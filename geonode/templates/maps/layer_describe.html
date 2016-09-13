@@ -22,15 +22,10 @@
     {
         Ext.select('*.su_only_gaz').setStyle('display', (checkbox.checked ? 'inline': 'none'))
     }
-
-
 </script>
 
 {{block.super}}
 <script type="text/javascript">
-
-
-
     Ext.onReady(function() {
         {% autoescape off %}
         // get #poc_form and #metadata_form, and add a `onchange` handler
@@ -111,6 +106,10 @@
             <input type="checkbox" value="include" name="gazetteer_include" id="gazetteer_include" {% if layer.in_gazetteer %}checked="checked"{% endif %} onclick="showGazetteerOptions(this);">Include in gazetteer
             </div>
             <div class="su_only_gaz">
+                <div class="gazetteer_warning">
+                    *NOTE: By adding your layer features to the gazetteer, they will be searchable and viewable
+                    by anyone regardless of your layer's security permissions.
+                </div>
                 Optional:
                     <table cellpadding="5" cellspacing="5" style="margin-left:20px;">
                         <tr><td colspan="2">{{gazetteer_form.project.label_tag}}: {{gazetteer_form.project}}</td></tr>

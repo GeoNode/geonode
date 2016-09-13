@@ -1,0 +1,26 @@
+{
+    "datafile_content_type": "application/zipped-shapefile", 
+    "datafile_create_datetime": "2014-09-30 10:00:54.544", 
+    "datafile_expected_md5_checksum": "e16c3b5c43781343ad6dfa180f176d7c", 
+    "datafile_download_url": "http://localhost:8080/api/access/datafile/1388", 
+    "datafile_filesize": 225975, 
+    "datafile_id": 123456,
+    "datafile_label": "social_disorder_in_boston_abc123.zip", 
+
+    "dataset_id": 1383, 
+     "dataset_name": "social disorder", 
+     "dataset_semantic_version": "DRAFT", 
+     "dataset_citation": "Privileged, Pete, 2014, \"social disorder\", http://dx.doi.org/10.5072/FK2/1383,  Root Dataverse,  DRAFT VERSION ", 
+     "dataset_description": "", 
+     "dataset_version_id": 362, 
+
+    "dataverse_id": 1, 
+    "dataverse_name": "Root",
+    "dataverse_installation_name": "http://localhost:8000",
+    "dataverse_description": "The test dataverse.",
+
+    "dv_user_id": 1, 
+    "dv_user_email": "dvuser@harvard.edu", 
+    "dv_username": "Pete Privileged", 
+    "return_to_dataverse_url": "http://localhost:8080/dataset.xhtml?id=1383&versionId=362"
+}

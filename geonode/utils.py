@@ -5,7 +5,9 @@ import datetime
 import os
 import subprocess
 from unidecode import unidecode
-from django.utils.log import AdminEmailHandler
+from geonode.settings import GAZETTEER_DB_ALIAS
+from logging import Handler
+import requests, json, traceback
 
 
 class ConfigMap(DictMixin):
@@ -17,7 +19,7 @@ class ConfigMap(DictMixin):
     def __iter__(self):
         for sname in self.sects:
             yield sname
-            
+
     def __getitem__(self, idx):
         return OptionMap(self.parser, idx)
 
@@ -45,7 +47,7 @@ class OptionMap(DictMixin):
     def __init__(self, parser, section):
         self.parser = parser
         self.section = section
-        
+
     def __getitem__(self, idx):
         try:
             return self.parser.get(self.section, idx)
@@ -111,39 +113,45 @@ def get_git_changeset():
 
 class WorldmapDatabaseRouter(object):
     """A router to control all database operations on models in
-    the myapp application"""
+    the gazetteer application"""
+
+    apps = ['gazetteer']
 
     def db_for_read(self, model, **hints):
-        "Point all operations on myapp models to 'other'"
-        if model._meta.app_label == 'gazetteer':
-            return 'wmdata'
+        """Point all operations on gazetteer models to gazetteer db"""
+        if model._meta.app_label in self.apps:
+            return GAZETTEER_DB_ALIAS
         return None
 
     def db_for_write(self, model, **hints):
-        "Point all operations on myapp models to 'other'"
-        if model._meta.app_label == 'gazetteer':
-            return 'wmdata'
+        """Point all operations on gazetteer models to gazetteer db"""
+        if model._meta.app_label in self.apps:
+            return GAZETTEER_DB_ALIAS
         return None
 
     def allow_relation(self, obj1, obj2, **hints):
-        "Allow any relation if a model in myapp is involved"
-        if obj1._meta.app_label == 'gazetteer' or obj2._meta.app_label == 'gazetteer':
+        """Allow any relation if a model in gazetteer is involved"""
+        if obj1._meta.app_label in self.apps or obj2._meta.app_label in self.apps:
             return True
         return None
 
     def allow_syncdb(self, db, model):
-        "Make sure the myapp app only appears on the 'other' db"
-        if db == 'wmdata':
-            return model._meta.app_label == 'gazetteer'
-        elif model._meta.app_label == 'gazetteer':
+        """Make sure the gazetteer app only appears on the gazetteer db"""
+        if model._meta.app_label in ['south']:
+            return True
+        if db == GAZETTEER_DB_ALIAS:
+            return model._meta.app_label in self.apps
+        elif model._meta.app_label in self.apps:
             return False
         return None
 
     def allow_migrate(self, db, model):
-        "Make sure the myapp app only appears on the 'other' db"
-        if db == 'wmdata':
-            return model._meta.app_label == 'gazetteer'
-        elif model._meta.app_label == 'gazetteer':
+        """Make sure the gazetteer app only appears on the gazetteer db"""
+        if model._meta.app_label in ['south']:
+            return True
+        if db == GAZETTEER_DB_ALIAS:
+            return model._meta.app_label in self.apps
+        elif model._meta.app_label in self.apps:
             return False
         return None
 
@@ -155,46 +163,14 @@ def slugify(text, delim=u'-'):
         result.extend(unidecode(word).split())
     return unicode(delim.join(result))
 
-
-class SlackHandler(AdminEmailHandler):
-    def emit(self, record):
-        try:
-            request = record.request
-            subject = '%s (%s IP): %s' % (
-                record.levelname,
-                ('internal' if request.META.get('REMOTE_ADDR') in settings.INTERNAL_IPS
-                 else 'EXTERNAL'),
-                record.getMessage()
-            )
-            filter = get_exception_reporter_filter(request)
-            request_repr = '\n{0}'.format(filter.get_request_repr(request))
-        except Exception:
-            subject = '%s: %s' % (
-                record.levelname,
-                record.getMessage()
-            )
-            request = None
-            request_repr = "unavailable"
-        subject = self.format_subject(subject)
-
-        if record.exc_info:
-            exc_info = record.exc_info
-        else:
-            exc_info = (None, record.getMessage(), None)
-
-        message = "%s\n\nRequest repr(): %s" % (self.format(record), request_repr)
-        reporter = ExceptionReporter(request, is_email=True, *exc_info)
-        html_message = reporter.get_traceback_html() if self.include_html else None
-
-        requests.post(settings.SLACK_WEBHOOK_URL, json={
-            "fallback": message,
-            "pretext": "An error occured",
-            "color": "#ef2a2a",
-            "fields": [
-                {
-                    "title": "Error",
-                    "value": message, 
-                    "short": False
-                }
-            ]
-        })
+class SlackLogHandler(Handler):
+   def __init__(self, logging_url="", stack_trace=False):
+      Handler.__init__(self)
+      self.logging_url = logging_url
+      self.stack_trace = stack_trace
+   def emit(self, record):
+      message = '%s' % (record.getMessage())
+      if self.stack_trace:
+         if record.exc_info:
+            message += '\n'.join(traceback.format_exception(*record.exc_info))
+            requests.post(self.logging_url, data=json.dumps({"pretext": "", "channel":"worldmap-log","username":"django", "icon_emoji": ":ghost:","text":"```%s```" % message} ))

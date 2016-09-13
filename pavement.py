@@ -304,11 +304,17 @@ def setup_geonode_client(options):
 def sync_django_db(options):
     sh("django-admin.py syncdb --settings=geonode.settings --noinput")
     try:
-        sh("django-admin.py syncdb --database=wmdata --settings=geonode.settings --noinput")
-    except:
-        info("******CREATION OF GAZETTEER TABLE FAILED - if you want the gazetteer enabled, \n \
-unescape the 'DATABASES' AND 'DATABASE_ROUTERS' settings in your settings file \n \
-and modify the default values if necessary")
+        from geonode import settings
+        if settings.USE_GAZETTEER and settings.GAZETTEER_DB_ALIAS:
+            sh("django-admin.py syncdb --database=%s --settings=geonode.settings --noinput" % settings.GAZETTEER_DB_ALIAS)
+            sh("django-admin.py migrate gazetteer --database=%s --settings=geonode.settings --noinput" % settings.GAZETTEER_DB_ALIAS)
+    except Exception as e:
+        info("""
+******CREATION OF GAZETTEER TABLE FAILED - if you want the gazetteer data saved
+in the geodata store database instead of the default database, unescape the
+DATABASE_ROUTERS and GAZETTEER_DB_ALIAS settings in your settings file
+and modify the default values if necessary - but re-escape them before
+running unit tests""")
     sh("django-admin.py migrate --settings=geonode.settings --noinput")
 
 
@@ -846,4 +852,3 @@ def _zip_extract_member(zf, member, targetpath, pwd):
     target.close()
 
     return targetpath
-

@@ -1,0 +1,35 @@
+{% extends "registration/base.html" %}
+
+{% load i18n %}
+{% block title %}Remove users{% endblock %}
+
+{% block main %}
+
+  <h3>Remove users</h3>
+
+  <p>{% trans "Are you sure you want to remove those users"  %}?</p>
+
+  {% for user in users %}
+    <h4>{{ user.username }}</h4>
+    The following maps will be also removed:
+    <ul>
+    {% for map in user.map_set.all %}
+      <li><a href="{{ map.get_absolute_url }}">{{ map.title }}</a></li>
+    {% endfor %}
+    </ul>
+    The following layers will be also removed:
+    <ul>
+    {% for layer in user.layer_set.all %}
+      <li><a href="{{ layer.get_absolute_url }}">{{ layer.title }}</a></li>
+    {% endfor %}
+    </ul>
+  {% endfor %}
+
+  <form action="." method="POST">
+      {% csrf_token %}
+      <input type="hidden" value="{{next}}" id="next" name="next" />
+      <input type="hidden" value="{{ids}}" id="ids" name="ids" />
+      <input type="submit" class="submit_btn" value="{% trans "Yes, delete"  %}" />
+  </form>
+
+{% endblock %}

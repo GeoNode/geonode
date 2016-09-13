@@ -1,4 +1,5 @@
 /src/GeoNodePy/geonode/local_settings.py
+geonode/contrib/datatables/tests/server_credentials.json
 
 # build artifacts
 *.pyc

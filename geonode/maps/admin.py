@@ -34,12 +34,18 @@ class ContactRoleAdmin(admin.ModelAdmin):
     search_fields = ['contact__name','layer__name']
     form = autocomplete_light.modelform_factory(ContactRole)
 
+def remove_map_owners(modeladmin, request, queryset):
+    ids = queryset.all().values_list('id', flat=True)
+    return HttpResponseRedirect("/users_remove/?ids=%s" % ','.join(str(id) for id in ids))
+remove_map_owners.short_description = "Remove the owners of the selected maps"
+
 class MapAdmin(admin.ModelAdmin):
     inlines = [MapLayerInline,MapOverallRatingInline,MapRatingInline]
     list_display = ('id', 'title','owner','created_dttm', 'last_modified')
     list_filter  = ('created_dttm','owner')
     date_hierarchy = 'created_dttm'
     search_fields = ['title','keywords__name']
+    actions = [remove_map_owners]
     ordering = ('-created_dttm',)
     form = autocomplete_light.modelform_factory(Map)
 
@@ -49,13 +55,13 @@ class ContactAdmin(admin.ModelAdmin):
     form = autocomplete_light.modelform_factory(Contact)
 
 class LayerAdmin(admin.ModelAdmin):
-    list_display = ('id','title', 'date', 'owner', 'topic_category')
+    list_display = ('id','title', 'store', 'name', 'date', 'owner', 'topic_category', 'add_as_join_target')
     list_display_links = ('id',)
     list_editable = ('title', 'topic_category')
     list_filter  = ('date', 'date_type', 'constraints_use', 'topic_category', 'owner')
     filter_horizontal = ('contacts',)
     date_hierarchy = 'date'
-    readonly_fields = ('uuid', 'typename', 'workspace')
+    readonly_fields = ('uuid', 'typename', 'workspace', 'add_as_join_target')
     inlines = [ContactRoleInline]
     search_fields = ['typename','title']
     actions = ['change_poc']

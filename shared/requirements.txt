@@ -24,7 +24,6 @@ psycopg2==2.4.1
 #-e git+https://github.com/cga-harvard/gsconfig.py.git#egg=gsconfig.py
 -e git+https://github.com/cga-harvard/gsconfig.py.git@publish_featuretype#egg=gsconfig.py
 
-
 django-registration==0.8
 django-profiles==0.2
 -e git+https://github.com/mbertrand/django-avatar.git#egg=avatar
@@ -43,9 +42,9 @@ defusedxml
 #The following are for the gazetteer
 -e git+https://github.com/cga-harvard/geopy.git#egg=geopy
 geojson
-https://bitbucket.org/jespern/django-piston/get/5b3ef294fe89.zip
+dicttoxml==1.6.6
 #Uncomment the following to use the django debug toolbar
--e git+https://github.com/robhudson/django-debug-toolbar.git#egg=django-debug-toolbar
+#-e git+https://github.com/robhudson/django-debug-toolbar.git#egg=django-debug-toolbar
 
 #For scheduled tasks
 django-celery==3.0.11
@@ -60,11 +59,19 @@ vectorformats
 #For autocomplete
 django-autocomplete-light==1.4.5
 
+# --------------------------------------------------
 # For the Dataverse/Geoconnect/WorldMap connection
+# --------------------------------------------------
 xmltodict
--e git+https://github.com/IQSS/shared-dataverse-information.git@7fd6e9aadc3e25222c79d86bb114f07ecd3a8370#egg=shared_dataverse_information-dev
-# ------------------
+shared_dataverse_information>=0.4.8
+#-e git+https://github.com/IQSS/shared-dataverse-information.git#egg=shared-dataverse-information
 
+# --------------------------------------------------
+# For Datatable app.  Tabular table joins to existing layers
+# --------------------------------------------------
+csvkit==0.9.0
+
+# --------------------------------------------------
 
 paste
 PasteDeploy

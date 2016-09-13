@@ -9,7 +9,7 @@
   <link rel="shortcut icon" href="{{ STATIC_URL }}theme/img/favicon.ico"/>
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.9.0/jquery.js" type="text/javascript"></script>
   <script type="text/javascript" src="{{ GEONODE_CLIENT_LOCATION }}externals/ext/adapter/jquery/ext-jquery-adapter.js"></script>
-  {% include 'autocomplete_light/static.html' %}    
+  {% include 'autocomplete_light/static.html' %}
   {% block head_extra_meta %}{% endblock %}
   {% block head %}
 
@@ -26,13 +26,13 @@
     <script type="text/javascript" src="{% url jscat %}"></script>
     <script type="text/javascript" src="{% url django.views.i18n.javascript_catalog %}"></script>
     <script type="text/javascript" src="{% url lang %}"></script>
-   
-    
+
+
   	{% endblock %}
     {% autoescape off %}
         {{ GOOGLE_ANALYTICS_CODE }}
     {% endautoescape %}
-    
+
     <script type="text/javascript">
 		function hideModal() {
 			Ext.get("modalhelp").setStyle("display","none");
@@ -51,7 +51,7 @@
             	{% endautoescape %}
     		});
 		}
-   </script>    
+   </script>
 
    <script>
     $(document).ready(function() {
@@ -85,10 +85,10 @@
 
     <div id="login-area">
       {% if user.is_authenticated %}
-          <a href="{{ user.get_profile.get_absolute_url }}">{{ user.username}}</a> | <a href="/accounts/logout/">{% trans "Log out" %}</a>
+          <a href="{{ user.get_profile.get_absolute_url }}">{{ user.username}}</a> | <a href="{% url accounts_logout %}">{% trans "Log out" %}</a>
       {% else %}
           <!-- this should be updated to a url var -->
-          <a href="/accounts/login/?next={% if 'logout' not in request.path %}{{request.path}}{% else %}/{% endif %}"
+          <a href="{% url accounts_login %}?next={% if 'logout' not in request.path %}{{request.path}}{% else %}/{% endif %}"
                   >{% trans "Sign in" %}</a>
       {% endif %}
       | <a class="" id="mapLink" href="/maps/new">{% trans "Create Map" %}</a>
@@ -97,6 +97,7 @@
           <option value="" disabled selected>Help</option>
           <option value='{{ STATIC_URL }}docs/WorldMap_Help_en.pdf'>English</option>
           <option value='{{ STATIC_URL }}docs/WorldMap_Help_zh-cn.pdf'>Chinese</option>
+          <option value='{{ STATIC_URL }}docs/WorldMap_Help_fr.pdf'>French</option>
           <option value='{{ STATIC_URL }}docs/WorldMap_Help_it.pdf'>Italian</option>
         </select>
 
@@ -113,9 +114,9 @@
   <div id="footer">
     <div class="wrap selfclear">
       {% block footer %}
-      
+
    <!-- Only show the language form if the csrf_token is present -->
-   {% if csrf_token != "NOTPROVIDED" and False %}       
+   {% if csrf_token != "NOTPROVIDED" and False %}
    {% get_current_language as LANGUAGE %}
     <form class="langbar" id="target" action="/i18n/setlang/" method="post">
       {% csrf_token %}
@@ -130,8 +131,8 @@
          </select>
        </div>
      </form>
-   {% endif %}        
-      
+   {% endif %}
+
       <div class="onecol" style="text-align:center">
          <a href="{{site}}{{ STATIC_URL }}docs/WorldMap_Help_{{LANGUAGE_CODE}}.pdf">{% trans "Need Help?" %}</a>&nbsp;&nbsp;
          <a href="mailto:worldmap@harvard.edu">{%  trans "Contact Us" %}</a>&nbsp;&nbsp;

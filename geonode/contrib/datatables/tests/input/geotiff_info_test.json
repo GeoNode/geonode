@@ -1,0 +1,31 @@
+{
+    "title": "Boston Neighborhood Boundaries",
+    "abstract": "Boston Redevelopment Authority Districts.  View in Dataverse: http://localhost:8080/dataset.xhtml?id=62 ",
+    "dv_user_email": "dvuser@harvard.edu",
+    "shapefile_name": "Neighborhoods_BRA_1.tiff",
+
+    "datafile_content_type" : "image/tiff",
+    "datafile_create_datetime": "2014-09-30 10:00:54.544",
+    "datafile_expected_md5_checksum": "e16c3b9999781343ad6dfa180f176d7c",
+    "datafile_download_url": "http://localhost:8080/api/access/datafile/1205",
+    "datafile_filesize": 1106432,
+    "datafile_id": 120555,
+    "datafile_label": "Neighborhoods_BRA_1.tiff",
+
+    "dataset_id": 42,
+     "dataset_name": "Boston Data",
+     "dataset_semantic_version": "DRAFT",
+     "dataset_citation": "BARI, 2015, \"Demographics for 2009 American Community Survey\", http://hdl.handle.net/1902.1/15586, Harvard Dataverse, V3",
+     "dataset_description": "",
+     "dataset_version_id": 62,
+
+    "dataverse_id": 1,
+    "dataverse_name": "Root",
+    "dataverse_installation_name": "http://localhost:8000",
+    "dataverse_description": "The test dataverse.",
+
+    "dv_user_id": 1,
+    "dv_user_email": "dvuser@harvard.edu",
+    "dv_username": "BARI",
+    "return_to_dataverse_url": "http://localhost:8080/dataset.xhtml?id=62"
+}
