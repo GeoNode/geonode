@@ -18,7 +18,7 @@ from geonode.base.models import TopicCategory
 from geonode.base.models import Region
 from geonode.layers.models import Layer
 from geonode.maps.models import Map
-from geonode.datarequests.models import DataRequestProfile
+from geonode.datarequests.models import DataRequestProfile, ProfileRequest
 from geonode.documents.models import Document
 from geonode.groups.models import GroupProfile
 
@@ -31,14 +31,16 @@ from tastypie.resources import ModelResource
 from tastypie.constants import ALL
 from tastypie.utils import trailing_slash
 
-from .authorization import GeoNodeAuthorization, DataRequestAuthorization
+from .authorization import GeoNodeAuthorization, DataRequestAuthorization, ProfileRequestAuthorization
 
+from pprint import pprint
 
 FILTER_TYPES = {
     'layer': Layer,
     'map': Map,
     'document': Document,
-    'data_request': DataRequestProfile,
+    # 'data_request': DataRequestProfile,
+    'data_request': ProfileRequest,
 }
 
 
@@ -329,9 +331,9 @@ REQUESTER_TYPES = {
 
 
 
-class DataRequestProfileResource(ModelResource):
+class ProfileRequestResource(ModelResource):
     """Data Request Profile api"""
-    data_request_detail_url = fields.CharField()
+    profile_request_detail_url = fields.CharField()
     org_type = fields.CharField()
     req_type = fields.CharField()
     status = fields.CharField()
@@ -339,12 +341,13 @@ class DataRequestProfileResource(ModelResource):
     is_rejected = fields.BooleanField(default=False)
     rejection_reason = fields.CharField()
     date_submitted = fields.CharField()
-    shapefile_thumbnail_url = fields.CharField(null=True)
+    # shapefile_thumbnail_url = fields.CharField(null=True)
+    data_request_id = fields.CharField()
 
     class Meta:
-        authorization = DataRequestAuthorization()
+        authorization = ProfileRequestAuthorization()
         authentication = SessionAuthentication()
-        queryset = DataRequestProfile.objects.all().order_by('-key_created_date')
+        queryset = ProfileRequest.objects.all().order_by('-key_created_date')
         resource_name = 'data_requests'
         allowed_methods = ['get']
         ordering = ['key_created_date', ]
@@ -356,7 +359,7 @@ class DataRequestProfileResource(ModelResource):
                      'key_created_date': ALL,
                      }
 
-    def dehydrate_data_request_detail_url(self, bundle):
+    def dehydrate_profile_request_detail_url(self, bundle):
         return bundle.obj.get_absolute_url()
 
     def dehydrate_org_type(self, bundle):
@@ -383,14 +386,17 @@ class DataRequestProfileResource(ModelResource):
         else:
             return 'success'
 
-    def dehydrate_shapefile_thumbnail_url(self, bundle):
-        if bundle.obj.jurisdiction_shapefile:
-            return bundle.obj.jurisdiction_shapefile.thumbnail_url
-        else:
-            return None
+    # def dehydrate_shapefile_thumbnail_url(self, bundle):
+    #     if bundle.obj.jurisdiction_shapefile:
+    #         return bundle.obj.jurisdiction_shapefile.thumbnail_url
+    #     else:
+    #         return None
+
+    def dehydrate_data_request_id(self, bundle):
+        return bundle.obj.data_request_id
 
     def apply_filters(self, request, applicable_filters):
-        base_object_list = super(DataRequestProfileResource, self).apply_filters(request, applicable_filters)
+        base_object_list = super(ProfileRequestResource, self).apply_filters(request, applicable_filters)
 
         query = request.GET.get('title__icontains', None)
         if query:
