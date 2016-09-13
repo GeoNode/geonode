@@ -82,6 +82,13 @@ class ProfileRequest(TimeStampedModel):
         null=True,
         blank=True
     )
+    data_request = models.ForeignKey(
+        'DataRequest',
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="new",
+    )
 
     username = models.CharField(
         _('User name'),
@@ -170,8 +177,6 @@ class ProfileRequest(TimeStampedModel):
 
 
 
-    #For request letter
-    request_letter= models.ForeignKey(Document, null=True, blank=True)
 
     # For email verification
     verification_key = models.CharField(max_length=50)
@@ -466,6 +471,111 @@ class ProfileRequest(TimeStampedModel):
         msg.attach_alternative(html_content, "text/html")
         msg.send()
 
+    def send_request_rejection_email(self):
+
+        additional_details = 'Additional Details: ' + str(self.additional_rejection_reason)
+
+        text_content = """
+        Dear {},
+
+        Your data request for LiPAD was not approved.
+        Reason: {}
+        {}
+
+        If you have further questions, you can contact us as at {}.
+
+        Regards,
+        LiPAD Team
+         """.format(
+             unidecode(self.first_name),
+             self.rejection_reason,
+             additional_details,
+             local_settings.LIPAD_SUPPORT_MAIL,
+         )
+
+        html_content = """
+        <p>Dear <strong>{}</strong>,</p>
+
+       <p>Your data request for LiPAD was not approved.</p>
+       <p>Reason: {} <br/>
+       {}</p>
+       <p>If you have further questions, you can contact us as at <a href="mailto:{}" target="_top">{}</a></p>
+       </br>
+        <p>Regards,</p>
+        <p>LiPAD Team</p>
+        """.format(
+             unidecode(self.first_name),
+             self.rejection_reason,
+             additional_details,
+             local_settings.LIPAD_SUPPORT_MAIL,
+             local_settings.LIPAD_SUPPORT_MAIL
+        )
+
+        email_subject = _('[LiPAD] Data Request Status')
+
+        msg = EmailMultiAlternatives(
+            email_subject,
+            text_content,
+            settings.DEFAULT_FROM_EMAIL,
+            [self.email, ]
+        )
+        msg.attach_alternative(html_content, "text/html")
+        msg.send()
+
+    def send_request_approval_email(self, username):
+        site = Site.objects.get_current()
+        profile_url = (
+            str(site) +
+            reverse('profile_detail', kwargs={'username': username})
+        )
+        profile_url = iri_to_uri(profile_url)
+
+        text_content = """
+        Dear {},
+
+        Your current data request for LiPAD was approved.
+        To download DTMs, DSMs, Classified LAZ and Orthophotos, please proceed to http://lipad.dream.upd.edu.ph/maptiles after logging in.
+        To download Flood Hazard Maps, Resource Layers and other datasets, please proceed to http://lipad.dream.upd.edu.ph/layers/.
+
+        To download DTMs, DSMs, Classified LAZ and Orthophotos, please proceed to http://lipad.dream.upd.edu.ph/maptiles after logging in.
+        To download Flood Hazard Maps, Resource Layers and other datasets, please proceed to http://lipad.dream.upd.edu.ph/layers/.
+
+        If you have any questions, you can contact us as at {}.
+
+        Regards,
+        LiPAD Team
+         """.format(
+             unidecode(self.first_name),
+             local_settings.LIPAD_SUPPORT_MAIL
+         )
+
+        html_content = """
+        <p>Dear <strong>{}</strong>,</p>
+
+       <p>Your current data request in LiPAD was approved.</p>
+       <p>To download DTMs, DSMs, Classified LAZ and Orthophotos, please proceed to <a href="http://lipad.dream.upd.edu.ph/maptiles">Data Tiles Section</a> under Data Store after logging in.</p>
+       <p>To download Flood Hazard Maps, Resource Layers and other datasets, please proceed to <a href="http://lipad.dream.upd.edu.ph/layers/">Layers Section</a> under Data Store.</p>
+       <p>If you have any questions, you can contact us as at <a href="mailto:{}" target="_top">{}</a></p>
+       </br>
+        <p>Regards,</p>
+        <p>LiPAD Team</p>
+        """.format(
+             unidecode(self.first_name),
+             local_settings.LIPAD_SUPPORT_MAIL,
+             local_settings.LIPAD_SUPPORT_MAIL
+         )
+
+        email_subject = _('[LiPAD] Data Request Status')
+
+        msg = EmailMultiAlternatives(
+            email_subject,
+            text_content,
+            settings.DEFAULT_FROM_EMAIL,
+            [self.email, ]
+        )
+        msg.attach_alternative(html_content, "text/html")
+        msg.send()
+
     def create_account(self):
         profile = None
         errors = []
@@ -605,6 +715,13 @@ class ProfileRequest(TimeStampedModel):
         return out
 
 class DataRequest(TimeStampedModel):
+    REQUEST_STATUS_CHOICES = Choices(
+        ('pending', _('Pending')),
+        ('approved', _('Approved')),
+        ('cancelled', _('Cancelled')),
+        ('rejected', _('Rejected')),
+        ('unconfirmed',_('Unconfirmed Email')),
+    )
     DATA_TYPE_CHOICES = Choices(
         ('interpreted', _('Interpreted')),
         ('raw', _('Raw')),
@@ -622,7 +739,7 @@ class DataRequest(TimeStampedModel):
         blank=True,
         related_name="new",
     )
-    account = models.ForeignKey(
+    profile_request = models.ForeignKey(
         ProfileRequest,
         on_delete=models.SET_NULL,
         null=True,
@@ -643,6 +760,9 @@ class DataRequest(TimeStampedModel):
         default=DATASET_USE_CHOICES.commercial,
         max_length=15,
     )
+    #For request letter
+    request_letter= models.ForeignKey(Document, null=True, blank=True)
+
     jurisdiction_shapefile = models.ForeignKey(Layer, null=True, blank=True)
     area_coverage = models.DecimalField(
         _('Area of Coverage'),
@@ -666,10 +786,46 @@ class DataRequest(TimeStampedModel):
         null=True,
         blank=True,
     )
+    date_submitted = models.DateTimeField(
+        blank=True,
+        null=True,
+        help_text=_('The date in which the form was submitted'),
+
+    )
+    date_status = models.DateTimeField(
+        blank=True,
+        null=True,
+        help_text=_('The date in which the form was submitted'),
+
+    )
+    request_status = models.CharField(
+        _('Status of Data Request'),
+        choices=REQUEST_STATUS_CHOICES,
+        default=REQUEST_STATUS_CHOICES.unconfirmed,
+        max_length=12,
+        null=True,
+        blank=True,
+    )
+    rejection_reason = models.CharField(
+        _('Reason for Rejection'),
+        blank=True,
+        null=True,
+        max_length=100,
+    )
+    additional_rejection_reason = models.TextField(
+        _('Additional details about rejection'),
+        blank=True,
+        null=True,
+        )
     class Meta:
         verbose_name = _('Data Request')
         verbose_name_plural = _('Data Requests')
         ordering = ('-created',)
+    def __unicode__(self):
+        return (_('data request - {}')
+                .format(
+                    self.profile_request,
+                ))
     def assign_jurisdiction(self):
         # Link shapefile to account
         uj = None
