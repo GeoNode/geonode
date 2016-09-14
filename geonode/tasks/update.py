@@ -82,15 +82,15 @@ def style_update(layer,style_template):
     if style is not None:
         try:
             print "Layer thumbnail url: %s " % layer.thumbnail_url
-            if "lipad" not in settings.BASEURL:
-                url = "geonode/uploaded/thumbs/layer-"+ layer.uuid + "-thumb.png"
-                os.remove(url)
-            else:
-                url = "/var/www/geonode/uploaded/thumbs/layer-" +layer.uuid + "-thumb.png"
-                uid = getpwnam("www-data").pw_uid
-                gid = getpwnam("www-data").pw_gid
-                os.chown(url,uid,gid)
-                os.remove(url)
+            #if "lipad" not in settings.BASEURL:
+            #    url = "geonode/uploaded/thumbs/layer-"+ layer.uuid + "-thumb.png"
+            #    os.remove(url)
+            #else:
+            #    url = "/var/www/geonode/uploaded/thumbs/layer-" +layer.uuid + "-thumb.png"
+            #    uid = getpwnam("www-data").pw_uid
+            #    gid = getpwnam("www-data").pw_gid
+            #    os.chown(url,uid,gid)
+            #    os.remove(url)
 
             gs_layer = cat.get_layer(layer.name)
             print "GS LAYER: %s " % gs_layer.name
