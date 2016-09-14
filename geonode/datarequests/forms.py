@@ -152,9 +152,10 @@ class DataRequestProfileForm(forms.ModelForm):
         return fname
     
     def clean_middle_name(self):
+        
         mname = self.cleaned_data.get('middle_name').strip()
-        if len(mname)<1:
-            raise forms.ValidationError("You have entered an empty middle name")
+        if len(mname)<1 or not mname:
+            mname = '_'
         
         return mname
         
