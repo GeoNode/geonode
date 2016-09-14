@@ -97,15 +97,15 @@ def style_update(layer,style_template):
             gs_layer._set_default_style(style)
             cat.save(gs_layer)
             ctr+=1
-            gs_style = cat.get_style(layer.name)
-            if gs_style is not None:
-                print "GS STYLE: %s " % gs_style.name
-                print "Geoserver: Will delete style %s " % gs_style.name
-                cat.delete(gs_style)
-            gn_style = Style.objects.get(name=layer.name)
-            if gn_style is not None:
-                print "Geonode: Will delete style %s " % gn_style.name
-                gn_style.delete()
+           # gs_style = cat.get_style(layer.name)
+            #if gs_style is not None:
+            #    print "GS STYLE: %s " % gs_style.name
+            #    print "Geoserver: Will delete style %s " % gs_style.name
+            #    cat.delete(gs_style)
+            #gn_style = Style.objects.get(name=layer.name)
+            #if gn_style is not None:
+            #    print "Geonode: Will delete style %s " % gn_style.name
+            #    gn_style.delete()
 
             layer.sld_body = style.sld_body
             _style = Style.objects.get(name=style_template)
