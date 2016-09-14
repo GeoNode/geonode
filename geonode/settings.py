@@ -528,7 +528,7 @@ MODIFY_TOPICCATEGORY = False
 
 FILE_UPLOAD_PERMISSIONS = 0666
 MISSING_THUMBNAIL = 'geonode/img/missing_thumb.png'
-THUMBNAIL_FILE_PERMISSIONS = 666
+THUMBNAIL_FILE_PERMISSIONS = 0666
 
 # Search Snippet Cache Time in Seconds
 CACHE_TIME = 0
@@ -669,12 +669,14 @@ MAP_BASELAYERS = [{
     "visibility": True,
     "fixed": True,
     "group": "background"
-}, {
-    "source": {"ptype": "gxp_mapquestsource"},
-    "name": "osm",
-    "group": "background",
-    "visibility": False
-}, {
+},
+# {
+#    "source": {"ptype": "gxp_mapquestsource"},
+#    "name": "osm",
+#    "group": "background",
+#    "visibility": False
+#}, 
+{
     "source": {"ptype": "gxp_mapquestsource"},
     "name": "naip",
     "group": "background",

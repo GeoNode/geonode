@@ -276,11 +276,16 @@ Filters tiles if they intersect the geometries which are part of the jurisdictio
 */
 
 function isInJurisdiction(geoms, tile){
+    console.log(tile);
     for ( var i=0; i<geoms.length; i++){
-        if (tile.geometry.intersects(geoms[i].geometry)){
+        console.log(geoms[i]);
+        if (geoms[i].geometry.bounds.bottom > 10000 && geoms[i].geometry.bounds.transform(new OpenLayers.Projection("EPSG:32651"), new OpenLayers.Projection("EPSG:4326")).intersectsBounds(tile.geometry.bounds)){
+            return true;
+        }else if (check_if_injuris = geoms[i].geometry.bounds.intersectsBounds(tile.geometry.bounds)){
             return true;
         }
     }
+    return false;
 }
 
 function jurisdictionFilter(geoms, feature_list){
@@ -359,40 +364,49 @@ function filterSelectedTiles(tile_filter, single_click, send_notice, epsgproj){
                         }
                         var tile = createTile(corners);
                          if (find_georef(tile_list, tile.georef)<0){
+                               console.log("tile is not yet in the list");
+                               tiles[i].geometry.calculateBounds();
+                               tiles[i].geometry.setBounds(tiles[i].geometry.bounds.transform(
+                                    new OpenLayers.Projection("EPSG:32651"), new OpenLayers.Projection("EPSG:4326")
+                               ));
                                if (isInJurisdiction(jurisdiction_geoms, tiles[i])){
+                                    console.log("tile is within jurisdiction");
                                     tile_list.push(tile);
                                     tile.feature = createHighlightBox(tile.corners);
                                     highlight_layer.addFeatures([tile.feature]);
                                     highlight_layer.refresh();
                                     added_count++;
-                              }else if (single_click){
+                                }else{
+                                    console.log("tile is not within jurisdiction")
+                                }
+                        }else if (single_click){
                                   removeHighlight(tile.georef, highlight_layer);
-                              }
-                         }
+                        }
                      }
-                  }
-                  display_points("point_display", highlight_layer);
+                 }
+            }
+            display_points("point_display", highlight_layer);
 
-                  if (added_count< feature_out.length){
-                      if (feature_out.length==1){
-                            //alert("Selected tile either lacks data or is out of bounds. ");
-                            display_message("notif","Selected tile either lacks data or is out of bounds." );
-                      }else{
-                            //alert("Some selected tiles have not been included in the list due to lack of data or being outside the jurisdiction boundaries");
-                            display_message("notif","Some selected tiles have not been included in the list due to lack of data or being outside the jurisdiction boundaries");
-                      }
-                  }else{
-                      /*document.getElementById("warning").style.visibilty =  "visible";
-                      document.getElementById("warning").style.display =  "inline";*/
-                      //container.setAttribute("hidden","hidden");
-                  }
-                  single_click=true;
-                  end = new Date().getTime();
-                  console.log(end);
-                  console.log(end-start);
+              //if (added_count< feature_out.length){
+              //    if (feature_out.length==1){
+                        //alert("Selected tile either lacks data or is out of bounds. ");
+              //          display_message("notif","Selected tile either lacks data or is out of bounds." );
+              //    }else{
+                        //alert("Some selected tiles have not been included in the list due to lack of data or being outside the jurisdiction boundaries");
+              //          display_message("notif","Some selected tiles have not been included in the list due to lack of data or being outside the jurisdiction boundaries");
+               //   }
+              //}else{
+                  /*document.getElementById("warning").style.visibilty =  "visible";
+                  document.getElementById("warning").style.display =  "inline";*/
+                  //container.setAttribute("hidden","hidden");
+              //}
+              single_click=true;
+              end = new Date().getTime();
+              console.log(end);
+              console.log(end-start);
              }
-         }
-     };
+         };
+     //};
      var wfs_resp = wfs_proto.read(arg_obj);
 }
 
@@ -550,15 +564,15 @@ Ext.onReady(function (){
     var mq_layer = new OpenLayers.Layer.XYZ(
         "OpenStreetMap",
         [
-            // "http://otile1.mqcdn.com/tiles/1.0.0/map/${z}/${x}/${y}.png",
-            // "http://otile2.mqcdn.com/tiles/1.0.0/map/${z}/${x}/${y}.png",
-            // "http://otile3.mqcdn.com/tiles/1.0.0/map/${z}/${x}/${y}.png",
-            // "http://otile4.mqcdn.com/tiles/1.0.0/map/${z}/${x}/${y}.png"
-            "http://korona.geog.uni-heidelberg.de/tiles/roads/x=${x}&y=${y}&z=${z}"
+          // "http://otile1.mqcdn.com/tiles/1.0.0/map/${z}/${x}/${y}.png",
+          // "http://otile2.mqcdn.com/tiles/1.0.0/map/${z}/${x}/${y}.png",
+          // "http://otile3.mqcdn.com/tiles/1.0.0/map/${z}/${x}/${y}.png",
+          // "http://otile4.mqcdn.com/tiles/1.0.0/map/${z}/${x}/${y}.png"
+          "http://korona.geog.uni-heidelberg.de/tiles/roads/x=${x}&y=${y}&z=${z}"
         ],
         {
-          //attribution: "Data, imagery and map information provided by <a href='http://www.mapquest.com/'  target='_blank'>MapQuest</a>, <a href='http://www.openstreetmap.org/' target='_blank'>Open Street Map</a> and contributors, <a href='http://creativecommons.org/licenses/by-sa/2.0/' target='_blank'>CC-BY-SA</a>  <img src='http://developer.mapquest.com/content/osm/mq_logo.png' border='0'>",
-          //attribution: "Imagery from <a href='http://giscience.uni-hd.de/'>GIScience Research Group @ University of Heidelberg</a> &mdash; Map data &copy; <a href='http://www.openstreetmap.org/copyright'>OpenStreetMap</a>",
+            //attribution: "Data, imagery and map information provided by <a href='http://www.mapquest.com/'  target='_blank'>MapQuest</a>, <a href='http://www.openstreetmap.org/' target='_blank'>Open Street Map</a> and contributors, <a href='http://creativecommons.org/licenses/by-sa/2.0/' target='_blank'>CC-BY-SA</a>  <img src='http://developer.mapquest.com/content/osm/mq_logo.png' border='0'>",
+            attribution: "Imagery from <a href='http://giscience.uni-hd.de/'>GIScience Research Group @ University of Heidelberg</a> &mdash; Map data &copy; <a href='http://www.openstreetmap.org/copyright'>OpenStreetMap</a>",
             transitionEffect: "resize"
         },
         {
@@ -692,7 +706,8 @@ Ext.onReady(function (){
               var transformed_pt = click_pt.transform(map.getProjectionObject(),new OpenLayers.Projection("EPSG:32651"));
               var computed_corners = get_corners(click_pt.x, click_pt.y);
 
-              //var tile = createTile(computed_corners);// this is a pointless piece of code
+              var tile = createTile(computed_corners);// this is a pointless piece of code
+              console.log(tile.georef);
 
               var filter = new OpenLayers. Filter.Comparison({
                       type: "==",
