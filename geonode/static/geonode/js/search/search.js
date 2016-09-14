@@ -235,7 +235,54 @@
         }
       });
     };
-    query_api($scope.query);
+
+    function query_api_layer_list(data){
+      $scope.results=[];
+      $scope.total_counts = 0;
+      $scope.$root.query_data=[];
+
+      Configs.url.forEach(function(url){
+        $http.get(url, {params: data || {}}).success(function(data){
+          // $scope.results = data.objects;
+          // $scope.total_counts = data.meta.total_count;
+          // $scope.latest_layers = 5;
+          // $scope.$root.query_data = data;
+          $scope.results.push.apply($scope.results, data.objects);
+          $scope.total_counts += data.meta.total_count;
+          $scope.latest_layers = 5;
+          $scope.$root.query_data.push.apply($scope.$root.query_data, data);
+          if (HAYSTACK_SEARCH) {
+            if ($location.search().hasOwnProperty('q')){
+              $scope.text_query = $location.search()['q'].replace(/\+/g," ");
+            }
+          } else {
+            if ($location.search().hasOwnProperty('title__icontains')){
+              $scope.text_query = $location.search()['title__icontains'].replace(/\+/g," ");
+            }
+          }
+
+          //Update facet/keyword/category counts from search results
+          if (HAYSTACK_FACET_COUNTS){
+              module.haystack_facets($http, $scope.$root, $location);
+              $("#types").find("a").each(function(){
+                  if ($(this)[0].id in data.meta.facets.subtype) {
+                      $(this).find("span").text(data.meta.facets.subtype[$(this)[0].id]);
+                  }
+                  else if ($(this)[0].id in data.meta.facets.type) {
+                      $(this).find("span").text(data.meta.facets.type[$(this)[0].id]);
+                  } else {
+                      $(this).find("span").text("0");
+                  }
+              });
+          }
+        });
+      });
+    };
+    if(Configs.url.constructor == Array){//for layer lists
+      query_api_layer_list($scope.query);
+    }else{
+      query_api($scope.query);
+    }
 
 
     /*
@@ -253,7 +300,7 @@
       if($scope.numpages < $scope.page){
         $scope.page = 1;
         $scope.query.offset = 0;
-        query_api($scope.query);
+        // query_api($scope.query);
       }
 
       // In case of no results, the number of pages is one.
