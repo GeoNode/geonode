@@ -14,7 +14,7 @@
 <script type="text/javascript">
     var map;
     window.addEventListener("map:init", function (e) {
-        
+
         map = e.detail.map;
 
         
@@ -27,22 +27,21 @@
             layers: '{{ resource.typename }}',
             format: 'image/png',
             transparent: true,
-            'opacity':0.8,
+            'opacity':1,
             tiled:true,
             visibility:true,
-            continuousWorld: true
-           
+            continuousWorld: true,
+
         }).addTo(map).bringToFront();
-        
+
           var MapQuestOpen_OSM = L.tileLayer('http://korona.geog.uni-heidelberg.de/tiles/roads/x={x}&y={y}&z={z}', {
             type: 'map',
             ext: 'jpg',
             attribution: 'Imagery from <a href="http://giscience.uni-hd.de/">GIScience Research Group @ University of Heidelberg</a> &mdash; Map data &copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>',
             subdomains: '1234',
             continuousWorld: true,
-            'opacity':0.8,
+            // 'opacity':0.8,
         }).addTo(map).bringToBack();
-
 
         var baseMaps = {
           'MapQuestOpen OSM' : MapQuestOpen_OSM
