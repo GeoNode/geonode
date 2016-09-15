@@ -158,7 +158,7 @@ def layer_default_style(keyword):
     elif keyword == 'dem_':
         try:
             layers = Layer.objects.filter(name__icontains=keyword)
-            iterate_over_layers(layers, 'DEM')
+            iterate_over_layers(layers, '')
         except Exception as e:
             print "%s" % e
             pass
@@ -180,7 +180,7 @@ def layer_default_style(keyword):
     elif keyword == 'SAR':
         try:
             layers = Layer.objects.filter(keywords__name__icontains=keyword)
-            iterate_over_layers(layers, 'dem')
+            iterate_over_layers(layers, 'DEM')
         except Exception as e:
             print "%s" % e
             pass
