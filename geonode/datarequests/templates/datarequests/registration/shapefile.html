@@ -20,11 +20,11 @@
 </div>
 
 {% if not user.is_authenticated %}
-    
+
     <p>{% blocktrans %}Your registration details have been received. We have sent you an email for verification. Follow the link provided in the email to finalize the signup process.{% endblocktrans %}</p>
-    
+
     <p>{% blocktrans %}Didn't receive your email? Please check your spam folder. Still not there? Contact us at <strong>{{ support_email }}</strong>, and we'll be glad to assist you.{% endblocktrans %}</p>
-    
+
     <p> Additionally, you can choose to submit your data request below. This action is <strong>not required</strong>.</p>
 
 {% endif %}
@@ -43,11 +43,20 @@
               </div>
           </div>
       </div>
+      <div id="please-wait" class="modal fade" tabindex="-1" role="dialog">
+          <div class="modal-dialog">
+              <div class="modal-content">
+                  <div class="modal-body">
+                      <h4>Sending your request.</h4>
+                  </div>
+              </div>
+          </div>
+      </div>
 
       <div id="upload-status"></div>
         <form id="file-uploader" class="form-horizontal" method="post" enctype="multipart/form-data">
             {% crispy form %}
-            
+
             {% if errors %}
             <div id="errors" class="alert alert-danger">
             {% for error in errors %}
@@ -55,7 +64,7 @@
                 {% endfor %}
             </div>
             {% endif %}
-            
+
             <legend>Area of Interest Shapefile (Optional)</legend>
              <p>Valid file formats are ONLY the following :
              <ul><li>shp</li><li>dbf</li><li>prj</li><li>shx</li></ul></p>
@@ -70,7 +79,7 @@
 
                 <input class="btn" id="file-input" name="shapefile_upload" type="file" multiple>
                 <section class="widget">
-                    
+
                     <h5>{% trans "Files to be uploaded" %}</h5>
                     <ul id="global-errors"></ul>
                     <div id="file-queue"></div>
@@ -132,5 +141,14 @@
 
 {% endautoescape %}
 
+$('#upload-button').click(function(){
+  $('#please-wait').modal({
+      backdrop: 'static',
+      keyboard: false
+  });
+});
+$('#modal-content').on('shown.bs.modal', function () {//when upload modal shows
+  $('#please-wait').modal('toggle');//to hide please wait modal
+})
 </script>
 {% endblock extra_script %}
