@@ -149,8 +149,8 @@ def layer_default_style(keyword):
                 owner__username="dataRegistrationUploader")
             for l in layers:
                 gs_layer = cat.get_layer(l.name)  # geoserver layer object
-                if gs_layer.default_style.name != 'Boundary':
-                    layers.remove(l)
+                # if gs_layer.default_style.name != 'Boundary':
+                #     layers.remove(l)
             iterate_over_layers(layers, 'Boundary')
         except Exception as e:
             print "%s" % e
