@@ -4,6 +4,7 @@ import shutil
 import os
 import sys
 import errno
+from django.db.models import
 
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "geonode.settings")
 
@@ -41,6 +42,7 @@ if __name__ == '__main__':
     isexit = False
 
     print 'src_path,dst_path,status'
+    # ridf_list = RIDF.objects.all()
 
     for SRC_DIR in SRC_DIRS:
 
@@ -102,8 +104,17 @@ if __name__ == '__main__':
                         # isexit = True
 
                     # Copy src to dst dir
-                    dst_filename = 'muni_' + muni + '_prov_' + province + '_' + suffix
-
+                    # dst_filename = 'muni_' + muni + '_prov_' + province + '_' + suffix
+                    ridfs = RIDF.objects.filter(Q(province=province)
+                                                & Q(municipality=muni))
+                    if len(ridfs) == 1 and ridfs is not None:
+                        ridf_obj = ridfs[0]
+                        nscb = ridf_obj.nscb_code
+                        dst_filename = nscb + suffix
+                    else:
+                        for r in ridfs:
+                            print >>sys.stderr, '#', i, 'More than one queryset filter in RIDF model or GADM_NCSB shapefile muni: ', r.municipality, 'province: ', r.province
+                        continue                       
                     # Copy shapefiles for src dir to dst
                     for src_shp in src_shps:
                         # src_fn, src_ext = os.path.splitext(src_shp)
@@ -111,7 +122,8 @@ if __name__ == '__main__':
                         src_ext = src_shp[src_shp.find('.'):]
 
                         # print 'os.path.dirname(SRC_DIR):', os.path.dirname(SRC_DIR)
-                        # print 'os.path.dirname(src_shp):', os.path.dirname(src_shp)
+                        # print 'os.path.dirname(src_shp):',
+                        # os.path.dirname(src_shp)
 
                         dst_dir = os.path.dirname(src_shp).replace(
                             os.path.dirname(SRC_DIR), DST_BASE)
