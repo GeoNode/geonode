@@ -99,7 +99,7 @@ class ProfileRequest(TimeStampedModel):
 
 
     request_status = models.CharField(
-        _('Status of Data Request'),
+        _('Status of Profile Request'),
         choices=REQUEST_STATUS_CHOICES,
         default=REQUEST_STATUS_CHOICES.unconfirmed,
         max_length=12,
