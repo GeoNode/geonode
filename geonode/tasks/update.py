@@ -179,7 +179,8 @@ def layer_default_style(keyword):
             pass
     elif keyword == 'SAR':
         try:
-            layers = Layer.objects.filter(keywords__name__icontains=keyword)
+            # layers = Layer.objects.filter(keywords__name__icontains=keyword)
+            layers = Layer.objects.filter(name__icontains='sar_')
             iterate_over_layers(layers, 'DEM')
         except Exception as e:
             print "%s" % e
