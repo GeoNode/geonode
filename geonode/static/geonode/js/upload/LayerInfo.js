@@ -388,7 +388,7 @@ define(function (require, exports) {
             data: form_data,
             processData: false,
             contentType: false,
-            timeout: 600000,
+            timeout: 300000,
             xhr: function() {
                 var req = $.ajaxSettings.xhr();
                 if (req) {
