@@ -23,6 +23,7 @@ from django.contrib.auth.models import Group
 from guardian.shortcuts import assign_perm, get_anonymous_user
 from string import Template
 from pwd import getpwnam
+import traceback
 
 
 @task(name='geonode.tasks.update.fh_perms_update', queue='update')
@@ -113,8 +114,8 @@ def style_update(layer, style_template):
             style.save()
 
         except Exception as e:
-            print "%s" % e
-
+            #print "%s" % e
+            raise
 
 def iterate_over_layers(layers, style_template):
     count = len(layers)
@@ -129,12 +130,14 @@ def iterate_over_layers(layers, style_template):
                 layer.default_style = layer.styles.get()
                 layer.save()
             else:
-
                 style_update(layer, style_template)
         except Exception as e:
-            print "%s" % e
-            pass
-
+            #print "%s" % e
+            #pass
+            print 'Error setting style!'
+            traceback.print_exc()
+            return
+            
 
 @task(name='geonode.tasks.update.layer_default_style', queue='update')
 def layer_default_style(keyword):
