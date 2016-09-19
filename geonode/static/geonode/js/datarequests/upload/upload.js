@@ -272,17 +272,17 @@ define(['underscore',
         }
         return false;
     };
-    
-    /**Function which submits the form if no 
-    
+
+    /**Function which submits the form if no
+
     /** Function which submits the form fields
-     *  
+     *
      */
     doFormSubmit = function(){
         var form = new FormData($("#file-uploader")[0]);
         $.ajax({
            type: "POST",
-           url: '/datarequests/register/shapefile/',
+           url: '/requests/register/shapefile/',
            data: form, //form.serialize(), // serializes the form's elements.
            contentType: false,
            processData: false,
@@ -311,10 +311,10 @@ define(['underscore',
                 }
             }
         });
-           
+
      }
-     
-     
+
+
 
     /** Function to ...
      *
@@ -380,12 +380,12 @@ define(['underscore',
                 files_changed = false;
           }
         });
-        
+
         $("#file-input").change(function (event) {
             files_changed = true;
         });
 
-        
+
         $(options.clear_button).on('click', doClearState);
         $(options.upload_button).on('click', doUploads);
         $("[id^=delete]").on('click', doDelete);
