@@ -18,7 +18,7 @@ from geonode.base.models import TopicCategory
 from geonode.base.models import Region
 from geonode.layers.models import Layer
 from geonode.maps.models import Map
-from geonode.datarequests.models import DataRequestProfile, ProfileRequest
+from geonode.datarequests.models import DataRequestProfile, ProfileRequest, DataRequest
 from geonode.documents.models import Document
 from geonode.groups.models import GroupProfile
 
@@ -40,7 +40,8 @@ FILTER_TYPES = {
     'map': Map,
     'document': Document,
     # 'data_request': DataRequestProfile,
-    'data_request': ProfileRequest,
+    'profile_request': ProfileRequest,
+    'data_request': DataRequest,
 }
 
 
@@ -332,7 +333,7 @@ REQUESTER_TYPES = {
 
 
 class ProfileRequestResource(ModelResource):
-    """Data Request Profile api"""
+    """Profile Request api"""
     profile_request_detail_url = fields.CharField()
     org_type = fields.CharField()
     req_type = fields.CharField()
@@ -341,14 +342,15 @@ class ProfileRequestResource(ModelResource):
     is_rejected = fields.BooleanField(default=False)
     rejection_reason = fields.CharField()
     date_submitted = fields.CharField()
-    # shapefile_thumbnail_url = fields.CharField(null=True)
+    shapefile_thumbnail_url = fields.CharField(null=True)
     data_request_id = fields.CharField()
+    data_request_detail_url = fields.CharField()
 
     class Meta:
         authorization = ProfileRequestAuthorization()
         authentication = SessionAuthentication()
         queryset = ProfileRequest.objects.all().order_by('-key_created_date')
-        resource_name = 'data_requests'
+        resource_name = 'profile_requests'
         allowed_methods = ['get']
         ordering = ['key_created_date', ]
         filtering = {'first_name': ALL,
@@ -386,6 +388,20 @@ class ProfileRequestResource(ModelResource):
         else:
             return 'success'
 
+    def dehydrate_data_request_detail_url(self, bundle):
+        try:
+            return DataRequest.objects.filter(id=bundle.obj.data_request_id)[0].get_absolute_url()
+        except:
+            return None
+
+    def dehydrate_shapefile_thumbnail_url(self, bundle):
+        try: ##because those having no data_request_id returns index out of range for [0]
+            if DataRequest.objects.filter(id=bundle.obj.data_request_id)[0].jurisdiction_shapefile:
+                return DataRequest.objects.filter(id=bundle.obj.data_request_id)[0].jurisdiction_shapefile.thumbnail_url
+            else:
+                return None
+        except:
+            return None
     # def dehydrate_shapefile_thumbnail_url(self, bundle):
     #     if bundle.obj.jurisdiction_shapefile:
     #         return bundle.obj.jurisdiction_shapefile.thumbnail_url
@@ -410,6 +426,124 @@ class ProfileRequestResource(ModelResource):
             base_object_list = base_object_list.filter(q).distinct()
 
         return base_object_list
+
+    def prepend_urls(self):
+        if settings.HAYSTACK_SEARCH:
+            return [
+                url(r"^(?P<resource_name>%s)/search%s$" % (
+                    self._meta.resource_name, trailing_slash()
+                    ),
+                    self.wrap_view('get_search'), name="api_get_search"),
+            ]
+        else:
+            return []
+
+class DataRequestResource(ModelResource):
+    """Data Request api"""
+    data_request_detail_url = fields.CharField()
+    purpose = fields.CharField()
+    status = fields.CharField()
+    status_label = fields.CharField()
+    is_rejected = fields.BooleanField(default=False)
+    rejection_reason = fields.CharField()
+    date_submitted = fields.CharField()
+    shapefile_thumbnail_url = fields.CharField(null=True)
+    profile_request_id = fields.CharField()
+    first_name = fields.CharField()
+    last_name = fields.CharField()
+    middle_name = fields.CharField()
+    organization = fields.CharField()
+    org_type = fields.CharField()
+    organization_other = fields.CharField()
+    profile_request_detail_url = fields.CharField()
+
+    class Meta:
+        authorization = DataRequestAuthorization()
+        authentication = SessionAuthentication()
+        queryset = DataRequest.objects.all().order_by('-date_submitted')
+        resource_name = 'data_requests'
+        allowed_methods = ['get']
+        ordering = ['date_submitted', ]
+        filtering = {'first_name': ALL,
+                     'requester_type': ALL,
+                     'request_status': ALL,
+                     'organization': ALL,
+                     'request_status': ALL,
+                     'date_submitted': ALL,
+                     }
+
+    def dehydrate_data_request_detail_url(self, bundle):
+        return bundle.obj.get_absolute_url()
+
+    def dehydrate_purpose(self, bundle):
+        return bundle.obj.purpose
+
+
+    def dehydrate_rejection_reason(self, bundle):
+        return bundle.obj.rejection_reason
+
+    def dehydrate_status(self, bundle):
+        return bundle.obj.get_request_status_display()
+
+    def dehydrate_is_rejected(self, bundle):
+        return bundle.obj.request_status == 'rejected'
+
+    def dehydrate_date_submitted(self, bundle):
+        return formats.date_format(bundle.obj.date_submitted, "SHORT_DATETIME_FORMAT")
+
+    def dehydrate_status_label(self, bundle):
+        if bundle.obj.request_status == 'pending' or bundle.obj.request_status == 'cancelled' or bundle.obj.request_status == 'unconfirmed':
+            return 'default'
+        elif bundle.obj.request_status == 'rejected':
+            return 'danger'
+        else:
+            return 'success'
+
+    def dehydrate_shapefile_thumbnail_url(self, bundle):
+        if bundle.obj.jurisdiction_shapefile:
+            return bundle.obj.jurisdiction_shapefile.thumbnail_url
+        else:
+            return None
+
+    def dehydrate_profile_request_id(self, bundle):
+        return bundle.obj.profile_request_id
+
+    def dehydrate_first_name(self, bundle):
+        return ProfileRequest.objects.filter(id=bundle.obj.profile_request_id)[0].first_name
+
+    def dehydrate_last_name(self, bundle):
+        return ProfileRequest.objects.filter(id=bundle.obj.profile_request_id)[0].last_name
+
+    def dehydrate_middle_name(self, bundle):
+        return ProfileRequest.objects.filter(id=bundle.obj.profile_request_id)[0].middle_name
+
+    def dehydrate_organization(self, bundle):
+        return ProfileRequest.objects.filter(id=bundle.obj.profile_request_id)[0].organization
+
+    def dehydrate_org_type(self, bundle):
+        return ProfileRequest.objects.filter(id=bundle.obj.profile_request_id)[0].get_organization_type_display()
+
+    def dehydrate_organization_other(self, bundle):
+        return ProfileRequest.objects.filter(id=bundle.obj.profile_request_id)[0].organization_other
+
+    def dehydrate_profile_request_detail_url(self, bundle):
+        return ProfileRequest.objects.filter(id=bundle.obj.profile_request_id)[0].get_absolute_url()
+
+    # def apply_filters(self, request, applicable_filters):
+    #     base_object_list = super(ProfileRequestResource, self).apply_filters(request, applicable_filters)
+    #
+    #     query = request.GET.get('title__icontains', None)
+    #     if query:
+    #         query = query.split(' ')
+    #         q = Q()
+    #         for t in query:
+    #             q = q | Q(first_name__icontains=t)
+    #             q = q | Q(middle_name__icontains=t)
+    #             q = q | Q(last_name__icontains=t)
+    #             q = q | Q(organization__icontains=t)
+    #         base_object_list = base_object_list.filter(q).distinct()
+    #
+    #     return base_object_list
 
     def prepend_urls(self):
         if settings.HAYSTACK_SEARCH:
