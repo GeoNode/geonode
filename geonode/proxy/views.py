@@ -88,6 +88,10 @@ def valid_response(responseContent):
     if re.match("<FeatureInfoResponse", responseContent):
         return responseContent
 
+    # ows exceptions
+    if "<ows:ExceptionReport" in responseContent:
+        return responseContent
+
     if responseContent[0] == "<":
         try:
             from defusedxml.ElementTree import fromstring
