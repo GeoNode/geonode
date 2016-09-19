@@ -845,7 +845,7 @@ class DataRequest(TimeStampedModel):
         resource.set_permissions(perms)
 
     def get_absolute_url(self):
-        return reverse('datarequests:data_request_profile', kwargs={'pk': self.pk})
+        return reverse('datarequests:data_request_data', kwargs={'pk': self.pk})
 
     def send_new_request_notif_to_admins(self):
         site = Site.objects.get_current()
