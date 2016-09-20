@@ -1115,7 +1115,8 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
         };
 
         if(layer.local){
-            layer.url = thisRecord.get('url');
+            // url is always the generic GeoServer endpoint for WM layers
+            layer.url = this.localGeoServerBaseUrl + 'wms';
         };
 
         if(thisRecord.get('ServiceType') === 'ESRI:ArcGIS:ImageServer' || thisRecord.get('ServiceType') === 'ESRI:ArcGIS:MapServer'){
@@ -2238,12 +2239,12 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
             trackSelection: true,
             permalinkURL: '/data/search',
             // 0. use this one in production
-            searchURL: "/solr",
+            //searchURL: "/solr",
             // 1. when developing use the following searchURLs
             // 1.1 this one in case using HH on dev server
             // searchURL: "http://192.168.33.15:8983/solr/hypermap/select",
             // 1.2 this one in case using HH on prod server
-            // searchURL: "http://54.221.223.91:8983/solr/hypermap/select",
+            searchURL: "http://54.221.223.91:8983/solr/hypermap/select",
             layerDetailURL: '/data/search/detail',
             constraints: [this.bbox],
             searchParams: {'limit':10, 'bbox': llbounds.toBBOX()},
