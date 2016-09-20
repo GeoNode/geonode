@@ -42,6 +42,7 @@ from django.http import Http404
 
 DEFAULT_TITLE = ""
 DEFAULT_ABSTRACT = ""
+DEFAULT_VIEWER_PLAYBACKMODE = ""
 
 INVALID_PERMISSION_MESSAGE = _("Invalid permission level.")
 
@@ -321,7 +322,10 @@ class GXPMapBase(object):
                 'center': [self.center_x, self.center_y],
                 'projection': self.projection,
                 'zoom': self.zoom
-            }
+            },
+            'viewer_playbackmode': self.viewer_playbackmode,
+            'tools':[{ 'outputConfig': { 'playbackMode': self.viewer_playbackmode }, 'ptype':'gxp_playback' }]
+
         }
 
         if any(layers):
@@ -346,12 +350,13 @@ class GXPMapBase(object):
 
 class GXPMap(GXPMapBase):
 
-    def __init__(self, projection=None, title=None, abstract=None,
+    def __init__(self, projection=None, title=None, abstract=None, viewer_playbackmode=None,
                  center_x=None, center_y=None, zoom=None):
         self.id = 0
         self.projection = projection
         self.title = title or DEFAULT_TITLE
         self.abstract = abstract or DEFAULT_ABSTRACT
+        self.viewer_playbackmode = viewer_playbackmode or DEFAULT_VIEWER_PLAYBACKMODE
         _DEFAULT_MAP_CENTER = forward_mercator(settings.DEFAULT_MAP_CENTER)
         self.center_x = center_x if center_x is not None else _DEFAULT_MAP_CENTER[
             0]
@@ -445,7 +450,8 @@ def default_map_config():
         projection=getattr(settings, 'DEFAULT_MAP_CRS', 'EPSG:900913'),
         center_x=_DEFAULT_MAP_CENTER[0],
         center_y=_DEFAULT_MAP_CENTER[1],
-        zoom=settings.DEFAULT_MAP_ZOOM
+        zoom=settings.DEFAULT_MAP_ZOOM, 
+        viewer_playbackmode=DEFAULT_VIEWER_PLAYBACKMODE
     )
 
     def _baselayer(lyr, order):

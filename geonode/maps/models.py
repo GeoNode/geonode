@@ -158,6 +158,8 @@ class Map(ResourceBase, GXPMapBase):
     # Alphanumeric alternative to referencing maps by id, appended to end of
     # URL instead of id, ie http://domain/maps/someview
 
+    viewer_playbackmode = models.CharField(_('Viewer Playback'), max_length=32, blank=True, null=True)
+
     featuredurl = models.CharField(
         _('Featured Map URL'),
         max_length=255,
@@ -247,6 +249,7 @@ class Map(ResourceBase, GXPMapBase):
 
         self.title = conf['about']['title']
         self.abstract = conf['about']['abstract']
+        self.viewer_playbackmode = conf['viewer_playbackmode']
 
         self.set_bounds_from_center_and_zoom(
             conf['map']['center'][0],

@@ -447,7 +447,6 @@ def clean_config(conf):
     if isinstance(conf, basestring):
         config = json.loads(conf)
         config_extras = [
-            "tools",
             "rest",
             "homeUrl",
             "localGeoServerBaseUrl",
@@ -571,6 +570,7 @@ def new_map_config(request):
 
         map_obj.abstract = DEFAULT_ABSTRACT
         map_obj.title = DEFAULT_TITLE
+        map_obj.viewer_playbackmode = DEFAULT_VIEWER_PLAYBACKMODE
         if request.user.is_authenticated():
             map_obj.owner = request.user
         config = map_obj.viewer_json(request.user)
