@@ -367,7 +367,8 @@ def gs_slurp(
         skip_unadvertised=False,
         skip_geonode_registered=False,
         remove_deleted=False,
-        permissions=None):
+        permissions=None,
+        layer_title=None):
     """Configure the layers available in GeoServer in GeoNode.
 
        It returns a list of dictionaries with the name of the layer,
@@ -449,6 +450,9 @@ def gs_slurp(
         name = resource.name
         the_store = resource.store
         workspace = the_store.workspace
+        if layer_title is not None:
+            resource.title = layer_title;
+
         try:
             layer, created = Layer.objects.get_or_create(name=name, defaults={
                 "workspace": workspace.name,
