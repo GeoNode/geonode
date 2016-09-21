@@ -933,7 +933,12 @@ def layer_metadata(request, layername):
 
         topic_category = layer.topic_category
         layerAttSet = inlineformset_factory(Layer, LayerAttribute, extra=0, form=LayerAttributeForm, )
-        show_gazetteer_form = settings.USE_GAZETTEER and layer.store == get_db_store_name(request.user)
+
+        # hack needed to see if the layer is in Postgres (otherwise no gazetteer):
+        # all PostGIS stores starts with wm. There is also a dataverse postgres database
+        show_gazetteer_form = settings.USE_GAZETTEER
+        if layer.store[:2] != 'wm' and layer.store != 'dataverse':
+            show_gazetteer_form = False
 
         fieldTypes = {}
         attributeOptions = layer.attribute_set.filter(attribute_type__in=['xsd:dateTime','xsd:date','xsd:int','xsd:string','xsd:bigint', 'xsd:double'])
@@ -1494,6 +1499,7 @@ def layer_acls(request):
     # is not present in django.
     logger.info("WTF is this still used?")
     acl_user = request.user
+
     if 'HTTP_AUTHORIZATION' in request.META:
         try:
             username, password = _get_basic_auth_info(request)
