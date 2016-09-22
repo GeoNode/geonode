@@ -77,7 +77,7 @@ class Command(BaseCommand):
             target_folder = os.path.join(backup_dir, dir_time_suffix)
             if not os.path.exists(target_folder):
                 os.makedirs(target_folder)
-            os.chmod(target_folder, 0777)
+            os.chmod(target_folder, 0755)
 
             # Create GeoServer Backup
             url = settings.OGC_SERVER['default']['PUBLIC_LOCATION']
