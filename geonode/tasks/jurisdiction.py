@@ -3,6 +3,7 @@ import traceback
 from pprint import pprint
 from celery.task import task
 from django.conf import settings
+from geonode.datarequests.utils import assign_grid_refs
 from geonode.geoserver.helpers import ogc_server_settings
 from geonode.layers.models import Layer
 from geonode.layers.models import Style
@@ -39,4 +40,4 @@ def jurisdiction_style(saved_layer):
         
 @task(name="geonode.tasks.jurisdiction.jurisdiction_gridrefs", queue="jurisdiction")
 def  jurisdiction_gridrefs(user):
-    pass
+    assign_grid_refs(user)
