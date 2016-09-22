@@ -112,7 +112,7 @@ class UserJurisdiction(models.Model):
         return self.user.username
         
 class UserTiles(models.Model):
-    user = models.ForeignKey(Profile, null=False, blank=False)
+    user = models.ForeignKey(Profile, null=False, blank=False, unique=True)
     gridref_list = models.TextField(null=False, blank=False)
 
 
