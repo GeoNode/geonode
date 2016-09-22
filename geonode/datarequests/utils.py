@@ -9,11 +9,12 @@ from pprint import pprint
 from unidecode import unidecode
 from django.core.exceptions import ObjectDoesNotExist
 from django.http import HttpResponse, HttpResponseBadRequest, HttpResponseRedirect, Http404
+from django.utils import simplejson as json
 
 from geonode.people.models import Profile
 from geonode.documents.models import Document
 from geonode.layers.models import Layer
-from geonode.cephgeo.models import UserJurisdiction
+from geonode.cephgeo.models import UserJurisdiction, UserTiles
 
 import geocoder
 
@@ -198,16 +199,22 @@ def get_juris_data_size(juris_shp):
 def assign_grid_refs(user):
     shapefile = UserJurisdiction.objects.get(user=user).jurisdiction_shapefile
     _TILE_SIZE = 1000
-    gridref_list = ""
-    
-    
+    gridref_list = []
     
     for tile in get_juris_tiles(shapefile):
         (minx, miny, maxx, maxy) = tile.bounds
-        gridref = "E{0}N{1}".format(minx / _TILE_SIZE, maxy / _TILE_SIZE,)
-        gridref_list += gridref
-        
+        gridref = '"E{0}N{1}"'.format(minx / _TILE_SIZE, maxy / _TILE_SIZE,)
+        gridref_list .append(gridref)
     
+    gridref_jquery = json.dumps(gridref_list)
+    
+    try:
+        tile_list_obj = UserTiles.objects.get(user=user)
+        tile_list_obj.gridref_list = gridref_jquery
+    except ObjectDoesNotExist as e:
+        tile_list_obj = UserTiles(user=user, gridref_list=gridref_jquery)
+    finally:
+        tile_list_obj.save()
 
 def get_area_coverage(juris_shp):
     return juris_shp.area/1000000
