@@ -147,7 +147,7 @@ def get_prs92_download_url(link): #wfs, wcs
     elif 'image%2Fpng' in str(link):
         link = prep_basemap(link,900193,'png','')
         return link
-    elif 'image%2Fjpeg' in str(ilnk): #remove this
+    elif 'image%2Fjpeg' in str(link): #remove this
         link = prep_basemap(link,900913,'jpeg','')
         return link
     elif 'SHAPE-ZIP' in str(link) or 'kml' in str(link):
