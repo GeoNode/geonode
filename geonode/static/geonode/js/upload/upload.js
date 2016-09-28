@@ -352,6 +352,10 @@ define(['underscore',
             buildFileInfo(_.groupBy(file_input.files, path.getName));
             displayFiles(file_queue);
         });
+        // Detect click on "Remove" link and update the file_queue
+        $(options.file_queue).on('click', '.remove-file', function () {
+            displayFiles(file_queue);
+        });
         $(options.clear_button).on('click', doClearState);
         $(options.upload_button).on('click', doUploads);
         $("[id^=delete]").on('click', doDelete);
