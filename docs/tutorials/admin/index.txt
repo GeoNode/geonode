@@ -38,6 +38,7 @@ You will know how to:
     more_on_security_and_permissions/index
     loading_data_into_geonode/index
     s3_config/index
+    backup_restore/index
 
 :ref:`admin_panel`
     GeoNode has an administration panel based on the Django admin which can be used to do some database operations. Although most of the operations can and should be done through the normal GeoNode interface, the admin panel provides a quick overview and management tool over the database.
@@ -70,3 +71,6 @@ You will know how to:
 
 :ref:`s3_config`
     This section will show you how to configure your GeoNode instance to utilize an Amazon S3 Bucket for your site's static and media files.
+
+:ref:`backup_restore_geonode`
+    How to perform a full backup / restore of GeoNode and GeoServer catalogs and how to migrate data. Customization backup / restore fixtures and data manglers.

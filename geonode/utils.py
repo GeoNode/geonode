@@ -18,6 +18,7 @@
 #
 #########################################################################
 
+import logging
 import os
 import httplib2
 import base64
@@ -54,6 +55,8 @@ SIGN_CHARACTER = '$'
 http_client = httplib2.Http()
 
 custom_slugify = Slugify(separator='_')
+
+logger = logging.getLogger("geonode.utils")
 
 
 def _get_basic_auth_info(request):
@@ -681,7 +684,8 @@ def check_shp_columnnames(layer):
                         j += 1
                         new_field_name = new_field_name[:-2]+'_'+str(j)
                 list_col.update({field_name: new_field_name})
-    except UnicodeDecodeError:
+    except UnicodeDecodeError as e:
+        print str(e)
         return False, None, None
 
     if len(list_col) == 0:

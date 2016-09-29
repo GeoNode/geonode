@@ -64,7 +64,7 @@ class ContactRole(models.Model):
     """
     ContactRole is an intermediate model to bind Profiles as Contacts to Resources and apply roles.
     """
-    resource = models.ForeignKey('ResourceBase')
+    resource = models.ForeignKey('ResourceBase', blank=True, null=True)
     contact = models.ForeignKey(settings.AUTH_USER_MODEL)
     role = models.CharField(choices=ROLE_VALUES, max_length=255, help_text=_('function performed by the responsible '
                                                                              'party'))
@@ -176,6 +176,19 @@ class RestrictionCodeType(models.Model):
     class Meta:
         ordering = ("identifier",)
         verbose_name_plural = 'Metadata Restriction Code Types'
+
+
+class Backup(models.Model):
+    identifier = models.CharField(max_length=255, editable=False)
+    name = models.CharField(max_length=100)
+    date = models.DateTimeField(auto_now_add=True, blank=True)
+    description = models.TextField(null=True, blank=True)
+    base_folder = models.CharField(max_length=100)
+    location = models.TextField(null=True, blank=True)
+
+    class Meta:
+        ordering = ("date", )
+        verbose_name_plural = 'Backups'
 
 
 class License(models.Model):
@@ -703,15 +716,20 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
             logger.debug('There are no permissions for this object, setting default perms.')
             self.set_default_permissions()
 
+        user = None
         if self.owner:
             user = self.owner
         else:
-            user = ResourceBase.objects.admin_contact().user
+            try:
+                user = ResourceBase.objects.admin_contact().user
+            except:
+                pass
 
-        if self.poc is None:
-            self.poc = user
-        if self.metadata_author is None:
-            self.metadata_author = user
+        if user:
+            if self.poc is None:
+                self.poc = user
+            if self.metadata_author is None:
+                self.metadata_author = user
 
     def maintenance_frequency_title(self):
         return [v for i, v in enumerate(UPDATE_FREQUENCIES) if v[0] == self.maintenance_frequency][0][1].title()
@@ -804,7 +822,7 @@ class Link(models.Model):
         * OGC:WFS: for WFS service links
         * OGC:WCS: for WCS service links
     """
-    resource = models.ForeignKey(ResourceBase)
+    resource = models.ForeignKey(ResourceBase, blank=True, null=True)
     extension = models.CharField(max_length=255, help_text=_('For example "kml"'))
     link_type = models.CharField(max_length=255, choices=[(x, x) for x in LINK_TYPES])
     name = models.CharField(max_length=255, help_text=_('For example "View in Google Earth"'))
@@ -822,6 +840,9 @@ def resourcebase_post_save(instance, *args, **kwargs):
     Used to fill any additional fields after the save.
     Has to be called by the children
     """
+    if not instance.id:
+        return
+
     ResourceBase.objects.filter(id=instance.id).update(
         thumbnail_url=instance.get_thumbnail_url(),
         detail_url=instance.get_absolute_url(),
