@@ -40,7 +40,7 @@ from geonode.people.models import Profile
 from geonode.people.views import profile_detail
 from geonode.security.views import _perms_info_json
 from geonode.tasks.requests_update import place_name_update, compute_size_update
-from geonode.tasks.jurisdiction import jurisdiction_style
+from geonode.tasks.jurisdiction import jurisdiction_style, 
 from geonode.utils import default_map_config
 from geonode.utils import GXPLayer
 from geonode.utils import GXPMap
@@ -687,7 +687,6 @@ def data_request_profile_approve(request, pk):
             #         pprint("Jurisdiction Shapefile not found, nothing to delete. Carry on")
 
             request_profile.set_approved(is_new_acc)
-
 
         return HttpResponseRedirect(request_profile.get_absolute_url())
 
