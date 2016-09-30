@@ -61,7 +61,8 @@ from .forms import (
     DataRequestProfileRejectForm, DataRequestDetailsForm)
 from .models import DataRequestProfile
 from .utils import (
-    get_place_name, get_juris_data_size, get_area_coverage)
+    get_place_name, get_area_coverage)
+from .utils2 import get_juris_data_size
 
 def registration_part_one(request):
 

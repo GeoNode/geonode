@@ -3,15 +3,14 @@ import traceback
 from pprint import pprint
 from celery.task import task
 from django.conf import settings
-from geonode.datarequests.utils import assign_grid_refs
 from geonode.geoserver.helpers import ogc_server_settings
 from geonode.layers.models import Layer
 from geonode.layers.models import Style
 from geoserver.catalog import Catalog
 from geonode.layers.models import Layer
 from geonode.datarequests.models import DataRequestProfile
-from geonode.datarequests.utils import get_shp_ogr, get_area_coverage,  get_juris_data_size, get_place_name
-
+from geonode.datarequests.utils2 import get_shp_ogr, assign_grid_refs, get_juris_data_size
+from geonode.datarequests.utils import  get_place_name, get_area_coverage
 
 @task(name='geonode.tasks.jurisdiction.jurisdiction_style', queue='jurisdiction')
 def jurisdiction_style(saved_layer):
