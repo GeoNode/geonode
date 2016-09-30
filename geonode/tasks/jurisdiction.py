@@ -8,6 +8,9 @@ from geonode.geoserver.helpers import ogc_server_settings
 from geonode.layers.models import Layer
 from geonode.layers.models import Style
 from geoserver.catalog import Catalog
+from geonode.layers.models import Layer
+from geonode.datarequests.models import DataRequestProfile
+from geonode.datarequests.utils import get_shp_ogr, get_area_coverage,  get_juris_data_size, get_place_name
 
 
 @task(name='geonode.tasks.jurisdiction.jurisdiction_style', queue='jurisdiction')
@@ -41,3 +44,39 @@ def jurisdiction_style(saved_layer):
 @task(name="geonode.tasks.jurisdiction.jurisdiction_gridrefs", queue="jurisdiction")
 def  jurisdiction_gridrefs(user):
     assign_grid_refs(user)
+
+@task(name='geonode.tasks.jurisdiction.compute_size_update', queue='jurisdiction')
+def compute_size_update(requests_query_list, area_compute = True, data_size = True, save=True):
+    pprint("Updating requests data size and area coverage")
+    if len(requests_query_list) < 1:
+        pprint("Requests for update is empty")
+    else:
+        for r in requests_query_list:
+            pprint("Updating request id:{0}".format(r.pk))
+            shapefile = get_shp_ogr(r.jurisdiction_shapefile.name)
+            if shapefile:
+                if area_compute:
+                    r.area_coverage = get_area_coverage(shapefile)
+                if data_size:
+                    r.juris_data_size = get_juris_data_size(shapefile)
+                
+                if save:
+                    r.save()
+
+@task(name='geonode.tasks.jurisdiction.place_name_update', queue='jurisdiction')
+def  place_name_update(requests_query_list, save=True):
+    if len(requests_query_list) < 1:
+        pprint("Requests for update is empty")
+    else:
+        for r in requests_query_list:
+            pprint("Updating request id:{0}".format(r.pk))
+            jurisdiction = r.jurisdiction_shapefile
+            if jurisdiction:
+                x = (jurisdiction.bbox_x1+jurisdiction.bbox_x0)/2
+                y = (jurisdiction.bbox_y1+jurisdiction.bbox_y0)/2
+                r.place_name = get_place_name(x,y)["county"]
+                pprint("Place name is: {}".format(r.place_name))
+                
+                if save:
+                    r.save()
+            

@@ -39,7 +39,7 @@ from geonode.layers.utils import file_upload
 from geonode.people.models import Profile
 from geonode.people.views import profile_detail
 from geonode.security.views import _perms_info_json
-from geonode.tasks.requests_update import place_name_update, compute_size_update
+from geonode.tasks.jurisdiction import place_name_update, compute_size_update, jurisdiction_gridrefs
 from geonode.utils import default_map_config
 from geonode.utils import GXPLayer
 from geonode.utils import GXPMap
@@ -662,6 +662,7 @@ def data_request_profile_approve(request, pk):
             request_profile.profile.save()
             if request_profile.jurisdiction_shapefile:
                 request_profile.assign_jurisdiction() #assigns/creates jurisdiction object
+                
             else:
                 try:
                     uj = UserJurisdiction.objects.get(user=request_profile.profile)
