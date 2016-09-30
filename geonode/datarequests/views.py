@@ -39,7 +39,7 @@ from geonode.layers.utils import file_upload
 from geonode.people.models import Profile
 from geonode.people.views import profile_detail
 from geonode.security.views import _perms_info_json
-from geonode.tasks.jurisdiction import place_name_update, compute_size_update, jurisdiction_gridrefs
+from geonode.tasks.jurisdiction import place_name_update, compute_size_update, jurisdiction_gridrefs, jurisdiction_style
 from geonode.utils import default_map_config
 from geonode.utils import GXPLayer
 from geonode.utils import GXPMap
