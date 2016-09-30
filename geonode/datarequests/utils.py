@@ -161,19 +161,18 @@ def get_place_name(longitude,latitude):
     }
 
 def get_juris_tiles(juris_shp):
-    _TILE_SIZE = 1000
     total_data_size = 0
-    min_x =  int(math.floor(juris_shp.bounds[0] / float(_TILE_SIZE)) * _TILE_SIZE)
-    max_x =  int(math.ceil(juris_shp.bounds[2] / float(_TILE_SIZE)) * _TILE_SIZE)
-    min_y =  int(math.floor(juris_shp.bounds[1] / float(_TILE_SIZE)) * _TILE_SIZE)
-    max_y =  int(math.ceil(juris_shp.bounds[3] / float(_TILE_SIZE)) * _TILE_SIZE)
+    min_x =  int(math.floor(juris_shp.bounds[0] / float(settings._TILE_SIZE)) * settings._TILE_SIZE)
+    max_x =  int(math.ceil(juris_shp.bounds[2] / float(settings._TILE_SIZE)) * settings._TILE_SIZE)
+    min_y =  int(math.floor(juris_shp.bounds[1] / float(settings._TILE_SIZE)) * settings._TILE_SIZE)
+    max_y =  int(math.ceil(juris_shp.bounds[3] / float(settings._TILE_SIZE)) * settings._TILE_SIZE)
     tile_list = []
-    for tile_y in xrange(min_y+_TILE_SIZE, max_y+_TILE_SIZE, _TILE_SIZE):
-        for tile_x in xrange(min_x, max_x, _TILE_SIZE):
+    for tile_y in xrange(min_y+settings._TILE_SIZE, max_y+settings._TILE_SIZE, settings._TILE_SIZE):
+        for tile_x in xrange(min_x, max_x, settings._TILE_SIZE):
             tile_ulp = (tile_x, tile_y)
-            tile_dlp = (tile_x, tile_y - _TILE_SIZE)
-            tile_drp = (tile_x + _TILE_SIZE, tile_y - _TILE_SIZE)
-            tile_urp = (tile_x + _TILE_SIZE, tile_y)
+            tile_dlp = (tile_x, tile_y - settings._TILE_SIZE)
+            tile_drp = (tile_x + settings._TILE_SIZE, tile_y - settings._TILE_SIZE)
+            tile_urp = (tile_x + settings._TILE_SIZE, tile_y)
             tile = Polygon([tile_ulp, tile_dlp, tile_drp, tile_urp])
             
             if not tile.intersection(juris_shp).is_empty:
@@ -187,7 +186,7 @@ def get_juris_data_size(juris_shp):
     
     for tile in tile_list:
         (minx, miny, maxx, maxy) = tile.bounds
-        gridref = "E{0}N{1}".format(minx / _TILE_SIZE, maxy / _TILE_SIZE,)
+        gridref = "E{0}N{1}".format(minx / settings._TILE_SIZE, maxy / settings._TILE_SIZE,)
         georef_query = CephDataObject.objects.filter(name__startswith=gridref)
         total_size = 0
         for georef_query_objects in georef_query:
@@ -198,12 +197,12 @@ def get_juris_data_size(juris_shp):
     
 def assign_grid_refs(user):
     shapefile = UserJurisdiction.objects.get(user=user).jurisdiction_shapefile
-    _TILE_SIZE = 1000
+    settings._TILE_SIZE = 1000
     gridref_list = []
     
     for tile in get_juris_tiles(shapefile):
         (minx, miny, maxx, maxy) = tile.bounds
-        gridref = '"E{0}N{1}"'.format(minx / _TILE_SIZE, maxy / _TILE_SIZE,)
+        gridref = '"E{0}N{1}"'.format(minx / settings._TILE_SIZE, maxy / settings._TILE_SIZE,)
         gridref_list .append(gridref)
     
     gridref_jquery = json.dumps(gridref_list)
