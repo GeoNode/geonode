@@ -92,7 +92,7 @@ def bbox_to_wkt(x0, x1, y0, y1, srid="4326"):
 
 class GazetteerForm(forms.Form):
 
-    project = forms.CharField(label=_('Project'), max_length=128, required=False)
+    project = forms.CharField(label=_('Custom Gazetteer Name'), max_length=128, required=False)
     startDate = forms.ModelChoiceField(label = _("Start Date attribute"),
         required=False,
         queryset = LayerAttribute.objects.none())
