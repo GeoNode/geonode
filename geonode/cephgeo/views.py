@@ -4,6 +4,7 @@ from django.contrib.auth.decorators import login_required, user_passes_test
 from django.core.exceptions import PermissionDenied, ObjectDoesNotExist
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.utils.encoding import smart_str
+from django.utils import simplejson as json
 from django.contrib import messages
 from django.core import serializers
 from django.template import RequestContext
@@ -11,7 +12,7 @@ from django.template import RequestContext
 from pprint import pprint
 
 from geonode.cephgeo.forms import DataInputForm
-from geonode.cephgeo.models import CephDataObject, FTPRequest, FTPStatus, FTPRequestToObjectIndex
+from geonode.cephgeo.models import CephDataObject, FTPRequest, FTPStatus, FTPRequestToObjectIndex, UserTiles
 from geonode.cephgeo.utils import get_data_class_from_filename
 from geonode.tasks.ftp import process_ftp_request
 from geonode.tasks.ceph_update import ceph_metadata_remove, ceph_metadata_update
@@ -32,6 +33,28 @@ from geonode import settings
 from geonode.layers.models import Layer
 
 # Create your views here.
+@login_required
+def tile_check(request):
+    user = request.user
+    response = "false"
+    if not request.POST:
+        raise PermissionDenied
+        
+    try:
+        json_tiles = UserTiles.objects.get(user=user)
+    except ObjectDoesNotExist as e:
+        return HttpResponse(status=404)
+    
+    georefs = map(str, request.POST.get('georefs',''))
+    reference_tiles = map(str, json.loads(json_tiles))
+    valid_tiles=[]
+    for x in georefs:
+        if x in georefs:
+            valid_tiles.append(x)
+            
+    return HttpResponse(json.dumps(valid_tiles),status=200)
+        
+
 @login_required
 @user_passes_test(lambda u: u.is_superuser)
 def file_list_ceph(request, sort=None):
