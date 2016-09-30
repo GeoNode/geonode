@@ -162,7 +162,7 @@ def get_place_name(longitude,latitude):
 
 def get_juris_tiles(juris_shp):
     total_data_size = 0
-    min_x =  int(math.floor(juris_shp.bounds[0] / float(settings._TILE_SIZE)) * settings._TILE_SIZE)
+    min_x =  int(math.floor(juris_shp.bbox / float(settings._TILE_SIZE)) * settings._TILE_SIZE)
     max_x =  int(math.ceil(juris_shp.bounds[2] / float(settings._TILE_SIZE)) * settings._TILE_SIZE)
     min_y =  int(math.floor(juris_shp.bounds[1] / float(settings._TILE_SIZE)) * settings._TILE_SIZE)
     max_y =  int(math.ceil(juris_shp.bounds[3] / float(settings._TILE_SIZE)) * settings._TILE_SIZE)
@@ -185,7 +185,7 @@ def get_juris_data_size(juris_shp):
     total_data_size = 0
     
     for tile in tile_list:
-        (minx, miny, maxx, maxy) = tile.bounds
+        (minx, miny, maxx, maxy) = tile.bbox
         gridref = "E{0}N{1}".format(minx / settings._TILE_SIZE, maxy / settings._TILE_SIZE,)
         georef_query = CephDataObject.objects.filter(name__startswith=gridref)
         total_size = 0
@@ -201,7 +201,7 @@ def assign_grid_refs(user):
     gridref_list = []
     
     for tile in get_juris_tiles(shapefile):
-        (minx, miny, maxx, maxy) = tile.bounds
+        (minx, miny, maxx, maxy) = tile.bbox
         gridref = '"E{0}N{1}"'.format(minx / settings._TILE_SIZE, maxy / settings._TILE_SIZE,)
         gridref_list .append(gridref)
     
