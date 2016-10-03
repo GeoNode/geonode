@@ -903,6 +903,7 @@ CELERY_IMPORTS = (
     'geonode.tasks.ftp',
     'geonode.tasks.mk_folder',
     'geonode.tasks.jurisdiction',
+    'geonode.tasks.jurisdiction2',
 
 )
 
