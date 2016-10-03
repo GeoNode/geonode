@@ -39,10 +39,10 @@ def compute_size_update(requests_query_list, area_compute = True, data_size = Tr
 
 def get_juris_tiles(juris_shp):
     total_data_size = 0
-    min_x =  int(math.floor(juris_shp.bbox[0] / float(settings._TILE_SIZE)) * settings._TILE_SIZE)
-    max_x =  int(math.ceil(juris_shp.bbox[2] / float(settings._TILE_SIZE)) * settings._TILE_SIZE)
-    min_y =  int(math.floor(juris_shp.bbox[1] / float(settings._TILE_SIZE)) * settings._TILE_SIZE)
-    max_y =  int(math.ceil(juris_shp.bbox[3] / float(settings._TILE_SIZE)) * settings._TILE_SIZE)
+    min_x =  int(math.floor(float(juris_shp.bounds[0]) / float(settings._TILE_SIZE)) * settings._TILE_SIZE)
+    max_x =  int(math.ceil(float(juris_shp.bounds[2]) / float(settings._TILE_SIZE)) * settings._TILE_SIZE)
+    min_y =  int(math.floor(float(juris_shp.bounds[1]) / float(settings._TILE_SIZE)) * settings._TILE_SIZE)
+    max_y =  int(math.ceil(float(juris_shp.bounds[3]) / float(settings._TILE_SIZE)) * settings._TILE_SIZE)
     tile_list = []
     for tile_y in xrange(min_y+settings._TILE_SIZE, max_y+settings._TILE_SIZE, settings._TILE_SIZE):
         for tile_x in xrange(min_x, max_x, settings._TILE_SIZE):
