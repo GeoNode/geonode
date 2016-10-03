@@ -15,7 +15,7 @@ from geonode.geoserver.helpers import ogc_server_settings
 from geoserver.catalog import Catalog
 from geonode.cephgeo.models import CephDataObject, UserJurisdiction, UserTiles
 from geonode.datarequests.models import DataRequestProfile
-from geonode.datarequests.utils2 import get_shp_ogr, assign_grid_refs, get_juris_data_size
+#from geonode.datarequests.utils2 import get_shp_ogr, assign_grid_refs, get_juris_data_size
 from geonode.datarequests.utils import  get_place_name, get_area_coverage
 
 
@@ -71,7 +71,8 @@ def get_juris_data_size(juris_shp):
         total_data_size += total_size
         
     return total_data_size
-    
+
+@task(name='geonode.tasks.jurisdiction.compute_size_update', queue='jurisdiction')    
 def assign_grid_refs(user):
     shapefile = UserJurisdiction.objects.get(user=user).jurisdiction_shapefile
     gridref_list = []
