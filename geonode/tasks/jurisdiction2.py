@@ -19,7 +19,7 @@ from geonode.datarequests.models import DataRequestProfile
 from geonode.datarequests.utils import  get_place_name, get_area_coverage
 
 
-@task(name='geonode.tasks.jurisdiction.compute_size_update', queue='jurisdiction')
+@task(name='geonode.tasks.jurisdiction2.compute_size_update', queue='jurisdiction')
 def compute_size_update(requests_query_list, area_compute = True, data_size = True, save=True):
     pprint("Updating requests data size and area coverage")
     if len(requests_query_list) < 1:
@@ -72,7 +72,7 @@ def get_juris_data_size(juris_shp):
         
     return total_data_size
 
-@task(name='geonode.tasks.jurisdiction.compute_size_update', queue='jurisdiction')    
+@task(name='geonode.tasks.jurisdiction2.assign_grid_refs', queue='jurisdiction')    
 def assign_grid_refs(user):
     shapefile = UserJurisdiction.objects.get(user=user).jurisdiction_shapefile
     gridref_list = []
