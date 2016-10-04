@@ -74,7 +74,8 @@ def get_juris_data_size(juris_shp):
 
 @task(name='geonode.tasks.jurisdiction2.assign_grid_refs', queue='jurisdiction')    
 def assign_grid_refs(user):
-    shapefile = UserJurisdiction.objects.get(user=user).jurisdiction_shapefile
+    shapefile_name = UserJurisdiction.objects.get(user=user).jurisdiction_shapefile.name
+    shapefile = get_shp_ogr(shapefile_name)
     gridref_list = []
     
     for tile in get_juris_tiles(shapefile):
