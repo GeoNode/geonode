@@ -9,6 +9,8 @@ from shapely.wkb import loads
 from shapely.geometry import Polygon
 from shapely.ops import cascaded_union
 
+from django.utils import simplejson as json
+
 import geonode.settings as settings
 
 from geonode.geoserver.helpers import ogc_server_settings
@@ -88,10 +90,11 @@ def assign_grid_refs(user):
     try:
         tile_list_obj = UserTiles.objects.get(user=user)
         tile_list_obj.gridref_list = gridref_jquery
+        tile_list_obj.save()
     except ObjectDoesNotExist as e:
         tile_list_obj = UserTiles(user=user, gridref_list=gridref_jquery)
-    finally:
         tile_list_obj.save()
+        
 
 def get_shp_ogr(juris_shp_name):
     source = ogr.Open(("PG:host={0} dbname={1} user={2} password={3}".format(settings.DATABASE_HOST,settings.GIS_DATABASE_NAME,settings.DATABASE_USER,settings.DATABASE_PASSWORD)))
