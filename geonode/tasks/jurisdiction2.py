@@ -9,6 +9,7 @@ from shapely.wkb import loads
 from shapely.geometry import Polygon
 from shapely.ops import cascaded_union
 
+from django.core.exceptions import ObjectDoesNotExist
 from django.utils import simplejson as json
 
 import geonode.settings as settings
@@ -17,7 +18,6 @@ from geonode.geoserver.helpers import ogc_server_settings
 from geoserver.catalog import Catalog
 from geonode.cephgeo.models import CephDataObject, UserJurisdiction, UserTiles
 from geonode.datarequests.models import DataRequestProfile
-#from geonode.datarequests.utils2 import get_shp_ogr, assign_grid_refs, get_juris_data_size
 from geonode.datarequests.utils import  get_place_name, get_area_coverage
 
 
