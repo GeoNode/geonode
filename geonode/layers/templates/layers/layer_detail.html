@@ -182,7 +182,7 @@
                   {% else %}
                   <tr>
                     <td>{% trans link.link_type %}</td>
-                    <!-- <td><a href="{{ link | get_layer_download_url }}&format_options=layout:phillidar1">{% trans link.name %}</a></td> -->
+                    {% comment %}<!-- <td><a href="{{ link | get_layer_download_url }}&format_options=layout:phillidar1">{% trans link.name %}</a></td> -->{% endcomment %}
                     <td><a href="{{ link | get_layer_download_url }}">{% trans link.name %}</a></td>
                     <td><a href="{{ link | get_prs92_download_url }}">{% trans link.name %}</a></td>
                   </tr>

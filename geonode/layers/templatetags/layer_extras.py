@@ -1,5 +1,5 @@
 import urllib2
-import json
+import json, os
 from django.core.urlresolvers import resolve
 import urllib
 from geonode.layers.models import Layer
@@ -13,59 +13,6 @@ from pprint import pprint
 
 
 def image_basemap(layername,epsg,out_format,format_options):
-    text = '''{
-      "units":"degrees",
-      "geodetic":"false",
-      "srs":"",
-      "layout":"Image",
-      "dpi":300,
-      "outputFilename":"",
-      "outputFormat":"",
-      "comment": "",
-      "mapTitle": "",
-      "layers": [
-        {
-          "baseURL": "",
-          "opacity": 1,
-          "singleTile": false,
-          "type": "WMS",
-          "layers": [
-            
-          ],
-          "format": "",
-          "styles": [
-            ""
-          ],
-          "customParams": {
-            "TRANSPARENT": true,
-            "TILED": true
-          }
-        },
-        {
-          "baseURL": "",
-          "opacity": 1,
-          "singleTile": false,
-          "type": "WMS",
-          "layers": [
-            "osm:osm"
-          ],
-          "format": "",
-          "styles": [
-            ""
-          ],
-          "customParams": {
-            "TRANSPARENT": true,
-            "TILED": true
-          }
-        }
-      ],
-      "pages": [
-        {
-          "bbox": [],
-          "rotation": 0
-        }
-      ]
-    }'''
     cat = Catalog(settings.OGC_SERVER['default']['LOCATION'] + 'rest',
                 username=settings.OGC_SERVER['default']['USER'],
                 password=settings.OGC_SERVER['default']['PASSWORD'])
@@ -107,7 +54,10 @@ def image_basemap(layername,epsg,out_format,format_options):
         x1 = point2.GetX()
         y1 = point2.GetY()
     bbox = [x0,y0,x1,y1]
-    jsontext = json.loads(text)
+
+    with open('./geonode/layers/templatetags/layer_image_print.json','r') as json_file:
+      data = json_file.read()
+    jsontext = json.loads(data)
     jsontext['srs'] = to_srs_str
     jsontext['outputFormat'] = outputFormat
     jsontext['outputFilename'] = layer.name
@@ -155,32 +105,6 @@ def get_prs92_download_url(link): #wfs, wcs
         link = link + '&srsName=EPSG:4683'
     return link
 
-def prs92_download_url_pl1(link): #FHM
-    link = link.get_download_url()
-    if 'image%2Fpng' in str(link):
-        link = prep_basemap(link,900913,'png','pl1')
-        return link
-    elif 'image%2Fjpeg' in str(link): #remove this
-        link = prep_basemap(link,900913,'jpeg','pl1')
-        return link
-    elif 'SHAPE-ZIP' in str(link) or 'kml' in str(link):
-        link = link + '&srsName=EPSG:4683'
-    link = link + '&format_options=layout:phillidar1'
-    return link
-
-def prs92_download_url_pl2(link): #PL2 resource layers
-    link = link.get_download_url()
-    if 'image%2Fpng' in str(link):
-        link = prep_basemap(link,900913,'png','pl2')
-        return link
-    elif 'image%2Fjpeg' in str(link): #remove this
-        link = prep_basemap(link,900913,'jpeg','pl2')
-        return link
-    elif 'SHAPE-ZIP' in str(link) or 'kml' in str(link):
-        link = link + '&srsName=EPSG:4683'
-    link = link + '&format_options=layout:phillidar2'
-    return link
-
 def get_layer_download_url(link): # Only one argument.
     link = link.get_download_url()
     if 'image%2Fpng' in str(link):
@@ -192,8 +116,34 @@ def get_layer_download_url(link): # Only one argument.
     else:
         return link
 
+# def prs92_download_url_pl1(link): #FHM
+#     link = link.get_download_url()
+#     if 'image%2Fpng' in str(link):
+#         link = prep_basemap(link,900913,'png','pl1')
+#         return link
+#     elif 'image%2Fjpeg' in str(link): #remove this
+#         link = prep_basemap(link,900913,'jpeg','pl1')
+#         return link
+#     elif 'SHAPE-ZIP' in str(link) or 'kml' in str(link):
+#         link = link + '&srsName=EPSG:4683'
+#     link = link + '&format_options=layout:phillidar1'
+#     return link
+
+# def prs92_download_url_pl2(link): #PL2 resource layers
+#     link = link.get_download_url()
+#     if 'image%2Fpng' in str(link):
+#         link = prep_basemap(link,900913,'png','pl2')
+#         return link
+#     elif 'image%2Fjpeg' in str(link): #remove this
+#         link = prep_basemap(link,900913,'jpeg','pl2')
+#         return link
+#     elif 'SHAPE-ZIP' in str(link) or 'kml' in str(link):
+#         link = link + '&srsName=EPSG:4683'
+#     link = link + '&format_options=layout:phillidar2'
+#     return link
+
 register.filter('get_layer_download_url', get_layer_download_url)
 register.filter('get_prs92_download_url', get_prs92_download_url)
-register.filter('prs92_download_url_pl1', prs92_download_url_pl1)
-register.filter('prs92_download_url_pl2', prs92_download_url_pl2)
+# register.filter('prs92_download_url_pl1', prs92_download_url_pl1)
+# register.filter('prs92_download_url_pl2', prs92_download_url_pl2)
 
