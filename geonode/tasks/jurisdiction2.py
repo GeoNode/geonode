@@ -41,10 +41,10 @@ def compute_size_update(requests_query_list, area_compute = True, data_size = Tr
 
 def get_juris_tiles(juris_shp):
     total_data_size = 0
-    min_x =  int(math.floor(float(juris_shp.bounds[0]) / float(settings._TILE_SIZE)) * settings._TILE_SIZE)
-    max_x =  int(math.ceil(float(juris_shp.bounds[2]) / float(settings._TILE_SIZE)) * settings._TILE_SIZE)
-    min_y =  int(math.floor(float(juris_shp.bounds[1]) / float(settings._TILE_SIZE)) * settings._TILE_SIZE)
-    max_y =  int(math.ceil(float(juris_shp.bounds[3]) / float(settings._TILE_SIZE)) * settings._TILE_SIZE)
+    min_x =  int(math.floor(float(juris_shp.bounds[0]) / float(settings._TILE_SIZE))) * int(settings._TILE_SIZE)
+    max_x =  int(math.ceil(float(juris_shp.bounds[2]) / float(settings._TILE_SIZE))) * int(settings._TILE_SIZE)
+    min_y =  int(math.floor(float(juris_shp.bounds[1]) / float(settings._TILE_SIZE))) * int(settings._TILE_SIZE)
+    max_y =  int(math.ceil(float(juris_shp.bounds[3]) / float(settings._TILE_SIZE))) * int(settings._TILE_SIZE)
     tile_list = []
     for tile_y in xrange(min_y+settings._TILE_SIZE, max_y+settings._TILE_SIZE, settings._TILE_SIZE):
         for tile_x in xrange(min_x, max_x, settings._TILE_SIZE):
@@ -82,7 +82,7 @@ def assign_grid_refs(user):
     
     for tile in get_juris_tiles(shapefile):
         (minx, miny, maxx, maxy) = tile.bounds
-        gridref = '"E{0}N{1}"'.format(minx / settings._TILE_SIZE, maxy / settings._TILE_SIZE,)
+        gridref = '"E{0}N{1}"'.format(int(minx / settings._TILE_SIZE), int(maxy / settings._TILE_SIZE))
         gridref_list .append(gridref)
     
     gridref_jquery = json.dumps(gridref_list)
