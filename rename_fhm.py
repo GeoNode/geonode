@@ -1,9 +1,12 @@
+#!/usr/bin/env python
+
 from geonode.settings import GEONODE_APPS
 from geonode.cephgeo.models import RIDF
 import shutil
 import os
 import sys
 import errno
+from django.db.models import Q
 
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "geonode.settings")
 
@@ -21,9 +24,9 @@ def get_province(rb, muni):
 # if line contains RIDF.municipality and RIDF.keywords(riverbasin), append RIDF.province
 # filename will be municipality__province_fh{X}yr_{Y}m
 
-SRC_DIRS = ['/mnt/geostorage/DAD/FLOOD_HAZARD/DREAM',
-            '/mnt/geostorage/DAD/FLOOD_HAZARD/Phil-LiDAR']
-DST_BASE = '/mnt/geostorage/DAD/FLOOD_HAZARD/Renamed'
+SRC_DIRS = ['/mnt/aquinas_geostorage/DAD/FLOOD_HAZARD/DREAM',
+            '/mnt/aquinas_geostorage/DAD/FLOOD_HAZARD/Phil-LiDAR']
+DST_BASE = '/mnt/aquinas_geostorage/DAD/FLOOD_HAZARD/Renamed'
 SHP_EXTS = ['.shp', '.prj', '.shx', '.dbf', '.shp.xml']
 
 
@@ -41,6 +44,7 @@ if __name__ == '__main__':
     isexit = False
 
     print 'src_path,dst_path,status'
+    # ridf_list = RIDF.objects.all()
 
     for SRC_DIR in SRC_DIRS:
 
@@ -89,6 +93,7 @@ if __name__ == '__main__':
                         province = get_province(rb, muni)
                         if province is None:
                             print >>sys.stderr, 'Cannot find province! rb:', rb, 'muni:', muni
+
                             print os.path.join(root, f) + ",,Can't find province! rb: " + rb + ' muni: ' + muni
                             # exit(1)
                             continue
@@ -98,11 +103,31 @@ if __name__ == '__main__':
                         muni = tokens[0]
                         tokens2 = tokens[1].split('_fh')
                         province = tokens2[0]
-                        suffix = tokens2[1]
+                        suffix = 'fh' + tokens2[1]
+
                         # isexit = True
 
                     # Copy src to dst dir
-                    dst_filename = 'muni_' + muni + '_prov_' + province + '_' + suffix
+                    # dst_filename = 'muni_' + muni + '_prov_' + province + '_' + suffix
+
+                    ridfs = RIDF.objects.filter(Q(province__icontains=province)
+                                                & Q(municipality__icontains=muni))
+                    if len(ridfs) == 1 and ridfs is not None:
+                        ridf_obj = ridfs[0]
+                        nscb = ridf_obj.nscb_code
+                        if nscb:
+                            dst_filename = str(nscb) + '_' + suffix
+                        else:
+                            print >>sys.stderr, 'nscb is None! muni:', muni, 'province:', province
+                            continue
+                    else:
+                        for r in ridfs:
+                            print >>sys.stderr, 'More than one queryset filter in RIDF model or GADM_NCSB shapefile muni: ', r.municipality, 'province: ', r.province
+                        continue                       
+
+                    if dst_filename is None:
+                        print >>sys.stderr, 'dst_filename is None! muni:', muni, 'province:', province
+                        continue
 
                     # Copy shapefiles for src dir to dst
                     for src_shp in src_shps:
@@ -111,7 +136,8 @@ if __name__ == '__main__':
                         src_ext = src_shp[src_shp.find('.'):]
 
                         # print 'os.path.dirname(SRC_DIR):', os.path.dirname(SRC_DIR)
-                        # print 'os.path.dirname(src_shp):', os.path.dirname(src_shp)
+                        # print 'os.path.dirname(src_shp):',
+                        # os.path.dirname(src_shp)
 
                         dst_dir = os.path.dirname(src_shp).replace(
                             os.path.dirname(SRC_DIR), DST_BASE)
@@ -120,9 +146,9 @@ if __name__ == '__main__':
                             dst_dir, dst_filename + src_ext)
 
                         if src_filename == dst_filename:
-                            print src_shp + ',' + dst_path + ',Copied'
+                            print os.path.basename(src_shp) + ',' + os.path.basename(dst_path) + ',Copied'
                         else:
-                            print src_shp + ',' + dst_path + ',Renamed&Copied'
+                            print os.path.basename(src_shp) + ',' + os.path.basename(dst_path) + ',Renamed&Copied'
 
                         if not os.path.isfile(dst_path):
                             # Create dst dir
