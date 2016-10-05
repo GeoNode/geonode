@@ -13,16 +13,14 @@ from geonode.layers.utils import create_thumbnail
 from django.core.exceptions import ObjectDoesNotExist
 from celery.utils.log import get_task_logger
 import geonode.settings as settings
-import os
-import subprocess
-import time
-import datetime
+import os, subprocess, time, datetime
 logger = get_task_logger("geonode.tasks.update")
 from geonode.security.models import PermissionLevelMixin
 from django.contrib.auth.models import Group
 from guardian.shortcuts import assign_perm, get_anonymous_user
 from string import Template
 from pwd import getpwnam
+import traceback
 
 
 @task(name='geonode.tasks.update.fh_perms_update', queue='update')
@@ -79,42 +77,48 @@ def style_update(layer, style_template):
     # delete thumbnail first because of permissions
 
     if '_fh' in layer.name:
-        style = None
         if layer_attrib == "Var":
-            style = cat.get_style(style_template)
+            gs_style = cat.get_style(style_template)
         else:
-            style = cat.get_style("fhm_merge")
+            gs_style = cat.get_style("fhm_merge")
     else:
-        style = cat.get_style(style_template)
+        gs_style = cat.get_style(style_template)
 
-    if style is not None:
+    if gs_style is not None:
         try:
 
-            style = Style.objects.get(name=style_template)
+            gn_style = Style.objects.get(name=style_template)
             #update in geoserver
             gs_layer = cat.get_layer(layer.name)
             print "GS LAYER: %s " % gs_layer.name
-            gs_style = cat.get_style(style.name)
             gs_layer._set_default_style(gs_style)
             gs_layer._set_alternate_styles([gs_style])
             cat.save(gs_layer)
             #update in geonode
-            layer.default_style = style
+            layer.default_style = gn_style
             layer.save()
             #delete in geonode
-            gn_style = Style.objects.get(name=layer.name)
+            gn_orig_style = Style.objects.get(name=layer.name)
             lstyles = layer.styles
-            lstyles.remove(gn_style)
-            gn_style.delete()
+            try:
+                lstyles.remove(gn_orig_style)
+            except:
+                traceback.print_exc()
+            try:
+                gn_orig_style.delete()
+            except:
+                traceback.print_exc()
+            #delete in geoserver
             gs_orig_style = cat.get_style(layer.name)
-            cat.delete(gs_orig_style)
+            if gs_orig_style is not None:
+                cat.delete(gs_orig_style)
 
             style.sld_title = style_template
             style.save()
 
         except Exception as e:
-            print "%s" % e
-
+            #print "%s" % e
+            raise
 
 def iterate_over_layers(layers, style_template):
     count = len(layers)
@@ -129,12 +133,14 @@ def iterate_over_layers(layers, style_template):
                 layer.default_style = layer.styles.get()
                 layer.save()
             else:
-
                 style_update(layer, style_template)
         except Exception as e:
-            print "%s" % e
-            pass
-
+            #print "%s" % e
+            #pass
+            print 'Error setting style!'
+            traceback.print_exc()
+            return
+            
 
 @task(name='geonode.tasks.update.layer_default_style', queue='update')
 def layer_default_style(keyword):
@@ -179,7 +185,8 @@ def layer_default_style(keyword):
             pass
     elif keyword == 'SAR':
         try:
-            layers = Layer.objects.filter(keywords__name__icontains=keyword)
+            # layers = Layer.objects.filter(keywords__name__icontains=keyword)
+            layers = Layer.objects.filter(name__icontains='sar_')
             iterate_over_layers(layers, 'DEM')
         except Exception as e:
             print "%s" % e
