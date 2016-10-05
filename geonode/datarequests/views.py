@@ -663,8 +663,8 @@ def data_request_profile_approve(request, pk):
             request_profile.profile.save()
             if request_profile.jurisdiction_shapefile:
                 request_profile.assign_jurisdiction() #assigns/creates jurisdiction object
-                place_name_update.delay([request_profile])
-                compute_size_update.delay([request_profile])
+                #place_name_update.delay([request_profile])
+                #compute_size_update.delay([request_profile])
                 assign_grid_refs.delay(request_profile.profile)
             else:
                 try:

@@ -102,6 +102,7 @@ def tiled_view(request, overlay=settings.TILED_SHAPEFILE, template="maptiles/map
     #context_dict["projections"]= SRS.labels.values()
 
     return render_to_response(template, RequestContext(request, context_dict))
+    
 def tiled_view2(request, overlay=settings.TILED_SHAPEFILE, template="maptiles/maptiles_map2.html",test_mode=False, jurisdiction=None):
 
     context_dict = {}
