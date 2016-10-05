@@ -24,10 +24,11 @@ def create_folder(username):
         return e
         
 
-@hosts(settings.GEOSTORAGE_HOST)
+@hosts(settings.FTP_HOST)
 def fab_create_folder(username):
+    return run(settings.FTP_SCRIPT+ " {0}".format(username))
     #return run("/mnt/backup_pool/geostorage/scripts/set_acls/createdir.sh {0}".format(username))
-    return run("/mnt/backup_pool/scripts/set_acls/createdir.sh {0}".format(username))
+    #return run("/mnt/backup_pool/scripts/set_acls/createdir.sh {0}".format(username))
 
 
 def mail_on_error(username, trace_error):
