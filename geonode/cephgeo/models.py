@@ -141,6 +141,7 @@ class RIDF(models.Model):
     layer_name = models.CharField(max_length=100, blank=True)
     riverbasins = TaggableManager(
         _('riverbasins'),blank=True, help_text='List of riverbasins')
+    nscb_code = models.IntegerField(null=True)
 
     # def keyword_list(self):
     #     """

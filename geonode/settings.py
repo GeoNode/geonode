@@ -522,9 +522,9 @@ OGP_URL = "http://geodata.tufts.edu/solr/select"
 # absolutely need it set to True this variable
 MODIFY_TOPICCATEGORY = False
 
-FILE_UPLOAD_PERMISSIONS = 0777
+FILE_UPLOAD_PERMISSIONS = 0776
 MISSING_THUMBNAIL = 'geonode/img/missing_thumb.png'
-THUMBNAIL_FILE_PERMISSIONS = 0777
+THUMBNAIL_FILE_PERMISSIONS = 0776
 
 # Search Snippet Cache Time in Seconds
 CACHE_TIME = 0
@@ -933,6 +933,7 @@ SELECTION_LIMIT=209715200
 MUNICIPALITY_SHAPEFILE = 'geonode:phl_adm2_municipalities_utm_z51n'
 #Upload permissions on file
 FILE_UPLOAD_PERMISSIONS = 0776
+
 GEOSTORAGE_HOST = ""
 
 FILE_UPLOAD_TEMP_DIR = "/tmp/geonode"
