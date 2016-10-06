@@ -139,10 +139,19 @@ def process_georefs(request):
             georef_area = request.POST['georef_area']
             submitted_georef_list = filter(None, georef_area.split(","))
             georef_list = []
+            jurisdiction_georefs = []
+            
+            try:
+                jurisdiction_georefs=str(UserTiles.objects.get(user=request.user).gridref_list)
+            except ObjectDoesNotExist as e:
+                pprint("No jurisdiction tiles for this user") 
+                raise PermissionDenied
             
             for georef in submitted_georef_list:
-                if georef in json.load(UserTiles.objects.get(user=request.user).gridref_list):
+                if georef in jurisdiction_georefs:
                     georef_list.append(georef)
+
+            pprint(georef_list)
 
             #Get the requested dataclasses
             data_classes = list()
