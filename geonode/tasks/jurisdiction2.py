@@ -74,8 +74,7 @@ def get_juris_data_size(juris_shp):
         
     return total_data_size
 
-@task(name='geonode.tasks.jurisdiction2.assign_grid_refs', queue='jurisdiction')    
-def assign_grid_refs(user):
+def assign_grid_ref_util(user):
     shapefile_name = UserJurisdiction.objects.get(user=user).jurisdiction_shapefile.name
     shapefile = get_shp_ogr(shapefile_name)
     gridref_list = []
@@ -93,8 +92,17 @@ def assign_grid_refs(user):
         tile_list_obj.save()
     except ObjectDoesNotExist as e:
         tile_list_obj = UserTiles(user=user, gridref_list=gridref_jquery)
-        tile_list_obj.save()
-        
+        tile_list_obj.save()   
+
+@task(name='geonode.tasks.jurisdiction2.assign_grid_refs', queue='jurisdiction')    
+def assign_grid_refs(user):
+    assign_grid_ref_util(user)
+
+@task(name='geonode.tasks.jurisdiction2.assign_grid_refs_all',queue='jurisdiction')
+def assign_grid_refs_all():
+    user_jurisdictions = UserJurisdiction.objects.all()
+    for uj in  user_jurisdictions:
+        assign_grid_ref_util(uj.user)
 
 def get_shp_ogr(juris_shp_name):
     source = ogr.Open(("PG:host={0} dbname={1} user={2} password={3}".format(settings.DATABASE_HOST,settings.GIS_DATABASE_NAME,settings.DATABASE_USER,settings.DATABASE_PASSWORD)))
