@@ -40,7 +40,7 @@ from geonode.people.models import Profile
 from geonode.people.views import profile_detail
 from geonode.security.views import _perms_info_json
 from geonode.tasks.jurisdiction import place_name_update, jurisdiction_style
-from geonode.tasks.jurisdiction2 import compute_size_update, assign_grid_refs
+from geonode.tasks.jurisdiction2 import compute_size_update, assign_grid_refs, assign_grid_refs_all
 from geonode.utils import default_map_config
 from geonode.utils import GXPLayer
 from geonode.utils import GXPMap
@@ -752,6 +752,15 @@ def data_request_profile_reverse_geocode(request, pk):
         return HttpResponseRedirect(reverse('datarequests:data_request_browse'))
     else:
         return HttpResponseRedirect('/forbidden/')
+        
+def data_request_assign_gridrefs(request):
+    if request.user.is_superuser and request.method=='POST':
+        assign_grid_refs_all.delay()
+        
+        return HttpResponseRedirect(reverse('datarequests:data_request_browse')
+    else:
+        return HttpResponseRedirect('/forbidden/')
+            
 
 def data_request_facet_count(request):
     if not request.user.is_superuser:
