@@ -110,6 +110,10 @@ class UserJurisdiction(models.Model):
 
     def get_user_name(self):
         return self.user.username
+        
+class UserTiles(models.Model):
+    user = models.ForeignKey(Profile, null=False, blank=False, unique=True)
+    gridref_list = models.TextField(null=False, blank=False)
 
 
 class MissionGridRef(models.Model):
@@ -137,6 +141,7 @@ class RIDF(models.Model):
     layer_name = models.CharField(max_length=100, blank=True)
     riverbasins = TaggableManager(
         _('riverbasins'),blank=True, help_text='List of riverbasins')
+    nscb_code = models.IntegerField(null=True)
 
     # def keyword_list(self):
     #     """
