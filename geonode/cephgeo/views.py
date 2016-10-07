@@ -53,10 +53,6 @@ def tile_check(request):
             valid_tiles.append(x)
             
     return HttpResponse(json.dumps(valid_tiles),status=200)
-    
-    
-    
-    
         
 
 @login_required
