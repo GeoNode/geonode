@@ -754,10 +754,10 @@ def data_request_profile_reverse_geocode(request, pk):
         return HttpResponseRedirect('/forbidden/')
         
 def data_request_assign_gridrefs(request):
-    if request.user.is_superuser and request.method=='POST':
+    if request.user.is_superuser:
         assign_grid_refs_all.delay()
+        return HttpResponseRedirect(reverse('datarequests:data_request_browse'))
         
-        return HttpResponseRedirect(reverse('datarequests:data_request_browse')
     else:
         return HttpResponseRedirect('/forbidden/')
             
