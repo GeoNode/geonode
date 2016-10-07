@@ -31,6 +31,7 @@ def image_basemap(layername,epsg,out_format,format_options):
           "type": "WMS",
           "layers": [
 
+            
           ],
           "format": "",
           "styles": [
@@ -111,8 +112,9 @@ def image_basemap(layername,epsg,out_format,format_options):
     jsontext['srs'] = to_srs_str
     jsontext['outputFormat'] = outputFormat
     jsontext['outputFilename'] = layer.name
-    jsontext['layers'][0]['baseURL'] = settings.OGC_SERVER['default']['LOCATION'] + 'wms?SERVICE=WMS&'
-    jsontext['layers'][1]['baseURL'] = settings.OGC_SERVER['default']['LOCATION'] + 'wms?SERVICE=WMS&'
+    # jsontext['layers'][0]['baseURL'] = settings.OGC_SERVER['default']['LOCATION'] + 'wms?SERVICE=WMS&'
+    jsontext['layers'][0]['baseURL'] = baseURL + 'wms?SERVICE=WMS&' #baseURL for local
+    jsontext['layers'][1]['baseURL'] = baseURL + 'wms?SERVICE=WMS&' #baseURL for local
     jsontext['layers'][0]['layers'] = [str(layer.typename)]
     jsontext['layers'][0]['format'] = format
     jsontext['layers'][1]['format'] = format
@@ -145,9 +147,9 @@ def get_prs92_download_url(link): #wfs, wcs
         temp = link.split('crs=EPSG%3A32651')
         link = temp[0] + epsg4683 + temp[1]
     elif 'image%2Fpng' in str(link):
-        link = prep_basemap(link,900193,'png','')
+        link = prep_basemap(link,900913,'png','')
         return link
-    elif 'image%2Fjpeg' in str(ilnk): #remove this
+    elif 'image%2Fjpeg' in str(link): #remove this
         link = prep_basemap(link,900913,'jpeg','')
         return link
     elif 'SHAPE-ZIP' in str(link) or 'kml' in str(link):
