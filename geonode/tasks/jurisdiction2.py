@@ -74,27 +74,39 @@ def get_juris_data_size(juris_shp):
         
     return total_data_size
 
-@task(name='geonode.tasks.jurisdiction2.assign_grid_refs', queue='jurisdiction')    
-def assign_grid_refs(user):
+def assign_grid_ref_util(user):
     shapefile_name = UserJurisdiction.objects.get(user=user).jurisdiction_shapefile.name
     shapefile = get_shp_ogr(shapefile_name)
     gridref_list = []
     
-    for tile in get_juris_tiles(shapefile):
-        (minx, miny, maxx, maxy) = tile.bounds
-        gridref = '"E{0}N{1}"'.format(int(minx / settings._TILE_SIZE), int(maxy / settings._TILE_SIZE))
-        gridref_list .append(gridref)
-    
-    gridref_jquery = json.dumps(gridref_list)
-    
-    try:
-        tile_list_obj = UserTiles.objects.get(user=user)
-        tile_list_obj.gridref_list = gridref_jquery
-        tile_list_obj.save()
-    except ObjectDoesNotExist as e:
-        tile_list_obj = UserTiles(user=user, gridref_list=gridref_jquery)
-        tile_list_obj.save()
+    if shapefile:    
+        pprint("Computing gridrefs for {0}".format(user.username))
+        for tile in get_juris_tiles(shapefile):
+            (minx, miny, maxx, maxy) = tile.bounds
+            gridref = '"E{0}N{1}"'.format(int(minx / settings._TILE_SIZE), int(maxy / settings._TILE_SIZE))
+            gridref_list .append(gridref)
         
+        gridref_jquery = json.dumps(gridref_list)
+    
+        try:
+            tile_list_obj = UserTiles.objects.get(user=user)
+            tile_list_obj.gridref_list = gridref_jquery
+            tile_list_obj.save()
+        except ObjectDoesNotExist as e:
+            tile_list_obj = UserTiles(user=user, gridref_list=gridref_jquery)
+            tile_list_obj.save() 
+    else:
+        pprint("Missing shapefile for {0}".format(user.username))
+
+@task(name='geonode.tasks.jurisdiction2.assign_grid_refs', queue='jurisdiction')    
+def assign_grid_refs(user):
+    assign_grid_ref_util(user)
+
+@task(name='geonode.tasks.jurisdiction2.assign_grid_refs_all',queue='jurisdiction')
+def assign_grid_refs_all():
+    user_jurisdictions = UserJurisdiction.objects.all()
+    for uj in  user_jurisdictions:
+        assign_grid_ref_util(uj.user)
 
 def get_shp_ogr(juris_shp_name):
     source = ogr.Open(("PG:host={0} dbname={1} user={2} password={3}".format(settings.DATABASE_HOST,settings.GIS_DATABASE_NAME,settings.DATABASE_USER,settings.DATABASE_PASSWORD)))
