@@ -756,6 +756,7 @@ def data_request_profile_reverse_geocode(request, pk):
 def data_request_assign_gridrefs(request):
     if request.user.is_superuser:
         assign_grid_refs_all.delay()
+        messages.info(request, "Now processing jurisdictions. Please wait for a few minutes for them to finish")
         return HttpResponseRedirect(reverse('datarequests:data_request_browse'))
         
     else:
