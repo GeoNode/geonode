@@ -104,7 +104,7 @@ urlpatterns = patterns('',
                        (r'^geocoding/',include('geonode.arealocate.urls',namespace='arealocate')),
 
                        # Data Request Profiles
-                       (r'^datarequests/', include('geonode.datarequests.urls', namespace='datarequests')),
+                       (r'^requests/', include('geonode.datarequests.urls', namespace='datarequests')),
 
                        # Misc
                        # url(r'^captcha/', include('captcha.urls')),
