@@ -1,4 +1,3 @@
 include README README.rst LICENSE
 recursive-exclude ./geonode/static/.components
-recursive-include geonode *.js *.css *.png *.eot *.woff *.tff *.svg *.html *.xml *.json
-
+recursive-include geonode *.js *.css *.png *.eot *.woff *.tff *.svg *.html *.xml *.json *.ini
