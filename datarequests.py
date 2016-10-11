@@ -20,15 +20,16 @@ def get_requests_before_date(data_set, month, day, year):
 def get_requests_by_status(data_set, request_status):
     return data_set.filter(request_status=request_status)
     
-def main(argv):
-    result = get_requests_by_status(get_requests_before_date(get_requests_with_letter(DataRequestProfile.objects),7,18,2016), 'pending')
-    
+def write_to_csv(result):
     with open('dr.csv', 'wb') as csvfile:
         writer = csv.writer(csvfile, delimiter=',')
         writer.writerow(['ReqNumber','Name', 'Email', 'Status'])
         for dr in result:
             writer.writerow([str(dr.pk), dr.first_name+" "+dr.last_name, dr.email, dr.request_status])
-    
+            
+def main(argv):
+    result = get_requests_before_date(get_requests_with_letter(DataRequestProfile.objects),7,18,2016)
+    write_to_csv(result)
     
 if __name__ == "__main__":
     main(sys.argv[1:])
