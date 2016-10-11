@@ -26,13 +26,21 @@ def get_requests_by_status(data_set, request_status):
 
 def compute_area_size(data_set):
     for dr in get_requests_with_roi(data_set):
-        dr.area_coverage = get_area_coverage(dr.jurisdiction_shapefile.name)
-        dr.save()
+        try:
+            dr.area_coverage = get_area_coverage(dr.jurisdiction_shapefile.name)
+            dr.save()
+        except Exception as e:
+            from pprint import pprint
+            pprint("Skipping...")
 
 def compute_estimated_data_size(data_set):
     for dr in get_requests_with_roi(data_set):
-        dr.juris_data_size = get_juris_data_size(dr.jurisdiction_shapefile.name)
-        dr.save()
+        try:
+            dr.juris_data_size = get_juris_data_size(dr.jurisdiction_shapefile.name)
+            dr.save()
+        except Exception as e:
+            from pprint import pprint
+            pprint("Skipping...")
     
 def write_to_csv(file_name, result):
     with open(file_name, 'wb') as csvfile:
