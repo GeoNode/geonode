@@ -22,7 +22,7 @@ django-extensions==1.6.1
 django-forms-bootstrap==3.0.1
 django-friendly-tag-loader==1.2.1
 django-geoexplorer==4.0.5
-django-guardian==1.4.1
+django-guardian==1.4.6
 django-haystack==2.4.1
 django-jsonfield==0.9.16
 django-leaflet==0.13.7

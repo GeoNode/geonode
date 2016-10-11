@@ -133,7 +133,7 @@ class Profile(AbstractUser):
 
 
 def get_anonymous_user_instance(Profile):
-    return Profile(username='AnonymousUser')
+    return Profile(pk=-1, username='AnonymousUser')
 
 
 def profile_post_save(instance, sender, **kwargs):
