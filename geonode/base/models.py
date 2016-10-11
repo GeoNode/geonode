@@ -296,11 +296,11 @@ class _HierarchicalTagManager(_TaggableManager):
         # If str_tags has 0 elements Django actually optimizes that to not do a
         # query.  Malcolm is very smart.
         existing = self.through.tag_model().objects.filter(
-            slug__in=str_tags
+            name__in=str_tags
         )
         tag_objs.update(existing)
 
-        for new_tag in str_tags - set(t.slug for t in existing):
+        for new_tag in str_tags - set(t.name for t in existing):
             tag_objs.add(HierarchicalKeyword.add_root(name=new_tag))
 
         for tag in tag_objs:
