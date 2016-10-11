@@ -1,6 +1,6 @@
 from django.conf.urls import patterns, url
 
-from .views import DataRequestPofileList
+from .views import ProfileRequestList, DataRequestList
 # from .views import RequesterSignupWizard, DataRequestPofileList
 
 # signup_wizard = RequesterSignupWizard.as_view(url_name='signup_step',
@@ -16,11 +16,13 @@ urlpatterns = patterns(
     url(r'^register/shapefile/$', 'registration_part_two', name='registration_part_two'),
     url(r'^register/$', 'registration_part_one', name='registration_part_one'),
 
-    url(r'^$', DataRequestPofileList.as_view(), name='data_request_browse'),
+    url(r'^profile/$', ProfileRequestList.as_view(), name='profile_request_browse'),
+    url(r'^data/$', DataRequestList.as_view(), name='data_request_browse'),
     url(r'^datarequests_csv/$', 'data_request_csv', name='data_request_csv'),
     url(r'^compute_size/$','data_request_compute_size', name='data_request_compute_size'),
     url(r'^reverse_geocode/$','data_request_reverse_geocode', name='data_request_reverse_geocode'),
-    url(r'^(?P<pk>\d+)/$', 'data_request_profile', name="data_request_profile"),
+    url(r'^profile/(?P<pk>\d+)/$', 'data_request_profile', name="data_request_profile"),
+    url(r'^data/(?P<pk>\d+)/$', 'data_request_data', name="data_request_data"),
     url(r'^(?P<pk>\d+)/approve/$', 'data_request_profile_approve', name="data_request_profile_approve"),
     url(r'^(?P<pk>\d+)/reject/$', 'data_request_profile_reject', name="data_request_profile_reject"),
     url(r'^(?P<pk>\d+)/cancel/$', 'data_request_profile_cancel', name="data_request_profile_cancel"),

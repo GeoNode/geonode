@@ -59,8 +59,9 @@ from braces.views import (
 
 from .forms import (
     DataRequestProfileForm, DataRequestProfileShapefileForm,
-    DataRequestProfileRejectForm, DataRequestDetailsForm)
-from .models import DataRequestProfile
+    DataRequestProfileRejectForm, DataRequestDetailsForm,
+    DataRequestInfoForm, DataRequestProjectForm, DataRequestShapefileForm)
+from .models import DataRequestProfile, DataRequest, ProfileRequest
 from .utils import (
     get_place_name, get_area_coverage)
 
@@ -70,12 +71,12 @@ def registration_part_one(request):
     request_object = request.session.get('request_object', None)
     datarequest_shapefile=request.session.get('data_request_shapefile', None)
 
-    form = DataRequestProfileForm( )
+    form = DataRequestInfoForm()
 
     if request.method == 'GET':
         if request.user.is_authenticated():
 
-            request_object = DataRequestProfile(
+            request_object = ProfileRequest(
                 profile = request.user,
                 first_name = request.user.first_name,
                 middle_name = request.user.middle_name,
@@ -107,7 +108,7 @@ def registration_part_one(request):
                     'contact_number': request_object.contact_number,
                     'location': request_object.location
                 }
-                form = DataRequestProfileForm(initial = initial)
+                form = DataRequestInfoForm(initial = initial)
     elif request.method == 'POST':
         if request.user.is_authenticated():
             request_object = create_request_obj(request.user)
@@ -119,7 +120,7 @@ def registration_part_one(request):
             request.session['request_object']=request_object
 
         else:
-            form = DataRequestProfileForm(
+            form = DataRequestInfoForm(
                 request.POST
             )
             if form.is_valid():
@@ -157,7 +158,7 @@ def registration_part_two(request):
     if request.user.is_authenticated() and request.user is not Profile.objects.get(username="AnonymousUser") :
         is_new_auth_req = request.session.get('is_new_auth_req', None)
         try:
-            last_submitted_dr = DataRequestProfile.objects.filter(profile=request.user).latest('key_created_date')
+            last_submitted_dr = DataRequest.objects.filter(profile=request.user).latest('date_submitted')
             part_two_initial['project_summary']=last_submitted_dr.project_summary
             part_two_initial['data_type_requested']=last_submitted_dr.data_type_requested
         except ObjectDoesNotExist as e:
@@ -169,8 +170,8 @@ def registration_part_two(request):
     if not saved_request_object:
         return redirect(reverse('datarequests:registration_part_one'))
 
-    form = DataRequestDetailsForm(initial=part_two_initial)
-    
+    form = DataRequestProjectForm(initial=part_two_initial)
+
     juris_data_size = 0.0
     #area_coverage = get_area_coverage(saved_layer.name)
     area_coverage = 0
@@ -178,18 +179,19 @@ def registration_part_two(request):
     if request.method == 'POST' :
         post_data = request.POST.copy()
         post_data['permissions'] = '{"users":{"dataRegistrationUploader": ["view_resourcebase"] }}'
-        form = DataRequestDetailsForm(post_data, request.FILES)
+        form = DataRequestProjectForm(post_data, request.FILES)
         if u'base_file' in request.FILES:
-            form = DataRequestProfileShapefileForm(post_data, request.FILES)
+            form = DataRequestShapefileForm(post_data, request.FILES)
 
         tempdir = None
         errormsgs = []
         out = {}
         #request_profile =  request.session['request_object']
-        request_profile = saved_request_object
+        # request_profile = saved_request_object
         place_name = None
         pprint(post_data)
         if form.is_valid():
+            request_data = DataRequestProjectForm(post_data, request.FILES).save()
             if last_submitted_dr and not is_new_auth_req:
                 if last_submitted_dr.request_status.encode('utf8') == 'pending' or last_submitted_dr.request_status.encode('utf8') == 'unconfirmed':
                     pprint("updating request_status")
@@ -290,7 +292,7 @@ def registration_part_two(request):
                         if permissions is not None and len(permissions.keys()) > 0:
 
                             saved_layer.set_permissions(permissions)
-                        
+
                         jurisdiction_style.delay(saved_layer)
 
                     finally:
@@ -304,35 +306,47 @@ def registration_part_two(request):
 
                 if 'request_object' in request.session :
                     if 'success' not in out:
-                        request_profile, letter = update_datarequest_obj(
-                            datarequest=  request.session['request_object'],
-                            parameter_dict = form.clean(),
-                            request_letter = form.clean()['letter_file'],
-                            interest_layer = interest_layer
-                        )
-
+                    #     request_data, letter = update_datarequest_obj(
+                    #         datarequest=  request.session['request_object'],
+                    #         parameter_dict = form.clean(),
+                    #         request_letter = form.clean()['letter_file'],
+                    #         interest_layer = interest_layer
+                    #     )
+                    #
                         out['success']=True
-                    else:
-                        if out['success']:
-                            request_profile, letter = update_datarequest_obj(
-                                datarequest=  request.session['request_object'],
-                                parameter_dict = form.clean(),
-                                request_letter = form.clean()['letter_file'],
-                                interest_layer = interest_layer
-                            )
+                    # else:
+                    #     if out['success']:
+                    #         request_data, letter = update_datarequest_obj(
+                    #             datarequest=  request.session['request_object'],
+                    #             parameter_dict = form.clean(),
+                    #             request_letter = form.clean()['letter_file'],
+                    #             interest_layer = interest_layer
+                    #         )
+                    request_data, letter = map_letter_shapefile(
+                        datarequest =  request_data,
+                        profile_session = request.session['request_object'],
+                        request_letter = form.clean()['letter_file'],
+                        interest_layer = interest_layer
+                    )
+                    request_data.date_submitted = datetime.datetime.now()
 
                     if interest_layer:
-                        request_profile.place_name = None
-                        request_profile.juris_data_size = juris_data_size
-                        request_profile.area_coverage = area_coverage
-                        request_profile.save()
+                        request_data.place_name = None
+                        request_data.juris_data_size = juris_data_size
+                        request_data.area_coverage = area_coverage
+                        request_data.save()
 
                     if request.user.is_authenticated():
-                        request_profile.profile = request.user
-                        request_profile.request_status = 'pending'
-                        request_profile.username = request.user.username
-                        request_profile.set_verification_key()
-                        request_profile.save()
+                        request_data.profile = request.user
+                        request_data.request_status = 'pending'
+                        request_data.username = request.user.username
+                        request_data.set_verification_key()
+                        request_data.save()
+                    else:
+                        request_data.profile_request = saved_request_object
+                        request_data.save()
+                        saved_request_object.data_request = request_data
+                        saved_request_object.save()
 
                 else:
                     pprint("unable to retrieve request object")
@@ -360,20 +374,20 @@ def registration_part_two(request):
         if out['success']:
             status_code = 200
             pprint("request has been succesfully submitted")
-            if request_profile and not request_profile.profile:
-#                request_profile.send_verification_email()
+            if request_data and not request_data.profile:
+            #    request_data.send_verification_email()
 
                 out['success_url'] = reverse('datarequests:email_verification_send')
 
                 out['redirect_to'] = reverse('datarequests:email_verification_send')
 
-            elif request_profile and request_profile.profile:
+            elif request_data and request_data.profile:
                 out['success_url'] = reverse('home')
 
                 out['redirect_to'] = reverse('home')
 
-                request_profile.date = timezone.now()
-                request_profile.save()
+                request_data.date = timezone.now()
+                request_data.save()
 
             del request.session['data_request_shapefile']
             del request.session['request_object']
@@ -394,10 +408,13 @@ def registration_part_two(request):
         })
 
 
-class DataRequestPofileList(LoginRequiredMixin, TemplateView):
-    template_name = 'datarequests/data_request_list.html'
+class ProfileRequestList(LoginRequiredMixin, TemplateView):
+    template_name = 'datarequests/profile_request_list.html'
     raise_exception = True
 
+class DataRequestList(LoginRequiredMixin, TemplateView):
+    template_name = 'datarequests/data_request_list.html'
+    raise_exception = True
 @login_required
 def data_request_csv(request):
     if not request.user.is_superuser:
@@ -443,7 +460,7 @@ def email_verification_confirm(request):
 
     if key and email:
         try:
-            data_request = DataRequestProfile.objects.get(
+            data_request = ProfileRequest.objects.get(
                 email=email,
                 verification_key=key,
             )
@@ -473,7 +490,7 @@ def email_verification_confirm(request):
 
 def data_request_profile(request, pk, template='datarequests/profile_detail.html'):
 
-    request_profile = get_object_or_404(DataRequestProfile, pk=pk)
+    request_profile = get_object_or_404(ProfileRequest, pk=pk)
 
     if not request.user.is_superuser and not request_profile.profile == request.user:
         raise PermissionDenied
@@ -484,73 +501,73 @@ def data_request_profile(request, pk, template='datarequests/profile_detail.html
 
     context_dict={"request_profile": request_profile}
 
-    if request_profile.jurisdiction_shapefile:
-        layer = request_profile.jurisdiction_shapefile
-        # assert False, str(layer_bbox)
-        config = layer.attribute_config()
-        # Add required parameters for GXP lazy-loading
-        layer_bbox = layer.bbox
-        bbox = [float(coord) for coord in list(layer_bbox[0:4])]
-        srid = layer.srid
-
-        # Transform WGS84 to Mercator.
-        config["srs"] = srid if srid != "EPSG:4326" else "EPSG:900913"
-        config["bbox"] = llbbox_to_mercator([float(coord) for coord in bbox])
-
-        config["title"] = layer.title
-        config["queryable"] = True
-
-        if layer.storeType == "remoteStore":
-            service = layer.service
-            source_params = {
-                "ptype": service.ptype,
-                "remote": True,
-                "url": service.base_url,
-                "name": service.name}
-            maplayer = GXPLayer(
-                name=layer.typename,
-                ows_url=layer.ows_url,
-                layer_params=json.dumps(config),
-                source_params=json.dumps(source_params))
-        else:
-            maplayer = GXPLayer(
-                name=layer.typename,
-                ows_url=layer.ows_url,
-                layer_params=json.dumps(config))
-
-        # center/zoom don't matter; the viewer will center on the layer bounds
-        map_obj = GXPMap(projection="EPSG:900913")
-        NON_WMS_BASE_LAYERS = [
-            la for la in default_map_config()[1] if la.ows_url is None]
-
-        metadata = layer.link_set.metadata().filter(
-            name__in=settings.DOWNLOAD_FORMATS_METADATA)
-
-        context_dict ["resource"] = layer
-        context_dict ["permissions_json"] = _perms_info_json(layer)
-        context_dict ["documents"] = get_related_documents(layer)
-        context_dict ["metadata"] =  metadata
-        context_dict ["is_layer"] = True
-        context_dict ["wps_enabled"] = settings.OGC_SERVER['default']['WPS_ENABLED'],
-
-        context_dict["viewer"] = json.dumps(
-            map_obj.viewer_json(request.user, * (NON_WMS_BASE_LAYERS + [maplayer])))
-        context_dict["preview"] = getattr(
-            settings,
-            'LAYER_PREVIEW_LIBRARY',
-            'leaflet')
-
-        if request.user.has_perm('download_resourcebase', layer.get_self_resource()):
-            if layer.storeType == 'dataStore':
-                links = layer.link_set.download().filter(
-                    name__in=settings.DOWNLOAD_FORMATS_VECTOR)
-            else:
-                links = layer.link_set.download().filter(
-                    name__in=settings.DOWNLOAD_FORMATS_RASTER)
-            context_dict["links"] = links
-
-        if settings.SOCIAL_ORIGINS:
-            context_dict["social_links"] = build_social_links(request, layer)
+    # if request_profile.jurisdiction_shapefile:
+    #     layer = request_profile.jurisdiction_shapefile
+    #     # assert False, str(layer_bbox)
+    #     config = layer.attribute_config()
+    #     # Add required parameters for GXP lazy-loading
+    #     layer_bbox = layer.bbox
+    #     bbox = [float(coord) for coord in list(layer_bbox[0:4])]
+    #     srid = layer.srid
+    #
+    #     # Transform WGS84 to Mercator.
+    #     config["srs"] = srid if srid != "EPSG:4326" else "EPSG:900913"
+    #     config["bbox"] = llbbox_to_mercator([float(coord) for coord in bbox])
+    #
+    #     config["title"] = layer.title
+    #     config["queryable"] = True
+    #
+    #     if layer.storeType == "remoteStore":
+    #         service = layer.service
+    #         source_params = {
+    #             "ptype": service.ptype,
+    #             "remote": True,
+    #             "url": service.base_url,
+    #             "name": service.name}
+    #         maplayer = GXPLayer(
+    #             name=layer.typename,
+    #             ows_url=layer.ows_url,
+    #             layer_params=json.dumps(config),
+    #             source_params=json.dumps(source_params))
+    #     else:
+    #         maplayer = GXPLayer(
+    #             name=layer.typename,
+    #             ows_url=layer.ows_url,
+    #             layer_params=json.dumps(config))
+    #
+    #     # center/zoom don't matter; the viewer will center on the layer bounds
+    #     map_obj = GXPMap(projection="EPSG:900913")
+    #     NON_WMS_BASE_LAYERS = [
+    #         la for la in default_map_config()[1] if la.ows_url is None]
+    #
+    #     metadata = layer.link_set.metadata().filter(
+    #         name__in=settings.DOWNLOAD_FORMATS_METADATA)
+    #
+    #     context_dict ["resource"] = layer
+    #     context_dict ["permissions_json"] = _perms_info_json(layer)
+    #     context_dict ["documents"] = get_related_documents(layer)
+    #     context_dict ["metadata"] =  metadata
+    #     context_dict ["is_layer"] = True
+    #     context_dict ["wps_enabled"] = settings.OGC_SERVER['default']['WPS_ENABLED'],
+    #
+    #     context_dict["viewer"] = json.dumps(
+    #         map_obj.viewer_json(request.user, * (NON_WMS_BASE_LAYERS + [maplayer])))
+    #     context_dict["preview"] = getattr(
+    #         settings,
+    #         'LAYER_PREVIEW_LIBRARY',
+    #         'leaflet')
+    #
+    #     if request.user.has_perm('download_resourcebase', layer.get_self_resource()):
+    #         if layer.storeType == 'dataStore':
+    #             links = layer.link_set.download().filter(
+    #                 name__in=settings.DOWNLOAD_FORMATS_VECTOR)
+    #         else:
+    #             links = layer.link_set.download().filter(
+    #                 name__in=settings.DOWNLOAD_FORMATS_RASTER)
+    #         context_dict["links"] = links
+    #
+    #     if settings.SOCIAL_ORIGINS:
+    #         context_dict["social_links"] = build_social_links(request, layer)
 
     context_dict["request_reject_form"]= DataRequestProfileRejectForm(instance=request_profile)
 
@@ -564,7 +581,7 @@ def data_request_profile_reject(request, pk):
     if not request.method == 'POST':
         raise PermissionDenied
 
-    request_profile = get_object_or_404(DataRequestProfile, pk=pk)
+    request_profile = get_object_or_404(ProfileRequest, pk=pk)
 
     if request_profile.request_status == 'pending':
         form = parse_qs(request.POST.get('form', None))
@@ -594,7 +611,7 @@ def data_request_profile_reject(request, pk):
     )
 
 def data_request_profile_cancel(request, pk):
-    request_profile = get_object_or_404(DataRequestProfile, pk=pk)
+    request_profile = get_object_or_404(ProfileRequest, pk=pk)
 
     if not request.user.is_superuser and  not request_profile.profile == request.user:
         raise PermissionDenied
@@ -602,7 +619,7 @@ def data_request_profile_cancel(request, pk):
     if not request.method == 'POST':
         raise PermissionDenied
 
-    request_profile = get_object_or_404(DataRequestProfile, pk=pk)
+    request_profile = get_object_or_404(ProfileRequest, pk=pk)
 
     if request_profile.request_status == 'pending' or request_profile.request_status == 'unconfirmed':
         pprint("Yown pasok")
@@ -636,12 +653,11 @@ def data_request_profile_cancel(request, pk):
 def data_request_profile_approve(request, pk):
     if not request.user.is_superuser:
         raise PermissionDenied
-
     if not request.method == 'POST':
         raise PermissionDenied
 
     if request.method == 'POST':
-        request_profile = get_object_or_404(DataRequestProfile, pk=pk)
+        request_profile = get_object_or_404(ProfileRequest, pk=pk)
 
         if not request_profile.has_verified_email or request_profile.request_status != 'pending':
             raise PermissionDenied
@@ -661,6 +677,7 @@ def data_request_profile_approve(request, pk):
             request_profile.profile.organization_type = request_profile.organization_type
             request_profile.profile.organization_other = request_profile.organization_other
             request_profile.profile.save()
+
             if request_profile.jurisdiction_shapefile:
                 request_profile.assign_jurisdiction() #assigns/creates jurisdiction object
                 #place_name_update.delay([request_profile])
@@ -674,7 +691,6 @@ def data_request_profile_approve(request, pk):
                     pprint("Jurisdiction Shapefile not found, nothing to delete. Carry on")
 
             request_profile.set_approved(is_new_acc)
-
 
         return HttpResponseRedirect(request_profile.get_absolute_url())
 
@@ -690,7 +706,7 @@ def data_request_profile_reconfirm(request, pk):
         raise PermissionDenied
 
     if request.method == 'POST':
-        request_profile = get_object_or_404(DataRequestProfile, pk=pk)
+        request_profile = get_object_or_404(ProfileRequest, pk=pk)
 
         request_profile.send_verification_email()
         return HttpResponseRedirect(request_profile.get_absolute_url())
@@ -703,14 +719,14 @@ def data_request_profile_recreate_dir(request, pk):
         raise PermissionDenied
 
     if request.method == 'POST':
-        request_profile = get_object_or_404(DataRequestProfile, pk=pk)
+        request_profile = get_object_or_404(ProfileRequest, pk=pk)
 
         request_profile.create_directory()
         return HttpResponseRedirect(request_profile.get_absolute_url())
 
 def data_request_compute_size(request):
     if request.user.is_superuser:
-        data_requests = DataRequestProfile.objects.exclude(jurisdiction_shapefile=None)
+        data_requests = DataRequest.objects.exclude(jurisdiction_shapefile=None)
         compute_size_update.delay(data_requests)
         messages.info(request, "The estimated data size area coverage of the requests are currently being computed")
         return HttpResponseRedirect(reverse('datarequests:data_request_browse'))
@@ -720,8 +736,8 @@ def data_request_compute_size(request):
 
 def data_request_profile_compute_size(request, pk):
     if request.user.is_superuser and request.method == 'POST':
-        if DataRequestProfile.objects.get(pk=pk).jurisdiction_shapefile:
-            data_requests = DataRequestProfile.objects.filter(pk=pk)
+        if DataRequest.objects.get(pk=pk).jurisdiction_shapefile:
+            data_requests = DataRequest.objects.filter(pk=pk)
             compute_size_update.delay(data_requests)
             messages.info(request, "The estimated data size area coverage of the request is currently being computed")
         else:
@@ -733,7 +749,7 @@ def data_request_profile_compute_size(request, pk):
 
 def data_request_reverse_geocode(request):
     if request.user.is_superuser:
-        data_requests = DataRequestProfile.objects.exclude(jurisdiction_shapefile=None)
+        data_requests = DataRequest.objects.exclude(jurisdiction_shapefile=None)
         place_name_update.delay(data_requests)
         messages.info(request,"Retrieving approximated place names of data requests")
         return HttpResponseRedirect(reverse('datarequests:data_request_browse'))
@@ -742,8 +758,8 @@ def data_request_reverse_geocode(request):
 
 def data_request_profile_reverse_geocode(request, pk):
     if request.user.is_superuser and request.method == 'POST':
-        if DataRequestProfile.objects.get(pk=pk).jurisdiction_shapefile:
-            data_requests = DataRequestProfile.objects.filter(pk=pk)
+        if DataRequest.objects.get(pk=pk).jurisdiction_shapefile:
+            data_requests = DataRequest.objects.filter(pk=pk)
             place_name_update.delay(data_requests)
             messages.info(request, "Retrieving approximated place names of data request")
         else:
@@ -763,6 +779,91 @@ def data_request_assign_gridrefs(request):
         return HttpResponseRedirect('/forbidden/')
             
 
+def data_request_data(request, pk, template='datarequests/data_detail.html'):
+
+    request_profile = get_object_or_404(DataRequest, pk=pk)
+
+    if not request.user.is_superuser and not request_profile.profile == request.user:
+        raise PermissionDenied
+
+
+    #if not request_profile.date:
+    #    raise Http404
+
+    context_dict={"request_profile": request_profile}
+
+    # if request_profile.jurisdiction_shapefile:
+    #     layer = request_profile.jurisdiction_shapefile
+    #     # assert False, str(layer_bbox)
+    #     config = layer.attribute_config()
+    #     # Add required parameters for GXP lazy-loading
+    #     layer_bbox = layer.bbox
+    #     bbox = [float(coord) for coord in list(layer_bbox[0:4])]
+    #     srid = layer.srid
+    #
+    #     # Transform WGS84 to Mercator.
+    #     config["srs"] = srid if srid != "EPSG:4326" else "EPSG:900913"
+    #     config["bbox"] = llbbox_to_mercator([float(coord) for coord in bbox])
+    #
+    #     config["title"] = layer.title
+    #     config["queryable"] = True
+    #
+    #     if layer.storeType == "remoteStore":
+    #         service = layer.service
+    #         source_params = {
+    #             "ptype": service.ptype,
+    #             "remote": True,
+    #             "url": service.base_url,
+    #             "name": service.name}
+    #         maplayer = GXPLayer(
+    #             name=layer.typename,
+    #             ows_url=layer.ows_url,
+    #             layer_params=json.dumps(config),
+    #             source_params=json.dumps(source_params))
+    #     else:
+    #         maplayer = GXPLayer(
+    #             name=layer.typename,
+    #             ows_url=layer.ows_url,
+    #             layer_params=json.dumps(config))
+    #
+    #     # center/zoom don't matter; the viewer will center on the layer bounds
+    #     map_obj = GXPMap(projection="EPSG:900913")
+    #     NON_WMS_BASE_LAYERS = [
+    #         la for la in default_map_config()[1] if la.ows_url is None]
+    #
+    #     metadata = layer.link_set.metadata().filter(
+    #         name__in=settings.DOWNLOAD_FORMATS_METADATA)
+    #
+    #     context_dict ["resource"] = layer
+    #     context_dict ["permissions_json"] = _perms_info_json(layer)
+    #     context_dict ["documents"] = get_related_documents(layer)
+    #     context_dict ["metadata"] =  metadata
+    #     context_dict ["is_layer"] = True
+    #     context_dict ["wps_enabled"] = settings.OGC_SERVER['default']['WPS_ENABLED'],
+    #
+    #     context_dict["viewer"] = json.dumps(
+    #         map_obj.viewer_json(request.user, * (NON_WMS_BASE_LAYERS + [maplayer])))
+    #     context_dict["preview"] = getattr(
+    #         settings,
+    #         'LAYER_PREVIEW_LIBRARY',
+    #         'leaflet')
+    #
+    #     if request.user.has_perm('download_resourcebase', layer.get_self_resource()):
+    #         if layer.storeType == 'dataStore':
+    #             links = layer.link_set.download().filter(
+    #                 name__in=settings.DOWNLOAD_FORMATS_VECTOR)
+    #         else:
+    #             links = layer.link_set.download().filter(
+    #                 name__in=settings.DOWNLOAD_FORMATS_RASTER)
+    #         context_dict["links"] = links
+    #
+    #     if settings.SOCIAL_ORIGINS:
+    #         context_dict["social_links"] = build_social_links(request, layer)
+
+    context_dict["request_reject_form"]= DataRequestProfileRejectForm(instance=request_profile)
+
+    return render_to_response(template, RequestContext(request, context_dict))
+
 def data_request_facet_count(request):
     if not request.user.is_superuser:
         raise PermissionDenied
@@ -771,13 +872,13 @@ def data_request_facet_count(request):
         raise PermissionDenied
 
     facets_count = {
-        'pending': DataRequestProfile.objects.filter(
+        'pending': ProfileRequest.objects.filter(
             request_status='pending').exclude(date=None).count(),
-        'approved': DataRequestProfile.objects.filter(
+        'approved': ProfileRequest.objects.filter(
             request_status='approved').count(),
-        'rejected': DataRequestProfile.objects.filter(
+        'rejected': ProfileRequest.objects.filter(
             request_status='rejected').count(),
-        'cancelled': DataRequestProfile.objects.filter(
+        'cancelled': ProfileRequest.objects.filter(
             request_status='cancelled').exclude(date=None).count(),
     }
 
@@ -790,7 +891,7 @@ def data_request_facet_count(request):
 def update_datarequest_obj(datarequest=None, parameter_dict=None, interest_layer=None, request_letter = None):
     if datarequest is None or parameter_dict is None or request_letter is None:
         raise HttpResponseBadRequest
-        
+
     if not datarequest.middle_name or len(datarequest.middle_name.strip())<1:
         datarequest.middle_name = '_'
 
@@ -821,5 +922,25 @@ def update_datarequest_obj(datarequest=None, parameter_dict=None, interest_layer
     datarequest.request_letter =letter;
 
     datarequest.save()
+
+    return (datarequest, letter)
+
+def map_letter_shapefile(datarequest=None, profile_session=None, interest_layer=None, request_letter = None):
+    if interest_layer:
+        datarequest.jurisdiction_shapefile = interest_layer
+
+    requester_name = unidecode(profile_session.first_name+" "+profile_session.last_name)
+    letter = Document()
+    letter_owner, created =  Profile.objects.get_or_create(username='dataRegistrationUploader')
+    letter.owner = letter_owner
+    letter.doc_file = request_letter
+    letter.title = requester_name+ " Request Letter " +datetime.datetime.now().strftime("%Y-%m-%d")
+    letter.is_published = False
+    letter.save()
+    letter.set_permissions( {"users":{"dataRegistrationUploader":["view_resourcebase"]}})
+
+    datarequest.request_letter =letter;
+
+    # datarequest.save()
 
     return (datarequest, letter)
