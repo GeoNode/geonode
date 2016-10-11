@@ -655,6 +655,8 @@ def data_request_profile_approve(request, pk):
                     pprint("Jurisdiction Shapefile not found, nothing to delete. Carry on")
 
             request_profile.set_approved(is_new_acc)
+            request_profile.administrator = request.user 
+            request_profile.save()
 
 
         return HttpResponseRedirect(request_profile.get_absolute_url())
