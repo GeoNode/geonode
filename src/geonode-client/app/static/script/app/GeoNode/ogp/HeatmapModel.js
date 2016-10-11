@@ -4,6 +4,7 @@ var heatmapParams = {
   facet : "true",
   "facet.heatmap" : "bbox",
   "facet.heatmap.format" : "ints2D",
+  "facet.heatmap.distErrPct": "0.05",
   fq: [
     "area:[0 TO 400]",
     "!(area:1 AND max_x:0 AND max_y:0)"
