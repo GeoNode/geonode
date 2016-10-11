@@ -3,7 +3,7 @@ import datetime
 
 from geonode.settings import GEONODE_APPS
 from geonode.datarequests.models import DataRequestProfile
-from geonode.utils import get_juris_data_size, get_area_coverage
+from geonode.datarequests.utils import get_juris_data_size, get_area_coverage
 
 import geonode.settings as settings
 import os, sys
