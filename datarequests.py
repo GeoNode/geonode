@@ -25,16 +25,14 @@ def get_requests_by_status(data_set, request_status):
     return data_set.filter(request_status=request_status)
 
 def compute_area_size(data_set):
-    for dr in data_set:
-        if dr.jurisdiction_shapefile:
-            dr.area_coverage = get_area_coverage(dr.jurisdiction_shapefile.name)
-            dr.save()
+    for dr in get_requests_with_roi(data_set):
+        dr.area_coverage = get_area_coverage(dr.jurisdiction_shapefile.name)
+        dr.save()
 
 def compute_estimated_data_size(data_set):
-    for dr in data_set:
-        if dr.jurisdiction_shapefile:
-            dr.juris_data_size = get_juris_data_size(dr.jurisdiction_shapefile.name)
-            dr.save()
+    for dr in get_requests_with_roi(data_set):
+        dr.juris_data_size = get_juris_data_size(dr.jurisdiction_shapefile.name)
+        dr.save()
     
 def write_to_csv(file_name, result):
     with open(file_name, 'wb') as csvfile:
