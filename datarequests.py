@@ -44,7 +44,7 @@ def write_to_csv(file_name, result):
             writer.writerow([str(dr.pk), dr.first_name+" "+dr.last_name, dr.email, dr.request_status])
             
 def main(argv):
-    result_roi = get_requests_before_date(get_requests_with_roi(DataRequestProfile.objects),7,18,2016)
+    results_roi = get_requests_before_date(get_requests_with_roi(DataRequestProfile.objects),7,18,2016)
     write_to_csv("requests_with_rois.csv", results_roi)
     results_letter = get_requests_before_date(get_requests_with_letter(DataRequestProfile.objects),7,18,2016)
     write_to_csv("requests_with_letters.csv", results_letter)
