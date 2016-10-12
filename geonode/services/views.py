@@ -947,10 +947,12 @@ def _process_arcgis_service(arcserver, name, owner=None, parent=None):
     return return_dict
 
 
-def _process_arcgis_folder(folder, name, services=[], owner=None, parent=None):
+def _process_arcgis_folder(folder, name, services=None, owner=None, parent=None):
     """
     Iterate through folders and services in an ArcGIS REST service folder
     """
+    if services is None:
+        services = []
     for service in folder.services:
         return_dict = {}
         if not isinstance(service, ArcMapService):
