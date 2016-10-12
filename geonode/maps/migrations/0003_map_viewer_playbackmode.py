@@ -7,7 +7,7 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('maps', '0002_auto_20160809_1434'),
+        ('maps', '0002_add_map_chapters'),
     ]
 
     operations = [
