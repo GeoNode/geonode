@@ -469,19 +469,24 @@ def email_verification_confirm(request):
 
     if key and email:
         try:
-            data_request = ProfileRequest.objects.get(
+            profile_request = ProfileRequest.objects.get(
                 email=email,
                 verification_key=key,
             )
             # Only verify once
             if not data_request.date:
-                data_request.request_status = 'pending'
-                data_request.date = timezone.now()
+                profile_request.request_status = 'pending'
+                profile_request.date = timezone.now()
                 pprint(email+" has been confirmed")
-                data_request.save()
-                data_request.send_new_request_notif_to_admins()
+                profile_request.save()
+                profile_request.send_new_request_notif_to_admins()
+                if profile_request.data_request:
+                    dr = profile_request.data_request
+                    dr.request_status = 'pending'
+                    dr.save()
+                    
         except ObjectDoesNotExist:
-            data_request = None
+            profile_request = None
 
         if data_request:
             return render(
@@ -497,7 +502,7 @@ def email_verification_confirm(request):
     )
 
 
-def data_request_profile(request, pk, template='datarequests/profile_detail.html'):
+def profile_request_detail(request, pk, template='datarequests/profile_detail.html'):
 
     request_profile = get_object_or_404(ProfileRequest, pk=pk)
 
@@ -788,7 +793,7 @@ def data_request_assign_gridrefs(request):
         return HttpResponseRedirect('/forbidden/')
             
 
-def data_request_data(request, pk, template='datarequests/data_detail.html'):
+def data_request_detail(request, pk, template='datarequests/data_detail.html'):
 
     request_profile = get_object_or_404(DataRequest, pk=pk)
 

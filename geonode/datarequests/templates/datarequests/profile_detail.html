@@ -25,7 +25,7 @@
 
 {% block body_outer %}
 <div class="page-header">
-  <a href="{% url 'datarequests:data_request_browse' %}" class="btn btn-primary pull-right">{% trans "View All Requests" %}</a>
+  <a href="{% url 'datarequests:profile_request_browse' %}" class="btn btn-primary pull-right">{% trans "View All Requests" %}</a>
   <h2 class="page-title">{% trans "Profile Request Details" %}</h2>
 </div>
 
@@ -37,10 +37,6 @@
       <tr>
       <td class="table-user-profile-attribute col-md-3">{% trans "Requester" %}</td>
       <td>{{ request_profile.first_name }} {{ request_profile.middle_name }} {{ request_profile.last_name }}</td>
-      </tr>
-      <tr>
-      <td class="table-user-profile-attribute col-md-3">{% trans "Request Letter" %}</td>
-      <td><a href="{{ request_profile.request_letter.detail_url }}/download" >{{ request_profile.request_letter.title }}</a></td>
       </tr>
      <tr>
          <td class="table-user-profile-attribute col-md-3"> {% trans "User Name" %}</td>
@@ -58,6 +54,26 @@
       </tr>
 
       <tr>
+      <td class="table-user-profile-attribute">{% trans "Organization type based on Phil-LiDAR1 Data Distribution Policy" %}</td>
+      <td>{{ request_profile.get_organization_type_display }}</td>
+      </tr>
+      {% if request_profile.intended_use_of_dataset == 'academe' %}
+      <tr>
+      <td class="table-user-profile-attribute">{% trans "Level of Request" %}</td>
+      <td>{{ request_profile.get_request_level_display }}</td>
+      </tr>
+
+      <tr>
+      <td class="table-user-profile-attribute">{% trans "Source of Funding" %}</td>
+      <td>{{ request_profile.funding_source }}</td>
+      </tr>
+      <tr>
+      <td class="table-user-profile-attribute">{% trans "Consultant in behalf of another organization?" %}</td>
+      <td>{{ is_consultant|yesno:"yes,no" }}</td>
+      </tr>
+      {% endif %}
+
+      <tr>
       <td class="table-user-profile-attribute">{% trans "Entity" %}</td>
       <td>{{ request_profile.get_location_display }}</td>
       </tr>
@@ -72,62 +88,6 @@
       <td>{{ request_profile.contact_number }}</td>
       </tr>
 
-      <tr>
-      <td class="table-user-profile-attribute">{% trans "Area of Coverage in Sqr KMs:" %}</td>
-      <td>{{ request_profile.area_coverage }}</td>
-      </tr>
-
-      <tr>
-      <td class="table-user-profile-attribute">{% trans "Location of Area Requested" %}</td>
-      <td>{{ request_profile.place_name }}</td>
-      </tr>
-
-      <tr>
-      <td class="table-user-profile-attribute">{% trans "Data Size of Area Requested" %}</td>
-      <td>{{ request_profile.juris_data_size|filesizeformat }}</td>
-      </tr>
-
-      <tr>
-      <td class="table-user-profile-attribute">{% trans "Project Summary" %}</td>
-      <td>{{ request_profile.project_summary }}</td>
-      </tr>
-
-      <tr>
-      <td class="table-user-profile-attribute">{% trans "Type of Data Requested" %}</td>
-      <td>{{ request_profile.get_data_type_requested_display }}</td>
-      </tr>
-
-      <tr>
-      <td class="table-user-profile-attribute">{% trans "Purpose/Intended Use of Data" %}</td>
-      <td>{{ request_profile.purpose }}</td>
-      </tr>
-
-      <tr>
-      <td class="table-user-profile-attribute">{% trans "Intended Use of Dataset" %}</td>
-      <td>{{ request_profile.get_intended_use_of_dataset_display }}</td>
-      </tr>
-
-      {% if request_profile.intended_use_of_dataset == 'noncommercial' or request_profile.intended_use_of_dataset == 'academe' %}
-        <tr>
-        <td class="table-user-profile-attribute">{% trans "Organization type based on Phil-LiDAR1 Data Distribution Policy" %}</td>
-        <td>{{ request_profile.get_organization_type_display }}</td>
-        </tr>
-        {% if request_profile.intended_use_of_dataset == 'academe' %}
-          <tr>
-          <td class="table-user-profile-attribute">{% trans "Level of Request" %}</td>
-          <td>{{ request_profile.get_request_level_display }}</td>
-          </tr>
-
-          <tr>
-          <td class="table-user-profile-attribute">{% trans "Source of Funding" %}</td>
-          <td>{{ request_profile.funding_source }}</td>
-          </tr>
-          <tr>
-          <td class="table-user-profile-attribute">{% trans "Consultant in behalf of another organization?" %}</td>
-          <td>{{ is_consultant|yesno:"yes,no" }}</td>
-          </tr>
-        {% endif %}
-      {% endif %}
          <tr>
           <td class="table-user-profile-attribute col-md-3">{% trans "Approval/Rejection Administrator" %}</td>
           <td>{{request_profile.administrator.username}}</td>
