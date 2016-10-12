@@ -22,6 +22,7 @@ from django.shortcuts import (
     redirect, get_object_or_404, render, render_to_response)
 from django.template import RequestContext
 from django.template.defaultfilters import slugify
+from django.template.response import TemplateResponse
 from django.utils import dateformat
 from django.utils import timezone
 from django.utils import simplejson as json
@@ -415,6 +416,14 @@ class ProfileRequestList(LoginRequiredMixin, TemplateView):
 class DataRequestList(LoginRequiredMixin, TemplateView):
     template_name = 'datarequests/data_request_list.html'
     raise_exception = True
+
+@login_required
+def requests_landing(request):
+    if request.user.is_superuser:
+        return TemplateResponse(request, 'datarequests/requests_landing.html',{}, status=200).render()
+    else:
+        return HttpResponseRedirect(reverse('datarequests:data_request_browse'))
+
 @login_required
 def data_request_csv(request):
     if not request.user.is_superuser:
