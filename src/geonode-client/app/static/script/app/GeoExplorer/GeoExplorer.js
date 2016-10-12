@@ -1084,6 +1084,7 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
             ];
 
         var layer_detail_url = this.mapproxy_backend + JSON.parse(thisRecord.get('location')).layerInfoPage;
+
         var layer = {
             "styles": "",
             "group": "General",
@@ -1102,6 +1103,10 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
             "buffer": 0,
             "tiled": true,
             "local": thisRecord.get('service_type') === 'Hypermap:WorldMap'
+        };
+
+        if (thisRecord.get('service_type') === 'Hypermap:WorldMap'){
+            layer_detail_url = 'http://worldmap.harvard.edu/data/' + thisRecord.get('name');
         };
 
         if(layer.local){
