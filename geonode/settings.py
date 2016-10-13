@@ -774,7 +774,7 @@ DOWNLOAD_FORMATS_METADATA = [
     'Atom', 'DIF', 'Dublin Core', 'ebRIM', 'FGDC', 'ISO',
 ]
 DOWNLOAD_FORMATS_VECTOR = [
-    'JPEG', 'PNG', 'Zipped Shapefile',
+    'JPEG', 'PNG', 'PDF','Zipped Shapefile',
     #'PDF', 'GML 2.0', 'GML 3.1.1', 'CSV',
     #'Excel', 'GeoJSON', 'KML', 'View in Google Earth', 'Tiles',
 ]
@@ -782,6 +782,7 @@ DOWNLOAD_FORMATS_RASTER = [
     'JPEG',
     #'PDF',
     'PNG',
+    'PDF',
     # 'ArcGrid',
     'GeoTIFF',
     #'Gtopo30',
