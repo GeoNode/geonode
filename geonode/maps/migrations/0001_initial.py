@@ -30,6 +30,8 @@ class Migration(migrations.Migration):
     dependencies = [
         ('base', '0001_initial'),
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
+        ('notification', '0001_initial'),
+        ('people', '0002_add_mapstory_specific_fields'),
     ]
 
     operations = [
