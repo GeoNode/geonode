@@ -522,9 +522,9 @@ OGP_URL = "http://geodata.tufts.edu/solr/select"
 # absolutely need it set to True this variable
 MODIFY_TOPICCATEGORY = False
 
-FILE_UPLOAD_PERMISSIONS = 0777
+FILE_UPLOAD_PERMISSIONS = 0776
 MISSING_THUMBNAIL = 'geonode/img/missing_thumb.png'
-THUMBNAIL_FILE_PERMISSIONS = 0777
+THUMBNAIL_FILE_PERMISSIONS = 0776
 
 # Search Snippet Cache Time in Seconds
 CACHE_TIME = 0
@@ -903,7 +903,8 @@ CELERY_IMPORTS = (
     'geonode.tasks.email',
     'geonode.tasks.ftp',
     'geonode.tasks.mk_folder',
-    'geonode.tasks.requests_update',
+    'geonode.tasks.jurisdiction',
+    'geonode.tasks.jurisdiction2',
 
 )
 
@@ -916,8 +917,7 @@ CELERY_QUEUES = [
     Queue('email', routing_key='email'),
     Queue('ftp', routing_key='ftp'),
     Queue('mk_folder', routing_key='mk_folder'),
-    Queue('requests_update', routing_key='requests_update'),
-    Queue('jurisdiction',routing_key='jurisdiction')
+    Queue('jurisdiction',routing_key='jurisdiction'),
 
 ]
 
@@ -933,12 +933,13 @@ SELECTION_LIMIT=209715200
 
 MUNICIPALITY_SHAPEFILE = 'geonode:phl_adm2_municipalities_utm_z51n'
 #Upload permissions on file
-FILE_UPLOAD_PERMISSIONS = 0777
+FILE_UPLOAD_PERMISSIONS = 0776
+
 GEOSTORAGE_HOST = ""
 
 FILE_UPLOAD_TEMP_DIR = "/tmp/geonode"
 # THUMBNAIL_FILE_PERMISSIONS = 0664
-THUMBNAIL_FILE_PERMISSIONS = 0777
+THUMBNAIL_FILE_PERMISSIONS = 0776
 
 # Load more settings from a file called local_settings.py if it exists
 try:
@@ -993,5 +994,7 @@ if 'geonode.geoserver' in GEONODE_APPS:
     MAP_BASELAYERS.extend(baselayers)
 
 PH_BBOX= [116.22307468566594, 4.27103012208686, 127.09228398538997, 21.2510169394873 ]
+
+_TILE_SIZE = 1000
 
 CAS_VERSION = 3

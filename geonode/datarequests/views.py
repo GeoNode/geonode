@@ -39,7 +39,8 @@ from geonode.layers.utils import file_upload
 from geonode.people.models import Profile
 from geonode.people.views import profile_detail
 from geonode.security.views import _perms_info_json
-from geonode.tasks.requests_update import place_name_update, compute_size_update
+from geonode.tasks.jurisdiction import place_name_update, jurisdiction_style
+from geonode.tasks.jurisdiction2 import compute_size_update, assign_grid_refs, assign_grid_refs_all
 from geonode.utils import default_map_config
 from geonode.utils import GXPLayer
 from geonode.utils import GXPMap
@@ -61,7 +62,7 @@ from .forms import (
     DataRequestProfileRejectForm, DataRequestDetailsForm)
 from .models import DataRequestProfile
 from .utils import (
-    get_place_name, get_juris_data_size, get_area_coverage)
+    get_place_name, get_area_coverage)
 
 def registration_part_one(request):
 
@@ -662,6 +663,9 @@ def data_request_profile_approve(request, pk):
             request_profile.profile.save()
             if request_profile.jurisdiction_shapefile:
                 request_profile.assign_jurisdiction() #assigns/creates jurisdiction object
+                #place_name_update.delay([request_profile])
+                #compute_size_update.delay([request_profile])
+                assign_grid_refs.delay(request_profile.profile)
             else:
                 try:
                     uj = UserJurisdiction.objects.get(user=request_profile.profile)
@@ -748,6 +752,16 @@ def data_request_profile_reverse_geocode(request, pk):
         return HttpResponseRedirect(reverse('datarequests:data_request_browse'))
     else:
         return HttpResponseRedirect('/forbidden/')
+        
+def data_request_assign_gridrefs(request):
+    if request.user.is_superuser:
+        assign_grid_refs_all.delay()
+        messages.info(request, "Now processing jurisdictions. Please wait for a few minutes for them to finish")
+        return HttpResponseRedirect(reverse('datarequests:data_request_browse'))
+        
+    else:
+        return HttpResponseRedirect('/forbidden/')
+            
 
 def data_request_facet_count(request):
     if not request.user.is_superuser:
