@@ -32,7 +32,7 @@ class Migration(migrations.Migration):
     dependencies = [
         ('taggit', '0002_auto_20150616_2121'),
         ('auth', '0006_require_contenttypes_0002'),
-        ('sites', '0001_initial')
+        ('sites', '0001_initial'),
     ]
 
     run_before = [
