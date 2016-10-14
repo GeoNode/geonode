@@ -21,7 +21,7 @@ from .models import DataRequestProfile, RequestRejectionReason, DataRequest, Pro
 
 from pprint import pprint
 
-class DataRequestInfoForm(forms.ModelForm):
+class ProfileRequestForm(forms.ModelForm):
 
     captcha = ReCaptchaField(attrs={'theme': 'clean'})
 
@@ -66,29 +66,9 @@ class DataRequestInfoForm(forms.ModelForm):
         ('student', _('Student')),
     )
 
-    # organization_type = forms.ChoiceField(
-    #     choices = ORGANIZATION_TYPE_CHOICES,
-    #     required = False
-    # )
-
-    # request_level = forms.CharField(
-    #     label=_('Level of the Request'),
-    #     required = False
-    # )
-
-    # funding_source = forms.CharField(
-    #     label = _('Source of Funding'),
-    #     max_length=255,
-    #     required=False
-    # )
-    #
-    # is_consultant = forms.BooleanField(
-    #     required=False
-    # )
-
     def __init__(self, *args, **kwargs):
 
-        super(DataRequestInfoForm, self).__init__(*args, **kwargs)
+        super(ProfileRequestForm, self).__init__(*args, **kwargs)
         self.fields['captcha'].error_messages = {'required': 'Please answer the Captcha to continue.'}
         self.helper = FormHelper()
         # self.helper.form_class = 'form-horizontal'
@@ -210,23 +190,16 @@ class DataRequestInfoForm(forms.ModelForm):
             raise forms.ValidationError(
                 'This field is required.')
         return organization_other
-    #def clean_letter_file(self):
-    #    letter_file = self.cleaned_data.get('letter_file')
-    #    split_filename =  os.path.splitext(str(letter_file.name))
-
-    #    if letter_file and split_filename[len(split_filename)-1].lower()[1:] != "pdf":
-    #        raise forms.ValidationError(_("This file type is not allowed"))
-    #    return letter_file
 
     def save(self, commit=True, *args, **kwargs):
         data_request = super(
-            DataRequestInfoForm, self).save(commit=False, *args, **kwargs)
+            ProfileRequestForm, self).save(commit=False, *args, **kwargs)
 
         if commit:
             data_request.save()
         return data_request
 
-class DataRequestProjectForm(forms.ModelForm):
+class DataRequestForm(forms.ModelForm):
 
     INTENDED_USE_CHOICES = Choices(
         ('Disaster Risk Management', _('Disaster Risk Management')),
@@ -275,14 +248,10 @@ class DataRequestProjectForm(forms.ModelForm):
 
         )
 
-
-
     def __init__(self, *args, **kwargs):
         super(DataRequestProjectForm, self).__init__(*args, **kwargs)
         self.helper = FormHelper()
-        # self.helper.form_class = 'form-horizontal'
         self.helper.form_tag = False
-        # self.helper.form_show_labels = False
         self.helper.layout = Layout(
             Div(
                 Field('project_summary', css_class='form-control'),
@@ -304,19 +273,10 @@ class DataRequestProjectForm(forms.ModelForm):
                 Field('intended_use_of_dataset', css_class='form-control'),
                 css_class='form-group'
             ),
-            # Fieldset('Non-commercial',
-            #
-            #    css_class='noncommercial-fieldset',
-            # ),
             Div(
                 Field('letter_file', css_class='form-control'),
                     css_class='form-group'
             ),
-            #HTML("""
-            #{% load i18n %}
-
-
-            #"""),
         )
 
     def clean_letter_file(self):
@@ -342,18 +302,6 @@ class DataRequestShapefileForm(NewLayerUploadForm):
         ('Cellular Network Mapping', _('Cellular Network Mapping')),
         ('other', _('Other, please specify:')),
     )
-
-    # ORGANIZATION_TYPE_CHOICES = Choices(
-    #     (0, _('Phil-LiDAR 1 SUC')),
-    #     (1, _('Phil-LiDAR 2 SUC' )),
-    #     (2, _( 'Government Agency')),
-    #     (3, _('Academe')),
-    #     (4, _( 'International NGO')),
-    #     (5, _('Local NGO')),
-    #     (6, _('Private Insitution' )),
-    #     (7, _('Other' )),
-    # )
-
     DATASET_USE_CHOICES =Choices(
         ('commercial', _('Commercial')),
         ('noncommercial', _('Non-commercial')),
@@ -365,12 +313,6 @@ class DataRequestShapefileForm(NewLayerUploadForm):
         ('processed', _('Processed')),
         ('other', _('Other')),
     )
-
-    # REQUEST_LEVEL_CHOICES = Choices(
-    #     ('institution', _('Institution')),
-    #     ('faculty', _('Faculty')),
-    #     ('student', _('Student')),
-    # )
 
     abstract = forms.CharField(required=False)
 
@@ -447,6 +389,58 @@ class DataRequestShapefileForm(NewLayerUploadForm):
             else:
                 return purpose_other
         return purpose
+        
+class ProfileRequestRejectForm(forms.ModelForm):
+
+    REJECTION_REASON_CHOICES = Choices(
+        ('Invalid requirements', _('Invalid requirements')),
+        ('Invalid purpose', _('Invalid purpose')),
+        ('Invalid request', _('Invalid request')),
+    )
+
+    rejection_reason = forms.ChoiceField(
+        label=_('Reason for Rejection'),
+        choices=REJECTION_REASON_CHOICES
+    )
+
+    class Meta:
+        model = ProfileRequest
+        fields = (
+            'rejection_reason', 'additional_rejection_reason',
+        )
+
+    def __init__(self, *args, **kwargs):
+        self.helper = FormHelper()
+        super(DataRequestProfileRejectForm, self).__init__(*args, **kwargs)
+        rejection_reason_qs = RequestRejectionReason.objects.all()
+        if rejection_reason_qs:
+            self.fields['rejection_reason'].choices = [(r.reason, r.reason) for r in rejection_reason_qs]
+            
+class DataRequestRejectForm(forms.ModelForm):
+
+    REJECTION_REASON_CHOICES = Choices(
+        ('Invalid requirements', _('Invalid requirements')),
+        ('Invalid purpose', _('Invalid purpose')),
+        ('Invalid request', _('Invalid request')),
+    )
+
+    rejection_reason = forms.ChoiceField(
+        label=_('Reason for Rejection'),
+        choices=REJECTION_REASON_CHOICES
+    )
+
+    class Meta:
+        model = DataRequest
+        fields = (
+            'rejection_reason', 'additional_rejection_reason',
+        )
+
+    def __init__(self, *args, **kwargs):
+        self.helper = FormHelper()
+        super(DataRequestProfileRejectForm, self).__init__(*args, **kwargs)
+        rejection_reason_qs = RequestRejectionReason.objects.all()
+        if rejection_reason_qs:
+            self.fields['rejection_reason'].choices = [(r.reason, r.reason) for r in rejection_reason_qs]
 
 ##old Datarequest forms
 class DataRequestProfileForm(forms.ModelForm):
@@ -489,26 +483,6 @@ class DataRequestProfileForm(forms.ModelForm):
         ('faculty', _('Faculty')),
         ('student', _('Student')),
     )
-
-    # organization_type = forms.ChoiceField(
-    #     choices = ORGANIZATION_TYPE_CHOICES,
-    #     required = False
-    # )
-
-    # request_level = forms.CharField(
-    #     label=_('Level of the Request'),
-    #     required = False
-    # )
-
-    # funding_source = forms.CharField(
-    #     label = _('Source of Funding'),
-    #     max_length=255,
-    #     required=False
-    # )
-    #
-    # is_consultant = forms.BooleanField(
-    #     required=False
-    # )
 
     def __init__(self, *args, **kwargs):
 
@@ -614,21 +588,11 @@ class DataRequestProfileForm(forms.ModelForm):
     def clean_funding_source(self):
         funding_source = self.cleaned_data.get('funding_source')
         organization_type = self.cleaned_data.get('organization_type')
-        #intended_use_of_dataset = self.cleaned_data.get('intended_use_of_dataset')
-        if (#intended_use_of_dataset == 'noncommercial' and
-                organization_type == OrganizationType.ACADEME and
+        if (organization_type == OrganizationType.ACADEME and
                 not funding_source):
             raise forms.ValidationError(
                 'This field is required.')
         return funding_source
-
-    #def clean_letter_file(self):
-    #    letter_file = self.cleaned_data.get('letter_file')
-    #    split_filename =  os.path.splitext(str(letter_file.name))
-
-    #    if letter_file and split_filename[len(split_filename)-1].lower()[1:] != "pdf":
-    #        raise forms.ValidationError(_("This file type is not allowed"))
-    #    return letter_file
 
     def save(self, commit=True, *args, **kwargs):
         data_request = super(
@@ -681,10 +645,7 @@ class DataRequestDetailsForm(forms.ModelForm):
             #project_summary',
             'data_type_requested',
             'intended_use_of_dataset',
-
         )
-
-
 
     def __init__(self, *args, **kwargs):
         super(DataRequestDetailsForm, self).__init__(*args, **kwargs)
