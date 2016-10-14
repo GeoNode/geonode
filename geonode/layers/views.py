@@ -23,9 +23,10 @@ import sys
 import logging
 import shutil
 import traceback
-from guardian.shortcuts import get_perms
+import uuid
 import decimal
 
+from guardian.shortcuts import get_perms
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.core.urlresolvers import reverse
@@ -262,7 +263,7 @@ def layer_detail(request, layername, template='layers/layer_detail.html'):
     map_obj = GXPMap(projection=getattr(settings, 'DEFAULT_MAP_CRS', 'EPSG:900913'))
 
     NON_WMS_BASE_LAYERS = [
-        la for la in default_map_config()[1] if la.ows_url is None]
+        la for la in default_map_config(request)[1] if la.ows_url is None]
 
     metadata = layer.link_set.metadata().filter(
         name__in=settings.DOWNLOAD_FORMATS_METADATA)
@@ -305,8 +306,14 @@ def layer_detail(request, layername, template='layers/layer_detail.html'):
         "filter": filter,
     }
 
+    if 'access_token' in request.session:
+        access_token = request.session['access_token']
+    else:
+        u = uuid.uuid1()
+        access_token = u.hex
+
     context_dict["viewer"] = json.dumps(
-        map_obj.viewer_json(request.user, * (NON_WMS_BASE_LAYERS + [maplayer])))
+        map_obj.viewer_json(request.user, access_token, * (NON_WMS_BASE_LAYERS + [maplayer])))
     context_dict["preview"] = getattr(
         settings,
         'LAYER_PREVIEW_LIBRARY',
@@ -324,6 +331,11 @@ def layer_detail(request, layername, template='layers/layer_detail.html'):
             links = layer.link_set.download().filter(
                 name__in=settings.DOWNLOAD_FORMATS_RASTER)
         context_dict["links"] = links
+
+        if access_token:
+            for idx, item in enumerate(context_dict["links"]):
+                if item.url:
+                    item.url = "%s&access_token=%s" % (item.url, access_token)
 
     if settings.SOCIAL_ORIGINS:
         context_dict["social_links"] = build_social_links(request, layer)

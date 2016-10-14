@@ -223,7 +223,8 @@ def sync(options):
         sh("python manage.py migrate --noinput")
     except:
         pass
-    sh("python manage.py loaddata sample_admin.json")
+    # sh("python manage.py loaddata sample_admin.json")
+    sh("python manage.py loaddata initial_data.json")
 
 
 @task

@@ -20,6 +20,7 @@
 
 import json
 import logging
+import base64
 import httplib2
 import os
 
@@ -339,11 +340,14 @@ def geoserver_rest_proxy(request, proxy_path, downstream_path):
     url = str("".join([ogc_server_settings.LOCATION, downstream_path, path]))
 
     http = httplib2.Http()
-    http.add_credentials(*(ogc_server_settings.credentials))
+    username, password = ogc_server_settings.credentials
+    auth = base64.encodestring(username + ':' + password)
+    # http.add_credentials(*(ogc_server_settings.credentials))
     headers = dict()
 
     if request.method in ("POST", "PUT") and "CONTENT_TYPE" in request.META:
         headers["Content-Type"] = request.META["CONTENT_TYPE"]
+        headers["Authorization"] = "Basic " + auth
         # if user is not authorized, we must stop him
         # we need to sync django here and check if some object (styles) can
         # be edited by the user
