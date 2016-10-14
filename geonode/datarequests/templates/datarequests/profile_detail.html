@@ -95,15 +95,6 @@
       </tbody>
     </table>
 
-    <div class="row">
-      <h4><strong>Jurisdiction Shapefile</strong></h4>
-      {% if not request_profile.jurisdiction_shapefile %}
-        <h5><strong>No ROI submitted</strong></h5>
-        {% endif %}
-      <div id="embedded_map" class="mrg-btm">
-        <div id="preview_map"></div>
-      </div>
-    </div>
   </div>
 
   <div class="col-md-4">
@@ -132,16 +123,6 @@
         {% endif %}
       </li>
 {% if user.is_superuser %}
-    <li class="list-group-item">
-             <form id="compute_request_size_form" method="post" class="modal-form" action='{% url "datarequests:data_request_profile_compute_size" pk=request_profile.pk%}'>{% csrf_token %}
-                <button type="submit" class="btn btn-primary btn-md btn-block"  id="compute-request-size">{% trans "Compute Request Size" %}</button>
-            </form>
-        </li>
-        <li class="list-group-item">
-             <form id="get_place_name_form" method="post" class="modal-form" action='{% url "datarequests:data_request_profile_reverse_geocode" pk=request_profile.pk%}'>{% csrf_token %}
-                <button type="submit" class="btn btn-primary btn-md btn-block"  id="get-place-name">{% trans "Get Place Name" %}</button>
-            </form>
-        </li>
       {% if request_profile.request_status == 'approved' %}
         <li class="list-group-item">
              <form id="recreate_dir_form" method="post" class="modal-form" action='{% url "datarequests:data_request_profile_recreate_dir" pk=request_profile.pk%}'>{% csrf_token %}
