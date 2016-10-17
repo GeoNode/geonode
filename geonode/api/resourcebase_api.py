@@ -45,9 +45,10 @@ from geonode.base.models import HierarchicalKeyword
 
 from .authorization import GeoNodeAuthorization
 
-from .api import TagResource, RegionResource, ProfileResource, \
-    TopicCategoryResource, \
-    FILTER_TYPES
+from .api import TagResource, RegionResource, ProfileResource
+from .api import ThesaurusKeywordResource
+from .api import TopicCategoryResource
+from .api import FILTER_TYPES
 
 if settings.HAYSTACK_SEARCH:
     from haystack.query import SearchQuerySet  # noqa
@@ -65,6 +66,7 @@ class CommonMetaApi:
     allowed_methods = ['get']
     filtering = {'title': ALL,
                  'keywords': ALL_WITH_RELATIONS,
+                 'tkeywords': ALL_WITH_RELATIONS,
                  'regions': ALL_WITH_RELATIONS,
                  'category': ALL_WITH_RELATIONS,
                  'owner': ALL_WITH_RELATIONS,
@@ -83,6 +85,7 @@ class CommonModelApi(ModelResource):
         null=True,
         full=True)
     owner = fields.ToOneField(ProfileResource, 'owner', full=True)
+    tkeywords = fields.ToManyField(ThesaurusKeywordResource, 'tkeywords', null=True)
 
     def build_filters(self, filters=None):
         if filters is None:

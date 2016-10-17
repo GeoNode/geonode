@@ -938,6 +938,7 @@ SEARCH_FILTERS = {
     'OWNERS_ENABLED': True,
     'KEYWORDS_ENABLED': True,
     'H_KEYWORDS_ENABLED': True,
+    'T_KEYWORDS_ENABLED': True,
     'DATE_ENABLED': True,
     'REGION_ENABLED': True,
     'EXTENT_ENABLED': True,
@@ -1051,3 +1052,10 @@ if 'geonode.geoserver' in INSTALLED_APPS:
     baselayers = MAP_BASELAYERS
     MAP_BASELAYERS = [LOCAL_GEOSERVER]
     MAP_BASELAYERS.extend(baselayers)
+
+# Keywords thesauri
+# e.g. THESAURI = [{'name':'inspire_themes', 'required':True, 'filter':True}, {'name':'inspire_concepts', 'filter':True}, ]
+# Required: (boolean, optional, default false) mandatory while editing metadata (not implemented yet)
+# Filter: (boolean, optional, default false) a filter option on that thesaurus will appear in the main search page
+THESAURI = []
+

@@ -120,6 +120,7 @@ def resource_urls(request):
             'SEARCH_FILTERS',
             False
         ),
+        THESAURI_FILTERS=[t['name'] for t in settings.THESAURI if t.get('filter')],
     )
 
     return defaults
