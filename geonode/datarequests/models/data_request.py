@@ -15,7 +15,13 @@ from django.utils.http import urlquote
 from django_enumfield import enum
 from django.core import validators
 
+from model_utils import Choices
+
+from geonode.documents.models import Document
+from geonode.layers.models import Layer
+from geonode.people.models import Profile
 from .profile_request import ProfileRequest
+from .base_request import BaseRequest
 
 class DataRequest(BaseRequest):
 
@@ -25,20 +31,7 @@ class DataRequest(BaseRequest):
         ('processed', _('Processed')),
         ('other', _('Other')),
     )
-
-    REQUEST_STATUS_CHOICES = Choices(
-        ('pending', _('Pending')),
-        ('approved', _('Approved')),
-        ('cancelled', _('Cancelled')),
-        ('rejected', _('Rejected')),
-        ('unconfirmed',_('Unconfirmed Email')),
-    )
-
-    REQUESTER_TYPE_CHOICES = Choices(
-        ('commercial', _('Commercial Requester')),
-        ('noncommercial', _('Non-Commercial Requester')),
-    )
-
+    
     DATASET_USE_CHOICES = Choices(
         ('commercial', _('Commercial')),
         ('noncommercial', _('Non-commercial')),
