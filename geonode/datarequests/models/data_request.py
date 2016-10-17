@@ -43,12 +43,6 @@ class DataRequest(BaseRequest):
         ('reason3', _('Reason 3')),
     )
 
-    profile = models.ForeignKey(
-        Profile,
-        on_delete=models.SET_NULL,
-        null=True,
-        blank=True
-    )
 
     profile_request = models.ForeignKey(
         ProfileRequest,
@@ -104,13 +98,6 @@ class DataRequest(BaseRequest):
 
     #For request letter
     request_letter= models.ForeignKey(Document, null=True, blank=True)
-
-    administrator = models.ForeignKey(
-        Profile,
-        null=True,
-        blank=True,
-        related_name="+"
-    )
 
     class Meta:
         verbose_name = _('Data Request Profile')
