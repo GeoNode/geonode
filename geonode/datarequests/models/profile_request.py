@@ -16,6 +16,7 @@ from django_enumfield import enum
 from django.core import validators
 from django_auth_ldap.backend import LDAPBackend, ldap_error
 
+from model_utils import Choices
 from pprint import pprint
 from unidecode import unidecode
 import traceback
