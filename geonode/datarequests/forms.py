@@ -818,7 +818,7 @@ class DataRequestProfileShapefileForm(NewLayerUploadForm):
         return purpose
 
 
-class DataRequestProfileRejectForm(forms.ModelForm):
+class RejectionForm(forms.ModelForm):
 
     REJECTION_REASON_CHOICES = Choices(
         ('Invalid requirements', _('Invalid requirements')),
@@ -839,7 +839,7 @@ class DataRequestProfileRejectForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         self.helper = FormHelper()
-        super(DataRequestProfileRejectForm, self).__init__(*args, **kwargs)
+        super(RejectionForm, self).__init__(*args, **kwargs)
         rejection_reason_qs = RequestRejectionReason.objects.all()
         if rejection_reason_qs:
             self.fields['rejection_reason'].choices = [(r.reason, r.reason) for r in rejection_reason_qs]
