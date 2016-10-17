@@ -103,9 +103,10 @@ class DataRequest(TimeStampedModel):
 
     #For jurisdiction data size
     juris_data_size = models.FloatField(
-        _('Data size of requested jurisdiction'),
+        _('Data size of requested jurisdiction in bytes'),
         null=True,
         blank=True,
+        default = 0
     )
 
     #For request letter
@@ -117,37 +118,24 @@ class DataRequest(TimeStampedModel):
         blank=True,
         related_name="+"
     )
-    
-    additional_remarks = models.TextField(
-        blank = True,
-        null = True,
-        help_text= _('Additional remarks by an administrator'),
-    )
-
-    additional_remarks = models.TextField(
-        blank = True,
-        null = True,
-        help_text= _('Additional remarks by an administrator'),
-    )
 
     class Meta:
         verbose_name = _('Data Request Profile')
         verbose_name_plural = _('Data Request Profiles')
         ordering = ('-created',)
 
+    def __init__(self):
+        self.status = BaseRequest.STATUS.pending
+        self.request_type = BaseRequest.REQUEST_TYPE.data
+
     def __unicode__(self):
-        info = None
-        if self.profile_request:
-            info = self.profile_request
-        elif self.profile:
-            info = self.profile
         return (_('{} request by {} {} {} of {}')
-                .format(
-                    self.status,
-                    unidecode(info.first_name),
-                    info.last_name,
-                    info.organization,
-                ))
+            .format(
+                self.status,
+                unidecode(self.get_first_name()),
+                unidecode(self.get_last_name()),
+                unidecode(self.get_organization()),
+            ))
 
     def get_absolute_url(self):
         return reverse('datarequests:data_request_details', kwargs={'pk': self.pk})
@@ -213,8 +201,8 @@ class DataRequest(TimeStampedModel):
             if f  is 'id':
                 out.append(getattr(self, 'pk'))
             elif f is 'name':
-                first_name = unidecode(getattr(self, 'first_name'))
-                last_name = unidecode(getattr(self,'last_name'))
+                first_name = unidecode(self.get_first_name())
+                last_name = unidecode(self.get_last_name())
                 out.append(first_name+" "+last_name)
             elif f is 'created':
                 created = getattr(self, f)
