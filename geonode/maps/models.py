@@ -237,6 +237,13 @@ class Map(ResourceBase, GXPMapBase):
 
         return json.dumps(map_config)
 
+    def viewer_json(self, user, *added_layers):
+        base_config = super(Map, self).viewer_json(user, *added_layers)
+        base_config['viewer_playbackmode'] = self.viewer_playbackmode
+        base_config['tools'] = [{'outputConfig': {'playbackMode': self.viewer_playbackmode}, 'ptype': 'gxp_playback'}]
+
+        return base_config
+
     def update_from_viewer(self, conf):
         """
         Update this Map's details by parsing a JSON object as produced by
@@ -249,7 +256,7 @@ class Map(ResourceBase, GXPMapBase):
 
         self.title = conf['about']['title']
         self.abstract = conf['about']['abstract']
-        self.viewer_playbackmode = conf['viewer_playbackmode']
+        self.viewer_playbackmode = conf['viewer_playbackmode'] or 'Instant'
 
         self.set_bounds_from_center_and_zoom(
             conf['map']['center'][0],
