@@ -7,7 +7,7 @@ from fabric.contrib.console import confirm
 from fabric.tasks import execute
 from django.core.mail import send_mail
 
-from geonode import settings
+import geonode.settings as settings
 
 ROOT_DIRECTORY=""
 
