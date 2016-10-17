@@ -371,13 +371,13 @@ class ProfileRequest(BaseRequest):
         self.send_email(email_subj,text_content,html_content)
 
     def send_rejection_email(self):
-         additional_details = 'Additional Details: ' + str(self.additional_rejection_reason)
+        additional_details = 'Additional Details: ' + str(self.additional_rejection_reason)
 
         text_content = email_utils.PROFILE_REJECTION_TEXT.format(
              unidecode(self.first_name),
              self.rejection_reason,
              additional_details,
-             local_settings.LIPAD_SUPPORT_MAIL,
+             local_settings.LIPAD_SUPPORT_MAIL
          )
 
         html_content = email_utils.PROFILE_REJECTION_HTML.format(
