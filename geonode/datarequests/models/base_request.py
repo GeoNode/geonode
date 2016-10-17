@@ -20,6 +20,10 @@ from model_utils import Choices
 from model_utils.models import TimeStampedModel, StatusModel
 
 from geonode.cephgeo.models import UserJurisdiction
+from geonode.datarequests.utils import create_login_credentials, create_ad_account, add_to_ad_group
+from geonode.documents.models import Document
+from geonode.layers.models import Layer
+from geonode.people.models import OrganizationType, Profile
 
 from pprint import pprint
 from unidecode import unidecode
@@ -28,7 +32,7 @@ import traceback
 
 import geonode.settings as local_settings
 
-from .utils import create_login_credentials, create_ad_account, add_to_ad_group
+
 
 class BaseRequest(TimeStampedModel, StatusModel):
     
