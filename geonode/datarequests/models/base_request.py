@@ -16,8 +16,6 @@ from django_enumfield import enum
 from django.core import validators
 from django_auth_ldap.backend import LDAPBackend, ldap_error
 
-import ldap
-
 from model_utils import Choices
 from model_utils.models import TimeStampedModel, StatusModel
 
