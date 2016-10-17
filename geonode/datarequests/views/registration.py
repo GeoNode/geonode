@@ -14,43 +14,51 @@ from geonode.people.views import profile_detail
 from geonode.security.views import _perms_info_json
 
 from geonode.datarequests.forms import (
+    ProfileRequestForm,
     DataRequestProfileForm, DataRequestProfileShapefileForm,
     DataRequestProfileRejectForm, DataRequestDetailsForm,
-    DataRequestInfoForm, DataRequestProjectForm, DataRequestShapefileForm)
+    DataRequestProjectForm, DataRequestShapefileForm)
     
 from geonode.datarequests.models import DataRequestProfile, DataRequest, ProfileRequest
 
-def registration_part_one(request):
+def profile_request_view(request):
+    profile_request_obj = request.session.get('profile_request_obj', None)
+    data_request_obj=request.session.get('data_request_obj', None)
 
-    shapefile_session = request.session.get('data_request_shapefile', None)
-    request_object = request.session.get('request_object', None)
-    datarequest_shapefile=request.session.get('data_request_shapefile', None)
+    form = ProfileRequestForm()
 
-    form = DataRequestInfoForm()
 
-    if request.method == 'GET':
-        if request.user.is_authenticated():
-
-            request_object = ProfileRequest(
-                profile = request.user,
-                first_name = request.user.first_name,
-                middle_name = request.user.middle_name,
-                last_name = request.user.last_name,
-                organization = request.user.organization,
-                organization_type = request.user.organization_type,
-                organization_other = request.user.organization_other,
-                email = request.user.email,
-                contact_number = request.user.voice,
-                request_status = 'pending'
-            )
-            pprint(request_object.first_name)
-            request.session['request_object']=request_object
-
-            return HttpResponseRedirect(
-                reverse('datarequests:registration_part_two')
-            )
-        else:
-            if datarequest_shapefile and request_object:
+    if request.user.is_authenticated():
+        
+        return HttpResponseRedirect(
+            reverse('datarequests:data_request_form')
+        )
+    else:
+        if request.method == 'POST':
+            form = ProfileRequestForm(request.POST)
+            if form.is_valid():
+                if profile_request_obj and data_request_obj:
+                    profile_request_obj.first_name = form.cleaned_data['first_name']
+                    profile_request_obj.middle_name = form.cleaned_data['middle_name']
+                    profile_request_obj.last_name = form.cleaned_data['last_name']
+                    profile_request_obj.organization = form.cleaned_data['organization']
+                    profile_request_obj.organization_type=form.cleaned_data['organization_type']
+                    profile_request_obj.contact_number = form.cleaned_data['contact_number']
+                    if not profile_request_obj.email == form.cleaned_data['email']:
+                        profile_request_obj.email = form.cleaned_data['email']
+                        profile_request_obj.save()
+                        profile_request_obj.send_verification_email()
+                else:
+                    profile_request_obj = form.save()
+                    profile_request_obj.send_verification_email()
+                
+                request.session['profile_request_obj']= profile_request_obj
+                request.session.set_expiry(900)
+                return HttpResponseRedirect(
+                    reverse('datarequests:data_request_form')
+                )
+        elif request.method == 'GET':
+            if data_request_object and profile_request_object:
                 ## the user pressed back
                 initial = {
                     'first_name': request_object.first_name,
@@ -63,64 +71,21 @@ def registration_part_one(request):
                     'contact_number': request_object.contact_number,
                     'location': request_object.location
                 }
-                form = DataRequestInfoForm(initial = initial)
-    elif request.method == 'POST':
-        if request.user.is_authenticated():
-            request_object = create_request_obj(request.user)
+                form = ProfileRequestForm(initial = initial)
+        
+        return render(
+            request,
+            'requests/registration/profile.html',
+            {'form': form}
+        )        
 
-            if not request_object:
-                messages.info(request, "Please update your middle name and/or organization in your profile")
-                return redirect(reverse('profile_detail',  args= [request.user.username]))
-
-            request.session['request_object']=request_object
-
-        else:
-            form = DataRequestInfoForm(
-                request.POST
-            )
-            if form.is_valid():
-
-                if request_object and datarequest_shapefile:
-                    request_object.first_name= form.cleaned_data['first_name']
-                    request_object.middle_name= form.cleaned_data['middle_name']
-                    request_object.last_name= form.cleaned_data['last_name']
-                    request_object.organization= form.cleaned_data['organization']
-                    request_object.contact_number= form.cleaned_data['contact_number']
-                    request_object.save()
-                    if not request_object.email == form.cleaned_data['email']:
-                        request_object.email=form.cleaned_data['email']
-                        request_object.save()
-                        request_object.send_verification_email()
-                else:
-                    request_object = form.save()
-                    request_object.send_verification_email()
-
-                request.session['request_object']= request_object
-                request.session.set_expiry(900)
-                return HttpResponseRedirect(
-                    reverse('datarequests:registration_part_two')
-                )
-    return render(
-        request,
-        'datarequests/registration/profile.html',
-        {'form': form}
-    )
-
-def registration_part_two(request):
+def data_request_view(request):
     part_two_initial ={}
-    is_new_auth_req = False
-    last_submitted_dr = None
-    if request.user.is_authenticated() and request.user is not Profile.objects.get(username="AnonymousUser") :
-        is_new_auth_req = request.session.get('is_new_auth_req', None)
-        try:
-            last_submitted_dr = DataRequest.objects.filter(profile=request.user).latest('date_submitted')
-            part_two_initial['project_summary']=last_submitted_dr.project_summary
-            part_two_initial['data_type_requested']=last_submitted_dr.data_type_requested
-        except ObjectDoesNotExist as e:
-            pprint("No previous request from "+request.user.username)
+    profile_request_obj = request.session.get('profile_request_obj', None)
+    if not request.user.is_authenticated() and not profile_request_obj:
+        return redirect(reverse('datarequests:profile_request_form'))
 
     request.session['data_request_shapefile'] = True
-    saved_request_object= request.session.get('request_object', None)
 
     if not saved_request_object:
         return redirect(reverse('datarequests:registration_part_one'))
@@ -134,7 +99,7 @@ def registration_part_two(request):
     if request.method == 'POST' :
         post_data = request.POST.copy()
         post_data['permissions'] = '{"users":{"dataRegistrationUploader": ["view_resourcebase"] }}'
-        form = DataRequestProjectForm(post_data, request.FILES)
+        form = DataRequestForm(post_data, request.FILES)
         if u'base_file' in request.FILES:
             form = DataRequestShapefileForm(post_data, request.FILES)
 
@@ -144,14 +109,9 @@ def registration_part_two(request):
         #request_profile =  request.session['request_object']
         # request_profile = saved_request_object
         place_name = None
-        pprint(post_data)
         if form.is_valid():
-            request_data = DataRequestProjectForm(post_data, request.FILES).save()
-            if last_submitted_dr and not is_new_auth_req:
-                if last_submitted_dr.request_status.encode('utf8') == 'pending' or last_submitted_dr.request_status.encode('utf8') == 'unconfirmed':
-                    pprint("updating request_status")
-                    last_submitted_dr.request_status = 'cancelled'
-                    last_submitted_dr.save()
+            data_request_obj = DataRequestForm(post_data, request.FILES).save()
+
             if form.cleaned_data:
                 interest_layer = None
                 if u'base_file' in request.FILES:
@@ -254,10 +214,6 @@ def registration_part_two(request):
                         if tempdir is not None:
                             shutil.rmtree(tempdir)
 
-            #Now store the data request
-                #data_request_form = DataRequestProfileForm(
-                #                profile_form_data)
-
 
                 if 'request_object' in request.session :
                     if 'success' not in out:
@@ -285,17 +241,10 @@ def registration_part_two(request):
                     )
                     request_data.date_submitted = datetime.datetime.now()
 
-                    if interest_layer:
-                        request_data.place_name = None
-                        request_data.juris_data_size = juris_data_size
-                        request_data.area_coverage = area_coverage
-                        request_data.save()
-
                     if request.user.is_authenticated():
                         request_data.profile = request.user
                         request_data.request_status = 'pending'
                         request_data.username = request.user.username
-                        request_data.set_verification_key()
                         request_data.save()
                     else:
                         request_data.profile_request = saved_request_object

@@ -249,7 +249,7 @@ class DataRequestForm(forms.ModelForm):
         )
 
     def __init__(self, *args, **kwargs):
-        super(DataRequestProjectForm, self).__init__(*args, **kwargs)
+        super(DataRequestForm, self).__init__(*args, **kwargs)
         self.helper = FormHelper()
         self.helper.form_tag = False
         self.helper.layout = Layout(
@@ -411,7 +411,7 @@ class ProfileRequestRejectForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         self.helper = FormHelper()
-        super(DataRequestProfileRejectForm, self).__init__(*args, **kwargs)
+        super(DataRequestRejectForm, self).__init__(*args, **kwargs)
         rejection_reason_qs = RequestRejectionReason.objects.all()
         if rejection_reason_qs:
             self.fields['rejection_reason'].choices = [(r.reason, r.reason) for r in rejection_reason_qs]
@@ -437,7 +437,7 @@ class DataRequestRejectForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         self.helper = FormHelper()
-        super(DataRequestProfileRejectForm, self).__init__(*args, **kwargs)
+        super(DataRequestRejectForm, self).__init__(*args, **kwargs)
         rejection_reason_qs = RequestRejectionReason.objects.all()
         if rejection_reason_qs:
             self.fields['rejection_reason'].choices = [(r.reason, r.reason) for r in rejection_reason_qs]

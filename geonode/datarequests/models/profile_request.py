@@ -173,6 +173,7 @@ class ProfileRequest(BaseRequest):
     
     def __init__(self):
         self.request_type=BaseRequest.REQUEST_TYPE.profile
+        self.status = BaseRequest.STATUS.unconfirmed
 
     def __unicode__(self):
         return (_('{} request by {} {} {} of {}')
