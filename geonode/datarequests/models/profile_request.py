@@ -159,13 +159,6 @@ class ProfileRequest(BaseRequest):
         #validators=[validators.RegexValidator(regex="^Others\/[a-zA-Z]{6,15}[0-9]{0,4}")]
         )
 
-    administrator = models.ForeignKey(
-        Profile,
-        null=True,
-        blank=True,
-        related_name="+"
-    )
-
     class Meta:
         verbose_name = _('Profile Request')
         verbose_name_plural = _('Profile Requests')
