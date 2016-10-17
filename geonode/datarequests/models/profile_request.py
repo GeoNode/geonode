@@ -272,7 +272,7 @@ class ProfileRequest(BaseRequest):
             requesters_group.join(self.profile, role='member')
             #raise ValueError("Unable to add user to the group")
     
-        def create_directory(self):
+    def create_directory(self):
         pprint("creating user folder for "+self.username)
         create_folder.delay(self.username)
         self.ftp_folder = "Others/"+self.username
