@@ -17,7 +17,7 @@ from django.core import validators
 
 from .profile_request import ProfileRequest
 
-class DataRequest(TimeStampedModel):
+class DataRequest(BaseRequest):
 
     DATA_TYPE_CHOICES = Choices(
         ('interpreted', _('Interpreted')),
