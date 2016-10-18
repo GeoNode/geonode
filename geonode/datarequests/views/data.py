@@ -116,3 +116,39 @@ def data_request_detail(request, pk, template='datarequests/profile_detail.html'
     context_dict["request_reject_form"]= RejectionForm(instance=data_request)
 
     return render_to_response(template, RequestContext(request, context_dict))
+
+def data_request_profile_reject(request, pk):
+    if not request.user.is_superuser:
+        raise PermissionDenied
+
+    if not request.method == 'POST':
+        raise PermissionDenied
+
+    request_profile = get_object_or_404(ProfileRequest, pk=pk)
+
+    if request_profile.request_status == 'pending':
+        form = parse_qs(request.POST.get('form', None))
+        request_profile.rejection_reason = form['rejection_reason'][0]
+        request_profile.request_status = 'rejected'
+        if 'additional_rejection_reason' in form.keys():
+            request_profile.additional_rejection_reason = form['additional_rejection_reason'][0]
+        request_profile.administrator = request.user
+        request_profile.action_date = timezone.now()
+        request_profile.save()
+        if request_profile.profile:
+            pprint("sending request rejection email")
+            request_profile.send_request_rejection_email()
+        else:
+            pprint("sending account rejection email")
+            request_profile.send_account_rejection_email()
+
+    url = request.build_absolute_uri(request_profile.get_absolute_url())
+
+    return HttpResponse(
+        json.dumps({
+            'result': 'success',
+            'errors': '',
+            'url': url}),
+        status=200,
+        mimetype='text/plain'
+    )
