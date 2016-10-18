@@ -14,7 +14,7 @@ urlpatterns = patterns(
     # url(r'^register/(?P<step>[A-Za-z0-9\-\_]+)/$', signup_wizard, name='signup_step'),
     # url(r'^register/$', signup_wizard, name='signup'),
     url(r'^register/data_request/$', 'data_request_view', name='data_request_form'),
-    url(r'^register/accout_request/$', 'profile_request_view', name='profile_request_form'),
+    url(r'^register/profile_request/$', 'profile_request_view', name='profile_request_form'),
 
     #urls for profile requests
     url(r'^profile/$', ProfileRequestList.as_view(), name='profile_request_browse'),
