@@ -74,7 +74,7 @@ def profile_request_view(request):
         
         return render(
             request,
-            'requests/registration/profile.html',
+            'datarequests/registration/profile.html',
             {'form': form}
         )        
 
