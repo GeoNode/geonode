@@ -27,9 +27,7 @@ def profile_request_view(request):
 
     form = ProfileRequestForm()
 
-
     if request.user.is_authenticated():
-        
         return HttpResponseRedirect(
             reverse('datarequests:data_request_form')
         )
@@ -191,6 +189,8 @@ def data_request_view(request):
                             saved_layer.set_permissions(permissions)
                         
                         jurisdiction_style.delay(saved_layer)
+                        place_name_update.delay([data_request_obj])
+                        compute_size_update.delay([data_request_obj])
 
                     finally:
                         if tempdir is not None:
