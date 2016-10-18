@@ -13,7 +13,7 @@ from geonode.datarequests.models import DataRequest
 @login_required
 def data_request_csv(request):
     if not request.user.is_superuser:
-        raise HttpResponseForbidden
+        return HttpResponseRedirect('/forbidden')
 
     response = HttpResponse(content_type='text/csv')
     datetoday = timezone.now()
@@ -265,22 +265,36 @@ def data_request_assign_gridrefs(request):
         return HttpResponseRedirect('/forbidden/')
 
 def data_request_facet_count(request):
-    if not request.user.is_superuser:
-        return HttpResponseRedirect('/forbidden')
+    #if not request.user.is_superuser:
+    #    return HttpResponseRedirect('/forbidden')
 
     if not request.method == 'POST':
         return HttpResponseRedirect('/forbidden')
 
-    facets_count = {
-        'pending': DataRequest.objects.filter(
-            request_status='pending').exclude(date=None).count(),
-        'approved': DataRequest.objects.filter(
-            request_status='approved').count(),
-        'rejected': DataRequest.objects.filter(
-            request_status='rejected').count(),
-        'cancelled': DataRequest.objects.filter(
-            request_status='cancelled').exclude(date=None).count(),
-    }
+    facets_count = {}
+
+    if not request.user.is_superuser:
+        facets_count = {
+            'pending': DataRequest.objects.filter(
+                status='pending', profile=request.user).exclude(date=None).count(),
+            'approved': DataRequest.objects.filter(
+                status='approved', profile=request.user).count(),
+            'rejected': DataRequest.objects.filter(
+                status='rejected', profile=request.user).count(),
+            'cancelled': DataRequest.objects.filter(
+                status='cancelled', profile=request.user).exclude(date=None).count(),
+        }
+    else:
+        facets_count = {
+            'pending': DataRequest.objects.filter(
+                status='pending').exclude(date=None).count(),
+            'approved': DataRequest.objects.filter(
+                status='approved').count(),
+            'rejected': DataRequest.objects.filter(
+                status='rejected').count(),
+            'cancelled': DataRequest.objects.filter(
+                status='cancelled').exclude(date=None).count(),
+        }
 
     return HttpResponse(
         json.dumps(facets_count),
