@@ -82,7 +82,7 @@ def data_request_view(request):
     if not request.user.is_authenticated() and not profile_request_obj:
         return redirect(reverse('datarequests:profile_request_form'))
 
-    request.session['data_request_shapefile'] = True
+    request.session['data_request'] = True
 
     form = DataRequestForm()
 
@@ -222,23 +222,21 @@ def data_request_view(request):
         if out['success']:
             status_code = 200
             pprint("request has been succesfully submitted")
-            if request_data and not request_data.profile:
+            if profile_request_obj and not request.user.is_authenticated():
             #    request_data.send_verification_email()
 
                 out['success_url'] = reverse('datarequests:email_verification_send')
 
                 out['redirect_to'] = reverse('datarequests:email_verification_send')
 
-            elif request_data and request_data.profile:
+            elif request.user.is_authenticated():
+                messages.info("Your request has been submitted")
                 out['success_url'] = reverse('home')
 
                 out['redirect_to'] = reverse('home')
 
-                request_data.date = timezone.now()
-                request_data.save()
-
-            del request.session['data_request_shapefile']
-            del request.session['request_object']
+            del request.session['data_request']
+            del request.session['profile_request_obj']
         else:
             status_code = 400
         return HttpResponse(
@@ -284,7 +282,7 @@ def email_verification_confirm(request):
                 verification_key=key,
             )
             # Only verify once
-            if not data_request.date:
+            if not data_request.verification_date:
                 profile_request.request_status = 'pending'
                 profile_request.date = timezone.now()
                 pprint(email+" has been confirmed")
