@@ -17,7 +17,7 @@ from geonode.datarequests.forms import (
     ProfileRequestForm,
     DataRequestProfileForm, DataRequestProfileShapefileForm,
     DataRequestProfileRejectForm, DataRequestDetailsForm,
-    DataRequestProjectForm, DataRequestShapefileForm)
+    DataRequestForm, DataRequestShapefileForm)
     
 from geonode.datarequests.models import DataRequestProfile, DataRequest, ProfileRequest
 
@@ -80,21 +80,13 @@ def profile_request_view(request):
         )        
 
 def data_request_view(request):
-    part_two_initial ={}
     profile_request_obj = request.session.get('profile_request_obj', None)
     if not request.user.is_authenticated() and not profile_request_obj:
         return redirect(reverse('datarequests:profile_request_form'))
 
     request.session['data_request_shapefile'] = True
 
-    if not saved_request_object:
-        return redirect(reverse('datarequests:registration_part_one'))
-
-    form = DataRequestProjectForm(initial=part_two_initial)
-
-    juris_data_size = 0.0
-    #area_coverage = get_area_coverage(saved_layer.name)
-    area_coverage = 0
+    form = DataRequestForm()
 
     if request.method == 'POST' :
         post_data = request.POST.copy()
@@ -106,14 +98,22 @@ def data_request_view(request):
         tempdir = None
         errormsgs = []
         out = {}
-        #request_profile =  request.session['request_object']
-        # request_profile = saved_request_object
         place_name = None
         if form.is_valid():
             data_request_obj = DataRequestForm(post_data, request.FILES).save()
 
             if form.cleaned_data:
-                interest_layer = None
+                if form.clean()['letter_file']:
+                    request_letter = None
+                    if request.user.is_authenticated() and request.user is not Profile.objects.get(username="AnonymousUser"):
+                        request_letter = create_letter_document(form.clean()['letter_file'], profile=request.user)
+                        data_request_obj.profile =  request.user
+                    else:
+                        request_letter = create_letter_document(form.clean()['letter_file', profile_request=profile_request_obj)
+                        data_request_obj.profile_request = profile_request_obj
+                    data_request_obj.request_letter = request_letter
+                    data_request_obj.save()
+                    
                 if u'base_file' in request.FILES:
                     pprint(request.FILES)
                     title = form.cleaned_data["layer_title"]
@@ -145,26 +145,6 @@ def data_request_view(request):
                             abstract=form.cleaned_data["abstract"],
                             title=form.cleaned_data["layer_title"],
                         )
-                        interest_layer =  saved_layer
-
-                        cat = Catalog(settings.OGC_SERVER['default']['LOCATION'] + 'rest',
-                            username=settings.OGC_SERVER['default']['USER'],
-                            password=settings.OGC_SERVER['default']['PASSWORD'])
-
-                        boundary_style = cat.get_style('Boundary')
-                        gs_layer = cat.get_layer(saved_layer.name)
-                        if boundary_style:
-                            gs_layer._set_default_style(boundary_style)
-                            cat.save(gs_layer) #save in geoserver
-                            saved_layer.sld_body = boundary_style.sld_body
-                            saved_layer.save() #save in geonode
-
-                        #bbox = gs_layer.resource.latlon_bbox
-                        #bbox_lon = (float(bbox[0])+float(bbox[1]))/2
-                        #bbox_lat = (float(bbox[2])+float(bbox[3]))/2
-                        #place_name = get_place_name(bbox_lon, bbox_lat)
-                        juris_data_size = 0.0
-                        area_coverage = 0.0
 
                     except Exception as e:
                         exception_type, error, tb = sys.exc_info()
@@ -203,54 +183,18 @@ def data_request_view(request):
                                 'groups': {}
                             }
 
+                        data_request_obj.jurisdiction_shapefile = interest_layer
+                        data_request_obj.save()
 
                         if permissions is not None and len(permissions.keys()) > 0:
 
                             saved_layer.set_permissions(permissions)
-
+                        
                         jurisdiction_style.delay(saved_layer)
 
                     finally:
                         if tempdir is not None:
                             shutil.rmtree(tempdir)
-
-
-                if 'request_object' in request.session :
-                    if 'success' not in out:
-                    #     request_data, letter = update_datarequest_obj(
-                    #         datarequest=  request.session['request_object'],
-                    #         parameter_dict = form.clean(),
-                    #         request_letter = form.clean()['letter_file'],
-                    #         interest_layer = interest_layer
-                    #     )
-                    #
-                        out['success']=True
-                    # else:
-                    #     if out['success']:
-                    #         request_data, letter = update_datarequest_obj(
-                    #             datarequest=  request.session['request_object'],
-                    #             parameter_dict = form.clean(),
-                    #             request_letter = form.clean()['letter_file'],
-                    #             interest_layer = interest_layer
-                    #         )
-                    request_data, letter = map_letter_shapefile(
-                        datarequest =  request_data,
-                        profile_session = request.session['request_object'],
-                        request_letter = form.clean()['letter_file'],
-                        interest_layer = interest_layer
-                    )
-                    request_data.date_submitted = datetime.datetime.now()
-
-                    if request.user.is_authenticated():
-                        request_data.profile = request.user
-                        request_data.request_status = 'pending'
-                        request_data.username = request.user.username
-                        request_data.save()
-                    else:
-                        request_data.profile_request = saved_request_object
-                        request_data.save()
-                        saved_request_object.data_request = request_data
-                        saved_request_object.save()
 
                 else:
                     pprint("unable to retrieve request object")
@@ -366,3 +310,31 @@ def email_verification_confirm(request):
         'datarequests/registration/verification_failed.html',
         context
     )
+
+def create_letter_document(request_letter, profile=None, profile_request=None):
+    if not profile or not profile_request:
+        raise PermissionDenied
+        
+    details = None
+    letter_owner = None
+    permissions = None
+    
+    if profile:
+        details = profile
+        letter_owner = profile
+        permissions = {"users":{profile.username:["view_resourcebase","download_resourcebase"]}}
+    else:
+        details = profile_request
+        letter_owner = Profile.objects.get_or_create(username='dataRegistrationUploader')
+        permissions = {"users":{"dataRegistrationUploader":["view_resourcebase"]}}
+        
+    requester_name = unidecode(details.first_name+" " +details.last_name)
+    letter = Document()
+    letter.owner = letter_owner
+    letter.doc_file = request_letter
+    letter.title = requester_name + " Request Letter " +datetime.datetime.now().strftime("%Y-%m-%d")
+    letter.is_published = False
+    letter.save()
+    letter.set_permissions(permissions)
+    
+    return letter
