@@ -1,6 +1,6 @@
 from django.conf.urls import patterns, url
 
-from .views import ProfileRequestList, DataRequestList
+from .views import ProfileRequestTestList, DataRequestTestList
 
 urlpatterns = patterns(
     'geonode.datarequests.views',
@@ -17,7 +17,7 @@ urlpatterns = patterns(
     url(r'^register/profile_request/$', 'profile_request_view', name='profile_request_form'),
 
     #urls for profile requests
-    url(r'^profile/$', ProfileRequestList.as_view(), name='profile_request_browse'),
+    url(r'^profile/$', ProfileRequestTestList.as_view(), name='profile_request_browse'),
     url(r'^profile_requests_csv/$', 'profile_request_csv', name='profile_request_csv'),
     
     url(r'^profile/(?P<pk>\d+)/$', 'profile_request_detail', name="profile_request_detail"),
@@ -30,7 +30,7 @@ urlpatterns = patterns(
     url(r'^profile/~count_facets/$', 'profile_request_facet_count', name="profile_request_facet_count"),
     
     #urls for datarequests
-    url(r'^data/$', DataRequestList.as_view(), name='data_request_browse'),
+    url(r'^data/$', DataRequestTestList.as_view(), name='data_request_browse'),
     url(r'^data/requests_csv/$', 'data_request_csv', name='data_request_csv'),
     url(r'^data/compute_size/$','data_request_compute_size', name='data_request_compute_size'),
     url(r'^data/reverse_geocode/$','data_request_reverse_geocode', name='data_request_reverse_geocode'),
