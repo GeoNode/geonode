@@ -58,12 +58,13 @@ from braces.views import (
     SuperuserRequiredMixin, LoginRequiredMixin,
 )
 
-from .forms import (
-    DataRequestProfileForm, DataRequestProfileShapefileForm,
-    RejectionForm, DataRequestDetailsForm,
-    DataRequestInfoForm, DataRequestProjectForm, DataRequestShapefileForm)
-from .models import DataRequestProfile, DataRequest, ProfileRequest
-from .utils import (
+from geonode.datarequests.forms import (
+    ProfileRequestForm, DataRequestShapefileForm,
+    RejectionForm, DataRequestForm)
+
+from geonode.datarequests.models import DataRequestProfile, DataRequest, ProfileRequest
+
+from geonode.datarequests.utils import (
     get_place_name, get_area_coverage)
 
 
