@@ -105,7 +105,7 @@ class DataRequest(BaseRequest):
         ordering = ('-created',)
 
     def __init__(self):
-        self.status = BaseRequest.STATUS.pending
+        self.status = BaseRequest.STATUS.unconfirmed
         self.request_type = BaseRequest.REQUEST_TYPE.data
 
     def __unicode__(self):
@@ -137,13 +137,6 @@ class DataRequest(BaseRequest):
         perms = resource.get_all_level_info()
         perms["users"][self.profile.username]=["view_resourcebase"]
         resource.set_permissions(perms)
-
-    def set_approved(self, administrator):
-        self.status = 'approved'
-        self.administrator = administrator
-        self.save()
-
-        self.send_approval_email()
 
     def get_first_name(self):
         if self.profile:

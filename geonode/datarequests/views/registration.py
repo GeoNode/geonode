@@ -108,6 +108,8 @@ def data_request_view(request):
                     else:
                         request_letter = create_letter_document(form.clean()['letter_file'], profile_request=profile_request_obj)
                         data_request_obj.profile_request = profile_request_obj
+                        profile_request_obj.data_request = data_request_obj
+                        profile_request_obj.save()
                     data_request_obj.request_letter = request_letter
                     data_request_obj.save()
                     

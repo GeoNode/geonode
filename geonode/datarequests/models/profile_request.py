@@ -271,10 +271,6 @@ class ProfileRequest(BaseRequest):
         create_folder.delay(self.username)
         self.ftp_folder = "Others/"+self.username
         self.save()
-
-    def set_approved(self):
-        self.status = 'approved'
-        self.save()
         
     def get_organization_type(self):
         return OrganizationType.get(getattr(self,'organization_type'))
