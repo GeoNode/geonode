@@ -16,17 +16,17 @@ from geonode.people.views import profile_detail
 from geonode.security.views import _perms_info_json
 
 from geonode.datarequests.forms import (
-    ProfileRequestForm,
-    DataRequestProfileForm, DataRequestProfileShapefileForm, DataRequestDetailsForm,
-    DataRequestForm, DataRequestShapefileForm)
+    ProfileRequestTestForm,
+    DataRequestTestProfileForm, DataRequestTestProfileShapefileForm, DataRequestTestDetailsForm,
+    DataRequestTestForm, DataRequestTestShapefileForm)
     
-from geonode.datarequests.models import DataRequestProfile, DataRequest, ProfileRequest
+from geonode.datarequests.models import DataRequestTestProfile, DataRequestTest, ProfileRequestTest
 
 def profile_request_view(request):
     profile_request_obj = request.session.get('profile_request_obj', None)
     data_request_session=request.session.get('data_request_session', None)
 
-    form = ProfileRequestForm()
+    form = ProfileRequestTestForm()
 
     if request.user.is_authenticated():
         return HttpResponseRedirect(
@@ -34,7 +34,7 @@ def profile_request_view(request):
         )
     else:
         if request.method == 'POST':
-            form = ProfileRequestForm(request.POST)
+            form = ProfileRequestTestForm(request.POST)
             if form.is_valid():
                 if profile_request_obj and data_request_obj:
                     profile_request_obj.first_name = form.cleaned_data['first_name']
@@ -70,7 +70,7 @@ def profile_request_view(request):
                     'contact_number': request_object.contact_number,
                     'location': request_object.location
                 }
-                form = ProfileRequestForm(initial = initial)
+                form = ProfileRequestTestForm(initial = initial)
         
         return render(
             request,
@@ -85,21 +85,21 @@ def data_request_view(request):
 
     request.session['data_request_session'] = True
 
-    form = DataRequestForm()
+    form = DataRequestTestForm()
 
     if request.method == 'POST' :
         post_data = request.POST.copy()
         post_data['permissions'] = '{"users":{"dataRegistrationUploader": ["view_resourcebase"] }}'
-        form = DataRequestForm(post_data, request.FILES)
+        form = DataRequestTestForm(post_data, request.FILES)
         if u'base_file' in request.FILES:
-            form = DataRequestShapefileForm(post_data, request.FILES)
+            form = DataRequestTestShapefileForm(post_data, request.FILES)
 
         tempdir = None
         errormsgs = []
         out = {}
         place_name = None
         if form.is_valid():
-            data_request_obj = DataRequestForm(post_data, request.FILES).save()
+            data_request_obj = DataRequestTestForm(post_data, request.FILES).save()
 
             if form.cleaned_data:
                 if form.clean()['letter_file']:
@@ -280,7 +280,7 @@ def email_verification_confirm(request):
 
     if key and email:
         try:
-            profile_request = ProfileRequest.objects.get(
+            profile_request = ProfileRequestTest.objects.get(
                 email=email,
                 verification_key=key,
             )

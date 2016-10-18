@@ -111,10 +111,16 @@ class BaseRequest(TimeStampedModel, StatusModel):
         self.status = status
         self.administrator = None
         self.save()
+    
+    class Meta:
+        app_label = "datarequests"
 
 class RequestRejectionReason(models.Model):
     reason = models.CharField(_('Reason for rejection'), max_length=100)
 
+    class Meta:
+        app_label = "datarequests"
+        
     def __unicode__(self):
         return (_('{}').format(self.reason,))
 
@@ -350,6 +356,7 @@ class DataRequestProfile(TimeStampedModel):
 
 
     class Meta:
+        app_label = "datarequests"
         verbose_name = _('Data Request Profile')
         verbose_name_plural = _('Data Request Profiles')
         ordering = ('-created',)
