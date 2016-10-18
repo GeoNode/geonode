@@ -22,7 +22,7 @@ from geonode.datarequests.models import DataRequestProfile, DataRequest, Profile
 
 def profile_request_view(request):
     profile_request_obj = request.session.get('profile_request_obj', None)
-    data_request_obj=request.session.get('data_request_obj', None)
+    data_request_session=request.session.get('data_request_session', None)
 
     form = ProfileRequestForm()
 
@@ -55,7 +55,7 @@ def profile_request_view(request):
                     reverse('datarequests:data_request_form')
                 )
         elif request.method == 'GET':
-            if data_request_object and profile_request_object:
+            if data_request_session and profile_request_obj:
                 ## the user pressed back
                 initial = {
                     'first_name': request_object.first_name,
@@ -81,7 +81,7 @@ def data_request_view(request):
     if not request.user.is_authenticated() and not profile_request_obj:
         return redirect(reverse('datarequests:profile_request_form'))
 
-    request.session['data_request'] = True
+    request.session['data_request_session'] = True
 
     form = DataRequestForm()
 
@@ -236,7 +236,7 @@ def data_request_view(request):
 
                 out['redirect_to'] = reverse('home')
 
-            del request.session['data_request']
+            del request.session['data_request_session']
             del request.session['profile_request_obj']
         else:
             status_code = 400
