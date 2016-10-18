@@ -106,6 +106,11 @@ class BaseRequest(TimeStampedModel, StatusModel):
         )
         msg.attach_alternative(html_content, "text/html")
         msg.send()
+        
+    def  set_status(self, status, administrator = None):
+        self.status = status
+        self.administrator = None
+        self.save()
 
 class RequestRejectionReason(models.Model):
     reason = models.CharField(_('Reason for rejection'), max_length=100)
