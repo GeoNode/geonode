@@ -15,8 +15,7 @@ from geonode.security.views import _perms_info_json
 
 from geonode.datarequests.forms import (
     ProfileRequestForm,
-    DataRequestProfileForm, DataRequestProfileShapefileForm,
-    DataRequestProfileRejectForm, DataRequestDetailsForm,
+    DataRequestProfileForm, DataRequestProfileShapefileForm, DataRequestDetailsForm,
     DataRequestForm, DataRequestShapefileForm)
     
 from geonode.datarequests.models import DataRequestProfile, DataRequest, ProfileRequest
@@ -107,7 +106,7 @@ def data_request_view(request):
                         request_letter = create_letter_document(form.clean()['letter_file'], profile=request.user)
                         data_request_obj.profile =  request.user
                     else:
-                        request_letter = create_letter_document(form.clean()['letter_file', profile_request=profile_request_obj)
+                        request_letter = create_letter_document(form.clean()['letter_file'], profile_request=profile_request_obj)
                         data_request_obj.profile_request = profile_request_obj
                     data_request_obj.request_letter = request_letter
                     data_request_obj.save()

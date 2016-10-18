@@ -1,3 +1,9 @@
+from django.contrib.auth.decorators import login_required
+from django.views.generic import TemplateView
+
+from braces.views import (
+    SuperuserRequiredMixin, LoginRequiredMixin,
+)
 
 class ProfileRequestList(LoginRequiredMixin, TemplateView):
     template_name = 'datarequests/profile_request_list.html'
