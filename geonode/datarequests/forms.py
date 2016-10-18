@@ -11,22 +11,22 @@ from crispy_forms.layout import Layout, Fieldset, HTML, Div, Column, Row, Field
 from crispy_forms.bootstrap import PrependedText, InlineRadios
 from model_utils import Choices
 
-from geonode.datarequests.models import DataRequestProfile, DataRequest, ProfileRequest
+from geonode.datarequests.models import DataRequestTestProfile, DataRequestTest, ProfileRequestTest
 from geonode.layers.forms import NewLayerUploadForm, LayerUploadForm, JSONField
 from geonode.documents.models import Document
 from geonode.documents.forms import DocumentCreateForm
 from geonode.people.models import OrganizationType, Profile
 
-from .models import DataRequestProfile, RequestRejectionReason, DataRequest, ProfileRequest
+from .models import DataRequestTestProfile, RequestRejectionReason, DataRequestTest, ProfileRequestTest
 
 from pprint import pprint
 
-class ProfileRequestForm(forms.ModelForm):
+class ProfileRequestTestForm(forms.ModelForm):
 
     captcha = ReCaptchaField(attrs={'theme': 'clean'})
 
     class Meta:
-        model = ProfileRequest
+        model = ProfileRequestTest
         fields = (
             'first_name',
             'middle_name',
@@ -68,7 +68,7 @@ class ProfileRequestForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
 
-        super(ProfileRequestForm, self).__init__(*args, **kwargs)
+        super(ProfileRequestTestForm, self).__init__(*args, **kwargs)
         self.fields['captcha'].error_messages = {'required': 'Please answer the Captcha to continue.'}
         self.helper = FormHelper()
         # self.helper.form_class = 'form-horizontal'
@@ -193,13 +193,13 @@ class ProfileRequestForm(forms.ModelForm):
 
     def save(self, commit=True, *args, **kwargs):
         data_request = super(
-            ProfileRequestForm, self).save(commit=False, *args, **kwargs)
+            ProfileRequestTestForm, self).save(commit=False, *args, **kwargs)
 
         if commit:
             data_request.save()
         return data_request
 
-class DataRequestForm(forms.ModelForm):
+class DataRequestTestForm(forms.ModelForm):
 
     INTENDED_USE_CHOICES = Choices(
         ('Disaster Risk Management', _('Disaster Risk Management')),
@@ -237,7 +237,7 @@ class DataRequestForm(forms.ModelForm):
     )
 
     class Meta:
-        model = DataRequest
+        model = DataRequestTest
         fields=(
             'project_summary',
             'purpose',
@@ -249,7 +249,7 @@ class DataRequestForm(forms.ModelForm):
         )
 
     def __init__(self, *args, **kwargs):
-        super(DataRequestForm, self).__init__(*args, **kwargs)
+        super(DataRequestTestForm, self).__init__(*args, **kwargs)
         self.helper = FormHelper()
         self.helper.form_tag = False
         self.helper.layout = Layout(
@@ -287,7 +287,7 @@ class DataRequestForm(forms.ModelForm):
             raise forms.ValidationError(_("This file type is not allowed"))
         return letter_file
 
-class DataRequestShapefileForm(NewLayerUploadForm):
+class DataRequestTestShapefileForm(NewLayerUploadForm):
 
     INTENDED_USE_CHOICES = Choices(
         ('Disaster Risk Management', _('Disaster Risk Management')),
@@ -351,7 +351,7 @@ class DataRequestShapefileForm(NewLayerUploadForm):
 
 
     def __init__(self, *args, **kwargs):
-        super(DataRequestShapefileForm, self).__init__(*args, **kwargs)
+        super(DataRequestTestShapefileForm, self).__init__(*args, **kwargs)
 
     def clean(self):
         cleaned = self.cleaned_data
@@ -390,7 +390,7 @@ class DataRequestShapefileForm(NewLayerUploadForm):
                 return purpose_other
         return purpose
         
-class ProfileRequestRejectForm(forms.ModelForm):
+class ProfileRequestTestRejectForm(forms.ModelForm):
 
     REJECTION_REASON_CHOICES = Choices(
         ('Invalid requirements', _('Invalid requirements')),
@@ -404,19 +404,19 @@ class ProfileRequestRejectForm(forms.ModelForm):
     )
 
     class Meta:
-        model = ProfileRequest
+        model = ProfileRequestTest
         fields = (
             'rejection_reason', 'additional_rejection_reason',
         )
 
     def __init__(self, *args, **kwargs):
         self.helper = FormHelper()
-        super(DataRequestRejectForm, self).__init__(*args, **kwargs)
+        super(DataRequestTestRejectForm, self).__init__(*args, **kwargs)
         rejection_reason_qs = RequestRejectionReason.objects.all()
         if rejection_reason_qs:
             self.fields['rejection_reason'].choices = [(r.reason, r.reason) for r in rejection_reason_qs]
             
-class DataRequestRejectForm(forms.ModelForm):
+class DataRequestTestRejectForm(forms.ModelForm):
 
     REJECTION_REASON_CHOICES = Choices(
         ('Invalid requirements', _('Invalid requirements')),
@@ -430,25 +430,25 @@ class DataRequestRejectForm(forms.ModelForm):
     )
 
     class Meta:
-        model = DataRequest
+        model = DataRequestTest
         fields = (
             'rejection_reason', 'additional_rejection_reason',
         )
 
     def __init__(self, *args, **kwargs):
         self.helper = FormHelper()
-        super(DataRequestRejectForm, self).__init__(*args, **kwargs)
+        super(DataRequestTestRejectForm, self).__init__(*args, **kwargs)
         rejection_reason_qs = RequestRejectionReason.objects.all()
         if rejection_reason_qs:
             self.fields['rejection_reason'].choices = [(r.reason, r.reason) for r in rejection_reason_qs]
 
 ##old Datarequest forms
-class DataRequestProfileForm(forms.ModelForm):
+class DataRequestTestProfileForm(forms.ModelForm):
 
     captcha = ReCaptchaField(attrs={'theme': 'clean'})
 
     class Meta:
-        model = DataRequestProfile
+        model = DataRequestTestProfile
         fields = (
             'first_name',
             'middle_name',
@@ -486,7 +486,7 @@ class DataRequestProfileForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
 
-        super(DataRequestProfileForm, self).__init__(*args, **kwargs)
+        super(DataRequestTestProfileForm, self).__init__(*args, **kwargs)
         self.fields['captcha'].error_messages = {'required': 'Please answer the Captcha to continue.'}
         self.helper = FormHelper()
         # self.helper.form_class = 'form-horizontal'
@@ -596,13 +596,13 @@ class DataRequestProfileForm(forms.ModelForm):
 
     def save(self, commit=True, *args, **kwargs):
         data_request = super(
-            DataRequestProfileForm, self).save(commit=False, *args, **kwargs)
+            DataRequestTestProfileForm, self).save(commit=False, *args, **kwargs)
 
         if commit:
             data_request.save()
         return data_request
 
-class DataRequestDetailsForm(forms.ModelForm):
+class DataRequestTestDetailsForm(forms.ModelForm):
 
     INTENDED_USE_CHOICES = Choices(
         ('Disaster Risk Management', _('Disaster Risk Management')),
@@ -640,7 +640,7 @@ class DataRequestDetailsForm(forms.ModelForm):
     )
 
     class Meta:
-        model = DataRequestProfile
+        model = DataRequestTestProfile
         fields=(
             #project_summary',
             'data_type_requested',
@@ -648,7 +648,7 @@ class DataRequestDetailsForm(forms.ModelForm):
         )
 
     def __init__(self, *args, **kwargs):
-        super(DataRequestDetailsForm, self).__init__(*args, **kwargs)
+        super(DataRequestTestDetailsForm, self).__init__(*args, **kwargs)
         self.helper = FormHelper()
         # self.helper.form_class = 'form-horizontal'
         self.helper.form_tag = False
@@ -697,7 +697,7 @@ class DataRequestDetailsForm(forms.ModelForm):
             raise forms.ValidationError(_("This file type is not allowed"))
         return letter_file
 
-class DataRequestProfileShapefileForm(NewLayerUploadForm):
+class DataRequestTestProfileShapefileForm(NewLayerUploadForm):
 
     INTENDED_USE_CHOICES = Choices(
         ('Disaster Risk Management', _('Disaster Risk Management')),
@@ -778,7 +778,7 @@ class DataRequestProfileShapefileForm(NewLayerUploadForm):
     )
 
     def __init__(self, *args, **kwargs):
-        super(DataRequestProfileShapefileForm, self).__init__(*args, **kwargs)
+        super(DataRequestTestProfileShapefileForm, self).__init__(*args, **kwargs)
 
     def clean(self):
         cleaned = self.cleaned_data
@@ -832,7 +832,7 @@ class RejectionForm(forms.ModelForm):
     )
 
     class Meta:
-        model = ProfileRequest
+        model = ProfileRequestTest
         fields = (
             'rejection_reason', 'additional_rejection_reason',
         )
