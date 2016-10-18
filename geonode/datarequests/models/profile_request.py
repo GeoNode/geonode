@@ -34,7 +34,7 @@ from .base_request import BaseRequest
 
 
 
-class ProfileRequest(BaseRequest):
+class ProfileRequestTest(BaseRequest):
 
     # Choices that will be used for fields
     LOCATION_CHOICES = Choices(
@@ -69,7 +69,7 @@ class ProfileRequest(BaseRequest):
     )
     
     data_request = models.ForeignKey(
-        'DataRequest',
+        'DataRequestTest',
         on_delete=models.SET_NULL,
         null=True,
         blank=True,
@@ -160,6 +160,7 @@ class ProfileRequest(BaseRequest):
         )
 
     class Meta:
+        app_label = "datarequests"
         verbose_name = _('Profile Request')
         verbose_name_plural = _('Profile Requests')
         ordering = ('-created',)
