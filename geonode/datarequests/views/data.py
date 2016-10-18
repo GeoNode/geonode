@@ -1,11 +1,14 @@
 from django.contrib.auth.decorators import login_required
 from django.views.generic import TemplateView
 
-
 from braces.views import (
     SuperuserRequiredMixin, LoginRequiredMixin,
 )
 
+from urlparse import parse_qs
+
+from geonode.datarequests.forms import DataRequestRejectForm
+from geonode.datarequests.models import DataRequest
 
 @login_required
 def data_request_csv(request):
@@ -17,10 +20,10 @@ def data_request_csv(request):
     response['Content-Disposition'] = 'attachment; filename="datarequests-"'+str(datetoday.month)+str(datetoday.day)+str(datetoday.year)+'.csv"'
 
     writer = csv.writer(response)
-    fields = ['id','name','email','contact_number', 'organization', 'organization_type','organization_other','has_letter','has_shapefile','project_summary', 'created','request_status', 'date of action','rejection_reason','juris_data_size','area_coverage']
+    fields = ['id','name','email','contact_number', 'organization', 'organization_type','organization_other','has_letter','has_shapefile','project_summary', 'created','status', 'status changed','rejection_reason','juris_data_size','area_coverage']
     writer.writerow( fields)
 
-    objects = DataRequestProfile.objects.all().order_by('pk')
+    objects = DataRequest.objects.all().order_by('pk')
 
     for o in objects:
         writer.writerow(o.to_values_list(fields))
@@ -36,17 +39,17 @@ def data_request_detail(request, pk, template='datarequests/profile_detail.html'
     data_request = get_object_or_404(DataRequest, pk=pk)
 
     if not request.user.is_superuser and not data_request.profile == request.user:
-        raise PermissionDenied
+        return HttpResponseRedirect('/forbidden')
 
     context_dict={"data_request": data_request}
     
     if data_request.profile:
         context_dict['profile'] = data_request.profile
-    if data_request.profile_request:
-        context_dict['profile_request'] = data_request.profile_request
+    elif data_request.profile_request:
+        context_dict['profile'] = data_request.profile_request
     
     if data_request.jurisdiction_shapefile:
-         layer = request_profile.jurisdiction_shapefile
+         layer = data_request.jurisdiction_shapefile
          # assert False, str(layer_bbox)
          config = layer.attribute_config()
          # Add required parameters for GXP lazy-loading
@@ -113,42 +116,174 @@ def data_request_detail(request, pk, template='datarequests/profile_detail.html'
          if settings.SOCIAL_ORIGINS:
              context_dict["social_links"] = build_social_links(request, layer)
     
-    context_dict["request_reject_form"]= RejectionForm(instance=data_request)
+    context_dict["request_reject_form"]= DataRequestRejectForm(instance=data_request)
 
     return render_to_response(template, RequestContext(request, context_dict))
 
-def data_request_profile_reject(request, pk):
-    if not request.user.is_superuser:
-        raise PermissionDenied
+def data_request_cancel(request, pk):
+    data_request = get_object_or_404(DataRequest, pk=pk)
+    if not request.user.is_superuser or not data_request.profile == request.user:
+        return HttpResponseRedirect('/forbidden')
 
     if not request.method == 'POST':
-        raise PermissionDenied
+        return HttpResponseRedirect('/forbidden')
 
-    request_profile = get_object_or_404(ProfileRequest, pk=pk)
-
-    if request_profile.request_status == 'pending':
+    if data_request.request_status == 'pending':
         form = parse_qs(request.POST.get('form', None))
-        request_profile.rejection_reason = form['rejection_reason'][0]
-        request_profile.request_status = 'rejected'
-        if 'additional_rejection_reason' in form.keys():
-            request_profile.additional_rejection_reason = form['additional_rejection_reason'][0]
-        request_profile.administrator = request.user
-        request_profile.action_date = timezone.now()
-        request_profile.save()
-        if request_profile.profile:
-            pprint("sending request rejection email")
-            request_profile.send_request_rejection_email()
+        data_request.rejection_reason = form['rejection_reason'][0]
+        data_request.save()
+        
+        if not request.user.is_superuser:
+            data_request.set_status('cancelled')
         else:
-            pprint("sending account rejection email")
-            request_profile.send_account_rejection_email()
-
-    url = request.build_absolute_uri(request_profile.get_absolute_url())
+            data_request.set_status('cancelled',administrator = request.user)
+            
+    url = request.build_absolute_uri(data_request.get_absolute_url())
 
     return HttpResponse(
         json.dumps({
             'result': 'success',
             'errors': '',
             'url': url}),
+        status=200,
+        mimetype='text/plain'
+    )
+
+def data_request_approve(request, pk):
+    if not request.user.is_superuser:
+        return HttpResponseRedirect('/forbidden')
+    if not request.method == 'POST':
+        return HttpResponseRedirect('/forbidden')
+
+    if request.method == 'POST':
+        data_request = get_object_or_404(DataRequest, pk=pk)
+        
+        if not data_request.status == 'pending':
+            return HttpResponseRedirect('/forbidden')
+        
+        if data_request.jurisdiction_shapefile:
+            data_request.assign_jurisdiction() #assigns/creates jurisdiction object
+            assign_grid_refs.delay(data_request.profile)
+        else:
+            try:
+                uj = UserJurisdiction.objects.get(user=data_request.profile)
+                uj.delete()
+            except ObjectDoesNotExist as e:
+                pprint("Jurisdiction Shapefile not found, nothing to delete. Carry on")
+
+        data_request.set_status('approved',administrator = request.user)
+        data_request.send_approval_email()
+        messages.info("Request "+str(pk)+" has been approved.")
+        
+        return HttpResponseRedirect(data_request.get_absolute_url())
+
+    else:
+        return HttpResponseRedirect("/forbidden/")
+
+def data_request_reject(request, pk):
+    if not request.user.is_superuser:
+        return HttpResponseRedirect('/forbidden/')
+
+    if not request.method == 'POST':
+         return HttpResponseRedirect('/forbidden/')
+
+    data_request = get_object_or_404(DataRequest, pk=pk)
+
+    if data_request.request_status == 'pending':
+        form = parse_qs(request.POST.get('form', None))
+        data_request.rejection_reason = form['rejection_reason'][0]
+        if 'additional_rejection_reason' in form.keys():
+            data_request.additional_rejection_reason = form['additional_rejection_reason'][0]
+        data_request.save()
+        
+        data_request.set_status('rejected',administrator = request.user)
+        data_request.send_rejection_email()
+
+    url = request.build_absolute_uri(data_request.get_absolute_url())
+
+    return HttpResponse(
+        json.dumps({
+            'result': 'success',
+            'errors': '',
+            'url': url}),
+        status=200,
+        mimetype='text/plain'
+    )
+
+def data_request_compute_size(request):
+    if request.user.is_superuser:
+        data_requests = DataRequest.objects.exclude(jurisdiction_shapefile=None)
+        compute_size_update.delay(data_requests)
+        messages.info(request, "The estimated data size area coverage of the requests are currently being computed")
+        return HttpResponseRedirect(reverse('datarequests:data_request_browse'))
+    else:
+        return HttpResponseRedirect('/forbidden/')
+
+
+def data_request_compute_size(request, pk):
+    if request.user.is_superuser and request.method == 'POST':
+        if DataRequest.objects.get(pk=pk).jurisdiction_shapefile:
+            data_requests = DataRequest.objects.filter(pk=pk)
+            compute_size_update.delay(data_requests)
+            messages.info(request, "The estimated data size area coverage of the request is currently being computed")
+        else:
+            messages.info(request, "This request does not have a shape file")
+
+        return HttpResponseRedirect(reverse('datarequests:data_request_browse'))
+    else:
+        return HttpResponseRedirect('/forbidden/')
+
+def data_request_reverse_geocode(request):
+    if request.user.is_superuser:
+        data_requests = DataRequest.objects.exclude(jurisdiction_shapefile=None)
+        place_name_update.delay(data_requests)
+        messages.info(request,"Retrieving approximated place names of data requests")
+        return HttpResponseRedirect(reverse('datarequests:data_request_browse'))
+    else:
+        return HttpResponseRedirect('/forbidden/')
+
+def data_request_reverse_geocode(request, pk):
+    if request.user.is_superuser and request.method == 'POST':
+        if DataRequest.objects.get(pk=pk).jurisdiction_shapefile:
+            data_requests = DataRequest.objects.filter(pk=pk)
+            place_name_update.delay(data_requests)
+            messages.info(request, "Retrieving approximated place names of data request")
+        else:
+            messages.info(request, "This request does not have a shape file")
+
+        return HttpResponseRedirect(reverse('datarequests:data_request_browse'))
+    else:
+        return HttpResponseRedirect('/forbidden/')
+        
+def data_request_assign_gridrefs(request):
+    if request.user.is_superuser:
+        assign_grid_refs_all.delay()
+        messages.info(request, "Now processing jurisdictions. Please wait for a few minutes for them to finish")
+        return HttpResponseRedirect(reverse('datarequests:data_request_browse'))
+        
+    else:
+        return HttpResponseRedirect('/forbidden/')
+
+def data_request_facet_count(request):
+    if not request.user.is_superuser:
+        return HttpResponseRedirect('/forbidden')
+
+    if not request.method == 'POST':
+        return HttpResponseRedirect('/forbidden')
+
+    facets_count = {
+        'pending': DataRequest.objects.filter(
+            request_status='pending').exclude(date=None).count(),
+        'approved': DataRequest.objects.filter(
+            request_status='approved').count(),
+        'rejected': DataRequest.objects.filter(
+            request_status='rejected').count(),
+        'cancelled': DataRequest.objects.filter(
+            request_status='cancelled').exclude(date=None).count(),
+    }
+
+    return HttpResponse(
+        json.dumps(facets_count),
         status=200,
         mimetype='text/plain'
     )
