@@ -12,14 +12,21 @@
 # serve to show the default.
 
 import sys, os
+from unittest.mock import MagicMock
+
+class Mock(MagicMock):
+    @classmethod
+    def __getattr__(cls, name):
+            return Mock()
+
+MOCK_MODULES = ['shapely', 'pygtk', 'gtk', 'gobject', 'argparse', 'numpy', 'pandas']
+sys.modules.update((mod_name, Mock()) for mod_name in MOCK_MODULES)
 
 # If extensions (or modules to document with autodoc) are in another directory,
 # add these directories to sys.path here. If the directory is relative to the
 # documentation root, use os.path.abspath to make it absolute, like shown here.
 DOC_PATH = os.path.dirname(__file__)
 PROJ_PATH = os.path.join(DOC_PATH, '../')
-MOCK_MODULES = ['shapely','pandas']
-sys.modules.update((mod_name, Mock()) for mod_name in MOCK_MODULES)
 sys.path.extend([DOC_PATH, PROJ_PATH])
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "geonode.settings")
 
