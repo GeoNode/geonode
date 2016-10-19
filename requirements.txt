@@ -55,7 +55,7 @@ pep8==1.6.2
 pillow==3.3.1
 pinax-theme-bootstrap==3.0a11
 pinax-theme-bootstrap-account==1.0b2
-pycsw==2.0.0
+pycsw==2.0.2
 elasticsearch==2.4.0
 pyflakes==1.2.3
 pyproj==1.9.5.1
