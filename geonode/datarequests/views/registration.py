@@ -27,6 +27,8 @@ from geonode.datarequests.forms import (
     
 from geonode.datarequests.models import DataRequestProfile, DataRequest, ProfileRequest
 
+from pprint import pprint
+
 def register(request):
     return HttpResponseRedirect(
         reverse('datarequests:profile_request_form'))
