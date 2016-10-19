@@ -333,7 +333,7 @@ class ProfileRequest(BaseRequest):
             local_settings.LIPAD_SUPPORT_MAIL,
         )
 
-        email_subject = _('[LiPAD] Email Confirmation')
+        email_subj = _('[LiPAD] Email Confirmation')
         self.send_email(email_subj,text_content,html_content)
     
     def send_approval_email(self, username, directory):
@@ -359,7 +359,7 @@ class ProfileRequest(BaseRequest):
             local_settings.LIPAD_SUPPORT_MAIL        
         )
         
-        email_subject = _('[LiPAD] Account Registration Status')
+        email_subj = _('[LiPAD] Account Registration Status')
         self.send_email(email_subj,text_content,html_content)
 
     def send_rejection_email(self):
@@ -380,6 +380,6 @@ class ProfileRequest(BaseRequest):
              local_settings.LIPAD_SUPPORT_MAIL
         )
 
-        email_subject = _('[LiPAD] Account Registration Status')
+        email_subj = _('[LiPAD] Account Registration Status')
         self.send_email(email_subj,text_content,html_content)
 
