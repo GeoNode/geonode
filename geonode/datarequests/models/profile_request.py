@@ -34,7 +34,7 @@ from .base_request import BaseRequest
 
 
 
-class ProfileRequestTest(BaseRequest):
+class ProfileRequest(BaseRequest):
 
     # Choices that will be used for fields
     LOCATION_CHOICES = Choices(
@@ -69,7 +69,7 @@ class ProfileRequestTest(BaseRequest):
     )
     
     data_request = models.ForeignKey(
-        'DataRequestTest',
+        'DataRequest',
         on_delete=models.SET_NULL,
         null=True,
         blank=True,

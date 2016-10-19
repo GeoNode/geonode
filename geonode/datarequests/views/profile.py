@@ -5,7 +5,7 @@ from braces.views import (
     SuperuserRequiredMixin, LoginRequiredMixin,
 )
 
-class ProfileRequestTestList(LoginRequiredMixin, TemplateView):
+class ProfileRequestList(LoginRequiredMixin, TemplateView):
     template_name = 'datarequests/profile_request_list.html'
     raise_exception = True
     
@@ -22,7 +22,7 @@ def profile_request_csv(request):
     fields = ['id','name','email','contact_number', 'organization', 'organization_type','organization_other', 'created','status', 'status changed','rejection_reason','has_data_request']
     writer.writerow( fields)
 
-    objects = ProfileRequestTest.objects.all().order_by('pk')
+    objects = ProfileRequest.objects.all().order_by('pk')
 
     for o in objects:
         writer.writerow(o.to_values_list(fields))
@@ -32,7 +32,7 @@ def profile_request_csv(request):
     
 def profile_request_detail(request, pk, template='datarequests/profile_detail.html'):
 
-    profile_request = get_object_or_404(ProfileRequestTest, pk=pk)
+    profile_request = get_object_or_404(ProfileRequest, pk=pk)
 
     if not request.user.is_superuser and not profile_request.profile == request.user:
         return HttpResponseRedirect('/forbidden')
@@ -50,7 +50,7 @@ def profile_request_approve(request, pk):
         return HttpResponseRedirect('/forbidden')
 
     if request.method == 'POST':
-        profile_request = get_object_or_404(ProfileRequestTest, pk=pk)
+        profile_request = get_object_or_404(ProfileRequest, pk=pk)
 
         if not profile_request.has_verified_email or profile_request.request_status != 'pending':
             return HttpResponseRedirect('/forbidden')
@@ -80,7 +80,7 @@ def profile_request_approve(request, pk):
         return HttpResponseRedirect("/forbidden/")
         
 def profile_request_cancel(request, pk):
-    profile_request = get_object_or_404(ProfileRequestTest, pk=pk)
+    profile_request = get_object_or_404(ProfileRequest, pk=pk)
     if not request.user.is_superuser:
         return HttpResponseRedirect('/forbidden')
 
@@ -115,7 +115,7 @@ def profile_request_reject(request, pk):
     if not request.method == 'POST':
          return HttpResponseRedirect('/forbidden/')
 
-    profile_request = get_object_or_404(ProfileRequestTest, pk=pk)
+    profile_request = get_object_or_404(ProfileRequest, pk=pk)
 
     if profile_request.request_status == 'pending':
         form = parse_qs(request.POST.get('form', None))
@@ -146,7 +146,7 @@ def profile_request_reconfirm(request, pk):
         return HttpResponseRedirect('/forbidden')
 
     if request.method == 'POST':
-        profile_request = get_object_or_404(ProfileRequestTest, pk=pk)
+        profile_request = get_object_or_404(ProfileRequest, pk=pk)
 
         profile_request.send_verification_email()
         
@@ -161,7 +161,7 @@ def profile_request_recreate_dir(request, pk):
         return HttpResponseRedirect('/forbidden')
 
     if request.method == 'POST':
-        profile_request = get_object_or_404(ProfileRequestTest, pk=pk)
+        profile_request = get_object_or_404(ProfileRequest, pk=pk)
 
         profile_request.create_directory()
         
@@ -178,13 +178,13 @@ def profile_request_facet_count(request):
         return HttpResponseRedirect('/forbidden')
 
     facets_count = {
-        'pending': DataRequestTest.objects.filter(
+        'pending': DataRequest.objects.filter(
             request_status='pending').exclude(date=None).count(),
-        'approved': DataRequestTest.objects.filter(
+        'approved': DataRequest.objects.filter(
             request_status='approved').count(),
-        'rejected': DataRequestTest.objects.filter(
+        'rejected': DataRequest.objects.filter(
             request_status='rejected').count(),
-        'cancelled': DataRequestTest.objects.filter(
+        'cancelled': DataRequest.objects.filter(
             request_status='cancelled').exclude(date=None).count(),
     }
 
