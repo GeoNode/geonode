@@ -8,7 +8,7 @@ class ProfileRequestAdmin(admin.ModelAdmin):
 
 class DataRequestAdmin(admin.ModelAdmin):
     model = DataRequest
-    search_fields=('id', 'status','profile__last_name','profile_request__last_name','request_letter__title','administrator__username','profile__username')
+    search_fields=('id', 'status','request_letter__title')
 
 admin.site.register(ProfileRequest,ProfileRequestAdmin)
 admin.site.register(DataRequest,DataRequestAdmin)
