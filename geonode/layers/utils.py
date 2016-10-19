@@ -660,7 +660,7 @@ def create_thumbnail(instance, thumbnail_remote_url, thumbnail_create_url=None,
     thumbnail_name = 'layer-%s-thumb.png' % instance.uuid
     thumbnail_path = os.path.join(thumbnail_dir, thumbnail_name)
 
-    if overwrite is True or storage.exists(thumbnail_path) is False:
+    if overwrite is True or storage.exists(thumbnail_name) is False:
         if not ogc_client:
             ogc_client = http_client
         BBOX_DIFFERENCE_THRESHOLD = 1e-5
