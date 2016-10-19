@@ -27,6 +27,10 @@ from geonode.datarequests.forms import (
     
 from geonode.datarequests.models import DataRequestProfile, DataRequest, ProfileRequest
 
+def register(request):
+    return HttpResponseRedirect(
+        reverse('datarequests:profile_request_form'))
+
 def profile_request_view(request):
     profile_request_obj = request.session.get('profile_request_obj', None)
     data_request_session=request.session.get('data_request_session', None)
@@ -41,7 +45,7 @@ def profile_request_view(request):
         if request.method == 'POST':
             form = ProfileRequestForm(request.POST)
             if form.is_valid():
-                if profile_request_obj and data_request_obj:
+                if profile_request_obj and data_request_session:
                     profile_request_obj.first_name = form.cleaned_data['first_name']
                     profile_request_obj.middle_name = form.cleaned_data['middle_name']
                     profile_request_obj.last_name = form.cleaned_data['last_name']
@@ -65,15 +69,15 @@ def profile_request_view(request):
             if data_request_session and profile_request_obj:
                 ## the user pressed back
                 initial = {
-                    'first_name': request_object.first_name,
-                    'middle_name': request_object.middle_name,
-                    'last_name': request_object.last_name,
-                    'organization': request_object.organization,
-                    'organization_type': request_object.organization_type,
-                    'organization_other': request_object.organization_other,
-                    'email': request_object.email,
-                    'contact_number': request_object.contact_number,
-                    'location': request_object.location
+                    'first_name': profile_request_obj.first_name,
+                    'middle_name': profile_request_obj.middle_name,
+                    'last_name': profile_request_obj.last_name,
+                    'organization': profile_request_obj.organization,
+                    'organization_type': profile_request_obj.organization_type,
+                    'organization_other': profile_request_obj.organization_other,
+                    'email': profile_request_obj.email,
+                    'contact_number': profile_request_obj.contact_number,
+                    'location': profile_request_obj.location
                 }
                 form = ProfileRequestForm(initial = initial)
         
