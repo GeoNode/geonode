@@ -20,10 +20,10 @@ from model_utils import Choices
 from geonode.documents.models import Document
 from geonode.layers.models import Layer
 from geonode.people.models import Profile
-from .profile_request import ProfileRequestTest
+from .profile_request import ProfileRequest
 from .base_request import BaseRequest
 
-class DataRequestTest(BaseRequest):
+class DataRequest(BaseRequest):
 
     DATA_TYPE_CHOICES = Choices(
         ('interpreted', _('Interpreted')),
@@ -45,7 +45,7 @@ class DataRequestTest(BaseRequest):
 
 
     profile_request = models.ForeignKey(
-        ProfileRequestTest,
+        ProfileRequest,
         null=True,
         blank=True
     )
