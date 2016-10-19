@@ -7,8 +7,8 @@ from braces.views import (
 
 from urlparse import parse_qs
 
-from geonode.datarequests.forms import DataRequestTestRejectForm
-from geonode.datarequests.models import DataRequestTest
+from geonode.datarequests.forms import DataRequestRejectForm
+from geonode.datarequests.models import DataRequest
 
 @login_required
 def data_request_csv(request):
@@ -23,20 +23,20 @@ def data_request_csv(request):
     fields = ['id','name','email','contact_number', 'organization', 'organization_type','organization_other','has_letter','has_shapefile','project_summary', 'created','status', 'status changed','rejection_reason','juris_data_size','area_coverage']
     writer.writerow( fields)
 
-    objects = DataRequestTest.objects.all().order_by('pk')
+    objects = DataRequest.objects.all().order_by('pk')
 
     for o in objects:
         writer.writerow(o.to_values_list(fields))
 
     return response
 
-class DataRequestTestList(LoginRequiredMixin, TemplateView):
+class DataRequestList(LoginRequiredMixin, TemplateView):
     template_name = 'datarequests/data_request_list.html'
     raise_exception = True
 
 def data_request_detail(request, pk, template='datarequests/profile_detail.html'):
 
-    data_request = get_object_or_404(DataRequestTest, pk=pk)
+    data_request = get_object_or_404(DataRequest, pk=pk)
 
     if not request.user.is_superuser and not data_request.profile == request.user:
         return HttpResponseRedirect('/forbidden')
@@ -116,12 +116,12 @@ def data_request_detail(request, pk, template='datarequests/profile_detail.html'
          if settings.SOCIAL_ORIGINS:
              context_dict["social_links"] = build_social_links(request, layer)
     
-    context_dict["request_reject_form"]= DataRequestTestRejectForm(instance=data_request)
+    context_dict["request_reject_form"]= DataRequestRejectForm(instance=data_request)
 
     return render_to_response(template, RequestContext(request, context_dict))
 
 def data_request_cancel(request, pk):
-    data_request = get_object_or_404(DataRequestTest, pk=pk)
+    data_request = get_object_or_404(DataRequest, pk=pk)
     if not request.user.is_superuser or not data_request.profile == request.user:
         return HttpResponseRedirect('/forbidden')
 
@@ -156,7 +156,7 @@ def data_request_approve(request, pk):
         return HttpResponseRedirect('/forbidden')
 
     if request.method == 'POST':
-        data_request = get_object_or_404(DataRequestTest, pk=pk)
+        data_request = get_object_or_404(DataRequest, pk=pk)
         
         if not data_request.status == 'pending':
             return HttpResponseRedirect('/forbidden')
@@ -187,7 +187,7 @@ def data_request_reject(request, pk):
     if not request.method == 'POST':
          return HttpResponseRedirect('/forbidden/')
 
-    data_request = get_object_or_404(DataRequestTest, pk=pk)
+    data_request = get_object_or_404(DataRequest, pk=pk)
 
     if data_request.request_status == 'pending':
         form = parse_qs(request.POST.get('form', None))
@@ -212,7 +212,7 @@ def data_request_reject(request, pk):
 
 def data_request_compute_size(request):
     if request.user.is_superuser:
-        data_requests = DataRequestTest.objects.exclude(jurisdiction_shapefile=None)
+        data_requests = DataRequest.objects.exclude(jurisdiction_shapefile=None)
         compute_size_update.delay(data_requests)
         messages.info(request, "The estimated data size area coverage of the requests are currently being computed")
         return HttpResponseRedirect(reverse('datarequests:data_request_browse'))
@@ -222,8 +222,8 @@ def data_request_compute_size(request):
 
 def data_request_compute_size(request, pk):
     if request.user.is_superuser and request.method == 'POST':
-        if DataRequestTest.objects.get(pk=pk).jurisdiction_shapefile:
-            data_requests = DataRequestTest.objects.filter(pk=pk)
+        if DataRequest.objects.get(pk=pk).jurisdiction_shapefile:
+            data_requests = DataRequest.objects.filter(pk=pk)
             compute_size_update.delay(data_requests)
             messages.info(request, "The estimated data size area coverage of the request is currently being computed")
         else:
@@ -235,7 +235,7 @@ def data_request_compute_size(request, pk):
 
 def data_request_reverse_geocode(request):
     if request.user.is_superuser:
-        data_requests = DataRequestTest.objects.exclude(jurisdiction_shapefile=None)
+        data_requests = DataRequest.objects.exclude(jurisdiction_shapefile=None)
         place_name_update.delay(data_requests)
         messages.info(request,"Retrieving approximated place names of data requests")
         return HttpResponseRedirect(reverse('datarequests:data_request_browse'))
@@ -244,8 +244,8 @@ def data_request_reverse_geocode(request):
 
 def data_request_reverse_geocode(request, pk):
     if request.user.is_superuser and request.method == 'POST':
-        if DataRequestTest.objects.get(pk=pk).jurisdiction_shapefile:
-            data_requests = DataRequestTest.objects.filter(pk=pk)
+        if DataRequest.objects.get(pk=pk).jurisdiction_shapefile:
+            data_requests = DataRequest.objects.filter(pk=pk)
             place_name_update.delay(data_requests)
             messages.info(request, "Retrieving approximated place names of data request")
         else:
@@ -275,24 +275,24 @@ def data_request_facet_count(request):
 
     if not request.user.is_superuser:
         facets_count = {
-            'pending': DataRequestTest.objects.filter(
+            'pending': DataRequest.objects.filter(
                 status='pending', profile=request.user).exclude(date=None).count(),
-            'approved': DataRequestTest.objects.filter(
+            'approved': DataRequest.objects.filter(
                 status='approved', profile=request.user).count(),
-            'rejected': DataRequestTest.objects.filter(
+            'rejected': DataRequest.objects.filter(
                 status='rejected', profile=request.user).count(),
-            'cancelled': DataRequestTest.objects.filter(
+            'cancelled': DataRequest.objects.filter(
                 status='cancelled', profile=request.user).exclude(date=None).count(),
         }
     else:
         facets_count = {
-            'pending': DataRequestTest.objects.filter(
+            'pending': DataRequest.objects.filter(
                 status='pending').exclude(date=None).count(),
-            'approved': DataRequestTest.objects.filter(
+            'approved': DataRequest.objects.filter(
                 status='approved').count(),
-            'rejected': DataRequestTest.objects.filter(
+            'rejected': DataRequest.objects.filter(
                 status='rejected').count(),
-            'cancelled': DataRequestTest.objects.filter(
+            'cancelled': DataRequest.objects.filter(
                 status='cancelled').exclude(date=None).count(),
         }
 
