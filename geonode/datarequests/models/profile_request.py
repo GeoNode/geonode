@@ -166,7 +166,8 @@ class ProfileRequest(BaseRequest):
         ordering = ('-created',)
         
     
-    def __init__(self):
+    def __init__(self, *args, **kwargs):
+        super(ProfileRequest, self).__init__(*args, **kwargs)
         self.request_type=BaseRequest.REQUEST_TYPE.profile
         self.status = BaseRequest.STATUS.unconfirmed
 
