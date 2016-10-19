@@ -1,3 +1,6 @@
+from django.core.urlresolvers import reverse
+
+from django.http import HttpResponse, HttpResponseRedirect, Http404
 from django.shortcuts import (
     redirect, get_object_or_404, render, render_to_response)
 from django.utils import dateformat
