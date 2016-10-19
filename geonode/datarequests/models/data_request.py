@@ -101,8 +101,8 @@ class DataRequest(BaseRequest):
 
     class Meta:
         app_label = "datarequests"
-        verbose_name = _('Data Request Profile')
-        verbose_name_plural = _('Data Request Profiles')
+        verbose_name = _('Data Request')
+        verbose_name_plural = _('Data Requests')
         ordering = ('-created',)
 
     def __init__(self, *args, **kwargs):
