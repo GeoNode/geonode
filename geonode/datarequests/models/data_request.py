@@ -105,7 +105,8 @@ class DataRequest(BaseRequest):
         verbose_name_plural = _('Data Request Profiles')
         ordering = ('-created',)
 
-    def __init__(self):
+    def __init__(self, *args, **kwargs):
+        super(DataRequest, self).__init__(*args, **kwargs)
         self.status = BaseRequest.STATUS.unconfirmed
         self.request_type = BaseRequest.REQUEST_TYPE.data
 
