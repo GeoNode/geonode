@@ -351,6 +351,8 @@ define(['underscore',
             // this is a mess
             buildFileInfo(_.groupBy(file_input.files, path.getName));
             displayFiles(file_queue);
+            // Reset the file upload form so the user can reupload the same file
+            $('#file-uploader').get(0).reset();
         });
         // Detect click on "Remove" link and update the file_queue
         $(options.file_queue).on('click', '.remove-file', function () {
