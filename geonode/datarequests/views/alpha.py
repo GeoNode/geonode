@@ -59,10 +59,10 @@ from braces.views import (
 )
 
 from geonode.datarequests.forms import (
-    ProfileRequestTestForm, DataRequestTestShapefileForm,
-    RejectionForm, DataRequestTestForm)
+    ProfileRequestForm, DataRequestShapefileForm,
+    RejectionForm, DataRequestForm)
 
-from geonode.datarequests.models import DataRequestTestProfile, DataRequestTest, ProfileRequestTest
+from geonode.datarequests.models import DataRequestProfile, DataRequest, ProfileRequest
 
 from geonode.datarequests.utils import (
     get_place_name, get_area_coverage)
