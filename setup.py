@@ -23,6 +23,11 @@ from distutils.command.install import INSTALL_SCHEMES
 from setuptools import find_packages
 import os
 
+on_rtd = os.environ.get('READTHEDOCS', None) == 'True'
+if on_rtd:
+    shapely_dep = "Shapely<1.5.13"
+else:
+    shapely_dep = "Shapely>=1.5.13"
 
 setup(name='GeoNode',
       version=__import__('geonode').get_version(),
@@ -107,7 +112,7 @@ setup(name='GeoNode',
         "OWSLib>=0.11.0",
         "pycsw>=2.0.2",
         "pyproj>=1.9.3",
-        "Shapely>=1.5.13",
+        "%s" % shapely_dep,
 
         # haystack/elasticsearch, uncomment to use
         "django-haystack>=2.4.1",
