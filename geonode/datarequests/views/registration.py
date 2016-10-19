@@ -18,6 +18,8 @@ from geonode.people.models import Profile
 from geonode.people.views import profile_detail
 from geonode.security.views import _perms_info_json
 
+import geonode.settings as settings
+
 from geonode.datarequests.forms import (
     ProfileRequestForm,
     DataRequestProfileForm, DataRequestProfileShapefileForm, DataRequestDetailsForm,
