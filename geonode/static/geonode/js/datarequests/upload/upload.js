@@ -282,7 +282,7 @@ define(['underscore',
         var form = new FormData($("#file-uploader")[0]);
         $.ajax({
            type: "POST",
-           url: '/requests/register/shapefile/',
+           url: '/requests/register/data_request/',
            data: form, //form.serialize(), // serializes the form's elements.
            contentType: false,
            processData: false,
