@@ -9,6 +9,7 @@ urlpatterns = patterns(
     url(r'^/?$','requests_landing',name='requests_landing'),
     
     #urls for registration
+    url(r'^register/$','register',name='request_register'),
     url(r'^register/verification-sent/$', 'email_verification_send', name='email_verification_send'),
     url(r'^register/email-verified/$', 'email_verification_confirm', name='email_verification_confirm'),
     # url(r'^register/(?P<step>[A-Za-z0-9\-\_]+)/$', signup_wizard, name='signup_step'),
