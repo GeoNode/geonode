@@ -290,6 +290,10 @@ def save_step(user, layer, spatial_files, overwrite=True,
         next_id = max(int(last_importer_session), int(upload_next_id)) + 1
         next_id = max(int(last_importer_session), int(upload_next_id)) + 1
 
+        # Truncate name to maximum length defined by the field.
+        max_length = Upload._meta.get_field('name').max_length
+        name = name[:max_length]
+
         # save record of this whether valid or not - will help w/ debugging
         upload = Upload.objects.create(
             user=user,
