@@ -143,13 +143,13 @@ STATIC_URL = "/static/"
 #    os.path.join(PROJECT_ROOT, "static"),
 #]
 
-STATICFILES_DIRS = [
-    '/opt/geonode/geonode/media',
-    os.path.join(PROJECT_ROOT, "static"),
-    "/opt/geonode/virtualenv/geonode/local/lib/python2.7/site-packages/django/contrib/admin/static",
-    "/opt/geonode/virtualenv/geonode/local/lib/python2.7/site-packages/autocomplete_light/static",
-    "/opt/geonode/virtualenv/geonode/local/lib/python2.7/site-packages/leaflet/static",
-]
+#STATICFILES_DIRS = [
+#    '/opt/geonode/geonode/media',
+#    os.path.join(PROJECT_ROOT, "static"),
+#    "/opt/geonode/virtualenv/geonode/local/lib/python2.7/site-packages/django/contrib/admin/static",
+#    "/opt/geonode/virtualenv/geonode/local/lib/python2.7/site-packages/autocomplete_light/static",
+#    "/opt/geonode/virtualenv/geonode/local/lib/python2.7/site-packages/leaflet/static",
+#]
 
 
 # List of finder classes that know how to find static files in
