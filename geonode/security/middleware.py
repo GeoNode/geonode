@@ -21,6 +21,10 @@ class LoginRequiredMiddleware(object):
         reverse('layer_acls_dep'),
         reverse('layer_resolve_user'),
         reverse('layer_resolve_user_dep'),
+        reverse('datarequests:data_request_form'),
+        reverse('datarequests:profile_request_form'),
+        reverse('datarequests:email_verification_send'),
+        reverse('datarequests:email_verification_confirm')
         '/account/(?!.*(?:signup))',
         # block unauthenticated users from creating new accounts.
         '/static/*',
