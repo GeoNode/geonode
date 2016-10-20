@@ -20,6 +20,7 @@ from geonode.people.views import profile_detail
 from geonode.security.views import _perms_info_json
 
 import geonode.settings as settings
+import datetime
 
 from geonode.datarequests.forms import (
     ProfileRequestForm,
@@ -29,6 +30,7 @@ from geonode.datarequests.forms import (
 from geonode.datarequests.models import DataRequestProfile, DataRequest, ProfileRequest
 
 from pprint import pprint
+from unidecode import unidecode
 
 def register(request):
     return HttpResponseRedirect(
@@ -100,11 +102,10 @@ def data_request_view(request):
     form = DataRequestForm()
 
     if request.method == 'POST' :
+        pprint("detected data request post")
         post_data = request.POST.copy()
         post_data['permissions'] = '{"users":{"dataRegistrationUploader": ["view_resourcebase"] }}'
         form = DataRequestForm(post_data, request.FILES)
-        if u'base_file' in request.FILES:
-            form = DataRequestShapefileForm(post_data, request.FILES)
 
         tempdir = None
         errormsgs = []
@@ -112,21 +113,25 @@ def data_request_view(request):
         place_name = None
         if form.is_valid():
             data_request_obj = DataRequestForm(post_data, request.FILES).save()
-
+            pprint("form is considered valid")
             if form.cleaned_data:
+                
                 if form.clean()['letter_file']:
+                    pprint("clean letter file detected")
                     request_letter = None
-                    if request.user.is_authenticated() and request.user is not Profile.objects.get(username="AnonymousUser"):
+                    if request.user.is_authenticated() and not request.user == Profile.objects.get(username="AnonymousUser"):
+                        pprint("user is authenticated and is {}".format(request.user.username))
                         request_letter = create_letter_document(form.clean()['letter_file'], profile=request.user)
                         data_request_obj.profile =  request.user
                     else:
+                        pprint("user is not authenticated")
                         request_letter = create_letter_document(form.clean()['letter_file'], profile_request=profile_request_obj)
                         data_request_obj.profile_request = profile_request_obj
                         profile_request_obj.data_request = data_request_obj
                         profile_request_obj.save()
                     data_request_obj.request_letter = request_letter
                     data_request_obj.save()
-                    
+                
                 if u'base_file' in request.FILES:
                     pprint(request.FILES)
                     title = form.cleaned_data["layer_title"]
@@ -325,7 +330,7 @@ def email_verification_confirm(request):
     )
 
 def create_letter_document(request_letter, profile=None, profile_request=None):
-    if not profile or not profile_request:
+    if not profile and not profile_request:
         raise PermissionDenied
         
     details = None
@@ -333,12 +338,14 @@ def create_letter_document(request_letter, profile=None, profile_request=None):
     permissions = None
     
     if profile:
+        pprint("profile is not empty")
         details = profile
         letter_owner = profile
         permissions = {"users":{profile.username:["view_resourcebase","download_resourcebase"]}}
     else:
+        pprint("profile request is not empty")
         details = profile_request
-        letter_owner = Profile.objects.get_or_create(username='dataRegistrationUploader')
+        letter_owner, created = Profile.objects.get_or_create(username='dataRegistrationUploader')
         permissions = {"users":{"dataRegistrationUploader":["view_resourcebase"]}}
         
     requester_name = unidecode(details.first_name+" " +details.last_name)
