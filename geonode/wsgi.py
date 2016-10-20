@@ -19,6 +19,11 @@
 
 import os
 
+#import sys
+#print sys.version
+#for p in sys.path:
+#    print p
+
 from django.core.wsgi import get_wsgi_application
 
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "geonode.settings")
@@ -27,3 +32,4 @@ os.environ.setdefault("DJANGO_SETTINGS_MODULE", "geonode.settings")
 # as well as any WSGI server configured to use this file.
 
 application = get_wsgi_application()
+
