@@ -425,6 +425,8 @@
       var query_entry = [];
       var data_filter = element.attr('data-filter');
       var value = element.attr('data-value');
+      // Type of data being displayed, use 'content' instead of 'all'
+      $scope.dataValue = (value == 'all') ? 'content' : value;
 
       // If the query object has the record then grab it
       if ($scope.query.hasOwnProperty(data_filter)){
