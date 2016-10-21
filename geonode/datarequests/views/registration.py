@@ -229,7 +229,7 @@ def data_request_view(request):
                 request_letter = create_letter_document(details_form.clean()['letter_file'], profile = request.user)
                 data_request_obj.request_letter = request_letter
                 data_request_obj.profile = request.user 
-            else:
+            else: 
                 request_letter = create_letter_document(details_form.clean()['letter_file'], profile_request = profile_request_obj)
                 data_request_obj.profile_request = profile_request_obj
                 profile_request_obj.data_request_obj = data_request_obj
