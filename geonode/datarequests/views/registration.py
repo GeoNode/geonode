@@ -1,8 +1,17 @@
+import datetime
+import os
+import shutil
+import sys
+import traceback
+
+import geonode.settings as settings
+
 from django.core.exceptions import ObjectDoesNotExist, PermissionDenied
 from django.core.urlresolvers import reverse
 from django.http import HttpResponse, HttpResponseRedirect, Http404
 from django.shortcuts import (
     redirect, get_object_or_404, render, render_to_response)
+from django.template.defaultfilters import slugify
 from django.utils import dateformat
 from django.utils import timezone
 from django.utils import simplejson as json
@@ -19,15 +28,13 @@ from geonode.people.models import Profile
 from geonode.people.views import profile_detail
 from geonode.security.views import _perms_info_json
 
-import geonode.settings as settings
-import datetime
-
 from geonode.datarequests.forms import (
-    ProfileRequestForm,
-    DataRequestProfileForm, DataRequestProfileShapefileForm, DataRequestDetailsForm,
-    DataRequestForm, DataRequestShapefileForm)
+    ProfileRequestForm, DataRequestForm, DataRequestShapefileForm)
     
 from geonode.datarequests.models import DataRequestProfile, DataRequest, ProfileRequest
+
+from geonode.tasks.jurisdiction import place_name_update, jurisdiction_style
+from geonode.tasks.jurisdiction2 import compute_size_update
 
 from pprint import pprint
 from unidecode import unidecode
@@ -105,36 +112,29 @@ def data_request_view(request):
         pprint("detected data request post")
         post_data = request.POST.copy()
         post_data['permissions'] = '{"users":{"dataRegistrationUploader": ["view_resourcebase"] }}'
-        form = DataRequestForm(post_data, request.FILES)
-
-        tempdir = None
+        details_form = DataRequestForm(post_data, request.FILES)
+        data_request_obj = None
+        
         errormsgs = []
         out = {}
-        place_name = None
-        if form.is_valid():
-            data_request_obj = DataRequestForm(post_data, request.FILES).save()
-            pprint("form is considered valid")
-            if form.cleaned_data:
+        out['errors'] = {}
+        out['success'] = False
+        saved_layer = None
+        if not details_form.is_valid():
+            for e in details_form.errors.values():
+                errormsgs.extend([escape(v) for v in e])
                 
-                if form.clean()['letter_file']:
-                    pprint("clean letter file detected")
-                    request_letter = None
-                    if request.user.is_authenticated() and not request.user == Profile.objects.get(username="AnonymousUser"):
-                        pprint("user is authenticated and is {}".format(request.user.username))
-                        request_letter = create_letter_document(form.clean()['letter_file'], profile=request.user)
-                        data_request_obj.profile =  request.user
-                    else:
-                        pprint("user is not authenticated")
-                        request_letter = create_letter_document(form.clean()['letter_file'], profile_request=profile_request_obj)
-                        data_request_obj.profile_request = profile_request_obj
-                        profile_request_obj.data_request = data_request_obj
-                        profile_request_obj.save()
-                    data_request_obj.request_letter = request_letter
-                    data_request_obj.save()
+            out['errors'] =  dict(
+                (k, map(unicode, v))
+                for (k,v) in form.errors.iteritems())
                 
+            pprint(out['errors'])
+        else:
+            tempdir = None
+            shapefile_form = DataRequestShapefileForm(post_data, request.FILES)
+            if shapefile_form.is_valid():
                 if u'base_file' in request.FILES:
-                    pprint(request.FILES)
-                    title = form.cleaned_data["layer_title"]
+                    title = shapefile_form.cleaned_data["layer_title"]
 
                     # Replace dots in filename - GeoServer REST API upload bug
                     # and avoid any other invalid characters.
@@ -143,7 +143,7 @@ def data_request_view(request):
                         name_base = title
                     else:
                         name_base, __ = os.path.splitext(
-                            form.cleaned_data["base_file"].name)
+                            shapefile_form.cleaned_data["base_file"].name)
 
                     name = slugify(name_base.replace(".", "_"))
 
@@ -151,7 +151,7 @@ def data_request_view(request):
                         # Moved this inside the try/except block because it can raise
                         # exceptions when unicode characters are present.
                         # This should be followed up in upstream Django.
-                        tempdir, base_file = form.write_files()
+                        tempdir, base_file = shapefile_form.write_files()
                         registration_uploader, created = Profile.objects.get_or_create(username='dataRegistrationUploader')
                         pprint("saving jurisdiction")
                         saved_layer = file_upload(
@@ -159,9 +159,9 @@ def data_request_view(request):
                             name=name,
                             user=registration_uploader,
                             overwrite=False,
-                            charset=form.cleaned_data["charset"],
-                            abstract=form.cleaned_data["abstract"],
-                            title=form.cleaned_data["layer_title"],
+                            charset=shapefile_form.cleaned_data["charset"],
+                            abstract=shapefile_form.cleaned_data["abstract"],
+                            title=shapefile_form.cleaned_data["layer_title"],
                         )
 
                     except Exception as e:
@@ -183,6 +183,7 @@ def data_request_view(request):
                             out['context'] = upload_session.context
                             out['upload_session'] = upload_session.id
                     else:
+                        pprint("layer_upload is successful")
                         out['success'] = True
                         out['url'] = reverse(
                             'layer_detail', args=[
@@ -201,44 +202,43 @@ def data_request_view(request):
                                 'groups': {}
                             }
 
-                        data_request_obj.jurisdiction_shapefile = interest_layer
-                        data_request_obj.save()
-
                         if permissions is not None and len(permissions.keys()) > 0:
-
                             saved_layer.set_permissions(permissions)
                         
                         jurisdiction_style.delay(saved_layer)
-                        place_name_update.delay([data_request_obj])
-                        compute_size_update.delay([data_request_obj])
+
 
                     finally:
                         if tempdir is not None:
                             shutil.rmtree(tempdir)
 
-                else:
-                    pprint("unable to retrieve request object")
-
-                    for e in form.errors.values():
-                        errormsgs.extend([escape(v) for v in e])
-                    out['success'] = False
-                    out['errors'] =  dict(
+            else:
+                for e in shapefile_form.errors.values():
+                    errormsgs.extend([escape(v) for v in e])
+                out['success'] = False
+                out['errors'].update(dict(
                         (k, map(unicode, v))
                         for (k,v) in form.errors.iteritems()
-                    )
-                    pprint(out['errors'])
-                    out['errormsgs'] = out['errors']
-        else:
-            for e in form.errors.values():
-                errormsgs.extend([escape(v) for v in e])
-            out['success'] = False
-            out['errors'] = dict(
-                    (k, map(unicode, v))
-                    for (k,v) in form.errors.iteritems()
-            )
-            pprint(out['errors'])
-            out['errormsgs'] = out['errors']
+                ))
+                pprint(out['errors'])
+                out['errormsgs'] = out['errors']
 
+        if not out['errors']:
+            data_request_obj = details_form.save()
+            if request.user.is_authenticated() and not request.user == Profile.objects.get(username='AnonymousUploader'):
+                request_letter = create_letter_document(details_form.clean()['letter_file'], profile = request.user)
+                data_request_obj.request_letter = request_letter
+                data_request_obj.profile = request.user 
+            else:
+                request_letter = create_letter_document(details_form.clean()['letter_file'], profile_request = profile_request_obj)
+                data_request_obj.profile_request = profile_request_obj
+                profile_request_obj.data_request_obj = data_request_obj
+                profile_request_obj.save()
+            data_request_obj.save()
+            if saved_layer:
+                place_name_update.delay([data_request_obj])
+                compute_size_update.delay([data_request_obj])
+                
         if out['success']:
             status_code = 200
             pprint("request has been succesfully submitted")
