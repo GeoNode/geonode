@@ -1,6 +1,9 @@
 {% load i18n %}
 {% verbatim %}
 <div class="row">
+  <div ng-if="results.length == 0">
+    <div><h3>No {{ dataValue || 'content' }} created yet.</h3></div>
+  </div>
   <article ng-repeat="item in results" resource_id="{{ item.id }}" ng-cloak class="ng-cloak">
     <div class="col-xs-12 item-container">
       <div class="col-xs-12 profile-avatar">
