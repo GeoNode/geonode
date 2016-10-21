@@ -713,17 +713,6 @@ class DataRequestProfileShapefileForm(NewLayerUploadForm):
         ('other', _('Other, please specify:')),
     )
 
-    # ORGANIZATION_TYPE_CHOICES = Choices(
-    #     (0, _('Phil-LiDAR 1 SUC')),
-    #     (1, _('Phil-LiDAR 2 SUC' )),
-    #     (2, _( 'Government Agency')),
-    #     (3, _('Academe')),
-    #     (4, _( 'International NGO')),
-    #     (5, _('Local NGO')),
-    #     (6, _('Private Insitution' )),
-    #     (7, _('Other' )),
-    # )
-
     DATASET_USE_CHOICES =Choices(
         ('commercial', _('Commercial')),
         ('noncommercial', _('Non-commercial')),
@@ -735,12 +724,6 @@ class DataRequestProfileShapefileForm(NewLayerUploadForm):
         ('processed', _('Processed')),
         ('other', _('Other')),
     )
-
-    # REQUEST_LEVEL_CHOICES = Choices(
-    #     ('institution', _('Institution')),
-    #     ('faculty', _('Faculty')),
-    #     ('student', _('Student')),
-    # )
 
     abstract = forms.CharField(required=False)
 
