@@ -7,7 +7,7 @@ Community Bylaws
 Committers
 ----------
 
-The GeoNode community is divided into two groups - users and committers.  There are no requirements or responsibilities to be a GeoNode user.  To be a committer, you must be voted in by the existing committers (2 +1's and no -1's; a committer must initiate the vote.)  Non-committers are encouraged to engage in discussions on the mailing lists, code review, and issue reports to qualify them to be voted in as committers.  Committers (or PRIMARY AUTHORS) can be found in the [AUTHORS file](https://github.com/GeoNode/geonode/blob/dev/AUTHORS)
+The GeoNode community is divided into two groups - users and committers.  There are no requirements or responsibilities to be a GeoNode user.  To be a committer, you must be voted in by the existing committers (2 +1's and no -1's; a committer must initiate the vote.)  Non-committers are encouraged to engage in discussions on the mailing lists, code review, and issue reports to qualify them to be voted in as committers.  Committers (or PRIMARY AUTHORS) can be found in the [AUTHORS file](https://github.com/GeoNode/geonode/blob/master/AUTHORS)
  
   
 Committers must:
