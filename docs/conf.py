@@ -44,7 +44,7 @@ master_doc = 'index'
 
 # General information about the project.
 project = u'GeoNode'
-copyright = u'2015, GeoNode Development Team'
+copyright = u'2016, Open Source Geospatial Foundation, CC-SA'
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the
@@ -232,7 +232,7 @@ man_pages = [
 epub_title = u'GeoNode'
 epub_author = u'GeoNode Development Team'
 epub_publisher = u'GeoNode Development Team'
-epub_copyright = u'2015, GeoNode Development Team'
+epub_copyright = u'2016, Open Source Geospatial Foundation, CC-SA'
 
 # The language of the text. It defaults to the language option
 # or en if the language is not set.
