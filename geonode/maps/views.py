@@ -47,6 +47,7 @@ from geonode.layers.views import _resolve_layer
 from geonode.utils import forward_mercator, llbbox_to_mercator
 from geonode.utils import DEFAULT_TITLE
 from geonode.utils import DEFAULT_ABSTRACT
+from geonode.utils import DEFAULT_VIEWER_PLAYBACKMODE
 from geonode.utils import default_map_config
 from geonode.utils import resolve_object
 from geonode.utils import layer_from_viewer_config
