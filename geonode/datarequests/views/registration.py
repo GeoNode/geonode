@@ -123,10 +123,10 @@ def data_request_view(request):
         if not details_form.is_valid():
             for e in details_form.errors.values():
                 errormsgs.extend([escape(v) for v in e])
-                
+
             out['errors'] =  dict(
                 (k, map(unicode, v))
-                for (k,v) in form.errors.iteritems())
+                for (k,v) in details_form.errors.iteritems())
                 
             pprint(out['errors'])
         else:
@@ -218,12 +218,12 @@ def data_request_view(request):
                 out['success'] = False
                 out['errors'].update(dict(
                         (k, map(unicode, v))
-                        for (k,v) in form.errors.iteritems()
+                        for (k,v) in shapefile_form.errors.iteritems()
                 ))
                 pprint(out['errors'])
                 out['errormsgs'] = out['errors']
 
-        if not out['errors']:
+        if out['success']:
             data_request_obj = details_form.save()
             if request.user.is_authenticated() and not request.user == Profile.objects.get(username='AnonymousUploader'):
                 request_letter = create_letter_document(details_form.clean()['letter_file'], profile = request.user)
@@ -238,8 +238,6 @@ def data_request_view(request):
             if saved_layer:
                 place_name_update.delay([data_request_obj])
                 compute_size_update.delay([data_request_obj])
-                
-        if out['success']:
             status_code = 200
             pprint("request has been succesfully submitted")
             if profile_request_obj and not request.user.is_authenticated():
@@ -257,6 +255,7 @@ def data_request_view(request):
 
             del request.session['data_request_session']
             del request.session['profile_request_obj']
+                
         else:
             status_code = 400
         return HttpResponse(
