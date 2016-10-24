@@ -45,7 +45,7 @@ LAYER_ADMIN_PERMISSIONS = [
     'change_layer_style'
 ]
 
-
+ 
 def get_users_with_perms(obj):
     """
     Override of the Guardian get_users_with_perms
@@ -53,26 +53,26 @@ def get_users_with_perms(obj):
     ctype = ContentType.objects.get_for_model(obj)
     permissions = {}
     PERMISSIONS_TO_FETCH = ADMIN_PERMISSIONS + LAYER_ADMIN_PERMISSIONS
-
+ 
     for perm in Permission.objects.filter(codename__in=PERMISSIONS_TO_FETCH, content_type_id=ctype.id):
         permissions[perm.id] = perm.codename
-
+ 
     user_model = get_user_obj_perms_model(obj)
     users_with_perms = user_model.objects.filter(object_pk=obj.pk,
                                                  content_type_id=ctype.id,
                                                  permission_id__in=permissions).values('user_id', 'permission_id')
-
+ 
     users = {}
     for item in users_with_perms:
         if item['user_id'] in users:
             users[item['user_id']].append(permissions[item['permission_id']])
         else:
             users[item['user_id']] = [permissions[item['permission_id']], ]
-
+ 
     profiles = {}
     for profile in get_user_model().objects.filter(id__in=users.keys()):
         profiles[profile] = users[profile.id]
-
+ 
     return profiles
 
 
