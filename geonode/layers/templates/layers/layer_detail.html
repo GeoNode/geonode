@@ -171,23 +171,9 @@
             <table class="table table-striped table-bordered table-condensed">
               <tr><th></th><th>WGS84</th><th>PRS92</th></tr>
               {% for link in links %}
-                {% if "wms" in link.url %}
-                  {% if "PhilLiDAR2" in resource.keyword_list %}
-                  <tr>
-                    <td>{% trans link.link_type %}</td>
-                    <!-- <td><a href="{{ link | get_layer_download_url }}&format_options=layout:phillidar2">{% trans link.name %}</a></td> -->
-                    <td><a href="{{ link | get_layer_download_url }}">{% trans link.name %}</a></td>
-                    <td><a href="{{ link | get_prs92_download_url }}">{% trans link.name %}</a></td>
-                  </tr>
-                  {% else %}
-                  <tr>
-                    <td>{% trans link.link_type %}</td>
-                    {% comment %}<!-- <td><a href="{{ link | get_layer_download_url }}&format_options=layout:phillidar1">{% trans link.name %}</a></td> -->{% endcomment %}
-                    <td><a href="{{ link | get_layer_download_url }}">{% trans link.name %}</a></td>
-                    <td><a href="{{ link | get_prs92_download_url }}">{% trans link.name %}</a></td>
-                  </tr>
-                  {% endif %}
-                {% else %} <!-- for wfs and wcs -->
+              <!-- (if wms)PL2 layers are wms, have 2 formats: pl1 and pl2 -->
+              <!-- insert layer format options for PL1 and PL2 -->
+                <!-- for wfs and wcs -->
                   <tr>
                     <td>{% trans link.link_type %}</td>
 
@@ -196,7 +182,7 @@
                     <td><a href="{{ link | get_layer_download_url }}">{% trans link.name %}</a></td>
                     <td><a href="{{ link | get_prs92_download_url }}">{% trans link.name %}</a></td>
                   </tr>
-                {% endif %}
+                
               {% endfor %}
             </table>
             {% endif %}
