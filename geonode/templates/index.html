@@ -178,8 +178,16 @@
   </div>
 </div>
 
+{% include "_modal_announcements.html" %}
   {% endblock %}
 
   {% block mainbody %}
 
 {% endblock %}
+{% block extra_script %}
+  <script type="text/javascript">
+    $(window).load(function(){
+        $('#modal-announcements').modal('toggle');
+    });
+  </script>
+{% endblock extra_script %}
