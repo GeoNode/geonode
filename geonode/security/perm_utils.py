@@ -4,6 +4,7 @@ from guardian.compat import get_user_model
 from django.contrib.contenttypes.models import ContentType
 import bisect
 from django.db.models.query_utils import Q
+from guardian.core import ObjectPermissionChecker
 
 
 def get_users_with_perms(obj, attach_perms=True, with_superusers=True,
@@ -60,3 +61,14 @@ def get_groups_with_perms(obj, attach_perms=True):
             all_group_perms[p.group] = [p.permission.codename]
     
     return all_group_perms
+
+def has_direct_or_group_perm(user_profile, permission, obj_to_check):
+    checker = ObjectPermissionChecker(user_profile)
+    allowed = checker.has_perm(permission, obj_to_check)
+    if not allowed:
+        for usr_grp in user_profile.group_list_all():
+            checker = ObjectPermissionChecker(usr_grp.group)
+            allowed = checker.has_perm(permission, obj_to_check)
+            if allowed:
+                break
+    return allowed
