@@ -29,7 +29,7 @@ def parse_datarequest_csv(csv_path):
         counter = 1
         for line in open_file:
 
-            print '#' * 80
+            # print '#' * 80
 
             if first_line:
                 first_line = False
@@ -63,7 +63,7 @@ def parse_datarequest_csv(csv_path):
                 audit = tokens[20].strip()
                 # legend,agency column excluded being empty
 
-                print counter, _id, orig_name
+                # print counter, _id, orig_name
 
                 ## Get first, middle and last name ##
 
@@ -94,19 +94,19 @@ def parse_datarequest_csv(csv_path):
                 # If multiple requesters, only get the first name
                 if (';' not in name and ((',' in name and ' and ' in name) or
                                          name.count(',') > 1)):
-                    print 'Case 1'
+                    # print 'Case 1'
                     name = name.split(',')[0].strip()
                 elif '/' in name:
-                    print 'Case 2'
+                    # print 'Case 2'
                     name = name.split('/')[0].strip()
                 elif ';' in name and 'and' in name:
-                    print 'Case 3'
+                    # print 'Case 3'
                     name = name.split(';')[0].strip()
                     tokens = name.split(',')
                     last_name = tokens[0].strip()
                     first_name = tokens[1].strip()
                 elif ' and ' in name:
-                    print 'Case 4'
+                    # print 'Case 4'
                     name = name.split('and')[0].strip()
 
                 # print '2: name:', repr(name)
@@ -128,19 +128,19 @@ def parse_datarequest_csv(csv_path):
                             middle_id = i
 
                     if middle_id:
-                        print 'Case 7'
+                        # print 'Case 7'
                         middle_initial = tokens[middle_id]
                         first_name = ' '.join(tokens[:middle_id])
                         last_name = ' '.join(tokens[middle_id + 1:])
                     else:
                         if ',' in name:
-                            print 'Case 5'
+                            # print 'Case 5'
                             for i in range(len(tokens)):
                                 if ',' in tokens[i]:
                                     split_id = i
                                     break
                         elif _is_in(name, suffixes):
-                            print 'Case 6'
+                            # print 'Case 6'
                             for i in range(len(tokens)):
                                 if _is_in(tokens[i], suffixes):
                                     split_id = i - 1
@@ -164,9 +164,9 @@ def parse_datarequest_csv(csv_path):
                 last_name = last_name[:21]
 
                 # print '3: tokens:', repr(tokens)
-                print '3: first_name:', repr(first_name)
-                print '3: middle_initial:', repr(middle_initial)
-                print '3: last_name:', repr(last_name)
+                # print '3: first_name:', repr(first_name)
+                # print '3: middle_initial:', repr(middle_initial)
+                # print '3: last_name:', repr(last_name)
 
                 remarks = """
                 Name: {0}
