@@ -165,7 +165,7 @@ def registration_part_two(request):
         return redirect(reverse('datarequests:registration_part_one'))
 
     form = DataRequestDetailsForm(initial=part_two_initial)
-    
+
     juris_data_size = 0.0
     #area_coverage = get_area_coverage(saved_layer.name)
     area_coverage = 0
@@ -224,14 +224,28 @@ def registration_part_two(request):
                             title=form.cleaned_data["layer_title"],
                         )
                         interest_layer =  saved_layer
-                        #bbox = gs_layer.resource.latlon_bbox
-                        #bbox_lon = (float(bbox[0])+float(bbox[1]))/2
-                        #bbox_lat = (float(bbox[2])+float(bbox[3]))/2
-                        #place_name = get_place_name(bbox_lon, bbox_lat)
+
+                        cat = Catalog(settings.OGC_SERVER['default']['LOCATION'] + 'rest',
+                            username=settings.OGC_SERVER['default']['USER'],
+                            password=settings.OGC_SERVER['default']['PASSWORD'])
+
+                        boundary_style = cat.get_style('Boundary')
+                        gs_layer = cat.get_layer(saved_layer.name)
+                        if boundary_style:
+                            gs_layer._set_default_style(boundary_style)
+                            cat.save(gs_layer) #save in geoserver
+                            saved_layer.sld_body = boundary_style.sld_body
+                            saved_layer.save() #save in geonode
+
+                        bbox = gs_layer.resource.latlon_bbox
+                        bbox_lon = (float(bbox[0])+float(bbox[1]))/2
+                        bbox_lat = (float(bbox[2])+float(bbox[3]))/2
+                        place_name = get_place_name(bbox_lon, bbox_lat)
+                        pprint(place_name)
                         juris_data_size = 0.0
                         #area_coverage = get_area_coverage(saved_layer.name)
                         area_coverage =  0
-                        
+
                     except Exception as e:
                         exception_type, error, tb = sys.exc_info()
                         print traceback.format_exc()
@@ -273,7 +287,7 @@ def registration_part_two(request):
                         if permissions is not None and len(permissions.keys()) > 0:
 
                             saved_layer.set_permissions(permissions)
-                        
+
                         jurisdiction_style.delay(saved_layer)
 
                     finally:
@@ -305,7 +319,7 @@ def registration_part_two(request):
                             )
 
                     if interest_layer:
-                        #request_profile.place_name = place_name['state']
+                        request_profile.place_name = place_name['address']
                         request_profile.juris_data_size = juris_data_size
                         request_profile.area_coverage = area_coverage
                         request_profile.save()
@@ -655,7 +669,7 @@ def data_request_profile_approve(request, pk):
                     pprint("Jurisdiction Shapefile not found, nothing to delete. Carry on")
 
             request_profile.set_approved(is_new_acc)
-            request_profile.administrator = request.user 
+            request_profile.administrator = request.user
             request_profile.save()
 
 
@@ -718,7 +732,7 @@ def data_request_facet_count(request):
 def update_datarequest_obj(datarequest=None, parameter_dict=None, interest_layer=None, request_letter = None):
     if datarequest is None or parameter_dict is None or request_letter is None:
         raise HttpResponseBadRequest
-        
+
     if not datarequest.middle_name or len(datarequest.middle_name.strip())<1:
         datarequest.middle_name = '_'
 
