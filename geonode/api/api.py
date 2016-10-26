@@ -405,6 +405,12 @@ class ProfileRequestResource(ModelResource):
             return bundle.obj.data_request.id
         else:
             return None
+            
+    def dehydrate_has_data_request(self, bundle):
+        if bundle.obj.data_request:
+            return True
+        else:
+            return False
 
     def apply_filters(self, request, applicable_filters):
         base_object_list = super(ProfileRequestResource, self).apply_filters(request, applicable_filters)
