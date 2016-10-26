@@ -131,7 +131,7 @@ def data_request_cancel(request, pk):
     if not request.method == 'POST':
         return HttpResponseRedirect('/forbidden')
 
-    if data_request.request_status == 'pending':
+    if data_request.status == 'pending':
         form = parse_qs(request.POST.get('form', None))
         data_request.rejection_reason = form['rejection_reason'][0]
         data_request.save()
@@ -192,7 +192,7 @@ def data_request_reject(request, pk):
 
     data_request = get_object_or_404(DataRequest, pk=pk)
 
-    if data_request.request_status == 'pending':
+    if data_request.status == 'pending':
         form = parse_qs(request.POST.get('form', None))
         data_request.rejection_reason = form['rejection_reason'][0]
         if 'additional_rejection_reason' in form.keys():

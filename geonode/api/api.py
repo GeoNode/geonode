@@ -356,9 +356,9 @@ class ProfileRequestResource(ModelResource):
         ordering = ['-created', ]
         filtering = {'first_name': ALL,
                      'requester_type': ALL,
-                     'request_status': ALL,
+                     'status': ALL,
                      'organization': ALL,
-                     'request_status': ALL,
+                     'status': ALL,
                      'key_created_date': ALL,
                      }
 
@@ -467,9 +467,9 @@ class DataRequestResource(ModelResource):
         ordering = ['date_submitted', ]
         filtering = {'first_name': ALL,
                      'requester_type': ALL,
-                     'request_status': ALL,
+                     'status': ALL,
                      'organization': ALL,
-                     'request_status': ALL,
+                     'status': ALL,
                      'date_submitted': ALL,
                      }
 
@@ -484,18 +484,18 @@ class DataRequestResource(ModelResource):
         return bundle.obj.rejection_reason
 
     def dehydrate_status(self, bundle):
-        return bundle.obj.get_request_status_display()
+        return bundle.obj.get_status_display()
 
     def dehydrate_is_rejected(self, bundle):
-        return bundle.obj.request_status == 'rejected'
+        return bundle.obj.status == 'rejected'
 
     def dehydrate_date_submitted(self, bundle):
         return formats.date_format(bundle.obj.date_submitted, "SHORT_DATETIME_FORMAT")
 
     def dehydrate_status_label(self, bundle):
-        if bundle.obj.request_status == 'pending' or bundle.obj.request_status == 'cancelled' or bundle.obj.request_status == 'unconfirmed':
+        if bundle.obj.status == 'pending' or bundle.obj.status == 'cancelled' or bundle.obj.status == 'unconfirmed':
             return 'default'
-        elif bundle.obj.request_status == 'rejected':
+        elif bundle.obj.status == 'rejected':
             return 'danger'
         else:
             return 'success'

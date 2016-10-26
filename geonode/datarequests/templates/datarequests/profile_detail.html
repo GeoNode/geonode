@@ -104,18 +104,18 @@
         <h5 class="list-group-item-heading">{%trans "Data Request Status" %}</h5>
 
         <div class="row data-request-status-parent">
-          {% if request_profile.request_status == 'pending' %}
+          {% if request_profile.status == 'pending' %}
             <div class="col-sm-12 data-request-status label pending-request">
-          {% elif request_profile.request_status == 'approved' %}
+          {% elif request_profile.status == 'approved' %}
             <div class="col-sm-12 label data-request-status label-success">
           {% else %}
             <div class="col-sm-12 label data-request-status label-danger">
           {% endif %}
-              <strong>{{ request_profile.get_request_status_display }}</strong>
+              <strong>{{ request_profile.get_status_display }}</strong>
             </div>
         </div>
 
-        {% if request_profile.request_status == 'rejected' or request_profile.request_status == 'cancelled' %}
+        {% if request_profile.status == 'rejected' or request_profile.status == 'cancelled' %}
           <p><strong>{% trans "Reason" %}</strong>: {{ request_profile.rejection_reason }}</p>
           {% if request_profile.additional_rejection_reason %}
               <p><strong>{% trans "Additional Details" %}</strong>: {{ request_profile.additional_rejection_reason }}</p>
@@ -123,14 +123,14 @@
         {% endif %}
       </li>
 {% if user.is_superuser %}
-      {% if request_profile.request_status == 'approved' %}
+      {% if request_profile.status == 'approved' %}
         <li class="list-group-item">
              <form id="recreate_dir_form" method="post" class="modal-form" action='{% url "datarequests:profile_request_recreate_dir" pk=request_profile.pk%}'>{% csrf_token %}
                 <button type="submit" class="btn btn-primary btn-md btn-block"  id="recreate-dir-submit">{% trans "Create Directory" %}</button>
             </form>
         </li>
       {% else %}
-        {%  if request_profile.request_status == 'pending'%}
+        {%  if request_profile.status == 'pending'%}
         <li class="list-group-item">
           <button class="btn btn-primary btn-md btn-block"  data-toggle="modal" data-target="#approve-request" id="approve-button">{% trans "Approve" %}</button>
         </li>
@@ -182,7 +182,7 @@
             </div>
           </form>
         </div>
-      {% elif request_profile.request_status == 'unconfirmed'%}
+      {% elif request_profile.status == 'unconfirmed'%}
        <li class="list-group-item">
         <form id="reconfirm_form" method="post" class="modal-form" action='{% url "datarequests:profile_request_reconfirm" pk=request_profile.pk%}'>{% csrf_token %}
             <button type="submit" class="btn btn-primary btn-md btn-block"  id="reconfirm-request-submit">{% trans "Resend Confirmation Email" %}</button>
@@ -190,7 +190,7 @@
 
         </li>
       {% endif %}
-      {% if request_profile.request_status == 'unconfirmed' or request_profile.request_status == 'pending' %}
+      {% if request_profile.status == 'unconfirmed' or request_profile.status == 'pending' %}
          <li class="list-group-item">
           <button class="btn btn-default btn-md btn-block" data-toggle="modal" data-target="#cancel-request">{% trans "Cancel Request" %}</button>
         </li>
@@ -221,7 +221,7 @@
         {% endif %}
   {% endif %}
   {% else %}
-  {% if request_profile.request_status == 'unconfirmed' or request_profile.request_status == 'pending' %}
+  {% if request_profile.status == 'unconfirmed' or request_profile.status == 'pending' %}
          <li class="list-group-item">
              <form id="cancel_form" method="post" class="modal-form" action='{% url "datarequests:profile_request_cancel" pk=request_profile.pk%}'>{% csrf_token %}
                 <button type="submit" class="btn btn-default btn-md btn-block" id="cancel-request-submit">{% trans "Cancel Request" %}</button>
