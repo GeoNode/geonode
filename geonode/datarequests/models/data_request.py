@@ -120,7 +120,7 @@ class DataRequest(BaseRequest):
             ))
 
     def get_absolute_url(self):
-        return reverse('datarequests:data_request_details', kwargs={'pk': self.pk})
+        return reverse('datarequests:data_request_detail', kwargs={'pk': self.pk})
 
     def assign_jurisdiction(self):
         # Link shapefile to account
