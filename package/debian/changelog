@@ -1,3 +1,16 @@
+geonode (2.5.5+thefinal0) xenial; urgency=high
+
+  [ Angelos Tzotsos ]
+  * [bbfd54] Updating release info and some improvements to pavement for Xenial releases
+  * [fe71eb] Fixing travis build
+
+  [ Daniel Berry ]
+  * [4227d8] previous adjustments to the setup.py and MANIFEST.ini were not allowing certain filetypes to be packaged, loading.gif was the most noticeable.
+
+  [ Angelos Tzotsos ]
+
+ -- Angelos Tzotsos <gcpp.kalxas@gmail.com>  Wed, 26 Oct 2016 19:40:03 +0300
+
 geonode (2.5.4+thefinal0) xenial; urgency=high
 
   [ capooti ]
