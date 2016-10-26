@@ -65,7 +65,7 @@ def get_groups_with_perms(obj, attach_perms=True):
 def has_direct_or_group_perm(user_profile, permission, obj_to_check):
     checker = ObjectPermissionChecker(user_profile)
     allowed = checker.has_perm(permission, obj_to_check)
-    if not allowed:
+    if str(user_profile) != 'AnonymousUser' and not allowed:
         for usr_grp in user_profile.group_list_all():
             checker = ObjectPermissionChecker(usr_grp.group)
             allowed = checker.has_perm(permission, obj_to_check)
