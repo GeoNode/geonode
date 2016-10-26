@@ -22,9 +22,9 @@ urlpatterns = patterns(
     url(r'^profile/(?P<pk>\d+)/$', 'profile_request_detail', name="profile_request_detail"),
     url(r'^profile/(?P<pk>\d+)/approve/$', 'profile_request_approve', name="profile_request_approve"),
     url(r'^profile/(?P<pk>\d+)/reject/$', 'profile_request_reject', name="profile_request_reject"),
+    url(r'^prolfile/(?P<pk>\d+)/cancel/$', 'profile_request_cancel', name="profile_request_cancel"), 
     url(r'^profile/(?P<pk>\d+)/reconfirm/$', 'profile_request_reconfirm', name="profile_request_reconfirm"), 
     url(r'^prolfile/(?P<pk>\d+)/recreate_dir/$', 'profile_request_recreate_dir', name="profile_request_recreate_dir"), 
-    
     url(r'^profile/~count_facets/$', 'profile_request_facet_count', name="profile_request_facet_count"),
     
     #urls for datarequests
