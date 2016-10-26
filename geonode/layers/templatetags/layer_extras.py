@@ -15,9 +15,12 @@ from pprint import pprint
 def image_basemap(layername,epsg,out_format):
     # text = ''''''
     cat = Catalog(settings.OGC_SERVER['default']['LOCATION'] + 'rest',
-                username=settings.OGC_SERVER['default']['USER'],
-                password=settings.OGC_SERVER['default']['PASSWORD'])
-    layer = Layer.objects.get(name=layername)
+                  username=settings.OGC_SERVER['default']['USER'],
+                  password=settings.OGC_SERVER['default']['PASSWORD'])
+    baseURL = settings.OGC_SERVER['default']['PUBLIC_LOCATION']
+
+    # get layer name
+    layer, layout = analyze_link(link)
     geoserver_layer = cat.get_layer(layer.name)
     layer_projection = geoserver_layer.resource.projection
     layer_projection_epsg = layer_projection.split(':')[1]
@@ -26,12 +29,12 @@ def image_basemap(layername,epsg,out_format):
     y0 = float(bbox_string[1])
     x1 = float(bbox_string[2])
     y1 = float(bbox_string[3])
-    #for mapfish printing
+
+    # for mapfish printing
     to_srs = epsg
     # if 'lipad' in settings.SITEURL:
     #   baseURL = settings.OGC_SERVER['default']['LOCATION']
     # else:
-    baseURL = settings.OGC_SERVER['default']['PUBLIC_LOCATION']
     to_srs_str = 'EPSG:' + str(to_srs)
     outputFormat = out_format
     format = 'image/' + str(out_format)
@@ -96,7 +99,10 @@ def prep_basemap(link,epsg,format):
     link = image_basemap(layername,epsg,format)
     return link
 
-def get_prs92_download_url(link): #wfs, wcs
+# applies for wfs, wcs layer types
+
+
+def get_prs92_download_url(link):
     link = link.get_download_url()
     if 'GeoTIFF' in str(link):
         epsg4683 = 'crs=EPSG%3A4683'
@@ -115,8 +121,6 @@ def get_prs92_download_url(link): #wfs, wcs
 
     return link
 
-def get_layer_download_url(link): # Only one argument.
-    link = link.get_download_url()
     if 'image%2Fpng' in str(link):
         link = prep_basemap(link,4326,'png')
         return link
