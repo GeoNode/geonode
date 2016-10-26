@@ -43,6 +43,8 @@ from geonode.base.models import ResourceBase
 
 from .authorization import GeoNodeAuthorization
 
+from django.conf import settings
+
 from .api import TagResource, RegionResource, ProfileResource, \
     TopicCategoryResource, \
     FILTER_TYPES
@@ -409,7 +411,7 @@ class CommonModelApi(ModelResource):
             objects = []
 
         object_list = {
-           "meta": {"limit": 100,  # noqa
+           "meta": {"limit": settings.CLIENT_RESULTS_LIMIT,
                     "next": next_page,
                     "offset": int(getattr(request.GET, 'offset', 0)),
                     "previous": previous_page,
