@@ -38,6 +38,7 @@ from django.core.cache import cache
 from django.http import Http404
 
 from pprint import pprint
+from geonode.security.perm_utils import has_direct_or_group_perm
 
 DEFAULT_TITLE = ""
 DEFAULT_ABSTRACT = ""
@@ -491,9 +492,11 @@ def resolve_object(request, model, query, permission='base.view_resourcebase',
             obj_to_check = obj
     if permission:
         if permission_required or request.method != 'GET':
-            allowed = request.user.has_perm(
-                permission,
-                obj_to_check)
+            #NOTE:replace to check for both user or group perms
+            #allowed = request.user.has_perm(
+            #    permission,
+            #    obj_to_check)
+            allowed = has_direct_or_group_perm(request.user, permission, obj_to_check)
     if not allowed:
         mesg = permission_msg or _('Permission Denied')
         raise PermissionDenied(mesg)
