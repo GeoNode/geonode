@@ -343,16 +343,17 @@ class ProfileRequestResource(ModelResource):
     rejection_reason = fields.CharField()
     date_submitted = fields.CharField()
     shapefile_thumbnail_url = fields.CharField(null=True)
+    has_data_request = fields.BooleanField(default=False)
     data_request_id = fields.CharField()
     data_request_detail_url = fields.CharField()
 
     class Meta:
         authorization = ProfileRequestAuthorization()
         authentication = SessionAuthentication()
-        queryset = ProfileRequest.objects.all().order_by('-key_created_date')
+        queryset = ProfileRequest.objects.all().order_by('-created')
         resource_name = 'profile_requests'
         allowed_methods = ['get']
-        ordering = ['key_created_date', ]
+        ordering = ['-created', ]
         filtering = {'first_name': ALL,
                      'requester_type': ALL,
                      'request_status': ALL,
@@ -367,49 +368,43 @@ class ProfileRequestResource(ModelResource):
     def dehydrate_org_type(self, bundle):
         return bundle.obj.get_organization_type_display()
 
-
     def dehydrate_rejection_reason(self, bundle):
         return bundle.obj.rejection_reason
 
     def dehydrate_status(self, bundle):
-        return bundle.obj.get_request_status_display()
+        return bundle.obj.get_status_display()
 
     def dehydrate_is_rejected(self, bundle):
-        return bundle.obj.request_status == 'rejected'
+        return bundle.obj.status == 'rejected'
 
     def dehydrate_date_submitted(self, bundle):
-        return formats.date_format(bundle.obj.key_created_date, "SHORT_DATETIME_FORMAT")
+        return formats.date_format(bundle.obj.created, "SHORT_DATETIME_FORMAT")
 
     def dehydrate_status_label(self, bundle):
-        if bundle.obj.request_status == 'pending' or bundle.obj.request_status == 'cancelled' or bundle.obj.request_status == 'unconfirmed':
+        if bundle.obj.status == 'pending' or bundle.obj.status == 'unconfirmed':
             return 'default'
-        elif bundle.obj.request_status == 'rejected':
+        elif bundle.obj.status == 'rejected':
             return 'danger'
         else:
             return 'success'
 
     def dehydrate_data_request_detail_url(self, bundle):
-        try:
-            return DataRequest.objects.filter(id=bundle.obj.data_request_id)[0].get_absolute_url()
-        except:
+        if bundle.obj.data_request:
+            return bundle.obj.data_request.get_absolute_url()
+        else:
             return None
 
     def dehydrate_shapefile_thumbnail_url(self, bundle):
-        try: ##because those having no data_request_id returns index out of range for [0]
-            if DataRequest.objects.filter(id=bundle.obj.data_request_id)[0].jurisdiction_shapefile:
-                return DataRequest.objects.filter(id=bundle.obj.data_request_id)[0].jurisdiction_shapefile.thumbnail_url
-            else:
-                return None
-        except:
+        if bundle.obj.data_request and bundle.obj.data_request.jurisdiction_shapefile:
+            return bundle.obj.data_request.jurisdiction_shapefile.thumbnail_url
+        else:
             return None
-    # def dehydrate_shapefile_thumbnail_url(self, bundle):
-    #     if bundle.obj.jurisdiction_shapefile:
-    #         return bundle.obj.jurisdiction_shapefile.thumbnail_url
-    #     else:
-    #         return None
 
     def dehydrate_data_request_id(self, bundle):
-        return bundle.obj.data_request_id
+        if bundle.obj.data_request:
+            return bundle.obj.data_request.id
+        else:
+            return None
 
     def apply_filters(self, request, applicable_filters):
         base_object_list = super(ProfileRequestResource, self).apply_filters(request, applicable_filters)
