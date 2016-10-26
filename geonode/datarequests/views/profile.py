@@ -61,7 +61,7 @@ def profile_request_approve(request, pk):
     if request.method == 'POST':
         profile_request = get_object_or_404(ProfileRequest, pk=pk)
 
-        if not profile_request.has_verified_email or profile_request.request_status != 'pending':
+        if not profile_request.has_verified_email or profile_request.status != 'pending':
             return HttpResponseRedirect('/forbidden')
 
         result = True
@@ -97,7 +97,7 @@ def profile_request_reject(request, pk):
 
     profile_request = get_object_or_404(ProfileRequest, pk=pk)
 
-    if profile_request.request_status == 'pending':
+    if profile_request.status == 'pending':
         form = parse_qs(request.POST.get('form', None))
         profile_request.rejection_reason = form['rejection_reason'][0]
         if 'additional_rejection_reason' in form.keys():
@@ -147,6 +147,35 @@ def profile_request_recreate_dir(request, pk):
         
         messages.info("Folder creation has been scheduled. Check folder location in a few minutes")
         return HttpResponseRedirect(profile_request.get_absolute_url())
+        
+def profile_request_cancel(request,pk):
+    profile_request = get_object_or_404(ProfileRequest, pk=pk)
+    if not request.user.is_superuser:
+        return HttpResponseRedirect('/forbidden')
+
+    if not request.method == 'POST':
+        return HttpResponseRedirect('/forbidden')
+
+    if profile_request.status == 'pending' or profile_request.status == 'unconfirmed':
+        form = parse_qs(request.POST.get('form', None))
+        profile_request.rejection_reason = form['rejection_reason'][0]
+        profile_request.save()
+        
+        if not request.user.is_superuser:
+            profile_request.set_status('cancelled')
+        else:
+            profile_request.set_status('cancelled',administrator = request.user)
+            
+    url = request.build_absolute_uri(data_request.get_absolute_url())
+
+    return HttpResponse(
+        json.dumps({
+            'result': 'success',
+            'errors': '',
+            'url': url}),
+        status=200,
+        mimetype='text/plain'
+    )
 
 def profile_request_facet_count(request):
     if not request.user.is_superuser:
@@ -157,11 +186,11 @@ def profile_request_facet_count(request):
 
     facets_count = {
         'pending': ProfileRequest.objects.filter(
-            request_status='pending').exclude(date=None).count(),
+            status='pending').exclude(date=None).count(),
         'approved': ProfileRequest.objects.filter(
-            request_status='approved').count(),
+            status='approved').count(),
         'rejected': ProfileRequest.objects.filter(
-            request_status='rejected').count(),
+            status='rejected').count(),
     }
 
     return HttpResponse(
