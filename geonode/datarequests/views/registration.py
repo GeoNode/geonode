@@ -301,7 +301,7 @@ def email_verification_confirm(request):
                 verification_key=key,
             )
             # Only verify once
-            if not data_request.verification_date:
+            if not profile_request.verification_date and profile_request.status == "unconfirmed":
                 profile_request.request_status = 'pending'
                 profile_request.date = timezone.now()
                 pprint(email+" has been confirmed")
