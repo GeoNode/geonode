@@ -144,13 +144,14 @@ def add_to_ad_group(group_dn=settings.LIPAD_LDAP_GROUP_DN, user_dn=""):
 
 def get_place_name(longitude,latitude):
     g = geocoder.google([latitude,longitude], method='reverse')
-    #pprint(g.geojson)
+    # pprint(g.geojson)
     return {
         'street': g.street,
         'city': g.city,
         'county': g.county,
         'state': g.state,
-        'country': g.country
+        'country': g.country,
+        'address': g.address
     }
 
 def get_area_coverage(juris_shp):
