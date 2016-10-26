@@ -24,7 +24,7 @@ from geonode.people.utils import get_valid_user
 from geonode.geoserver.helpers import gs_slurp
 import traceback
 import sys
-
+import ast
 
 class Command(BaseCommand):
     help = 'Update the GeoNode application with data from GeoServer'
@@ -77,8 +77,14 @@ class Command(BaseCommand):
             '--workspace',
             dest="workspace",
             default=None,
-            help="Only update data on specified workspace"))
-
+            help="Only update data on specified workspace"),
+        make_option(
+            '-p',
+            '--permissions',
+            dest="permissions",
+            default="None",
+            help="Permissions to apply to each layer"))
+            
     def handle(self, **options):
         ignore_errors = options.get('ignore_errors')
         skip_unadvertised = options.get('skip_unadvertised')
@@ -90,7 +96,8 @@ class Command(BaseCommand):
         workspace = options.get('workspace')
         filter = options.get('filter')
         store = options.get('store')
-
+        permissions = ast.literal_eval(options.get('permissions'))
+        
         if verbosity > 0:
             console = sys.stdout
         else:
@@ -106,7 +113,8 @@ class Command(BaseCommand):
             filter=filter,
             skip_unadvertised=skip_unadvertised,
             skip_geonode_registered=skip_geonode_registered,
-            remove_deleted=remove_deleted)
+            remove_deleted=remove_deleted,
+            permissions=permissions)
 
         if verbosity > 1:
             print "\nDetailed report of failures:"
