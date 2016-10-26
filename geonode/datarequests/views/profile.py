@@ -1,11 +1,18 @@
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import (
     redirect, get_object_or_404, render, render_to_response)
+from django.template import RequestContext
 from django.views.generic import TemplateView
+
 
 from braces.views import (
     SuperuserRequiredMixin, LoginRequiredMixin,
 )
+
+from geonode.datarequests.forms import RejectionForm
+from geonode.datarequests.models import (
+    ProfileRequest, DataRequest)
+
 
 class ProfileRequestList(LoginRequiredMixin, TemplateView):
     template_name = 'datarequests/profile_request_list.html'
