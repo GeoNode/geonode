@@ -79,35 +79,6 @@ def profile_request_approve(request, pk):
     else:
         return HttpResponseRedirect("/forbidden/")
         
-def profile_request_cancel(request, pk):
-    profile_request = get_object_or_404(ProfileRequest, pk=pk)
-    if not request.user.is_superuser:
-        return HttpResponseRedirect('/forbidden')
-
-    if not request.method == 'POST':
-        return HttpResponseRedirect('/forbidden')
-
-    if data_request.request_status == 'pending':
-        form = parse_qs(request.POST.get('form', None))
-        data_request.rejection_reason = form['rejection_reason'][0]
-        data_request.save()
-        
-        if not request.user.is_superuser:
-            data_request.set_status('cancelled')
-        else:
-            data_request.set_status('cancelled',administrator = request.user)
-            
-    url = request.build_absolute_uri(data_request.get_absolute_url())
-
-    return HttpResponse(
-        json.dumps({
-            'result': 'success',
-            'errors': '',
-            'url': url}),
-        status=200,
-        mimetype='text/plain'
-    )
-
 def profile_request_reject(request, pk):
     if not request.user.is_superuser:
         return HttpResponseRedirect('/forbidden/')
@@ -168,8 +139,6 @@ def profile_request_recreate_dir(request, pk):
         messages.info("Folder creation has been scheduled. Check folder location in a few minutes")
         return HttpResponseRedirect(profile_request.get_absolute_url())
 
-
-
 def profile_request_facet_count(request):
     if not request.user.is_superuser:
         return HttpResponseRedirect('/forbidden')
@@ -178,14 +147,12 @@ def profile_request_facet_count(request):
         return HttpResponseRedirect('/forbidden')
 
     facets_count = {
-        'pending': DataRequest.objects.filter(
+        'pending': ProfileRequest.objects.filter(
             request_status='pending').exclude(date=None).count(),
-        'approved': DataRequest.objects.filter(
+        'approved': ProfileRequest.objects.filter(
             request_status='approved').count(),
-        'rejected': DataRequest.objects.filter(
+        'rejected': ProfileRequest.objects.filter(
             request_status='rejected').count(),
-        'cancelled': DataRequest.objects.filter(
-            request_status='cancelled').exclude(date=None).count(),
     }
 
     return HttpResponse(
