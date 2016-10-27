@@ -189,11 +189,13 @@ def profile_request_facet_count(request):
 
     facets_count = {
         'pending': ProfileRequest.objects.filter(
-            status='pending').exclude(date=None).count(),
+            status='pending').count(),
         'approved': ProfileRequest.objects.filter(
             status='approved').count(),
         'rejected': ProfileRequest.objects.filter(
             status='rejected').count(),
+        'unconfirmed': ProfileRequest.objects.filter(
+            status='unconfirmed').count(),
     }
 
     return HttpResponse(
