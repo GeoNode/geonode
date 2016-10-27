@@ -917,6 +917,7 @@ CELERY_QUEUES = [
     Queue('ftp', routing_key='ftp'),
     Queue('mk_folder', routing_key='mk_folder'),
     Queue('jurisdiction',routing_key='jurisdiction'),
+    Queue('requests',routing_key='requests'),
 
 ]
 
