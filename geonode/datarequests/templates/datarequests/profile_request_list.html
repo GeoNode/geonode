@@ -12,7 +12,7 @@
   <h2 class="page-title">{% trans "Profile Requests" %}</h2>
 </div>
   {% with include_type_filter='true' %}
-    {% with facet_type='data_requests' %}
+    {% with facet_type='profile_requests' %}
       {% with header='Requester Type' %}
         {% with filter='type__in' %}
         {% include "datarequests/_profile_request_content.html" %}
@@ -25,7 +25,7 @@
 {% block extra_script %}
   <script type="text/javascript">
   {% autoescape off %}
-    facet_count_url = "{% url 'datarequests:data_request_facet_count' %}",
+    facet_count_url = "{% url 'datarequests:profile_request_facet_count' %}",
     csrf_token =  "{{ csrf_token }}"
   {% endautoescape %}
   </script>
@@ -81,7 +81,7 @@
       }, {})
 
       for (facet in params) {
-        if (facet == 'request_status__in' || facet == 'requester_type__in') {
+        if (facet == 'status__in' || facet == 'requester_type__in') {
           for (var i = 0; i < params[facet].length; i++) {
           $('#' + params[facet][i]).addClass('active');
           };
