@@ -35,6 +35,7 @@ from geonode.datarequests.models import DataRequestProfile, DataRequest, Profile
 
 from geonode.tasks.jurisdiction import place_name_update, jurisdiction_style
 from geonode.tasks.jurisdiction2 import compute_size_update
+from geonode.tasks.requests import set_status_for_multiple_requests
 
 from pprint import pprint
 from unidecode import unidecode
@@ -295,6 +296,7 @@ def email_verification_confirm(request):
     }
 
     if key and email:
+        profile_request = None
         try:
             profile_request = ProfileRequest.objects.get(
                 email=email,
@@ -302,20 +304,23 @@ def email_verification_confirm(request):
             )
             # Only verify once
             if not profile_request.verification_date and profile_request.status == "unconfirmed":
-                profile_request.request_status = 'pending'
+                profile_request.set_status('pending')
                 profile_request.date = timezone.now()
                 pprint(email+" has been confirmed")
                 profile_request.save()
                 profile_request.send_new_request_notif_to_admins()
                 if profile_request.data_request:
                     dr = profile_request.data_request
-                    dr.request_status = 'pending'
                     dr.save()
+                    dr.set_status('pending')
+                profile_requests = ProfileRequest.objects.filter(email=email, status="unconfirmed")
+                set_status_for_multiple_requests.delay(profile_requests,"cancelled")
+                
                     
         except ObjectDoesNotExist:
             profile_request = None
 
-        if data_request:
+        if profile_request:
             return render(
                 request,
                 'datarequests/registration/verification_done.html',

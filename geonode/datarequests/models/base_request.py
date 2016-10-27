@@ -109,7 +109,7 @@ class BaseRequest(TimeStampedModel, StatusModel):
         
     def  set_status(self, status, administrator = None):
         self.status = status
-        self.administrator = None
+        self.administrator = administrator
         self.save()
     
     class Meta:
