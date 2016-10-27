@@ -1,9 +1,10 @@
 from django.contrib.auth.decorators import login_required
+from django.http import HttpResponse, HttpResponseRedirect, Http404
 from django.shortcuts import (
     redirect, get_object_or_404, render, render_to_response)
 from django.template import RequestContext
+from django.utils import simplejson as json
 from django.views.generic import TemplateView
-
 
 from braces.views import (
     SuperuserRequiredMixin, LoginRequiredMixin,
@@ -182,9 +183,6 @@ def profile_request_cancel(request,pk):
 
 def profile_request_facet_count(request):
     if not request.user.is_superuser:
-        return HttpResponseRedirect('/forbidden')
-
-    if not request.method == 'POST':
         return HttpResponseRedirect('/forbidden')
 
     facets_count = {
