@@ -153,8 +153,6 @@ def get_prs92_download_url(link):
 
 def get_layer_download_url(link):  # Only one argument.
     link = link.get_download_url()
-    # format_options=check_layout(link)
-
     if 'image%2Fpng' in str(link):
         link = image_basemap(link, 4326, 'png')
         return link
