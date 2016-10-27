@@ -331,7 +331,6 @@ REQUESTER_TYPES = {
 }
 
 
-
 class ProfileRequestResource(ModelResource):
     """Profile Request api"""
     profile_request_detail_url = fields.CharField()
