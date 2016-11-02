@@ -16,6 +16,7 @@ from django_enumfield import enum
 from django.core import validators
 
 from model_utils import Choices
+from unidecode import unidecode
 
 from geonode.documents.models import Document
 from geonode.layers.models import Layer
