@@ -224,9 +224,11 @@ def data_request_view(request):
                 pprint(out['errors'])
                 out['errormsgs'] = out['errors']
 
-        if out['success']:
+        #if out['success']:
+        if not out['errors']:
+            out['success'] = True
             data_request_obj = details_form.save()
-            if request.user.is_authenticated() and not request.user == Profile.objects.get(username='AnonymousUploader'):
+            if request.user.is_authenticated() and not request.user.username  == 'AnonymousUser':
                 request_letter = create_letter_document(details_form.clean()['letter_file'], profile = request.user)
                 data_request_obj.request_letter = request_letter
                 data_request_obj.profile = request.user 
