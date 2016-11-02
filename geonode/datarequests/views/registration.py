@@ -232,7 +232,8 @@ def data_request_view(request):
             if request.user.is_authenticated() and not request.user.username  == 'AnonymousUser':
                 request_letter = create_letter_document(details_form.clean()['letter_file'], profile = request.user)
                 data_request_obj.request_letter = request_letter
-                data_request_obj.profile = request.user 
+                data_request_obj.profile = request.user
+                data_request_obj.set_status('pending')
             else: 
                 request_letter = create_letter_document(details_form.clean()['letter_file'], profile_request = profile_request_obj)
                 data_request_obj.profile_request = profile_request_obj
@@ -258,7 +259,9 @@ def data_request_view(request):
                 out['redirect_to'] = reverse('home')
 
             del request.session['data_request_session']
-            del request.session['profile_request_obj']
+            
+            if 'profile_request_obj' in request.session:
+                del request.session['profile_request_obj']
                 
         else:
             status_code = 400
