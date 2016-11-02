@@ -1,7 +1,6 @@
 Django==1.6.11
 Fabric==1.8.1
 GDAL==1.10.0
--e git+git@github.com:PhilLidar-DAD/geonode.git@2d80bd8b2c67875ffab319ff603bc04146bc7468#egg=GeoNode-test
 MultipartPostHandler==0.1.0
 OWSLib==0.10.0
 Paver==1.2.1
