@@ -20,6 +20,7 @@ urlpatterns = patterns('',
     url(r'^ftprequests/$', views.ftp_request_list, ),
 	url(r'^ftprequests/(?P<sort>[A-Za-z]+)/$', views.ftp_request_list, ),
     url(r'^ftprequests/r=(?P<ftp_req_name>ftprequest_[0-9]{4}-[0-9]{2}-[0-9]{2}_[0-9]{4})/$', views.ftp_request_details),
+    url(r'tilecheck/',views.tile_check),
     # Data Management Views
     url(r'^datamanager/$', views.management, name='data_management'),
     url(r'^datamanager/input/$', views.data_input ),
