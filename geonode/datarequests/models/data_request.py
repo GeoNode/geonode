@@ -113,12 +113,11 @@ class DataRequest(BaseRequest):
 
     def __unicode__(self):
         if self.profile_request or self.profile:
-            return (_('{} request by {} {} of {}')
+            return (_('{} request by {} {}')
                 .format(
                     self.status,
                     unidecode(self.get_first_name()),
                     unidecode(self.get_last_name()),
-                    unidecode(self.get_organization()),
                 ))
         else:
             return (_('Data request # {}').format(
