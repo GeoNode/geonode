@@ -446,8 +446,9 @@ class DataRequestResource(ModelResource):
     status_label = fields.CharField()
     is_rejected = fields.BooleanField(default=False)
     rejection_reason = fields.CharField()
-    date_submitted = fields.CharField()
+    created = fields.CharField()
     shapefile_thumbnail_url = fields.CharField(null=True)
+    username = fields.CharField()
     profile_request_id = fields.CharField()
     first_name = fields.CharField()
     last_name = fields.CharField()
@@ -460,7 +461,7 @@ class DataRequestResource(ModelResource):
     class Meta:
         authorization = DataRequestAuthorization()
         authentication = SessionAuthentication()
-        queryset = DataRequest.objects.all().order_by('-date_submitted')
+        queryset = DataRequest.objects.all().order_by('-created')
         resource_name = 'data_requests'
         allowed_methods = ['get']
         ordering = ['date_submitted', ]
@@ -478,7 +479,6 @@ class DataRequestResource(ModelResource):
     def dehydrate_purpose(self, bundle):
         return bundle.obj.purpose
 
-
     def dehydrate_rejection_reason(self, bundle):
         return bundle.obj.rejection_reason
 
@@ -489,7 +489,7 @@ class DataRequestResource(ModelResource):
         return bundle.obj.status == 'rejected'
 
     def dehydrate_date_submitted(self, bundle):
-        return formats.date_format(bundle.obj.date_submitted, "SHORT_DATETIME_FORMAT")
+        return formats.date_format(bundle.obj.date_created, "SHORT_DATETIME_FORMAT")
 
     def dehydrate_status_label(self, bundle):
         if bundle.obj.status == 'pending' or bundle.obj.status == 'cancelled' or bundle.obj.status == 'unconfirmed':
@@ -508,42 +508,76 @@ class DataRequestResource(ModelResource):
     def dehydrate_profile_request_id(self, bundle):
         return bundle.obj.profile_request_id
 
+    def dehydrate_username(self, bundle):
+        if bundle.obj.profile:
+            return bundle.obj.profile.username
+        else:
+            return None
+
     def dehydrate_first_name(self, bundle):
-        return ProfileRequest.objects.filter(id=bundle.obj.profile_request_id)[0].first_name
+        if bundle.obj.profile_request:
+            return bundle.obj.profile_request.first_name
+        elif bundle.obj.profile:
+            return bundle.obj.profile.first_name
+        else:
+            return None
 
     def dehydrate_last_name(self, bundle):
-        return ProfileRequest.objects.filter(id=bundle.obj.profile_request_id)[0].last_name
+        if bundle.obj.profile_request:
+            return bundle.obj.profile_request.last_name
+        elif bundle.obj.profile:
+            return bundle.obj.profile.last_name
+        else:
+            return None
 
     def dehydrate_middle_name(self, bundle):
-        return ProfileRequest.objects.filter(id=bundle.obj.profile_request_id)[0].middle_name
+        if bundle.obj.profile_request:
+            return bundle.obj.profile_request.middle_name
+        elif bundle.obj.profile:
+            return bundle.obj.profile.middle_name
+        else:
+            return None
 
     def dehydrate_organization(self, bundle):
-        return ProfileRequest.objects.filter(id=bundle.obj.profile_request_id)[0].organization
+        if bundle.obj.profile_request:
+            return bundle.obj.profile_request.organization
+        else:
+            return None
 
     def dehydrate_org_type(self, bundle):
-        return ProfileRequest.objects.filter(id=bundle.obj.profile_request_id)[0].get_organization_type_display()
+        if bundle.obj.profile_request:
+            return bundle.obj.profile_request.get_organization_type_display()
+        else:
+            return None
 
     def dehydrate_organization_other(self, bundle):
-        return ProfileRequest.objects.filter(id=bundle.obj.profile_request_id)[0].organization_other
+        if bundle.obj.profile_request:
+            return bundle.obj.profile_request.organization_other
+        else:
+            return None
 
     def dehydrate_profile_request_detail_url(self, bundle):
-        return ProfileRequest.objects.filter(id=bundle.obj.profile_request_id)[0].get_absolute_url()
+        if bundle.obj.profile_request:
+            return bundle.obj.profile_request.get_absolute_url()
+        else:
+            return None
 
-    # def apply_filters(self, request, applicable_filters):
-    #     base_object_list = super(ProfileRequestResource, self).apply_filters(request, applicable_filters)
-    #
-    #     query = request.GET.get('title__icontains', None)
-    #     if query:
-    #         query = query.split(' ')
-    #         q = Q()
-    #         for t in query:
-    #             q = q | Q(first_name__icontains=t)
-    #             q = q | Q(middle_name__icontains=t)
-    #             q = q | Q(last_name__icontains=t)
-    #             q = q | Q(organization__icontains=t)
-    #         base_object_list = base_object_list.filter(q).distinct()
-    #
-    #     return base_object_list
+    def apply_filters(self, request, applicable_filters):
+         base_object_list = super(DataRequestResource, self).apply_filters(request, applicable_filters)
+    
+         query = request.GET.get('title__icontains', None)
+         if query:
+             query = query.split(' ')
+             q = Q()
+             for t in query:
+                 q = q | Q(first_name__icontains=t)
+                 q = q | Q(middle_name__icontains=t)
+                 q = q | Q(last_name__icontains=t)
+                 q = q | Q(organization__icontains=t)
+                 q = q | Q(username__icontains=t)
+             base_object_list = base_object_list.filter(q).distinct()
+    
+         return base_object_list
 
     def prepend_urls(self):
         if settings.HAYSTACK_SEARCH:
