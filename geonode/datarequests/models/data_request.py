@@ -112,12 +112,17 @@ class DataRequest(BaseRequest):
         self.request_type = BaseRequest.REQUEST_TYPE.data
 
     def __unicode__(self):
-        return (_('{} request by {} {} {} of {}')
-            .format(
-                self.status,
-                unidecode(self.get_first_name()),
-                unidecode(self.get_last_name()),
-                unidecode(self.get_organization()),
+        if self.profile_request or self.profile:
+            return (_('{} request by {} {} of {}')
+                .format(
+                    self.status,
+                    unidecode(self.get_first_name()),
+                    unidecode(self.get_last_name()),
+                    unidecode(self.get_organization()),
+                ))
+        else:
+            return (_('Data request # {}').format(
+                self.pk
             ))
 
     def get_absolute_url(self):
