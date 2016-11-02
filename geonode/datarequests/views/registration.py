@@ -252,7 +252,7 @@ def data_request_view(request):
                 out['redirect_to'] = reverse('datarequests:email_verification_send')
 
             elif request.user.is_authenticated():
-                messages.info("Your request has been submitted")
+                messages.info(request, "Your request has been submitted")
                 out['success_url'] = reverse('home')
 
                 out['redirect_to'] = reverse('home')
