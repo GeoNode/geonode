@@ -335,7 +335,6 @@ class ProfileRequestResource(ModelResource):
     """Profile Request api"""
     profile_request_detail_url = fields.CharField()
     org_type = fields.CharField()
-    req_type = fields.CharField()
     status = fields.CharField()
     status_label = fields.CharField()
     is_rejected = fields.BooleanField(default=False)

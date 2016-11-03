@@ -87,30 +87,9 @@ class BaseRequest(TimeStampedModel, StatusModel):
         blank=True,
         null=True,
         )
-
-    def get_absolute_url(self, request_type):
-        return reverse('datarequests:'+request_type+'_request_detail', kwargs={'pk': self.pk})
-    
-    def get_status(self):
-        return self.status
-
-    def send_email(self, subj, msg, html_msg):
-        text_content = msg
-
-        html_content = html_msg
-
-        email_subject = _(subj)
-
-        msg = EmailMultiAlternatives(
-            email_subject,
-            text_content,
-            settings.DEFAULT_FROM_EMAIL,
-            [self.email, ]
-        )
-        msg.attach_alternative(html_content, "text/html")
-        msg.send()
     
     class Meta:
+        abstract = True
         app_label = "datarequests"
 
 class RequestRejectionReason(models.Model):

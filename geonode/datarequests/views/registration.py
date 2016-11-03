@@ -315,7 +315,7 @@ def email_verification_confirm(request):
                 profile_request.set_status(BaseRequest.STATUS.pending)
                 pprint("returned status="+profile_request.get_status())
                 pprint(profile_request.status)
-                profile_request.date = timezone.now()
+                profile_request.verification_date = timezone.now()
                 pprint(email+" has been confirmed")
                 profile_request.save()
                 profile_request.send_new_request_notif_to_admins()

@@ -167,7 +167,7 @@ class ProfileRequest(BaseRequest):
         
     
     def __init__(self, *args, **kwargs):
-        super(ProfileRequest, self).__init__(*args, **kwargs)
+        #super(ProfileRequest, self).__init__(*args, **kwargs)
         self.request_type=BaseRequest.REQUEST_TYPE.profile
         self.status = BaseRequest.STATUS.unconfirmed
 
@@ -197,12 +197,6 @@ class ProfileRequest(BaseRequest):
         self.status = status
         self.administrator = administrator
         self.save()
-        
-    def get_status(self):
-        parent_status = super(ProfileRequest,self).get_status()
-        pprint("parent_status="+str(parent_status))
-        pprint("self_status="+(str(self.status)))
-        return self.status
 
     def create_account(self):
         profile = None
@@ -318,7 +312,23 @@ class ProfileRequest(BaseRequest):
                     out.append(str(val))
 
         return out
-        
+    
+    def send_email(self, subj, msg, html_msg):
+        text_content = msg
+
+        html_content = html_msg
+
+        email_subject = _(subj)
+
+        msg = EmailMultiAlternatives(
+            email_subject,
+            text_content,
+            settings.DEFAULT_FROM_EMAIL,
+            [self.email, ]
+        )
+        msg.attach_alternative(html_content, "text/html")
+        msg.send()
+    
     def send_new_request_notif_to_admins(self):
         site = Site.objects.get_current()
         text_content = email_utils.NEW_REQUEST_EMAIL_TEXT.format(

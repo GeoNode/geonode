@@ -107,7 +107,6 @@ class DataRequest(BaseRequest):
         ordering = ('-created',)
 
     def __init__(self, *args, **kwargs):
-        super(DataRequest, self).__init__(*args, **kwargs)
         self.status = BaseRequest.STATUS.unconfirmed
         self.request_type = BaseRequest.REQUEST_TYPE.data
 
@@ -224,7 +223,23 @@ class DataRequest(BaseRequest):
                     out.append(str(val))
 
         return out
-        
+
+    def send_email(self, subj, msg, html_msg):
+        text_content = msg
+
+        html_content = html_msg
+
+        email_subject = _(subj)
+
+        msg = EmailMultiAlternatives(
+            email_subject,
+            text_content,
+            settings.DEFAULT_FROM_EMAIL,
+            [self.email, ]
+        )
+        msg.attach_alternative(html_content, "text/html")
+        msg.send()
+
     def send_new_request_notif_to_admins(self):
         site = Site.objects.get_current()
         text_content = email_utils.NEW_REQUEST_EMAIL_TEXT.format(
