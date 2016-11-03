@@ -34,7 +34,7 @@ from .base_request import BaseRequest
 
 
 
-class ProfileRequestA(BaseRequest):
+class ProfileRequest(BaseRequest):
 
     # Choices that will be used for fields
     LOCATION_CHOICES = Choices(
