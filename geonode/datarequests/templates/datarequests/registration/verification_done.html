@@ -1,0 +1,13 @@
+{% extends "site_base.html" %}
+
+{% load url from future %}
+{% load i18n %}
+
+{% block head_title %}{% trans "Email address confirmed" %}{% endblock %}
+
+{% block body %}
+    <h2>{% trans "Email address confirmed" %}</h2>
+
+    <p>{% blocktrans %}Your data request registration is now under evaluation. Once your request is evaluated, you will receive an email from us regarding its approval. {% endblocktrans %}</p>
+    <p>{% blocktrans %}If you have further questions, contact us at <strong>{{ support_email }}</strong>, and we'll be glad to assist you.{% endblocktrans %}</p>
+{% endblock %}

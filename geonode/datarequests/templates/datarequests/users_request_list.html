@@ -1,0 +1,23 @@
+{% extends "layers/layer_base.html" %}
+{% load i18n %}
+{% load staticfiles %}
+{% load url from future %}
+
+{% block title %} {% trans "Data Request Profiles" %} - {{ block.super }} {% endblock %}
+
+{% block body_class %}Data Request Profiles{% endblock %}
+
+{% block body %}
+<div class="page-header">
+  <h2 class="page-title">{% trans "Data Request Profiles" %}</h2>
+</div>
+     {% include "datarequests/_users_request_content.html" %}
+
+{% block extra_script %}
+  <script type="text/javascript">
+  {% autoescape off %}
+    csrf_token =  "{{ csrf_token }}"
+  {% endautoescape %}
+  </script>
+  
+
