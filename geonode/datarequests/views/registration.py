@@ -32,7 +32,7 @@ from geonode.security.views import _perms_info_json
 from geonode.datarequests.forms import (
     ProfileRequestForm, DataRequestForm, DataRequestShapefileForm)
     
-from geonode.datarequests.models import DataRequestProfile, DataRequest, ProfileRequest
+from geonode.datarequests.models import DataRequestProfile, DataRequest, ProfileRequest, BaseRequest
 
 from geonode.tasks.jurisdiction import place_name_update, jurisdiction_style
 from geonode.tasks.jurisdiction2 import compute_size_update
@@ -233,7 +233,7 @@ def data_request_view(request):
                 request_letter = create_letter_document(details_form.clean()['letter_file'], profile = request.user)
                 data_request_obj.request_letter = request_letter
                 data_request_obj.profile = request.user
-                data_request_obj.set_status('pending')
+                data_request_obj.set_status(BaseRequest.STATUS.pending)
             else: 
                 request_letter = create_letter_document(details_form.clean()['letter_file'], profile_request = profile_request_obj)
                 data_request_obj.profile_request = profile_request_obj
@@ -310,7 +310,7 @@ def email_verification_confirm(request):
             )
             # Only verify once
             if not profile_request.verification_date and profile_request.status == "unconfirmed":
-                profile_request.set_status('pending')
+                profile_request.set_status(BaseRequest.STATUS.pending)
                 profile_request.date = timezone.now()
                 pprint(email+" has been confirmed")
                 profile_request.save()
@@ -320,7 +320,7 @@ def email_verification_confirm(request):
                     dr.save()
                     dr.set_status('pending')
                 profile_requests = ProfileRequest.objects.filter(email=email, status="unconfirmed")
-                set_status_for_multiple_requests.delay(profile_requests,"cancelled")
+                set_status_for_multiple_requests.delay(profile_requests,BaseRequest.STATUS.cancelled)
                 
                     
         except ObjectDoesNotExist:
