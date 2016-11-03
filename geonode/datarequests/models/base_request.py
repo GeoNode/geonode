@@ -90,6 +90,9 @@ class BaseRequest(TimeStampedModel, StatusModel):
 
     def get_absolute_url(self, request_type):
         return reverse('datarequests:'+request_type+'_request_detail', kwargs={'pk': self.pk})
+    
+    def get_status(self):
+        return self.status
 
     def send_email(self, subj, msg, html_msg):
         text_content = msg
