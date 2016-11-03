@@ -197,6 +197,12 @@ class ProfileRequest(BaseRequest):
         self.status = status
         self.administrator = administrator
         self.save()
+        
+    def get_status(self):
+        parent_status = super(ProfileRequest,self).get_status()
+        pprint("parent_status="+str(parent_status))
+        pprint("self_status="+(str(self.status)))
+        return self.status
 
     def create_account(self):
         profile = None
