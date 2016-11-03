@@ -192,6 +192,11 @@ class ProfileRequest(BaseRequest):
         self.verification_key = get_random_string(length=50)
         self.key_created_date = timezone.now()
         self.save()
+        
+    def set_status(self, status, administrator = None):
+        self.status = status
+        self.administrator = administrator
+        self.save()
 
     def create_account(self):
         profile = None
