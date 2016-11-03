@@ -21,10 +21,10 @@ from unidecode import unidecode
 from geonode.documents.models import Document
 from geonode.layers.models import Layer
 from geonode.people.models import Profile
-from .profile_request import ProfileRequestA
+from .profile_request import ProfileRequest
 from .base_request import BaseRequest
 
-class DataRequestA(BaseRequest):
+class DataRequest(BaseRequest):
 
     DATA_TYPE_CHOICES = Choices(
         ('interpreted', _('Interpreted')),
@@ -46,7 +46,7 @@ class DataRequestA(BaseRequest):
 
 
     profile_request = models.ForeignKey(
-        ProfileRequestA,
+        ProfileRequest,
         null=True,
         blank=True
     )
