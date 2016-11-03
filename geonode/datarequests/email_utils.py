@@ -1,3 +1,15 @@
+NEW_REQUEST_EMAIL_TEXT="""
+    Hello LiPAD Admins,
+    A new {} request has been submitted. You can view the request using the following link:
+    {}
+    """
+
+NEW_REQUEST_EMAIL_HTML="""
+    <p>Hello LiPAD Admins,</p>
+    <p>A new {} request has been submitted. You can view the request using the following link:</p>
+    <p><a rel="nofollow" target="_blank" href="{}">{}</a></p>
+    """
+
 VERIFICATION_EMAIL_TEXT="""
      Dear <strong>{}</strong>,
 
