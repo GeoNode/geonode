@@ -1,0 +1,8 @@
+{% load i18n %}
+
+<div class="col-md-6">
+  <ul class="list-inline pull-left" id="sort">
+    <li><a data-value="-date" data-filter="order_by" class="selected" ng-click="single_choice_listener($event)">{% trans "Most recent" %}</a></li>
+    <li><a data-value="date" data-filter="order_by" ng-click="single_choice_listener($event)">{% trans "Less recent" %}</a></li>
+  </ul>
+</div>
