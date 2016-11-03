@@ -219,6 +219,22 @@ class DataRequest(BaseRequest):
                     out.append(str(val))
 
         return out
+        
+    def send_new_request_notif_to_admins(self):
+        site = Site.objects.get_current()
+        text_content = email_utils.NEW_REQUEST_EMAIL_TEXT.format(
+            self.request_type,
+            self.get_absolute_url()
+        )
+        
+        html_content=email_utils.NEW_REQUEST_EMAIL_HTML.format(
+            self.request_type,
+            self.get_absolute_url(),
+            self.get_absolute_url()
+        )
+        
+        email_subj = "[LiPAD] A new request has been submitted"
+        self.send_email(email_subj,text_content,html_content)
 
     def send_approval_email(self, username):
         site = Site.objects.get_current()
