@@ -106,11 +106,6 @@ class BaseRequest(TimeStampedModel, StatusModel):
         )
         msg.attach_alternative(html_content, "text/html")
         msg.send()
-        
-    def  set_status(self, status, administrator = None):
-        self.status = status
-        self.administrator = administrator
-        self.save()
     
     class Meta:
         app_label = "datarequests"
