@@ -318,7 +318,7 @@ def email_verification_confirm(request):
                 if profile_request.data_request:
                     dr = profile_request.data_request
                     dr.save()
-                    dr.set_status('pending')
+                    dr.set_status(BaseRequest.STATUS.pending)
                 profile_requests = ProfileRequest.objects.filter(email=email, status="unconfirmed")
                 set_status_for_multiple_requests.delay(profile_requests,BaseRequest.STATUS.cancelled)
                 
