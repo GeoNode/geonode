@@ -1,0 +1,26 @@
+{% load i18n %}
+<div class="row">
+  <div class="col-md-3">
+    <div class="selections">
+      <h5>
+        {% trans "Filters" %}
+        <a href="." id="clear-search" class="pull-right">{% trans "Clear all filters" %}</a>
+      </h5>
+      </div>
+        {% include "search/_text_filter.html" %}
+      <div id="slide-pane">
+        {% include "datarequests/_profile_request_filters.html" %}
+      </div>
+  </div>
+  <div class="col-md-9">
+    <div class="col-md-3">
+      <span>Total: </span>
+      <span ng-bind="total_counts"></span>
+    </div>
+    {% include "datarequests/_requests_sort_filters.html" %}
+    <div class="col-md-12 grid-spacer">
+    {% include 'datarequests/_profile_request_list_item.html' %}
+    {% include 'search/_pagination.html' %}
+    </div>
+  </div>
+</div>
