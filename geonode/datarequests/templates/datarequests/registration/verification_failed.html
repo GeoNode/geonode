@@ -1,0 +1,13 @@
+{% extends "site_base.html" %}
+
+{% load url from future %}
+{% load i18n %}
+
+{% block head_title %}{% trans "Email address verification failed" %}{% endblock %}
+
+{% block body %}
+    <h2>{% trans "Email address verification failed" %}</h2>
+
+    <p>{% blocktrans %}You have given an invalid email address verification code.{% endblocktrans %}</p>
+    <p>{% blocktrans %}Are you sure that you gave a valid one? Contact us at <strong>{{ support_email }}</strong>, and we'll be glad to assist you.{% endblocktrans %}</p>
+{% endblock %}
