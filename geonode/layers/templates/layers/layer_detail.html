@@ -241,7 +241,7 @@
     <ul class="list-group">
       {% if resource.storeType != "remoteStore" %}
         <li class="list-group-item">
-        {% if links %}
+        {% if links or links_download %}
            <button class="btn btn-primary btn-md btn-block" data-toggle="modal" data-target="#download-layer">{% trans "Download Layer" %}</button>
         {% else %}
           {% if request.user.is_authenticated %}
@@ -258,13 +258,40 @@
             <h4 class="modal-title" id="myModalLabel">{% trans "Download Layer" %}</h4>
           </div>
           <div class="modal-body">
-            {% if links %}
-            <ul>
-              {% for link in links %}
-              <li><a href="{{ link.url }}" target="_blank">{% trans link.name %}</a></li>
-              {% endfor %}
-            </ul>
-            {% endif %}
+            <div class="tabbable">
+                <ul class="nav nav-tabs">
+                    {% if links %}
+                    <li class="active"><a href="#download_tab1" data-toggle="tab">Images</a></li>
+                    {% endif %}
+                    {% if links_download %}
+                    <li><a href="#download_tab2" data-toggle="tab">Data</a></li>
+                    {% endif %}
+                </ul>
+                <div class="tab-content">
+                {% if links %}
+                    <div class="tab-pane active" id="download_tab1">
+                        <li class="active">
+                            <ul>
+                              {% for link in links %}
+                              <li><a href="{{ link.url }}" target="_blank">{% trans link.name %}</a></li>
+                              {% endfor %}
+                            </ul>
+                        </li>
+                    </div>
+                {% endif %}
+                {% if links_download %}
+                    <div class="tab-pane" id="download_tab2">
+                        <li>
+                            <ul>
+                              {% for link in links_download %}
+                              <li><a href="{{ link.url }}" target="_blank">{% trans link.name %}</a></li>
+                              {% endfor %}
+                            </ul>
+                        </li>
+                    </div>
+                {% endif %}
+                </div>
+            </div>
           </div>
           <div class="modal-footer">
             <button type="button" class="btn btn-default" data-dismiss="modal">{% trans "Close" %}</button>

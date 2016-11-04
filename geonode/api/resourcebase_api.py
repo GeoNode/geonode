@@ -456,13 +456,15 @@ class CommonModelApi(ModelResource):
         to_be_serialized = self.alter_list_data_to_serialize(
             request,
             to_be_serialized)
-        return self.create_response(request, to_be_serialized)
+
+        return self.create_response(request, to_be_serialized, response_objects=objects)
 
     def create_response(
             self,
             request,
             data,
             response_class=HttpResponse,
+            response_objects=None,
             **response_kwargs):
         """
         Extracts the common "which-format/serialize/return-response" cycle.
@@ -489,12 +491,19 @@ class CommonModelApi(ModelResource):
             'rating',
         ]
 
+        # If an user does not have at least view permissions, he won't be able to see the resource at all.
+        if response_objects:
+            filtered_objects_ids = [item.id for item in response_objects if
+                                    request.user.has_perm('view_resourcebase', item.get_self_resource())]
         if isinstance(
                 data,
                 dict) and 'objects' in data and not isinstance(
                 data['objects'],
                 list):
-            data['objects'] = list(data['objects'].values(*VALUES))
+            if filtered_objects_ids:
+                data['objects'] = [x for x in list(data['objects'].values(*VALUES)) if x['id'] in filtered_objects_ids]
+            else:
+                data['objects'] = list(data['objects'].values(*VALUES))
 
         desired_format = self.determine_format(request)
         serialized = self.serialize(request, data, desired_format)
