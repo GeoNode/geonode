@@ -78,7 +78,9 @@ def resource_permissions(request, resource_id):
             for user, perms in info_users.items():
                 if 'download_resourcebase' in perms and 'view_resourcebase' not in perms:
                     success = False
-                    message = "User '" + str(user) + "' has 'Download' permissions but cannot access the resource. Please update permissions consistently!"
+                    message = 'User " + str(user) + " has Download permissions but ' \
+                              'cannot access the resource. ' \
+                              'Please update permissions consistently!'
 
             return HttpResponse(
                 json.dumps({'success': success, 'message': message}),
