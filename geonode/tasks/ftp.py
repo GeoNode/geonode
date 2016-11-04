@@ -4,7 +4,8 @@ from fabric.api import *
 from fabric.contrib.console import confirm
 from fabric.tasks import execute
 from django.core.mail import send_mail
-from geonode import settings
+#from geonode import settings
+from django.conf import settings
 from geonode.cephgeo.models import FTPRequest, FTPStatus
 
 import logging

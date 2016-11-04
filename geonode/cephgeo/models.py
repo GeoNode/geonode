@@ -1,6 +1,6 @@
 from django.db import models
 from geonode.layers.models import Layer
-from geonode import settings
+from django.conf import settings
 from datetime import datetime
 import json
 from geonode.people.models import Profile
