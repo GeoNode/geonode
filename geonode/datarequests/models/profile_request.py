@@ -28,7 +28,7 @@ from geonode.people.models import OrganizationType, Profile
 from geonode.groups.models import GroupProfile, GroupMember
 from geonode.layers.models import Layer
 
-import geonode.settings as local_settings
+from django.conf import settings as local_settings
 from geonode.tasks.mk_folder import create_folder
 from .base_request import BaseRequest
 
