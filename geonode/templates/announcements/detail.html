@@ -8,9 +8,9 @@
   <h2>{{ announcement.title }} ({{ announcement.level_label }})</h2>
 </div>
 <p>{{ announcement.creation_date }}</p>
-<div class="col-md-10">
+<div class="col-md-10" style="width:100%;">
   <blockquote>
-    <p>{{ announcement.content }}</p>
+    <p>{{ announcement.content|safe }}</p>
     <small>{{ announcement.creator }}</small>
   </blockquote>
 </div>
