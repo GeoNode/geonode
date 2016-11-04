@@ -30,7 +30,7 @@ from unidecode import unidecode
 
 import traceback
 
-import geonode.settings as local_settings
+from django.conf import settings as local_settings
 
 
 
