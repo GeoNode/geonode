@@ -322,7 +322,7 @@ class GXPMapBase(object):
             # Mark the last added layer as selected - important for data page
             config["map"]["layers"][len(layers) - 1]["selected"] = True
         else:
-            (def_map_config, def_map_layers) = default_map_config(request)
+            (def_map_config, def_map_layers) = default_map_config(None)
             config = def_map_config
             layers = def_map_layers
 
@@ -466,7 +466,7 @@ def default_map_config(request):
         else:
             u = uuid.uuid1()
             access_token = u.hex
-    
+
     DEFAULT_MAP_CONFIG = _default_map.viewer_json(user, access_token, *DEFAULT_BASE_LAYERS)
 
     return DEFAULT_MAP_CONFIG, DEFAULT_BASE_LAYERS
