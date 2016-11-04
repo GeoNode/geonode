@@ -263,6 +263,7 @@ define(['underscore',
         }
         var checked = checkFiles();
         if ($.isEmptyObject(layers) || !checked) {
+            $('#please-wait').modal('toggle');//to hide please wait modal
             alert(gettext('You are uploading an incomplete set of files.'));
             console.log('You are uploading an incomplete set of files.');
         } else {
@@ -272,11 +273,11 @@ define(['underscore',
         }
         return false;
     };
-    
-    /**Function which submits the form if no 
-    
+
+    /**Function which submits the form if no
+
     /** Function which submits the form fields
-     *  
+     *
      */
     doFormSubmit = function(){
         var form = new FormData($("#file-uploader")[0]);
@@ -311,10 +312,10 @@ define(['underscore',
                 }
             }
         });
-           
+
      }
-     
-     
+
+
 
     /** Function to ...
      *
@@ -380,12 +381,12 @@ define(['underscore',
                 files_changed = false;
           }
         });
-        
+
         $("#file-input").change(function (event) {
             files_changed = true;
         });
 
-        
+
         $(options.clear_button).on('click', doClearState);
         $(options.upload_button).on('click', doUploads);
         $("[id^=delete]").on('click', doDelete);
