@@ -29,7 +29,7 @@ from django.utils.text import slugify
 from geonode.tasks.update import fhm_metadata_update, style_update, seed_layers, pl2_metadata_update, sar_metadata_update, layer_default_style
 from geonode.base.enumerations import CHARSETS
 
-from geonode import settings
+from django.conf import settings
 from geonode.layers.models import Layer
 
 # Create your views here.

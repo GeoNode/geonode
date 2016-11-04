@@ -1,7 +1,7 @@
 from django.test import TestCase
 from django.http import HttpRequest
 
-from geonode import settings
+from django.conf import settings
 from changuito import CartProxy
 from changuito import models as cartmodels
 

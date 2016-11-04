@@ -35,7 +35,7 @@ import django_cas_ng
 import autocomplete_light
 from geonode.views import forbidden
 
-from geonode import settings
+#from geonode import settings
 
 # Setup Django Admin
 autocomplete_light.autodiscover()
