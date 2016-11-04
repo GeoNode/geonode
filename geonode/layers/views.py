@@ -329,7 +329,6 @@ def layer_detail(request, layername, template='layers/layer_detail.html'):
     else:
         links = layer.link_set.download().filter(
             name__in=settings.DOWNLOAD_FORMATS_RASTER)
-
     links_view = [item for idx, item in enumerate(links) if
                   item.url and 'wms' in item.url or 'gwc' in item.url]
     links_download = [item for idx, item in enumerate(links) if
