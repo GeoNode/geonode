@@ -127,9 +127,7 @@
     <ul class="list-group">
       <li class="list-group-item"><a href="{% url "layer_upload" %}"><i class="fa fa-cloud-upload"></i> {% trans "Upload new layers" %}</a></li>
       <li class="list-group-item"><a href="{% url "new_map" %}"><i class="fa fa-map-marker"></i> {% trans "Create a new map" %}</a></li>
-      {% if_has_tag actor_url %}
-      <li class="list-group-item"><a href="{% actor_url profile %}"><i class="fa fa-fire"></i> {% trans "My Activities" %}</a></li>
-      {% endif_has_tag %}
+      <li class="list-group-item"><a href="{% url "user-activity" profile.username %}"><i class="fa fa-fire"></i> {% trans "My Activities" %}</a></li>
     </ul>
     <ul class="list-group">
       {% if USE_NOTIFICATIONS %}
@@ -159,7 +157,7 @@
     </ul>
     {% endif %}
     <ul class="list-group">
-      <li class="list-group-item"><a href="{% actor_url profile %}"><i class="fa fa-fire"></i> {% trans "User Activities" %}</a></li>
+      <li class="list-group-item"><a href="{% url "user-activity" profile.username %}"><i class="fa fa-fire"></i> {% trans "User Activities" %}</a></li>
     </ul>
     {% if_has_tag if_relationship %}
       {% include "relationships/_profile_follow.html" %}
@@ -171,7 +169,7 @@
   {% endif_has_tag %}
 </div>
 
-<div class="col-md-9" ng-if="results.length > 0">
+<div class="col-md-9">
   <h4>{% trans "Resources" %}</h4>
   <div class="col-md-12">
     {% include "people/_profile_filters.html" %}
