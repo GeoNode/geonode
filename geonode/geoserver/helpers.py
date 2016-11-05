@@ -18,58 +18,53 @@
 #
 #########################################################################
 
-import json
-import sys
-import os
-import urllib
-import logging
-import re
-import time
-import errno
-import uuid
+from collections import namedtuple, defaultdict
 import datetime
-from bs4 import BeautifulSoup
-import geoserver
-import httplib2
-
-
+from decimal import Decimal
+import errno
+from itertools import cycle, izip
+import json
+import logging
+import os
+import re
+import sys
+from threading import local
+import time
+import urllib
 from urlparse import urlparse
 from urlparse import urlsplit
-from threading import local
-from collections import namedtuple
-from itertools import cycle, izip
-from lxml import etree
-import xml.etree.ElementTree as ET
-from decimal import Decimal
+import uuid
 
-from owslib.wcs import WebCoverageService
-from owslib.util import http_post
-
-from django.core.exceptions import ImproperlyConfigured
+from agon_ratings.models import OverallRating
+from bs4 import BeautifulSoup
+from dialogos.models import Comment
+from django.conf import settings
 from django.contrib.contenttypes.models import ContentType
+from django.core.exceptions import ImproperlyConfigured
 from django.db.models.signals import pre_delete
 from django.template.loader import render_to_string
-from django.conf import settings
 from django.utils.translation import ugettext as _
-
-from dialogos.models import Comment
-from agon_ratings.models import OverallRating
-
-from gsimporter import Client
-from owslib.wms import WebMapService
-from geoserver.store import CoverageStore, DataStore, datastore_from_index,\
-    coveragestore_from_index, wmsstore_from_index
-from geoserver.workspace import Workspace
+import geoserver
 from geoserver.catalog import Catalog
-from geoserver.catalog import FailedRequestError, UploadError
 from geoserver.catalog import ConflictingDataError
+from geoserver.catalog import FailedRequestError, UploadError
 from geoserver.resource import FeatureType, Coverage
+from geoserver.store import CoverageStore, DataStore, datastore_from_index, \
+    coveragestore_from_index, wmsstore_from_index
 from geoserver.support import DimensionInfo
+from geoserver.workspace import Workspace
+from gsimporter import Client
+import httplib2
+from lxml import etree
+from owslib.util import http_post
+from owslib.wcs import WebCoverageService
+from owslib.wms import WebMapService
 
 from geonode import GeoNodeException
-from geonode.layers.utils import layer_type, get_files
-from geonode.layers.models import Layer, Attribute, Style
 from geonode.layers.enumerations import LAYER_ATTRIBUTE_NUMERIC_DATA_TYPES
+from geonode.layers.models import Layer, Attribute, Style
+from geonode.layers.utils import layer_type, get_files
+import xml.etree.ElementTree as ET
 
 
 logger = logging.getLogger(__name__)
@@ -713,7 +708,38 @@ def set_attributes(layer, overwrite=False):
         except Exception:
             attribute_map = []
 
-    # we need 3 more items for description, attribute_label and display_order
+    # Get attribute statistics & package for call to really_set_attributes()
+    attribute_stats = defaultdict(dict)
+    # Add new layer attributes if they don't already exist
+    for attribute in attribute_map:
+        field, ftype = attribute
+        if field is not None:
+            if Attribute.objects.filter(layer=layer, attribute=field).exists():
+                continue
+            else:
+                if is_layer_attribute_aggregable(
+                        layer.storeType,
+                        field,
+                        ftype):
+                    logger.debug("Generating layer attribute statistics")
+                    result = get_attribute_statistics(layer.name, field)
+                else:
+                    result = None
+                attribute_stats[layer.name][field] = result
+
+    really_set_attributes(
+        layer, attribute_map, overwrite=overwrite, attribute_stats=attribute_stats
+    )
+
+def really_set_attributes(layer, attribute_map, overwrite=False, attribute_stats=None):
+    """ *layer*: a geonode.layers.models.Layer instance
+        *fields*: a list of 2-lists specifying attribute names and types,
+            example: [ ['id', 'Integer'], ... ]
+        *overwrite*: replace existing attributes with new values if name/type matches.
+        *attribute_stats*: dictionary of return values from get_attribute_statistics(),
+            of the form to get values by referencing attribute_stats[<layer_name>][<field_name>].
+    """
+    # we need 3 more items; description, attribute_label, and display_order
     attribute_map_dict = {
         'field': 0,
         'ftype': 1,
@@ -754,22 +780,18 @@ def set_attributes(layer, overwrite=False):
                     description=description, attribute_label=label,
                     display_order=display_order)
                 if created:
-                    if is_layer_attribute_aggregable(
-                            layer.storeType,
-                            field,
-                            ftype):
+                    result = attribute_stats[layer.name][field]
+                    if result is not None:
                         logger.debug("Generating layer attribute statistics")
-                        result = get_attribute_statistics(layer.name, field)
-                        if result is not None:
-                            la.count = result['Count']
-                            la.min = result['Min']
-                            la.max = result['Max']
-                            la.average = result['Average']
-                            la.median = result['Median']
-                            la.stddev = result['StandardDeviation']
-                            la.sum = result['Sum']
-                            la.unique_values = result['unique_values']
-                            la.last_stats_updated = datetime.datetime.now()
+                        la.count = result['Count']
+                        la.min = result['Min']
+                        la.max = result['Max']
+                        la.average = result['Average']
+                        la.median = result['Median']
+                        la.stddev = result['StandardDeviation']
+                        la.sum = result['Sum']
+                        la.unique_values = result['unique_values']
+                        la.last_stats_updated = datetime.datetime.now()
                     la.visible = ftype.find("gml:") != 0
                     la.display_order = iter
                     la.save()
@@ -780,6 +802,8 @@ def set_attributes(layer, overwrite=False):
                         layer.name.encode('utf-8'))
     else:
         logger.debug("No attributes found")
+
+
 
 
 def set_styles(layer, gs_catalog):
@@ -1180,7 +1204,7 @@ def geoserver_upload(
         box = gs_resource.native_bbox[:4]
         minx, maxx, miny, maxy = [float(a) for a in box]
         if -180 <= minx <= 180 and -180 <= maxx <= 180 and \
-           -90 <= miny <= 90 and -90 <= maxy <= 90:
+           - 90 <= miny <= 90 and -90 <= maxy <= 90:
             logger.info('GeoServer failed to detect the projection for layer '
                         '[%s]. Guessing EPSG:4326', name)
             # If GeoServer couldn't figure out the projection, we just
