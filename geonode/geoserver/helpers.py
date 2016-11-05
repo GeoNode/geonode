@@ -64,6 +64,7 @@ from geonode import GeoNodeException
 from geonode.layers.enumerations import LAYER_ATTRIBUTE_NUMERIC_DATA_TYPES
 from geonode.layers.models import Layer, Attribute, Style
 from geonode.layers.utils import layer_type, get_files
+from geonode.utils import set_attributes
 import xml.etree.ElementTree as ET
 
 
@@ -727,83 +728,9 @@ def set_attributes_from_geoserver(layer, overwrite=False):
                     result = None
                 attribute_stats[layer.name][field] = result
 
-    really_set_attributes(
+    set_attributes(
         layer, attribute_map, overwrite=overwrite, attribute_stats=attribute_stats
     )
-
-def really_set_attributes(layer, attribute_map, overwrite=False, attribute_stats=None):
-    """ *layer*: a geonode.layers.models.Layer instance
-        *fields*: a list of 2-lists specifying attribute names and types,
-            example: [ ['id', 'Integer'], ... ]
-        *overwrite*: replace existing attributes with new values if name/type matches.
-        *attribute_stats*: dictionary of return values from get_attribute_statistics(),
-            of the form to get values by referencing attribute_stats[<layer_name>][<field_name>].
-    """
-    # we need 3 more items; description, attribute_label, and display_order
-    attribute_map_dict = {
-        'field': 0,
-        'ftype': 1,
-        'description': 2,
-        'label': 3,
-        'display_order': 4,
-    }
-    for attribute in attribute_map:
-        attribute.extend((None, None, 0))
-
-    attributes = layer.attribute_set.all()
-    # Delete existing attributes if they no longer exist in an updated layer
-    for la in attributes:
-        lafound = False
-        for attribute in attribute_map:
-            field, ftype, description, label, display_order = attribute
-            if field == la.attribute:
-                lafound = True
-                # store description and attribute_label in attribute_map
-                attribute[attribute_map_dict['description']] = la.description
-                attribute[attribute_map_dict['label']] = la.attribute_label
-                attribute[attribute_map_dict['display_order']] = la.display_order
-        if overwrite or not lafound:
-            logger.debug(
-                "Going to delete [%s] for [%s]",
-                la.attribute,
-                layer.name.encode('utf-8'))
-            la.delete()
-
-    # Add new layer attributes if they don't already exist
-    if attribute_map is not None:
-        iter = len(Attribute.objects.filter(layer=layer)) + 1
-        for attribute in attribute_map:
-            field, ftype, description, label, display_order = attribute
-            if field is not None:
-                la, created = Attribute.objects.get_or_create(
-                    layer=layer, attribute=field, attribute_type=ftype,
-                    description=description, attribute_label=label,
-                    display_order=display_order)
-                if created:
-                    result = attribute_stats[layer.name][field]
-                    if result is not None:
-                        logger.debug("Generating layer attribute statistics")
-                        la.count = result['Count']
-                        la.min = result['Min']
-                        la.max = result['Max']
-                        la.average = result['Average']
-                        la.median = result['Median']
-                        la.stddev = result['StandardDeviation']
-                        la.sum = result['Sum']
-                        la.unique_values = result['unique_values']
-                        la.last_stats_updated = datetime.datetime.now()
-                    la.visible = ftype.find("gml:") != 0
-                    la.display_order = iter
-                    la.save()
-                    iter += 1
-                    logger.debug(
-                        "Created [%s] attribute for [%s]",
-                        field,
-                        layer.name.encode('utf-8'))
-    else:
-        logger.debug("No attributes found")
-
-
 
 
 def set_styles(layer, gs_catalog):
