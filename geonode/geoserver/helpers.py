@@ -462,7 +462,7 @@ def gs_slurp(
             })
 
             # recalculate the layer statistics
-            set_attributes(layer, overwrite=True)
+            set_attributes_from_geoserver(layer, overwrite=True)
 
             # Fix metadata links if the ip has changed
             if layer.link_set.metadata().count() > 0:
@@ -626,7 +626,7 @@ def get_stores(store_type=None):
     return store_list
 
 
-def set_attributes(layer, overwrite=False):
+def set_attributes_from_geoserver(layer, overwrite=False):
     """
     Retrieve layer attribute names & types from Geoserver,
     then store in GeoNode database using Attribute model
