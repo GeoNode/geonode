@@ -15,3 +15,4 @@ MIGRATE_APPS:
   - people
   - base
   - services
+  - oauth2_provider

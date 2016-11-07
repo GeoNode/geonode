@@ -240,7 +240,7 @@ class Map(ResourceBase, GXPMapBase):
         bbox = None
         index = 0
 
-        DEFAULT_MAP_CONFIG, DEFAULT_BASE_LAYERS = default_map_config()
+        DEFAULT_MAP_CONFIG, DEFAULT_BASE_LAYERS = default_map_config(None)
 
         # Save the map in order to create an id in the database
         # used below for the maplayers.
