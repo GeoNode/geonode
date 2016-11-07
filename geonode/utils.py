@@ -753,7 +753,13 @@ def set_attributes(layer, attribute_map, overwrite=False, attribute_stats=None):
                     description=description, attribute_label=label,
                     display_order=display_order)
                 if created:
-                    result = attribute_stats[layer.name][field] if attribute_stats else None
+                    if (not attribute_stats
+                        or layer.name not in attribute_stats
+                        or field not in attribute_stats[layer.name]):
+                        result = None
+                    else:
+                        result = attribute_stats[layer.name][field]
+
                     if result is not None:
                         logger.debug("Generating layer attribute statistics")
                         la.count = result['Count']
