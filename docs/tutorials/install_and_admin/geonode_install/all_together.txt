@@ -29,12 +29,12 @@ Then edit the configuration file::
     sudo gedit local_settings.py
 
 Add the `ALLOWED_HOSTS` and `PROXY_ALLOWED_HOSTS` variables at the top with the
-following values:::
+following values::
 
     ALLOWED_HOSTS = ['127.0.0.1', 'localhost', '::1']
     PROXY_ALLOWED_HOSTS = ("127.0.0.1", 'localhost', '::1')
 
-Add the `POSTGIS_VERSION` variable matching your PostGIS version:::
+Add the `POSTGIS_VERSION` variable matching your PostGIS version::
 
     POSTGIS_VERSION = (2, 1, 2)
 
@@ -62,7 +62,7 @@ and comment the one with empty `ENGINE` variable. Also set the `NAME` variable t
 
 Then configure GeoServer location:
 Change the value of the `LOCATION` and `PUBLIC_LOCATION` variables as follows,
-also set the `DATASTORE` variable to `datastore`:::
+also set the `DATASTORE` variable to `datastore`::
 
     OGC_SERVER = {
         'default' : {
@@ -73,7 +73,7 @@ also set the `DATASTORE` variable to `datastore`:::
         'DATASTORE': 'datastore',
     }
 
-The resulting configuration file should look like this:::
+The resulting configuration file should look like this::
 
     import os
 
@@ -156,7 +156,7 @@ Initialize the Database
 
 We' we already setup GeoNode databases and user permissions for PostgreSQL. And
 instruct GeoNode on how to access the database. Now let's get the database ready
-running the following:::
+running the following::
 
     cd /home/geonode/geonode
     python manage.py syncdb --noinput
@@ -165,7 +165,7 @@ If you get an error message it is likely that database access is not set properl
 Check you pg_hba.conf file and GeoNode `local_settings.py` file. Remember to restart
 PostgreSQL to make any changes to pg_hba.conf effective.
 
-Test that you are able to connect to the database as follows:::
+Test that you are able to connect to the database as follows::
 
     psql -U geonode geonode
 
@@ -176,7 +176,7 @@ and::
 Create GeoNode Superuser
 ========================
 
-Now create the admin user for GeoNode running the following:::
+Now create the admin user for GeoNode running the following::
 
     python manage.py createsuperuser
 
@@ -186,7 +186,7 @@ Test the installation
 =====================
 
 We are ready to restart GeoNode (Apache) and test the installation.
-Restart Apache:::
+Restart Apache::
 
     sudo service apache2 restart
 
