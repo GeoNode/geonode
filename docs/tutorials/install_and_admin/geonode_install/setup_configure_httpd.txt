@@ -116,8 +116,8 @@ them:::
     sudo chown -R geonode /home/geonode/geonode/
     sudo chown geonode:www-data /home/geonode/geonode/geonode/static/
     sudo chown geonode:www-data /home/geonode/geonode/geonode/uploaded/
-    chmod -Rf 777 /home/geonode/geonode/geonode/uploaded/thumbs
-    chmod -Rf 777 /home/geonode/geonode/geonode/uploaded/layers
+    sudo chmod -Rf 777 /home/geonode/geonode/geonode/uploaded/thumbs
+    sudo chmod -Rf 777 /home/geonode/geonode/geonode/uploaded/layers
     sudo chown www-data:www-data /home/geonode/geonode/geonode/static_root/
 
 Copy GeoNode data to be served by Apache. You will be prompted for confirmation::
