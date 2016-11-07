@@ -700,7 +700,6 @@ def check_shp_columnnames(layer):
     return True, None, list_col
 
 
-Attribute = None
 def set_attributes(layer, attribute_map, overwrite=False, attribute_stats=None):
     """ *layer*: a geonode.layers.models.Layer instance
         *attribute_map*: a list of 2-lists specifying attribute names and types,
@@ -711,12 +710,7 @@ def set_attributes(layer, attribute_map, overwrite=False, attribute_stats=None):
     """
     # Some import dependency tweaking; functions in this module are used before
     # models are fully set up so Attribute has to be imported here.
-    # The global Attribute caches the import so it's not done every time
-    # this function is called.
-    global Attribute
-    if Attribute == None:
-        from geonode.layers.models import Attribute as LayerAttribute
-        Attribute = LayerAttribute
+    from geonode.layers.models import Attribute
 
     # we need 3 more items; description, attribute_label, and display_order
     attribute_map_dict = {
