@@ -753,9 +753,8 @@ def set_attributes(layer, attribute_map, overwrite=False, attribute_stats=None):
                     description=description, attribute_label=label,
                     display_order=display_order)
                 if created:
-                    if (not attribute_stats
-                        or layer.name not in attribute_stats
-                        or field not in attribute_stats[layer.name]):
+                    if (not attribute_stats or layer.name not in attribute_stats or
+                            field not in attribute_stats[layer.name]):
                         result = None
                     else:
                         result = attribute_stats[layer.name][field]
