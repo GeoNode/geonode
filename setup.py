@@ -19,7 +19,6 @@
 #########################################################################
 
 from distutils.core import setup
-from distutils.command.install import INSTALL_SCHEMES
 from setuptools import find_packages
 import os
 
@@ -66,15 +65,15 @@ setup(name='GeoNode',
         "awesome-slugify>=1.6.2",
 
         # Django Apps
-        "django-pagination >=1.0.5, <=1.0.7", # python-django-pagination
-        "django-extensions>=1.2.5", # python-django-extensions
-        "django-taggit>=0.21.0", # python-django-taggit
-        "django-mptt>=0.8.6", # django-mptt
-        "django-treebeard>=3.0", #django-treebeard
-        "django-guardian>=1.4.1", #django-guardian
+        "django-pagination >=1.0.5, <=1.0.7",  # python-django-pagination
+        "django-extensions>=1.2.5",  # python-django-extensions
+        "django-taggit>=0.21.0",  # python-django-taggit
+        "django-mptt>=0.8.6",  # django-mptt
+        "django-treebeard>=3.0",  # django-treebeard
+        "django-guardian>=1.4.1",  # django-guardian
         # "django-admin-bootstrapped>=1.6.5", #django-admin-bootstrapped
 
-        ## Apps with packages provided in GeoNode's PPA on Launchpad.
+        # Apps with packages provided in GeoNode's PPA on Launchpad.
         "dj-database-url >=0.4.0",
         "django-jsonfield>=0.9.16",  # python-django-jsonfield
         "django-mptt>=0.8.0",  # django-mptt
@@ -118,7 +117,7 @@ setup(name='GeoNode',
         "django-haystack>=2.4.1",
         "elasticsearch>=2.4.0",
         "pyelasticsearch>=0.6.1",
-        "celery>=3.1.17",
+        "celery>=3.1.17,<4.0a0",
         "django-celery>=3.1.16",
 
         # datetimepicker widget
@@ -126,7 +125,7 @@ setup(name='GeoNode',
         "flake8>=2.3.0",
         "pep8>=1.6.2",
 
-        #AWS S3 dependencies
+        # AWS S3 dependencies
         "django-storages>=1.1.8",
         "boto>=2.38.0"
         ],
