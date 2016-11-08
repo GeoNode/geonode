@@ -18,58 +18,54 @@
 #
 #########################################################################
 
-import json
-import sys
-import os
-import urllib
-import logging
-import re
-import time
-import errno
-import uuid
+from collections import namedtuple, defaultdict
 import datetime
-from bs4 import BeautifulSoup
-import geoserver
-import httplib2
-
-
+from decimal import Decimal
+import errno
+from itertools import cycle, izip
+import json
+import logging
+import os
+import re
+import sys
+from threading import local
+import time
+import urllib
 from urlparse import urlparse
 from urlparse import urlsplit
-from threading import local
-from collections import namedtuple
-from itertools import cycle, izip
-from lxml import etree
-import xml.etree.ElementTree as ET
-from decimal import Decimal
+import uuid
 
-from owslib.wcs import WebCoverageService
-from owslib.util import http_post
-
-from django.core.exceptions import ImproperlyConfigured
+from agon_ratings.models import OverallRating
+from bs4 import BeautifulSoup
+from dialogos.models import Comment
+from django.conf import settings
 from django.contrib.contenttypes.models import ContentType
+from django.core.exceptions import ImproperlyConfigured
 from django.db.models.signals import pre_delete
 from django.template.loader import render_to_string
-from django.conf import settings
 from django.utils.translation import ugettext as _
-
-from dialogos.models import Comment
-from agon_ratings.models import OverallRating
-
-from gsimporter import Client
-from owslib.wms import WebMapService
-from geoserver.store import CoverageStore, DataStore, datastore_from_index,\
-    coveragestore_from_index, wmsstore_from_index
-from geoserver.workspace import Workspace
+import geoserver
 from geoserver.catalog import Catalog
-from geoserver.catalog import FailedRequestError, UploadError
 from geoserver.catalog import ConflictingDataError
+from geoserver.catalog import FailedRequestError, UploadError
 from geoserver.resource import FeatureType, Coverage
+from geoserver.store import CoverageStore, DataStore, datastore_from_index, \
+    coveragestore_from_index, wmsstore_from_index
 from geoserver.support import DimensionInfo
+from geoserver.workspace import Workspace
+from gsimporter import Client
+import httplib2
+from lxml import etree
+from owslib.util import http_post
+from owslib.wcs import WebCoverageService
+from owslib.wms import WebMapService
 
 from geonode import GeoNodeException
-from geonode.layers.utils import layer_type, get_files
-from geonode.layers.models import Layer, Attribute, Style
 from geonode.layers.enumerations import LAYER_ATTRIBUTE_NUMERIC_DATA_TYPES
+from geonode.layers.models import Layer, Attribute, Style
+from geonode.layers.utils import layer_type, get_files
+from geonode.utils import set_attributes
+import xml.etree.ElementTree as ET
 
 
 logger = logging.getLogger(__name__)
@@ -467,7 +463,7 @@ def gs_slurp(
             })
 
             # recalculate the layer statistics
-            set_attributes(layer, overwrite=True)
+            set_attributes_from_geoserver(layer, overwrite=True)
 
             # Fix metadata links if the ip has changed
             if layer.link_set.metadata().count() > 0:
@@ -631,7 +627,7 @@ def get_stores(store_type=None):
     return store_list
 
 
-def set_attributes(layer, overwrite=False):
+def set_attributes_from_geoserver(layer, overwrite=False):
     """
     Retrieve layer attribute names & types from Geoserver,
     then store in GeoNode database using Attribute model
@@ -713,73 +709,28 @@ def set_attributes(layer, overwrite=False):
         except Exception:
             attribute_map = []
 
-    # we need 3 more items for description, attribute_label and display_order
-    attribute_map_dict = {
-        'field': 0,
-        'ftype': 1,
-        'description': 2,
-        'label': 3,
-        'display_order': 4,
-    }
-    for attribute in attribute_map:
-        attribute.extend((None, None, 0))
-
-    attributes = layer.attribute_set.all()
-    # Delete existing attributes if they no longer exist in an updated layer
-    for la in attributes:
-        lafound = False
-        for attribute in attribute_map:
-            field, ftype, description, label, display_order = attribute
-            if field == la.attribute:
-                lafound = True
-                # store description and attribute_label in attribute_map
-                attribute[attribute_map_dict['description']] = la.description
-                attribute[attribute_map_dict['label']] = la.attribute_label
-                attribute[attribute_map_dict['display_order']] = la.display_order
-        if overwrite or not lafound:
-            logger.debug(
-                "Going to delete [%s] for [%s]",
-                la.attribute,
-                layer.name.encode('utf-8'))
-            la.delete()
-
+    # Get attribute statistics & package for call to really_set_attributes()
+    attribute_stats = defaultdict(dict)
     # Add new layer attributes if they don't already exist
-    if attribute_map is not None:
-        iter = len(Attribute.objects.filter(layer=layer)) + 1
-        for attribute in attribute_map:
-            field, ftype, description, label, display_order = attribute
-            if field is not None:
-                la, created = Attribute.objects.get_or_create(
-                    layer=layer, attribute=field, attribute_type=ftype,
-                    description=description, attribute_label=label,
-                    display_order=display_order)
-                if created:
-                    if is_layer_attribute_aggregable(
-                            layer.storeType,
-                            field,
-                            ftype):
-                        logger.debug("Generating layer attribute statistics")
-                        result = get_attribute_statistics(layer.name, field)
-                        if result is not None:
-                            la.count = result['Count']
-                            la.min = result['Min']
-                            la.max = result['Max']
-                            la.average = result['Average']
-                            la.median = result['Median']
-                            la.stddev = result['StandardDeviation']
-                            la.sum = result['Sum']
-                            la.unique_values = result['unique_values']
-                            la.last_stats_updated = datetime.datetime.now()
-                    la.visible = ftype.find("gml:") != 0
-                    la.display_order = iter
-                    la.save()
-                    iter += 1
-                    logger.debug(
-                        "Created [%s] attribute for [%s]",
+    for attribute in attribute_map:
+        field, ftype = attribute
+        if field is not None:
+            if Attribute.objects.filter(layer=layer, attribute=field).exists():
+                continue
+            else:
+                if is_layer_attribute_aggregable(
+                        layer.storeType,
                         field,
-                        layer.name.encode('utf-8'))
-    else:
-        logger.debug("No attributes found")
+                        ftype):
+                    logger.debug("Generating layer attribute statistics")
+                    result = get_attribute_statistics(layer.name, field)
+                else:
+                    result = None
+                attribute_stats[layer.name][field] = result
+
+    set_attributes(
+        layer, attribute_map, overwrite=overwrite, attribute_stats=attribute_stats
+    )
 
 
 def set_styles(layer, gs_catalog):
@@ -1180,7 +1131,7 @@ def geoserver_upload(
         box = gs_resource.native_bbox[:4]
         minx, maxx, miny, maxy = [float(a) for a in box]
         if -180 <= minx <= 180 and -180 <= maxx <= 180 and \
-           -90 <= miny <= 90 and -90 <= maxy <= 90:
+           - 90 <= miny <= 90 and -90 <= maxy <= 90:
             logger.info('GeoServer failed to detect the projection for layer '
                         '[%s]. Guessing EPSG:4326', name)
             # If GeoServer couldn't figure out the projection, we just

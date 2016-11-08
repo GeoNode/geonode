@@ -29,7 +29,7 @@ from django.utils.translation import ugettext
 from django.conf import settings
 
 from geonode.geoserver.ows import wcs_links, wfs_links, wms_links
-from geonode.geoserver.helpers import cascading_delete, set_attributes
+from geonode.geoserver.helpers import cascading_delete, set_attributes_from_geoserver
 from geonode.geoserver.helpers import set_styles, gs_catalog
 from geonode.geoserver.helpers import ogc_server_settings
 from geonode.geoserver.helpers import geoserver_upload, http_client
@@ -182,7 +182,7 @@ def geoserver_post_save(instance, sender, **kwargs):
 
     if instance.storeType == "remoteStore":
         # Save layer attributes
-        set_attributes(instance)
+        set_attributes_from_geoserver(instance)
         return
 
     if not getattr(instance, 'gs_resource', None):
@@ -471,7 +471,7 @@ def geoserver_post_save(instance, sender, **kwargs):
         Link.objects.filter(pk=link.pk).update(url=tile_url)
 
     # Save layer attributes
-    set_attributes(instance)
+    set_attributes_from_geoserver(instance)
 
     # Save layer styles
     set_styles(instance, gs_catalog)

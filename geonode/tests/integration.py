@@ -48,7 +48,7 @@ from geonode.layers.utils import (
 )
 from geonode.tests.utils import check_layer, get_web_page
 
-from geonode.geoserver.helpers import cascading_delete, set_attributes
+from geonode.geoserver.helpers import cascading_delete, set_attributes_from_geoserver
 # FIXME(Ariel): Uncomment these when #1767 is fixed
 # from geonode.geoserver.helpers import get_time_info
 # from geonode.geoserver.helpers import get_wms
@@ -1001,7 +1001,7 @@ class GeoNodeGeoServerSync(TestCase):
     def tearDown(self):
         pass
 
-    def test_set_attributes(self):
+    def test_set_attributes_from_geoserver(self):
         """Test attributes syncronization
         """
 
@@ -1018,7 +1018,7 @@ class GeoNodeGeoServerSync(TestCase):
             attribute.save()
 
         # sync the attributes with GeoServer
-        set_attributes(layer)
+        set_attributes_from_geoserver(layer)
 
         # tests if everything is synced properly
         for attribute in layer.attribute_set.all():
