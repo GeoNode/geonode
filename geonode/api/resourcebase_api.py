@@ -410,7 +410,7 @@ class CommonModelApi(ModelResource):
             objects = []
 
         object_list = {
-           "meta": {"limit": 100,  # noqa
+           "meta": {"limit": settings.CLIENT_RESULTS_LIMIT,
                     "next": next_page,
                     "offset": int(getattr(request.GET, 'offset', 0)),
                     "previous": previous_page,
