@@ -37,7 +37,7 @@
             <td>
                 <form id="thread_delete_{{ thread.pk }}" method="post" action="{% url "messages_thread_delete" thread.pk %}">
                     {% csrf_token %}
-                    <input type="submit" value="{% trans "Delete" %}" class="btn btn-danger" type="button"/>
+                    <button class="btn btn-danger message_delete_btn">{% trans "Delete" %}</button>
                 </form>
             </td>
         </tr>
