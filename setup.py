@@ -117,7 +117,7 @@ setup(name='GeoNode',
         "django-haystack>=2.4.1",
         "elasticsearch>=2.4.0",
         "pyelasticsearch>=0.6.1",
-        "celery>=3.1.17,<4.0a0",
+        "celery>=3.1.18,<4.0a0",
         "django-celery>=3.1.16",
 
         # datetimepicker widget
