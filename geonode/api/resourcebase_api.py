@@ -410,14 +410,15 @@ class CommonModelApi(ModelResource):
             objects = []
 
         object_list = {
-           "meta": {"limit": settings.CLIENT_RESULTS_LIMIT,
-                    "next": next_page,
-                    "offset": int(getattr(request.GET, 'offset', 0)),
-                    "previous": previous_page,
-                    "total_count": total_count,
-                    "facets": facets,
-                    },
-            'objects': map(lambda x: self.get_haystack_api_fields(x), objects),
+           "meta": {
+                "limit": settings.CLIENT_RESULTS_LIMIT,
+                "next": next_page,
+                "offset": int(getattr(request.GET, 'offset', 0)),
+                "previous": previous_page,
+                "total_count": total_count,
+                "facets": facets,
+            },
+           "objects": map(lambda x: self.get_haystack_api_fields(x), objects),
         }
         self.log_throttled_access(request)
         return self.create_response(request, object_list)
