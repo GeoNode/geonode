@@ -26,7 +26,6 @@
 {% block body_outer %}
 <div class="page-header">
     {% if request.user.is_superuser %}
-    <a href="{% url 'datarequests:data_request_csv' %}" class="btn btn-primary pull-right">{% trans "Download CSV" %}</a>
     <a href="{% url 'datarequests:data_request_compute_size' %}" class="btn btn-primary pull-right">{% trans "Compute Request Sizes" %}</a>
     <a href="{% url 'datarequests:data_request_reverse_geocode' %}" class="btn btn-primary pull-right">{% trans "Assign Place Names" %}</a>
     {% endif %}
@@ -39,110 +38,84 @@
 
   <table class="table table-user-profile">
       <tbody>
+      {{ if profile_request }}
       <tr>
       <td class="table-user-profile-attribute col-md-3">{% trans "Requester" %}</td>
-      <td>{{ request_profile.first_name }} {{ request_profile.middle_name }} {{ request_profile.last_name }}</td>
+      <td><a href={% url 'datarequests:profile_request_detail'  %}>{{ profile_request.first_name }} {{ profile_request.middle_name }} {{ profile_request.last_name }}</td>
       </tr>
-      <tr>
-      <td class="table-user-profile-attribute col-md-3">{% trans "Request Letter" %}</td>
-      <td><a href="{{ request_profile.request_letter.detail_url }}/download" >{{ request_profile.request_letter.title }}</a></td>
-      </tr>
-     <tr>
-         <td class="table-user-profile-attribute col-md-3"> {% trans "User Name" %}</td>
-         <td> {{ request_profile.username }}</td>
-     </tr>
-     <tr>
-        <td class="table-user-profile-attribute col-md-3"> {% trans "FTP directory" %}</td>
-        <td>{{ request_profile.ftp_folder }} </td>
-     </tr>
-      <tr>
-
       <tr>
       <td class="table-user-profile-attribute">{% trans "Organization" %}</td>
-      <td>{{ request_profile.organization }}</td>
+      <td>{{ profile_request.organization }}</td>
       </tr>
-
-      <tr>
-      <td class="table-user-profile-attribute">{% trans "Entity" %}</td>
-      <td>{{ request_profile.get_location_display }}</td>
-      </tr>
-
       <tr>
       <td class="table-user-profile-attribute">{% trans "Email" %}</td>
-      <td>{{ request_profile.email }}</td>
+      <td>{{ profile_request.email }}</td>
       </tr>
+      {{ elif profile }}
+      <tr>
+      <td class="table-user-profile-attribute col-md-3">{% trans "Requester" %}</td>
+      <td>{{ profile.first_name }} {{ profile.middle_name }} {{ profile.last_name }}</td>
+      </tr>
+      <tr>
+      <td class="table-user-profile-attribute">{% trans "Organization" %}</td>
+      <td>{{ profile.organization }}</td>
+      </tr>
+      <tr>
+      <td class="table-user-profile-attribute">{% trans "Email" %}</td>
+      <td>{{ profile.email }}</td>
+      </tr> 
+      {{endif}}
 
       <tr>
-      <td class="table-user-profile-attribute">{% trans "Contact Number" %}</td>
-      <td>{{ request_profile.contact_number }}</td>
+      <td class="table-user-profile-attribute col-md-3">{% trans "Request Letter" %}</td>
+      <td><a href="{{ data_request.request_letter.detail_url }}/download" >{{ data_request.request_letter.title }}</a></td>
       </tr>
 
       <tr>
       <td class="table-user-profile-attribute">{% trans "Area of Coverage in Sqr KMs:" %}</td>
-      <td>{{ request_profile.area_coverage }}</td>
+      <td>{{ data_request.area_coverage }}</td>
       </tr>
 
       <tr>
       <td class="table-user-profile-attribute">{% trans "Location of Area Requested" %}</td>
-      <td>{{ request_profile.place_name }}</td>
+      <td>{{ data_request.place_name }}</td>
       </tr>
 
       <tr>
       <td class="table-user-profile-attribute">{% trans "Data Size of Area Requested" %}</td>
-      <td>{{ request_profile.juris_data_size|filesizeformat }}</td>
+      <td>{{ data_request.juris_data_size|filesizeformat }}</td>
       </tr>
 
       <tr>
       <td class="table-user-profile-attribute">{% trans "Project Summary" %}</td>
-      <td>{{ request_profile.project_summary }}</td>
+      <td>{{ data_request.project_summary }}</td>
       </tr>
 
       <tr>
       <td class="table-user-profile-attribute">{% trans "Type of Data Requested" %}</td>
-      <td>{{ request_profile.get_data_type_requested_display }}</td>
+      <td>{{ data_request.get_data_type_requested_display }}</td>
       </tr>
 
       <tr>
       <td class="table-user-profile-attribute">{% trans "Purpose/Intended Use of Data" %}</td>
-      <td>{{ request_profile.purpose }}</td>
+      <td>{{ data_request.purpose }}</td>
       </tr>
 
       <tr>
       <td class="table-user-profile-attribute">{% trans "Intended Use of Dataset" %}</td>
-      <td>{{ request_profile.get_intended_use_of_dataset_display }}</td>
+      <td>{{ data_request.get_intended_use_of_dataset_display }}</td>
       </tr>
 
-      {% if request_profile.intended_use_of_dataset == 'noncommercial' or request_profile.intended_use_of_dataset == 'academe' %}
-        <tr>
-        <td class="table-user-profile-attribute">{% trans "Organization type based on Phil-LiDAR1 Data Distribution Policy" %}</td>
-        <td>{{ request_profile.get_organization_type_display }}</td>
-        </tr>
-        {% if request_profile.intended_use_of_dataset == 'academe' %}
-          <tr>
-          <td class="table-user-profile-attribute">{% trans "Level of Request" %}</td>
-          <td>{{ request_profile.get_request_level_display }}</td>
-          </tr>
-
-          <tr>
-          <td class="table-user-profile-attribute">{% trans "Source of Funding" %}</td>
-          <td>{{ request_profile.funding_source }}</td>
-          </tr>
-          <tr>
-          <td class="table-user-profile-attribute">{% trans "Consultant in behalf of another organization?" %}</td>
-          <td>{{ is_consultant|yesno:"yes,no" }}</td>
-          </tr>
-        {% endif %}
-      {% endif %}
-         <tr>
+    <tr>
           <td class="table-user-profile-attribute col-md-3">{% trans "Approval/Rejection Administrator" %}</td>
-          <td>{{request_profile.administrator.username}}</td>
+          <td>{{data_request.administrator.username}}</td>
       </tr>
       </tbody>
     </table>
 
     <div class="row">
       <h4><strong>Jurisdiction Shapefile</strong></h4>
-      {% if not request_profile.jurisdiction_shapefile %}
+      {% if not data_request.jurisdiction_shapefile %}
         <h5><strong>No ROI submitted</strong></h5>
         {% endif %}
       <div id="embedded_map" class="mrg-btm">
@@ -158,49 +131,49 @@
         <h5 class="list-group-item-heading">{%trans "Data Request Status" %}</h5>
 
         <div class="row data-request-status-parent">
-          {% if request_profile.request_status == 'pending' %}
+          {% if data_request.status == 'pending' %}
             <div class="col-sm-12 data-request-status label pending-request">
-          {% elif request_profile.request_status == 'approved' %}
+          {% elif profile.request_status == 'approved' %}
             <div class="col-sm-12 label data-request-status label-success">
           {% else %}
             <div class="col-sm-12 label data-request-status label-danger">
           {% endif %}
-              <strong>{{ request_profile.get_request_status_display }}</strong>
+              <strong>{{ profile.get_request_status_display }}</strong>
             </div>
         </div>
 
-        {% if request_profile.request_status == 'rejected' or request_profile.request_status == 'cancelled' %}
-          <p><strong>{% trans "Reason" %}</strong>: {{ request_profile.rejection_reason }}</p>
-          {% if request_profile.additional_rejection_reason %}
-              <p><strong>{% trans "Additional Details" %}</strong>: {{ request_profile.additional_rejection_reason }}</p>
+        {% if profile.request_status == 'rejected' or profile.request_status == 'cancelled' %}
+          <p><strong>{% trans "Reason" %}</strong>: {{ profile.rejection_reason }}</p>
+          {% if profile.additional_rejection_reason %}
+              <p><strong>{% trans "Additional Details" %}</strong>: {{ profile.additional_rejection_reason }}</p>
           {% endif %}
         {% endif %}
       </li>
 {% if user.is_superuser %}
     <li class="list-group-item">
-             <form id="compute_request_size_form" method="post" class="modal-form" action='{% url "datarequests:data_request_profile_compute_size" pk=request_profile.pk%}'>{% csrf_token %}
+             <form id="compute_request_size_form" method="post" class="modal-form" action='{% url "datarequests:data_profile_compute_size" pk=profile.pk%}'>{% csrf_token %}
                 <button type="submit" class="btn btn-primary btn-md btn-block"  id="compute-request-size">{% trans "Compute Request Size" %}</button>
             </form>
         </li>
         <li class="list-group-item">
-             <form id="get_place_name_form" method="post" class="modal-form" action='{% url "datarequests:data_request_profile_reverse_geocode" pk=request_profile.pk%}'>{% csrf_token %}
+             <form id="get_place_name_form" method="post" class="modal-form" action='{% url "datarequests:data_profile_reverse_geocode" pk=profile.pk%}'>{% csrf_token %}
                 <button type="submit" class="btn btn-primary btn-md btn-block"  id="get-place-name">{% trans "Get Place Name" %}</button>
             </form>
         </li>
-      {% if request_profile.request_status == 'approved' %}
+      {% if profile.request_status == 'approved' %}
         <li class="list-group-item">
-             <form id="recreate_dir_form" method="post" class="modal-form" action='{% url "datarequests:data_request_profile_recreate_dir" pk=request_profile.pk%}'>{% csrf_token %}
+             <form id="recreate_dir_form" method="post" class="modal-form" action='{% url "datarequests:data_profile_recreate_dir" pk=profile.pk%}'>{% csrf_token %}
                 <button type="submit" class="btn btn-primary btn-md btn-block"  id="recreate-dir-submit">{% trans "Create Directory" %}</button>
             </form>
         </li>
       {% else %}
-        {%  if request_profile.request_status == 'pending'%}
+        {%  if profile.request_status == 'pending'%}
         <li class="list-group-item">
           <button class="btn btn-primary btn-md btn-block"  data-toggle="modal" data-target="#approve-request" id="approve-button">{% trans "Approve" %}</button>
         </li>
 
         <div class="modal fade" id="approve-request" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-          <form id="approve_form" method="post" class="modal-form" action='{% url "datarequests:data_request_profile_approve" pk=request_profile.pk%}'>{% csrf_token %}
+          <form id="approve_form" method="post" class="modal-form" action='{% url "datarequests:data_profile_approve" pk=profile.pk%}'>{% csrf_token %}
           <div class="modal-dialog">
             <div class="modal-content">
               <div class="modal-header">
@@ -224,7 +197,7 @@
         </li>
 
         <div class="modal fade" id="reject-request" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-          <form id="request_reject_form" accept-charset="UTF-8" method="post" class="modal-form" action='{% url "datarequests:data_request_profile_reject" pk=request_profile.pk%}'>
+          <form id="request_reject_form" accept-charset="UTF-8" method="post" class="modal-form" action='{% url "datarequests:data_profile_reject" pk=profile.pk%}'>
             <div class="modal-dialog">
               <div class="modal-content">
                 <div class="modal-header">
@@ -246,21 +219,21 @@
             </div>
           </form>
         </div>
-      {% elif request_profile.request_status == 'unconfirmed'%}
+      {% elif profile.request_status == 'unconfirmed'%}
        <li class="list-group-item">
-        <form id="reconfirm_form" method="post" class="modal-form" action='{% url "datarequests:data_request_profile_reconfirm" pk=request_profile.pk%}'>{% csrf_token %}
+        <form id="reconfirm_form" method="post" class="modal-form" action='{% url "datarequests:data_profile_reconfirm" pk=profile.pk%}'>{% csrf_token %}
             <button type="submit" class="btn btn-primary btn-md btn-block"  id="reconfirm-request-submit">{% trans "Resend Confirmation Email" %}</button>
         </form>
 
         </li>
       {% endif %}
-      {% if request_profile.request_status == 'unconfirmed' or request_profile.request_status == 'pending' %}
+      {% if profile.request_status == 'unconfirmed' or profile.request_status == 'pending' %}
          <li class="list-group-item">
           <button class="btn btn-default btn-md btn-block" data-toggle="modal" data-target="#cancel-request">{% trans "Cancel Request" %}</button>
         </li>
 
         <div class="modal fade" id="cancel-request" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-          <form id="request_cancel_form" accept-charset="UTF-8" method="post" class="modal-form" action='{% url "datarequests:data_request_profile_cancel" pk=request_profile.pk%}'>
+          <form id="request_cancel_form" accept-charset="UTF-8" method="post" class="modal-form" action='{% url "datarequests:data_profile_cancel" pk=profile.pk%}'>
             <div class="modal-dialog">
               <div class="modal-content">
                 <div class="modal-header">
@@ -285,16 +258,16 @@
         {% endif %}
   {% endif %}
   {% else %}
-  {% if request_profile.request_status == 'unconfirmed' or request_profile.request_status == 'pending' %}
+  {% if profile.request_status == 'unconfirmed' or profile.request_status == 'pending' %}
          <li class="list-group-item">
-             <form id="cancel_form" method="post" class="modal-form" action='{% url "datarequests:data_request_profile_cancel" pk=request_profile.pk%}'>{% csrf_token %}
+             <form id="cancel_form" method="post" class="modal-form" action='{% url "datarequests:data_profile_cancel" pk=profile.pk%}'>{% csrf_token %}
                 <button type="submit" class="btn btn-default btn-md btn-block" id="cancel-request-submit">{% trans "Cancel Request" %}</button>
         </form>
         </li>
     {% endif %}
 {% endif %}
   </ul>
-  <input type="hidden" id="request_profile_id" value="{{request_profile.pk}}"></input>
+  <input type="hidden" id="profile_id" value="{{profile.pk}}"></input>
   </div> <!-- col-md-4 -->
 </div> <!-- row -->
 {% endblock %}
@@ -337,8 +310,8 @@
           var reject_request_submit = function(){
              var message = $('#reject_request_message');
              var $request_reject_form = $('#request_reject_form');
-             var pk = $('#request_profile_id').val();
-             var url = "{% url 'datarequests:data_request_profile_reject' pk=666 %}".replace('666', pk);
+             var pk = $('#profile_id').val();
+             var url = "{% url 'datarequests:data_profile_reject' pk=666 %}".replace('666', pk);
              var form = $request_reject_form.serialize()
              $.ajax(
               {
@@ -374,8 +347,8 @@
            var cancel_request_submit = function(){
              var message = $('#cancel_request_message');
              var $request_cancel_form = $('#request_cancel_form');
-             var pk = $('#request_profile_id').val();
-             var url = "{% url 'datarequests:data_request_profile_cancel' pk=666 %}".replace('666', pk);
+             var pk = $('#profile_id').val();
+             var url = "{% url 'datarequests:data_profile_cancel' pk=666 %}".replace('666', pk);
              var form = $request_cancel_form.serialize()
              $.ajax(
               {

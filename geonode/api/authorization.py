@@ -89,13 +89,13 @@ class ProfileRequestAuthorization(DjangoAuthorization):
         if bundle.request.user.is_superuser:
             return object_list
         else:
-            return object_list.filter(profile=bundle.request.user)
+            raise Unauthorized()
 
     def read_detail(self, object_list, bundle):
         if bundle.request.user.is_superuser:
             return object_list
         else:
-            return object_list.filter(profile=bundle.request.user)
+            return Unauthorized()
 
     def create_list(self, object_list, bundle):
         # TODO implement if needed
