@@ -28,7 +28,10 @@ class LayerResource(ModelResource):
     keywords = fields.ToManyField(TagResource, 'keywords', full = True)
 
     def dehydrate_topic_category(self, bundle):
-        return bundle.obj.topic_category.title
+        if bundle.obj.topic_category:
+            return bundle.obj.topic_category.title
+        else:
+            return ''
 
     def dehydrate_owner_username(self, bundle):
         return bundle.obj.owner.username
