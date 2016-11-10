@@ -440,7 +440,6 @@ class ProfileRequestResource(ModelResource):
 class DataRequestResource(ModelResource):
     """Data Request api"""
     data_request_detail_url = fields.CharField()
-    purpose = fields.CharField()
     status = fields.CharField()
     status_label = fields.CharField()
     is_rejected = fields.BooleanField(default=False)
@@ -540,12 +539,16 @@ class DataRequestResource(ModelResource):
     def dehydrate_organization(self, bundle):
         if bundle.obj.profile_request:
             return bundle.obj.profile_request.organization
+        elif bundle.obj.profile:
+            return bundle.obj.profile.organization
         else:
             return None
 
     def dehydrate_org_type(self, bundle):
         if bundle.obj.profile_request:
             return bundle.obj.profile_request.get_organization_type_display()
+        elif:
+            return bundle.obj.profile.get_organization_type_display()
         else:
             return None
 

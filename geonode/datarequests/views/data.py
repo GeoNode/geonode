@@ -37,7 +37,7 @@ class DataRequestList(LoginRequiredMixin, TemplateView):
     template_name = 'datarequests/data_request_list.html'
     raise_exception = True
 
-def data_request_detail(request, pk, template='datarequests/profile_detail.html'):
+def data_request_detail(request, pk, template='datarequests/data_detail.html'):
 
     data_request = get_object_or_404(DataRequest, pk=pk)
 
@@ -48,8 +48,9 @@ def data_request_detail(request, pk, template='datarequests/profile_detail.html'
     
     if data_request.profile:
         context_dict['profile'] = data_request.profile
-    elif data_request.profile_request:
-        context_dict['profile'] = data_request.profile_request
+    
+    if data_request.profile_request:
+        context_dict['profile_request'] = data_request.profile_request
     
     if data_request.jurisdiction_shapefile:
          layer = data_request.jurisdiction_shapefile
@@ -220,7 +221,7 @@ def data_request_compute_size(request):
         messages.info(request, "The estimated data size area coverage of the requests are currently being computed")
         return HttpResponseRedirect(reverse('datarequests:data_request_browse'))
     else:
-        return HttpResponseRedirect('/forbidden/')
+        return HttpResponseRedirect('/forbidden')
 
 
 def data_request_compute_size(request, pk):
