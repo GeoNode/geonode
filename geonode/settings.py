@@ -44,7 +44,6 @@ PROJECT_ROOT = os.path.abspath(os.path.dirname(__file__))
 # Setting debug to true makes Django serve static media and
 # present pretty error pages.
 DEBUG = strtobool(os.getenv('DEBUG', 'True'))
-TEMPLATE_DEBUG = strtobool(os.getenv('TEMPLATE_DEBUG', 'True'))
 
 # Set to True to load non-minified versions of (static) client dependencies
 # Requires to set-up Node and tools that are required for static development
@@ -63,7 +62,10 @@ SECRET_KEY = os.getenv('SECRET_KEY', _DEFAULT_SECRET_KEY)
 
 DATABASE_URL = os.getenv(
     'DATABASE_URL',
-    'sqlite:///{path}'.format(path=os.path.join(PROJECT_ROOT, 'development.db')))
+    'sqlite:///{path}'.format(
+        path=os.path.join(PROJECT_ROOT, 'development.db')
+    )
+)
 
 # Defines settings for development
 DATABASES = {
@@ -152,7 +154,7 @@ EXTRA_LANG_INFO = {
 }
 
 
-AUTH_USER_MODEL = os.getenv('AUTH_USER_MODEL','people.Profile')
+AUTH_USER_MODEL = os.getenv('AUTH_USER_MODEL', 'people.Profile')
 
 MODELTRANSLATION_LANGUAGES = ['en', ]
 
@@ -167,23 +169,25 @@ MEDIA_ROOT = os.getenv('MEDIA_ROOT', os.path.join(PROJECT_ROOT, "uploaded"))
 # URL that handles the media served from MEDIA_ROOT. Make sure to use a
 # trailing slash if there is a path component (optional in other cases).
 # Examples: "http://media.lawrence.com", "http://example.com/media/"
-MEDIA_URL = os.getenv('MEDIA_URL',"/uploaded/")
-LOCAL_MEDIA_URL = os.getenv('LOCAL_MEDIA_URL',"/uploaded/")
+MEDIA_URL = os.getenv('MEDIA_URL', "/uploaded/")
+LOCAL_MEDIA_URL = os.getenv('LOCAL_MEDIA_URL', "/uploaded/")
 
 # Absolute path to the directory that holds static files like app media.
 # Example: "/home/media/media.lawrence.com/apps/"
-STATIC_ROOT = os.getenv('STATIC_ROOT',os.path.join(PROJECT_ROOT, "static_root"))
+STATIC_ROOT = os.getenv('STATIC_ROOT',
+                        os.path.join(PROJECT_ROOT, "static_root")
+                        )
 
 # URL that handles the static files like app media.
 # Example: "http://media.lawrence.com"
-STATIC_URL = os.getenv('STATIC_URL',"/static/")
+STATIC_URL = os.getenv('STATIC_URL', "/static/")
 
 # Additional directories which hold static files
 _DEFAULT_STATICFILES_DIRS = [
     os.path.join(PROJECT_ROOT, "static"),
 ]
 
-STATICFILES_DIRS = os.getenv('STATICFILES_DIRS',_DEFAULT_STATICFILES_DIRS)
+STATICFILES_DIRS = os.getenv('STATICFILES_DIRS', _DEFAULT_STATICFILES_DIRS)
 
 # List of finder classes that know how to find static files in
 # various locations.
@@ -193,36 +197,28 @@ STATICFILES_FINDERS = (
     #    'django.contrib.staticfiles.finders.DefaultStorageFinder',
 )
 
-# Note that Django automatically includes the "templates" dir in all the
-# INSTALLED_APPS, se there is no need to add maps/templates or admin/templates
-_DEFAULT_TEMPLATE_DIRS = (
-    os.path.join(PROJECT_ROOT, "templates"),
-)
-
-TEMPLATE_DIRS = os.getenv('TEMPLATE_DIRS',_DEFAULT_TEMPLATE_DIRS)
-
 # Location of translation files
 _DEFAULT_LOCALE_PATHS = (
     os.path.join(PROJECT_ROOT, "locale"),
 )
 
-LOCALE_PATHS = os.getenv('LOCALE_PATHS',_DEFAULT_LOCALE_PATHS)
+LOCALE_PATHS = os.getenv('LOCALE_PATHS', _DEFAULT_LOCALE_PATHS)
 
 
 # Location of url mappings
-ROOT_URLCONF = os.getenv('ROOT_URLCONF','geonode.urls')
+ROOT_URLCONF = os.getenv('ROOT_URLCONF', 'geonode.urls')
 
 # Login and logout urls override
-LOGIN_URL = os.getenv('LOGIN_URL','/account/login/')
-LOGOUT_URL = os.getenv('LOGOUT_URL','/account/logout/')
+LOGIN_URL = os.getenv('LOGIN_URL', '/account/login/')
+LOGOUT_URL = os.getenv('LOGOUT_URL', '/account/logout/')
 
 # Documents application
 ALLOWED_DOCUMENT_TYPES = [
-    'doc', 'docx', 'gif', 'jpg', 'jpeg', 'ods', 'odt', 'odp', 'pdf', 'png', 'ppt',
-    'pptx', 'rar', 'sld', 'tif', 'tiff', 'txt', 'xls', 'xlsx', 'xml', 'zip', 'gz',
-    'qml'
+    'doc', 'docx', 'gif', 'jpg', 'jpeg', 'ods', 'odt', 'odp', 'pdf', 'png',
+    'ppt', 'pptx', 'rar', 'sld', 'tif', 'tiff', 'txt', 'xls', 'xlsx', 'xml',
+    'zip', 'gz', 'qml'
 ]
-MAX_DOCUMENT_SIZE = int(os.getenv('MAX_DOCUMENT_SIZE ','2'))  # MB
+MAX_DOCUMENT_SIZE = int(os.getenv('MAX_DOCUMENT_SIZE ', '2'))  # MB
 
 # DOCUMENT_TYPE_MAP and DOCUMENT_MIMETYPE_MAP update enumerations in
 # documents/enumerations.py and should only
@@ -307,7 +303,7 @@ INSTALLED_APPS = (
     # 'haystack',
     'autocomplete_light',
     'mptt',
-    #'modeltranslation',
+    # 'modeltranslation',
     'djcelery',
     'storages',
 
@@ -321,7 +317,7 @@ INSTALLED_APPS = (
     'avatar',
     'dialogos',
     'agon_ratings',
-    #'notification',
+    # 'notification',
     'announcements',
     'actstream',
     'user_messages',
@@ -336,7 +332,8 @@ LOGGING = {
     'disable_existing_loggers': True,
     'formatters': {
         'verbose': {
-            'format': '%(levelname)s %(asctime)s %(module)s %(process)d %(thread)d %(message)s'
+            'format': '%(levelname)s %(asctime)s %(module)s %(process)d '
+                      '%(thread)d %(message)s'
         },
         'simple': {
             'format': '%(message)s',
@@ -380,22 +377,30 @@ LOGGING = {
 # Customizations to built in Django settings required by GeoNode
 #
 
-
-TEMPLATE_CONTEXT_PROCESSORS = (
-    'django.contrib.auth.context_processors.auth',
-    'django.core.context_processors.debug',
-    'django.core.context_processors.i18n',
-    "django.core.context_processors.tz",
-    'django.core.context_processors.media',
-    "django.core.context_processors.static",
-    'django.core.context_processors.request',
-    'django.contrib.messages.context_processors.messages',
-    'account.context_processors.account',
-    # The context processor below adds things like SITEURL
-    # and GEOSERVER_BASE_URL to all pages that use a RequestContext
-    'geonode.context_processors.resource_urls',
-    'geonode.geoserver.context_processors.geoserver_urls',
-)
+# Django automatically includes the "templates" dir in all the INSTALLED_APPS.
+TEMPLATES = [
+    {
+        'BACKEND': 'django.template.backends.django.DjangoTemplates',
+        'DIRS': [os.path.join(PROJECT_ROOT, "templates")],
+        'APP_DIRS': True,
+        'OPTIONS': {
+            'context_processors': [
+                'django.contrib.auth.context_processors.auth',
+                'django.core.context_processors.debug',
+                'django.core.context_processors.i18n',
+                'django.core.context_processors.tz',
+                'django.core.context_processors.media',
+                'django.core.context_processors.static',
+                'django.core.context_processors.request',
+                'django.contrib.messages.context_processors.messages',
+                'account.context_processors.account',
+                'geonode.context_processors.resource_urls',
+                'geonode.geoserver.context_processors.geoserver_urls',
+            ],
+            'debug': DEBUG,
+        },
+    },
+]
 
 MIDDLEWARE_CLASSES = (
     'django.middleware.common.CommonMiddleware',
@@ -410,8 +415,10 @@ MIDDLEWARE_CLASSES = (
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     # This middleware allows to print private layers for the users that have
     # the permissions to view them.
-    # It sets temporary the involved layers as public before restoring the permissions.
-    # Beware that for few seconds the involved layers are public there could be risks.
+    # It sets temporary the involved layers as public before restoring the
+    # permissions.
+    # Beware that for few seconds the involved layers are public there could be
+    # risks.
     # 'geonode.middleware.PrintProxyMiddleware',
 )
 
@@ -423,16 +430,24 @@ AUTHENTICATION_BACKENDS = (
     'guardian.backends.ObjectPermissionBackend',
 )
 
-GUARDIAN_GET_INIT_ANONYMOUS_USER =os.getenv('GUARDIAN_GET_INIT_ANONYMOUS_USER', 'geonode.people.models.get_anonymous_user_instance')
+GUARDIAN_GET_INIT_ANONYMOUS_USER = os.getenv(
+    'GUARDIAN_GET_INIT_ANONYMOUS_USER',
+    'geonode.people.models.get_anonymous_user_instance'
+)
 
-# Whether the uplaoded resources should be public and downloadable by default or not
-DEFAULT_ANONYMOUS_VIEW_PERMISSION = strtobool(os.getenv('DEFAULT_ANONYMOUS_VIEW_PERMISSION', 'True'))
-DEFAULT_ANONYMOUS_DOWNLOAD_PERMISSION = strtobool(os.getenv('DEFAULT_ANONYMOUS_VIEW_PERMISSION', 'True'))
+# Whether the uplaoded resources should be public and downloadable by default
+# or not
+DEFAULT_ANONYMOUS_VIEW_PERMISSION = strtobool(
+    os.getenv('DEFAULT_ANONYMOUS_VIEW_PERMISSION', 'True')
+)
+DEFAULT_ANONYMOUS_DOWNLOAD_PERMISSION = strtobool(
+    os.getenv('DEFAULT_ANONYMOUS_VIEW_PERMISSION', 'True')
+)
 
 #
 # Settings for default search size
 #
-DEFAULT_SEARCH_SIZE = int(os.getenv('DEFAULT_SEARCH_SIZE','10'))
+DEFAULT_SEARCH_SIZE = int(os.getenv('DEFAULT_SEARCH_SIZE', '10'))
 
 
 #
@@ -461,13 +476,21 @@ ACTSTREAM_SETTINGS = {
 }
 
 # Settings for Social Apps
-REGISTRATION_OPEN =  strtobool(os.getenv('REGISTRATION_OPEN', 'False'))
-ACCOUNT_EMAIL_CONFIRMATION_EMAIL = strtobool(os.getenv('ACCOUNT_EMAIL_CONFIRMATION_EMAIL', 'False'))
-ACCOUNT_EMAIL_CONFIRMATION_REQUIRED = strtobool(os.getenv('ACCOUNT_EMAIL_CONFIRMATION_REQUIRED', 'False'))
-ACCOUNT_APPROVAL_REQUIRED = strtobool(os.getenv('ACCOUNT_APPROVAL_REQUIRED','False'))
+REGISTRATION_OPEN = strtobool(os.getenv('REGISTRATION_OPEN', 'False'))
+ACCOUNT_EMAIL_CONFIRMATION_EMAIL = strtobool(
+    os.getenv('ACCOUNT_EMAIL_CONFIRMATION_EMAIL', 'False')
+)
+ACCOUNT_EMAIL_CONFIRMATION_REQUIRED = strtobool(
+    os.getenv('ACCOUNT_EMAIL_CONFIRMATION_REQUIRED', 'False')
+)
+ACCOUNT_APPROVAL_REQUIRED = strtobool(
+    os.getenv('ACCOUNT_APPROVAL_REQUIRED', 'False')
+)
 
 # Email for users to contact admins.
-THEME_ACCOUNT_CONTACT_EMAIL = os.getenv('THEME_ACCOUNT_CONTACT_EMAIL','admin@example.com')
+THEME_ACCOUNT_CONTACT_EMAIL = os.getenv(
+    'THEME_ACCOUNT_CONTACT_EMAIL', 'admin@example.com'
+)
 
 #
 # Test Settings
@@ -486,26 +509,32 @@ NOSE_ARGS = [
 #
 # GeoNode specific settings
 #
-SITEURL = os.getenv('SITEURL',"http://localhost:8000/")
+SITEURL = os.getenv('SITEURL', "http://localhost:8000/")
 
 USE_QUEUE = strtobool(os.getenv('USE_QUEUE', 'False'))
 
-DEFAULT_WORKSPACE = os.getenv('DEFAULT_WORKSPACE','geonode')
-CASCADE_WORKSPACE = os.getenv('CASCADE_WORKSPACE','geonode')
+DEFAULT_WORKSPACE = os.getenv('DEFAULT_WORKSPACE', 'geonode')
+CASCADE_WORKSPACE = os.getenv('CASCADE_WORKSPACE', 'geonode')
 
-OGP_URL = os.getenv('OGP_URL',"http://geodata.tufts.edu/solr/select")
+OGP_URL = os.getenv('OGP_URL', "http://geodata.tufts.edu/solr/select")
 
 # Topic Categories list should not be modified (they are ISO). In case you
 # absolutely need it set to True this variable
 MODIFY_TOPICCATEGORY = strtobool(os.getenv('MODIFY_TOPICCATEGORY', 'False'))
 
-MISSING_THUMBNAIL = os.getenv('MISSING_THUMBNAIL','geonode/img/missing_thumb.png')
+MISSING_THUMBNAIL = os.getenv(
+    'MISSING_THUMBNAIL', 'geonode/img/missing_thumb.png'
+)
 
 # Search Snippet Cache Time in Seconds
-CACHE_TIME = int(os.getenv('CACHE_TIME','0'))
+CACHE_TIME = int(os.getenv('CACHE_TIME', '0'))
 
-GEOSERVER_LOCATION = os.getenv('GEOSERVER_LOCATION', 'http://localhost:8080/geoserver/')
-GEOSERVER_PUBLIC_LOCATION = os.getenv('GEOSERVER_PUBLIC_LOCATION', 'http://localhost:8080/geoserver/')
+GEOSERVER_LOCATION = os.getenv(
+    'GEOSERVER_LOCATION', 'http://localhost:8080/geoserver/'
+)
+GEOSERVER_PUBLIC_LOCATION = os.getenv(
+    'GEOSERVER_PUBLIC_LOCATION', 'http://localhost:8080/geoserver/'
+)
 
 # OGC (WMS/WFS/WCS) Server Settings
 # OGC (WMS/WFS/WCS) Server Settings
@@ -526,7 +555,8 @@ OGC_SERVER = {
         'WMST_ENABLED': False,
         'BACKEND_WRITE_ENABLED': True,
         'WPS_ENABLED': False,
-        'LOG_FILE': '%s/geoserver/data/logs/geoserver.log' % os.path.abspath(os.path.join(PROJECT_ROOT, os.pardir)),
+        'LOG_FILE': '%s/geoserver/data/logs/geoserver.log'
+        % os.path.abspath(os.path.join(PROJECT_ROOT, os.pardir)),
         # Set to name of database in DATABASES dictionary to enable
         'DATASTORE': '',  # 'datastore',
         'PG_GEOGIG': False,
@@ -573,16 +603,18 @@ PYCSW = {
     # pycsw configuration
     'CONFIGURATION': {
         # uncomment / adjust to override server config system defaults
-        #'server': {
+        # 'server': {
         #    'maxrecords': '10',
         #    'pretty_print': 'true',
         #    'federatedcatalogues': 'http://catalog.data.gov/csw'
-        #},
+        # },
         'metadata:main': {
             'identification_title': 'GeoNode Catalogue',
-            'identification_abstract': 'GeoNode is an open source platform that facilitates the creation, sharing, ' \
-            'and collaborative use of geospatial data',
-            'identification_keywords': 'sdi,catalogue,discovery,metadata,GeoNode',
+            'identification_abstract': 'GeoNode is an open source platform' \
+            ' that facilitates the creation, sharing, and collaborative use' \
+            ' of geospatial data',
+            'identification_keywords': 'sdi, catalogue, discovery, metadata,' \
+            ' GeoNode',
             'identification_keywords_type': 'theme',
             'identification_fees': 'None',
             'identification_accessconstraints': 'None',
@@ -600,7 +632,8 @@ PYCSW = {
             'contact_email': 'Email Address',
             'contact_url': 'Contact URL',
             'contact_hours': 'Hours of Service',
-            'contact_instructions': 'During hours of service. Off on weekends.',
+            'contact_instructions': 'During hours of service. Off on ' \
+            'weekends.',
             'contact_role': 'pointOfContact',
         },
         'metadata:inspire': {
@@ -657,31 +690,32 @@ MAP_BASELAYERS = [{
 SOCIAL_BUTTONS = True
 
 SOCIAL_ORIGINS = [{
-    "label":"Email",
-    "url":"mailto:?subject={name}&body={url}",
-    "css_class":"email"
+    "label": "Email",
+    "url": "mailto:?subject={name}&body={url}",
+    "css_class": "email"
 }, {
-    "label":"Facebook",
-    "url":"http://www.facebook.com/sharer.php?u={url}",
-    "css_class":"fb"
+    "label": "Facebook",
+    "url": "http://www.facebook.com/sharer.php?u={url}",
+    "css_class": "fb"
 }, {
-    "label":"Twitter",
-    "url":"https://twitter.com/share?url={url}&hashtags={hashtags}",
-    "css_class":"tw"
+    "label": "Twitter",
+    "url": "https://twitter.com/share?url={url}&hashtags={hashtags}",
+    "css_class": "tw"
 }, {
-    "label":"Google +",
-    "url":"https://plus.google.com/share?url={url}",
-    "css_class":"gp"
+    "label": "Google +",
+    "url": "https://plus.google.com/share?url={url}",
+    "css_class": "gp"
 }]
 
-#CKAN Query String Parameters names pulled from
-#https://github.com/ckan/ckan/blob/2052628c4a450078d58fb26bd6dc239f3cc68c3e/ckan/logic/action/create.py#L43
+# CKAN Query String Parameters names pulled from
+# http://tinyurl.com/og2jofn
 CKAN_ORIGINS = [{
-    "label":"Humanitarian Data Exchange (HDX)",
-    "url":"https://data.hdx.rwlabs.org/dataset/new?title={name}&dataset_date={date}&notes={abstract}&caveats={caveats}",
-    "css_class":"hdx"
+    "label": "Humanitarian Data Exchange (HDX)",
+    "url": "https://data.hdx.rwlabs.org/dataset/new?title={name}&"
+    "dataset_date={date}&notes={abstract}&caveats={caveats}",
+    "css_class": "hdx"
 }]
-#SOCIAL_ORIGINS.extend(CKAN_ORIGINS)
+# SOCIAL_ORIGINS.extend(CKAN_ORIGINS)
 
 # Setting TWITTER_CARD to True will enable Twitter Cards
 # https://dev.twitter.com/cards/getting-started
@@ -693,7 +727,8 @@ TWITTER_HASHTAGS = ['geonode']
 OPENGRAPH_ENABLED = True
 
 # Enable Licenses User Interface
-# Regardless of selection, license field stil exists as a field in the Resourcebase model.
+# Regardless of selection, license field stil exists as a field in the
+# Resourcebase model.
 # Detail Display: above, below, never
 # Metadata Options: verbose, light, never
 LICENSES = {
@@ -721,7 +756,8 @@ PROXY_ALLOWED_HOSTS = ()
 # The proxy to use when making cross origin requests.
 PROXY_URL = '/proxy/?url=' if DEBUG else None
 
-# Haystack Search Backend Configuration.  To enable, first install the following:
+# Haystack Search Backend Configuration. To enable,
+# first install the following:
 # - pip install django-haystack
 # - pip install pyelasticsearch
 # Set HAYSTACK_SEARCH to True
@@ -733,7 +769,8 @@ SKIP_PERMS_FILTER = False
 HAYSTACK_FACET_COUNTS = False
 # HAYSTACK_CONNECTIONS = {
 #    'default': {
-#        'ENGINE': 'haystack.backends.elasticsearch_backend.ElasticsearchSearchEngine',
+#        'ENGINE': 'haystack.backends.elasticsearch_backend.'
+#        'ElasticsearchSearchEngine',
 #        'URL': 'http://127.0.0.1:9200/',
 #        'INDEX_NAME': 'geonode',
 #        },
@@ -792,15 +829,19 @@ LEAFLET_CONFIG = {
         ('Watercolor',
          'http://{s}.tile.stamen.com/watercolor/{z}/{x}/{y}.png',
          'Map tiles by <a href="http://stamen.com">Stamen Design</a>, \
-         <a href="http://creativecommons.org/licenses/by/3.0">CC BY 3.0</a> &mdash; Map data &copy; \
+         <a href="http://creativecommons.org/licenses/by/3.0">CC BY 3.0</a> \
+         &mdash; Map data &copy; \
          <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, \
-         <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>'),
+         <a href="http://creativecommons.org/licenses/by-sa/2.0/"> \
+         CC-BY-SA</a>'),
         ('Toner Lite',
          'http://{s}.tile.stamen.com/toner-lite/{z}/{x}/{y}.png',
          'Map tiles by <a href="http://stamen.com">Stamen Design</a>, \
-         <a href="http://creativecommons.org/licenses/by/3.0">CC BY 3.0</a> &mdash; Map data &copy; \
+         <a href="http://creativecommons.org/licenses/by/3.0">CC BY 3.0</a> \
+         &mdash; Map data &copy; \
          <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, \
-         <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>'),
+         <a href="http://creativecommons.org/licenses/by-sa/2.0/"> \
+         CC-BY-SA</a>'),
     ],
     'PLUGINS': {
         'esri-leaflet': {
@@ -917,7 +958,8 @@ AWS_QUERYSTRING_AUTH = False
 if S3_STATIC_ENABLED:
     STATICFILES_LOCATION = 'static'
     STATICFILES_STORAGE = 'storages.backends.s3boto.S3BotoStorage'
-    STATIC_URL = "https://%s/%s/" % (AWS_S3_BUCKET_DOMAIN, STATICFILES_LOCATION)
+    STATIC_URL = "https://%s/%s/" % (AWS_S3_BUCKET_DOMAIN,
+                                     STATICFILES_LOCATION)
 
 if S3_MEDIA_ENABLED:
     MEDIAFILES_LOCATION = 'media'
@@ -949,16 +991,17 @@ if LOCKDOWN_GEONODE:
     MIDDLEWARE_CLASSES = MIDDLEWARE_CLASSES + \
         ('geonode.security.middleware.LoginRequiredMiddleware',)
 
-#for windows users check if they didn't set GEOS and GDAL in local_settings.py
-#maybe they set it as a windows environment
+# for windows users check if they didn't set GEOS and GDAL in local_settings.py
+# maybe they set it as a windows environment
 if os.name == 'nt':
-    if not "GEOS_LIBRARY_PATH" in locals() or not "GDAL_LIBRARY_PATH" in locals():
+    if "GEOS_LIBRARY_PATH" not in locals() \
+      or "GDAL_LIBRARY_PATH" not in locals():
         if os.environ.get("GEOS_LIBRARY_PATH", None) \
-            and os.environ.get("GDAL_LIBRARY_PATH", None):
+          and os.environ.get("GDAL_LIBRARY_PATH", None):
             GEOS_LIBRARY_PATH = os.environ.get('GEOS_LIBRARY_PATH')
             GDAL_LIBRARY_PATH = os.environ.get('GDAL_LIBRARY_PATH')
         else:
-            #maybe it will be found regardless if not it will throw 500 error
+            # maybe it will be found regardless if not it will throw 500 error
             from django.contrib.gis.geos import GEOSGeometry
 
 
