@@ -39,7 +39,7 @@ def profile_request_csv(request):
 
     return response
 
-    
+@login_required    
 def profile_request_detail(request, pk, template='datarequests/profile_detail.html'):
 
     profile_request = get_object_or_404(ProfileRequest, pk=pk)
