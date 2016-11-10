@@ -39,8 +39,8 @@ class LayerResource(ModelResource):
     class Meta:
         queryset = Layer.objects.all()
         allowed_methods = ['get', ]
-        ordering = ['last_modified', ]
+        ordering = ['created_dttm', ]
         fields = ['abstract', 'bbox', 'date', 'date_type', 'is_public', 'keywords',
-            'last_modified', 'name', 'owner_username', 'srs', 'temporal_extent_end',
+            'created_dttm', 'name', 'owner_username', 'srs', 'temporal_extent_end',
             'temporal_extent_start', 'title', 'topic_category', 'typename', 'uuid',
         ]
