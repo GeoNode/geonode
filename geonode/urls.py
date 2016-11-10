@@ -9,6 +9,8 @@ import geonode.gazetteer.urls
 import geonode.mapnotes.urls
 import geonode.capabilities.urls
 
+from tastypie.api import Api
+from maps.api.resources import LayerResource, TagResource, LayerCategoryResource
 
 # Uncomment the next two lines to enable the admin:
 from django.contrib import admin
@@ -25,6 +27,12 @@ sitemaps = {
     "layer": LayerSitemap,
     "map": MapSitemap
 }
+
+# api
+wm_api = Api(api_name='1.5')
+wm_api.register(LayerResource())
+wm_api.register(TagResource())
+wm_api.register(LayerCategoryResource())
 
 urlpatterns = patterns('',
 
@@ -61,7 +69,13 @@ urlpatterns = patterns('',
     url(r'^sitemap\.xml$', 'django.contrib.sitemaps.views.sitemap',
                                   {'sitemaps': sitemaps}, name='sitemap'),
     (r'^i18n/', include('django.conf.urls.i18n')),
+
+    # admin
     (r'^admin/', include(admin.site.urls)),
+
+    # Tastypie API
+    (r'^api/', include(wm_api.urls)),
+
     (r'^affiliation/confirm', 'geonode.register.views.confirm'),
     (r'^avatar/', include('avatar.urls')),
     (r'^accounts/', include('geonode.register.urls')),
@@ -80,7 +94,6 @@ urlpatterns = patterns('',
     # Dataverse/GeoConnect API
     (r'^dataverse/api/', include('geonode.contrib.dataverse_connect.urls')),
     (r'^dataverse/api/tabular/', include('geonode.contrib.datatables.urls_dataverse')),
-
 
 )
 

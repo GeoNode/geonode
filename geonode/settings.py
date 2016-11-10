@@ -138,6 +138,7 @@ INSTALLED_APPS = (
     'django.contrib.messages',
 
     # Third party apps
+    'tastypie',
     'django_extensions',
     'registration',
     'profiles',
@@ -495,11 +496,7 @@ MAP_BASELAYERS = [
     }
 ]
 
-
-#GEONODE_CLIENT_LOCATION = "http://localhost:9090/"
 GEONODE_CLIENT_LOCATION = "/static/geonode/"
-#GEONODE_CLIENT_LOCATION = "http://192.168.33.16:9090/"
-
 
 # GeoNode vector data backend configuration.
 
