@@ -30,6 +30,15 @@ import re
 import sys
 from threading import local
 import time
+import errno
+import uuid
+import datetime
+from bs4 import BeautifulSoup
+import geoserver
+import base64
+import httplib2
+
+
 import urllib
 from urlparse import urlparse
 from urlparse import urlsplit
@@ -1456,10 +1465,12 @@ def wps_execute_layer_attribute_statistics(layer_name, field):
 def _invalidate_geowebcache_layer(layer_name, url=None):
     http = httplib2.Http()
     username, password = ogc_server_settings.credentials
-    http.add_credentials(username, password)
+    auth = base64.encodestring(username + ':' + password)
+    # http.add_credentials(username, password)
     method = "POST"
     headers = {
-        "Content-Type": "text/xml"
+        "Content-Type": "text/xml",
+        "Authorization": "Basic " + auth
     }
     body = """
         <truncateLayer><layerName>{0}</layerName></truncateLayer>
@@ -1467,6 +1478,7 @@ def _invalidate_geowebcache_layer(layer_name, url=None):
     if not url:
         url = '%sgwc/rest/masstruncate' % ogc_server_settings.LOCATION
     response, _ = http.request(url, method, body=body, headers=headers)
+
     if response.status != 200:
         line = "Error {0} invalidating GeoWebCache at {1}".format(
             response.status, url

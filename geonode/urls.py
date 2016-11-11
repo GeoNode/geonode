@@ -29,6 +29,7 @@ from django.contrib import admin
 import geonode.proxy.urls
 
 from geonode.api.urls import api
+from geonode.api.views import verify_token, roles, users, admin_role
 
 import autocomplete_light
 
@@ -106,6 +107,15 @@ urlpatterns = patterns('',
                        (r'^groups/', include('geonode.groups.urls')),
                        (r'^documents/', include('geonode.documents.urls')),
                        (r'^services/', include('geonode.services.urls')),
+
+                       # OAuth Provider
+                       url(r'^o/', include('oauth2_provider.urls', namespace='oauth2_provider')),
+
+                       # Api Views
+                       url(r'^api/o/v4/tokeninfo', verify_token, name='tokeninfo'),
+                       url(r'^api/roles', roles, name='roles'),
+                       url(r'^api/adminRole', admin_role, name='adminRole'),
+                       url(r'^api/users', users, name='users'),
                        url(r'', include(api.urls)),
                        )
 

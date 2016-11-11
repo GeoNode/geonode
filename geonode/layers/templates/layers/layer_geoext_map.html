@@ -17,7 +17,11 @@
                 {% if PROXY_URL %}
                 proxy: '{{ PROXY_URL }}',
                 {% endif %}
+                {% if 'access_token' in request.session %}
+                localGeoServerBaseUrl: "{{GEOSERVER_BASE_URL}}?access_token={{request.session.access_token}}",
+                {% else %}
                 localGeoServerBaseUrl: "{{GEOSERVER_BASE_URL}}",
+                {% endif %}
                 authorizedRoles: "{{ user.is_authenticated|yesno:"ROLE_ADMINISTRATOR,ROLE_ANONYMOUS" }}",
 
                 /* The URL to a REST map configuration service.  This service 

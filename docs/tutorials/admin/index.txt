@@ -28,6 +28,7 @@ You will know how to:
 .. toctree::
     :hidden:
 
+    geoserver_geonode_security/index
     admin_panel/index
     admin_mgmt_commands/index
     csw_settings/index
@@ -39,6 +40,9 @@ You will know how to:
     loading_data_into_geonode/index
     s3_config/index
     backup_restore/index
+
+:ref:`geoserver_geonode_aa`
+    GeoNode interacts with GeoServer through an advanced security mechanism based on OAuth2 Protocol and GeoFence. This section is a walk through of the configuration and setup of GeoNode and GeoServer Advanced Security.
 
 :ref:`admin_panel`
     GeoNode has an administration panel based on the Django admin which can be used to do some database operations. Although most of the operations can and should be done through the normal GeoNode interface, the admin panel provides a quick overview and management tool over the database.
