@@ -49,6 +49,7 @@ from geonode.maps.encode import num_encode, num_decode
 from django.db import transaction
 import autocomplete_light
 from geonode.maps.encode import despam, XssCleaner
+from geonode.actions.models import Action
 
 logger = logging.getLogger("geonode.maps.views")
 
@@ -203,12 +204,23 @@ def maps(request): # , mapid=None):
                 status=401
             )
         else:
+            # create a new map
             map_obj = Map(owner=request.user, zoom=0, center_x=0, center_y=0)
             map_obj.save()
             map_obj.set_default_permissions()
             try:
                 map_obj.update_from_viewer(request.raw_post_data)
                 MapSnapshot.objects.create(config=clean_config(request.raw_post_data),map=map_obj,user=request.user)
+
+                # audit action
+                username = request.user.get_profile().username()
+                action = Action(
+                    action_type='map_create',
+                    description='User %s created map titled "%s"' % (username, map_obj.title),
+                    args=map_obj.id,
+                )
+                action.save()
+
             except ValueError, e:
                 return HttpResponse(str(e), status=400)
             else:
@@ -639,10 +651,21 @@ def deletemap(request, mapid):
             'urlsuffix': get_suffix_if_custom(map_obj)
         }))
     elif request.method == 'POST':
+        map_id = map_obj.id
+        map_title = map_obj.title
+        username = request.user.get_profile().username()
         layers = map_obj.layer_set.all()
         for layer in layers:
             layer.delete()
         map_obj.delete()
+
+        # audit action
+        action = Action(
+            action_type='map_delete',
+            description='User %s deleted map titled "%s"' % (username, map_title),
+            args=map_id,
+        )
+        action.save()
 
         return HttpResponseRedirect(request.user.get_profile().get_absolute_url())
 
@@ -1120,7 +1143,19 @@ def layer_remove(request, layername):
                 "lastmapTitle" : request.session.get("lastmapTitle")
             }))
         if (request.method == 'POST'):
+            layer_title = layer.title
+            layer_uuid = layer.uuid
             layer.delete()
+
+            # audit action
+            username = request.user.get_profile().username()
+            action = Action(
+                action_type='layer_delete',
+                description='User %s deleted layer titled "%s"' % (username, layer_title),
+                args=layer_uuid,
+            )
+            action.save()
+
             return HttpResponseRedirect(request.user.get_profile().get_absolute_url())
         else:
             return HttpResponse("Not allowed",status=403)
@@ -1243,6 +1278,16 @@ def upload_layer(request):
                         charset = request.POST.get('charset'),
                         sldfile = sld_file
                         )
+
+                # audit action
+                username = request.user.get_profile().username()
+                action = Action(
+                    action_type='layer_upload',
+                    description='User %s uploaded layer titled "%s"' % (username, saved_layer.title),
+                    args=saved_layer.uuid,
+                )
+                action.save()
+
                 redirect_to  = reverse('data_metadata', args=[saved_layer.typename])
                 if 'mapid' in request.POST and request.POST['mapid'] == 'tab':
                     redirect_to+= "?tab=worldmap_update_panel"
@@ -2762,8 +2807,17 @@ def create_pg_layer(request):
                 check_projection(name, layer)
 
                 logger.info("Create django record")
-                geonodeLayer = create_django_record(request.user, layer_form.cleaned_data['title'], layer_form.cleaned_data['keywords'].strip().split(" "), layer_form.cleaned_data['abstract'], layer, permissions)
+                title = layer_form.cleaned_data['title']
+                geonodeLayer = create_django_record(request.user, title, layer_form.cleaned_data['keywords'].strip().split(" "), layer_form.cleaned_data['abstract'], layer, permissions)
 
+                # audit action
+                username = request.user.get_profile().username()
+                action = Action(
+                    action_type='layer_create',
+                    description='User %s created layer titled "%s"' % (username, title),
+                    args=geonodeLayer.uuid,
+                )
+                action.save()
 
                 redirect_to  = reverse('data_metadata', args=[geonodeLayer.typename])
                 if 'mapid' in request.POST and request.POST['mapid'] == 'tab': #if mapid = tab then open metadata form in tabbed panel
