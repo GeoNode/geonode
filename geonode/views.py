@@ -253,25 +253,25 @@ def report_layer(request, template='report_layers.html'):
     }
     auth_list = Action.objects.filter(verb='downloaded').order_by('timestamp')
     for auth in auth_list:
-        pprint(auth.action_object.typename)
-        if 'coverage' in auth.action_object.typename:
-            layer_count['cov'] += 1
-        elif 'document' in auth.action_object.typename:
+        if auth.action_object.csw_type == 'document':
             layer_count['doc'] += 1
-        elif 'fh' in auth.action_object.typename:
-            layer_count['fhm'] += 1
-        elif 'dtm' in auth.action_object.typename:
-            layer_count['dtm'] += 1
-        elif 'dsm' in auth.action_object.typename:
-            layer_count['dsm'] += 1
-        elif 'laz' in auth.action_object.typename:
-            layer_count['laz'] += 1
-        elif 'ortho' in auth.action_object.typename:
-            layer_count['ortho'] += 1
-        elif 'sar' in auth.action_object.typename:
-            layer_count['sar'] += 1
         else:
-            layer_count['others'] += 1
+            if 'coverage' in auth.action_object.typename:
+                layer_count['cov'] += 1
+            elif 'fh' in auth.action_object.typename:
+                layer_count['fhm'] += 1
+            elif 'dtm' in auth.action_object.typename:
+                layer_count['dtm'] += 1
+            elif 'dsm' in auth.action_object.typename:
+                layer_count['dsm'] += 1
+            elif 'laz' in auth.action_object.typename:
+                layer_count['laz'] += 1
+            elif 'ortho' in auth.action_object.typename:
+                layer_count['ortho'] += 1
+            elif 'sar' in auth.action_object.typename:
+                layer_count['sar'] += 1
+            else:
+                layer_count['others'] += 1
     pprint(layer_count)
 
     # writer.writerow(['\n'])
@@ -279,25 +279,25 @@ def report_layer(request, template='report_layers.html'):
     # writer.writerow(['Anonymous Downloads'])
     # writer.writerow( ['lastname','firstname','email','organization','organization type','purpose','layer name','doc name','date downloaded'])
     for anon in anon_list:
-        pprint(anon.anon_layer.typename)
-        if 'coverage' in anon.anon_layer.typename:
-            layer_count['cov'] += 1
-        elif 'document' in anon.anon_layer.typename:
+        if anon.anon_document:
             layer_count['doc'] += 1
-        elif 'fh' in anon.anon_layer.typename:
-            layer_count['fhm'] += 1
-        elif 'dtm' in anon.anon_layer.typename:
-            layer_count['dtm'] += 1
-        elif 'dsm' in anon.anon_layer.typename:
-            layer_count['dsm'] += 1
-        elif 'laz' in anon.anon_layer.typename:
-            layer_count['laz'] += 1
-        elif 'ortho' in anon.anon_layer.typename:
-            layer_count['ortho'] += 1
-        elif 'sar' in anon.anon_layer.typename:
-            layer_count['sar'] += 1
         else:
-            layer_count['others'] += 1
+            if 'coverage' in anon.anon_layer.typename:
+                layer_count['cov'] += 1
+            elif 'fh' in anon.anon_layer.typename:
+                layer_count['fhm'] += 1
+            elif 'dtm' in anon.anon_layer.typename:
+                layer_count['dtm'] += 1
+            elif 'dsm' in anon.anon_layer.typename:
+                layer_count['dsm'] += 1
+            elif 'laz' in anon.anon_layer.typename:
+                layer_count['laz'] += 1
+            elif 'ortho' in anon.anon_layer.typename:
+                layer_count['ortho'] += 1
+            elif 'sar' in anon.anon_layer.typename:
+                layer_count['sar'] += 1
+            else:
+                layer_count['others'] += 1
     pprint(layer_count)
 
     context_dict = {
