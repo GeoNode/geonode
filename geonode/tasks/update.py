@@ -284,8 +284,8 @@ def fhm_year_metadata(flood_year, skip_prev):
             pass
 
 
-@task(name='geonode.tasks.update.layers_metadata_update', queue='update')
-def fhm_metadata_update(skip_prev=True, flood_years=(5, 25, 100)):
+@task(name='geonode.tasks.update.update_fhm_metadata_task', queue='update')
+def update_fhm_metadata_task(skip_prev=True, flood_years=(5, 25, 100)):
     for year in flood_years:
         fhm_year_metadata(year, skip_prev)
 
