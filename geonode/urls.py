@@ -170,3 +170,9 @@ urlpatterns += patterns('',
                         (r'^featured/(?P<site>[A-Za-z0-9_\-]+)/$', 'geonode.maps.views.featured_map'),
                         (r'^featured/(?P<site>[A-Za-z0-9_\-]+)/info$', 'geonode.maps.views.featured_map_info'),
                         )
+
+# Reports
+urlpatterns += patterns('',
+                        (r'^report-layers/', 'geonode.views.report_layer'),
+
+                        )
