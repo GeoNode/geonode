@@ -133,15 +133,17 @@ class SucToLayer(models.Model):
 
 
 class RIDF(models.Model):
-    municipality = models.CharField(max_length=50)
-    province = models.CharField(max_length=50)
-    _100yr = models.DecimalField(max_digits=7, decimal_places=3)
-    _25yr = models.DecimalField(max_digits=7, decimal_places=3)
-    _5yr = models.DecimalField(max_digits=7, decimal_places=3)
-    layer_name = models.CharField(max_length=100, blank=True)
+    prov_code = models.CharField(max_length=11)
+    prov_name = models.CharField(max_length=50)
+    muni_code = models.CharField(max_length=11)
+    muni_name = models.CharField(max_length=50)
+    iscity = models.BooleanField(default=False)
+    _5yr = models.DecimalField(max_digits=7, decimal_places=3, null=True,default=0)
+    _25yr = models.DecimalField(max_digits=7, decimal_places=3, null=True,default=0)
+    _100yr = models.DecimalField(max_digits=7, decimal_places=3, null=True,default=0)
+    rbs_raw = models.CharField(max_length=100,null=True,blank=True)
     riverbasins = TaggableManager(
         _('riverbasins'),blank=True, help_text='List of riverbasins')
-    nscb_code = models.IntegerField(null=True)
 
     # def keyword_list(self):
     #     """
@@ -150,4 +152,4 @@ class RIDF(models.Model):
     #     return [kw.name for kw in self.riverbasins.all()]
 
     def __unicode__(self):
-        return "{0}".format(self.layer_name)
+        return "{0}:{1}".format(self.prov_name, self.muni_name)
