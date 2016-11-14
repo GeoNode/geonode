@@ -40,9 +40,9 @@ Add the `POSTGIS_VERSION` variable matching your PostGIS version::
 
 This will instruct GeoNode to listen on connections from your local machine.
 
-Change the value of the `SITEURL`::
+Change the value of the `SITEURL` to your server's host name::
 
-    SITEURL = "http://localhost/"
+    SITEURL = "http://<host>/"
 
 Now configure database access:
 Uncomment the `ENGINE`: `django.contrib.gis.db.backends.postgis` line
@@ -79,7 +79,7 @@ The resulting configuration file should look like this::
 
     PROJECT_ROOT = os.path.abspath(os.path.dirname(__file__))
 
-    SITEURL = "http://localhost/"
+    SITEURL = "http://<host>/"
 
     ALLOWED_HOSTS = ['127.0.0.1', 'localhost', '::1']
     PROXY_ALLOWED_HOSTS = ("127.0.0.1", 'localhost', '::1')
