@@ -411,7 +411,7 @@ class CommonModelApi(ModelResource):
 
         object_list = {
            "meta": {
-                "limit": settings.CLIENT_RESULTS_LIMIT,
+                "limit": settings.API_LIMIT_PER_PAGE,
                 "next": next_page,
                 "offset": int(getattr(request.GET, 'offset', 0)),
                 "previous": previous_page,
