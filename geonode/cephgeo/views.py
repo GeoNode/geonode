@@ -26,7 +26,7 @@ from django.core.urlresolvers import reverse
 from geonode.maptiles.models import SRS
 from django.utils.text import slugify
 
-from geonode.tasks.update import fhm_metadata_update, style_update, seed_layers, pl2_metadata_update, sar_metadata_update, layer_default_style
+from geonode.tasks.update import update_fhm_metadata_task, style_update, seed_layers, pl2_metadata_update, sar_metadata_update, layer_default_style
 from geonode.base.enumerations import CHARSETS
 
 from geonode import settings
@@ -439,7 +439,8 @@ def management(request):
 @login_required
 @user_passes_test(lambda u: u.is_superuser)
 def update_fhm_metadata(request):
-    fhm_metadata_update.delay()
+    # fhm_metadata_update.delay()
+    update_fhm_metadata_task.delay()
     messages.error(request, "Updating Flood Hazard Map metadata")
     return HttpResponseRedirect(reverse('data_management'))
 
