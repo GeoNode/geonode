@@ -37,6 +37,11 @@ class DataRequestList(LoginRequiredMixin, TemplateView):
     template_name = 'datarequests/data_request_list.html'
     raise_exception = True
 
+@login_required
+def user_data_request_list(request):
+    data_requests = 
+    pass
+
 def data_request_detail(request, pk, template='datarequests/data_detail.html'):
 
     data_request = get_object_or_404(DataRequest, pk=pk)
