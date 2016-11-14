@@ -11,6 +11,7 @@ import geonode.capabilities.urls
 
 from tastypie.api import Api
 from maps.api.resources import LayerResource, TagResource, LayerCategoryResource
+from actions.api.resources import ActionLayerDeleteResource
 
 # Uncomment the next two lines to enable the admin:
 from django.contrib import admin
@@ -33,6 +34,7 @@ wm_api = Api(api_name='1.5')
 wm_api.register(LayerResource())
 wm_api.register(TagResource())
 wm_api.register(LayerCategoryResource())
+wm_api.register(ActionLayerDeleteResource())
 
 urlpatterns = patterns('',
 
