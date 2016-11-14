@@ -10,11 +10,31 @@
 
 {% block body_outer %}
 <div class="page-header">
-  {{ layer_count }}
+</div>
+<div id = 'myDiv' style='width: 480px; height: 400px;'>
 </div>
 
 {% endblock %}
 
 {% block extra_script %}
+<script src="{{ STATIC_URL }}lib/js/plotly-latest.min.js"></script>
+<script type="text/javascript">
+var data = [
+  {
+    x: [
+      {% for key, value in layer_count.items %}
+        '{{ key }}',
+      {% endfor %}
+    ],
+    y: [
+      {% for key, value in layer_count.items %}
+        {{ value }},
+      {% endfor %}
+    ],
+    type: 'bar'
+  }
+];
 
+Plotly.newPlot('myDiv', data);
+</script>
 {% endblock extra_script %}
