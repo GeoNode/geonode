@@ -112,13 +112,16 @@ class RIDFAdmin(admin.ModelAdmin):
     list_display_links = ('id',)
     list_display = (
         'id',
-        'municipality',
-        'province',
-        '_100yr',
-        '_25yr',
+        'prov_code',
+        'prov_name',
+        'muni_code',
+        'muni_name',
+        'iscity',
         '_5yr',
-        'layer_name',
-        'Riverbasins'
+        '_25yr',
+        '_100yr',
+        'rbs_raw',
+        'Riverbasins',
 
     )
     # list_filter = ('')
@@ -129,8 +132,9 @@ class RIDFAdmin(admin.ModelAdmin):
     def Riverbasins(self, obj):
         return u", ".join(o.name for o in obj.riverbasins.all())
 
-    search_fields = ('municipality', 'province', '_100yr',
-                     '_25yr', '_5yr', 'layer_name')
+    search_fields = ('muni_code', 'muni_name', 'iscity', 'prov_code', 'prov_name', '_100yr',
+                     '_25yr', '_5yr','rbs_raw')
+
 
 class UserTilesAdmin(admin.ModelAdmin):
     model = UserTiles
@@ -142,31 +146,6 @@ class UserTilesAdmin(admin.ModelAdmin):
     )
     search_fields = ('user__username','gridref_list')
 
-class RIDFAdmin(admin.ModelAdmin):
-    model = RIDF
-    list_display_links = ('id',)
-    list_display = (
-        'id',
-        'municipality',
-        'province',
-        '_100yr',
-        '_25yr',
-        '_5yr',
-        'layer_name',
-        'Riverbasins',
-        'nscb_code'
-
-    )
-    # list_filter = ('')
-
-    def get_queryset(self, request):
-        return super(RIDFAdmin, self).get_queryset(request).prefetch_related('riverbasins')
-
-    def Riverbasins(self, obj):
-        return u", ".join(o.name for o in obj.riverbasins.all())
-
-    search_fields = ('municipality', 'province', '_100yr',
-                     '_25yr', '_5yr', 'layer_name','nscb_code')
 
 admin.site.register(Cart, CartAdmin)
 admin.site.register(Item, ItemAdmin)
@@ -174,7 +153,7 @@ admin.site.register(CephDataObject, CephDataObjectAdmin)
 admin.site.register(FTPRequest, FTPRequestAdmin)
 admin.site.register(FTPRequestToObjectIndex, FTPRequestToObjectIndexAdmin)
 admin.site.register(UserJurisdiction, UserJurisdictionAdmin)
-admin.site.register(MissionGridRef,MissionGridRefAdmin)
-admin.site.register(SucToLayer,SucToLayerAdmin)
+admin.site.register(MissionGridRef, MissionGridRefAdmin)
+admin.site.register(SucToLayer, SucToLayerAdmin)
 admin.site.register(RIDF, RIDFAdmin)
 admin.site.register(UserTiles,UserTilesAdmin)
