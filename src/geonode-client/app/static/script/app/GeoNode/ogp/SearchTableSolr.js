@@ -48,6 +48,7 @@ GeoNode.SearchTable = Ext.extend(Ext.util.Observable, {
             totalProperty: 'response.numFound',
             fields: [
                 {name: 'id', type: 'string'},
+                {name: 'uuid', type: 'string'},
                 {name: 'name', type: 'string'},
                 {name: 'title', type: 'string'},
                 {name: 'abstract', type: 'string'},
@@ -138,10 +139,13 @@ GeoNode.SearchTable = Ext.extend(Ext.util.Observable, {
     },
 
     _search: function(params) {
+
        /* search with given parameters */
         this.disableControls();
         this.pagerLabel.setText(this.loadingText);
+
         this.searchStore.load({params: params});
+
         this.updatePermalink(params);
     },
 
@@ -608,10 +612,10 @@ GeoNode.SearchTable = Ext.extend(Ext.util.Observable, {
     },
 
     showPreviewLayer: function(record){
-
         if($.parseJSON(record.get('is_public'))){
             var typename = this.getlayerTypename(record);
-            this.heatmap.bbox_widget.viewer.fireEvent("showPreviewLayer", typename, this.getLayerID(record));
+            var uuid = this.getuuid(record);
+            this.heatmap.bbox_widget.viewer.fireEvent("showPreviewLayer", typename, this.getLayerID(record), uuid);
         }
     },
 
@@ -621,6 +625,10 @@ GeoNode.SearchTable = Ext.extend(Ext.util.Observable, {
 
     getlayerTypename: function(record){
         return record.get('name');
+    },
+
+    getuuid: function(record) {
+        return record.get('uuid');
     },
 
     getLayerID: function(record){
