@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 #########################################################################
 #
 # Copyright (C) 2012 OpenPlans
@@ -17,10 +18,12 @@
 #
 #########################################################################
 
-from django.db import models
-from django.utils.translation import ugettext_lazy as _
+from django.conf.urls import patterns, url
+from django.conf import settings
+from django.views.generic import TemplateView
 
-class DownloadCount(models.Model):
-    date = models.DateTimeField(auto_now=True)
-    category = models.CharField(_('Category'), max_length=100)
-    count = models.IntegerField(_('Count'))
+# Reports
+urlpatterns = patterns('',
+                        (r'^layers/', 'geonode.views.report_layer'),
+
+                        )
