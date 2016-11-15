@@ -48,9 +48,6 @@ from django.utils import simplejson as json
 from geonode.utils import resolve_object, llbbox_to_mercator
 from geonode.layers.models import Layer
 
-from actstream.models import Action
-from geonode.eula.models import AnonDownloader
-
 _PERMISSION_MSG_GENERIC = _('You do not have permissions for this layer.')
 _PERMISSION_MSG_VIEW = _("You are not permitted to view this layer")
 
@@ -237,94 +234,3 @@ def err403(request):
 
 def forbidden(request):
     return TemplateResponse(request, '401.html', {}, status=401).render()
-
-
-def report_layer(request, template='report_layers.html'):
-    layer_count = {}
-    layer_count['jan'] = {
-        "cov": 0,
-        "doc": 0,
-        "fhm": 0,
-        "dtm": 0,
-        "dsm": 0,
-        "laz": 0,
-        "ortho": 0,
-        "sar": 0,
-        "others": 0,
-    }
-    auth_list = Action.objects.filter(verb='downloaded').order_by('timestamp')
-    for auth in auth_list:
-        if auth.timestamp.strftime('%b') not in layer_count:
-            layer_count[auth.timestamp.strftime('%b')] = {
-                "cov": 0,
-                "doc": 0,
-                "fhm": 0,
-                "dtm": 0,
-                "dsm": 0,
-                "laz": 0,
-                "ortho": 0,
-                "sar": 0,
-                "others": 0,
-            }
-        if auth.action_object.csw_type == 'document':
-            layer_count[auth.timestamp.strftime('%b')]['doc'] += 1
-        else:
-            if 'coverage' in auth.action_object.typename:
-                layer_count[auth.timestamp.strftime('%b')]['cov'] += 1
-            elif 'fh' in auth.action_object.typename:
-                layer_count[auth.timestamp.strftime('%b')]['fhm'] += 1
-            elif 'dtm' in auth.action_object.typename:
-                layer_count[auth.timestamp.strftime('%b')]['dtm'] += 1
-            elif 'dsm' in auth.action_object.typename:
-                layer_count[auth.timestamp.strftime('%b')]['dsm'] += 1
-            elif 'laz' in auth.action_object.typename:
-                layer_count[auth.timestamp.strftime('%b')]['laz'] += 1
-            elif 'ortho' in auth.action_object.typename:
-                layer_count[auth.timestamp.strftime('%b')]['ortho'] += 1
-            elif 'sar' in auth.action_object.typename:
-                layer_count[auth.timestamp.strftime('%b')]['sar'] += 1
-            else:
-                layer_count[auth.timestamp.strftime('%b')]['others'] += 1
-
-    # writer.writerow(['\n'])
-    anon_list = AnonDownloader.objects.all().order_by('date')
-    # writer.writerow(['Anonymous Downloads'])
-    # writer.writerow( ['lastname','firstname','email','organization','organization type','purpose','layer name','doc name','date downloaded'])
-    for anon in anon_list:
-        if anon.date.strftime('%b') not in layer_count:
-            layer_count[anon.date.strftime('%b')] = {
-                "cov": 0,
-                "doc": 0,
-                "fhm": 0,
-                "dtm": 0,
-                "dsm": 0,
-                "laz": 0,
-                "ortho": 0,
-                "sar": 0,
-                "others": 0,
-            }
-        if anon.anon_document:
-            layer_count[anon.date.strftime('%b')]['doc'] += 1
-        else:
-            if 'coverage' in anon.anon_layer.typename:
-                layer_count[anon.date.strftime('%b')]['cov'] += 1
-            elif 'fh' in anon.anon_layer.typename:
-                layer_count[anon.date.strftime('%b')]['fhm'] += 1
-            elif 'dtm' in anon.anon_layer.typename:
-                layer_count[anon.date.strftime('%b')]['dtm'] += 1
-            elif 'dsm' in anon.anon_layer.typename:
-                layer_count[anon.date.strftime('%b')]['dsm'] += 1
-            elif 'laz' in anon.anon_layer.typename:
-                layer_count[anon.date.strftime('%b')]['laz'] += 1
-            elif 'ortho' in anon.anon_layer.typename:
-                layer_count[anon.date.strftime('%b')]['ortho'] += 1
-            elif 'sar' in anon.anon_layer.typename:
-                layer_count[anon.date.strftime('%b')]['sar'] += 1
-            else:
-                layer_count[anon.date.strftime('%b')]['others'] += 1
-    pprint(layer_count)
-
-    context_dict = {
-        "layer_count": layer_count,
-    }
-    return render_to_response(template, RequestContext(request, context_dict))
