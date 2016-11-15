@@ -400,13 +400,11 @@ class CommonModelApi(ModelResource):
             else:
                 next_page = 1
             total_count = sqs.count()
-            public_count = sum(i.is_published == True for i in sqs)
             objects = page.object_list
         else:
             next_page = 0
             previous_page = 0
             total_count = 0
-            public_count = 0
             facets = {}
             objects = []
 
@@ -416,7 +414,6 @@ class CommonModelApi(ModelResource):
                     "offset": int(getattr(request.GET, 'offset', 0)),
                     "previous": previous_page,
                     "total_count": total_count,
-                    "public_count": public_count,
                     "facets": facets,
                     },
             'objects': map(lambda x: self.get_haystack_api_fields(x), objects),
