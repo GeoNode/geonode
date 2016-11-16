@@ -39,8 +39,9 @@ class DataRequestList(LoginRequiredMixin, TemplateView):
 
 @login_required
 def user_data_request_list(request):
-    data_requests = 
-    pass
+    data_requests = DataRequest.objects.filter(profile=request.user)
+    
+    return None
 
 def data_request_detail(request, pk, template='datarequests/data_detail.html'):
 
