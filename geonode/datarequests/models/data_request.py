@@ -107,6 +107,7 @@ class DataRequest(BaseRequest):
         ordering = ('-created',)
 
     def __init__(self, *args, **kwargs):
+        models.Model.__init__(self, *args, **kwargs)
         self.status = BaseRequest.STATUS.unconfirmed
         self.request_type = BaseRequest.REQUEST_TYPE.data
 
