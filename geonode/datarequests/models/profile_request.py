@@ -167,7 +167,7 @@ class ProfileRequest(BaseRequest):
         
     
     def __init__(self, *args, **kwargs):
-        #super(ProfileRequest, self).__init__(*args, **kwargs)
+        models.Model.__init__(self, *args, **kwargs)
         self.request_type=BaseRequest.REQUEST_TYPE.profile
         self.status = BaseRequest.STATUS.unconfirmed
 
