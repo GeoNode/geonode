@@ -547,7 +547,7 @@ class DataRequestResource(ModelResource):
     def dehydrate_org_type(self, bundle):
         if bundle.obj.profile_request:
             return bundle.obj.profile_request.get_organization_type_display()
-        elif:
+        elif bundle.obj.profile:
             return bundle.obj.profile.get_organization_type_display()
         else:
             return None
