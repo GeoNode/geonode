@@ -1,0 +1,28 @@
+{% extends "announcements/base.html" %}
+
+{% load i18n %}
+{% load bootstrap_tags %}
+{% load url from future %}
+
+{% block body_class %}announcements{% endblock %}
+
+{% block body %}
+    <h1>{% if announcement %}{% trans "Edit Announcement" %}{% else %}{% trans "Create Announcement" %}{% endif %}</h1>
+    {% if announcement %}
+        {% url "announcements_update" pk=announcement.pk as post_url %}
+    {% else %}
+        {% url "announcements_create" as post_url %}
+    {% endif %}
+
+    <form action="{{ post_url }}" method="POST" class="form form-horizontal">
+        {% csrf_token %}
+        {{ form|as_bootstrap }}
+        <div class="form-actions">
+            <a href="{% url "announcements_list" %}" class="btn">{% trans "Cancel" %}</a>
+            {% if announcement %}
+                <a href="{% url "announcements_delete" pk=announcement.pk %}" class="btn btn-danger">{% trans "Delete" %}</a>
+            {% endif %}
+            <button type="submit" class="btn btn-primary">{% trans "Save" %}</button>
+        </div>
+    </form>
+{% endblock %}
