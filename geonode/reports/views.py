@@ -32,19 +32,8 @@ from pprint import pprint
 from actstream.models import Action
 from geonode.eula.models import AnonDownloader
 
-def report_layer(request, template='report_layers.html'):
+def report_layer(request, template='reports/report_layers.html'):
     layer_count = {}
-    layer_count['jan'] = {
-        "cov": 0,
-        "doc": 0,
-        "fhm": 0,
-        "dtm": 0,
-        "dsm": 0,
-        "laz": 0,
-        "ortho": 0,
-        "sar": 0,
-        "others": 0,
-    }
     auth_list = Action.objects.filter(verb='downloaded').order_by('timestamp')
     for auth in auth_list:
         if auth.timestamp.strftime('%b') not in layer_count:
