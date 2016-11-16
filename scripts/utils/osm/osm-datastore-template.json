@@ -1,0 +1,88 @@
+{
+    "dataStore": {
+        "name": "%%%datastore%%%",
+        "type": "PostGIS",
+        "enabled": true,
+        "workspace": {
+            "name": "%%%workspace%%%",
+            "href": "http:\/\/localhost:8080\/geoserver\/rest\/workspaces\/%%%workspace%%%.json"
+        },
+        "connectionParameters": {
+            "entry": [
+            {
+                "@key": "Connection timeout",
+                "$": "20"
+            }, {
+                "@key": "port",
+                "$": "%%%port%%%"
+            }, {
+                "@key": "passwd",
+                "$": "%%%passwd%%%"
+            }, {
+                "@key": "dbtype",
+                "$": "postgis"
+            }, {
+                "@key": "host",
+                "$": "%%%host%%%"
+            }, {
+                "@key": "Evictor tests per run",
+                "$": "3"
+            }, {
+                "@key": "validate connections",
+                "$": "true"
+            }, {
+                "@key": "encode functions",
+                "$": "false"
+            }, {
+                "@key": "max connections",
+                "$": "10"
+            }, {
+                "@key": "Support on the fly geometry simplification",
+                "$": "true"
+            }, {
+                "@key": "database",
+                "$": "osm"
+            }, {
+                "@key": "Max connection idle time",
+                "$": "300"
+            }, {
+                "@key": "Evictor run periodicity",
+                "$": "300"
+            }, {
+                "@key": "schema",
+                "$": "public"
+            }, {
+                "@key": "Test while idle",
+                "$": "true"
+            }, {
+                "@key": "Loose bbox",
+                "$": "true"
+            }, {
+                "@key": "Expose primary keys",
+                "$": "false"
+            }, {
+                "@key": "create database",
+                "$": "false"
+            }, {
+                "@key": "Max open prepared statements",
+                "$": "50"
+            }, {
+                "@key": "fetch size",
+                "$": "1000"
+            }, {
+                "@key": "preparedStatements",
+                "$": "false"
+            }, {
+                "@key": "Estimated extends",
+                "$": "true"
+            }, {
+                "@key": "user",
+                "$": "%%%user%%%"
+            }, {
+                "@key": "min connections",
+                "$": "1"
+            }]
+        },
+        "_default": false
+    }
+}
