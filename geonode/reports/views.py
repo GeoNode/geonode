@@ -23,6 +23,9 @@ from django.core.urlresolvers import reverse
 from django.utils import simplejson as json
 from django.db.models import Q
 from django.template.response import TemplateResponse
+from django.shortcuts import (
+    redirect, get_object_or_404, render, render_to_response)
+from django.template import RequestContext
 
 from pprint import pprint
 
