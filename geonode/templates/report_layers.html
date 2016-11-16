@@ -10,11 +10,182 @@
 
 {% block body_outer %}
 <div class="page-header">
-  {{ layer_count }}
+</div>
+<div id = 'myDiv' style='width: 1000px; height: 800px;'>
 </div>
 
 {% endblock %}
 
 {% block extra_script %}
+<script src="{{ STATIC_URL }}lib/js/plotly-latest.min.js"></script>
+<script type="text/javascript">
+var trace1 = {
+  x: [
+    {% for key, value in layer_count.items %}
+      '{{ key }}',
+    {% endfor %}
+  ],
+  y: [
+    {% for key, value in layer_count.items %}
+      {{ value.cov }},
+    {% endfor %}
+  ],
+  name: 'Coverage',
+  type: 'bar',
+  marker: {
+    color: '#DC3912'
+  }
+};
 
+var trace2 = {
+  x: [
+    {% for key, value in layer_count.items %}
+      '{{ key }}',
+    {% endfor %}
+  ],
+  y: [
+    {% for key, value in layer_count.items %}
+      {{ value.doc }},
+    {% endfor %}
+  ],
+  name: 'Documents',
+  type: 'bar',
+  marker: {
+    color: '#FF9900'
+  }
+};
+
+var trace3 = {
+  x: [
+    {% for key, value in layer_count.items %}
+      '{{ key }}',
+    {% endfor %}
+  ],
+  y: [
+    {% for key, value in layer_count.items %}
+      {{ value.fhm }},
+    {% endfor %}
+  ],
+  name: 'Flood Hazard Maps',
+  type: 'bar',
+  marker: {
+    color: '#3366CB'
+  }
+};
+
+var trace4 = {
+  x: [
+    {% for key, value in layer_count.items %}
+      '{{ key }}',
+    {% endfor %}
+  ],
+  y: [
+    {% for key, value in layer_count.items %}
+      {{ value.dtm }},
+    {% endfor %}
+  ],
+  name: 'DTM',
+  type: 'bar',
+  marker: {
+    color: '#109618'
+  }
+};
+
+var trace5 = {
+  x: [
+    {% for key, value in layer_count.items %}
+      '{{ key }}',
+    {% endfor %}
+  ],
+  y: [
+    {% for key, value in layer_count.items %}
+      {{ value.dsm }},
+    {% endfor %}
+  ],
+  name: 'DSM',
+  type: 'bar',
+  marker: {
+    color: '#990099'
+  }
+};
+
+var trace6 = {
+  x: [
+    {% for key, value in layer_count.items %}
+      '{{ key }}',
+    {% endfor %}
+  ],
+  y: [
+    {% for key, value in layer_count.items %}
+      {{ value.laz }},
+    {% endfor %}
+  ],
+  name: 'LAZ',
+  type: 'bar',
+  marker: {
+    color: '#0099C6'
+  }
+};
+
+var trace7 = {
+  x: [
+    {% for key, value in layer_count.items %}
+      '{{ key }}',
+    {% endfor %}
+  ],
+  y: [
+    {% for key, value in layer_count.items %}
+      {{ value.ortho }},
+    {% endfor %}
+  ],
+  name: 'Ortho',
+  type: 'bar',
+  marker: {
+    color: '#DD4477'
+  }
+};
+
+var trace8 = {
+  x: [
+    {% for key, value in layer_count.items %}
+      '{{ key }}',
+    {% endfor %}
+  ],
+  y: [
+    {% for key, value in layer_count.items %}
+      {{ value.sar }},
+    {% endfor %}
+  ],
+  name: 'SAR',
+  type: 'bar',
+  marker: {
+    color: '#FFF328'
+  }
+};
+
+var trace9 = {
+  x: [
+    {% for key, value in layer_count.items %}
+      '{{ key }}',
+    {% endfor %}
+  ],
+  y: [
+    {% for key, value in layer_count.items %}
+      {{ value.others }},
+    {% endfor %}
+  ],
+  name: 'Others',
+  type: 'bar',
+  marker: {
+    color: '#19ED88'
+  }
+};
+
+var data = [trace1, trace2, trace3, trace4, trace5, trace6, trace7, trace8, trace9];
+
+var layout = {barmode: 'stack',
+              xaxis: {autorange: 'reversed'}};
+
+Plotly.newPlot('myDiv', data, layout);
+</script>
 {% endblock extra_script %}

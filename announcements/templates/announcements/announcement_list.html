@@ -1,0 +1,39 @@
+{% extends "announcements/base.html" %}
+
+{% load i18n %}
+{% load url from future %}
+
+{% block head_title %}{% trans "Announcements Admin" %}{% endblock %}
+
+{% block body_class %}announcements{% endblock %}
+{% block body %}
+        <h2>{% trans "Announcements" %}</h2>
+        <a href="{% url "announcements_create" %}" class="btn btn-success">
+            {% trans "Add New Announcement" %}
+        </a>
+        
+        <table class="table">
+            {% for announcement in announcement_list %}
+                <tr>
+                    <td>
+                        <a href="{% url "announcements_update" pk=announcement.pk %}" class="btn btn-mini">
+                            <i class="icon icon-pencil"></i>
+                            {% trans "Edit" %}
+                        </a>
+                    </td>
+                    <td>
+                        {% if announcement.publish_start or announcement.publish_end %}
+                            <small>Published from <em>{{ announcement.publish_start|date:"F j, Y" }}</em> to
+                            <em>{{ announcement.publish_end|date:"F j, Y" }}</em></small>
+                        {% endif %}
+                    </td>
+                    <td>
+                        {{ announcement.title }}
+                    </td>
+                    <td>
+                        {{ announcement.content }}
+                    </td>
+                </tr>
+            {% endfor %}
+        </table>
+{% endblock %}
