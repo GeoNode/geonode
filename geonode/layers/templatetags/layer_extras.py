@@ -104,7 +104,7 @@ def image_basemap(link, epsg, filetype):
             jsontext['purpose'] = 'No purpose provided'
         jsontext['srs'] = to_srs_str
         jsontext['outputFormat'] = filetype
-        jsontext['outputFilename'] = layer.name
+        jsontext['outputFilename'] = layer.title.replace(',','')
         # jsontext['layers'][0]['baseURL'] = settings.OGC_SERVER['default']['LOCATION'] + 'wms?SERVICE=WMS&'
         jsontext['layers'][0]['baseURL'] = baseURL + \
             'wms?SERVICE=WMS&'  # baseURL for local
