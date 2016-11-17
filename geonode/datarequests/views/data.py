@@ -220,7 +220,7 @@ def data_request_reject(request, pk):
         mimetype='text/plain'
     )
 
-def data_request_compute_size(request):
+def data_request_compute_size_all(request):
     if request.user.is_superuser:
         data_requests = DataRequest.objects.exclude(jurisdiction_shapefile=None)
         compute_size_update.delay(data_requests)
