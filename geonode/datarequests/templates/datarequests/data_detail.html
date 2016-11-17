@@ -127,14 +127,14 @@
         <h5 class="list-group-item-heading">{%trans "Data Request Status" %}</h5>
 
         <div class="row data-request-status-parent">
-          {% if data_request.status == 'pending' %}
+          {% if data_request.status == 'pending' or  data_request.status == 'unconfirmed' %}
             <div class="col-sm-12 data-request-status label pending-request">
           {% elif data_request.status == 'approved' %}
             <div class="col-sm-12 label data-request-status label-success">
           {% else %}
             <div class="col-sm-12 label data-request-status label-danger">
           {% endif %}
-              <strong>{{ profile.get_request_status_display }}</strong>
+              <strong>{{ data_request.get_status_display }}</strong>
             </div>
         </div>
 
