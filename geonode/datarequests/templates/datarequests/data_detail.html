@@ -215,13 +215,6 @@
             </div>
           </form>
         </div>
-      {% elif data_request.status == 'unconfirmed'%}
-       <li class="list-group-item">
-        <form id="reconfirm_form" method="post" class="modal-form" action='{% url "datarequests:data_request_reconfirm" pk=data_request.pk%}'>{% csrf_token %}
-            <button type="submit" class="btn btn-primary btn-md btn-block"  id="reconfirm-request-submit">{% trans "Resend Confirmation Email" %}</button>
-        </form>
-
-        </li>
       {% endif %}
       {% if data_request.status == 'unconfirmed' or data_request.status == 'pending' %}
          <li class="list-group-item">
