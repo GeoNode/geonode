@@ -132,10 +132,9 @@ def image_basemap(link, epsg, filetype):
 
 def get_prs92_download_url(link):
     link = link.get_download_url()
-    if 'GeoTIFF' in str(link):
-        epsg4683 = 'crs=EPSG%3A4683'
-        temp = link.split('crs=EPSG%3A32651')
-        link = temp[0] + epsg4683 + temp[1]
+    if 'image%2Ftiff' in str(link):
+        outputCRS = '&outputcrs=http://www.opengis.net/def/crs/EPSG/0/4683'
+        link = link + outputCRS
     elif 'image%2Fpng' in str(link):
         link = image_basemap(link, 4683, 'png')
         return link
@@ -144,8 +143,8 @@ def get_prs92_download_url(link):
         return link
     elif '%2Fpdf' in str(link):  # remove this
         link = image_basemap(link, 4683, 'pdf')
-    elif 'SHAPE-ZIP' in str(link) or 'kml' in str(link):
-        link = link + '&srsName=EPSG:4683'
+    # elif 'SHAPE-ZIP' in str(link) or 'kml' in str(link):
+    #     link = link + '&srsName=EPSG:4683'
     return link
 
 
