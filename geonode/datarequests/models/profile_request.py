@@ -195,6 +195,7 @@ class ProfileRequest(BaseRequest):
         
     def set_status(self, status, administrator = None):
         self.status = status
+        self.save()
         self.administrator = administrator
         self.save()
 
