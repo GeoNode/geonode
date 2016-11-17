@@ -1,5 +1,6 @@
 from tastypie.resources import ModelResource
 from tastypie import fields
+from tastypie.resources import ALL
 from taggit.models import Tag
 
 from geonode.maps.models import Layer, LayerCategory
@@ -43,7 +44,10 @@ class LayerResource(ModelResource):
         queryset = Layer.objects.all()
         allowed_methods = ['get', ]
         ordering = ['created_dttm', ]
-        fields = ['abstract', 'bbox', 'date', 'date_type', 'is_public', 'keywords',
+        fields = ['abstract', 'bbox', 'llbbox', 'date', 'date_type', 'is_public', 'keywords',
             'created_dttm', 'name', 'owner_username', 'srs', 'temporal_extent_end',
             'temporal_extent_start', 'title', 'topic_category', 'typename', 'uuid',
         ]
+        filtering = {
+            'name': ALL,
+        }
