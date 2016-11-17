@@ -103,6 +103,8 @@ def profile_request_view(request):
 
 def data_request_view(request):
     profile_request_obj = request.session.get('profile_request_obj', None)
+    if not profile_request_obj:
+        pprint("no profile request object found")
     if not request.user.is_authenticated() and not profile_request_obj:
         return redirect(reverse('datarequests:profile_request_form'))
 
@@ -232,11 +234,16 @@ def data_request_view(request):
             if request.user.is_authenticated() and not request.user.username  == 'AnonymousUser':
                 request_letter = create_letter_document(details_form.clean()['letter_file'], profile = request.user)
                 data_request_obj.request_letter = request_letter
+                data_request_obj.save()
                 data_request_obj.profile = request.user
-                data_request_obj.set_status(BaseRequest.STATUS.pending)
+                data_request_obj.save()
+                data_request_obj.set_status("pending")
             else: 
                 request_letter = create_letter_document(details_form.clean()['letter_file'], profile_request = profile_request_obj)
+                data_request_obj.request_letter = request_letter
+                data_request_obj.save()
                 data_request_obj.profile_request = profile_request_obj
+                data_request_obj.save()
                 profile_request_obj.data_request_obj = data_request_obj
                 profile_request_obj.save()
             data_request_obj.save()
@@ -311,8 +318,7 @@ def email_verification_confirm(request):
             # Only verify once
             if not profile_request.verification_date and profile_request.status == "unconfirmed":
                 pprint(profile_request.status)
-                profile_request.set_status(BaseRequest.STATUS.pending)
-                pprint(profile_request.status)
+                profile_request.set_status("pending")
                 profile_request.verification_date = timezone.now()
                 pprint(email+" has been confirmed")
                 profile_request.save()
@@ -320,7 +326,7 @@ def email_verification_confirm(request):
                 if profile_request.data_request:
                     dr = profile_request.data_request
                     dr.save()
-                    dr.set_status(BaseRequest.STATUS.pending)
+                    dr.set_status("pending")
                 profile_requests = ProfileRequest.objects.filter(email=email, status="unconfirmed")
                 set_status_for_multiple_requests.delay(profile_requests,BaseRequest.STATUS.cancelled)
                 
