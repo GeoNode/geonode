@@ -30,7 +30,7 @@ urlpatterns = patterns(
     #urls for datarequests
     url(r'^data/$', DataRequestList.as_view(), name='data_request_browse'),
     url(r'^data/requests_csv/$', 'data_request_csv', name='data_request_csv'),
-    url(r'^data/compute_size/$','data_request_compute_size', name='data_request_compute_size'),
+    url(r'^data/compute_size/$','data_request_compute_size_all', name='data_request_compute_size_all'),
     url(r'^data/reverse_geocode/$','data_request_reverse_geocode', name='data_request_reverse_geocode'),
     
     url(r'^data/(?P<pk>\d+)/$', 'data_request_detail', name="data_request_detail"),
