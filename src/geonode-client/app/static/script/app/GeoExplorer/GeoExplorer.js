@@ -1083,7 +1083,7 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
             parseFloat(thisRecord.get('max_y'))
             ];
 
-        var layer_detail_url = this.mapproxy_backend + JSON.parse(thisRecord.get('location')).layerInfoPage;
+        var layer_detail_url = this.mapproxy_backend + '/registry/hypermap/layer/' + thisRecord.get('uuid') + '/';
 
         var layer = {
             "styles": "",

@@ -288,7 +288,7 @@ GeoNode.SearchTable = Ext.extend(Ext.util.Observable, {
                 rowselect: function(sm, rowIndex, record){
                     if(record.get('is_public')){
                         self.heatmap.bbox_widget.viewer.fireEvent('showLayer',
-                        self.getlayerTypename(record), self.getLayerID(record));
+                        self.getlayerTypename(record), self.getLayerID(record), self.getuuid(record));
                     }
                 },
                 rowdeselect: function(sm, rowIndex, record){
