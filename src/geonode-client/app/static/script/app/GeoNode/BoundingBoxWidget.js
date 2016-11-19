@@ -56,8 +56,8 @@ GeoNode.BoundingBoxWidget = Ext.extend(Ext.util.Observable, {
                 hidePreviewLayer: function(){
                     self.hidePreviewLayer();
                 },
-                showLayer: function(typename, layerId){
-                    self.showLayer(typename, layerId);
+                showLayer: function(typename, layerId, uuid){
+                    self.showLayer(typename, layerId, uuid);
                 },
                 hideLayer: function(typename){
                     self.hideLayer(typename);
@@ -366,11 +366,11 @@ GeoNode.BoundingBoxWidget = Ext.extend(Ext.util.Observable, {
         return layer;
     },
 
-    getOrCreateLayer: function(typename, layerId){
+    getOrCreateLayer: function(typename, layerId, uuid){
         if(!this.layers.hasOwnProperty(typename)){
             var layer = new OpenLayers.Layer.OSM(
                 typename,
-                this.gwcBackend + layerId + '/map/wmts/' + typename.replace('geonode:', '') + '/default_grid/${z}/${x}/${y}.png',
+                this.gwcBackend + uuid + '/map/wmts/' + typename.replace('geonode:', '') + '/default_grid/${z}/${x}/${y}.png',
                 {
                     isBaseLayer: false
                 }
@@ -380,9 +380,9 @@ GeoNode.BoundingBoxWidget = Ext.extend(Ext.util.Observable, {
         return this.layers[typename];
     },
 
-    showLayer: function(typename, layerId){
+    showLayer: function(typename, layerId, uuid){
         var map = this.viewer.mapPanel.map;
-        var layer = this.getOrCreateLayer(typename, layerId);
+        var layer = this.getOrCreateLayer(typename, layerId, uuid);
         map.addLayer(layer);
     },
 
