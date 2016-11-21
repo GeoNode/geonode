@@ -1,5 +1,6 @@
 from django.db import models
 from django.conf import settings
+from django.contrib import messages
 from django.contrib.sites.models import Site
 from django.core.exceptions import ObjectDoesNotExist, PermissionDenied
 from django.core.mail import EmailMultiAlternatives
@@ -28,10 +29,8 @@ from geonode.people.models import OrganizationType, Profile
 from geonode.groups.models import GroupProfile, GroupMember
 from geonode.layers.models import Layer
 
-from django.conf import settings as local_settings
 from geonode.tasks.mk_folder import create_folder
 from .base_request import BaseRequest
-
 
 
 class ProfileRequest(BaseRequest):
@@ -314,7 +313,7 @@ class ProfileRequest(BaseRequest):
 
         return out
     
-    def send_email(self, subj, msg, html_msg):
+    def send_email(self, subj, msg, html_msg, recipient=settings.LIPAD_SUPPORT_MAIL):
         text_content = msg
 
         html_content = html_msg
@@ -325,7 +324,7 @@ class ProfileRequest(BaseRequest):
             email_subject,
             text_content,
             settings.DEFAULT_FROM_EMAIL,
-            [self.email, ]
+            [recipient, ]
         )
         msg.attach_alternative(html_content, "text/html")
         msg.send()
@@ -360,19 +359,19 @@ class ProfileRequest(BaseRequest):
         text_content = email_utils.VERIFICATION_EMAIL_TEXT.format(
              unidecode(self.first_name),
              verification_url,
-             local_settings.LIPAD_SUPPORT_MAIL,
+             settings.LIPAD_SUPPORT_MAIL,
          )
 
         html_content = email_utils.VERIFICATION_EMAIL_HTML.format(
             unidecode(self.first_name),
             verification_url,
             verification_url,
-            local_settings.LIPAD_SUPPORT_MAIL,
-            local_settings.LIPAD_SUPPORT_MAIL,
+            settings.LIPAD_SUPPORT_MAIL,
+            settings.LIPAD_SUPPORT_MAIL,
         )
 
         email_subj = _('[LiPAD] Email Confirmation')
-        self.send_email(email_subj,text_content,html_content)
+        self.send_email(email_subj,text_content,html_content, recipient=self.email)
     
     def send_approval_email(self, username, directory):
         site = Site.objects.get_current()
@@ -386,19 +385,19 @@ class ProfileRequest(BaseRequest):
             unidecode(self.first_name),
             username,
             profile_url,
-            local_settings.LIPAD_SUPPORT_MAIL
+            settings.LIPAD_SUPPORT_MAIL
         )
         
         html_content = email_utils.PROFILE_APPROVAL_HTML.format(
             unidecode(self.first_name),
             username,
             profile_url,
-            local_settings.LIPAD_SUPPORT_MAIL,
-            local_settings.LIPAD_SUPPORT_MAIL        
+            settings.LIPAD_SUPPORT_MAIL,
+            settings.LIPAD_SUPPORT_MAIL        
         )
         
         email_subj = _('[LiPAD] Account Registration Status')
-        self.send_email(email_subj,text_content,html_content)
+        self.send_email(email_subj,text_content,html_content, recipient=self.email)
 
     def send_rejection_email(self):
         additional_details = 'Additional Details: ' + str(self.additional_rejection_reason)
@@ -407,17 +406,17 @@ class ProfileRequest(BaseRequest):
              unidecode(self.first_name),
              self.rejection_reason,
              additional_details,
-             local_settings.LIPAD_SUPPORT_MAIL
+             settings.LIPAD_SUPPORT_MAIL
          )
 
         html_content = email_utils.PROFILE_REJECTION_HTML.format(
              unidecode(self.first_name),
              self.rejection_reason,
              additional_details,
-             local_settings.LIPAD_SUPPORT_MAIL,
-             local_settings.LIPAD_SUPPORT_MAIL
+             settings.LIPAD_SUPPORT_MAIL,
+             settings.LIPAD_SUPPORT_MAIL
         )
 
         email_subj = _('[LiPAD] Account Registration Status')
-        self.send_email(email_subj,text_content,html_content)
+        self.send_email(email_subj,text_content,html_content, recipient=self.email)
 
