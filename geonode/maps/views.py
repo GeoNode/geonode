@@ -16,6 +16,7 @@ from django.conf import settings
 from django.template import RequestContext, loader
 from django.utils.translation import ugettext as _
 from django.utils import simplejson as json
+from django.views.generic.simple import direct_to_template
 from django.template.defaultfilters import slugify
 
 import math
@@ -50,6 +51,8 @@ from django.db import transaction
 import autocomplete_light
 from geonode.maps.encode import despam, XssCleaner
 from geonode.actions.models import Action
+
+from .forms import EndpointForm
 
 logger = logging.getLogger("geonode.maps.views")
 
@@ -2980,3 +2983,32 @@ def users_remove(request):
             print 'Removing user %s' % user.username
             user.delete()
         return HttpResponseRedirect(reverse('admin:maps_map_changelist'))
+
+@login_required
+def add_endpoint(request):
+    """
+    Let the user to add an endpoint for a remote service.
+    """
+    if request.method == 'POST':
+        endpoint_form = EndpointForm(request.POST)
+        if endpoint_form.is_valid():
+            endpoint = endpoint_form.save(commit=False)
+            endpoint.owner = request.user
+            endpoint.save()
+            return direct_to_template(
+                request,
+                'maps/endpoint_added.html', {
+                    "endpoint": endpoint,
+                }
+            )
+        else:
+            logger.info('Error posting an endpoint')
+    else:
+        endpoint_form = EndpointForm()
+
+    return render_to_response(
+        'maps/endpoint_add.html',
+        RequestContext(request, {
+            "form": endpoint_form,
+        })
+    )

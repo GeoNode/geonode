@@ -2379,3 +2379,11 @@ class LayerStats(models.Model):
 
     class Meta:
         verbose_name_plural = 'Layer stats'
+
+class Endpoint(models.Model):
+    """
+    Model for a remote endpoint.
+    """
+    description = models.TextField(_('Description'))
+    url = models.URLField(_("Suggests URL endpoint"))
+    owner = models.ForeignKey(User, blank=True, null=True)
