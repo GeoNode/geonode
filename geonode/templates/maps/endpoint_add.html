@@ -1,0 +1,15 @@
+{% extends "page_layout.html" %}
+{% load i18n %}
+
+{% block title %} {% trans "Suggests an Endpoint"  %} - {{ block.super }} {% endblock %}
+
+{% block main %}
+
+  <h2>{% trans "Suggests an Endpoint" %}</h2>
+
+  <form action="" method="post">{% csrf_token %}
+      {{ form.as_p }}
+      <input type="submit" value="Send endpoint" />
+  </form>
+
+{% endblock %}

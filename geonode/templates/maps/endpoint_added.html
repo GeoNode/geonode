@@ -1,0 +1,10 @@
+{% extends "page_layout.html" %}
+{% load i18n %}
+
+{% block title %} {% trans "Suggests an Endpoint"  %} - {{ block.super }} {% endblock %}
+
+{% block main %}
+
+  <p>Thanks {{ endpoint.owner.username }} for suggesting the endpoint: {{ endpoint.url }}</p>
+
+{% endblock %}
