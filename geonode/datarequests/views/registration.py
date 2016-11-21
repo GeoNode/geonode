@@ -323,6 +323,7 @@ def email_verification_confirm(request):
                 profile_request.verification_date = timezone.now()
                 pprint(email+" "+profile_request.status)
                 profile_request.save()
+                pprint(email+" "+profile_request.status)
                 profile_request.send_new_request_notif_to_admins()
                 if profile_request.data_request:
                     dr = profile_request.data_request
