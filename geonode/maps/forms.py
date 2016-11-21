@@ -111,4 +111,4 @@ class EndpointForm(forms.ModelForm):
     """
     class Meta:
         model = Endpoint
-        exclude = ('owner',)
+        fields = ['url', 'description', ]
