@@ -316,11 +316,12 @@ def email_verification_confirm(request):
                 verification_key=key,
             )
             # Only verify once
-            if not profile_request.verification_date and profile_request.status == "unconfirmed":
+            if profile_request.status == "unconfirmed":
                 pprint(profile_request.status)
-                profile_request.set_status("pending")
+                #profile_request.set_status("pending")
+                profile_request.status = "pending"
                 profile_request.verification_date = timezone.now()
-                pprint(email+" has been confirmed")
+                pprint(email+" "+profile_request.status)
                 profile_request.save()
                 profile_request.send_new_request_notif_to_admins()
                 if profile_request.data_request:
