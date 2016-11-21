@@ -108,7 +108,8 @@
             <div class="su_only_gaz">
                 <div class="gazetteer_warning">
                     *NOTE: By adding your layer features to the gazetteer, they will be searchable and viewable
-                    by anyone regardless of your layer's security permissions.
+                    by anyone regardless of your layer's security permissions.<br />
+                    If you do not choose at least one depict-date field, the system will use the depict-date in the layer metadata (if any).
                 </div>
                 Optional:
                     <table cellpadding="5" cellspacing="5" style="margin-left:20px;">
@@ -124,6 +125,10 @@
                             <td id="endDateFormatCell" style="display:none">{{gazetteer_form.endDateFormat.label_tag}}: {{gazetteer_form.endDateFormat}} {%  trans "Examples: 'YYYY', 'MM/DD/YYYY', 'YYYY/MM/DD'"  %} </td>
                         </tr>
                     </table>
+                <div class="gazetteer_warning">
+                    Please see Section 7.1 of the Help document (link is at upper right) for details on accessing all gazetteers
+                    via a RESTful API.
+                </div>
             </div>
           </p>
           <legend>Attributes</legend>
