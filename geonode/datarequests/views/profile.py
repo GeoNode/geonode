@@ -1,3 +1,4 @@
+from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse, HttpResponseRedirect, Http404
 from django.shortcuts import (
@@ -134,8 +135,8 @@ def profile_request_reconfirm(request, pk):
 
         profile_request.send_verification_email()
         
-        messages.info("Confirmation email resent")
-        return HttpResponseRedirect(request_profile.get_absolute_url())
+        messages.info(request, "Confirmation email resent")
+        return HttpResponseRedirect(profile_request.get_absolute_url())
 
 def profile_request_recreate_dir(request, pk):
     if not request.user.is_superuser:
@@ -149,7 +150,7 @@ def profile_request_recreate_dir(request, pk):
 
         profile_request.create_directory()
         
-        messages.info("Folder creation has been scheduled. Check folder location in a few minutes")
+        messages.info(request, "Folder creation has been scheduled. Check folder location in a few minutes")
         return HttpResponseRedirect(profile_request.get_absolute_url())
         
 def profile_request_cancel(request,pk):
