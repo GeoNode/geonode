@@ -93,7 +93,6 @@ class LayerStatsAdmin(admin.ModelAdmin):
 class EndpointAdmin(admin.ModelAdmin):
     list_display = ('id', 'description', 'owner', 'url')
     list_display_links = ('id',)
-    list_filter  = ('owner',)
     search_fields = ['description', 'url']
 
 
