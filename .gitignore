@@ -1,4 +1,4 @@
-/src/GeoNodePy/geonode/local_settings.py
+/geonode/local_settings.py
 geonode/contrib/datatables/tests/server_credentials.json
 
 # build artifacts
@@ -9,6 +9,7 @@ target
 *.mo
 
 # virtualenv stuff
+/env
 /bin
 /include
 /lib/
@@ -16,7 +17,7 @@ target
 /setuptools-0.6c11-py2.6.egg
 
 # supporting stuff pulled in by paver script
-/src/GeoNodePy/geonode/media/static/
+/geonode/media/static/
 /geoserver_token
 /development.db
 /django.log
@@ -30,9 +31,11 @@ target
 /src/nosexcover/
 /webapps/
 /src/GeoNodePy/capra/development.db
+/geonode/static
+/geonode/static_root
 
 # Directory created by collectstatic
-src/GeoNodePy/geonode/site_media/
+/geonode/site_media/
 
 # directory created by the build process
 src/GeoNodePy/geonode/static/geonode
@@ -50,3 +53,8 @@ pip-log.txt
 #Testing output
 .coverage
 nosetests.xml
+
+#Other things
+.vagrant/
+Vagrantfile
+deploy/
