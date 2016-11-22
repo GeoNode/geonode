@@ -36,19 +36,6 @@ from django.conf import settings as local_settings
 
 class BaseRequest(TimeStampedModel):
     
-    STATUS = Choices(
-        ('pending', _('Pending')),
-        ('approved', _('Approved')),
-        ('cancelled', _('Cancelled')),
-        ('rejected', _('Rejected')),
-        ('unconfirmed',_('Unconfirmed Email')),
-    )
-    
-    REQUEST_TYPE= Choices(
-        ('profile',_('Profile')),
-        ('data',_('Data')),
-    )
-    
     profile = models.ForeignKey(
         Profile,
         on_delete=models.SET_NULL,
@@ -61,26 +48,6 @@ class BaseRequest(TimeStampedModel):
         null=True,
         blank=True,
         related_name="admin+"
-    )
-    
-    status = models.CharField(
-        _('Request Status'),
-        choices = STATUS,
-        max_length=20,
-        null=False,
-        blank=False,
-        default= "unconfirmed"
-    )
-    
-    status_changed = models.DateTimeField(
-        blank=True,
-        null=True,
-    )
-    
-    request_type = models.CharField(
-        _('Request Type'),
-        choices=REQUEST_TYPE,
-        max_length=10,
     )
     
     rejection_reason = models.CharField(

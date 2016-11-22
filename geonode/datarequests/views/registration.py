@@ -72,6 +72,8 @@ def profile_request_view(request):
                         profile_request_obj.send_verification_email()
                 else:
                     profile_request_obj = form.save()
+                    profile_request_obj.status = "unconfirmed"
+                    profile_request_obj.save()
                     profile_request_obj.send_verification_email()
                 
                 request.session['profile_request_obj']= profile_request_obj
@@ -315,9 +317,9 @@ def email_verification_confirm(request):
                 email=email,
                 verification_key=key,
             )
+            pprint(profile_request.status)
             # Only verify once
             if profile_request.status == "unconfirmed":
-                pprint(profile_request.status)
                 #profile_request.set_status("pending")
                 profile_request.status = "pending"
                 profile_request.verification_date = timezone.now()
@@ -330,7 +332,7 @@ def email_verification_confirm(request):
                     dr.save()
                     dr.set_status("pending")
                 profile_requests = ProfileRequest.objects.filter(email=email, status="unconfirmed")
-                set_status_for_multiple_requests.delay(profile_requests,BaseRequest.STATUS.cancelled)
+                set_status_for_multiple_requests.delay(profile_requests,"cancelled")
                 
                     
         except ObjectDoesNotExist:
