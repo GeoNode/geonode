@@ -42,6 +42,14 @@ class ProfileRequest(BaseRequest):
         ('foreign', _('Foreign')),
     )
 
+    STATUS = Choices(
+        ('pending', _('Pending')),
+        ('approved', _('Approved')),
+        ('cancelled', _('Cancelled')),
+        ('rejected', _('Rejected')),
+        ('unconfirmed',_('Unconfirmed Email')),
+    )
+
     REQUESTER_TYPE_CHOICES = Choices(
         ('commercial', _('Commercial Requester')),
         ('noncommercial', _('Non-Commercial Requester')),
@@ -72,6 +80,20 @@ class ProfileRequest(BaseRequest):
         max_length=50,
         null=True,
         blank=True,
+    )
+    
+    status = models.CharField(
+        _('Request Status'),
+        choices = STATUS,
+        max_length=20,
+        null=False,
+        blank=False,
+        default= "unconfirmed"
+    )
+    
+    status_changed = models.DateTimeField(
+        blank=True,
+        null=True,
     )
 
     first_name = models.CharField(_('First Name'), max_length=21)
@@ -159,8 +181,7 @@ class ProfileRequest(BaseRequest):
     
     def __init__(self, *args, **kwargs):
         models.Model.__init__(self, *args, **kwargs)
-        self.request_type=BaseRequest.REQUEST_TYPE.profile
-        self.status = BaseRequest.STATUS.unconfirmed
+        #self.status = self.STATUS.unconfirmed
 
     def __unicode__(self):
         return (_('{} request by {} {} {} of {}')
@@ -321,15 +342,15 @@ class ProfileRequest(BaseRequest):
         msg.attach_alternative(html_content, "text/html")
         msg.send()
     
-    def send_new_request_notif_to_admins(self):
+    def send_new_request_notif_to_admins(self, request_type="Profile"):
         site = Site.objects.get_current()
         text_content = email_utils.NEW_REQUEST_EMAIL_TEXT.format(
-            self.request_type,
+            request_type,
             self.get_absolute_url()
         )
         
         html_content=email_utils.NEW_REQUEST_EMAIL_HTML.format(
-            self.request_type,
+            request_type,
             self.get_absolute_url(),
             self.get_absolute_url()
         )
