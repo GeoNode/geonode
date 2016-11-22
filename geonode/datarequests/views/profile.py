@@ -15,6 +15,7 @@ from geonode.datarequests.forms import RejectionForm
 from geonode.datarequests.models import (
     ProfileRequest, DataRequest)
 
+from pprint import pprint
 
 class ProfileRequestList(LoginRequiredMixin, TemplateView):
     template_name = 'datarequests/profile_request_list.html'
@@ -48,8 +49,8 @@ def profile_request_detail(request, pk, template='datarequests/profile_detail.ht
     if not request.user.is_superuser and not profile_request.profile == request.user:
         return HttpResponseRedirect('/forbidden')
 
+    pprint("profile_request "+profile_request.status)
     context_dict={"profile_request": profile_request}
-    
     
     if profile_request.data_request:
         context_dict['data_request'] = profile_request.data_request.get_absolute_url()
