@@ -26,6 +26,14 @@ from .base_request import BaseRequest
 
 class DataRequest(BaseRequest):
 
+    STATUS = Choices(
+        ('pending', _('Pending')),
+        ('approved', _('Approved')),
+        ('cancelled', _('Cancelled')),
+        ('rejected', _('Rejected')),
+        ('unconfirmed',_('Unconfirmed Email')),
+    )
+
     DATA_TYPE_CHOICES = Choices(
         ('interpreted', _('Interpreted')),
         ('raw', _('Raw')),
@@ -50,6 +58,21 @@ class DataRequest(BaseRequest):
         null=True,
         blank=True
     )
+
+    status = models.CharField(
+        _('Request Status'),
+        choices = STATUS,
+        max_length=20,
+        null=False,
+        blank=False,
+        default= "unconfirmed"
+    )
+    
+    status_changed = models.DateTimeField(
+        blank=True,
+        null=True,
+    )
+
 
     jurisdiction_shapefile = models.ForeignKey(Layer, null=True, blank=True)
 
@@ -108,8 +131,7 @@ class DataRequest(BaseRequest):
 
     def __init__(self, *args, **kwargs):
         models.Model.__init__(self, *args, **kwargs)
-        self.status = BaseRequest.STATUS.unconfirmed
-        self.request_type = BaseRequest.REQUEST_TYPE.data
+        #self.status = self.STATUS.unconfirmed
 
     def __unicode__(self):
         if self.profile_request or self.profile:
@@ -241,15 +263,15 @@ class DataRequest(BaseRequest):
         msg.attach_alternative(html_content, "text/html")
         msg.send()
 
-    def send_new_request_notif_to_admins(self):
+    def send_new_request_notif_to_admins(self, request_type="Data"):
         site = Site.objects.get_current()
         text_content = email_utils.NEW_REQUEST_EMAIL_TEXT.format(
-            self.request_type,
+            request_type,
             self.get_absolute_url()
         )
         
         html_content=email_utils.NEW_REQUEST_EMAIL_HTML.format(
-            self.request_type,
+            request_type,
             self.get_absolute_url(),
             self.get_absolute_url()
         )
