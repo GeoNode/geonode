@@ -227,9 +227,7 @@ define(function (require, exports) {
                 $('#modal-content').modal({
                         show: false
                 });
-                $('#please-wait').modal({
-                        show: false
-                });
+                $('#please-wait').modal('hide');
             },
             success: function (resp, status) {
                 window.location = resp.redirect_to;
@@ -424,6 +422,7 @@ define(function (require, exports) {
                         backdrop: 'static',
                         keyboard: false
                 });
+                $('#please-wait').modal('hide');
             },
             error: function (jqXHR) {
                 self.polling = false;
@@ -433,7 +432,7 @@ define(function (require, exports) {
                     self.markError(jqXHR);
                 }
                 $('#modal-content').modal('hide');
-
+                $('#please-wait').modal('hide');
             },
             success: function (resp, status) {
                 self.logStatus({
