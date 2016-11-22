@@ -227,11 +227,18 @@ define(function (require, exports) {
                 $('#modal-content').modal({
                         show: false
                 });
+                $('#please-wait').modal({
+                        show: false
+                });
             },
             success: function (resp, status) {
                 window.location = resp.redirect_to;
                 $('#modal-content').modal({
                         show: false
+                });
+                $('#please-wait').modal({
+                    backdrop: 'static',
+                    keyboard: false
                 });
             },
         });
@@ -250,7 +257,7 @@ define(function (require, exports) {
             empty: 'true'
         });
     };
-    
+
     LayerInfo.prototype.startPolling = function() {
         var self = this;
         if (self.polling) {
@@ -437,6 +444,10 @@ define(function (require, exports) {
                 console.log('line 412');
                 self.doStep(resp);
                 $('#modal-content').modal('hide');
+                $('#please-wait').modal({
+                    backdrop: 'static',
+                    keyboard: false
+                });
             }
         });
     };
