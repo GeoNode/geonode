@@ -361,6 +361,10 @@ def registration_part_two(request):
 
                 request_profile.date = timezone.now()
                 request_profile.save()
+            
+            if request.user.is_authenticated():
+                request_profile.send_new_request_notif_to_admins()
+                request_profile.send_request_reception_email()
 
             del request.session['data_request_shapefile']
             del request.session['request_object']
