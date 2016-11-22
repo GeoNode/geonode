@@ -2385,5 +2385,5 @@ class Endpoint(models.Model):
     Model for a remote endpoint.
     """
     description = models.TextField(_('Describe Map Service'))
-    url = models.URLField(_('Map service endpoint'))
+    url = models.URLField(_('Map service URL'))
     owner = models.ForeignKey(User, blank=True, null=True)
