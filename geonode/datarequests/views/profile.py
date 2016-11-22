@@ -50,6 +50,7 @@ def profile_request_detail(request, pk, template='datarequests/profile_detail.ht
 
     context_dict={"profile_request": profile_request}
     
+    
     if profile_request.data_request:
         context_dict['data_request'] = profile_request.data_request.get_absolute_url()
 
