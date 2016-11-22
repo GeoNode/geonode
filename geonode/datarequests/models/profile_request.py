@@ -18,6 +18,7 @@ from django.core import validators
 from django_auth_ldap.backend import LDAPBackend, ldap_error
 
 from model_utils import Choices
+from model_utils.models import TimeStampedModel, StatusModel
 from pprint import pprint
 from unidecode import unidecode
 import traceback
@@ -39,15 +40,6 @@ class ProfileRequest(BaseRequest):
     LOCATION_CHOICES = Choices(
         ('local', _('Local')),
         ('foreign', _('Foreign')),
-    )
-
-
-    REQUEST_STATUS_CHOICES = Choices(
-        ('pending', _('Pending')),
-        ('approved', _('Approved')),
-        ('cancelled', _('Cancelled')),
-        ('rejected', _('Rejected')),
-        ('unconfirmed',_('Unconfirmed Email')),
     )
 
     REQUESTER_TYPE_CHOICES = Choices(
