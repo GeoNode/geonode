@@ -74,7 +74,7 @@ def registration_part_one(request):
     if request.method == 'GET':
         if request.user.is_authenticated():
             
-             if not request.user.organization:
+            if not request.user.organization:
                 messages.info(request, "Please update your middle name and/or organization in your profile")
                 return redirect(reverse('profile_detail',  args= [request.user.username]))
 
@@ -88,7 +88,7 @@ def registration_part_one(request):
                 contact_number = request.user.voice,
                 request_status = 'pending'
             )
-            pprint(request_object.first_name)
+            
             request.session['request_object']=request_object
 
             return HttpResponseRedirect(
