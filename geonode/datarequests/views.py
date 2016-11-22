@@ -73,6 +73,10 @@ def registration_part_one(request):
 
     if request.method == 'GET':
         if request.user.is_authenticated():
+            
+             if not request.user.organization:
+                messages.info(request, "Please update your middle name and/or organization in your profile")
+                return redirect(reverse('profile_detail',  args= [request.user.username]))
 
             request_object = DataRequestProfile(
                 profile = request.user,
@@ -97,7 +101,7 @@ def registration_part_one(request):
                     'first_name': request_object.first_name,
                     'middle_name': request_object.middle_name,
                     'last_name': request_object.last_name,
-                    'organization': request_object.last_name,
+                    'organization': request_object.organization,
                     'email': request_object.email,
                     'contact_number': request_object.contact_number,
                     'location': request_object.location
@@ -107,7 +111,7 @@ def registration_part_one(request):
         if request.user.is_authenticated():
             request_object = create_request_obj(request.user)
 
-            if not request_object:
+            if not request_object.organization:
                 messages.info(request, "Please update your middle name and/or organization in your profile")
                 return redirect(reverse('profile_detail',  args= [request.user.username]))
 
