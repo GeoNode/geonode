@@ -305,6 +305,7 @@ define(['underscore',
                 }
             },
             error: function(data){
+              $('#please-wait').modal('hide');
                 var errors = $.parseJSON(data.responseText).errors;
                 for (var key in errors ){
                     $('#div_id_'+key).addClass('has-error');
