@@ -23,5 +23,11 @@ from django.utils.translation import ugettext_lazy as _
 class DownloadCount(models.Model):
     date = models.DateTimeField(auto_now=True)
     category = models.CharField(_('Category'), max_length=100)
+    chart_group = models.CharField(_('Chart Group'), max_length=100)
     download_type = models.CharField(_('Type'), max_length=100)
     count = models.IntegerField(_('Count'))
+
+class SUCLuzViMin(models.Model):
+    province =  models.CharField(_('Province'), max_length=100)
+    suc = models.CharField(_('Suc'), max_length=100)
+    luzvimin = models.CharField(_('LuzViMin'), max_length=100)
