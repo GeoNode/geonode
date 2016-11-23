@@ -26,14 +26,6 @@ from .base_request import BaseRequest
 
 class DataRequest(BaseRequest):
 
-    STATUS = Choices(
-        ('pending', _('Pending')),
-        ('approved', _('Approved')),
-        ('cancelled', _('Cancelled')),
-        ('rejected', _('Rejected')),
-        ('unconfirmed',_('Unconfirmed Email')),
-    )
-
     DATA_TYPE_CHOICES = Choices(
         ('interpreted', _('Interpreted')),
         ('raw', _('Raw')),
@@ -58,21 +50,6 @@ class DataRequest(BaseRequest):
         null=True,
         blank=True
     )
-
-    status = models.CharField(
-        _('Request Status'),
-        choices = STATUS,
-        max_length=20,
-        null=False,
-        blank=False,
-        default= "unconfirmed"
-    )
-    
-    status_changed = models.DateTimeField(
-        blank=True,
-        null=True,
-    )
-
 
     jurisdiction_shapefile = models.ForeignKey(Layer, null=True, blank=True)
 
