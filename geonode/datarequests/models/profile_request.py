@@ -81,20 +81,6 @@ class ProfileRequest(BaseRequest):
         null=True,
         blank=True,
     )
-    
-    status = models.CharField(
-        _('Request Status'),
-        choices = STATUS,
-        max_length=20,
-        null=False,
-        blank=False,
-        default= "unconfirmed"
-    )
-    
-    status_changed = models.DateTimeField(
-        blank=True,
-        null=True,
-    )
 
     first_name = models.CharField(_('First Name'), max_length=21)
     middle_name = models.CharField(_('Middle Name'), max_length=21, null=False, blank=False)
