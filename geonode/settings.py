@@ -138,6 +138,7 @@ INSTALLED_APPS = (
     'django.contrib.messages',
 
     # Third party apps
+    'tastypie',
     'django_extensions',
     'registration',
     'profiles',
@@ -165,6 +166,7 @@ INSTALLED_APPS = (
     #'geonode.hoods',
     'geonode.gazetteer',
     #'debug_toolbar',
+    'geonode.actions',
 
     #DVN apps
     'shared_dataverse_information.dataverse_info',           # external repository: https://github.com/IQSS/shared-dataverse-information

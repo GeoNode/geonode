@@ -4,6 +4,8 @@ from django.utils import simplejson as json
 import os
 import tempfile
 
+from .models import Endpoint
+
 SRS_CHOICES = (
     ('EPSG:4326', 'EPSG:4326 (WGS 84 Lat/Long)'),
     ('EPSG:900913', 'EPSG:900913 (Web Mercator)'),
@@ -103,3 +105,10 @@ class WorldMapLayerUploadForm(LayerUploadForm):
 
     spatial_files = ("base_file", "dbf_file", "shx_file", "prj_file", "sld_file")
 
+class EndpointForm(forms.ModelForm):
+    """
+    A form to add a remote endpoint.
+    """
+    class Meta:
+        model = Endpoint
+        fields = ['url', 'description', ]

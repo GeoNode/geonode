@@ -59,6 +59,9 @@ vectorformats
 #For autocomplete
 django-autocomplete-light==1.4.5
 
+# for new api
+django-tastypie==0.9.16
+
 # --------------------------------------------------
 # For the Dataverse/Geoconnect/WorldMap connection
 # --------------------------------------------------

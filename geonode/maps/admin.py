@@ -1,4 +1,4 @@
-from geonode.maps.models import Map, Layer, MapLayer, LayerCategory, LayerAttribute, Contact, ContactRole, Role, MapStats, LayerStats
+from geonode.maps.models import Map, Layer, MapLayer, LayerCategory, LayerAttribute, Contact, ContactRole, Role, MapStats, LayerStats, Endpoint
 from django.contrib.contenttypes.models import ContentType
 from django.contrib import admin
 from django.http import HttpResponseRedirect
@@ -90,6 +90,10 @@ class MapStatsAdmin(admin.ModelAdmin):
 class LayerStatsAdmin(admin.ModelAdmin):
     list_display = ('layer','visits', 'uniques','downloads','last_modified')
 
+class EndpointAdmin(admin.ModelAdmin):
+    list_display = ('id', 'description', 'owner', 'url')
+    list_display_links = ('id',)
+    search_fields = ['description', 'url']
 
 
 
@@ -103,4 +107,5 @@ admin.site.register(MapLayer,MapLayerAdmin)
 admin.site.register(Role)
 admin.site.register(MapStats, MapStatsAdmin)
 admin.site.register(LayerStats, LayerStatsAdmin)
+admin.site.register(Endpoint, EndpointAdmin)
 #admin.site.register(Comment, CommentAdmin)

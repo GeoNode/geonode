@@ -1,6 +1,7 @@
 # -*- coding: UTF-8 -*-
 from django import forms
 from django.conf import settings
+from django.utils.safestring import mark_safe
 from django.contrib.auth.models import User
 from django.contrib.sites.models import Site
 from registration.forms import RegistrationFormUniqueEmail
@@ -39,6 +40,7 @@ class UserRegistrationForm(RegistrationFormUniqueEmail):
                                 label=_(u'password'))
     password2 = forms.CharField(widget=forms.PasswordInput(attrs=attrs_dict, render_value=False),
                                 label=_(u'password (again)'))
+    agree_tos = forms.BooleanField(label=mark_safe("I agree to the <a href='/upload_terms'>Terms and Conditions</a>"))
 
     def save(self, profile_callback=None):
         new_user = RegistrationProfile.objects.create_inactive_user(username=self.cleaned_data['username'],

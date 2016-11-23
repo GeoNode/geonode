@@ -416,7 +416,7 @@ def setup_join(new_table_owner, table_name, layer_typename, table_attribute_name
         # Unmatched records list
         if tj.unmatched_records_count > 0:
             cur.execute(unmatched_list_sql)
-            tj.unmatched_records_list = ",".join([r[0] for r in cur.fetchall()])
+            tj.unmatched_records_list = ",".join(['%s' %  r[0] for r in cur.fetchall()])
 
         conn.commit()
         cur.close()
