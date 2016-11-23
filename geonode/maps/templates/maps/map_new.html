@@ -1,13 +1,19 @@
 {% extends "site_base.html" %}
 
 {% load i18n %}
+{% load base_tags %}
 
-{% block title %} {% trans "GeoExplorer" %} - {{ block.super }} {% endblock %}
-
+{% block title %} {% trans "New Map" %} - {{ block.super }} {% endblock %}
 {% block head %}
-{{ block.super }}
-{% include 'maps/map_geoexplorer.js' %}
+	{% if preview == 'geoext' %}
+		{% include 'maps/map_geoexplorer.js' %}
+	{% elif preview == 'react' %}
+		{% include 'geonode-client/map_new.html' %}
+	{% else %}
+		{% include 'maps/map_geoexplorer.js' %}
+	{% endif %}
 
+	{{ block.super }}
 {% endblock %}
 
 {% block footer %}{% endblock %}

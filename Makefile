@@ -16,6 +16,14 @@ sync: up
 	docker-compose exec django django-admin.py migrate --noinput
 	docker-compose exec django django-admin.py loaddata sample_admin
 
+migrate:
+	django-admin.py makemigrations --noinput
+	django-admin.py migrate account --noinput
+	django-admin.py migrate --noinput
+
+migrate_setup: migrate
+	django-admin.py loaddata sample_admin
+
 wait:
 	sleep 5
 
