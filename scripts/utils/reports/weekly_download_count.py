@@ -1,14 +1,29 @@
+from geonode.settings import GEONODE_APPS
+import geonode.settings as settings
 from actstream.models import Action
 from geonode.eula.models import AnonDownloader
-from geonode.reports.models import DownloadCount
+from geonode.reports.models import DownloadCount, SUCLuzViMin
 from datetime import datetime, timedelta
+from geonode.layers.models import Layer
 
-datetoappend = datetime.strptime((datetime.now()-timedelta(days=3)).strftime('%U-%Y')+'-3','%U-%Y-%w') #timedelta to start week count days from sunday; days=3 meaning week count if from wednesday to tuesday
 layer_count = {}
-auth_list = Action.objects.filter(verb='downloaded').order_by('timestamp')
-for auth in auth_list:
-    if auth.timestamp.strftime('%U-%Y') not in layer_count:
-           layer_count[auth.timestamp.strftime('%U-%Y')] = {
+
+def get_luzvimin(iterate):
+    layer_query = Layer.objects.get(typename=iterate['typename'])
+    keyword_list = layer_query.keywords.values_list()
+    try:
+        for eachkeyword in keyword_list[0]:
+            luzvimin_query = SUCLuzViMin.objects.get(suc=eachkeyword)
+            luzvimin = luzvimin_query.luzvimin
+            break
+    except Exception as e:
+        print (str(iterate['typename']) + ' - ' + str(e))
+        luzvimin = "Luzvimin_others"
+    return luzvimin
+
+def add_to_count(category, typename):
+    if category not in layer_count:
+        layer_count[category] = {
             "cov": 0,
             "doc": 0,
             "fhm": 0,
@@ -19,65 +34,45 @@ for auth in auth_list:
             "sar": 0,
             "others": 0,
         }
-    if auth.action_object.csw_type == 'document':
-        layer_count[auth.timestamp.strftime('%U-%Y')]['doc'] += 1
+    if 'coverage' in typename:
+        layer_count[category]['cov'] += 1
+    elif 'fh' in typename:
+        layer_count[category]['fhm'] += 1
+    elif 'dtm' in typename:
+        layer_count[category]['dtm'] += 1
+    elif 'dsm' in typename:
+        layer_count[category]['dsm'] += 1
+    elif 'laz' in typename:
+        layer_count[category]['laz'] += 1
+    elif 'ortho' in typename:
+        layer_count[category]['ortho'] += 1
+    elif 'sar' in typename:
+        layer_count[category]['sar'] += 1
     else:
-        if 'coverage' in auth.action_object.typename:
-            layer_count[auth.timestamp.strftime('%U-%Y')]['cov'] += 1
-        elif 'fh' in auth.action_object.typename:
-            layer_count[auth.timestamp.strftime('%U-%Y')]['fhm'] += 1
-        elif 'dtm' in auth.action_object.typename:
-            layer_count[auth.timestamp.strftime('%U-%Y')]['dtm'] += 1
-        elif 'dsm' in auth.action_object.typename:
-            layer_count[auth.timestamp.strftime('%U-%Y')]['dsm'] += 1
-        elif 'laz' in auth.action_object.typename:
-            layer_count[auth.timestamp.strftime('%U-%Y')]['laz'] += 1
-        elif 'ortho' in auth.action_object.typename:
-            layer_count[auth.timestamp.strftime('%U-%Y')]['ortho'] += 1
-        elif 'sar' in auth.action_object.typename:
-            layer_count[auth.timestamp.strftime('%U-%Y')]['sar'] += 1
-        else:
-            layer_count[auth.timestamp.strftime('%U-%Y')]['others'] += 1
+        layer_count[category]['others'] += 1
+
+datetoappend = datetime.strptime((datetime.now()-timedelta(days=3)).strftime('%U-%Y')+'-3','%U-%Y-%w') #timedelta to start week count days from sunday; days=3 meaning week count if from wednesday to tuesday
+auth_list = Action.objects.filter(verb='downloaded').order_by('timestamp')
+for auth in auth_list:
+    if datetoappend == datetime.strptime(auth.timestamp.strftime('%U-%Y')+'-3','%U-%Y-%w') and not auth.action_object.csw_type == 'document':#if datenow is timestamp
+        luzvimin = get_luzvimin({
+            "timestamp": auth.timestamp,
+            "typename": auth.action_object.typename,
+            })
+        add_to_count(luzvimin, auth.action_object.typename)
 
 anon_list = AnonDownloader.objects.all().order_by('date')
 for anon in anon_list:
-    if anon.date.strftime('%U-%Y') not in layer_count:
-        layer_count[anon.date.strftime('%U-%Y')] = {
-            "cov": 0,
-            "doc": 0,
-            "fhm": 0,
-            "dtm": 0,
-            "dsm": 0,
-            "laz": 0,
-            "ortho": 0,
-            "sar": 0,
-            "others": 0,
-        }
-    if anon.anon_document:
-        layer_count[anon.date.strftime('%U-%Y')]['doc'] += 1
-    else:
-        if 'coverage' in anon.anon_layer.typename:
-            layer_count[anon.date.strftime('%U-%Y')]['cov'] += 1
-        elif 'fh' in anon.anon_layer.typename:
-            layer_count[anon.date.strftime('%U-%Y')]['fhm'] += 1
-        elif 'dtm' in anon.anon_layer.typename:
-            layer_count[anon.date.strftime('%U-%Y')]['dtm'] += 1
-        elif 'dsm' in anon.anon_layer.typename:
-            layer_count[anon.date.strftime('%U-%Y')]['dsm'] += 1
-        elif 'laz' in anon.anon_layer.typename:
-            layer_count[anon.date.strftime('%U-%Y')]['laz'] += 1
-        elif 'ortho' in anon.anon_layer.typename:
-            layer_count[anon.date.strftime('%U-%Y')]['ortho'] += 1
-        elif 'sar' in anon.anon_layer.typename:
-            layer_count[anon.date.strftime('%U-%Y')]['sar'] += 1
-        else:
-            layer_count[anon.date.strftime('%U-%Y')]['others'] += 1
-pprint(layer_count)
-
-context_dict = {
-    "layer_count": layer_count,
-}
-# list = download objects . all
-# for obj in list
-#     obj.create = 9
-#     ob.save()
+    if datetoappend == datetime.strptime(anon.date.strftime('%U-%Y')+'-3','%U-%Y-%w') and not anon.anon_document:#if datenow is timestamp
+        luzvimin = get_luzvimin({
+            "timestamp": anon.date,
+            "typename": anon.anon_layer.typename,
+            })
+        add_to_count(luzvimin, anon.anon_layer.typename)
+print(layer_count)
+# model_object = DownloadCount(date=str(datetoappend),
+#                                     category=str(luzvimin),
+#                                     chart_group="luzvimin",
+#                                     download_type=str(layer_type),
+#                                     count=str(count))
+# model_object.save()
