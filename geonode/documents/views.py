@@ -34,6 +34,8 @@ from django.utils import timezone
 import csv
 import datetime
 
+from geonode.people.models import Profile
+
 ALLOWED_DOC_TYPES = settings.ALLOWED_DOCUMENT_TYPES
 
 _PERMISSION_MSG_DELETE = _("You are not permitted to delete this document")
@@ -489,32 +491,53 @@ def document_remove(request, docid, template='documents/document_remove.html'):
 @login_required
 @user_passes_test(lambda u: u.is_superuser)
 def document_csv_download(request):
-    # if not request.user.is_superuser:
-    #     raise HttpResponseForbidden
-
+    if not request.user.is_superuser:
+        return HttpResponseRedirect("/forbidden/")
     response = HttpResponse(content_type='text/csv')
     datetoday = timezone.now()
     response['Content-Disposition'] = 'attachment; filename="Documents-List-"'+str(datetoday.month)+str(datetoday.day)+str(datetoday.year)+'.csv"'
+    listtowrite = []
     writer = csv.writer(response)
 
-    # auth_list = Action.objects.filter(verb='downloaded').order_by('timestamp') #get layers in prod
+    orgtypelist = ['Phil-LiDAR 1 SUC',
+    'Phil-LiDAR 2 SUC',
+    'Government Agency',
+    'Academe',
+    'International NGO',
+    'Local NGO',
+    'Private Insitution',
+    'Other']
 
-    # auth_fmc =
+    auth_list = Action.objects.filter(verb='downloaded').order_by('timestamp')
+    writer.writerow( ['username','lastname','firstname','email','organization','organization type','purpose','layer name','date downloaded'])
+    for auth in auth_list:
+        username = auth.actor
+        getprofile = Profile.objects.get(username=username)
+        firstname = getprofile.first_name
+        lastname = getprofile.last_name
+        email = getprofile.email
+        organization = getprofile.organization
+        orgtype = orgtypelist[getprofile.organization_type]
+        #pprint(dir(getprofile))
+        if auth.action_object.csw_type == 'document':
+            listtowrite.append([username,lastname,firstname,email,organization,orgtype,"",auth.action_object.title,auth.timestamp.strftime('%Y/%m/%d')])
+
+    # writer.writerow(['\n'])
     anon_list = AnonDownloader.objects.all().order_by('date')
-    # anon_fmc
-    writer.writerow( ['username','layer name','date downloaded'])
-
-    # for auth in auth_list:
-    #     # auth.actor + " " + auth.action_object + " " +  auth.timestamp.strftime('%Y/%m/%d')
-    #     writer.writerow([auth.actor,auth.action_object.title,auth.timestamp.strftime('%Y/%m/%d')])
-
-    writer.writerow(['\n'])
-    writer.writerow(['Anonymous Downloads'])
-    writer.writerow( ['lastname','firstname','document name','date downloaded'])
+    # writer.writerow(['Anonymous Downloads'])
+    # writer.writerow( ['lastname','firstname','email','organization','organization type','purpose','layer name','doc name','date downloaded'])
     for anon in anon_list:
         lastname = anon.anon_last_name
         firstname = anon.anon_first_name
-        documentname = anon.anon_document
-        writer.writerow([lastname,firstname,documentname,anon.date.strftime('%Y/%m/%d')])
-
+        email = anon.anon_email
+        layername = anon.anon_layer
+        docname = anon.anon_document
+        organization = anon.anon_organization
+        orgtype = anon.anon_orgtype
+        purpose = anon.anon_purpose
+        if docname:
+            listtowrite.append(["",lastname,firstname,email,organization,orgtype,purpose,docname,anon.date.strftime('%Y/%m/%d')])
+    listtowrite.sort(key=lambda x: datetime.datetime.strptime(x[8], '%Y/%m/%d'), reverse=True)
+    for eachtowrite in listtowrite:
+        writer.writerow(eachtowrite)
     return response
