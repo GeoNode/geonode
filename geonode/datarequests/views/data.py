@@ -1,7 +1,9 @@
+from django.conf import settings
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import (
     redirect, get_object_or_404, render, render_to_response)
 from django.template import RequestContext
+from django.utils import simplejson as json
 from django.views.generic import TemplateView
 
 from braces.views import (
@@ -12,6 +14,10 @@ from urlparse import parse_qs
 
 from geonode.datarequests.forms import DataRequestRejectForm
 from geonode.datarequests.models import DataRequest
+from geonode.documents.models import get_related_documents
+from geonode.security.views import _perms_info_json
+from geonode.utils import default_map_config, resolve_object, llbbox_to_mercator
+from geonode.utils import GXPLayer, GXPMap
 
 @login_required
 def data_request_csv(request):
