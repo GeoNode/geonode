@@ -122,7 +122,9 @@ class GeoNodeCSWTest(TestCase):
         for link in record.references:
             if link['scheme'] == 'OGC:WMS':
                 self.assertEqual(link['url'],
-                                 'http://localhost:8080/geoserver/geonode/wms',
+                                 'http://localhost:8080/geoserver/geonode/wms' +
+                                 '?service=WMS&amp;request=GetMap&amp;layers=' +
+                                 'geonode:san_andres_y_providencia_location',
                                  'Expected a specific OGC:WMS URL')
             elif link['scheme'] == 'OGC:WFS':
                 self.assertEqual(link['url'],
