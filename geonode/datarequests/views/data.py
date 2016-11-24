@@ -246,7 +246,7 @@ def data_request_compute_size(request, pk):
     else:
         return HttpResponseRedirect('/forbidden/')
 
-def data_request_reverse_geocode(request):
+def data_request_reverse_geocode_all(request):
     if request.user.is_superuser:
         data_requests = DataRequest.objects.exclude(jurisdiction_shapefile=None)
         place_name_update.delay(data_requests)
