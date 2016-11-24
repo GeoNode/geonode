@@ -80,6 +80,8 @@ def registration_part_one(request):
                 middle_name = request.user.middle_name,
                 last_name = request.user.last_name,
                 organization = request.user.organization,
+                organization_type = request.user.organization_type,
+                organization_other = request.user.organization_other,
                 email = request.user.email,
                 contact_number = request.user.voice,
                 request_status = 'pending'
@@ -97,7 +99,9 @@ def registration_part_one(request):
                     'first_name': request_object.first_name,
                     'middle_name': request_object.middle_name,
                     'last_name': request_object.last_name,
-                    'organization': request_object.last_name,
+                    'organization': request_object.organization,
+                    'organization_type': request_object.organization_type,
+                    'organization_other': request_object.organization_other,
                     'email': request_object.email,
                     'contact_number': request_object.contact_number,
                     'location': request_object.location
@@ -165,7 +169,7 @@ def registration_part_two(request):
         return redirect(reverse('datarequests:registration_part_one'))
 
     form = DataRequestDetailsForm(initial=part_two_initial)
-    
+
     juris_data_size = 0.0
     #area_coverage = get_area_coverage(saved_layer.name)
     area_coverage = 0
@@ -224,14 +228,28 @@ def registration_part_two(request):
                             title=form.cleaned_data["layer_title"],
                         )
                         interest_layer =  saved_layer
-                        #bbox = gs_layer.resource.latlon_bbox
-                        #bbox_lon = (float(bbox[0])+float(bbox[1]))/2
-                        #bbox_lat = (float(bbox[2])+float(bbox[3]))/2
-                        #place_name = get_place_name(bbox_lon, bbox_lat)
+
+                        cat = Catalog(settings.OGC_SERVER['default']['LOCATION'] + 'rest',
+                            username=settings.OGC_SERVER['default']['USER'],
+                            password=settings.OGC_SERVER['default']['PASSWORD'])
+
+                        boundary_style = cat.get_style('Boundary')
+                        gs_layer = cat.get_layer(saved_layer.name)
+                        if boundary_style:
+                            gs_layer._set_default_style(boundary_style)
+                            cat.save(gs_layer) #save in geoserver
+                            saved_layer.sld_body = boundary_style.sld_body
+                            saved_layer.save() #save in geonode
+
+                        bbox = gs_layer.resource.latlon_bbox
+                        bbox_lon = (float(bbox[0])+float(bbox[1]))/2
+                        bbox_lat = (float(bbox[2])+float(bbox[3]))/2
+                        place_name = get_place_name(bbox_lon, bbox_lat)
+                        pprint(place_name)
                         juris_data_size = 0.0
                         #area_coverage = get_area_coverage(saved_layer.name)
                         area_coverage =  0
-                        
+
                     except Exception as e:
                         exception_type, error, tb = sys.exc_info()
                         print traceback.format_exc()
@@ -273,7 +291,7 @@ def registration_part_two(request):
                         if permissions is not None and len(permissions.keys()) > 0:
 
                             saved_layer.set_permissions(permissions)
-                        
+
                         jurisdiction_style.delay(saved_layer)
 
                     finally:
@@ -305,7 +323,7 @@ def registration_part_two(request):
                             )
 
                     if interest_layer:
-                        #request_profile.place_name = place_name['state']
+                        request_profile.place_name = place_name['address']
                         request_profile.juris_data_size = juris_data_size
                         request_profile.area_coverage = area_coverage
                         request_profile.save()
@@ -391,7 +409,7 @@ def data_request_csv(request):
     response['Content-Disposition'] = 'attachment; filename="datarequests-"'+str(datetoday.month)+str(datetoday.day)+str(datetoday.year)+'.csv"'
 
     writer = csv.writer(response)
-    fields = ['id','name','email','contact_number', 'organization', 'organization_type','has_letter','has_shapefile','project_summary', 'created','request_status', 'date of action','rejection_reason','juris_data_size','area_coverage']
+    fields = ['id','name','email','contact_number', 'organization', 'organization_type','organization_other','has_letter','has_shapefile','project_summary', 'created','request_status', 'date of action','rejection_reason','juris_data_size','area_coverage']
     writer.writerow( fields)
 
     objects = DataRequestProfile.objects.all().order_by('pk')
@@ -616,8 +634,6 @@ def data_request_profile_cancel(request, pk):
     else:
         return HttpResponseRedirect(reverse('datarequests:data_request_profile', args=[pk]))
 
-
-
 def data_request_profile_approve(request, pk):
     if not request.user.is_superuser:
         raise PermissionDenied
@@ -644,9 +660,13 @@ def data_request_profile_approve(request, pk):
             messages.error (request, _(message))
         else:
             request_profile.profile.organization_type = request_profile.organization_type
+            request_profile.profile.organization_other = request_profile.organization_other
             request_profile.profile.save()
             if request_profile.jurisdiction_shapefile:
                 request_profile.assign_jurisdiction() #assigns/creates jurisdiction object
+                #place_name_update.delay([request_profile])
+                #compute_size_update.delay([request_profile])
+                assign_grid_refs.delay(request_profile.profile)
             else:
                 try:
                     uj = UserJurisdiction.objects.get(user=request_profile.profile)
@@ -655,7 +675,7 @@ def data_request_profile_approve(request, pk):
                     pprint("Jurisdiction Shapefile not found, nothing to delete. Carry on")
 
             request_profile.set_approved(is_new_acc)
-            request_profile.administrator = request.user 
+            request_profile.administrator = request.user
             request_profile.save()
 
 
@@ -718,7 +738,7 @@ def data_request_facet_count(request):
 def update_datarequest_obj(datarequest=None, parameter_dict=None, interest_layer=None, request_letter = None):
     if datarequest is None or parameter_dict is None or request_letter is None:
         raise HttpResponseBadRequest
-        
+
     if not datarequest.middle_name or len(datarequest.middle_name.strip())<1:
         datarequest.middle_name = '_'
 
