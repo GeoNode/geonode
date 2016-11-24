@@ -599,16 +599,8 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
                 continue
             if url.link_type == 'html':
                 links.append((self.title, 'Web address (URL)', 'WWW:LINK-1.0-http--link', url.url))
-            elif url.link_type in ('OGC:WFS', 'OGC:WCS'):
+            elif url.link_type in ('OGC:WMS', 'OGC:WFS', 'OGC:WCS'):
                 links.append((self.title, url.name, url.link_type, url.url))
-            elif url.link_type in ('OGC:WMS'):
-                if url.resource.layer:
-                    href = "%s?service=%s&amp;request=GetMap&amp;layers=%s" % (url.url,
-                                                                               url.link_type[-3:],
-                                                                               url.resource.layer.typename)
-                else:
-                    href = url.url
-                links.append((self.title, url.name, url.link_type, href))
             else:
                 description = '%s (%s Format)' % (self.title, url.name)
                 links.append((self.title, description, 'WWW:DOWNLOAD-1.0-http--download', url.url))
