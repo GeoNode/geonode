@@ -129,9 +129,6 @@ def data_request_detail(request, pk, template='datarequests/data_detail.html'):
                      name__in=settings.DOWNLOAD_FORMATS_RASTER)
              context_dict["links"] = links
     
-         if settings.SOCIAL_ORIGINS:
-             context_dict["social_links"] = build_social_links(request, layer)
-    
     context_dict["request_reject_form"]= DataRequestRejectForm(instance=data_request)
 
     return render_to_response(template, RequestContext(request, context_dict))
