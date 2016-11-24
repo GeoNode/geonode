@@ -16,6 +16,7 @@ from geonode.datarequests.models import (
     ProfileRequest, DataRequest)
 
 from pprint import pprint
+from urlparse import parse_qs
 
 class ProfileRequestList(LoginRequiredMixin, TemplateView):
     template_name = 'datarequests/profile_request_list.html'
