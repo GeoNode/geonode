@@ -116,7 +116,7 @@ def profile_request_reject(request, pk):
         profile_request.set_status('rejected',administrator = request.user)
         profile_request.send_rejection_email()
 
-    url = request.build_absolute_uri(data_request.get_absolute_url())
+    url = request.build_absolute_uri(profile_request.get_absolute_url())
 
     return HttpResponse(
         json.dumps({
