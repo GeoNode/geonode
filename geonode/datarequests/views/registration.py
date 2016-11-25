@@ -329,10 +329,6 @@ def email_verification_confirm(request):
                 profile_request.save()
                 pprint(email+" "+profile_request.status)
                 profile_request.send_new_request_notif_to_admins()
-                if profile_request.data_request:
-                    dr = profile_request.data_request
-                    dr.save()
-                    dr.set_status("pending")
                 profile_requests = ProfileRequest.objects.filter(email=email, status="unconfirmed")
                 set_status_for_multiple_requests.delay(profile_requests,"cancelled")
                 
