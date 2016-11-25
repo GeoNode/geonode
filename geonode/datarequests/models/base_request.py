@@ -34,7 +34,7 @@ from django.conf import settings as local_settings
 
 
 
-class BaseRequest(TimeStampedModel):
+class BaseRequest(TimeStampedModel, StatusModel):
     
     STATUS = Choices(
         ('pending', _('Pending')),
@@ -42,20 +42,6 @@ class BaseRequest(TimeStampedModel):
         ('cancelled', _('Cancelled')),
         ('rejected', _('Rejected')),
         ('unconfirmed',_('Unconfirmed Email')),
-    )
-    
-    status = models.CharField(
-        _('Request Status'),
-        choices = STATUS,
-        max_length=20,
-        null=False,
-        blank=False,
-        default= "unconfirmed"
-    )
-    
-    status_changed = models.DateTimeField(
-        blank=True,
-        null=True,
     )
     
     profile = models.ForeignKey(
