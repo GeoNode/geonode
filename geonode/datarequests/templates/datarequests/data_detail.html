@@ -256,7 +256,7 @@
     {% endif %}
 {% endif %}
   </ul>
-  <input type="hidden" id="profile_id" value="{{profile.pk}}"></input>
+  <input type="hidden" id="request_id" value="{{data_request.pk}}"></input>
   </div> <!-- col-md-4 -->
 </div> <!-- row -->
 {% endblock %}
@@ -299,7 +299,7 @@
           var reject_request_submit = function(){
              var message = $('#reject_request_message');
              var $request_reject_form = $('#request_reject_form');
-             var pk = $('#profile_id').val();
+             var pk = $('#request_id').val();
              var url = "{% url 'datarequests:data_request_reject' pk=666 %}".replace('666', pk);
              var form = $request_reject_form.serialize()
              $.ajax(
@@ -336,7 +336,7 @@
            var cancel_request_submit = function(){
              var message = $('#cancel_request_message');
              var $request_cancel_form = $('#request_cancel_form');
-             var pk = $('#profile_id').val();
+             var pk = $('#request_id').val();
              var url = "{% url 'datarequests:data_request_cancel' pk=666 %}".replace('666', pk);
              var form = $request_cancel_form.serialize()
              $.ajax(
