@@ -86,7 +86,7 @@ def profile_request_approve(request, pk):
             profile_request.profile.organization_other = profile_request.organization_other
             profile_request.profile.save()
 
-            profile_request.set_approved('approved',administrator = request.user)
+            profile_request.set_status('approved',administrator = request.user)
             
             if profile_request.data_request:
                 profile_request.data_request.set_status('pending')
