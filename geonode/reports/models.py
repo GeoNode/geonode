@@ -21,7 +21,7 @@ from django.db import models
 from django.utils.translation import ugettext_lazy as _
 
 class DownloadCount(models.Model):
-    date = models.DateTimeField(auto_now=True)
+    date = models.DateTimeField()
     category = models.CharField(_('Category'), max_length=100)
     chart_group = models.CharField(_('Chart Group'), max_length=100)
     download_type = models.CharField(_('Type'), max_length=100)
