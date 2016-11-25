@@ -24,6 +24,8 @@ from geonode.tasks.jurisdiction2 import compute_size_update
 from geonode.utils import default_map_config, resolve_object, llbbox_to_mercator
 from geonode.utils import GXPLayer, GXPMap
 
+from pprint import pprint
+
 @login_required
 def data_request_csv(request):
     if not request.user.is_superuser:
@@ -62,6 +64,7 @@ def data_request_detail(request, pk, template='datarequests/data_detail.html'):
         return HttpResponseRedirect('/forbidden')
 
     context_dict={"data_request": data_request}
+    pprint("dr.pk="+str(data_request.pk))
     
     if data_request.profile:
         context_dict['profile'] = data_request.profile
