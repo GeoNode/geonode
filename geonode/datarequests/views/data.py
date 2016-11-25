@@ -143,8 +143,7 @@ def data_request_detail(request, pk, template='datarequests/data_detail.html'):
 
 def data_request_cancel(request, pk):
     data_request = get_object_or_404(DataRequest, pk=pk)
-    if not request.user.is_superuser or not data_request.profile == request.user:
-        pprint("user is neither superuser or the owner of this request")
+    if not request.user.is_superuser and not data_request.profile == request.user:
         return HttpResponseRedirect('/forbidden')
 
     if not request.method == 'POST':
