@@ -193,7 +193,7 @@
         </li>
 
         <div class="modal fade" id="reject-request" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-          <form id="request_reject_form" accept-charset="UTF-8" method="post" class="modal-form" action='{% url "datarequests:data_request_reject" pk=data_request.pk%}'>
+          <form id="request_reject_form" accept-charset="UTF-8" method="post" class="modal-form" action='{% url "datarequests:data_request_reject" pk=data_request.pk %}'>
             <div class="modal-dialog">
               <div class="modal-content">
                 <div class="modal-header">
@@ -222,7 +222,7 @@
         </li>
 
         <div class="modal fade" id="cancel-request" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-          <form id="request_cancel_form" accept-charset="UTF-8" method="post" class="modal-form" action='{% url "datarequests:data_request_cancel" pk=data_request.pk%}'>
+          <form id="request_cancel_form" accept-charset="UTF-8" method="post" class="modal-form" action='{% url "datarequests:data_request_cancel" pk=data_request.pk %}'>
             <div class="modal-dialog">
               <div class="modal-content">
                 <div class="modal-header">
