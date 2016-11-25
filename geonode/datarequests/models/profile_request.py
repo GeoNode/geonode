@@ -372,11 +372,11 @@ class ProfileRequest(BaseRequest):
         email_subj = _('[LiPAD] Email Confirmation')
         self.send_email(email_subj,text_content,html_content, recipient=self.email)
     
-    def send_approval_email(self, username, directory):
+    def send_approval_email(self):
         site = Site.objects.get_current()
         profile_url = (
             str(site) +
-            reverse('profile_detail', kwargs={'username': username})
+            reverse('profile_detail', kwargs={'username': self.username})
         )
         profile_url = iri_to_uri(profile_url)
     
