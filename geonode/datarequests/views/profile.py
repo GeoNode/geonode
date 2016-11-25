@@ -5,6 +5,7 @@ from django.shortcuts import (
     redirect, get_object_or_404, render, render_to_response)
 from django.template import RequestContext
 from django.utils import simplejson as json
+from django.utils.translation import gettext as _
 from django.views.generic import TemplateView
 
 from braces.views import (
