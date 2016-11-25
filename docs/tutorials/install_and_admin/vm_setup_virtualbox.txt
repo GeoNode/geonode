@@ -70,6 +70,13 @@ At the end of the installation process, launch VirtualBox.
    :width: 600px
    :alt: VirtualBox installation - Windows
 
+Download Ubuntu ISO
+-------------------
+
+Navigate to `Ubuntu official Download page <https://www.ubuntu.com/download/alternative-downloads>`_
+and download the Ubuntu 14.04 `.iso` file for your architecture. The ISO image will be used to install
+Ubuntu 14.04 inside the Virtual Machine
+
 Virtual Machine Setup
 =====================
 
@@ -108,7 +115,7 @@ Under "Storage" select the empty DVD drive, click on `Live CD/DVD` as shown belo
    :alt: Ubuntu VM setup
 
 Click on the DVD icon next to the `Optical Drive` drop down menu and select the Ubuntu 14.04 `.iso`
-file from your file system
+file that you downloaded before
 
 .. image:: img/ubuntu_vm_setup_5.png
    :width: 600px
