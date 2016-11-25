@@ -181,7 +181,7 @@ class ProfileRequest(BaseRequest):
 
     @property
     def has_verified_email(self):
-        return self.date is not None
+        return self.verification_date is not None
 
     def get_absolute_url(self):
         return reverse('datarequests:profile_request_detail', kwargs={'pk': self.pk})
