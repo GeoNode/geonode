@@ -18,6 +18,7 @@ from django.core import validators
 from model_utils import Choices
 from unidecode import unidecode
 
+from geonode.datarequests import email_utils
 from geonode.documents.models import Document
 from geonode.layers.models import Layer
 from geonode.people.models import Profile
