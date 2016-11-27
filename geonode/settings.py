@@ -674,13 +674,13 @@ MAP_BASELAYERS = [{
 #    "name": "osm",
 #    "group": "background",
 #    "visibility": False
-#}, 
+#},
 {
     "source": {"ptype": "gxp_mapquestsource"},
     "name": "naip",
     "group": "background",
     "visibility": False
-}, 
+},
 {
     "source": {"ptype": "gxp_mapboxsource"},
 }]
@@ -777,15 +777,15 @@ DOWNLOAD_FORMATS_METADATA = [
     'Atom', 'DIF', 'Dublin Core', 'ebRIM', 'FGDC', 'ISO',
 ]
 DOWNLOAD_FORMATS_VECTOR = [
-    'JPEG', 'PNG', 'Zipped Shapefile',
+    'JPEG', 'PNG', 'PDF', 'Zipped Shapefile',
     #'PDF', 'GML 2.0', 'GML 3.1.1', 'CSV',
     #'Excel', 'GeoJSON', 'KML', 'View in Google Earth', 'Tiles',
 ]
 DOWNLOAD_FORMATS_RASTER = [
     'JPEG',
-    #'PDF',
     'PNG',
-    'ArcGrid',
+    'PDF',
+    # 'ArcGrid',
     'GeoTIFF',
     #'Gtopo30',
     #'ImageMosaic',
@@ -817,7 +817,7 @@ LEAFLET_CONFIG = {
         # http://leaflet-extras.github.io/leaflet-providers/preview/
 
         # Stamen toner lite.
-        
+
     ],
     'PLUGINS': {
         'esri-leaflet': {
@@ -946,7 +946,7 @@ except ImportError:
     pass
 
 try:
-    BING_LAYER = {    
+    BING_LAYER = {
         "source": {
             "ptype": "gxp_bingsource",
             "apiKey": BING_API_KEY
