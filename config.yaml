@@ -1,0 +1,460 @@
+#===========================================================================
+# allowed DPIs
+#===========================================================================
+dpis: [75, 150, 300]
+
+formats:
+  - pdf
+  - png
+  - jpeg
+
+#===========================================================================
+# the allowed scales
+#===========================================================================
+scales:
+  # - 25000
+  # - 50000
+  # - 100000
+  # - 200000
+  # - 500000
+  # - 1000000
+  # - 2000000
+  # - 4000000
+  - 1000     
+  - 1200     
+  - 2000     
+  - 2400     
+  - 2500     
+  - 4800     
+  - 5000     
+  - 6000     
+  - 9000     
+  - 9600     
+  - 10000    
+  - 12000    
+  - 15840    
+  - 20000    
+  - 24000    
+  - 25000    
+  - 31680    
+  - 50000    
+  - 62500    
+  - 63360    
+  - 80000    
+  - 100000   
+  - 125000   
+  - 126720   
+  - 250000   
+  - 500000   
+  - 1000000 
+  - 2000000 
+  - 3000000 
+  - 5000000 
+  - 10000000
+  - 25000000
+
+globalParallelFetches: 100
+perHostParallelFetches: 100
+# tilecacheMerging: true
+disableScaleLocking: false
+connectionTimeout: 180000
+socketTimeout: 540000
+# maxPrintTimeBeforeWarningInSeconds: 60
+# printTimeoutMinutes: 10
+
+fonts:
+  - /usr/share/fonts/truetype/dejavu/
+  # - /opt/geonode/geonode/static/geonode/fonts/
+
+#===========================================================================
+# the list of allowed ips
+#===========================================================================
+hosts:
+  - !localMatch
+    dummy: true
+  - !dnsMatch
+    host: otile1.mqcdn.com
+    port: 80
+  - !dnsMatch
+    host: otile2.mqcdn.com
+    port: 80
+  - !dnsMatch
+    host: otile3.mqcdn.com
+    port: 80
+  - !dnsMatch
+    host: otile4.mqcdn.com
+    port: 80
+  - !dnsMatch
+    host: otile5.mqcdn.com
+    port: 80
+  - !dnsMatch
+    host: a.tile.openstreetmap.org
+    port: 80
+  - !dnsMatch
+    host: b.tile.openstreetmap.org
+    port: 80
+  - !dnsMatch
+    host: c.tile.openstreetmap.org
+    port: 80
+  - !dnsMatch
+    host: d.tile.openstreetmap.org
+    port: 80
+  - !dnsMatch
+    host: lipad.tst.dream.upd.edu.ph
+    port: 80
+  - !dnsMatch
+    host: lipad-tst.dream.upd.edu.ph
+    port: 443
+  - !dnsMatch
+    host: lipad.stg.dream.upd.edu.ph
+    port: 80
+
+layouts:
+  Image:
+    mainPage:
+      items:
+        - !map
+          width: 672
+          height: 358
+          spacingAfter: 0
+  A4 portrait:
+    mainPage:
+      pageSize: A4
+      # rotation: true
+      rotation: false
+      items:
+        - !text
+          text: '${mapTitle}'
+          fontSize: 30
+          spacingAfter: 0
+          font: DejaVu Sans Bold
+        - !map
+          spacingAfter: 30
+          width: 440
+          height: 483
+        - !scalebar
+          type: bar
+          maxSize: 100
+          barBgColor: white
+          fontSize: 8
+          align: right
+          units: m
+        - !text
+          font: DejaVu Sans
+          fontSize: 9
+          align: right
+          text: 'scale: 1:${scale} | date printed: ${now MM.dd.yyyy}'
+        - !text
+          font: DejaVu Sans
+          fontSize: 9
+          align: left
+          text: 'Abstract:'
+        - !text
+          font: DejaVu Sans
+          fontSize: 9
+          align: left
+          text: '${abstract}'
+        - !text
+          font: DejaVu Sans
+          fontSize: 9
+          align: left
+          text: 'Purpose'
+        - !text
+          font: DejaVu Sans
+          fontSize: 9
+          align: left
+          text: '${purpose}'
+
+  phil-lidar:
+    mainPage:
+      pageSize: A4
+      landscape: true
+      marginLeft: 40
+      marginRight: 40
+      marginTop: 20
+      marginBottom: 20
+      items:
+        - !table
+          config:
+            cells:
+              - col: 0
+                borderWidth: 1
+          widths: [476,286]
+          items:
+            # Main map
+            - !map
+              width: 476
+              height: 555
+            # Title
+            - !text
+              text: '${mapTitle}'
+              align: center
+              font: DejaVu Sans Bold
+        # North arrow
+        - !table
+          config:
+            cells:
+              - padding: 5
+          absoluteX: 40
+          absoluteY: 575
+          width: 476
+          items:
+            - !image
+              align: left
+              maxWidth: 50
+              maxHeight: 50
+              url: 'http://localhost/static/geonode/img/Arrow_North_CFCF.svg'
+        # Abstract title
+        - !table
+          config:
+            cells:
+              - padding: 1
+          # absoluteX: 516
+          absoluteX: 540
+          absoluteY: 540
+          width: 286
+          items:
+            - !text
+              text: 'Abstract'
+              align: left
+              font: DejaVu Sans Bold
+              fontSize: 9
+              condition: abstract
+        # Abstract text
+        - !table
+          config:
+            cells:
+              - padding: 1
+          # absoluteX: 516
+          absoluteX: 540
+          absoluteY: 530
+          width: 286
+          items:
+            - !text
+              text: '${abstract}'
+              align: left
+              font: DejaVu Sans
+              fontSize: 8
+              condition: abstract
+        # Purpose title
+        - !table
+          config:
+            cells:
+              - padding: 1
+          # absoluteX: 516
+          absoluteX: 540
+          absoluteY: 380
+          width: 286
+          items:
+            - !text
+              text: 'Purpose'
+              align: left
+              font: DejaVu Sans Bold
+              fontSize: 9
+              condition: purpose
+        # Purpose text
+        - !table
+          config:
+            cells:
+              - padding: 1
+          # absoluteX: 516
+          absoluteX: 540
+          absoluteY: 370
+          width: 286
+          items:
+            - !text
+              text: '${purpose}'
+              align: left
+              font: DejaVu Sans
+              fontSize: 8
+              condition: purpose
+        # Legend title
+        - !table
+          config:
+            cells:
+              - padding: 1
+          # absoluteX: 516
+          absoluteX: 540
+          absoluteY: 330
+          width: 286
+          items:
+            - !text
+              text: 'Legend'
+              align: left
+              font: DejaVu Sans Bold
+              fontSize: 9
+        # Legend
+        - !table
+          config:
+            cells:
+              - padding: 1
+          # absoluteX: 516
+          absoluteX: 540
+          absoluteY: 320
+          width: 286
+          # absoluteX: 40
+          # absoluteY: 300
+          # width: 476
+          items:
+            - !legends
+
+              horizontalAlignment: left
+              iconMaxWidth: 0
+              iconMaxHeight: 200
+              # From GeoServer bitmap space (~91 dpi) to PDF paper space (72 dpi)
+              # necessary for icons to have the same size in legend and on map
+              # defaultScale: 0.7937
+              # layerSpace: 3
+              # layerFontSize: 10
+              # classIndentation: 0
+              # classFontSize: 10
+              # classSpace: 3
+              # maxWidth: 150
+              # maxHeight: 664
+              # layerFont: DejaVu Sans
+              # layerFontSize: 10
+              # classFont: DejaVu Sans
+              # classFontSize: 8
+
+        #       backgroundColor: #FFFFFF
+              # borders: false
+              # borders: true
+        #       horizontalAlignment: center
+        #       maxWidth: 0
+        #       maxHeight: 0
+        #       iconMaxWidth: 0
+        #       iconMaxHeight: 8
+        #       iconPadding: 8 7 6 5
+        #       textMaxWidth: 8
+        #       textMaxHeight: 8
+        #       textPadding: 8 7 6 5
+              # defaultScale: 1.0
+              # defaultScale: 0.5
+              # inline: true
+        #       classIndentation: 20
+        #       layerSpaceBefore: 5
+        #       layerSpace: 5
+        #       classSpace: 2
+        #       layerFont: DejaVu Sans
+        #       layerFontSize: 10
+        #       classFont: DejaVu Sans
+        #       classFontSize: 8
+        #       fontEncoding: Cp1252
+        #       columnMargin: 3
+
+              # layerFont: DejaVu Sans
+              # layerFontSize: 10
+              # layerSpace: 5
+              # maxIconWidth: 50
+              # maxIconHeight: 50
+              # classFont: DejaVu Sans
+              # classFontSize: 20
+              # classSpace: 5
+              # classIndentation: 20
+        # Overview Map
+        # - !table
+        #   config:
+        #     cells:
+        #       - padding: 5
+        #   absoluteX: 516
+        #   absoluteY: 160
+        #   width: 286
+        #   items:
+        # #     - !map
+        # #       width: 200
+        # #       height: 100
+        # #       align: center
+        # #       overviewMap: 10
+        #     - !image
+        #       align: center
+        #       vertAlign: middle
+        #       maxWidth: 280
+        #       maxHeight: 100
+        #       url: 'http://placekitten.com/280/100'
+        # Scalebar
+        - !table
+          config:
+            cells:
+              - padding: 1
+          # absoluteX: 516
+          absoluteX: 540
+          absoluteY: 110
+          width: 286
+          items:
+            - !text
+              font: DejaVu Sans
+              fontSize: 9
+              align: left
+              text: 'Scale: 1:${scale}'
+            - !scalebar
+              maxSize: 150
+              type: bar_sub
+              units: m
+              align: left
+              font: DejaVu Sans
+        # Logos
+        - !table
+          config:
+            cells:
+              - padding: 1
+          absoluteX: 540
+          # absoluteX: 610
+          # absoluteY: 50
+          absoluteY: 80
+          width: 200
+          items:
+            - !image
+              align: left
+              vertAlign: middle
+              maxWidth: 40
+              maxHeight: 40
+              url: 'http://localhost/static/geonode/img/logos/logo_dost.svg'
+            - !image
+              align: left
+              vertAlign: middle
+              maxWidth: 40
+              maxHeight: 40
+              url: 'http://localhost/static/geonode/img/logos/logo_up.svg'
+            - !image
+              align: left
+              vertAlign: middle
+              maxWidth: 40
+              maxHeight: 40
+              url: 'http://localhost/static/geonode/img/logos/logo_tcagp.svg'
+            - !image
+              align: left
+              vertAlign: middle
+              maxWidth: 40
+              maxHeight: 40
+              url: 'http://localhost/static/geonode/img/logos/logo_phil-lidar1.svg'
+              condition: isPhilLidar1
+            - !image
+              align: center
+              vertAlign: middle
+              maxWidth: 40
+              maxHeight: 40
+              url: 'http://localhost/static/geonode/img/logos/logo_phil-lidar2.svg'
+              condition: isPhilLidar2
+        # Copyright
+        - !table
+          config:
+            cells:
+              - padding: 1
+          # absoluteX: 516
+          absoluteX: 540
+          absoluteY: 32
+          width: 286
+          items:
+            - !text
+              font: DejaVu Sans
+              fontSize: 9
+              align: left
+              text: '© 2016 DOST-UP DREAM and Phil-LiDAR 1 PROGRAM'
+              condition: isPhilLidar1
+            - !text
+              font: DejaVu Sans
+              fontSize: 9
+              align: left
+              text: '© 2016 DOST-UP DREAM and Phil-LiDAR 2 PROGRAM'
+              condition: isPhilLidar2
+
