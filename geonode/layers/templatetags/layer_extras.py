@@ -105,7 +105,7 @@ def image_basemap(link, epsg, filetype):
             jsontext['purpose'] = 'No purpose provided'
         jsontext['srs'] = to_srs_str
         jsontext['outputFormat'] = filetype
-        jsontext['outputFilename'] = layer.name
+        jsontext['outputFilename'] = layer.title.replace(',','')
         # jsontext['layers'][0]['baseURL'] = settings.OGC_SERVER['default']['LOCATION'] + 'wms?SERVICE=WMS&'
         jsontext['layers'][0]['baseURL'] = localURL + \
             'wms?SERVICE=WMS&'  # baseURL for local
@@ -120,6 +120,8 @@ def image_basemap(link, epsg, filetype):
         jsontext['legends'][0]['classes'][0]['icons'][0] = legendurl
         jsontext['isPhilLidar1'] = isPhilLidar1
         jsontext['isPhilLidar2'] = isPhilLidar2
+        # print '******************** J S O N ********************'
+        # pprint(jsontext)
 
         jsonmini = json.dumps(jsontext, separators=(',', ':'))
         urlencoded = urllib.quote(jsonmini)
