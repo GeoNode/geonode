@@ -26,7 +26,7 @@ Linux
 Ubuntu
 ------
 
-The easiest way to get the .deb is to install it using APT, the standard installation management tool for Ubuntu and other Debian-based systems.
+The easiest way to get the .deb is to install it using APT, the standard installation management tool for Ubuntu. The current release, 2.4 is available only for Ubuntu 14.04.
 
 0. First, make sure you have the ``add-apt-repository`` binary available.
 
