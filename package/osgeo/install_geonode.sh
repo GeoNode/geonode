@@ -130,7 +130,7 @@ chown -R www-data:www-data /usr/lib/python2.7/dist-packages/geonode/uploaded
 
 echo "Configuring GeoNode"
 # Create tables in the database
-sudo -u "$USER_NAME" django-admin syncdb --all --noinput --settings=geonode.settings
+sudo -u "$USER_NAME" django-admin migrate --settings=geonode.settings
 
 # create a superuser (one from fixtures doesnt seem to work)
 sudo -u "$USER_NAME" django-admin createsuperuser --username="$USER_NAME" \

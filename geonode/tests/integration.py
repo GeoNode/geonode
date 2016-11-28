@@ -98,7 +98,7 @@ $ psql -d test_geonode -c "grant all on spatial_ref_sys to public;"
 $ psql -d test_geonode -c "grant all on geometry_columns to public;"
 $ exit
 
-$ geonode syncdb
+$ geonode migrate
 $ geonode createsuperuser
 
 """

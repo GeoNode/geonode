@@ -265,11 +265,11 @@ Add the following as a directive::
 
 **Synchronise db**
 
-To synchronise the database call the django command ``syncdb``
+To synchronise the database call the django command ``migrate``
 
 .. code-block:: console
 
-    $ python manage.py syncdb --noinput --all
+    $ python manage.py migrate
 
 
 Django configurations

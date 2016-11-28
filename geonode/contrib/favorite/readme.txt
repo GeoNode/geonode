@@ -76,4 +76,4 @@ Steps to enable Favorites in GeoNode:
     <li><a href="{% url "favorite_list" %}"><i class="fa fa-star"></i> {% trans "Favorites" %}</a></li> 
 
 
-6. Run syncdb to create the new favorite_favorite table.
+6. Run migrate to create the new favorite_favorite table.

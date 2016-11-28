@@ -15,7 +15,7 @@ If you are working remotely, you should first connect to the machine that has yo
     $ django-admin startproject my_geonode --template=https://github.com/GeoNode/geonode-project/archive/master.zip -epy,rst
     $ cd my_geonode
     $ sudo pip install -e .
-    $ python manage.py syncdb
+    $ python manage.py migrate
 
 .. note:: You should NOT use the name *geonode* for your project as it will conflict with your default geonode package name.
 
