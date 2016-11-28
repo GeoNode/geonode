@@ -25,6 +25,7 @@ from models import Layer
 class LayerAutocomplete(autocomplete_light.AutocompleteModelTemplate):
     choice_template = 'autocomplete_response.html'
 
+
 autocomplete_light.register(
     Layer,
     LayerAutocomplete,

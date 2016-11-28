@@ -558,6 +558,7 @@ def final_step_view(req, upload_session):
          }
     )
 
+
 _steps = {
     'save': save_step_view,
     'time': time_step_view,

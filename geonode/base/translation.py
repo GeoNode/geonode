@@ -46,6 +46,7 @@ class BackupTranslationOptions(TranslationOptions):
 class LicenseTranslationOptions(TranslationOptions):
     fields = ('name', 'description', 'license_text',)
 
+
 translator.register(TopicCategory, TopicCategoryTranslationOptions)
 translator.register(SpatialRepresentationType, SpatialRepresentationTypeTranslationOptions)
 translator.register(Region, RegionTranslationOptions)

@@ -144,6 +144,7 @@ class SiteProfileResource(ProfileResource):
     class Meta(ProfileResource.Meta):
         queryset = get_user_model().objects.exclude(username='AnonymousUser').filter(id__in=users_for_site())
 
+
 api.register(SiteLayerResource())
 api.register(SiteMapResource())
 api.register(SiteDocumentResource())

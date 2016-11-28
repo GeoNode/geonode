@@ -208,6 +208,7 @@ class LinkAdmin(admin.ModelAdmin):
 class HierarchicalKeywordAdmin(TreeAdmin):
     form = movenodeform_factory(HierarchicalKeyword)
 
+
 admin.site.register(TopicCategory, TopicCategoryAdmin)
 admin.site.register(Region, RegionAdmin)
 admin.site.register(SpatialRepresentationType, SpatialRepresentationTypeAdmin)
