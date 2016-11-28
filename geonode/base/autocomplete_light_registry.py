@@ -26,6 +26,7 @@ from models import ResourceBase, Region, HierarchicalKeyword
 class ResourceBaseAutocomplete(autocomplete_light.AutocompleteModelTemplate):
     choice_template = 'autocomplete_response.html'
 
+
 autocomplete_light.register(Region,
                             search_fields=['name'],
                             autocomplete_js_attributes={'placeholder': 'Region/Country ..', },)

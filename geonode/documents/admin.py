@@ -41,4 +41,5 @@ class DocumentAdmin(MediaTranslationAdmin):
     date_hierarchy = 'date'
     form = DocumentAdminForm
 
+
 admin.site.register(Document, DocumentAdmin)

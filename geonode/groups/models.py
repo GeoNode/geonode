@@ -286,4 +286,5 @@ def group_pre_delete(instance, sender, **kwargs):
         raise Exception('Deletion of the anonymous group is\
          not permitted as will break the geonode permissions system')
 
+
 signals.pre_delete.connect(group_pre_delete, sender=Group)
