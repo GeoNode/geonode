@@ -1,7 +1,8 @@
 #!/usr/bin/env python
 
 # SUC, floodplain tagging for PL1 layers
-
+# floodplain tagging only for DREAM
+#   - from csv, match PSA code, tag layer with riverbasin in riverbasin column
 from geonode.settings import GEONODE_APPS
 import geonode.settings as settings
 import os
@@ -85,11 +86,17 @@ for layer in layers:
             'FP:{0} - SUC:{1}'.format(pair['floodplain'], pair['suc']))
         layer.keywords.add(pair['floodplain'])
         layer.keywords.add(pair['suc'])
+        layer.floodplain_tag.add(pair['floodplain'])
+        layer.SUC_tag.add(pair['suc'])
         try:
             layer.save()
             _logger.debug('Keywords: {0}'.format(layer.keywords.values_list()))
+            _logger.debug('Floodplain Tag: {0}'.format(
+                layer.floodplain_tag.values_list()))
+            _logger.debug('SUC Tag: {0}'.format(
+                layer.SUC_tag.values_list()))
         except:
             _logger.exception('ERROR SAVING LAYER')
     else:
         _logger.error('NO FP-SUC PAIR FOUND')
-    count+=1
+    count += 1
