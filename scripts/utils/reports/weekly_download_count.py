@@ -35,21 +35,23 @@ def add_to_count(category, typename):
             "others": 0,
         }
     if 'coverage' in typename:
-        layer_count[category]['cov'] += 1
+        layer_count[category]['Coverage'] += 1
     elif 'fh' in typename:
-        layer_count[category]['fhm'] += 1
+        layer_count[category]['FHM'] += 1
     elif 'dtm' in typename:
-        layer_count[category]['dtm'] += 1
+        layer_count[category]['DTM'] += 1
     elif 'dsm' in typename:
-        layer_count[category]['dsm'] += 1
+        layer_count[category]['DSM'] += 1
     elif 'laz' in typename:
-        layer_count[category]['laz'] += 1
+        layer_count[category]['LAZ'] += 1
     elif 'ortho' in typename:
-        layer_count[category]['ortho'] += 1
+        layer_count[category]['ORTHO'] += 1
     elif 'sar' in typename:
-        layer_count[category]['sar'] += 1
+        layer_count[category]['SAR'] += 1
     else:
-        layer_count[category]['others'] += 1
+        layer_count[category]['Others'] += 1
+def add_to_monthlyc(category):
+    layer_count[category]['Document'] += 1
 
 datetoappend = datetime.strptime((datetime.now()-timedelta(days=3)).strftime('%U-%Y')+'-3','%U-%Y-%w') #timedelta to start week count days from sunday; days=3 meaning week count if from wednesday to tuesday
 auth_list = Action.objects.filter(verb='downloaded').order_by('timestamp')
@@ -60,6 +62,9 @@ for auth in auth_list:
             "typename": auth.action_object.typename,
             })
         add_to_count(luzvimin, auth.action_object.typename)
+        add_to_count('monthly', auth.action_object.typename)
+    elif datetoappend == datetime.strptime(auth.timestamp.strftime('%U-%Y')+'-3','%U-%Y-%w') and auth.action_object.csw_type == 'document':#if datenow is timestamp
+        add_to_monthlyc('monthly')
 
 anon_list = AnonDownloader.objects.all().order_by('date')
 for anon in anon_list:
@@ -69,10 +74,23 @@ for anon in anon_list:
             "typename": anon.anon_layer.typename,
             })
         add_to_count(luzvimin, anon.anon_layer.typename)
+        add_to_count('monthly', anon.anon_layer.typename)
+    elif datetoappend == datetime.strptime(anon.date.strftime('%U-%Y')+'-3','%U-%Y-%w') and anon.anon_document:#if datenow is timestamp
+        add_to_monthlyc('monthly')
 print(layer_count)
-# model_object = DownloadCount(date=str(datetoappend),
-#                                     category=str(luzvimin),
-#                                     chart_group="luzvimin",
-#                                     download_type=str(layer_type),
-#                                     count=str(count))
-# model_object.save()
+
+
+for eachkey, eachdict in layer_count.iteritems():
+    category = eachkey
+    if category == 'Luzon' or category == 'Visayas' or category == 'Mindanao':
+        chart_group = 'luzvimin'
+    elif category == 'monthly':
+        chart_group = 'monthly'
+    for eachtype, eachvalue in eachdict.iteritems():
+        model_object = DownloadCount(date=str(datetoappend),
+                                    category=str(category),
+                                    chart_group=str(chart_group),
+                                    download_type=str(eachtype),
+                                    count=str(eachvalue))
+        model_object.save()
+        print str(datetoappend) +'-'+ str(category) +'-'+ str(chart_group) +'-'+ str(eachtype) +'-'+ str(eachvalue)
