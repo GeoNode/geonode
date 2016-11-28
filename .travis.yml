@@ -20,6 +20,7 @@ install:
   - sudo update-java-alternatives --set java-8-oracle
   - pip install -r requirements.txt --use-mirrors
   - pip install -e . --use-mirrors --no-deps
+  - pip install coveralls
 
 before_script:
   - paver setup
@@ -29,6 +30,9 @@ script:
 
 after_script:
   - paver reset_hard
+
+after_success:
+  - coveralls
 
 notifications:
   irc:
