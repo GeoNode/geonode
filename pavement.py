@@ -438,7 +438,8 @@ def test(options):
     """
     Run GeoNode's Unit Test Suite
     """
-    sh("python manage.py test %s.tests --noinput" % '.tests '.join(GEONODE_APPS))
+    sh("%s manage.py test %s.tests --noinput" % (options.get('prefix'),
+                                                 '.tests '.join(GEONODE_APPS)))
 
 
 @task
@@ -484,12 +485,19 @@ def test_integration(options):
 
 
 @task
-def run_tests():
+@cmdopts([
+    ('coverage', 'c', 'use this flag to generate coverage during test runs')
+])
+def run_tests(options):
     """
     Executes the entire test suite.
     """
-    sh('python manage.py test geonode.tests.smoke')
-    call_task('test')
+    if options.coverage:
+        prefix = 'coverage run --branch --source=geonode'
+    else:
+        prefix = 'python'
+    sh('%s manage.py test geonode.tests.smoke' % prefix)
+    call_task('test', options={'prefix': prefix})
     call_task('test_integration')
     call_task('test_integration', options={'name': 'geonode.tests.csw'})
     sh('flake8 geonode')

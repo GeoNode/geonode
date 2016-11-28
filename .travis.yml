@@ -25,7 +25,7 @@ before_script:
   - paver setup
 
 script:
-  - paver run_tests
+  - paver run_tests --coverage
 
 after_script:
   - paver reset_hard
