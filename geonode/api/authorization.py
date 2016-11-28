@@ -37,6 +37,8 @@ class GeoNodeAuthorization(DjangoAuthorization):
         return object_list.filter(id__in=permitted_ids)
 
     def read_detail(self, object_list, bundle):
+        if 'schema' in bundle.request.path:
+            return True
         return bundle.request.user.has_perm(
             'view_resourcebase',
             bundle.obj.get_self_resource())
