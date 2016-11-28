@@ -212,7 +212,7 @@ def upgradedb(options):
 @task
 def sync(options):
     """
-    Run the syncdb and migrate management commands to create and migrate a DB
+    Run the migrate and migrate management commands to create and migrate a DB
     """
     for app in dev_config['MIGRATE_APPS']:
         try:

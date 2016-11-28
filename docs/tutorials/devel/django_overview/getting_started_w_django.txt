@@ -96,7 +96,7 @@ For example, if the models for the application is defined in the module **myapp.
 
 .. warning:: When you add new apps to **INSTALLED_APPS**, be sure to run **manage.py migrate**, optionally making migrations for them first with **manage.py makemigrations**.
 
-.. note:: GeoNode uses the specific command **manage.py syncdb** to perform the models update and migration.
+.. note:: GeoNode uses the specific command **manage.py migrate** to perform the models update and migration.
 
 Fields
 ......

@@ -94,7 +94,8 @@ function setup_django_every_time() {
 
     export DJANGO_SETTINGS_MODULE=geonode.settings
 
-    geonode syncdb --noinput --verbosity 0
+    geonode migrate --verbosity 0
+    geonode loaddata $geonodedir/geonode/base/fixtures/initial_data.json
     geonode collectstatic --noinput --verbosity 0
 
     # Create an empty uploads dir

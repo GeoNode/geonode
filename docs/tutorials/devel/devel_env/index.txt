@@ -316,7 +316,7 @@ Summary of the installation steps
    .. code-block:: console
 
     $ cd /home/geonode/dev/geonode
-    $ python manage.py syncdb --noinput
+    $ python manage.py migrate
 
    .. warning:: If the start fails because of an import error related to osgeo, then please consult the :ref:`install_gdal_devmode`.
 
