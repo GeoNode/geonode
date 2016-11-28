@@ -41,11 +41,16 @@ def report_layer(request, template='reports/report_layers.html'):
     for eachinlist in monthly_list:
         if eachinlist.date.strftime('%b') not in monthly_count:
             monthly_count [eachinlist.date.strftime('%b')] = {}
-        if len(monthly_count) > 1:
+        try: #because of keyerror
+        # if len(monthly_count) > 1:
             cumulative_count = monthly_count[monthly_count.keys()[-2]][eachinlist.download_type] + eachinlist.count
-        else:
+        except:
+        # else:
             cumulative_count = eachinlist.count
-        monthly_count[eachinlist.date.strftime('%b')][eachinlist.download_type] = cumulative_count
+        if eachinlist.download_type in monthly_count[eachinlist.date.strftime('%b')]:
+            monthly_count[eachinlist.date.strftime('%b')][eachinlist.download_type] += eachinlist.count
+        else:
+            monthly_count[eachinlist.date.strftime('%b')][eachinlist.download_type] = cumulative_count
     pprint(monthly_count)
 
     reversed_mc = OrderedDict(reversed(list(monthly_count.items())))
