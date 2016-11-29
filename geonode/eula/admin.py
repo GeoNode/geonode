@@ -16,5 +16,6 @@ class AnonDownloaderAdmin(admin.ModelAdmin):
         'date',
         'anon_layer',
         'anon_document')
+    search_fields = ('anon_first_name', 'anon_last_name', 'anon_email', 'anon_organization', 'anon_purpose',)
 
 admin.site.register(AnonDownloader, AnonDownloaderAdmin)

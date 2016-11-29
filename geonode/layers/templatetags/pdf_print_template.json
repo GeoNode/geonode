@@ -1,0 +1,68 @@
+{
+  "comment": "",
+  "layers": [
+    {
+      "opacity": 1,
+      "layers": [
+        "osm:osm"
+      ],
+      "format": "image\/png",
+      "customParams": {
+        "TRANSPARENT": true,
+        "TILED": true
+      },
+      "baseURL": "",
+      "singleTile": false,
+      "styles": [
+        ""
+      ],
+      "type": "WMS"
+    },
+    {
+      "opacity": 1,
+      "layers": [
+        ""
+      ],
+      "format": "image\/png",
+      "customParams": {
+        "TRANSPARENT": true,
+        "TILED": true
+      },
+      "baseURL": "",
+      "singleTile": false,
+      "styles": [
+        ""
+      ],
+      "type": "WMS"
+    }
+  ],
+  "outputFormat": "",
+  "layout": "phil-lidar",
+  "mapTitle": "",
+  "abstract": "",
+  "purpose": "",
+  "outputFilename": "",
+  "srs": "",
+  "geodetic": "false",
+  "units": "degrees",
+  "pages": [
+    {
+      "rotation": 0,
+      "bbox": []
+    }
+  ],
+  "dpi": 300,
+  "legends": [
+    {
+      "classes": [
+        {
+            "icons": [""],
+            "name": ""
+        }
+      ],
+      "name": ""
+    }
+  ],
+  "isPhilLidar1": false,
+  "isPhilLidar2": false
+}
