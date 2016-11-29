@@ -64,15 +64,14 @@ for yr in ['5', '25', '100']:
     print('Done!')
 
     # Delete existing layer group if exists
-    lgs_url = settings.SITEURL + 'geoserver/rest/workspaces/geonode/layergroups.json'
+    lgs_url = 'http://localhost/geoserver/rest/workspaces/geonode/layergroups.json'
     _auth = (settings.OGC_SERVER['default']['USER'],
              settings.OGC_SERVER['default']['PASSWORD'])
     r = requests.get(lgs_url, auth=_auth)
     for lg in r.json()['layerGroups']['layerGroup']:
         if lg['name'] == json_data['layerGroup']['name']:
             print('Deleting existing layer group...', end='')
-            lg_url = settings.SITEURL + \
-                'geoserver/rest/workspaces/geonode/layergroups/' + \
+            lg_url = 'http://localhost/geoserver/rest/workspaces/geonode/layergroups/' + \
                 lg['name'] + '.json'
             r = requests.delete(lg_url, auth=_auth)
             if r.status_code != 200:
