@@ -663,7 +663,8 @@ def layer_download_csv(request):
         email = getprofile.email
         organization = getprofile.organization
         orgtype = orgtypelist[getprofile.organization_type]
-        area = get_area_coverage(auth.action_object.typename)
+        #area = get_area_coverage(auth.action_object.typename)
+        area = 0
         # pprint(dir(getprofile))
         if auth.action_object.csw_type != 'document':
             listtowrite.append([username, lastname, firstname, email, organization, orgtype,
@@ -684,7 +685,8 @@ def layer_download_csv(request):
         organization = anon.anon_organization
         orgtype = anon.anon_orgtype
         purpose = anon.anon_purpose
-        area = get_area_coverage(layername.typename)
+        #area = get_area_coverage(layername.typename)
+        area = 0
         if layername:
             listtowrite.append(["", lastname, firstname, email, organization, orgtype,
                                 purpose, layername.typename, anon.date.strftime('%Y/%m/%d'),area,''])
