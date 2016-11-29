@@ -2,8 +2,10 @@ from django.core.exceptions import PermissionDenied, ObjectDoesNotExist
 from operator import itemgetter, attrgetter
 import re
 from changuito.proxy import CartProxy
-from geonode.cephgeo.models import CephDataObject, DataClassification, MissionGridRef, SucToLayer, FTPRequestToObjectIndex
+
+from geonode.cephgeo.models import CephDataObject, DataClassification, MissionGridRef, SucToLayer, FTPRequestToObjectIndex, RIDF
 from geonode.datarequests.models import DataRequestProfile
+
 from osgeo import ogr
 import shapely
 from shapely.wkb import loads
@@ -310,6 +312,9 @@ def get_bytes_by_type(ftp_request, data_type):
 #     for v in value:
 #         obj = SucToLayer.objects.create(suc=riverbasin.GetFieldAsString("SUC"),block_name=str(v))
 #         obj.save()
+
+
+
 
 
 
