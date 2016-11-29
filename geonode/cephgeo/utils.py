@@ -240,6 +240,7 @@ def get_ftp_details(ftp_request):
     if ftp_request.user.organization:
         ftp_details['organization'] = user.organization
     elif dr:
+    else if dr:
         ftp_details['organization'] = dr.organization
         ftp_details["organization_type"] = dr.get_organization_type_display()
     else:
