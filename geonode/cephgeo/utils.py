@@ -228,22 +228,22 @@ def get_ftp_details(ftp_request):
     dr = None
     
     try:
-        dr = DataRequestProfile.objects.filter(profile = ftp_request.user)[0]
+        drs = DataRequestProfile.objects.filter(profile = ftp_request.user)
+        if len(drs>0):
+            dr = drs[0]
     except ObjectDoesNotExist:
         dr = None
     
-    user = ftp_request.user 
-    
-    ftp_details= {}
-    
+    user = ftp_request.user     
     ftp_details['user'] = user
     
     if ftp_request.user.organization:
         ftp_details['organization'] = user.organization
+    elif dr:
+        ftp_details['organization'] = dr.organization
+        ftp_details["organization_type"] = dr.get_organization_type_display()
     else:
-        if dr:
-            ftp_details['organization'] = dr.organization
-            ftp_details["organization_type"] = dr.get_organization_type_display()
+        ftp_details['organization'] = None
     
     ftp_details['total_number_of_tiles'] = ftp_request.num_tiles
     ftp_details['total_size'] = ftp_request.size_in_bytes
