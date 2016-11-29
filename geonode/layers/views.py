@@ -653,6 +653,8 @@ def layer_download_csv(request):
     auth_list = Action.objects.filter(verb='downloaded').order_by('timestamp')
     writer.writerow(['username', 'lastname', 'firstname', 'email', 'organization',
                      'organization type', 'purpose', 'layer name', 'date downloaded','area','size_in_bytes'])
+                     
+    pprint("writing authenticated downloads list")
     for auth in auth_list:
         username = auth.actor
         getprofile = Profile.objects.get(username=username)
@@ -671,7 +673,8 @@ def layer_download_csv(request):
     anon_list = AnonDownloader.objects.all().order_by('date')
     # writer.writerow(['Anonymous Downloads'])
     # writer.writerow( ['lastname','firstname','email','organization','organization type','purpose','layer name','doc name','date downloaded'])
-
+    
+    pprint("writing anonymous downloads list")
     for anon in anon_list:
         lastname = anon.anon_last_name
         firstname = anon.anon_first_name
@@ -688,7 +691,8 @@ def layer_download_csv(request):
                                 
     listtowrite.sort(key=lambda x: datetime.datetime.strptime(
         x[8], '%Y/%m/%d'), reverse=True)
-        
+    
+    pprint("writing ftp downloads list")
     for ftp_request in FTPRequest.objects.all():
         ftp_detail = get_ftp_details(ftp_request)
         username = ftp_detail['user'].username
