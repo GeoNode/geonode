@@ -59,7 +59,7 @@ The layer group is now ready to be consumed:
 
 #. Navigate to the GeoServer `Welcome Page <http://localhost:8083/geoserver/web/>`_.
 
-#. Go to the :guilabel:`Layer Preview` link at the bottom of the lefthand menu.
+#. Go to the :guilabel:`Layer Preview` link at the bottom of the left-hand menu.
  
    .. figure:: img/preview1.png
 
@@ -87,7 +87,7 @@ The layer group is now ready to be consumed:
 
       Feature info
 
-#. Try zoomin in more and more. New layers should start to appear. This is scale dependent styling.
+#. Try zooming in more and more. New layers should start to appear. This is scale dependent styling.
 
 Now let's see how desktop clients handle the layer group, and how we can change the way the see it.
 
@@ -107,7 +107,7 @@ Now let's see how desktop clients handle the layer group, and how we can change 
 
    .. figure:: img/group10.png
 
-#. We need to make uDig aware of the change. Right click the root of the the capabilities tree and choose the "Reset" command
+#. We need to make uDig aware of the change. Right click the root of the capabilities tree and choose the "Reset" command
 
    .. figure:: img/group11.png
 

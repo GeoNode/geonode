@@ -35,28 +35,28 @@ Install Python Virtual Environment
         pip install virtualenvwrapper
 
 
-Setup Postgresql
-================
-Enable Postgresql service
+Set up PostgreSQL
+=================
+Enable the PostgreSQL service
 
     .. code-block:: console
 
         systemctl enable postgresql
 
-Change postgres UNIX password
+Change the Unix password for the postgres user
 
     .. code-block:: console
 
         passwd -u postgres -f
         passwd postgres
 
-Start Postgresql service
+Start the PostgreSQL service
 
     .. code-block:: console
 
         systemctl start postgresql.service
 
-Create GeoNode role and database
+Create the GeoNode role and database
 
     .. code-block:: console
 
@@ -99,7 +99,7 @@ Assuming your user name is v-user, you need to edit your .bashrc file
 
         nano /home/v-user/.bashrc
 
-adding the following lines (please replace v-user with your actual user name):
+Add the following lines (please replace v-user with your actual user name):
 
     .. code-block:: console
 
@@ -150,7 +150,7 @@ In case of successful installation, this should return several (50+) lines.
 
 Install GeoServer
 -----------------
-The installation of Geoserver starts with
+The installation of GeoServer starts with
 
     .. code-block:: console
 

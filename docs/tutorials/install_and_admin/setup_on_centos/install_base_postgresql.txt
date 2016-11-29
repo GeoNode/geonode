@@ -21,7 +21,7 @@ Install PostgreSQL, PostGIS and related libs::
     postgresql94-devel gdal gdal-python geos python-pip python-imaging  python-virtualenv python-devel gcc-c++  \
     python-psycopg2 libxml2 libxml2-devel libxml2-python libxslt libxslt-devel libxslt-python
 
-Init the DB::
+Initialize the DB::
 
    /usr/pgsql-9.4/bin/postgresql94-setup initdb
 
@@ -29,7 +29,7 @@ Enable start on boot::
 
    systemctl enable postgresql-9.4
 
-Start postgres service by hand::
+Start the PostgreSQL service manually::
 
    systemctl start postgresql-9.4
 
@@ -68,7 +68,7 @@ effective::
 
 Create GeoNode Users Databases
 ------------------------------
-Switch to postgres user::
+Switch to the postgres user::
 
     su postgres
 

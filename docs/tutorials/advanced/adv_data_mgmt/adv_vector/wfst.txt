@@ -3,20 +3,20 @@
 Modifying Feature Types
 =======================
 
-GeoServer provides a fully Transactional Web Feature Service (WFS-T) which enables users to insert/delete/modify the avilable FeatureTypes.
+GeoServer provides a fully Transactional Web Feature Service (WFS-T) which enables users to insert/delete/modify the available FeatureTypes.
 This section shows a few of the GeoServer WFS-T capabilities and interactions with GIS clients.
 
 Modifying Feature Types using GeoNode
 -------------------------------------
 
-#. Open your instance of `GeoNode <http://geonode.org>`_ and log in as a `superuser` or a user having write rigths on at least some `Layers`
+#. Open your instance of `GeoNode <http://geonode.org>`_ and log in as a `superuser` or a user having write rights on at least some `Layers`
 
    .. figure:: img/wfs-t_geonode1.png
       :align: center
       
       GeoNode Layers
 
-#. Select a `Layer` on which whon you have right to edit `data`
+#. Select a `Layer` on which when you have right to edit `data`
 
    .. warning:: You can edit **only** `Layers` which have been stored on a JDBC DataStore, like a DataBase. On GeoNode this is only possible if the ``DB datastore`` has been enabled from the ``settings``.
    
@@ -108,7 +108,7 @@ Modifying Feature Types using GeoNode
 Modifying Feature Types using a Desktop GIS client
 --------------------------------------------------
 
-#. Open `uDig <http://udig.refractions.net>`_ GIS desktop client by going on the command line, changing directory in the training root if necessary, and running the ``udig`` commmand.
+#. Open `uDig <http://udig.refractions.net>`_ GIS desktop client by going on the command line, changing directory in the training root if necessary, and running the ``udig`` command.
 
 #. Add GeoServer WFS to the catalog.
 
@@ -176,7 +176,7 @@ Modifying Feature Types using a Desktop GIS client
 	  
       Retrieving Feature Type info from uDig interface
 
-#. Now open/create the ``request.xml`` file in the training root dir and set in the following requst, which will be used to issue an **Update** Feature type request to the WFS-T updating all roads labelled as ``Monarch Rd`` to ``Monarch Road``
+#. Now open/create the ``request.xml`` file in the training root directory and set in the following request, which will be used to issue an **Update** Feature type request to the WFS-T updating all roads labelled as ``Monarch Rd`` to ``Monarch Road``
 
    .. code-block:: xml
 

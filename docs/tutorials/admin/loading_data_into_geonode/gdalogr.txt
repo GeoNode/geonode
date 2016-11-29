@@ -3,9 +3,9 @@
 Using GDAL and OGR to convert your Data for use in GeoNode
 ==========================================================
 
-GeoNode supports uploading data in shapefiles, GeoTiff, csv and kml formats (for the last two formats only if you are using the geonode.importer backend in the UPLOAD variable in settings.py). If your data is in other formats, you will need to convert it into one of these formats for use in GeoNode. This section will walk you through the steps necessary to convert your data into formats suitable for uploading into GeoNode.
+GeoNode supports uploading data in shapefiles, GeoTIFF, CSV and KML formats (for the last two formats only if you are using the geonode.importer backend in the UPLOAD variable in settings.py). If your data is in other formats, you will need to convert it into one of these formats for use in GeoNode. This section will walk you through the steps necessary to convert your data into formats suitable for uploading into GeoNode.
 
-You will need to make sure that you have the gdal library installed on your system. On Ubuntu you can install this package with the following command::
+You will need to make sure that you have the GDAL library installed on your system. On Ubuntu you can install this package with the following command::
 
     $ sudo apt-get install gdal-bin
 
@@ -138,7 +138,7 @@ As soon as the import process completes, you will have the possibility to go str
 GDAL (Raster Data)
 ------------------
 
-Now that we have seen how to convert vector layers into shapefiles using ogr2ogr, we will walk through the steps necessary to perform the same operation with Raster layers. For this example, we will work with Arc/Info Binary and ASCII Grid data and convert it into GeoTiff format for use in GeoNode.
+Now that we have seen how to convert vector layers into shapefiles using ogr2ogr, we will walk through the steps necessary to perform the same operation with Raster layers. For this example, we will work with Arc/Info Binary and ASCII Grid data and convert it into GeoTIFF format for use in GeoNode.
 
 First, you need to download the sample data to work with it. You can do this by executing the following command::
 
@@ -269,7 +269,7 @@ Which will produce the following output::
     Center      ( 150.2079059, -35.7203212) (150d12'28.46"E, 35d43'13.16"S)
     Band 1 Block=174x11 Type=Float32, ColorInterp=Gray
 
-You can then follow the same steps we used above to upload the GeoTiff file we created into the GeoNode, and you will see your layer displayed in the Layer Info page.
+You can then follow the same steps we used above to upload the GeoTIFF file we created into the GeoNode, and you will see your layer displayed in the Layer Info page.
 
 .. figure:: img/batemans_tif.png
 

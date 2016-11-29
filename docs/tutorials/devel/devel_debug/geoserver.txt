@@ -20,7 +20,7 @@ way to start diagnosing an issue in GeoNode once the other. To create a proper
 error report for use in requesting support, providing any contextual logging
 information is critical.
 
-When using a standard geoserver installation, the GeoServer logs are located at
+When using a standard GeoServer installation, the GeoServer logs are located at
 :file:`/usr/share/geoserver/data/logs/geoserver.log`. The properties files that
 control the varying rules are also located here.
 
@@ -29,7 +29,7 @@ Exercises
 
 #. Switch logging levels for various loggers.
 #. Look at the different logging profiles and discuss the loggers and levels.
-#. Learn how to read stacktraces, nested or otherwise.
+#. Learn how to read stack traces, nested or otherwise.
 
 Advanced Troubleshooting
 ------------------------
@@ -56,7 +56,7 @@ REST API. This allows high-level functions as well as viewing raw REST responses
      cat.get_layers() # list of gsconfig layer objects
      # OR, for a specific layer
      lyr = Layer.objects.get(id=1)
-     lyr.resource # specfic gsconfig layer object
+     lyr.resource # specific gsconfig layer object
      lyr.resource.fetch() # get the XML from REST
      lyr.resource.dom # reference to the parsed XML
      from xml.etree.ElementTree import tostring

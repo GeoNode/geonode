@@ -34,7 +34,7 @@ At the end of this section you will be able to setup from scratch the whole GeoN
     setup_on_centos/index
 
 :ref:`quick_installation`
-    This section is a quick guide to get GeoNode up and running in most common operating systems. This is meant to be run on a fresh machine with no previously installated packages or GeoNode versions.
+    This section is a quick guide to get GeoNode up and running in most common operating systems. This is meant to be run on a fresh machine with no previously installed packages or GeoNode versions.
 
 :ref:`linux_admin_intro`
     This section describes how to setup a Virtual Machine running Ubuntu.
