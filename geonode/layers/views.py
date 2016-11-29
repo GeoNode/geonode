@@ -701,7 +701,7 @@ def layer_download_csv(request):
         lastname = unidecode(ftp_detail['user'].last_name)
         firstname = unidecode(ftp_detail['user'].first_name)
         email = ftp_detail['user'].email
-        organization = unidecode(ftp_detail['organization'])
+        organization = ftp_detail['organization']
         organization_type = ftp_detail['organization_type']
         date_requested = ftp_request.date_time
         
