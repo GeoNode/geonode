@@ -234,6 +234,7 @@ def get_ftp_details(ftp_request):
     except ObjectDoesNotExist:
         dr = None
     
+    ftp_details = {}
     user = ftp_request.user     
     ftp_details['user'] = user
     
