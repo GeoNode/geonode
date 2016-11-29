@@ -247,14 +247,14 @@ def get_ftp_details(ftp_request):
     
     ftp_details['total_number_of_tiles'] = ftp_request.num_tiles
     ftp_details['total_size'] = ftp_request.size_in_bytes
-    ftp_details['number_of_laz'] = get_tiles_by_type(ftp_request, 'LAZ')
-    ftp_details['size_of_laz'] = get_bytes_by_type(ftp_request, 'LAZ')
-    ftp_details['number_of_dsm'] = get_tiles_by_type(ftp_request, 'dsm')
-    ftp_details['size_of_laz'] = get_bytes_by_type(ftp_request, 'dsm')
-    ftp_details['number_of_dtm'] = get_tiles_by_type(ftp_request, 'dtm')
-    ftp_details['size_of_laz'] = get_bytes_by_type(ftp_request, 'dtm')
-    ftp_details['number_of_ortho'] = get_tiles_by_type(ftp_request, 'ortho')
-    ftp_details['size_of_laz'] = get_bytes_by_type(ftp_request, 'ortho')
+    ftp_details['number_of_laz'] = get_tiles_by_type(ftp_request, 1) #LAZ
+    ftp_details['size_of_laz'] = get_bytes_by_type(ftp_request, 1) #LAZ
+    ftp_details['number_of_dtm'] = get_tiles_by_type(ftp_request, 3) #DTM
+    ftp_details['size_of_laz'] = get_bytes_by_type(ftp_request, 3) #DTM
+    ftp_details['number_of_dsm'] = get_tiles_by_type(ftp_request, 4) #DSM
+    ftp_details['size_of_laz'] = get_bytes_by_type(ftp_request, 4) #DSM
+    ftp_details['number_of_ortho'] = get_tiles_by_type(ftp_request, 5) #Ortho
+    ftp_details['size_of_laz'] = get_bytes_by_type(ftp_request, 5) #Ortho
     
     return ftp_details
     
