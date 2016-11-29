@@ -229,7 +229,7 @@ def get_ftp_details(ftp_request):
     
     try:
         drs = DataRequestProfile.objects.filter(profile = ftp_request.user)
-        if len(drs>0):
+        if len(drs)>0:
             dr = drs[0]
     except ObjectDoesNotExist:
         dr = None
