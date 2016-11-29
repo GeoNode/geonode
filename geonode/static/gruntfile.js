@@ -185,7 +185,8 @@ module.exports = function(grunt) {
             'lib/css/bootstrap.min.css',
             'lib/css/jquery-ui.css',
             'lib/css/bootstrap-datetimepicker.css',
-            'lib/css/multi-select.css'
+            'lib/css/multi-select.css',
+            'lib/css/bootstrap-treeview.min.css'
           ]
         }
       }
@@ -216,7 +217,8 @@ module.exports = function(grunt) {
             'lib/js/angular-leaflet-directive.min.js',
             'lib/js/ZeroClipboard.min.js',
             'lib/js/moment-with-locales.min.js',
-            'lib/js/bootstrap-datetimepicker.min.js'
+            'lib/js/bootstrap-datetimepicker.min.js',
+            'lib/js/bootstrap-treeview.min.js'
           ],
           'lib/js/require.js': ['lib/js/require.js'],
           'lib/js/text.js': ['lib/js/text.js'],
