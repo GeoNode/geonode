@@ -15,6 +15,7 @@ from collections import defaultdict
 import json
 from shapely.geometry import Polygon
 import datetime
+from unidecode import unidecode
 
 _TILE_SIZE = 1000
 ### For additional functions/definitions which may be needed by views
