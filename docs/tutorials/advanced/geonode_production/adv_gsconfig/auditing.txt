@@ -22,7 +22,7 @@ The ``monitor.properties`` file can contain the following items to enable and co
      audit.path=${TRAINING_ROOT}
      audit.roll_limit=20
 
-#. Replace ``${TRAINING_ROOT}`` with the full path to the workshop root folder, and rememeber to always use forward slashes, ``/``, in the path, regardless of the operating system. For example, on Windows the path might look like ``c:/data/Training_2.5.X-32``
+#. Replace ``${TRAINING_ROOT}`` with the full path to the workshop root folder, and remember to always use forward slashes, ``/``, in the path, regardless of the operating system. For example, on Windows the path might look like ``c:/data/Training_2.5.X-32``
 
 #. Go to the Map `Map Preview <http://localhost:8083/geoserver/web/?wicket:bookmarkablePage=:org.geoserver.web.demo.MapPreviewPage>`_ and open the `geosolutions:states` layer clicking on the ``OpenLayer`` link.
 
@@ -55,7 +55,7 @@ pattern. The ``nn`` is increased at each roll of the file. The contents of the l
 Customizing the log contents
 ----------------------------
 
-The log contents are driven by three FreeMarker templates. We can customize them to have the log file be a csv file for example.
+The log contents are driven by three FreeMarker templates. We can customize them to have the log file be a CSV file for example.
 
 #. On the file system navigate to the GeoServer data directory located at $GEOSERVER_DATA_DIR.
 

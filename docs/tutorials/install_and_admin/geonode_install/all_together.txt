@@ -4,7 +4,7 @@
 Finish installation
 ===================
 
-In previous sections you' ve setup all the applications we need to run GeoNode.
+In previous sections you've setup all the applications we need to run GeoNode.
 
 In this section we are going to `glue` all the pieces together and finalize GeoNode
 setup.
@@ -181,7 +181,7 @@ Now create the admin user for GeoNode running the following::
 
     python manage.py createsuperuser
 
-You will be prompted for the username, email address and passoword for the user
+You will be prompted for the username, email address and password for the user
 
 Test the installation
 =====================

@@ -12,7 +12,7 @@ files provided.
 
 #.	Navigate to the workshop directory :file:`${TRAINING_ROOT}/data/user_data/gdal_processing_data` (on Windows :file:`%TRAINING_ROOT%\\data\\user_data\\gdal_processing_data`) and find the *CTR_data* directory.
 
-#.	Navigate inside the *CTR_data* directory with the SDKshell.
+#.	Navigate into the *CTR_data* directory with the SDK Shell.
 
 .. note:: The following operations must be executed from the shell inside the selected directory. In Windows, run *setenv.bat* if not already launched.
 
@@ -163,7 +163,7 @@ files provided.
 		Band 1 Block=128x128 Type=Byte, ColorInterp=Gray
 		  NoData Value=255
 
-#.	Transforming from VRT to GeoTiff with **gdal_translate**::
+#.	Transforming from VRT to GeoTIFF with **gdal_translate**::
 
 		gdal_translate -a_nodata none -co "BLOCKXSIZE=512" -co "BLOCKYSIZE=512" -co "TILED=YES" -co "BIGTIFF=YES" -co "COMPRESS=DEFLATE" merged_vrt.vrt merged_tif.tif
 		
@@ -248,7 +248,7 @@ files provided.
 			Band 1 Block=512x512 Type=Byte, ColorInterp=Gray
 			  Overviews: 25026x31024, 12513x15512, 6257x7756, 3129x3878, 1565x1939, 783x970, 392x485
 			  
-		Then the result can be displayed in GeoServer by configuring the image as a GeoTiff (see :ref:`Adding a GeoTiff <geoserver.add_geotiff>` section).
+		Then the result can be displayed in GeoServer by configuring the image as a GeoTIFF (see :ref:`Adding a GeoTiff <geoserver.add_geotiff>` section).
 
 	*	(**Optional**) Creation of a **pyramid** associated to the merged image and displaying the image on GeoServer with the ImagePyramid plugin (see :ref:`Advanced Mosaic and Pyramid configuration <geoserver.mosaic_pyramid>` section).		
 		
@@ -400,7 +400,7 @@ If the user wants to keep the palette the steps to achieve are quite similar.
 			0: 255,255,255,255
 			1: 0,0,0,255
 
-#.	Transforming from VRT to GeoTiff with **gdal_translate**::
+#.	Transforming from VRT to GeoTIFF with **gdal_translate**::
 
 		gdal_translate -co "NBITS=1" -co "BLOCKXSIZE=512" -co "BLOCKYSIZE=512" -co "TILED=YES" -co "BIGTIFF=YES" -co "COMPRESS=DEFLATE" merged_vrt.vrt merged_tif.tif
 		
@@ -475,13 +475,3 @@ If the user wants to keep the palette the steps to achieve are quite similar.
 			:width: 90%
 
 		Result with overviews (Zoom on the image for seeing the result).
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	

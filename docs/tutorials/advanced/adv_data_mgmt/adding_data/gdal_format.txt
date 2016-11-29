@@ -6,9 +6,9 @@ Adding a GDAL Supported Format
 ------------------------------
 
 In case the GDAL libraries are available, it is possible to access to several GDAL's supported data formats.
-Actually, the available GDAL plugins allow to support DTED, EHdr, ERDASImg, MrSID, JP2K (via MrSID Driver) and NITF data formats.
-Moreover, in case a valid license have been purchased and the proper native library is available, also ECW, JP2K (via ECW) and JP2K (via Kakadu) are supported.
-This section provides instructions to add and publish a MrSID, ECW and JP2K datasets.
+Actually, the available GDAL plugins allow to support DTED, EHdr, ERDASImg, MrSID, JPEG 2000 (via MrSID Driver) and NITF data formats.
+Moreover, in case a valid license have been purchased and the proper native library is available, also ECW, JPEG 2000 (via ECW) and JPEG 2000 (via Kakadu) are supported.
+This section provides instructions to add and publish MrSID, ECW and JPEG 2000 datasets.
 
    .. warning::
     
@@ -41,9 +41,9 @@ MrSID Data Set
 
    .. figure:: img/gdal_publish.jpg
    
-#. click on :guilabel:`Save` when done. 
+#. Click on :guilabel:`Save` when done.
 
-At this point the MrSID data is being published with GeoServer. 
+At this point the MrSID data is being published with GeoServer.
 
 #. Click the :guilabel:`Layer Preview` link in the left GeoServer menu. 
 
@@ -82,7 +82,7 @@ ECW (Enhanced Compression Wavelet) is a proprietary wavelet compression image fo
 
    .. figure:: img/ecw1.png
 
-At this point the ECW data is being published with GeoServer. 
+At this point the ECW data is being published with GeoServer.
 
 #. Click the :guilabel:`Layer Preview` link in the left GeoServer menu. 
 
@@ -124,7 +124,7 @@ JPEG 2000 is a image coding system that uses state-of-the-art compression techni
 
    .. figure:: img/jpeg2k3.png
 
-At this point the JP2K data is being published with GeoServer. 
+At this point the JPEG 2000 data is being published with GeoServer.
 
 #. Click the :guilabel:`Layer Preview` link in the left GeoServer menu. 
 

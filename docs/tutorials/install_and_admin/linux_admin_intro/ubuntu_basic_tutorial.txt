@@ -9,7 +9,7 @@ widespread `Linux <https://en.wikipedia.org/wiki/Linux>`_ `Distributions <https:
 .
 
 In this section of the documentation you will learn how to do basic operations in
-Ubuntu such as Log inand Log out, Launch applications and Install new software.
+Ubuntu such as login and logout, launching applications and installing new software.
 
 User Login
 ==========

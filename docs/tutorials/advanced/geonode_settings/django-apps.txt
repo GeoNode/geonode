@@ -42,7 +42,7 @@ these apps for your specific needs.
         searching GeoNode.
 
       geonode.security
-        provide django auth backend for providing security system.
+        provides a Django auth backend.
 
 
 ``geonode.base`` - GeoNode core functionality
@@ -102,7 +102,7 @@ Views
 Template Tags
 -------------
 featured_layers
-  Returns the the 7 newest layers.
+  Returns the 7 newest layers.
 
 layer_thumbnail <layer>
   Returns the layer's thumbnail.
@@ -120,7 +120,7 @@ importlayers
 updatelayers
   ``python manage.py updatelayers``
 
-  Scan Geoserver for data that has not been added to GeoNode.
+  Scan GeoServer for data that has not been added to GeoNode.
 
 ``geonode.maps`` - Map creation and geospatial data management
 ==============================================================
@@ -146,7 +146,7 @@ The maps app provides views for:
 These operations require the use of GeoServer to manage map rendering, as well
 as GeoExt to provide interactive editing and previewing of maps and data layers.
 
-There are also some url mappings in the ``geonode.maps.urls`` module for easy
+There are also some URL mappings in the ``geonode.maps.urls`` module for easy
 inclusion in GeoNode sites.
 
 ``settings.py`` Entries
@@ -155,7 +155,7 @@ inclusion in GeoNode sites.
 OGC_SERVER
   Default: ``{}`` (Empty dictionary)
 
-  A dictionary of OGC servers and and their options.  The main
+  A dictionary of OGC servers and their options.  The main
   server should be listed in the 'default' key.  If there is no 'default'
   key or if the ``OGC_SERVER`` setting does not exist GeoNode will raise
   an Improperly Configured exception.  Below is an example of the ``OGC_SERVER``
@@ -186,7 +186,7 @@ OGC_SERVER
     Default: ``"http://localhost:8080/geoserver/"``
 
     A base URL from which GeoNode can construct OGC service URLs.
-    If using Geoserver you can determine this by
+    If using GeoServer you can determine this by
     visiting the GeoServer administration home page without the
     /web/ at the end.  For example, if your GeoServer administration app is at
     http://example.com/geoserver/web/, your server's location is http://example.com/geoserver.
@@ -195,7 +195,7 @@ OGC_SERVER
     Default: ``"http://localhost:8080/geoserver/"``
 
     The URL used to in most public requests from GeoNode.  This settings allows a user to write to one OGC server (the LOCATION setting)
-    and read from a seperate server or the PUBLIC_LOCATION.
+    and read from a separate server or the PUBLIC_LOCATION.
 
   USER
     Default: ``'admin'``
@@ -210,7 +210,7 @@ OGC_SERVER
   MAPFISH_PRINT_ENABLED
     Default: ``True``
 
-    A boolean that represents whether the Mapfish printing extension is enabled on the server.
+    A boolean that represents whether the MapFish printing extension is enabled on the server.
 
   PRINT_NG_ENABLED
     Default: ``True``
@@ -225,7 +225,7 @@ OGC_SERVER
   GEOGIT_ENABLED
     Default: ``False``
 
-    A boolean that represents whether the OGC server supports Geogig datastores.
+    A boolean that represents whether the OGC server supports GeoGig datastores.
 
   WMST_ENABLED
     Default: ``False``
@@ -279,7 +279,7 @@ CATALOGUE
   A dict with the following keys:
 
   * ENGINE: The CSW backend (default is ``geonode.catalogue.backends.pycsw_local``)
-  * URL: The FULLY QUALIFIED base url to the CSW instance for this GeoNode
+  * URL: The FULLY QUALIFIED base URL to the CSW instance for this GeoNode
   * USERNAME: login credentials (if required)
   * PASSWORD: login credentials (if required)
 
@@ -362,7 +362,7 @@ LOCKDOWN_GEONODE
 AUTH_EXEMPT_URLS
   Default: ``()`` (Empty tuple)
 
-  A tuple of url patterns that the user can visit without being authenticated.
+  A tuple of URL patterns that the user can visit without being authenticated.
   This setting has no effect if ``LOCKDOWN_GEONODE`` is not True.  For example,
   ``AUTH_EXEMPT_URLS = ('/maps',)`` will allow unauthenticated users to
   browse maps.
@@ -390,4 +390,4 @@ GeoNode customizes some of Django's default error templates.
 500.html
 --------
 
-If no custom handler for 500 errors is set up in the URLconf module, django will call django.views.defaults.server_error which expects a 500.html file in the root of the templates directory. In GeoNode, we have put a template that does not inherit from anything as 500.html and because most of Django's machinery is down when an INTERNAL ERROR (500 code) is encountered the use of template tags should be avoided.
+If no custom handler for 500 errors is set up in urls.py, Django will call django.views.defaults.server_error which expects a 500.html file in the root of the templates directory. In GeoNode, we have put a template that does not inherit from anything as 500.html and because most of Django's machinery is down when an INTERNAL ERROR (500 code) is encountered the use of template tags should be avoided.

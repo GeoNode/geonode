@@ -123,7 +123,7 @@ This will extract a single geometry that we'll use as a reference, so this time 
 
   INCLUDE;DWITHIN(the_geom, querySingle('bptlandmarks', 'the_geom', 'FULLNAME = ''Boulder County Courthouse'''), 400, feet)
 
-and the resulting map is going to be:
+the resulting map is going to be:
 
 .. figure:: img/court_close_buildings.png
 

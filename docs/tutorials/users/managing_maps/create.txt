@@ -63,7 +63,7 @@ Adding external layers
 
       *New Server URL and Type*
 
-#. Note - for security purposes, the URL you enter must be on a list of pre-approved external services set up by the GeoNode admininistrator.  Otherwise you will receive a 403 error when trying to add the server.
+#. Note - for security purposes, the URL you enter must be on a list of pre-approved external services set up by the GeoNode administrator.  Otherwise you will receive a 403 error when trying to add the server.
 
 #. A list of layers available from that server should appear momentarily.  The layers must be available in the Web Mercator projection or they will not show up in the list.  Select the layers you want to add to the map.  Click :guilabel:`Add Layers` to add them all to the map.
 

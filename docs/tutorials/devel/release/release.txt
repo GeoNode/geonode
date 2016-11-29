@@ -18,8 +18,8 @@ Before doing the release, a GeoNode team member who can already make release has
 Creating and importing a gpg key
 --------------------------------
 
-A gpg key is needed to push and publish the package.
-There is a complete guide on how to `create and import`_ a gpg key
+A GPG key is needed to push and publish the package.
+There is a complete guide on how to `create and import`_ a GPG key
 
 .. _create and import: https://help.launchpad.net/YourAccount/ImportingYourPGPKey
 
@@ -27,11 +27,11 @@ Preparing the environment
 -------------------------
 
 Make sure to have a Ubuntu 12.04 machine.
-Install the following packages in additon to the python virtulenv tools::
+Install the following packages in addition to the python virtualenv tools::
 
     $ sudo apt-get install git-core git-buildpackage dbhelper devscripts
 
-Get the GeoNode code (from master) in a virtuelnv::
+Get the GeoNode code (from master) in a virtualenv::
 
     $ mkvirtualenv geonode
     $ git clone https://github.com/GeoNode/geonode.git

@@ -4,12 +4,12 @@
 How to contribute to GeoNode's Translation 
 ==========================================
 
-GeoNode uses `Transifex <https://www.transifex.com/projects/p/geonode/>`_ to translate the webpage and code from english to any other language. To be able to contribute to the translation, you need to get an account on transifex.
+GeoNode uses `Transifex <https://www.transifex.com/projects/p/geonode/>`_ to translate the webpage and code from English to any other language. To be able to contribute to the translation, you need to get an account on Transifex.
 
 Edit translations directly on Transifex webpage
 ===============================================
 
-Here you will see how easy it is to update the translations directly on the transifex website.
+Here you will see how easy it is to update the translations directly on the Transifex website.
 
 #. Create account
 
@@ -59,7 +59,7 @@ Using this options it is assumed that you have a local Geonode GitHub repository
 
 .. note:: It is recommended to first create a new branch e.g. *translation* in your repository for your translations.
 
-#. As a firt step, generate all of the needed .pot files (any time the master documentation changes)::
+#. As a first step, generate all of the needed .pot files (any time the master documentation changes)::
 
    $ cd docs
    $ sphinx-build -b gettext . i18n/pot
@@ -68,7 +68,7 @@ Using this options it is assumed that you have a local Geonode GitHub repository
 
    $ sh i18n/scripts/pre_translate.sh
   
-#. Do a pull from transifex to get latest translations::
+#. Do a pull from Transifex to get latest translations::
 
    $ tx pull -a
     
@@ -82,7 +82,7 @@ Using this options it is assumed that you have a local Geonode GitHub repository
    $ git commit
    $ git push
 
-#. Now make a pull request and GeoNode will push your changes to transifex.
+#. Now make a pull request and GeoNode will push your changes to Transifex.
 
 Only for transifex maintainers
 ------------------------------
@@ -94,7 +94,7 @@ For main Geonode localization files
 
 These files are generated using standard django-admin tools : makemessages and compilemessages command line tools.
 
-At first make sure to install transifex client and configure your .transifexrc with our credentials as::
+At first make sure to install Transifex client and configure your .transifexrc with our credentials as::
 
    [https://www.transifex.com]
    username = YOURUSERNAME
@@ -113,7 +113,7 @@ Then update the messages in the po and compile the corresponding mo::
    $ geonode makemessages -d djangojs --all
    $ geonode compiliemessages
 
-Finally update ressources on transifex.com::
+Finally update resources on transifex.com::
 
    $ tx push -s -t
 
@@ -122,7 +122,7 @@ For documentation localization
 
 .. note:: Section below is deprecated, since the docs are no more translated, to much work to maintain them in every language.
 
-#. As a firt step, generate all of the needed .pot files (any time from master documentation changes)::
+#. As a first step, generate all of the needed .pot files (any time from master documentation changes)::
 
    $ cd docs
    $ sphinx-build -b gettext . i18n/pot
@@ -131,7 +131,7 @@ For documentation localization
 
    $ sh i18n/scripts/pre_translate.sh
   
-#. Do a pull from transifex to get latest translations::
+#. Do a pull from Transifex to get latest translations::
 
    $ tx pull -a
     
@@ -140,7 +140,7 @@ For documentation localization
    $ vi i18n/it/LC_MESSAGES/index.po
    $ sh i18n/scripts/post_translate.sh
     
-#. Do a push to transifex to update translations on the server::
+#. Do a push to Transifex to update translations on the server::
 
    $ tx push -s -t
   
@@ -151,6 +151,6 @@ For documentation localization
 How to add a new language
 =========================
 
-   To add a new language, click on *Request language* on the right top of the transifex webpage.
+   To add a new language, click on *Request language* on the right top of the Transifex webpage.
 
    .. figure:: img/transifex_request_language.png

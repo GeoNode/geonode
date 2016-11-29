@@ -23,9 +23,9 @@ Versions of Microsoft Internet Explorer older than 10 exhibit known issues when 
 Testing on Internet Explorer
 ============================
 
-When working on front end code, developers should take care to test carefully with Microsoft Internet Explorer to ensure that the features they are working on do indeed work correctly and on this browser. It is good practice to test on all browsers available, but the use of modern front end libraries like bootstrap and jquery make it much more likely code will work across browsers seamlessly.
+When working on front end code, developers should take care to test carefully with Microsoft Internet Explorer to ensure that the features they are working on do indeed work correctly and on this browser. It is good practice to test on all browsers available, but the use of modern front end libraries like bootstrap and jQuery make it much more likely code will work across browsers seamlessly.
 
-In order to test on Internet Explorer, developers can use the `Modern IE <https://www.modern.ie/en-us>`_ site to download virutal machines for use in `Oracle VM Virtual Box <https://www.virtualbox.org/>`_. 
+In order to test on Internet Explorer, developers can use the `Modern IE <https://www.modern.ie/en-us>`_ site to download virtual machines for use in `Oracle VM Virtual Box <https://www.virtualbox.org/>`_. 
 
 .. figure:: img/modern_ie.png
 

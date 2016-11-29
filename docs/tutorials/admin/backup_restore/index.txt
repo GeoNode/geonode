@@ -5,9 +5,9 @@ Backup & Restore GeoNode - Data Migration
 =========================================
 
 The admin command to backup and restore GeoNode, allows to extract consistently the GeoNode and GeoServer data models in a serializable meta-format which is being interpreted later by the restore procedure in order to exactly rebuild the whole structure, 
-accordingly to the current instance version (which may also be different from the starting one).
+according to the current instance version (which may also be different from the starting one).
 
-In particular the tool helps developers and amdins to correctly extract and serialize the following resources are on the storage and deserialize on the target GeoNode/GeoServer instance:
+In particular the tool helps developers and admins to correctly extract and serialize the following resources are on the storage and deserialize on the target GeoNode/GeoServer instance:
 
 * **GeoNode** (Resource Base Model):
 
@@ -107,7 +107,7 @@ Settings: [database] Section
     pgdump = pg_dump
     pgrestore = pg_restore
 
-This section si quite simple. It contains only two (2) properties:
+This section is quite simple. It contains only two (2) properties:
 
 * *pgdump*; the path of the ``pg_dump`` local command.
 
@@ -162,11 +162,11 @@ What its properties mean:
 
 * *apps*; this is an ordered list of GeoNode Object Models (or DJango apps). The backup / restore procedure will dump / restore the fixtures in a portable format.
 
-* *dumps*; this is the list of ``files`` associated to the DJango apps. The order **must** be the same of the property above. Each name represents the ``file name`` where to dump / read the single app fixture.
+* *dumps*; this is the list of ``files`` associated to the Django apps. The order **must** be the same of the property above. Each name represents the ``file name`` where to dump / read the single app fixture.
 
 * *migrations*; some fixtures must be enriched or updated before restored on the target model. This section allows to associate specific manglers to the fixtures. Manglers are simple Python classes which simply converts some attributes to other formats.
 
-* *manglers*; the Python mangler class to execute accorndingly to the fixture indicated by the *migrations* property. Manglers classes **must** be located into he `geonode/base/management/commands/lib`` folder.
+* *manglers*; the Python mangler class to execute accordingly to the fixture indicated by the *migrations* property. Manglers classes **must** be located into he `geonode/base/management/commands/lib`` folder.
 
 .. note:: Manglers **must** be used when migrating from a GeoNode version to another one, i.e. where the original model differs from the target one. With the default distribution are provided manglers to convert from GeoNode 2.0 to GeoNode 2.4. Other versions may require other manglers or updates to the default ones.
 
@@ -187,7 +187,7 @@ The structure of a mangler is quite simple. Lets examine the ``ResourceBaseMangl
 
         def decode(self, json_string):
             """
-            json_string is basicly string that you give to json.loads method
+            json_string is basically a string that you give to json.loads method
             """
             default_obj = super(ResourceBaseMangler, self).decode(json_string)
 
@@ -301,7 +301,7 @@ The structure of a mangler is quite simple. Lets examine the ``ResourceBaseMangl
     
 #. It overrides the ``def decode(self, json_string)`` method.
 
-    The decoded Python object can be enriched / modified before returing it to the management command.
+    The decoded Python object can be enriched / modified before returning it to the management command.
 
 From Command Line
 =================
@@ -326,7 +326,7 @@ It is worth notice that both commands allows the following option
         
         python manage.py restore --force / -f
     
-Which will instruct the management command to not ask for confirmation from the user. It enables bascially a non-interactive mode.
+Which will instruct the management command to not ask for confirmation from the user. It enables basically a non-interactive mode.
     
 Backup
 ------
@@ -350,7 +350,7 @@ In order to perform a restore just run the command:
 
 Restore requires the path of one ``.zip`` archive containing the backup fixtures.
 
-.. warning:: The Restore will **overwrite** the whole target GeoNode / GeoServer users, catalog and database, so be very carefull.
+.. warning:: The Restore will **overwrite** the whole target GeoNode / GeoServer users, catalog and database, so be very careful.
 
 From GeoNode Admin GUI
 ======================
@@ -424,4 +424,4 @@ From GeoNode Admin GUI
              * geonode / settings.TEMPLATE_DIRS
              * geonode / settings.LOCALE_PATHS
 
-.. warning:: The Restore will **overwrite** the whole target GeoNode / GeoServer users, catalog and database, so be very carefull.
+.. warning:: The Restore will **overwrite** the whole target GeoNode / GeoServer users, catalog and database, so be very careful.

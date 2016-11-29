@@ -3,10 +3,10 @@
 
 .. _geoserver.add_geotiff:
 
-Adding a GeoTiff
+Adding a GeoTIFF
 ----------------
 
-The GeoTIFF is a widely used geospatial raster data format: it is composed of a single file containing both the data and the georeferencing information (not to be confused with the .tiff/.tfw/.prj file triplet, which is considered a "world image" file in GeoServer).
+GeoTIFF is a widely used geospatial raster data format. It is composed of a single file containing both the data and the georeferencing information (not to be confused with the .tiff/.tfw/.prj file triplet, which is considered a "world image" file in GeoServer).
 This section provides instructions to add and publish a GeoTIFF file.
 
 #. Open the web browser and navigate to the GeoServer `Welcome Page <http://localhost:8083/geoserver>`_.

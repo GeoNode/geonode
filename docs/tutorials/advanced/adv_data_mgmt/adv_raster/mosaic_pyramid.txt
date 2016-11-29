@@ -34,7 +34,7 @@ We will configure an ImageMosaic using the optimized dataset. As explained in th
 
 #. Check the Coordinate Reference Systems and the Bounding Boxes fields are properly set.
 
-#. Customize the ImageMosaic properties if needed. For the sample mosaic, set the OutputTransparentColor to the value **000000** (Which is the Black color). click on :guilabel:`Save` when done. 
+#. Customize the ImageMosaic properties if needed. For the sample mosaic, set the OutputTransparentColor to the value **000000** (Which is the Black color). Click on :guilabel:`Save` when done. 
 
    .. figure:: ../adding_data/img/raster5.png
 
@@ -157,7 +157,7 @@ GeoServer can efficiently deal with large TIFF with overviews, as long as the TI
 
       *Choosing the coverage for publishing*
 
-7. Setup the layer parameter **USE_JAI_IMAGEREAD** to false to get better scalability: as told before the image loading using imageread is done using the JAI deferred mode so the data will be really loaded when are needed. This may cause many idle open ImageReaders, in case of having to deal with big pyramids (lots of granules over many levels) and it could cause performances issues.
+7. Setup the layer parameter **USE_JAI_IMAGEREAD** to false to get better scalability: as told before the image loading using ImageRead is done using the JAI deferred mode so the data will be really loaded when are needed. This may cause many idle open ImageReaders, in case of having to deal with big pyramids (lots of granules over many levels) and it could cause performances issues.
 
    .. figure:: 
       img/pyramid4.png

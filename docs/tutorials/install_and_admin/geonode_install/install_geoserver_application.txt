@@ -5,12 +5,12 @@ Install GeoServer Application
 =============================
 
 In this section we are going to setup GeoServer for GeoNode. GeoServer will run inside
-`Tomcat` sevrlet container.
+`Tomcat` servlet container.
 
 Setup GeoServer
 ===============
 
-You' ve already installed `Tomcat 7` in the system in the first section of the training.
+You've already installed `Tomcat 7` in the system in the first section of the training.
 Before you deploy GeoServer stop the running Tomcat instance:::
 
     sudo service tomcat7 stop

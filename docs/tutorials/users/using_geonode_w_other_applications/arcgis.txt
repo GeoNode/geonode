@@ -17,7 +17,7 @@ From there, double click the "Add WMS Server" item in the tree to bring up the d
 
 .. figure:: img/arc_add_wms.png
 
-Next, enter the URL for your GeoNode's WMS endpoint which is the base url with /geoserver/wms appended to the end of the URL. You can also enter your credentials into the optional Account section of this dialog to gain access to non-public layers that your user may have access to.
+Next, enter the URL for your GeoNode's WMS endpoint which is the base URL with /geoserver/wms appended to the end of the URL. You can also enter your credentials into the optional Account section of this dialog to gain access to non-public layers that your user may have access to.
 
 .. figure:: img/arc_enter_wms_url.png
 
@@ -72,7 +72,7 @@ Select the layers that you want to add and click OK and ArcMap will import the f
 
 .. figure:: img/arcmap_wfs_import.png
 
-Depending on the projection of your data, you may receive a warning about Alignment and Accuracy of data transformations. You can specify the transformation manually or simply hit close to ignore this dialog. If you dont want to be warned again, use the checkboxes in this dialog to hide these warnings temporarily or permanently.
+Depending on the projection of your data, you may receive a warning about Alignment and Accuracy of data transformations. You can specify the transformation manually or simply hit close to ignore this dialog. If you don't want to be warned again, use the checkboxes in this dialog to hide these warnings temporarily or permanently.
 
 .. figure:: img/arcmap_wfs_transformations.png
 
@@ -88,4 +88,4 @@ Since your layer was imported as actual vector features, you can use normal ArcM
 
 .. figure:: img/arcmap_wfs_style.png
 
-Now that you have added layers from your GeoNode as both WMS and WFS, you can explore the other options available to you with these layers within ArcMap. 
+Now that you have added layers from your GeoNode as both WMS and WFS, you can explore the other options available to you with these layers within ArcMap.

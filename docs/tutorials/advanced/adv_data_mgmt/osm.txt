@@ -10,9 +10,9 @@ The first step in this process is to get the data from OSM. We will be using the
 - http://wiki.openstreetmap.org/wiki/Overpass_API
 - http://wiki.openstreetmap.org/wiki/Overpass_API/Language_Guide
 
-In this example, we will be extracting building footprint data around Port au Prince in Haiti. To do this we will use an interactive tool that makes it easy construct a Query against the Overpass API. Point your browser at http://overpass-turbo.eu/ and use the search tools to zoom into Port Au Prince and Cite Soleil specifically. 
+In this example, we will be extracting building footprint data around Port au Prince in Haiti. To do this we will use an interactive tool that makes it easy construct a Query against the Overpass API. Point your browser at http://overpass-turbo.eu/ and use the search tools to zoom into Port Au Prince and Cité Soleil specifically. 
 
-You will need to cut and paste the query specified below to get all of the appropriate data under the bbox::
+You will need to cut and paste the query specified below to get all of the appropriate data under the bounding box::
 
     <osm-script>
       <union into="_">
@@ -32,7 +32,7 @@ This should look like the following.
 
 .. figure:: img/overpass_turbo.png
 
-When you have the bbox and query set correctly, click the "Export" button on the menu to bring up the export menu, and then click the API interpreter link to download the OSM data base on the query you have specified. 
+When you have the bounding box and query set correctly, click the "Export" button on the menu to bring up the export menu, and then click the API interpreter link to download the OSM data base on the query you have specified. 
 
 .. figure:: img/overpass_export.png
 
@@ -45,11 +45,11 @@ This will download a file named 'export.osm' on your file system. You will proba
 Exporting OSM data to shapefile using QGIS
 ------------------------------------------
 
-Now that we have osm data on our filesystem, we will need to convert it into a format suitable for uploading into your GeoNode. There are many ways to accomplish this, but for purposes of this example, we will use an OSM QGIS plugin that makes if fairly easy. Please consult the wiki page that explains how to install this plugin and make sure it is installed in your QGIS instance. Once its installed, you can use the Web Menu to load your file.
+Now that we have OSM data on our filesystem, we will need to convert it into a format suitable for uploading into your GeoNode. There are many ways to accomplish this, but for purposes of this example, we will use an OSM QGIS plugin that makes if fairly easy. Please consult the wiki page that explains how to install this plugin and make sure it is installed in your QGIS instance. Once its installed, you can use the Web Menu to load your file.
 
 .. figure:: img/load_osm.png
 
-This will bring up a dialog box that you can use to find and convert the osm file we downloaded.
+This will bring up a dialog box that you can use to find and convert the OSM file we downloaded.
 
 .. figure:: img/load_osm_dialog.png
 
@@ -84,7 +84,7 @@ Exporting OSM data to shapefile using GDAL
 
 An alternative way to export the .osm file to a shapefile is to use `ogr2ogr <http://www.gdal.org/ogr2ogr.html>`_ combined with the `GDAL osm driver <http://www.gdal.org/ogr/drv_osm.html>`_, available from GDAL version 1.10.
 
-As a first step, inspect how the GDAL osm driver sees the .osm file using the ogrinfo command::
+As a first step, inspect how the GDAL OSM driver sees the .osm file using the ogrinfo command::
 
     $ ogrinfo cite_soleil_buildings.osm
     Had to open data source read-only.
@@ -96,7 +96,7 @@ As a first step, inspect how the GDAL osm driver sees the .osm file using the og
     4: multipolygons (Multi Polygon)
     5: other_relations (Geometry Collection)
 
-ogrinfo has detected 5 different geometric layers inside the osm data source. As we are just interested in the buildings, you will just export to a new shapefile the multipolygons layer using the GDAL ogr2ogr command utility::
+ogrinfo has detected 5 different geometric layers inside the OSM data source. As we are just interested in the buildings, you will just export the multipolygons layer to a new shapefile using the GDAL ogr2ogr command utility::
 
     $ ogr2ogr cite_soleil_buildings cite_soleil_buildings.osm multipolygons
 
@@ -126,7 +126,7 @@ You will first need to install the GeoGig command line tools. These can be found
      Git Commit Author Email : gabriel.roldan@gmail.com
           Git Commit Message : Synchronize DefaultPlatform.getTempDir() to avoid false precondition check on concurrent access.
 
-Once the geogig command is available, you will need to create an empty repository to hold your data. Change directories to a suitable location on your servers filesystem and issue the following command substituting *my_repo* for whatever name you choose::
+Once the GeoGig command is available, you will need to create an empty repository to hold your data. Change directories to a suitable location on your servers filesystem and issue the following command substituting *my_repo* for whatever name you choose::
 
     $ cd /somewhere/on/file/system
     $ mkdir my_repo
@@ -136,7 +136,7 @@ Once the geogig command is available, you will need to create an empty repositor
 Loading OSM Data into your Repository
 +++++++++++++++++++++++++++++++++++++
 
-Now that you have an empty repository to store our data, the next step is to load the current snapshot of OSM data into your repository using the *geogig osm download* command. At a minimum, you will want to use a bounding box filter to limit the downloaded data to the area of interest for your geonode installation. The example below is a bounding box that encompasses the country of Malawi. More information about the geogig osm download command can be found in the `geogig docs <http://geogig.org/manpages/osmdownload.html>`_.::
+Now that you have an empty repository to store our data, the next step is to load the current snapshot of OSM data into your repository using the *geogig osm download* command. At a minimum, you will want to use a bounding box filter to limit the downloaded data to the area of interest for your geonode installation. The example below is a bounding box that encompasses the country of Malawi. More information about the GeoGig OSM download command can be found in the `geogig docs <http://geogig.org/manpages/osmdownload.html>`_.::
 
     $ geogig osm download --bbox -17.129459 32.668991 -9.364680 35.920441 --saveto ./mw-osm-temp --keep-files
 
@@ -161,7 +161,7 @@ Now that you have an empty repository to store our data, the next step is to loa
      Nodes: 1,091,572.
      Ways: 72,848
 
-GeoGig stores data in *trees* which are basically equivalent to *layers* in a normal geospatial context. At this point in the process, your repo contains 2 trees for *ways* and *nodes* from OSM. In order to convert these into layers that may be more familiar to your users like *roads*, *buildings* or *medical facilities*, you will need to apply a mapping that filters the complete list of nodes and ways and converts the tags into attributes. There are a great set of sample mappings in the US State Departments CyberGIS project. You can find them at this `link <https://github.com/state-hiu/cybergis-osm-mappings/tree/master/mappings>`_. You should clone this repository along side your geogig repository and then apply them as shown below::
+GeoGig stores data in *trees* which are basically equivalent to *layers* in a normal geospatial context. At this point in the process, your repo contains 2 trees for *ways* and *nodes* from OSM. In order to convert these into layers that may be more familiar to your users like *roads*, *buildings* or *medical facilities*, you will need to apply a mapping that filters the complete list of nodes and ways and converts the tags into attributes. There are a great set of sample mappings in the US State Departments CyberGIS project. You can find them at this `link <https://github.com/state-hiu/cybergis-osm-mappings/tree/master/mappings>`_. You should clone this repository along side your GeoGig repository and then apply them as shown below::
 
     $ geogig osm map ../cybergis-osm-mappings/mappings/basic/buildings_and_roads.json
 
@@ -226,7 +226,7 @@ Define your new primary key for the table we can't export (id is the osm id)::
 
     INSERT INTO gt_pk_metadata_table (table_schema, table_name, pk_column) VALUES ('geogig_data','osm_train_stations','id'); 
 
-Next you need to alter your osm data table accordingly::
+Next you need to alter your OSM data table accordingly::
 
     ALTER TABLE geogig_data.osm_train_stations DROP CONSTRAINT osm_train_stations_pkey;
 

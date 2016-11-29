@@ -29,8 +29,8 @@ Find the ``Proxy Base URL`` text field, put the complete address there::
 Configure the Printing Module
 =============================
 
-This lives in the GeoServer Data dir ``/usr/share/geoserver/data/printing/config.yaml``, add your server's IP address or domain name to the list of exceptions. 
-Please refer to http://docs.geoserver.org/2.4.x/en/user/datadirectory/index.html for additional information on managing the geoserver data directory::
+This lives in the GeoServer Data directory ``/usr/share/geoserver/data/printing/config.yaml``, add your server's IP address or domain name to the list of exceptions.
+Please refer to http://docs.geoserver.org/2.4.x/en/user/datadirectory/index.html for additional information on managing the GeoServer data directory::
 
     hosts:
       - !dnsMatch
@@ -128,7 +128,7 @@ To allow new user registration:
 
 3. With the Django application running, set the domain name of the service properly through the admin interface as specified above in the Sitemaps section.  (This domain name is used in the account activation emails.).
 
-5. Restart apache::
+5. Restart Apache::
 
        $ sudo service apache2 restart
 
@@ -173,7 +173,7 @@ While 4GB *physical* RAM is sufficient, it is recommended that machines be confi
 
 For example, a machine with 4GB physical RAM and 2GB swap space should be able to run GeoNode, but if you would like to run without a swapfile then you should configure the machine with at least 6GB RAM.
 
-On Linux and MacOSX hosts, you can check the available RAM with the following command::
+On Linux and Mac OS X hosts, you can check the available RAM with the following command::
 
     $ free -m
                  total         used       free     shared    buffers     cached
@@ -202,7 +202,7 @@ The SQL for the stored procedure is distributed with the GeoServer web applicati
 Configuring GeoServer to Use the Database Security Client
 =========================================================
 
-If a context configuration XML file does not already exist, create one for GeoServer. If using Tomcat6 on Ubuntu, this file resides at :file:`/etc/tomcat6/Catalina/localhost/geoserver.xml`. If creating a new file, the following XML should be added (replace ALLCAPS with your specific values)::
+If a context configuration XML file does not already exist, create one for GeoServer. If using Tomcat 6 on Ubuntu, this file resides at :file:`/etc/tomcat6/Catalina/localhost/geoserver.xml`. If creating a new file, the following XML should be added (replace ALLCAPS with your specific values)::
 
     <Context path="/geoserver"
         antiResourceLocking="false" >
@@ -321,7 +321,7 @@ Adding servers by hostname
 
 .. highlight:: yaml
 
-The Mapfish printing module is configured through a `YAML <yaml>`_
+The MapFish printing module is configured through a `YAML <yaml>`_
 configuration file, usually named :file:`print.yaml`.  If you are using the
 GeoServer plugin to run the printing module, this configuration file can be
 found at :file:`{GEOSERVER_DATA_DIR}/printing/config.yaml`.  The default

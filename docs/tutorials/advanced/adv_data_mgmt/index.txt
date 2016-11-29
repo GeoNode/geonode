@@ -22,10 +22,10 @@ Advanced Data Management and Processing
     Learn how to create pretty styles for the Maps in GeoServer.
 
 :ref:`geoserver.raster_data`
-    Learn advanced tecquinques for the delivery of Raster Data with GeoServer.
+    Learn advanced techniques for the delivery of Raster Data with GeoServer.
 
 :ref:`geoserver.vector_data`
-    Learn advanced tecquinques for the delivery of Vectorial Data with GeoServer.
+    Learn advanced techniques for the delivery of Vectorial Data with GeoServer.
 
 :ref:`spatial_processing`
     Learn how to do Spatial Processing using external tools.

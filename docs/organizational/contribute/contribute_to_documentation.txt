@@ -88,7 +88,7 @@ done here
 
 .. image:: img/create_file.png
 
-If you click on *create new file here* you can first subdirect to another folder by typing the *foldername* followed by /. If this folder
+If you click on *create new file here* you can first change into another folder by typing the *foldername* followed by /. If this folder
 doesn't exist until now, one will be created. To create a new file in this folder just type *filename.txt* into the box and hit enter.
 A short example on how to manage this is given here http://i.stack.imgur.com/n3Wg3.gif.
 
@@ -119,7 +119,7 @@ Before you go further you should do some setup steps (can be found here: https:/
 We assume you have already forked the geonode repository. If not, please do so following _link and return back if ready.
 
 Until now your repository only exists on the web! To get your forked repository on to your machine, you have to *clone* it.
-To do so, open a terminal, go to the folder where you want the projet to be and type::
+To do so, open a terminal, go to the folder where you want the project to be and type::
 
       git clone https://github.com/your_username/geonode.git my_geonode
 
@@ -135,7 +135,7 @@ By typing::
 
       git fetch upstream
        
-changes not present in your local repository will be pulled in without modifying your files.
+Changes not present in your local repository will be pulled in without modifying your files.
 
 **Add folder with images**
 
@@ -172,7 +172,7 @@ To add the folder *images* including all content to the repository, type::
 
 If this command doesn't work, check your path, maybe it is incorrect!
 
-*Remark*: In order to commit and push the folder, it must not be emtpy!
+*Remark*: In order to commit and push the folder, it must not be empty!
 
 The next step is to commit the folder/files::
 

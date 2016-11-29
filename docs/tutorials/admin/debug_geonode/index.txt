@@ -63,12 +63,12 @@ The typical location of the file that needs to be modified is ``/var/lib/tomcat7
     <param-value>FILE</param-value>
   </context-param>
 
-Add the Django debug toolbar
+Add the Django Debug Toolbar
 ----------------------------
 
 .. warning:: The Debug Toolbar module **must** be disabled whe running the server in production (with Apache2 HTTPD Server WSGI)
 
-The django debug toolbar offers a lot of information on about how the page you 
+The Django Debug Toolbar offers a lot of information on about how the page you
 are seeing is created and used. From the database hits to the views involved.
 It is a configurable set of panels that display various debug information 
 about the current request/response and when clicked, display more details 

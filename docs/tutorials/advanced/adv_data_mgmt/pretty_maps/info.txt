@@ -20,7 +20,7 @@ Templating is concerned with the HTML one.
          
       Default GetFeatureInfo request
 
-#. In order to configure a custom template of the GetFeatureInfo results create three files .FTL in :guilabel:`$GEOSERVER_DATA_DIR/workspaces/geosolutions` directory named::
+#. In order to configure a custom template of the GetFeatureInfo results create three .ftl files in :guilabel:`$GEOSERVER_DATA_DIR/workspaces/geosolutions` directory named::
 
 	- header.ftl
   	- content.ftl
@@ -80,7 +80,7 @@ Templating is concerned with the HTML one.
   		</style>
   		<body>
 
-#. In :guilabel:`content.ftl` file enter the following HMTL:
+#. In :guilabel:`content.ftl` file enter the following HTML:
 
    .. code-block:: html
 
@@ -98,7 +98,7 @@ Templating is concerned with the HTML one.
 	</#list>
 	</ul>
 
-#. In :guilabel:`footer.ftl` file enter the following HMTL:
+#. In :guilabel:`footer.ftl` file enter the following HTML:
 
    .. code-block:: html
 

@@ -6,7 +6,7 @@ Window Binary Installer
 
 The GeoNode Windows Binary installer can be downloaded `here <http://build.geonode.org/windows/>`_.
 
-The windows binary installer is an executable file which atuomatically setup your system for GeoNode. It will install everything on the target folder, chosen by the user as a first step.
+The Windows binary installer is an executable file which automatically sets up your system for GeoNode. It will install everything on the target folder, chosen by the user as a first step.
 
 In particular the installer configures the following components:
 
@@ -43,7 +43,7 @@ Step by step GeoNode Windows installation
 
    .. figure:: img/win_install_04.jpg
 
-5. Choose the install location. This is the folder wher all the pieces of the GeoNode environment will be placed. You can also keep the default one.
+5. Choose the install location. This is the folder where all the pieces of the GeoNode environment will be placed. You can also keep the default one.
 
    .. note:: It is highly recommended to avoid long names with spaces and strange character. Also avoid positions which are system protected. Even if the installer runs with Administrator rights, you may encounter issues customizing GeoNode in the future.
    
@@ -71,11 +71,11 @@ Step by step GeoNode Windows installation
   
      .. figure:: img/win_install_10.jpg
         
-8. Choose the location of the external GeoServer Data dir (where the physical geospatial files will be placed). It is recommended to keep the default value.
+8. Choose the location of the external GeoServer Data directory (where the physical geospatial files will be placed). It is recommended to keep the default value.
 
    .. figure:: img/win_install_11.jpg
    
-9. Select the minimum and maximum values for the memory to assign to the GeoServer JVM. This depends mainly from the RAM avaialble on the target PC. The default values should work on most cases. Increase the Maximum Heap Memory if possible.
+9. Select the minimum and maximum values for the memory to assign to the GeoServer JVM. This depends mainly from the RAM available on the target PC. The default values should work on most cases. Increase the Maximum Heap Memory if possible.
 
    .. figure:: img/win_install_12.jpg
 
@@ -127,7 +127,7 @@ Step by step GeoNode Windows installation
 
    .. figure:: img/win_install_24.jpg
 
-18. At a certain point the process configures the DataBase
+18. At a certain point the process configures the database
 
    .. figure:: img/win_install_25.jpg
 
