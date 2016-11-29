@@ -239,10 +239,10 @@ def get_ftp_details(ftp_request):
     ftp_details['user'] = user
     
     if ftp_request.user.organization:
-        ftp_details['organization'] = user.organization
+        ftp_details['organization'] = unidecode(user.organization)
         ftp_details["organization_type"] = user.get_organization_type_display()
     elif dr:
-        ftp_details['organization'] = dr.organization
+        ftp_details['organization'] = unidecode(dr.organization)
         ftp_details["organization_type"] = dr.get_organization_type_display()
     else:
         ftp_details['organization'] = None
