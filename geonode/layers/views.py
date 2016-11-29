@@ -661,11 +661,11 @@ def layer_download_csv(request):
         email = getprofile.email
         organization = getprofile.organization
         orgtype = orgtypelist[getprofile.organization_type]
-        area = 
+        area = get_area_coverage(auth.action_object.typename)
         # pprint(dir(getprofile))
         if auth.action_object.csw_type != 'document':
             listtowrite.append([username, lastname, firstname, email, organization, orgtype,
-                                "", auth.action_object.typename, auth.timestamp.strftime('%Y/%m/%d'),'',''])
+                                "", auth.action_object.typename, auth.timestamp.strftime('%Y/%m/%d'),area,''])
 
     # writer.writerow(['\n'])
     anon_list = AnonDownloader.objects.all().order_by('date')
@@ -681,9 +681,10 @@ def layer_download_csv(request):
         organization = anon.anon_organization
         orgtype = anon.anon_orgtype
         purpose = anon.anon_purpose
+        area = get_area_coverage(layername.typename)
         if layername:
             listtowrite.append(["", lastname, firstname, email, organization, orgtype,
-                                purpose, layername.typename, anon.date.strftime('%Y/%m/%d'),'',''])
+                                purpose, layername.typename, anon.date.strftime('%Y/%m/%d'),area,''])
                                 
     listtowrite.sort(key=lambda x: datetime.datetime.strptime(
         x[8], '%Y/%m/%d'), reverse=True)
