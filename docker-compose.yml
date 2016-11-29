@@ -44,7 +44,7 @@ services:
       - DOCKER_HOST_IP
 
   nginx:
-    image: geonode/nginx
+    image: geonode/nginx:geoserver
     links:
       - django
       - geoserver
