@@ -240,11 +240,13 @@ def get_ftp_details(ftp_request):
     
     if ftp_request.user.organization:
         ftp_details['organization'] = user.organization
+        ftp_details["organization_type"] = user.get_organization_type_display()
     elif dr:
         ftp_details['organization'] = dr.organization
         ftp_details["organization_type"] = dr.get_organization_type_display()
     else:
         ftp_details['organization'] = None
+        ftp_details["organization_type"] = None
     
     ftp_details['total_number_of_tiles'] = ftp_request.num_tiles
     ftp_details['total_size'] = ftp_request.size_in_bytes
