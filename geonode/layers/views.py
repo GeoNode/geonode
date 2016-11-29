@@ -661,11 +661,11 @@ def layer_download_csv(request):
         email = getprofile.email
         organization = getprofile.organization
         orgtype = orgtypelist[getprofile.organization_type]
-        area = 
+        area = get_area_coverage(auth.action_object.typename)
         # pprint(dir(getprofile))
         if auth.action_object.csw_type != 'document':
             listtowrite.append([username, lastname, firstname, email, organization, orgtype,
-                                "", auth.action_object.typename, auth.timestamp.strftime('%Y/%m/%d'),'',''])
+                                "", auth.action_object.typename, auth.timestamp.strftime('%Y/%m/%d'),area,''])
 
     # writer.writerow(['\n'])
     anon_list = AnonDownloader.objects.all().order_by('date')
@@ -681,9 +681,10 @@ def layer_download_csv(request):
         organization = anon.anon_organization
         orgtype = anon.anon_orgtype
         purpose = anon.anon_purpose
+        area = get_area_coverage(layername.typename)
         if layername:
             listtowrite.append(["", lastname, firstname, email, organization, orgtype,
-                                purpose, layername.typename, anon.date.strftime('%Y/%m/%d'),'',''])
+                                purpose, layername.typename, anon.date.strftime('%Y/%m/%d'),area,''])
                                 
     listtowrite.sort(key=lambda x: datetime.datetime.strptime(
         x[8], '%Y/%m/%d'), reverse=True)
@@ -699,13 +700,13 @@ def layer_download_csv(request):
         date_requested = ftp_request.date_time
         
         listtowrite.append([ username, lastname, firstname, email, organization, organization_type, "", 
-                    "LAZ", date_requested, ftp_detail['number_of_laz'], date_requested, ftp_detail['size_of_laz'])
+                    "LAZ", date_requested, ftp_detail['number_of_laz'], date_requested, ftp_detail['size_of_laz']])
         listtowrite.append([ username, lastname, firstname, email, organization, organization_type, "", 
-                    "DSM", date_requested, ftp_detail['number_of_dsm'], date_requested, ftp_detail['size_of_dsm'])
+                    "DSM", date_requested, ftp_detail['number_of_dsm'], date_requested, ftp_detail['size_of_dsm']])
         listtowrite.append([ username, lastname, firstname, email, organization, organization_type, "", 
-                    "DTM", date_requested, ftp_detail['number_of_dtm'], date_requested, ftp_detail['size_of_dtm'])
+                    "DTM", date_requested, ftp_detail['number_of_dtm'], date_requested, ftp_detail['size_of_dtm']])
         listtowrite.append([ username, lastname, firstname, email, organization, organization_type, "", 
-                    "Ortho", date_requested, ftp_detail['number_of_ortho'], date_requested, ftp_detail['size_of_ortho'])
+                    "Ortho", date_requested, ftp_detail['number_of_ortho'], date_requested, ftp_detail['size_of_ortho']])
 
         
     for eachtowrite in listtowrite:
