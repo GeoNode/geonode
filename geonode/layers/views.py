@@ -27,7 +27,7 @@ import csv
 import datetime
 from pprint import pprint
 from guardian.shortcuts import get_perms
-
+from unidecode import unidecode
 
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required, user_passes_test
@@ -698,8 +698,8 @@ def layer_download_csv(request):
     for ftp_request in FTPRequest.objects.all():
         ftp_detail = get_ftp_details(ftp_request)
         username = ftp_detail['user'].username
-        lastname = ftp_detail['user'].last_name
-        firstname = ftp_detail['user'].first_name
+        lastname = unidecode(ftp_detail['user'].last_name)
+        firstname = unidecode(ftp_detail['user'].first_name)
         email = ftp_detail['user'].email
         organization = ftp_detail['organization']
         organization_type = ftp_detail['organization_type']
