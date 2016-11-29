@@ -19,7 +19,6 @@
 <script src="{{ STATIC_URL }}geonode/js/search/explore.js?v={{ VERSION }}"></script>
 <script src="{{ STATIC_URL }}geonode/js/search/search.js?v={{ VERSION }}"></script>
 <script src="{{ STATIC_URL }}geonode/js/search/cart.js"></script>
-<script src="{{ STATIC_URL }}lib/js/bootstrap-treeview.min.js?v={{ VERSION }}"></script>
 <script type="text/javascript">
   $("body").attr('ng-controller', 'geonode_search_controller');
   CATEGORIES_ENDPOINT = '{% url 'api_dispatch_list' api_name='api' resource_name='categories' %}';
