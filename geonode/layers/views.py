@@ -52,6 +52,9 @@ from geonode.base.forms import CategoryForm
 from geonode.layers.models import Layer, Attribute, UploadSession
 from geonode.base.enumerations import CHARSETS
 from geonode.base.models import TopicCategory
+from geonode.cephgeo.models import FTPRequest
+from geonode.cephgeo.utils import get_ftp_details
+from geonode.datarequests.utils import get_area_coverage
 
 from geonode.utils import default_map_config
 from geonode.utils import GXPLayer
@@ -649,7 +652,7 @@ def layer_download_csv(request):
 
     auth_list = Action.objects.filter(verb='downloaded').order_by('timestamp')
     writer.writerow(['username', 'lastname', 'firstname', 'email', 'organization',
-                     'organization type', 'purpose', 'layer name', 'date downloaded'])
+                     'organization type', 'purpose', 'layer name', 'date downloaded','area','size_in_bytes'])
     for auth in auth_list:
         username = auth.actor
         getprofile = Profile.objects.get(username=username)
@@ -658,10 +661,11 @@ def layer_download_csv(request):
         email = getprofile.email
         organization = getprofile.organization
         orgtype = orgtypelist[getprofile.organization_type]
+        area = 
         # pprint(dir(getprofile))
         if auth.action_object.csw_type != 'document':
             listtowrite.append([username, lastname, firstname, email, organization, orgtype,
-                                "", auth.action_object.typename, auth.timestamp.strftime('%Y/%m/%d')])
+                                "", auth.action_object.typename, auth.timestamp.strftime('%Y/%m/%d'),'',''])
 
     # writer.writerow(['\n'])
     anon_list = AnonDownloader.objects.all().order_by('date')
@@ -679,9 +683,31 @@ def layer_download_csv(request):
         purpose = anon.anon_purpose
         if layername:
             listtowrite.append(["", lastname, firstname, email, organization, orgtype,
-                                purpose, layername.typename, anon.date.strftime('%Y/%m/%d')])
+                                purpose, layername.typename, anon.date.strftime('%Y/%m/%d'),'',''])
+                                
     listtowrite.sort(key=lambda x: datetime.datetime.strptime(
         x[8], '%Y/%m/%d'), reverse=True)
+        
+    for ftp_request in FTPRequest.objects.all():
+        ftp_detail = get_ftp_details(ftp_request)
+        username = ftp_detail['user'].username
+        lastname = ftp_detail['user'].lastname
+        firstname = ftp_detail['user'].firstname
+        email = ftp_detail['user'].email
+        organization = ftp_detail['organization']
+        organization_type = ftp_detail['organization_type']
+        date_requested = ftp_request.date_time
+        
+        listtowrite.append([ username, lastname, firstname, email, organization, organization_type, "", 
+                    "LAZ", date_requested, ftp_detail['number_of_laz'], date_requested, ftp_detail['size_of_laz'])
+        listtowrite.append([ username, lastname, firstname, email, organization, organization_type, "", 
+                    "DSM", date_requested, ftp_detail['number_of_dsm'], date_requested, ftp_detail['size_of_dsm'])
+        listtowrite.append([ username, lastname, firstname, email, organization, organization_type, "", 
+                    "DTM", date_requested, ftp_detail['number_of_dtm'], date_requested, ftp_detail['size_of_dtm'])
+        listtowrite.append([ username, lastname, firstname, email, organization, organization_type, "", 
+                    "Ortho", date_requested, ftp_detail['number_of_ortho'], date_requested, ftp_detail['size_of_ortho'])
+
+        
     for eachtowrite in listtowrite:
         writer.writerow(eachtowrite)
     return response
