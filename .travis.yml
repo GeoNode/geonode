@@ -44,3 +44,8 @@ notifications:
     - ingenieroariel@gmail.com
     - simone.dalmasso@gmail.com
   slack: geonode-sprint:oQylJRkU9feZ8JruGi6czWwe
+  webhooks:
+    urls:
+      - https://webhooks.gitter.im/e/fba3aee05ba25806ba81
+    on_success: always
+    on_failure: always
