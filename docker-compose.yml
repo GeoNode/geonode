@@ -38,10 +38,8 @@ services:
       - "8080"
     volumes_from:
       - data_dir_conf
-    environment:
-      - DOCKER_HOST
-      - PUBLIC_PORT=80
-      - DOCKER_HOST_IP
+    env_file:
+      - geoserver.env
 
   nginx:
     image: geonode/nginx:geoserver
