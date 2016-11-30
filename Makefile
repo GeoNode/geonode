@@ -1,6 +1,9 @@
 up:
 	# bring up the services
 	docker-compose up -d
+	#geonode authentication in geoserver
+	docker-compose exec geoserver bash -c "sh setup_auth.sh"
+
 
 build:
 	docker-compose build django
