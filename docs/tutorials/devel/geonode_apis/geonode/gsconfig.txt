@@ -28,7 +28,7 @@ Getting Help
 There is a brief manual at http://boundlessgeo.github.io/gsconfig/ .
 If you have questions, please ask them on the GeoServer Users mailing list: http://geoserver.org/comm/ .
 
-Please use the GitHub project at http://github.com/boundlessgeo/gsconfig for any bug reports (and pull requests are welcome, but please include tests where possible.)
+Please use the GitHub project at https://github.com/boundlessgeo/gsconfig for any bug reports (and pull requests are welcome, but please include tests where possible.)
 
 Sample Layer Creation Code
 ==========================

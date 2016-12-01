@@ -12,7 +12,7 @@ These 3 top links are the GeoNode landing pages and will take you to all other i
 
 * Main home page and blog http://geonode.org
 * Documentation http://docs.geonode.org
-* GitHub Code http://github.com/GeoNode
+* GitHub Code https://github.com/GeoNode
 
 Community Contact
 -----------------
@@ -35,7 +35,7 @@ Github Project Links
 * Master Branch https://github.com/GeoNode/geonode/tree/master
 * Issue Tracker https://github.com/GeoNode/geonode/issues
 * Pull Requests https://github.com/GeoNode/geonode/pulls
-* geonode.org Homepage Code http://github.com/geonode/geonode.github.com (published to http://geonode.org)
+* geonode.org Homepage Code https://github.com/geonode/geonode.github.com (published to http://geonode.org)
 
 
 * Localisation using Transifex https://www.transifex.com/projects/p/geonode

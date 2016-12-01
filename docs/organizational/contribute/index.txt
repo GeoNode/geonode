@@ -19,7 +19,7 @@ If you want to help out with GeoNode, one easy way is to sign up for the mailing
 Report Problems on the Issue Tracking System
 --------------------------------------------
 
-Informative bug reports are a key part of the bug fixing process, so if you do run into a problem with GeoNode, please don't hesitate to report it on our bug tracker, available online at http://github.com/GeoNode/geonode/issues.
+Informative bug reports are a key part of the bug fixing process, so if you do run into a problem with GeoNode, please don't hesitate to report it on our bug tracker, available online at https://github.com/GeoNode/geonode/issues.
 Useful information for bug reports includes:
 
   * What were you doing when the bug occurred?
@@ -55,7 +55,7 @@ Write Code
 ----------
 
 Of course since GeoNode is an open source project which encourages contributions of source code as well.
-If you are interested in making small changes, you can find an open ticket on http://github.com/GeoNode/geonode/issues, hack away, and get started on the "`Patch Review Process <http://docs.geonode.org/en/latest/organizational/contribute/review_criteria.html>`_".
+If you are interested in making small changes, you can find an open ticket on https://github.com/GeoNode/geonode/issues, hack away, and get started on the "`Patch Review Process <http://docs.geonode.org/en/latest/organizational/contribute/review_criteria.html>`_".
 
 Further Reading
 ---------------

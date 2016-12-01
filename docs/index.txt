@@ -96,4 +96,4 @@ Having trouble? Cant find what you are looking for? We'd like to help!
 .. _#geonode IRC channel: irc://irc.freenode.net/geonode
 .. _Freenode's web based client: http://webchat.freenode.net
 .. _gitter.im/GeoNode: https://gitter.im/GeoNode
-.. _issue tracker: http://github.com/GeoNode/geonode/issues
+.. _issue tracker: https://github.com/GeoNode/geonode/issues
