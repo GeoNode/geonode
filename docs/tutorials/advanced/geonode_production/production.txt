@@ -323,7 +323,7 @@ Adding servers by hostname
 
 .. highlight:: yaml
 
-The MapFish printing module is configured through a `YAML <yaml>`_
+The MapFish printing module is configured through a `YAML <http://yaml.org/>`_
 configuration file, usually named :file:`print.yaml`.  If you are using the
 GeoServer plugin to run the printing module, this configuration file can be
 found at :file:`{GEOSERVER_DATA_DIR}/printing/config.yaml`.  The default
