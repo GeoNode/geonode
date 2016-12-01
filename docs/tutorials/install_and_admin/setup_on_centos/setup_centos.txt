@@ -9,7 +9,7 @@ CentOS Setup
 
 We are re going to install a minimal CentOS 7 distribution.
 You can get a copy of the .iso the image used for the installation
-`here <http://mi.mirror.garr.it/mirrors/CentOS/7/isos/x86_64/CentOS-7-x86_64-Minimal-1503-01.iso>`_.
+`here <http://isoredirect.centos.org/centos/7/isos/x86_64/CentOS-7-x86_64-Minimal-1511.iso>`_.
 
 Boot up the installation DVD and start the `CentOS 7` Installation wizard.
 

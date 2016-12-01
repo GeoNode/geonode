@@ -7,7 +7,7 @@ Setup Using Ansible
 Using `Ansible <http://www.ansible.com/>`_ we can automate the installation and
 configuration of GeoNode on local or remote machines. If you never used Ansible
 before take a look at the `Running Ansible scripts` section of the documentation
-or `Ansible official documentation <https://docs.ansible.com/>`_.
+or `Ansible official documentation <https://docs.ansible.com/ansible/index.html>`_.
 
 GeoNode setup with Ansible
 ==========================

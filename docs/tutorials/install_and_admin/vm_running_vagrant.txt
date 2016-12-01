@@ -12,18 +12,18 @@ In this section you will find instructions on how to setup an Ubuntu 14.04 VM us
 Vagrant Setup
 =============
 
-Download Vagrant from the `official <https://www.vagrantup.com/downloads>`_ web site.
+Download Vagrant from the `official <https://www.vagrantup.com/downloads.html>`_ web site.
 Choose the installer matching your operating system and architecture.
 
 Installation process is straightforward, refer to Vagrant `official documentation
-<https://docs.vagrantup.com/v2/installation/index.html>`_ if you encounter any problem.
+<https://www.vagrantup.com/docs/installation/index.html>`_ if you encounter any problems.
 
 At the end of the installation process log out your system and log back
 in.
 
-Vagrant is going to need a `provider <https://docs.vagrantup.com/v2/providers/>`_
+Vagrant is going to need a `provider <https://www.vagrantup.com/docs/providers/>`_
 in order to setup the Virtual Machines. `VirtualBox` is supported out of the box.
-Just make sure you install `one of the supported versions of VirtualBox <https://docs.vagrantup.com/v2/virtualbox>`_
+Just make sure you install `one of the supported versions of VirtualBox <https://www.vagrantup.com/docs/virtualbox/>`_
 
 Open a terminal and type `vagrant version`. A message containing the installed
 version of Vagrant will be printed on the terminal

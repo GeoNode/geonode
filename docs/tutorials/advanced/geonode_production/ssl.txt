@@ -137,6 +137,6 @@ This information was complied from a number of sources.  The main links are list
 * http://confluence.atlassian.com/display/JIRA/Connecting+to+SSL+services
 * http://confluence.atlassian.com/display/JIRA/Integrating+JIRA+with+Apache+using+SSL
 * http://www.akadia.com/services/ssh_test_certificate.html
-* https://help.ubuntu.com/10.04/serverguide/C/httpd.html
-* https://help.ubuntu.com/10.04/serverguide/C/certificates-and-security.html
+* https://help.ubuntu.com/lts/serverguide/httpd.html
+* https://help.ubuntu.com/lts/serverguide/certificates-and-security.html
 
