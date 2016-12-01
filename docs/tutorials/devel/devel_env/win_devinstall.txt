@@ -35,7 +35,7 @@ In order to install Geonode 2.0 in developing mode on Windows 2008r2 the followi
 
 #. Install Supporting tools 
 
-    * Git http://git-scm.com/downloads
+    * Git https://git-scm.com/downloads
 
     * gettext (not tested yet)
 

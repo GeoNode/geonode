@@ -115,7 +115,7 @@ Source code revision control
 
 It is recommended that you immediately put your new project under source code revision control. The GeoNode development team uses Git and GitHub and recommends that you do the same. If you do not already have a GitHub account, you can easily set one up. A full review of Git and distributed source code revision control systems is beyond the scope of this tutorial, but you may find the `Git Book`_ useful if you are not already familiar with these concepts.
 
-.. _Git Book: http://git-scm.com/book
+.. _Git Book: https://git-scm.com/book
 
 #. Create a new repository in GitHub. You should use the GitHub user interface to create a new repository for your new project.
 
