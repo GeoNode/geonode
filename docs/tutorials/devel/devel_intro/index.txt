@@ -92,7 +92,7 @@ Core development tools and libraries
 
 - geopython
 
-  - http://pycsw.org/docs/documentation.html
+  - http://pycsw.org/docs/
   - http://geopython.github.io/OWSLib/
   - https://github.com/toblerity/shapely
   - https://github.com/sgillies/Fiona
