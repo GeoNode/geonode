@@ -38,7 +38,7 @@ Github Project Links
 * geonode.org Homepage Code https://github.com/geonode/geonode.github.com (published to http://geonode.org)
 
 
-* Localisation using Transifex https://www.transifex.com/projects/p/geonode
+* Localisation using Transifex https://www.transifex.com/geonode/geonode/
 
 Demo Sites
 ----------
