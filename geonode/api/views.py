@@ -25,10 +25,11 @@ from oauth2_provider.models import AccessToken
 from oauth2_provider.exceptions import OAuthToolkitError, FatalClientError
 from django.views.decorators.csrf import csrf_exempt
 from django.conf import settings
-from django.contrib.auth import models, authenticate, login, get_user_model
-from django.http import HttpResponse, HttpResponseRedirect
+from django.contrib.auth import get_user_model
+from django.http import HttpResponse
 
 from guardian.models import Group
+
 
 def verify_access_token(key):
     try:
@@ -38,7 +39,7 @@ def verify_access_token(key):
             raise OAuthToolkitError('AccessToken is not valid.')
         if token.is_expired():
             raise OAuthToolkitError('AccessToken has expired.')
-    except AccessToken.DoesNotExist, e:
+    except AccessToken.DoesNotExist:
         raise FatalClientError("AccessToken not found at all.")
 
     return token
@@ -57,7 +58,7 @@ def get_client_ip(request):
 def verify_token(request):
     """
     TODO: Check IP whitelist / blacklist
-    Verifies the velidity of an OAuth2 Access Token 
+    Verifies the velidity of an OAuth2 Access Token
     and returns associated User's details
     """
     if (not request.user.is_authenticated()):
@@ -65,7 +66,7 @@ def verify_token(request):
             json.dumps({
                 'error': 'unauthorized_request'
             }),
-            status = 403,
+            status=403,
             content_type="application/json"
         )
 
@@ -77,7 +78,7 @@ def verify_token(request):
                 json.dumps({
                     'error': str(e)
                 }),
-                status = 403,
+                status=403,
                 content_type="application/json"
             )
 
@@ -98,7 +99,7 @@ def verify_token(request):
         json.dumps({
             'error': 'invalid_request'
         }),
-        status = 403,
+        status=403,
         content_type="application/json"
     )
 
@@ -113,13 +114,13 @@ def roles(request):
             json.dumps({
                 'error': 'unauthorized_request'
             }),
-            status = 403,
+            status=403,
             content_type="application/json"
         )
 
     groups = [group.name for group in Group.objects.all()]
     groups.append("admin")
-    
+
     return HttpResponse(
         json.dumps({
             'groups': groups
@@ -138,11 +139,11 @@ def users(request):
             json.dumps({
                 'error': 'unauthorized_request'
             }),
-            status = 403,
+            status=403,
             content_type="application/json"
         )
 
-    user_name = request.path_info.rsplit('/', 1)[-1]    
+    user_name = request.path_info.rsplit('/', 1)[-1]
     User = get_user_model()
 
     if user_name is None or not user_name or user_name == "users":
@@ -162,7 +163,7 @@ def users(request):
 
         json_object.append({
             'username': user.username,
-            'groups': groups                
+            'groups': groups
         })
 
     return HttpResponse(
@@ -183,7 +184,7 @@ def admin_role(request):
             json.dumps({
                 'error': 'unauthorized_request'
             }),
-            status = 403,
+            status=403,
             content_type="application/json"
         )
 

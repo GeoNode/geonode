@@ -30,11 +30,7 @@ import re
 import sys
 from threading import local
 import time
-import errno
 import uuid
-import datetime
-from bs4 import BeautifulSoup
-import geoserver
 import base64
 import httplib2
 
@@ -42,7 +38,6 @@ import httplib2
 import urllib
 from urlparse import urlparse
 from urlparse import urlsplit
-import uuid
 
 from agon_ratings.models import OverallRating
 from bs4 import BeautifulSoup
@@ -63,7 +58,6 @@ from geoserver.store import CoverageStore, DataStore, datastore_from_index, \
 from geoserver.support import DimensionInfo
 from geoserver.workspace import Workspace
 from gsimporter import Client
-import httplib2
 from lxml import etree
 from owslib.util import http_post
 from owslib.wcs import WebCoverageService

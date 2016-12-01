@@ -72,6 +72,85 @@ Authorization
 Authorization is the process of allowing authenticated users to access protected resources by checking its roles and rights against some sort of security rules mechanism or protocol. 
 In other words it allows to control access rights by granting or denying specific permissions to specific authorized users.
 
+GeoNode Security Backend
+========================
+
+DJango Authentication
+^^^^^^^^^^^^^^^^^^^^^
+
+The Django authentication system handles both authentication and authorization. 
+
+The auth system consists of:
+
+#. Users
+#. Permissions: Binary (yes/no) flags designating whether a user may perform a certain task.
+#. Groups: A generic way of applying labels and permissions to more than one user.
+#. A configurable password hashing system
+#. Forms and view tools for logging in users, or restricting content
+#. A pluggable backend system
+
+The authentication system in Django aims to be very generic and doesn’t provide some features commonly found in web authentication systems. Solutions for some of these common problems have been implemented in third-party packages:
+
+#. Password strength checking
+#. Throttling of login attempts
+#. Authentication against third-parties (OAuth, for example)
+
+.. note:: For more details on installation and configuration of Django authentication system, please refer to the official guide https://docs.djangoproject.com/en/1.10/topics/auth/.
+
+GeoNode communicates with GeoServer through Basic Authentication under the hood, in order to configure the data and the GeoServer catalog.
+
+In order to do this, you must be sure that GeoNode knows the **internal** admin user and password of GeoServer.
+
+.. warning:: This must be an internal GeoServer user with admin rights, not a GeoNode one.
+
+Make sure the credentials are correctly configured into the file ``settings.py``
+
+OGC_SERVER
+----------
+
+Ensure that the ``OGC_SERVER`` settings are correctly configured.
+
+Notice that the two properties ``LOGIN_ENDPOINT`` and ``LOGOUT_ENDPOINT`` must speficy the GeoServer OAuth2 Endpoints (see details below).
+The default values ``'j_spring_oauth2_geonode_login'`` and ``'j_spring_oauth2_geonode_logout'`` work in most of the cases, unless you need some specific endpoints different from the latters.
+In any case those values **must** be coherent with the GeoServer OAuth2 Plugin configuration.
+
+If in doubt, please use the default values here below.
+
+Default values are:
+
+.. code-block:: python
+    
+    ...
+    # OGC (WMS/WFS/WCS) Server Settings
+    # OGC (WMS/WFS/WCS) Server Settings
+    OGC_SERVER = {
+        'default': {
+            'BACKEND': 'geonode.geoserver',
+            'LOCATION': GEOSERVER_LOCATION,
+            'LOGIN_ENDPOINT': 'j_spring_oauth2_geonode_login',
+            'LOGOUT_ENDPOINT': 'j_spring_oauth2_geonode_logout',
+            # PUBLIC_LOCATION needs to be kept like this because in dev mode
+            # the proxy won't work and the integration tests will fail
+            # the entire block has to be overridden in the local_settings
+            'PUBLIC_LOCATION': GEOSERVER_PUBLIC_LOCATION,
+            'USER': 'admin',
+            'PASSWORD': 'geoserver',
+            'MAPFISH_PRINT_ENABLED': True,
+            'PRINT_NG_ENABLED': True,
+            'GEONODE_SECURITY_ENABLED': True,
+            'GEOGIG_ENABLED': False,
+            'WMST_ENABLED': False,
+            'BACKEND_WRITE_ENABLED': True,
+            'WPS_ENABLED': False,
+            'LOG_FILE': '%s/geoserver/data/logs/geoserver.log' % os.path.abspath(os.path.join(PROJECT_ROOT, os.pardir)),
+            # Set to name of database in DATABASES dictionary to enable
+            'DATASTORE': '',  # 'datastore',
+            'PG_GEOGIG': False,
+            'TIMEOUT': 10  # number of seconds to allow for HTTP requests
+        }
+    }
+    ...
+
 GeoNode and GeoServer A&A Interaction
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
@@ -173,85 +252,6 @@ Summarizing we will have different ways to access GeoNode Layers:
 #. Through GeoServer Security Subsystem; it will be always possible to access to GeoServer using its internal security system and users, unless explictly disabled (**warning** this is dangeruos, you must know what you are doing).
 
 Lets now see in details how the single pieces are configured and how they can be configured.
-
-GeoNode Security Backend
-========================
-
-DJango Authentication
-^^^^^^^^^^^^^^^^^^^^^
-
-The Django authentication system handles both authentication and authorization. 
-
-The auth system consists of:
-
-#. Users
-#. Permissions: Binary (yes/no) flags designating whether a user may perform a certain task.
-#. Groups: A generic way of applying labels and permissions to more than one user.
-#. A configurable password hashing system
-#. Forms and view tools for logging in users, or restricting content
-#. A pluggable backend system
-
-The authentication system in Django aims to be very generic and doesn’t provide some features commonly found in web authentication systems. Solutions for some of these common problems have been implemented in third-party packages:
-
-#. Password strength checking
-#. Throttling of login attempts
-#. Authentication against third-parties (OAuth, for example)
-
-.. note:: For more details on installation and configuration of Django authentication system, please refer to the official guide https://docs.djangoproject.com/en/1.10/topics/auth/.
-
-GeoNode communicates with GeoServer through Basic Authentication under the hood, in order to configure the data and the GeoServer catalog.
-
-In order to do this, you must be sure that GeoNode knows the **internal** admin user and password of GeoServer.
-
-.. warning:: This must be an internal GeoServer user with admin rights, not a GeoNode one.
-
-Make sure the credentials are correctly configured into the file ``settings.py``
-
-OGC_SERVER
-----------
-
-Ensure that the ``OGC_SERVER`` settings are correctly configured.
-
-Notice that the two properties ``LOGIN_ENDPOINT`` and ``LOGOUT_ENDPOINT`` must speficy the GeoServer OAuth2 Endpoints (see details below).
-The default values ``'j_spring_oauth2_geonode_login'`` and ``'j_spring_oauth2_geonode_logout'`` work in most of the cases, unless you need some specific endpoints different from the latters.
-In any case those values **must** be coherent with the GeoServer OAuth2 Plugin configuration.
-
-If in doubt, please use the default values here below.
-
-Default values are:
-
-.. code-block:: python
-    
-    ...
-    # OGC (WMS/WFS/WCS) Server Settings
-    # OGC (WMS/WFS/WCS) Server Settings
-    OGC_SERVER = {
-        'default': {
-            'BACKEND': 'geonode.geoserver',
-            'LOCATION': GEOSERVER_LOCATION,
-            'LOGIN_ENDPOINT': 'j_spring_oauth2_geonode_login',
-            'LOGOUT_ENDPOINT': 'j_spring_oauth2_geonode_logout',
-            # PUBLIC_LOCATION needs to be kept like this because in dev mode
-            # the proxy won't work and the integration tests will fail
-            # the entire block has to be overridden in the local_settings
-            'PUBLIC_LOCATION': GEOSERVER_PUBLIC_LOCATION,
-            'USER': 'admin',
-            'PASSWORD': 'geoserver',
-            'MAPFISH_PRINT_ENABLED': True,
-            'PRINT_NG_ENABLED': True,
-            'GEONODE_SECURITY_ENABLED': True,
-            'GEOGIG_ENABLED': False,
-            'WMST_ENABLED': False,
-            'BACKEND_WRITE_ENABLED': True,
-            'WPS_ENABLED': False,
-            'LOG_FILE': '%s/geoserver/data/logs/geoserver.log' % os.path.abspath(os.path.join(PROJECT_ROOT, os.pardir)),
-            # Set to name of database in DATABASES dictionary to enable
-            'DATASTORE': '',  # 'datastore',
-            'PG_GEOGIG': False,
-            'TIMEOUT': 10  # number of seconds to allow for HTTP requests
-        }
-    }
-    ...
 
 DJango OAuth Toolkit Setup and Configuration
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^

@@ -64,7 +64,6 @@ from geonode.people.enumerations import ROLE_VALUES
 
 from oauthlib.common import generate_token
 from oauth2_provider.models import AccessToken, get_application_model
-from oauth2_provider.exceptions import OAuthToolkitError, FatalClientError
 
 logger = logging.getLogger(__name__)
 
@@ -901,14 +900,16 @@ def do_login(sender, user, request, **kwargs):
             token = u.hex
 
         # Do GeoServer Login
-        url = "%s%s?access_token=%s" % (settings.OGC_SERVER['default']['PUBLIC_LOCATION'], 'ows?service=wms&version=1.3.0&request=GetCapabilities', token)
+        url = "%s%s?access_token=%s" % (settings.OGC_SERVER['default']['PUBLIC_LOCATION'],
+                                        'ows?service=wms&version=1.3.0&request=GetCapabilities',
+                                        token)
 
         cj = cookielib.CookieJar()
         opener = urllib2.build_opener(urllib2.HTTPCookieProcessor(cj))
 
         jsessionid = None
         try:
-            home = opener.open(url)
+            opener.open(url)
             for c in cj:
                 if c.name == "JSESSIONID":
                     jsessionid = c.value
@@ -926,25 +927,36 @@ def do_logout(sender, user, request, **kwargs):
     request to GeoServer
     """
     if 'access_token' in request.session:
-        Application = get_application_model()
-        app = Application.objects.get(name="GeoServer")
-        
-        # Lets delete the old one
         try:
-            old = AccessToken.objects.get(user=user, application=app)
+            Application = get_application_model()
+            app = Application.objects.get(name="GeoServer")
+
+            # Lets delete the old one
+            try:
+                old = AccessToken.objects.get(user=user, application=app)
+            except:
+                pass
+            else:
+                old.delete()
         except:
             pass
-        else:
-            old.delete()
 
         # Do GeoServer Logout
-        url = "%s%s?access_token=%s" % (settings.OGC_SERVER['default']['PUBLIC_LOCATION'],
-                                        settings.OGC_SERVER['default']['LOGOUT_ENDPOINT'],
-                                        request.session['access_token'])
+        if 'access_token' in request.session:
+            access_token = request.session['access_token']
+        else:
+            access_token = None
 
-        header_params = {
-            "Authorization": ("Bearer %s" % request.session['access_token'])
-        }
+        if access_token:
+            url = "%s%s?access_token=%s" % (settings.OGC_SERVER['default']['PUBLIC_LOCATION'],
+                                            settings.OGC_SERVER['default']['LOGOUT_ENDPOINT'],
+                                            access_token)
+            header_params = {
+                "Authorization": ("Bearer %s" % access_token)
+            }
+        else:
+            url = "%s%s" % (settings.OGC_SERVER['default']['PUBLIC_LOCATION'],
+                            settings.OGC_SERVER['default']['LOGOUT_ENDPOINT'])
 
         param = {}
         data = urllib.urlencode(param)
@@ -956,7 +968,7 @@ def do_logout(sender, user, request, **kwargs):
             if name == 'csrftoken':
                 header_params['X-CSRFToken'] = value
 
-            cook = "%s=%s" % (name,value)
+            cook = "%s=%s" % (name, value)
             if not cookies:
                 cookies = cook
             else:
@@ -970,11 +982,13 @@ def do_logout(sender, user, request, **kwargs):
         gs_request = urllib2.Request(url, data, header_params)
 
         try:
-            response = urllib2.urlopen(gs_request).open()
+            urllib2.urlopen(gs_request).open()
         except:
             pass
 
-        del request.session['access_token']
+        if 'access_token' in request.session:
+            del request.session['access_token']
+
         request.session.modified = True
 
 

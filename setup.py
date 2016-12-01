@@ -92,6 +92,8 @@ setup(name='GeoNode',
         "django-leaflet>=0.13.7",
         "django-autocomplete-light>=2.3.3, <3.0a0",
         "django-modeltranslation>=0.11",
+        "django-oauth-toolkit>=0.10.0",
+        "django-cors-headers>=1.1.0",
 
         # GeoNode org maintained apps.
         "django-geoexplorer>=4.0.5",
