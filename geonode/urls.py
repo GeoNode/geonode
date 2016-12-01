@@ -137,6 +137,11 @@ if 'notification' in settings.INSTALLED_APPS:
                             (r'^notifications/', include('notification.urls')),
                             )
 
+if "djmp" in settings.INSTALLED_APPS:
+    urlpatterns += patterns('',
+                            (r'^djmp/', include('djmp.urls')),
+                            )
+
 # Set up proxy
 urlpatterns += geonode.proxy.urls.urlpatterns
 
