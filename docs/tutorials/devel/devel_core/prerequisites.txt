@@ -46,12 +46,12 @@ virtualenv
 
 *virtualenv* is a tool used to create isolated python development environments such that the versions of project dependencies are sandboxed from the system-wide python packages. This eliminates the commonly encountered problem of different projects on the same system using different versions of the same library. You should be familiar with how to create and activate virtual environments for the projects you work on. More information about virtualenv can be found in the links below.
 
-- http://pypi.python.org/pypi/virtualenv
-- http://www.virtualenv.org/en/latest/
+- https://virtualenv.pypa.io/en/stable/
+- https://pypi.python.org/pypi/virtualenv
 
 *virtualenvwrapper* is a wrapper around the virtualenv package that makes it easier to create and switch between virtual environments as you do development. Using it will make your life much easier, so its recommended that you install and configure it and use its commands as part of your virtualenv workflow. More info about virtualenvwrapper can be found in the links below.
 
-- http://www.doughellmann.com/projects/virtualenvwrapper/
+- https://bitbucket.org/dhellmann/virtualenvwrapper
 
 
 pip
@@ -59,8 +59,8 @@ pip
 
 *pip* is a tool for installing and managing python packages. Specifically it is used to install and upgrade packages found in the Python Package Index (PyPI). GeoNode uses pip to install itself, and to manage all of the python dependencies that are needed as part of a GeoNode instance. As you learn to add new modules to your geonode, you will need to become familiar with the use of pip and about basic python packaging usage. More information about pip can be found in the links below.
 
-- http://www.pip-installer.org/en/latest/
-- http://pypi.python.org/pypi/pip
+- https://pip.pypa.io/en/latest/
+- https://pypi.python.org/pypi/pip
 - https://en.wikipedia.org/wiki/Pip_(package_manager)
 
 
@@ -70,7 +70,7 @@ miscellaneous
 *ipython* is a set of tools to make your python development and debugging experience easier. The primary tool you want to use is an interactive shell that adds introspection, integrated help and command completion and more. While not strictly required to do GeoNode development, learning how to use ipython will make your development more productive and pleasant. More information about ipython can be found in the links below.
 
 - http://ipython.org/
-- http://pypi.python.org/pypi/ipython
+- https://pypi.python.org/pypi/ipython
 - https://github.com/ipython/ipython
 - https://en.wikipedia.org/wiki/IPython
 

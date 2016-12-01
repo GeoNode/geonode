@@ -96,7 +96,7 @@ Core development tools and libraries
   - http://geopython.github.io/OWSLib/
   - https://github.com/toblerity/shapely
   - https://github.com/sgillies/Fiona
-  - http://pypi.python.org/pypi/pyproj
+  - https://pypi.python.org/pypi/pyproj
 
 - GDAL/OGR
 

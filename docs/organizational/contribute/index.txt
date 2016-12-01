@@ -40,7 +40,7 @@ Write Documentation
 GeoNode's documentation can always use improvement - there are always more questions to be answered.
 For managing contributions to the manual, GeoNode uses a process similar to that used for managing the code itself.
 The documentation is generated from source files in the `docs/` directory within the GeoNode source repository.
-See http://sphinx.pocoo.org/ for more information on the documentation system GeoNode uses.
+See http://www.sphinx-doc.org for more information on the documentation system GeoNode uses.
 
 If you want to learn more about contributing to the documentation, please go ahead to the "`How to contribute to GeoNode's Documentation <http://docs.geonode.org/en/latest/organizational/contribute/contribute_to_documentation.html#contrib-docu>`_". 
 GeoNode also have some guidelines to help with writing once you are set up "`How to write Documentation <http://docs.geonode.org/en/latest/organizational/contribute/documentation_guidelines.html#doc-guidelines>`_".
