@@ -7,7 +7,6 @@
   var service_ = null;
   var q = null;
 
-
   module.service('geoGigService', function($q, $http) {
     return {
       geogigCommand: function(url) {
@@ -68,10 +67,17 @@
               } else {
                 $scope.commits = response;
               }
+              //set initial commit message here for display
+              var firstCommit = $scope.commits[$scope.commits.length-1];
+
+              if (firstCommit.message == "") {
+                firstCommit.message ='Imported this awesome time-enabled geographic data for use as StoryLayer.';
+              } 
+
               for (var i = 0; i < $scope.commits.length; i++) {
                 var commit = $scope.commits[i];
-                if (commit.author) {
-                  commit.commitTimeSince = moment().calendar(commit.author.timestamp);
+                if (commit.committer) {
+                  commit.commitTimeSince = moment(commit.committer.timestamp).calendar();
                 }
               }
             }
@@ -81,6 +87,5 @@
             $('#geogig-message > h4').text(errorText);
           });
     }
-
   });
 })();
