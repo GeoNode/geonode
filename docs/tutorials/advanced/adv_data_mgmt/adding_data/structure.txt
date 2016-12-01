@@ -66,7 +66,7 @@ The following is the GEOSERVER_DATA_DIR structure::
    * - ``workspaces``
      - The various workspaces directories contain metadata about ``stores`` and ``layers`` which are published by GeoServer. Each layer will have a layer.xml file associated with it, as well as either a coverage.xml or a featuretype.xml file depending on whether it's a raster or vector.
    * - ``www``
-     - The www directory is used to allow GeoServer to act like a regular web server and serve regular files. While not a replacement for a full blown web server the www  directory can be useful to easily serve OpenLayers map applications (this avoids the need to setup a proxy in order to respect the `same origin policy <http://en.wikipedia.org/wiki/Same_origin_policy>`_).
+     - The www directory is used to allow GeoServer to act like a regular web server and serve regular files. While not a replacement for a full blown web server the www  directory can be useful to easily serve OpenLayers map applications (this avoids the need to setup a proxy in order to respect the `same origin policy <https://en.wikipedia.org/wiki/Same_origin_policy>`_).
    * - ``global.xml``
      - Contains settings that go across services, including contact information, JAI settings, character sets and verbosity.
    * - ``gwc-gs.xml`` 

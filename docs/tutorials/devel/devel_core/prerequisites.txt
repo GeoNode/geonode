@@ -17,14 +17,14 @@ SSH and sudo are very basic terminal skills which you will need to deploy, maint
 
 *sudo* is the command used to execute a terminal command as the superuser when you are logged in with a normal user. You will to use sudo in order to start, stop and restart key services on your GeoNode instance. If you are not able to grant yourself these privileges on the machine you are using for your GeoNode instance, you may need to consult with your network administrator to arrange for your user to be granted sudo permissions. More information about sudo can be found in the links below.
 
-- http://en.wikipedia.org/wiki/Sudo
+- https://en.wikipedia.org/wiki/Sudo
 
 bash
 ~~~~
 
 *Bash* is the most common Unix shell which will usually be the default on servers where you will be deploying your GeoNode instance. You should be familiar with the most common bash commands in order to be able to deploy, maintain and modify a geonode instance. More information about Bash and common bash commands can be found in the links below.
 
-- http://en.wikipedia.org/wiki/Bash_(Unix_shell)
+- https://en.wikipedia.org/wiki/Bash_(Unix_shell)
 
 
 apt
@@ -32,7 +32,7 @@ apt
 
 *apt* is the packaging tool that is used to install GeoNode on ubuntu and other Debian based systems. You will need to be familiar with adding Personal Package Archives to your list of install sources, and will need to be familiar with basic apt commands. More information about apt can be found in the links below.
 
-- http://en.wikipedia.org/wiki/Advanced_Packaging_Tool
+- https://en.wikipedia.org/wiki/Advanced_Packaging_Tool
 
 
 Python Development Tools
@@ -61,7 +61,7 @@ pip
 
 - http://www.pip-installer.org/en/latest/
 - http://pypi.python.org/pypi/pip
-- http://en.wikipedia.org/wiki/Pip_(Python)  
+- https://en.wikipedia.org/wiki/Pip_(package_manager)
 
 
 miscellaneous
@@ -72,7 +72,7 @@ miscellaneous
 - http://ipython.org/
 - http://pypi.python.org/pypi/ipython
 - https://github.com/ipython/ipython
-- http://en.wikipedia.org/wiki/IPython
+- https://en.wikipedia.org/wiki/IPython
 
 *pdb* is a standard python module that is used to interactively debug your python code. It supports setting conditional breakpoints so you can step through the code line by line and inspect your variables and perform arbitrary execution of statements. Learning how to effectively use pdb will make the process of debugging your application code significantly easier. More information about pdb can be found in the links below.
 
@@ -90,7 +90,7 @@ Model Template View
 
 Django is based on the Model Template View paradigm (more commonly called Model View Controller). Models are used to define objects that you use in your application and Django's ORM is used to map these models to a database. Views are used to implement the business logic of your application and provide objects and other context for the templates. Templates are used to render the context from views into a page for display to the user. You should become familiar with this common paradigm used in most modern web frameworks, and how it is specifically implemented and used in Django. The Django tutorial itself is a great place to start. More information about MTV in Django can be found in the links below.
 
-- http://en.wikipedia.org/wiki/Model%E2%80%93view%E2%80%93controller
+- https://en.wikipedia.org/wiki/Model%E2%80%93view%E2%80%93controller
 - http://www.codinghorror.com/blog/2008/05/understanding-model-view-controller.html
 - https://docs.djangoproject.com/en/1.4/
 
@@ -101,7 +101,7 @@ HTTP Request Response
 Django and all other web frameworks are based on the HTTP Request Response cycle. Requests come in to the server from remote clients which are primarily web browsers, but also can be API clients, and the server returns with a Response. You should be familiar with these very basic HTTP principles and become familiar with the way that Django implements them. More information about HTTP, Requests and Responses and Django's implementation in the links below.
 
 - https://www.jmarshall.com/easy/http/
-- http://en.wikipedia.org/wiki/Hypertext_Transfer_Protocol
+- https://en.wikipedia.org/wiki/Hypertext_Transfer_Protocol
 - https://docs.djangoproject.com/en/dev/ref/request-response/
 
 

@@ -88,7 +88,7 @@ At this point the new WMS Layer is being published with GeoServer.
 
 **Creating a parametric SQL view**
 
-   .. warning:: As a rule of thumb use SQL parameter substitution only if the required functionality cannot be obtained with safer means, such as dynamic filtering (CQL filters) or SLD parameter substitution. Only use SQL parameters as a last resort, improperly validated parameters can open the door to `SQL injection attacks <http://en.wikipedia.org/wiki/SQL_injection>`_.
+   .. warning:: As a rule of thumb use SQL parameter substitution only if the required functionality cannot be obtained with safer means, such as dynamic filtering (CQL filters) or SLD parameter substitution. Only use SQL parameters as a last resort, improperly validated parameters can open the door to `SQL injection attacks <https://en.wikipedia.org/wiki/SQL_injection>`_.
 
 A parametric SQL view is based on a SQL query containing parameters whose values can be dynamically provided along WMS or WFS requests. A parameter is bound by % signs, can have a default value, and should always have a validation regular expression.
 

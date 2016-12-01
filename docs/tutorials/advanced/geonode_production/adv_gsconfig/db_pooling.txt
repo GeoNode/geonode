@@ -80,7 +80,7 @@ Long story short the fact that the pool is internal with respect to the stores m
 
 Configuration of a JNDI connection pool with Tomcat
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-Many datastores in GeoServer provide the option of exploiting the Java Naming and Directory Interface or `JNDI <http://en.wikipedia.org/wiki/Java_Naming_and_Directory_Interface>`_. for managing the connections pools. JNDI allows for components in a Java system to look up other objects and data by a predefined name. A common use of JNDI is to set-up a connection pool in order to improve the database resource management.
+Many datastores in GeoServer provide the option of exploiting the Java Naming and Directory Interface or `JNDI <https://en.wikipedia.org/wiki/Java_Naming_and_Directory_Interface>`_. for managing the connections pools. JNDI allows for components in a Java system to look up other objects and data by a predefined name. A common use of JNDI is to set-up a connection pool in order to improve the database resource management.
 
 In order to set-up a connection pool, Tomcat needs to be provided with a JDBC driver for the database used and the necessary pool configurations.
 Usually the JDBC driver can be found in the website of the DBMS provider or can be available in the database installation directory. This is important to know since we are not usually allowed to redistribute them. 
@@ -291,5 +291,5 @@ Regardless of how we configure the validation query it is extremely important th
 
 .. rubric:: Footnotes
 
-.. [#f1] http://en.wikipedia.org/wiki/Java_Naming_and_Directory_Interface
+.. [#f1] https://en.wikipedia.org/wiki/Java_Naming_and_Directory_Interface
 .. [#f2]  http://commons.apache.org/proper/commons-dbcp/
