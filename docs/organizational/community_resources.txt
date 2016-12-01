@@ -71,7 +71,6 @@ Full List here https://github.com/GeoNode/geonode/network/members
 
 .. hint:: Look at the branches in these Forks
 
-* https://github.com/opengeo/geonode
 * https://github.com/gfdrr/geonode
 * https://github.com/dwinslow/geonode
 * https://github.com/ingenieroariel/geonode
@@ -90,10 +89,11 @@ Downstream Github Projects
 * https://github.com/aifdr/tsudat2
 * https://github.com/aifdr/riab
 * https://github.com/gem/
-* https://github.com/opengeo/mapstory
+* https://github.com/MapStory/mapstory
 * https://github.com/dialog-it/anzsm
 * https://github.com/CIGNo-project/CIGNo
 * https://github.com/ROGUE-JCTD/rogue_geonode
+* https://github.com/boundlessgeo/exchange
 * Many More ...
 
 Additional Modules

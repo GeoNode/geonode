@@ -42,7 +42,7 @@ Basic Web based GIS Concepts and Background
 
 - OpenGeo Suite
 
-  - http://workshops.opengeo.org/suiteintro/
+  - http://workshops.boundlessgeo.com/suiteintro/
   - http://suite.opengeo.org/opengeo-docs/
 
 - GeoServer Administration
@@ -51,8 +51,8 @@ Basic Web based GIS Concepts and Background
   - http://suite.opengeo.org/docs/sysadmin/index.html#sysadmin
 
 - PostgreSQL and PostGIS Administration
-  - http://workshops.opengeo.org/postgis-intro/
-  - http://workshops.opengeo.org/postgis-spatialdbtips/
+  - http://workshops.boundlessgeo.com/postgis-intro/
+  - http://workshops.boundlessgeo.com/postgis-spatialdbtips/
 
 Core development tools and libraries
 ------------------------------------
