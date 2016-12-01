@@ -206,7 +206,7 @@ Javascript in GeoNode
     * `OpenLayers <http://openlayers.org/>`_ for interactive mapping and other geospatial operations
     * `GeoExt <http://geoext.org/>`_ for integrating ExtJS with OpenLayers
     * `Grunt <http://gruntjs.com/>`_ for front-end task automation.
-    * `GXP <http://projects.opengeo.org/gxp>`_ for providing some higher-level application building facilities on top of GeoExt, as well
+    * `GXP <https://github.com/boundlessgeo/gxp>`_ for providing some higher-level application building facilities on top of GeoExt, as well
       as improving integration with GeoServer.
     * `jQuery <http://jquery.com>`_ to abstract Javascript manipulation, event handling, animation and Ajax.
 
