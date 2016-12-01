@@ -82,7 +82,7 @@ You now have a shapefile of the data you extracted from OSM that you can use to 
 Exporting OSM data to shapefile using GDAL
 ------------------------------------------
 
-An alternative way to export the .osm file to a shapefile is to use `ogr2ogr <http://www.gdal.org/ogr2ogr.html>`_ combined with the `GDAL osm driver <http://www.gdal.org/ogr/drv_osm.html>`_, available from GDAL version 1.10.
+An alternative way to export the .osm file to a shapefile is to use `ogr2ogr <http://www.gdal.org/ogr2ogr.html>`_ combined with the `GDAL osm driver <http://www.gdal.org/drv_osm.html>`_, available from GDAL version 1.10.
 
 As a first step, inspect how the GDAL OSM driver sees the .osm file using the ogrinfo command::
 
