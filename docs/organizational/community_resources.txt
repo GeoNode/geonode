@@ -52,7 +52,7 @@ Testing and Packaging
     * Jenkins Continuous Integration Server http://geonode-testing.dev.opengeo.org:8090
     * Integration Test Suite https://github.com/GeoNode/geonode-integration
     * Travis-CI https://travis-ci.org/#!/GeoNode/geonode
-    * Ohloh https://www.ohloh.net/p/geonode
+    * Openhub https://www.openhub.net/p/geonode
 * Packages
     * Debian Package https://github.com/GeoNode/geonode-deb
     * RPM Red Hat https://github.com/GeoNode/geonode-rpm
