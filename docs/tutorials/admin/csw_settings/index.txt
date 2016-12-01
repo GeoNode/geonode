@@ -12,7 +12,7 @@ Supported CSW server implementations
 GeoNode additionally supports the following CSW server implementations:
 
  * `GeoNetwork opensource <http://geonetwork-opensource.org/>`_
- * `deegree <http://deegree.org/>`_
+ * `deegree <http://www.deegree.org/>`_
 
 Since GeoNode communicates with alternate CSW configurations via HTTP, the CSW server can be installed and deployed independent of GeoNode if desired.
 
