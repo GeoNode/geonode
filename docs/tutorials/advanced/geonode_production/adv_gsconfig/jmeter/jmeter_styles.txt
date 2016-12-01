@@ -57,7 +57,7 @@ Configuring GeoServer
    
 		*Styles configuration*	  
 
-#. Click on :guilabel:`Save`. With this configuration we have a Layer Group composed by 4 Layers with 4 bad styles associated. This will result in a low throughput, if compared to that of the test with optimized styels.
+#. Click on :guilabel:`Save`. With this configuration we have a Layer Group composed by 4 Layers with 4 bad styles associated. This will result in a low throughput, if compared to that of the test with optimized styles.
 	  
 Configuring JMeter
 ------------------

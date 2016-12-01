@@ -51,7 +51,7 @@ Create CSV file
 	Band 1 Block=256x256 Type=Int16, ColorInterp=Gray
 	  Overviews: 1260x900, 630x450, 315x225, 158x113, 79x57, 40x29
 	  
-#. The information needed for create a multiscale CSV file are:
+#. The information needed for create a Multiscale CSV file are:
 
 	.. list-table::
 		  :widths: 30 50
@@ -212,7 +212,7 @@ Configure JMeter
    
       *HTTP Default Request host/port/path configuration*
 	  
-#. From the training data dir root, open the ``data/jmeter_data/jmeter_request_params_2.txt``, select and copy its contents in the clipboard, then click "Add from Clipboard" in the "HTTP request" panel to setup a sample GetMap request:
+#. From the training data root directory, open the ``data/jmeter_data/jmeter_request_params_2.txt``, select and copy its contents in the clipboard, then click "Add from Clipboard" in the "HTTP request" panel to setup a sample GetMap request:
 	 
 #. Add the following listeners by right clicking on ``Test Plan`` tree node: "View results Tree", "Summary Report"
 	  
@@ -253,9 +253,9 @@ Configure JMeter
 
 		*Configuring Response Assertion*
 
-At this point jMeter is configured to run a GeoServer performance test:
+At this point JMeter is configured to run a GeoServer performance test:
 
-#. Select the **Test Plan** tree node and select ``Run`` - ``Start`` from the top menu to start the jMeter test.
+#. Select the **Test Plan** tree node and select ``Run`` - ``Start`` from the top menu to start the JMeter test.
 
    .. figure:: img/jmeter13.png
       :align: center

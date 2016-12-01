@@ -99,9 +99,9 @@ Generating the custom palette
 
 To generate a custom palette you can use IrfanView for example, on Windows. The steps are simple:
 
-    * open the png 24 bit version of the image
-    * use Image/Decrease Color Depth and set 256 colors
-    * use Image/Palette/Export to save the palette
+    * Open the 24-bit PNG version of the image
+    * Use Image/Decrease Color Depth and set 256 colors
+    * Use Image/Palette/Export to save the palette
 
 
 An example with raster data

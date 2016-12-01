@@ -6,7 +6,7 @@ Getting Started With Django
 
 Object-relational mapper
 ========================
-Data models can be defined entirely in Python. DJango makes available a rich, dynamic database-access API for free, but it is still possible to write SQL if needed.
+Data models can be defined entirely in Python. Django makes available a rich, dynamic database-access API for free, but it is still possible to write SQL if needed.
 
 .. hint:: The following documentation is based on official `documentation <https://docs.djangoproject.com/en>`_ of the project Django.
 
@@ -81,7 +81,7 @@ Using models
 ............
 
 Once models have been defined, Django must be instructed on how to use those models. 
-This is possible by editing the DJango settings file and changing the **INSTALLED_APPS** setting to add the name of the module that contains the **model class**.
+This is possible by editing the Django settings file and changing the **INSTALLED_APPS** setting to add the name of the module that contains the **model class**.
 
 For example, if the models for the application is defined in the module **myapp.models**, **INSTALLED_APPS** should read, in part:
 
@@ -96,7 +96,7 @@ For example, if the models for the application is defined in the module **myapp.
 
 .. warning:: When you add new apps to **INSTALLED_APPS**, be sure to run **manage.py migrate**, optionally making migrations for them first with **manage.py makemigrations**.
 
-.. note:: GeoNode uses the specific command **manage.py syncdb** to perform the models update and migration.
+.. note:: GeoNode uses the specific command **manage.py migrate** to perform the models update and migration.
 
 Fields
 ......
@@ -231,7 +231,7 @@ Assuming models live in a file **mysite/blog/models.py**, here’s an example:
     >>> b = Blog(name='Beatles Blog', tagline='All the latest Beatles news.')
     >>> b.save()
 
-This performs an **INSERT SQL** statement behind the scenes. Django doesn’t hit the database until you explicitly call **save()**. 
+This performs an **INSERT SQL** statement behind the scenes. Django doesn't hit the database until you explicitly call **save()**.
 The **save()** method has no return value.
 
 .. code-block:: python
@@ -240,7 +240,7 @@ The **save()** method has no return value.
     >>> b5.name = 'New name'
     >>> b5.save()
 
-This performs an **UPDATE SQL** statement behind the scenes. Django doesn’t hit the database until you explicitly call **save()**.
+This performs an **UPDATE SQL** statement behind the scenes. Django doesn't hit the database until you explicitly call **save()**.
 
 Retrieving objects
 ..................
@@ -340,8 +340,8 @@ URLs and views
 A clean elegant URL scheme is an important detail in a high-quality Web application.
 Django encourages beautiful URL design and does not put junk in URLs, like .php or .asp.
 
-In DJango a Python module called URLconf is like a table of contents for the application.
-It contains a simple mapping between URL patterns and the **views**.
+In Django, a Python module called urls.py is like a table of contents for the application.
+It contains a simple mapping between URL patterns and **views**.
 
 .. note:: The following examples are taken from the official Django documentation for the sole purpose of introducing the general concepts.
 
@@ -571,7 +571,7 @@ Django provides multiple protections against:
 * SSL/HTTPS
     It is always better for security, though not always practical in all cases, to deploy your site behind HTTPS. Without this, it is possible for malicious network users to sniff authentication credentials or any other information transferred between client and server, and in some cases – active network attackers – to alter data that is sent in either direction.
     
-    Django provides some settings to secure your site unser SSL/HTTPS.
+    Django provides some settings to secure your site under SSL/HTTPS.
 
 .. warning::
     While Django provides good security protection out of the box, it is still important to properly deploy your application and take advantage of the security protection of the Web server, operating system and other components.

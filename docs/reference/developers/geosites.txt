@@ -10,7 +10,7 @@ GeoSites is a way to run multiple websites with a single instance of GeoNode. Ea
 Master Website
 ==============
 
-A GeoSites installation uses a 'master' GeoNode website that has soms additional administrative pages for doing data management. Layers, Maps, Documents, Users, and Groups can all be added and removed from different sites.  Users can be given access to any number of sites, and data may appear on only a single site, or all of them.  Additionally, if desired, any or all of the django apps installed on the other sites can be added to the master site to provide a single administrative interface that gives full access to all apps.  The master site need not be accessible from the outside so that it can be used as an internal tool to the organization.
+A GeoSites installation uses a 'master' GeoNode website that has some additional administrative pages for doing data management. Layers, Maps, Documents, Users, and Groups can all be added and removed from different sites.  Users can be given access to any number of sites, and data may appear on only a single site, or all of them.  Additionally, if desired, any or all of the Django apps installed on the other sites can be added to the master site to provide a single administrative interface that gives full access to all apps.  The master site need not be accessible from the outside so that it can be used as an internal tool to the organization.
 
 Users created on a particular site are created with access to just that site.  Data uploaded to a particular site is given permission on that site as well as the master site.   Any further adjustments to site-based permissions must be done from the master site.
 

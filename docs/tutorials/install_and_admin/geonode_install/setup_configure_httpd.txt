@@ -93,7 +93,7 @@ for GeoServer.
     In the case that GeoServer is running on a separate machine change the `ProxyPass`
     and `ProxyPassReverse` accordingly
 
-Now load apache `proxy` module::
+Now load the Apache `proxy` module::
 
     sudo a2enmod proxy_http
 

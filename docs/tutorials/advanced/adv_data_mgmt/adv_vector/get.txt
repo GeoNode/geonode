@@ -32,9 +32,9 @@ In this section we will learn how to deal with vector data using WFS. First we w
    .. note:: We recommend the Mozilla Firefox web browser for navigating WFS response documents.
 
 
-#. Now that we know the quick and easy way to get WFS data, let's go back and do it the way a standard WFS client works. First, the only thing expected to be known is the WFS server url: http://localhost:8083/geoserver/ows?service=WFS&version=1.0.0
+#. Now that we know the quick and easy way to get WFS data, let's go back and do it the way a standard WFS client works. First, the only thing expected to be known is the WFS server URL: http://localhost:8083/geoserver/ows?service=WFS&version=1.0.0
 
-   Using that url, we can issue a ``GetCapabilities`` request in order to know which layer it contains and what operations are supported:
+   Using that URL, we can issue a ``GetCapabilities`` request in order to know which layer it contains and what operations are supported:
    http://localhost:8083/geoserver/ows?service=WFS&version=1.0.0&request=GetCapabilities
 
    .. figure:: img/get4.png

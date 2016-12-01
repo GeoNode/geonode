@@ -113,4 +113,4 @@ The task of adding a Shapefile is one that is core to any GIS tool. This section
 	  
       The ``mainrd`` shapefile preview
 
-In the :ref:`next <geoserver.shp_postgis>` section we will see how to load a shapeFile into PostGIS.
+In the :ref:`next <geoserver.shp_postgis>` section we will see how to load a shapefile into PostGIS.

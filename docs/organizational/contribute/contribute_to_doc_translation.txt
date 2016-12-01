@@ -11,16 +11,16 @@ documentation and here we list a few.
 Translate using Github Locally
 ==============================
 
-Here we assume you have github running locally and that you are familiar with the command line.
+Here we assume you have GitHub running locally and that you are familiar with the command line.
 
-#. Get latest version from Github:
+#. Get latest version from GitHub:
 
    .. code-block:: console
 
     $ git pull
 
 
-#. Get latest version from transifex
+#. Get latest version from Transifex
    (it should be synced with Github, but just in case):
 
    .. code-block:: console

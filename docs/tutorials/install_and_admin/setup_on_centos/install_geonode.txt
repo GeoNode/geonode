@@ -184,18 +184,19 @@ The resulting configuration file should look like this:::
 Initialize GeoNode
 ------------------
 
-As user ``geonode``, init the db, by creating the schema tables and populating the static data:::
+As user ``geonode``, initialize the db, by creating the schema tables and populating the static data:::
 
     cd /home/geonode/geonode/geonode/
-    python manage.py syncdb --noinput
+    python manage.py migrate
+    python manage.py loaddata geonode/base/fixtures/initial_data.json
 
 Now create the admin user for GeoNode running the following:::
 
    python manage.py createsuperuser
 
-You will be prompted for the username, email address and passoword for the user
+You will be prompted for the username, email address and password for the user
 
-Dowload GeoNode data to be served by Apache. You will be prompted for confirmation::
+Download GeoNode data to be served by Apache. You will be prompted for confirmation::
 
     python manage.py collectstatic
 

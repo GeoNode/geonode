@@ -145,7 +145,6 @@ class CatalogueBackend(GenericCatalogueBackend):
                 'typenames': formats,
                 'resulttype': 'results',
                 'constraintlanguage': 'CQL_TEXT',
-                'constraint': 'csw:AnyText like "%%%s%%"' % keywords,
                 'outputschema': 'http://www.isotc211.org/2005/gmd',
                 'constraint': None,
                 'startposition': start,

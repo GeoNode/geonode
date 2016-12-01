@@ -39,7 +39,7 @@ def restore_full(archive):
 
       # Prepare Target DB
       try:
-         call_command('syncdb', interactive=False, load_initial_data=False)
+         call_command('migrate', interactive=False, load_initial_data=False)
          call_command('flush', interactive=False, load_initial_data=False)
 
          helpers.patch_db()

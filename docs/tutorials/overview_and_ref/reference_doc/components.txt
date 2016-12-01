@@ -10,7 +10,7 @@ Lets look at each of these components and discuss how they are used within the G
 Django
 =======
 
-GeoNode is based on Django_ which is a high level Python web development framework that encourages rapid development and clean pragmatic design. Django is based on the Model View Controller (MVC_) architecture pattern, and as such, GeoNode models layers, maps and other modules with Django's Model_ module and and these models are used via Django's ORM_ in views which contain the business logic of the GeoNode application and are used to drive HTML templates to display the web pages within the application.
+GeoNode is based on Django_ which is a high level Python web development framework that encourages rapid development and clean pragmatic design. Django is based on the Model View Controller (MVC_) architecture pattern, and as such, GeoNode models layers, maps and other modules with Django's Model_ module and these models are used via Django's ORM_ in views which contain the business logic of the GeoNode application and are used to drive HTML templates to display the web pages within the application.
 
 .. _Django: https://www.djangoproject.com/ 
 .. _MVC: http://en.wikipedia.org/wiki/Model%E2%80%93view%E2%80%93controller
@@ -20,7 +20,7 @@ GeoNode is based on Django_ which is a high level Python web development framewo
 GeoServer
 =========
 
-GeoServer_ is a an open source software server written in Java that provides OGC compliant services which publish data from many spatial data sources. GeoServer is used as the core GIS component inside GeoNode and is used to render the layers in a GeoNode instance, create map tiles from the layers, provide for downloading those layers in various formats and to allow for transactional editing of those layers. 
+GeoServer_ is an open source software server written in Java that provides OGC compliant services which publish data from many spatial data sources. GeoServer is used as the core GIS component inside GeoNode and is used to render the layers in a GeoNode instance, create map tiles from the layers, provide for downloading those layers in various formats and to allow for transactional editing of those layers. 
 
 .. _GeoServer: http://geoserver.org/display/GEOS/Welcome
 
@@ -35,7 +35,7 @@ GeoExplorer_ is a web application, based on the GeoExt_ framework, for composing
 PostgreSQL and PostGIS
 ======================
 
-PostgreSQL_ and PostGIS_ are the database components that store and manage spatial data and information for GeoNode and the django modules that it is composed of, pycsw and GeoServer. All of these tables and data are stored within a geonode database in PostgreSQL. GeoServer uses PostGIS to store and manage spatial vector data for each layer which are stored as a separate table in the database.
+PostgreSQL_ and PostGIS_ are the database components that store and manage spatial data and information for GeoNode and the Django modules that it is composed of, pycsw and GeoServer. All of these tables and data are stored within a geonode database in PostgreSQL. GeoServer uses PostGIS to store and manage spatial vector data for each layer which are stored as a separate table in the database.
 
 .. _PostgreSQL: http://www.postgresql.org/
 .. _PostGIS: http://postgis.net/
@@ -63,13 +63,13 @@ GeoNode uses a set of Django plugins which are usually referred to as pluggables
 jQuery
 ======
 
-jQuery_ is a feature-rich javascript library that is used within GeoNode to provide an interactive and responsive user interface as part of the application. GeoNode uses several jQuery plugins to provide specific pieces of functionality, and the GeoNode development team often adds new features to the interface by adding additional plugins.
+jQuery_ is a feature-rich Javascript library that is used within GeoNode to provide an interactive and responsive user interface as part of the application. GeoNode uses several jQuery plugins to provide specific pieces of functionality, and the GeoNode development team often adds new features to the interface by adding additional plugins.
 
 .. _jQuery: http://jquery.com/
 
 Bootstrap
 =========
 
-Bootstrap_ is a front-end framework for laying out and styling the pages that make up the GeoNode application. It is designed to ensure that the pages render and look and behave the same across all browsers. GeoNode customizes bootstraps default style and its relatively easy for developers to customize their own GeoNode based site using existing Boostrap themes or by customizing the styles directly.
+Bootstrap_ is a front-end framework for laying out and styling the pages that make up the GeoNode application. It is designed to ensure that the pages render and look and behave the same across all browsers. GeoNode customizes bootstraps default style and its relatively easy for developers to customize their own GeoNode based site using existing Bootstrap themes or by customizing the styles directly.
 
 .. _Bootstrap: http://www.getbootstrap.com

@@ -13,14 +13,14 @@ Summary of the installation steps
     #. Retrieve latest apt-get list
     #. Install build tools and libraries
     #. Install dependencies (Python, Postgresql and Java) and supporting tools
-    #. Add Nodejs PPA and other tools required for static development
+    #. Add Node.js PPA and other tools required for static development
     #. Set up a virtual environment (virtualenv)
-    #. Clone geonode from github and install it in the virtual environment
-    #. Run paver to get install geoserver and start the development servers
+    #. Clone geonode from GitHub and install it in the virtual environment
+    #. Run paver to get install GeoServer and start the development servers
     #. Compile and Start the server
     #. Start Geonode instance
     #. To stop the server
-    #. Next create a superuser for your django geonode
+    #. Next create a Django superuser for your GeoNode
 
 .. note:: The following steps have to be executed in your terminal. The steps have to be done as a **root user**, therefore don´t forget to type sudo in front!
 
@@ -134,7 +134,7 @@ Summary of the installation steps
 
    Here is where Geonode will later be running.
 
-   Add the virtualenvwrapper to your new environement.
+   Add the virtualenvwrapper to your new environment.
 
 
       .. code-block:: console
@@ -168,7 +168,7 @@ Summary of the installation steps
 
 #. Get the code
 
-   To download the latest geonode version from github, the command *clone* is used
+   To download the latest geonode version from GitHub, the command *clone* is used
 
    .. note::
     If you are following the GeoNode training, skip the following command.
@@ -178,7 +178,7 @@ Summary of the installation steps
 
         $ git clone https://github.com/GeoNode/geonode.git
 
-#. Add Nodejs PPA and other tools required for static development
+#. Add Node.js PPA and other tools required for static development
 
    This is required for static development
 
@@ -227,7 +227,7 @@ Summary of the installation steps
 
 #. Create ``local_settings.py``
 
-   Add the ``local_settings.py`` to your GeoNode instllation
+   Add the ``local_settings.py`` to your GeoNode installation
 
    .. code-block:: console
 
@@ -310,12 +310,12 @@ Summary of the installation steps
 
 #. Compile and Start the server for the first time
 
-   Align the DataBase structure
+   Align the database structure
 
    .. code-block:: console
 
     $ cd /home/geonode/dev/geonode
-    $ python manage.py syncdb --noinput
+    $ python manage.py migrate
 
    .. warning:: If the start fails because of an import error related to osgeo, then please consult the :ref:`install_gdal_devmode`.
 
@@ -350,15 +350,15 @@ Summary of the installation steps
 
 #. To stop the server
 
-   type hold **Ctrl c**  on your keyboard to stop the server
+   Press **Ctrl-C** on your keyboard to stop the server
 
-   now type:
+   Then type:
 
    .. code-block:: console
 
     $ paver stop    # to stop all django, geoserver services
 
-#. Next create a superuser for your django geonode
+#. Next create a Django superuser for your GeoNode
 
    Create a superuser so you can log on to your local geonode installation at http://localhost:8000
 
@@ -369,7 +369,7 @@ Summary of the installation steps
 Start working on Geonode the next day after install
 ===================================================
 
-   With every restart of your machine, you have to restart geonode as well. That means, you will not be able to open http://localhost:8000   directly after starting your machine new. In order to be able to use geonode now, you have to activate your virtualenvironment and to start the development servers.
+   With every restart of your machine, you have to restart geonode as well. That means, you will not be able to open http://localhost:8000   directly after starting your machine new. In order to be able to use geonode now, you have to activate your virtualenv and to start the development servers.
 
    .. note:: *username* is the name of your machine and personal folder!
 

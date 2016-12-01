@@ -19,8 +19,7 @@ password and press `Enter`.
    :alt: User Login
 
 You are now logged in as user 'geo'. On the left side of the screen there
-is a panel with shortcuts to common applications, launch a the terminal
-emulator.
+is a panel with shortcuts to common applications, launch a terminal.
 
 .. image:: img/open_terminal.png
    :width: 600px

@@ -16,7 +16,7 @@ Creating and setting a new GeoServer Data Directory
 	${TRAINING_ROOT}/geoserver_data or %TRAINING_ROOT%\geoserver_data on Windows
 	
 	
-   Generally this is not an issue, but if you run the system from the LiveDVD this folder resides in memory. The first thing to do is to move this folder into a local persistent storage.
+   Generally this is not an issue, but if you run the system from the Live DVD this folder resides in memory. The first thing to do is to move this folder into a local persistent storage.
 	
 	
 	* Move the ``GEOSERVER_DATA_DIR`` somewhere in the persistent storage using the command::

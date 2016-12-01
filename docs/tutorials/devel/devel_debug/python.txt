@@ -20,7 +20,7 @@ the logging data structure with something a bit more verbose.
 Output
 ......
 
-In production, logging output will go into the apache error log. This is located
+In production, logging output will go into the Apache error log. This is located
 in :file:`/var/log/apache2/error.log`. During development, logging output will,
 by default, go to standard error.
 
@@ -35,7 +35,7 @@ Configuring
 Debugging SQL
 .............
 
-* To trace all SQL in django, configure the ``django.db.backends`` logger to
+* To trace all SQL in Django, configure the ``django.db.backends`` logger to
   ``DEBUG``
 * To examine a specific query object, you can use the ``query`` field:
   str(Layer.objects.all().query)
@@ -86,4 +86,4 @@ To set a breakpoint, insert the following code before the code to debug.
 When execution reaches this statement, the debugger will activate. The commands
 are noted in the link above. In addition to those debugger specific commands,
 general python statements are supported. For example, typing the name of a
-variable in scope will yield the value via string coersion. Typing "n" will execute the next line, "c" wil continue the execution of the program, "q" will quit.
+variable in scope will yield the value via string coercion. Typing "n" will execute the next line, "c" will continue the execution of the program, "q" will quit.

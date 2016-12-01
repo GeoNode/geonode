@@ -57,6 +57,7 @@ import shutil
 import os.path
 import logging
 import uuid
+import zipfile
 
 logger = logging.getLogger(__name__)
 
@@ -736,6 +737,13 @@ def final_step(upload_session, user):
     if xml_file:
         saved_layer.metadata_uploaded = True
         # get model properties from XML
+        # If it's contained within a zip, need to extract it
+        if upload_session.base_file.archive:
+            archive = upload_session.base_file.archive
+            zf = zipfile.ZipFile(archive, 'r')
+            zf.extract(xml_file[0], os.path.dirname(archive))
+            # Assign the absolute path to this file
+            xml_file[0] = os.path.dirname(archive) + '/' + xml_file[0]
         identifier, vals, regions, keywords = set_metadata(open(xml_file[0]).read())
 
         regions_resolved, regions_unresolved = resolve_regions(regions)
@@ -869,7 +877,6 @@ max\ connections={db_conn_max}"""
 
     if not append_to_mosaic_opts:
 
-        import zipfile
         z = zipfile.ZipFile(dirname + '/' + head + '.zip', "w")
 
         z.write(dst_file, arcname=head + "_" + mosaic_time_value + tail)
