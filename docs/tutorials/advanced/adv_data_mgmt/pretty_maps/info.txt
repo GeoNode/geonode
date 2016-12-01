@@ -27,7 +27,7 @@ Templating is concerned with the HTML one.
 	- footer.ftl
 
 
-   .. note:: The Template is managed using `Freemarker <http://freemarker.sourceforge.net/>`_. This is a simple yet powerful template engine that GeoServer uses whenever developers allowed user customization of textual outputs. In particular, at the time of writing it's used to allow customization of GetFeatureInfo, GeoRSS and KML outputs.
+   .. note:: The Template is managed using `Freemarker <https://sourceforge.net/projects/freemarker/>`_. This is a simple yet powerful template engine that GeoServer uses whenever developers allowed user customization of textual outputs. In particular, at the time of writing it's used to allow customization of GetFeatureInfo, GeoRSS and KML outputs.
    
    .. note:: Splitting the template in three files allows the administrator to keep a consistent styling for the GetFeatureInfo result, but use different templates for different workspaces or different layers: this is done by providing a master ``header.ftl`` and ``footer.ftl`` file, but specify a different ``content.ftl`` for each layer.
 

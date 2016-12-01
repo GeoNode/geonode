@@ -112,7 +112,7 @@ Much more information about how to perform the steps below can be found in the G
 Getting Started
 +++++++++++++++
 
-You will first need to install the GeoGig command line tools. These can be found on the projects `SourceForge page <http://sourceforge.net/projects/geogig/files/latest/download>`_. Follow the instructions contained in the installation file in order to install the CLI tools on your GeoNode server. Once you have the tools installed and added to your path, the *geogig* command should be available::
+You will first need to install the GeoGig command line tools. These can be found on the projects `SourceForge page <https://sourceforge.net/projects/geogig/files/latest/download>`_. Follow the instructions contained in the installation file in order to install the CLI tools on your GeoNode server. Once you have the tools installed and added to your path, the *geogig* command should be available::
 
     $ geogig --version
              Project Version : 1.0-SNAPSHOT
