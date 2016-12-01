@@ -12,7 +12,7 @@ The GeoServer REST configuration module uses the REST principles to expose servi
 
   The REST configuration extension has normally to be installed separately, it is not come out of the box.
 
-The examples in this section use the `cURL <http://curl.haxx.se/>`_ utility, which is a handy command line tool for executing HTTP requests and transferring files.
+The examples in this section use the `cURL <https://curl.haxx.se/>`_ utility, which is a handy command line tool for executing HTTP requests and transferring files.
 
 
 #. Open the Terminal and enter the following command::

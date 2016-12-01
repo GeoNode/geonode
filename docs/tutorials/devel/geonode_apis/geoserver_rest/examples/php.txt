@@ -112,7 +112,7 @@ Here are some possible values:
 |            |  e.g. the workspace already exists, the XML is malformed, ... |
 +------------+---------------------------------------------------------------+ 
 
-For other codes see `cURL Error Codes <http://curl.haxx.se/libcurl/c/libcurl-errors.html>`_ and `HTTP Codes <http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html>`_.
+For other codes see `cURL Error Codes <https://curl.haxx.se/libcurl/c/libcurl-errors.html>`_ and `HTTP Codes <http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html>`_.
 
 GET with PHP/cURL
 -----------------
