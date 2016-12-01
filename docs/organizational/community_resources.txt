@@ -65,17 +65,10 @@ Full List here https://github.com/GeoNode/geonode/network/members
 
 .. hint:: Look at the branches in these Forks
 
-* https://github.com/gfdrr/geonode
-* https://github.com/dwinslow/geonode
-* https://github.com/ingenieroariel/geonode
-* https://github.com/jj0hns0n/geonode
-* https://github.com/ahocevar/geonode
-* https://github.com/groldan/geonode
-* https://github.com/AIFDR/geonode
 * https://github.com/cga-harvard/cga-worldmap
-* https://github.com/sopac/geonode
-* https://github.com/dialog-it/geonode
-* https://github.com/eldarion/geonode
+* https://github.com/jj0hns0n/geonode
+* https://github.com/ingenieroariel/geonode
+* https://github.com/gfdrr/geonode
 
 Downstream Github Projects
 --------------------------
