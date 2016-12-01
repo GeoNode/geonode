@@ -33,6 +33,7 @@ class GroupAdmin(admin.ModelAdmin):
     ]
     exclude = ['group', ]
 
+
 admin.site.register(GroupProfile, GroupAdmin)
 
 admin.site.register(GroupInvitation)

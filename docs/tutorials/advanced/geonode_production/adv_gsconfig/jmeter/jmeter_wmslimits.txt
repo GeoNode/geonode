@@ -11,7 +11,7 @@ Preliminary Steps
 
 #. Open your Web browser and navigate to the GeoServer `Welcome Page <http://localhost:8083/geoserver/>`_.
 
-#. Go to :guilabel:`Stores` and select ``storms`` DataStore
+#. Go to :guilabel:`Stores` and select the ``storms`` datastore
 
 #. Change the following parameters:
 

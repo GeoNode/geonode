@@ -32,4 +32,5 @@ class LayerTranslationOptions(TranslationOptions):
         'data_quality_statement',
     )
 
+
 translator.register(Layer, LayerTranslationOptions)

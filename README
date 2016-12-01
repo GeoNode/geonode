@@ -1,3 +1,7 @@
+.. image:: https://coveralls.io/repos/github/GeoNode/geonode/badge.svg?branch=master
+    :alt: Coverage Badge
+    :target: https://coveralls.io/github/GeoNode/geonode?branch=master
+
 .. image:: https://secure.travis-ci.org/GeoNode/geonode.png
     :alt: Build Status
     :target: http://travis-ci.org/GeoNode/geonode
@@ -20,7 +24,7 @@ If you just want to try GeoNode, it is recommended to use Ubuntu 14.04 and insta
     sudo apt-get update
     sudo apt-get install geonode
 
-If instead, you are interested in doing development on the source code, here are the instructions: http://docs.geonode.org/en/master/tutorials/devel/devel_env/index.html 
+If instead, you are interested in doing development on the source code, here are the instructions: http://docs.geonode.org/en/master/tutorials/devel/devel_env/index.html
 
 Docker Usage
 ------------
@@ -90,7 +94,7 @@ openSUSE Development Build Instructions::
 
     # Initialize database
     paver sync
-    
+
     # Start the servers
     paver start
 
@@ -112,7 +116,7 @@ Windows Development Build Instructions::
     # Install and configure from the windows command prompt
     If you don't already have python virtualenv installed, then do it now:
     easy_install virtualenv
-    
+
     # Download and install http://download.gisinternals.com/sdk/downloads/release-1800-gdal-1-11-4-mapserver-6-4-3/gdal-111-1800-core.msi
     # Download and install http://download.gisinternals.com/sdk/downloads/release-1800-gdal-1-11-4-mapserver-6-4-3/GDAL-1.11.4.win32-py2.7.msi
     # Choose your 32 bit python as your install target
@@ -125,49 +129,49 @@ Windows Development Build Instructions::
 
     # Clone GeoNode
     git clone https://github.com/GeoNode/geonode.git
-    
+
     # Install compiled packages for Python 2.7 Win32
     cd geonode
     pip install paver
     pip install pyyaml
     paver win_install_deps
-    
+
     # Install GeoNode in the local virtualenv, if you get an error about use-mirrors, just remove the argument
     pip install -e . --use-mirrors
-    
+
     # Note, you may get errors due to certain dependencies not being installable on windows with pip, such as lxml and shapely.
     # For these, you can download a whl file (use cp27 / win32 version) from http://www.lfd.uci.edu/~gohlke/pythonlibs and then install them via pip.
     # Ex: pip install <Download Dir>\Shapely-1.5-16-cp27-cp27m-win32.whl
-    # 
+    #
     # Also note, you may have to adjust the dependencies in geonode\setup.py to say >= instead of ==,
     # ie "Shapely>=1.5.13", instead of "Shapely==1.5.13",
-    
+
     # Compile GeoServer
     paver setup
 
-    # Set GDAL environment info 
+    # Set GDAL environment info
     SET GDAL_LIBRARY_PATH=<GdalPath>\gdal111.dll
     SET GDAL_HOME=<GdalPath>
     SET GEOS_LIBRARY_PATH=<GdalPath>\geos_c.dll
     SET PATH=<GdalPath>;%PATH%
-    
+
     # Initialize database
     paver sync
-    
+
     # Start the servers
     paver start --java_path=C:/path/to/java/bin/java.exe
-    
-    
+
+
 
 Mac OSX
 -------
 
 Mac OSX Development Build Instructions::
-    
-    # you may need brew install various dependencies 
+
+    # you may need brew install various dependencies
 
     mkdir -p ~/pyenv
-    virtualenv ~/pyenv/geonode    
+    virtualenv ~/pyenv/geonode
     source ~/pyenv/geonode/bin/activate
     git clone https://github.com/GeoNode/geonode
     cd geonode
@@ -191,7 +195,7 @@ Mac OSX Development Build Instructions::
     paver setup
     paver sync
     paver start
-    
+
     # Optional: To generate document thumbnails for PDFs and other ghostscripts file types
     # Then download ghostscript: https://www.macupdate.com/app/mac/9980/gpl-ghostscript
     brew install imagemagick
@@ -199,7 +203,7 @@ Mac OSX Development Build Instructions::
 
 Once fully started, you should see a message indicating the address of your geonode.
 The default username and password are ``admin`` and ``admin``::
-  
+
   Development Geonode is running at http://localhost:8000/
   To stop the GeoNode machine run:
   paver stop
@@ -211,20 +215,20 @@ Before starting GeoNode (paver start), you could test your installation by runni
 
     paver test
     paver test_integration
-    
+
 In case you want to build yourself the documentation, you need to install Sphinx and the run 'make html' from within the docs directory::
 
     pip install Sphinx
     pip install sphinx_rtd_theme
     cd docs
     make html
-    
+
 You can eventually generate a pdf containing the whole documentation set. For this purpose, if using Ubuntu you will need to install the texlive-full package::
 
     sudo apt-get install texlive-full
     make latexpdf
 
-.. note:: 
+.. note::
 
   When running ``virtualenv venv`` the ``--system-site-packages`` option is
   not required.  If not enabled, the bootstrap script will sandbox your virtual
@@ -238,12 +242,12 @@ You can eventually generate a pdf containing the whole documentation set. For th
 Development Roadmap
 ===================
 
-Geonode's development roadmap is documented in a series of Geonode Improvement Projects (GNIPS). 
+Geonode's development roadmap is documented in a series of Geonode Improvement Projects (GNIPS).
 They are documented here: https://github.com/GeoNode/geonode/wiki/GeoNode-Improvement-Proposals.
-GNIPS are considered to be large undertakings which will add a large amount of features to the project. 
+GNIPS are considered to be large undertakings which will add a large amount of features to the project.
 As such they are the topic of community dicussion and guidance.
 The community discusses these on the developer mailing list: http://lists.osgeo.org/pipermail/geonode-devel/
-Github issues tracks features and bugs, for new developers the tag 'easy-pick' indicates an 
+Github issues tracks features and bugs, for new developers the tag 'easy-pick' indicates an
 issue that should be relatively easy for new developers to understand and complete. Once you have completed an issue
 a pull request should be submitted. This will then be reviewed by the community.
 

@@ -15,7 +15,7 @@ Database connections are valuable resources and as such shall be managed with ca
 
 The purpose served by a connection pool is to maintain connections to an underlying database between requests. The benefit is that connection set-up only need to occur once on the first request while subsequent requests use existing connections and achieve a performance benefit as a result.
 
-Ok, now let’s go into GeoServer specifics. In most GeoServer DataStores you have the possibility to use the JNDI [#f1]_  or the standard store which basically means you can have GeoServer manage the connection pool for you or you can configure it externally (from within the Application Server of choice) and then have GeoServer lean onto it to get connections. Baseline is, one way or the other you’ll always end-up using a connection pool in GeoServer.
+Ok, now let’s go into GeoServer specifics. In most GeoServer datastores you have the possibility to use the JNDI [#f1]_  or the standard store which basically means you can have GeoServer manage the connection pool for you or you can configure it externally (from within the Application Server of choice) and then have GeoServer lean onto it to get connections. Baseline is, one way or the other you’ll always end-up using a connection pool in GeoServer.
 
 
 GeoServer Internal Connection Pool Parameters
@@ -59,28 +59,28 @@ Prepared statements consideration
 Prepared statements are used by databases to avoid re-planning the data access every time, the plan is done only once up-front, and as long as the statement is cached, the plan does not need to be re-computed. 
 
 In business applications fetching a small amount of data at a time this is beneficial for performance, however, in spatial ones, where we typically fetch thousands of rows, the benefit is limited, and sometimes, turns into a performance problem.
-This is the case with PostGIS, that is able to tune the access plan by inspecting the requested BBOX, and deciding if a sequential scan is preferable (the BBOX really accesses most of the data) or using the spatial index is best instead. So, as a rule of thumb, when working with PostGis, it’s better not to enable prepared statements.
+This is the case with PostGIS, that is able to tune the access plan by inspecting the requested bounding box, and deciding if a sequential scan is preferable (the BBOX really accesses most of the data) or using the spatial index is best instead. So, as a rule of thumb, when working with PostGIS, it’s better not to enable prepared statements.
 
 With other databases there are no choices, Oracle currently works only with prepared statements, SQL server only without them (this is often related to implementation limitations than database specific issues).
 
-There is an upside of using prepared statement though: no sql injection attacks are possible when using them. GeoServer code tries hard to avoid this kind of attack when working without prepared statements, but enabling them makes the attack via filter parameters basically impossible.
+There is an upside of using prepared statement though: no SQL injection attacks are possible when using them. GeoServer code tries hard to avoid this kind of attack when working without prepared statements, but enabling them makes the attack via filter parameters basically impossible.
 
 
 Final Thoughts
 ``````````````````````````````````````````````````````
-Summarising, when creating standard DataStores for serving vector data from DBMS in GeoServer you need to remember that internally a connection pool will be created. 
+To summarize, when creating standard datastores for serving vector data from DBMS in GeoServer you need to remember that internally a connection pool will be created. 
 This approach is the simplest to implement but might lead to an inefficient distribution of the connections between different stores in the following cases:
 
  * if we tend to separate tables into different schemas this will lead to the need for creating multiple stores to serve them out since GeoServer works best if the “schema” parameter is specified, this leading to the creation of (mostly unnecessary) connection pools 
  * if we want to create stores in different workspaces connecting to the same database this again will lead to unnecessary duplication of connection pools in different store leading to inefficient usage of connections
  
-Long story short the fact that the pool is internal with respect to the stores may lead to inefficient usage of connections to the underlying DBMS since they will be splitted between multiple stores limiting the scalability of each of them: in fact having 100 connections shared between N normal DataStore will impose limits to the maximum number that each can use, otherwise if we managed to keep the connections into a single pool shared, in turn, with the various DataStore we would achieve a much more efficient sharing between the store as, as an instance, a single store under high load could scale to use all the connections available.
+Long story short the fact that the pool is internal with respect to the stores may lead to inefficient usage of connections to the underlying DBMS since they will be split between multiple stores limiting the scalability of each of them: in fact having 100 connections shared between N normal datastore will impose limits to the maximum number that each can use, otherwise if we managed to keep the connections into a single pool shared, in turn, with the various datastore we would achieve a much more efficient sharing between the store as, as an instance, a single store under high load could scale to use all the connections available.
 
 
 
 Configuration of a JNDI connection pool with Tomcat
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-Many DataStore in GeoServer provide the option of exploiting Java Naming and Directory Interface or `JNDI <http://en.wikipedia.org/wiki/Java_Naming_and_Directory_Interface>`_. for managing the connections pools. JNDI allows for components in a Java system to look up other objects and data by a predefined name. A common use of JNDI is to set-up a connection pool in order to improve the database resource management.
+Many datastores in GeoServer provide the option of exploiting the Java Naming and Directory Interface or `JNDI <http://en.wikipedia.org/wiki/Java_Naming_and_Directory_Interface>`_. for managing the connections pools. JNDI allows for components in a Java system to look up other objects and data by a predefined name. A common use of JNDI is to set-up a connection pool in order to improve the database resource management.
 
 In order to set-up a connection pool, Tomcat needs to be provided with a JDBC driver for the database used and the necessary pool configurations.
 Usually the JDBC driver can be found in the website of the DBMS provider or can be available in the database installation directory. This is important to know since we are not usually allowed to redistribute them. 
@@ -99,8 +99,8 @@ For configuring a PostgreSQL JNDI pool you have to remove the Postgres JDBC driv
 Tomcat Set-up
 ``````````````
 
-The first step to perform for creating a JNDI DataSource (connection pool) is to edit the **context.xml** file inside ``$TOMCAT_HOME/conf`` directory. This file contains the different JNDI resources configured for Tomcat.
-In this case, we are going to configure a JNDI DataSource for a PostgreSQL database. If the file is not present you should create it and add a content similar to the following::
+The first step to perform for creating a JNDI datasource (connection pool) is to edit the **context.xml** file inside ``$TOMCAT_HOME/conf`` directory. This file contains the different JNDI resources configured for Tomcat.
+In this case, we are going to configure a JNDI datasource for a PostgreSQL database. If the file is not present you should create it and add a content similar to the following::
 
 	<Context>
 		<Resource
@@ -119,7 +119,7 @@ In this case, we are going to configure a JNDI DataSource for a PostgreSQL datab
 	 
 .. note:: If the file is already present, do not add the `<Context></Context>` labels.
 
-In the previous XML snippet we configured a connection to a PostrgreSQL database called **testdb** which have the hostname as *localhost* and port number equal to *5432*.
+In the previous XML snippet, we configured a connection to a PostgreSQL database called **testdb** which have the host name as *localhost* and port number equal to *5432*.
 
 .. note:: Note that the user shall set proper *username* and *password* for the database.
 
@@ -133,8 +133,8 @@ Some of the parameters that can be configured for the JNDI connection pool are a
 	* **validationQuery** : (default null) A validation query that double checks the connection is still alive before actually using it.
 	* **timeBetweenEvictionRunsMillis** : (default -1) The number of **milliseconds** to sleep between runs of the idle object evictor thread. When non-positive, no idle object evictor thread will be run.
 	* **numTestsPerEvictionRun** : (default 3) The number of objects to examine during each run of the idle object evictor thread (if any).
-	* **minEvictableIdleTimeMillis** : : (default 1000 * 60 * 30) The minimum amount of time, in **milliseconds**, an object may sit idle in the pool before it is eligable for eviction by the idle object evictor (if any).
-	* **removeAbandoned** : (default false) Flag to remove abandoned connections if they exceed the removeAbandonedTimout. If set to true a connection is considered abandoned and eligible for removal if it has been idle longer than the removeAbandonedTimeout. Setting this to true can recover db connections from poorly written applications which fail to close a connection.
+	* **minEvictableIdleTimeMillis** : : (default 1000 * 60 * 30) The minimum amount of time, in **milliseconds**, an object may sit idle in the pool before it is eligible for eviction by the idle object evictor (if any).
+	* **removeAbandoned** : (default false) Flag to remove abandoned connections if they exceed the removeAbandonedTimeout. If set to true a connection is considered abandoned and eligible for removal if it has been idle longer than the removeAbandonedTimeout. Setting this to true can recover db connections from poorly written applications which fail to close a connection.
 	* **removeAbandonedTimeout** : (default 300) Timeout in **seconds** before an abandoned connection can be removed.
 	* **logAbandoned** : (default false) Flag to log stack traces for application code which abandoned a Statement or Connection.
 	* **testWhileIdle** : (default false) Flag used to test connections when idle.
@@ -162,7 +162,7 @@ And then you can configure the connection pool:
 	
 	PostGIS JNDI Store Configuration
 
-When you are doing this, make sure the schema is properly configured, or the DataStore will list all the tables it can find in the schema it is given access to. 
+When you are doing this, make sure the schema is properly configured, or the datastore will list all the tables it can find in the schema it is given access to.
 		
 Microsoft SQLServer JNDI Configuration
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -174,7 +174,7 @@ Before configuring a SQLServer connection pool you must follow these `Guidelines
 Tomcat Set-up
 ``````````````
 
-In this case, we are going to configure a JNDI DataSource for a SQLServer database. You shall create/edit the **context.xml** file inside ``$TOMCAT_HOME/conf`` directory
+In this case, we are going to configure a JNDI datasource for a SQLServer database. You shall create/edit the **context.xml** file inside ``$TOMCAT_HOME/conf`` directory
 with the following lines::
 
 	<Context>
@@ -218,7 +218,7 @@ Oracle JNDI Configuration
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 Before configuring an Oracle connection pool you should download the Oracle plugin from the `GeoServer Download Page <http://geoserver.org/download/>`_ 
-and then put the the :file:`ojdbc14.jar` file into the ``$TOMCAT_HOME/lib`` folder.
+and then put the :file:`ojdbc14.jar` file into the ``$TOMCAT_HOME/lib`` folder.
 
 .. warning:: You must remove the :file:`ojdbc14.jar` file from the ``WEB-INF/lib`` folder and put it inside the ``$TOMCAT_HOME/lib`` folder.
 
@@ -269,7 +269,7 @@ After, you can configure the connection pool:
 Configuring Connection Pools for production usage
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Connection waiting time and relation with other params
+Connection waiting time and relation with other parameters
 ``````````````````````````````````````````````````````````````````````
 In general it is important to set the connection waiting time in a way that the connection pool does not become a place where to queue threads executing requests under big load. It is indeed possible that under big load threads executing requests for a vector layer will outnumber the available connections in the pool hence such threads will be blocked trying to acquire a new connection; if the number of connections is much smaller than the number of incoming requests and the max wait time is quite big (e.g. 60 seconds) we will find ourselves in the condition to have many threads waiting for a long time to acquire a connection after most of the resources they need will be allocated, especially the memory back buffer if these are WMS requests.
 
@@ -278,7 +278,7 @@ The *max wait time* in general shall be set accordingly to the expected maximum 
 Maximizing sharing of Connection Pools
 ``````````````````````````````````````````````````````````````````````
 How the data is organized between database, schemas and table impact the degree of flexibility we have when trying to best share connections, regardless of the fact that we were using JNDI pools or not. Summarising:
- * Splitting tables in many schemas makes it hard for GeoServer to access table belonging to different schemas unless we switch to JNDI since the schema must be specified as part of the connection params when using internal pools
+ * Splitting tables into many schemas makes it hard for GeoServer to access tables belonging to different schemas unless we switch to JNDI, since the schema must be specified as part of the connection parameters when using internal pools
  * Using different users for different schemas prevent JNDI from working efficiently across schemas. It’s best to use when possible a single dedicated account across schemas
  * Generally speaking having a complex combination of users and schema can lead to inefficient split of available connections in multiple pools
 

@@ -9,7 +9,7 @@ Configuring JMeter for testing GeoWebCache fullWMS support
 The following section compare GeoServer WMS with GeoWebCache ``fullWMS`` support. ``FullWMS`` is a new feature which allows GeoWebCache to act as a WMS endpoint, like GeoServer.
 Using GeoWebCache, the server is able to cache the requested tiles in order to return them faster then GeoServer. 
 
-This example will show how to configure GeoWebCache with fullWMS support and how the performances are improved.
+This example will show how to configure GeoWebCache with full WMS support and how to improve performance.
 
 
 Configuring GeoServer/GeoWebCache

@@ -57,34 +57,34 @@ Basic Web based GIS Concepts and Background
 
 Core development tools and libraries
 ------------------------------------
-- python
+- Python
 
   - http://docs.python.org/2/tutorial/
   - http://www.learnpython.org/
   - http://learnpythonthehardway.org/book/
 
-- django
+- Django
 
   - https://docs.djangoproject.com/en/dev/intro/tutorial01/
   - https://code.djangoproject.com/wiki/Tutorials
 
-- javascript
+- Javascript
 
   - http://www.crockford.com/javascript/inheritance.html
   - http://geoext.org/tutorials/quickstart.html
 
-- jquery
+- jQuery
 
   - http://www.w3schools.com/jquery/default.asp
   - http://docs.jquery.com/Tutorials:Getting_Started_with_jQuery
   - http://www.jquery-tutorial.net/
 
-- bootstrap
+- Bootstrap
 
   - http://twitter.github.io/bootstrap/
   - http://www.w3resource.com/twitter-bootstrap/tutorial.php
 
-- geotools/geoscript/geoserver
+- GeoTools/GeoScript/GeoServer
 
   - http://docs.geotools.org/stable/tutorials/feature/csv2shp.html
   - http://geoscript.org/tutorials/index.html
@@ -99,7 +99,7 @@ Core development tools and libraries
   - https://github.com/sgillies/Fiona
   - http://pypi.python.org/pypi/pyproj
 
-- gdal/ogr
+- GDAL/OGR
 
   - http://www.gdal.org/gdal_utilities.html
   - http://www.gdal.org/ogr_utilities.html

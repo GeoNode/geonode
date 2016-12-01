@@ -123,6 +123,7 @@ def _add_sld_boilerplate(symbolizer):
 </StyledLayerDescriptor>
 """
 
+
 _raster_template = """
 <RasterSymbolizer>
     <Opacity>1.0</Opacity>

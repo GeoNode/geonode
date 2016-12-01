@@ -64,7 +64,7 @@ paver reset
 paver start_geoserver
 PGPASSWORD=geonode dropdb -h localhost -U geonode geonode
 PGPASSWORD=geonode createdb -h localhost -U geonode geonode -T template_postgis
-DJANGO_SETTINGS_MODULE=geonode.upload.tests.test_settings python manage.py syncdb --all --noinput
+DJANGO_SETTINGS_MODULE=geonode.upload.tests.test_settings python manage.py migrate --noinput
 DJANGO_SETTINGS_MODULE=geonode.upload.tests.test_settings python manage.py loaddata sample_admin
 sleep 30
 DELETE_LAYERS= REUSE_DB=1 DJANGO_SETTINGS_MODULE=geonode.upload.tests.test_settings python manage.py test geonode.upload.tests.integration

@@ -4,7 +4,7 @@
 Using REST module
 -----------------
 
-This section contains a number of examples which illustrate various uses of the REST data configuration api.
+This section contains a number of examples which illustrate various uses of the REST data configuration API.
 
 The GeoServer REST configuration module uses the REST principles to expose services allowing to edit the catalog, in particular to manage workspaces, stores, layers, styles and groups.
 
@@ -19,7 +19,7 @@ The examples in this section use the `cURL <http://curl.haxx.se/>`_ utility, whi
 
    	curl -u admin:geoserver -v -XPOST -H "Content-type: text/xml" -d "<workspace><name>myworkspace</name></workspace>" http://localhost:8083/geoserver/rest/workspaces
 
-  the response should contains the following:
+  The response should contain the following:
 
    .. figure:: img/workspace1.png
 

@@ -29,6 +29,7 @@ class ProfileAutocomplete(autocomplete_light.AutocompleteModelTemplate):
         self.choices = self.choices.exclude(username='AnonymousUser')
         return super(ProfileAutocomplete, self).choices_for_request()
 
+
 autocomplete_light.register(
     Profile,
     ProfileAutocomplete,

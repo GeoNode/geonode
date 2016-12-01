@@ -2,7 +2,7 @@
 Developers Reference
 ====================
 
-Here you will find information about each and every component of Geonode, for example geoserver, geonode settings, security, etc.
+Here you will find information about each and every component of GeoNode, for example GeoServer, GeoNode settings, security, etc.
 
 :ref:`djangoapps`
 

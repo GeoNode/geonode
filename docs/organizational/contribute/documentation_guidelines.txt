@@ -4,7 +4,7 @@
 How to write Documentation
 ==========================
 
-GeoNode uses Restructured Text with `Sphinx <http://sphinx.pocoo.org>`_ . Writing style should follow the same policies as geoserver does in their `Documentation Style Guide <http://docs.geoserver.org/latest/en/docguide/style.html>`_
+GeoNode uses reStructuredText with `Sphinx <http://sphinx.pocoo.org>`_ . Writing style should follow the same policies as GeoServer does in their `Documentation Style Guide <http://docs.geoserver.org/latest/en/docguide/style.html>`_
 
 Sphinx Syntax
 =============
@@ -59,13 +59,13 @@ Level 3 sections should have a single minus symbol (-)::
    ---------------------
 
 
-Level 4 sections should have a single dot,periol symbol (.)::
+Level 4 sections should have a single dot, period symbol (.)::
 
    I am a level 4 header
    .....................
 
 
-Level 5 sections should have a single dot,periol symbol (.)::
+Level 5 sections should have a single dot, period symbol (.)::
 
    I am a level 5 header
    +++++++++++++++++++++

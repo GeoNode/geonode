@@ -179,7 +179,7 @@ Where the meaning of the main parameters is summarized below:
   
 *gdal_translate - Tiling the sample dataset*
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-The following steps provide instructions to tile the sample dataset previously configured in GeoServer, by using the GeoTiff driver.
+The following steps provide instructions to tile the sample dataset previously configured in GeoServer, by using the GeoTIFF driver.
 
 1. Create a directory to store the converted data:
 
@@ -293,7 +293,7 @@ Instead of manually repeating these 2 steps (retile + add overviews) for each fi
       
 	  notepad optimize.bat
 	  
-    will be open a text editor. Copy the following content::
+    will open a text editor. Copy the following content::
   
 	  for %%F in (*.tif) do  (
 		echo Processing file %%F

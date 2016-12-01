@@ -32,4 +32,5 @@ class MapTranslationOptions(TranslationOptions):
         'data_quality_statement',
     )
 
+
 translator.register(Map, MapTranslationOptions)

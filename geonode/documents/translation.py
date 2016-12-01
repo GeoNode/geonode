@@ -32,4 +32,5 @@ class DocumentTranslationOptions(TranslationOptions):
         'data_quality_statement',
     )
 
+
 translator.register(Document, DocumentTranslationOptions)

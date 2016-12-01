@@ -39,7 +39,7 @@ sending concurrent request to the server.
    
       *Adding a new Loop Controller*
 
-#. In the ``Thread Group`` panel set the number of thread for the test to  4 (this represents the number of simultaneous requests that are made to GeoServer) and the ramp-up period to 60. Also, chek ``Forever`` on the **Loop Count** field. 
+#. In the ``Thread Group`` panel set the number of thread for the test to  4 (this represents the number of simultaneous requests that are made to GeoServer) and the ramp-up period to 60. Also, check ``Forever`` on the **Loop Count** field. 
 
    .. figure:: img/jmeter14.png
       :align: center
@@ -80,16 +80,16 @@ sending concurrent request to the server.
    
       *HTTP Request host/port/path configuration*
 
-#. From the training data dir root, open the ``data/jmeter_data/jmeter_request_params.txt``, select and copy its contents in the clipboard, then click "Add from Clipboard" in the "HTTP request" panel to setup a sample GetMap request:
+#. From the training data root directory, open the ``data/jmeter_data/jmeter_request_params.txt``, select and copy its contents in the clipboard, then click "Add from Clipboard" in the "HTTP request" panel to setup a sample GetMap request:
 
   .. figure:: img/jmeter_request_params.png
      :align: center
  
      *HTTP parameters configuration*
 
-At this point jMeter is configured to run a GeoServer performance test:
+At this point JMeter is configured to run a GeoServer performance test:
 
-#. Select on **Thread Group** tree node and afted click on ``Run`` tool and select **Start** to startig the jMeter test.
+#. Select on **Thread Group** tree node and then click on ``Run`` tool and select **Start** to starting the JMeter test.
 
    .. figure:: img/jmeter13.png
       :align: center

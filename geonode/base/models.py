@@ -874,6 +874,7 @@ def rating_post_save(instance, *args, **kwargs):
     """
     ResourceBase.objects.filter(id=instance.object_id).update(rating=instance.rating)
 
+
 signals.post_save.connect(rating_post_save, sender=OverallRating)
 
 

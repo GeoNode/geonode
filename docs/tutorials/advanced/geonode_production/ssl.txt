@@ -27,18 +27,18 @@ Copy the key and certificate to the standard locations::
     sudo cp server.crt /etc/ssl/certs/geonode.crt
     sudo cp server.key /etc/ssl/private/geonode.key
 
-It seems not necessary in standard goenode installations (via ppa) but if you plan to use other python or java applications 
-could be useful alsoadd the certificate to the cacerts file for python and java::
+It seems not necessary in standard GeoNode installations (via ppa) but if you plan to use other python or java applications,
+it could be useful also add the certificate to the cacerts file for python and java::
 
     sudo -s "cat server.crt >> /usr/lib/python2.7/dist-packages/httplib2/cacerts.txt"
     sudo keytool -import -alias geonodessl -keystore /etc/ssl/certs/java/cacerts -file server.crt
 
-Note keytool will ask for a password and the standard password for the java cacerts file is ``changeit``.
+Note: keytool will ask for a password and the standard password for the java cacerts file is ``changeit``.
 
 Apache Configuration
 ====================
 
-Enable the ssl module in Apache with the command::
+Enable the SSL module in Apache with the command::
 
     sudo a2enmod ssl
 

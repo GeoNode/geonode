@@ -37,4 +37,5 @@ class ServiceAdmin(admin.ModelAdmin):
     list_filter = ('type', 'method')
     form = ServiceAdminForm
 
+
 admin.site.register(Service, ServiceAdmin)

@@ -410,14 +410,15 @@ class CommonModelApi(ModelResource):
             objects = []
 
         object_list = {
-           "meta": {"limit": 100,  # noqa
-                    "next": next_page,
-                    "offset": int(getattr(request.GET, 'offset', 0)),
-                    "previous": previous_page,
-                    "total_count": total_count,
-                    "facets": facets,
-                    },
-            'objects': map(lambda x: self.get_haystack_api_fields(x), objects),
+           "meta": {
+                "limit": settings.API_LIMIT_PER_PAGE,
+                "next": next_page,
+                "offset": int(getattr(request.GET, 'offset', 0)),
+                "previous": previous_page,
+                "total_count": total_count,
+                "facets": facets,
+            },
+           "objects": map(lambda x: self.get_haystack_api_fields(x), objects),
         }
         self.log_throttled_access(request)
         return self.create_response(request, object_list)
@@ -492,6 +493,7 @@ class CommonModelApi(ModelResource):
         ]
 
         # If an user does not have at least view permissions, he won't be able to see the resource at all.
+        filtered_objects_ids = None
         if response_objects:
             filtered_objects_ids = [item.id for item in response_objects if
                                     request.user.has_perm('view_resourcebase', item.get_self_resource())]

@@ -15,7 +15,7 @@ at the `ASCII - GRID` section.
 
 #.	Navigate to the workshop directory :file:`${TRAINING_ROOT}/data/user_data/gdal_processing_data` (on Windows :file:`%TRAINING_ROOT%\\data\\user_data\\gdal_processing_data`) and find the *DTM_data* directory.
 
-#.	Navigate inside the *DTM_data* directory with the SDKshell.
+#.	Navigate into the *DTM_data* directory with the SDK Shell.
 
 .. note:: The following operations must be executed from the shell inside the selected directory. In Windows, run *setenv.bat* if not already launched.
 
@@ -201,7 +201,7 @@ at the `ASCII - GRID` section.
 		  NoData Value=-9999
 		  Overviews: 1807x3142, 904x1571, 452x786, 226x393
 		  
-	Then the result can be displayed in GeoServer by configuring the image as a GeoTiff (see :ref:`Adding a GeoTiff <geoserver.add_geotiff>` section).
+	Then the result can be displayed in GeoServer by configuring the image as a GeoTIFF (see :ref:`Adding a GeoTiff <geoserver.add_geotiff>` section).
 	
 #.	Displaying the result on GeoServer:
 

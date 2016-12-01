@@ -3,7 +3,7 @@
 GeoNode Advanced Configuration
 ==============================
 
-Here you will find information about each and every component of Geonode, for example geoserver, geonode settings, security, etc.
+Here you will find information about every component of Geonode, such as GeoServer, geonode settings, security, etc.
 
 :ref:`settings`
 

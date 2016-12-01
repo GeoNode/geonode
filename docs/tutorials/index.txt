@@ -11,7 +11,7 @@ The tutorials are based around performing tasks, like adding data or publishing 
     
     .. code-block:: yaml
     
-        geo/geo # principal user whith suoders privileges
+        geo/geo # principal user with sudoers privileges
         geonode/geo # /home/geonode is the location where you can find sources, binaries and training data
         postgres/postgres # system user for the management of the DBMS
         
@@ -56,7 +56,7 @@ The tutorials are based around performing tasks, like adding data or publishing 
     You will know how to:
 
     1. Manage users accounts and how to modify them.
-    2. Use and manage the different GeoNode basic resouces.
+    2. Use and manage the different GeoNode basic resources.
     3. Use the GeoNode searching tools to find your resources.
     4. Manage Layers and Maps, update the styles and publish them.
     5. Load datasets into GeoNode and keep them synchronized with GeoServer.
@@ -97,9 +97,10 @@ The tutorials are based around performing tasks, like adding data or publishing 
         GeoNode is a web based GIS tool, and as such, in order to do development on GeoNode itself or to integrate it into your own application, you should be familiar with basic web development concepts as well as with general GIS concepts.
 
 :ref:`adv_workshop`
-    This module introduces advanced tecquinques and metodologies for the management of the geospatial data and the maintenance and tuning of the servers on *Production Environments*.
+    This module introduces advanced techniques and methodologies for the management of the geospatial data and the maintenance and tuning of the servers on *Production Environments*.
     
     The last sections of the module will teach also you how to add brand new classes and functionalities to your GeoNode installation.
     
     *Prerequisites*
-        You should be familiar with GeoNode, GeoServer, Python framework and development concepts other than with system administrator and caching concepts and tecnquiques.
+        You should be familiar with GeoNode, GeoServer, Python framework and
+development concepts other than with system administrator and caching concepts and techniques.

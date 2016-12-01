@@ -18,7 +18,7 @@ To enable a new language in GeoNode you have to do the following:
 
     python manage.py makemessages -l fr
 
-#. Navigate to the GeoNode dir and do::
+#. Navigate to the GeoNode directory and do::
 
     cd src/GeoNodePy/geonode/maps; django-admin.py makemessages -l fr
     cd src/GeoNodePy/geonode; django-admin.py makemessages -l fr
