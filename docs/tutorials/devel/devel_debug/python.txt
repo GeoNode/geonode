@@ -10,7 +10,7 @@ Logging
 References:
 
 - https://docs.python.org/2/library/logging.html
-- https://docs.djangoproject.com/en/1.4/topics/logging/
+- https://docs.djangoproject.com/en/1.8/topics/logging/
 
 Logging is controlled by the contents of the logging data structure defined in
 the :file:`settings.py`. The default settings distributed with GeoNode are

@@ -102,7 +102,7 @@ both the ``Domain name`` and ``Display name`` entries to match your system.
 
 It is possible to 'inform' google of changes to your sitemap. This is accomplished
 using the ping_google management command. More information can be found here
-http://docs.djangoproject.com/en/dev/ref/contrib/sitemaps/#django.contrib.sitemaps.ping_google
+https://docs.djangoproject.com/en/dev/ref/contrib/sitemaps/#django.contrib.sitemaps.ping_google
 It is recommended to put this call into a cron (scheduled) job to update google periodically.
 
 
@@ -113,7 +113,9 @@ You can optionally configure GeoNode to allow new users to register through the 
 
 To allow new user registration:
 
-1. Set up the email backend for Django (see `Django documentation <http://docs.djangoproject.com/en/dev/topics/email/#e-mail-backends>`_) and add the appropriate settings to ``./src/GeoNodePy/geonode/local_settings.py``.  For example::
+1. Set up the email backend for Django (see `Django documentation <https://docs.djangoproject.com/en/1.8/topics/email/#email-backends>`_)
+   and add the appropriate settings to
+   ``./src/GeoNodePy/geonode/local_settings.py``.  For example::
 
        EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
        EMAIL_HOST = 'smtp.gmail.com'

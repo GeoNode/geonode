@@ -31,7 +31,7 @@ It's also possible to filter by related tables like *"/api/layers?keywords__slug
 
 There are many possible filter, refer to the django_ filters guide.
 
-.. _django: https://docs.djangoproject.com/en/1.6/ref/models/querysets/
+.. _django: https://docs.djangoproject.com/en/1.8/ref/models/querysets/
 
 
 API limit and pagination

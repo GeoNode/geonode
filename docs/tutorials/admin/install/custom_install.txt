@@ -282,7 +282,8 @@ You will also need a web server capable of simply serving static files;
 if you are using Apache httpd it can serve this purpose as well.
 
 .. note:: The Django project has further documentation on how to serve Django
-        applications at https://docs.djangoproject.com/en/1.5/howto/deployment/ .
+        applications at https://docs.djangoproject.com/en/1.8/howto/deployment/ .
+
 
 Before the web server will be configured, some other steps are needed to execute.
 

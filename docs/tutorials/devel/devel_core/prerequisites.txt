@@ -92,7 +92,7 @@ Django is based on the Model Template View paradigm (more commonly called Model 
 
 - https://en.wikipedia.org/wiki/Model%E2%80%93view%E2%80%93controller
 - http://www.codinghorror.com/blog/2008/05/understanding-model-view-controller.html
-- https://docs.djangoproject.com/en/1.4/
+- https://docs.djangoproject.com/en/1.8/
 
 
 HTTP Request Response

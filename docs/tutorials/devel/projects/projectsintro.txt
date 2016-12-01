@@ -14,7 +14,7 @@ GeoNode is an out-of-the-box, full-featured Spatial Data Infrastructure solution
 
 There are quite a few existing Downstream GeoNode projects some of which follow the methodology described in this module. You should familiarize yourself with these projects and how and why they extend GeoNode. You should also carefully think about what customization and additional modules you need for your own GeoNode-based project and research the options that are available to you. The `Django Packages`_ site is a great place to start looking for existing modules that may meet your needs.
 
-.. _Django Packages: http://www.djangopackages.com/
+.. _Django Packages: https://djangopackages.org/
 
 Existing downstream GeoNode projects
 ------------------------------------
@@ -42,4 +42,4 @@ Django template projects
 
 GeoNode follows the Django template projects paradigm introduced in Django 1.4. At a minimum, a Django project consists of a :file:`settings.py` file and a :file:`urls.py` file; Django apps are used to add specific pieces of functionality. The GeoNode development team has created a template project which contains these required files with all the GeoNode configuration you need to get up and running with your own GeoNode project. If you would like learn more about Django projects and apps, you should consult the `Django Documentation`_
 
-.. _Django Documentation: https://docs.djangoproject.com/en/1.4/
+.. _Django Documentation: https://docs.djangoproject.com/en/1.8/

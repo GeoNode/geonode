@@ -28,9 +28,9 @@ In the advanced sections of this documentation we will go through GeoNode comman
 Django Architecture
 ===================
 
-GeoNode is based on `Django <www.djangoproject.com>`_ which is a high level Python web development framework that encourages rapid development and clean pragmatic design. 
+GeoNode is based on `Django <https://www.djangoproject.com/>`_ which is a high level Python web development framework that encourages rapid development and clean pragmatic design.
 Django is based on the Model View Controller (`MVC <http://en.wikipedia.org/wiki/Model%E2%80%93view%E2%80%93controller>`_) architecture pattern, and as such, 
-GeoNode models layers, maps and other modules with Django’s `Model <https://docs.djangoproject.com/en/1.4/topics/db/models/>`_ module and these models are used via 
+GeoNode models layers, maps and other modules with Django’s `Model <https://docs.djangoproject.com/en/1.8/topics/db/models/>`_ module and these models are used via
 Django’s `ORM <http://en.wikipedia.org/wiki/Object-relational_mapping>`_ in views which contain the business logic of the GeoNode application and are used to drive 
 HTML templates to display the web pages within the application.
 
@@ -214,7 +214,7 @@ Javascript in GeoNode
 
     * A `GeoNode mixin <https://github.com/GeoNode/geonode/blob/master/geonode/static/geonode/js/extjs/GeoNode-mixin.js>`_  class
       that provides GeoExplorer with the methods needed to properly function in GeoNode.  The class
-      is responsible for checking permissions, retrieving and submitting the `CSRF token <https://docs.djangoproject.com/en/dev/ref/contrib/csrf/>`_,
+      is responsible for checking permissions, retrieving and submitting the `CSRF token <https://docs.djangoproject.com/en/1.8/ref/contrib/csrf/>`_,
       and user authentication.
 
     * A `search module <https://github.com/GeoNode/geonode/tree/master/geonode/static/geonode/js/search>`_ responsible for the GeoNode's site-wide search functionality.
