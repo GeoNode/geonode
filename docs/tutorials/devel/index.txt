@@ -33,7 +33,7 @@ This module will introduce you to the components that GeoNode is built with, the
     Here's a list of Pavement tasks maintained by the GeoNode development team.
 
 :ref:`django_overview_index`
-    This section introduces some basic concepts of DJango, the Python based web framework on top of which GeoNode has been developed.
+    This section introduces some basic concepts of Django, the Python based web framework on top of which GeoNode has been developed.
 
     Django's primary goal is to ease the creation of complex, database-driven websites. Django emphasizes reusability and "pluggability" of components,
     rapid development, and the principle of *don't repeat yourself*. 
@@ -45,14 +45,14 @@ This module will introduce you to the components that GeoNode is built with, the
     This module will introduce you to the basic tools and skills required to start actively developing GeoNode.
 
 :ref:`install_devmode`
-    This module shows a step-by-step guide for the setup of a GeoNode Develeopment Environent on an Ubuntu system.
+    This module shows a step-by-step guide for the setup of a GeoNode Development Environment on an Ubuntu system.
     
     For other Linux distributions the commands are similar, the difference is mainly on the packages names.
     
     .. note:: For Windows: (:ref:`win_binary_installer`)
     
 :ref:`dev_debug`
-    GeoNode can be difficult to debug as there are several different components involved. This module shows some tecniques to debug the different parts of GeoNode.
+    GeoNode can be difficult to debug as there are several different components involved. This module shows some techniques to debug the different parts of GeoNode.
     
 :ref:`geonode_apis`
     This module provides an overview of the core modules and libraries used by GeoNode and teach to the user how to use them through some guided examples.

@@ -34,7 +34,7 @@ Fist configure Ansible `PPA <https://en.wikipedia.org/wiki/Personal_Package_Arch
     sudo apt-get install software-properties-common
     sudo apt-add-repository ppa:ansible/ansible
 
-Then update your available software index and install ansible::
+Then update your available software index and install Ansible::
 
     sudo apt-get update
     sudo apt-get install ansible
@@ -42,7 +42,7 @@ Then update your available software index and install ansible::
 Running Ansible
 ===============
 
-To test your ansible installation, run the following command
+To test your Ansible installation, run the following command
 
 .. note::
 
@@ -66,7 +66,7 @@ Edit or create the hosts file::
     vim /etc/ansible/hosts
 
 This file contains a list of nodes for Ansible to manage. Nodes can be referred
-either with IP or hostname. The syntax is the following::
+either with IP or host name. The syntax is the following::
 
     192.168.1.50
     aserver.example.org
@@ -184,7 +184,7 @@ Managing Packages
 =================
 
 Another use case is installing or upgrading packages on the remote nodes. You can use
-the `apt` module to acheive this on Debian based systems or the `yum` module on
+the `apt` module to achieve this on Debian based systems or the `yum` module on
 Red Hat based systems::
 
     ansible 84.33.2.70 -m apt -a "name=apache2 state=present"
@@ -199,7 +199,7 @@ You can use the same module to make sure a package is at the latest version::
 Managing Services
 =================
 
-Use the `service` module to ensure a given service is started on all webservers::
+Use the `service` module to ensure a given service is started on all web servers::
 
     ansible webservers -m service -a "name=httpd state=started"
 
@@ -279,13 +279,13 @@ The handlers part describes the handlers for this playbook (more on handlers lat
 In the example above there are three tasks. Each task has a name, a module and zero
 or more arguments for the module.
 
-The first task specifies that we want apache at the latest version installed on
+The first task specifies that we want the latest version of Apache installed on
 the system. This is accomplished by the `yum` module.
 
 The second task specifies a configuration file for Apache using a `template`.
 Template files are written in `Jinja2 template language <http://jinja.pocoo.org/>`_.
 
-The third task make sure apache web server is running using the `service` module.
+The third task make sure the Apache web server is running using the `service` module.
 
 When you run a Playbook using the ansible-playbook command, Ansible will connect to
 the hosts specified in the hosts section and run the tasks one by one, in order.
@@ -319,4 +319,4 @@ This concludes our brief tutorial on Ansible. For a more thorough introduction
 refer the `official documentation <https://docs.ansible.com/>`_.
 
 Also, take a look at the `Ansible examples repository <https://github.com/ansible/ansible-examples>`_
-for a set of Playbooks showing common techniques.
+or a set of Playbooks showing common techniques.

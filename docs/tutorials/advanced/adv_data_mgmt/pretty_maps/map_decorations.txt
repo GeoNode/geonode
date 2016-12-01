@@ -6,7 +6,7 @@ Decorating a Map
 ------------------
 
 
-WMS Decorations provide a framework for visually annotating images from WMS with absolute, rather than spatial, positioning. This example of decoration include scaleline, legends, and image.
+WMS Decorations provide a framework for visually annotating images from WMS with absolute, rather than spatial, positioning. Examples of this decoration include scale lines, legends, and image.
 
 
 #. Go to $GEOSERVER_DATA_DIR and create a new directory named :guilabel:`layouts` and create a new file named :guilabel:`boulder_ly.xml` inside it.

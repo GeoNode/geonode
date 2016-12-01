@@ -3,7 +3,7 @@
 ===============
 Django Overview
 ===============
-This section introduces some basic concepts of DJango, the Python based web framework on top of which GeoNode has been developed.
+This section introduces some basic concepts of Django, the Python based web framework on top of which GeoNode has been developed.
 
 The main objective of Django is to facilitate the creation of complex sites oriented databases. Django emphasizes reusability and "pluggability" of components, rapid development, and the principle of not repeating yourself. Python is used everywhere, even for settings, files, and data models. 
 

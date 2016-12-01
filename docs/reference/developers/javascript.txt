@@ -14,7 +14,7 @@ GeoNode provides a number of facilities for interactivity in the web browser bui
 * `Grunt <http://gruntjs.com/>`_ for front-end task automation.
 * `GXP <http://projects.opengeo.org/gxp>`_ for providing some higher-level application building facilities on top of GeoExt, as well
   as improving integration with GeoServer.
-* `jQuery <http://jquery.com>`_ to abstract javascript manipulation, event handling, animation and Ajax.
+* `jQuery <http://jquery.com>`_ to abstract JavaScript manipulation, event handling, animation and XMLHttpRequest.
 
 GeoNode uses application-specific modules to handle pages and services that are unique to GeoNode.  This framework includes:
 
@@ -25,8 +25,8 @@ GeoNode uses application-specific modules to handle pages and services that are 
 
 * A `search module <https://github.com/GeoNode/geonode/tree/master/geonode/static/geonode/js/search>`_ responsible for the GeoNode's site-wide search functionality.
 * An `upload and status module <https://github.com/GeoNode/geonode/tree/master/geonode/static/geonode/js/upload>`_ to support file uploads.
-* `Template files <https://github.com/GeoNode/geonode/tree/master/geonode/static/geonode/js/templates>`_ for generating commonly used html sections.
-* A `front-end testing module <https://github.com/GeoNode/geonode/tree/master/geonode/static/geonode/js/tests>`_ to test GeoNode javascript.
+* `Template files <https://github.com/GeoNode/geonode/tree/master/geonode/static/geonode/js/templates>`_ for generating commonly used HTML sections.
+* A `front-end testing module <https://github.com/GeoNode/geonode/tree/master/geonode/static/geonode/js/tests>`_ to test GeoNode JavaScript.
 
 The following concepts are particularly important for developing on top of the
 GeoNode's JavaScript framework.

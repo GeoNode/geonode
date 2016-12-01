@@ -51,7 +51,7 @@ You may want to review the configuration files ::
    /etc/sysconfig/network-scripts/ifcfg-DEVICE
 
 You may also want to review the file ``/etc/resolv.conf``
-to check the nameservers.
+to check the name servers.
 
 Check that the connection is up by pinging and external server::
 
@@ -116,7 +116,7 @@ First generate a public/private key pair using `ssh-keygen`::
 
     ssh-keygen
 
-Folllow the procedure, you will end up with your newly generated key under ``~/.ssh``
+Follow the procedure, you will end up with your newly generated key under ``~/.ssh``
 Now copy your `public` (by default it is called id_rsa.pub) key over the CentOS
 machine in ``/home/geo/.ssh/authorized_keys``. There are several ways to do
 it, we are going to use the `ssh-copy-id` tool::
@@ -151,7 +151,7 @@ Edit ``/etc/ssh/sshd_config`` as follows::
 Installing ntp
 ==============
 
-Install the program for ntp server synchronization::
+Install the program for NTP server synchronization::
 
    yum install ntp
 
@@ -159,13 +159,13 @@ Edit ``/etc/ntp.conf`` and add the following line before the first ``server`` di
 
    server tempo.ien.it     # Galileo Ferraris
 
-Replace ``tempo.ien.it`` with your nearest ntp server.
+Replace ``tempo.ien.it`` with your nearest NTP server.
 
 Sync with the server by issuing::
 
    systemctl start ntpd
 
-Set the time synchronization as an autostarting daemon::
+Set the time synchronization as an automatically started daemon::
 
    systemctl enable ntpd
 

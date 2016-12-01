@@ -41,7 +41,7 @@ You can download the Oracle JDK RPM from this page:
 
   http://www.oracle.com/technetwork/java/javase/downloads/index.html
 
-Oracle does not expose a URL to automatically dowload the JDK because an interactive licence acceptance is requested.
+Oracle does not expose a URL to automatically download the JDK because interactive license acceptance is requested.
 You may start downloading the JDK RPM from a browser, and then either:
 
 * stop the download from the browser and use on the server the dynamic download URL your browser has been assigned, or

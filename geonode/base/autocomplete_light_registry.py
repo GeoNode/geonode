@@ -37,6 +37,7 @@ class ResourceBaseAutocomplete(autocomplete_light.AutocompleteModelTemplate):
         return super(ResourceBaseAutocomplete, self).choices_for_request()
 
 
+
 autocomplete_light.register(Region,
                             search_fields=['name'],
                             autocomplete_js_attributes={'placeholder': 'Region/Country ..', },)

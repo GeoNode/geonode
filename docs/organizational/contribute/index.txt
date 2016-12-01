@@ -31,7 +31,7 @@ Useful information for bug reports includes:
   * If there is a data file involved in the bug (such as a Shapefile that doesn't render properly), please consider including it in the bug report.
     Be aware that not all data files are freely distributable.
 
-To help GeoNode to better address the issue you can tag the ticket with one or more lables
+To help GeoNode address the issue, you can tag the ticket with one or more labels
 that you can find on the side column.
 
 Write Documentation

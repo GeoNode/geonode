@@ -116,7 +116,7 @@ Make a commit
 
 On GitHub, saved changes are called **commits**.
 
-Each commit has an associated **commit message**, which is a description explaining why a particular change was made. Thanks to these messages, you and others can read through commits and understand what you’ve done and why.
+Each commit has an associated **commit message**, which is a description explaining why a particular change was made. Thanks to these messages, you and others can read through commits and understand what you've done and why.
 
 * Add a new logo to your custom GeoNode as described in the section :ref:`theme_admin`
 

@@ -4,13 +4,13 @@
 Community Resources
 ===================
 
-Here you will find many links to resources on Github, external sites using GeoNode.  Think of like your GeoNode Bookmarks.
+Here you will find many links to resources on GitHub, external sites using GeoNode.  Think of like your GeoNode Bookmarks.
 
 Main Links
 ----------
 These 3 top links are the GeoNode landing pages and will take you to all other information on GeoNode.
 
-* Main HomePage and Blog http://geonode.org
+* Main home page and blog http://geonode.org
 * Documentation http://docs.geonode.org
 * GitHub Code http://github.com/GeoNode
 
@@ -22,7 +22,7 @@ Contact members and ask questions
     * Users List http://lists.osgeo.org/cgi-bin/mailman/listinfo/geonode-users
     * Developers List http://lists.osgeo.org/cgi-bin/mailman/listinfo/geonode-devel
 * IRC irc://irc.freenode.net/geonode
-* WebChat: http://webchat.freenode.net/?channels=#geonode
+* Webchat: http://webchat.freenode.net/?channels=#geonode
 * Social Media
     * Blog http://geonode.org/blog/
     * Twitter https://twitter.com/geonode
@@ -31,7 +31,7 @@ Contact members and ask questions
 Github Project Links
 --------------------
 
-* Main Github page https://github.com/GeoNode/geonode
+* Main GitHub page https://github.com/GeoNode/geonode
 * Master Branch https://github.com/GeoNode/geonode/tree/master
 * Issue Tracker https://github.com/GeoNode/geonode/issues
 * Pull Requests https://github.com/GeoNode/geonode/pulls
@@ -58,9 +58,9 @@ Testing and Packaging
     * Ohloh https://www.ohloh.net/p/geonode
 * Packages
     * Debian Package https://github.com/GeoNode/geonode-deb
-    * RPM Redhat https://github.com/GeoNode/geonode-rpm
+    * RPM Red Hat https://github.com/GeoNode/geonode-rpm
     * Chef https://github.com/GeoNode/chef-geonode
-    * PyPi https://pypi.python.org/pypi/GeoNode
+    * PyPI https://pypi.python.org/pypi/GeoNode
     * Launchpad
         * https://launchpad.net/~geonode
         * https://launchpad.net/~geonode/+archive/release

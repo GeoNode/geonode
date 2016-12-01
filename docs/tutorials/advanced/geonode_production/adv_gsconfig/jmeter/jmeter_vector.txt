@@ -6,7 +6,7 @@
 Configuring JMeter for testing Vector data
 ================================================
 
-The following section compare vector data preparation using Shapefile and PostGis. For this example a Shapefile containing primary or secondary roads is used.
+The following section compares vector data preparation using Shapefile and PostGIS. For this example a Shapefile containing primary or secondary roads is used.
 
 The purpose is to test the throughput between the shapefile and an optimized database containing the same data. The result will demonstrate that database optimization can provide a better
 throughput than the one of the shapefile

@@ -2,7 +2,7 @@
 How to translate GeoNode's Documentation
 ========================================
 
-1. As a firt step, generate all of the needed .pot files (any time the master documentation changes)::
+1. As a first step, generate all of the needed .pot files (any time the master documentation changes)::
 
     cd docs
     sphinx-build -b gettext . i18n/pot
@@ -11,7 +11,7 @@ How to translate GeoNode's Documentation
 
     $ sh i18n/scripts/pre_translate.sh
   
-3. Do a pull from transifex to get latest translations::
+3. Do a pull from Transifex to get latest translations::
 
     $ tx pull -a
     
@@ -20,7 +20,7 @@ How to translate GeoNode's Documentation
     $ vi i18n/it/LC_MESSAGES/index.po
     $ sh i18n/scripts/post_translate.sh
     
-4. Do a push to transifex to update translations::
+4. Do a push to Transifex to update translations::
 
     $ tx push -s -t
   

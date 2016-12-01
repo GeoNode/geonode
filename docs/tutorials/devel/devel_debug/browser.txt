@@ -7,7 +7,7 @@ This section covers some techniques for debugging browser and Django related
 response bugs using the Firefox web browser extension named Firebug. The concepts
 covered apply to other browser's tools but may vary in terminology.
 
-Another Firefox extension worth noting is 'jsonview'. This extension supports
+Another Firefox extension worth noting is 'JSONView'. This extension supports
 formatted viewing of JSON responses and integrates well with Firebug.
 
 References:
@@ -53,7 +53,7 @@ DOM Tab Exercises
 ..................
 
 #. Drill down in the DOM tab.
-#. Use the console to interactively exercise jquery.
+#. Use the console to interactively exercise jQuery.
 #. Use the console to interact with the app/map or other page objects
 
 Script Tab
@@ -85,6 +85,6 @@ The screen-shot displays a search result 'article' element highlighted with padd
 HTML Tab Exercises
 ...................
 
-#. Identify elements, look at the tabs on the right
-#. Change styles, add new rules and styles
-#. Edit existing HTML elements via the raw and tree-view
+#. Identify elements by looking at the tabs on the right.
+#. Change styles, adding new rules and styles.
+#. Edit existing HTML elements via the raw view and the tree view.

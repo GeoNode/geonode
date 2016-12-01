@@ -75,7 +75,7 @@ Its parameters dialog is also created automatically from the inputs it takes and
 
 SEXTANTE exposes its API through the QGIS python console, including not just all its available algorithms, but also several tools for easy handling both vector and raster data and creating new geoalgorithms. Users familiar with python will be able to create much more complex models with ease, and to automate tasks that involve processing.
 
-algorithms are executed ussing the ``runalg`` method, passing the name of the algorithm and the parameters it requires. Importing a layer into geoserver can be done from the QGIS console using code like the one shown below:
+Algorithms are executed using the ``runalg`` method, passing the name of the algorithm and the parameters it requires. Importing a layer into GeoServer can be done from the QGIS console using code like the one shown below:
 
 ::
 
@@ -106,4 +106,4 @@ Each row in the table (3 by default) represents a single execution, and more row
 
 Models can also be run as a batch process. The model defined above, which computed a set of contour lines from a points layer and imported the result into GeoServer, can be called repeatedly using the same input layer and different intervals, to get contour layers of different level of detail, suitable to be rendered at different scales.
 
-More detailed documentation about SEXTANTE can be found at a dedicated chapter in the current QGIS manual, at http://docs.qgis.org/html/en/docs/user_manual/sextante/index.html. For the most up-to-date version, check the corresponding entry at the QGIS documentation github repository, at https://github.com/qgis/QGIS-Documentation/tree/master/source/docs/user_manual/sextante
+More detailed documentation about SEXTANTE can be found at a dedicated chapter in the current QGIS manual, at http://docs.qgis.org/html/en/docs/user_manual/sextante/index.html. For the most up-to-date version, check the corresponding entry at the QGIS documentation GitHub repository, at https://github.com/qgis/QGIS-Documentation/tree/master/source/docs/user_manual/sextante

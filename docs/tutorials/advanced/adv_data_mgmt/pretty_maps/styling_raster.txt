@@ -126,9 +126,9 @@ Adding hillshade
 
     .. figure:: img/raster_overlay_2layers.png
 
-#. Press Enter to send the updated request. The Layer Preview should change like this where you can see both the srtm and hillshade layers.
+#. Press Enter to send the updated request. The Layer Preview should change like this where you can see both the SRTM and hillshade layers.
 
     .. figure:: img/raster_overlay.png
 
-       Layer preview with srtm and hillshade being overlaid
+       Layer preview with SRTM and hillshade being overlaid
 

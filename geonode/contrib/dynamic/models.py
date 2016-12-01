@@ -458,6 +458,7 @@ def post_save_layer(instance, sender, **kwargs):
     # Assign this layer model to all ModelDescriptions with the same name.
     ModelDescription.objects.filter(name=instance.name).update(layer=instance)
 
+
 if not has_datastore:
     models.signals.pre_save.connect(configure_models, sender=Layer)
     models.signals.post_save.connect(post_save_layer, sender=Layer)

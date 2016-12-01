@@ -125,7 +125,7 @@ Which in case of successful import will look like::
 Configuring a shapefile with no projection information
 ------------------------------------------------------
 
-In this case, let's assume we have a single shapefile, tasmania_cities.shp, that does not have the .prj anciliary file 
+In this case, let's assume we have a single shapefile, tasmania_cities.shp, that does not have the ancillary .prj file
 (the example is equally good for any case where the prj file contents cannot be matched to an official EPSG code).
 
 We are going to post the following import definition::
@@ -176,7 +176,7 @@ The response in case the CRS is missing will be::
 	  }
 	}
 
-Drilling into the task layer we can see the srs information is missing::
+Drilling down to the task layer, we can see the SRS information is missing::
 
 	{
 	  "layer": {
@@ -310,7 +310,7 @@ into PostGIS as a new spatial table. The CSV file looks as follows::
 	1, 2015-01-01T14:00:00, 10.41, 62.45, 12
 
 
-First, we are going to create a empty import with an existing postgis store as the target::
+First, we are going to create a empty import with an existing PostGIS store as the target::
 
 	curl -u admin:geoserver -XPOST -H "Content-type: application/json" -d @import.json "http://localhost:8080/geoserver/rest/imports"
 
@@ -331,7 +331,7 @@ Where import.json is::
 	   }
 	}
 
-Then, we are going to POST the csv file to the tasks list, in order to create an import task for it::
+Then, we are going to POST the CSV file to the tasks list, in order to create an import task for it::
 
 	curl -u admin:geoserver -F name=test -F filedata=@values.csv "http://localhost:8080/geoserver/rest/imports/0/tasks"
 
@@ -400,13 +400,13 @@ Now the import is ready to run, and we'll execute it using::
 If all goes well the new layer is created in PostGIS and registered in GeoServer as a new layer.
 
 In case the features in the CSV need to be appended to an existing layer a PUT request against the task might be performed, changing its
-updateMode from "CREATE" to "APPEND". Changing it to "REPLACE" instead will preserve the layer, but remove the old conents and replace
+updateMode from "CREATE" to "APPEND". Changing it to "REPLACE" instead will preserve the layer, but remove the old contents and replace
 them with the newly uploaded ones.
 
 Uploading and optimizing a GeoTiff with ground control points 
 -------------------------------------------------------------
 
-A data supplier is periodically providing GeoTiffs that we need to configure in GeoServer.
+A data supplier is periodically providing GeoTIFFs that we need to configure in GeoServer.
 The GeoTIFF is referenced via Ground Control Points, is organized by stripes, and has no overviews.
 The objective is to rectify, optimize and publish it via the importer.
 
@@ -426,7 +426,7 @@ Where import.json is::
        }
     }
 
-Then, we are going to POST the GeoTiff file to the tasks list, in order to create an import task for it::
+Then, we are going to POST the GeoTIFF file to the tasks list, in order to create an import task for it::
 
     curl -u admin:geoserver -F name=test -F filedata=@box_gcp_fixed.tif "http://localhost:8080/geoserver/rest/imports/0/tasks"
     
@@ -465,7 +465,7 @@ Now the import is ready to run, and we'll execute it using::
 
     curl -u admin:geoserver -XPOST "http://localhost:8080/geoserver/rest/imports/0"
 
-A new layer ``box_gcp_fixed`` layer will appear in GeoServer, with an underlying GeoTiff file ready
+A new layer ``box_gcp_fixed`` layer will appear in GeoServer, with an underlying GeoTIFF file ready
 for web serving.
 
 Adding a new granule into an existing mosaic 
@@ -473,7 +473,7 @@ Adding a new granule into an existing mosaic
 
 A data supplier is periodically providing new time based imagery that we need to add into an existing mosaic
 in GeoServer.
-The imagery is in GeoTiff format, and lacks a good internal structure, which needs to be aligned with
+The imagery is in GeoTIFF format, and lacks a good internal structure, which needs to be aligned with
 the one into the other images.
   
 First, we are going to create a import with an indication of where the granule is located, and
@@ -533,7 +533,7 @@ Asynchronously fetching and importing data from a remote server
 ---------------------------------------------------------------
 
 We assume a remote FTP server contains multiple shapefiles that we need to import in GeoServer
-as new layers. The files are large, and the server has much better bandwith than the client,
+as new layers. The files are large, and the server has much better bandwidth than the client,
 so it's best if GeoServer performs the data fetching on its own.
 
 In this case a asynchronous request using ``remote`` data will be the best fit::

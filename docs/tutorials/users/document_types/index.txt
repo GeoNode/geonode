@@ -64,4 +64,4 @@ By clicking the Documents link you will be brought to the Documents menu where a
 
       *Documents in GeoNode toolbar*
 
-Through the document datailed page is possible to view, download and manage a document.
+Through the document detailed page is possible to view, download and manage a document.

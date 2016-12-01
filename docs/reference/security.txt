@@ -199,7 +199,7 @@ Require authentication to access GeoNode
 
 By default, unregistered users cannot view maps, layers, and documents on your site without being authenticated.  GeoNode comes
 a security option that requires users to authenticate before accessing any page.  To enable this option, set the ``LOCKDOWN_GEONODE``
-setting to true in your ``settings.py`` file.  You can fine-tune which url routes are white-listed (accessible by unregistered
+setting to true in your ``settings.py`` file.  You can fine-tune which URL routes are white-listed (accessible by unregistered
 users) by listing the routes in the ``AUTH_EXEMPT_URLS`` tuple.  See the :ref:`djangoapps` documentation for more information.
 
 Publishing and unpublishing objects

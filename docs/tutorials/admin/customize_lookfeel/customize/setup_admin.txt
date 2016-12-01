@@ -15,7 +15,7 @@ If you are working remotely, you should first connect to the machine that has yo
     $ django-admin startproject my_geonode --template=https://github.com/GeoNode/geonode-project/archive/master.zip -epy,rst
     $ cd my_geonode
     $ sudo pip install -e .
-    $ python manage.py syncdb
+    $ python manage.py migrate
 
 .. note:: You should NOT use the name *geonode* for your project as it will conflict with your default geonode package name.
 
@@ -96,7 +96,7 @@ Then regenerate the static **JavaScript** and **CSS** files from **/path/to/my_g
 Customize the Look & Feel
 =========================
 
-Now you can edit the templates in **my_geonode/templates**, the css and images to match your needs like shown in :ref:`customize.theme_admin`!
+Now you can edit the templates in **my_geonode/templates**, the CSS and images to match your needs like shown in :ref:`customize.theme_admin`!
 
 .. note:: After going through the theming guide you'll have to return to this site to execute one more command in order to finish the theming!
 
@@ -274,7 +274,7 @@ More: http://docs.python.org/2/distutils/setupscript.html
 static
 ~~~~~~
 
-The :file:`static` directory will contain your fixed resources: css, html, 
+The :file:`static` directory will contain your fixed resources: CSS, HTML,
 images, etc. Everything in this directory will be copied to the final media
 directory (along with the `static` resources from other apps in your project).
 

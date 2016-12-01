@@ -530,6 +530,21 @@ class TestUpload(UploaderBase):
         self.upload_file(abspath, self.complete_upload,
                          check_name='san_andres_y_providencia_poi')
 
+    def test_zipped_upload_xml_sidecar(self):
+        """Test uploading a zipped shapefile with xml sidecar"""
+        fd, abspath = self.temp_file('.zip')
+        fp = os.fdopen(fd, 'wb')
+        zf = ZipFile(fp, 'w')
+        fpath = os.path.join(
+            GOOD_DATA,
+            'vector',
+            'Air_Runways.*')
+        for f in glob.glob(fpath):
+            zf.write(f, os.path.basename(f))
+        zf.close()
+        self.upload_file(abspath, self.complete_upload,
+                         check_name='Air_Runways')
+
     def test_invalid_layer_upload(self):
         """ Tests the layers that are invalid and should not be uploaded"""
         # this issue with this test is that the importer supports

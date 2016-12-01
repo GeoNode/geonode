@@ -166,6 +166,7 @@ def profile_pre_save(instance, sender, **kw):
             'notification' in settings.INSTALLED_APPS:
         notification.send([instance, ], "account_active")
 
+
 signals.pre_save.connect(profile_pre_save, sender=Profile)
 signals.post_save.connect(profile_post_save, sender=Profile)
 signals.post_save.connect(email_post_save, sender=EmailAddress)
