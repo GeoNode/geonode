@@ -100,7 +100,7 @@ HTTP Request Response
 
 Django and all other web frameworks are based on the HTTP Request Response cycle. Requests come in to the server from remote clients which are primarily web browsers, but also can be API clients, and the server returns with a Response. You should be familiar with these very basic HTTP principles and become familiar with the way that Django implements them. More information about HTTP, Requests and Responses and Django's implementation in the links below.
 
-- http://devhub.fm/http-requestresponse-basics/
+- https://www.jmarshall.com/easy/http/
 - http://en.wikipedia.org/wiki/Hypertext_Transfer_Protocol
 - https://docs.djangoproject.com/en/dev/ref/request-response/
 
