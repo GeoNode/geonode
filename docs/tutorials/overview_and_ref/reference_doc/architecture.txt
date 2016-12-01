@@ -97,7 +97,7 @@ Presentation Model
     The Presentation Model can expose commands which the view uses for invoking actions. 
     The advantage of this approach is that you can essentially remove the code-behind altogether as the PM completely encapsulates all of the behaviour for the view. 
     
-    This pattern is a very strong candidate for use in WPF applications and is also called `Model-View-ViewModel <http://msdn.microsoft.com/en-us/magazine/dd419663.aspx>`_.
+    This pattern is a very strong candidate for use in WPF applications and is also called `Model-View-ViewModel <https://msdn.microsoft.com/en-us/magazine/dd419663.aspx>`_.
 
 More: `http://reinout.vanrees.org/weblog/2011/12/13/django-mvc-explanation.html <http://reinout.vanrees.org/weblog/2011/12/13/django-mvc-explanation.html>`_
 

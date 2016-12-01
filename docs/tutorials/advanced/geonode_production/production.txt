@@ -47,7 +47,7 @@ Adding layers from Google, Bing and other providers
 Bing
 ====
 
-Get an API key from Microsoft at http://bingmapsportal.com/ and place it in ``local_settings.py``.:: 
+Get an API key from Microsoft at http://www.bingmapsportal.com/ and place it in ``local_settings.py``.::
     
     BING_API_KEY="zxcxzcXAWdsdfkjsdfWWsdfjpowxcxz"
 
