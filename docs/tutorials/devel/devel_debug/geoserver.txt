@@ -5,8 +5,8 @@ Debugging GeoServer
 
 Resources:
 
-- http://docs.geoserver.org/stable/en/user/advanced/logging.html
-- http://docs.geoserver.org/stable/en/user/production/troubleshooting.html
+- http://docs.geoserver.org/latest/en/user/production/troubleshooting.html
+- http://docs.geoserver.org/latest/en/user/production/troubleshooting.html
 
 This section does not attempt to cover developer-level debugging in GeoServer as
 this is a much larger topic involving many more tools. The goal here is to

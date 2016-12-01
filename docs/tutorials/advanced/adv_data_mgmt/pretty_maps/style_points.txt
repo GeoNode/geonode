@@ -59,7 +59,7 @@ Given the above symbols a point symbolizer looks as follows:
           </sld:PointSymbolizer>
 
 The icon is depicted on the screen as-is, at its natural resolutions.
-The ``labelObstacle`` vendor parameter, specific to GeoServer, makes sure the point is icon is treated as a `label obstacle <http://docs.geoserver.org/latest/en/user/styling/sld-extensions/label-obstacles.html>`_, that is, makes sure no label will ever be depicted over the point.
+The ``labelObstacle`` vendor parameter, specific to GeoServer, makes sure the point is icon is treated as a `label obstacle <http://docs.geoserver.org/2.2.2/user/styling/sld-extensions/label-obstacles.html>`_, that is, makes sure no label will ever be depicted over the point.
 
 Text symbolizers for points
 ---------------------------
@@ -125,7 +125,7 @@ Highlights about the above style:
 * Applies a white halo to make it stand out of the background map
 * Sets its priority to 200000 (high, important) to make sure the label is depicted in preference to others
 * Uses the ``autoWrap`` option to make it wrap on the next line if it's larger than 100 pixels
-  (the full list of labelling vendor options is available in the `GeoServer user guide <http://docs.geoserver.org/latest/en/user/styling/sld-reference/labeling.html>`_).
+  (the full list of labelling vendor options is available in the `GeoServer user guide <http://docs.geoserver.org/latest/en/user/styling/sld/reference/labeling.html>`_).
 
 Using Rules to assign a different styling to each point
 -------------------------------------------------------
