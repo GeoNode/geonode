@@ -269,7 +269,7 @@ This is a large topic and not necessary to understand while getting started with
 GeoNode development but will be important for larger projects and to make
 development easier for other developers.
 
-More: http://docs.python.org/2/distutils/setupscript.html
+More: https://docs.python.org/2/distutils/setupscript.html
 
 static
 ~~~~~~

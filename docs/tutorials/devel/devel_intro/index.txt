@@ -58,7 +58,7 @@ Core development tools and libraries
 ------------------------------------
 - Python
 
-  - http://docs.python.org/2/tutorial/
+  - https://docs.python.org/2/tutorial/
   - http://www.learnpython.org/
   - https://learnpythonthehardway.org/book/
 

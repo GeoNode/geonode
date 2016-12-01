@@ -76,7 +76,7 @@ miscellaneous
 
 *pdb* is a standard python module that is used to interactively debug your python code. It supports setting conditional breakpoints so you can step through the code line by line and inspect your variables and perform arbitrary execution of statements. Learning how to effectively use pdb will make the process of debugging your application code significantly easier. More information about pdb can be found in the links below.
 
-- http://docs.python.org/2/library/pdb.html
+- https://docs.python.org/2/library/pdb.html
 
 
 Django
