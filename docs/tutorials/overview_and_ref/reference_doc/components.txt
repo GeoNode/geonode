@@ -72,4 +72,4 @@ Bootstrap
 
 Bootstrap_ is a front-end framework for laying out and styling the pages that make up the GeoNode application. It is designed to ensure that the pages render and look and behave the same across all browsers. GeoNode customizes bootstraps default style and its relatively easy for developers to customize their own GeoNode based site using existing Bootstrap themes or by customizing the styles directly.
 
-.. _Bootstrap: http://www.getbootstrap.com
+.. _Bootstrap: http://getbootstrap.com/

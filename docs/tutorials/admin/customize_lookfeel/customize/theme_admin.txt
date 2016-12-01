@@ -3,7 +3,7 @@
 Theming your GeoNode project
 ============================
 
-There are a range of options available to you if you want to change the default look and feel of your GeoNode project. Since GeoNode's style is based on `Bootstrap <http://twitter.github.com/bootstrap/>`_ you will be able to make use of all that Bootstrap has to offer in terms of theme customization. You should consult Bootstrap's documentation as your primary guide once you are familiar with how GeoNode implements Bootstrap and how you can override GeoNode's theme and templates in your own project.
+There are a range of options available to you if you want to change the default look and feel of your GeoNode project. Since GeoNode's style is based on `Bootstrap <http://getbootstrap.com/>`_ you will be able to make use of all that Bootstrap has to offer in terms of theme customization. You should consult Bootstrap's documentation as your primary guide once you are familiar with how GeoNode implements Bootstrap and how you can override GeoNode's theme and templates in your own project.
 
 Logos and graphics
 ------------------

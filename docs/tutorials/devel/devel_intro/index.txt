@@ -75,12 +75,12 @@ Core development tools and libraries
 - jQuery
 
   - http://www.w3schools.com/jquery/default.asp
-  - http://docs.jquery.com/Tutorials:Getting_Started_with_jQuery
+  - http://learn.jquery.com/using-jquery-core/
   - http://www.jquery-tutorial.net/
 
 - Bootstrap
 
-  - http://twitter.github.io/bootstrap/
+  - http://getbootstrap.com/
   - http://www.w3resource.com/twitter-bootstrap/tutorial.php
 
 - GeoTools/GeoScript/GeoServer

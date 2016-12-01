@@ -201,8 +201,8 @@ Javascript in GeoNode
     GeoNode provides a number of facilities for interactivity in the web browser built on top of several high-quality JavaScript frameworks:
 
     * `Bootstrap <http://getbootstrap.com/>`_ for GeoNode's front-end user interface and common user interaction.
-    * `Bower <http://bower.io/>`_ for GeoNode's front-end package management.
-    * `ExtJS <http://extjs.com/>`_ for component-based UI construction and data access
+    * `Bower <https://bower.io/>`_ for GeoNode's front-end package management.
+    * `ExtJS <https://www.sencha.com/products/extjs/>`_ for component-based UI construction and data access
     * `OpenLayers <http://openlayers.org/>`_ for interactive mapping and other geospatial operations
     * `GeoExt <http://geoext.org/>`_ for integrating ExtJS with OpenLayers
     * `Grunt <http://gruntjs.com/>`_ for front-end task automation.
