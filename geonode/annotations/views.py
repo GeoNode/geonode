@@ -13,7 +13,7 @@ import json
 
 def _annotations_get(req, mapid):
     mapobj = resolve_object(req, Map, {'id': mapid}, permission='base.view_resourcebase')
-    cols = ['title', 'content', 'media', 'start_time', 'end_time', 'in_map', 'in_timeline', 'appearance']
+    cols = ['title', 'content', 'media', 'start_time', 'end_time', 'in_map', 'in_timeline', 'appearance', 'auto_show', 'pause_playback']
     ann = Annotation.objects.filter(map=mapid)
     ann = ann.order_by('start_time', 'end_time', 'title')
     if bool(req.GET.get('in_map', False)):
