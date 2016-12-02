@@ -56,7 +56,7 @@ MVP
 
     MVP tends to be a very natural pattern for achieving separated presentation in Web Forms.
     
-    **Two primary variations** (You can `find out more about both variants <http://www.codeplex.com/websf/Wiki/View.aspx?title=MVPDocumentation&referringTitle=bundles>`_.)
+    **Two primary variations** (You can `find out more about both variants <http://webclientguidance.codeplex.com/wikipage?title=MVPDocumentation&referringTitle=bundles>`_.)
     
     **Passive View:** The View is as dumb as possible and contains almost zero logic. The Presenter is a middle man that talks to the View and the Model. The View and Model are completely shielded from one another. The Model may raise events, but the Presenter subscribes to them for updating the View. In Passive View there is no direct data binding, instead the View exposes setter properties which the Presenter uses to set the data. All state is managed in the Presenter and not the View.
 
