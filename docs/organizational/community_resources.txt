@@ -35,8 +35,6 @@ Github Project Links
 * Master Branch https://github.com/GeoNode/geonode/tree/master
 * Issue Tracker https://github.com/GeoNode/geonode/issues
 * Pull Requests https://github.com/GeoNode/geonode/pulls
-* Wiki https://github.com/GeoNode/geonode/wiki
-* GNIPs https://github.com/GeoNode/geonode/wiki/GeoNode-Improvement-Proposals
 * geonode.org Homepage Code http://github.com/geonode/geonode.github.com (published to http://geonode.org)
 
 
