@@ -71,7 +71,6 @@ else:
         'GEOSERVER_PUBLIC_LOCATION', 'http://localhost:8080/geoserver/'
     )
 
-import ipdb; ipdb.set_trace()
 # OGC (WMS/WFS/WCS) Server Settings
 # OGC (WMS/WFS/WCS) Server Settings
 OGC_SERVER = {
@@ -178,3 +177,30 @@ PYCSW = {
     }
 }
 
+# define the urls after the settings are overridden
+if 'geonode.geoserver' in INSTALLED_APPS:
+    LOCAL_GEOSERVER = {
+        "source": {
+            "ptype": "gxp_wmscsource",
+            "url": OGC_SERVER['default']['PUBLIC_LOCATION'] + "wms",
+            "restUrl": "/gs/rest"
+        }
+    }
+    if 'DOCKER_HOST_IP' in os.environ:
+        MAP_BASELAYERS = [{
+            "source": {"ptype": "gxp_olsource"},
+            "type": "OpenLayers.Layer",
+            "args": ["No background"],
+            "visibility": False,
+            "fixed": True,
+            "group":"background"
+        }, {
+            "source": {"ptype": "gxp_osmsource"},
+            "type": "OpenLayers.Layer.OSM",
+            "name": "mapnik",
+            "visibility": True,
+            "fixed": True,
+            "group": "background"
+        }]
+        # Todo merge this change below to master
+        MAP_BASELAYERS.insert(0, LOCAL_GEOSERVER)
