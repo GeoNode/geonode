@@ -88,7 +88,7 @@ Core development tools and libraries
   - http://docs.geotools.org/stable/tutorials/feature/csv2shp.html
   - http://geoscript.org/tutorials/index.html
   - http://docs.geotools.org/stable/tutorials/
-  - https://github.com/dwins/gsconfig.py/blob/master/README.rst
+  - https://github.com/boundlessgeo/gsconfig/blob/master/README.rst
 
 - geopython
 
