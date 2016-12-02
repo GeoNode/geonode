@@ -42,7 +42,7 @@ You will know how to:
     backup_restore/index
 
 :ref:`geoserver_geonode_aa`
-    GeoNode interacts with GeoServer through a customized security mechanism. This section explains with more details how GeoNode and GeoServer Security works.
+    GeoNode interacts with GeoServer through an advanced security mechanism based on OAuth2 Protocol and GeoFence. This section is a walk through of the configuration and setup of GeoNode and GeoServer Advanced Security.
 
 :ref:`admin_panel`
     GeoNode has an administration panel based on the Django admin which can be used to do some database operations. Although most of the operations can and should be done through the normal GeoNode interface, the admin panel provides a quick overview and management tool over the database.

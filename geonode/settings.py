@@ -37,6 +37,8 @@ import dj_database_url
 # GeoNode Version
 VERSION = get_version()
 
+CORS_ORIGIN_ALLOW_ALL = True
+
 # Defines the directory that contains the settings file as the PROJECT_ROOT
 # It is used for relative settings elsewhere.
 PROJECT_ROOT = os.path.abspath(os.path.dirname(__file__))
@@ -55,6 +57,17 @@ DEBUG_STATIC = strtobool(os.getenv('DEBUG_STATIC', 'False'))
 os.environ['DJANGO_LIVE_TEST_SERVER_ADDRESS'] = 'localhost:8000'
 
 ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', ['localhost', 'django'])
+
+# AUTH_IP_WHITELIST property limits access to users/groups REST endpoints
+# to only whitelisted IP addresses.
+#
+# Empty list means 'allow all'
+#
+# If you need to limit 'api' REST calls to only some specific IPs
+# fill the list like below:
+#
+# AUTH_IP_WHITELIST = ['192.168.1.158', '192.168.1.159']
+AUTH_IP_WHITELIST = []
 
 # Make this unique, and don't share it with anybody.
 _DEFAULT_SECRET_KEY = 'myv-y4#7j-d*p-__@j#*3z@!y24fz8%^z2v6atuy4bo9vqr1_a'
@@ -324,6 +337,8 @@ INSTALLED_APPS = (
     'tastypie',
     'polymorphic',
     'guardian',
+    'oauth2_provider',
+    'corsheaders',
 
 ) + GEONODE_APPS
 
@@ -406,6 +421,7 @@ MIDDLEWARE_CLASSES = (
     'django.middleware.common.CommonMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
+
     # The setting below makes it possible to serve different languages per
     # user depending on things like headers in HTTP requests.
     'django.middleware.locale.LocaleMiddleware',
@@ -413,6 +429,7 @@ MIDDLEWARE_CLASSES = (
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+
     # This middleware allows to print private layers for the users that have
     # the permissions to view them.
     # It sets temporary the involved layers as public before restoring the
@@ -420,16 +437,35 @@ MIDDLEWARE_CLASSES = (
     # Beware that for few seconds the involved layers are public there could be
     # risks.
     # 'geonode.middleware.PrintProxyMiddleware',
+
+    # If you use SessionAuthenticationMiddleware, be sure it appears before OAuth2TokenMiddleware.
+    # SessionAuthenticationMiddleware is NOT required for using django-oauth-toolkit.
+    'django.contrib.auth.middleware.SessionAuthenticationMiddleware',
+    'oauth2_provider.middleware.OAuth2TokenMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
 )
 
 
 # Replacement of default authentication backend in order to support
 # permissions per object.
 AUTHENTICATION_BACKENDS = (
+    'oauth2_provider.backends.OAuth2Backend',
     'django.contrib.auth.backends.ModelBackend',
     'guardian.backends.ObjectPermissionBackend',
 )
 
+OAUTH2_PROVIDER = {
+    'SCOPES': {
+        'read': 'Read scope',
+        'write': 'Write scope',
+        'groups': 'Access to your groups'
+    },
+
+    'CLIENT_ID_GENERATOR_CLASS': 'oauth2_provider.generators.ClientIdGenerator',
+}
+
+
+ANONYMOUS_USER_ID = os.getenv('ANONYMOUS_USER_ID','-1')
 GUARDIAN_GET_INIT_ANONYMOUS_USER = os.getenv(
     'GUARDIAN_GET_INIT_ANONYMOUS_USER',
     'geonode.people.models.get_anonymous_user_instance'
@@ -542,6 +578,8 @@ OGC_SERVER = {
     'default': {
         'BACKEND': 'geonode.geoserver',
         'LOCATION': GEOSERVER_LOCATION,
+        'LOGIN_ENDPOINT': 'j_spring_oauth2_geonode_login',
+        'LOGOUT_ENDPOINT': 'j_spring_oauth2_geonode_logout',
         # PUBLIC_LOCATION needs to be kept like this because in dev mode
         # the proxy won't work and the integration tests will fail
         # the entire block has to be overridden in the local_settings

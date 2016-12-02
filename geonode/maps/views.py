@@ -114,10 +114,15 @@ def map_detail(request, mapid, snapshot=None, template='maps/map_detail.html'):
     if request.user != map_obj.owner and not request.user.is_superuser:
         Map.objects.filter(id=map_obj.id).update(popular_count=F('popular_count') + 1)
 
-    if snapshot is None:
-        config = map_obj.viewer_json(request.user)
+    if 'access_token' in request.session:
+        access_token = request.session['access_token']
     else:
-        config = snapshot_config(snapshot, map_obj, request.user)
+        access_token = None
+
+    if snapshot is None:
+        config = map_obj.viewer_json(request.user, access_token)
+    else:
+        config = snapshot_config(snapshot, map_obj, request.user, access_token)
 
     config = json.dumps(config)
     layers = MapLayer.objects.filter(map=map_obj.id)
@@ -299,14 +304,19 @@ def map_embed(
         snapshot=None,
         template='maps/map_embed.html'):
     if mapid is None:
-        config = default_map_config()[0]
+        config = default_map_config(request)[0]
     else:
         map_obj = _resolve_map(request, mapid, 'base.view_resourcebase', _PERMISSION_MSG_VIEW)
 
-        if snapshot is None:
-            config = map_obj.viewer_json(request.user)
+        if 'access_token' in request.session:
+            access_token = request.session['access_token']
         else:
-            config = snapshot_config(snapshot, map_obj, request.user)
+            access_token = None
+
+        if snapshot is None:
+            config = map_obj.viewer_json(request.user, access_token)
+        else:
+            config = snapshot_config(snapshot, map_obj, request.user, access_token)
 
     return render_to_response(template, RequestContext(request, {
         'config': json.dumps(config)
@@ -323,10 +333,15 @@ def map_view(request, mapid, snapshot=None, template='maps/map_view.html'):
     """
     map_obj = _resolve_map(request, mapid, 'base.view_resourcebase', _PERMISSION_MSG_VIEW)
 
-    if snapshot is None:
-        config = map_obj.viewer_json(request.user)
+    if 'access_token' in request.session:
+        access_token = request.session['access_token']
     else:
-        config = snapshot_config(snapshot, map_obj, request.user)
+        access_token = None
+
+    if snapshot is None:
+        config = map_obj.viewer_json(request.user, access_token)
+    else:
+        config = snapshot_config(snapshot, map_obj, request.user, access_token)
 
     return render_to_response(template, RequestContext(request, {
         'config': json.dumps(config),
@@ -336,14 +351,24 @@ def map_view(request, mapid, snapshot=None, template='maps/map_view.html'):
 
 def map_view_js(request, mapid):
     map_obj = _resolve_map(request, mapid, 'base.view_resourcebase', _PERMISSION_MSG_VIEW)
-    config = map_obj.viewer_json(request.user)
+    if 'access_token' in request.session:
+        access_token = request.session['access_token']
+    else:
+        access_token = None
+
+    config = map_obj.viewer_json(request.user, access_token)
     return HttpResponse(json.dumps(config), content_type="application/javascript")
 
 
 def map_json(request, mapid, snapshot=None):
     if request.method == 'GET':
         map_obj = _resolve_map(request, mapid, 'base.view_resourcebase', _PERMISSION_MSG_VIEW)
-        return HttpResponse(json.dumps(map_obj.viewer_json(request.user)))
+        if 'access_token' in request.session:
+            access_token = request.session['access_token']
+        else:
+            access_token = None
+
+        return HttpResponse(json.dumps(map_obj.viewer_json(request.user, access_token)))
     elif request.method == 'PUT':
         if not request.user.is_authenticated():
             return HttpResponse(
@@ -366,7 +391,13 @@ def map_json(request, mapid, snapshot=None):
                     request.body),
                 map=map_obj,
                 user=request.user)
-            return HttpResponse(json.dumps(map_obj.viewer_json(request.user)))
+
+            if 'access_token' in request.session:
+                access_token = request.session['access_token']
+            else:
+                access_token = None
+
+            return HttpResponse(json.dumps(map_obj.viewer_json(request.user, access_token)))
         except ValueError as e:
             return HttpResponse(
                 "The server could not understand the request." + str(e),
@@ -466,7 +497,12 @@ def new_map_config(request):
     default map configuration is used.  If copy is specified
     and the map specified does not exist a 404 is returned.
     '''
-    DEFAULT_MAP_CONFIG, DEFAULT_BASE_LAYERS = default_map_config()
+    DEFAULT_MAP_CONFIG, DEFAULT_BASE_LAYERS = default_map_config(request)
+
+    if 'access_token' in request.session:
+        access_token = request.session['access_token']
+    else:
+        access_token = None
 
     if request.method == 'GET' and 'copy' in request.GET:
         mapid = request.GET['copy']
@@ -476,7 +512,8 @@ def new_map_config(request):
         map_obj.title = DEFAULT_TITLE
         if request.user.is_authenticated():
             map_obj.owner = request.user
-        config = map_obj.viewer_json(request.user)
+
+        config = map_obj.viewer_json(request.user, access_token)
         del config['id']
     else:
         if request.method == 'GET':
@@ -526,6 +563,10 @@ def new_map_config(request):
 
                 if layer.storeType == "remoteStore":
                     service = layer.service
+                    if access_token:
+                        url = service.base_url+'?access_token='+access_token
+                    else:
+                        url = service.base_url
                     maplayer = MapLayer(map=map_obj,
                                         name=layer.typename,
                                         ows_url=layer.ows_url,
@@ -534,13 +575,17 @@ def new_map_config(request):
                                         source_params=json.dumps({
                                             "ptype": service.ptype,
                                             "remote": True,
-                                            "url": service.base_url,
+                                            "url": url,
                                             "name": service.name}))
                 else:
+                    if access_token:
+                        url = layer.ows_url+'?access_token='+access_token
+                    else:
+                        url = layer.ows_url
                     maplayer = MapLayer(
                         map=map_obj,
                         name=layer.typename,
-                        ows_url=layer.ows_url,
+                        ows_url=url,
                         # use DjangoJSONEncoder to handle Decimal values
                         layer_params=json.dumps(config, cls=DjangoJSONEncoder),
                         visibility=True
@@ -582,7 +627,7 @@ def new_map_config(request):
                 map_obj.zoom = math.ceil(min(width_zoom, height_zoom))
 
             config = map_obj.viewer_json(
-                request.user, *(DEFAULT_BASE_LAYERS + layers))
+                request.user, access_token, *(DEFAULT_BASE_LAYERS + layers))
             config['fromLayer'] = True
         else:
             config = DEFAULT_MAP_CONFIG
@@ -742,7 +787,7 @@ def maplayer_attributes(request, layername):
         content_type="application/json")
 
 
-def snapshot_config(snapshot, map_obj, user):
+def snapshot_config(snapshot, map_obj, user, access_token):
     """
         Get the snapshot map configuration - look up WMS parameters (bunding box)
         for local GeoNode layers
@@ -755,7 +800,7 @@ def snapshot_config(snapshot, map_obj, user):
         return None
 
     # Set up the proper layer configuration
-    def snaplayer_config(layer, sources, user):
+    def snaplayer_config(layer, sources, user, access_token):
         cfg = layer.layer_config()
         src_cfg = layer.source_config()
         source = snapsource_lookup(src_cfg, sources)
@@ -790,9 +835,10 @@ def snapshot_config(snapshot, map_obj, user):
             snaplayer_config(
                 l,
                 sources,
-                user) for l in maplayers]
+                user,
+                access_token) for l in maplayers]
     else:
-        config = map_obj.viewer_json()
+        config = map_obj.viewer_json(user, access_token)
     return config
 
 

@@ -25,6 +25,10 @@ import logging
 import math
 import os
 import re
+import uuid
+
+from osgeo import ogr
+from slugify import Slugify
 import string
 
 from django.conf import settings
@@ -35,8 +39,6 @@ from django.http import HttpResponse
 from django.shortcuts import get_object_or_404
 from django.utils.translation import ugettext_lazy as _
 import httplib2
-from osgeo import ogr
-from slugify import Slugify
 
 
 try:
@@ -200,7 +202,7 @@ def layer_from_viewer_config(model, layer, source, ordering):
 
 class GXPMapBase(object):
 
-    def viewer_json(self, user, *added_layers):
+    def viewer_json(self, user, access_token, *added_layers):
         """
         Convert this map to a nested dictionary structure matching the JSON
         configuration for GXP Viewers.
@@ -239,7 +241,7 @@ class GXPMapBase(object):
                     results.append(x)
             return results
 
-        configs = [l.source_config() for l in layers]
+        configs = [l.source_config(access_token) for l in layers]
 
         i = 0
         for source in uniqify(configs):
@@ -256,7 +258,7 @@ class GXPMapBase(object):
 
         def layer_config(l, user=None):
             cfg = l.layer_config(user=user)
-            src_cfg = l.source_config()
+            src_cfg = l.source_config(access_token)
             source = source_lookup(src_cfg)
             if source:
                 cfg["source"] = source
@@ -323,7 +325,7 @@ class GXPMapBase(object):
             # Mark the last added layer as selected - important for data page
             config["map"]["layers"][len(layers) - 1]["selected"] = True
         else:
-            (def_map_config, def_map_layers) = default_map_config()
+            (def_map_config, def_map_layers) = default_map_config(None)
             config = def_map_config
             layers = def_map_layers
 
@@ -358,7 +360,7 @@ class GXPMap(GXPMapBase):
 
 class GXPLayerBase(object):
 
-    def source_config(self):
+    def source_config(self, access_token):
         """
         Generate a dict that can be serialized to a GXP layer source
         configuration suitable for loading this layer.
@@ -369,7 +371,10 @@ class GXPLayerBase(object):
             cfg = dict(ptype="gxp_wmscsource", restUrl="/gs/rest")
 
         if self.ows_url:
-            cfg["url"] = self.ows_url
+            if access_token:
+                cfg["url"] = self.ows_url+'?access_token='+access_token
+            else:
+                cfg["url"] = self.ows_url
 
         return cfg
 
@@ -428,7 +433,7 @@ class GXPLayer(GXPLayerBase):
             setattr(self, k, kw[k])
 
 
-def default_map_config():
+def default_map_config(request):
     if getattr(settings, 'DEFAULT_MAP_CRS', 'EPSG:900913') == "EPSG:4326":
         _DEFAULT_MAP_CENTER = inverse_mercator(settings.DEFAULT_MAP_CENTER)
     else:
@@ -455,7 +460,17 @@ def default_map_config():
         _baselayer(
             lyr, idx) for idx, lyr in enumerate(
             settings.MAP_BASELAYERS)]
-    DEFAULT_MAP_CONFIG = _default_map.viewer_json(None, *DEFAULT_BASE_LAYERS)
+    user = None
+    access_token = None
+    if request:
+        user = request.user
+        if 'access_token' in request.session:
+            access_token = request.session['access_token']
+        else:
+            u = uuid.uuid1()
+            access_token = u.hex
+
+    DEFAULT_MAP_CONFIG = _default_map.viewer_json(user, access_token, *DEFAULT_BASE_LAYERS)
 
     return DEFAULT_MAP_CONFIG, DEFAULT_BASE_LAYERS
 

@@ -30,10 +30,14 @@ import re
 import sys
 from threading import local
 import time
+import uuid
+import base64
+import httplib2
+
+
 import urllib
 from urlparse import urlparse
 from urlparse import urlsplit
-import uuid
 
 from agon_ratings.models import OverallRating
 from bs4 import BeautifulSoup
@@ -54,7 +58,6 @@ from geoserver.store import CoverageStore, DataStore, datastore_from_index, \
 from geoserver.support import DimensionInfo
 from geoserver.workspace import Workspace
 from gsimporter import Client
-import httplib2
 from lxml import etree
 from owslib.util import http_post
 from owslib.wcs import WebCoverageService
@@ -1457,10 +1460,12 @@ def wps_execute_layer_attribute_statistics(layer_name, field):
 def _invalidate_geowebcache_layer(layer_name, url=None):
     http = httplib2.Http()
     username, password = ogc_server_settings.credentials
-    http.add_credentials(username, password)
+    auth = base64.encodestring(username + ':' + password)
+    # http.add_credentials(username, password)
     method = "POST"
     headers = {
-        "Content-Type": "text/xml"
+        "Content-Type": "text/xml",
+        "Authorization": "Basic " + auth
     }
     body = """
         <truncateLayer><layerName>{0}</layerName></truncateLayer>
@@ -1468,6 +1473,7 @@ def _invalidate_geowebcache_layer(layer_name, url=None):
     if not url:
         url = '%sgwc/rest/masstruncate' % ogc_server_settings.LOCATION
     response, _ = http.request(url, method, body=body, headers=headers)
+
     if response.status != 200:
         line = "Error {0} invalidating GeoWebCache at {1}".format(
             response.status, url
