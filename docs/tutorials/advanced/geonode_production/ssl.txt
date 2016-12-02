@@ -134,8 +134,8 @@ Finally restart Apache and Tomcat with::
 
 This information was complied from a number of sources.  The main links are listed below.  Please contact the GeoNode list with any updates or corrections.
 
-* http://confluence.atlassian.com/display/JIRA/Connecting+to+SSL+services
-* http://confluence.atlassian.com/display/JIRA/Integrating+JIRA+with+Apache+using+SSL
+* https://confluence.atlassian.com/jira/connecting-to-ssl-services-117455.html
+* https://confluence.atlassian.com/adminjiraserver072/integrating-jira-with-apache-using-ssl-828788158.html
 * http://www.akadia.com/services/ssh_test_certificate.html
 * https://help.ubuntu.com/lts/serverguide/httpd.html
 * https://help.ubuntu.com/lts/serverguide/certificates-and-security.html
