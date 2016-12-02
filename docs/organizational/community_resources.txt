@@ -43,20 +43,14 @@ Github Project Links
 Demo Sites
 ----------
 * Demo GeoNode Site http://demo.geonode.org/
-* Latest Beta Demo Site http://beta.dev.geonode.org/
 * UI/UX Review Site https://sites.google.com/a/opengeo.org/geonode-ui/
 
 Testing and Packaging
 ---------------------
 * Testing
-    * Jenkins Continuous Integration Server http://geonode-testing.dev.opengeo.org:8090
-    * Integration Test Suite https://github.com/GeoNode/geonode-integration
     * Travis-CI https://travis-ci.org/#!/GeoNode/geonode
     * Openhub https://www.openhub.net/p/geonode
 * Packages
-    * Debian Package https://github.com/GeoNode/geonode-deb
-    * RPM Red Hat https://github.com/GeoNode/geonode-rpm
-    * Chef https://github.com/GeoNode/chef-geonode
     * PyPI https://pypi.python.org/pypi/GeoNode
     * Launchpad
         * https://launchpad.net/~geonode
@@ -90,7 +84,6 @@ Downstream Github Projects
 * https://github.com/aifdr/riab
 * https://github.com/gem/
 * https://github.com/MapStory/mapstory
-* https://github.com/dialog-it/anzsm
 * https://github.com/CIGNo-project/CIGNo
 * https://github.com/ROGUE-JCTD/rogue_geonode
 * https://github.com/boundlessgeo/exchange
@@ -101,11 +94,9 @@ Additional Modules
 
 * https://github.com/simod/geonode-documents
 * https://github.com/GFDRR/geonode-registry
-* https://github.com/eldarion/geonode/branches
 
 Public Sites
 ------------
 
-* Risiko (Risk in a Box) demo site http://demo.riskinabox.org/
 * CIGNo network: CNR - ISMAR Node http://cigno.ve.ismar.cnr.it/
 * ... Many Many More
