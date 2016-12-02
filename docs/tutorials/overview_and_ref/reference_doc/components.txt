@@ -37,7 +37,7 @@ PostgreSQL and PostGIS
 
 PostgreSQL_ and PostGIS_ are the database components that store and manage spatial data and information for GeoNode and the Django modules that it is composed of, pycsw and GeoServer. All of these tables and data are stored within a geonode database in PostgreSQL. GeoServer uses PostGIS to store and manage spatial vector data for each layer which are stored as a separate table in the database.
 
-.. _PostgreSQL: http://www.postgresql.org/
+.. _PostgreSQL: https://www.postgresql.org/
 .. _PostGIS: http://postgis.net/
 
 pycsw
