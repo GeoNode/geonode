@@ -13,9 +13,9 @@ Django
 GeoNode is based on Django_ which is a high level Python web development framework that encourages rapid development and clean pragmatic design. Django is based on the Model View Controller (MVC_) architecture pattern, and as such, GeoNode models layers, maps and other modules with Django's Model_ module and these models are used via Django's ORM_ in views which contain the business logic of the GeoNode application and are used to drive HTML templates to display the web pages within the application.
 
 .. _Django: https://www.djangoproject.com/ 
-.. _MVC: http://en.wikipedia.org/wiki/Model%E2%80%93view%E2%80%93controller
+.. _MVC: https://en.wikipedia.org/wiki/Model%E2%80%93view%E2%80%93controller
 .. _Model: https://docs.djangoproject.com/en/1.4/topics/db/models/
-.. _ORM: http://en.wikipedia.org/wiki/Object-relational_mapping
+.. _ORM: https://en.wikipedia.org/wiki/Object-relational_mapping
 
 GeoServer
 =========
