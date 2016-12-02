@@ -7,7 +7,7 @@ Roadmap Process
 
 The GeoNode Roadmap Process is designed to complement the more technical :ref:`gnips` and strives to make it easier for the various organizations invested in GeoNode to collaborate on features of common interest.
 
-It is based on the `roadmap items <https://spreadsheets.google.com/a/opengeo.org/spreadsheet/ccc?key=0AklXlBUnMqOrdDNackdvX3ZRS0Fha0xCeGhjSjZ1dEE>`_ developed at the `GeoNode Roadmapping Summit <http://geonode.org/2011/05/roadmapping-summit/>`_ held in May 2011.
+It is based on the roadmap items developed at the GeoNode Summit held in May 2011.
 
 Overall, the process for adding items to the collective roadmap is as follows:
 

@@ -48,7 +48,6 @@ Basic Web based GIS Concepts and Background
 - GeoServer Administration
 
   - http://suite.opengeo.org/opengeo-docs/geoserver/
-  - https://docs.google.com/a/opengeo.org/presentation/d/15fvUDYg0TO6WGFQlMLM2J1qiTVBYpfjCp0aQBDT0GrM/edit#slide=id.g2e4bd7ac_0_35
   - http://suite.opengeo.org/docs/sysadmin/index.html#sysadmin
 
 - PostgreSQL and PostGIS Administration
