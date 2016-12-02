@@ -41,6 +41,15 @@ def catalogue_pre_delete(instance, sender, **kwargs):
 
 def catalogue_post_save(instance, sender, **kwargs):
     """Get information from catalogue"""
+
+    # if layer is not to be published, temporarily
+    # change publish state to be able to update
+    # properties (#2332)
+    is_published = instance.is_published
+    if not is_published:
+        resources = ResourceBase.objects.filter(id=instance.resourcebase_ptr.id)
+        resources.update(is_published=True)
+
     try:
         catalogue = get_catalogue()
         catalogue.create_record(instance)
@@ -85,6 +94,9 @@ def catalogue_post_save(instance, sender, **kwargs):
     resources.update(metadata_xml=md_doc)
     resources.update(csw_wkt_geometry=csw_wkt_geometry)
     resources.update(csw_anytext=csw_anytext)
+
+    if not is_published:  # revert temporarily changed publishing state
+        resources.update(is_published=is_published)
 
 
 def catalogue_pre_save(instance, sender, **kwargs):
