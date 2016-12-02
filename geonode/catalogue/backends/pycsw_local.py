@@ -46,6 +46,7 @@ CONFIGURATION = {
     },
     'repository': {
         'source': 'geonode',
+        'filter': 'is_published = 1',
         'mappings': os.path.join(os.path.dirname(__file__), 'pycsw_local_mappings.py')
     }
 }
