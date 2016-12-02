@@ -20,9 +20,10 @@
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
 from geonode.people.models import Profile
+from datetime import datetime
 
 class DownloadCount(models.Model):
-    date = models.DateTimeField()
+    date = models.DateTimeField( default=datetime.now)
     category = models.CharField(_('Category'), max_length=100)
     chart_group = models.CharField(_('Chart Group'), max_length=100)
     download_type = models.CharField(_('Type'), max_length=100)
@@ -34,7 +35,7 @@ class SUCLuzViMin(models.Model):
     luzvimin = models.CharField(_('LuzViMin'), max_length=100)
 
 class DownloadTracker(models.Model):
-    timestamp = models.DateTimeField()
+    timestamp = models.DateTimeField(default=datetime.now)
     actor = models.ForeignKey(
         Profile
     )

@@ -74,6 +74,9 @@ from geonode.eula.models import AnonDownloader
 from django.utils import timezone
 from geonode.people.models import Profile
 
+from geonode.reports.models import DownloadTracker
+from geonode.base.models import ResourceBase
+
 CONTEXT_LOG_FILE = None
 
 if 'geonode.geoserver' in settings.INSTALLED_APPS:
@@ -635,6 +638,11 @@ def layer_download(request, layername):
         _PERMISSION_MSG_VIEW)
     if request.user.is_authenticated():
         action.send(request.user, verb='downloaded', action_object=layer)
+        DownloadTracker(actor=Profile.objects.get(username=request.user),
+                        title=str(layername),
+                        resource_type=str(ResourceBase.objects.get(layer__typename=layername).csw_type),
+                        keywords=ResourceBase.objects.get(layer__typename=layername).keywords.slugs()
+                        ).save()
 
     splits = request.get_full_path().split("/")
     redir_url = urljoin(settings.OGC_SERVER['default'][
