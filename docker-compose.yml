@@ -18,7 +18,7 @@ services:
       - rabbitmq
     command: django-admin.py runserver 0.0.0.0:8000 --settings=geonode.settings
     env_file:
-      - django.env
+      - ./scripts/docker/env/production/django.env
 
   celery:
     image: geonode/django
@@ -28,7 +28,7 @@ services:
       - elasticsearch
     command: celery worker --app=geonode.celery_app:app -B -l INFO
     env_file:
-      - django.env
+      - ./scripts/docker/env/production/django.env
 
   geoserver:
     image: geonode/geoserver
@@ -39,7 +39,7 @@ services:
     volumes_from:
       - data_dir_conf
     env_file:
-      - geoserver.env
+      - ./scripts/docker/env/production/geoserver.env
 
   nginx:
     image: geonode/nginx:geoserver
