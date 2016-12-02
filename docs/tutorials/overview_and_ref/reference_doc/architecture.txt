@@ -214,7 +214,7 @@ Javascript in GeoNode
 
     * A `GeoNode mixin <https://github.com/GeoNode/geonode/blob/master/geonode/static/geonode/js/extjs/GeoNode-mixin.js>`_  class
       that provides GeoExplorer with the methods needed to properly function in GeoNode.  The class
-      is responsible for checking permissions, retrieving and submitting the `CSRF token <https://docs.djangoproject.com/en/1.8/ref/contrib/csrf/>`_,
+      is responsible for checking permissions, retrieving and submitting the `CSRF token <https://docs.djangoproject.com/en/1.8/ref/csrf/>`_,
       and user authentication.
 
     * A `search module <https://github.com/GeoNode/geonode/tree/master/geonode/static/geonode/js/search>`_ responsible for the GeoNode's site-wide search functionality.
