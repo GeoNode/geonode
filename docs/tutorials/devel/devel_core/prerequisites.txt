@@ -91,7 +91,7 @@ Model Template View
 Django is based on the Model Template View paradigm (more commonly called Model View Controller). Models are used to define objects that you use in your application and Django's ORM is used to map these models to a database. Views are used to implement the business logic of your application and provide objects and other context for the templates. Templates are used to render the context from views into a page for display to the user. You should become familiar with this common paradigm used in most modern web frameworks, and how it is specifically implemented and used in Django. The Django tutorial itself is a great place to start. More information about MTV in Django can be found in the links below.
 
 - https://en.wikipedia.org/wiki/Model%E2%80%93view%E2%80%93controller
-- http://www.codinghorror.com/blog/2008/05/understanding-model-view-controller.html
+- https://blog.codinghorror.com/understanding-model-view-controller/
 - https://docs.djangoproject.com/en/1.8/
 
 
