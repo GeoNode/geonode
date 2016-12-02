@@ -68,7 +68,7 @@ Copy the ``MAP_BASELAYERS`` dictionary from ``settings.py`` into ``local_setting
 Google
 ======
 
-Get an API key from Google at http://code.google.com/apis/maps/signup.html and place it in ``local_settings.py``, for example::
+Get an API key from Google at https://developers.google.com/maps/faq?csw=1#using-google-maps-apis and place it in ``local_settings.py``, for example::
 
     GOOGLE_API_KEY="zxcxzcXAWdqwdQWWQEDzxcxz"
 
