@@ -34,6 +34,9 @@ class Annotation(models.Model):
     in_timeline = models.BooleanField(default=False)
     in_map = models.BooleanField(default=False)
     appearance = models.TextField(blank=True, null=True)
+    auto_show = models.BooleanField(default=False)
+    pause_playback = models.BooleanField(default=False)
+
 
     def _timefmt(self, val):
         return datetime.isoformat(datetime.utcfromtimestamp(val))
