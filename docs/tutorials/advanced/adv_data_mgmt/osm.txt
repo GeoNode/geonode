@@ -219,9 +219,6 @@ At this point you have different options on how to serve this repository from yo
 
     $ geogig pg export --host localhost --port 5432 -- schema myschema --database my_osm_database --user my_user --password my_password osm_train_stations osm_train_stations
 
-.. CAUTION::
-   You may encounter an error when performing this step. This issue has been documented `here <https://github.com/boundlessgeo/GeoGig/issues/356>`_ and is being investigated by the GeoGig team. You will need to create a primary key metadata table as described at this `page <http://docs.geoserver.org/stable/en/user/data/database/primarykey.html>`_ and then follow the steps below. If you have questions about this process, please ask for help on the developers mailing list. 
-
 Define your new primary key for the table we can't export (id is the osm id)::
 
     INSERT INTO gt_pk_metadata_table (table_schema, table_name, pk_column) VALUES ('geogig_data','osm_train_stations','id'); 
