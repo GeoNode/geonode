@@ -8,7 +8,7 @@ Object-relational mapper
 ========================
 Data models can be defined entirely in Python. Django makes available a rich, dynamic database-access API for free, but it is still possible to write SQL if needed.
 
-.. hint:: The following documentation is based on official `documentation <https://docs.djangoproject.com/en>`_ of the project Django.
+.. hint:: The following documentation is based on official `documentation <https://docs.djangoproject.com/en/1.8>`_ of the project Django.
 
 .. note:: The following examples are taken from the official Django documentation for the sole purpose of introducing the general concepts.
 
@@ -455,7 +455,7 @@ Django supports a full-featured and secure authentication system. It handles use
         """A view that can only be accessed by logged-in users"""
         return render(request, 'protected.html', {'current_user': request.user})
 
-More: `User authentication in Django <https://docs.djangoproject.com/en/stable/topics/auth/>`_
+More: `User authentication in Django <https://docs.djangoproject.com/en/1.8/topics/auth/>`_
     
 Admin
 =====
@@ -481,7 +481,7 @@ It reads metadata from models in order to provide a powerful and ready-to-use GU
 
 .. note:: The advanced workshop for Developers will provide more details on GeoNode specific models and admin interface
 
-More: `The Django admin site <https://docs.djangoproject.com/en/stable/ref/contrib/admin/>`_
+More: `The Django admin site <https://docs.djangoproject.com/en/1.8/ref/contrib/admin/>`_
 
 Internationalization
 ====================
@@ -537,7 +537,7 @@ and it uses these hooks to localize Web applications for particular users accord
 
 .. note:: The advanced workshop for Developers will provide more details on how to create languages and translations on GeoNode using `Transifex <https://www.transifex.com/>`_
 
-More: `Internationalization and localization <https://docs.djangoproject.com/en/stable/topics/i18n/>`_
+More: `Internationalization and localization <https://docs.djangoproject.com/en/1.8/topics/i18n/>`_
 
 Security
 ========
@@ -582,4 +582,4 @@ Django provides multiple protections against:
     * Keep your **SECRET_KEY** a secret.
     * It is a good idea to limit the accessibility of your caching system and database using a firewall.
 
-More: `Security in Django <https://docs.djangoproject.com/en/stable/topics/security/>`_
+More: `Security in Django <https://docs.djangoproject.com/en/1.8/topics/security/>`_

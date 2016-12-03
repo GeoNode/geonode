@@ -4,7 +4,7 @@
 How to write Documentation
 ==========================
 
-GeoNode uses reStructuredText with `Sphinx <http://sphinx.pocoo.org>`_ . Writing style should follow the same policies as GeoServer does in their `Documentation Style Guide <http://docs.geoserver.org/latest/en/docguide/style.html>`_
+GeoNode uses reStructuredText with `Sphinx <http://www.sphinx-doc.org>`_ . Writing style should follow the same policies as GeoServer does in their `Documentation Style Guide <http://docs.geoserver.org/latest/en/docguide/style.html>`_
 
 Sphinx Syntax
 =============
@@ -12,7 +12,7 @@ Sphinx Syntax
 This page contains syntax rules, tips, and tricks for using Sphinx and reStructuredText.  For more information, please see:
  * `RST Quick Reference <http://docutils.sourceforge.net/docs/user/rst/quickref.html#section-structure>`_
  * `Comprehensive guide to reStructuredText <http://docutils.sourceforge.net/docs/ref/rst/restructuredtext.html>`_
- * `Sphinx reStructuredText Primer <http://sphinx.pocoo.org/rest.html>`_
+ * `Sphinx reStructuredText Primer <http://www.sphinx-doc.org/rest.html>`_
 
 Basic markup
 ------------

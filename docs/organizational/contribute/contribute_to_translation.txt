@@ -4,7 +4,7 @@
 How to contribute to GeoNode's Translation 
 ==========================================
 
-GeoNode uses `Transifex <https://www.transifex.com/projects/p/geonode/>`_ to translate the webpage and code from English to any other language. To be able to contribute to the translation, you need to get an account on Transifex.
+GeoNode uses `Transifex <https://www.transifex.com/geonode/geonode/>`_ to translate the webpage and code from English to any other language. To be able to contribute to the translation, you need to get an account on Transifex.
 
 Edit translations directly on Transifex webpage
 ===============================================

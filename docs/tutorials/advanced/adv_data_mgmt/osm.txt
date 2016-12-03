@@ -82,7 +82,7 @@ You now have a shapefile of the data you extracted from OSM that you can use to 
 Exporting OSM data to shapefile using GDAL
 ------------------------------------------
 
-An alternative way to export the .osm file to a shapefile is to use `ogr2ogr <http://www.gdal.org/ogr2ogr.html>`_ combined with the `GDAL osm driver <http://www.gdal.org/ogr/drv_osm.html>`_, available from GDAL version 1.10.
+An alternative way to export the .osm file to a shapefile is to use `ogr2ogr <http://www.gdal.org/ogr2ogr.html>`_ combined with the `GDAL osm driver <http://www.gdal.org/drv_osm.html>`_, available from GDAL version 1.10.
 
 As a first step, inspect how the GDAL OSM driver sees the .osm file using the ogrinfo command::
 
@@ -105,14 +105,14 @@ Now you can upload the shapefile to GeoNode using the GeoNode Upload form in the
 Using GeoGig to load OSM Data into Manage OSM Data
 --------------------------------------------------
 
-Another alternative for working with OSM data in your GeoNode is to use `GeoGig <http://geogig.org/>`_. GeoGig is a tool that draws inspiration from Git but adapts its core concepts to handle distributed versioning of geospatial data. GeoGig allows you to load OpenStreetMap data into a repository on your server and either export that data into PostGIS for use in your GeoNode, or configure the GeoGig GeoServer extension and expose the repo directly from GeoServer. An article about this process can be found on the `Boundless Geo Blog <http://http://boundlessgeo.com/2014/03/geogit-and-openstreetmap-for-yolanda/>`_. and will be described below. Much of the impetus for GeoGig came from the ROGUE JCTD and the technology has been incorporated into the `GeoSHAPE project <http://http://geoshape.org/>`_.
+Another alternative for working with OSM data in your GeoNode is to use `GeoGig <http://geogig.org/>`_. GeoGig is a tool that draws inspiration from Git but adapts its core concepts to handle distributed versioning of geospatial data. GeoGig allows you to load OpenStreetMap data into a repository on your server and either export that data into PostGIS for use in your GeoNode, or configure the GeoGig GeoServer extension and expose the repo directly from GeoServer. An article about this process can be found on the `Boundless Geo Blog <https://boundlessgeo.com/2014/03/geogit-and-openstreetmap-for-yolanda/>`_, and will be described below. Much of the impetus for GeoGig came from the ROGUE JCTD and the technology has been incorporated into `Boundless Exchange <https://boundlessgeo.com/boundless-exchange/>`_.
 
 Much more information about how to perform the steps below can be found in the GeoGig documentation page on `Using GeoGig with OpenStreetMap data <http://geogig.org/docs/interaction/osm.html>`_. The instructions that follow are only a brief overview of the process.
 
 Getting Started
 +++++++++++++++
 
-You will first need to install the GeoGig command line tools. These can be found on the projects `SourceForge page <http://sourceforge.net/projects/geogig/files/latest/download>`_. Follow the instructions contained in the installation file in order to install the CLI tools on your GeoNode server. Once you have the tools installed and added to your path, the *geogig* command should be available::
+You will first need to install the GeoGig command line tools. These can be found on the projects `SourceForge page <https://sourceforge.net/projects/geogig/files/latest/download>`_. Follow the instructions contained in the installation file in order to install the CLI tools on your GeoNode server. Once you have the tools installed and added to your path, the *geogig* command should be available::
 
     $ geogig --version
              Project Version : 1.0-SNAPSHOT
@@ -218,9 +218,6 @@ Serving your GeoGig repository in GeoNode
 At this point you have different options on how to serve this repository from your GeoNode. The most basic option is to *export* this data to PostGIS and configure the PostGIS database in GeoServer for use in GeoNode. First create a PostGIS database that will be used to store the data and then use the `geogig pg export command <http://geogig.org/manpages/pgexport.html>`_ to export the layers into this database for serving. Note you will need to replace the connection parameters below to match you r servers setup::
 
     $ geogig pg export --host localhost --port 5432 -- schema myschema --database my_osm_database --user my_user --password my_password osm_train_stations osm_train_stations
-
-.. CAUTION::
-   You may encounter an error when performing this step. This issue has been documented `here <https://github.com/boundlessgeo/GeoGig/issues/356>`_ and is being investigated by the GeoGig team. You will need to create a primary key metadata table as described at this `page <http://docs.geoserver.org/stable/en/user/data/database/primarykey.html>`_ and then follow the steps below. If you have questions about this process, please ask for help on the developers mailing list. 
 
 Define your new primary key for the table we can't export (id is the osm id)::
 

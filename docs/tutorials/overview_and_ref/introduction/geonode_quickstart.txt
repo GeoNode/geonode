@@ -185,6 +185,6 @@ Your map can now be shared!
 To be continued
 ===============
 
-Now you've gotten some quick insight in the possibilities of GeoNode. To learn more about GeoNode and its features, visit the official webpage `www.geonode.org <www.geonode.org>`_.
+Now you've gotten some quick insight in the possibilities of GeoNode. To learn more about GeoNode and its features, visit `the official GeoNode web page <http://geonode.org/>`_.
 
 Stay in touch with the GeoNode community through the `Gitter.im chatroom <https://gitter.im/geonode/>`_ or by asking your question in our `mailing list <https://lists.osgeo.org/cgi-bin/mailman/listinfo/geonode-users>`_!

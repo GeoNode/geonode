@@ -23,7 +23,7 @@ The general steps are explained in more detail below.
 Create an account on GitHub
 ---------------------------
 
-The first step is to create an account on GitHub. Just go to `Github <https://www.github.com>`_, find a username that suits you, enter your email and a password and hit *Sign up for GitHub*.
+The first step is to create an account on GitHub. Just go to `Github <https://github.com>`_, find a username that suits you, enter your email and a password and hit *Sign up for GitHub*.
 Now you've signed in, you can type *geonode* into the searching area at the top of the website. On top of the search results you will find the repository *GeoNode/geonode*. By clicking on it you will be entering the repository and will be able to see all the folders and files that are needed for GeoNode.
 The files needed for the documentation can be found in */docs*. 
 
@@ -75,7 +75,7 @@ A new branch can be created by clicking on the button *branch: master* as shown 
 
 .. image:: img/create_branch_example.PNG
 
-Just type the name of your new branch, hit enter and your branch will be created. To learn more about branches it is recommended to take a look here http://git-scm.com/book/en/Git-Branching-What-a-Branch-Is.
+Just type the name of your new branch, hit enter and your branch will be created. To learn more about branches it is recommended to take a look here https://git-scm.com/book/en/Git-Branching-What-a-Branch-Is.
 
 .. note:: Before you start editing make sure that you are in the right branch!
 
@@ -152,7 +152,7 @@ Or instead you could use::
       git pull
 
 Your repository should now be up to date!
-For more information on those commands go to http://git-scm.com/docs.
+For more information on those commands go to https://git-scm.com/docs.
 
 .. note:: If you've created a new branch, and you want to add the new folder to this branch, make sure you are working on this branch!
 

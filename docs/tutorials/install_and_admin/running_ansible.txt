@@ -4,7 +4,7 @@
 Running Ansible scripts
 =======================
 
-`Ansible <http://www.ansible.com/>`_ is a free software platform used for configuring
+`Ansible <https://www.ansible.com/>`_ is a free software platform used for configuring
 and managing computers. It is written in `Python <https://www.python.org/>`_ and
 allows users to manage `nodes` (computers) over SSH.
 

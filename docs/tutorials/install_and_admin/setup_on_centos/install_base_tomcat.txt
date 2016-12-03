@@ -56,7 +56,6 @@ Once installed, you still see that the default ``java`` and ``javac`` commands
 are still the ones from OpenJDK.
 In order to switch JDK version you have to set the proper system `alternatives`.
 
-You may want to refer to `this page <http://www.rackspace.com/knowledge_center/article/how-to-install-the-oracle-jdk-on-fedora-15-16>`_ .
 Issue the command::
 
    alternatives --install /usr/bin/java java /usr/java/latest/bin/java 200000 \

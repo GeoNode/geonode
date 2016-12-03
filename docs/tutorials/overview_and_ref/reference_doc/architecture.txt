@@ -28,10 +28,10 @@ In the advanced sections of this documentation we will go through GeoNode comman
 Django Architecture
 ===================
 
-GeoNode is based on `Django <www.djangoproject.com>`_ which is a high level Python web development framework that encourages rapid development and clean pragmatic design. 
-Django is based on the Model View Controller (`MVC <http://en.wikipedia.org/wiki/Model%E2%80%93view%E2%80%93controller>`_) architecture pattern, and as such, 
-GeoNode models layers, maps and other modules with Django’s `Model <https://docs.djangoproject.com/en/1.4/topics/db/models/>`_ module and these models are used via 
-Django’s `ORM <http://en.wikipedia.org/wiki/Object-relational_mapping>`_ in views which contain the business logic of the GeoNode application and are used to drive 
+GeoNode is based on `Django <https://www.djangoproject.com/>`_ which is a high level Python web development framework that encourages rapid development and clean pragmatic design.
+Django is based on the Model View Controller (`MVC <https://en.wikipedia.org/wiki/Model%E2%80%93view%E2%80%93controller>`_) architecture pattern, and as such,
+GeoNode models layers, maps and other modules with Django’s `Model <https://docs.djangoproject.com/en/1.8/topics/db/models/>`_ module and these models are used via
+Django’s `ORM <https://en.wikipedia.org/wiki/Object-relational_mapping>`_ in views which contain the business logic of the GeoNode application and are used to drive
 HTML templates to display the web pages within the application.
 
 Django explained with model/view/controller (`MVC <http://reinout.vanrees.org/weblog/2011/12/13/django-mvc-explanation.html>`_)
@@ -56,7 +56,7 @@ MVP
 
     MVP tends to be a very natural pattern for achieving separated presentation in Web Forms.
     
-    **Two primary variations** (You can `find out more about both variants <http://www.codeplex.com/websf/Wiki/View.aspx?title=MVPDocumentation&referringTitle=bundles>`_.)
+    **Two primary variations** (You can `find out more about both variants <http://webclientguidance.codeplex.com/wikipage?title=MVPDocumentation&referringTitle=bundles>`_.)
     
     **Passive View:** The View is as dumb as possible and contains almost zero logic. The Presenter is a middle man that talks to the View and the Model. The View and Model are completely shielded from one another. The Model may raise events, but the Presenter subscribes to them for updating the View. In Passive View there is no direct data binding, instead the View exposes setter properties which the Presenter uses to set the data. All state is managed in the Presenter and not the View.
 
@@ -97,7 +97,7 @@ Presentation Model
     The Presentation Model can expose commands which the view uses for invoking actions. 
     The advantage of this approach is that you can essentially remove the code-behind altogether as the PM completely encapsulates all of the behaviour for the view. 
     
-    This pattern is a very strong candidate for use in WPF applications and is also called `Model-View-ViewModel <http://msdn.microsoft.com/en-us/magazine/dd419663.aspx>`_.
+    This pattern is a very strong candidate for use in WPF applications and is also called `Model-View-ViewModel <https://msdn.microsoft.com/en-us/magazine/dd419663.aspx>`_.
 
 More: `http://reinout.vanrees.org/weblog/2011/12/13/django-mvc-explanation.html <http://reinout.vanrees.org/weblog/2011/12/13/django-mvc-explanation.html>`_
 
@@ -109,7 +109,7 @@ WSGI
     * This allows any WSGI compliant framework to be hosted in any WSGI compliant server.
     * For most GeoNode development, the details of this specification may be ignored.
     
-More: `http://en.wikipedia.org/wiki/Wsgi <http://en.wikipedia.org/wiki/Wsgi>`_
+More: `http://en.wikipedia.org/wiki/Wsgi <https://en.wikipedia.org/wiki/Wsgi>`_
 
 GeoNode and GeoServer
 =====================
@@ -201,12 +201,12 @@ Javascript in GeoNode
     GeoNode provides a number of facilities for interactivity in the web browser built on top of several high-quality JavaScript frameworks:
 
     * `Bootstrap <http://getbootstrap.com/>`_ for GeoNode's front-end user interface and common user interaction.
-    * `Bower <http://bower.io/>`_ for GeoNode's front-end package management.
-    * `ExtJS <http://extjs.com/>`_ for component-based UI construction and data access
+    * `Bower <https://bower.io/>`_ for GeoNode's front-end package management.
+    * `ExtJS <https://www.sencha.com/products/extjs/>`_ for component-based UI construction and data access
     * `OpenLayers <http://openlayers.org/>`_ for interactive mapping and other geospatial operations
     * `GeoExt <http://geoext.org/>`_ for integrating ExtJS with OpenLayers
     * `Grunt <http://gruntjs.com/>`_ for front-end task automation.
-    * `GXP <http://projects.opengeo.org/gxp>`_ for providing some higher-level application building facilities on top of GeoExt, as well
+    * `GXP <https://github.com/boundlessgeo/gxp>`_ for providing some higher-level application building facilities on top of GeoExt, as well
       as improving integration with GeoServer.
     * `jQuery <http://jquery.com>`_ to abstract Javascript manipulation, event handling, animation and Ajax.
 
@@ -214,7 +214,7 @@ Javascript in GeoNode
 
     * A `GeoNode mixin <https://github.com/GeoNode/geonode/blob/master/geonode/static/geonode/js/extjs/GeoNode-mixin.js>`_  class
       that provides GeoExplorer with the methods needed to properly function in GeoNode.  The class
-      is responsible for checking permissions, retrieving and submitting the `CSRF token <https://docs.djangoproject.com/en/dev/ref/contrib/csrf/>`_,
+      is responsible for checking permissions, retrieving and submitting the `CSRF token <https://docs.djangoproject.com/en/1.8/ref/csrf/>`_,
       and user authentication.
 
     * A `search module <https://github.com/GeoNode/geonode/tree/master/geonode/static/geonode/js/search>`_ responsible for the GeoNode's site-wide search functionality.

@@ -9,7 +9,8 @@ GeoNode is known to work on all modern web browsers. This list includes (but is 
 - `Google Chrome <http://www.google.com/chrome/>`_.
 - `Apple Safari <https://www.apple.com/safari/>`_.
 - `Mozilla Firefox <https://www.mozilla.org/en-US/firefox/new/>`_.
-- `Microsoft Internet Explorer <http://windows.microsoft.com/en-us/internet-explorer/download-ie>`_.
+- `Microsoft Edge <https://developer.microsoft.com/en-us/microsoft-edge/>`_.
+- Microsoft Internet Explorer.
 
 The vast majority of GeoNode developers do their work with Google Chrome.
 

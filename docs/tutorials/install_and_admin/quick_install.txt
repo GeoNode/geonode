@@ -200,11 +200,11 @@ You can eventually generate a pdf containing the whole documentation set. For th
 Vagrant
 -------
 
-http://docs.vagrantup.com/v2/getting-started/index.html
+https://www.vagrantup.com/docs/getting-started/index.html
 
-.. _Virtual Box: http://virtualbox.org
-.. _Vagrant: http://vagrantup.com
-.. _Ubuntu Linux: http://www.ubuntu.com/download
+.. _VirtualBox: https://www.virtualbox.org/
+.. _Vagrant: https://www.vagrantup.com/
+.. _Ubuntu Linux: https://www.ubuntu.com/download
 
 
 

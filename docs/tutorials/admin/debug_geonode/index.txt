@@ -125,4 +125,4 @@ To install it::
 More:
     For more set up and customize the panels read the official docs here
     
-    http://django-debug-toolbar.readthedocs.org/en/latest/
+    http://django-debug-toolbar.readthedocs.io/en/latest/

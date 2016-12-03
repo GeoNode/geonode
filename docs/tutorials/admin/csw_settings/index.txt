@@ -12,7 +12,7 @@ Supported CSW server implementations
 GeoNode additionally supports the following CSW server implementations:
 
  * `GeoNetwork opensource <http://geonetwork-opensource.org/>`_
- * `deegree <http://deegree.org/>`_
+ * `deegree <http://www.deegree.org/>`_
 
 Since GeoNode communicates with alternate CSW configurations via HTTP, the CSW server can be installed and deployed independent of GeoNode if desired.
 
@@ -23,7 +23,7 @@ GeoNetwork opensource Installation
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
  * Deploy GeoNetwork opensource by downloading geonetwork.war (see http://geonetwork-opensource.org/downloads.html) and deploying into your servlet container
- * Follow the instructions at http://geonetwork-opensource.org/manuals/2.6.4/eng/users/quickstartguide/installing/index.html to complete the installation
+ * Follow the instructions at http://geonetwork-opensource.org/manuals/3.0.5/eng/users/user-guide/quick-start/index.html to complete the installation
  * test the server with a GetCapabilities request (http://localhost:8080/geonetwork/srv/en/csw?service=CSW&version=2.0.2&request=GetCapabilities)
 
 See http://geonetwork-opensource.org/docs.html for further documentation.

@@ -31,16 +31,12 @@ For contributors who do not have commit access to the GeoNode repository, the re
 0. Find or create a ticket describing the feature or bug to be resolved.
 1. Create changes to GeoNode code addressing the ticket.
 2. Publish those changes and request a review from the GeoNode committers.
-   The recommended format is a GitHub [pull request](http://help.github.com/pull-requests/).
+   The recommended format is a GitHub [pull request](https://help.github.com/articles/about-pull-requests/).
    If you are unable or unwilling to provide a change as a branch on GitHub, please consult the developer's list for advice.
 3. At least one GeoNode committer should review the submitted changes.
    If he finds the patch acceptable, the changes will be pulled into GeoNode.
    If problems are found, then he should list them clearly in order to allow the original author to update the submission (at which point we return to point 2 in this process.)
    In the case of a feature idea which is simply not suitable for inclusion as core GeoNode functionality, the patch may be rejected outright.
-
-![Code Review Flow](http://geonode.org/wp-content/uploads/2011/05/code-review-flow.png)
-
-   The general workflow for code patches coming into GeoNode.
 
 _Note: If after a few days your patch has not been reviewed by any GeoNode committer, please feel free to bring it up either in the mailing list or the IRC channel. The GeoNode community (and it's committers) try to respond quickly and give adequate feedback to maintain the interest of new potential members. However, sometimes other responsibilities prevent us from responding quickly._
 

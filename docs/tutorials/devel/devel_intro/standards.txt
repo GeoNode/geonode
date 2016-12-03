@@ -132,7 +132,7 @@ REST
 
 .. [4] `"What is CSS?" <http://www.w3.org/standards/webdesign/htmlcss#whatcss>`_. World Wide Web Consortium. Retrieved December 2010.
 
-.. [5] Fielding, R. T.; Taylor, R. N. (2000). "Principled design of the modern Web architecture". pp. 407–416. doi:`10.1145/337180.337228 <https://dx.doi.org/10.1145%2F337180.337228>`_.
+.. [5] Fielding, R. T.; Taylor, R. N. (2000). "Principled design of the modern Web architecture". pp. 407–416. doi:`10.1145/337180.337228 <http://dl.acm.org/citation.cfm?doid=337180.337228>`_.
 
 .. [6] Richardson, Leonard; Sam Ruby (2007), `RESTful web service <http://books.google.com/books?id=XUaErakHsoAC>`_, O'Reilly Media, `ISBN 978-0-596-52926-0 <https://en.wikipedia.org/wiki/Special:BookSources/978-0-596-52926-0>`_, retrieved 18 January 2011, The main topic of this book is the web service architectures which can be considered RESTful: those which get a good score when judged on the criteria set forth in Roy Fielding's dissertation."
 

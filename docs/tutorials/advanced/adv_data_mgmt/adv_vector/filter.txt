@@ -21,7 +21,7 @@ WFS also defines mechanisms to only retrieve a subset of the data that matches s
     curl -XPOST -d @request.xml -H "Content-type: application/xml" "http://localhost:8083/geoserver/ows"
 
 
-#. Now, let's write an equivalent request - using the name of the state instead of the ``id``- issuing a ``GET`` and encoding the filter in a language called `CQL <http://en.wikipedia.org/wiki/CQL>`_. Copy the following  URL in your browser's navigation bar::
+#. Now, let's write an equivalent request - using the name of the state instead of the ``id``- issuing a ``GET`` and encoding the filter in a language called `CQL <https://en.wikipedia.org/wiki/CQL>`_. Copy the following  URL in your browser's navigation bar::
 
     http://localhost:8083/geoserver/wfs?request=GetFeature&service=WFS&version=1.0.0&typeName=geosolutions:WorldCountries&outputFormat=GML2&CQL_FILTER=NAME=%27Monaco%27
 

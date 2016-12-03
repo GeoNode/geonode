@@ -122,7 +122,7 @@ static
 ------
 ```paver static```
 
-.. note:: This task requires the `Node Package Manager <https://npmjs.org/>`_ to be installed.
+.. note:: This task requires the `Node Package Manager <https://www.npmjs.com/>`_ to be installed.
 
 Downloads and installs GeoNode's static file dependencies and creates the production assets.
 

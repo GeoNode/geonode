@@ -47,7 +47,7 @@ Adding layers from Google, Bing and other providers
 Bing
 ====
 
-Get an API key from Microsoft at http://bingmapsportal.com/ and place it in ``local_settings.py``.:: 
+Get an API key from Microsoft at http://www.bingmapsportal.com/ and place it in ``local_settings.py``.::
     
     BING_API_KEY="zxcxzcXAWdsdfkjsdfWWsdfjpowxcxz"
 
@@ -68,7 +68,7 @@ Copy the ``MAP_BASELAYERS`` dictionary from ``settings.py`` into ``local_setting
 Google
 ======
 
-Get an API key from Google at http://code.google.com/apis/maps/signup.html and place it in ``local_settings.py``, for example::
+Get an API key from Google at https://developers.google.com/maps/faq?csw=1#using-google-maps-apis and place it in ``local_settings.py``, for example::
 
     GOOGLE_API_KEY="zxcxzcXAWdqwdQWWQEDzxcxz"
 
@@ -102,7 +102,7 @@ both the ``Domain name`` and ``Display name`` entries to match your system.
 
 It is possible to 'inform' google of changes to your sitemap. This is accomplished
 using the ping_google management command. More information can be found here
-http://docs.djangoproject.com/en/dev/ref/contrib/sitemaps/#django.contrib.sitemaps.ping_google
+https://docs.djangoproject.com/en/dev/ref/contrib/sitemaps/#django.contrib.sitemaps.ping_google
 It is recommended to put this call into a cron (scheduled) job to update google periodically.
 
 
@@ -113,7 +113,9 @@ You can optionally configure GeoNode to allow new users to register through the 
 
 To allow new user registration:
 
-1. Set up the email backend for Django (see `Django documentation <http://docs.djangoproject.com/en/dev/topics/email/#e-mail-backends>`_) and add the appropriate settings to ``./src/GeoNodePy/geonode/local_settings.py``.  For example::
+1. Set up the email backend for Django (see `Django documentation <https://docs.djangoproject.com/en/1.8/topics/email/#email-backends>`_)
+   and add the appropriate settings to
+   ``./src/GeoNodePy/geonode/local_settings.py``.  For example::
 
        EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
        EMAIL_HOST = 'smtp.gmail.com'
@@ -272,7 +274,7 @@ Native JAI and JAI ImageIO
 
 Using the native-code implementation of JAI and JAI ImageIO speeds up GeoServer, thereby requiring less concurrency at the same level of throughput.
 
-The GeoServer manual contains `platform-specific instructions <http://docs.geoserver.org/stable/en/user/production/java.html#install-native-jai-and-jai-image-i-o-extensions>`_ for configuring JAI and JAI ImageIO.
+The GeoServer manual contains `platform-specific instructions <http://docs.geoserver.org/stable/en/user/production/java.html#install-native-jai-and-imageio-extensions>`_ for configuring JAI and JAI ImageIO.
 
 
 GeoServer Configuration
@@ -321,7 +323,7 @@ Adding servers by hostname
 
 .. highlight:: yaml
 
-The MapFish printing module is configured through a `YAML <yaml>`_
+The MapFish printing module is configured through a `YAML <http://yaml.org/>`_
 configuration file, usually named :file:`print.yaml`.  If you are using the
 GeoServer plugin to run the printing module, this configuration file can be
 found at :file:`{GEOSERVER_DATA_DIR}/printing/config.yaml`.  The default
@@ -344,7 +346,6 @@ You can add host/port entries to this list to allow other servers.
    print module.
 
    The `GeoServer documentation
-   <http://docs.geoserver.org/stable/en/user/community/printing/>`_ on
+   <http://docs.geoserver.org/maintain/en/user/extensions/printing/index.html>`_ on
    configuring the print module.
-
 

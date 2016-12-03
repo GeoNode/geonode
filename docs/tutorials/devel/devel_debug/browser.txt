@@ -13,7 +13,7 @@ formatted viewing of JSON responses and integrates well with Firebug.
 References:
 
 - https://getfirebug.com/faq/
-- http://jsonview.com/
+- https://jsonview.com/
 
 Net Tab
 -------

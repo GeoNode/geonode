@@ -12,7 +12,7 @@ Coordinate Reference System Configuration
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 When adding data, GeoServer tries to inspect data headers looking for an EPSG code: if the data has a CRS with an explicit EPSG code and the full CRS definition behind the code matches the one in GeoServer, the CRS will be already set for the data.
-If the data has a CRS but no EPSG code, you'll have to manually guess the EPSG code. Browsing to `<www.spatialreference.org>`_ might be a good option to find the exact EPSG code for your data.
+If the data has a CRS but no EPSG code, you'll have to manually guess the EPSG code. Browsing to `<http://www.spatialreference.org>`_ might be a good option to find the exact EPSG code for your data.
 
 If an EPSG code cannot be found, then either the data has no CRS or it is unknown to GeoServer.  In this case, there are a few options:
 

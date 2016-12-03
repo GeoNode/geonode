@@ -31,7 +31,7 @@ It's also possible to filter by related tables like *"/api/layers?keywords__slug
 
 There are many possible filter, refer to the django_ filters guide.
 
-.. _django: https://docs.djangoproject.com/en/1.6/ref/models/querysets/
+.. _django: https://docs.djangoproject.com/en/1.8/ref/models/querysets/
 
 
 API limit and pagination
@@ -60,7 +60,7 @@ Once activated the full text API is reachable by appending "search" to the URL, 
 
 Although the backend type is not mandatory, we suggest (for simplicity) to use Elasticsearch_:
 
-.. _Elasticsearch: http://www.elasticsearch.org/
+.. _Elasticsearch: https://www.elastic.co/products/elasticsearch/
 
 To activate the search backend make sure that you have a running instance of Elasticsearch, then uncomment the following line in the geonode settings:
 

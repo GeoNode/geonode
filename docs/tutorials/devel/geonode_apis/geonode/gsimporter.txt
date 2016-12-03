@@ -13,14 +13,14 @@ pip install gsconfig
 
 or
 
-git clone https://github.com/boundlessgeo/gsimporter.git
+git clone https://github.com/boundlessgeo/gsimporter
 cd gsimporter
 pip install .
 
 Getting Help
 ============
 
-Please use the GitHub project at http://github.com/boundlessgeo/gsimporter for any bug reports (and pull requests are welcome, but please include tests where possible.)
+Please use the GitHub project at https://github.com/boundlessgeo/gsimporter for any bug reports (and pull requests are welcome, but please include tests where possible.)
 
 Running Tests
 =============
