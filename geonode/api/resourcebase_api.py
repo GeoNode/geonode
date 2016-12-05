@@ -479,6 +479,7 @@ class CommonModelApi(ModelResource):
             'title',
             'date',
             'abstract',
+            'typename',
             'csw_wkt_geometry',
             'csw_type',
             'owner__username',
