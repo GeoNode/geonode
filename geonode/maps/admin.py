@@ -1,4 +1,5 @@
-from geonode.maps.models import Map, Layer, MapLayer, LayerCategory, LayerAttribute, Contact, ContactRole, Role, MapStats, LayerStats, Endpoint
+from geonode.maps.models import (Map, Layer, MapLayer, LayerCategory, LayerAttribute,
+    Contact, ContactRole, Role, MapStats, LayerStats, Endpoint, MapSnapshot)
 from django.contrib.contenttypes.models import ContentType
 from django.contrib import admin
 from django.http import HttpResponseRedirect
@@ -95,6 +96,10 @@ class EndpointAdmin(admin.ModelAdmin):
     list_display_links = ('id',)
     search_fields = ['description', 'url']
 
+class MapSnapshotAdmin(admin.ModelAdmin):
+    list_display = ('map', 'created_dttm')
+    search_fields = ['map__title',]
+    date_hierarchy = 'created_dttm'
 
 
 admin.site.register(Map, MapAdmin)
@@ -108,4 +113,4 @@ admin.site.register(Role)
 admin.site.register(MapStats, MapStatsAdmin)
 admin.site.register(LayerStats, LayerStatsAdmin)
 admin.site.register(Endpoint, EndpointAdmin)
-#admin.site.register(Comment, CommentAdmin)
+admin.site.register(MapSnapshot, MapSnapshotAdmin)
