@@ -37,7 +37,7 @@ The maps app also includes a set of forms, customization of the Django admin, so
 
 You can familiarize yourself with the maps app on GitHub.
 
-https://github.com/GeoNode/geonode/tree/master/geonode/layers
+https://github.com/GeoNode/geonode/tree/master/geonode/maps
 
 geonode.security
 ----------------
