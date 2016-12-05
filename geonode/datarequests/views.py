@@ -88,7 +88,7 @@ def registration_part_one(request):
                 contact_number = request.user.voice,
                 request_status = 'pending'
             )
-            
+            request_object.date = timezone.now()
             request.session['request_object']=request_object
 
             return HttpResponseRedirect(
