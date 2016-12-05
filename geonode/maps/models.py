@@ -2008,12 +2008,15 @@ class MapSnapshot(models.Model):
     The user who created the snapshot.
     """
 
+    def url(self):
+        return num_encode(self.id)
+
     def json(self):
         return {
             "map": self.map.id,
             "created": self.created_dttm.isoformat(),
             "user": self.user.username if self.user else None,
-            "url": num_encode(self.id)
+            "url": url()
         }
 
 

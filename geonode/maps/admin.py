@@ -97,7 +97,7 @@ class EndpointAdmin(admin.ModelAdmin):
     search_fields = ['description', 'url']
 
 class MapSnapshotAdmin(admin.ModelAdmin):
-    list_display = ('map', 'created_dttm')
+    list_display = ('map', 'created_dttm', 'url')
     search_fields = ['map__title',]
     date_hierarchy = 'created_dttm'
 
