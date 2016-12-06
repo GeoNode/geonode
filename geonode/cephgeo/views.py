@@ -524,4 +524,10 @@ def jurisdict_default_style(request):
     messages.error(request, "Updating Default Style of Jurisdiction Shapefiles")
     return HttpResponseRedirect(reverse('data_management'))
 
+@login_required
+@user_passes_test(lambda u: u.is_superuser)
+def update_floodplain_keywords(request):
+    floodplain_keywords.delay()
+    messages.error(request, "Inserting FP/RB SUC keywords on layers")
+    return HttpResponseRedirect(reverse('data_management'))
 

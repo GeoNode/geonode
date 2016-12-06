@@ -13,14 +13,19 @@ from geonode.layers.utils import create_thumbnail
 from django.core.exceptions import ObjectDoesNotExist
 from celery.utils.log import get_task_logger
 import geonode.settings as settings
-import os, subprocess, time, datetime
+import os
+import subprocess
+import time
+import datetime
 logger = get_task_logger("geonode.tasks.update")
 from geonode.security.models import PermissionLevelMixin
 from django.contrib.auth.models import Group
 from guardian.shortcuts import assign_perm, get_anonymous_user
 from string import Template
 from pwd import getpwnam
-import traceback
+import traceback, logging
+import psycopg2
+from osgeo import ogr
 
 
 @task(name='geonode.tasks.update.fh_perms_update', queue='update')
@@ -117,8 +122,9 @@ def style_update(layer, style_template):
             style.save()
 
         except Exception as e:
-            #print "%s" % e
+            # print "%s" % e
             raise
+
 
 def iterate_over_layers(layers, style_template):
     count = len(layers)
@@ -135,12 +141,12 @@ def iterate_over_layers(layers, style_template):
             else:
                 style_update(layer, style_template)
         except Exception as e:
-            #print "%s" % e
-            #pass
+            # print "%s" % e
+            # pass
             print 'Error setting style!'
             traceback.print_exc()
             return
-            
+
 
 @task(name='geonode.tasks.update.layer_default_style', queue='update')
 def layer_default_style(keyword):
@@ -213,14 +219,14 @@ def seed_layers(keyword):
             print 'e.cmd:', e.cmd
             print 'e.output:', e.output
 
+
 def _get_ridf(layer_name, flood_year):
     print ''
-    #layer.name = municipality_province_fh{year}yr_mapresolution
+    # layer.name = municipality_province_fh{year}yr_mapresolution
     tokens = layer_name.split('_fh').strip()
     layer_muni_prov = tokens[0]
 
     # ridf = RIDF.objects.filter(Q(layer_name=layer_muni_prov)&Q())
-
 
 
 def fhm_year_metadata(flood_year, skip_prev):
@@ -766,3 +772,129 @@ def create_document_thumbnail(object_id):
     image = document._render_thumbnail()
     filename = 'doc-%s-thumb.png' % document.id
     document.save_thumbnail(filename, image)
+
+def assign_tag(mode,records,layer):
+    if mode=='dream':
+        _dict = {}
+        _dict['floodplain'] = records[0][0]
+        _logger.info(
+            'FP:{0}'.format(_dict['floodplain']))
+        layer.keywords.add(_dict['floodplain'])
+        layer.floodplain_tag.add(_dict['floodplain'])
+        try:
+            layer.save()
+            _logger.debug('Keywords: {0}'.format(
+                layer.keywords.values_list()))
+            _logger.debug('Floodplain Tag: {0}'.format(
+                layer.floodplain_tag.values_list()))
+        except:
+            _logger.exception('ERROR SAVING LAYER')
+    else:
+        pair = {}
+        pair['floodplain'] = records[0][0]
+        pair['suc'] = records[0][1]
+        _logger.info(
+            'FP:{0} - SUC:{1}'.format(pair['floodplain'], pair['suc']))
+        layer.keywords.add(pair['floodplain'])
+        layer.keywords.add(pair['suc'])
+        layer.floodplain_tag.add(pair['floodplain'])
+        layer.SUC_tag.add(pair['suc'])
+        try:
+            layer.save()
+            _logger.debug('Keywords: {0}'.format(
+                layer.keywords.values_list()))
+            _logger.debug('Floodplain Tag: {0}'.format(
+                layer.floodplain_tag.values_list()))
+            _logger.debug('SUC Tag: {0}'.format(
+                layer.SUC_tag.values_list()))
+        except:
+            _logger.exception('ERROR SAVING LAYER')
+
+def tag_layers(mode,delineation,cur,conn,source,_logger):
+    count = 1
+    layers = Layer.objects.filter(name__icontains='_fh')
+    total = len(layers)
+    for layer in layers:
+        layer_name = layer.name
+        if mode=='dream':
+            query = '''
+                WITH fhm AS (
+                    SELECT ST_Multi(ST_Union(f.the_geom)) AS the_geom 
+                    FROM ''' + layer_name + ''' AS f
+                ) 
+                SELECT a.rb_name 
+                FROM ''' + delineation + ''' AS a, fhm 
+                WHERE ST_Contains(a.the_geom, ST_Centroid(fhm.the_geom)) 
+                      AND ST_Intersects(a.the_geom, fhm.the_geom);
+                '''
+        else:
+            query = '''
+                WITH fhm AS (
+                    SELECT ST_Multi(ST_Union(f.the_geom)) AS the_geom 
+                    FROM ''' + layer_name + ''' AS f
+                ) 
+                SELECT a."FP_Name", a."SUC" 
+                FROM ''' + delineation + ''' AS a, fhm 
+                WHERE ST_Contains(a.the_geom, ST_Centroid(fhm.the_geom)) 
+                      AND ST_Intersects(a.the_geom, fhm.the_geom);
+                '''
+
+        _logger.info('{0}/{2} Layer name: {1}'.format(count, layer_name,total))
+        _logger.info('Query: %s', query)
+        try:
+            cur.execute(query)
+        except psycopg2.ProgrammingError:
+            _logger.exception('ERROR EXECUTING QUERY')
+            # traceback.print_exc()
+            conn.rollback()
+            continue
+        records = cur.fetchall()
+        _logger.info('Records: %s', records)
+        if len(records) > 1:
+            if mode=='dream':
+                _logger.error('RETURNED MORE THAN 1 FP: %s', records)
+            else:
+                _logger.error('RETURNED MORE THAN 1 FP-SUC PAIR: '%s, records)
+        elif len(records) == 1:
+            assign_tag(mode,records,layer,_logger)
+        else:
+            if mode=='dream':
+                _logger.error('RETURNED 0 FP: %s', records)
+            else:
+                _logger.error('RETURNED 0 FP-SUC PAIR: %s', records)
+        count += 1
+
+@task(name='geonode.tasks.update.floodplain_keywords', queue='update')
+def floodplain_keywords():
+    _logger = logging.getLogger()
+    _LOG_LEVEL = logging.DEBUG
+    _CONS_LOG_LEVEL = logging.INFO
+    _FILE_LOG_LEVEL = logging.DEBUG
+
+    _logger.setLevel(_LOG_LEVEL)
+    formatter = logging.Formatter(
+        '[%(asctime)s] (%(levelname)s) : %(message)s')
+
+    # Setup console logging
+    ch = logging.StreamHandler(sys.stdout)
+    ch.setLevel(_CONS_LOG_LEVEL)
+    ch.setFormatter(formatter)
+    _logger.addHandler(ch)
+
+    # Setup file logging
+    fh = logging.FileHandler(os.path.splitext(
+        os.path.basename(__file__))[0] + '.log', mode='w')
+    fh.setLevel(_FILE_LOG_LEVEL)
+    fh.setFormatter(formatter)
+    _logger.addHandler(fh)
+
+    source = ogr.Open(("PG:host={0} dbname={1} user={2} password={3}".format
+                   (settings.HOST_ADDR, settings.GIS_DATABASE_NAME,
+                    settings.DATABASE_USER, settings.DATABASE_PASSWORD)))
+    conn = psycopg2.connect(("host={0} dbname={1} user={2} password={3}".format
+                             (settings.HOST_ADDR, settings.GIS_DATABASE_NAME,
+                              settings.DATABASE_USER, settings.DATABASE_PASSWORD)))
+    cur = conn.cursor()
+
+    tag_layers('dream',settings.RB_DELINEATION_DREAM,cur,conn,source,_logger)
+    tag_layers('',settings.FP_DELINEATION_PL1,cur,conn,source,_logger)
