@@ -63,6 +63,7 @@ def image_basemap(link, epsg, filetype):
                   username=settings.OGC_SERVER['default']['USER'],
                   password=settings.OGC_SERVER['default']['PASSWORD'])
     baseURL = settings.OGC_SERVER['default']['PUBLIC_LOCATION']
+    localURL = settings.OGC_SERVER['default']['LOCATION']
 
     # get layer name
     layer, isPhilLidar1, isPhilLidar2 = analyze_link(link)
@@ -104,11 +105,11 @@ def image_basemap(link, epsg, filetype):
             jsontext['purpose'] = 'No purpose provided'
         jsontext['srs'] = to_srs_str
         jsontext['outputFormat'] = filetype
-        jsontext['outputFilename'] = layer.name
+        jsontext['outputFilename'] = layer.title.replace(',','')
         # jsontext['layers'][0]['baseURL'] = settings.OGC_SERVER['default']['LOCATION'] + 'wms?SERVICE=WMS&'
-        jsontext['layers'][0]['baseURL'] = baseURL + \
+        jsontext['layers'][0]['baseURL'] = localURL + \
             'wms?SERVICE=WMS&'  # baseURL for local
-        jsontext['layers'][1]['baseURL'] = baseURL + \
+        jsontext['layers'][1]['baseURL'] = localURL + \
             'wms?SERVICE=WMS&'  # baseURL for local
 
         # jsontext['layers'][0]['layers'] = [str(layer.typename)]
@@ -132,10 +133,9 @@ def image_basemap(link, epsg, filetype):
 
 def get_prs92_download_url(link):
     link = link.get_download_url()
-    if 'GeoTIFF' in str(link):
-        epsg4683 = 'crs=EPSG%3A4683'
-        temp = link.split('crs=EPSG%3A32651')
-        link = temp[0] + epsg4683 + temp[1]
+    if 'image%2Ftiff' in str(link):
+        outputCRS = '&outputcrs=http://www.opengis.net/def/crs/EPSG/0/4683'
+        link = link + outputCRS
     elif 'image%2Fpng' in str(link):
         link = image_basemap(link, 4683, 'png')
         return link
@@ -144,8 +144,8 @@ def get_prs92_download_url(link):
         return link
     elif '%2Fpdf' in str(link):  # remove this
         link = image_basemap(link, 4683, 'pdf')
-    elif 'SHAPE-ZIP' in str(link) or 'kml' in str(link):
-        link = link + '&srsName=EPSG:4683'
+    # elif 'SHAPE-ZIP' in str(link) or 'kml' in str(link):
+    #     link = link + '&srsName=EPSG:4683'
     return link
 
 

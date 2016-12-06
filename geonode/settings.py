@@ -790,7 +790,7 @@ DOWNLOAD_FORMATS_RASTER = [
     'GeoTIFF',
     #'Gtopo30',
     #'ImageMosaic',
-    'KML',
+    # 'KML', 
     'View in Google Earth',
     #'Tiles',
 ]
