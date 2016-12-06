@@ -2024,7 +2024,7 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
 
         this.searchWindow = new Ext.Window({
             id: 'ge_searchWindow',
-            title: "Search",
+            title: "Search BETA",
             closeAction: 'hide',
             layout: 'fit',
             width: 900,
