@@ -7,6 +7,7 @@ class DownloadCountAdmin(admin.ModelAdmin):
     model = DownloadCount
     list_display_links = ('id',)
     list_display = (
+        'id',
         'date',
         'category',
         'chart_group',
@@ -19,6 +20,7 @@ class SUCLuzViMinAdmin(admin.ModelAdmin):
     model = SUCLuzViMin
     list_display_links = ('id',)
     list_display = (
+        'id',
         'province',
         'suc',
         'luzvimin')
@@ -29,6 +31,7 @@ class DownloadTrackerAdmin(admin.ModelAdmin):
     model = DownloadTracker
     list_display_links = ('id',)
     list_display = (
+        'id',
         'timestamp',
         'actor',
         'title',
