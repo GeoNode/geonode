@@ -18,7 +18,15 @@
     {% endif %}
     <form enctype="multipart/form-data" method="POST" action="{% url 'avatar_add' %}">
         {{ upload_avatar_form.as_p }}
-        <p>{% csrf_token %}<input type="submit" class="btn btn-primary" value="{% trans "Upload New Image" %}" /></p>
+        <p>{% csrf_token %}<input id="avatar-file" type="submit" class="btn btn-primary" style="visibility: hidden" value="{% trans "Upload New Image" %}" /></p>
     </form>
     <a class="btn btn-primary btn-danger" href="{% url 'avatar_delete' %}">{% trans "Delete Your Avatar" %}</a>
+{% endblock %}
+
+{% block extra_script %}
+<script type="text/javascript">
+    $('#id_avatar').change(function() {
+        $('#avatar-file').css('visibility', 'visible');
+    });
+</script>
 {% endblock %}
