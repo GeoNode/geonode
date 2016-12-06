@@ -636,6 +636,7 @@ def layer_download(request, layername):
         layername,
         'base.view_resourcebase',
         _PERMISSION_MSG_VIEW)
+    pprint(request.user.is_authenticated)
     if request.user.is_authenticated():
         action.send(request.user, verb='downloaded', action_object=layer)
         DownloadTracker(actor=Profile.objects.get(username=request.user),
@@ -671,7 +672,7 @@ def layer_download_csv(request):
                    'Private Insitution',
                    'Other']
 
-    auth_list = Action.objects.filter(verb='downloaded').order_by('timestamp')
+    auth_list = DownloadTracker.objects.order_by('timestamp')
     writer.writerow(['username', 'lastname', 'firstname', 'email', 'organization',
                      'organization type', 'purpose', 'layer name', 'date downloaded'])
     for auth in auth_list:
@@ -683,9 +684,9 @@ def layer_download_csv(request):
         organization = getprofile.organization
         orgtype = orgtypelist[getprofile.organization_type]
         # pprint(dir(getprofile))
-        if auth.action_object.csw_type != 'document':
+        if auth.resource_type != 'document':
             listtowrite.append([username, lastname, firstname, email, organization, orgtype,
-                                "", auth.action_object.typename, auth.timestamp.strftime('%Y/%m/%d')])
+                                "", auth.title, auth.timestamp.strftime('%Y/%m/%d')])
 
     # writer.writerow(['\n'])
     anon_list = AnonDownloader.objects.all().order_by('date')
