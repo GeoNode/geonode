@@ -74,6 +74,9 @@ from geonode.eula.models import AnonDownloader
 from django.utils import timezone
 from geonode.people.models import Profile
 
+from geonode.reports.models import DownloadTracker
+from geonode.base.models import ResourceBase
+
 CONTEXT_LOG_FILE = None
 
 if 'geonode.geoserver' in settings.INSTALLED_APPS:
@@ -635,6 +638,11 @@ def layer_download(request, layername):
         _PERMISSION_MSG_VIEW)
     if request.user.is_authenticated():
         action.send(request.user, verb='downloaded', action_object=layer)
+        DownloadTracker(actor=Profile.objects.get(username=request.user),
+                        title=str(layername),
+                        resource_type=str(ResourceBase.objects.get(layer__typename=layername).csw_type),
+                        keywords=ResourceBase.objects.get(layer__typename=layername).keywords.slugs()
+                        ).save()
 
     splits = request.get_full_path().split("/")
     redir_url = urljoin(settings.OGC_SERVER['default'][
@@ -663,7 +671,7 @@ def layer_download_csv(request):
                    'Private Insitution',
                    'Other']
 
-    auth_list = Action.objects.filter(verb='downloaded').order_by('timestamp')
+    auth_list = DownloadTracker.objects.order_by('timestamp')
     writer.writerow(['username', 'lastname', 'firstname', 'email', 'organization',
                      'organization type', 'purpose', 'layer name', 'date downloaded'])
     for auth in auth_list:
@@ -675,9 +683,9 @@ def layer_download_csv(request):
         organization = getprofile.organization
         orgtype = orgtypelist[getprofile.organization_type]
         # pprint(dir(getprofile))
-        if auth.action_object.csw_type != 'document':
+        if auth.resource_type != 'document':
             listtowrite.append([username, lastname, firstname, email, organization, orgtype,
-                                "", auth.action_object.typename, auth.timestamp.strftime('%Y/%m/%d')])
+                                "", auth.title, auth.timestamp.strftime('%Y/%m/%d')])
 
     # writer.writerow(['\n'])
     anon_list = AnonDownloader.objects.all().order_by('date')
