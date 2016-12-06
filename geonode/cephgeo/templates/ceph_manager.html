@@ -53,6 +53,13 @@
                 Update SAR DEM Metadata
               </label>
             </div>
+           <div class="form-check">
+              <label class="form-check-label">
+                <input class="form-check-input" type="radio" name="sample" value="floodplain">
+                Update FP/RB and SUC Keywoords
+              </label>
+            </div>
+
                           <!-- <div>
                 <input type="radio" name="fhm" value="fhm">
                 <label>Flood Hazard Map</label>
@@ -206,6 +213,9 @@ $( "#update-metadata" ).click(function() {
     }
     else if ($( "input:checked" ).val() == "sar"){
             window.location = "{% url 'cephgeo.views.update_sar_metadata' %}";
+    }
+    else if ($( "input:checked" ).val() == "floodplain"){
+            window.location = "{% url 'cephgeo.views.update_floodplain_keywords' %}";
     }
     
 });
