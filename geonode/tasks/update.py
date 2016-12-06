@@ -129,7 +129,7 @@ def iterate_over_layers(layers, style_template):
             # layer.default_style = layer.styles.get()
             # layer.save()
             if style_template == '':
-                print "Layer {0} - style template is {1} ".format(layers.name, style_template)
+                print "Layer {0} - style template is {1} ".format(layer.name, style_template)
                 layer.default_style = layer.styles.get()
                 layer.save()
             else:
