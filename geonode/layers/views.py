@@ -636,6 +636,7 @@ def layer_download(request, layername):
         layername,
         'base.view_resourcebase',
         _PERMISSION_MSG_VIEW)
+    pprint(request.user.is_authenticated)
     if request.user.is_authenticated():
         action.send(request.user, verb='downloaded', action_object=layer)
         DownloadTracker(actor=Profile.objects.get(username=request.user),
