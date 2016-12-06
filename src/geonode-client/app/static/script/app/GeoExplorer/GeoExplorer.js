@@ -209,6 +209,7 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
     uploadLayerText: 'Upload Layer',
     createLayerText: 'Create Layer',
     rectifyLayerText: 'Rectify Layer',
+    submitendpointText: 'Submit a Map Service',
     worldmapDataText: 'Search',
     externalDataText: 'External Data',
     leavePageWarningText: 'If you leave this page, unsaved changes will be lost.',
@@ -1892,6 +1893,16 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
         });
     },
 
+    initSubmitEndpointPanel: function() {
+        this.submitEndpointPanel = new Ext.Panel({
+            id: 'worldmap_submitendpoint_panel',
+            title: this.submitendpointText,
+            header: false,
+            contentEl: 'submitEndpointDiv',
+            autoScroll: true
+        });
+    },
+
 
 
     initTabPanel: function() {
@@ -1917,6 +1928,7 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
             }
         }
         this.dataTabPanel.add(this.warperPanel);
+        this.dataTabPanel.add(this.submitEndpointPanel);
 
     },
 
@@ -2015,6 +2027,10 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
 
         if (!this.warperPanel) {
             this.initWarperPanel();
+        }
+
+        if (!this.submitEndpointPanel) {
+            this.initSubmitEndpointPanel();
         }
 
         if (!this.dataTabPanel) {
