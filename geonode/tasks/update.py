@@ -13,7 +13,7 @@ from geonode.layers.utils import create_thumbnail
 from django.core.exceptions import ObjectDoesNotExist
 from celery.utils.log import get_task_logger
 import geonode.settings as settings
-import os
+import os, sys
 import subprocess
 import time
 import datetime
