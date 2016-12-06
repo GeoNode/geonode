@@ -13,7 +13,7 @@ def get_luzvimin(iterate):
     keyword_list = layer_query.keywords.values_list()
     try:
         for eachkeyword in keyword_list[0]:
-            luzvimin_query = SUCLuzViMin.objects.get(suc=eachkeyword)
+            luzvimin_query = SUCLuzViMin.objects.filter(suc=eachkeyword)[0]
             luzvimin = luzvimin_query.luzvimin
             break
     except Exception as e:
