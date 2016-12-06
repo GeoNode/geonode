@@ -1213,7 +1213,12 @@ def layer_detail(request, layername):
     print 'layer.title', layer.title
     print 'layer.attribute_config()', layer.attribute_config(), '\n'
     print '-' * 40
-    maplayer = MapLayer(name = layer.typename, styles=[layer.default_style.name], source_params = '{"ptype": "gxp_gnsource"}', ows_url = settings.GEOSERVER_BASE_URL + "wms",  layer_params= '{"tiled":true, "title":" '+ layer.title + '", ' + json.dumps(layer.attribute_config()) + '}')
+    maplayer = MapLayer(
+        name = layer.typename,
+        styles=[layer.default_style.name],
+        source_params = '{"ptype": "gxp_gnsource"}',
+        ows_url = settings.GEOSERVER_BASE_URL + "wms",
+        layer_params= '{"tiled":true, "local":true, "title":" '+ layer.title + '", ' + json.dumps(layer.attribute_config()) + '}')
 
     # center/zoom don't matter; the viewer will center on the layer bounds
     map_obj = Map(projection="EPSG:900913")
@@ -1221,10 +1226,13 @@ def layer_detail(request, layername):
 
     layerstats,created = LayerStats.objects.get_or_create(layer=layer)
 
+    added_layers = (DEFAULT_BASE_LAYERS + [maplayer])
+    viewer = json.dumps(map_obj.viewer_json(request.user, * added_layers))
+
     return render_to_response('maps/layer.html', RequestContext(request, {
         "layer": layer,
         "layerstats": layerstats,
-        "viewer": json.dumps(map_obj.viewer_json(request.user, * (DEFAULT_BASE_LAYERS + [maplayer]))),
+        "viewer": viewer,
         "permissions_json": _perms_info_email_json(layer, LAYER_LEV_NAMES),
         "customGroup": settings.CUSTOM_GROUP_NAME if settings.USE_CUSTOM_ORG_AUTHORIZATION else '',
         "GEOSERVER_BASE_URL": settings.GEOSERVER_BASE_URL,

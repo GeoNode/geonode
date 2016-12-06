@@ -2236,6 +2236,7 @@ class MapLayer(models.Model):
                 cfg['visibility'] = cfg['visibility'] and not cfg['disabled']
                 cfg['abstract'] = gnLayer.abstract
                 cfg['styles'] = self.styles
+                cfg['local'] = True
             except Exception, e:
                 # Give it some default values so it will still show up on the map, but disable it in the layer tree
                 cfg['srs'] = 'EPSG:900913'
