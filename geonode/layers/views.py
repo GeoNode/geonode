@@ -643,6 +643,7 @@ def layer_download(request, layername):
                         resource_type=str(ResourceBase.objects.get(layer__typename=layername).csw_type),
                         keywords=ResourceBase.objects.get(layer__typename=layername).keywords.slugs()
                         ).save()
+        pprint('Download Tracked')
 
     splits = request.get_full_path().split("/")
     redir_url = urljoin(settings.OGC_SERVER['default'][
