@@ -355,6 +355,7 @@ def registration_part_two(request):
                 out['redirect_to'] = reverse('datarequests:email_verification_send')
 
             elif request_profile and request_profile.profile:
+                pprint("request profile exists and has a mapped profile")
                 out['success_url'] = reverse('home')
 
                 out['redirect_to'] = reverse('home')
