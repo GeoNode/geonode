@@ -32,30 +32,27 @@ def parse_reports_csv(csv_path):
                 skip_once = False
                 continue
             tokens = line.strip().split(',')
-
+            province = tokens[1].strip()
+            suc = tokens[2].strip()
+            luzvimin = tokens[3].strip()
             try:
-                _id = tokens[0].strip()  # int
-                province = tokens[1].strip()
-                suc = tokens[2].strip()
-                luzvimin = tokens[3].strip()
-
-
-                model_object = SUCLuzViMin(province=str(province),
+                model_object = SUCLuzViMin.objects.get(province=str(province),
                                                     suc=str(suc),
                                                     luzvimin=str(luzvimin))
-                model_object.save()
-                print str(counter) + '. Saved: ', model_object.province, model_object.suc
+                print ('it already exists')
+            except:
+                try:
+                    model_object = SUCLuzViMin(province=str(province),
+                                                        suc=str(suc),
+                                                        luzvimin=str(luzvimin))
+                    model_object.save()
+                    print str(counter) + '. Saved: ', model_object.province, model_object.suc
 
-            except Exception as e:
-                print e
-                print traceback.print_exc()
-                exit(1)
-                # print _id
-                # print 'length chars', name_length_chars
-                # print '* First name: ', first_name
-                # print '* Middle name: ', middle_name
-                # print '* Last name: ', last_name
+                except Exception as e:
+                    print e
+                    print traceback.print_exc()
+                    exit(1)
 
-#csv_path = 'data_request_list.csv'
-csv_path = raw_input('CSV complete file path:')
+csv_path = os.getcwd()+'/scripts/utils/reports/SUC_LuzViMin.csv'
+# csv_path = raw_input('CSV complete file path:')
 parse_reports_csv(csv_path)
