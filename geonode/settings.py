@@ -241,6 +241,9 @@ GEONODE_APPS = (
 
     # Data Requests Management App
     'geonode.datarequests',
+
+    # Reports
+    'geonode.reports',
 )
 
 GEONODE_CONTRIB_APPS = (
@@ -323,7 +326,7 @@ INSTALLED_APPS = (
     'captcha',
 
     #CAS client
-    'django_cas_ng', 
+    'django_cas_ng',
 ) + GEONODE_APPS
 
 LOGGING = {
