@@ -1,0 +1,84 @@
+FID,NAME_1,VARNAME_1,
+1,Abra,MMSU ,Luzon
+2,Ilocos Norte,MMSU,Luzon
+3,Ilocos Sur,MMSU,Luzon
+4,La Union,MMSU,Luzon
+5,Cagayan,ISU,Luzon
+6,Isabela,ISU,Luzon
+7,Nueva Vizcaya,ISU,Luzon
+8,Quirino,ISU,Luzon
+9,Batanes, ,Luzon
+10,Aurora,CLSU,Luzon
+11,Bataan,CLSU,Luzon
+12,Bulacan,CLSU,Luzon
+13,Nueva Ecija,CLSU,Luzon
+14,Pampanga,CLSU,Luzon
+15,Pangasinan,CLSU,Luzon
+16,Tarlac,CLSU,Luzon
+17,Zambales,CLSU,Luzon
+18,Batangas,MIT,Luzon
+19,Cavite,MIT,Luzon
+20,Quezon,MIT,Luzon
+21,Rizal,MIT,Luzon
+22,Laguna,UPLB,Luzon
+23,Marinduque,UPLB,Luzon
+24,Occidental Mindoro,UPLB,Luzon
+25,Oriental Mindoro,UPLB,Luzon
+26,Palawan,UPLB,Luzon
+27,Romblon,UPLB,Luzon
+28,Albay,ADNU,Luzon
+29,Camarines Norte,ADNU,Luzon
+30,Camarines Sur,ADNU,Luzon
+31,Catanduanes,ADNU,Luzon
+32,Masbate,ADNU,Luzon
+33,Sorsogon,ADNU,Luzon
+34,Aklan,UP Cebu,Visayas
+35,Antique,UP Cebu,Visayas
+36,Capiz,UP Cebu,Visayas
+37,Guimaras,UP Cebu,Visayas
+38,Iloilo,UP Cebu,Visayas
+39,Negros Occidental,UP Cebu,Visayas
+40,Bohol,USC,Visayas
+41,Cebu,USC,Visayas
+42,Negros Oriental,USC,Visayas
+43,Siquijor,USC,Visayas
+44,Leyte,VSU,Visayas
+45,Samar,VSU,Visayas
+46,Biliran,VSU,Visayas
+47,Eastern Samar,VSU,Visayas
+48,Northern Samar,VSU,Visayas
+49,Southern Leyte,VSU,Visayas
+50,Zamboanga City,ADZU,Mindanao
+51,Basilan,ADZU,Mindanao
+52,Zamboanga del Norte,ADZU,Mindanao
+53,Zamboanga Sibugay,ADZU,Mindanao
+54,Sulu,ADZU,Mindanao
+55,Tawi-Tawi,ADZU,Mindanao
+56,Bukidnon,CMU,Mindanao
+57,Camiguin,CMU,Mindanao
+58,Misamis Oriental,CMU,Mindanao
+59,North Cotabato,CMU,Mindanao
+60,Lanao del Norte,MSU-IIT,Mindanao
+61,Lanao del Sur,MSU-IIT,Mindanao
+62,Zamboanga del Sur,ADZU,Mindanao
+63,Misamis Occidental,MSU-IIT,Mindanao
+64,Compostela Valley,UP Mindanao,Mindanao
+65,Davao del Norte,UP Mindanao,Mindanao
+66,Davao del Sur,UP Mindanao,Mindanao
+67,Davao Oriental,UP Mindanao,Mindanao
+68,Agusan del Norte,CSU,Mindanao
+69,Agusan del Sur,CSU,Mindanao
+70,Dinagat Islands,CSU,Mindanao
+71,Surigao del Norte,CSU,Mindanao
+72,Surigao del Sur,CSU,Mindanao
+73,Apayao,MMSU ,Luzon
+74,Benguet,MMSU ,Luzon
+75,Ifugao,MMSU ,Luzon
+76,Kalinga,MMSU ,Luzon
+77,Maguindanao,MSU-IIT,Mindanao
+78,Mountain Province,MMSU ,Luzon
+79,Sarangani,UP Mindanao,Mindanao
+80,Shariff Kabunsuan,MSU-IIT,Mindanao
+81,South Cotabato,UP Mindanao,Mindanao
+82,Sultan Kudarat,MSU-IIT,Mindanao
+83,Metropolitan Manila,NCR,Luzon

@@ -49,15 +49,16 @@ class LayerAdmin(MediaTranslationAdmin):
     list_editable = ('title', 'category')
     list_filter = ('storeType', 'owner', 'category',
                    'restriction_code_type__identifier', 'date', 'date_type')
-    def get_queryset(self, request):
-        return super(LayerAdmin, self).get_queryset(request).prefetch_related('floodplain_tag')
+    # def get_queryset(self, request):
+    #     return super(LayerAdmin, self).get_queryset(request).prefetch_related('floodplain_tag','SUC_tag')
     def Floodplains(self, obj):
         return u", ".join(o.name for o in obj.floodplain_tag.all())
-        
-    def get_queryset(self, request):
-        return super(LayerAdmin, self).get_queryset(request).prefetch_related('SUC_tag')
     def SUC(self, obj):
-        return u", ".join(o.name for o in obj.SUC_tag.all())
+        return u", ".join(o.name for o in obj.SUC_tag.all())    
+    # def get_queryset(self, request):
+    #     return super(LayerAdmin, self).get_queryset(request).prefetch_related('SUC_tag')
+    # def SUC(self, obj):
+    #     return u", ".join(o.name for o in obj.SUC_tag.all())
     inlines = [AttributeInline]
     search_fields = ('typename', 'title', 'abstract', 'purpose',)
     filter_horizontal = ('contacts',)
