@@ -2016,7 +2016,7 @@ class MapSnapshot(models.Model):
             "map": self.map.id,
             "created": self.created_dttm.isoformat(),
             "user": self.user.username if self.user else None,
-            "url": url()
+            "url": self.url()
         }
 
 
