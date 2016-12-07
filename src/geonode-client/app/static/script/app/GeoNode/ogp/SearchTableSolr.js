@@ -424,7 +424,6 @@ GeoNode.SearchTable = Ext.extend(Ext.util.Observable, {
                 ],
                 data: [['', 'All Layers'],
                     ['service_type:"Hypermap:WorldMap"', 'WorldMap Layers'],
-                    ['service_type:"OGC:WMTS"', 'WMTS'],
                     ['service_type:"OGC:WMS"', 'WMS'],
                     ['service_type:"ESRI:ArcGIS:ImageServer"', 'ESRI Image'],
                     ['service_type:"ESRI:ArcGIS:MapServer"', 'ESRI Map']
