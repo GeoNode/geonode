@@ -72,3 +72,19 @@ def get_attributes_count():
                 else:
                     attributes[attr] = 0
     return attributes
+
+def fix_broken_snapshot(map_id):
+    """
+    Add local=True for all of the snapshots of a given map.
+    """
+    map = Map.objects.get(id=map_id)
+
+    for ms in map.snapshot_set.all().order_by('created_dttm'):
+        config = json.loads(ms.config)
+        for layer in config['map']['layers']:
+            if 'name' in layer:
+                if layer['name'][:8] == 'geonode:':
+                    layer['local'] = True
+        new_config_s = json.dumps(config)
+        ms.config = new_config_s
+        ms.save()
