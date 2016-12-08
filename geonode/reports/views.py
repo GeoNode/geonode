@@ -40,7 +40,7 @@ def report_layer(request, template='reports/report_layers.html'):
     monthly_list = DownloadCount.objects.filter(chart_group='monthly').order_by('date')
     for eachinlist in monthly_list:
         if eachinlist.date.strftime('%b') not in monthly_count:
-            monthly_count [eachinlist.date.strftime('%b')] = {}
+            monthly_count[eachinlist.date.strftime('%b')] = {}
         try: #because of keyerror
         # if len(monthly_count) > 1:
             cumulative_count = monthly_count[monthly_count.keys()[-2]][eachinlist.download_type] + eachinlist.count
@@ -54,6 +54,17 @@ def report_layer(request, template='reports/report_layers.html'):
     pprint(monthly_count)
 
     reversed_mc = OrderedDict(reversed(list(monthly_count.items())))
+
+    luz_count = OrderedDict()
+    vi_count = OrderedDict()
+    min_count = OrderedDict()
+    luzvimin_list = DownloadCount.objects.filter(chart_group='luzvimin').order_by('date')
+    for eachinlist in luzvimin_list:
+        if eachinlist.date.strftime('%b') not in luzvimin_count:
+            luz_count[eachinlist.date.strftime('%b')] = {}
+            vi_count[eachinlist.date.strftime('%b')] = {}
+            min_count[eachinlist.date.strftime('%b')] = {}
+
     context_dict = {
         "monthly_count": reversed_mc,
     }
