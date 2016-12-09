@@ -71,4 +71,5 @@ def report_layer(request, template='reports/report_layers.html'):
         "monthly_count": reversed_mc,
         "luzvimin_count": reversed_luzvimin,
     }
+    pprint(luzvimin_count)
     return render_to_response(template, RequestContext(request, context_dict))
