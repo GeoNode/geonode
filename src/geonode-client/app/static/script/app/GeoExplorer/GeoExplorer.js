@@ -1056,7 +1056,16 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
             this.setWorldMapSourceKey();
         var wmSource = this.layerSources[this.worldMapSourceKey];
         if (wmSource) {
-            this.addLayerAjax(wmSource, this.worldMapSourceKey, records);
+            for (var i = 0; i < records.length; i++) {
+                var record = records[i];
+                if (record.data['service_type'] == 'Hypermap:WorldMap'){
+                    this.addLayerAjax(wmSource, this.worldMapSourceKey, record);
+                } else {
+                    url = 'http://hh.worldmap.harvard.edu/registry/hypermap/layer/' + record.data['uuid'] + '/map/wmts/' + record.data['name'] + '/default_grid/${z}/${x}/${y}.png';
+                    var hhSource = this.addLayerSource({"config":{"url":url, "ptype":"gxp_gnsource"}});
+                    this.addLayerAjax(hhSource, hhSource.id, record);
+                }
+            }
         }
     },
 
@@ -1144,50 +1153,57 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
         });
     },
 
-    addLayerAjax: function (dataSource, dataKey, dataRecords) {
+    addLayerAjax: function (dataSource, dataKey, dataRecord) {
         var geoEx = this;
         var key = dataKey;
         var records = dataRecords;
         var source = dataSource;
 
         var layerStore = this.mapPanel.layers;
-        var isLocal = source instanceof gxp.plugins.GeoNodeSource;
-        for (var i = 0, ii = records.length; i < ii; ++i) {
-            var thisRecord = records[i];
-            if (isLocal){
-                var authorized = true;
-                if (!$.parseJSON(thisRecord.get('is_public'))){
-                   geoEx.testLayerPermission(thisRecord, source, layerStore, key);
-                } else {
-                    // hack here
-                    geoEx.addLocalLayer(thisRecord, source, layerStore, key);
-                }
+        /*
+        var isLocal = source instanceof gxp.plugins.GeoNodeSource &&
+          source.url.replace(this.urlPortRegEx, "$1/").indexOf(
+                this.localGeoServerBaseUrl.replace(
+                    this.urlPortRegEx, "$1/")) === 0;
+        */
+        // I believe this check is not needed any more (it was used by the previous add remote layers tool)
+        var isLocal = true;
+        //for (var i = 0, ii = records.length; i < ii; ++i) {
+        var thisRecord = dataRecord;
+        if (isLocal){
+            var authorized = true;
+            if (!$.parseJSON(thisRecord.get('is_public'))){
+               geoEx.testLayerPermission(thisRecord, source, layerStore, key);
             } else {
-                //Not a local GeoNode layer, use source's standard method for creating the layer.
-                var layer = records[i].get("name");
-                var record = source.createLayerRecord({
-                    name: layer,
-                    source: key,
-                    buffer: 0
-                });
-                //alert(layer + " created after FAIL");
-                if (record) {
-                    if (record.get("group") === "background") {
-                        var pos = layerStore.queryBy(
-                            function(rec) {
-                                return rec.get("group") === "background"
-                            }).getCount();
-                        layerStore.insert(pos, [record]);
-                    } else {
-                        category = "General";
-                        record.set("group", category);
+                // hack here
+                geoEx.addLocalLayer(thisRecord, source, layerStore, key);
+            }
+        } else {
+            //Not a local GeoNode layer, use source's standard method for creating the layer.
+            var layer = thisRecord.get("name");
+            var record = source.createLayerRecord({
+                name: layer,
+                source: key,
+                buffer: 0
+            });
+            //alert(layer + " created after FAIL");
+            if (record) {
+                if (record.get("group") === "background") {
+                    var pos = layerStore.queryBy(
+                        function(rec) {
+                            return rec.get("group") === "background"
+                        }).getCount();
+                    layerStore.insert(pos, [record]);
+                } else {
+                    category = "General";
+                    record.set("group", category);
 
-                        geoEx.layerTree.addCategoryFolder({"group":record.get("group")}, true);
-                        layerStore.add([record]);
-                    }
+                    geoEx.layerTree.addCategoryFolder({"group":record.get("group")}, true);
+                    layerStore.add([record]);
                 }
             }
         }
+        //}
         this.searchWindow.hide();
     },
 
