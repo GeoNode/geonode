@@ -6,7 +6,7 @@ from geonode.reports.models import DownloadCount, SUCLuzViMin
 from datetime import datetime, timedelta
 from geonode.layers.models import Layer
 
-layer_count = {}
+
 
 def get_luzvimin(iterate):
     layer_query = Layer.objects.get(typename=iterate['typename'])
@@ -66,7 +66,8 @@ def add_to_monthlyc(category):
     layer_count[category]['Document'] += 1
 
 for n in range(52):
-    m = 3 - 7*n
+    layer_count = {}
+    m = 7*n - 3
     datetoappend = datetime.strptime((datetime.now()-timedelta(days=m)).strftime('%U-%Y')+'-3','%U-%Y-%w') #timedelta to start week count days from sunday; days=3 meaning week count if from wednesday to tuesday
     auth_list = Action.objects.filter(verb='downloaded').order_by('timestamp')
     for auth in auth_list:
@@ -76,10 +77,6 @@ for n in range(52):
                 "typename": auth.action_object.typename,
                 })
             add_to_count(luzvimin, auth.action_object.typename)
-        #     add_to_count('monthly', auth.action_object.typename)
-        # elif datetoappend == datetime.strptime(auth.timestamp.strftime('%U-%Y')+'-3','%U-%Y-%w') and auth.action_object.csw_type == 'document':#if datenow is timestamp
-        #     add_to_monthlyc('monthly')
-
     anon_list = AnonDownloader.objects.all().order_by('date')
     for anon in anon_list:
         if datetoappend == datetime.strptime(anon.date.strftime('%U-%Y')+'-3','%U-%Y-%w') and not anon.anon_document:#if datenow is timestamp
@@ -88,9 +85,6 @@ for n in range(52):
                 "typename": anon.anon_layer.typename,
                 })
             add_to_count(luzvimin, anon.anon_layer.typename)
-        #     add_to_count('monthly', anon.anon_layer.typename)
-        # elif datetoappend == datetime.strptime(anon.date.strftime('%U-%Y')+'-3','%U-%Y-%w') and anon.anon_document:#if datenow is timestamp
-        #     add_to_monthlyc('monthly')
     print(layer_count)
 
 
