@@ -24,15 +24,15 @@ def get_luzvimin(iterate):
 def add_to_count(category, typename):
     if category not in layer_count:
         layer_count[category] = {
-            "cov": 0,
-            "doc": 0,
-            "fhm": 0,
-            "dtm": 0,
-            "dsm": 0,
-            "laz": 0,
-            "ortho": 0,
-            "sar": 0,
-            "others": 0,
+            "Coverage": 0,
+            "Document": 0,
+            "FHM": 0,
+            "DTM": 0,
+            "DSM": 0,
+            "LAZ": 0,
+            "ORTHO": 0,
+            "SAR": 0,
+            "Others": 0,
         }
     if 'coverage' in typename:
         layer_count[category]['Coverage'] += 1
@@ -51,6 +51,18 @@ def add_to_count(category, typename):
     else:
         layer_count[category]['Others'] += 1
 def add_to_monthlyc(category):
+    if category not in layer_count:
+        layer_count[category] = {
+            "Coverage": 0,
+            "Document": 0,
+            "FHM": 0,
+            "DTM": 0,
+            "DSM": 0,
+            "LAZ": 0,
+            "ORTHO": 0,
+            "SAR": 0,
+            "Others": 0,
+        }
     layer_count[category]['Document'] += 1
 
 datetoappend = datetime.strptime((datetime.now()-timedelta(days=3)).strftime('%U-%Y')+'-3','%U-%Y-%w') #timedelta to start week count days from sunday; days=3 meaning week count if from wednesday to tuesday
@@ -82,7 +94,7 @@ print(layer_count)
 
 for eachkey, eachdict in layer_count.iteritems():
     category = eachkey
-    if category == 'Luzon' or category == 'Visayas' or category == 'Mindanao':
+    if category == 'Luzon' or category == 'Visayas' or category == 'Mindanao' or category == 'Luzvimin_others':
         chart_group = 'luzvimin'
     elif category == 'monthly':
         chart_group = 'monthly'
