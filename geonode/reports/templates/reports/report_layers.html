@@ -13,6 +13,8 @@
 </div>
 <div id = 'myDiv' style='width: 1000px; height: 800px;'>
 </div>
+<div id = 'luzvimin_div' style='width: 1000px; height: 800px;'>
+</div>
 
 {% endblock %}
 
@@ -36,7 +38,6 @@ var trace1 = {
     color: '#DC3912'
   }
 };
-
 var trace2 = {
   x: [
     {% for key, value in monthly_count.items %}
@@ -54,7 +55,6 @@ var trace2 = {
     color: '#FF9900'
   }
 };
-
 var trace3 = {
   x: [
     {% for key, value in monthly_count.items %}
@@ -72,7 +72,6 @@ var trace3 = {
     color: '#3366CB'
   }
 };
-
 var trace4 = {
   x: [
     {% for key, value in monthly_count.items %}
@@ -90,7 +89,6 @@ var trace4 = {
     color: '#109618'
   }
 };
-
 var trace5 = {
   x: [
     {% for key, value in monthly_count.items %}
@@ -108,7 +106,6 @@ var trace5 = {
     color: '#990099'
   }
 };
-
 var trace6 = {
   x: [
     {% for key, value in monthly_count.items %}
@@ -126,7 +123,6 @@ var trace6 = {
     color: '#0099C6'
   }
 };
-
 var trace7 = {
   x: [
     {% for key, value in monthly_count.items %}
@@ -144,7 +140,6 @@ var trace7 = {
     color: '#DD4477'
   }
 };
-
 var trace8 = {
   x: [
     {% for key, value in monthly_count.items %}
@@ -162,30 +157,105 @@ var trace8 = {
     color: '#FFF328'
   }
 };
+var trace9 = {
+  x: [
+    {% for key, value in monthly_count.items %}
+      '{{ key }}',
+    {% endfor %}
+  ],
+  y: [
+    {% for key, value in monthly_count.items %}
+      {{ value.Others }},
+    {% endfor %}
+  ],
+  name: 'Others',
+  type: 'bar',
+  marker: {
+    color: '#19ED88'
+  }
+};
 
-// var trace9 = {
-//   x: [
-//     {% for key, value in monthly_count.items %}
-//       '{{ key }}',
-//     {% endfor %}
-//   ],
-//   y: [
-//     {% for key, value in monthly_count.items %}
-//       {{ value.others }},
-//     {% endfor %}
-//   ],
-//   name: 'Others',
-//   type: 'bar',
-//   marker: {
-//     color: '#19ED88'
-//   }
-// };
-
-var data = [trace1, trace2, trace3, trace4, trace5, trace6, trace7, trace8];
+var data = [trace1, trace2, trace3, trace4, trace5, trace6, trace7, trace8, trace9];
 
 var layout = {barmode: 'stack',
               xaxis: {autorange: 'reversed'}};
 
 Plotly.newPlot('myDiv', data, layout);
+
+var luzvimin1 = {
+  x: [
+    {% for key, value in luzvimin_count.items %}
+      '{{ key }}',
+    {% endfor %}
+  ],
+  y: [
+    {% for key, value in luzvimin_count.items %}
+      {{ value.Luzon }},
+    {% endfor %}
+  ],
+  name: 'Luzon',
+  type: 'bar',
+  marker: {
+    color: '#DC3912'
+  }
+};
+var luzvimin2 = {
+  x: [
+    {% for key, value in luzvimin_count.items %}
+      '{{ key }}',
+    {% endfor %}
+  ],
+  y: [
+    {% for key, value in luzvimin_count.items %}
+      {{ value.Visayas }},
+    {% endfor %}
+  ],
+  name: 'Visayas',
+  type: 'bar',
+  marker: {
+    color: '#FF9900'
+  }
+};
+var luzvimin3 = {
+  x: [
+    {% for key, value in luzvimin_count.items %}
+      '{{ key }}',
+    {% endfor %}
+  ],
+  y: [
+    {% for key, value in luzvimin_count.items %}
+      {{ value.Mindanao }},
+    {% endfor %}
+  ],
+  name: 'Mindanao',
+  type: 'bar',
+  marker: {
+    color: '#3366CB'
+  }
+};
+var luzvimin4 = {
+  x: [
+    {% for key, value in luzvimin_count.items %}
+      '{{ key }}',
+    {% endfor %}
+  ],
+  y: [
+    {% for key, value in luzvimin_count.items %}
+      {{ value.Luzvimin_others }},
+    {% endfor %}
+  ],
+  name: 'Others',
+  type: 'bar',
+  marker: {
+    color: '#109618'
+  }
+};
+
+var data_luzvimin = [luzvimin1, luzvimin2, luzvimin3, luzvimin4];
+
+var layout_luzvimin = {barmode: 'stack',
+              xaxis: {autorange: 'reversed'}};
+
+Plotly.newPlot('luzvimin_div', data_luzvimin, layout_luzvimin);
 </script>
 {% endblock extra_script %}

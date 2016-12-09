@@ -80,7 +80,7 @@ def _resolve_layer(request, typename, permission='base.view_resourcebase',
 
 def philgrid(request,template='index.html'):
     layername = "geonode:philgrid"
-
+   
     layer = _resolve_layer(
         request,
         layername,
@@ -130,7 +130,7 @@ def philgrid(request,template='index.html'):
         la for la in default_map_config()[1] if la.ows_url is None]
 
     metadata = layer.link_set.metadata().filter(
-        name__in=settings.DOWNLOAD_FORMATS_METADATA)
+        name__in=settings.DOWNLOAD_FORMATS_METADATA)    
 
     context_dict = {
         "resource": layer,
@@ -231,6 +231,6 @@ def err403(request):
             request.get_full_path())
     else:
         return TemplateResponse(request, '401.html', {}, status=401).render()
-
+        
 def forbidden(request):
     return TemplateResponse(request, '401.html', {}, status=401).render()
