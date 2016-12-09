@@ -25,7 +25,7 @@ logger.setLevel(logging.INFO)
 def iterate_over_layers(layers, style_template):
     count = len(layers)
     for i, layer in enumerate(layers):
-        try
+        try:
             print "Layer {0} {1}/{2}".format(layer.name, i + 1, count)
             # print "Layer {0}".format(layers.name)
             # layer.default_style = layer.styles.get()
