@@ -199,10 +199,10 @@ def create_document_thumbnail(object_id):
 def floodplain_keywords():
 
     source = ogr.Open(("PG:host={0} dbname={1} user={2} password={3}".format
-                       (settings.HOST_ADDR, settings.GIS_DATABASE_NAME,
+                       (settings.DATABASE_HOST, settings.GIS_DATABASE_NAME,
                         settings.DATABASE_USER, settings.DATABASE_PASSWORD)))
     conn = psycopg2.connect(("host={0} dbname={1} user={2} password={3}".format
-                             (settings.HOST_ADDR, settings.GIS_DATABASE_NAME,
+                             (settings.DATABASE_HOST, settings.GIS_DATABASE_NAME,
                               settings.DATABASE_USER, settings.DATABASE_PASSWORD)))
     cur = conn.cursor()
 
