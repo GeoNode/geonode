@@ -233,7 +233,7 @@ class CommonModelApi(ModelResource):
                 )
             else:
                 words = [
-                    '*{0}*'.format(w) for w in re.split(
+                    w for w in re.split(
                         '\W',
                         query,
                         flags=re.UNICODE) if w]
