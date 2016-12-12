@@ -193,6 +193,16 @@ article.tab-pane {
 .navbar-collapse {
     max-height: none
 }
+.navbar-header {
+	i {
+		color: white;
+		font-size: 2em;
+	}
+	button {
+		border: 0;
+		margin-top: 0.75em;
+	}
+}
 /* autocomplete 
 ------------------------*/
 
@@ -975,6 +985,22 @@ footer {
     .collapsing {
         overflow: hidden!important;
     }
+	.home .navbar-inverse {
+		background-color: @gray-dark;
+	}
+	.navbar-inverse {
+		.navbar-nav>li>a {
+			padding-bottom: 0.75em;
+			padding-top: 0.75em;
+		}
+		.navbar-nav .search {
+			padding-bottom: 0.75em;
+			top: 0;
+			input {
+				width: 100%;
+			}
+		}
+	}
 }
 
 #member_form_container .select2-container{

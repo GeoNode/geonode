@@ -37,7 +37,7 @@
   </head>
   
   <body class="{% block body_class %}{% endblock %}">
-
+    <!-- Navbar -->
     {% block header %}
 	<nav class="navbar navbar-inverse navbar-fixed-top" role="navigation">
 	  <div class="container">
@@ -58,7 +58,7 @@
                 {% if user.is_authenticated %}
                 <li><a href="{% url "services" %}">{% trans "Remote Services" %}</a></li>
                 <li role="separator" class="divider"></li>
-                <li><a href="/layers/upload">Upload Layer</a></li>
+                <li><a href="{% url "layer_upload" %}">Upload Layer</a></li>
                 <li><a href="/documents/upload/">Upload Document</a></li>
                 <li><a href="/services/register/">{% trans "Add Remote Services" %}</a></li>
                 {% endif %}
@@ -118,10 +118,10 @@
                 <li><a href="{% url "recent-activity" %}">{% trans "Recent Activity" %}</a></li>
                 <li><a href="{% url "messages_inbox" %}">{% trans "Inbox" %}</a></li>
                 <li role="separator" class="divider"></li>
-                <li><a href="/admin/">Admin</a></li>
-                <li><a href="/geoserver/">GeoServer</a></li>
+                <li><a href="{% url "admin:index" %}">Admin</a></li>
+                <li><a href="{{ GEOSERVER_BASE_URL }}">GeoServer</a></li>
                 <li role="separator" class="divider"></li>
-                <li><a href="#">Help</a></li>
+                <li><a title="Help" rel="tooltip" href="{% url "help" %}">{% trans "Help" %}</li>
                 <li role="separator" class="divider"></li>
                 <li><a href="/account/logout/">Logout</a></li>
                 </ul>
@@ -134,7 +134,8 @@
         </div>
       </nav>
       {% endblock header %}
-
+      <!-- End of Navbar -->
+	  
     <div class="alert alert-danger alert-dismissible" role="alert" id="ieflag" style="display:none">
       <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
       <h1>You are using an outdated browser that is not supported by GeoNode.</h1>
