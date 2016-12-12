@@ -1,0 +1,30 @@
+README
+
+1) Check if postgres user can login via psql to database
+
+psql -h lipad-postgres-fmctst.tst.dream.upd.edu.ph -U postgres 
+# DOGjSEojaZwzsWZaO4rG
+
+a) psql: FATAL:  no pg_hba.conf entry for host "192.168.20.209", user "postgres", database "postgres", SSL off
+
+$ ssh admin@lipad-postgres-fmctst
+
+$ sudo su -
+
+# nano /var/lib/pgsql/9.3/data/pg_hba.conf
+
+host    all             postgres        192.168.20.209/23       md5
+
+# /etc/init.d/postgresql-9.3 restart
+
+2) Install osm2pgsql
+
+# aptitude install osm2pgsql
+
+3) Change to virtualenv
+
+$ workon geonode
+
+4) Run script
+
+$ ./load_osm_to_db.sh lipad-postgres-fmctst.tst.dream.upd.edu.ph
