@@ -651,6 +651,23 @@ def layer_download(request, layername):
                         'PUBLIC_LOCATION'], "/".join(splits[4:]))
     return HttpResponseRedirect(redir_url)
 
+def layer_tracker(request, layername):
+    layer = _resolve_layer(
+        request,
+        layername,
+        'base.view_resourcebase',
+        _PERMISSION_MSG_VIEW)
+    pprint(request.user.is_authenticated)
+    if request.user.is_authenticated():
+        action.send(request.user, verb='downloaded', action_object=layer)
+        DownloadTracker(actor=Profile.objects.get(username=request.user),
+                        title=str(layername),
+                        resource_type=str(ResourceBase.objects.get(layer__typename=layername).csw_type),
+                        keywords=ResourceBase.objects.get(layer__typename=layername).keywords.slugs()
+                        ).save()
+        pprint('Download Tracked')
+    return HttpResponse(status=200)
+
 
 @login_required
 def layer_download_csv(request):
