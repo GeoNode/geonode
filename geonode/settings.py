@@ -527,7 +527,7 @@ OGP_URL = "http://geodata.tufts.edu/solr/select"
 MODIFY_TOPICCATEGORY = False
 
 MISSING_THUMBNAIL = 'geonode/img/missing_thumb.png'
-THUMBNAIL_FILE_PERMISSIONS = 0666
+THUMBNAIL_FILE_PERMISSIONS = 0776
 
 # Search Snippet Cache Time in Seconds
 CACHE_TIME = 0
@@ -674,13 +674,13 @@ MAP_BASELAYERS = [{
 #    "name": "osm",
 #    "group": "background",
 #    "visibility": False
-#}, 
+#},
 {
     "source": {"ptype": "gxp_mapquestsource"},
     "name": "naip",
     "group": "background",
     "visibility": False
-}, 
+},
 {
     "source": {"ptype": "gxp_mapboxsource"},
 }]
@@ -817,7 +817,7 @@ LEAFLET_CONFIG = {
         # http://leaflet-extras.github.io/leaflet-providers/preview/
 
         # Stamen toner lite.
-        
+
     ],
     'PLUGINS': {
         'esri-leaflet': {
@@ -946,7 +946,7 @@ except ImportError:
     pass
 
 try:
-    BING_LAYER = {    
+    BING_LAYER = {
         "source": {
             "ptype": "gxp_bingsource",
             "apiKey": BING_API_KEY
