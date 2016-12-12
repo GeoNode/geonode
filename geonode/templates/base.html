@@ -39,76 +39,101 @@
   <body class="{% block body_class %}{% endblock %}">
 
     {% block header %}
-    <nav class="navbar navbar-inverse navbar-fixed-top" role="navigation">
-      <div class="container">
+	<nav class="navbar navbar-inverse navbar-fixed-top" role="navigation">
+	  <div class="container">
         <div class="navbar-header">
-          <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar">
-            <span class="sr-only">Toggle navigation</span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-          </button>
-          <a class="navbar-brand" href="{% url "home" %}">GeoNode</a>
-        </div>
-        <div id="navbar" class="navbar-collapse collapse">
-          <ul class="nav navbar-nav">
-            {% block tabs %}
-            <li id="nav_layers">
-              <a href="{% url "layer_browse" %}">{% trans "Layers" %}</a>
+	      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+	        <i class="fa fa-navicon fa-lg"></i>
+	      </button>
+	      <a class="navbar-brand" href="{% url "home" %}">GeoNode</a>
+	    </div>
+	    <div id="navbar" class="navbar-collapse collapse">
+	      <ul class="nav navbar-nav toolbar">
+	        {% block tabs %}
+	        <li id="nav_layers">
+              <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">{% trans "Data" %}<i class="fa fa-angle-down fa-lg"></i></a>
+              <ul class="dropdown-menu">
+                <li><a href="{% url "layer_browse" %}">{% trans "Layers" %}</a></li>
+                <li><a href="{% url "document_browse" %}">{% trans "Documents" %}</a></li>
+                {% if user.is_authenticated %}
+                <li><a href="{% url "services" %}">{% trans "Remote Services" %}</a></li>
+                <li role="separator" class="divider"></li>
+                <li><a href="/layers/upload">Upload Layer</a></li>
+                <li><a href="/documents/upload/">Upload Document</a></li>
+                <li><a href="/services/register/">{% trans "Add Remote Services" %}</a></li>
+                {% endif %}
+              </ul>
             </li>
-            <li id="nav_maps">
+	        <li id="nav_maps">
+              {% if user.is_authenticated %}
+              <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">{% trans "Maps" %}<i class="fa fa-angle-down fa-lg"></i></a>
+              <ul class="dropdown-menu">
+                <li><a href="{% url "maps_browse" %}">{% trans "Explore Maps" %}</a></li>
+                <li> <a href="{% url "new_map" %}">{% trans "Create Map" %}</a></li>
+              </ul>
+              {% else %}
               <a href="{% url "maps_browse" %}">{% trans "Maps" %}</a>
+              {% endif %}
             </li>
-            <li id="nav_documents">
-              <a href="{% url "document_browse" %}">{% trans "Documents" %}</a>
+            <li>
+	          <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">{% trans "About" %}<i class="fa fa-angle-down fa-lg"></i></a>
+              <ul class="dropdown-menu">
+                <li><a href="{% url "profile_browse" %}">{% trans "People" %}</a></li>
+                <li><a href="{% url "group_list" %}">{% trans "Groups" %}</a></li>
+                {% if perms.announcements.can_manage %}
+                <li><a href="{% url "announcements_list" %}">{% trans "Announcements" %}</a></li>
+                {% endif %}
+                {% if user.is_superuser %}
+                <li role="separator" class="divider"></li>
+                <li><a href="/admin/people/profile/add/">{% trans "Add User" %}</a></li>
+                <li><a href="{% url "account_invite_user" %}">{% trans "Invite User" %}</a></li>
+                <li><a href="/groups/create/">{% trans "Create Group" %}</a></li>
+                {% endif %}
+              </ul>
             </li>
-           {% block extra_tab %}
-           {% endblock %}
-            <li id="nav_people">
-              <a href="{% url "profile_browse" %}">{% trans "People" %}</a>
-            </li>
-            <li id="nav_groups">
-              <a href="{% url "group_list" %}">{% trans "Groups" %}</a>
-            </li>
+	        {% block extra_tab %}
+            {% endblock %}
             {% endblock %}
           </ul>
-          {% trans "Search" as search_text %}
-          <form class="navbar-form" id="search" action="{% url "search" %}" >
-            <div class="col-md-3">
-              <div class="input-group">
-                {% if HAYSTACK_SEARCH %}
-                <input id="search_input" type="text" placeholder="{{ search_text }}" class="form-control" name="q">
-                {% else %}
-                <input id="search_input" type="text" placeholder="{{ search_text }}" class="form-control" name="title__icontains">
-                {% endif %}
-                <span class="input-group-btn">
-                  <button class="btn btn-primary" type="submit"><i class="fa fa-search"></i></button>
-                </span>
+	      <ul class="nav navbar-nav navbar-right">
+            <li>
+              <div class="search">
+                <form id="search" action="{% url "search" %}" >
+                  <span class="fa fa-search"></span>
+                  {% if HAYSTACK_SEARCH %}
+                  <input id="search_input" type="text" placeholder="Search" name="q">
+                  {% else %}
+                  <input id="search_input" type="text" placeholder="Search" name="title__icontains">
+                  {% endif %}
+                </form>
               </div>
-            </div>
-          </form>
-          <ul class="nav navbar-nav navbar-right">
+	        </li>
             {% if not user.is_authenticated and REGISTRATION_OPEN %}
             <li><a href="{% url "account_signup" %}">{% trans "Register" %}</a></li>
             {% endif %}
             {% if user.is_authenticated %}
-            <li>
-              <a href="#" data-toggle="modal" data-target="#UserModal" role="button" aria-expanded="false">
-                {% avatar user 30 %} {{ user.username }}
-              </a>
-            </li>
-            {% else %}
-            <li>
-              <a href="#" data-toggle="modal" data-target="#SigninModal" role="button" >
-                {% trans "Sign in" %} 
-              </a>
-            </li>
-            {% endif %}
-          </ul>
-        </div><!--/.nav-collapse -->
-      </div>
-    </nav>
-    {% endblock header %}
+            <li><a href="#" class="dropdown-toggle avatar" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">{% avatar user 42 %} {{ user.username }}<i class="fa fa-angle-down fa-lg"></i></a>
+              <ul class="dropdown-menu">
+                <li><a href="{{ user.get_absolute_url }}">{% trans "Profile" %}</a></li>
+                <li><a href="{% url "recent-activity" %}">{% trans "Recent Activity" %}</a></li>
+                <li><a href="{% url "messages_inbox" %}">{% trans "Inbox" %}</a></li>
+                <li role="separator" class="divider"></li>
+                <li><a href="/admin/">Admin</a></li>
+                <li><a href="/geoserver/">GeoServer</a></li>
+                <li role="separator" class="divider"></li>
+                <li><a href="#">Help</a></li>
+                <li role="separator" class="divider"></li>
+                <li><a href="/account/logout/">Logout</a></li>
+                </ul>
+              </li>
+		      {% else %}
+		      <li><a href="#" data-toggle="modal" data-target="#SigninModal" role="button" >{% trans "Sign in" %} </a></li>
+              {% endif %}
+            </ul>
+          </div> <!--/.nav-collapse -->
+        </div>
+      </nav>
+      {% endblock header %}
 
     <div class="alert alert-danger alert-dismissible" role="alert" id="ieflag" style="display:none">
       <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
