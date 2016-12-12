@@ -59,8 +59,8 @@
                 <li><a href="{% url "services" %}">{% trans "Remote Services" %}</a></li>
                 <li role="separator" class="divider"></li>
                 <li><a href="{% url "layer_upload" %}">Upload Layer</a></li>
-                <li><a href="/documents/upload/">Upload Document</a></li>
-                <li><a href="/services/register/">{% trans "Add Remote Services" %}</a></li>
+                <li><a href="{% url "document_upload" %}">Upload Document</a></li>
+                <li><a href="{% url "register_service" %}">{% trans "Add Remote Services" %}</a></li>
                 {% endif %}
               </ul>
             </li>
@@ -87,7 +87,7 @@
                 <li role="separator" class="divider"></li>
                 <li><a href="/admin/people/profile/add/">{% trans "Add User" %}</a></li>
                 <li><a href="{% url "account_invite_user" %}">{% trans "Invite User" %}</a></li>
-                <li><a href="/groups/create/">{% trans "Create Group" %}</a></li>
+                <li><a href="{% url "group_create" %}">{% trans "Create Group" %}</a></li>
                 {% endif %}
               </ul>
             </li>
@@ -121,7 +121,7 @@
                 <li><a href="{% url "admin:index" %}">Admin</a></li>
                 <li><a href="{{ GEOSERVER_BASE_URL }}">GeoServer</a></li>
                 <li role="separator" class="divider"></li>
-                <li><a title="Help" rel="tooltip" href="{% url "help" %}">{% trans "Help" %}</li>
+                <li><a href="{% url "help" %}">{% trans "Help" %}</li>
                 <li role="separator" class="divider"></li>
                 <li><a href="/account/logout/">Logout</a></li>
                 </ul>
