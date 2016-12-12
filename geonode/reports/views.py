@@ -35,6 +35,8 @@ from geonode.eula.models import AnonDownloader
 from geonode.reports.models import DownloadCount
 from collections import OrderedDict
 
+import urllib2, json
+
 def report_layer(request, template='reports/report_layers.html'):
     monthly_count = OrderedDict()
     monthly_list = DownloadCount.objects.filter(chart_group='monthly').order_by('date')
@@ -67,6 +69,9 @@ def report_layer(request, template='reports/report_layers.html'):
         luzvimin_count[eachinlist.date.strftime('%b')]
 
     reversed_luzvimin = OrderedDict(reversed(list(luzvimin_count.items())))
+
+    urls_to_visit = ['https://lipad-fmctst.dream.upd.edu.ph/']
+
     context_dict = {
         "monthly_count": reversed_mc,
         "luzvimin_count": reversed_luzvimin,
