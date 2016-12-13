@@ -1,7 +1,10 @@
+from django.core.exceptions import PermissionDenied, ObjectDoesNotExist
 from operator import itemgetter, attrgetter
 import re
 from changuito.proxy import CartProxy
-from geonode.cephgeo.models import CephDataObject, DataClassification, MissionGridRef, SucToLayer, RIDF
+from geonode.cephgeo.models import CephDataObject, DataClassification, MissionGridRef, SucToLayer, FTPRequestToObjectIndex, RIDF
+from geonode.datarequests.models import DataRequestProfile
+
 from osgeo import ogr
 import shapely
 from shapely.wkb import loads
@@ -220,6 +223,59 @@ def map_blocks_suc():
             obj = SucToLayer.objects.create(suc=riverbasin.GetFieldAsString("SUC"),block_name=str(v))
             obj.save()
 
+def get_ftp_details(ftp_request):
+    dr = None
+    
+    try:
+        drs = DataRequestProfile.objects.filter(profile = ftp_request.user)
+        if len(drs)>0:
+            dr = drs[0]
+    except ObjectDoesNotExist:
+        dr = None
+    
+    ftp_details = {}
+    user = ftp_request.user     
+    ftp_details['user'] = user
+    
+    if ftp_request.user.organization:
+        ftp_details['organization'] = user.organization
+        ftp_details["organization_type"] = user.get_organization_type_display()
+    elif dr:
+        ftp_details['organization'] = dr.organization
+        ftp_details["organization_type"] = dr.get_organization_type_display()
+    else:
+        ftp_details['organization'] = None
+        ftp_details["organization_type"] = None
+    
+    ftp_details['total_number_of_tiles'] = ftp_request.num_tiles
+    ftp_details['total_size'] = ftp_request.size_in_bytes
+    ftp_details['number_of_laz'] = get_tiles_by_type(ftp_request, 1) #LAZ
+    ftp_details['size_of_laz'] = get_bytes_by_type(ftp_request, 1) #LAZ
+    ftp_details['number_of_dtm'] = get_tiles_by_type(ftp_request, 3) #DTM
+    ftp_details['size_of_dtm'] = get_bytes_by_type(ftp_request, 3) #DTM
+    ftp_details['number_of_dsm'] = get_tiles_by_type(ftp_request, 4) #DSM
+    ftp_details['size_of_dsm'] = get_bytes_by_type(ftp_request, 4) #DSM
+    ftp_details['number_of_ortho'] = get_tiles_by_type(ftp_request, 5) #Ortho
+    ftp_details['size_of_ortho'] = get_bytes_by_type(ftp_request, 5) #Ortho
+    
+    return ftp_details
+    
+def get_tiles_by_type(ftp_request, data_type):
+    request_to_tiles =  FTPRequestToObjectIndex.objects.filter(ftprequest = ftp_request).filter(cephobject__data_class=data_type)
+    
+    num_tiles = len(request_to_tiles)
+    
+    return num_tiles
+    
+def get_bytes_by_type(ftp_request, data_type):
+    request_to_tiles =  FTPRequestToObjectIndex.objects.filter(ftprequest = ftp_request).filter(cephobject__data_class=data_type)
+    size_in_bytes = 0
+    
+    for r in request_to_tiles:
+        size_in_bytes += r.cephobject.size_in_bytes
+
+    return size_in_bytes
+    
 #for testing of map_blocks_suc() uncomment this block:
 # from collections import defaultdict
 # from osgeo import ogr
