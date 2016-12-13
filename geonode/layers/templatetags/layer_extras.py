@@ -131,6 +131,8 @@ def image_basemap(link, epsg, filetype):
 
 def get_prs92_download_url(link):
     link = link.get_download_url()
+    return link
+    # Ignore the ff. for now
     if 'GeoTIFF' in str(link):
         epsg4683 = 'crs=EPSG%3A4683'
         temp = link.split('crs=EPSG%3A32651')
@@ -150,6 +152,8 @@ def get_prs92_download_url(link):
 
 def get_layer_download_url(link):  # Only one argument.
     link = link.get_download_url()
+    return link
+    # Ignore the ff. for now
     # format_options=check_layout(link)
 
     if 'image%2Fpng' in str(link):
