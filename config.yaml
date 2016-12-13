@@ -108,6 +108,21 @@ hosts:
   - !dnsMatch
     host: lipad.stg.dream.upd.edu.ph
     port: 80
+  - !dnsMatch
+    host: lipad-stg.dream.upd.edu.ph
+    port: 443
+  - !dnsMatch
+    host: lipad.dmz.dream.upd.edu.ph
+    port: 80
+  - !dnsMatch
+    host: lipad.dream.upd.edu.ph
+    port: 443
+  - !dnsMatch
+    host: lipad-fmc.dmz.dream.upd.edu.ph
+    port: 80
+  - !dnsMatch
+    host: lipad-fmc.dream.upd.edu.ph
+    port: 443
 
 layouts:
   Image:
