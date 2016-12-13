@@ -578,7 +578,6 @@ def jurisdict_default_style(request):
         request, "Updating Default Style of Jurisdiction Shapefiles")
     return HttpResponseRedirect(reverse('data_management'))
 
-
 @login_required
 @user_passes_test(lambda u: u.is_superuser)
 def update_floodplain_keywords(request):
