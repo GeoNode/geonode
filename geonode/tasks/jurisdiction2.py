@@ -29,7 +29,7 @@ def compute_size_update(requests_query_list, area_compute = True, data_size = Tr
     else:
         for r in requests_query_list:
             pprint("Updating request id:{0}".format(r.pk))
-            shapefile = get_shp_ogr(r.jurisdiction_shapefile.name)
+            shapefile = get_shp_ogr(r.jurisdiction_shapefile.typename)
             if shapefile:
                 if area_compute:
                     r.area_coverage = get_area_coverage(shapefile)
@@ -109,7 +109,7 @@ def assign_grid_refs_all():
         assign_grid_ref_util(uj.user)
 
 def get_shp_ogr(juris_shp_name):
-    source = ogr.Open(("PG:host={0} dbname={1} user={2} password={3}".format(settings.DATABASE_HOST,settings.GIS_DATABASE_NAME,settings.DATABASE_USER,settings.DATABASE_PASSWORD)))
+    source = ogr.Open(("PG:host={0} dbname={1} user={2} password={3}".format(settings.DATABASE_HOST,settings.DATABASE_NAME,settings.DATABASE_USER,settings.DATABASE_PASSWORD)))
     data = source.ExecuteSQL("select the_geom from "+str(juris_shp_name))
     shplist = []
     if data:
