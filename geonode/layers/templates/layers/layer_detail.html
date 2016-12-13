@@ -179,8 +179,8 @@
 
                     <!-- <td><a href="{{ link | get_layer_download_url }}&srsName=EPSG:32651">{% trans link.name %}</a></td> -->
                     <!-- <td><a href="{{ link | get_layer_download_url }}&srsName=EPSG:4683">{% trans link.name %}</a></td> -->
-                    <td><a id='Downloadlink' href="{{ link | get_layer_download_url }}">{% trans link.name %}</a></td>
-                    <td><a id='Downloadlink' href="{{ link | get_prs92_download_url }}">{% trans link.name %}</a></td>
+                    <td><a class='Downloadlink' href="{{ link | get_layer_download_url }}">{% trans link.name %}</a></td>
+                    <td><a class='Downloadlink' href="{{ link | get_prs92_download_url }}">{% trans link.name %}</a></td>
                   </tr>
 
               {% endfor %}
@@ -437,9 +437,9 @@
 
     </script>
     <script type="text/javascript">
-    $('#Downloadlink').click(function(){
+    $('.Downloadlink').click(function(){
       $.ajax({
-        url: window.location.pathname + "/layer_tracker",
+        url: window.location.pathname + "/layer_tracker/",
         type:"POST",
         success: function(){
         }
