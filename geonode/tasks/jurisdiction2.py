@@ -75,7 +75,7 @@ def get_juris_data_size(juris_shp):
     return total_data_size
 
 def assign_grid_ref_util(user):
-    shapefile_name = UserJurisdiction.objects.get(user=user).jurisdiction_shapefile.name
+    shapefile_name = UserJurisdiction.objects.get(user=user).jurisdiction_shapefile.typename
     shapefile = get_shp_ogr(shapefile_name)
     gridref_list = []
     
@@ -110,7 +110,7 @@ def assign_grid_refs_all():
 
 def get_shp_ogr(juris_shp_name):
     source = ogr.Open(("PG:host={0} dbname={1} user={2} password={3}".format(settings.DATABASE_HOST,settings.DATABASE_NAME,settings.DATABASE_USER,settings.DATABASE_PASSWORD)))
-    data = source.ExecuteSQL("select the_geom from "+str(juris_shp_name))
+    data = source.ExecuteSQL("select the_geom from "+'"'+str(juris_shp_name)+'"')
     shplist = []
     if data:
         for i in range(data.GetFeatureCount()):
