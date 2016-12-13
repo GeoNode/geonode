@@ -46,7 +46,7 @@ LAYER_ADMIN_PERMISSIONS = [
 ]
 
  
-def get_users_with_perms(obj):
+def get_users_with_perms_gn(obj):
     """
     Override of the Guardian get_users_with_perms
     """

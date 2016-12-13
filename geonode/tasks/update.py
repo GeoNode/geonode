@@ -221,6 +221,15 @@ def seed_layers(keyword):
             print 'e.cmd:', e.cmd
             print 'e.output:', e.output
 
+def _get_ridf(layer_name, flood_year):
+    print ''
+    #layer.name = municipality_province_fh{year}yr_mapresolution
+    tokens = layer_name.split('_fh').strip()
+    layer_muni_prov = tokens[0]
+
+    # ridf = RIDF.objects.filter(Q(layer_name=layer_muni_prov)&Q())
+
+
 
 def _get_ridf(layer_name, flood_year):
     print ''
