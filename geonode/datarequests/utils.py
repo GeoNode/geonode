@@ -4,6 +4,7 @@ import ldap
 import ldap.modlist
 import geocoder
 import geonode.settings as settings
+from osgeo import ogr
 
 from pprint import pprint
 from unidecode import unidecode
