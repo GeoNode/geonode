@@ -12,7 +12,7 @@ from django.template import RequestContext
 from pprint import pprint
 
 from geonode.cephgeo.forms import DataInputForm
-from geonode.cephgeo.models import CephDataObject, FTPRequest, FTPStatus, FTPRequestToObjectIndex
+from geonode.cephgeo.models import CephDataObject, FTPRequest, FTPStatus, FTPRequestToObjectIndex, UserTiles
 from geonode.cephgeo.utils import get_data_class_from_filename
 from geonode.tasks.ftp import process_ftp_request
 from geonode.tasks.ceph_update import ceph_metadata_remove, ceph_metadata_update
@@ -422,6 +422,28 @@ def ftp_request_details(request, ftp_req_name=None):
     }
 
     return render(request, "ftp_details.html", context_dict)
+
+
+@login_required
+def tile_check(request):
+    user = request.user
+    response = "false"
+    if not request.POST:
+        raise PermissionDenied
+    try:
+        json_tiles = UserTiles.objects.get(user=user)
+    except ObjectDoesNotExist as e:
+        return HttpResponse(status=404)
+
+    georefs = map(str, request.POST.get('georefs', ''))
+    reference_tiles = map(str, json.loads(json_tiles))
+    valid_tiles = []
+    for x in georefs:
+        if x in georefs:
+            valid_tiles.append(x)
+
+    return HttpResponse(json.dumps(valid_tiles), status=200)
+
 
 
 @login_required
