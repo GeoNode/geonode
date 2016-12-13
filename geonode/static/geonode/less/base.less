@@ -7,7 +7,7 @@
 ----------------------- */
 
 body {
-  background: @gray-light;
+  background: @gray-dark;
   font-family: @font-family-sans-serif;
   font-size: @font-size-base;
   padding-top: 60px;
@@ -264,6 +264,8 @@ article.tab-pane {
 		}
 	}
 	#showcase {
+		background: @gray-lighter;
+		padding: 2em 0;
 		text-align: center;
 		.col-md-3 {
 			padding: 2em 1em;
@@ -811,8 +813,17 @@ nav.filter {
 /* Footer
 ----------------------- */
 footer {
-  border-top: 1px solid @gray-light;
-  padding: 20px;
+  color: white;
+  padding: 1.5em;
+  a {
+	  color: @brand-warning;
+  	  &:hover {
+		  color: darken(@brand-warning, 13.5%)
+	  }
+  }
+  form {
+	  color: @text-color;
+  }
 }
 
 /* Etc
