@@ -309,7 +309,7 @@
                 return $(this).css('overflow') === 'hidden';
             }).first().css('overflow', 'visible');
             if(this.input.attr('name') !== 'resource-keywords'){
-              this.box.insertAfter(this.input).css({top: 0, left: 0});
+              this.box.insertAfter(this.input).css({top: 28, left: 0});
             }else{
               var pos = $.extend({}, this.input.position(), {
                 height: this.input.outerHeight()
