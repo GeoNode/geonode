@@ -29,7 +29,7 @@ from geonode.catalogue.backends.generic import METADATA_FORMATS
 from shapely.geometry.base import ReadingError
 
 true_value = 'true'
-if 'sqlite' in settings.DATABASE_URL:
+if 'sqlite' in settings.DATABASES['default']['ENGINE']:
     true_value = '1'
 
 # pycsw settings that the user shouldn't have to worry about
