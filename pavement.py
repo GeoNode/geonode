@@ -224,6 +224,7 @@ def sync(options):
     except:
         pass
     sh("python manage.py loaddata sample_admin.json")
+    sh("python manage.py loaddata geonode/base/fixtures/default_oauth_apps.json")
     sh("python manage.py loaddata geonode/base/fixtures/initial_data.json")
 
 
