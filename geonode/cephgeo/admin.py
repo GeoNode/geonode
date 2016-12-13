@@ -134,6 +134,16 @@ class RIDFAdmin(admin.ModelAdmin):
 
     search_fields = ('muni_code', 'muni_name', 'iscity', 'prov_code', 'prov_name', '_100yr',
                      '_25yr', '_5yr', 'rbs_raw')
+                     
+class UserTilesAdmin(admin.ModelAdmin):
+    model = UserTiles
+    list_display_links = ('id',)
+    list_display = (
+        'id',
+        'user',
+        'gridref_list'
+    )
+    search_fields = ('user__username','gridref_list')
 
 
 admin.site.register(Cart, CartAdmin)
@@ -145,3 +155,4 @@ admin.site.register(UserJurisdiction, UserJurisdictionAdmin)
 admin.site.register(MissionGridRef, MissionGridRefAdmin)
 admin.site.register(SucToLayer, SucToLayerAdmin)
 admin.site.register(RIDF, RIDFAdmin)
+admin.site.register(UserTiles,UserTilesAdmin)
