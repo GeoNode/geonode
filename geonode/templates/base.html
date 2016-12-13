@@ -37,79 +37,105 @@
   </head>
   
   <body class="{% block body_class %}{% endblock %}">
-
+    <!-- Navbar -->
     {% block header %}
-    <nav class="navbar navbar-inverse navbar-fixed-top" role="navigation">
-      <div class="container">
+	<nav class="navbar navbar-inverse navbar-fixed-top" role="navigation">
+	  <div class="container">
         <div class="navbar-header">
-          <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar">
-            <span class="sr-only">Toggle navigation</span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-          </button>
-          <a class="navbar-brand" href="{% url "home" %}">GeoNode</a>
-        </div>
-        <div id="navbar" class="navbar-collapse collapse">
-          <ul class="nav navbar-nav">
-            {% block tabs %}
-            <li id="nav_layers">
-              <a href="{% url "layer_browse" %}">{% trans "Layers" %}</a>
+	      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+	        <i class="fa fa-navicon fa-lg"></i>
+	      </button>
+	      <a class="navbar-brand" href="{% url "home" %}">GeoNode</a>
+	    </div>
+	    <div id="navbar" class="navbar-collapse collapse">
+	      <ul class="nav navbar-nav toolbar">
+	        {% block tabs %}
+	        <li id="nav_layers">
+              <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">{% trans "Data" %}<i class="fa fa-angle-down fa-lg"></i></a>
+              <ul class="dropdown-menu">
+                <li><a href="{% url "layer_browse" %}">{% trans "Layers" %}</a></li>
+                <li><a href="{% url "document_browse" %}">{% trans "Documents" %}</a></li>
+                {% if user.is_authenticated %}
+                <li><a href="{% url "services" %}">{% trans "Remote Services" %}</a></li>
+                <li role="separator" class="divider"></li>
+                <li><a href="{% url "layer_upload" %}">Upload Layer</a></li>
+                <li><a href="{% url "document_upload" %}">Upload Document</a></li>
+                <li><a href="{% url "register_service" %}">{% trans "Add Remote Service" %}</a></li>
+                {% endif %}
+              </ul>
             </li>
-            <li id="nav_maps">
+	        <li id="nav_maps">
+              {% if user.is_authenticated %}
+              <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">{% trans "Maps" %}<i class="fa fa-angle-down fa-lg"></i></a>
+              <ul class="dropdown-menu">
+                <li><a href="{% url "maps_browse" %}">{% trans "Explore Maps" %}</a></li>
+                <li> <a href="{% url "new_map" %}">{% trans "Create Map" %}</a></li>
+              </ul>
+              {% else %}
               <a href="{% url "maps_browse" %}">{% trans "Maps" %}</a>
+              {% endif %}
             </li>
-            <li id="nav_documents">
-              <a href="{% url "document_browse" %}">{% trans "Documents" %}</a>
+            <li>
+	          <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">{% trans "About" %}<i class="fa fa-angle-down fa-lg"></i></a>
+              <ul class="dropdown-menu">
+                <li><a href="{% url "profile_browse" %}">{% trans "People" %}</a></li>
+                <li><a href="{% url "group_list" %}">{% trans "Groups" %}</a></li>
+                {% if perms.announcements.can_manage %}
+                <li><a href="{% url "announcements_list" %}">{% trans "Announcements" %}</a></li>
+                {% endif %}
+                {% if user.is_superuser %}
+                <li role="separator" class="divider"></li>
+                <li><a href="/admin/people/profile/add/">{% trans "Add User" %}</a></li>
+                <li><a href="{% url "account_invite_user" %}">{% trans "Invite User" %}</a></li>
+                <li><a href="{% url "group_create" %}">{% trans "Create Group" %}</a></li>
+                {% endif %}
+              </ul>
             </li>
-           {% block extra_tab %}
-           {% endblock %}
-            <li id="nav_people">
-              <a href="{% url "profile_browse" %}">{% trans "People" %}</a>
-            </li>
-            <li id="nav_groups">
-              <a href="{% url "group_list" %}">{% trans "Groups" %}</a>
-            </li>
+	        {% block extra_tab %}
+            {% endblock %}
             {% endblock %}
           </ul>
-          {% trans "Search" as search_text %}
-          <form class="navbar-form" id="search" action="{% url "search" %}" >
-            <div class="col-md-3">
-              <div class="input-group">
-                {% if HAYSTACK_SEARCH %}
-                <input id="search_input" type="text" placeholder="{{ search_text }}" class="form-control" name="q">
-                {% else %}
-                <input id="search_input" type="text" placeholder="{{ search_text }}" class="form-control" name="title__icontains">
-                {% endif %}
-                <span class="input-group-btn">
-                  <button class="btn btn-primary" type="submit"><i class="fa fa-search"></i></button>
-                </span>
+	      <ul class="nav navbar-nav navbar-right">
+            <li>
+              <div class="search">
+                <form id="search" action="{% url "search" %}" >
+                  <span class="fa fa-search"></span>
+                  {% if HAYSTACK_SEARCH %}
+                  <input id="search_input" type="text" placeholder="Search" name="q">
+                  {% else %}
+                  <input id="search_input" type="text" placeholder="Search" name="title__icontains">
+                  {% endif %}
+                </form>
               </div>
-            </div>
-          </form>
-          <ul class="nav navbar-nav navbar-right">
+	        </li>
             {% if not user.is_authenticated and REGISTRATION_OPEN %}
             <li><a href="{% url "account_signup" %}">{% trans "Register" %}</a></li>
             {% endif %}
             {% if user.is_authenticated %}
-            <li>
-              <a href="#" data-toggle="modal" data-target="#UserModal" role="button" aria-expanded="false">
-                {% avatar user 30 %} {{ user.username }}
-              </a>
-            </li>
-            {% else %}
-            <li>
-              <a href="#" data-toggle="modal" data-target="#SigninModal" role="button" >
-                {% trans "Sign in" %} 
-              </a>
-            </li>
-            {% endif %}
-          </ul>
-        </div><!--/.nav-collapse -->
-      </div>
-    </nav>
-    {% endblock header %}
-
+            <li><a href="#" class="dropdown-toggle avatar" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">{% avatar user 42 %} {{ user.username }}<i class="fa fa-angle-down fa-lg"></i></a>
+              <ul class="dropdown-menu">
+                <li><a href="{{ user.get_absolute_url }}">{% trans "Profile" %}</a></li>
+                <li><a href="{% url "recent-activity" %}">{% trans "Recent Activity" %}</a></li>
+                <li><a href="{% url "messages_inbox" %}">{% trans "Inbox" %}</a></li>
+                <li role="separator" class="divider"></li>
+                <li><a href="{% url "admin:index" %}">Admin</a></li>
+                <li><a href="{{ GEOSERVER_BASE_URL }}">GeoServer</a></li>
+                <li role="separator" class="divider"></li>
+                <li><a href="{% url "help" %}">{% trans "Help" %}</li>
+                <li role="separator" class="divider"></li>
+                <li><a href="/account/logout/">Logout</a></li>
+                </ul>
+              </li>
+		      {% else %}
+		      <li><a href="#" data-toggle="modal" data-target="#SigninModal" role="button" >{% trans "Sign in" %} </a></li>
+              {% endif %}
+            </ul>
+          </div> <!--/.nav-collapse -->
+        </div>
+      </nav>
+      {% endblock header %}
+      <!-- End of Navbar -->
+	  
     <div class="alert alert-danger alert-dismissible" role="alert" id="ieflag" style="display:none">
       <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
       <h1>You are using an outdated browser that is not supported by GeoNode.</h1>
@@ -136,35 +162,71 @@
     {% endblock middle %}
   </div>
     
-    {% block footer %}
-    <footer class="footer">
-      <div class="container">
-        <div class="row">
-          <div class="col-md-8">
-            {% trans "Powered by" %} <a href="http://geonode.org">{% trans "GeoNode" %}</a> <em>{% trans "version" %} {{ VERSION }}</em> |
-            <a href="{% url "developer" %}">{% trans "Developers" %}</a> |
-            <a href="{% url "about" %}">{% trans "About" %}</a>
-          </div>
-          <div class="col-md-4">
-            <label class="hidden">{% trans "Language" %}</label>
-            {% if csrf_token != "NOTPROVIDED" %}
-            {% get_current_language as LANGUAGE %}
-            <form class="form-inline" action="/i18n/setlang/" method="post">
-            {% csrf_token %}
-              <select class="col-md-6 pull-right" name="language" onchange="javascript:form.submit()">
-                {% for lang in LANGUAGES %}
-                <option value="{{ lang.0 }}" {% ifequal LANGUAGE_CODE lang.0 %} selected="selected"{% endifequal %}>
-                  {{ lang.1 }}
-                </option>
-                {% endfor %}
-              </select>
-            </form>
+  {% block footer %}
+  <footer>
+    <div class="container">
+      <div class="row">
+        <div class="col-md-2">
+          <ul class="list-unstyled">
+            <li>Data</li>
+            <li><a href="{% url "layer_browse" %}">{% trans "Layers" %}</a></li>
+            <li><a href="{% url "document_browse" %}">{% trans "Documents" %}</a></li>
+            {% if user.is_authenticated %}
+            <li><a href="{% url "services" %}">{% trans "Remote Services" %}</a></li>
+            <li><a href="{% url "layer_upload" %}">Upload Layer</a></li>
+            <li><a href="{% url "document_upload" %}">Upload Document</a></li>
+            <li><a href="{% url "register_service" %}">{% trans "Add Remote Service" %}</a></li>
             {% endif %}
-          </div>
+          </ul>
+        </div>
+        <div class="col-md-2">
+          <ul class="list-unstyled">
+            <li>Maps</li>
+            <li><a href="{% url "maps_browse" %}">{% trans "Explore Maps" %}</a></li>
+            {% if user.is_authenticated %}
+            <li> <a href="{% url "new_map" %}">{% trans "Create Map" %}</a></li>
+            {% endif %}
+          </ul>
+        </div>
+		<div class="col-md-2">
+          <ul class="list-unstyled">
+            <li>About</li>
+            <li><a href="{% url "profile_browse" %}">{% trans "People" %}</a></li>
+            <li><a href="{% url "group_list" %}">{% trans "Groups" %}</a></li>
+            {% if perms.announcements.can_manage %}
+            <li><a href="{% url "announcements_list" %}">{% trans "Announcements" %}</a></li>
+            {% endif %}
+            {% if user.is_superuser %}
+            <li><a href="/admin/people/profile/add/">{% trans "Add User" %}</a></li>
+            <li><a href="{% url "account_invite_user" %}">{% trans "Invite User" %}</a></li>
+            <li><a href="{% url "group_create" %}">{% trans "Create Group" %}</a></li>
+            {% endif %}
+          </ul>
+        </div>
+        <div class="col-md-6 text-right">
+          <ul class="list-unstyled">	  
+            <li>{% trans "Powered by" %} <a href="http://geonode.org">{% trans "GeoNode" %}</a> <em>{% trans "version" %} {{ VERSION }}</em></li>
+            <li><a href="{% url "developer" %}">{% trans "Developers" %}</a> | <a href="{% url "about" %}">{% trans "About" %}</a><li>
+          </ul>
+          <label class="hidden">{% trans "Language" %}</label>
+          {% if csrf_token != "NOTPROVIDED" %}
+          {% get_current_language as LANGUAGE %}
+          <form class="form-inline" action="/i18n/setlang/" method="post">
+          {% csrf_token %}
+            <select class="col-md-6 pull-right" name="language" onchange="javascript:form.submit()">
+              {% for lang in LANGUAGES %}
+              <option value="{{ lang.0 }}" {% ifequal LANGUAGE_CODE lang.0 %} selected="selected"{% endifequal %}>
+                {{ lang.1 }}
+              </option>
+              {% endfor %}
+            </select>
+          </form>
+          {% endif %}
         </div>
       </div>
-    </footer>
-    {% endblock footer %}
+    </div>
+  </footer>
+  {% endblock footer %}
 
 
     <!-- Modal must stay outside the navbar -->
@@ -195,51 +257,6 @@
               <button type="submit" class="btn btn-primary btn-block">{% trans "Sign in" %}</button>
             </div>
           </form>
-        </div>
-      </div>
-    </div>
-    {% else %}
-    <div class="modal fade" id="UserModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-      <div class="modal-dialog modal-sm">
-        <div class="modal-content">
-          <div class="modal-header">
-            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-            <h4 class="modal-title" id="myModalLabel">{% trans "Menu" %}</h4>
-          </div>
-          <div class="modal-body">
-            <ul class="list-unstyled">
-              <li><a href="{% url "layer_upload" %}"><i class="fa fa-cloud-upload"></i> {% trans "Upload Layers" %}</a></li>
-              <li class="modal-divider"></li>
-              <li><a href="{{ user.get_absolute_url }}"><i class="fa fa-user"></i> {% trans "Profile" %}</a></li>
-              <li><a href="{% url "recent-activity" %}"><i class="fa fa-fire"></i> {% trans "Recent Activity" %}</a></li>
-              <li><a href="{% url "messages_inbox" %}"><i class="fa fa-inbox"></i> {% trans "Inbox" %}</a></li>
-              {% if USE_NOTIFICATIONS %}
-                <li><a href="{% url "notification_notice_settings" %}"><i class="fa fa-bell"></i> {% trans "Notifications" %}</a></li>
-              {% endif %}
-              {% if perms.announcements.can_manage %}
-              <li><a href="{% url "announcements_list" %}"><i class="fa fa-bullhorn"></i> {% trans "Announcements" %}</a></li>
-              {% endif %}
-              {% if user.is_superuser %}
-              <li><a href="{% url "services" %}"><i class="fa fa-globe"></i> {% trans "Remote Services" %}</a></li>
-              <li><a href="{% url "account_invite_user" %}"><i class="fa fa-edit"></i> {% trans "Invite User" %}</a></li>
-              <li class="modal-divider"></li>
-              <li><a href="{{ GEOSERVER_BASE_URL }}"><i class="fa fa-gears"></i> {% trans "GeoServer" %}</a></li>
-              {% endif %}
-              {% if user.is_staff %}
-              <li><a href="{% url "admin:index" %}"><i class="fa fa-cog"></i> {% trans "Admin" %}</a></li>
-              {% endif %}
-              {% block extra_user_menu %}
-              {% endblock %}
-              <li class="modal-divider"></li>
-              <li><a title="Help" rel="tooltip" href="{% url "help" %}"><i class="fa fa-question-circle"></i> {% trans "Help" %}</a></li>
-            </ul>
-          </div>
-          <div class="modal-footer">
-            <form action="{% url "account_logout" %}" id="logout_form" method="post">
-              {% csrf_token %}
-              <a class="btn btn-warning btn-block" href="javascript:{}" onclick="document.getElementById('logout_form').submit();">{% trans "Log out" %}</a>
-            </form>
-          </div>
         </div>
       </div>
     </div>
@@ -292,7 +309,7 @@
                 return $(this).css('overflow') === 'hidden';
             }).first().css('overflow', 'visible');
             if(this.input.attr('name') !== 'resource-keywords'){
-              this.box.insertAfter(this.input).css({top: 0, left: 0});
+              this.box.insertAfter(this.input).css({top: 28, left: 0});
             }else{
               var pos = $.extend({}, this.input.position(), {
                 height: this.input.outerHeight()
