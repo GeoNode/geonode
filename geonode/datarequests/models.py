@@ -210,7 +210,7 @@ class DataRequestProfile(TimeStampedModel):
         _('Geolocation name provided by Google'),
         null=True,
         blank=True,
-        max_length=50,
+        max_length=250,
     )
 
     #For jurisdiction data size

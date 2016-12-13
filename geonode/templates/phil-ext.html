@@ -49,7 +49,8 @@
           // 'cdo' : cdo
         };
 
-        var fhms_5yr = L.tileLayer.wms('{{ public_location }}' + 'geoserver/ows?', {
+        var fhms_5yr = L.tileLayer.wms('https://lipad-fmc.dream.upd.edu.ph/geoserver/ows?', {
+            ptype: 'gxp_wmsgetfeatureinfo',
             layers: 'geonode:fhms_5yr',
             format: 'image/png',
             transparent: true,
@@ -59,7 +60,8 @@
             continuousWorld: true
         });
 
-        var fhms_25yr = L.tileLayer.wms('{{ public_location }}' + 'geoserver/ows?', {
+        var fhms_25yr = L.tileLayer.wms('https://lipad-fmc.dream.upd.edu.ph/geoserver/ows?', {
+            ptype: 'gxp_wmsgetfeatureinfo',
             layers: 'geonode:fhms_25yr',
             format: 'image/png',
             transparent: true,
@@ -69,7 +71,8 @@
             continuousWorld: true
         });
 
-        var fhms_100yr = L.tileLayer.wms('{{ public_location }}' + 'geoserver/ows?', {
+        var fhms_100yr = L.tileLayer.wms('https://lipad-fmc.dream.upd.edu.ph/geoserver/ows?', {
+            ptype: 'gxp_wmsgetfeatureinfo',
             layers: 'geonode:fhms_100yr',
             format: 'image/png',
             transparent: true,

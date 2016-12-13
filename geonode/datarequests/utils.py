@@ -155,7 +155,8 @@ def get_place_name(longitude,latitude):
         'city': g.city,
         'county': g.county,
         'state': g.state,
-        'country': g.country
+        'country': g.country,
+        'address': g.address
     }
 
 def get_juris_data_size(juris_shp_name):

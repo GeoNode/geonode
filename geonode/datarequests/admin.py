@@ -14,9 +14,11 @@ class DataRequestProfileAdmin(admin.ModelAdmin):
         'middle_name',
         'last_name',
         'organization',
-        'organization_type',)
+        'organization_type',
+        'jurisdiction_shapefile',
+        'request_letter')
     list_filter = ('request_status', 'organization_type')
-    search_fields = ('username', 'first_name', 'middle_name', 'last_name', 'organization','organization_type', )
+    search_fields = ('username', 'first_name', 'middle_name', 'last_name', 'organization','organization_type', 'jurisdiction_shapefile', 'request_letter' )
 
 
 admin.site.register(DataRequestProfile, DataRequestProfileAdmin)
