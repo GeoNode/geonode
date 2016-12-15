@@ -5,12 +5,12 @@ Loading OSM Data into GeoNode
 
 In this section, we will walk through the steps necessary to load OSM data into your GeoNode project. As discussed in previous sections, your GeoNode already uses OSM tiles from MapQuest and the main OSM servers as some of the available base layers. This session is specifically about extracting actual data from OSM and converting it for use in your project and potentially for Geoprocessing tasks.
 
-The first step in this process is to get the data from OSM. We will be using the OSM Overpass API since it lets us do more complex queries than the OSM API itself. You should refer to the OSM Overpass API documentation to learn about all of its features. It is an extremely powerful API that lets you extract data from OSM using a very sophisticated API. 
+The first step in this process is to get the data from OSM. We will be using the OSM Overpass API since it lets us do more complex queries than the OSM API itself. You should refer to the OSM Overpass API documentation to learn about all of its features. It is an extremely powerful API that lets you extract data from OSM using a very sophisticated API.
 
 - http://wiki.openstreetmap.org/wiki/Overpass_API
 - http://wiki.openstreetmap.org/wiki/Overpass_API/Language_Guide
 
-In this example, we will be extracting building footprint data around Port au Prince in Haiti. To do this we will use an interactive tool that makes it easy construct a Query against the Overpass API. Point your browser at http://overpass-turbo.eu/ and use the search tools to zoom into Port Au Prince and Cité Soleil specifically. 
+In this example, we will be extracting building footprint data around Port au Prince in Haiti. To do this we will use an interactive tool that makes it easy construct a Query against the Overpass API. Point your browser at http://overpass-turbo.eu/ and use the search tools to zoom into Port Au Prince and Cité Soleil specifically.
 
 You will need to cut and paste the query specified below to get all of the appropriate data under the bounding box::
 
@@ -32,7 +32,7 @@ This should look like the following.
 
 .. figure:: img/overpass_turbo.png
 
-When you have the bounding box and query set correctly, click the "Export" button on the menu to bring up the export menu, and then click the API interpreter link to download the OSM data base on the query you have specified. 
+When you have the bounding box and query set correctly, click the "Export" button on the menu to bring up the export menu, and then click the API interpreter link to download the OSM data base on the query you have specified.
 
 .. figure:: img/overpass_export.png
 
@@ -221,7 +221,7 @@ At this point you have different options on how to serve this repository from yo
 
 Define your new primary key for the table we can't export (id is the osm id)::
 
-    INSERT INTO gt_pk_metadata_table (table_schema, table_name, pk_column) VALUES ('geogig_data','osm_train_stations','id'); 
+    INSERT INTO gt_pk_metadata_table (table_schema, table_name, pk_column) VALUES ('geogig_data','osm_train_stations','id');
 
 Next you need to alter your OSM data table accordingly::
 
@@ -237,7 +237,7 @@ Then you can run the *geogig pg export* command with the -o option to overwrite 
 
     $ geogig pg export -o --host localhost --port 5432 -- schema myschema --database my_osm_database --user my_user --password my_password osm_train_stations osm_train_stations
 
-At this point, you need to configure your PostGIS database connection in GeoServer. More information about this process can be found in the `GeoServer documentation <http://docs.geoserver.org/stable/en/user/data/database/postgis.html>`_. 
+At this point, you need to configure your PostGIS database connection in GeoServer. More information about this process can be found in the `GeoServer documentation <http://docs.geoserver.org/stable/en/user/data/database/postgis.html>`_.
 
 Once the layers are configured in GeoServer. You want to issue the updatelayers to configure them in your GeoNode::
 
@@ -249,3 +249,63 @@ Using the GeoGig GeoServer Extension
 The GeoGig project also contains a GeoServer extension that allows a GeoServer administrator to configure and serve the GeoGig store directly. This extension basically lets you treat your GeoGig repository as any other store of spatial data.
 
 .. note:: This section is still to be completed.
+
+Using the osm-extract script to download OSM Data into PostGIS
+--------------------------------------------------------------
+
+osm-extract is a script that allows to download data from OpenStreetMap for a country of interest, perform ETL procedures in order to classify data into layers and publish it in a PostgreSQL+PostGIS database.
+It is based on a fork from Terronodo and it is built around a Makefile with instructions that must be executed with the Linux make command (we assume you are working on a Linux based OS).
+Once OSM data have been loaded into PostGIS, they can be published in GeoNode.
+In addition data can be updated on a fixed frequency, by executing the Makefile with a scheduled cron job. In such case a sql instruction can be executed in order to update the publication date of the respective metadata published by GeoNode.
+
+Steps for putting it in production
+++++++++++++++++++++++++++++++++++
+#. Download the repo
+#. Install the dependencies: osmosis. (GeoNode  is assumed to be up and running)
+#. Launch the Makefile for the first time
+#. Publish the layers in GeoNode, update_layers
+#. Customize the sh file
+#. Customize the SQL file
+#. Schedule the shell file as a cron job
+
+**1. Download the repo**::
+
+  git clone https://github.com/MalawiGeospatialTools/osm-extract.git
+
+**2. Install the dependencies**
+
+We assume that GeoNode is already installed on your machine.
+In addition to that you need to install osmosis, which is used by the Makefile to handle OSM data.
+In order to do so, follow the instructions at `Installing pre-built Osmosis <http://wiki.openstreetmap.org/wiki/Osmosis/Installation#Linux>`_
+
+**3. Launch the Makefile for the first time**
+
+Set the current directory to the directory where the Makefile is stored.
+Then launch it by typing the following command::
+
+  make all NAME=<country> URL="<Planet.osm mirror>"
+
+Substitute in the command *<country>* with the name of your country of interest (e.g. *malawi*); and *<Planet.osm mirror>* with one of the mirrors listed in http://wiki.openstreetmap.org/wiki/Planet.osm#Downloading.
+The procedure is going to create a new database in your PostgreSQL instance and store in it the OSM data for your country. Therefore you should run the Makefile with a user that has enough privileges.
+
+**4. Publish the layers in GeoNode**
+
+We propose to do so in two steps: firstly publish the layers in GeoServer and then in GeoNode.
+In GeoServer generate a new Store so that you can keep it separate from the default GeoNode Store. Then publish the layers of your interest from the ones that were created by the procedure at the previous step (please note that some of them may be empty, depending on the country of interest).
+In GeoNode take advantage of the updatelayers command and publish all layers from the GeoServer Workspace created ad-hoc at the previous step. See the `updatelayers documentation <http://docs.geonode.org/en/master/tutorials/admin/admin_mgmt_commands/>`_ for details.
+
+**5. Customize the sh file**
+
+Customize the osm_update.sh file in order to fit your server and software configuration, namely:
+
+- define the installation path (on line 3) for the osmosis software, so that it can be found by the OS
+- change the current directory to a working directory of your interest, where temporary files can be stored, deleted and updated (on line 4)
+- define the name of the country of interest as well as the url (on line 6) as you did in step 3
+
+**6. Customize the SQL file**
+
+Customize the set_pub_date.sql file in order to fit it for your purpose. In particular substitute the store name *osm_extracts* with the name of the store in which your OSM data are in GeoServer.
+
+**7. Schedule the shell file as a cron job**
+
+Insert the osm_update.sh file in the crontab of your server as a scheduled job. In order to do so, please have a look at the official cron documentation. If you’re using Ubuntu OS, please have a look `here <https://help.ubuntu.com/community/CronHowto>`_.
