@@ -814,6 +814,12 @@ def view(request, mapid, snapshot=None):
     else:
         config = snapshot_config(snapshot, map_obj, request.user)
 
+    for layer in config['map']['layers']:
+        if 'local' in layer:
+            if 'styles' in layer:
+                if layer['styles'] is None:
+                    logger.info('fixing style for layer %s' % layer['name'])
+                    layer['styles'] = ''
 
     first_visit = True
     if request.session.get('visit' + str(map_obj.id), False):
