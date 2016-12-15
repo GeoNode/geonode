@@ -1058,12 +1058,18 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
         if (wmSource) {
             for (var i = 0; i < records.length; i++) {
                 var record = records[i];
-                if (record.data['service_type'] == 'Hypermap:WorldMap'){
-                    this.addLayerAjax(wmSource, this.worldMapSourceKey, record);
+                // add an existing layers
+                if ('uuid' in record.data){
+                    if (record.data['service_type'] == 'Hypermap:WorldMap'){
+                        this.addLayerAjax(wmSource, this.worldMapSourceKey, record);
+                    } else {
+                        url = 'http://hh.worldmap.harvard.edu/registry/hypermap/layer/' + record.data['uuid'] + '/map/wmts/' + record.data['name'] + '/default_grid/${z}/${x}/${y}.png';
+                        var hhSource = this.addLayerSource({"config":{"url":url, "ptype":"gxp_gnsource"}});
+                        this.addLayerAjax(hhSource, hhSource.id, record);
+                    }
                 } else {
-                    url = 'http://hh.worldmap.harvard.edu/registry/hypermap/layer/' + record.data['uuid'] + '/map/wmts/' + record.data['name'] + '/default_grid/${z}/${x}/${y}.png';
-                    var hhSource = this.addLayerSource({"config":{"url":url, "ptype":"gxp_gnsource"}});
-                    this.addLayerAjax(hhSource, hhSource.id, record);
+                    // newly uploaded and created layers
+                    this.addLayerAjax(wmSource, this.worldMapSourceKey, record);
                 }
             }
         }
@@ -1079,6 +1085,10 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
             new OpenLayers.Projection("EPSG:4326");
     },
 
+    /**
+    Add a layer to the Map.
+    Creates an instance for any existing WM layer or any Registry layer for being added to the map.
+    */
     addLocalLayer: function(thisRecord, source, layerStore, key){
         //Get all the required WMS parameters from the GeoNode/Worldmap database
         // instead of GetCapabilities
@@ -1139,24 +1149,70 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
         }
     },
 
-    testLayerPermission: function(thisRecord, source, layerStore, key){
+    /**
+    * Check if the user has the permission for displaying the WM layer before adding it to the map.
+    */
+    testLayerPermission: function(thisRecord, source, layerStore, key, is_new_layer){
         var self = this;
+        // not sure when the layer name is LayerName
+        if('LayerName' in thisRecord.data){
+            var name = thisRecord.get('LayerName');
+        } else {
+            var name = thisRecord.get('name');
+        }
         $.ajax({
-            url: 'http://worldmap.harvard.edu/data/' + thisRecord.get('LayerName'),
+            url: '/data/' + name,
             method: 'GET',
             complete: function(xhr, status){
                 if (xhr.status == 200){
-                    self.addLocalLayer(thisRecord, source, layerStore, key)
+                    if(is_new_layer){
+                      self.addNewWMLayer(thisRecord, source, layerStore, key);
+                    } else {
+                      self.addLocalLayer(thisRecord, source, layerStore, key)
+                    }
                 }
             },
             dataType: 'jsonp'
         });
     },
 
+    /**
+    * Creates an instance for a new WM layer (created or uploaded) for being added to the map.
+    */
+    addNewWMLayer: function(thisRecord, source, layerStore, key){
+      if (this.worldMapSourceKey == null)
+          this.setWorldMapSourceKey();
+      var source = this.layerSources[this.worldMapSourceKey];
+      var name = thisRecord.get('name');
+      var tiled = thisRecord.get('tiled');
+      var layer_detail_url = 'http://worldmap.harvard.edu/data/' + name;
+      var layer = null;
+
+      $.ajax({
+          url: "/maps/addgeonodelayer/?layername=" + name,
+          type: "GET",
+          dataType: 'json',
+          async: false,
+          //params: {layername:name},
+          success: function(data){
+            layer = data['layer']
+            layer.source = key;
+            layer.buffer = 0;
+            layer.tiled = true;
+            layer.local = true;
+          },
+          error: function(jqXHR, textStatus, errorThrown){
+            alert('Exeption:' + exception);
+          }
+      });
+
+      this.loadRecord(source, layerStore, layer, layer_detail_url);
+
+    },
+
     addLayerAjax: function (dataSource, dataKey, dataRecord) {
         var geoEx = this;
         var key = dataKey;
-        var records = dataRecords;
         var source = dataSource;
 
         var layerStore = this.mapPanel.layers;
@@ -1172,11 +1228,17 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
         var thisRecord = dataRecord;
         if (isLocal){
             var authorized = true;
-            if (!$.parseJSON(thisRecord.get('is_public'))){
-               geoEx.testLayerPermission(thisRecord, source, layerStore, key);
+            // layer from solr
+            if ('uuid' in thisRecord.data){
+                if (!$.parseJSON(thisRecord.get('is_public'))){
+                   geoEx.testLayerPermission(thisRecord, source, layerStore, key, false);
+                } else {
+                    // hack here
+                    geoEx.addLocalLayer(thisRecord, source, layerStore, key);
+                }
             } else {
-                // hack here
-                geoEx.addLocalLayer(thisRecord, source, layerStore, key);
+                // newly uploaded and created layers
+                geoEx.testLayerPermission(thisRecord, source, layerStore, key, true);
             }
         } else {
             //Not a local GeoNode layer, use source's standard method for creating the layer.
@@ -1218,6 +1280,9 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
         });
     },
 
+    /**
+    Load a layer in the map.
+    */
     loadRecord: function(source, layerStore, config, layer_detail_url){
         var record = source.createLayerRecord(config);
         var geoEx = this;

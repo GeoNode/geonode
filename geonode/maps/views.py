@@ -2428,7 +2428,7 @@ def addlayers(request):
 
 def addLayerJSON(request):
     logger.debug("Enter addLayerJSON")
-    layername = request.POST.get('layername', False)
+    layername = request.GET.get('layername', False)
     logger.debug("layername is [%s]", layername)
 
     if layername:
