@@ -99,10 +99,11 @@ for eachkey, eachdict in layer_count.iteritems():
     elif category == 'monthly':
         chart_group = 'monthly'
     for eachtype, eachvalue in eachdict.iteritems():
-        model_object = DownloadCount(date=str(datetoappend),
-                                    category=str(category),
-                                    chart_group=str(chart_group),
-                                    download_type=str(eachtype),
-                                    count=str(eachvalue))
-        model_object.save()
-        print str(datetoappend) +'-'+ str(category) +'-'+ str(chart_group) +'-'+ str(eachtype) +'-'+ str(eachvalue)
+        if eachvalue:
+            model_object = DownloadCount(date=str(datetoappend),
+                                        category=str(category),
+                                        chart_group=str(chart_group),
+                                        download_type=str(eachtype),
+                                        count=str(eachvalue))
+            model_object.save()
+            print str(datetoappend) +'-'+ str(category) +'-'+ str(chart_group) +'-'+ str(eachtype) +'-'+ str(eachvalue)
