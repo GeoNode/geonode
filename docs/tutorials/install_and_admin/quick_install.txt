@@ -45,9 +45,49 @@ The easiest way to get the .deb is to install it using APT, the standard install
 3. Create a superuser and set the IP address
     a) $ geonode createsuperuser
     b) $ sudo geonode-updateip 127.0.0.1
-    
+
 4. Read the Admin Docs
     http://docs.geonode.org/en/master/#for-administrators
+
+Ubuntu with a virtual environment
+---------------------------------
+
+This kind of GeoNode installation is very useful in case you want to develop using Ubuntu (tested on Ubuntu 14.04 LTS)::
+
+    # Install Ubuntu dependencies
+    sudo apt-get update
+    sudo apt-get install python-virtualenv python-dev libxml2 libxml2-dev libxslt1-dev zlib1g-dev libjpeg-dev libpq-dev libgdal-dev git default-jdk
+
+    # Install Java 8 (needed by latest GeoServer 2.9)
+    sudo apt-add-repository ppa:webupd8team/java
+    sudo apt-get update
+    sudo apt-get install oracle-java8-installer
+
+    # Create and activate the virtulenv
+    virtualenv --no-site-packages env
+    source env/bin/activate
+
+    # git clone geonode
+    git clone https://github.com/GeoNode/geonode
+    cd geonode
+
+    # Install pip dependencies
+    pip install -r requirements.txt
+    pip install -e .
+    pip install pygdal==1.10.1
+
+You can now setup and start GeoNode::
+
+    # Paver setup
+    paver setup
+    paver sync
+    paver start
+
+In case you want to be involved in static files development::
+
+    sudo apt-get install npm
+    sudo npm install -g bower
+    sudo npm install -g grunt-cli
 
 
 Windows, OSX and others
@@ -72,28 +112,28 @@ To install in Windows it is assumed you're familiar with python development and 
     * git
 
 Install and configure from the windows command prompt, if you don't already have python virtualenv installed, then do it now::
-   
+
    easy_install virtualenv
 
 Create virtualenv and activate it::
-    
+
     cd <Directory to install the virtualenv & geonode into>
     virtualenv <name of virtualenv folder>
     virtualenv <name of virtualenv folder>\scripts\activate
 
 Clone GeoNode::
-    
+
     git clone https://github.com/GeoNode/geonode.git
 
     cd geonode
 
 Install Python native dependencies, this command will look for and install binary distributions (pip install will attempt to build and fail)::
-    
+
     pip install paver
     paver win_install_deps
 
 
-    
+
 Install GeoNode in the local virtualenv::
 
     pip install -e .
@@ -106,11 +146,11 @@ or add the variables to your local_settings.py file as below.
 
 The GEOS and GDAL libraries can be found in your <virtualenv directory>\Lib\site-packages\GDAL-1.11.0-py2.7-win32.egg\osgeo\ folder.
 
-    
+
 Setup GeoServer::
-    
+
     paver setup
-    
+
 Start the servers.  You have the option to set the JAVA_HOME environment variable or use the --java_path.::
 
     paver start --java_path="C:\path\to\java\java.exe"
@@ -129,7 +169,7 @@ The recommended install method in these platforms is to use a virtualization sol
 You may need brew install various dependencies::
 
     mkdir -p ~/pyenv
-    virtualenv ~/pyenv/geonode    
+    virtualenv ~/pyenv/geonode
     source ~/pyenv/geonode/bin/activate
     git clone https://github.com/GeoNode/geonode
     cd geonode
@@ -141,7 +181,7 @@ You may need brew install various dependencies::
     pip install pillow
     pip install paver
 
-Node and tools required for static development::
+Node and tools required for static files development::
 
     brew install node
     npm install -g bower
@@ -155,7 +195,7 @@ Paver handles dependencies for Geonode, first setup (this will download and upda
 
     paver setup
     paver start
-    
+
 Optional: To generate document thumbnails for PDFs and other ghostscript file types, download ghostscript: https://www.macupdate.com/app/mac/9980/gpl-ghostscript::
 
     sudo apt-get install imagemagick
@@ -164,7 +204,7 @@ Optional: To generate document thumbnails for PDFs and other ghostscript file ty
 
 Once fully started, you should see a message indicating the address of your geonode.
 The default username and password are ``admin`` and ``admin``::
-  
+
   Development GeoNode is running at http://localhost:8000/
   The GeoNode is an unstoppable machine
   Press CTRL-C to shut down
@@ -173,19 +213,19 @@ Before starting GeoNode (paver start), you could test your installation by runni
 
     paver test
     paver test_integration
-    
+
 In case you want to build yourself the documentation, you need to install Sphinx and the run 'make html' from within the docs directory::
 
     pip install Sphinx
     cd docs
     make html
-    
+
 You can eventually generate a pdf containing the whole documentation set. For this purpose, if using Ubuntu 12.4 you will need to install the texlive-full package::
 
     sudo apt-get install texlive-full
     make latexpdf
 
-.. note:: 
+.. note::
 
   When running ``virtualenv venv`` the ``--system-site-packages`` option is
   not required.  If not enabled, the bootstrap script will sandbox your virtual
@@ -214,4 +254,3 @@ CentOS/RHEL and other \*nix distros
 We recommend you to download the latest release and modify the included ``install.sh`` and ``support/config.sh``. GeoNode has been installed in CentOS/RHEL using this mechanism.
 
 Once the package is installed, please consult the :ref:`custom_install` to learn how to create the admin user and tweak the settings to get more performance.
-
