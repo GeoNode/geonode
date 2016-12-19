@@ -51,7 +51,6 @@ GEOSERVER_PUBLIC_LOCATION = os.getenv(
 )
 
 # OGC (WMS/WFS/WCS) Server Settings
-# OGC (WMS/WFS/WCS) Server Settings
 OGC_SERVER = {
     'default': {
         'BACKEND': 'geonode.geoserver',
