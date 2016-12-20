@@ -87,12 +87,6 @@ class LayerIndex(indexes.SearchIndex, indexes.Indexable):
     rating = indexes.IntegerField(null=True)
     num_ratings = indexes.IntegerField(stored=False)
     num_comments = indexes.IntegerField(stored=False)
-    # Need to grab the owner's first and last name as well as published status
-    owner__first_name = indexes.CharField(model_attr="owner__first_name", faceted=True, null=True)
-    owner__last_name = indexes.CharField(model_attr="owner__last_name", faceted=True, null=True)
-    is_published = indexes.BooleanField(model_attr="is_published")
-    # Featured status for front page carousel
-    featured = indexes.BooleanField(model_attr="featured")
 
     def get_model(self):
         return Layer
