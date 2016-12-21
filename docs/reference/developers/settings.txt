@@ -50,13 +50,6 @@ PYCSW
   in the ``server`` section.  See http://docs.pycsw.org/en/latest/configuration.html
   for full pycsw configuration details.
 
-DEFAULT_TOPICCATEGORY
----------------------
-Default: ``'location'``
-
-The identifier of the default topic category to use when uploading new layers.  The value specified for this setting must be
-present in the TopicCategory table or GeoNode will return a ``TopicCategory.DoesNotExist`` exception.
-
 MODIFY_TOPICCATEGORY
 --------------------
 Default: ``False``
