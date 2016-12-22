@@ -260,6 +260,10 @@ class Layer(ResourceBase):
     def class_name(self):
         return self.__class__.__name__
 
+    @property
+    def geogig_enabled(self):
+        return (len(self.link_set.geogig()) > 0)
+
 
 class LayerStyles(models.Model):
     layer = models.ForeignKey(Layer)
