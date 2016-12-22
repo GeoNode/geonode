@@ -39,6 +39,7 @@ from tastypie.utils.mime import build_content_type
 
 from geonode.layers.models import Layer
 from geonode.maps.models import Map
+from geonode.maps.models import MapLayer
 from geonode.documents.models import Document
 from geonode.base.models import ResourceBase
 from geonode.base.models import HierarchicalKeyword
@@ -572,6 +573,28 @@ class MapResource(CommonModelApi):
         if settings.RESOURCE_PUBLISHING:
             queryset = queryset.filter(is_published=True)
         resource_name = 'maps'
+
+
+class MapLayersResource(CommonModelApi):
+
+    """Includes everything from Maps API plus details for each layer in map"""
+
+    class Meta(CommonMetaApi):
+        queryset = Map.objects.distinct().order_by('-date')
+        if settings.RESOURCE_PUBLISHING:
+            queryset = queryset.filter(is_published=True)
+        resource_name = 'maplayers'
+
+    def dehydrate(self, bundle):
+        map_id = bundle.data['id']
+        layers = []
+        for maplayerObj in MapLayer.objects.filter(map_id=map_id):
+            layerObj = Layer.objects.filter(typename=maplayerObj.name)[0]
+            layer = maplayerObj.layer_config()
+            layer['id'] = layerObj.id
+            layers.append(layer)
+        bundle.data['layers'] = layers
+        return bundle
 
 
 class DocumentResource(CommonModelApi):
