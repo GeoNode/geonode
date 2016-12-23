@@ -264,6 +264,14 @@ class Layer(ResourceBase):
     def geogig_enabled(self):
         return (len(self.link_set.geogig()) > 0)
 
+    @property
+    def geogig_link(self):
+        # check to see if this layer is backed by geogig
+        if(self.geogig_enabled):
+            # get the clone link 
+            return getattr(self.link_set.filter(name__icontains='clone in geogig').first(), 'url', None)
+        return None
+
 
 class LayerStyles(models.Model):
     layer = models.ForeignKey(Layer)

@@ -536,7 +536,7 @@ class LayerResource(CommonModelApi):
 
     """Layer API"""
 
-    geogig_enabled = fields.BooleanField(attribute='geogig_enabled', readonly=True)
+    geogig_link = fields.CharField(attribute='geogig_link', readonly=True, null=True)
 
     class Meta(CommonMetaApi):
         queryset = Layer.objects.distinct().order_by('-date')
@@ -561,7 +561,7 @@ class LayerResource(CommonModelApi):
             'thumbnail_url',
             'detail_url',
             'rating',
-            'geogig_enabled',
+            'geogig_link',
         ]
 
 
