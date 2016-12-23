@@ -163,6 +163,9 @@ The library to use for display preview images of layers.  The library choices ar
 
 * ``"leaflet"``
 * ``"geoext"``
+* ``"react"``
+
+More instructions can be found `here<https://github.com/GeoNode/geonode-client/blob/master/README.md>`
 
 OGC_SERVER
 ----------
