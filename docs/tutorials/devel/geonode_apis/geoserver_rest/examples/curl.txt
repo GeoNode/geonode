@@ -4,8 +4,8 @@ cURL
 ====
 
 The examples in this section use `cURL <http://curl.haxx.se/>`_, a command line tool for executing HTTP requests and transferring files, to generate requests to GeoServer's REST interface. Although the examples are based on cURL, they could be adapted for any HTTP-capable tool or library.
-Please be aware, that cURL acts not entirely the same as a web-browser. In contrast to Mozilla Firefox or Google Chrome cURL will not escape special characters in your request-string automatically. To make sure, that your requests can be processed correctly, make sure, that characters like paranthesis, commas and the like are escaped before sending them via cURL.
-If you use libcurl in PHP 5.5 or newer you can prepare the url-string using the function curl_escape. In older versions of PHP hmlspecialchars should do the job also.
+Please be aware that cURL doesn't act exactly the same as a web browser. In contrast to Mozilla Firefox or Google Chrome, cURL will not escape special characters in your request string automatically. To make sure, that your requests can be processed correctly, make sure, that characters like parenthesis, commas and the like are escaped before sending them via cURL.
+If you use libcurl in PHP 5.5 or newer you can prepare the URL-string using the function curl_escape. In older versions of PHP htmlspecialchars should do the job also.
 
 .. todo::
 
@@ -77,7 +77,7 @@ This shows that the workspace can contain "``dataStores``" (for :ref:`vector dat
 Uploading a shapefile
 ---------------------
 
-In this example a new store will be created by uploading a shapefile.
+In this example, a new store will be created by uploading a shapefile.
 
 The following request uploads a zipped shapefile named :download:`roads.zip <resources/shapefiles/roads.zip>` and creates a new store named ``roads``.
 
@@ -230,7 +230,7 @@ If executed correctly, the response should contain the following::
 
   < HTTP/1.1 200 OK
 
-The SLD itself can be downloaded through a a GET request:
+The SLD itself can be downloaded through a GET request:
 
 .. code-block:: console
 
@@ -304,7 +304,7 @@ And finally apply that style to the layer. Note the use of the ``<workspace>`` t
 Adding a PostGIS database
 -------------------------
 
-In this example a PostGIS database named ``nyc`` will be added as a new store.
+In this example, a PostGIS database named ``nyc`` will be added as a new store.
 
 .. warning:: This section assumes that a PostGIS database named ``nyc`` is present on the local system and is accessible by the user ``bob``.
 
@@ -376,7 +376,7 @@ The response should look like the following:
 Adding a PostGIS table
 ----------------------
 
-In this example a table from the PostGIS database created in the previous example will be added as a featuretypes.
+In this example, a table from the PostGIS database created in the previous example will be added as a featuretype.
 
 .. warning:: This example assumes the table has already been created and the ``tiger_roads`` Layer deleted in case you have executed the previous steps.
 
@@ -460,7 +460,7 @@ Creating a layer group
         
         $ curl -v -u admin:geoserver -XPOST -H "Content-type: text/xml" -d "<featureType><name>poly_landmarks</name></featureType>" http://localhost/geoserver/rest/workspaces/acme/datastores/nyc/featuretypes
 
-In this example a layer group will be created, based on layers that already exist on the server.
+In this example, a layer group will be created, based on layers that already exist on the server.
 
 Create a new text file and add the following content to it. This file will represent the definition of the new layer group. Save the file as :file:`nycLayerGroup.xml`.
 
@@ -658,7 +658,7 @@ The image mosaic index structure can be retrieved using something like:
 
    curl -v -u admin:geoserver -XGET "http://localhost/geoserver/rest/workspaces/topp/coveragestores/polyphemus-v1/coverages/NO2/index.xml"
 
-which will result in the following:
+Which will result in the following:
 
 .. code-block:: json
 
@@ -819,7 +819,7 @@ Once done you can get the list of coverages/granules available on that store.
 
    curl -v -u admin:geoserver -XGET "http://localhost/geoserver/rest/workspaces/topp/coveragestores/empty/coverages.xml?list=all"
 
-which will result in the following:
+Which will result in the following:
 
 .. code-block:: json
 

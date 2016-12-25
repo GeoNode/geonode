@@ -146,4 +146,4 @@ You should write the following (in a single line, here it's reported formatted o
   AXIS["Northing", NORTH], 
   AUTHORITY["EPSG","3003"]]
 
-The definition has been changed in two places, the **TOWGS84** paramerers, and the Datum code, ``AUTHORITY["EPSG","4265"]``, has been removed. 
+The definition has been changed in two places: the **TOWGS84** parameters, and the Datum code, ``AUTHORITY["EPSG","4265"]``, have been removed.

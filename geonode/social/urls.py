@@ -19,6 +19,10 @@
 #########################################################################
 
 from django.conf.urls import patterns, url
-from geonode.social.views import RecentActivity
+from geonode.social.views import RecentActivity, UserActivity
 
-urlpatterns = patterns('', url(r'^recent-activity$', RecentActivity.as_view(), name='recent-activity'),)
+urlpatterns = patterns('',
+                       url(r'^recent-activity$',
+                           RecentActivity.as_view(), name='recent-activity'),
+                       url(r'^user-activity/(?P<actor>[^/]*)$',
+                           UserActivity.as_view(), name='user-activity'),)

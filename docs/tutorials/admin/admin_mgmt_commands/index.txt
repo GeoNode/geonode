@@ -16,7 +16,7 @@ importlayers
 
 Imports a file or folder with geospatial files to GeoNode.
 
-It supports data in Shapefile and GeoTiff format. It also picks up the styles if a ``.sld`` file is present.
+It supports data in Shapefile and GeoTIFF format. It also picks up the styles if a ``.sld`` file is present.
 
 Usage::
 

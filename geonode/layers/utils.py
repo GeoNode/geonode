@@ -370,12 +370,17 @@ def extract_tarfile(upload_file, extension='.shp', tempdir=None):
 
 
 def file_upload(filename, name=None, user=None, title=None, abstract=None,
-                keywords=[], category=None, regions=[], date=None,
+                keywords=None, category=None, regions=None, date=None,
                 skip=True, overwrite=False, charset='UTF-8',
                 metadata_uploaded_preserve=False):
     """Saves a layer in GeoNode asking as little information as possible.
        Only filename is required, user and title are optional.
     """
+    if keywords is None:
+        keywords = []
+    if regions is None:
+        regions = []
+
     # Get a valid user
     theuser = get_valid_user(user)
 

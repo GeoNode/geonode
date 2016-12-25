@@ -28,6 +28,7 @@ You will know how to:
 .. toctree::
     :hidden:
 
+    geoserver_geonode_security/index
     admin_panel/index
     admin_mgmt_commands/index
     csw_settings/index
@@ -38,6 +39,10 @@ You will know how to:
     more_on_security_and_permissions/index
     loading_data_into_geonode/index
     s3_config/index
+    backup_restore/index
+
+:ref:`geoserver_geonode_aa`
+    GeoNode interacts with GeoServer through a customized security mechanism. This section explains with more details how GeoNode and GeoServer Security works.
 
 :ref:`admin_panel`
     GeoNode has an administration panel based on the Django admin which can be used to do some database operations. Although most of the operations can and should be done through the normal GeoNode interface, the admin panel provides a quick overview and management tool over the database.
@@ -66,7 +71,10 @@ You will know how to:
     First of all it will be shown how a user can be created and what permissions he can have. Secondly we will take a closer look on to layers, maps and documents and the different opportunities you have in order to ban certain users from viewing or editing your data.
 
 :ref:`data`
-    This module will walk you through the various options available to load data into your GeoNode from GeoServer, on the command-line or programatically. You can choose from among these techniques depending on what kind of data you have and how you have your geonode setup.
+    This module will walk you through the various options available to load data into your GeoNode from GeoServer, on the command-line or programmatically. You can choose from among these techniques depending on what kind of data you have and how you have your geonode setup.
 
 :ref:`s3_config`
     This section will show you how to configure your GeoNode instance to utilize an Amazon S3 Bucket for your site's static and media files.
+
+:ref:`backup_restore_geonode`
+    How to perform a full backup / restore of GeoNode and GeoServer catalogs and how to migrate data. Customization backup / restore fixtures and data manglers.

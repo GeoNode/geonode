@@ -11,7 +11,7 @@ At the end of this section you will master all the GeoNode sections and entities
 You will know how to:
 
 1. Manage users accounts and how to modify them.
-2. Use and manage the different GeoNode basic resouces.
+2. Use and manage the different GeoNode basic resources.
 3. Use the GeoNode searching tools to find your resources.
 4. Manage Layers and Maps, update the styles and publish them.
 5. Load datasets into GeoNode and keep them synchronized with GeoServer.

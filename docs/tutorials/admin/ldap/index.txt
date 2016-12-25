@@ -7,7 +7,7 @@ LDAP configuration
 Library Dependencies
 ====================
 
-LDAP support requires ldap devel libraries
+LDAP support requires LDAP development libraries
 
 **Centos/RHEL**
 

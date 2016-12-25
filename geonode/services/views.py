@@ -57,7 +57,7 @@ from geonode.utils import bbox_to_wkt
 from geonode.services.forms import CreateServiceForm, ServiceForm
 from geonode.utils import mercator_to_llbbox
 from geonode.layers.utils import create_thumbnail
-from geonode.geoserver.helpers import set_attributes
+from geonode.geoserver.helpers import set_attributes_from_geoserver
 from geonode.base.models import Link
 
 logger = logging.getLogger("geonode.core.layers.views")
@@ -655,7 +655,7 @@ def _register_indexed_layers(service, wms=None, verbosity=False):
                 saved_layer.save()
                 saved_layer.set_default_permissions()
                 saved_layer.keywords.add(*keywords)
-                set_attributes(saved_layer)
+                set_attributes_from_geoserver(saved_layer)
 
                 service_layer, created = ServiceLayer.objects.get_or_create(
                     typename=wms_layer.name,
@@ -947,10 +947,12 @@ def _process_arcgis_service(arcserver, name, owner=None, parent=None):
     return return_dict
 
 
-def _process_arcgis_folder(folder, name, services=[], owner=None, parent=None):
+def _process_arcgis_folder(folder, name, services=None, owner=None, parent=None):
     """
     Iterate through folders and services in an ArcGIS REST service folder
     """
+    if services is None:
+        services = []
     for service in folder.services:
         return_dict = {}
         if not isinstance(service, ArcMapService):

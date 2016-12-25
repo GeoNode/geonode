@@ -6,7 +6,7 @@
 Adding base types
 =================
 
-This section explain how to add some of the base data types into GeoServer. As an example we will learn how to insert a ShapeFile and GeoTIFF into GeoServer, as well as how to import a Shapefile into PostGIS and then publish it from there.
+This section explain how to add some of the base data types into GeoServer. As an example we will learn how to insert a shapefile and GeoTIFF into GeoServer, as well as how to import a Shapefile into PostGIS and then publish it from there.
 
 What you will learn
 -------------------

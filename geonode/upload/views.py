@@ -120,9 +120,11 @@ class JSONResponse(HttpResponse):
 
     def __init__(self,
                  obj='',
-                 json_opts={},
+                 json_opts=None,
                  content_type="application/json", *args, **kwargs):
 
+        if json_opts is None:
+            json_opts = {}
         content = json.dumps(obj, **json_opts)
         super(JSONResponse, self).__init__(content, content_type, *args, **kwargs)
 
@@ -555,6 +557,7 @@ def final_step_view(req, upload_session):
          'success': True
          }
     )
+
 
 _steps = {
     'save': save_step_view,

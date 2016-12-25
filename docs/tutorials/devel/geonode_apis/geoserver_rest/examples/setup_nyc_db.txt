@@ -37,7 +37,7 @@ This small section contains a step-by-step guide for the creation and population
 
         $ psql -d nyc < /tmp/nyc.dump 
 
-#. Test that everything is ok by connecting to the database and listing the tables
+#. Test that everything is OK by connecting to the database and listing the tables
 
     .. code-block:: console
     

@@ -64,7 +64,7 @@ class ContactRole(models.Model):
     """
     ContactRole is an intermediate model to bind Profiles as Contacts to Resources and apply roles.
     """
-    resource = models.ForeignKey('ResourceBase')
+    resource = models.ForeignKey('ResourceBase', blank=True, null=True)
     contact = models.ForeignKey(settings.AUTH_USER_MODEL)
     role = models.CharField(choices=ROLE_VALUES, max_length=255, help_text=_('function performed by the responsible '
                                                                              'party'))
@@ -178,6 +178,19 @@ class RestrictionCodeType(models.Model):
         verbose_name_plural = 'Metadata Restriction Code Types'
 
 
+class Backup(models.Model):
+    identifier = models.CharField(max_length=255, editable=False)
+    name = models.CharField(max_length=100)
+    date = models.DateTimeField(auto_now_add=True, blank=True)
+    description = models.TextField(null=True, blank=True)
+    base_folder = models.CharField(max_length=100)
+    location = models.TextField(null=True, blank=True)
+
+    class Meta:
+        ordering = ("date", )
+        verbose_name_plural = 'Backups'
+
+
 class License(models.Model):
     identifier = models.CharField(max_length=255, editable=False)
     name = models.CharField(max_length=100)
@@ -283,11 +296,11 @@ class _HierarchicalTagManager(_TaggableManager):
         # If str_tags has 0 elements Django actually optimizes that to not do a
         # query.  Malcolm is very smart.
         existing = self.through.tag_model().objects.filter(
-            slug__in=str_tags
+            name__in=str_tags
         )
         tag_objs.update(existing)
 
-        for new_tag in str_tags - set(t.slug for t in existing):
+        for new_tag in str_tags - set(t.name for t in existing):
             tag_objs.add(HierarchicalKeyword.add_root(name=new_tag))
 
         for tag in tag_objs:
@@ -703,15 +716,20 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
             logger.debug('There are no permissions for this object, setting default perms.')
             self.set_default_permissions()
 
+        user = None
         if self.owner:
             user = self.owner
         else:
-            user = ResourceBase.objects.admin_contact().user
+            try:
+                user = ResourceBase.objects.admin_contact().user
+            except:
+                pass
 
-        if self.poc is None:
-            self.poc = user
-        if self.metadata_author is None:
-            self.metadata_author = user
+        if user:
+            if self.poc is None:
+                self.poc = user
+            if self.metadata_author is None:
+                self.metadata_author = user
 
     def maintenance_frequency_title(self):
         return [v for i, v in enumerate(UPDATE_FREQUENCIES) if v[0] == self.maintenance_frequency][0][1].title()
@@ -804,7 +822,7 @@ class Link(models.Model):
         * OGC:WFS: for WFS service links
         * OGC:WCS: for WCS service links
     """
-    resource = models.ForeignKey(ResourceBase)
+    resource = models.ForeignKey(ResourceBase, blank=True, null=True)
     extension = models.CharField(max_length=255, help_text=_('For example "kml"'))
     link_type = models.CharField(max_length=255, choices=[(x, x) for x in LINK_TYPES])
     name = models.CharField(max_length=255, help_text=_('For example "View in Google Earth"'))
@@ -822,6 +840,9 @@ def resourcebase_post_save(instance, *args, **kwargs):
     Used to fill any additional fields after the save.
     Has to be called by the children
     """
+    if not instance.id:
+        return
+
     ResourceBase.objects.filter(id=instance.id).update(
         thumbnail_url=instance.get_thumbnail_url(),
         detail_url=instance.get_absolute_url(),
@@ -843,5 +864,6 @@ def rating_post_save(instance, *args, **kwargs):
     Used to fill the average rating field on OverallRating change.
     """
     ResourceBase.objects.filter(id=instance.object_id).update(rating=instance.rating)
+
 
 signals.post_save.connect(rating_post_save, sender=OverallRating)

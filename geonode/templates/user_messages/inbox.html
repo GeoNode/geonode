@@ -37,3 +37,21 @@
 {% block sidebar %}
 <a href="{% url "message_create" %}" class="btn btn-primary" type="button">{% trans "Create Message" %}</a>
 {% endblock %}
+
+{% block extra_script %}
+<script type="text/javascript">
+$('.message_delete_btn').click(function(event) {
+  form = $(this).parent()[0];
+  $.ajax({
+    type: "POST",
+    url: $(form).attr('action'),
+    data: $(form).serialize(),
+    success: function() {
+      $('#inbox').load(window.location.pathname + ' #inbox');
+      $('#all').load(window.location.pathname + ' #all');
+    }
+  });
+  return false;
+});
+</script>
+{% endblock extra_script %}

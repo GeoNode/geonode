@@ -1,15 +1,15 @@
 .. _api:
 
 ==================
-GeoNode ah-hoc API
+GeoNode ad-hoc API
 ==================
 
-GeoNode provides JSON API which currently support the GET method. The API are also used as main serch engine.
+GeoNode provides a JSON API which currently supports the GET method. The API is also used as main search engine.
 
 API endpoints
 -------------
 
-GeoNode provides some enpoints and filtering.
+GeoNode provides some endpoints and filtering.
 
 - *"/api/base"* query on the ResourceBase table and returns combined results of Maps, Layers Documents and Services
 - *"/api/layers"* query the Layer table
@@ -19,14 +19,14 @@ GeoNode provides some enpoints and filtering.
 - *"/api/profiles"* query the Profile table (which is the geonode authentication table)
 - *"/api/categories"* query the Category table
 - *"/api/keywords"* query the Tag table
-- *"/api/featured"* query the ResouceBase table by limiting the items to the ones flagged as "featured" (listed in home page)
+- *"/api/featured"* query the ResourceBase table by limiting the items to the ones flagged as "featured" (listed in home page)
 
 API filtering
 -------------
 
-The API allow filtering by adding django style model filters to the url.
+The API allow filtering by adding Django style model filters to the URL.
 
-As an example, filtering by title corresponds to a url like *"/api/layers?title__contains=grid"*
+As an example, filtering by title corresponds to a URL like *"/api/layers?title__contains=grid"*
 It's also possible to filter by related tables like *"/api/layers?keywords__slug__exact=the-keyword"*
 
 There are many possible filter, refer to the django_ filters guide.
@@ -37,8 +37,8 @@ There are many possible filter, refer to the django_ filters guide.
 API limit and pagination
 ------------------------
 
-It's possible to limite the number of the results returned by the API by adding a limit parameter like *"/api/layers?limit=10"*
-It's also possible to specify an offset so that the firts results will not be returned (together with the limit this makes a pagination logic), *"/api/layers?offset=5"*
+It's possible to limit the number of the results returned by the API by adding a limit parameter like *"/api/layers?limit=10"*
+It's also possible to specify an offset so that the first results will not be returned (together with the limit this makes a pagination logic), *"/api/layers?offset=5"*
 
 So a query like *"/api/layers?offset=5&limit=10"* will return 10 results starting from the 6th found in the database.
 
@@ -56,13 +56,13 @@ Searching with Haystack
 GeoNode is ready to use a complete full text search engine. 
 Note that haystack will be used only on the base, layers, maps and documents API.
 
-Once activated the full text API is reachable by appending "search" to the url, for example *"/api/base/search?limit=0&offset=0"*
+Once activated the full text API is reachable by appending "search" to the URL, for example *"/api/base/search?limit=0&offset=0"*
 
-Although the backend type is not mandatory, we suggest (for simplicity) to use Elastichsearch_:
+Although the backend type is not mandatory, we suggest (for simplicity) to use Elasticsearch_:
 
-.. _Elastichsearch: http://www.elasticsearch.org/
+.. _Elasticsearch: http://www.elasticsearch.org/
 
-To activate the search backend make sure that you have a running instance of Elastichsearch, then uncomment the following line in the geonode settings:
+To activate the search backend make sure that you have a running instance of Elasticsearch, then uncomment the following line in the geonode settings:
 
 https://github.com/GeoNode/geonode/blob/master/geonode/settings.py#L219
 
@@ -70,7 +70,7 @@ And activate the search through the settings at the line:
 
 https://github.com/GeoNode/geonode/blob/master/geonode/settings.py#L607
 
-Also uncomment and correct the address of elastichsearch if needed:
+Also uncomment and correct the address of Elasticsearch if needed:
 https://github.com/GeoNode/geonode/blob/master/geonode/settings.py#L612
 https://github.com/GeoNode/geonode/blob/master/geonode/settings.py#L619
 

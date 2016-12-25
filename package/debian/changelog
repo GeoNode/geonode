@@ -1,3 +1,705 @@
+geonode (2.5.5+thefinal0) xenial; urgency=high
+
+  [ Angelos Tzotsos ]
+  * [bbfd54] Updating release info and some improvements to pavement for Xenial releases
+  * [fe71eb] Fixing travis build
+
+  [ Daniel Berry ]
+  * [4227d8] previous adjustments to the setup.py and MANIFEST.ini were not allowing certain filetypes to be packaged, loading.gif was the most noticeable.
+
+  [ Angelos Tzotsos ]
+
+ -- Angelos Tzotsos <gcpp.kalxas@gmail.com>  Wed, 26 Oct 2016 19:40:03 +0300
+
+geonode (2.5.4+thefinal0) xenial; urgency=high
+
+  [ capooti ]
+  * [e672c6] Set max_length=255 for doc_file and doc_url in document model as per #issue-2285
+
+  [ Tom Kralidis ]
+  * [06ae28] add support for preserving XML metadata with upload (#2250)
+
+  [ Simone Dalmasso ]
+  * [c45a75] make dynamic to work with datastore
+  * [b12b4d] Not make Point a multipoint
+
+  [ Tom Kralidis ]
+  * [c27891] implement ident/status JSON (#2100)
+
+  [ Francesco Bartoli ]
+  * [95f6a6] Fix issue #2368
+
+  [ afabiani ]
+  * [4c4195]  - Issue #2337
+
+  [ Simone Dalmasso ]
+  * [287dbf] use WCS version 2.0.1, no need to do getCapabilities
+  * [85ddd1] update integration tests to reflect the correct mime
+
+  [ Craig Stephenson ]
+  * [54e3ec] Added management command script to change titles of layers on particular maps.
+
+  [ afabiani ]
+  * [9b9795]  - a bit more robust check on db connection
+  * [538f7e]  - more robust with maps without layers or broken configuration
+  * [06bb8c]  - fix wMS test case
+  * [1f8c8f]  - fix WMS test case
+
+  [ Jeffrey Johnson ]
+  * [9b564b] Initial work on hierarchical keywords
+  * [3a7edd] Use a custom tag manager to handle for inserting to the tree
+  * [9cccf3] Adapt the api to work with the h keywords
+  * [1a4f27] minor fix to h keywords
+
+  [ Simone Dalmasso ]
+  * [26e04e] make autocomplete to work with Hierarchical keywords
+  * [ae0c86] make nullable metadata_uploaded_preserve
+  * [9f1c82] revert previous commit, sorry
+
+  [ Francesco Bartoli ]
+  * [0fbe49] Add SSL configuration to docs
+
+  [ kamalhg ]
+  * [3e24eb] updating the condition in line 321
+
+  [ Tom Kralidis ]
+  * [c853c9] remove unsupported ISO property (#2385)
+
+  [ madi ]
+  * [9e2a5b] added a tutorial for installing geonode devmode on centos 7
+  * [0ee4ab] specified centos version
+  * [d42c06] added devmode install on centos to the index
+  * [d39a23] added devinstall centos to the index
+  * [ce5b5e] modified in order to render correctly in the html page
+
+  [ Pedro Dias ]
+  * [3c01ac] Keywords not restricted by type
+
+  [ madi ]
+  * [8ac2a1] added .. code-block:: console
+  * [e1f76a] added newline for readability
+
+  [ Jeffrey Johnson ]
+  * [436a00] further work on hierarchical keywords
+  * [3b5716] fix gruntfile.js syntax error
+  * [004855] use load_h_keywords in search.js
+  * [09dddc] Move h keywords filter to snippet
+  * [28cb22] In progress work on UI in metadata form for hierarchical keywords
+
+  [ Craig Stephenson ]
+  * [e1b42b] Added option to provide a custom date to importlayers management command.
+
+  [ Simone Dalmasso ]
+  * [24f98f] fix bower package name and static imports
+  * [4ed2d9] add select/deselect facilities for h_keywords
+
+  [ Jeffrey Johnson ]
+  * [048d05] in progress work on metadata form saving keywords
+
+  [ Craig Stephenson ]
+  * [329fc4] Explicitly parse a provided importlayers date string into a datetime object.
+
+  [ Simone Dalmasso ]
+  * [dce52e] is tree view.min
+  * [165f10] make keywords to use tags
+
+  [ GeospatialPython.com ]
+  * [7c7da7] Update users-groups.txt
+
+  [ Guillaume SUEUR ]
+  * [9e3619] Update django.po
+
+  [ Tyler Garner ]
+  * [4e8989] Fix bug preventing set_permissions from granting layer perms to AnonymousUsers.
+  * [8972aa] Allow permissions to be set in gs_slurp.
+
+  [ Jeffrey Johnson ]
+  * [863b5a] In progress commits from dev machine
+
+  [ Tom Kralidis ]
+  * [4d01ae] support GM03 metadata
+
+  [ Simone Dalmasso ]
+  * [0d9602] make kw menu collapsible
+  * [d4cb53] select/deselect all children
+
+  [ afabiani ]
+  * [c4e7c8]  - Issue #2402
+  * [a4f667]  - Issue #2403
+
+  [ Tom Kralidis ]
+  * [85f9d7] update deprecated Django argument
+
+  [ afabiani ]
+  * [518f54]  - relax few base library dependencies
+
+  [ Tom Kralidis ]
+  * [cc0cb7] add CSW code example
+
+  [ Simone Dalmasso ]
+  * [d0d22a] fix the datastore for the geomanager
+  * [3e5604] fix the datastore for the geomanager
+
+  [ Jeffrey Johnson ]
+  * [0b046d] Some minor changes to development environment setup docs
+  * [04cf14] Getting rid of duplicate dev mode installation instructions.
+
+  [ afabiani ]
+  * [a0fe13]  - Merging Indexes for issue: Getting rid of duplicate dev mode installation instructions.
+
+  [ David Alda Fernandez de Lezea ]
+  * [f01ad2] Commit Message
+  * [5a4399] wmsStore added as countable layer
+  * [964f43] wmsStore added as countable layer
+  * [ec1b6b] wmsStore added as countable layer
+
+  [ Simone Dalmasso ]
+  * [c858a0] remove GeoNode.js
+  * [8b3f87] bind shapely to 1.3.1
+
+  [ jveselka ]
+  * [657340] Modal user menu Help link fix. Changed to Django template tag.
+
+  [ David Alda Fernandez de Lezea ]
+  * [2b2294] wmsStore added as countable layer
+  * [4d69d7] wmsStore added as countable layer
+
+  [ afabiani ]
+  * [848789]  - Issue #2417
+
+  [ Tom Kralidis ]
+  * [3ff5df] remove unused fields (#2422)
+
+  [ Jeffrey Johnson ]
+  * [b0716f] add zlib1g-dev to Dockerfile
+
+  [ afabiani ]
+  * [e3f874]  - updated db port and password on win bin installer documentation
+
+  [ Tom Kralidis ]
+  * [7143d5] add startIndex and count parameter bindings to OpenSearch Description
+
+  [ Darin ]
+  * [9483d9] set conditional for default map crs
+
+  [ nathanhilbert ]
+  * [573c51] old win-installer script clean up
+
+  [ Simone Dalmasso ]
+  * [e441c2] point quick install to the stable package
+
+  [ Luiz Vital ]
+  * [b95cf7] Fixes some i18n issues:
+
+  [ Davi Custodio ]
+  * [2f1f45] implementation of a exclusive page that display metadata detail for layers, maps and documents
+
+  [ Ariel Núñez ]
+  * [e48ce4] Fixed typo in origin year
+
+  [ karakostis ]
+  * [02706e] fix #2381
+  * [11dfa9] flexibly port for dev geoserver
+
+  [ Tom Kralidis ]
+  * [9f8320] bump OWSLib and pycsw
+
+  [ afabiani ]
+  * [0fe791]  - Improvements for gnip #2211
+
+  [ Daniel Berry ]
+  * [8c4620] osgeo-incubation, Added Copyright Headers to all python files
+  * [b9f3fd] pep8 fix
+  * [cdd50a] adjusted copyright
+
+  [ capooti ]
+  * [0f9c7d] Updated download link for py2exe as reported by #2459
+
+  [ Tom Kralidis ]
+  * [12d88b] catch AttributeError on metadata with no date (#2469)
+
+  [ jice ]
+  * [f25b6d] syncing with tsfx
+
+  [ Daniel Berry ]
+  * [9677b8] osgeo-incubation, Added Copyright Headers to all python files
+
+  [ Simone Dalmasso ]
+  * [a647c5] filter categories by is_choice. fixes #2461
+
+  [ afabiani ]
+  * [fc4085]  - Issue #2430 - Update to DJango 1.8.7
+
+  [ root ]
+  * [1b2ed5]  - Fix Headers CopyRight
+  * [a39176]  - Fix migration issue with DJango 1.8.7
+
+  [ Simone Dalmasso ]
+  * [d46d53] pass is_layer in the run as extra param
+
+  [ Jeffrey Johnson ]
+  * [24d618] Remove references to specific VM for tutorials
+
+  [ etj ]
+  * [81bf7a] Issue #2453 Add metadata export as ISO+XSL
+
+  [ Simone Dalmasso ]
+  * [6bbed8] update doc for customise look and feel
+
+  [ Angelos Tzotsos ]
+  * [3f7d2c] Updated license information in readme files
+
+  [ pjdufour ]
+  * [991f8e] moved urls from inside pavement code into yaml file
+
+  [ Jeffrey Johnson ]
+  * [1c0aa7] Update README
+  * [14ec94] Update README
+
+  [ Tom Kralidis ]
+  * [5df687] update ISO template link gmd:name values to be actionable
+
+  [ etj ]
+  * [854e7e] #2453: Add README file to metadataxsl contrib app.
+
+  [ mikefedak ]
+  * [0ba323] Clarify origin of datastore identifier.
+
+  [ etj ]
+  * [3a70fe] #2488: Initial db migrations
+
+  [ Simone Dalmasso ]
+  * [89e8c1] explain better the redeploy site commands
+
+  [ etj ]
+  * [d99771] Upgrade django-nose version for Django 1.8 compatibility (django-nose/django-nose#202)
+  * [17673c] Fix fixtures list for tests.
+
+  [ Sara Safavi ]
+  * [ea9e5d] Use DjangoJSONEncoder when we need to handle Decimal types
+
+  [ etj ]
+  * [c747a8] #2495: Add icons associated to TopicCategories
+
+  [ Sara Safavi ]
+  * [b6bcb7] use absolute path to data file to avoid IOError
+
+  [ Tom Kralidis ]
+  * [613252] bump pycsw to 2.0.0-alpha1
+
+  [ Sara Safavi ]
+  * [293cfe] Update dev install instructions link
+  * [2e682d] 'null' has no effect on a ManyToManyField; removed from model & migration
+
+  [ travis ]
+  * [b9b566] Check for existing thumbs before overwriting
+
+  [ Sara Safavi ]
+  * [fdfc99] Satisfy Django with OneToOneField instead of FK where unique=True
+  * [71afe5] Removing fake-initial auth migration in sync to avoid errors
+  * [334bc5] Replace deprecated 'syncdb' with 'migrate'
+
+  [ Daniel Berry ]
+  * [1cb605] geonode/js/upload/cookie.js is no longer present in static direcotry. removing script reference from layer_upload.html.
+  * [bc5829] removed mosaic entry in basename variable of doGeoGigToggle
+  * [11319a] added mapbox api basemaps functionality
+
+  [ Asif Saifuddin Auvi ]
+  * [b09b38] updated catalog urls to 1.8+
+  * [5c681f] updated contrib/favorite urls to 1.8+
+  * [b4dae6] updated contrib/geosites urls to 1.8+
+  * [32920c] updated contrib/metadataxsl urls to 1.8+
+
+  [ Antoine ROLLAND ]
+  * [47c660]  set 600px instead of 400 for geoext frame for layers and maps templates
+
+  [ Sara Safavi ]
+  * [483249] update README with database migration step
+  * [f6ffb4] update tutorial's dev install steps
+
+  [ Daniel Berry ]
+  * [9f1991] added additonal api basemaps functionality
+
+  [ capooti ]
+  * [9adcba] Update documentation for the MAPBOX_ACCESS_TOKEN setting
+
+  [ Daniel Berry ]
+  * [87439f] added name to AUTHORS
+  * [e495b3] updated developers documentation for basemap additions
+
+  [ Clarence Davis Jr ]
+  * [a83d0a] Refactor thumbnail files to be stored in the location configured for media storage so that whether uploaded or auto-generated, the locations are consistent when the application is configured for remote storage.
+  * [9f999d] Adds the TIME param to allow thumbnails generated for time enabled layers to include all features.
+
+  [ Daniel Berry ]
+  * [ddd212] added declaration for 256x256 sized tiles, as per recommnedation from mapbox team
+  * [2a437b] added readme and comments to settings.py for the additions for the api_basemaps app
+
+  [ amefad ]
+  * [2e83c4] updated index.txt
+
+  [ Antoine ROLLAND ]
+  * [e7b2c7] added fields to enable vertical scroll in search bar
+
+  [ Simone Dalmasso ]
+  * [ac4400] compile css
+
+  [ Clarence Davis Jr ]
+  * [777d89] Adds support for s3 storage and forces layer uploads to use the FileSystemStorage
+
+  [ Francesco Bartoli ]
+  * [18cb95] Fix issue #2526
+
+  [ Daniel Berry ]
+  * [72f44c] Added LDAP install and configure steps in Admin workshop
+
+  [ Francesco Bartoli ]
+  * [5cb0b2] Add a name to AUTHORS
+  * [aac353] Fill empty value for DATASTORE variable in docs
+
+  [ Artists Team - Cirad ]
+  * [154d25] Added an autocomplete template and additions to enable search by catalogue
+  * [023419] Created template and edited files to enable .txt and .html formats export for metadata
+
+  [ Daniel Berry ]
+  * [6cb8ba] Fixes admin interface for layers
+  * [bb46d0] dj_database_url formats the port as an integer, whereas gsconfig is wanting a string for creating the feature store.
+
+  [ Sara Safavi ]
+  * [a55949] addition to previous patch: format port as str
+
+  [ Simone Dalmasso ]
+  * [2489ac] bump some packages version
+
+  [ afabiani ]
+  * [25c5e2]  - Restoring missing parts of the docs
+  * [e5e270]  - update ext pakages versions
+
+  [ Daniel Berry ]
+  * [be2f33] Lock in version of gsconfig
+  * [158e61] gsconfig now utilizes an attribution dictionary and bumped to newest version
+
+  [ afabiani ]
+  * [420e82]  - update geonode exts version in order to fix pavement sync db
+
+  [ Germán Larraín ]
+  * [4cd274] README: fix syntax error
+
+  [ lukerees ]
+  * [98a924] ol3-preview
+  * [1304fd] keep geoext as default
+  * [ce12f7] Missing quotation mark
+  * [0a8531] Add support for EPSG:4326
+
+  [ Simone Dalmasso ]
+  * [658c66] bump user-messages
+  * [c0194b] don't assume 'geoserver' in style url management
+
+  [ lukerees ]
+  * [9bb138] tiles_url should be a XYZ source
+
+  [ Daniel Berry ]
+  * [6dd32a] set_metadata returns four variables, which was causing an error of too many values to unpack
+
+  [ Sara Safavi ]
+  * [cc73d9] 'name' no longer a ContentType field in Django 1.8+
+
+  [ travis ]
+  * [4e8e5a] Added handling of postgres backed geogig stores
+
+  [ Darin ]
+  * [1bf3be] fix layer style dropdown values
+
+  [ travis ]
+  * [b161a6] Default to public schema if not defined
+
+  [ Daniel Berry ]
+  * [b5ae44] added exception handler for when multiple legends are returned
+
+  [ Simone Dalmasso ]
+  * [35ada4] just update the tiles link url if needed, this will respect any changes to the url made by other apps like contrib.mp
+
+  [ Sara Safavi ]
+  * [c0550b] register models for actstream 0.5+ / Django 1.8+
+
+  [ Simone Dalmasso ]
+  * [fab91a] re enable publish as layer group
+
+  [ Daniel Berry ]
+  * [038607] adjusted text and html metadata links in the templates for documents and layers
+
+  [ Cristian Zamar ]
+  * [c4f124] Changes in manual installation docs (#2561)
+
+  [ Simone Dalmasso ]
+  * [22f2fa] fix layer group endpoint
+
+  [ Sara Safavi ]
+  * [25445d] fix for port changes: can't concatenate str & int
+  * [404b57] check if layerfile_set exists
+
+  [ travis ]
+  * [cfbafa] Refactor to align with updated PG Geogig plugin: calls the plugin only to create the geogig repo, and calls gsconfig to create the datastore
+
+  [ Clarence Davis Jr ]
+  * [303827] fix client/server handling for multi-file upload/import by storing the upload id in the session
+
+  [ Sasha Hart ]
+  * [123b3a] use .get explicitly instead of .all().filter(...)[0]
+  * [3b6781] use elif with mutually exclusive comparisons
+  * [c24de5] Invalidate layer in GeoWebCache after style_update PUT/POST
+
+  [ Sara Safavi ]
+  * [459bc9] send content-type:text/xml header
+  * [1e9e1f] use str.join() properly
+  * [c54f25] fix status code check
+  * [4012b3] update url for cache refresh
+
+  [ Clarence Davis Jr ]
+  * [c83763] prevent auto redirect when additional information is required.
+
+  [ Sara Safavi ]
+  * [d6466e] bump gsconfig to 1.0.6
+
+  [ afabiani ]
+  * [cc104a]  - Paver setup_geoserver using the new 2.9.x
+  * [ea2b29]  - remove layer_is FK constraints from layer_styles migrations
+
+  [ travis ]
+  * [75b9d7] Added documentation for configuring an AWS S3 Bucket with GeoNode
+
+  [ Alessio Fabiani ]
+  * [3b1cd7]  - test travis script with Java 8 (#2584)
+
+  [ eg-novelt ]
+  * [5dd773] Adding instructions to add windows dependencies
+  * [73d81d] Adding gdal environment variables
+  * [ca7e67] Update README
+  * [1ace93] Update README
+  * [32e3c7] Update README
+
+  [ Sara Safavi ]
+  * [ea2302] Revert " - remove layer_is FK constraints from layer_styles migrations"
+
+  [ Sasha Hart ]
+  * [38f902] fix broken og:image link in meta tag in head
+  * [a84f16] fix exception during renders of admin forms using autocomplete_light
+
+  [ Darin ]
+  * [6617e0] change LayerStyles related name to snake_case
+
+  [ Jeffrey Johnson ]
+  * [3939a2] Create new CONTRIBUTING file
+
+  [ Sara Safavi ]
+  * [eec600] restructure get_context_resourcetype for clarity
+  * [1628e6] add profiles & groups autocomplete config
+  * [83bf9a] Groups have titles, not names
+
+  [ Ariel Núñez ]
+  * [8791e4] Docker for development (#2593)
+  * [69e5b3] Use geonode/django in celery too (#2594)
+  * [1300d0] make test works in docker (#2595)
+
+  [ Sara Safavi ]
+  * [146eeb] Add context-specific search to /groups page
+  * [9a2ddc] groups do not have date or popular_count fields
+  * [3452f0] let custom search_content template work for both profiles & groups
+  * [37ad5f] Custom sort filters depending on data type
+  * [5bbc5a] Add context-specific search (filtering by username) within /people
+  * [90f176] if searching from /people context, use username instead of title
+
+  [ Jeffrey Johnson ]
+  * [fdd431] url fix in README
+
+  [ Sara Safavi ]
+  * [7d33db] add name to AUTHORS
+
+  [ Ariel Núñez ]
+  * [a3f268] geonode-user-accounts 1.0.13 (#2603)
+
+  [ Daniel Berry ]
+  * [edb11a] Fix for issue 2599. The issue was that apache was allowing directory browsing. Added the options directive to remove it from the current list of options enforced for that directory.
+
+  [ Ariel Núñez ]
+  * [9942a6] Use environment variables in settings.py (#2596)
+  * [ce44b4] Missing migrations (#2604)
+  * [8d5a83] Updated readme for docker (#2607)
+
+  [ Jorge Martinez ]
+  * [7c7442] Using docker images from hub
+
+  [ afabiani ]
+  * [7f9d37]  - (issue #2070) Layer name cannot be a style name already on Geoserver
+  * [781fc7]  - (issue #2075) Add lxml back into paver win_install_deps
+
+  [ Nicolas Dufrane ]
+  * [f59fc0] adding missing trans for #1769
+
+  [ julien collaer ]
+  * [adf68d] sycing tsf
+
+  [ Simone Dalmasso ]
+  * [dd0ff0] use layer instance to revoke layer permissions, fixes #2531 (#2614)
+  * [874041] include data files in downstream installations should fix #2452 (#2615)
+
+  [ Ismail Sunni ]
+  * [fc60a8] - Modify some settings and code to make geonode able to use QGIS Server as backend. - Add some views, templates and resources to make geonode able to use QGIS Server as backend. - Add sample setting to use QGIS Server backend.
+
+  [ Simone Dalmasso ]
+  * [28ae92] should fix #2464 (#2616)
+
+  [ pjdufour ]
+  * [b4ef9b] Fixed migrations, settings.py, and pavement for development
+  * [528c8a] pavement: moved migrate_apps to yaml
+
+  [ Simone Dalmasso ]
+  * [7f31e7] fix #1718
+  * [4ed20f] make debug default to true
+
+  [ julien collaer ]
+  * [63f885] sycing for #1769, after #2612 merge
+
+  [ Simone Dalmasso ]
+  * [10c051] fix upload issue, check if the js property exists first
+  * [0bbfc8] hierarchical tags support
+  * [7733aa] fix indentation
+  * [77f99a] add freeboard to requirements.txt
+  * [3355bd] bump taggit
+
+  [ Ariel Núñez ]
+  * [628959] Don't pin versions in setup.py use >= or <=
+
+  [ Ariel Nuñez ]
+  * [c24770] Pin versions in requirements.txt
+
+  [ Daniel Berry ]
+  * [894ec1] Set to 2.5 final version for release
+
+  [ Simone Dalmasso ]
+  * [a82f5e] update keywords integration test
+
+  [ Jeffrey Johnson ]
+  * [3aec8a] fix filename
+  * [3efc3b] we dont use submodules anymore
+
+  [ amefad ]
+  * [a366b8] Updated instruction for configure ssl on geonode: with version 2.4 some path are changed (#2571)
+
+  [ Ariel Nuñez ]
+  * [f09453] 2.5.0 is out, move master branch to 2.5.1-dev
+
+  [ Ariel Núñez ]
+  * [45ee6e] Delete fig.yml
+  * [e76d5a] Do not flake8 migrations
+  * [e8cacd] python-properties is now usually pre-installed in Ubuntu
+
+  [ Christian Mayer ]
+  * [356758] Fix typos in installation dev docs
+
+  [ Erik Merkle ]
+  * [1d0ae8] Fix GeoGig stats/logs URL for Layer info page. (#2633)
+
+  [ Ariel Núñez ]
+  * [0b2797] Do not pin versions on setup.py
+
+  [ Ariel Nuñez ]
+  * [16bd03] Upgrade django mptt
+  * [aff43c] Use a pattern for adding package data, fixes missing fixtures on packages
+  * [626990] Set development version for 2.5.3
+
+  [ Francesco Bartoli ]
+  * [5e4e5d] Add volume data container to geoserver
+
+  [ Craig Stephenson ]
+  * [6609a4] Exclude remote services layers from map download feature.
+
+  [ travislbrundage ]
+  * [287a84] Make download links open in new tab (#2642)
+
+  [ Erik Merkle ]
+  * [6bc231] Fix race condition during Raster upload/import
+
+  [ Francesco Bartoli ]
+  * [6b24bf] Add variables for building base_url
+
+  [ Ariel Núñez ]
+  * [545564] local_settings.py should be called only once
+
+  [ Way Barrios ]
+  * [d588d5] Provide defaults for optional ogc_server_settings (#2647)
+
+  [ Ariel Nuñez ]
+  * [6cf89e] Move master to 2.5.4
+
+  [ travis ]
+  * [b3068d] Minor text fix for profile update
+
+  [ Etienne Trimaille ]
+  * [9b6329] fix QGIS path log when using qgis server backend (#2648)
+
+  [ travis ]
+  * [1f6578] Bugfix for updating style through UI
+  * [0cfd4d] Clear comment modal after adding comment
+
+  [ Alessio Fabiani ]
+  * [f5f89b] Issue #2401: GNIP: GeoNode Backup and Restore (#2651)
+
+  [ travislbrundage ]
+  * [2856aa] Respond correctly when user removes the last related file for a layer upload (#2660)
+
+  [ Simone Dalmasso ]
+  * [08dd00] bump guardian and manage the anonymous pk internally
+  * [0c78f3] use names instead of slugs for keywords
+
+  [ Daniel Berry ]
+  * [cf14e3] ini file was not an allowed file type for MANIFEST.in. This was causing the settings.ini file to not be included in the package.
+
+  [ travis ]
+  * [12c89c] Fix small bug where {{ repoUrl }} was being used as geogig email due to incorrect input type in HTML
+  * [102584] Fixing missing and broken links to actions on the user's activity page
+
+  [ Angelos Tzotsos ]
+  * [fc5c4e] Updating pycsw to the latest released version 2.0.2
+
+  [ Tom Kralidis ]
+  * [503250] bump pycsw
+
+  [ Alessio Fabiani ]
+  * [6c7115] Update conf.py
+  * [d12d16] Update setup.py
+  * [697398] Update conf.py
+  * [946359] Update conf.py
+  * [203cbb] Update requirements.txt
+  * [1c6446] Update conf.py
+
+  [ afabiani ]
+  * [0fd256]  - Fix the docs
+
+  [ travislbrundage ]
+  * [a6dd4c] Updating Choose Files button to allow user to reupload the same file again without having to use Clear (#2681)
+  * [89224c] Use new UserActivity view (#2680)
+
+  [ Sasha Hart ]
+  * [0ebe41] truncate upload names over length to allow upload (#2671)
+  * [03e242] remove mutable default values for kwargs (#2668)
+
+  [ Jeffrey Johnson ]
+  * [f684cb] first of many docs fixes (#2684)
+
+  [ travis ]
+  * [854fcf] Fix the Resources section on profile detail page to work when no data exists in the category yet
+
+  [ Angelos Tzotsos ]
+  * [99aca2] Incubation documentation fixes (#2687)
+
+  [ travis ]
+  * [962504] Fixed bug breaking Group Activity view
+
+  [ Angelos Tzotsos ]
+
+ -- Angelos Tzotsos <gcpp.kalxas@gmail.com>  Tue, 25 Oct 2016 22:17:23 +0300
+
 geonode (2.4.0+thefinal0) trusty; urgency=high
 
   [ Tom Kralidis ]

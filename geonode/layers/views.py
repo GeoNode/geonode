@@ -63,13 +63,11 @@ from geonode.security.views import _perms_info_json
 from geonode.documents.models import get_related_documents
 from geonode.utils import build_social_links
 from geonode.geoserver.helpers import cascading_delete, gs_catalog
-
-CONTEXT_LOG_FILE = None
+from geonode.geoserver.helpers import ogc_server_settings
 
 if 'geonode.geoserver' in settings.INSTALLED_APPS:
     from geonode.geoserver.helpers import _render_thumbnail
-    from geonode.geoserver.helpers import ogc_server_settings
-    CONTEXT_LOG_FILE = ogc_server_settings.LOG_FILE
+CONTEXT_LOG_FILE = ogc_server_settings.LOG_FILE
 
 logger = logging.getLogger("geonode.layers.views")
 
@@ -318,6 +316,19 @@ def layer_detail(request, layername, template='layers/layer_detail.html'):
         'DEFAULT_MAP_CRS',
         'EPSG:900913')
 
+    if layer.storeType == 'dataStore':
+        links = layer.link_set.download().filter(
+            name__in=settings.DOWNLOAD_FORMATS_VECTOR)
+    else:
+        links = layer.link_set.download().filter(
+            name__in=settings.DOWNLOAD_FORMATS_RASTER)
+    links_view = [item for idx, item in enumerate(links) if
+                  item.url and 'wms' in item.url or 'gwc' in item.url]
+    links_download = [item for idx, item in enumerate(links) if
+                      item.url and 'wms' not in item.url and 'gwc' not in item.url]
+
+    if request.user.has_perm('view_resourcebase', layer.get_self_resource()):
+        context_dict["links"] = links_view
     if request.user.has_perm('download_resourcebase', layer.get_self_resource()):
         if layer.storeType == 'dataStore':
             links = layer.link_set.download().filter(
@@ -325,7 +336,7 @@ def layer_detail(request, layername, template='layers/layer_detail.html'):
         else:
             links = layer.link_set.download().filter(
                 name__in=settings.DOWNLOAD_FORMATS_RASTER)
-        context_dict["links"] = links
+        context_dict["links_download"] = links_download
 
     if settings.SOCIAL_ORIGINS:
         context_dict["social_links"] = build_social_links(request, layer)
@@ -464,11 +475,17 @@ def layer_metadata(request, layername, template='layers/layer_metadata.html'):
         layer_form.fields['poc'].initial = poc.id
         poc_form = ProfileForm(prefix="poc")
         poc_form.hidden = True
+    else:
+        poc_form = ProfileForm(prefix="poc")
+        poc_form.hidden = False
 
     if metadata_author is not None:
         layer_form.fields['metadata_author'].initial = metadata_author.id
         author_form = ProfileForm(prefix="author")
         author_form.hidden = True
+    else:
+        author_form = ProfileForm(prefix="author")
+        author_form.hidden = False
 
     return render_to_response(template, RequestContext(request, {
         "layer": layer,

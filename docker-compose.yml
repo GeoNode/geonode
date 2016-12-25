@@ -17,12 +17,8 @@ services:
       - elasticsearch
       - rabbitmq
     command: django-admin.py runserver 0.0.0.0:8000 --settings=geonode.settings
-    environment:
-      - DATABASE_URL=postgres://postgres:postgres@postgres:5432/postgres
-      - BROKER_URL=amqp://guest:guest@rabbitmq:5672/
-      - DJANGO_SETTINGS_MODULE=geonode.settings
-      - GEOSERVER_BASE_URL="http://geoserver:8080/geoserver/"
-      - ALLOWED_HOSTS=['django',]
+    env_file:
+      - django.env
 
   celery:
     image: geonode/django
@@ -30,14 +26,9 @@ services:
       - rabbitmq
       - postgres
       - elasticsearch
-    command: celery worker --app=geonode.celeryapp:app -B -l INFO
-    environment:
-      - DATABASE_URL=postgres://postgres:postgres@postgres:5432/postgres
-      - BROKER_URL=amqp://guest:guest@rabbitmq:5672/
-      - GEOSERVER_BASE_URL="http://geoserver:8080/geoserver/"
-      - DJANGO_SETTINGS_MODULE=geonode.settings
-      - ALLOWED_HOSTS=['django',]
-      - C_FORCE_ROOT=1
+    command: celery worker --app=geonode.celery_app:app -B -l INFO
+    env_file:
+      - django.env
 
   geoserver:
     image: geonode/geoserver
@@ -45,11 +36,26 @@ services:
       - postgres
     ports:
       - "8080"
+    volumes_from:
+      - data_dir_conf
+    env_file:
+      - geoserver.env
 
   nginx:
-    image: geonode/nginx
+    image: geonode/nginx:geoserver
     links:
       - django
       - geoserver
     ports:
       - "80:80"
+
+  data_dir_conf:
+    image: geonode/geoserver_data
+    container_name: geoserver_data_dir
+    command: /bin/true
+    volumes:
+      - /geoserver_data/data
+
+volumes:
+
+  geoserver_data_dir:

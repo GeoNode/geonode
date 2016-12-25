@@ -1,0 +1,82 @@
+version: '2'
+services:
+
+  #postgres:
+  #  image: postgres
+
+  elasticsearch:
+   image: elasticsearch
+
+  rabbitmq:
+     image: rabbitmq
+
+  django:
+    image: geonode/django
+    build:
+      context: .
+      args:
+        - DOCKER_HOST
+    links:
+      #- postgres
+      - elasticsearch
+      - rabbitmq
+      - geoservices
+    ports:
+      - "8000:8000"
+    command: bash -c 'source /root/.bashrc && django-admin.py migrate --noinput && django-admin.py loaddata sample_admin.json && django-admin.py loaddata geonode/base/fixtures/initial_data.json && django-admin.py runserver 0.0.0.0:8000 --settings=geonode.docker_settings'
+    #entrypoint: /usr/bin/wait-for-postgres postgres
+    #environment:
+      #- DATABASE_URL=postgres://postgres:postgres@postgres:5432/postgres
+      #- BROKER_URL=amqp://guest:guest@rabbitmq:5672/
+      #- DJANGO_SETTINGS_MODULE=geonode.settings
+      #- GEOSERVER_INTERNAL_URL=http://geoservices:8080/geoserver/
+      #- ALLOWED_HOSTS=['django',]
+      #- DOCKER_HOST
+      #- PUBLIC_PORT=8000
+      #- DOCKER_HOST_IP
+      #- DEBUG=True
+    env_file:
+      - ./scripts/docker/env/development/django.env
+
+  celery:
+    image: geonode/django
+    links:
+      - rabbitmq
+      #- postgres
+      - elasticsearch
+    command: celery worker --app=geonode.celery_app:app -B -l INFO
+    #environment:
+      #- DATABASE_URL=postgres://postgres:postgres@postgres:5432/postgres
+      #- BROKER_URL=amqp://guest:guest@rabbitmq:5672/
+      #- GEOSERVER_INTERNAL_URL=http://geoservices:8080/geoserver/
+      #- DJANGO_SETTINGS_MODULE=geonode.settings
+      #- ALLOWED_HOSTS=['django',]
+      #- C_FORCE_ROOT=1
+    env_file:
+      - ./scripts/docker/env/development/django.env
+
+  geoservices:
+    image: geonode/geoserver
+    #links:
+    #  - postgres
+    ports:
+      - "8080:8080"
+    volumes_from:
+      - data_dir_conf
+    #environment:
+      #- DOCKER_HOST
+      #- PUBLIC_PORT=8000
+      #- DOCKER_HOST_IP
+    env_file:
+      - ./scripts/docker/env/development/geoserver.env
+
+  data_dir_conf:
+    image: geonode/geoserver_data
+    container_name: geoserver_data_dir
+    command: /bin/true
+    volumes:
+      - /geoserver_data/data
+
+volumes:
+
+  geoserver_data_dir:

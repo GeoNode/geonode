@@ -34,11 +34,11 @@ CATALOGUE
 A dict with the following keys:
 
 * ENGINE: The CSW backend (default is ``geonode.catalogue.backends.pycsw_local``)
-* URL: The FULLY QUALIFIED base url to the CSW instance for this GeoNode
+* URL: The FULLY QUALIFIED base URL to the CSW instance for this GeoNode
 * USERNAME: login credentials (if required)
 * PASSWORD: login credentials (if required)
 
-pycsw is the default CSW enabled in GeoNode.  pycsw configuration directives
+pycsw is the default CSW enabled in GeoNode. pycsw configuration directives
 are managed in the PYCSW entry.
 
 PYCSW
@@ -171,7 +171,7 @@ OGC_SERVER
 ----------
 Default: ``{}`` (Empty dictionary)
 
-A dictionary of OGC servers and and their options.  The main
+A dictionary of OGC servers and their options.  The main
 server should be listed in the 'default' key.  If there is no 'default'
 key or if the ``OGC_SERVER`` setting does not exist Geonode will raise
 an Improperly Configured exception.  Below is an example of the ``OGC_SERVER``
@@ -242,14 +242,14 @@ GEONODE_SECURITY_ENABLED
 ........................
 Default: ``True``
 
-A boolean that represents whether Geonode's security application is enabled.
+A boolean that represents whether GeoNode's security application is enabled.
 
 LOCATION
 ........
 Default: ``"http://localhost:8080/geoserver/"``
 
 A base URL from which GeoNode can construct OGC service URLs.
-If using Geoserver you can determine this by
+If using GeoServer you can determine this by
 visiting the GeoServer administration home page without the
 /web/ at the end.  For example, if your GeoServer administration app is at
 http://example.com/geoserver/web/, your server's location is http://example.com/geoserver.
@@ -258,7 +258,7 @@ MAPFISH_PRINT_ENABLED
 .....................
 Default: ``True``
 
-A boolean that represents whether the Mapfish printing extension is enabled on the server.
+A boolean that represents whether the MapFish printing extension is enabled on the server.
 
 PASSWORD
 ........
@@ -278,7 +278,7 @@ PUBLIC_LOCATION
 Default: ``"http://localhost:8080/geoserver/"``
 
 The URL used to in most public requests from Geonode.  This settings allows a user to write to one OGC server (the LOCATION setting)
-and read from a seperate server or the PUBLIC_LOCATION.
+and read from a separate server or the PUBLIC_LOCATION.
 
 USER
 ....
@@ -330,7 +330,7 @@ PROXY_URL
 ---------
 Default ``/proxy/?url=``
 
-The url to a proxy that will be used when making client-side requests in GeoNode.  By default, the
+The URL to a proxy that will be used when making client-side requests in GeoNode.  By default, the
 internal GeoNode proxy is used but administrators may favor using their own, less restrictive proxies.
 
 Search settings
@@ -349,7 +349,7 @@ AUTH_EXEMPT_URLS
 ----------------
 Default: ``()`` (Empty tuple)
 
-A tuple of url patterns that the user can visit without being authenticated.
+A tuple of URL patterns that the user can visit without being authenticated.
 This setting has no effect if ``LOCKDOWN_GEONODE`` is not True.  For example,
 ``AUTH_EXEMPT_URLS = ('/maps',)`` will allow unauthenticated users to
 browse maps.
@@ -378,7 +378,7 @@ SOCIAL_BUTTONS
 --------------
 Default: ``True``
 
-A boolean which specifies whether the social media icons and javascript should be rendered in GeoNode.
+A boolean which specifies whether the social media icons and JavaScript should be rendered in GeoNode.
 
 SOCIAL_ORIGINS
 --------------
@@ -402,7 +402,7 @@ Default::
         "css_class":"gp"
     }]
 
-A list of dictionaries that is used to generate the social links displayed in the Share tab.  For each origin, the name and and url format parameters are replaced by the actual values of the ResourceBase object (layer, map, document).
+A list of dictionaries that is used to generate the social links displayed in the Share tab.  For each origin, the name and URL format parameters are replaced by the actual values of the ResourceBase object (layer, map, document).
 
 CKAN_ORIGINS
 --------------
@@ -414,7 +414,7 @@ Default::
         "css_class":"hdx"
     }]
 
-A list of dictionaries that is used to generate the links to CKAN instances displayed in the Share tab.  For each origin, the name and and abstract format parameters are replaced by the actual values of the ResourceBase object (layer, map, document).  This is not enabled by default.  To enabled, uncomment the following line: SOCIAL_ORIGINS.extend(CKAN_ORIGINS).
+A list of dictionaries that is used to generate the links to CKAN instances displayed in the Share tab.  For each origin, the name and abstract format parameters are replaced by the actual values of the ResourceBase object (layer, map, document).  This is not enabled by default.  To enabled, uncomment the following line: SOCIAL_ORIGINS.extend(CKAN_ORIGINS).
 
 TWITTER_CARD
 ------------
@@ -433,7 +433,7 @@ TWITTER_HASHTAGS
 
 Default:: ``['geonode']``
 
-A list that specifies the hastags to use when sharing a resource when clicking on a social link.
+A list that specifies the hashtags to use when sharing a resource when clicking on a social link.
 
 OPENGRAPH_ENABLED
 -----------------
@@ -464,7 +464,7 @@ Default::
         }
     }
 
-A dictionary of Uploader settings and and their values.
+A dictionary of Uploader settings and their values.
 
 BACKEND
 .......
@@ -475,7 +475,7 @@ The uploader backend to use.  The backend choices are:
 * ``'geonode.importer'``
 * ``'geonode.rest'``
 
-The importer backend requires the Geoserver importer extension to be enabled and is required for uploading data into
+The importer backend requires the GeoServer importer extension to be enabled and is required for uploading data into
 GeoGig datastores.
 
 OPTIONS
@@ -512,7 +512,7 @@ THEME_ACCOUNT_CONTACT_EMAIL
 ---------------------------
 Default: ``'admin@example.com'``
 
-This email address is added to the bottom of the password reset page in case users have trouble un-locking their account.
+This email address is added to the bottom of the password reset page in case users have trouble unlocking their account.
 
 Download settings
 =================
@@ -593,7 +593,7 @@ A boolean that specifies whether the Slack contrib app is enabled.  If enabled, 
 SLACK_WEBHOOK_URLS
 ------------------
 
-A list that specifies the urls to post Slack messages to.  Each url is for a different channel.  The default url should be replaced when slack integration is enabled.
+A list that specifies the URLs to post Slack messages to.  Each URL is for a different channel.  The default URL should be replaced when slack integration is enabled.
 
 Default::
 

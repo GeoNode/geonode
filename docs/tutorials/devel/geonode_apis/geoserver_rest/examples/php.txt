@@ -4,7 +4,7 @@ PHP
 ===
 
 The examples in this section use the server-side scripting language `PHP <http://php.net/index.php/>`_, a popular language for dynamic webpages. PHP has `cURL functions <http://php.net/manual/en/ref.curl.php/>`_ , as well as 
-`XML functions <http://www.php.net/manual/en/refs.xml.php/>`_, making it a convenient method for performing batch processing through the Geoserver REST interface. The following scripts execute single requests, but can be easily modified with looping structures to perform batch processing.
+`XML functions <http://www.php.net/manual/en/refs.xml.php/>`_, making it a convenient method for performing batch processing through the GeoServer REST interface. The following scripts execute single requests, but can be easily modified with looping structures to perform batch processing.
 
 .. note:: In order to execute the examples just copy the script content into a ``test.php`` file and execute the following command:
 
@@ -108,8 +108,8 @@ Here are some possible values:
 +------------+---------------------------------------------------------------+ 
 | 405        |  Method not Allowed: check request syntax                     |
 +------------+---------------------------------------------------------------+ 
-| 500        |  Geoserver is unable to process the request,                  |
-|            |  e.g. the workspace already exists, the xml is malformed, ... |
+| 500        |  GeoServer is unable to process the request,                  |
+|            |  e.g. the workspace already exists, the XML is malformed, ... |
 +------------+---------------------------------------------------------------+ 
 
 For other codes see `cURL Error Codes <http://curl.haxx.se/libcurl/c/libcurl-errors.html>`_ and `HTTP Codes <http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html>`_.

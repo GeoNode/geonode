@@ -29,7 +29,7 @@ from django.utils.translation import ugettext
 from django.conf import settings
 
 from geonode.geoserver.ows import wcs_links, wfs_links, wms_links
-from geonode.geoserver.helpers import cascading_delete, set_attributes
+from geonode.geoserver.helpers import cascading_delete, set_attributes_from_geoserver
 from geonode.geoserver.helpers import set_styles, gs_catalog
 from geonode.geoserver.helpers import ogc_server_settings
 from geonode.geoserver.helpers import geoserver_upload, http_client
@@ -103,19 +103,21 @@ def geoserver_pre_save(instance, sender, **kwargs):
             store=instance.store,
             workspace=instance.workspace)
 
-    gs_resource.title = instance.title
-    gs_resource.abstract = instance.abstract
-    gs_resource.name = instance.name
+    if gs_resource:
+        gs_resource.title = instance.title if instance.title else ""
+        gs_resource.abstract = instance.abstract if instance.abstract else ""
+        gs_resource.name = instance.name if instance.name else ""
 
     # Get metadata links
     metadata_links = []
     for link in instance.link_set.metadata():
         metadata_links.append((link.mime, link.name, link.url))
 
-    gs_resource.metadata_links = metadata_links
+    if gs_resource:
+        gs_resource.metadata_links = metadata_links
     # gs_resource should only be called if
     # ogc_server_settings.BACKEND_WRITE_ENABLED == True
-    if getattr(ogc_server_settings, "BACKEND_WRITE_ENABLED", True):
+    if gs_resource and getattr(ogc_server_settings, "BACKEND_WRITE_ENABLED", True):
         gs_catalog.save(gs_resource)
 
     gs_layer = gs_catalog.get_layer(instance.name)
@@ -146,22 +148,23 @@ def geoserver_pre_save(instance, sender, **kwargs):
        * Styles (SLD)
     """
 
-    bbox = gs_resource.latlon_bbox
+    if gs_resource:
+        bbox = gs_resource.latlon_bbox
 
-    # FIXME(Ariel): Correct srid setting below
-    # self.srid = gs_resource.src
+        # FIXME(Ariel): Correct srid setting below
+        # self.srid = gs_resource.src
 
-    instance.srid_url = "http://www.spatialreference.org/ref/" + \
-        instance.srid.replace(':', '/').lower() + "/"
+        instance.srid_url = "http://www.spatialreference.org/ref/" + \
+            instance.srid.replace(':', '/').lower() + "/"
 
-    # Set bounding box values
-    instance.bbox_x0 = bbox[0]
-    instance.bbox_x1 = bbox[1]
-    instance.bbox_y0 = bbox[2]
-    instance.bbox_y1 = bbox[3]
+        # Set bounding box values
+        instance.bbox_x0 = bbox[0]
+        instance.bbox_x1 = bbox[1]
+        instance.bbox_y0 = bbox[2]
+        instance.bbox_y1 = bbox[3]
 
-    # store the resource to avoid another geoserver call in the post_save
-    instance.gs_resource = gs_resource
+        # store the resource to avoid another geoserver call in the post_save
+        instance.gs_resource = gs_resource
 
 
 def geoserver_post_save(instance, sender, **kwargs):
@@ -179,7 +182,7 @@ def geoserver_post_save(instance, sender, **kwargs):
 
     if instance.storeType == "remoteStore":
         # Save layer attributes
-        set_attributes(instance)
+        set_attributes_from_geoserver(instance)
         return
 
     if not getattr(instance, 'gs_resource', None):
@@ -257,12 +260,15 @@ def geoserver_post_save(instance, sender, **kwargs):
                                        )
                                        )
 
-        if gs_resource.store.type and gs_resource.store.type.lower() == 'geogig' and \
-                gs_resource.store.connection_parameters.get('geogig_repository'):
+        gs_store_type = gs_resource.store.type.lower() if gs_resource.store.type else None
+        geogig_repository = gs_resource.store.connection_parameters.get('geogig_repository', '')
+        geogig_repo_name = geogig_repository.replace('geoserver://', '')
 
-            repo_url = '{url}geogig/{geogig_repository}'.format(
+        if gs_store_type == 'geogig' and geogig_repo_name:
+
+            repo_url = '{url}geogig/repos/{repo_name}'.format(
                 url=ogc_server_settings.public_url,
-                geogig_repository=gs_resource.store.connection_parameters.get('geogig_repository'))
+                repo_name=geogig_repo_name)
 
             path = gs_resource.dom.findall('nativeName')
 
@@ -465,7 +471,7 @@ def geoserver_post_save(instance, sender, **kwargs):
         Link.objects.filter(pk=link.pk).update(url=tile_url)
 
     # Save layer attributes
-    set_attributes(instance)
+    set_attributes_from_geoserver(instance)
 
     # Save layer styles
     set_styles(instance, gs_catalog)

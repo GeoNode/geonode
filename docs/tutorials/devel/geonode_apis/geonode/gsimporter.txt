@@ -20,12 +20,12 @@ pip install .
 Getting Help
 ============
 
-Please use the Github project at http://github.com/boundlessgeo/gsimporter for any bug reports (and pull requests are welcome, but please include tests where possible.)
+Please use the GitHub project at http://github.com/boundlessgeo/gsimporter for any bug reports (and pull requests are welcome, but please include tests where possible.)
 
 Running Tests
 =============
 
-The tests are integration tests. These require having a running GeoServer instance with the community/importer modules installed. Because some of the tests use a postgres database, a data base is required to run. **It is strongly advised to run with a data directory you don't care about.**
+The tests are integration tests. These require having a running GeoServer instance with the community/importer modules installed. Because some of the tests use a PostgreSQL database, a data base is required to run. **It is strongly advised to run with a data directory you don't care about.**
 
 The test suite will first attempt to verify a connection to GeoServer and a connection to the database. If the default values are not appropriate, provide them via environment variables on the command line or via `export`. For example::
 
@@ -39,8 +39,8 @@ To run all of the tests, one way is via `setup.py`. `python setup.py test` shoul
 
 If developing and finer grained control is desired, specific tests and other flags can be provided using `python test/uploadtests.py`. Supported arguments are:
 
-* **--clean** delete layers and stores in the test workspaces. useful for cleanup.
-* **--skip-teardown** don't delete things after running. may cause errors but useful for a single test.
+* **--clean** delete layers and stores in the test workspaces. Useful for cleanup.
+* **--skip-teardown** don't delete things after running. May cause errors but useful for a single test.
 
 To run a single case (or drop the method name to run the whole class)::
 

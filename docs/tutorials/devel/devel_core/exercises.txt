@@ -7,33 +7,33 @@ Shell and Utilities
 ...................
 
 #. *ssh* into your virtual machine or other instance
-#. *sudo* to modify the *sshd_config* settings to verify disabling of dns resolution (UseDNS=no)
-#. install a command line helper
+#. *sudo* to modify the *sshd_config* settings to verify disabling of DNS resolution (UseDNS=no)
+#. Install a command line helper
 
       .. code-block:: console
 
         $ sudo apt-get install bash-completion
 
-#. exercise command completion
+#. Exercise command completion
 
       .. code-block:: console
 
         $ apt-get install <TAB><TAB>
 
-#. activate/deactivate the *virtualenv* on your instance
+#. Activate/deactivate the *virtualenv* on your instance
 
       .. code-block:: console
 
         $ source /var/lib/geonode/bin/activate
         $ deactivate
 
-#. set the *DJANGO_SETTINGS_MODULE* env variable
+#. Set the *DJANGO_SETTINGS_MODULE* environment variable
 
       .. code-block:: console
 
         $ export DJANGO_SETTINGS_MODULE=geonode.settings
 
-#. install the *httpie* utility via pip
+#. Install the *httpie* utility via pip
 
       .. code-block:: console
 
@@ -45,7 +45,7 @@ Shell and Utilities
 Python
 ......
 
-#. launch *ipython* and experiment
+#. Launch *ipython* and experiment
 
       .. code-block:: python
 
@@ -54,7 +54,7 @@ Python
         > x.split.__doc__
         > ?
 
-#. execute a script with *ipython* and open the REPL
+#. Execute a script with *ipython* and open the REPL
 
       .. code-block:: console
 

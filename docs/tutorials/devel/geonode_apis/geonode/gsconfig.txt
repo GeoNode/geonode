@@ -28,7 +28,7 @@ Getting Help
 There is a brief manual at http://boundlessgeo.github.io/gsconfig/ .
 If you have questions, please ask them on the GeoServer Users mailing list: http://geoserver.org/comm/ .
 
-Please use the Github project at http://github.com/boundlessgeo/gsconfig for any bug reports (and pull requests are welcome, but please include tests where possible.)
+Please use the GitHub project at http://github.com/boundlessgeo/gsconfig for any bug reports (and pull requests are welcome, but please include tests where possible.)
 
 Sample Layer Creation Code
 ==========================
@@ -60,7 +60,7 @@ Running Tests
 Since the entire purpose of this module is to interact with GeoServer, the test suite is mostly composed of `integration tests <http://en.wikipedia.org/wiki/Integration_testing>`_.  
 These tests necessarily rely on a running copy of GeoServer, and expect that this GeoServer instance will be using the default data directory that is included with GeoServer.
 This data is also included in the GeoServer source repository as ``/data/release/``.
-In addition, it is expected that there will be a postgres database available at ``postgres:password@localhost:5432/db``.
+In addition, it is expected that there will be a PostgreSQL database available at ``postgres:password@localhost:5432/db``.
 You can test connecting to this database with the ``psql`` command line client by running ``$ psql -d db -Upostgres -h localhost -p 5432`` (you will be prompted interactively for the password.)
 
 To override the assumed database connection parameters, the following environment variables are supported:
@@ -77,7 +77,7 @@ GEOSERVER_HOME
     Location of git repository to read the clean data from. If only this option is provided
     `git clean` will be used to reset the data.
 GEOSERVER_DATA_DIR
-    Optional location of the data dir geoserver will be running with. If provided, `rsync`
+    Optional location of the data directory GeoServer will be running with. If provided, `rsync`
     will be used to reset the data.
 GS_VERSION
     Optional environment variable allowing the catalog test cases to automatically download
@@ -196,7 +196,7 @@ You need to update or remove the ``datastore.properties`` file before creating t
     cat = Catalog("http://localhost:8180/geoserver/rest")
     cat.create_imagemosaic("NOAAWW3_NCOMultiGrid_WIND_test", "NOAAWW3_NCOMultiGrid_WIND_test.zip")
 
-By defualt the ``cat.create_imagemosaic`` tries to configure the layer too. If you want to create the store only, you can specify the following parameter
+By default the ``cat.create_imagemosaic`` tries to configure the layer too. If you want to create the store only, you can specify the following parameter
 
 .. code-block:: python
 
@@ -223,7 +223,7 @@ The granules will be uploaded and stored on the ImageMosaic index folder.
     cat.harvest_uploadgranule("NOAAWW3_NCOMultiGrid__WIND_000_20131002T000000.zip", store)
 
 To delete an ImageMosaic store, you can follow the standard approach, by deleting the layers first.
-*ATTENTION*: at this time you need to manually cleanup the data dir from the mosaic granules and, in case you used a DB datastore, you must also drop the mosaic tables.
+*ATTENTION*: at this time you need to manually cleanup the data directory from the mosaic granules and, in case you used a DB datastore, you must also drop the mosaic tables.
 
 .. code-block:: python
 

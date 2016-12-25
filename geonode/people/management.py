@@ -41,7 +41,7 @@ if "notification" in settings.INSTALLED_APPS:
             _("Account activated"),
             _("This account is now active and can log in the site"))
 
-    signals.post_syncdb.connect(
+    signals.post_migrate.connect(
         create_notice_types,
         sender=notification.models)
     logger.info(

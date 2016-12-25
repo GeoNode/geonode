@@ -58,8 +58,8 @@ Pull Requests
 -------------
 
 If you’re able to patch the bug or add the feature yourself, make a pull request with the code. 
-Be sure you’ve read any documents on contributing, understand the license and have signed a CLA if required. 
+Be sure you've read any documents on contributing, understand the license and have signed a CLA if required.
 
-Once you’ve submitted a pull request the maintainer(s) can compare your branch to the existing one and decide whether or not to incorporate (pull in) your changes.
+Once you've submitted a pull request, the maintainer(s) can compare your branch to the existing one and decide whether or not to incorporate (pull) your changes.
 
 For more information on how Pull Requests work, see the section ":ref:`work_with_github`"

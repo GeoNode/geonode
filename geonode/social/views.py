@@ -42,3 +42,22 @@ class RecentActivity(ListView):
             public=True,
             action_object_content_type__model='comment')[:15]
         return context
+
+
+class UserActivity(ListView):
+    """
+    Returns recent user activity.
+    """
+    context_object_name = 'action_list'
+    template_name = 'actstream/actor.html'
+
+    def get_queryset(self):
+        # There's no generic foreign key for 'actor', so can't filter directly
+        # Hence the code below is essentially applying the filter afterwards
+        return [x for x in Action.objects.filter(public=True)[:15]
+                if x.actor.username == self.kwargs['actor']]
+
+    def get_context_data(self, *args, **kwargs):
+        context = super(ListView, self).get_context_data(*args, **kwargs)
+        context['actor'] = self.kwargs['actor']
+        return context

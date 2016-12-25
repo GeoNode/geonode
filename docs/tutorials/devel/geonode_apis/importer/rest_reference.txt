@@ -6,7 +6,7 @@ REST API
 Importer concepts
 -----------------
 
-The importer REST api is built around a tree of objects representing a single import, structured as follows:
+The importer REST API is built around a tree of objects representing a single import, structured as follows:
 
    * import
       * target workspace
@@ -16,7 +16,7 @@ The importer REST api is built around a tree of objects representing a single im
           * layer
           * transformation (one or more)
 
-An **import** refers to the top level object and is a "session" like entity the state of the entire import. It maintains information relevant to the import as a whole such as user infromation, timestamps 
+An **import** refers to the top level object and is a "session" like entity the state of the entire import. It maintains information relevant to the import as a whole such as user information, timestamps 
 along with optional information that is uniform along all tasks, such as a target workspace, the shared input data (e.g., a directory, a database).
 An import is made of any number of task objects. 
 
@@ -104,7 +104,7 @@ results in::
 Creating a new import
 """""""""""""""""""""
 
-Posting to the /imports path a import json object creates a new import session::
+Posting to the /imports path a import JSON object creates a new import session::
 
 	Content-Type: application/json
 	
@@ -253,7 +253,7 @@ generate import tasks for each data found in it.
 
 Most data types are discussed in the task section, the only type that's specific to the whole
 import context is the "remote" one, that is used to ask the importer to fetch the data from
-a remote location autonomusly, without asking the client to perform an upload.
+a remote location autonomously, without asking the client to perform an upload.
 
 The representation of a remote resource looks as follows::
 
@@ -271,7 +271,6 @@ and required only if the remote server demands an authentication of sorts.
 In case the referred file is compressed, it will be unpacked as the download completes, and the
 tasks will be created over the result of unpacking.
     
->>>>>>> 296f581... [GEOS-7049] Allow autonomous and asynchonous data fetching in importer REST api
 Tasks
 ^^^^^
 
@@ -367,7 +366,7 @@ The response to the upload will be the creation of a new task, for example::
 Creating a new task from form upload
 """"""""""""""""""""""""""""""""""""
 
-This creation mode assumes the POST to ``imports/<importId>/tasks`` of form url encoded data containing a ``url`` parameter::
+This creation mode assumes the POST to ``imports/<importId>/tasks`` of form URL encoded data containing a ``url`` parameter::
 
 	Content-type: application/x-www-form-urlencoded
 	
@@ -931,7 +930,7 @@ Parses a string representation of a date into a Date/Timestamp object
 IntegerFieldToDateTransform
 """""""""""""""""""""""""""
 
-Takes a integer field and transforms it to a date, interpreting the intereger field as a date
+Takes a integer field and transforms it to a date, interpreting the integer field as a date
 
 .. list-table::
    :header-rows: 1

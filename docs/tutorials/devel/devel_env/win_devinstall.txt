@@ -5,13 +5,13 @@ Install GeoNode for Development (Windows)
 
 In order to install Geonode 2.0 in developing mode on Windows 2008r2 the following steps are required:
 
-#. install dependencies (Python and Java) and supporting tools
+#. Install dependencies (Python and Java) and supporting tools
 
-#. set up a virtual environment (virtualenv)
+#. Set up a virtual environment (virtualenv)
 
-#. clone geonode from github and install it in the virtual environment
+#. Clone geonode from GitHub and install it in the virtual environment
 
-#. run paver to get install geoserver and start the development servers
+#. Run paver to get install GeoServer and start the development servers
 
 .. note:: The following steps have to be executed in your terminal where there is a ">". The path will differ depending on installation.
 
@@ -27,17 +27,17 @@ In order to install Geonode 2.0 in developing mode on Windows 2008r2 the followi
     
         > easy_install virtualenv
 
-#. Install Java for Geoserver.  If you already have java installed 32 or 64 bit versions work.
+#. Install Java for GeoServer.  If you already have java installed 32 or 64 bit versions work.
 
     * http://www.oracle.com/technetwork/java/javase/downloads/jdk7-downloads-1880260.html
 
-    * Ant and Maven are optional for custom builds of Geoserver
+    * Ant and Maven are optional for custom builds of GeoServer
 
 #. Install Supporting tools 
 
     * Git http://git-scm.com/downloads
 
-    * GetText (not tested yet)
+    * gettext (not tested yet)
 
 #. Install node and tools for static development (not tested yet)
 
@@ -106,7 +106,7 @@ In order to install Geonode 2.0 in developing mode on Windows 2008r2 the followi
 
         cd geonode
 
-#. Set up the Geoserver with command
+#. Set up the GeoServer with command
 
     .. code-block:: console
 
@@ -126,13 +126,13 @@ Visit the geonode site by typing http://localhost:8000 into your browser windo
 
 #. To stop the server
 
-    type hold Ctrl c on your keyboard to stop the server
+    Press Ctrl-C on your keyboard to stop the server
 
     .. code-block:: console
 
         > paver stop    # to stop all django, geoserver services
 
-#. Next create a superuser for your django geonode
+#. Next create a Django superuser for your GeoNode
 
     Create a superuser so you can log on to your local geonode installation at http://localhost:8000
 

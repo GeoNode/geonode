@@ -65,14 +65,35 @@ def resource_permissions(request, resource_id):
             content_type='text/plain')
 
     if request.method == 'POST':
-        permission_spec = json.loads(request.body)
-        resource.set_permissions(permission_spec)
+        success = True
+        message = "Permissions successfully updated!"
+        try:
+            permission_spec = json.loads(request.body)
+            resource.set_permissions(permission_spec)
 
-        return HttpResponse(
-            json.dumps({'success': True}),
-            status=200,
-            content_type='text/plain'
-        )
+            # Check Users Permissions Consistency
+            info = _perms_info(resource)
+            info_users = dict([(u.username, perms) for u, perms in info['users'].items()])
+            for user, perms in info_users.items():
+                if 'download_resourcebase' in perms and 'view_resourcebase' not in perms:
+                    success = False
+                    message = 'User ' + str(user) + ' has Download permissions but ' \
+                              'cannot access the resource. ' \
+                              'Please update permissions consistently!'
+
+            return HttpResponse(
+                json.dumps({'success': success, 'message': message}),
+                status=200,
+                content_type='text/plain'
+            )
+        except:
+            success = False
+            message = "Error updating permissions :("
+            return HttpResponse(
+                json.dumps({'success': success, 'message': message}),
+                status=500,
+                content_type='text/plain'
+            )
 
     elif request.method == 'GET':
         permission_spec = _perms_info_json(resource)

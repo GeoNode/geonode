@@ -9,10 +9,10 @@ GeoNode is a web-based application and platform for developing geospatial inform
 
 In this Quickstart guide you will learn the following:
 
-    #. to register a new account to get started
-    #. add a new layer
-    #. create a map using your new layer
-    #. share your map with others
+    #. How to register a new account to get started
+    #. How to add a new layer
+    #. How to create a map using your new layer
+    #. How to share your map with others
 
 Start GeoNode on your Live DVD or local VM and redirect your browser at `http://localhost:8000/ <http://localhost:8000/>`_ (this is the default port).
 The page will look like shown in the image below.
@@ -45,13 +45,10 @@ In order to create a map and add layers to it, you have to have create an accoun
 
     #. You will be returned to the welcome page. An email will be sent confirming that you have signed up. While you are now logged in, you will need to confirm your account. Navigate to the link that was sent in the email.
 
-        .. image:: img/confirm1.png
-           :width: 500px
-           :alt: Confirm
-        *Confirm*
-
     #. By clicking *Confirm* you will be returned to the homepage. Now you’ve registered an account, you are able to add layers to it as well as create maps and share those with other users.
 
+
+.. note:: Depending on how the GeoNode you are using is configured, registration may not be available, or you may not be required to confirm your email address before logging in.
 
 2. Add a new layer
 ==================
@@ -188,6 +185,6 @@ Your map can now be shared!
 To be continued
 ===============
 
-Now you’ve gotten a quick insight in the possibilities of GeoNode. To learn more about GeoNode and its features, visit the official webpage `www.geonode.org <www.geonode.org>`_.
+Now you've gotten some quick insight in the possibilities of GeoNode. To learn more about GeoNode and its features, visit the official webpage `www.geonode.org <www.geonode.org>`_.
 
-Stay in touch with the GeoNode community through the #geonode IRC channel using `http://webchat.freenode.net/ <http://webchat.freenode.net/>`_ or by asking your question in our `google group <https://groups.google.com/forum/#!forum/geonode-users>`_!
+Stay in touch with the GeoNode community through the `Gitter.im chatroom <https://gitter.im/geonode/>`_ or by asking your question in our `mailing list <https://lists.osgeo.org/cgi-bin/mailman/listinfo/geonode-users>`_!

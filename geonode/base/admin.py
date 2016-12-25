@@ -19,9 +19,13 @@
 #########################################################################
 
 from django.contrib import admin
+from django.contrib.admin import helpers
 from django.conf import settings
+from django.core.management import call_command
+from django.template.response import TemplateResponse
 
 import autocomplete_light
+import StringIO
 from autocomplete_light.contrib.taggit_field import TaggitField, TaggitWidget
 
 from treebeard.admin import TreeAdmin
@@ -30,7 +34,7 @@ from treebeard.forms import movenodeform_factory
 from modeltranslation.admin import TranslationAdmin
 
 from geonode.base.models import (TopicCategory, SpatialRepresentationType, Region, RestrictionCodeType,
-                                 ContactRole, Link, License, HierarchicalKeyword)
+                                 ContactRole, Link, Backup, License, HierarchicalKeyword)
 
 
 class MediaTranslationAdmin(TranslationAdmin):
@@ -41,6 +45,83 @@ class MediaTranslationAdmin(TranslationAdmin):
         css = {
             'screen': ('modeltranslation/css/tabbed_translation_fields.css',),
         }
+
+
+class BackupAdminForm(autocomplete_light.ModelForm):
+
+    class Meta:
+        model = Backup
+        fields = '__all__'
+
+
+def run(self, request, queryset):
+    """
+    Running a Backup
+    """
+    if request.POST.get('_selected_action'):
+        id = request.POST.get('_selected_action')
+        siteObj = self.model.objects.get(pk=id)
+        if request.POST.get("post"):
+            for siteObj in queryset:
+                self.message_user(request, "Executed Backup: " + siteObj.name)
+                out = StringIO.StringIO()
+                call_command('backup', force_exec=True, backup_dir=siteObj.base_folder, stdout=out)
+                value = out.getvalue()
+                if value:
+                    siteObj.location = value
+                    siteObj.save()
+                else:
+                    self.message_user(request, siteObj.name + " backup failed!")
+        else:
+            context = {
+                "objects_name": "Backups",
+                'title': "Confirm run of Backups:",
+                'action_exec': "run",
+                'cancellable_backups': [siteObj],
+                'action_checkbox_name': helpers.ACTION_CHECKBOX_NAME,
+            }
+            return TemplateResponse(request, 'admin/backups/confirm_cancel.html', context,
+                                    current_app=self.admin_site.name)
+
+
+def restore(self, request, queryset):
+    """
+    Running a Restore
+    """
+    if request.POST.get('_selected_action'):
+        id = request.POST.get('_selected_action')
+        siteObj = self.model.objects.get(pk=id)
+        if request.POST.get("post"):
+            for siteObj in queryset:
+                self.message_user(request, "Executed Restore: " + siteObj.name)
+                out = StringIO.StringIO()
+                if siteObj.location:
+                    call_command('restore', force_exec=True, backup_file=str(siteObj.location).strip(), stdout=out)
+                else:
+                    self.message_user(request, siteObj.name + " backup not ready!")
+        else:
+            context = {
+                "objects_name": "Restores",
+                'title': "Confirm run of Restores:",
+                'action_exec': "restore",
+                'cancellable_backups': [siteObj],
+                'action_checkbox_name': helpers.ACTION_CHECKBOX_NAME,
+            }
+            return TemplateResponse(request, 'admin/backups/confirm_cancel.html', context,
+                                    current_app=self.admin_site.name)
+
+
+run.short_description = "Run the Backup"
+restore.short_description = "Run the Restore"
+
+
+class BackupAdmin(MediaTranslationAdmin):
+    list_display = ('id', 'name', 'date', 'location')
+    list_display_links = ('name',)
+    date_hierarchy = 'date'
+    readonly_fields = ('location',)
+    form = BackupAdminForm
+    actions = [run, restore]
 
 
 class LicenseAdmin(MediaTranslationAdmin):
@@ -127,12 +208,14 @@ class LinkAdmin(admin.ModelAdmin):
 class HierarchicalKeywordAdmin(TreeAdmin):
     form = movenodeform_factory(HierarchicalKeyword)
 
+
 admin.site.register(TopicCategory, TopicCategoryAdmin)
 admin.site.register(Region, RegionAdmin)
 admin.site.register(SpatialRepresentationType, SpatialRepresentationTypeAdmin)
 admin.site.register(RestrictionCodeType, RestrictionCodeTypeAdmin)
 admin.site.register(ContactRole, ContactRoleAdmin)
 admin.site.register(Link, LinkAdmin)
+admin.site.register(Backup, BackupAdmin)
 admin.site.register(License, LicenseAdmin)
 admin.site.register(HierarchicalKeyword, HierarchicalKeywordAdmin)
 

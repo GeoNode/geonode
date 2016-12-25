@@ -133,7 +133,7 @@ class Profile(AbstractUser):
 
 
 def get_anonymous_user_instance(Profile):
-    return Profile(username='AnonymousUser')
+    return Profile(pk=-1, username='AnonymousUser')
 
 
 def profile_post_save(instance, sender, **kwargs):
@@ -165,6 +165,7 @@ def profile_pre_save(instance, sender, **kw):
     if instance.is_active and not matching_profiles.get().is_active and \
             'notification' in settings.INSTALLED_APPS:
         notification.send([instance, ], "account_active")
+
 
 signals.pre_save.connect(profile_pre_save, sender=Profile)
 signals.post_save.connect(profile_post_save, sender=Profile)

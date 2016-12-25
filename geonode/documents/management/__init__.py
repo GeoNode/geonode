@@ -50,7 +50,7 @@ if "notification" in settings.INSTALLED_APPS:
                 _("Document for Map"),
                 _("A rating was given to a document"))
 
-        signals.post_syncdb.connect(
+        signals.post_migrate.connect(
             create_notice_types,
             sender=notification.models)
         logger.info(
