@@ -51,6 +51,7 @@ class MapLayerAdmin(admin.ModelAdmin):
     search_fields = ('map__title', 'name',)
     form = autocomplete_light.modelform_factory(MapLayer, fields='__all__')
 
+
 admin.site.register(Map, MapAdmin)
 admin.site.register(MapLayer, MapLayerAdmin)
 admin.site.register(MapSnapshot)

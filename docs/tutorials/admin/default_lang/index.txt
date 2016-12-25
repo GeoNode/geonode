@@ -32,7 +32,7 @@ As **root** create a new directory within GeoNode's site packages::
 or::
     mkdir /var/lib/geonode/lib/python2.7/site-packages/setmydefaultlanguage
 
-if GeoNode has been installed using **apt-get**
+if GeoNode has been installed using **apt-get**.
     
 As root create and edit a new file :file:`/usr/lib/python2.7/dist-packages/setmydefaultlanguage/__init__.py` and add the following lines::
 
@@ -59,7 +59,7 @@ At the end of the GeoNode configuration file :file:`/home/geonode/geonode/geonod
 Restart
 =======
 
-Finally restart Apache2 as root with::
+Finally restart Apache as root with::
 
     service apache2 restart
 

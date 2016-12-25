@@ -212,7 +212,7 @@ def upgradedb(options):
 @task
 def sync(options):
     """
-    Run the syncdb and migrate management commands to create and migrate a DB
+    Run the migrate and migrate management commands to create and migrate a DB
     """
     for app in dev_config['MIGRATE_APPS']:
         try:
@@ -224,6 +224,7 @@ def sync(options):
     except:
         pass
     sh("python manage.py loaddata sample_admin.json")
+    sh("python manage.py loaddata geonode/base/fixtures/initial_data.json")
 
 
 @task
@@ -438,7 +439,8 @@ def test(options):
     """
     Run GeoNode's Unit Test Suite
     """
-    sh("python manage.py test %s.tests --noinput" % '.tests '.join(GEONODE_APPS))
+    sh("%s manage.py test %s.tests --noinput" % (options.get('prefix'),
+                                                 '.tests '.join(GEONODE_APPS)))
 
 
 @task
@@ -484,12 +486,19 @@ def test_integration(options):
 
 
 @task
-def run_tests():
+@cmdopts([
+    ('coverage', 'c', 'use this flag to generate coverage during test runs')
+])
+def run_tests(options):
     """
     Executes the entire test suite.
     """
-    sh('python manage.py test geonode.tests.smoke')
-    call_task('test')
+    if options.coverage:
+        prefix = 'coverage run --branch --source=geonode'
+    else:
+        prefix = 'python'
+    sh('%s manage.py test geonode.tests.smoke' % prefix)
+    call_task('test', options={'prefix': prefix})
     call_task('test_integration')
     call_task('test_integration', options={'name': 'geonode.tests.csw'})
     sh('flake8 geonode')
@@ -574,6 +583,10 @@ def deb(options):
 
         sh(('git-dch --spawn-editor=snapshot --git-author --new-version=%s'
             ' --id-length=6 --ignore-branch --release' % (simple_version)))
+        #In case you publish from Ubuntu Xenial (git-dch is removed from upstream)
+        # use the following line instead:
+        #sh(('gbp dch --spawn-editor=snapshot --git-author --new-version=%s'
+        #    ' --id-length=6 --ignore-branch --release' % (simple_version)))
 
         deb_changelog = path('debian') / 'changelog'
         for line in fileinput.input([deb_changelog], inplace=True):
@@ -620,7 +633,7 @@ def publish():
     sh('git tag debian/%s' % simple_version)
     sh('git push origin debian/%s' % simple_version)
     sh('git push origin master')
-    sh('python setup.py sdist upload')
+    sh('python setup.py sdist upload -r pypi')
 
 
 def versions():

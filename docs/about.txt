@@ -30,8 +30,8 @@ But it should hopefully allow you to easily preview the capabilities of GeoNode.
 Geospatial data storage
 =======================
 
-GeoNode allows the user to upload vector (currently only Shapefiles) and raster data in their original projections using a web form.
-Vector data is uploaded in ESRI Shapefile format and satellite imagery and other kinds of raster data are uploaded as GeoTIFFs.
+GeoNode allows the user to upload vector data (currently only shapefiles) and raster data in their original projections using a web form.
+Vector data is uploaded in ESRI shapefile format and satellite imagery and other kinds of raster data are uploaded as GeoTIFFs.
 
 Special importance is given to standard metadata formats like ISO 19139:2007. After the upload is finished, the user is presented with a form to fill in the metadata and it is made available using a `CSW`_ interface. Users may also upload a metadata XML document (in ISO, FGDC, or Dublin Core format) to fill in key GeoNode metadata elements automatically.
 
@@ -45,9 +45,9 @@ Data mixing, maps creation
 
 Once the data has been uploaded, GeoNode lets the user search for it geographically or via keywords and create maps.
 
-All the layers are automatically reprojected to web mercator for maps display, making it possible to use different popular base layers, like Open Street Map, Google Satellite or Bing layers.
+All the layers are automatically re-projected to web mercator for maps display, making it possible to use different popular base layers, like Open Street Map, Google Satellite or Bing layers.
 
-Once maps are saved, it is possible to embed them in any webpage or get a PDF version for printing.
+Once maps are saved, it is possible to embed them in any web page or get a PDF version for printing.
 
 
 GeoNode as a building block
@@ -61,13 +61,7 @@ The development community is very supportive of new projects and contributes ide
 Convinced! Where do I sign?
 ===========================
 
-The next steps are to follow the :ref:`quick_installation`, :doc:`read the tutorials </tutorials/index>` and email geonode-users+subscribe@googlegroups.com to join the community. Thanks for your interest!
+The next steps are to follow the :ref:`quick_installation`, :doc:`read the tutorials </tutorials/index>` and subscribe to the `geonode-users`_ and/or `geonode-devel`_ mailing lists to join the community. Thanks for your interest!
 
-.. note::
-
-    The registration process for the mailing list is the following:
-      #. Send an email to geonode-users+subscribe@googlegroups.com with any subject or content.
-      #. Get a confirmation notice from geonode-users+subconfirm@googlegroups.com and confirm by replying.
-      #. Once the above is complete, you are registered and you can start sending emails to the community.
-
-
+.. _geonode-users: https://lists.osgeo.org/mailman/listinfo/geonode-users
+.. _geonode-devel: https://lists.osgeo.org/mailman/listinfo/geonode-devel

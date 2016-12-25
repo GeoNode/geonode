@@ -1,6 +1,6 @@
 To run the integration tests, make sure a the sqlite db is setup::
 
-  python manage.py syncdb --all
+  python manage.py migrate
 
 Run geoserver but ensure that the django server is _not_ running::
 

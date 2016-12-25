@@ -19,48 +19,14 @@
 #########################################################################
 
 from distutils.core import setup
-from distutils.command.install import INSTALL_SCHEMES
+from setuptools import find_packages
 import os
 
-
-def fullsplit(path, result=None):
-    """
-    Split a pathname into components (the opposite of os.path.join) in a
-    platform-neutral way.
-    """
-    if result is None:
-        result = []
-    head, tail = os.path.split(path)
-    if head == '':
-        return [tail] + result
-    if head == path:
-        return result
-    return fullsplit(head, [tail] + result)
-
-# Tell distutils not to put the data_files in platform-specific installation
-# locations. See here for an explanation:
-# http://groups.google.com/group/comp.lang.python/browse_thread/thread/35ec7b2fed36eaec/2105ee4d9e8042cb
-for scheme in INSTALL_SCHEMES.values():
-    scheme['data'] = scheme['purelib']
-
-# Compile the list of packages available, because distutils doesn't have
-# an easy way to do this.
-packages, data_files = [], []
-root_dir = os.path.dirname(__file__)
-if root_dir != '':
-    os.chdir(root_dir)
-geonode_dir = 'geonode'
-
-for dirpath, dirnames, filenames in os.walk(geonode_dir):
-    # Ignore dirnames that start with '.'
-    for i, dirname in enumerate(dirnames):
-        if dirname.startswith('.'):
-            del dirnames[i]
-    if '__init__.py' in filenames:
-        packages.append('.'.join(fullsplit(dirpath)))
-    elif filenames:
-        data_files.append([dirpath, [os.path.join(dirpath, f) for f in filenames]])
-
+on_rtd = os.environ.get('READTHEDOCS', None) == 'True'
+if on_rtd:
+    shapely_dep = "Shapely<1.5.13"
+else:
+    shapely_dep = "Shapely>=1.5.13"
 
 setup(name='GeoNode',
       version=__import__('geonode').get_version(),
@@ -73,8 +39,7 @@ setup(name='GeoNode',
       author_email='dev@geonode.org',
       url='http://geonode.org',
       license='GPL',
-      packages=packages,
-      data_files=data_files,
+      packages=find_packages(),
       include_package_data=True,
       install_requires=[
         # # The commented name next to the package
@@ -100,15 +65,15 @@ setup(name='GeoNode',
         "awesome-slugify>=1.6.2",
 
         # Django Apps
-        "django-pagination >=1.0.5, <=1.0.7", # python-django-pagination
-        "django-extensions==1.2.5", # python-django-extensions
-        "django-taggit==0.21.0", # python-django-taggit
-        "django-mptt==0.8.6", # django-mptt
-        "django-treebeard==3.0", #django-treebeard
-        "django-guardian==1.4.1", #django-guardian
-        # "django-admin-bootstrapped==1.6.5", #django-admin-bootstrapped
+        "django-pagination >=1.0.5, <=1.0.7",  # python-django-pagination
+        "django-extensions>=1.2.5",  # python-django-extensions
+        "django-taggit>=0.21.0",  # python-django-taggit
+        "django-mptt>=0.8.6",  # django-mptt
+        "django-treebeard>=3.0",  # django-treebeard
+        "django-guardian>=1.4.1",  # django-guardian
+        # "django-admin-bootstrapped>=1.6.5", #django-admin-bootstrapped
 
-        ## Apps with packages provided in GeoNode's PPA on Launchpad.
+        # Apps with packages provided in GeoNode's PPA on Launchpad.
         "dj-database-url >=0.4.0",
         "django-jsonfield>=0.9.16",  # python-django-jsonfield
         "django-mptt>=0.8.0",  # django-mptt
@@ -145,13 +110,13 @@ setup(name='GeoNode',
         "OWSLib>=0.11.0",
         "pycsw>=2.0.2",
         "pyproj>=1.9.3",
-        "Shapely>=1.5.13",
+        "%s" % shapely_dep,
 
         # haystack/elasticsearch, uncomment to use
         "django-haystack>=2.4.1",
         "elasticsearch>=2.4.0",
         "pyelasticsearch>=0.6.1",
-        "celery>=3.1.17",
+        "celery>=3.1.18,<4.0a0",
         "django-celery>=3.1.16",
 
         # datetimepicker widget
@@ -159,7 +124,7 @@ setup(name='GeoNode',
         "flake8>=2.3.0",
         "pep8>=1.6.2",
 
-        #AWS S3 dependencies
+        # AWS S3 dependencies
         "django-storages>=1.1.8",
         "boto>=2.38.0"
         ],

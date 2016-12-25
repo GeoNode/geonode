@@ -198,4 +198,5 @@ class ProfileAdmin(admin.ModelAdmin):
         return super(ProfileAdmin, self).response_add(request, obj,
                                                       post_url_continue)
 
+
 admin.site.register(Profile, ProfileAdmin)

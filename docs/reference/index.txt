@@ -2,7 +2,7 @@
 Reference documentation
 =======================
 
-In this section, you will find information about each and every component of Geonode, for example geoserver, geonode settings, security, etc.
+In this section, you will find information about every component of GeoNode, such as GeoServer, GeoNode settings, security, etc.
 
 :ref:`security`
 

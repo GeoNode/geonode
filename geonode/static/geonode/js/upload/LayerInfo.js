@@ -699,6 +699,7 @@ define(function (require, exports) {
             }
             a.data('layer', self.name);
             a.data('file',  file.name);
+            a.attr('class', 'remove-file');
             a.appendTo(p);
             a.on('click', function (event) {
                 var target = $(event.target),
@@ -706,10 +707,14 @@ define(function (require, exports) {
                     layer_name = target.data('layer'),
                     file_name  = target.data('file');
                 self.removeFile(file_name);
+                if (self.files.length == 0) {
+                    delete layers[self.name];
+                }
                 if (file_ext === 'xml') {
                     $('#metadata_uploaded_preserve_check').hide();
                 }
-                self.displayRefresh();
+                self.errors = self.collectErrors();
+                self.displayErrors();
             });
         });
     };

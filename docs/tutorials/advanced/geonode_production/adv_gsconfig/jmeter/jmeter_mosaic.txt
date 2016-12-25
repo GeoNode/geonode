@@ -37,7 +37,7 @@ Test the Unoptimized Mosaic
 		  * - srs
 		    - EPSG:26913
 
-At this point jMeter is configured to run a GeoServer performance test:
+At this point JMeter is configured to run a GeoServer performance test:
 
 #. Run the test
 

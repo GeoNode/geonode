@@ -105,7 +105,8 @@ LEAFLET_CONFIG = {
 OGC_SERVER = {
     'default': {
         'LOCATION': SITEURL + 'qgis-server/',
-        'PUBLIC_LOCATION': SITEURL + 'qgis-server/'
+        'PUBLIC_LOCATION': SITEURL + 'qgis-server/',
+        'LOG_FILE': '/tmp/qgis-server.log'
     }
 }
 

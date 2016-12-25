@@ -2,18 +2,18 @@
 
 .. _geoserver.example1:
 
-Example n° 1: Serving a large number of GrayScale GeoTiff with Palette
+Example n° 1: Serving a large number of grayscale GeoTIFFs with palettes
 --------------------------------------------------------------------------------------------------------------------
 
 
-In this example there is a group of Gray GeoTiff images. The purpose of this section is to describe how to merge these images using GDAL. These data 
-are taken from the `Regione Marche Cartographic Portal <http://www.ambiente.marche.it/Territorio/Cartografiaeinformazioniterritoriali/Archiviocartograficoeinformazioniterritoriali/Cartografie/ORTOFOTOCARTEREGIONALI110000.aspx#>`_.
+In this example, there is a group of grayscale GeoTIFF images. The purpose of this section is to describe how to merge these images using GDAL.
+These data are taken from the `Regione Marche Cartographic Portal <http://www.ambiente.marche.it/Territorio/Cartografiaeinformazioniterritoriali/Archiviocartograficoeinformazioniterritoriali/Cartografie/ORTOFOTOCARTEREGIONALI110000.aspx#>`_.
 
 .. note:: Data have the same pixel resolution and same Coordinate Reference System *EPSG:26592*.
 
 #.	Navigate to the workshop directory :file:`${TRAINING_ROOT}/data/user_data/gdal_processing_data` (on Windows :file:`%TRAINING_ROOT%\\data\\user_data\\gdal_processing_data`) and find the *grayscale_data* directory.
 
-#.	Navigate inside the *grayscale_data* directory with the SDKshell.
+#.	Navigate inside the *grayscale_data* directory with the SDK shell.
 
 .. note:: The following operations must be executed from the shell inside the selected directory. In Windows, run *setenv.bat* if not already launched.
 
@@ -65,7 +65,7 @@ are taken from the `Regione Marche Cartographic Portal <http://www.ambiente.marc
 
 		gdal_translate -expand gray -a_srs EPSG:26592 -of vrt $f ${f:0:6}.vrt
 
-	The final image format is not GeoTiff but **VRT**. This format simply creates an **XML** file containing information about the operation to 
+	The final image format is not GeoTIFF but **VRT**. This format simply creates an **XML** file containing information about the operation to
 	perform on the image; the output image is created only when the image must be shown to the screen. The CRS is set with the **-a_srs** parameter.
 	The color interpretation can be set to *gray* because each palette value is equal to a grayscale value (this last step is optional). 
 
@@ -159,7 +159,7 @@ are taken from the `Regione Marche Cartographic Portal <http://www.ambiente.marc
 		Band 1 Block=128x128 Type=Byte, ColorInterp=Gray
 		  NoData Value=255
 
-#.	Transforming from VRT to GeoTiff with **gdal_translate**::
+#.	Transforming from VRT to GeoTIFF with **gdal_translate**::
 
 		gdal_translate -co "BLOCKXSIZE=512" -co "BLOCKYSIZE=512" -co "TILED=YES" -co "BIGTIFF=YES" -co "COMPRESS=DEFLATE" merged_vrt.vrt merged_tif.tif
 
@@ -241,9 +241,9 @@ are taken from the `Regione Marche Cartographic Portal <http://www.ambiente.marc
 			  NoData Value=255
 			  Overviews: 8171x4579, 4086x2290, 2043x1145, 1022x573, 511x287
 	
-		Then the result can be displayed in GeoServer by configuring the image as a GeoTiff (see :ref:`Adding a GeoTiff <geoserver.add_geotiff>` section).
+		Then the result can be displayed in GeoServer by configuring the image as a GeoTIFF (see :ref:`Adding a GeoTiff <geoserver.add_geotiff>` section).
 	
-	*	Building a pyramid through several **gdalwarp** invokations, each time by reducing the image resolution::
+	*	Building a pyramid through several **gdalwarp** invocations, each time by reducing the image resolution::
 	
 			gdalwarp -r cubicspline -dstnodata 255 -srcnodata 255 -multi -tr 2,53458 -2,53458 -co BLOCKXSIZE=512 -co BLOCKYSIZE=512 -co TILED=YES -co COMPRESS=DEFLATE merged_tif.tif merged_tif_2.tif
 		

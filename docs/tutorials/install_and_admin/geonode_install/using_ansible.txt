@@ -7,12 +7,12 @@ Setup Using Ansible
 Using `Ansible <http://www.ansible.com/>`_ we can automate the installation and
 configuration of GeoNode on local or remote machines. If you never used Ansible
 before take a look at the `Running Ansible scripts` section of the documentation
-or `Ansible official docmumentation <https://docs.ansible.com/>`_
+or `Ansible official documentation <https://docs.ansible.com/>`_.
 
 GeoNode setup with Ansible
 ==========================
 
-In the Virtual Machines we provided for the training come with Ansible preinstalled.
+The Virtual Machines we provided for the training come with Ansible preinstalled.
 In the `geo` user home folder ( /home/geo/ ) you will find a simple Ansible playbook
 we wrote for demonstration along with some resource files used by the playbook itself.
 

@@ -5,7 +5,7 @@ Quick Installation Guide
 ========================
 
 The following is a quick guide to get GeoNode up and running in most common operating systems.
-This is meant to be run on a fresh machine with no previously installated packages or GeoNode versions.
+This is meant to be run on a fresh machine with no previously installed packages or GeoNode versions.
 
 Recommended Minimum System Requirements
 =======================================
@@ -26,7 +26,7 @@ Linux
 Ubuntu
 ------
 
-The easiest way to get the .deb is to install it using APT, the standard installation management tool for Ubuntu and other Debian-based systems.
+The easiest way to get the .deb is to install it using APT, the standard installation management tool for Ubuntu. The current release, 2.4 is available only for Ubuntu 14.04.
 
 0. First, make sure you have the ``add-apt-repository`` binary available.
 
@@ -57,16 +57,16 @@ Windows, OSX and others
 Windows
 -------
 
-It is now available an automatic installer for Windows systems which configres GeoNode with PostgreSQL DB and few sample layers on a few steps.
+It is now available an automatic installer for Windows systems which configures GeoNode with PostgreSQL DB and few sample layers on a few steps.
 See detailed instructions and steps of the GeoNode Windows Installer at section :ref:`win_binary_installer`.
 
-If you have different needs or jast want to configure manully the GeoNode environment, please continue reading the guide below.
+If you have different needs or just want to configure the GeoNode environment manually, please continue reading the guide below.
 
-To install in Windows it is assumed you're familiar with python development and virtualenv on Windows and that you're familiar with the windows command prompt. You will need the follow prerequists installed:
+To install in Windows it is assumed you're familiar with python development and virtualenv on Windows and that you're familiar with the windows command prompt. You will need the follow prerequisites installed:
 
     * Java JDK
     * Python 2.7.9
-      * Earlier versions of python require you to installdistutils (easy_install) - http://www.lfd.uci.edu/~gohlke/pythonlibs/#setuptools
+      * Earlier versions of python require you to install distutils (easy_install) - http://www.lfd.uci.edu/~gohlke/pythonlibs/#setuptools
     * ant (bin directory must be on system PATH)
     * maven2 (bin directory must be on system PATH)
     * git
@@ -98,13 +98,13 @@ Install GeoNode in the local virtualenv::
 
     pip install -e .
 
-You have two options to set up the geos and gdal libraries.  Either create an environment variable
+You have two options to set up the GEOS and GDAL libraries.  Either create an environment variable
 or add the variables to your local_settings.py file as below.
 
     GEOS_LIBRARY_PATH="C:/path/to/geos_c.dll"
     GDAL_LIBRARY_PATH="C:/path/to/gdal111.dll"
 
-The geos and gdal libraries can be found in your <virtualenv directory>\Lib\site-packages\GDAL-1.11.0-py2.7-win32.egg\osgeo\ folder.
+The GEOS and GDAL libraries can be found in your <virtualenv directory>\Lib\site-packages\GDAL-1.11.0-py2.7-win32.egg\osgeo\ folder.
 
     
 Setup GeoServer::
@@ -124,7 +124,7 @@ Once the package is installed, please consult :ref:`custom_install` to learn how
 OSX
 ---
 
-The recommended install method in these platforms is to use a virtualization solution, like `Virtual Box`_, install the latest `Ubuntu Linux`_ and then proceed with the steps mentioned above. Some GeoNode developers prefer to use `Vagrant`_ - a VirtualBox wrapper, the steps for this are detailed below. The Vagrant quickstart guide shows how to get a Linux VM configured in most operating systems. However, if you would like to develop natively on OSX please follow the following instructions.
+The recommended install method in these platforms is to use a virtualization solution, like `Virtual Box`_, install the latest `Ubuntu Linux`_ and then proceed with the steps mentioned above. Some GeoNode developers prefer to use `Vagrant`_ - a VirtualBox wrapper, the steps for this are detailed below. The Vagrant quickstart guide shows how to get a Linux VM configured in most operating systems. However, if you would like to develop natively on Mac OS X please follow the following instructions.
 
 You may need brew install various dependencies::
 
@@ -156,7 +156,7 @@ Paver handles dependencies for Geonode, first setup (this will download and upda
     paver setup
     paver start
     
-Optional: To generate document thumbnails for PDFs and other ghostscripts file types, download ghostscript: https://www.macupdate.com/app/mac/9980/gpl-ghostscript::
+Optional: To generate document thumbnails for PDFs and other ghostscript file types, download ghostscript: https://www.macupdate.com/app/mac/9980/gpl-ghostscript::
 
     sudo apt-get install imagemagick
     brew install imagemagick

@@ -276,13 +276,13 @@ class GroupActivityView(ListView):
         context['action_list_layers'] = Action.objects.filter(
             public=True,
             actor_object_id__in=members,
-            action_object_content_type__name='layer')[:15]
+            action_object_content_type__model='layer')[:15]
         context['action_list_maps'] = Action.objects.filter(
             public=True,
             actor_object_id__in=members,
-            action_object_content_type__name='map')[:15]
+            action_object_content_type__model='map')[:15]
         context['action_list_comments'] = Action.objects.filter(
             public=True,
             actor_object_id__in=members,
-            action_object_content_type__name='comment')[:15]
+            action_object_content_type__model='comment')[:15]
         return context

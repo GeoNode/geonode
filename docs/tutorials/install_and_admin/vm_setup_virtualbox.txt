@@ -12,7 +12,7 @@ In this section you will find instructions on how to setup an Ubuntu 14.04 VM in
 VirtualBox Setup
 ================
 
-Download Virtualbox from `official <https://www.virtualbox.org/wiki/Downloads>`_ web site. Choose the installer matching your
+Download VirtualBox from `official <https://www.virtualbox.org/wiki/Downloads>`_ web site. Choose the installer matching your
 operating system and architecture.
 
 Installation process is straightforward, refer to VirtualBox `official documentation
@@ -70,6 +70,13 @@ At the end of the installation process, launch VirtualBox.
    :width: 600px
    :alt: VirtualBox installation - Windows
 
+Download Ubuntu ISO
+-------------------
+
+Navigate to `Ubuntu official Download page <https://www.ubuntu.com/download/alternative-downloads>`_
+and download the Ubuntu 14.04 `.iso` file for your architecture. The ISO image will be used to install
+Ubuntu 14.04 inside the Virtual Machine
+
 Virtual Machine Setup
 =====================
 
@@ -92,10 +99,10 @@ refer to `System Preparation & Prerequisites` sections for details.
    :width: 600px
    :alt: Ubuntu VM setup
 
-Create a new `virtual disk` for the VM. Againg, refer to `System Preparation & Prerequisites`
-section for details about disk size, for testing purposes 30 GB will be enought.
+Create a new `virtual disk` for the VM. Again, refer to `System Preparation & Prerequisites`
+section for details about disk size, for testing purposes 30 GB will be enough.
 
-Now edit the Virtual Machine settigs
+Now edit the Virtual Machine settings
 
 .. image:: img/ubuntu_vm_setup_3.png
    :width: 600px
@@ -108,7 +115,7 @@ Under "Storage" select the empty DVD drive, click on `Live CD/DVD` as shown belo
    :alt: Ubuntu VM setup
 
 Click on the DVD icon next to the `Optical Drive` drop down menu and select the Ubuntu 14.04 `.iso`
-file from your file system
+file that you downloaded before
 
 .. image:: img/ubuntu_vm_setup_5.png
    :width: 600px

@@ -52,7 +52,7 @@ def profile_edit(request, username=None):
             form = ProfileForm(request.POST, request.FILES, instance=profile)
             if form.is_valid():
                 form.save()
-                messages.success(request, "Profile profile updated.")
+                messages.success(request, ("Profile %s updated." % username))
                 return redirect(
                     reverse(
                         'profile_detail',

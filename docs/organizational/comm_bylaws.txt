@@ -7,7 +7,7 @@ Community Bylaws
 Committers
 ----------
 
-The GeoNode community is divided into two groups - users and committers.  There are no requirements or responsibilities to be a GeoNode user.  To be a committer, you must be voted in by the existing committers (2 +1's and no -1's; a committer must initiate the vote.)  Non-committers are encouraged to engage in discussions on the mailing lists, code review, and issue reports to qualify them to be voted in as committers.  Committers (or PRIMARY AUTHORS) can be found in the [AUTHORS file](https://github.com/GeoNode/geonode/blob/dev/AUTHORS)
+The GeoNode community is divided into two groups - users and committers.  There are no requirements or responsibilities to be a GeoNode user.  To be a committer, you must be voted in by the existing committers (2 +1's and no -1's; a committer must initiate the vote.)  Non-committers are encouraged to engage in discussions on the mailing lists, code review, and issue reports to qualify them to be voted in as committers.  Committers (or PRIMARY AUTHORS) can be found in the [AUTHORS file](https://github.com/GeoNode/geonode/blob/master/AUTHORS)
  
   
 Committers must:
@@ -15,6 +15,8 @@ Committers must:
   * Make useful contributions to the project in the form of commits at least once in a 6-month period, else they fall back to "committer emeritus" status.  A committer emeritus has no special involvement in the project, but may request committer privileges from the current body of committers.
   * Review code contributions, which may come from other committers or from users.  Users must submit code externally to the main GeoNode repository (ie as a patch or a github pull request); committers can do this as well if they see review as particularly important (for example, a patch might affect a particularly crucial component of GeoNode, or a committer might be working in a part of the code that he is relatively unfamiliar with.)   A review should result in either (a) instructions on how to bring the code to a more acceptable condition or (b) merging the changes in and notifying the submitter that this has been done.
   * Committers also have the option to "self-review" and commit changes directly.  It is at the discretion of individual committers when this is appropriate, but it should be rare - we encourage committers to only use this option when they deem a change extremely safe.
+
+.. _gnips:
 
 GeoNode Improvement Proposals (GNIPS)
 -------------------------------------

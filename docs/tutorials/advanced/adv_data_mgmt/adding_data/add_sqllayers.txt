@@ -90,7 +90,7 @@ At this point the new WMS Layer is being published with GeoServer.
 
    .. warning:: As a rule of thumb use SQL parameter substitution only if the required functionality cannot be obtained with safer means, such as dynamic filtering (CQL filters) or SLD parameter substitution. Only use SQL parameters as a last resort, improperly validated parameters can open the door to `SQL injection attacks <http://en.wikipedia.org/wiki/SQL_injection>`_.
 
-A parametric SQL view is based on a SQL query containing parameters whose values can be dinamically provided along WMS or WFS requests. A parameter is bound by % signs, can have a default value, and should always have a validation regular expression.
+A parametric SQL view is based on a SQL query containing parameters whose values can be dynamically provided along WMS or WFS requests. A parameter is bound by % signs, can have a default value, and should always have a validation regular expression.
 
 #. In order to create a parametric SQL view performs the steps 1 and 2 like before and then insert the following parameters: 
 
@@ -110,7 +110,7 @@ A parametric SQL view is based on a SQL query containing parameters whose values
 
    .. note:: The query defines two parameters ``%MIN_OBS_YEAR%`` and ``%MAX_OBS_YEAR%``.
 
-#. Click on the :guilabel:`Guess parameters from SQL`. GeoServer will automatically create fields with the parameters spcified in the view: 
+#. Click on the :guilabel:`Guess parameters from SQL`. GeoServer will automatically create fields with the parameters specified in the view:
 
    .. figure:: img/sqlviews_parametricsql_guess_params.png
       

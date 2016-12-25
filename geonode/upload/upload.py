@@ -57,6 +57,7 @@ import shutil
 import os.path
 import logging
 import uuid
+import zipfile
 
 logger = logging.getLogger(__name__)
 
@@ -290,6 +291,10 @@ def save_step(user, layer, spatial_files, overwrite=True,
         next_id = max(int(last_importer_session), int(upload_next_id)) + 1
         next_id = max(int(last_importer_session), int(upload_next_id)) + 1
 
+        # Truncate name to maximum length defined by the field.
+        max_length = Upload._meta.get_field('name').max_length
+        name = name[:max_length]
+
         # save record of this whether valid or not - will help w/ debugging
         upload = Upload.objects.create(
             user=user,
@@ -383,16 +388,14 @@ def run_import(upload_session, async):
     import_session = upload_session.import_session
     import_session = gs_uploader.get_session(import_session.id)
     task = import_session.tasks[0]
+    import_execution_requested = False
     if import_session.state == 'INCOMPLETE':
         if task.state != 'ERROR':
             raise Exception('unknown item state: %s' % task.state)
     elif import_session.state == 'PENDING' and task.target.store_type == 'coverageStore':
         if task.state == 'READY':
             import_session.commit(async)
-
-    elif import_session.state == 'PENDING' and task.target.store_type == 'coverageStore':
-        if task.state == 'READY':
-            import_session.commit(async)
+            import_execution_requested = True
 
     # if a target datastore is configured, ensure the datastore exists
     # in geoserver and set the uploader target appropriately
@@ -426,7 +429,8 @@ def run_import(upload_session, async):
 
     _log('running import session')
     # run async if using a database
-    import_session.commit(async)
+    if not import_execution_requested:
+        import_session.commit(async)
 
     # @todo check status of import session - it may fail, but due to protocol,
     # this will not be reported during the commit
@@ -733,6 +737,13 @@ def final_step(upload_session, user):
     if xml_file:
         saved_layer.metadata_uploaded = True
         # get model properties from XML
+        # If it's contained within a zip, need to extract it
+        if upload_session.base_file.archive:
+            archive = upload_session.base_file.archive
+            zf = zipfile.ZipFile(archive, 'r')
+            zf.extract(xml_file[0], os.path.dirname(archive))
+            # Assign the absolute path to this file
+            xml_file[0] = os.path.dirname(archive) + '/' + xml_file[0]
         identifier, vals, regions, keywords = set_metadata(open(xml_file[0]).read())
 
         regions_resolved, regions_unresolved = resolve_regions(regions)
@@ -866,7 +877,6 @@ max\ connections={db_conn_max}"""
 
     if not append_to_mosaic_opts:
 
-        import zipfile
         z = zipfile.ZipFile(dirname + '/' + head + '.zip', "w")
 
         z.write(dst_file, arcname=head + "_" + mosaic_time_value + tail)

@@ -21,6 +21,7 @@
 from django.db import models
 from django.db.models import signals
 from django.contrib.sites.models import Site
+from django.conf import settings
 
 from geonode.base.models import ResourceBase
 from geonode.layers.models import Layer
@@ -98,13 +99,14 @@ def post_delete_profile(instance, sender, **kwargs):
 
 
 # Django doesn't propagate the signals to the parents so we need to add the listeners on the children
-signals.post_save.connect(post_save_resource, sender=Layer)
-signals.post_save.connect(post_save_resource, sender=Map)
-signals.post_save.connect(post_save_resource, sender=Document)
-signals.post_save.connect(post_save_site, sender=Site)
-signals.post_delete.connect(post_delete_resource, sender=Layer)
-signals.post_delete.connect(post_delete_resource, sender=Map)
-signals.post_delete.connect(post_delete_resource, sender=Document)
-signals.post_delete.connect(post_delete_site, sender=Site)
-signals.post_save.connect(post_save_profile, sender=Profile)
-signals.post_delete.connect(post_delete_profile, sender=Profile)
+if 'geonode.contrib.geosites' in settings.INSTALLED_APPS:
+    signals.post_save.connect(post_save_resource, sender=Layer)
+    signals.post_save.connect(post_save_resource, sender=Map)
+    signals.post_save.connect(post_save_resource, sender=Document)
+    signals.post_save.connect(post_save_site, sender=Site)
+    signals.post_delete.connect(post_delete_resource, sender=Layer)
+    signals.post_delete.connect(post_delete_resource, sender=Map)
+    signals.post_delete.connect(post_delete_resource, sender=Document)
+    signals.post_delete.connect(post_delete_site, sender=Site)
+    signals.post_save.connect(post_save_profile, sender=Profile)
+    signals.post_delete.connect(post_delete_profile, sender=Profile)

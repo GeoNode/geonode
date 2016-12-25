@@ -20,10 +20,10 @@ This chapter contains two sub-sections:
 
 Configuration
 -------------
-A vector footprint can be linked to an Imagemosaic in three different ways:
+A vector footprint can be linked to an ImageMosaic in three different ways:
 
 1.	By using for each mosaic granule a **Sidecar File**, a Shapefile with the same filename of the granule which contains the footprint for it;
-2.  By using a single Shapefile called **footprints.shp** which contains all the footprints for each granule; each feature contained in the shapefile represent a footprint for an Imagemosaic granule. Each footprint is associated to a granule with the *location* attribute;
+2.  By using a single Shapefile called **footprints.shp** which contains all the footprints for each granule; each feature contained in the shapefile represent a footprint for an ImageMosaic granule. Each footprint is associated to a granule with the *location* attribute;
 3.  By using a file called **footprints.properties**, this option add more flexibility to the option number 2. 
 
 The last option allows to write the following configuration inside the **footprints.properties** file::
@@ -61,7 +61,7 @@ There are three possible behaviours for Footprint:
 	
 	* *None*: simply doesn't use the Footprint and behaves like a standard ImageMosaic layer;
 	* *Transparent*: adds an alpha band of 0s on the image portions outside of the Footprint making them transparent, typically used for RGB data;
-	* *Cut*: set the background value on the image portions outside of the Footprint, typically used for GrayScale data.
+	* *Cut*: set the background value on the image portions outside of the Footprint, typically used for grayscale data.
 	
 The behaviour must be set directly on the Layer configuration page.
 
@@ -97,7 +97,7 @@ Here are presented a few steps for configuring a new ImageMosaic layer with foot
 1. Vector Footprint configured with a sidecar file
 ++++++++++++++++++++++++++++++++++++++++++++++++++
 
-Here the steps to load am Imagemosaic with a sidecar file as a vector footprint.
+Here the steps to load an ImageMosaic with a sidecar file as a vector footprint.
 
 Step 1: Create a new ImageMosaic Layer
 """""""""""""""""""""""""""""""""""""""""
@@ -178,7 +178,7 @@ For testing this functionality the user must
 
          In order to specify an inset and use a footprint shapefile with a custom name.
      
-	* Then publish the imagemosaic located in the cloned directory called ``mosaic_sample2``
+	* Then publish the ImageMosaic located in the cloned directory called ``mosaic_sample2``
 
 The result of setting **FootprintBehavior** to *Transparent*, Inset type to *border* and Inset value to 0.00001 is:
 

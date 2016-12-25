@@ -298,6 +298,7 @@
       url: $("#form_post_comment").attr('action'),
       data: $("#form_post_comment").serialize(),
       success: function() {
+        $('#form_post_comment_div').modal().find('form')[0].reset();
         $('#form_post_comment_div').modal('hide');
         $('#comments_section').load(window.location.pathname + ' #comments_section', 
         		function(){$(this).children().unwrap()})

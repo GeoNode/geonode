@@ -17,7 +17,7 @@ Run GeoExplorer in debug mode::
     $ cd geoexplorer
     $ ant debug
     
-Check if GeoExplore is running at this url: http://localhost:9080
+Check if GeoExplorer is running at this URL: http://localhost:9080
 
 Edit the ``layers/templates/layers/layer_geoext_map.html`` file and replace this 
 line::
