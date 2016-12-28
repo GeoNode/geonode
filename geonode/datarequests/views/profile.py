@@ -22,26 +22,6 @@ from urlparse import parse_qs
 class ProfileRequestList(LoginRequiredMixin, TemplateView):
     template_name = 'datarequests/profile_request_list.html'
     raise_exception = True
-    
-@login_required
-def profile_request_csv(request):
-    if not request.user.is_superuser:
-        return HttpResponseRedirect('/forbidden')
-
-    response = HttpResponse(content_type='text/csv')
-    datetoday = timezone.now()
-    response['Content-Disposition'] = 'attachment; filename="datarequests-"'+str(datetoday.month)+str(datetoday.day)+str(datetoday.year)+'.csv"'
-
-    writer = csv.writer(response)
-    fields = ['id','name','email','contact_number', 'organization', 'organization_type','organization_other', 'created','status', 'status changed','rejection_reason','has_data_request']
-    writer.writerow( fields)
-
-    objects = ProfileRequest.objects.all().order_by('pk')
-
-    for o in objects:
-        writer.writerow(o.to_values_list(fields))
-
-    return response
 
 @login_required    
 def profile_request_detail(request, pk, template='datarequests/profile_detail.html'):
