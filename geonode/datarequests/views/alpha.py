@@ -73,3 +73,24 @@ def requests_landing(request):
         return TemplateResponse(request, 'datarequests/requests_landing.html',{}, status=200).render()
     else:
         return HttpResponseRedirect(reverse('datarequests:data_request_browse'))
+
+@login_required
+def requests_csv(request):
+    if not request.user.is_superuser:
+        return HttpResponseRedirect("/forbidden")
+    else:
+        response = HttpResponse(content_type='text/csv')
+        datetoday = timezone.now()
+        response['Content-Disposition'] = 'attachment; filename="datarequests-"'+str(datetoday.month)+str(datetoday.day)+str(datetoday.year)+'.csv"'
+
+        writer = csv.writer(response)
+        fields = ['id','name','email','contact_number', 'organization', 'organization_type','organization_other', 'created','status', 'status changed','has_data_request', 'area_coverage','estimated_data_size', ]
+        writer.writerow( fields)
+
+        objects = ProfileRequest.objects.all().order_by('pk')
+
+        for o in objects:
+            writer.writerow(o.to_values_list(fields))
+
+        return response
+    
