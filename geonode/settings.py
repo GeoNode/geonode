@@ -311,6 +311,7 @@ INSTALLED_APPS = (
     'geoexplorer',
     'leaflet',
     'django_extensions',
+    'geonode-client',
     # 'haystack',
     'autocomplete_light',
     'mptt',
@@ -709,6 +710,7 @@ MAP_BASELAYERS = [{
     "source": {"ptype": "gxp_olsource"},
     "type": "OpenLayers.Layer",
     "args": ["No background"],
+    "name": "background",
     "visibility": False,
     "fixed": True,
     "group":"background"

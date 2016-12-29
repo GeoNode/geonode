@@ -345,7 +345,11 @@ def map_view(request, mapid, snapshot=None, template='maps/map_view.html'):
 
     return render_to_response(template, RequestContext(request, {
         'config': json.dumps(config),
-        'map': map_obj
+        'map': map_obj,
+        'preview': getattr(
+            settings,
+            'LAYER_PREVIEW_LIBRARY',
+            '')
     }))
 
 
@@ -430,14 +434,19 @@ def clean_config(conf):
         return conf
 
 
-def new_map(request, template='maps/map_view.html'):
+def new_map(request, template='maps/map_new.html'):
     config = new_map_config(request)
+    context_dict = {
+        'config': config,
+    }
+    context_dict["preview"] = getattr(
+        settings,
+        'LAYER_PREVIEW_LIBRARY',
+        '')
     if isinstance(config, HttpResponse):
         return config
     else:
-        return render_to_response(template, RequestContext(request, {
-            'config': config,
-        }))
+        return render_to_response(template, RequestContext(request, context_dict))
 
 
 def new_map_json(request):
