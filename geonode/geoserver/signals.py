@@ -71,6 +71,11 @@ def geoserver_pre_save(instance, sender, **kwargs):
     if getattr(instance, "service", None) is not None:
         return
 
+    # Don't run this signal handler if it is a tile layer
+    #    Currently only gpkg files containing tiles will have this type & will be served via MapProxy.
+    if hasattr(instance, 'storeType') and getattr(instance, 'storeType') == 'tileStore':
+        return
+
     gs_resource = None
 
     # If the store in None then it's a new instance from an upload,
@@ -173,6 +178,10 @@ def geoserver_post_save(instance, sender, **kwargs):
        The way keywords are implemented requires the layer
        to be saved to the database before accessing them.
     """
+    # Don't run this signal handler if it is a tile layer
+    #    Currently only gpkg files containing tiles will have this type & will be served via MapProxy.
+    if hasattr(instance, 'storeType') and getattr(instance, 'storeType') == 'tileStore':
+        return
 
     if type(instance) is ResourceBase:
         if hasattr(instance, 'layer'):
