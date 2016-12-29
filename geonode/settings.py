@@ -311,7 +311,7 @@ INSTALLED_APPS = (
     'geoexplorer',
     'leaflet',
     'django_extensions',
-    'geonode-client',
+    #'geonode-client',
     # 'haystack',
     'autocomplete_light',
     'mptt',
