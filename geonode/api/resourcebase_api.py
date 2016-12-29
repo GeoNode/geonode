@@ -454,6 +454,12 @@ class CommonModelApi(ModelResource):
             collection_name=self._meta.collection_name)
         to_be_serialized = paginator.page()
 
+        bundles = [
+            self.full_dehydrate(self.build_bundle(obj=obj, request=request), for_list=True)
+            for obj in to_be_serialized[self._meta.collection_name]
+        ]
+
+        to_be_serialized[self._meta.collection_name] = bundles
         to_be_serialized = self.alter_list_data_to_serialize(
             request,
             to_be_serialized)
@@ -472,40 +478,15 @@ class CommonModelApi(ModelResource):
 
         Mostly a useful shortcut/hook.
         """
-        VALUES = [
-            # fields in the db
-            'id',
-            'uuid',
-            'title',
-            'date',
-            'abstract',
-            'csw_wkt_geometry',
-            'csw_type',
-            'owner__username',
-            'share_count',
-            'popular_count',
-            'srid',
-            'category__gn_description',
-            'supplemental_information',
-            'thumbnail_url',
-            'detail_url',
-            'rating',
-        ]
 
         # If an user does not have at least view permissions, he won't be able to see the resource at all.
         filtered_objects_ids = None
         if response_objects:
             filtered_objects_ids = [item.id for item in response_objects if
                                     request.user.has_perm('view_resourcebase', item.get_self_resource())]
-        if isinstance(
-                data,
-                dict) and 'objects' in data and not isinstance(
-                data['objects'],
-                list):
-            if filtered_objects_ids:
-                data['objects'] = [x for x in list(data['objects'].values(*VALUES)) if x['id'] in filtered_objects_ids]
-            else:
-                data['objects'] = list(data['objects'].values(*VALUES))
+
+            for bundle in data:
+                data['objects'] = [x for x in data['objects'] if x.data['id'] in filtered_objects_ids]
 
         desired_format = self.determine_format(request)
         serialized = self.serialize(request, data, desired_format)
@@ -555,12 +536,33 @@ class LayerResource(CommonModelApi):
 
     """Layer API"""
 
+    geogig_link = fields.CharField(attribute='geogig_link', readonly=True, null=True)
+
     class Meta(CommonMetaApi):
         queryset = Layer.objects.distinct().order_by('-date')
         if settings.RESOURCE_PUBLISHING:
             queryset = queryset.filter(is_published=True)
         resource_name = 'layers'
         excludes = ['csw_anytext', 'metadata_xml']
+        fields = [
+            'id',
+            'uuid',
+            'title',
+            'date',
+            'abstract',
+            'csw_wkt_geometry',
+            'csw_type',
+            'owner__username',
+            'share_count',
+            'popular_count',
+            'srid',
+            'category__gn_description',
+            'supplemental_information',
+            'thumbnail_url',
+            'detail_url',
+            'rating',
+            'geogig_link',
+        ]
 
 
 class MapResource(CommonModelApi):
