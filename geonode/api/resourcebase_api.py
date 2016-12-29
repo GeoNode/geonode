@@ -34,6 +34,7 @@ from django.conf.urls import url
 from django.core.paginator import Paginator, InvalidPage
 from django.http import Http404
 from django.core.exceptions import ObjectDoesNotExist
+from django.forms.models import model_to_dict
 
 from tastypie.utils.mime import build_content_type
 
@@ -83,6 +84,25 @@ class CommonModelApi(ModelResource):
         null=True,
         full=True)
     owner = fields.ToOneField(ProfileResource, 'owner', full=True)
+    VALUES = [
+        # fields in the db
+        'id',
+        'uuid',
+        'title',
+        'date',
+        'abstract',
+        'csw_wkt_geometry',
+        'csw_type',
+        'owner__username',
+        'share_count',
+        'popular_count',
+        'srid',
+        'category__gn_description',
+        'supplemental_information',
+        'thumbnail_url',
+        'detail_url',
+        'rating',
+    ]
 
     def build_filters(self, filters=None):
         if filters is None:
@@ -460,6 +480,12 @@ class CommonModelApi(ModelResource):
 
         return self.create_response(request, to_be_serialized, response_objects=objects)
 
+    def format_objects(self, objects):
+        """
+        Format the objects for output in a response.
+        """
+        return objects.values(*self.VALUES)
+
     def create_response(
             self,
             request,
@@ -472,25 +498,6 @@ class CommonModelApi(ModelResource):
 
         Mostly a useful shortcut/hook.
         """
-        VALUES = [
-            # fields in the db
-            'id',
-            'uuid',
-            'title',
-            'date',
-            'abstract',
-            'csw_wkt_geometry',
-            'csw_type',
-            'owner__username',
-            'share_count',
-            'popular_count',
-            'srid',
-            'category__gn_description',
-            'supplemental_information',
-            'thumbnail_url',
-            'detail_url',
-            'rating',
-        ]
 
         # If an user does not have at least view permissions, he won't be able to see the resource at all.
         filtered_objects_ids = None
@@ -503,9 +510,10 @@ class CommonModelApi(ModelResource):
                 data['objects'],
                 list):
             if filtered_objects_ids:
-                data['objects'] = [x for x in list(data['objects'].values(*VALUES)) if x['id'] in filtered_objects_ids]
+                data['objects'] = [x for x in list(self.format_objects(data['objects']))
+                                   if x['id'] in filtered_objects_ids]
             else:
-                data['objects'] = list(data['objects'].values(*VALUES))
+                data['objects'] = list(self.format_objects(data['objects']))
 
         desired_format = self.determine_format(request)
         serialized = self.serialize(request, data, desired_format)
@@ -554,6 +562,20 @@ class FeaturedResourceBaseResource(CommonModelApi):
 class LayerResource(CommonModelApi):
 
     """Layer API"""
+
+    def format_objects(self, objects):
+        """
+        Formats the object then adds a geogig_link as necessary.
+        """
+        formatted_objects = []
+        for obj in objects:
+            # convert the object to a dict using the standard values.
+            formatted_obj = model_to_dict(obj, fields=self.VALUES)
+            # add the geogig link
+            formatted_obj['geogig_link'] = obj.geogig_link
+            # put the object on the response stack
+            formatted_objects.append(formatted_obj)
+        return formatted_objects
 
     class Meta(CommonMetaApi):
         queryset = Layer.objects.distinct().order_by('-date')
