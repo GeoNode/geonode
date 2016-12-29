@@ -438,7 +438,7 @@ def new_map(request, template='maps/map_new.html'):
     config = new_map_config(request)
     context_dict = {
         'config': config,
-    };
+    }
     context_dict["preview"] = getattr(
         settings,
         'LAYER_PREVIEW_LIBRARY',
