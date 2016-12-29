@@ -510,7 +510,8 @@ class CommonModelApi(ModelResource):
                 data['objects'],
                 list):
             if filtered_objects_ids:
-                data['objects'] = [x for x in list(self.format_objects(data['objects'])) if x['id'] in filtered_objects_ids]
+                data['objects'] = [x for x in list(self.format_objects(data['objects']))
+                                   if x['id'] in filtered_objects_ids]
             else:
                 data['objects'] = list(self.format_objects(data['objects']))
 
