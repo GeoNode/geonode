@@ -27,6 +27,7 @@ from django.core.urlresolvers import reverse
 from django.contrib.contenttypes.models import ContentType
 from django.conf import settings
 from django.db.models import Count
+from django.utils.translation import get_language
 
 from avatar.templatetags.avatar_tags import avatar_url
 from guardian.shortcuts import get_objects_for_user
@@ -34,12 +35,14 @@ from guardian.shortcuts import get_objects_for_user
 from geonode.base.models import ResourceBase
 from geonode.base.models import TopicCategory
 from geonode.base.models import Region
+from geonode.base.models import HierarchicalKeyword
+from geonode.base.models import ThesaurusKeywordLabel
+
 from geonode.layers.models import Layer
 from geonode.maps.models import Map
 from geonode.documents.models import Document
 from geonode.groups.models import GroupProfile
 
-from geonode.base.models import HierarchicalKeyword
 from django.core.serializers.json import DjangoJSONEncoder
 from tastypie.serializers import Serializer
 from tastypie import fields
@@ -142,6 +145,61 @@ class TagResource(TypeFilteredResource):
         allowed_methods = ['get']
         filtering = {
             'slug': ALL,
+        }
+        serializer = CountJSONSerializer()
+
+
+class ThesaurusKeywordResource(TypeFilteredResource):
+    """ThesaurusKeyword api"""
+
+    thesaurus_identifier = fields.CharField(null=False)
+    label_id = fields.CharField(null=False)
+
+    def build_filters(self, filters={}):
+        """adds filtering by current language"""
+
+        id = filters.pop('id', None)
+
+        orm_filters = super(ThesaurusKeywordResource, self).build_filters(filters)
+
+        if id is not None:
+            orm_filters['keyword__id'] = id
+
+        orm_filters['lang'] = filters['lang'] if 'lang' in filters else get_language()
+
+        if 'thesaurus' in filters:
+            orm_filters['keyword__thesaurus__identifier'] = filters['thesaurus']
+
+        return orm_filters
+
+    def serialize(self, request, data, format, options={}):
+        options['count_type'] = 'tkeywords__id'
+
+        return super(ThesaurusKeywordResource, self).serialize(request, data, format, options)
+
+    def dehydrate_id(self, bundle):
+        return bundle.obj.keyword.id
+
+    def dehydrate_label_id(self, bundle):
+        return bundle.obj.id
+
+    def dehydrate_thesaurus_identifier(self, bundle):
+        return bundle.obj.keyword.thesaurus.identifier
+
+    class Meta:
+        queryset = ThesaurusKeywordLabel.objects \
+                                        .all() \
+                                        .order_by('label') \
+                                        .select_related('keyword') \
+                                        .select_related('keyword__thesaurus')
+
+        resource_name = 'thesaurus/keywords'
+        allowed_methods = ['get']
+        filtering = {
+            'id': ALL,
+            'label': ALL,
+            'lang': ALL,
+            'thesaurus': ALL,
         }
         serializer = CountJSONSerializer()
 

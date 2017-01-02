@@ -315,6 +315,71 @@ class _HierarchicalTagManager(_TaggableManager):
             self.through.objects.get_or_create(tag=tag, **self._lookup_kwargs())
 
 
+class Thesaurus(models.Model):
+    """
+    Loadable thesaurus containing keywords in different languages
+    """
+    identifier = models.CharField(max_length=255, null=False, blank=False, unique=True)
+
+    # read from the RDF file
+    title = models.CharField(max_length=255, null=False, blank=False)
+    # read from the RDF file
+    date = models.CharField(max_length=20, default='')
+    # read from the RDF file
+    description = models.TextField(max_length=255, default='')
+
+    slug = models.CharField(max_length=64, default='')
+
+    def __unicode__(self):
+        return u"{0}".format(self.identifier)
+
+    class Meta:
+        ordering = ("identifier",)
+        verbose_name_plural = 'Thesauri'
+
+
+class ThesaurusKeyword(models.Model):
+    """
+    Loadable thesaurus containing keywords in different languages
+    """
+    # read from the RDF file
+    about = models.CharField(max_length=255, null=True, blank=True)
+    # read from the RDF file
+    alt_label = models.CharField(max_length=255, default='', null=True, blank=True)
+
+    thesaurus = models.ForeignKey('Thesaurus', related_name='thesaurus')
+
+    def __unicode__(self):
+        return u"{0}".format(self.alt_label)
+
+    class Meta:
+        ordering = ("alt_label",)
+        verbose_name_plural = 'Thesaurus Keywords'
+        unique_together = (("thesaurus", "alt_label"),)
+
+
+class ThesaurusKeywordLabel(models.Model):
+    """
+    Loadable thesaurus containing keywords in different languages
+    """
+
+    # read from the RDF file
+    lang = models.CharField(max_length=3)
+    # read from the RDF file
+    label = models.CharField(max_length=255)
+#    note  = models.CharField(max_length=511)
+
+    keyword = models.ForeignKey('ThesaurusKeyword', related_name='keyword')
+
+    def __unicode__(self):
+        return u"{0}".format(self.label)
+
+    class Meta:
+        ordering = ("keyword", "lang")
+        verbose_name_plural = 'Labels'
+        unique_together = (("keyword", "lang"),)
+
+
 class ResourceBaseManager(PolymorphicManager):
     def admin_contact(self):
         # this assumes there is at least one superuser
@@ -347,6 +412,8 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
                                         'it is first produced')
     keywords_help_text = _('commonly used word(s) or formalised word(s) or phrase(s) used to describe the subject '
                            '(space or comma-separated')
+    tkeywords_help_text = _('formalised word(s) or phrase(s) from a fixed thesaurus used to describe the subject '
+                            '(space or comma-separated')
     regions_help_text = _('keyword identifies a location')
     restriction_code_type_help_text = _('limitation(s) placed upon the access or use of the data.')
     constraints_other_help_text = _('other restrictions and legal prerequisites for accessing and using the resource or'
@@ -377,6 +444,7 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
 
     keywords = TaggableManager(_('keywords'), through=TaggedContentItem, blank=True, help_text=keywords_help_text,
                                manager=_HierarchicalTagManager)
+    tkeywords = models.ManyToManyField(ThesaurusKeyword, help_text=tkeywords_help_text)
     regions = models.ManyToManyField(Region, verbose_name=_('keywords region'), blank=True,
                                      help_text=regions_help_text)
 
