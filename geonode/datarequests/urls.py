@@ -7,6 +7,7 @@ urlpatterns = patterns(
     
     #url for landing page for profile and data requests
     url(r'^/?$','requests_landing',name='requests_landing'),
+    url(r'^/requests_csv/$','requests_csv',name='requests_csv'),
     
     #urls for registration
     url(r'^register/$','register',name='request_register'),
@@ -17,7 +18,7 @@ urlpatterns = patterns(
 
     #urls for profile requests
     url(r'^profile/$', ProfileRequestList.as_view(), name='profile_request_browse'),
-    url(r'^profile_requests_csv/$', 'profile_request_csv', name='profile_request_csv'),
+    url(r'^profile_requests_csv/$', 'profile_requests_csv', name='profile_requests_csv'),
     
     url(r'^profile/(?P<pk>\d+)/$', 'profile_request_detail', name="profile_request_detail"),
     url(r'^profile/(?P<pk>\d+)/approve/$', 'profile_request_approve', name="profile_request_approve"),
@@ -29,7 +30,7 @@ urlpatterns = patterns(
     
     #urls for datarequests
     url(r'^data/$', DataRequestList.as_view(), name='data_request_browse'),
-    url(r'^data/requests_csv/$', 'data_request_csv', name='data_request_csv'),
+    url(r'^data/data_requests_csv/$', 'data_requests_csv', name='data_requests_csv'),
     url(r'^data/compute_size/$','data_request_compute_size_all', name='data_request_compute_size_all'),
     url(r'^data/reverse_geocode/$','data_request_reverse_geocode_all', name='data_request_reverse_geocode_all'),
     
