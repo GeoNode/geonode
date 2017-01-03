@@ -1,3 +1,4 @@
+from django.utils import timezone
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse, HttpResponseRedirect, Http404
@@ -18,6 +19,8 @@ from geonode.datarequests.models import (
 
 from pprint import pprint
 from urlparse import parse_qs
+
+import csv
 
 class ProfileRequestList(LoginRequiredMixin, TemplateView):
     template_name = 'datarequests/profile_request_list.html'
@@ -166,6 +169,26 @@ def profile_request_cancel(request,pk):
         status=200,
         mimetype='text/plain'
     )
+
+@login_required    
+def profile_requests_csv(request):
+    if not request.user.is_superuser:
+        return HttpResponseRedirect("/forbidden")
+    else:
+        response = HttpResponse(content_type='text/csv')
+        datetoday = timezone.now()
+        response['Content-Disposition'] = 'attachment; filename="profilerequests-"'+str(datetoday.month)+str(datetoday.day)+str(datetoday.year)+'.csv"'
+
+        writer = csv.writer(response)
+        fields = ['id','name','email','contact_number', 'organization', 'organization_type','organization_other', 'created','status', 'status changed','has_data_request', 'place_name', 'area_coverage','estimated_data_size', ]
+        writer.writerow( fields)
+
+        objects = ProfileRequest.objects.all().order_by('pk')
+
+        for o in objects:
+            writer.writerow(o.to_values_list(fields))
+        
+        return response
 
 def profile_request_facet_count(request):
     if not request.user.is_superuser:

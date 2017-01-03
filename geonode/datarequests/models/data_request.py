@@ -161,6 +161,12 @@ class DataRequest(BaseRequest):
             return self.profile.last_name
         if self.profile_request:
             return self.profile_request.last_name
+            
+    def get_email(self):
+        if self.profile:
+            return self.profile.email
+        if self.profile_request:
+            return self.profile_request.email
     
     def get_contact_number(self):
         if self.profile:
@@ -180,7 +186,7 @@ class DataRequest(BaseRequest):
         else:
             return None
     
-    def to_values_list(self, fields=['id','name','email','contact_number', 'organization', 'project_summary', 'created','status', 'data_size','area_coverage']):
+    def to_values_list(self, fields=['id','name','email','contact_number', 'organization', 'project_summary', 'created','status', 'data_size','area_coverage','has_profile_request']):
         out = []
         for f in fields:
             if f  is 'id':
@@ -189,6 +195,12 @@ class DataRequest(BaseRequest):
                 first_name = unidecode(self.get_first_name())
                 last_name = unidecode(self.get_last_name())
                 out.append(first_name+" "+last_name)
+            elif f is 'email':
+                out.append(self.get_email())
+            elif f is 'contact_number':
+                out.append(self.get_contact_number())
+            elif f is 'organization':
+                out.append(self.get_organization())
             elif f is 'created':
                 created = getattr(self, f)
                 out.append( str(created.month) +"/"+str(created.day)+"/"+str(created.year))
@@ -199,7 +211,7 @@ class DataRequest(BaseRequest):
                 else:
                     out.append('')
             elif f is 'organization_type':
-                out.append(self.get_organization_type)
+                out.append(self.get_organization_type())
             elif f is 'has_letter':
                 if self.request_letter:
                     out.append('yes')
@@ -212,10 +224,22 @@ class DataRequest(BaseRequest):
                     out.append('no')
             elif f is 'rejection_reason':
                 out.append(str(getattr(self,'rejection_reason')))
+            elif f is 'place_name':
+                out.append(str(getattr(self,'place_name')))
             elif f is 'juris_data_size':
                 out.append(str(getattr(self,'juris_data_size')))
             elif f is 'area_coverage':
                 out.append(str(getattr(self,'area_coverage')))
+            elif f is 'has_profile_request':
+                if self.profile_request:
+                    out.append('yes')
+                else:
+                    out.append('no')
+            elif f is 'has_account':
+                if self.profile:
+                    out.append('yes')
+                else:
+                    out.append('no')
             else:
                 val = getattr(self, f)
                 if isinstance(val, unicode):

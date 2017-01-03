@@ -9,6 +9,9 @@
 
 {% block body %}
 <div class="page-header">
+    {% if request.user.is_superuser %}
+        <a href="{% url 'datarequests:profile_requests_csv' %}" class="btn btn-primary pull-right">{% trans "Download CSV" %}</a>
+    {% endif %}
   <h2 class="page-title">{% trans "Profile Requests" %}</h2>
 </div>
   {% with include_type_filter='true' %}
