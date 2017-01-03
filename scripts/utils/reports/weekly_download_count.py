@@ -5,6 +5,7 @@ from geonode.eula.models import AnonDownloader
 from geonode.reports.models import DownloadCount, SUCLuzViMin
 from datetime import datetime, timedelta
 from geonode.layers.models import Layer
+from geonode.cephgeo.models import FTPRequest, FTPRequestToObjectIndex, DataClassification
 
 layer_count = {}
 
@@ -89,6 +90,12 @@ for anon in anon_list:
         add_to_count('monthly', anon.anon_layer.typename)
     elif datetoappend == datetime.strptime(anon.date.strftime('%U-%Y')+'-3','%U-%Y-%w') and anon.anon_document:#if datenow is timestamp
         add_to_monthlyc('monthly')
+ftp_list = FTPRequest.objects.all().order_by('date_time')
+for ftp in ftp_list:
+    if datetoappend == datetime.strptime(ftp.date_time.strftime('%U-%Y')+'-3','%U-%Y-%w'):
+        type_list = FTPRequestToObjectIndex.objects.filter(ftprequest=ftp.id)
+        for eachtype in type_list:
+            add_to_count('monthly', DataClassification.gs_feature_labels[eachtype.cephobject._enum_data_class].lower())
 print(layer_count)
 
 
