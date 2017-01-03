@@ -393,6 +393,7 @@ LOGGING = {
 # Django automatically includes the "templates" dir in all the INSTALLED_APPS.
 TEMPLATES = [
     {
+        'NAME': 'GeoNode Project Templates',
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
         'DIRS': [os.path.join(PROJECT_ROOT, "templates")],
         'APP_DIRS': True,
@@ -1060,4 +1061,3 @@ if 'geonode.geoserver' in INSTALLED_APPS:
 # Required: (boolean, optional, default false) mandatory while editing metadata (not implemented yet)
 # Filter: (boolean, optional, default false) a filter option on that thesaurus will appear in the main search page
 THESAURI = []
-
