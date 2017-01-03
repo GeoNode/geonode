@@ -1,3 +1,4 @@
+from django.utils import timezone
 from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
@@ -26,8 +27,10 @@ from geonode.utils import GXPLayer, GXPMap
 
 from pprint import pprint
 
+import csv
+
 @login_required
-def data_request_csv(request):
+def data_requests_csv(request):
     if not request.user.is_superuser:
         return HttpResponseRedirect('/forbidden')
 
@@ -36,7 +39,7 @@ def data_request_csv(request):
     response['Content-Disposition'] = 'attachment; filename="datarequests-"'+str(datetoday.month)+str(datetoday.day)+str(datetoday.year)+'.csv"'
 
     writer = csv.writer(response)
-    fields = ['id','name','email','contact_number', 'organization', 'organization_type','organization_other','has_letter','has_shapefile','project_summary', 'created','status', 'status changed','rejection_reason','juris_data_size','area_coverage']
+    fields = ['id','name','email','contact_number', 'organization', 'organization_type','has_profile_request','has_letter','has_shapefile','project_summary', 'created','status', 'status_changed','rejection_reason','juris_data_size','area_coverage']
     writer.writerow( fields)
 
     objects = DataRequest.objects.all().order_by('pk')

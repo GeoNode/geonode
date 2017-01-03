@@ -293,16 +293,37 @@ class ProfileRequest(BaseRequest):
             elif f is 'created':
                 created = getattr(self, f)
                 out.append( str(created.month) +"/"+str(created.day)+"/"+str(created.year))
-            elif f == 'status update':
-                status_changed = getattr(self, 'status_changed')
+            elif f == 'status update' or f == 'status changed':
+                status_changed = self.status_changed
                 if status_changed:
                     out.append(str(status_changed.month)+"/"+str(status_changed.day)+"/"+str(status_changed.year))
                 else:
-                    out.append(self.get_organization_type())
+                    out.append(str(None))
             elif f is 'organization_type':
-                out.append()
+                organization_type  = self.get_organization_type()
+                out.append(organization_type)
             elif f is 'rejection_reason':
                 out.append(str(getattr(self,'rejection_reason')))
+            elif f is 'has_data_request':
+                if self.data_request:
+                    out.append('yes')
+                else:
+                    out.append('no')
+            elif f is 'place_name':
+                if self.data_request:
+                    out.append(self.data_request.place_name)
+                else:
+                    out.append("NA")
+            elif f is 'area_coverage':
+                if self.data_request:
+                    out.append(self.data_request.area_coverage)
+                else:
+                    out.append("NA")
+            elif f is 'estimated_data_size':
+                if self.data_request:
+                    out.append(self.data_request.juris_data_size)
+                else:
+                    out.append("NA")
             else:
                 val = getattr(self, f)
                 if isinstance(val, unicode):

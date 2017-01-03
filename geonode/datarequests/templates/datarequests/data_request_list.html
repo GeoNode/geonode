@@ -10,7 +10,7 @@
 {% block body %}
 <div class="page-header">
     {% if request.user.is_superuser %}
-        <a href="{% url 'datarequests:data_request_csv' %}" class="btn btn-primary pull-right">{% trans "Download CSV" %}</a>
+        <a href="{% url 'datarequests:data_requests_csv' %}" class="btn btn-primary pull-right">{% trans "Download CSV" %}</a>
         <a href="{% url 'datarequests:data_request_compute_size_all' %}" class="btn btn-primary pull-right">{% trans "Compute Request Sizes" %}</a>
         <a href="{% url 'datarequests:data_request_reverse_geocode_all' %}" class="btn btn-primary pull-right">{% trans "Assign Place Names" %}</a>
     {% endif %}
