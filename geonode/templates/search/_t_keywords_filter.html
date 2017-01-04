@@ -1,0 +1,28 @@
+{% load i18n %}
+
+<div id="tkeywords">
+{% for tname in THESAURI_FILTERS %}
+
+<nav class="filter">
+  <h4><a href="#" class="toggle toggle-nav"><i class="fa fa-chevron-right"></i> Thesaurus: {{ tname }}</a></h4>
+  <ul class="nav closed" id="tkeywords_{{ tname }}">
+      <li ng-repeat="tk in tkeywords" ng-if="tk.count > 0 && tk.thesaurus_identifier == '{{ tname }}'">
+    {% verbatim %}
+        <a data-value="{{ tk.id }}"
+           data-filter="tkeywords__id__in"
+           ng-click="multiple_choice_listener($event)"
+           class="{{tk.active}}">{{ tk.label | limitTo: 25 }}{{ tk.label.length > 25 ? '...' : ''}}
+            <span class="badge pull-right">{{ tk.count }}</span>
+        </a>
+      </li>
+    {% endverbatim %}
+  </ul>
+
+</nav>
+
+{% endfor %}
+
+</div>
+
+
+

@@ -45,7 +45,7 @@ Introduction
 
 GeoServer, i.e. the geospatial backend server of GeoNode, is a sptial server which needs authenticated users in order to access protected resources or administration functions.
 
-GeoServer supports several kind of Authentication and Authorization mechanisms. Those systems are pluggable and GeoServer can use them at the same time by the use of a ``Filter Chain``. 
+GeoServer supports several kind of Authentication and Authorization mechanisms. Those systems are pluggable and GeoServer can use them at the same time by the use of a ``Filter Chain``.
 Briefly this mechanism allows GeoServer to check for different A&A protocols one by one. The first one matching is used by GeoServer to authorize the users.
 
 GeoNode Authentication is based by default on Django Security Subsystem. Django authentication allows GeoNode to manage its internal users, groups, roles and sessions.
@@ -60,8 +60,8 @@ Before going deeply on how GeoServer/GeoNode A&A works and how it can be configu
 Authentication
 ^^^^^^^^^^^^^^
 
-Authentication is the process of verifying the identity of someone through the use of some sort of credentials and an handshake protocol. 
-If the credentials are valid, the authorization process starts. Authentication process always proceeds to Authorization process (although they may often seem to be combined). 
+Authentication is the process of verifying the identity of someone through the use of some sort of credentials and an handshake protocol.
+If the credentials are valid, the authorization process starts. Authentication process always proceeds to Authorization process (although they may often seem to be combined).
 The two terms are often used synonymously but they are two different processes.
 
 For more details and explanation about the authentication concepts, take a look `here <http://searchsecurity.techtarget.com/definition/authentication>`_.
@@ -69,7 +69,7 @@ For more details and explanation about the authentication concepts, take a look 
 Authorization
 ^^^^^^^^^^^^^
 
-Authorization is the process of allowing authenticated users to access protected resources by checking its roles and rights against some sort of security rules mechanism or protocol. 
+Authorization is the process of allowing authenticated users to access protected resources by checking its roles and rights against some sort of security rules mechanism or protocol.
 In other words it allows to control access rights by granting or denying specific permissions to specific authorized users.
 
 GeoNode Security Backend
@@ -78,7 +78,7 @@ GeoNode Security Backend
 DJango Authentication
 ^^^^^^^^^^^^^^^^^^^^^
 
-The Django authentication system handles both authentication and authorization. 
+The Django authentication system handles both authentication and authorization.
 
 The auth system consists of:
 
@@ -119,7 +119,7 @@ If in doubt, please use the default values here below.
 Default values are:
 
 .. code-block:: python
-    
+
     ...
     # OGC (WMS/WFS/WCS) Server Settings
     # OGC (WMS/WFS/WCS) Server Settings
@@ -161,7 +161,7 @@ In particular GeoServer is configured with a ``Filter Chain`` for Authorization 
     #. **Basic Authentication**; this is the default GeoServer Authentication mechanism. This makes use of `rfc2617 - Basic and Digest Access Authentication <https://tools.ietf.org/html/rfc2617>`_ in order to check for user's credentials.
         In other words, GeoServer takes a ``username`` and a ``password`` encoded `Base64 <https://tools.ietf.org/html/rfc4648>`_ on the HTTP Request Headers and compare them against its internal database (which by default is an encrypted XML file on the GeoServer Data Dir).
         If the user's credentials match, then GeoServer checks for Authorization through its ``Role Services`` (we will see those services in details on the *GeoServer (Security Backend)* section below).
-        
+
         .. note:: GeoServer ships by default with ``admin`` and ``geoserver`` as the default administrator user name and password. Before putting the GeoServer on-line it is imperative to change at least the administrator password.
 
     #. **OAuth2 Authentication**; this module allows GeoServer to authenticate against the `OAuth2 Protocol <https://tools.ietf.org/html/rfc6749>`_. If the Basic Authentication fails, GeoServer falls back to this by using GeoNode as OAuth2 Provider by default.
@@ -186,7 +186,7 @@ GeoServer must know and must be able to access GeoNode via HTTP/HTTPS. In other 
 
     *GeoServer as OAuth2 Relying Party (RP)*
 
-    Thanks to the **OAuth2 Authentication** GeoServer is able to retrieve an end user's identity directly from the OAuth2 Provider (OP). 
+    Thanks to the **OAuth2 Authentication** GeoServer is able to retrieve an end user's identity directly from the OAuth2 Provider (OP).
 
     With GeoNode acting as an OP, the mechanism will avoid the use of cookies relying, instead, on the OAuth2 secure protocol.
 
@@ -211,10 +211,10 @@ GeoServer must know and must be able to access GeoNode via HTTP/HTTPS. In other 
     On GeoServer side we will still need to a ``RoleService`` which would be able to talk to GeoNode and transform the tokens into a User Principal to be used within the GeoServer Security subsystem itself.
 
     In other words after a successfull Authentication, GeoServer needs to Authorize the user in order to understand which resources he is enable to access or not.
-    A ``REST based RoleService`` on GeoNode side, allows GeoServer to talk to GeoNode via `REST <https://en.wikipedia.org/wiki/Representational_state_transfer>`_ to get the current user along with the list of its Roles. 
-    
+    A ``REST based RoleService`` on GeoNode side, allows GeoServer to talk to GeoNode via `REST <https://en.wikipedia.org/wiki/Representational_state_transfer>`_ to get the current user along with the list of its Roles.
+
     Nevertheless knowning the Roles associated to a user is not sufficient. The complete GeoServer Authorization needs to catch a set of ``Access Rules``, associdated to the Roles, in order to establish which resources and data are accessible by the user.
-    
+
     The GeoServer Authorization is based on Roles only, therefore for each authenticated user we need also to know:
 
         1. The Roles associated to a valid user session
@@ -231,14 +231,14 @@ GeoServer must know and must be able to access GeoNode via HTTP/HTTPS. In other 
     The advantages using such plugin are multiple:
 
         1. The Authorizations rules have a fine granularity. The security rules are handled by GeoFence in a way similar to the iptables ones, and allow to define security constraints even on sub-regions and attributes of layers.
-        
+
         2. GeoFence exposes a REST interface to its internal rule database, allowing external managers to update the security constraints programmatically
-        
+
         3. GeoFence implements an internal caching mechanism which improves considerably the performances under load.
-        
+
     *GeoNode interaction with GeoFence*
 
-    GeoNode itself is able to push/manage Authorization rules to GeoServer through the GeoFence `REST API <https://github.com/geoserver/geofence/wiki/REST-API>`_, acting as an administrator for GeoServer. 
+    GeoNode itself is able to push/manage Authorization rules to GeoServer through the GeoFence `REST API <https://github.com/geoserver/geofence/wiki/REST-API>`_, acting as an administrator for GeoServer.
     GeoNode properly configures the GeoFence rules anytime it is needed, i.e. the permissions of a Resource / Layer are updated.
 
 GeoServer must know and must be able to access GeoNode via HTTP/HTTPS. In other words, an external user connected to GeoNode must be authenticated to GeoServer with same permissions. This is possible through the **GeoNodeCoockieProcessingFiler**.
@@ -248,7 +248,7 @@ Summarizing we will have different ways to access GeoNode Layers:
 #. Through GeoNode via DJango Authentication and **GeoNodeCoockieProcessingFiler**; basically the users available in GeoNode are also valid for GeoServer or any other backend.
 
     .. warning:: If a GeoNode user has "administrator" rights, he will be able to administer GeoServer too.
-    
+
 #. Through GeoServer Security Subsystem; it will be always possible to access to GeoServer using its internal security system and users, unless explictly disabled (**warning** this is dangeruos, you must know what you are doing).
 
 Lets now see in details how the single pieces are configured and how they can be configured.
@@ -279,7 +279,7 @@ Default values are:
     ...
     AUTH_IP_WHITELIST = []
     ...
-    
+
 INSTALLED_APPS
 --------------
 
@@ -335,7 +335,6 @@ Default values are:
         # SessionAuthenticationMiddleware is NOT required for using django-oauth-toolkit.
         'django.contrib.auth.middleware.SessionAuthenticationMiddleware',
         'oauth2_provider.middleware.OAuth2TokenMiddleware',
-        'corsheaders.middleware.CorsMiddleware',
     )
     ...
 
@@ -377,84 +376,84 @@ Once the ``settings.py`` and ``local_settings.py`` have been correctly configure
 #. Complete the GeoNode setup steps
 
     * Prepare the model
-    
+
         .. code-block:: python
-        
+
             python manage.py makemigrations
             python manage.py migrate
             python manage.py syncdb
 
     * Prepare the static data
-    
+
         .. code-block:: python
-        
+
             python manage.py collectstatic
 
     * Make sure the database has been populated with initial default data
-    
+
         .. warning:: *Deprecated* this command will be replaced by migrations in the future, so be careful.
-        
+
         .. code-block:: python
-        
+
             python manage.py loaddata initial_data.json
 
     * Make sure there exists a superuser for your environment
-    
+
         .. warning:: *Deprecated* this command will be replaced by migrations in the future, so be careful.
-        
+
         .. code-block:: python
-        
+
             python manage.py createsuperuser
 
     .. note:: Read the base tutorials on GeoNode Developer documentation for details on the specific commands and how to use them.
-    
+
 #. Start the application
 
     Start GeoNode accordingly on how the setup has been done; run debug mode through ``paver``, or proxied by an HTTP Server like Apache2 HTTPD, Nginx or others.
-    
+
 #. Finalize the setup of the OAuth2 Provider
 
     First of all you need to configure and create a new OAuth2 Application called ``GeoServer`` through the GeoNode Admin Dashboard
-    
+
     * Access the GeoNode Admin Dashboard
-    
+
         .. figure:: img/oauth002.png
-        
+
     * Go to ``Django OAuth Toolkit`` > ``Applications``
-    
+
         .. figure:: img/oauth003.png
-        
+
     * Update or create the Application named ``GeoServer``
-    
+
         .. warning:: The Application name **must** be ``GeoServer``
-    
+
         .. figure:: img/oauth004.png
-        
+
         - ``Client id``; An alphanumeric code representing the OAuth2 Client Id. GeoServer OAuth2 Plugin **will** use **this** value.
-        
+
             .. warning:: In a production environment it is **highly** recommended to modify the default value provided with GeoNode installation.
-            
+
         - ``User``; Search for the ``admin`` user. Its ``ID`` will be automatically updated into the form.
-        
+
         - ``Redirect uris``; It is possible to specify many URIs here. Those must coincide with the GeoServer instances URIs.
-        
+
         - ``Client type``; Choose ``Confidential``
-        
+
         - ``Authorization grant type``; Choose ``Authorization code``
-        
+
         - ``Client secret``; An alphanumeric code representing the OAuth2 Client Secret. GeoServer OAuth2 Plugin **will** use **this** value.
-        
+
             .. warning:: In a production environment it is **highly** recommended to modify the default value provided with GeoNode installation.
-            
+
         - ``Name``; **Must** be ``GeoServer``
-        
+
 GeoServer Security Backend
 ==========================
 
 GeoServer Security Subsystem
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-GeoServer has a robust security subsystem, modeled on Spring Security. Most of the security features are available through the Web administration interface. 
+GeoServer has a robust security subsystem, modeled on Spring Security. Most of the security features are available through the Web administration interface.
 
 For more details on how this works and how to configure and modify it, please refer to the official GeoServer guide http://docs.geoserver.org/stable/en/user/security/webadmin/index.html
 
@@ -489,51 +488,51 @@ Setup of the GeoNode REST Role Service
 #. Login as ``admin`` to the GeoServer GUI
 
     .. warning:: In a production system remember to change the default admin credentials ``admin`` \ ``geoserver``
-    
+
     .. figure:: img/oauth005.png
-    
+
 #. Access the ``Security`` > ``Users, Groups, Roles`` section
 
     .. figure:: img/oauth006.png
-    
+
 #. **If not yet configured** the service ``geonode REST role service``, click on ``Role Services`` > ``Add new``
 
     .. note:: This passage is **not** needed if the ``geonode REST role service`` has been already created. If so it will be displayed amond the Role Services list
-    
+
         .. figure:: img/oauth008.png
-        
+
     .. figure:: img/oauth007.png
-    
+
 #. **If not yet configured** the service ``geonode REST role service``, choose ``AuthKEY REST - Role service from REST endpoint``
 
     .. figure:: img/oauth009.png
-    
+
 #. Create / update the ``geonode REST role service`` accordingly
 
     .. figure:: img/oauth010.png
-    
+
     - ``Name``; **Must** be ``geonode REST role service``
-    
+
     - ``Base Server URL``; Must point to the GeoNode instance base URL (e.g. ``http://<geonode_host_url>``)
-    
+
     - ``Roles REST Endpoint``; Enter ``/api/roles``
-    
+
     - ``Admin Role REST Endpoint``; Enter ``/api/adminRole``
-    
+
     - ``Users REST Endpoint``; Enter ``/api/users``
-    
+
     - ``Roles JSON Path``; Enter ``$.groups``
-    
+
     - ``Admin Role JSON Path``; Enter ``$.adminRole``
-    
+
     - ``Users JSON Path``; Enter ``$.users[0].groups``
-    
+
     Once everything has been setup and it is working, choose the ``Administrator role`` and ``Group administrator role`` as ``ROLE_ADMIN``
 
 #. Access the ``Security`` > ``Settings`` section
 
     .. figure:: img/oauth011.png
-    
+
 #. Choose the ``geonode REST role service`` as ``Active role service``
 
     .. figure:: img/oauth012.png
@@ -558,51 +557,51 @@ Setup of the GeoNode OAuth2 Security Filter
 #. Access the ``Security`` > ``Authentication`` section
 
     .. figure:: img/oauth013.png
-    
+
 #. **If not yet configured** the Authentication Filter ``geonode-oauth2 - Authentication using a GeoNode OAuth2``, click on ``Authentication Filters`` > ``Add new``
 
     .. note:: This passage is **not** needed if the ``geonode-oauth2 - Authentication using a GeoNode OAuth2`` has been already created. If so it will be displayed amond the Authentication Filters list
-    
+
         .. figure:: img/oauth015.png
-        
+
     .. figure:: img/oauth014.png
 
 #. **If not yet configured** the Authentication Filter ``geonode-oauth2 - Authentication using a GeoNode OAuth2``, choose ``GeoNode OAuth2 - Authenticates by looking up for a valid GeoNode OAuth2 access_token key sent as URL parameter``
 
     .. figure:: img/oauth016.png
-    
+
 #. Create / update the ``geonode-oauth2 - Authentication using a GeoNode OAuth2`` accordingly
 
     .. figure:: img/oauth017.png
-    
+
     - ``Name``; **Must** be ``geonode-oauth2``
-    
+
     - ``Enable Redirect Authentication EntryPoint``; It is recommended to put this to ``False``, otherwise GeoServer won't allow you to connect to its Admin GUI through the ``Form`` but only through GeoNode
-    
+
     - ``Login Authentication EndPoint``; Unless you have specific needs, keep the default value ``/j_spring_oauth2_geonode_login``
-    
+
     - ``Logout Authentication EndPoint``; Unless you have specific needs, keep the default value ``/j_spring_oauth2_geonode_logout``
-    
+
     - ``Force Access Token URI HTTPS Secured Protocol``; This must be ``False`` unless you enabled a ``Secured Connection`` on GeoNode. In that case you will need to trust the GeoNode ``Certificate`` on the GeoServer JVM Kaystore. Please see details below
-    
+
     - ``Access Token URI``; Set this to ``http://<geonode_host_base_url>/o/token/``
-    
+
     - ``Force User Authorization URI HTTPS Secured Protocol``; This must be ``False`` unless you enabled a ``Secured Connection`` on GeoNode. In that case you will need to trust the GeoNode ``Certificate`` on the GeoServer JVM Kaystore. Please see details below
-    
+
     - ``User Authorization URI``; Set this to ``http://<geonode_host_base_url>/o/authorize/``
-    
+
     - ``Redirect URI``; Set this to ``http://<geoserver_host>/geoserver``. This address **must** be presenet on the ``Reditect uris`` of GeoNode ``OAuth2`` > ``Applications`` > ``GeoServer`` (see above)
-    
+
     - ``Check Token Endpoint URL``; Set this to ``http://<geonode_host_base_url>/api/o/v4/tokeninfo/``
-    
+
     - ``Logout URI``; Set this to ``http://<geonode_host_base_url>/account/logout/``
-    
+
     - ``Scopes``; Unless you have specific needs, keep the default value ``read,write,groups``
-    
+
     - ``Client ID``; The ``Client id`` alphanumeric key generated by the GeoNode ``OAuth2`` > ``Applications`` > ``GeoServer`` (see above)
-    
+
     - ``Client Secret``; The ``Client secret`` alphanumeric key generated by the GeoNode ``OAuth2`` > ``Applications`` > ``GeoServer`` (see above)
-    
+
     - ``Role source``; In order to authorize the user against GeoNode, choose ``Role service`` > ``geonode REST role service``
 
 Configuration of the GeoServer Filter Chains
@@ -610,7 +609,7 @@ Configuration of the GeoServer Filter Chains
 
 The following steps ensure GeoServer can adopt more Authentication methods. As stated above, it is possible to Authenticate to GeoServer using different protocols.
 
-GeoServer scans the authentication filters chain associated to the specified path and tries them one by one sequentially. 
+GeoServer scans the authentication filters chain associated to the specified path and tries them one by one sequentially.
 The first one matching the protocol and able to grant access to the user, breaks the cycle by creating a ``User Principal`` and injecting it into the GeoServer ``SecurityContext``.
 The Authentication process, then, ends here and the control goes to the Authorization one, which will try to retrieve the authenticated user's Roles through the available GeoServer Role Services associated to the Authentication Filter that granted the access.
 
@@ -629,7 +628,7 @@ Setup of the GeoServer Filter Chains
 #. Access the ``Security`` > ``Authentication`` section
 
     .. figure:: img/oauth013.png
-    
+
 #. Identify the section ``Filter Chains``
 
     .. figure:: img/oauth018.png
@@ -637,52 +636,52 @@ Setup of the GeoServer Filter Chains
 #. Make sure the ``web`` Filter Chain is configured as shown below
 
     .. figure:: img/oauth019.png
-    
+
     .. warning:: Every time you modify a Filter Chain, **don't forget to save** the ``Authentication`` settings. This **must** be done for **each** change.
-    
+
         .. figure:: img/oauth020.png
 
 #. Make sure the ``rest`` Filter Chain is configured as shown below
 
     .. figure:: img/oauth021.png
-    
+
     .. warning:: Every time you modify a Filter Chain, **don't forget to save** the ``Authentication`` settings. This **must** be done for **each** change.
-    
+
         .. figure:: img/oauth020.png
 
 #. Make sure the ``gwc`` Filter Chain is configured as shown below
 
     .. figure:: img/oauth022.png
-    
+
     .. warning:: Every time you modify a Filter Chain, **don't forget to save** the ``Authentication`` settings. This **must** be done for **each** change.
-    
+
         .. figure:: img/oauth020.png
 
 #. Make sure the ``default`` Filter Chain is configured as shown below
 
     .. figure:: img/oauth023.png
-    
+
     .. warning:: Every time you modify a Filter Chain, **don't forget to save** the ``Authentication`` settings. This **must** be done for **each** change.
-    
+
         .. figure:: img/oauth020.png
 
 #. Add the ``GeoNode Login Endpoints`` to the comma-delimited list of the ``webLogin`` Filter Chain
 
     .. figure:: img/oauth024.png
-    
+
     .. warning:: Every time you modify a Filter Chain, **don't forget to save** the ``Authentication`` settings. This **must** be done for **each** change.
-    
+
         .. figure:: img/oauth020.png
 
 #. Add the ``GeoNode Logout Endpoints`` to the comma-delimited list of the ``webLogout`` Filter Chain
 
     .. figure:: img/oauth025.png
-    
+
     .. warning:: Every time you modify a Filter Chain, **don't forget to save** the ``Authentication`` settings. This **must** be done for **each** change.
-    
+
         .. figure:: img/oauth020.png
 
-        
+
 #. Add the ``GeoNode Logout Endpoints`` to the comma-delimited list of the ``formLogoutChain`` XML node in ``<GEOSERVER_DATA_DIR>/security/filter/formLogout/config.xml``
 
     You will need a text editor to modify the file.
@@ -696,7 +695,7 @@ Setup of the GeoServer Filter Chains
           <redirectURL>/web/</redirectURL>
           <formLogoutChain>/j_spring_security_logout,/j_spring_security_logout/,/j_spring_oauth2_geonode_logout,/j_spring_oauth2_geonode_logout/</formLogoutChain>
         </logoutFilter>
-    
+
     .. warning:: The value ``j_spring_oauth2_geonode_logout`` **must** be the same specified as ``Logout Authentication EndPoint`` in the ``geonode-oauth2 - Authentication using a GeoNode OAuth2`` above.
 
 Setup and test of the GeoFence Server and Default Rules
@@ -719,7 +718,7 @@ Setup of the GeoServer Filter Chains
 #. Access the ``Security`` > ``Authentication`` section
 
     .. figure:: img/oauth013.png
-    
+
 #. Identify the section ``Authentication Providers`` and make sure the ``geofence`` Authentication Provider is present
 
     .. figure:: img/oauth032.png
@@ -727,9 +726,9 @@ Setup of the GeoServer Filter Chains
 #. Make sure the ``Provider Chain`` is configured as shown below
 
     .. figure:: img/oauth033.png
-    
+
     .. warning:: Every time you modify a Authentication Providers, **don't forget to save** the ``Authentication`` settings. This **must** be done for **each** change.
-    
+
         .. figure:: img/oauth020.png
 
 Setup of the GeoFence Server and Rules
@@ -738,41 +737,41 @@ Setup of the GeoFence Server and Rules
 #. Make sure GeoFence server works and the default settings are correctly configured
 
     - Access the ``Security`` > ``GeoFence`` section
-    
+
         .. figure:: img/oauth026.png
 
     - Make sure the ``Options`` are configured as follows and the server works well when performing a ``Test Connection``
-    
+
         .. figure:: img/oauth027.png
-        
+
         * ``Allow remote and inline layers in SLD``; Set it to ``True``
-        
+
         * ``Allow SLD and SLD_BODY parameters in requests``; Set it to ``True``
-        
+
         * ``Authenticated users can write``; Set it to ``True``
-        
+
         * ``Use GeoServer roles to get authorizations``; Set it to ``False``
 
 #. Check the GeoFence default Rules
 
     - Access the ``Security`` > ``GeoFence Data Rules`` section
-    
+
         .. figure:: img/oauth028.png
 
     - Make sure the ``DENY ALL`` Rule is present by default, otherwise your data will be accessible to everyone
-    
+
         .. note:: This rule is **always** the last one
-    
+
         .. figure:: img/oauth029.png
-        
+
         .. warning:: If that rule does not exists **at the very bottom** (this rule is **always** the last one), add it manually.
 
     - Access the ``Security`` > ``GeoFence Admin Rules`` section
-    
+
         .. figure:: img/oauth030.png
 
     - No Rules needed here
-    
+
         .. figure:: img/oauth031.png
 
 Throubleshooting and Advanced Features
@@ -784,60 +783,60 @@ Common Issues and Fixes
 * GeoServer/GeoNode OAuth2 does not authenticate as Administrator even using GeoNode ``admin`` users
 
     **Symptoms**
-    
+
         When trying to authenticate with an ``admin`` user using OAuth2, the process correctly redirects to GeoServer page but I'm not a GeoServer Administrator.
-        
+
     **Cause**
-    
+
         That means that somehow GeoServer could not successfully complete the Authorization and Authentication process.
-        
+
         The possible causes of the problem may be the following ones:
-        
+
         1. The OAuth2 Authentication fails on GeoServer side
-        
+
             This is usually due to an exception while trying to complete the Authentication process.
-            
+
             - A typical cause is that GeoServer tries to use HTTPS connections but the GeoNode certificate is not trusted;
-            
+
                 In that case please refer to the section below. Also take a look at the logs (in particular the GeoServer one) as explained in :ref:`debug_geonode`.
-                The GeoServer logs should contain a detailed Exception explaining the cause of the problem. 
+                The GeoServer logs should contain a detailed Exception explaining the cause of the problem.
                 If no exception is listed here (even after raised the log level to *DEBUG*), try to check for the GeoNode Role Service as explained below.
-            
+
             - Another possible issue is that somehow the OAuth2 handshake cannot complete successfully;
-            
+
                 1. Login into GeoServer as administrator through its WEB login form.
-                
+
                 2. Double check that all the ``geonode-oauth2 - Authentication using a GeoNode OAuth2`` parameters are correct. If everything is ok, take a look at the logs (in particular the GeoServer one) as explained in :ref:`debug_geonode`.
                    The GeoServer logs should contain a detailed Exception explaining the cause of the problem. If no exception is listed here (even after raised the log level to *DEBUG*), try to check for the GeoNode Role Service as explained below.
-        
+
         2. GeoServer is not able to retrieve the user Role from a Role Service
-        
+
             Always double check both HTTP Server and GeoServer log as specified in section :ref:`debug_geonode`. This might directly guide you to the cause of the problem.
-            
+
             - Check that the GeoServer host is granted to access GeoNode Role Service REST APIs in the ``AUTH_IP_WHITELIST`` of the ``settings.py``
-            
+
             - Check that the ``geonode REST role service`` is the default Role service and that the GeoServer OAuth2 Plugin has been configured to use it by default
-            
-            - Check that the GeoNode REST Role Service APIs are functional and produce correct JSON. 
-            
+
+            - Check that the GeoNode REST Role Service APIs are functional and produce correct JSON.
+
                 This is possible by using simple ``cUrl`` GET calls like
-            
+
                 .. code-block:: shell
-                
+
                     curl http://localhost/api/adminRole
                     $> {"adminRole": "admin"}
-                    
-                    
+
+
                     curl http://localhost/api/users
                     $> {"users": [{"username": "AnonymousUser", "groups": ["anonymous"]}, {"username": "afabiani", "groups": ["anonymous", "test"]}, {"username": "admin", "groups": ["anonymous", "test", "admin"]}]}
-                    
+
                     curl http://localhost/api/roles
                     $> {"groups": ["anonymous", "test", "admin"]}
-                    
+
                     curl http://localhost/api/users/admin
                     $> {"users": [{"username": "admin", "groups": ["anonymous", "test", "admin"]}]}
-                    
-    
+
+
 How to setup ``HTTPS`` secured endpoints
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
@@ -857,59 +856,59 @@ When using a custom ``Keystore`` or trying to access a non-trusted or self-signe
 In order to do this you can follow the next steps:
 
     In this example we are going to
-	
+
 	#. Retrieve SSL Certificate from GeoNode domain:
-	
+
 		"Access Token URI" = https://<geonode_host_base_url>/o/token/ therefore we need to trust ``https://<geonode_host_base_url>`` or (``<geonode_host_base_url>:443``)
-		
+
 		.. note:: You will need to get and trust certificates from every different HTTPS URL used on OAuth2 Endpoints.
-	
+
 	#. Store SSL Certificates on local hard-disk
 
 	#. Add SSL Certificates to the Java Keystore
-	
+
 	#. Enable the JVM to check for SSL Certificates from the Keystore
-	
+
 1. Retrieve the SSL Certificate from GeoNode domain
 
 	Use the ``openssl`` command in order to dump the certificate
-	
+
 	For ``https://<geonode_host_base_url>``
-	
+
 		.. code-block:: shell
-		
+
 			openssl s_client -connect <geonode_host_base_url>:443
-			
+
 		.. figure:: img/google_ssl_001.png
 		   :align: center
 
 2. Store SSL Certificate on local hard-disk
 
 	Copy-and-paste the section ``-BEGIN CERTIFICATE-``, ``-END CERTIFICATE-`` and save it into a ``.cert`` file
-	
+
 	.. note:: ``.cert`` file are plain text files containing the ASCII characters included on the ``-BEGIN CERTIFICATE-``, ``-END CERTIFICATE-`` sections
-	
+
 	``geonode.cert`` (or whatever name you want with ``.cert`` extension)
-	
+
         .. figure:: img/google_ssl_003.png
            :align: center
 
 3. Add SSL Certificates to the Java Keystore
 
 	You can use the Java command ``keytool`` like this
-	
+
 	``geonode.cert`` (or whatever name you want with ``.cert`` extension)
-	
+
 		.. code-block:: shell
-		
+
 			keytool -import -noprompt -trustcacerts -alias geonode -file geonode.cert -keystore ${KEYSTOREFILE} -storepass ${KEYSTOREPASS}
 
     or, alternatively, you can use some graphic tool which helps you managing the SSL Certificates and Keystores, like `Portecle <http://portecle.sourceforge.net/>`_
-	
+
 		.. code-block:: shell
-		
+
 			java -jar c:\apps\portecle-1.9\portecle.jar
-	
+
         .. figure:: img/google_ssl_005.png
            :align: center
 
@@ -940,9 +939,9 @@ In order to do this you can follow the next steps:
 4. Enable the JVM to check for SSL Certificates from the Keystore
 
 	In order to do this, you need to pass a ``JAVA_OPTION`` to your JVM:
-	
+
 		.. code-block:: shell
-		
+
 			-Djavax.net.ssl.trustStore=F:\tmp\keystore.key
 
 5. Restart your server

@@ -37,8 +37,6 @@ import dj_database_url
 # GeoNode Version
 VERSION = get_version()
 
-CORS_ORIGIN_ALLOW_ALL = True
-
 # Defines the directory that contains the settings file as the PROJECT_ROOT
 # It is used for relative settings elsewhere.
 PROJECT_ROOT = os.path.abspath(os.path.dirname(__file__))
@@ -313,6 +311,7 @@ INSTALLED_APPS = (
     'geoexplorer',
     'leaflet',
     'django_extensions',
+    #'geonode-client',
     # 'haystack',
     'autocomplete_light',
     'mptt',
@@ -338,7 +337,6 @@ INSTALLED_APPS = (
     'polymorphic',
     'guardian',
     'oauth2_provider',
-    'corsheaders',
 
 ) + GEONODE_APPS
 
@@ -395,6 +393,7 @@ LOGGING = {
 # Django automatically includes the "templates" dir in all the INSTALLED_APPS.
 TEMPLATES = [
     {
+        'NAME': 'GeoNode Project Templates',
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
         'DIRS': [os.path.join(PROJECT_ROOT, "templates")],
         'APP_DIRS': True,
@@ -442,7 +441,6 @@ MIDDLEWARE_CLASSES = (
     # SessionAuthenticationMiddleware is NOT required for using django-oauth-toolkit.
     'django.contrib.auth.middleware.SessionAuthenticationMiddleware',
     'oauth2_provider.middleware.OAuth2TokenMiddleware',
-    'corsheaders.middleware.CorsMiddleware',
 )
 
 
@@ -713,6 +711,7 @@ MAP_BASELAYERS = [{
     "source": {"ptype": "gxp_olsource"},
     "type": "OpenLayers.Layer",
     "args": ["No background"],
+    "name": "background",
     "visibility": False,
     "fixed": True,
     "group":"background"
@@ -942,6 +941,7 @@ SEARCH_FILTERS = {
     'OWNERS_ENABLED': True,
     'KEYWORDS_ENABLED': True,
     'H_KEYWORDS_ENABLED': True,
+    'T_KEYWORDS_ENABLED': True,
     'DATE_ENABLED': True,
     'REGION_ENABLED': True,
     'EXTENT_ENABLED': True,
@@ -1055,3 +1055,9 @@ if 'geonode.geoserver' in INSTALLED_APPS:
     baselayers = MAP_BASELAYERS
     MAP_BASELAYERS = [LOCAL_GEOSERVER]
     MAP_BASELAYERS.extend(baselayers)
+
+# Keywords thesauri
+# e.g. THESAURI = [{'name':'inspire_themes', 'required':True, 'filter':True}, {'name':'inspire_concepts', 'filter':True}, ]
+# Required: (boolean, optional, default false) mandatory while editing metadata (not implemented yet)
+# Filter: (boolean, optional, default false) a filter option on that thesaurus will appear in the main search page
+THESAURI = []

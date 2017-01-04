@@ -34,6 +34,7 @@ def resource_urls(request):
         VERSION=get_version(),
         SITE_NAME=site.name,
         SITE_DOMAIN=site.domain,
+        SITEURL=settings.SITEURL,
         RESOURCE_PUBLISHING=settings.RESOURCE_PUBLISHING,
         THEME_ACCOUNT_CONTACT_EMAIL=settings.THEME_ACCOUNT_CONTACT_EMAIL,
         DEBUG_STATIC=getattr(
@@ -120,6 +121,7 @@ def resource_urls(request):
             'SEARCH_FILTERS',
             False
         ),
+        THESAURI_FILTERS=[t['name'] for t in settings.THESAURI if t.get('filter')],
     )
 
     return defaults

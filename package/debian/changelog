@@ -1,3 +1,188 @@
+geonode (2.5.6+thefinal0) xenial; urgency=high
+
+  [ Angelos Tzotsos ]
+  * [9c2b9e] Update release version
+
+  [ Francesco Bartoli ]
+  * [19f1b4] Make resourcebase info panel template extendable
+
+  [ Way Barrios ]
+  * [449f13] Fixing syntax error: celery_app (#2697)
+
+  [ travislbrundage ]
+  * [c6168b] Sync auto generate avatar sizes with avatar sizes used in templates (#2693)
+
+  [ afabiani ]
+  * [740204]  2696 Part 1 - GNIP - Better management of View and Download permissions.
+
+  [ Ariel Núñez ]
+  * [b8b383] Updated AUTHORS list
+
+  [ Alessio Fabiani ]
+  * [b9b05e] Update views.py
+
+  [ travislbrundage ]
+  * [9b1ba9] Update AUTHORS
+
+  [ Clarence Davis ]
+  * [c2f54d] Enable update layers management command to accept the permissions dictionary. (#2691)
+
+  [ Jonathan Doig ]
+  * [5e6eb2] Insert missing sudo to chmod commands
+  * [b6db18] Clean up extra ':'s (from ::: to ::)
+  * [8c76e0] Language cleanup, deleted duplicate section
+  * [a58ebd] Minor cleanup
+
+  [ travis ]
+  * [1aa95e] Process inbox messages using AJAX
+
+  [ Daniel Berry ]
+  * [3fb165] - removed import on INSTALLED_SCHEMES since its usage was removed on this commit  (aff43c0). - limiting the version of celery to less then the 4.0 release, due to django-celery not having a release in over a year which would include the updates in master to support the new version of celery.  If you currently install Geonode it will install celery 4.0, but when attempting to use any django commands an ImportError occurs due to no module named timeutils.
+
+  [ Jivan Amara ]
+  * [5dd5ce] Split geoserver.helpers.set_attributes() (#2699)
+
+  [ Jeremiah Cooper ]
+  * [3d6ed5] Update the object_list limit to use the value assigned to CLIENT_RESULTS_LIMIT in settings rather than a hard coded value.
+
+  [ Sasha Hart ]
+  * [a0e1eb] require celery version to be at least 3.1.18
+
+  [ Jeremiah Cooper ]
+  * [db4079] Fixed a PEP8 continuation line unaligned for hanging indent warning.
+
+  [ Daniel Berry ]
+  * [49be1b] The standalone TEMPLATE_* settings were deprecated in Django 1.8 (#2711)
+
+  [ afabiani ]
+  * [36d4ff] PR - (Issue #2374) GNIP: GeoServer A&A Improvements
+
+  [ Jonathan Doig ]
+  * [3b9ee4] Set SITEURL to server's host name
+
+  [ Jeremiah Cooper ]
+  * [9a04a9] Update the limit variable to API_LIMIT_PER_PAGE.
+
+  [ afabiani ]
+  * [a620c1] (Issue 2720) - Incomplete OGC:WMS Download Link for Catalog
+
+  [ Tom Kralidis ]
+  * [43c073] Revert "Fix for (Issue 2720) - Incomplete OGC:WMS Download Link for Catalog"
+
+  [ Alessandro Parma ]
+  * [618f06] Fix for VM Setup with Virtualbox Doc #2577
+
+  [ Simone Dalmasso ]
+  * [caa67e] authorise read detail is requesting schema
+
+  [ Sasha Hart ]
+  * [001b5b] avoid flake8 E305 (expected 2 blank lines) warnings
+  * [63c000] remove redundant 'constraint' key
+
+  [ Simone Dalmasso ]
+  * [391969] fix #2689
+  * [10231d] fix #2688
+  * [5bd1bf] update doc and code to use migrate instead of syncdb
+
+  [ Jeffrey Johnson ]
+  * [5eb2dc] Update quickstart docs
+
+  [ Simone Dalmasso ]
+  * [1219b3] fix #2434
+
+  [ Sara Safavi ]
+  * [83f977] Add optional coverage generation & integrate CI with Coveralls.io (#2731)
+
+  [ Simone Dalmasso ]
+  * [8a0bca] include tree view in assets
+  * [b8fbb5] treeview is now in assets
+
+  [ Sasha Hart ]
+  * [3879f1] minor tweaks to spelling, punctuation, grammar (#2743)
+
+  [ Simone Dalmasso ]
+  * [76d6ae] initialise variable before assignment
+
+  [ afabiani ]
+  * [572fc9]  - Documentation with details for Issue 2715
+
+  [ Way Barrios ]
+  * [6049bd] [WIP] Fixing geoserver connection with django container (#2749)
+
+  [ Simone Dalmasso ]
+  * [b559b3] load categories with paver start (#2748)
+
+  [ travislbrundage ]
+  * [9d55d1] Correctly handle xml sidecar files within a zip (#2719)
+
+  [ Sasha Hart ]
+  * [cb05a1] add Sasha Hart to AUTHORS per nomination Nov 30, 2016
+
+  [ Way Barrios ]
+  * [b59548] Creating authentication for geonode into geoserver container
+
+  [ Simone Dalmasso ]
+  * [f7d41c] fix #2573 (#2754)
+  * [c49097] add geonode.mp contrib app
+
+  [ afabiani ]
+  * [f3845b] PR - (Issue #2374) GNIP: GeoServer A&A Improvements
+
+  [ Francesco Bartoli ]
+  * [f0da88] Organize docker env files
+  * [c16900] Fix missing env files
+
+  [ Tom Kralidis ]
+  * [a1271d] Use isPublished field to control whether a Resource is exposed in pycsw (#2332)
+
+  [ Sasha Hart ]
+  * [bb878d] Fix doc links (#2761)
+
+  [ Ashish Acharya ]
+  * [de2116] Fixed a wrong link (#2766)
+
+  [ Dan 'Ducky' Little ]
+  * [4b3c75] Fix for PostgreSQL/SQLite boolean type differences
+
+  [ travislbrundage ]
+  * [f096a2] Do not allow upload new image on avatar change page until an image has been selected to upload (#2768)
+
+  [ afabiani ]
+  * [1b46d8]  - A&A initial data fixtures and pavements scripts
+
+  [ Tom Kralidis ]
+  * [0bef27] fix boolean check safely (#2771)
+
+  [ Paolo Pasquali ]
+  * [42c2d5] Homepage redesign (#2772)
+
+  [ afabiani ]
+  * [bd81a8]  - update local_settings geoserver sample
+
+  [ sbsimo ]
+  * [df48c8] add instructions on how to use osm-extract (#2777)
+
+  [ Paolo Corti ]
+  * [69375e] Adding django-braces and oauthlib in requirements (#2779)
+  * [1245ab] Added ubuntu development installation instructions in readm and quick_install documentation (#2780)
+
+  [ Ashish Acharya ]
+  * [122a8d] Removed duplicate comment (#2782)
+
+  [ Daniel Berry ]
+  * [f6285b] L169 limited featured dataset title to 20 characters so the the name doesnt overlap the next dataset
+  * [99b1ae] removal of corsheader app, since it was not working and still required a proxy server suchas nginx or apache. The reason for removal was to reduce the nonessential app dependencies.
+
+  [ Paolo Corti ]
+  * [bda8b8] Fixes #2786 (#2787)
+
+  [ Mila Frerichs ]
+  * [ea8272] New Viewer: React Based (Boundless SDK) (#2790)
+
+  [ Angelos Tzotsos ]
+
+ -- Angelos Tzotsos <gcpp.kalxas@gmail.com>  Thu, 29 Dec 2016 19:55:02 +0200
+
 geonode (2.5.5+thefinal0) xenial; urgency=high
 
   [ Angelos Tzotsos ]
