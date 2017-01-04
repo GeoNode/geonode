@@ -253,9 +253,11 @@ The GeoGig project also contains a GeoServer extension that allows a GeoServer a
 Using the osm-extract script to download OSM Data into PostGIS
 --------------------------------------------------------------
 
-osm-extract is a script that allows to download data from OpenStreetMap for a country of interest, perform ETL procedures in order to classify data into layers and publish it in a PostgreSQL+PostGIS database.
+osm-extract is a script that allows to download data from OpenStreetMap, perform ETL procedures in order to classify data into layers and publish it in a PostgreSQL+PostGIS database.
 It is based on a fork from Terronodo and it is built around a Makefile with instructions that must be executed with the Linux make command (we assume you are working on a Linux based OS).
 Once OSM data have been loaded into PostGIS, they can be published in GeoNode.
+
+The script processes the whole .pbf file provided in input, therefore the processing extent depends on the bounding box of the .pbf file itself.
 In addition data can be updated on a fixed frequency, by executing the Makefile with a scheduled cron job. In such case a sql instruction can be executed in order to update the publication date of the respective metadata published by GeoNode.
 
 Steps for putting it in production
@@ -285,8 +287,15 @@ Then launch it by typing the following command::
 
   make all NAME=<country> URL="<Planet.osm mirror>"
 
-Substitute in the command *<country>* with the name of your country of interest (e.g. *malawi*); and *<Planet.osm mirror>* with one of the mirrors listed in http://wiki.openstreetmap.org/wiki/Planet.osm#Downloading.
+Substitute in the command *<country>* with the name of your country of interest (e.g. *malawi*), if you're working on a specific country (the name is used for naming the staging files created by the procedure).
+
+Also replace *<Planet.osm mirror>* with one of the mirrors listed in http://wiki.openstreetmap.org/wiki/Planet.osm#Downloading; make sure that the mirror publishes extracts in .pbf format. One handy mirror is http://download.openstreetmap.fr/extracts, which published data on a country or area basis: this allows to reduce the processing steps to a single country or area of interest.
+
 The procedure is going to create a new database in your PostgreSQL instance and store in it the OSM data for your country. Therefore you should run the Makefile with a user that has enough privileges.
+
+The features and attributes to be included in each table and consequently in each GeoNode layer are defined in configuration files which are stored in the conf directory.
+
+A few indications on the computing resources: 30 seconds of computing time are required for processing a .pbf file sized 38MB (the country of Malawi) with an Amazon m3 medium instance (1 Intel Xeon E5-2670 CPU, 3.75GB RAM).
 
 **4. Publish the layers in GeoNode**
 
