@@ -152,7 +152,6 @@ class DataRequest(BaseRequest):
 
     def get_first_name(self):
         if self.profile:
-            pprint(self.profile.first_name)
             return self.profile.first_name
         if self.profile_request:
             return self.profile_request.first_name
