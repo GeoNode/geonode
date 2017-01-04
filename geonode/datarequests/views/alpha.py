@@ -81,16 +81,25 @@ def requests_csv(request):
     else:
         response = HttpResponse(content_type='text/csv')
         datetoday = timezone.now()
-        response['Content-Disposition'] = 'attachment; filename="datarequests-"'+str(datetoday.month)+str(datetoday.day)+str(datetoday.year)+'.csv"'
+        response['Content-Disposition'] = 'attachment; filename="requests-"'+str(datetoday.month)+str(datetoday.day)+str(datetoday.year)+'.csv"'
 
         writer = csv.writer(response)
-        fields = ['id','name','email','contact_number', 'organization', 'organization_type','organization_other', 'created','status', 'status changed','has_data_request', 'area_coverage','estimated_data_size', ]
-        writer.writerow( fields)
+        header_fields = ['name','email','contact_number', 'organization', 'organization_type','organization_other', 'created','status','has_data_request','data_request_status','area_coverage','estimated_data_size', ]
+        writer.writerow(header_fields)
 
         objects = ProfileRequest.objects.all().order_by('pk')
+        
+        profile_request_fields = ['name','email','contact_number', 'organization', 'organization_type','organization_other', 'created','status', 'has_data_request','data_request_status','area_coverage','estimated_data_size']
 
         for o in objects:
-            writer.writerow(o.to_values_list(fields))
+            writer.writerow(o.to_values_list(profile_request_fields))
+            
+        objects = DataRequest.objects.filter(profile_request = None).order_by('pk')
+        
+        data_request_fields = ['name', 'email', 'organization','organization_type','organization_other','created','profile_request_status','has_data_request','status','area_coverage','estimated_data_size']
+        
+        for o in objects:
+            writer.writerow(o.to_values_list(data_request_fields))
 
         return response
     

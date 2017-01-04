@@ -16,6 +16,7 @@ from django_enumfield import enum
 from django.core import validators
 
 from model_utils import Choices
+from pprint import pprint
 from unidecode import unidecode
 
 from geonode.datarequests import email_utils
@@ -44,7 +45,6 @@ class DataRequest(BaseRequest):
         ('reason2', _('Reason 2')),
         ('reason3', _('Reason 3')),
     )
-
 
     profile_request = models.ForeignKey(
         ProfileRequest,
@@ -152,6 +152,7 @@ class DataRequest(BaseRequest):
 
     def get_first_name(self):
         if self.profile:
+            pprint(self.profile.first_name)
             return self.profile.first_name
         if self.profile_request:
             return self.profile_request.first_name
@@ -222,6 +223,11 @@ class DataRequest(BaseRequest):
                     out.append('yes')
                 else:
                     out.append('no')
+            elif f is 'data_request_status':
+                if self.data_request:
+                    out.append(data_request.status)
+                else:
+                    out.append("NA")
             elif f is 'rejection_reason':
                 out.append(str(getattr(self,'rejection_reason')))
             elif f is 'place_name':
@@ -241,11 +247,14 @@ class DataRequest(BaseRequest):
                 else:
                     out.append('no')
             else:
-                val = getattr(self, f)
-                if isinstance(val, unicode):
-                    out.append(unidecode(val))
-                else:
-                    out.append(str(val))
+                try:
+                    val = getattr(self, f)
+                    if isinstance(val, unicode):
+                        out.append(unidecode(val))
+                    else:
+                        out.append(str(val))
+                except Exception:
+                    out.append("NA")
 
         return out
 
