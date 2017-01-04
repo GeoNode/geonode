@@ -7,7 +7,7 @@ urlpatterns = patterns(
     
     #url for landing page for profile and data requests
     url(r'^/?$','requests_landing',name='requests_landing'),
-    url(r'^/requests_csv/$','requests_csv',name='requests_csv'),
+    url(r'^requests_csv/$','requests_csv',name='requests_csv'),
     
     #urls for registration
     url(r'^register/$','register',name='request_register'),
