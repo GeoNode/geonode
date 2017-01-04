@@ -299,6 +299,11 @@ class ProfileRequest(BaseRequest):
                     out.append(str(status_changed.month)+"/"+str(status_changed.day)+"/"+str(status_changed.year))
                 else:
                     out.append(str(None))
+            elif f == 'data_request_status':
+                if self.data_request:
+                    out.append(str(self.data_request.status))
+                else:
+                    out.append(" ")
             elif f is 'organization_type':
                 organization_type  = self.get_organization_type()
                 out.append(organization_type)
