@@ -35,9 +35,6 @@ from account.models import EmailAddress
 from .utils import format_address
 from django_enumfield import enum
 
-from django_cas_ng import signals as cas_signals
-from django_cas_ng.backends import CASBackend
-
 from pprint import pprint
 
 class OrganizationType(enum.Enum):
@@ -219,10 +216,3 @@ def profile_pre_save(instance, sender, **kw):
 signals.pre_save.connect(profile_pre_save, sender=Profile)
 signals.post_save.connect(profile_post_save, sender=Profile)
 signals.post_save.connect(email_post_save, sender=EmailAddress)
-
-def account_authenticated(instance, **kw):
-    for key, value in kwargs.iteritems():
-        pprint("{}:{}".format(key,value))
-    return
-    
-cas_signals.cas_user_authenticated.connect(account_authenticated, sender = CASBackend)

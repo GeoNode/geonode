@@ -22,7 +22,6 @@ class CASBackend(ModelBackend):
         """Verifies CAS ticket and gets or creates User object"""
         client = get_cas_client(service_url=service)
         username, attributes, pgtiou = client.verify_ticket(ticket)
-        pprint("username: "+username)
         if attributes:
             request.session['attributes'] = attributes
         if not username:
