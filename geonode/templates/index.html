@@ -39,6 +39,7 @@
   	</div>
   </div>
 
+  {% block datasets %}
   <section id="datasets">
   	<div class="container">
   		<div class="row">
@@ -156,7 +157,9 @@
   		</div>
   	</div>
   </section>
+  {% endblock %}
 
+  {% block showcase %}
   <section id="showcase">
     <div class="container">
       <div class="row">
@@ -175,7 +178,7 @@
       <p><a href="/search/">Explore all datasets</a></p>
     </div>
   </section>
-
+  {% endblock %}
 
   {% endblock %}
 
