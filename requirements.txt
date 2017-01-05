@@ -10,7 +10,7 @@ beautifulsoup4==4.2.1
 billiard==3.3.0.23
 boto==2.38.0
 celery==3.1.18
-dj-database-url==0.4.0
+dj-database-url==0.4.2
 django-activity-stream==0.6.1
 django-appconf==0.5
 django-autocomplete-light==2.3.3
