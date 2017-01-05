@@ -462,6 +462,8 @@ OAUTH2_PROVIDER = {
     'CLIENT_ID_GENERATOR_CLASS': 'oauth2_provider.generators.ClientIdGenerator',
 }
 
+# authorized exempt urls needed for oauth when GeoNode is set to lockdown
+AUTH_EXEMPT_URLS = ('/api/o/*', '/api/roles', '/api/adminRole', '/api/users',)
 
 ANONYMOUS_USER_ID = os.getenv('ANONYMOUS_USER_ID','-1')
 GUARDIAN_GET_INIT_ANONYMOUS_USER = os.getenv(
