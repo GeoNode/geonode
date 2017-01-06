@@ -19,7 +19,7 @@
 #########################################################################
 
 from modeltranslation.translator import translator, TranslationOptions
-from geonode.maps.models import Map
+from geonode.maps.models import Map, MapStory
 
 
 class MapTranslationOptions(TranslationOptions):
@@ -33,3 +33,4 @@ class MapTranslationOptions(TranslationOptions):
     )
 
 translator.register(Map, MapTranslationOptions)
+translator.register(MapStory)
