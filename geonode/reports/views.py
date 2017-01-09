@@ -33,28 +33,73 @@ from actstream.models import Action
 from geonode.eula.models import AnonDownloader
 
 from geonode.reports.models import DownloadCount
-from collections import OrderedDict
+from collections import OrderedDict, Counter
+
+import urllib2, json
+from urllib2 import HTTPError
+from datetime import datetime
 
 def report_layer(request, template='reports/report_layers.html'):
-    monthly_count = OrderedDict()
+
+    monthly_count = {}
     monthly_list = DownloadCount.objects.filter(chart_group='monthly').order_by('date')
     for eachinlist in monthly_list:
-        if eachinlist.date.strftime('%b') not in monthly_count:
-            monthly_count [eachinlist.date.strftime('%b')] = {}
-        try: #because of keyerror
-        # if len(monthly_count) > 1:
-            cumulative_count = monthly_count[monthly_count.keys()[-2]][eachinlist.download_type] + eachinlist.count
-        except:
-        # else:
-            cumulative_count = eachinlist.count
-        if eachinlist.download_type in monthly_count[eachinlist.date.strftime('%b')]:
-            monthly_count[eachinlist.date.strftime('%b')][eachinlist.download_type] += eachinlist.count
-        else:
-            monthly_count[eachinlist.date.strftime('%b')][eachinlist.download_type] = cumulative_count
-    pprint(monthly_count)
+        if eachinlist.date.strftime('%Y%m') not in monthly_count:
+            monthly_count[eachinlist.date.strftime('%Y%m')] = {}
+        if eachinlist.download_type not in monthly_count[eachinlist.date.strftime('%Y%m')]:
+            monthly_count[eachinlist.date.strftime('%Y%m')][eachinlist.download_type] = 0
+        monthly_count[eachinlist.date.strftime('%Y%m')][eachinlist.download_type] += eachinlist.count
 
-    reversed_mc = OrderedDict(reversed(list(monthly_count.items())))
+    luzvimin_count = {}
+    luzvimin_list = DownloadCount.objects.filter(chart_group='luzvimin').order_by('date')
+    for eachinlist in luzvimin_list:
+        if eachinlist.date.strftime('%Y%m') not in luzvimin_count:
+            luzvimin_count[eachinlist.date.strftime('%Y%m')] = {}
+        if eachinlist.category not in luzvimin_count[eachinlist.date.strftime('%Y%m')]:
+            luzvimin_count[eachinlist.date.strftime('%Y%m')][eachinlist.category] = 0
+        luzvimin_count[eachinlist.date.strftime('%Y%m')][eachinlist.category] += eachinlist.count
+
+    urls_to_visit = ['https://lipad-fmctst.dream.upd.edu.ph/']
+    for each_url in urls_to_visit:
+        try:
+            response = urllib2.urlopen(each_url + 'api/download_count')
+            data = json.loads(response.read())
+            objdict = data[u'objects']
+            for eachentry in objdict:
+                date_of_entry = datetime.strptime(eachentry[u'date'],'%Y-%m-%dT%H:%M:%S').strftime('%Y%m')
+                if eachentry[u'chart_group'] == 'monthly':
+                    if date_of_entry not in monthly_count:
+                        monthly_count[date_of_entry] = {}
+                    if eachentry[u'download_type'] not in monthly_count[date_of_entry]:
+                        monthly_count[date_of_entry][eachentry[u'download_type']] = 0
+                    monthly_count[date_of_entry][eachentry[u'download_type']] += eachentry[u'count']
+                elif eachentry[u'chart_group'] == 'luzvimin':
+                    if date_of_entry not in luzvimin_count:
+                        luzvimin_count[date_of_entry] = {}
+                    if eachentry[u'category'] not in luzvimin_count[date_of_entry]:
+                        luzvimin_count[date_of_entry][eachentry[u'category']] = 0
+                    luzvimin_count[date_of_entry][eachentry[u'category']] += eachentry[u'count']
+        except HTTPError:
+            continue
+
+    #sorted
+    sorted_mc = OrderedDict(sorted(monthly_count.iteritems(), key=lambda x: x[0]))
+    sorted_luzvimin = OrderedDict(sorted(luzvimin_count.iteritems(), key=lambda x: x[0]))
+    #cumulative
+    counter_dict = Counter()
+    for each in sorted_mc.iteritems():
+        counter_dict.update(each[1])
+        sorted_mc[each[0]] = dict(counter_dict)
+    #rename
+    renamed_mc = OrderedDict([(datetime.strptime(eachone[0],'%Y%m').strftime('%b'),eachone[1]) for eachone in sorted_mc.iteritems()])
+    renamed_luzvimin = OrderedDict([(datetime.strptime(eachone[0],'%Y%m').strftime('%b'),eachone[1]) for eachone in sorted_luzvimin.iteritems()])
+
+    reversed_mc = OrderedDict(reversed(list(renamed_mc.items())))
+    reversed_luzvimin = OrderedDict(reversed(list(renamed_luzvimin.items())))
+
     context_dict = {
         "monthly_count": reversed_mc,
+        "luzvimin_count": reversed_luzvimin
     }
+
     return render_to_response(template, RequestContext(request, context_dict))
