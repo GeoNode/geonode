@@ -48,8 +48,6 @@ from django.utils import simplejson as json
 from geonode.utils import resolve_object, llbbox_to_mercator
 from geonode.layers.models import Layer
 
-
-
 _PERMISSION_MSG_GENERIC = _('You do not have permissions for this layer.')
 _PERMISSION_MSG_VIEW = _("You are not permitted to view this layer")
 
@@ -236,5 +234,3 @@ def err403(request):
         
 def forbidden(request):
     return TemplateResponse(request, '401.html', {}, status=401).render()
-        
-    
