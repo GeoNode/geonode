@@ -640,19 +640,36 @@ def layer_download(request, layername):
         'base.view_resourcebase',
         _PERMISSION_MSG_VIEW)
     pprint(request.user.is_authenticated)
-    if request.user.is_authenticated():
-        action.send(request.user, verb='downloaded', action_object=layer)
-        DownloadTracker(actor=Profile.objects.get(username=request.user),
-                        title=str(layername),
-                        resource_type=str(ResourceBase.objects.get(layer__typename=layername).csw_type),
-                        keywords=ResourceBase.objects.get(layer__typename=layername).keywords.slugs()
-                        ).save()
-        pprint('Download Tracked')
+    # if request.user.is_authenticated():
+    #     action.send(request.user, verb='downloaded', action_object=layer)
+    #     DownloadTracker(actor=Profile.objects.get(username=request.user),
+    #                     title=str(layername),
+    #                     resource_type=str(ResourceBase.objects.get(layer__typename=layername).csw_type),
+    #                     keywords=Layer.objects.get(typename=layername).keywords.slugs()
+    #                     ).save()
+    #     pprint('Download Tracked') #Download tracking moved to layer_tracker
 
     splits = request.get_full_path().split("/")
     redir_url = urljoin(settings.OGC_SERVER['default'][
                         'PUBLIC_LOCATION'], "/".join(splits[4:]))
     return HttpResponseRedirect(redir_url)
+
+def layer_tracker(request, layername):
+    layer = _resolve_layer(
+        request,
+        layername,
+        'base.view_resourcebase',
+        _PERMISSION_MSG_VIEW)
+    pprint(request.user.is_authenticated)
+    if request.user.is_authenticated():
+        action.send(request.user, verb='downloaded', action_object=layer)
+        DownloadTracker(actor=Profile.objects.get(username=request.user),
+                        title=str(layername),
+                        resource_type=str(ResourceBase.objects.get(layer__typename=layername).csw_type),
+                        keywords=Layer.objects.get(typename=layername).keywords.slugs()
+                        ).save()
+        pprint('Download Tracked')
+    return HttpResponse(status=200)
 
 
 @login_required
