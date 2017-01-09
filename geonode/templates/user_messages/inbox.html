@@ -40,17 +40,23 @@
 
 {% block extra_script %}
 <script type="text/javascript">
-$('.message_delete_btn').click(function(event) {
-  form = $(this).parent()[0];
-  $.ajax({
-    type: "POST",
-    url: $(form).attr('action'),
-    data: $(form).serialize(),
-    success: function() {
-      $('#inbox').load(window.location.pathname + ' #inbox');
-      $('#all').load(window.location.pathname + ' #all');
-    }
-  });
+$('.tab-content').click(function(event) {
+  objectClicked = event.target;
+  // If we clicked the delete button
+  if ($(objectClicked)[0].className.includes('message_delete_btn')) {
+    // Grab the correct form
+    form = $(objectClicked).closest('form')[0];
+    // Asynchronous delete thread and refresh on same page
+    $.ajax({
+      type: "POST",
+      url: $(form).attr('action'),
+      data: $(form).serialize(),
+      success: function() {
+        $('#all').load(window.location.pathname + ' #all');
+        $('#inbox').load(window.location.pathname + ' #inbox');
+      }
+    });
+  }
   return false;
 });
 </script>
