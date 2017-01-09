@@ -906,6 +906,7 @@ CELERY_IMPORTS = (
     'geonode.tasks.ftp',
     'geonode.tasks.mk_folder',
     'geonode.tasks.jurisdiction',
+    'geonode.tasks.jurisdiction2',
 )
 
 
@@ -992,3 +993,5 @@ if 'geonode.geoserver' in GEONODE_APPS:
     MAP_BASELAYERS.extend(baselayers)
 
 PH_BBOX= [116.22307468566594, 4.27103012208686, 127.09228398538997, 21.2510169394873 ]
+
+_TILE_SIZE = 1000
