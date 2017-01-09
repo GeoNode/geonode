@@ -57,6 +57,7 @@ class OrganizationType(enum.Enum):
         OTHER : 'Other',
     }
 
+
 if 'notification' in settings.INSTALLED_APPS:
     from notification import models as notification
 
