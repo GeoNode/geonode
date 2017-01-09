@@ -36,6 +36,9 @@ import datetime
 
 from geonode.people.models import Profile
 
+from geonode.reports.models import DownloadTracker
+from geonode.base.models import ResourceBase
+
 ALLOWED_DOC_TYPES = settings.ALLOWED_DOCUMENT_TYPES
 
 _PERMISSION_MSG_DELETE = _("You are not permitted to delete this document")
@@ -154,6 +157,11 @@ def document_download(request, docid):
     document = get_object_or_404(Document, pk=docid)
     if request.user.is_authenticated():
         action.send(request.user, verb='downloaded', action_object=document)
+        DownloadTracker(actor=Profile.objects.get(username=request.user),
+                        title=str(document.title),
+                        resource_type=str(ResourceBase.objects.get(document__id=docid).csw_type),
+                        keywords=Document.objects.get(id=docid).keywords.slugs()
+                        ).save()
     print request.user.has_perm('base.download_resourcebase',obj=document.get_self_resource())
 
     if not request.user.has_perm(
@@ -508,7 +516,7 @@ def document_csv_download(request):
     'Private Insitution',
     'Other']
 
-    auth_list = Action.objects.filter(verb='downloaded').order_by('timestamp')
+    auth_list = DownloadTracker.objects.order_by('timestamp')
     writer.writerow( ['username','lastname','firstname','email','organization','organization type','purpose','layer name','date downloaded'])
     for auth in auth_list:
         username = auth.actor
@@ -519,8 +527,8 @@ def document_csv_download(request):
         organization = getprofile.organization
         orgtype = orgtypelist[getprofile.organization_type]
         #pprint(dir(getprofile))
-        if auth.action_object.csw_type == 'document':
-            listtowrite.append([username,lastname,firstname,email,organization,orgtype,"",auth.action_object.title,auth.timestamp.strftime('%Y/%m/%d')])
+        if auth.resource_type == 'document':
+            listtowrite.append([username,lastname,firstname,email,organization,orgtype,"",auth.title,auth.timestamp.strftime('%Y/%m/%d')])
 
     # writer.writerow(['\n'])
     anon_list = AnonDownloader.objects.all().order_by('date')
