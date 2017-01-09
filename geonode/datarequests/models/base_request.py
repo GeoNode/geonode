@@ -215,7 +215,8 @@ class DataRequestProfile(TimeStampedModel):
     )
     organization_type = enum.EnumField(
         OrganizationType,
-        default=OrganizationType.OTHER,
+        default = None,
+        # default=OrganizationType.OTHER,
         # default="Undefined", #I assigned random default to get rid of --------- as one of the choices
         blank=False,
         help_text=_('Organization type based on Phil-LiDAR1 Data Distribution Policy')
@@ -260,7 +261,7 @@ class DataRequestProfile(TimeStampedModel):
         _('Geolocation name provided by Google'),
         null=True,
         blank=True,
-        max_length=50,
+        max_length=250,
     )
 
     #For jurisdiction data size
@@ -307,17 +308,11 @@ class DataRequestProfile(TimeStampedModel):
         null=True,
         help_text=_('The date and time this data request was approved or rejected'),
     )
-    
-    additional_remarks = models.TextField(
-        blank = True,
-        null = True,
-        help_text= _('Additional remarks by an administrator'),
-    )
 
     additional_remarks = models.TextField(
-        blank = True,
-        null = True,
-        help_text= _('Additional remarks by an administrator'),
+        blank=True,
+        null=True,
+        help_text=_('Additional remarks by an administrator'),
     )
 
 
@@ -683,6 +678,7 @@ class DataRequestProfile(TimeStampedModel):
                     profile.voice = self.contact_number
                     profile.email = self.email
                     profile.organization_type = self.organization_type
+                    profile.organization_other = self.organization_other
                     profile.save()
                 else:
                     pprint("Accout was not created")

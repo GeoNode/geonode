@@ -139,16 +139,16 @@ STATIC_ROOT = os.path.join(PROJECT_ROOT, "static_root")
 STATIC_URL = "/static/"
 
 # Additional directories which hold static files
-#STATICFILES_DIRS = [
-#    os.path.join(PROJECT_ROOT, "static"),
-#]
+STATICFILES_DIRS = [
+   os.path.join(PROJECT_ROOT, "static"),
+]
 
 STATICFILES_DIRS = [
-    '/opt/geonode/geonode/media',
-    os.path.join(PROJECT_ROOT, "static"),
-    "/opt/geonode/virtualenv/geonode/local/lib/python2.7/site-packages/django/contrib/admin/static",
-    "/opt/geonode/virtualenv/geonode/local/lib/python2.7/site-packages/autocomplete_light/static",
-    "/opt/geonode/virtualenv/geonode/local/lib/python2.7/site-packages/leaflet/static",
+   '/opt/geonode/geonode/media',
+   os.path.join(PROJECT_ROOT, "static"),
+   "/opt/geonode/virtualenv/geonode/local/lib/python2.7/site-packages/django/contrib/admin/static",
+   "/opt/geonode/virtualenv/geonode/local/lib/python2.7/site-packages/autocomplete_light/static",
+   "/opt/geonode/virtualenv/geonode/local/lib/python2.7/site-packages/leaflet/static",
 ]
 
 
@@ -241,6 +241,9 @@ GEONODE_APPS = (
 
     # Data Requests Management App
     'geonode.datarequests',
+
+    # Reports
+    'geonode.reports',
 )
 
 GEONODE_CONTRIB_APPS = (
@@ -323,7 +326,7 @@ INSTALLED_APPS = (
     'captcha',
 
     #CAS client
-    'django_cas_ng', 
+    'django_cas_ng',
 ) + GEONODE_APPS
 
 LOGGING = {
@@ -774,19 +777,19 @@ DOWNLOAD_FORMATS_METADATA = [
     'Atom', 'DIF', 'Dublin Core', 'ebRIM', 'FGDC', 'ISO',
 ]
 DOWNLOAD_FORMATS_VECTOR = [
-    'JPEG', 'PNG', 'Zipped Shapefile',
+    'JPEG', 'PNG', 'PDF', 'Zipped Shapefile',
     #'PDF', 'GML 2.0', 'GML 3.1.1', 'CSV',
     #'Excel', 'GeoJSON', 'KML', 'View in Google Earth', 'Tiles',
 ]
 DOWNLOAD_FORMATS_RASTER = [
     'JPEG',
-    #'PDF',
     'PNG',
+    'PDF',
     # 'ArcGrid',
     'GeoTIFF',
     #'Gtopo30',
     #'ImageMosaic',
-    'KML',
+    # 'KML',
     'View in Google Earth',
     #'Tiles',
 ]
@@ -998,3 +1001,6 @@ PH_BBOX= [116.22307468566594, 4.27103012208686, 127.09228398538997, 21.251016939
 _TILE_SIZE = 1000
 
 CAS_VERSION = 3
+
+FP_DELINEATION_PL1 = 'fp_252_20161026v2'
+RB_DELINEATION_DREAM = 'DREAM_RB'
