@@ -660,6 +660,7 @@ class DataRequestProfile(TimeStampedModel):
                     profile.voice = self.contact_number
                     profile.email = self.email
                     profile.organization_type = self.organization_type
+                    profile.organization_other = self.organization_other
                     profile.save()
                 else:
                     pprint("Accout was not created")
