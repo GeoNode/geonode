@@ -52,6 +52,9 @@ from geonode.base.forms import CategoryForm
 from geonode.layers.models import Layer, Attribute, UploadSession
 from geonode.base.enumerations import CHARSETS
 from geonode.base.models import TopicCategory
+from geonode.cephgeo.models import FTPRequest
+from geonode.cephgeo.utils import get_ftp_details
+from geonode.datarequests.utils import get_area_coverage
 
 from geonode.utils import default_map_config
 from geonode.utils import GXPLayer
@@ -70,9 +73,12 @@ from actstream.models import Action
 from .forms import AnonDownloaderForm
 from geonode.eula.models import AnonDownloader
 
-# from datetime import date, timedelta, datetime
+# from dateftime import date, timedelta, datetime
 from django.utils import timezone
 from geonode.people.models import Profile
+
+from geonode.reports.models import DownloadTracker
+from geonode.base.models import ResourceBase
 
 CONTEXT_LOG_FILE = None
 
@@ -176,8 +182,10 @@ def layer_upload(request, template='upload/layer_upload.html'):
                 logger.exception(e)
                 out['success'] = False
                 out['errors'] = str(error)
-                # Assign the error message to the latest UploadSession from that user.
-                latest_uploads = UploadSession.objects.filter(user=request.user).order_by('-date')
+                # Assign the error message to the latest UploadSession from
+                # that user.
+                latest_uploads = UploadSession.objects.filter(
+                    user=request.user).order_by('-date')
                 if latest_uploads.count() > 0:
                     upload_session = latest_uploads[0]
                     upload_session.error = str(error)
@@ -219,7 +227,7 @@ def layer_upload(request, template='upload/layer_upload.html'):
 
 
 def layer_detail(request, layername, template='layers/layer_detail.html'):
-    #tile shapefile ng settings.tile
+    # tile shapefile ng settings.tile
     layer = _resolve_layer(
         request,
         layername,
@@ -228,7 +236,7 @@ def layer_detail(request, layername, template='layers/layer_detail.html'):
 
     # assert False, str(layer_bbox)
     config = layer.attribute_config()
-    #print layername
+    # print layername
     # Add required parameters for GXP lazy-loading
     layer_bbox = layer.bbox
     bbox = [float(coord) for coord in list(layer_bbox[0:4])]
@@ -263,7 +271,8 @@ def layer_detail(request, layername, template='layers/layer_detail.html'):
             id=layer.id).update(popular_count=F('popular_count') + 1)
 
     # center/zoom don't matter; the viewer will center on the layer bounds
-    map_obj = GXPMap(projection=getattr(settings, 'DEFAULT_MAP_CRS', 'EPSG:900913'))
+    map_obj = GXPMap(projection=getattr(
+        settings, 'DEFAULT_MAP_CRS', 'EPSG:900913'))
 
     NON_WMS_BASE_LAYERS = [
         la for la in default_map_config()[1] if la.ows_url is None]
@@ -282,7 +291,6 @@ def layer_detail(request, layername, template='layers/layer_detail.html'):
     }
     context_dict["phillidar2keyword"] = "PhilLiDAR2"
 
-
     context_dict["viewer"] = json.dumps(
         map_obj.viewer_json(request.user, * (NON_WMS_BASE_LAYERS + [maplayer])))
     context_dict["preview"] = getattr(
@@ -290,6 +298,9 @@ def layer_detail(request, layername, template='layers/layer_detail.html'):
         'LAYER_PREVIEW_LIBRARY',
         'leaflet')
 
+    pprint('CONTEXT DICTIONARY')
+    pprint(context_dict)
+    pprint('END')
     if request.user.has_perm('download_resourcebase', layer.get_self_resource()):
         if layer.storeType == 'dataStore':
             links = layer.link_set.download().filter(
@@ -310,7 +321,7 @@ def layer_detail(request, layername, template='layers/layer_detail.html'):
             pprint(form)
             out['success'] = True
             anondownload = form.save()
-            anondownload.anon_layer = Layer.objects.get(typename = layername)
+            anondownload.anon_layer = Layer.objects.get(typename=layername)
             anondownload.save()
         else:
             pprint(form)
@@ -324,11 +335,11 @@ def layer_detail(request, layername, template='layers/layer_detail.html'):
             status_code = 200
         else:
             status_code = 400
-        #Handle form
+        # Handle form
         pprint(status_code)
         return HttpResponse(status=status_code)
     else:
-        #Render form
+        # Render form
         form = AnonDownloaderForm()
     context_dict["anon_form"] = form
     context_dict["layername"] = layername
@@ -393,8 +404,10 @@ def layer_metadata(request, layername, template='layers/layer_metadata.html'):
             if poc_form.is_valid():
                 if len(poc_form.cleaned_data['profile']) == 0:
                     # FIXME use form.add_error in django > 1.7
-                    errors = poc_form._errors.setdefault('profile', ErrorList())
-                    errors.append(_('You must set a point of contact for this resource'))
+                    errors = poc_form._errors.setdefault(
+                        'profile', ErrorList())
+                    errors.append(
+                        _('You must set a point of contact for this resource'))
                     poc = None
             if poc_form.has_changed and poc_form.is_valid():
                 new_poc = poc_form.save()
@@ -408,8 +421,10 @@ def layer_metadata(request, layername, template='layers/layer_metadata.html'):
             if author_form.is_valid():
                 if len(author_form.cleaned_data['profile']) == 0:
                     # FIXME use form.add_error in django > 1.7
-                    errors = author_form._errors.setdefault('profile', ErrorList())
-                    errors.append(_('You must set an author for this resource'))
+                    errors = author_form._errors.setdefault(
+                        'profile', ErrorList())
+                    errors.append(
+                        _('You must set an author for this resource'))
                     metadata_author = None
             if author_form.has_changed and author_form.is_valid():
                 new_author = author_form.save()
@@ -437,12 +452,13 @@ def layer_metadata(request, layername, template='layers/layer_metadata.html'):
             the_layer.metadata_author = new_author
             Layer.objects.filter(id=the_layer.id).update(
                 category=new_category
-                )
+            )
 
             if getattr(settings, 'SLACK_ENABLED', False):
                 try:
                     from geonode.contrib.slack.utils import build_slack_message_layer, send_slack_messages
-                    send_slack_messages(build_slack_message_layer("layer_edit", the_layer))
+                    send_slack_messages(
+                        build_slack_message_layer("layer_edit", the_layer))
                 except:
                     print "Could not send slack message."
 
@@ -522,10 +538,12 @@ def layer_replace(request, layername, template='layers/layer_replace.html'):
                 tempdir, base_file = form.write_files()
                 if layer.is_vector() and is_raster(base_file):
                     out['success'] = False
-                    out['errors'] = _("You are attempting to replace a vector layer with a raster.")
+                    out['errors'] = _(
+                        "You are attempting to replace a vector layer with a raster.")
                 elif (not layer.is_vector()) and is_vector(base_file):
                     out['success'] = False
-                    out['errors'] = _("You are attempting to replace a raster layer with a vector.")
+                    out['errors'] = _(
+                        "You are attempting to replace a raster layer with a vector.")
                 else:
                     # delete geoserver's store before upload
                     cat = gs_catalog
@@ -581,7 +599,8 @@ def layer_remove(request, layername, template='layers/layer_remove.html'):
         try:
             delete_layer.delay(object_id=layer.id)
         except Exception as e:
-            message = '{0}: {1}.'.format(_('Unable to delete layer'), layer.typename)
+            message = '{0}: {1}.'.format(
+                _('Unable to delete layer'), layer.typename)
 
             if 'referenced by layer group' in getattr(e, 'message', ''):
                 message = _('This layer is a member of a layer group, you must remove the layer from the group '
@@ -613,18 +632,45 @@ def layer_thumbnail(request, layername):
                 mimetype='text/plain'
             )
 
+
 def layer_download(request, layername):
     layer = _resolve_layer(
         request,
         layername,
         'base.view_resourcebase',
         _PERMISSION_MSG_VIEW)
-    if request.user.is_authenticated():
-        action.send(request.user, verb='downloaded', action_object=layer)
+    pprint(request.user.is_authenticated)
+    # if request.user.is_authenticated():
+    #     action.send(request.user, verb='downloaded', action_object=layer)
+    #     DownloadTracker(actor=Profile.objects.get(username=request.user),
+    #                     title=str(layername),
+    #                     resource_type=str(ResourceBase.objects.get(layer__typename=layername).csw_type),
+    #                     keywords=Layer.objects.get(typename=layername).keywords.slugs()
+    #                     ).save()
+    #     pprint('Download Tracked') #Download tracking moved to layer_tracker
 
     splits = request.get_full_path().split("/")
-    redir_url = urljoin(settings.OGC_SERVER['default']['PUBLIC_LOCATION'], "/".join(splits[4:]))
+    redir_url = urljoin(settings.OGC_SERVER['default'][
+                        'PUBLIC_LOCATION'], "/".join(splits[4:]))
     return HttpResponseRedirect(redir_url)
+
+def layer_tracker(request, layername):
+    layer = _resolve_layer(
+        request,
+        layername,
+        'base.view_resourcebase',
+        _PERMISSION_MSG_VIEW)
+    pprint(request.user.is_authenticated)
+    if request.user.is_authenticated():
+        action.send(request.user, verb='downloaded', action_object=layer)
+        DownloadTracker(actor=Profile.objects.get(username=request.user),
+                        title=str(layername),
+                        resource_type=str(ResourceBase.objects.get(layer__typename=layername).csw_type),
+                        keywords=Layer.objects.get(typename=layername).keywords.slugs()
+                        ).save()
+        pprint('Download Tracked')
+    return HttpResponse(status=200)
+
 
 @login_required
 def layer_download_csv(request):
@@ -632,21 +678,27 @@ def layer_download_csv(request):
         return HttpResponseRedirect("/forbidden/")
     response = HttpResponse(content_type='text/csv')
     datetoday = timezone.now()
-    response['Content-Disposition'] = 'attachment; filename="layerdownloads-"'+str(datetoday.month)+str(datetoday.day)+str(datetoday.year)+'.csv"'
+    response['Content-Disposition'] = 'attachment; filename="layerdownloads-"' + \
+        str(datetoday.month) + str(datetoday.day) + \
+        str(datetoday.year) + '.csv"'
     listtowrite = []
     writer = csv.writer(response)
 
     orgtypelist = ['Phil-LiDAR 1 SUC',
-    'Phil-LiDAR 2 SUC',
-    'Government Agency',
-    'Academe',
-    'International NGO',
-    'Local NGO',
-    'Private Insitution',
-    'Other']
+                   'Phil-LiDAR 2 SUC',
+                   'Government Agency',
+                   'Academe',
+                   'International NGO',
+                   'Local NGO',
+                   'Private Insitution',
+                   'Other']
 
     auth_list = Action.objects.filter(verb='downloaded').order_by('timestamp')
-    writer.writerow( ['username','lastname','firstname','email','organization','organization type','purpose','layer name','date downloaded'])
+    writer.writerow(['username', 'lastname', 'firstname', 'email', 'organization',
+                     'organization type', 'purpose', 'layer name', 'date downloaded','area','size_in_bytes'])
+                     
+    pprint("writing authenticated downloads list")
+
     for auth in auth_list:
         username = auth.actor
         getprofile = Profile.objects.get(username=username)
@@ -655,14 +707,20 @@ def layer_download_csv(request):
         email = getprofile.email
         organization = getprofile.organization
         orgtype = orgtypelist[getprofile.organization_type]
-        #pprint(dir(getprofile))
+
+        #area = get_area_coverage(auth.action_object.typename)
+        area = 0
+        # pprint(dir(getprofile))
         if auth.action_object.csw_type != 'document':
-            listtowrite.append([username,lastname,firstname,email,organization,orgtype,"",auth.action_object.typename,auth.timestamp.strftime('%Y/%m/%d')])
+            listtowrite.append([username, lastname, firstname, email, organization, orgtype,
+                                "", auth.action_object.typename, auth.timestamp.strftime('%Y/%m/%d'),area,''])
 
     # writer.writerow(['\n'])
     anon_list = AnonDownloader.objects.all().order_by('date')
     # writer.writerow(['Anonymous Downloads'])
     # writer.writerow( ['lastname','firstname','email','organization','organization type','purpose','layer name','doc name','date downloaded'])
+    
+    pprint("writing anonymous downloads list")
     for anon in anon_list:
         lastname = anon.anon_last_name
         firstname = anon.anon_first_name
@@ -672,9 +730,37 @@ def layer_download_csv(request):
         organization = anon.anon_organization
         orgtype = anon.anon_orgtype
         purpose = anon.anon_purpose
+        area = 0
+
         if layername:
-            listtowrite.append(["",lastname,firstname,email,organization,orgtype,purpose,layername.typename,anon.date.strftime('%Y/%m/%d')])
-    listtowrite.sort(key=lambda x: datetime.datetime.strptime(x[8], '%Y/%m/%d'), reverse=True)
+            listtowrite.append(["", lastname, firstname, email, organization, orgtype,
+                                purpose, layername.typename, anon.date.strftime('%Y/%m/%d'),area,''])
+                                
+    listtowrite.sort(key=lambda x: datetime.datetime.strptime(
+        x[8], '%Y/%m/%d'), reverse=True)
+    
+    pprint("writing ftp downloads list")
+    for ftp_request in FTPRequest.objects.all():
+        ftp_detail = get_ftp_details(ftp_request)
+        username = ftp_detail['user'].username
+        lastname = ftp_detail['user'].last_name
+        firstname = ftp_detail['user'].first_name
+        email = ftp_detail['user'].email
+        organization = ftp_detail['organization']
+        organization_type = ftp_detail['organization_type']
+        date_requested = ftp_request.date_time
+        
+        listtowrite.append([ username, lastname, firstname, email, organization, organization_type, "", 
+                    "LAZ", date_requested.date, ftp_detail['number_of_laz'], ftp_detail['size_of_laz']])
+        listtowrite.append([ username, lastname, firstname, email, organization, organization_type, "", 
+                    "DSM", date_requested.date, ftp_detail['number_of_dsm'], ftp_detail['size_of_dsm']])
+        listtowrite.append([ username, lastname, firstname, email, organization, organization_type, "", 
+                    "DTM", date_requested.date, ftp_detail['number_of_dtm'], ftp_detail['size_of_dtm']])
+        listtowrite.append([ username, lastname, firstname, email, organization, organization_type, "", 
+                    "Ortho", date_requested.date, ftp_detail['number_of_ortho'], ftp_detail['size_of_ortho']])
+
+        
     for eachtowrite in listtowrite:
         writer.writerow(eachtowrite)
+        
     return response

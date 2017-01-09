@@ -1,0 +1,41 @@
+{% load i18n announcements_tags %}
+
+{% announcements as site_wide_announcements %}
+
+{% if site_wide_announcements %}
+  {% for announcement in site_wide_announcements %}
+    {% if announcement.site_wide == False %}
+      {% ifchanged announcement.site_wide %}
+        <div class="modal fade" id="modal-announcements" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+          <div class="modal-dialog">
+            <div class="modal-content">
+      {% endifchanged %}
+              <div class="modal-header" style="border-bottom:none; padding-bottom:0px;">
+                <!--<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>-->
+                <h4 class="modal-title" id="myModalLabel"><a href="{{ announcement.get_absolute_url }}">{{ announcement }}</a></h4>
+              </div>
+              <div class="modal-body" style="padding:5px 20px 30px 20px;">
+                <p style="margin:0px;"><small><em>{{ announcement.creation_date }}</em></small></p>
+                <div>
+                  {% if announcement.content|length|get_digit:"-1" > 500 %}
+                    {{ announcement.content|truncatechars:500|safe }} <a href="{{ announcement.get_absolute_url }}">{% trans "Read more." %}</a>
+                  {% else %}
+                    {{ announcement.content }}
+                  {% endif %}
+                </div>
+              </div>
+    {% endif %}
+  {% endfor %}
+  {% for announcement in site_wide_announcements %}
+    {% if announcement.site_wide == False %}
+      {% ifchanged announcement.site_wide %}
+              <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">{% trans "Close" %}</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      {% endifchanged %}
+    {% endif %}
+  {% endfor %}
+{% endif %}
