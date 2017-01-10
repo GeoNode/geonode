@@ -6,6 +6,8 @@ from django.conf import settings
 from geonode.geoserver.helpers import ogc_server_settings
 from geonode.layers.models import Layer
 from geonode.layers.models import Style
+from geonode.datarequests.models import DataRequestProfile
+from geonode.datarequests.utils import get_juris_data_size, get_area_coverage, get_shp_ogr
 from geoserver.catalog import Catalog
 
 
@@ -36,3 +38,24 @@ def jurisdiction_style(saved_layer):
     except Exception as e:
         exception_type, error, tb = sys.exc_info()
         print traceback.format_exc()
+        
+@task(name='geonode.tasks.jurisdiction.compute_size_update',queue='jurisdiction')
+def compute_size_update(requests_query_list, area_compute = True, data_size = True, save=True):
+    pprint("Updating requests data size and area coverage")
+    if len(requests_query_list) < 1:
+        pprint("Requests for update is empty")
+    else:
+        for r in requests_query_list:
+            pprint("Updating request id:{0}".format(r.pk))
+            shapefile = get_shp_ogr(r.jurisdiction_shapefile.name)
+            if shapefile:
+                pprint("Shapefile found")
+                if area_compute:
+                    r.area_coverage = get_area_coverage(r.jurisdiction_shapefile.name)
+                    pprint(r.juris_data_size)
+                if data_size:
+                    r.juris_data_size = get_juris_data_size(r.jurisdiction_shapefile.name)
+                    pprint(r.juris_data_size)
+                
+                if save:
+                    r.save()
