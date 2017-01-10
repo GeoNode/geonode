@@ -39,7 +39,7 @@ from geonode.layers.utils import file_upload
 from geonode.people.models import Profile
 from geonode.people.views import profile_detail
 from geonode.security.views import _perms_info_json
-from geonode.tasks.jurisdiction import jurisdiction_style
+from geonode.tasks.jurisdiction import jurisdiction_style, compute_size_update
 from geonode.utils import default_map_config
 from geonode.utils import GXPLayer
 from geonode.utils import GXPMap
@@ -549,6 +549,20 @@ def data_request_profile(request, pk, template='datarequests/profile_detail.html
     return render_to_response(template, RequestContext(request, context_dict))
 
 
+def data_request_profile_compute_size(request, pk=None):
+    if not request.user.is_superuser:
+        raise PermissionDenied
+    
+    if DataRequestProfile.objects.get(pk=pk).jurisdiction_shapefile:    
+        data_requests = DataRequestProfile.objects.filter(pk=pk)
+        compute_size_update.delay(data_requests)
+        messages.info(request, "The estimated data size area coverage of the request is currently being computed")
+    else:
+        messages.info(request, "This request does not have a shape file")
+        
+    return HttpResponseRedirect(reverse('datarequests:data_request_browse'))
+    
+
 def data_request_profile_reject(request, pk):
     if not request.user.is_superuser:
         raise PermissionDenied
@@ -597,7 +611,6 @@ def data_request_profile_cancel(request, pk):
     request_profile = get_object_or_404(DataRequestProfile, pk=pk)
 
     if request_profile.request_status == 'pending' or request_profile.request_status == 'unconfirmed':
-        pprint("Yown pasok")
         form = request.POST.get('form', None)
         request_profile.request_status = 'cancelled'
         if form:
