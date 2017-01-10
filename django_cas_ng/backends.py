@@ -22,7 +22,6 @@ class CASBackend(ModelBackend):
         """Verifies CAS ticket and gets or creates User object"""
         client = get_cas_client(service_url=service)
         username, attributes, pgtiou = client.verify_ticket(ticket)
-        pprint("username: "+username)
         if attributes:
             request.session['attributes'] = attributes
         if not username:
@@ -46,6 +45,15 @@ class CASBackend(ModelBackend):
             user = User.objects.create_user(username, '')
             user.save()
             created = True
+        
+        if attributes and user:
+            setattr(user, "email", attributes["email"])
+            setattr(user, "first_name",attributes["first_name"])
+            setattr(user, "last_name", attributes["last_name"])
+            setattr(user,"is_active",attributes["is_active"])
+            setattr(user,"is_superuser", attributes["is_superuser"])
+            setattr(user,"is_staff", attributes["is_staff"])
+            user.save()
 
         if pgtiou and settings.CAS_PROXY_CALLBACK:
             request.session['pgtiou'] = pgtiou

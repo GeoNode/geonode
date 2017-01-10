@@ -283,7 +283,7 @@ define(['underscore',
         var form = new FormData($("#file-uploader")[0]);
         $.ajax({
            type: "POST",
-           url: '/datarequests/register/shapefile/',
+           url: '/requests/register/data_request/',
            data: form, //form.serialize(), // serializes the form's elements.
            contentType: false,
            processData: false,
@@ -306,6 +306,7 @@ define(['underscore',
             },
             error: function(data){
                 var errors = $.parseJSON(data.responseText).errors;
+                $('#please-wait').modal('toggle');
                 for (var key in errors ){
                     $('#div_id_'+key).addClass('has-error');
                     $('#div_id_'+key).find('div').append("<span id=\"error_id_"+key+"\" class=\"error-msg\">"+errors[key]+"</span>");

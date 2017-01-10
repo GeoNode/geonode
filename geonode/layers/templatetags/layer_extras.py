@@ -116,7 +116,7 @@ def image_basemap(link, epsg, filetype):
         jsontext['layers'][1]['layers'] = [str(layer.typename)]
         jsontext['pages'][0]['bbox'] = bbox
 
-        legendurl = baseURL + 'wms?request=GetLegendGraphic&format=image/png&LAYER=' + str(layer.typename)
+        legendurl = localURL + 'wms?request=GetLegendGraphic&format=image/png&LAYER=' + str(layer.typename)
         jsontext['legends'][0]['classes'][0]['icons'][0] = legendurl
         jsontext['isPhilLidar1'] = isPhilLidar1
         jsontext['isPhilLidar2'] = isPhilLidar2
