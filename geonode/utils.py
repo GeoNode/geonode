@@ -371,7 +371,8 @@ class GXPLayerBase(object):
             cfg = dict(ptype="gxp_wmscsource", restUrl="/gs/rest")
 
         if self.ows_url:
-            # Do we need to deal with expired access tokens here? if we do, then need to remove the existing token and add the new one
+            # Do we need to deal with expired access tokens here?
+            # if we do, then need to remove the existing token and add the new one
             if access_token and 'access_token' not in self.ows_url:
                 cfg["url"] = self.ows_url+'?access_token='+access_token
             else:
