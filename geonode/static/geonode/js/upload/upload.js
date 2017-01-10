@@ -30,6 +30,7 @@ define(['underscore',
         doSuccessfulUpload,
         attach_events,
         checkFiles,
+        checkGeogig
         fileTypes = fileTypes;
 
     $('body').append(uploadTemplate);
@@ -188,6 +189,22 @@ define(['underscore',
         return matched;
     }
 
+    /** Function to check that a geogig repo has been named, or that
+     *  "Import to Geogig" is not checked.
+     *
+     *  @params  
+     *  @returns {boolean}
+     */
+    checkGeogig = function() {
+        geogig_store = $('#' + base_name + '\\:geogig_store').val();
+        geogig = $('#' + base_name + '\\:geogig_toggle').is(':checked');
+        if (geogig) {
+            return geogig_store.length != 0;
+        } else {
+            return true;
+        }
+    }
+
     doDelete = function(event) {
         var target = event.target || event.srcElement;
         var id = target.id.split("-")[1];
@@ -280,7 +297,7 @@ define(['underscore',
             return false;
         }
 
-        var checked = checkFiles();
+        var checked = checkFiles() && checkGeogig();
         if ($.isEmptyObject(layers) || !checked) {
             alert(gettext('You are trying to upload an incomplete set of files or not all mandatory options have been validated.\n\nPlease check for errors in the form!'));
         } else {
