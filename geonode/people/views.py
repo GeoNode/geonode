@@ -101,7 +101,7 @@ def forgot_username(request):
             if users:
                 username = users[0].username
                 email_message = email_subject + " : " + username
-                send_email.delay(email_subject, email_message, settings.DEFAULT_FROM_EMAIL,
+                send_email(email_subject, email_message, settings.DEFAULT_FROM_EMAIL,
                                  [username_form.cleaned_data['email']], fail_silently=False)
                 message = _("Your username has been emailed to you.")
             else:
