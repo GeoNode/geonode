@@ -50,9 +50,11 @@ def compute_size_update(requests_query_list, area_compute = True, data_size = Tr
             shapefile = get_shp_ogr(r.jurisdiction_shapefile.name)
             if shapefile:
                 if area_compute:
-                    r.area_coverage = get_area_coverage(shapefile)
+                    r.area_coverage = get_area_coverage(r.jurisdiction_shapefile.name)
+                    pprint(r.area_coverage)
                 if data_size:
-                    r.juris_data_size = get_juris_data_size(shapefile)
+                    r.juris_data_size = get_juris_data_size(r.jurisdiction_shapefile.name)
+                    pprint(r.juris_data_size)
                 
                 if save:
                     r.save()
