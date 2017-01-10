@@ -7,7 +7,7 @@ from geonode.geoserver.helpers import ogc_server_settings
 from geonode.layers.models import Layer
 from geonode.layers.models import Style
 from geonode.datarequests.models import DataRequestProfile
-from geonode.datarequests.utils import get_juris_data_size, get_area_coverage
+from geonode.datarequests.utils import get_juris_data_size, get_area_coverage, get_shp_ogr
 from geoserver.catalog import Catalog
 
 
