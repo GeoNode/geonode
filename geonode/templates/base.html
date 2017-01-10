@@ -107,9 +107,9 @@
           </form>
           <ul class="nav navbar-nav navbar-right">
             {% if not user.is_authenticated  %}
-            <li><a href="{% url 'datarequests:registration_part_one' %}">{% trans "Register" %}</a></li>
+            <li><a href="{% url 'datarequests:profile_request_form' %}">{% trans "Register" %}</a></li>
             {% elif not user.is_superuser %}
-            <li><a href="{% url 'datarequests:registration_part_one' %}">{% trans "Request New Data" %}</a></li>
+            <li><a href="{% url 'datarequests:profile_request_form' %}">{% trans "Request New Data" %}</a></li>
             {% endif %}
             {% if user.is_authenticated %}
             <li>
@@ -120,7 +120,6 @@
             {% else %}
             <li>
               <!--<a href="#" data-toggle="modal" data-target="#SigninModal" role="button" >-->
-              <!--<a href="/account/login" role="button">-->
               <a href="{% url "cas_ng_login" %}" role="button">
                 {% trans "Sign in" %}
               </a>
@@ -193,7 +192,7 @@
 
     <!-- Modal must stay outside the navbar -->
     {% if not user.is_authenticated %}
-    <div class="modal fade" id="SigninModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <!--<div class="modal fade" id="SigninModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
       <div class="modal-dialog modal-sm">
         <div class="modal-content">
           <div class="modal-header">
@@ -221,7 +220,7 @@
           </form>
         </div>
       </div>
-    </div>
+    </div>-->
     {% else %}
     <div class="modal fade" id="UserModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
       <div class="modal-dialog modal-sm">
@@ -244,9 +243,10 @@
               <li><a href="{% url "announcements_list" %}"><i class="fa fa-bullhorn"></i> {% trans "Announcements" %}</a></li>
               {% endif %}
               {% if user.is_superuser %}
-              <li><a href="{% url "datarequests:data_request_browse" %}"><i class="fa fa-users"></i> {% trans "Data Request Profiles" %}</a></li>
+              <li><a href="{% url "datarequests:requests_landing" %}"><i class="fa fa-users"></i> {% trans "Requests Home" %}</a></li>
+              <li><a href="{% url "datarequests:profile_request_browse" %}"><i class="fa fa-users"></i> {% trans "Profile Request" %}</a></li>
+              <li><a href="{% url "datarequests:data_request_browse" %}"><i class="fa fa-users"></i> {% trans "Data Request" %}</a></li>
               <li><a href="{% url "services" %}"><i class="fa fa-globe"></i> {% trans "Remote Services" %}</a></li>
-              <li><a href="{% url "account_invite_user" %}"><i class="fa fa-edit"></i> {% trans "Invite User" %}</a></li>
               <li class="modal-divider"></li>
               <li><a href="{{ GEOSERVER_BASE_URL }}"><i class="fa fa-gears"></i> {% trans "GeoServer" %}</a></li>
               {% else %}

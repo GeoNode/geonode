@@ -1,6 +1,6 @@
 from django.db import models
 from geonode.layers.models import Layer
-from geonode import settings
+from django.conf import settings
 from datetime import datetime
 import json
 from geonode.people.models import Profile
@@ -116,6 +116,7 @@ class UserTiles(models.Model):
     gridref_list = models.TextField(null=False, blank=False)
 
 
+
 class MissionGridRef(models.Model):
     fieldID = models.IntegerField()
     grid_ref = models.CharField(max_length=20)
@@ -138,12 +139,15 @@ class RIDF(models.Model):
     muni_code = models.CharField(max_length=11)
     muni_name = models.CharField(max_length=50)
     iscity = models.BooleanField(default=False)
-    _5yr = models.DecimalField(max_digits=7, decimal_places=3, null=True,default=0)
-    _25yr = models.DecimalField(max_digits=7, decimal_places=3, null=True,default=0)
-    _100yr = models.DecimalField(max_digits=7, decimal_places=3, null=True,default=0)
-    rbs_raw = models.CharField(max_length=100,null=True,blank=True)
+    _5yr = models.DecimalField(
+        max_digits=7, decimal_places=3, null=True, default=0)
+    _25yr = models.DecimalField(
+        max_digits=7, decimal_places=3, null=True, default=0)
+    _100yr = models.DecimalField(
+        max_digits=7, decimal_places=3, null=True, default=0)
+    rbs_raw = models.CharField(max_length=100, null=True, blank=True)
     riverbasins = TaggableManager(
-        _('riverbasins'),blank=True, help_text='List of riverbasins')
+        _('riverbasins'), blank=True, help_text='List of riverbasins')
 
     # def keyword_list(self):
     #     """

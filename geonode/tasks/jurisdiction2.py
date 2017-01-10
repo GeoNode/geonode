@@ -77,23 +77,24 @@ def get_juris_data_size(juris_shp):
 def assign_grid_ref_util(user):
     shapefile_name = UserJurisdiction.objects.get(user=user).jurisdiction_shapefile.name
     shapefile = get_shp_ogr(shapefile_name)
-    gridref_list = []
+    gridref_list = ""
     
     if shapefile:    
         pprint("Computing gridrefs for {0}".format(user.username))
         for tile in get_juris_tiles(shapefile):
             (minx, miny, maxx, maxy) = tile.bounds
             gridref = '"E{0}N{1}"'.format(int(minx / settings._TILE_SIZE), int(maxy / settings._TILE_SIZE))
-            gridref_list .append(gridref)
+            #gridref_list .append(gridref)
+            gridref_list += gridref
         
-        gridref_jquery = json.dumps(gridref_list)
+        #gridref_jquery = json.dumps(gridref_list)
     
         try:
             tile_list_obj = UserTiles.objects.get(user=user)
-            tile_list_obj.gridref_list = gridref_jquery
+            tile_list_obj.gridref_list = gridref_list
             tile_list_obj.save()
         except ObjectDoesNotExist as e:
-            tile_list_obj = UserTiles(user=user, gridref_list=gridref_jquery)
+            tile_list_obj = UserTiles(user=user, gridref_list=gridref_list)
             tile_list_obj.save() 
     else:
         pprint("Missing shapefile for {0}".format(user.username))
