@@ -19,6 +19,7 @@ urlpatterns = patterns(
     url(r'^$', DataRequestPofileList.as_view(), name='data_request_browse'),
     url(r'^datarequests_csv/$', 'data_request_csv', name='data_request_csv'),
     url(r'^(?P<pk>\d+)/$', 'data_request_profile', name="data_request_profile"),
+    url(r'^(?P<pk>\d+)/compute_size/$', 'data_request_profile_compute_size', name="data_request_profile_compute_size"),
     url(r'^(?P<pk>\d+)/approve/$', 'data_request_profile_approve', name="data_request_profile_approve"),
     url(r'^(?P<pk>\d+)/reject/$', 'data_request_profile_reject', name="data_request_profile_reject"),
     url(r'^(?P<pk>\d+)/cancel/$', 'data_request_profile_cancel', name="data_request_profile_cancel"),

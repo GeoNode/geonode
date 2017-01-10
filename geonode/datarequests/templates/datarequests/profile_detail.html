@@ -172,6 +172,11 @@
         {% endif %}
       </li>
 {% if user.is_superuser %}
+       <li class="list-group-item">
+             <form id="compute_size_form" method="post" class="modal-form" action='{% url "datarequests:data_request_profile_compute_size" pk=request_profile.pk%}'>{% csrf_token %}
+                <button type="submit" class="btn btn-primary btn-md btn-block"  id="compute-size-submit">{% trans "Compute Sizes" %}</button>
+            </form>
+        </li>
       {% if request_profile.request_status == 'approved' %}
         <li class="list-group-item">
              <form id="recreate_dir_form" method="post" class="modal-form" action='{% url "datarequests:data_request_profile_recreate_dir" pk=request_profile.pk%}'>{% csrf_token %}
