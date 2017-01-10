@@ -133,3 +133,26 @@ urlpatterns += patterns('',
                         (r'^featured/(?P<site>[A-Za-z0-9_\-]+)/$', 'geonode.maps.views.featured_map'),
                         (r'^featured/(?P<site>[A-Za-z0-9_\-]+)/info$', 'geonode.maps.views.featured_map_info'),
                         )
+
+# Include polls URLs for polls tutorial app
+# try:
+#     urlpatterns = urlpatterns + patterns('',
+#         url(r'^polls/', include('polls.urls')),
+#     )
+# except Exception as e:
+#     print 'In geonode/urls.py:', e
+
+# BEGIN ANSIBLE MANAGED BLOCK
+try:
+    urlpatterns = urlpatterns + patterns('', 
+        # Gazetteer 
+        url(r"^gazetteer/", include('gazetteer.urls')),
+        # URI redirectors
+        url(r"^def/", include('uriredirect.urls')), 
+        url(r"^rdf_io/", include ('rdf_io.urls')),
+        # Semantic Web components
+        url(r"^skosxl/", include ('skosxl.urls')),
+    )
+except Exception as e:
+    print e
+# END ANSIBLE MANAGED BLOCK
