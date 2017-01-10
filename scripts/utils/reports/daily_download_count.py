@@ -2,7 +2,7 @@ from geonode.settings import GEONODE_APPS
 import geonode.settings as settings
 from actstream.models import Action
 from geonode.eula.models import AnonDownloader
-from geonode.reports.models import DownloadCount, SUCLuzViMin
+from geonode.reports.models import DownloadCount, SUCLuzViMin, DownloadTracker
 from datetime import datetime, timedelta
 from geonode.layers.models import Layer
 from geonode.cephgeo.models import FTPRequest, FTPRequestToObjectIndex, DataClassification
