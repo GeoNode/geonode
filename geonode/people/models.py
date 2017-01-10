@@ -35,6 +35,8 @@ from account.models import EmailAddress
 from .utils import format_address
 from django_enumfield import enum
 
+from pprint import pprint
+
 class OrganizationType(enum.Enum):
     PHIL_LIDAR_1 = 0
     PHIL_LIDAR_2 = 1

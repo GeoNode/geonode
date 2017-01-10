@@ -8,3 +8,5 @@ cas_user_authenticated = dispatch.Signal(
 cas_user_logout = dispatch.Signal(
     providing_args=['user', 'session', 'ticket'],
 )
+
+

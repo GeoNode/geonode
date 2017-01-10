@@ -35,7 +35,7 @@ from django.utils.text import slugify
 from geonode.tasks.update import update_fhm_metadata_task, style_update, seed_layers, pl2_metadata_update, sar_metadata_update, layer_default_style, floodplain_keywords
 from geonode.base.enumerations import CHARSETS
 
-from geonode import settings
+from django.conf import settings
 from geonode.layers.models import Layer
 
 # Create your views here.
@@ -577,7 +577,6 @@ def jurisdict_default_style(request):
     messages.error(
         request, "Updating Default Style of Jurisdiction Shapefiles")
     return HttpResponseRedirect(reverse('data_management'))
-
 
 @login_required
 @user_passes_test(lambda u: u.is_superuser)
