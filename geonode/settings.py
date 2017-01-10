@@ -777,13 +777,12 @@ DOWNLOAD_FORMATS_METADATA = [
     'Atom', 'DIF', 'Dublin Core', 'ebRIM', 'FGDC', 'ISO',
 ]
 DOWNLOAD_FORMATS_VECTOR = [
-    'JPEG', 'PNG', 'PDF','Zipped Shapefile',
+    'JPEG', 'PNG', 'PDF', 'Zipped Shapefile',
     #'PDF', 'GML 2.0', 'GML 3.1.1', 'CSV',
     #'Excel', 'GeoJSON', 'KML', 'View in Google Earth', 'Tiles',
 ]
 DOWNLOAD_FORMATS_RASTER = [
     'JPEG',
-    #'PDF',
     'PNG',
     'PDF',
     # 'ArcGrid',
@@ -921,6 +920,7 @@ CELERY_QUEUES = [
     Queue('ftp', routing_key='ftp'),
     Queue('mk_folder', routing_key='mk_folder'),
     Queue('jurisdiction',routing_key='jurisdiction'),
+    Queue('requests',routing_key='requests'),
 
 ]
 

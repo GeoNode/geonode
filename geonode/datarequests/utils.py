@@ -41,6 +41,7 @@ def create_login_credentials(data_request):
     counter = 0
     final_username = base_username
     username_list = get_unames_starting_with(base_username)
+    pprint()
     while not unique:
         if counter > 0:
             final_username = final_username + str(counter)
@@ -154,5 +155,48 @@ def get_place_name(longitude,latitude):
         'address': g.address
     }
 
-def get_area_coverage(juris_shp):
-    return juris_shp.area/1000000
+def get_juris_data_size(juris_shp_name):
+    juris_shp = get_shp_ogr(juris_shp_name)
+
+    _TILE_SIZE = 1000
+    total_data_size = 0
+    min_x =  int(math.floor(juris_shp.bounds[0] / float(_TILE_SIZE)) * _TILE_SIZE)
+    max_x =  int(math.ceil(juris_shp.bounds[2] / float(_TILE_SIZE)) * _TILE_SIZE)
+    min_y =  int(math.floor(juris_shp.bounds[1] / float(_TILE_SIZE)) * _TILE_SIZE)
+    max_y =  int(math.ceil(juris_shp.bounds[3] / float(_TILE_SIZE)) * _TILE_SIZE)
+    for tile_y in xrange(min_y+_TILE_SIZE, max_y+_TILE_SIZE, _TILE_SIZE):
+        for tile_x in xrange(min_x, max_x, _TILE_SIZE):
+            tile_ulp = (tile_x, tile_y)
+            tile_dlp = (tile_x, tile_y - _TILE_SIZE)
+            tile_drp = (tile_x + _TILE_SIZE, tile_y - _TILE_SIZE)
+            tile_urp = (tile_x + _TILE_SIZE, tile_y)
+            tile = Polygon([tile_ulp, tile_dlp, tile_drp, tile_urp])
+
+            if not tile.intersection(juris_shp).is_empty:
+                gridref = "E{0}N{1}".format(tile_x / _TILE_SIZE, tile_y / _TILE_SIZE,)
+                georef_query = CephDataObject.objects.filter(name__startswith=gridref)
+                total_size = 0
+                for georef_query_objects in georef_query:
+                    total_size += georef_query_objects.size_in_bytes
+                total_data_size += total_size
+    return total_data_size
+
+def get_area_coverage(juris_shp_name):
+    juris_shp = get_shp_ogr(juris_shp_name)
+    if juris_shp:
+        return juris_shp.area/1000000
+    else:
+        return 0
+
+def get_shp_ogr(juris_shp_name):
+    source = ogr.Open(("PG:host={0} dbname={1} user={2} password={3}".format(settings.DATABASE_HOST,settings.DATASTORE_DB,settings.DATABASE_USER,settings.DATABASE_PASSWORD)))
+    data = source.ExecuteSQL("select the_geom from "+str(juris_shp_name))
+    shplist = []
+    if data:
+        for i in range(data.GetFeatureCount()):
+            feature = data.GetNextFeature()
+            shplist.append(loads(feature.GetGeometryRef().ExportToWkb()))
+        juris_shp = cascaded_union(shplist)
+        return juris_shp
+    else:
+        return None

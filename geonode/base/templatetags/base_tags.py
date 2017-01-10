@@ -6,7 +6,8 @@ from django.contrib.auth import get_user_model
 from django.db.models import Count
 
 from guardian.shortcuts import get_objects_for_user
-from geonode import settings
+#from geonode import settings
+from django.conf import settings
 
 from geonode.layers.models import Layer
 from geonode.maps.models import Map
@@ -19,7 +20,6 @@ import json
 from django.core.urlresolvers import resolve
 from django.db.models import Q
 from geoserver.catalog import Catalog
-import geonode.settings as settings
 
 register = template.Library()
 

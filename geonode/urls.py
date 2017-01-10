@@ -35,7 +35,7 @@ import django_cas_ng
 import autocomplete_light
 from geonode.views import forbidden
 
-from geonode import settings
+#from geonode import settings
 
 # Setup Django Admin
 autocomplete_light.autodiscover()
@@ -82,7 +82,7 @@ urlpatterns = patterns('',
                        url(r'^search/$', TemplateView.as_view(template_name='search/search.html'), name='search'),
 
                        # Social views
-                       (r"^account/", include("account.urls")),
+                       #(r"^account/", include("account.urls")),
                        (r'^people/', include('geonode.people.urls')),
                        (r'^avatar/', include('avatar.urls')),
                        (r'^comments/', include('dialogos.urls')),
@@ -95,8 +95,9 @@ urlpatterns = patterns('',
 
                         # Accounts
                        #url(r'^account/ajax_login$', 'geonode.views.ajax_login', name='account_ajax_login'),
-                       url(r'^account/login$', 'django_cas_ng.views.login', name='cas_ng_login'),
-                       url(r'^account/logout$', 'django_cas_ng.views.logout', name='cas_ng_logout'),
+                       url(r'^account/login/$','django_cas_ng.views.login', name='account_login'),
+                       url(r'^account/login/$', 'django_cas_ng.views.login', name='cas_ng_login'),
+                       url(r'^account/logout/$', 'django_cas_ng.views.logout', name='cas_ng_logout'),
                        url(r'^account/ajax_lookup$', 'geonode.views.ajax_lookup', name='account_ajax_lookup'),
                        url(r'^accounts/callback$', 'django_cas_ng.views.callback', name='cas_ng_proxy_callback'),
 
@@ -104,7 +105,7 @@ urlpatterns = patterns('',
                        (r'^geocoding/',include('geonode.arealocate.urls',namespace='arealocate')),
 
                        # Data Request Profiles
-                       (r'^datarequests/', include('geonode.datarequests.urls', namespace='datarequests')),
+                       (r'^requests/', include('geonode.datarequests.urls', namespace='datarequests')),
 
                        # Misc
                        # url(r'^captcha/', include('captcha.urls')),
