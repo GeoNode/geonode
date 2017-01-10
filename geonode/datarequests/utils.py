@@ -187,6 +187,7 @@ def get_juris_data_size(juris_shp_name):
 def get_area_coverage(juris_shp_name):
     juris_shp = get_shp_ogr(juris_shp_name)
     if juris_shp:
+        pprint(juris_shp.area)
         return juris_shp.area/1000000
     else:
         return 0
