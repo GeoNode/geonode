@@ -1,6 +1,6 @@
 from django.conf.urls import patterns, url
 
-from .views import ProfileRequestList, DataRequestList
+from .views import ProfileRequestList, DataRequestList, DataRequestProfileList
 
 urlpatterns = patterns(
     'geonode.datarequests.views',
@@ -8,6 +8,12 @@ urlpatterns = patterns(
     #url for landing page for profile and data requests
     url(r'^/?$','requests_landing',name='requests_landing'),
     url(r'^requests_csv/$','requests_csv',name='requests_csv'),
+    
+    #old requests
+    url(r'^old_requests/$',DataRequestProfileList.as_view(),name='old_requests_model_view'),
+    url(r'^old_requests/(?P<pk>\d+)/$', 'old_request_detail', name="old_request_detail"),
+    url(r'^old_requests/migrate/$','old_request_migration_all',name='old_request_migration_all'),
+    url(r'^old_requests/(?P<pk>\d+)/migrate/$','old_request_migration', name='old_request_migration'),
     
     #urls for registration
     url(r'^register/$','register',name='request_register'),

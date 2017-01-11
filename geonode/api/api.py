@@ -39,7 +39,7 @@ FILTER_TYPES = {
     'layer': Layer,
     'map': Map,
     'document': Document,
-    # 'data_request': DataRequestProfile,
+    'old_request': DataRequestProfile,
     'profile_request': ProfileRequest,
     'data_request': DataRequest,
 }
