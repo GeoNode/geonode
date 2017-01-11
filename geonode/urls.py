@@ -1,4 +1,4 @@
-#########################################################################
+# #########################################################################
 #
 # Copyright (C) 2012 OpenPlans
 #
@@ -135,12 +135,21 @@ urlpatterns += patterns('',
                         )
 
 # Include polls URLs for polls tutorial app
-# try:
-#     urlpatterns = urlpatterns + patterns('',
-#         url(r'^polls/', include('polls.urls')),
-#     )
-# except Exception as e:
-#     print 'In geonode/urls.py:', e
+try:
+    urlpatterns = urlpatterns + patterns('',
+        url(r'^polls/', include('polls.urls')),
+    )
+except Exception as e:
+    print 'In geonode/urls.py, error including polls URLs:', e
+
+# Include URLs for d3 example app
+try:
+    urlpatterns = urlpatterns + patterns('',
+        url(r'^d3ex/', include('d3ex.urls')),
+        url(r'^play/', include('play.urls')),
+    )
+except Exception as e:
+    print 'In geonode/urls.py, error including d3-example URLs:', e
 
 # BEGIN ANSIBLE MANAGED BLOCK
 try:

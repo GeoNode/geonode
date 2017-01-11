@@ -15,8 +15,12 @@ GAZ_APPS = (
     'gazetteer',
     'uriredirect',
 
+    # Django d3 example
+    'd3ex',
+    'play',
+
     # polls tutorial
-#    'polls',
+    'polls',
 )
 
 from settings import INSTALLED_APPS
