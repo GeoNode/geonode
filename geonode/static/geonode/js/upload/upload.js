@@ -196,13 +196,18 @@ define(['underscore',
      *  @returns {boolean}
      */
     checkGeogig = function() {
-        geogig_store = $('#' + base_name + '\\:geogig_store').val();
-        geogig = $('#' + base_name + '\\:geogig_toggle').is(':checked');
-        if (geogig) {
-            return geogig_store.length != 0;
-        } else {
-            return true;
+        var files = layers[Object.keys(layers)[0]]['files'];
+        for (var i = 0; i<files.length; i++){
+            var base_name = files[i].name.split('.')[0];
+            var geogig_store = $('#' + base_name + '\\:geogig_store').val();
+            var geogig = $('#' + base_name + '\\:geogig_toggle').is(':checked');
+            if (geogig) {
+                if (geogig_store.length == 0) {
+                    return false;
+                }
+            }
         }
+        return true;
     }
 
     doDelete = function(event) {
