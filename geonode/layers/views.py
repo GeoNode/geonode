@@ -640,7 +640,7 @@ def layer_download(request, layername):
                         'PUBLIC_LOCATION'], "/".join(splits[4:]))
     return HttpResponseRedirect(redir_url)
 
-def layer_tracker(request, layername):
+def layer_tracker(request, layername, dl_type):
     layer = _resolve_layer(
         request,
         layername,
@@ -652,7 +652,8 @@ def layer_tracker(request, layername):
         DownloadTracker(actor=Profile.objects.get(username=request.user),
                         title=str(layername),
                         resource_type=str(ResourceBase.objects.get(layer__typename=layername).csw_type),
-                        keywords=Layer.objects.get(typename=layername).keywords.slugs()
+                        keywords=Layer.objects.get(typename=layername).keywords.slugs(),
+                        dl_type=dl_type
                         ).save()
         pprint('Download Tracked')
     return HttpResponse(status=200)
@@ -713,7 +714,7 @@ def layer_download_csv(request):
                                 purpose, layername.typename, anon.date.strftime('%Y/%m/%d')])
     listtowrite.sort(key=lambda x: datetime.datetime.strptime(
         x[8], '%Y/%m/%d'), reverse=True)
-    
+
     pprint("writing ftp downloads list")
     for ftp_request in FTPRequest.objects.all():
         ftp_detail = get_ftp_details(ftp_request)
@@ -724,17 +725,17 @@ def layer_download_csv(request):
         organization = ftp_detail['organization']
         organization_type = ftp_detail['organization_type']
         date_requested = ftp_request.date_time
-        
-        listtowrite.append([ username, lastname, firstname, email, organization, organization_type, "", 
+
+        listtowrite.append([ username, lastname, firstname, email, organization, organization_type, "",
                     "LAZ", date_requested.date, ftp_detail['number_of_laz'], ftp_detail['size_of_laz']])
-        listtowrite.append([ username, lastname, firstname, email, organization, organization_type, "", 
+        listtowrite.append([ username, lastname, firstname, email, organization, organization_type, "",
                     "DSM", date_requested.date, ftp_detail['number_of_dsm'], ftp_detail['size_of_dsm']])
-        listtowrite.append([ username, lastname, firstname, email, organization, organization_type, "", 
+        listtowrite.append([ username, lastname, firstname, email, organization, organization_type, "",
                     "DTM", date_requested.date, ftp_detail['number_of_dtm'], ftp_detail['size_of_dtm']])
-        listtowrite.append([ username, lastname, firstname, email, organization, organization_type, "", 
+        listtowrite.append([ username, lastname, firstname, email, organization, organization_type, "",
                     "Ortho", date_requested.date, ftp_detail['number_of_ortho'], ftp_detail['size_of_ortho']])
 
-        
+
     for eachtowrite in listtowrite:
         writer.writerow(eachtowrite)
     return response
