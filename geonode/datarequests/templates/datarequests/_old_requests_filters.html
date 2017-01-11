@@ -1,0 +1,50 @@
+{% load i18n %}
+{% load base_tags %}
+
+<nav class="filter">
+  <h4><a href="#" class="toggle toggle-nav"><i class="fa fa-chevron-down"></i>{% trans "Request Status" %}</a></h4>
+  <ul class="nav" id="categories">
+    <li>
+        <a id="pending" class="request-filter" data-value="pending" data-filter="request_status__in" ng-click="multiple_choice_listener($event)">Pending<span class="badge pull-right"></span>
+        </a>
+    </li>
+    <li>
+        <a id="approved" class="request-filter" data-value="approved" data-filter="request_status__in" ng-click="multiple_choice_listener($event)">Approved<span class="badge pull-right"></span>
+        </a>
+    </li>
+    <li>
+        <a id="rejected" class="request-filter" data-value="rejected" data-filter="request_status__in" ng-click="multiple_choice_listener($event)">Rejected<span class="badge pull-right"></span>
+        </a>
+    </li>
+  </ul>
+</nav>
+
+<nav class="filter">
+  <h4><a href="#" class="toggle toggle-nav"><i class="fa fa-chevron-right"></i>{% trans header %}</a></h4>
+  <ul class="nav closed" id="types">
+        <li>
+            <a id="commercial" class="request-filter" data-value="commercial" data-filter="requester_type__in" ng-click="multiple_choice_listener($event)">Commercial<span class="badge pull-right"></span>
+            </a>
+        </li>
+        <li>
+            <a id="noncommercial" class="request-filter" data-value="noncommercial" data-filter="requester_type__in" ng-click="multiple_choice_listener($event)">Non-commercial<span class="badge pull-right"></span>
+            </a>
+        </li>
+        <li>
+            <a id="academe" class="request-filter" data-value="academe" data-filter="requester_type__in" ng-click="multiple_choice_listener($event)">Academe<span class="badge pull-right"></span>
+            </a>
+        </li>
+  </ul>
+</nav>
+
+<nav class="filter">
+  <h4><a href="#" class="toggle toggle-nav"><i class="fa fa-chevron-right"></i>{% trans "Date" %}</a></h4>
+  <ul class="nav closed" id="date_start">
+    <label>{% trans "Date begins after:" %}</label>
+    <li><input value="yyyy-mm-dd" data-date-format="YYYY-MM-DD" type="text" class="datepicker" placeholder="{% trans 'yyyy-mm-dd' %}" ng-model="date_query.date__gte" /></li>
+  </ul>
+  <ul class="nav closed" id="date_end">
+    <label>{% trans "Date ends before:" %}</label>
+    <li><input value="yyyy-mm-dd" data-date-format="YYYY-MM-DD" type="text" class="datepicker" placeholder="{% trans 'yyyy-mm-dd' %}" ng-model="date_query.date__lte" /></li>
+  </ul>
+</nav>
