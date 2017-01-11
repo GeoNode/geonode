@@ -36,6 +36,7 @@ class DownloadTrackerAdmin(admin.ModelAdmin):
         'actor',
         'title',
         'resource_type',
+        'dl_type',
         'keywords')
 
 admin.site.register(DownloadTracker, DownloadTrackerAdmin)
