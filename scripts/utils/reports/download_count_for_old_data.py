@@ -2,7 +2,7 @@ from geonode.settings import GEONODE_APPS
 import geonode.settings as settings
 from actstream.models import Action
 from geonode.eula.models import AnonDownloader
-from geonode.reports.models import DownloadCount, SUCLuzViMin
+from geonode.reports.models import DownloadCount, SUCLuzViMin, DownloadTracker
 from datetime import datetime, timedelta
 from geonode.layers.models import Layer
 
@@ -65,21 +65,21 @@ def add_to_monthlyc(category):
         }
     layer_count[category]['Document'] += 1
 
-for n in range(52):
+for m in range(365):
     layer_count = {}
-    m = 7*n - 3
-    datetoappend = datetime.strptime((datetime.now()-timedelta(days=m)).strftime('%U-%Y')+'-3','%U-%Y-%w') #timedelta to start week count days from sunday; days=3 meaning week count if from wednesday to tuesday
-    auth_list = Action.objects.filter(verb='downloaded').order_by('timestamp')
+    datetoappend = datetime.strptime((datetime.now()-timedelta(days=m)).strftime('%d-%m-%Y'),'%d-%m-%Y') #timedelta to start week count days from sunday; days=3 meaning week count if from wednesday to tuesday
+    # auth_list = Action.objects.filter(verb='downloaded').order_by('timestamp')
+    auth_list = DownloadTracker.objects.order_by('timestamp')
     for auth in auth_list:
-        if datetoappend == datetime.strptime(auth.timestamp.strftime('%U-%Y')+'-3','%U-%Y-%w') and not auth.action_object.csw_type == 'document':#if datenow is timestamp
+        if datetoappend == datetime.strptime(auth.timestamp.strftime('%d-%m-%Y'),'%d-%m-%Y') and not auth.resource_type == 'document':#if datenow is timestamp
             luzvimin = get_luzvimin({
                 "timestamp": auth.timestamp,
-                "typename": auth.action_object.typename,
+                "typename": auth.title,
                 })
-            add_to_count(luzvimin, auth.action_object.typename)
+            add_to_count(luzvimin, auth.title)
     anon_list = AnonDownloader.objects.all().order_by('date')
     for anon in anon_list:
-        if datetoappend == datetime.strptime(anon.date.strftime('%U-%Y')+'-3','%U-%Y-%w') and not anon.anon_document:#if datenow is timestamp
+        if datetoappend == datetime.strptime(anon.date.strftime('%d-%m-%Y'),'%d-%m-%Y') and not anon.anon_document:#if datenow is timestamp
             luzvimin = get_luzvimin({
                 "timestamp": anon.date,
                 "typename": anon.anon_layer.typename,
