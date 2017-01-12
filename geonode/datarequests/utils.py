@@ -41,7 +41,7 @@ def create_login_credentials(data_request):
     counter = 0
     final_username = base_username
     username_list = get_unames_starting_with(base_username)
-    pprint()
+    #pprint()
     while not unique:
         if counter > 0:
             final_username = final_username + str(counter)
