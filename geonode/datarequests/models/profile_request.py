@@ -184,7 +184,7 @@ class ProfileRequest(BaseRequest):
         return self.verification_date is not None
 
     def get_absolute_url(self):
-        return reverse('datarequests:profile_request_detail', kwargs={'pk': self.pk})
+        return settings.BASEURL + reverse('datarequests:profile_request_detail', kwargs={'pk': self.pk})
 
     def set_verification_key(self):
         self.verification_key = get_random_string(length=50)
@@ -408,14 +408,14 @@ class ProfileRequest(BaseRequest):
     
         text_content = email_utils.PROFILE_APPROVAL_TEXT.format(
             unidecode(self.first_name),
-            username,
+            self.username,
             profile_url,
             settings.LIPAD_SUPPORT_MAIL
         )
         
         html_content = email_utils.PROFILE_APPROVAL_HTML.format(
             unidecode(self.first_name),
-            username,
+            self.username,
             profile_url,
             settings.LIPAD_SUPPORT_MAIL,
             settings.LIPAD_SUPPORT_MAIL        
