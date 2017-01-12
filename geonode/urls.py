@@ -134,6 +134,14 @@ urlpatterns += patterns('',
                         (r'^featured/(?P<site>[A-Za-z0-9_\-]+)/info$', 'geonode.maps.views.featured_map_info'),
                         )
 
+# Include UADI answers URLs
+try:
+    urlpatterns = urlpatterns + patterns('',
+        url(r'^answers/', include('answers.urls')),
+    )
+except Exception as e:
+    print 'In geonode/urls.py, error including answers URLs:', e
+
 # Include polls URLs for polls tutorial app
 try:
     urlpatterns = urlpatterns + patterns('',

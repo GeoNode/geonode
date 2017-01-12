@@ -19,6 +19,9 @@ GAZ_APPS = (
     'd3ex',
     'play',
 
+    # UADI answers
+    'answers',
+
     # polls tutorial
     'polls',
 )
