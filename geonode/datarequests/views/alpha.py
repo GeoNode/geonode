@@ -102,4 +102,8 @@ def requests_csv(request):
             writer.writerow(o.to_values_list(data_request_fields))
 
         return response
-    
+
+@login_required
+class DataRequestProfileList(LoginRequiredMixin, TemplateView):
+    template_name = 'datarequests/data_request_list.html'
+    raise_exception = True

@@ -125,7 +125,7 @@ class DataRequest(BaseRequest):
             ))
 
     def get_absolute_url(self):
-        return reverse('datarequests:data_request_detail', kwargs={'pk': self.pk})
+        return settings.BASEURL + reverse('datarequests:data_request_detail', kwargs={'pk': self.pk})
 
     def set_status(self, status, administrator = None):
         self.status = status
@@ -292,7 +292,6 @@ class DataRequest(BaseRequest):
     def send_approval_email(self, username):
         site = Site.objects.get_current()
         profile_url = (
-            str(site) +
             reverse('profile_detail', kwargs={'username': username})
         )
         profile_url = iri_to_uri(profile_url)
