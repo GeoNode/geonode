@@ -8,11 +8,11 @@ from geonode.datarequests.models import DataRequestProfile, RequestRejectionReas
 
 class ProfileRequestAdmin(admin.ModelAdmin):
     model = ProfileRequest
-    search_fields=('id', 'last_name','organization','status','administrator',)
+    search_fields=('id', 'last_name','organization','status','administrator__username',)
 
 class DataRequestAdmin(admin.ModelAdmin):
     model = DataRequest
-    search_fields=('id', 'status','request_letter__title')
+    search_fields=('id', 'status','request_letter__title''administrator__username',)
 
 class DataRequestProfileAdmin(admin.ModelAdmin):
     model = DataRequestProfile
@@ -30,7 +30,7 @@ class DataRequestProfileAdmin(admin.ModelAdmin):
         'jurisdiction_shapefile',
         'request_letter')
     list_filter = ('request_status', 'organization_type')
-    search_fields = ('username', 'first_name', 'middle_name', 'last_name', 'organization','organization_type', 'jurisdiction_shapefile', 'request_letter' )
+    search_fields = ('username', 'first_name', 'middle_name', 'last_name', 'organization','organization_type', 'jurisdiction_shapefile', 'request_letter__title' )
 
 #admin.site.register(BaseRequest,BaseRequestAdmin)
 admin.site.register(ProfileRequest,ProfileRequestAdmin)
