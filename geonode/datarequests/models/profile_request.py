@@ -184,7 +184,7 @@ class ProfileRequest(BaseRequest):
         return self.verification_date is not None
 
     def get_absolute_url(self):
-        return settings.BASEURL + reverse('datarequests:profile_request_detail', kwargs={'pk': self.pk})
+        return reverse('datarequests:profile_request_detail', kwargs={'pk': self.pk})
 
     def set_verification_key(self):
         self.verification_key = get_random_string(length=50)
@@ -355,16 +355,15 @@ class ProfileRequest(BaseRequest):
         msg.send()
     
     def send_new_request_notif_to_admins(self, request_type="Profile"):
-        site = Site.objects.get_current()
         text_content = email_utils.NEW_REQUEST_EMAIL_TEXT.format(
             request_type,
-            self.get_absolute_url()
+            settings.BASEURL + self.get_absolute_url()
         )
         
         html_content=email_utils.NEW_REQUEST_EMAIL_HTML.format(
             request_type,
-            self.get_absolute_url(),
-            self.get_absolute_url()
+            settings.BASEURL + self.get_absolute_url(),
+            settings.BASEURL + self.get_absolute_url()
         )
         
         email_subj = "[LiPAD] A new request has been submitted"
