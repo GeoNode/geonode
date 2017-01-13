@@ -157,3 +157,12 @@ Deletes orphaned files of deleted documents.
 Usage::
 
    python manage.py delete_orphaned_files
+
+delete_orphaned_thumbs
+======================
+
+Deletes orphaned thumbnails of deleted GeoNode resources (Layers, Maps and Documents).
+
+Usage::
+
+   python manage.py delete_orphaned_thumbs
