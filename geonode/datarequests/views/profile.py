@@ -159,7 +159,7 @@ def profile_request_cancel(request,pk):
         else:
             profile_request.set_status('cancelled',administrator = request.user)
             
-    url = request.build_absolute_uri(data_request.get_absolute_url())
+    url = request.build_absolute_uri(profile_request.get_absolute_url())
 
     return HttpResponse(
         json.dumps({
