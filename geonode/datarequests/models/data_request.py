@@ -19,6 +19,7 @@ from model_utils import Choices
 from pprint import pprint
 from unidecode import unidecode
 
+from geonode.cephgeo.models import UserJurisdiction
 from geonode.datarequests import email_utils
 from geonode.documents.models import Document
 from geonode.layers.models import Layer
