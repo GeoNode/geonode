@@ -59,5 +59,9 @@ $('.tab-content').click(function(event) {
   }
   return false;
 });
+// Allow thread links to work
+$('.tab-content a').click(function(event) {
+  event.stopPropagation();
+});
 </script>
 {% endblock extra_script %}
