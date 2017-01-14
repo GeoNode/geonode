@@ -44,5 +44,5 @@ def create_document_thumbnail(object_id):
         return
 
     image = document._render_thumbnail()
-    filename = 'doc-%s-thumb.png' % document.id
+    filename = 'document-%s-thumb.png' % document.uuid
     document.save_thumbnail(filename, image)
