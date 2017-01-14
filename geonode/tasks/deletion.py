@@ -55,3 +55,9 @@ def delete_map(object_id):
 def delete_orphaned_document_files():
     from geonode.documents.utils import delete_orphaned_document_files
     delete_orphaned_document_files()
+
+
+@task(name='geonode.tasks.deletion.delete_orphaned_thumbs', queue='cleanup')
+def delete_orphaned_thumbnails():
+    from geonode.documents.utils import delete_orphaned_thumbs
+    delete_orphaned_thumbs()
