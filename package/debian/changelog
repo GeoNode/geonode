@@ -1,3 +1,27 @@
+geonode (2.5.9+dev20170116091118) trusty; urgency=high
+
+  [ Angelos Tzotsos ]
+  * [85f7aa] Update release version
+
+  [ Paolo Corti ]
+  * [37686a] Adds a management command and a celery task to delete orpahed files or removed documents. Fixes #2291 (#2818)
+
+  [ travislbrundage ]
+  * [21a589] Fix bug with inbox thread links becoming unclickable (#2820)
+
+  [ Paolo Corti ]
+  * [7a6e0c] Fixes #2824 (#2826)
+  * [f38440] Adds a management command and a celery task to delete orpahed thumbs. Fixes #2535 (#2825)
+
+  [ travislbrundage ]
+  * [a7b5c4] Make usernames case insensitive for authentication (#2821)
+
+  [ Simone Dalmasso ]
+  * [e4c71b] remove postgis version for xenial package (#2827)
+  * [b1ad7c] update geoserver debian changelog (#2828)
+
+ -- Simone Dalmasso <simone.dalmasso@gmail.com>  Mon, 16 Jan 2017 09:13:18 +0000
+
 geonode (2.5.7+thefinal0) xenial; urgency=high
 
   [ etj ]
