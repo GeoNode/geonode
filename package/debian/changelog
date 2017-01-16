@@ -1,3 +1,9 @@
+geonode (2.5.9+thefinal0) trusty; urgency=high
+
+  * [a8d827] fix dialogos dependency (#2829)
+
+ -- Simone Dalmasso <simone.dalmasso@gmail.com>  Mon, 16 Jan 2017 15:09:29 +0000
+
 geonode (2.5.9+dev20170116091118) trusty; urgency=high
 
   [ Angelos Tzotsos ]
