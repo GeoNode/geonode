@@ -115,7 +115,8 @@ class Command(BaseCommand):
             skip_unadvertised=skip_unadvertised,
             skip_geonode_registered=skip_geonode_registered,
             remove_deleted=remove_deleted,
-            permissions=permissions)
+            permissions=permissions,
+            execute_signals=True)
 
         if verbosity > 1:
             print "\nDetailed report of failures:"
