@@ -36,7 +36,7 @@
       {% if HAYSTACK_SEARCH %}
           SEARCH_URL = '{% url 'api_get_search' api_name='api' resource_name='base' %}?type__in=old_request'
       {% else %}
-          SEARCH_URL = "{% url 'api_dispatch_list' api_name='api' resource_name='old_requests' %}'";
+          SEARCH_URL = "{% url 'api_dispatch_list' api_name='api' resource_name='old_requests' %}";
       {% endif %}
     FILTER_TYPE = 'old_request';
     console.log(SEARCH_URL)
