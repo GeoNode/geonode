@@ -43,43 +43,44 @@ setup(name='GeoNode',
       include_package_data=True,
       install_requires=[
         # # The commented name next to the package
-        # # is the Ubuntu 14.04 package that provides it.
+        # # is the Ubuntu 16.04 package that provides it
+        # # with version in parenthesis
 
-        # # Apps with official Ubuntu 14.04 packages
+        # # Apps with official Ubuntu 16.04 packages
 
         # native dependencies
-        "pillow>=3.1.1",  # python-pillow
-        "lxml>=3.4.4",  # python-lxml
-        "psycopg2>=2.4.5",  # python-psycopg2
-        "Django >=1.8.7, < 1.9a0",  # python-django
+        "pillow>=3.1.1",  # python-imaging (3.1.2)
+        "lxml>=3.4.4",  # python-lxml (3.5.0)
+        "psycopg2>=2.4.5",  # python-psycopg2 (2.6.1)
+        "Django >=1.8.7, < 1.9a0",  # python-django (1.8.7)
 
         # Other
         "pyyaml>=3.11",
-        "beautifulsoup4>=4.2.1",  # python-bs4
-        "MultipartPostHandler>=0.1.0",  # python-multipartposthandler
-        "httplib2>=0.9.2",  # python-httplib2
-        "transifex-client>=0.10",  # transifex-client
-        "Paver>=1.2.1",  # python-paver
-        "nose>=1.3.1",  # python-nose
-        "django-nose>=1.4",  # python-django-nose
-        "awesome-slugify>=1.6.2",
+        "beautifulsoup4>=4.2.1",  # python-bs4 (4.4.1)
+        "MultipartPostHandler>=0.1.0",  # python-multipartposthandler (0.1.0)
+        "httplib2>=0.9.2",  # python-httplib2 (0.9.1, 0.9.2 in our ppa)
+        "transifex-client>=0.10",  # transifex-client (0.11.1)
+        "Paver>=1.2.1",  # python-paver (1.2.1)
+        "nose>=1.3.1",  # python-nose (1.3.7)
+        "django-nose>=1.4",  # python-django-nose (1.4.3)
 
         # Django Apps
-        "django-pagination >=1.0.5, <=1.0.7",  # python-django-pagination
-        "django-extensions>=1.2.5",  # python-django-extensions
-        "django-taggit>=0.21.0",  # python-django-taggit
-        "django-mptt>=0.8.6",  # django-mptt
-        "django-treebeard>=3.0",  # django-treebeard
-        "django-guardian>=1.4.1",  # django-guardian
+        "django-pagination >=1.0.5, <=1.0.7",  # python-django-pagination (1.0.7)
+        "django-extensions>=1.2.5",  # python-django-extensions (1.5.9)
+        "django-taggit>=0.21.0",  # python-django-taggit (0.18.0)
+        "django-mptt>=0.8.6",  # django-mptt (0.8.0, 0.8.6 in our ppa)
+        "django-treebeard>=3.0",  # django-treebeard (4.0)
+        "django-guardian>=1.4.1",  # django-guardian (1.4.1)
         # "django-admin-bootstrapped>=1.6.5", #django-admin-bootstrapped
 
-        # Apps with packages provided in GeoNode's PPA on Launchpad.
+        # # Apps with packages provided in GeoNode's PPA on Launchpad.
+
+        # Django Apps
+        "awesome-slugify>=1.6.2",
         "dj-database-url >=0.4.0",
         "django-jsonfield>=0.9.16",  # python-django-jsonfield
         "django-mptt>=0.8.0",  # django-mptt
         # "django-admin-bootstrapped>=1.6.5",  # django-admin-bootstrapped
-
-        # # Apps with packages provided in GeoNode's PPA on Launchpad.
         "pinax-theme-bootstrap>=3.0a11",
         "pinax-theme-bootstrap-account>=1.0b2",
         "django-forms-bootstrap>=3.0.1",
