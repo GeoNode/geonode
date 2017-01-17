@@ -214,3 +214,28 @@ def old_request_migration(request, pk):
             
     messages.info(request, message)
     return HttpResponseRedirect(reverse('datarequests:old_requests', args=[pk]))
+    
+def old_request_facet_count(request):
+    if not request.user.is_superuser:
+        raise PermissionDenied
+
+    if not request.method == 'POST':
+        raise PermissionDenied
+
+    facets_count = {
+        'pending': DataRequestProfile.objects.filter(
+            request_status='pending').exclude(date=None).count(),
+        'approved': DataRequestProfile.objects.filter(
+            request_status='approved').count(),
+        'rejected': DataRequestProfile.objects.filter(
+            request_status='rejected').count(),
+        'cancelled': DataRequestProfile.objects.filter(
+            request_status='cancelled').exclude(date=None).count(),
+    }
+
+    return HttpResponse(
+        json.dumps(facets_count),
+        status=200,
+        mimetype='text/plain'
+    )
+

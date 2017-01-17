@@ -591,3 +591,89 @@ class DataRequestResource(ModelResource):
             ]
         else:
             return []
+
+class DataRequestProfileResource(ModelResource):
+    """Data Request Profile api"""
+    data_request_detail_url = fields.CharField()
+    org_type = fields.CharField()
+    req_type = fields.CharField()
+    status = fields.CharField()
+    status_label = fields.CharField()
+    is_rejected = fields.BooleanField(default=False)
+    rejection_reason = fields.CharField()
+    date_submitted = fields.CharField()
+    shapefile_thumbnail_url = fields.CharField(null=True)
+
+    class Meta:
+        authorization = DataRequestAuthorization()
+        authentication = SessionAuthentication()
+        queryset = DataRequestProfile.objects.all().order_by('-key_created_date')
+        resource_name = 'old_requests'
+        allowed_methods = ['get']
+        ordering = ['key_created_date', ]
+        filtering = {'first_name': ALL,
+                     'requester_type': ALL,
+                     'request_status': ALL,
+                     'organization': ALL,
+                     'request_status': ALL,
+                     'key_created_date': ALL,
+                     }
+
+    def dehydrate_data_request_detail_url(self, bundle):
+        return bundle.obj.get_absolute_url()
+
+    def dehydrate_org_type(self, bundle):
+        return bundle.obj.get_organization_type_display()
+
+    def dehydrate_rejection_reason(self, bundle):
+        return bundle.obj.rejection_reason
+
+    def dehydrate_status(self, bundle):
+        return bundle.obj.get_request_status_display()
+
+    def dehydrate_is_rejected(self, bundle):
+        return bundle.obj.request_status == 'rejected'
+
+    def dehydrate_date_submitted(self, bundle):
+        return formats.date_format(bundle.obj.key_created_date, "SHORT_DATETIME_FORMAT")
+
+    def dehydrate_status_label(self, bundle):
+        if bundle.obj.request_status == 'pending' or bundle.obj.request_status == 'cancelled' or bundle.obj.request_status == 'unconfirmed':
+            return 'default'
+        elif bundle.obj.request_status == 'rejected':
+            return 'danger'
+        else:
+            return 'success'
+
+    def dehydrate_shapefile_thumbnail_url(self, bundle):
+        if bundle.obj.jurisdiction_shapefile:
+            return bundle.obj.jurisdiction_shapefile.thumbnail_url
+        else:
+            return None
+
+    def apply_filters(self, request, applicable_filters):
+        base_object_list = super(DataRequestProfileResource, self).apply_filters(request, applicable_filters)
+
+        query = request.GET.get('title__icontains', None)
+        if query:
+            query = query.split(' ')
+            q = Q()
+            for t in query:
+                q = q | Q(first_name__icontains=t)
+                q = q | Q(middle_name__icontains=t)
+                q = q | Q(last_name__icontains=t)
+                q = q | Q(organization__icontains=t)
+            base_object_list = base_object_list.filter(q).distinct()
+
+        return base_object_list
+
+    def prepend_urls(self):
+        if settings.HAYSTACK_SEARCH:
+            return [
+                url(r"^(?P<resource_name>%s)/search%s$" % (
+                    self._meta.resource_name, trailing_slash()
+                    ),
+                    self.wrap_view('get_search'), name="api_get_search"),
+            ]
+        else:
+            return []
