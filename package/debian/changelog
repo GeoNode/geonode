@@ -1,3 +1,9 @@
+geonode (2.5.9+thefinal3) trusty; urgency=high
+
+  * [82cfe2] update the debian wsgi script (#2834)
+
+ -- Simone Dalmasso <simone.dalmasso@gmail.com>  Tue, 17 Jan 2017 12:08:13 +0000
+
 geonode (2.5.9+thefinal2) trusty; urgency=high
 
   * UNRELEASED
