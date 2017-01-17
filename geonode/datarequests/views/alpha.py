@@ -196,22 +196,26 @@ def old_request_migration(request, pk):
     
     old_request = get_object_or_404(DataRequestProfile, pk=pk)
     
-    profile_request = old_request.migrate_request_profile()
     message = ""
-    if profile_request:
-        message += "Migrated profile request can be found here: {}.".format(settings.BASE_URL+profile_request.get_absolute_url())
-        data_request = old_request.migrate_request_data()
-        if data_request:
-            message += "Migrated data request can be found here: {}.".format(settings.BASE_URL+data_request.get_absolute_url())
-    else:
-        message += "This data request has already been migrated."
-        if old_request.profile_request:
-            message += "Profile request: {}".format(settings.BASE_URL+profile_request.get_absolute_url())
+    if old_request.profile_request:
+        message += "This request has already been migrated."
+        message += "\nProfile request: <a href = {}>#{}</a>".format(settings.BASEURL+old_request.profile_request.get_absolute_url(), old_request.profile_request.pk)
         if old_request.data_request:
-            message += "Data request: {}".format(settings.BASE_URL+data_request.get_absolute_url())
+            message += "\nData request: <a href = {}>{}</a>".format(settings.BASEURL+old_request.data_request.get_absolute_url(), old_request.data_request.pk)
+    
+    else:
+        profile_request = old_request.migrate_request_profile()
+    
+        if profile_request:
+            message += "Migrated profile request can be found here: <a href = {}>{}</a>.".format(settings.BASEURL+profile_request.get_absolute_url(), old_request.profile_request.pk)
+            data_request = old_request.migrate_request_data()
+            if data_request:
+                message += "\nMigrated data request can be found here: <a href = {}>{}</a>.".format(settings.BASEURL+data_request.get_absolute_url(), old_request.data_request.pk)
+        else:
+            message += "Unable to migrate"
             
     messages.info(request, message)
-    return HttpResponseRedirect(reverse('datarequests:old_requests', args=[pk]))
+    return HttpResponseRedirect(reverse('datarequests:old_request_detail', args=[pk]))
     
 def old_request_facet_count(request):
     if not request.user.is_superuser:

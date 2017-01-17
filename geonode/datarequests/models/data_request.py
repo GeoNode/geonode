@@ -277,13 +277,13 @@ class DataRequest(BaseRequest):
         site = Site.objects.get_current()
         text_content = email_utils.NEW_REQUEST_EMAIL_TEXT.format(
             request_type,
-            self.get_absolute_url()
+            settings.BASEURL + self.get_absolute_url()
         )
         
         html_content=email_utils.NEW_REQUEST_EMAIL_HTML.format(
             request_type,
-            self.get_absolute_url(),
-            self.get_absolute_url()
+            settings.BASEURL + self.get_absolute_url(),
+            settings.BASEURL + self.get_absolute_url()
         )
         
         email_subj = "[LiPAD] A new request has been submitted"
