@@ -293,7 +293,7 @@ class DataRequestProfile(TimeStampedModel):
         return self.date is not None
 
     def get_absolute_url(self):
-        return reverse('datarequests:data_request_profile', kwargs={'pk': self.pk})
+        return reverse('datarequests:old_request_detail', kwargs={'pk': self.pk})
 
     def set_verification_key(self):
         self.verification_key = get_random_string(length=50)

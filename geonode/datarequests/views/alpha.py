@@ -188,8 +188,6 @@ def old_request_detail(request, pk,template="datarequests/old_request_detail.htm
         if settings.SOCIAL_ORIGINS:
             context_dict["social_links"] = build_social_links(request, layer)
 
-    context_dict["request_reject_form"]= DataRequestProfileRejectForm(instance=request_profile)
-
     return render_to_response(template, RequestContext(request, context_dict))
 
 
