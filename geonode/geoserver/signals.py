@@ -20,6 +20,7 @@
 
 import errno
 import logging
+import os
 import urllib
 
 from urlparse import urlparse, urljoin
@@ -391,7 +392,13 @@ def geoserver_post_save(instance, sender, **kwargs):
     thumbnail_create_url = ogc_server_settings.LOCATION + \
         "wms/reflect?" + p
 
-    create_thumbnail(instance, thumbnail_remote_url, thumbnail_create_url, ogc_client=http_client)
+    thumbnail_dir = os.path.join(settings.MEDIA_ROOT, 'thumbs')
+    thumbnail_name = 'layer-' + instance.uuid + '-thumb.png'
+    thumbnail_path = os.path.join(thumbnail_dir, thumbnail_name)
+
+    if os.path.isfile(thumbnail_path) is False:
+        create_thumbnail(instance, thumbnail_remote_url, thumbnail_create_url,
+                         ogc_client=http_client)
 
     legend_url = ogc_server_settings.PUBLIC_LOCATION + \
         'wms?request=GetLegendGraphic&format=image/png&WIDTH=20&HEIGHT=20&LAYER=' + \
