@@ -529,7 +529,23 @@ def geoserver_post_save_map(instance, sender, **kwargs):
         # Add the bbox param only if the bbox is different to [None, None,
         # None, None]
         if None not in instance.bbox:
-            params['bbox'] = instance.bbox_string
+            # The bbox min and max y are switched for some layers
+            # This ensures a bbox error doesn't occur
+            bbox_list = [float(i) for i in instance.bbox_string.split(',')]
+            print bbox_list
+            new_bbox = None
+            bbox_error = bbox_list[1] > bbox_list[3] or bbox_list[0] > bbox_list[2]
+            if bbox_error == True:
+                new_bbox_list = [
+                  min(bbox_list[0], bbox_list[2]),
+                  min(bbox_list[1], bbox_list[3]),
+                  max(bbox_list[0], bbox_list[2]),
+                  max(bbox_list[1], bbox_list[3])
+                ]
+                new_bbox = ','.join([str(i) for i in new_bbox_list])
+                params['bbox'] = new_bbox
+            else:
+                params['bbox'] = instance.bbox_string
 
         # Avoid using urllib.urlencode here because it breaks the url.
         # commas and slashes in values get encoded and then cause trouble
