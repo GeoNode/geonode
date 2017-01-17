@@ -29,6 +29,7 @@ from pprint import pprint
 from unidecode import unidecode
 
 import traceback
+import datetime
 
 from django.conf import settings as local_settings
 
@@ -760,8 +761,8 @@ class DataRequestProfile(TimeStampedModel):
         return out
 
     def migrate_request_profile(self):
-        
-        if  not self.profile_request:
+        if not self.profile_request:
+            pprint("migrating")
             profile_request = ProfileRequest()
             profile_request.first_name = self.first_name
             profile_request.middle_name = self.middle_name
@@ -779,7 +780,7 @@ class DataRequestProfile(TimeStampedModel):
             profile_request.created = self.key_created_date
             profile_request.verification_key = self.verification_key
             profile_request.verification_date = self.date
-            if self.status == 'rejected':
+            if self.request_status == 'rejected':
                 profile_request.rejection_reason = self.rejection_reason
                 profile_request.additional_rejection_reason = self_additional_rejection_reason
             
@@ -791,6 +792,8 @@ class DataRequestProfile(TimeStampedModel):
             self.save()
             
             return profile_request
+        
+        pprint("Migration failed")
         return None
         
     def migrate_request_data(self):
@@ -807,7 +810,7 @@ class DataRequestProfile(TimeStampedModel):
             data_request.juris_data_size = self.juris_data_size
             data_request.request_letter = self.request_letter
                 
-            if self.status == 'rejected':
+            if self.request_status == 'rejected':
                 data_request.rejection_reason = self.rejection_reason
                 data_request.additional_rejection_reason = self_additional_rejection_reason
             
