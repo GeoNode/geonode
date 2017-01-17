@@ -1,3 +1,9 @@
+geonode (2.5.9+thefinal1) trusty; urgency=high
+
+  * [56b1b4] add python-pip and postgis2.2 config, thanks to @francbartoli (#2830)
+
+ -- Simone Dalmasso <simone.dalmasso@gmail.com>  Tue, 17 Jan 2017 08:32:08 +0000
+
 geonode (2.5.9+thefinal0) trusty; urgency=high
 
   * [a8d827] fix dialogos dependency (#2829)
