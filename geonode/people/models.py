@@ -21,8 +21,7 @@
 from django.db import models
 from django.utils.translation import ugettext as _
 from django.core.urlresolvers import reverse
-from django.contrib.auth.models import AbstractUser
-from django.contrib.auth.models import BaseUserManager
+from django.contrib.auth.models import AbstractUser, UserManager
 from django.db.models import signals
 from django.conf import settings
 
@@ -39,7 +38,7 @@ if 'notification' in settings.INSTALLED_APPS:
     from notification import models as notification
 
 
-class ProfileUserManager(BaseUserManager):
+class ProfileUserManager(UserManager):
     def get_by_natural_key(self, username):
         return self.get(username__iexact=username)
 
