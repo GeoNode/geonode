@@ -5,7 +5,7 @@
         <a href="{{ item.data_request_detail_url }}"><img ng-src="{{ item.shapefile_thumbnail_url }}" /></a>
       </div>
       <div class="col-xs-8 item-info">
-        <div class="row pull-right"><span class="label label-{{ item.status_label }}">{{ item.status }}</span></div>
+        <div class="row pull-right"><span class="label label-{{ item.status_label }}">{{ item.request_status }}</span></div>
         <h4><a href="{{ item.data_request_detail_url }}">{{ item.first_name }} {{ item.middle_name }} {{ item.last_name }}</a></h4>
         <h6>Submitted: {{ item.date_submitted }}</h6>
         <p>
