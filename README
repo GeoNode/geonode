@@ -73,7 +73,7 @@ Ubuntu development build instructions using an isolated virtual environment (tes
     sudo apt-get update
     sudo apt-get install oracle-java8-installer
 
-    # Create and activate the virtulenv
+    # Create and activate the virtualenv
     virtualenv --no-site-packages env
     source env/bin/activate
 
@@ -85,6 +85,17 @@ Ubuntu development build instructions using an isolated virtual environment (tes
     pip install -r requirements.txt
     pip install -e .
     pip install pygdal==1.10.1
+
+For Ubuntu 16.04 you should create your virtual-env like this instead (so with site packages)::
+
+    virtualenv env
+
+Instead of installing pygdal, you should do the following::
+
+    # Install the system python-gdal
+    sudo apt-get install python-gdal
+    # Create a symbolic link in your virtualenv
+    ln -s /usr/lib/python2.7/dist-packages/osgeo env/lib/python2.7/site-packages/osgeo
 
 You can now setup and start GeoNode::
 
