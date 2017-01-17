@@ -751,28 +751,34 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
         upload_to = 'thumbs/'
         upload_path = os.path.join('thumbs/', filename)
 
-        if storage.exists(upload_path):
-            # Delete if exists otherwise the (FileSystemStorage) implementation
-            # will create a new file with a unique name
-            storage.delete(os.path.join(upload_path))
+        try:
 
-        storage.save(upload_path, ContentFile(image))
+            if storage.exists(upload_path):
+                # Delete if exists otherwise the (FileSystemStorage) implementation
+                # will create a new file with a unique name
+                storage.delete(os.path.join(upload_path))
 
-        url_path = os.path.join(settings.MEDIA_URL, upload_to, filename).replace('\\', '/')
-        url = urljoin(settings.SITEURL, url_path)
+            storage.save(upload_path, ContentFile(image))
 
-        Link.objects.get_or_create(resource=self,
-                                   url=url,
-                                   defaults=dict(
-                                       name='Thumbnail',
-                                       extension='png',
-                                       mime='image/png',
-                                       link_type='image',
-                                   ))
+            url_path = os.path.join(settings.MEDIA_URL, upload_to, filename).replace('\\', '/')
+            url = urljoin(settings.SITEURL, url_path)
 
-        ResourceBase.objects.filter(id=self.id).update(
-            thumbnail_url=url
-        )
+            Link.objects.get_or_create(resource=self,
+                                       url=url,
+                                       defaults=dict(
+                                           name='Thumbnail',
+                                           extension='png',
+                                           mime='image/png',
+                                           link_type='image',
+                                       ))
+
+            ResourceBase.objects.filter(id=self.id).update(
+                thumbnail_url=url
+            )
+
+        except Exception:
+            logger.error('Error when generating the thumbnail for resource %s.' % self.id)
+            logger.error('Check permissions for file %s.' % upload_path)
 
     def set_missing_info(self):
         """Set default permissions and point of contacts.
