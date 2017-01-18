@@ -323,7 +323,7 @@
              var message = $('#reject_request_message');
              var $request_reject_form = $('#request_reject_form');
              var pk = $('#request_profile_id').val();
-             var url = "{% url 'datarequests:data_request_profile_reject' pk=666 %}".replace('666', pk);
+             var url = "{% url 'datarequests:profile_request_reject' pk=666 %}".replace('666', pk);
              var form = $request_reject_form.serialize()
              $.ajax(
               {
@@ -360,7 +360,7 @@
              var message = $('#cancel_request_message');
              var $request_cancel_form = $('#request_cancel_form');
              var pk = $('#request_profile_id').val();
-             var url = "{% url 'datarequests:data_request_profile_cancel' pk=666 %}".replace('666', pk);
+             var url = "{% url 'datarequests:profile_request_cancel' pk=666 %}".replace('666', pk);
              var form = $request_cancel_form.serialize()
              $.ajax(
               {

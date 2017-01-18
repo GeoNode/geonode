@@ -26,7 +26,8 @@ from django.template.response import TemplateResponse
 from django.utils import dateformat
 from django.utils import timezone
 from django.utils import simplejson as json
-from django.utils.html import escape
+from django.utils.html import escape, format_html
+from django.utils.safestring import mark_safe
 from django.utils.translation import ugettext as _
 from django.views.decorators.http import require_POST
 from django.views.generic import TemplateView
@@ -199,22 +200,22 @@ def old_request_migration(request, pk):
     message = ""
     if old_request.profile_request:
         message += "This request has already been migrated."
-        message += "\nProfile request: <a href = {}>#{}</a>".format(settings.BASEURL+old_request.profile_request.get_absolute_url(), old_request.profile_request.pk)
+        message += "<br/>Profile request: <a href = {}>#{}</a>".format(old_request.profile_request.get_absolute_url(), old_request.profile_request.pk)
         if old_request.data_request:
-            message += "\nData request: <a href = {}>{}</a>".format(settings.BASEURL+old_request.data_request.get_absolute_url(), old_request.data_request.pk)
+            message += "<br/>Data request: <a href = {}>{}</a>".format(old_request.data_request.get_absolute_url(), old_request.data_request.pk)
     
     else:
         profile_request = old_request.migrate_request_profile()
     
         if profile_request:
-            message += "Migrated profile request can be found here: <a href = {}>{}</a>.".format(settings.BASEURL+profile_request.get_absolute_url(), old_request.profile_request.pk)
+            message += "Migrated profile request can be found here: <a href = {}>{}</a>.".format(profile_request.get_absolute_url(), old_request.profile_request.pk)
             data_request = old_request.migrate_request_data()
             if data_request:
-                message += "\nMigrated data request can be found here: <a href = {}>{}</a>.".format(settings.BASEURL+data_request.get_absolute_url(), old_request.data_request.pk)
+                message += "\nMigrated data request can be found here: <a href = {}>{}</a>.".format(data_request.get_absolute_url(), old_request.data_request.pk)
         else:
             message += "Unable to migrate"
             
-    messages.info(request, message)
+    messages.info(request, mark_safe(message))
     return HttpResponseRedirect(reverse('datarequests:old_request_detail', args=[pk]))
     
 def old_request_facet_count(request):
