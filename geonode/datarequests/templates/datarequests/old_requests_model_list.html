@@ -3,7 +3,7 @@
 {% load staticfiles %}
 {% load url from future %}
 
-{% block title %} {% trans "Data Requests" %} - {{ block.super }} {% endblock %}
+{% block title %} {% trans "Data Request Profiles" %} - {{ block.super }} {% endblock %}
 
 {% block body_class %}Data Requests{% endblock %}
 
@@ -12,7 +12,7 @@
     {% if request.user.is_superuser %}
         <a class="btn btn-primary pull-right">{% trans "Migrate all requests to new model" %}</a>
     {% endif %}
-  <h2 class="page-title">{% trans "Data Requests" %}</h2>
+  <h2 class="page-title">{% trans "Data Request Profiles (deprecated)" %}</h2>
 </div>
   {% with include_type_filter='true' %}
     {% with facet_type='old_requests' %}
