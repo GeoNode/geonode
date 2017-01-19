@@ -10,7 +10,7 @@ class Migration(migrations.Migration):
 
     dependencies = [
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
-        ('layers', '26_layers'),
+        ('layers', '__first__'),
     ]
 
     operations = [
