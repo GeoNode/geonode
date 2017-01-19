@@ -1,3 +1,10 @@
+geoserver-geonode (2.9.0) xenial; urgency=high
+
+  * Added backup and restore
+  * Added oauth2 plugin
+
+ -- Simone Dalmasso <simone.dalmasso@gmail.com>  Mon, 16 Jan 2017 10:00:41 -0500
+
 geoserver-geonode (2.7.4-2) trusty; urgency=high
 
   * GeoServer needs to be unzipped in target/geoserver

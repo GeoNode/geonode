@@ -152,11 +152,11 @@ Web Map Service (WMS)
 
 WFS
 ...
-    WFS provides provides an API to retrieve raw geospatial vector data directly.  WFS is suitable for direct query and access to geographic features.
+    WFS provides an API to retrieve raw geospatial vector data directly.  WFS is suitable for direct query and access to geographic features.
 
 WCS
 ...
-    WCS provides provides an API to retrieve raw geospatial raster data directly.  WCS is suitable for direct access to satellite imagery, DEMs, etc.
+    WCS provides an API to retrieve raw geospatial raster data directly.  WCS is suitable for direct access to satellite imagery, DEMs, etc.
 
 CSW
 ...

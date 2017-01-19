@@ -154,7 +154,7 @@ The resulting configuration file should look like this::
 Initialize the Database
 =======================
 
-We' we already setup GeoNode databases and user permissions for PostgreSQL. And
+We' ve already setup GeoNode databases and user permissions for PostgreSQL. And
 instruct GeoNode on how to access the database. Now let's get the database ready
 running the following::
 

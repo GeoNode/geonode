@@ -18,31 +18,31 @@
 #
 #########################################################################
 
-from celery.task import task
-from geonode.geoserver.helpers import gs_slurp
-from geonode.documents.models import Document
+"""Utilities for managing GeoNode base models
+"""
+
+# Standard Modules
+import os
+
+# Django functionality
+from django.conf import settings
+
+# Geonode functionality
+from geonode.documents.models import ResourceBase
 
 
-@task(name='geonode.tasks.update.geoserver_update_layers', queue='update')
-def geoserver_update_layers(*args, **kwargs):
+def delete_orphaned_thumbs():
     """
-    Runs update layers.
+    Deletes orphaned thumbnails.
     """
-    return gs_slurp(*args, **kwargs)
-
-
-@task(name='geonode.tasks.update.create_document_thumbnail', queue='update')
-def create_document_thumbnail(object_id):
-    """
-    Runs the create_thumbnail logic on a document.
-    """
-
-    try:
-        document = Document.objects.get(id=object_id)
-
-    except Document.DoesNotExist:
-        return
-
-    image = document._render_thumbnail()
-    filename = 'document-%s-thumb.png' % document.uuid
-    document.save_thumbnail(filename, image)
+    documents_path = os.path.join(settings.MEDIA_ROOT, 'thumbs')
+    for filename in os.listdir(documents_path):
+        fn = os.path.join(documents_path, filename)
+        model = filename.split('-')[0]
+        uuid = filename.replace(model, '').replace('-thumb.png', '')[1:]
+        if ResourceBase.objects.filter(uuid=uuid).count() == 0:
+            print 'Removing orphan thumb %s' % fn
+            try:
+                os.remove(fn)
+            except OSError:
+                print 'Could not delete file %s' % fn

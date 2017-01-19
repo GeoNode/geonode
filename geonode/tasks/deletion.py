@@ -49,3 +49,15 @@ def delete_map(object_id):
 
     map_obj.layer_set.all().delete()
     map_obj.delete()
+
+
+@task(name='geonode.tasks.deletion.delete_orphaned_document_files', queue='cleanup')
+def delete_orphaned_document_files():
+    from geonode.documents.utils import delete_orphaned_document_files
+    delete_orphaned_document_files()
+
+
+@task(name='geonode.tasks.deletion.delete_orphaned_thumbs', queue='cleanup')
+def delete_orphaned_thumbnails():
+    from geonode.documents.utils import delete_orphaned_thumbs
+    delete_orphaned_thumbs()

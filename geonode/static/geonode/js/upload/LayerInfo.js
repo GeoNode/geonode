@@ -173,9 +173,9 @@ define(function (require, exports) {
         }
 
         if (geogig_enabled) {
-            geogig = $('#' + base_name + '\\:geogig_toggle').is(':checked');
+            geogig_store = $('#' + base_name + '\\:geogig_store').val();
+            geogig = $('#' + base_name + '\\:geogig_toggle').is(':checked') && geogig_store.length != 0;
             if (geogig) {
-                geogig_store = $('#' + base_name + '\\:geogig_store').val();
                 form_data.append('geogig_store', geogig_store);
             } else {
                 form_data.append('geogig_store', "");

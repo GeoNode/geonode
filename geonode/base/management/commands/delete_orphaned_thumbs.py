@@ -18,31 +18,12 @@
 #
 #########################################################################
 
-from celery.task import task
-from geonode.geoserver.helpers import gs_slurp
-from geonode.documents.models import Document
+from django.core.management.base import BaseCommand
+from geonode.base.utils import delete_orphaned_thumbs
 
 
-@task(name='geonode.tasks.update.geoserver_update_layers', queue='update')
-def geoserver_update_layers(*args, **kwargs):
-    """
-    Runs update layers.
-    """
-    return gs_slurp(*args, **kwargs)
+class Command(BaseCommand):
+    help = ("Delete orphaned thumbnails.")
 
-
-@task(name='geonode.tasks.update.create_document_thumbnail', queue='update')
-def create_document_thumbnail(object_id):
-    """
-    Runs the create_thumbnail logic on a document.
-    """
-
-    try:
-        document = Document.objects.get(id=object_id)
-
-    except Document.DoesNotExist:
-        return
-
-    image = document._render_thumbnail()
-    filename = 'document-%s-thumb.png' % document.uuid
-    document.save_thumbnail(filename, image)
+    def handle(self, *args, **options):
+        delete_orphaned_thumbs()

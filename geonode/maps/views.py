@@ -60,6 +60,7 @@ from geonode.documents.models import get_related_documents
 from geonode.people.forms import ProfileForm
 from geonode.utils import num_encode, num_decode
 from geonode.utils import build_social_links
+import urlparse
 
 if 'geonode.geoserver' in settings.INSTALLED_APPS:
     # FIXME: The post service providing the map_status object
@@ -572,7 +573,12 @@ def new_map_config(request):
 
                 if layer.storeType == "remoteStore":
                     service = layer.service
-                    if access_token:
+                    # Probably not a good idea to send the access token to every remote service.
+                    # This should never match, so no access token should be sent to remote services.
+                    ogc_server_url = urlparse.urlsplit(ogc_server_settings.PUBLIC_LOCATION).netloc
+                    service_url = urlparse.urlsplit(service.base_url).netloc
+
+                    if access_token and ogc_server_url == service_url and 'access_token' not in service.base_url:
                         url = service.base_url+'?access_token='+access_token
                     else:
                         url = service.base_url
@@ -587,7 +593,10 @@ def new_map_config(request):
                                             "url": url,
                                             "name": service.name}))
                 else:
-                    if access_token:
+                    ogc_server_url = urlparse.urlsplit(ogc_server_settings.PUBLIC_LOCATION).netloc
+                    layer_url = urlparse.urlsplit(layer.ows_url).netloc
+
+                    if access_token and ogc_server_url == layer_url and 'access_token' not in layer.ows_url:
                         url = layer.ows_url+'?access_token='+access_token
                     else:
                         url = layer.ows_url

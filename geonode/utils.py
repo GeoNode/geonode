@@ -39,6 +39,8 @@ from django.http import HttpResponse
 from django.shortcuts import get_object_or_404
 from django.utils.translation import ugettext_lazy as _
 import httplib2
+import urlparse
+import urllib
 
 
 try:
@@ -371,8 +373,27 @@ class GXPLayerBase(object):
             cfg = dict(ptype="gxp_wmscsource", restUrl="/gs/rest")
 
         if self.ows_url:
-            if access_token:
-                cfg["url"] = self.ows_url+'?access_token='+access_token
+            '''
+            This limits the access token we add to only the OGC servers decalred in OGC_SERVER.
+            Will also override any access_token in the request and replace it with an existing one.
+            '''
+            urls = []
+            for name, server in settings.OGC_SERVER.iteritems():
+                url = urlparse.urlsplit(server['PUBLIC_LOCATION'])
+                urls.append(url.netloc)
+
+            my_url = urlparse.urlsplit(self.ows_url)
+
+            if access_token and my_url.netloc in urls:
+                request_params = urlparse.parse_qs(my_url.query)
+                if 'access_token' in request_params:
+                    del request_params['access_token']
+                request_params['access_token'] = [access_token]
+                encoded_params = urllib.urlencode(request_params, doseq=True)
+
+                parsed_url = urlparse.SplitResult(my_url.scheme, my_url.netloc, my_url.path,
+                                                  encoded_params, my_url.fragment)
+                cfg["url"] = parsed_url.geturl()
             else:
                 cfg["url"] = self.ows_url
 

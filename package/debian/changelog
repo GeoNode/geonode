@@ -1,3 +1,109 @@
+geonode (2.5.9+thefinal3) trusty; urgency=high
+
+  * [82cfe2] update the debian wsgi script (#2834)
+
+ -- Simone Dalmasso <simone.dalmasso@gmail.com>  Tue, 17 Jan 2017 12:08:13 +0000
+
+geonode (2.5.9+thefinal2) trusty; urgency=high
+
+  * UNRELEASED
+
+ -- Simone Dalmasso <simone.dalmasso@gmail.com>  Tue, 17 Jan 2017 10:27:33 +0000
+
+geonode (2.5.9+thefinal1) trusty; urgency=high
+
+  * [56b1b4] add python-pip and postgis2.2 config, thanks to @francbartoli (#2830)
+
+ -- Simone Dalmasso <simone.dalmasso@gmail.com>  Tue, 17 Jan 2017 08:32:08 +0000
+
+geonode (2.5.9+thefinal0) trusty; urgency=high
+
+  * [a8d827] fix dialogos dependency (#2829)
+
+ -- Simone Dalmasso <simone.dalmasso@gmail.com>  Mon, 16 Jan 2017 15:09:29 +0000
+
+geonode (2.5.9+dev20170116091118) trusty; urgency=high
+
+  [ Angelos Tzotsos ]
+  * [85f7aa] Update release version
+
+  [ Paolo Corti ]
+  * [37686a] Adds a management command and a celery task to delete orpahed files or removed documents. Fixes #2291 (#2818)
+
+  [ travislbrundage ]
+  * [21a589] Fix bug with inbox thread links becoming unclickable (#2820)
+
+  [ Paolo Corti ]
+  * [7a6e0c] Fixes #2824 (#2826)
+  * [f38440] Adds a management command and a celery task to delete orpahed thumbs. Fixes #2535 (#2825)
+
+  [ travislbrundage ]
+  * [a7b5c4] Make usernames case insensitive for authentication (#2821)
+
+  [ Simone Dalmasso ]
+  * [e4c71b] remove postgis version for xenial package (#2827)
+  * [b1ad7c] update geoserver debian changelog (#2828)
+
+ -- Simone Dalmasso <simone.dalmasso@gmail.com>  Mon, 16 Jan 2017 09:13:18 +0000
+
+geonode (2.5.7+thefinal0) xenial; urgency=high
+
+  [ etj ]
+  * [fcdaad]  - 2670: handling keywords thesauri
+
+  [ Angelos Tzotsos ]
+  * [269724] Update release version
+
+  [ Dan "Ducky" Little ]
+  * [8d0899] Adding a geogig_link URL to /api/layers (#2792)
+
+  [ Jeffrey Johnson ]
+  * [245237] Dont include geonode-client in INSTALLED_APPS by default
+
+  [ Jivan Amara ]
+  * [3a0b82] Short-circuit Layer.save() geoserver signal processing for gpkg tile layers. (#2794)
+
+  [ pjdufour ]
+  * [5636fe] named template engine
+
+  [ sbsimo ]
+  * [799b17] Enrich osm-extract docs, in the tutorials section (#2799)
+
+  [ travislbrundage ]
+  * [abaf3f] Do not show delete avatar button until there is a custom avatar to delete (#2798)
+
+  [ Daniel Berry ]
+  * [82a04c] When `GEONODE_LOCKDOWN = True` the /api/* endpoints need to be added to `AUTH_EXEMPT_URLS`. Otherwise GeoServer will be unable to pull the ROLES.
+  * [9d99d6] Bumped to version that includes option of postgis backend to also add path parsing.
+
+  [ pjdufour ]
+  * [d474cf] blocks on homepage for downstream projects
+
+  [ Toni ( –anatol ) ]
+  * [8e6ccb] Update all_together.txt
+  * [cef696] Update architecture.txt
+
+  [ travislbrundage ]
+  * [2f6061] Fix bug with ajax POST and page refresh on inbox page when deleting message (#2808)
+  * [1a7946] Do not allow an empty geogig store to exist (#2809)
+
+  [ Ami Rahav ]
+  * [7c016d] Make sure we don't have duplicate access tokens for OGC request; Remove delay from send_mail so email will be sent
+  * [d036ee] Fix for flake8
+
+  [ travislbrundage ]
+  * [5911cc] Fix bug with missing variable definitions on checkGeogig (#2812)
+
+  [ Alessio Fabiani ]
+  * [26a9b5] Fix for Issue 2815: OAuth2 verify_token api should not throw an error if user is not authenticated (#2816)
+
+  [ Amiram Rahav ]
+  * [1eddcd] Send access token only to OGC_SERVER; Workaround for expired OAuth tokens being used. (#2814)
+
+  [ Angelos Tzotsos ]
+
+ -- Angelos Tzotsos <gcpp.kalxas@gmail.com>  Thu, 12 Jan 2017 17:32:28 +0200
+
 geonode (2.5.6+thefinal0) xenial; urgency=high
 
   [ Angelos Tzotsos ]

@@ -368,7 +368,8 @@ def gs_slurp(
         skip_unadvertised=False,
         skip_geonode_registered=False,
         remove_deleted=False,
-        permissions=None):
+        permissions=None,
+        execute_signals=False):
     """Configure the layers available in GeoServer in GeoNode.
 
        It returns a list of dictionaries with the name of the layer,
@@ -468,6 +469,11 @@ def gs_slurp(
 
             # recalculate the layer statistics
             set_attributes_from_geoserver(layer, overwrite=True)
+
+            # in some cases we need to explicitily save the resource to execute the signals
+            # (for sure when running updatelayers)
+            if execute_signals:
+                layer.save()
 
             # Fix metadata links if the ip has changed
             if layer.link_set.metadata().count() > 0:

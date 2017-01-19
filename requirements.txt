@@ -10,7 +10,7 @@ beautifulsoup4==4.2.1
 billiard==3.3.0.23
 boto==2.38.0
 celery==3.1.18
-dj-database-url==0.4.0
+dj-database-url==0.4.2
 django-activity-stream==0.6.1
 django-appconf==0.5
 django-autocomplete-light==2.3.3
@@ -26,7 +26,7 @@ django-guardian==1.4.6
 django-haystack==2.4.1
 django-jsonfield==0.9.16
 django-leaflet==0.13.7
-django-modeltranslation==0.11
+django-modeltranslation==0.12
 django-oauth-toolkit>=0.10.0
 django-mptt==0.8.6
 django-nose==1.4.4
