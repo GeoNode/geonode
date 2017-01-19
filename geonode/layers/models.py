@@ -119,11 +119,22 @@ class Layer(ResourceBase):
 
     upload_session = models.ForeignKey('UploadSession', blank=True, null=True)
 
-    service = models.ForeignKey(
-        'services.Service',
-        null=True,
-        blank=True,
-        related_name='layer_set')
+    @property
+    def is_remote(self):
+        return self.storeType == "remoteStore"
+
+    @property
+    def service(self):
+        """Get the related service object dynamically
+        """
+        # TODO: Get rid of this import by finding a way
+        # to use the Django ORM without having to import from geonode.services.
+        from geonode.services.models import ServiceLayer
+        service_layers = ServiceLayer.objects.filter(layer=self)
+        if len(service_layers) == 0:
+            return None
+        else:
+            return service_layers[0].service
 
     def is_vector(self):
         return self.storeType == 'dataStore'
@@ -160,21 +171,21 @@ class Layer(ResourceBase):
 
     @property
     def ows_url(self):
-        if self.storeType == "remoteStore":
+        if self.is_remote:
             return self.service.base_url
         else:
             return settings.OGC_SERVER['default']['PUBLIC_LOCATION'] + "wms"
 
     @property
     def ptype(self):
-        if self.storeType == "remoteStore":
+        if self.is_remote:
             return self.service.ptype
         else:
             return "gxp_wmscsource"
 
     @property
     def service_typename(self):
-        if self.storeType == "remoteStore":
+        if self.is_remote:
             return "%s:%s" % (self.service.name, self.typename)
         else:
             return self.typename
@@ -501,7 +512,7 @@ def pre_delete_layer(instance, sender, **kwargs):
     Remove any associated style to the layer, if it is not used by other layers.
     Default style will be deleted in post_delete_layer
     """
-    if instance.service:
+    if instance.is_remote:
         return
     logger.debug(
         "Going to delete the styles associated for [%s]",
@@ -534,7 +545,7 @@ def post_delete_layer(instance, sender, **kwargs):
             name=instance.typename,
             ows_url=instance.ows_url).delete()
 
-    if instance.service:
+    if instance.is_remote:
         return
     if instance.typename:
         logger.debug(
