@@ -32,7 +32,8 @@ from geonode.geoserver.ows import wcs_links, wfs_links, wms_links
 from geonode.geoserver.helpers import cascading_delete, set_attributes_from_geoserver
 from geonode.geoserver.helpers import set_styles, gs_catalog
 from geonode.geoserver.helpers import ogc_server_settings
-from geonode.geoserver.helpers import geoserver_upload, http_client
+from geonode.geoserver.helpers import geoserver_upload
+from geonode.geoserver.helpers import create_gs_thumbnail
 from geonode.base.models import ResourceBase
 from geonode.base.models import Link
 from geonode.layers.utils import create_thumbnail
@@ -371,27 +372,7 @@ def geoserver_post_save(instance, sender, **kwargs):
                                )
                                )
 
-    params = {
-        'layers': instance.typename.encode('utf-8'),
-        'format': 'image/png8',
-        'width': 200,
-        'height': 150,
-        'TIME': '-99999999999-01-01T00:00:00.0Z/99999999999-01-01T00:00:00.0Z'
-
-    }
-
-    # Avoid using urllib.urlencode here because it breaks the url.
-    # commas and slashes in values get encoded and then cause trouble
-    # with the WMS parser.
-    p = "&".join("%s=%s" % item for item in params.items())
-
-    thumbnail_remote_url = ogc_server_settings.PUBLIC_LOCATION + \
-        "wms/reflect?" + p
-
-    thumbnail_create_url = ogc_server_settings.LOCATION + \
-        "wms/reflect?" + p
-
-    create_thumbnail(instance, thumbnail_remote_url, thumbnail_create_url, ogc_client=http_client)
+    create_gs_thumbnail(instance, overwrite=True)
 
     legend_url = ogc_server_settings.PUBLIC_LOCATION + \
         'wms?request=GetLegendGraphic&format=image/png&WIDTH=20&HEIGHT=20&LAYER=' + \
