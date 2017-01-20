@@ -59,7 +59,7 @@ class LayerForm(ResourceBaseForm):
             'default_style',
             'styles',
             'upload_session',
-            'service',)
+            )
 
 
 class LayerUploadForm(forms.Form):

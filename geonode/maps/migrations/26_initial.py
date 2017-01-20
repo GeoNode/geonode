@@ -1,23 +1,4 @@
 # -*- coding: utf-8 -*-
-#########################################################################
-#
-# Copyright (C) 2016 OSGeo
-#
-# This program is free software: you can redistribute it and/or modify
-# it under the terms of the GNU General Public License as published by
-# the Free Software Foundation, either version 3 of the License, or
-# (at your option) any later version.
-#
-# This program is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-# GNU General Public License for more details.
-#
-# You should have received a copy of the GNU General Public License
-# along with this program. If not, see <http://www.gnu.org/licenses/>.
-#
-#########################################################################
-
 from __future__ import unicode_literals
 
 from django.db import migrations, models
@@ -28,44 +9,21 @@ import geonode.utils
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('base', '0001_initial'),
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
+        ('base', '__first__'),
     ]
 
     operations = [
         migrations.CreateModel(
             name='Map',
             fields=[
-                ('resourcebase_ptr',
-                    models.OneToOneField(
-                        parent_link=True, auto_created=True, primary_key=True, serialize=False,
-                        to='base.ResourceBase')),
-                ('title_en',
-                    models.CharField(
-                        help_text='name by which the cited resource is known', max_length=255, null=True,
-                        verbose_name='title')),
-                ('abstract_en',
-                    models.TextField(
-                        help_text='brief narrative summary of the content of the resource(s)', null=True,
-                        verbose_name='abstract', blank=True)),
-                ('purpose_en',
-                    models.TextField(
-                        help_text='summary of the intentions with which the resource(s) was developed', null=True,
-                        verbose_name='purpose', blank=True)),
-                ('constraints_other_en',
-                    models.TextField(
-                        help_text='other restrictions and legal prerequisites for accessing and using '
-                                  'the resource or metadata', null=True,
-                        verbose_name='restrictions other', blank=True)),
-                ('supplemental_information_en',
-                    models.TextField(
-                        default='No information provided',
-                        help_text='any other descriptive information about the dataset', null=True,
-                        verbose_name='supplemental information')),
-                ('data_quality_statement_en',
-                    models.TextField(
-                        help_text="general explanation of the data producer's knowledge about the lineage of a dataset",
-                        null=True, verbose_name='data quality statement', blank=True)),
+                ('resourcebase_ptr', models.OneToOneField(parent_link=True, auto_created=True, primary_key=True, serialize=False, to='base.ResourceBase')),
+                ('title_en', models.CharField(help_text='name by which the cited resource is known', max_length=255, null=True, verbose_name='title')),
+                ('abstract_en', models.TextField(help_text='brief narrative summary of the content of the resource(s)', null=True, verbose_name='abstract', blank=True)),
+                ('purpose_en', models.TextField(help_text='summary of the intentions with which the resource(s) was developed', null=True, verbose_name='purpose', blank=True)),
+                ('constraints_other_en', models.TextField(help_text='other restrictions and legal prerequisites for accessing and using the resource or metadata', null=True, verbose_name='restrictions other', blank=True)),
+                ('supplemental_information_en', models.TextField(default='No information provided', help_text='any other descriptive information about the dataset', null=True, verbose_name='supplemental information')),
+                ('data_quality_statement_en', models.TextField(help_text="general explanation of the data producer's knowledge about the lineage of a dataset", null=True, verbose_name='data quality statement', blank=True)),
                 ('zoom', models.IntegerField(verbose_name='zoom')),
                 ('projection', models.CharField(max_length=32, verbose_name='projection')),
                 ('center_x', models.FloatField(verbose_name='center X')),

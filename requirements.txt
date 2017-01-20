@@ -27,7 +27,7 @@ django-haystack==2.4.1
 django-jsonfield==0.9.16
 django-leaflet==0.13.7
 django-modeltranslation==0.12
-django-oauth-toolkit>=0.10.0
+django-oauth-toolkit==0.10.0
 django-mptt==0.8.6
 django-nose==1.4.4
 django-pagination==1.0.7
@@ -41,10 +41,10 @@ geonode-agon-ratings==0.3.5
 geonode-announcements==1.0.8
 geonode-arcrest==10.2
 geonode-avatar==2.1.6
-geonode-dialogos==0.6
+geonode-dialogos==0.7
 geonode-notification==1.1.1
 geonode-user-accounts==1.0.13
-geonode-user-messages==0.1.4
+geonode-user-messages==0.1.5
 gisdata==0.5.4
 gsconfig==1.0.6
 gsimporter==1.0.0

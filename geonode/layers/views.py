@@ -110,16 +110,14 @@ def _resolve_layer(request, typename, permission='base.view_resourcebase',
         service = Service.objects.filter(name=service_typename[0])
         return resolve_object(request,
                               Layer,
-                              {'service': service[0],
-                               'typename': service_typename[1] if service[0].method != "C" else typename},
+                              {'typename': service_typename[1] if service[0].method != "C" else typename},
                               permission=permission,
                               permission_msg=msg,
                               **kwargs)
     else:
         return resolve_object(request,
                               Layer,
-                              {'typename': typename,
-                               'service': None},
+                              {'typename': typename},
                               permission=permission,
                               permission_msg=msg,
                               **kwargs)
