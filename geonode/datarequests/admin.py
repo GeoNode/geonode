@@ -12,7 +12,7 @@ class ProfileRequestAdmin(admin.ModelAdmin):
 
 class DataRequestAdmin(admin.ModelAdmin):
     model = DataRequest
-    search_fields=('id', 'status','request_letter__title''administrator__username',)
+    search_fields=('id', 'status','request_letter__title','administrator__username')
 
 class DataRequestProfileAdmin(admin.ModelAdmin):
     model = DataRequestProfile
