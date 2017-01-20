@@ -257,5 +257,26 @@ var layout_luzvimin = {barmode: 'stack',
               xaxis: {autorange: 'reversed'}};
 
 Plotly.newPlot('luzvimin_div', data_luzvimin, layout_luzvimin);
+
+var data = [{
+  values: [
+    {% for key, value in total_count.items %}
+      {{ value }},
+    {% endfor %}
+  ],
+  labels: [
+    {% for key, value in total_count.items %}
+      '{{ key }}',
+    {% endfor %}
+  ],
+  type: 'pie'
+}];
+
+var layout = {
+  height: 400,
+  width: 500
+};
+
+Plotly.newPlot('myDiv', data, layout);
 </script>
 {% endblock extra_script %}
