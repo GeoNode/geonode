@@ -56,9 +56,7 @@ class ServicesTests(TestCase):
             service = Service.objects.get(id=service_dict['service_id'])
             # Harvested some layers
 
-            self.assertTrue(ServiceLayer.objects.filter(
-            service = service
-            ).count() > 0)
+            self.assertTrue(ServiceLayer.objects.filter(service=service).count() > 0)
             self.assertEqual(service.method, "I")
             self.assertEqual(service.type, "WMS")
             self.assertEqual(service.ptype, 'gxp_wmscsource')
@@ -82,9 +80,7 @@ class ServicesTests(TestCase):
         try:
             service = Service.objects.get(id=service_dict['service_id'])
             # Harvested some layers
-            self.assertTrue(ServiceLayer.objects.filter(
-            service = service
-            ).count() > 0)
+            self.assertTrue(ServiceLayer.objects.filter(service=service).count() > 0)
             self.assertEqual(service.method, "I")
             self.assertEqual(service.type, "REST")
             self.assertEqual(service.ptype, 'gxp_arcrestsource')
