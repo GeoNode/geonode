@@ -17,7 +17,13 @@
 <div class="page-header">
     <h2 class="page-title">{% trans "Submitted LiPAD Requests" %}</h2>
 </div>
+<div>
 <a href={% url 'datarequests:profile_request_browse' %} class="btn btn-primary ">Profile Requests</a>
 <a href={% url 'datarequests:data_request_browse' %} class="btn btn-primary">Data Requests</a>
 <a href={% url 'datarequests:requests_csv' %} class="btn btn-primary">Download Requests CSV</a>
+</div>
+<br /><br />
+<div>
+<a href={% url 'datarequests:old_requests_model_view' %} class="btn btn-primary">Old Requests List</a>
+</div>
 {% endblock %}
