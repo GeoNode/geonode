@@ -11,9 +11,11 @@
 {% block body_outer %}
 <div class="page-header">
 </div>
-<div id = 'myDiv' style='width: 1000px; height: 800px;'>
+<div id = 'monthly_div' style='width: 1000px; height: 800px;'>
 </div>
 <div id = 'luzvimin_div' style='width: 1000px; height: 800px;'>
+</div>
+<div id = 'pie_div' style='width: 1000px; height: 800px;'>
 </div>
 
 {% endblock %}
@@ -180,7 +182,7 @@ var data = [trace9, trace8, trace7, trace6, trace5, trace4, trace3, trace2, trac
 var layout = {barmode: 'stack',
               xaxis: {autorange: 'reversed'}};
 
-Plotly.newPlot('myDiv', data, layout);
+Plotly.newPlot('monthly_div', data, layout);
 
 var luzvimin1 = {
   x: [
@@ -269,14 +271,16 @@ var data = [{
       '{{ key }}',
     {% endfor %}
   ],
-  type: 'pie'
+  type: 'pie',
+  textinfo:'label+percent',
+  title:'Total Downloads: {% sum(total_count.values()) %}'
 }];
 
 var layout = {
-  height: 400,
-  width: 500
+  height: 800,
+  width: 1000
 };
 
-Plotly.newPlot('myDiv', data, layout);
+Plotly.newPlot('pie_div', data, layout);
 </script>
 {% endblock extra_script %}

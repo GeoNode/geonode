@@ -10,6 +10,7 @@ from unidecode import unidecode
 from django.core.exceptions import ObjectDoesNotExist
 from django.http import HttpResponse, HttpResponseBadRequest, HttpResponseRedirect, Http404
 from django.utils import simplejson as json
+from django.utils import dateformat
 
 from geonode.people.models import Profile
 from geonode.documents.models import Document
