@@ -34,6 +34,7 @@ from django.conf import settings
 from django.template import RequestContext, loader
 from django.template.defaultfilters import slugify
 from django.utils.translation import ugettext as _
+from django.db.models import signals
 try:
     # Django >= 1.7
     import json
@@ -59,6 +60,9 @@ from geonode.utils import mercator_to_llbbox
 from geonode.layers.utils import create_thumbnail
 from geonode.geoserver.helpers import set_attributes_from_geoserver
 from geonode.base.models import Link
+from geonode.base.models import resourcebase_post_save
+from geonode.catalogue.models import catalogue_post_save
+
 
 logger = logging.getLogger("geonode.core.layers.views")
 
@@ -467,7 +471,6 @@ def _register_cascaded_layers(service, owner=None):
                     bbox = resource.latlon_bbox
                     cascaded_layer, created = Layer.objects.get_or_create(
                         typename="%s:%s" % (cascade_ws.name, resource.name),
-                        service=service,
                         defaults={
                             "name": resource.name,
                             "workspace": cascade_ws.name,
@@ -632,10 +635,16 @@ def _register_indexed_layers(service, wms=None, verbosity=False):
                 wms_layer.boundingBoxWGS84 or (-179.0, -89.0, 179.0, 89.0))
 
             # Need to check if layer already exists??
-            saved_layer, created = Layer.objects.get_or_create(
-                typename=wms_layer.name,
-                service=service,
-                defaults=dict(
+            existing_layer = None
+            for layer in Layer.objects.filter(typename=wms_layer.name):
+                if layer.service == service:
+                    existing_layer = layer
+
+            if not existing_layer:
+                signals.post_save.disconnect(resourcebase_post_save, sender=Layer)
+                signals.post_save.disconnect(catalogue_post_save, sender=Layer)
+                saved_layer = Layer.objects.create(
+                    typename=wms_layer.name,
                     name=wms_layer.name,
                     store=service.name,  # ??
                     storeType="remoteStore",
@@ -650,12 +659,10 @@ def _register_indexed_layers(service, wms=None, verbosity=False):
                     bbox_y0=bbox[1],
                     bbox_y1=bbox[3]
                 )
-            )
-            if created:
+
                 saved_layer.save()
                 saved_layer.set_default_permissions()
                 saved_layer.keywords.add(*keywords)
-                set_attributes_from_geoserver(saved_layer)
 
                 service_layer, created = ServiceLayer.objects.get_or_create(
                     typename=wms_layer.name,
@@ -666,6 +673,13 @@ def _register_indexed_layers(service, wms=None, verbosity=False):
                 service_layer.description = wms_layer.abstract
                 service_layer.styles = wms_layer.styles
                 service_layer.save()
+
+                resourcebase_post_save(saved_layer, Layer)
+                catalogue_post_save(saved_layer, Layer)
+                set_attributes_from_geoserver(saved_layer)
+
+                signals.post_save.connect(resourcebase_post_save, sender=Layer)
+                signals.post_save.connect(catalogue_post_save, sender=Layer)
             count += 1
         message = "%d Layers Registered" % count
         return_dict = {'status': 'ok', 'msg': message}
@@ -844,35 +858,37 @@ def _register_arcgis_layers(service, arc=None):
         existing_layer = None
         logger.info("Registering layer  %s" % layer.name)
         try:
-            existing_layer = Layer.objects.get(
-                typename=typename, service=service)
+            for layer in Layer.objects.filter(typename=typename):
+                if layer.service == service:
+                    existing_layer = layer
         except Layer.DoesNotExist:
             pass
 
         llbbox = mercator_to_llbbox(bbox)
 
         if existing_layer is None:
+
+            signals.post_save.disconnect(resourcebase_post_save, sender=Layer)
+            signals.post_save.disconnect(catalogue_post_save, sender=Layer)
+
             # Need to check if layer already exists??
             logger.info("Importing layer  %s" % layer.name)
-            saved_layer, created = Layer.objects.get_or_create(
+            saved_layer = Layer.objects.create(
                 typename=typename,
-                service=service,
-                defaults=dict(
-                    name=valid_name,
-                    store=service.name,  # ??
-                    storeType="remoteStore",
-                    workspace="remoteWorkspace",
-                    title=layer.name,
-                    abstract=layer._json_struct[
-                        'description'] or _("Not provided"),
-                    uuid=layer_uuid,
-                    owner=None,
-                    srid="EPSG:%s" % layer.extent.spatialReference.wkid,
-                    bbox_x0=llbbox[0],
-                    bbox_x1=llbbox[2],
-                    bbox_y0=llbbox[1],
-                    bbox_y1=llbbox[3],
-                )
+                name=valid_name,
+                store=service.name,  # ??
+                storeType="remoteStore",
+                workspace="remoteWorkspace",
+                title=layer.name,
+                abstract=layer._json_struct[
+                    'description'] or _("Not provided"),
+                uuid=layer_uuid,
+                owner=None,
+                srid="EPSG:%s" % layer.extent.spatialReference.wkid,
+                bbox_x0=llbbox[0],
+                bbox_x1=llbbox[2],
+                bbox_y0=llbbox[1],
+                bbox_y1=llbbox[3],
             )
 
             saved_layer.set_default_permissions()
@@ -887,6 +903,12 @@ def _register_arcgis_layers(service, arc=None):
             service_layer.description = saved_layer.abstract,
             service_layer.styles = None
             service_layer.save()
+
+            resourcebase_post_save(saved_layer, Layer)
+            catalogue_post_save(saved_layer, Layer)
+
+            signals.post_save.connect(resourcebase_post_save, sender=Layer)
+            signals.post_save.connect(catalogue_post_save, sender=Layer)
 
             create_arcgis_links(saved_layer)
 
@@ -1109,7 +1131,6 @@ def process_ogp_results(ogp, result_json, owner=None):
 
             layer_uuid = str(uuid.uuid1())
             saved_layer, created = Layer.objects.get_or_create(typename=typename,
-                                                               service=service,
                                                                defaults=dict(
                                                                    name=doc["Name"],
                                                                    uuid=layer_uuid,
