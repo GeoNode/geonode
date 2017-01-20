@@ -48,7 +48,7 @@ from geonode.tasks.update import geoserver_update_layers
 from geonode.utils import json_response, _get_basic_auth_info
 from geoserver.catalog import FailedRequestError, ConflictingDataError
 from lxml import etree
-from .helpers import get_stores, ogc_server_settings, set_styles, style_update
+from .helpers import get_stores, ogc_server_settings, set_styles, style_update, create_gs_thumbnail
 
 logger = logging.getLogger(__name__)
 
@@ -345,6 +345,8 @@ def geoserver_rest_proxy(request, proxy_path, downstream_path):
     # http.add_credentials(*(ogc_server_settings.credentials))
     headers = dict()
 
+    affected_layers = None
+
     if request.method in ("POST", "PUT") and "CONTENT_TYPE" in request.META:
         headers["Content-Type"] = request.META["CONTENT_TYPE"]
         headers["Authorization"] = "Basic " + auth
@@ -360,12 +362,18 @@ def geoserver_rest_proxy(request, proxy_path, downstream_path):
                     content_type="text/plain",
                     status=401)
             if downstream_path == 'rest/styles':
-                style_update(request, url)
+                affected_layers = style_update(request, url)
 
     response, content = http.request(
         url, request.method,
         body=request.body or None,
         headers=headers)
+
+    # update thumbnails
+    if affected_layers:
+        for layer in affected_layers:
+            logger.debug('Updating thumbnail for layer with uuid %s' % layer.uuid)
+            create_gs_thumbnail(layer, True)
 
     return HttpResponse(
         content=content,

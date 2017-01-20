@@ -66,7 +66,7 @@ from owslib.wms import WebMapService
 from geonode import GeoNodeException
 from geonode.layers.enumerations import LAYER_ATTRIBUTE_NUMERIC_DATA_TYPES
 from geonode.layers.models import Layer, Attribute, Style
-from geonode.layers.utils import layer_type, get_files
+from geonode.layers.utils import layer_type, get_files, create_thumbnail
 from geonode.utils import set_attributes
 import xml.etree.ElementTree as ET
 
@@ -1498,6 +1498,7 @@ def style_update(request, url):
     In case of a POST or PUT, we need to parse the xml from
     request.body, which is in this format:
     """
+    affected_layers = []
     if request.method in ('POST', 'PUT'):  # we need to parse xml
         # Need to remove NSx from IE11
         if "HTTP_USER_AGENT" in request.META:
@@ -1525,6 +1526,7 @@ def style_update(request, url):
             layer = Layer.objects.get(typename=layer_name)
             style.layer_styles.add(layer)
             style.save()
+            affected_layers.append(layer)
         elif request.method == 'PUT':  # update style in GN
             style = Style.objects.get(name=style_name)
             style.sld_body = sld_body
@@ -1534,6 +1536,7 @@ def style_update(request, url):
             style.save()
             for layer in style.layer_styles.all():
                 layer.save()
+                affected_layers.append(layer)
 
         # Invalidate GeoWebCache so it doesn't retain old style in tiles
         _invalidate_geowebcache_layer(layer_name)
@@ -1542,6 +1545,8 @@ def style_update(request, url):
         style_name = os.path.basename(request.path)
         style = Style.objects.get(name=style_name)
         style.delete()
+
+    return affected_layers
 
 
 def set_time_info(layer, attribute, end_attribute, presentation,
@@ -1737,3 +1742,34 @@ def set_time_dimension(cat, layer, time_presentation, time_presentation_res, tim
     resource = cat.get_layer(layer).resource
     resource.metadata = {'time': timeInfo}
     cat.save(resource)
+
+
+def create_gs_thumbnail(layer, overwrite=False):
+    """
+    Create a thumbnail with a GeoServer request.
+    """
+    params = {
+        'layers': layer.typename.encode('utf-8'),
+        'format': 'image/png8',
+        'width': 200,
+        'height': 150,
+        'TIME': '-99999999999-01-01T00:00:00.0Z/99999999999-01-01T00:00:00.0Z'
+    }
+
+    # Add the bbox param only if the bbox is different to [None, None,
+    # None, None]
+    if None not in layer.bbox:
+        params['bbox'] = layer.bbox_string
+
+    # Avoid using urllib.urlencode here because it breaks the url.
+    # commas and slashes in values get encoded and then cause trouble
+    # with the WMS parser.
+    p = "&".join("%s=%s" % item for item in params.items())
+
+    thumbnail_remote_url = ogc_server_settings.PUBLIC_LOCATION + \
+        "wms/reflect?" + p
+
+    thumbnail_create_url = ogc_server_settings.LOCATION + \
+        "wms/reflect?" + p
+
+    create_thumbnail(layer, thumbnail_remote_url, thumbnail_create_url, ogc_client=http_client, overwrite=overwrite)
