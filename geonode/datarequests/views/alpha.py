@@ -241,4 +241,3 @@ def old_request_facet_count(request):
         mimetype='text/plain'
     )
 
->>>>>>> carlo-local-dev
