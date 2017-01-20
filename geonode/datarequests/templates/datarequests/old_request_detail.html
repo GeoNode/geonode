@@ -1,0 +1,220 @@
+{% extends "layers/layer_base.html" %}
+{% load i18n %}
+{% load dialogos_tags %}
+{% load agon_ratings_tags %}
+{% load bootstrap_tags %}
+{% load url from future %}
+{% load base_tags %}
+{% load guardian_tags %}
+{% load eula_extras %}
+
+{% block title %}{% trans "Data Request Profile" %} — {{ block.super }}{% endblock %}
+
+{% block head %}
+{% if resource %}
+    {% if preview == 'geoext' %}
+      {% include "layers/layer_geoext_map.html" %}
+    {% else %}
+      {% include "layers/layer_leaflet_map.html" %}
+    {% endif %}
+{% endif %}
+{{ block.super }}
+{% endblock %}
+
+{% block body_class %}{% trans "Data Request Profile" %}{% endblock %}
+
+{% block body_outer %}
+<div class="page-header">
+  <a href="{% url 'datarequests:old_requests_model_view' %}" class="btn btn-primary pull-right">{% trans "View All Requests" %}</a>
+  <h2 class="page-title">{% trans "Data Request Profile" %}</h2>
+</div>
+
+<div class="row">
+  <div class="col-md-8">
+
+  <table class="table table-user-profile">
+      <tbody>
+      <tr>
+      <td class="table-user-profile-attribute col-md-3">{% trans "Requester" %}</td>
+      <td>{{ request_profile.first_name }} {{ request_profile.middle_name }} {{ request_profile.last_name }}</td>
+      </tr>
+      <tr>
+      <td class="table-user-profile-attribute col-md-3">{% trans "Request Letter" %}</td>
+      <td><a href="{{ request_profile.request_letter.detail_url }}/download" >{{ request_profile.request_letter.title }}</a></td>
+      </tr>
+     <tr>
+         <td class="table-user-profile-attribute col-md-3"> {% trans "User Name" %}</td>
+         <td> {{ request_profile.username }}</td>
+     </tr>
+     <tr>
+        <td class="table-user-profile-attribute col-md-3"> {% trans "FTP directory" %}</td>
+        <td>{{ request_profile.ftp_folder }} </td>
+     </tr>
+      <tr>
+
+      <tr>
+      <td class="table-user-profile-attribute">{% trans "Organization" %}</td>
+      <td>{{ request_profile.organization }}</td>
+      </tr>
+
+      <tr>
+      <td class="table-user-profile-attribute">{% trans "Entity" %}</td>
+      <td>{{ request_profile.get_location_display }}</td>
+      </tr>
+
+      <tr>
+      <td class="table-user-profile-attribute">{% trans "Email" %}</td>
+      <td>{{ request_profile.email }}</td>
+      </tr>
+
+      <tr>
+      <td class="table-user-profile-attribute">{% trans "Contact Number" %}</td>
+      <td>{{ request_profile.contact_number }}</td>
+      </tr>
+
+      <tr>
+      <td class="table-user-profile-attribute">{% trans "Area of Coverage in Sqr KMs:" %}</td>
+      <td>{{ request_profile.area_coverage }}</td>
+      </tr>
+
+      <tr>
+      <td class="table-user-profile-attribute">{% trans "Location of Area Requested" %}</td>
+      <td>{{ request_profile.place_name }}</td>
+      </tr>
+
+      <tr>
+      <td class="table-user-profile-attribute">{% trans "Data Size of Area Requested" %}</td>
+      <td>{{ request_profile.juris_data_size|filesizeformat }}</td>
+      </tr>
+
+      <tr>
+      <td class="table-user-profile-attribute">{% trans "Project Summary" %}</td>
+      <td>{{ request_profile.project_summary }}</td>
+      </tr>
+
+      <tr>
+      <td class="table-user-profile-attribute">{% trans "Type of Data Requested" %}</td>
+      <td>{{ request_profile.get_data_type_requested_display }}</td>
+      </tr>
+
+      <tr>
+      <td class="table-user-profile-attribute">{% trans "Purpose/Intended Use of Data" %}</td>
+      <td>{{ request_profile.purpose }}</td>
+      </tr>
+
+      <tr>
+      <td class="table-user-profile-attribute">{% trans "Intended Use of Dataset" %}</td>
+      <td>{{ request_profile.get_intended_use_of_dataset_display }}</td>
+      </tr>
+
+      {% if request_profile.intended_use_of_dataset == 'noncommercial' or request_profile.intended_use_of_dataset == 'academe' %}
+        <tr>
+        <td class="table-user-profile-attribute">{% trans "Organization type based on Phil-LiDAR1 Data Distribution Policy" %}</td>
+        <td>{{ request_profile.get_organization_type_display }}</td>
+        </tr>
+        {% if request_profile.intended_use_of_dataset == 'academe' %}
+          <tr>
+          <td class="table-user-profile-attribute">{% trans "Level of Request" %}</td>
+          <td>{{ request_profile.get_request_level_display }}</td>
+          </tr>
+
+          <tr>
+          <td class="table-user-profile-attribute">{% trans "Source of Funding" %}</td>
+          <td>{{ request_profile.funding_source }}</td>
+          </tr>
+          <tr>
+          <td class="table-user-profile-attribute">{% trans "Consultant in behalf of another organization?" %}</td>
+          <td>{{ is_consultant|yesno:"yes,no" }}</td>
+          </tr>
+        {% endif %}
+      {% endif %}
+         <tr>
+          <td class="table-user-profile-attribute col-md-3">{% trans "Approval/Rejection Administrator" %}</td>
+          <td>{{request_profile.administrator.username}}</td>
+      </tr>
+      </tbody>
+    </table>
+
+    <div class="row">
+      <h4><strong>Jurisdiction Shapefile</strong></h4>
+      {% if not request_profile.jurisdiction_shapefile %}
+        <h5><strong>No ROI submitted</strong></h5>
+        {% endif %}
+      <div id="embedded_map" class="mrg-btm">
+        <div id="preview_map"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-md-4">
+
+    <ul class="list-group">
+      <li class="list-group-item">
+        <h5 class="list-group-item-heading">{%trans "Data Request Status" %}</h5>
+
+        <div class="row data-request-status-parent">
+          {% if request_profile.request_status == 'pending' %}
+            <div class="col-sm-12 data-request-status label pending-request">
+          {% elif request_profile.request_status == 'approved' %}
+            <div class="col-sm-12 label data-request-status label-success">
+          {% else %}
+            <div class="col-sm-12 label data-request-status label-danger">
+          {% endif %}
+              <strong>{{ request_profile.get_request_status_display }}</strong>
+            </div>
+        </div>
+
+        {% if request_profile.request_status == 'rejected' or request_profile.request_status == 'cancelled' %}
+          <p><strong>{% trans "Reason" %}</strong>: {{ request_profile.rejection_reason }}</p>
+          {% if request_profile.additional_rejection_reason %}
+              <p><strong>{% trans "Additional Details" %}</strong>: {{ request_profile.additional_rejection_reason }}</p>
+          {% endif %}
+        {% endif %}
+      </li>
+         <li class="list-group-item">
+             <form id="migrate_form" method="post" class="modal-form" action='{% url "datarequests:old_request_migration" pk=request_profile.pk%}'>{% csrf_token %}
+                <button type="submit" class="btn btn-default btn-md btn-block" id="migrate-request-submit">{% trans "Migrate Request" %}</button>
+        </form>            
+        </li>
+  </ul>
+  <input type="hidden" id="request_profile_id" value="{{request_profile.pk}}"></input>
+  </div> <!-- col-md-4 -->
+</div> <!-- row -->
+{% endblock %}
+
+{% block extra_script %}
+
+    {% if GEOGIG_ENABLED and resource.link_set.geogig %}
+        {% with "_geogig_scripts.html" as geogig_scripts_template %}
+            {% include  geogig_scripts_template %}
+        {% endwith %}
+    {% endif %}
+    <script type="text/javascript">
+      // $('#layer').css('opacity', 0);
+      // $('#layer').css('visibility', 'hidden');
+      // $('.nav-tabs').on('click', 'a[href="#layer"]', function() {
+      //   $('#layer').css('opacity', 1);
+      //   $('#layer').css('visibility', 'visible');
+
+      // });
+      {% if resource.get_legend.link_type == 'json' %}
+      $.getJSON('{{resource.get_legend_url}}', function (data) {
+          var legend = data.layers[0].legend;
+          var items = [];
+          $.each(legend, function (key, dvalue) {
+              items.push('<li><img src="data:image/png;base64,' + dvalue.imageData + '">'+dvalue.label+'</li>');
+          });
+
+          $('<ul/>', {
+              'class': 'arcgis-legend',
+              html: items.join('')
+
+          }).appendTo('#legend_placeholder');
+
+      });
+      {% endif %}
+    </script>
+
+      {% load i18n %}
+
+{% endblock extra_script %}
