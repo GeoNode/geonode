@@ -494,7 +494,7 @@ def run_tests(options):
     """
     Executes the entire test suite.
     """
-    if options.coverage:
+    if options.get('coverage'):
         prefix = 'coverage run --branch --source=geonode'
     else:
         prefix = 'python'
