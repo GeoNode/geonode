@@ -160,7 +160,8 @@ def document_download(request, docid):
         DownloadTracker(actor=Profile.objects.get(username=request.user),
                         title=str(document.title),
                         resource_type=str(ResourceBase.objects.get(document__id=docid).csw_type),
-                        keywords=Document.objects.get(id=docid).keywords.slugs()
+                        keywords=Document.objects.get(id=docid).keywords.slugs(),
+                        dl_type="document"
                         ).save()
     print request.user.has_perm('base.download_resourcebase',obj=document.get_self_resource())
 
