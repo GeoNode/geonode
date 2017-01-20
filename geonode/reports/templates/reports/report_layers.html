@@ -272,12 +272,12 @@ var data = [{
     {% endfor %}
   ],
   type: 'pie',
-  textinfo:'label+value+percent',
+  textinfo:'label+percent',
 }];
 
 var layout = {
-  height: 400,
-  width: 500
+  height: 800,
+  width: 1000
 };
 
 Plotly.newPlot('pie_div', data, layout);
