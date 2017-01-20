@@ -467,7 +467,6 @@ def _register_cascaded_layers(service, owner=None):
                     bbox = resource.latlon_bbox
                     cascaded_layer, created = Layer.objects.get_or_create(
                         typename="%s:%s" % (cascade_ws.name, resource.name),
-                        service=service,
                         defaults={
                             "name": resource.name,
                             "workspace": cascade_ws.name,
@@ -634,7 +633,6 @@ def _register_indexed_layers(service, wms=None, verbosity=False):
             # Need to check if layer already exists??
             saved_layer, created = Layer.objects.get_or_create(
                 typename=wms_layer.name,
-                service=service,
                 defaults=dict(
                     name=wms_layer.name,
                     store=service.name,  # ??
@@ -844,8 +842,10 @@ def _register_arcgis_layers(service, arc=None):
         existing_layer = None
         logger.info("Registering layer  %s" % layer.name)
         try:
-            existing_layer = Layer.objects.get(
-                typename=typename, service=service)
+            existing_layer = None
+            for layer in Layer.objects.filter(typename=typename):
+                if layer.service == service:
+                    existing_layer = layer
         except Layer.DoesNotExist:
             pass
 
@@ -856,7 +856,6 @@ def _register_arcgis_layers(service, arc=None):
             logger.info("Importing layer  %s" % layer.name)
             saved_layer, created = Layer.objects.get_or_create(
                 typename=typename,
-                service=service,
                 defaults=dict(
                     name=valid_name,
                     store=service.name,  # ??
@@ -1109,7 +1108,6 @@ def process_ogp_results(ogp, result_json, owner=None):
 
             layer_uuid = str(uuid.uuid1())
             saved_layer, created = Layer.objects.get_or_create(typename=typename,
-                                                               service=service,
                                                                defaults=dict(
                                                                    name=doc["Name"],
                                                                    uuid=layer_uuid,
