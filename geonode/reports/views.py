@@ -99,7 +99,8 @@ def report_layer(request, template='reports/report_layers.html'):
 
     context_dict = {
         "monthly_count": reversed_mc,
-        "luzvimin_count": reversed_luzvimin
+        "luzvimin_count": reversed_luzvimin,
+        "total_count": reversed_mc[reversed_mc.keys()[0]]
     }
 
     return render_to_response(template, RequestContext(request, context_dict))
