@@ -214,15 +214,7 @@ def sync(options):
     """
     Run the migrate and migrate management commands to create and migrate a DB
     """
-    for app in dev_config['MIGRATE_APPS']:
-        try:
-            sh("python manage.py migrate {app} --noinput".format(app=app))
-        except:
-            pass
-    try:
-        sh("python manage.py migrate --noinput")
-    except:
-        pass
+    sh("python manage.py migrate --noinput")
     sh("python manage.py loaddata sample_admin.json")
     sh("python manage.py loaddata geonode/base/fixtures/default_oauth_apps.json")
     sh("python manage.py loaddata geonode/base/fixtures/initial_data.json")
@@ -494,7 +486,7 @@ def run_tests(options):
     """
     Executes the entire test suite.
     """
-    if options.coverage:
+    if options.get('coverage'):
         prefix = 'coverage run --branch --source=geonode'
     else:
         prefix = 'python'

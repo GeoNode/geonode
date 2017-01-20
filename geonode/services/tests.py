@@ -24,7 +24,7 @@ import traceback
 
 from django.test import TestCase
 from django.core.urlresolvers import reverse
-from .models import Service
+from .models import Service, ServiceLayer
 
 
 class ServicesTests(TestCase):
@@ -55,7 +55,8 @@ class ServicesTests(TestCase):
         try:
             service = Service.objects.get(id=service_dict['service_id'])
             # Harvested some layers
-            self.assertTrue(service.layer_set.count() > 0)
+
+            self.assertTrue(ServiceLayer.objects.filter(service=service).count() > 0)
             self.assertEqual(service.method, "I")
             self.assertEqual(service.type, "WMS")
             self.assertEqual(service.ptype, 'gxp_wmscsource')
@@ -79,7 +80,7 @@ class ServicesTests(TestCase):
         try:
             service = Service.objects.get(id=service_dict['service_id'])
             # Harvested some layers
-            self.assertTrue(service.layer_set.count() > 0)
+            self.assertTrue(ServiceLayer.objects.filter(service=service).count() > 0)
             self.assertEqual(service.method, "I")
             self.assertEqual(service.type, "REST")
             self.assertEqual(service.ptype, 'gxp_arcrestsource')
