@@ -3,8 +3,33 @@
 <div class="btn-group pull-right" role="group" aria-label="tools">
   <div class="btn-group" role="group">
     <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-      <i class="fa fa-sort-alpha-asc fa-lg"></i>
-      <i class="fa fa-angle-down fa-lg"></i>
+      <div ng-if="dataValue == 'title'">
+        <i class="fa fa-sort-alpha-asc fa-lg"></i>
+        <i class="fa fa-angle-down fa-lg"></i>
+      </div>
+      <div ng-if="dataValue == '-title'">
+        <i class="fa fa-sort-alpha-desc fa-lg"></i>
+        <i class="fa fa-angle-down fa-lg"></i>
+      </div>
+      <div ng-if="dataValue == 'date'">
+        <i class="fa fa-clock-o"></i>
+        <i class="fa fa-clock-o fa-level-up"></i>
+        <i class="fa fa-angle-down fa-lg"></i>
+      </div>
+      <div ng-if="dataValue == '-date'">
+        <i class="fa fa-clock-o"></i>
+        <i class="fa fa-clock-o fa-level-down"></i>
+        <i class="fa fa-angle-down fa-lg"></i>
+      </div>
+      <div ng-if="dataValue == '-popular_count'">
+        <i class="fa fa-fire fa-lg"></i>
+        <i class="fa fa-angle-down fa-lg"></i>
+      </div>
+      <div ng-if="dataValue == null">
+        <i class="fa fa-clock-o"></i>
+        <i class="fa fa-clock-o fa-level-down"></i>
+        <i class="fa fa-angle-down fa-lg"></i>
+      </div>
     </button>
     <ul class="dropdown-menu dropdown-menu-right" id="sort">
       {% if facet_type != 'groups' and facet_type != 'people' %}
