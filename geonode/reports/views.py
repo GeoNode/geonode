@@ -130,6 +130,7 @@ def report_datarequest(request, template='reports/report_datarequest.html'):
 
     #sorted
     sorted_mc = OrderedDict(sorted(monthly_count.iteritems(), key=lambda x: x[0]))
+    sorted_org = OrderedDict(sorted(org_count.iteritems(), key=lambda x: x[0]))
     #cumulative
     counter_dict = Counter()
     for each in sorted_mc.iteritems():
@@ -137,12 +138,13 @@ def report_datarequest(request, template='reports/report_datarequest.html'):
         sorted_mc[each[0]] = dict(counter_dict)
     #rename
     renamed_mc = OrderedDict([(datetime.strptime(eachone[0],'%Y%m').strftime('%b'),eachone[1]) for eachone in sorted_mc.iteritems()])
+    renamed_org = OrderedDict([(OrganizationType.get(eachone[0]),eachone[1]) for eachone in sorted_org.iteritems()])
 
     reversed_mc = OrderedDict(reversed(list(renamed_mc.items())))
-
+    reversed_org = OrderedDict(reversed(list(renamed_org.items())))
     context_dict = {
         "monthly_count": reversed_mc,
-        "org_count": org_count,
+        "org_count": reversed_org,
         "total_count": reversed_mc[reversed_mc.keys()[0]]
     }
 
