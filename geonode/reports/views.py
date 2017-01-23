@@ -35,6 +35,8 @@ from geonode.eula.models import AnonDownloader
 from geonode.reports.models import DownloadCount
 from collections import OrderedDict, Counter
 from geonode.datarequests.models.data_request import DataRequest
+from geonode.datarequests.models.profile_request import ProfileRequest
+from geonode.people.models import OrganizationType
 
 import urllib2, json
 from urllib2 import HTTPError
@@ -109,6 +111,7 @@ def report_layer(request, template='reports/report_layers.html'):
 def report_datarequest(request, template='reports/report_datarequest.html'):
 
     monthly_count = {}
+    org_count = {}
     monthly_list = DataRequest.objects.all().order_by('status_changed')
     for eachinlist in monthly_list:
         if eachinlist.status_changed.strftime('%Y%m') not in monthly_count:
@@ -116,6 +119,13 @@ def report_datarequest(request, template='reports/report_datarequest.html'):
         if eachinlist.status not in monthly_count[eachinlist.status_changed.strftime('%Y%m')]:
             monthly_count[eachinlist.status_changed.strftime('%Y%m')][eachinlist.status] = 0
         monthly_count[eachinlist.status_changed.strftime('%Y%m')][eachinlist.status] += 1
+
+        mostrecent = ProfileRequest.objects.filter(id=eachinlist.profile_request_id).order_by('created').last()
+        if mostrecent:
+            if mostrecent.organization_type not in org_count:
+                org_count[mostrecent.organization_type] = 0
+            org_count[mostrecent.organization_type] += 1
+
 
 
     #sorted
@@ -132,6 +142,7 @@ def report_datarequest(request, template='reports/report_datarequest.html'):
 
     context_dict = {
         "monthly_count": reversed_mc,
+        "org_count": org_count,
         "total_count": reversed_mc[reversed_mc.keys()[0]]
     }
 

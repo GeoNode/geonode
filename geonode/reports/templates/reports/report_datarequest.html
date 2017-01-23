@@ -13,6 +13,8 @@
 </div>
 <div id = 'monthly_datarequest' style='width: 1000px; height: 800px;'>
 </div>
+<div id = 'org_datarequest' style='width: 1000px; height: 800px;'>
+</div>
 
 {% endblock %}
 
@@ -111,6 +113,31 @@ var layout = {barmode: 'stack',
               xaxis: {autorange: 'reversed'}};
 
 Plotly.newPlot('monthly_datarequest', data, layout);
+
+var org1 = {
+  x: [
+    {% for key, value in org_count.items %}
+      '{{ key }}',
+    {% endfor %}
+  ],
+  y: [
+    {% for key, value in org_count.items %}
+      {{ value }},
+    {% endfor %}
+  ],
+  name: 'LiPAD',
+  type: 'bar',
+  marker: {
+    color: '#DC3912'
+  }
+};
+
+var data_org = [org1];
+
+var layout_org = {barmode: 'stack',
+              xaxis: {autorange: 'reversed'}};
+
+Plotly.newPlot('org_datarequest', data_org, layout_org);
 
 </script>
 {% endblock extra_script %}
