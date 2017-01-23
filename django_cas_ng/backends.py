@@ -24,6 +24,7 @@ class CASBackend(ModelBackend):
         username, attributes, pgtiou = client.verify_ticket(ticket)
         if attributes:
             request.session['attributes'] = attributes
+            pprint("attributes:"+str(attributes))
         if not username:
             pprint("no username found")
             return None
