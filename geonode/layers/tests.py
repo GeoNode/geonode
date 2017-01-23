@@ -129,6 +129,30 @@ class LayersTest(TestCase):
         self.assertEqual(custom_attributes[1].sum, "NA")
         self.assertEqual(custom_attributes[1].unique_values, "NA")
 
+    def test_layer_attributes_feature_catalogue(self):
+        """ Test layer feature catalogue functionality
+        """
+
+        # test a non-existing layer
+        url = reverse('layer_feature_catalogue', args=('bad_layer',))
+        response = self.client.get(url)
+        self.assertEquals(response.status_code, 404)
+
+        # test a raster layer error (400)
+        # Get the layer to work with
+        layer = Layer.objects.get(pk=3)
+        url = reverse('layer_feature_catalogue', args=(layer.typename,))
+        response = self.client.get(url)
+        self.assertEquals(response.status_code, 400)
+        self.assertEquals(response['content-type'], 'application/json')
+
+        # test a vector layer (200)
+        layer = Layer.objects.get(pk=2)
+        url = reverse('layer_feature_catalogue', args=(layer.typename,))
+        response = self.client.get(url)
+        self.assertEquals(response.status_code, 200)
+        self.assertEquals(response['content-type'], 'application/xml')
+
     def test_layer_attribute_config(self):
         lyr = Layer.objects.get(pk=1)
         custom_attributes = (lyr.attribute_config())["getFeatureInfo"]

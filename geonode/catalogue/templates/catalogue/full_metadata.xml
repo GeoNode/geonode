@@ -1,4 +1,4 @@
-<gmd:MD_Metadata xmlns:gmd="http://www.isotc211.org/2005/gmd" xmlns:gml="http://www.opengis.net/gml" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:gco="http://www.isotc211.org/2005/gco" xsi:schemaLocation="http://www.isotc211.org/2005/gmd http://www.isotc211.org/2005/gmd/gmd.xsd">
+<gmd:MD_Metadata xmlns:gmd="http://www.isotc211.org/2005/gmd" xmlns:gml="http://www.opengis.net/gml" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:gco="http://www.isotc211.org/2005/gco" xsi:schemaLocation="http://www.isotc211.org/2005/gmd http://www.isotc211.org/2005/gmd/gmd.xsd">
    <gmd:fileIdentifier>
      <gco:CharacterString>{{layer.uuid}}</gco:CharacterString>
    </gmd:fileIdentifier>
@@ -290,6 +290,23 @@
        </gmd:supplementalInformation>
      </gmd:MD_DataIdentification>
    </gmd:identificationInfo>
+   <gmd:contentInfo>
+     {% if layer.storeType == 'coverageStore' %}
+     <gmd:MD_CoverageDescription>
+       <gmd:attributeDescription gco:nilReason="inapplicable"/>
+       <gmd:contentType>
+         <gmd:MD_CoverageContentTypeCode codeList="http://www.isotc211.org/2005/resources/Codelist/gmxCodelists.xml" codeListValue="image">image</gmd:MD_CoverageContentTypeCode>
+       </gmd:contentType>
+     </gmd:MD_CoverageDescription>
+     {% elif layer.storeType == 'dataStore' %}
+     <gmd:includedWithDataset>
+       <gco:Boolean>0</gco:Boolean>
+     </gmd:includedWithDataset>
+     <gmd:MD_FeatureCatalogueDescription>
+       <gmd:featureCatalogueCitation xlink:href="{{ SITEURL }}{{ layer.get_absolute_url }}/feature_catalogue"/>
+     </gmd:MD_FeatureCatalogueDescription>
+     {% endif %}
+   </gmd:contentInfo>
    <gmd:distributionInfo>
      <gmd:MD_Distribution>
        <gmd:transferOptions>

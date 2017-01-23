@@ -355,6 +355,32 @@ def layer_detail(request, layername, template='layers/layer_detail.html'):
     return render_to_response(template, RequestContext(request, context_dict))
 
 
+def layer_feature_catalogue(request, layername, template='../../catalogue/templates/catalogue/feature_catalogue.xml'):
+    layer = _resolve_layer(request, layername)
+    if layer.storeType != 'dataStore':
+        out = {
+            'success': False,
+            'errors': 'layer is not a feature type'
+        }
+        return HttpResponse(json.dumps(out), content_type='application/json', status=400)
+
+    attributes = []
+
+    for attrset in layer.attribute_set.all():
+        attr = {
+            'name': attrset.attribute,
+            'type': attrset.attribute_type
+        }
+        attributes.append(attr)
+
+    context_dict = {
+        'layer': layer,
+        'attributes': attributes,
+        'metadata': settings.PYCSW['CONFIGURATION']['metadata:main']
+    }
+    return render_to_response(template, context_dict, content_type='application/xml')
+
+
 @login_required
 def layer_metadata(request, layername, template='layers/layer_metadata.html'):
     layer = _resolve_layer(
