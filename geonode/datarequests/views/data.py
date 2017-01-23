@@ -183,8 +183,10 @@ def data_request_approve(request, pk):
     if request.method == 'POST':
         data_request = get_object_or_404(DataRequest, pk=pk)
         
-        if not data_request.status == 'pending':
-            return HttpResponseRedirect('/forbidden')
+        if not data_request.profile or not data_request.profile_request.status == 'approved':
+            messages.info("Request #"+str(pk)+" cannot be approved because the requester does not have an approved user yet.")
+            return HttpResponseRedirect(data_request.get_absolute_url())
+            #return HttpResponseRedirect('/forbidden')
         
         if data_request.jurisdiction_shapefile:
             data_request.assign_jurisdiction() #assigns/creates jurisdiction object
