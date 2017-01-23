@@ -47,6 +47,7 @@ class CASBackend(ModelBackend):
             created = True
         
         if attributes and user:
+            pprint(attributes)
             setattr(user, "email", attributes["email"])
             setattr(user, "first_name",attributes["first_name"])
             setattr(user, "last_name", attributes["last_name"])
