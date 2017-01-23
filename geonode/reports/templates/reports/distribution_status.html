@@ -264,14 +264,14 @@ var layout_luzvimin = {barmode: 'stack',
 
 Plotly.newPlot('luzvimin_div', data_luzvimin, layout_luzvimin);
 
-var data = [{
+var data_pie = [{
   values: [
-    {% for key, value in total_count.items %}
+    {% for key, value in total_layers.items %}
       {{ value }},
     {% endfor %}
   ],
   labels: [
-    {% for key, value in total_count.items %}
+    {% for key, value in total_layers.items %}
       '{{ key }}',
     {% endfor %}
   ],
@@ -279,21 +279,21 @@ var data = [{
   textinfo:'label+percent',
 }];
 
-var layout = {
+var layout_pie = {
   height: 800,
   width: 1000
 };
 
-Plotly.newPlot('pie_div', data, layout);
+Plotly.newPlot('pie_div', data_pie, layout_pie);
 
 var datarequest1 = {
   x: [
-    {% for key, value in monthly_count.items %}
+    {% for key, value in monthly_datarequest.items %}
       '{{ key }}',
     {% endfor %}
   ],
   y: [
-    {% for key, value in monthly_count.items %}
+    {% for key, value in monthly_datarequest.items %}
       {{ value.pending }},
     {% endfor %}
   ],
@@ -305,12 +305,12 @@ var datarequest1 = {
 };
 var datarequest2 = {
   x: [
-    {% for key, value in monthly_count.items %}
+    {% for key, value in monthly_datarequest.items %}
       '{{ key }}',
     {% endfor %}
   ],
   y: [
-    {% for key, value in monthly_count.items %}
+    {% for key, value in monthly_datarequest.items %}
       {{ value.approved }},
     {% endfor %}
   ],
@@ -322,12 +322,12 @@ var datarequest2 = {
 };
 var datarequest3 = {
   x: [
-    {% for key, value in monthly_count.items %}
+    {% for key, value in monthly_datarequest.items %}
       '{{ key }}',
     {% endfor %}
   ],
   y: [
-    {% for key, value in monthly_count.items %}
+    {% for key, value in monthly_datarequest.items %}
       {{ value.cancelled }},
     {% endfor %}
   ],
@@ -339,12 +339,12 @@ var datarequest3 = {
 };
 var datarequest4 = {
   x: [
-    {% for key, value in monthly_count.items %}
+    {% for key, value in monthly_datarequest.items %}
       '{{ key }}',
     {% endfor %}
   ],
   y: [
-    {% for key, value in monthly_count.items %}
+    {% for key, value in monthly_datarequest.items %}
       {{ value.rejected }},
     {% endfor %}
   ],
@@ -356,12 +356,12 @@ var datarequest4 = {
 };
 var datarequest5 = {
   x: [
-    {% for key, value in monthly_count.items %}
+    {% for key, value in monthly_datarequest.items %}
       '{{ key }}',
     {% endfor %}
   ],
   y: [
-    {% for key, value in monthly_count.items %}
+    {% for key, value in monthly_datarequest.items %}
       {{ value.unconfirmed }},
     {% endfor %}
   ],
@@ -372,12 +372,12 @@ var datarequest5 = {
   }
 };
 
-var data = [datarequest5, datarequest4, datarequest3, datarequest2, datarequest1];
+var data_datarequest = [datarequest5, datarequest4, datarequest3, datarequest2, datarequest1];
 
-var layout = {barmode: 'stack',
+var layout_datarequest = {barmode: 'stack',
               xaxis: {autorange: 'reversed'}};
 
-Plotly.newPlot('monthly_datarequest', data, layout);
+Plotly.newPlot('monthly_datarequest', data_datarequest, layout_datarequest);
 
 var org1 = {
   x: [
