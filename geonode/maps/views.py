@@ -410,6 +410,34 @@ def map_json(request, mapid, snapshot=None):
                 status=400
             )
 
+def map_edit(request, mapid, snapshot=None, template='maps/map_edit.html'):
+    """
+    The view that returns the map composer opened to
+    the map with the given map ID.
+    """
+    map_obj = _resolve_map(request, mapid, 'base.view_resourcebase', _PERMISSION_MSG_VIEW)
+
+    if 'access_token' in request.session:
+        access_token = request.session['access_token']
+    else:
+        access_token = None
+
+    if snapshot is None:
+        config = map_obj.viewer_json(request.user, access_token)
+    else:
+        config = snapshot_config(snapshot, map_obj, request.user, access_token)
+
+    return render_to_response(template, RequestContext(request, {
+        'mapId': mapid,
+        'config': json.dumps(config),
+        'map': map_obj,
+        'preview': getattr(
+            settings,
+            'LAYER_PREVIEW_LIBRARY',
+            '')
+    }))
+
+
 # NEW MAPS #
 
 

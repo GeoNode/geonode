@@ -50,6 +50,7 @@ urlpatterns = patterns(
     url(r'^snapshot/create/?$', 'snapshot_create'),
     url(r'^(?P<mapid>[^/]+)$', 'map_detail', name='map_detail'),
     url(r'^(?P<mapid>[^/]+)/view$', existing_map_view, name='map_view'),
+    url(r'^(?P<mapid>[^/]+)/edit$', 'map_edit', name='map_edit'),
     url(r'^(?P<mapid>[^/]+)/data$', 'map_json', name='map_json'),
     url(r'^(?P<mapid>[^/]+)/download$', 'map_download', name='map_download'),
     url(r'^(?P<mapid>[^/]+)/wmc$', 'map_wmc', name='map_wmc'),
