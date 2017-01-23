@@ -17,6 +17,10 @@
 </div>
 <div id = 'pie_div' style='width: 1000px; height: 800px;'>
 </div>
+<div id = 'monthly_datarequest' style='width: 1000px; height: 800px;'>
+</div>
+<div id = 'org_datarequest' style='width: 1000px; height: 800px;'>
+</div>
 
 {% endblock %}
 
@@ -281,5 +285,123 @@ var layout = {
 };
 
 Plotly.newPlot('pie_div', data, layout);
+
+var datarequest1 = {
+  x: [
+    {% for key, value in monthly_count.items %}
+      '{{ key }}',
+    {% endfor %}
+  ],
+  y: [
+    {% for key, value in monthly_count.items %}
+      {{ value.pending }},
+    {% endfor %}
+  ],
+  name: 'Pending',
+  type: 'bar',
+  marker: {
+    color: '#DC3912'
+  }
+};
+var datarequest2 = {
+  x: [
+    {% for key, value in monthly_count.items %}
+      '{{ key }}',
+    {% endfor %}
+  ],
+  y: [
+    {% for key, value in monthly_count.items %}
+      {{ value.approved }},
+    {% endfor %}
+  ],
+  name: 'Approved',
+  type: 'bar',
+  marker: {
+    color: '#FF9900'
+  }
+};
+var datarequest3 = {
+  x: [
+    {% for key, value in monthly_count.items %}
+      '{{ key }}',
+    {% endfor %}
+  ],
+  y: [
+    {% for key, value in monthly_count.items %}
+      {{ value.cancelled }},
+    {% endfor %}
+  ],
+  name: 'Cancelled',
+  type: 'bar',
+  marker: {
+    color: '#3366CB'
+  }
+};
+var datarequest4 = {
+  x: [
+    {% for key, value in monthly_count.items %}
+      '{{ key }}',
+    {% endfor %}
+  ],
+  y: [
+    {% for key, value in monthly_count.items %}
+      {{ value.rejected }},
+    {% endfor %}
+  ],
+  name: 'Rejected',
+  type: 'bar',
+  marker: {
+    color: '#109618'
+  }
+};
+var datarequest5 = {
+  x: [
+    {% for key, value in monthly_count.items %}
+      '{{ key }}',
+    {% endfor %}
+  ],
+  y: [
+    {% for key, value in monthly_count.items %}
+      {{ value.unconfirmed }},
+    {% endfor %}
+  ],
+  name: 'Unconfirmed',
+  type: 'bar',
+  marker: {
+    color: '#990099'
+  }
+};
+
+var data = [datarequest5, datarequest4, datarequest3, datarequest2, datarequest1];
+
+var layout = {barmode: 'stack',
+              xaxis: {autorange: 'reversed'}};
+
+Plotly.newPlot('monthly_datarequest', data, layout);
+
+var org1 = {
+  x: [
+    {% for key, value in org_count.items %}
+      '{{ key }}',
+    {% endfor %}
+  ],
+  y: [
+    {% for key, value in org_count.items %}
+      {{ value }},
+    {% endfor %}
+  ],
+  name: 'LiPAD',
+  type: 'bar',
+  marker: {
+    color: '#5B9BD5'
+  }
+};
+
+var data_org = [org1];
+
+var layout_org = {barmode: 'stack',
+              xaxis: {autorange: 'reversed'}};
+
+Plotly.newPlot('org_datarequest', data_org, layout_org);
 </script>
 {% endblock extra_script %}
