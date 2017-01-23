@@ -95,7 +95,7 @@ var trace5 = {
   ],
   y: [
     {% for key, value in monthly_count.items %}
-      {{ value.'unconfirmed' }},
+      {{ value.unconfirmed }},
     {% endfor %}
   ],
   name: 'Unconfirmed',
