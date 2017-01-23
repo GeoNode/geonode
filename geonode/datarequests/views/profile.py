@@ -67,6 +67,8 @@ def profile_request_approve(request, pk):
         else:
             profile_request.profile.organization_type = profile_request.organization_type
             profile_request.profile.organization_other = profile_request.organization_other
+            profile_request.data_request.profile = profile_request.profile
+            profile_request.save()
             profile_request.profile.save()
 
             profile_request.set_status('approved',administrator = request.user)
