@@ -184,8 +184,7 @@ def data_request_approve(request, pk):
         data_request = get_object_or_404(DataRequest, pk=pk)
         
         if not data_request.profile or not data_request.profile_request.status == 'approved':
-            pprint("data request profile does not exist")
-            messages.info("Request #"+str(pk)+" cannot be approved because the requester does not have an approved user yet.")
+            messages.info(request, "Data request #"+str(pk)+" cannot be approved because the requester does not have an approved user yet.")
             return HttpResponseRedirect(data_request.get_absolute_url())
             #return HttpResponseRedirect('/forbidden')
         
