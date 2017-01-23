@@ -136,7 +136,7 @@ def report_distribution_status(request, template='reports/distribution_status.ht
     context_dict = {
         "monthly_count": reversed_mc,
         "luzvimin_count": reversed_luzvimin,
-        "total_layers": reversed_mc[reversed_mc.keys()[0]]
+        "total_layers": reversed_mc[reversed_mc.keys()[0]],
         "monthly_datarequest": reversed_md,
         "org_count": reversed_org,
         "total_datarequest": reversed_md[reversed_md.keys()[0]],
