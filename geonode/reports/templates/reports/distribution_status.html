@@ -183,8 +183,10 @@ var trace9 = {
 
 var data = [trace9, trace8, trace7, trace6, trace5, trace4, trace3, trace2, trace1];
 
-var layout = {barmode: 'stack',
-              xaxis: {autorange: 'reversed'}};
+var layout = {
+  barmode: 'stack',
+  xaxis: {autorange: 'reversed'},
+  title: 'Cumulative LiPAD Downloads (Count)'};
 
 Plotly.newPlot('monthly_div', data, layout);
 
@@ -259,8 +261,10 @@ var luzvimin4 = {
 
 var data_luzvimin = [luzvimin4, luzvimin3, luzvimin2, luzvimin1];
 
-var layout_luzvimin = {barmode: 'stack',
-              xaxis: {autorange: 'reversed'}};
+var layout_luzvimin = {
+  barmode: 'stack',
+  xaxis: {autorange: 'reversed'},
+  title: 'LuzViMin'};
 
 Plotly.newPlot('luzvimin_div', data_luzvimin, layout_luzvimin);
 
@@ -280,6 +284,7 @@ var data_pie = [{
 }];
 
 var layout_pie = {
+  title: 'Total Downloads: {{ sum_layers }}'
   height: 800,
   width: 1000
 };
@@ -374,8 +379,10 @@ var datarequest5 = {
 
 var data_datarequest = [datarequest5, datarequest4, datarequest3, datarequest2, datarequest1];
 
-var layout_datarequest = {barmode: 'stack',
-              xaxis: {autorange: 'reversed'}};
+var layout_datarequest = {
+  barmode: 'stack',
+  xaxis: {autorange: 'reversed'},
+  title: 'Cumulative LiPAD Request'};
 
 Plotly.newPlot('monthly_datarequest', data_datarequest, layout_datarequest);
 
@@ -399,8 +406,10 @@ var org1 = {
 
 var data_org = [org1];
 
-var layout_org = {barmode: 'stack',
-              xaxis: {autorange: 'reversed'}};
+var layout_org = {
+  barmode: 'stack',
+  xaxis: {autorange: 'reversed'},
+  title: 'Data Request Tally per Organization'};
 
 Plotly.newPlot('org_datarequest', data_org, layout_org);
 </script>
