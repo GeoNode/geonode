@@ -34,6 +34,9 @@ from geonode.eula.models import AnonDownloader
 
 from geonode.reports.models import DownloadCount
 from collections import OrderedDict, Counter
+from geonode.datarequests.models.data_request import DataRequest
+from geonode.datarequests.models.profile_request import ProfileRequest
+from geonode.people.models import OrganizationType
 
 import urllib2, json
 from urllib2 import HTTPError
@@ -99,7 +102,50 @@ def report_layer(request, template='reports/report_layers.html'):
 
     context_dict = {
         "monthly_count": reversed_mc,
-        "luzvimin_count": reversed_luzvimin
+        "luzvimin_count": reversed_luzvimin,
+        "total_count": reversed_mc[reversed_mc.keys()[0]]
+    }
+
+    return render_to_response(template, RequestContext(request, context_dict))
+
+def report_datarequest(request, template='reports/report_datarequest.html'):
+
+    monthly_count = {}
+    org_count = {}
+    monthly_list = DataRequest.objects.all().order_by('status_changed')
+    for eachinlist in monthly_list:
+        if eachinlist.status_changed.strftime('%Y%m') not in monthly_count:
+            monthly_count[eachinlist.status_changed.strftime('%Y%m')] = {}
+        if eachinlist.status not in monthly_count[eachinlist.status_changed.strftime('%Y%m')]:
+            monthly_count[eachinlist.status_changed.strftime('%Y%m')][eachinlist.status] = 0
+        monthly_count[eachinlist.status_changed.strftime('%Y%m')][eachinlist.status] += 1
+
+        mostrecent = ProfileRequest.objects.filter(id=eachinlist.profile_request_id).order_by('created').last()
+        if mostrecent:
+            if mostrecent.organization_type not in org_count:
+                org_count[mostrecent.organization_type] = 0
+            org_count[mostrecent.organization_type] += 1
+
+
+
+    #sorted
+    sorted_mc = OrderedDict(sorted(monthly_count.iteritems(), key=lambda x: x[0]))
+    sorted_org = OrderedDict(sorted(org_count.iteritems(), key=lambda x: x[0]))
+    #cumulative
+    counter_dict = Counter()
+    for each in sorted_mc.iteritems():
+        counter_dict.update(each[1])
+        sorted_mc[each[0]] = dict(counter_dict)
+    #rename
+    renamed_mc = OrderedDict([(datetime.strptime(eachone[0],'%Y%m').strftime('%b'),eachone[1]) for eachone in sorted_mc.iteritems()])
+    renamed_org = OrderedDict([(OrganizationType.get(eachone[0]),eachone[1]) for eachone in sorted_org.iteritems()])
+
+    reversed_mc = OrderedDict(reversed(list(renamed_mc.items())))
+    reversed_org = OrderedDict(reversed(list(renamed_org.items())))
+    context_dict = {
+        "monthly_count": reversed_mc,
+        "org_count": reversed_org,
+        "total_count": reversed_mc[reversed_mc.keys()[0]]
     }
 
     return render_to_response(template, RequestContext(request, context_dict))
