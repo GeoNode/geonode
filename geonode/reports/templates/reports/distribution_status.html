@@ -266,12 +266,12 @@ Plotly.newPlot('luzvimin_div', data_luzvimin, layout_luzvimin);
 
 var data_pie = [{
   values: [
-    {% for key, value in total_count.items %}
+    {% for key, value in total_layers.items %}
       {{ value }},
     {% endfor %}
   ],
   labels: [
-    {% for key, value in total_count.items %}
+    {% for key, value in total_layers.items %}
       '{{ key }}',
     {% endfor %}
   ],
@@ -288,12 +288,12 @@ Plotly.newPlot('pie_div', data_pie, layout_pie);
 
 var datarequest1 = {
   x: [
-    {% for key, value in monthly_count.items %}
+    {% for key, value in monthly_datarequest.items %}
       '{{ key }}',
     {% endfor %}
   ],
   y: [
-    {% for key, value in monthly_count.items %}
+    {% for key, value in monthly_datarequest.items %}
       {{ value.pending }},
     {% endfor %}
   ],
@@ -305,12 +305,12 @@ var datarequest1 = {
 };
 var datarequest2 = {
   x: [
-    {% for key, value in monthly_count.items %}
+    {% for key, value in monthly_datarequest.items %}
       '{{ key }}',
     {% endfor %}
   ],
   y: [
-    {% for key, value in monthly_count.items %}
+    {% for key, value in monthly_datarequest.items %}
       {{ value.approved }},
     {% endfor %}
   ],
@@ -322,12 +322,12 @@ var datarequest2 = {
 };
 var datarequest3 = {
   x: [
-    {% for key, value in monthly_count.items %}
+    {% for key, value in monthly_datarequest.items %}
       '{{ key }}',
     {% endfor %}
   ],
   y: [
-    {% for key, value in monthly_count.items %}
+    {% for key, value in monthly_datarequest.items %}
       {{ value.cancelled }},
     {% endfor %}
   ],
@@ -339,12 +339,12 @@ var datarequest3 = {
 };
 var datarequest4 = {
   x: [
-    {% for key, value in monthly_count.items %}
+    {% for key, value in monthly_datarequest.items %}
       '{{ key }}',
     {% endfor %}
   ],
   y: [
-    {% for key, value in monthly_count.items %}
+    {% for key, value in monthly_datarequest.items %}
       {{ value.rejected }},
     {% endfor %}
   ],
@@ -356,12 +356,12 @@ var datarequest4 = {
 };
 var datarequest5 = {
   x: [
-    {% for key, value in monthly_count.items %}
+    {% for key, value in monthly_datarequest.items %}
       '{{ key }}',
     {% endfor %}
   ],
   y: [
-    {% for key, value in monthly_count.items %}
+    {% for key, value in monthly_datarequest.items %}
       {{ value.unconfirmed }},
     {% endfor %}
   ],
