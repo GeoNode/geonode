@@ -29,9 +29,11 @@ except ImportError:
 from django.contrib.contenttypes.models import ContentType
 from agon_ratings.models import OverallRating
 from django.contrib.auth import get_user_model
+from django.conf import settings
 
 from geonode.layers.models import Layer
 from geonode.maps.models import Map
+from geonode.maps.utils import fix_baselayers
 from geonode.utils import default_map_config
 from geonode.base.populate_test_data import create_models
 from geonode.maps.tests_populate_maplayers import create_maplayers
@@ -613,3 +615,19 @@ community."
         # Check there are no ratings matching the removed map
         rating = OverallRating.objects.filter(category=1, object_id=map_id)
         self.assertEquals(rating.count(), 0)
+
+    def test_fix_baselayers(self):
+        """Test fix_baselayers function, used by the fix_baselayers command
+        """
+        map_id = 1
+        map_obj = Map.objects.get(id=map_id)
+
+        # number of base layers (we remove the local geoserver entry from the total)
+        n_baselayers = len(settings.MAP_BASELAYERS) - 1
+
+        # number of local layers
+        n_locallayers = map_obj.layer_set.filter(local=True).count()
+
+        fix_baselayers(map_id)
+
+        self.assertEquals(map_obj.layer_set.all().count(), n_baselayers + n_locallayers)

@@ -166,3 +166,17 @@ Deletes orphaned thumbnails of deleted GeoNode resources (Layers, Maps and Docum
 Usage::
 
    python manage.py delete_orphaned_thumbs
+
+
+fix_baselayers
+==============
+
+Fix base layers for all of the GeoNode maps or for a given map.
+
+Usage::
+
+  # fix base layers for all of the GeoNode map
+  python manage.py fix_baselayers
+
+  # fix base layers for a given map
+  python manage.py fix_baselayers map_id
