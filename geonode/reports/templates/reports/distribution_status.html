@@ -286,7 +286,14 @@ var data_pie = [{
 var layout_pie = {
   title: 'Total Downloads: {{ sum_layers }}',
   height: 800,
-  width: 1000
+  width: 1000,
+  annotations: [
+    {
+      font: {
+        size: 35
+      },
+    }
+  ],
 };
 
 Plotly.newPlot('pie_div', data_pie, layout_pie);
