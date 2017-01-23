@@ -13,7 +13,8 @@ for auth in auth_list:
                                 actor=Profile.objects.get(username=auth.actor),
                                 title=str(auth.action_object.title),
                                 resource_type=str(auth.action_object.csw_type),
-                                keywords=str(ResourceBase.objects.filter(title=auth.action_object.title)[0].keywords.slugs())
+                                keywords=str(ResourceBase.objects.filter(title=auth.action_object.title)[0].keywords.slugs()),
+                                dl_type=""
                                 )
         print ('it already exists')
     except:
@@ -21,7 +22,8 @@ for auth in auth_list:
                                 actor=Profile.objects.get(username=auth.actor),
                                 title=str(auth.action_object.title),
                                 resource_type=str(auth.action_object.csw_type),
-                                keywords=str(ResourceBase.objects.filter(title=auth.action_object.title)[0].keywords.slugs())
+                                keywords=str(ResourceBase.objects.filter(title=auth.action_object.title)[0].keywords.slugs()),
+                                dl_type=""
                                 )
         model_object.save()
         print ('saved')
