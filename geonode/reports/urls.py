@@ -24,5 +24,5 @@ from django.views.generic import TemplateView
 
 # Reports
 urlpatterns = patterns('',
-                        (r'^distribution_status/', 'geonode.reports.views.report_distribution_status', name='distribution_status'),
+                        url(r'^distribution_status/', 'geonode.reports.views.report_distribution_status', name='distribution_status'),
                         )
