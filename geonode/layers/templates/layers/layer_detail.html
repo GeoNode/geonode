@@ -397,6 +397,7 @@
  					<li><a target="_blank" href="../catalogue/csw_to_extra_format/{{resource.uuid}}/{{resource.title}}.html"> HTML format </a></li>
  				</ul>
 			</div>
+		    <div style="margin-bottom:20px">
 			<h5 class="modal-title" id="myModalLabel">
 			Standard Metadata - XML format
 			</h5>
@@ -405,6 +406,13 @@
                 <li><a href="{{ link.url }}" target="_blank">{{ link.name }}</a></li>
               {% endfor %}
             <ul>
+            </div>
+            {% if resource.storeType == 'dataStore' %}
+            <h5 class="modal-title" id="myModalLabel">Attribute Information</h5>
+            <ul>
+              <li><a href="{{ resource.get_absolute_url }}/feature_catalogue" target="_blank">ISO Feature Catalogue</a></li>
+            <ul>
+            {% endif %}
           </div>
           <div class="modal-footer">
             <button type="button" class="btn btn-default" data-dismiss="modal">{% trans "Close" %}</button>

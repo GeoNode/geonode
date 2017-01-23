@@ -1,0 +1,75 @@
+<gfc:FC_FeatureCatalogue id="FC" xmlns:gco="http://www.isotc211.org/2005/gco" xmlns:gfc="http://www.isotc211.org/2005/gfc" xmlns:gmd="http://www.isotc211.org/2005/gmd" xmlns:gmx="http://www.isotc211.org/2005/gmx" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.isotc211.org/2005/gmd http://www.isotc211.org/2005/gmd/gmd.xsd http://www.isotc211.org/2005/gfc http://www.isotc211.org/2005/gfc/gfc.xsd http://www.isotc211.org/2005/gmx http://www.isotc211.org/2005/gmx/gmx.xsd">
+  <gmx:name>
+    <gco:CharacterString>GeoNodeFeatureCatalogue</gco:CharacterString>
+  </gmx:name>
+  <gmx:scope>
+    <gco:CharacterString>Generic Feature Catalogue</gco:CharacterString>
+  </gmx:scope>
+  <gmx:fieldOfApplication>
+    <gco:CharacterString>Generic Feature Catalogue</gco:CharacterString>
+  </gmx:fieldOfApplication>
+  <gmx:versionNumber>
+    <gco:CharacterString>1.0</gco:CharacterString>
+  </gmx:versionNumber>
+  <gmx:versionDate>
+    <gco:Date>2016-01-11</gco:Date>
+  </gmx:versionDate>
+  <gfc:producer>
+    <gmd:CI_ResponsibleParty>
+      <gmd:organisationName>
+        <gco:CharacterString>{{ metadata.provider_name }}</gco:CharacterString>
+      </gmd:organisationName>
+      <gmd:role>
+        <gmd:CI_RoleCode codeList="http://www.isotc211.org/2005/resources/codeList.xml#CI_RoleCode" codeListValue="{{ metadata.contact_role }}">{{ metadata.contact_role }}</gmd:CI_RoleCode>
+      </gmd:role>
+    </gmd:CI_ResponsibleParty>
+  </gfc:producer>
+  <gfc:featureType>
+    <gfc:FC_FeatureType id="FT-{{ layer.service_typename }}">
+      <gfc:typeName>
+        <gco:LocalName>{{ layer.service_typename }}</gco:LocalName>
+      </gfc:typeName>
+      <gfc:definition>
+        <gco:CharacterString>{{ layer.abstract }}</gco:CharacterString>
+      </gfc:definition>
+      <gfc:isAbstract>
+        <gco:Boolean>false</gco:Boolean>
+      </gfc:isAbstract>
+      <gfc:aliases>
+        <gco:LocalName>{{ layer.title }}</gco:LocalName>
+      </gfc:aliases>
+      <gfc:featureCatalogue xlink:href="#FC"/>
+      {% for attribute in attributes %}
+      <gfc:carrierOfCharacteristics>
+        <gfc:FC_FeatureAttribute>
+          <gfc:featureType xlink:href="#FT-{{ layer.service_typename }}"/>
+          <gfc:memberName>
+            <gco:LocalName>{{ attribute.name }}</gco:LocalName>
+          </gfc:memberName>
+          <gfc:cardinality>
+            <gco:Multiplicity>
+              <gco:range>
+                <gco:MultiplicityRange>
+                  <gco:lower>
+                    <gco:Integer>1</gco:Integer>
+                  </gco:lower>
+                  <gco:upper>
+                    <gco:UnlimitedInteger>1</gco:UnlimitedInteger>
+                  </gco:upper>
+                </gco:MultiplicityRange>
+              </gco:range>
+            </gco:Multiplicity>
+          </gfc:cardinality>
+          <gfc:valueType>
+            <gco:TypeName>
+              <gco:aName>
+                <gco:CharacterString>{{ attribute.type }}</gco:CharacterString>
+              </gco:aName>
+            </gco:TypeName>
+          </gfc:valueType>
+        </gfc:FC_FeatureAttribute>
+      </gfc:carrierOfCharacteristics>
+      {% endfor %}
+    </gfc:FC_FeatureType>
+  </gfc:featureType>
+</gfc:FC_FeatureCatalogue>
