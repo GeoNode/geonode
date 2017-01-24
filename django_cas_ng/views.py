@@ -93,8 +93,8 @@ def login(request, next_page=None, required=False):
             user.first_name = attributes["first_name"]
             user.last_name = attributes["last_name"]
             user.is_active = attributes["is_active"]
-            user.is_active = attributes["is_staff"]
-            user.is_active = attributes["is_superuser"]
+            user.is_staff = attributes["is_staff"]
+            user.is_superuser = attributes["is_superuser"]
             user.save()
             #pprint('Superuser? '+str(user.is_superuser))
 
