@@ -263,10 +263,13 @@
             </ul>
           </div>
           <div class="modal-footer">
-            <form action="{% url "cas_ng_logout" %}" id="logout_form" method="get">
+              <a class="btn btn-warning btn-block" href="{% url "cas_ng_logout" %}" role="button">
+                {% trans "Sign in" %}
+              </a>
+            <!--<form action="{% url "cas_ng_logout" %}" id="logout_form" method="get">
               {% csrf_token %}
               <a class="btn btn-warning btn-block" href="javascript:{}" onclick="document.getElementById('logout_form').submit();">{% trans "Log out" %}</a>
-            </form>
+            </form>-->
           </div>
         </div>
       </div>
