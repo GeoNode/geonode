@@ -49,6 +49,8 @@ class CASBackend(ModelBackend):
         
         if not user:
             pprint("user variable is empty")
+            
+        pprint(user.is_superuser)
         
         if attributes and user:
             setattr(user, "email", attributes["email"])
