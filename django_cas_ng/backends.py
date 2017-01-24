@@ -25,7 +25,6 @@ class CASBackend(ModelBackend):
         username, attributes, pgtiou = client.verify_ticket(ticket)
         if attributes:
             request.session['attributes'] = attributes
-            pprint("attributes:"+str(attributes))
         if not username:
             pprint("no username found")
             return None
@@ -37,7 +36,7 @@ class CASBackend(ModelBackend):
             username = username.upper()
 
         try:
-            pprint("checking is user is present")
+            pprint("checking if user is present")
             user = User.objects.get(**{User.USERNAME_FIELD: username})
             created = False
         except User.DoesNotExist:
@@ -89,3 +88,10 @@ class CASBackend(ModelBackend):
             return User.objects.get(pk=user_id)
         except User.DoesNotExist:
             return None
+
+@receive(cas_user_authenticated)
+def handle_user_authenticated(sender, **kwargs):
+    user = kwargs.get("user")
+    attributes = kwargs.get("attributes")
+    pprint('User.is_superuser:'+ str(user.is_superuser))
+    pprint("atrributes: "+str(attributes))
