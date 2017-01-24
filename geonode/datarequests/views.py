@@ -73,7 +73,7 @@ def registration_part_one(request):
 
     if request.method == 'GET':
         if request.user.is_authenticated():
-            
+
             if not request.user.organization:
                 messages.info(request, "Please update your middle name and/or organization in your profile")
                 return redirect(reverse('profile_detail',  args= [request.user.username]))
@@ -84,11 +84,14 @@ def registration_part_one(request):
                 middle_name = request.user.middle_name,
                 last_name = request.user.last_name,
                 organization = request.user.organization,
+                organization_type = request.user.organization_type,
+                organization_other = request.user.organization_other,
                 email = request.user.email,
                 contact_number = request.user.voice,
                 request_status = 'pending'
             )
             request_object.date = timezone.now()
+            pprint(request_object.first_name)
             request.session['request_object']=request_object
 
             return HttpResponseRedirect(
@@ -102,6 +105,8 @@ def registration_part_one(request):
                     'middle_name': request_object.middle_name,
                     'last_name': request_object.last_name,
                     'organization': request_object.organization,
+                    'organization_type': request_object.organization_type,
+                    'organization_other': request_object.organization_other,
                     'email': request_object.email,
                     'contact_number': request_object.contact_number,
                     'location': request_object.location
@@ -169,7 +174,7 @@ def registration_part_two(request):
         return redirect(reverse('datarequests:registration_part_one'))
 
     form = DataRequestDetailsForm(initial=part_two_initial)
-    
+
     juris_data_size = 0.0
     #area_coverage = get_area_coverage(saved_layer.name)
     area_coverage = 0
@@ -235,7 +240,7 @@ def registration_part_two(request):
                         juris_data_size = 0.0
                         #area_coverage = get_area_coverage(saved_layer.name)
                         area_coverage =  0
-                        
+
                     except Exception as e:
                         exception_type, error, tb = sys.exc_info()
                         print traceback.format_exc()
@@ -277,7 +282,7 @@ def registration_part_two(request):
                         if permissions is not None and len(permissions.keys()) > 0:
 
                             saved_layer.set_permissions(permissions)
-                        
+
                         jurisdiction_style.delay(saved_layer)
 
                     finally:
@@ -362,7 +367,7 @@ def registration_part_two(request):
 
                 request_profile.date = timezone.now()
                 request_profile.save()
-            
+
             if request.user.is_authenticated():
                 request_profile.send_new_request_notif_to_admins()
                 request_profile.send_request_reception_email()
@@ -400,7 +405,7 @@ def data_request_csv(request):
     response['Content-Disposition'] = 'attachment; filename="datarequests-"'+str(datetoday.month)+str(datetoday.day)+str(datetoday.year)+'.csv"'
 
     writer = csv.writer(response)
-    fields = ['id','name','email','contact_number', 'organization', 'organization_type','has_letter','has_shapefile','project_summary', 'created','request_status', 'date of action','rejection_reason','juris_data_size','area_coverage']
+    fields = ['id','name','email','contact_number', 'organization', 'organization_type','organization_other','has_letter','has_shapefile','project_summary', 'created','request_status', 'date of action','rejection_reason','juris_data_size','area_coverage']
     writer.writerow( fields)
 
     objects = DataRequestProfile.objects.all().order_by('pk')
@@ -552,16 +557,16 @@ def data_request_profile(request, pk, template='datarequests/profile_detail.html
 def data_request_profile_compute_size(request, pk=None):
     if not request.user.is_superuser:
         raise PermissionDenied
-    
-    if DataRequestProfile.objects.get(pk=pk).jurisdiction_shapefile:    
+
+    if DataRequestProfile.objects.get(pk=pk).jurisdiction_shapefile:
         data_requests = DataRequestProfile.objects.filter(pk=pk)
         compute_size_update.delay(data_requests)
         messages.info(request, "The estimated data size area coverage of the request is currently being computed")
     else:
         messages.info(request, "This request does not have a shape file")
-        
+
     return HttpResponseRedirect(reverse('datarequests:data_request_browse'))
-    
+
 
 def data_request_profile_reject(request, pk):
     if not request.user.is_superuser:
@@ -638,8 +643,6 @@ def data_request_profile_cancel(request, pk):
     else:
         return HttpResponseRedirect(reverse('datarequests:data_request_profile', args=[pk]))
 
-
-
 def data_request_profile_approve(request, pk):
     if not request.user.is_superuser:
         raise PermissionDenied
@@ -666,6 +669,7 @@ def data_request_profile_approve(request, pk):
             messages.error (request, _(message))
         else:
             request_profile.profile.organization_type = request_profile.organization_type
+            request_profile.profile.organization_other = request_profile.organization_other
             request_profile.profile.save()
             if request_profile.jurisdiction_shapefile:
                 request_profile.assign_jurisdiction() #assigns/creates jurisdiction object
@@ -677,7 +681,7 @@ def data_request_profile_approve(request, pk):
                     pprint("Jurisdiction Shapefile not found, nothing to delete. Carry on")
 
             request_profile.set_approved(is_new_acc)
-            request_profile.administrator = request.user 
+            request_profile.administrator = request.user
             request_profile.save()
 
 
@@ -740,7 +744,7 @@ def data_request_facet_count(request):
 def update_datarequest_obj(datarequest=None, parameter_dict=None, interest_layer=None, request_letter = None):
     if datarequest is None or parameter_dict is None or request_letter is None:
         raise HttpResponseBadRequest
-        
+
     if not datarequest.middle_name or len(datarequest.middle_name.strip())<1:
         datarequest.middle_name = '_'
 

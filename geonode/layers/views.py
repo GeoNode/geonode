@@ -73,9 +73,12 @@ from actstream.models import Action
 from .forms import AnonDownloaderForm
 from geonode.eula.models import AnonDownloader
 
-# from datetime import date, timedelta, datetime
+# from dateftime import date, timedelta, datetime
 from django.utils import timezone
 from geonode.people.models import Profile
+
+from geonode.reports.models import DownloadTracker
+from geonode.base.models import ResourceBase
 
 CONTEXT_LOG_FILE = None
 
@@ -231,7 +234,7 @@ def layer_detail(request, layername, template='layers/layer_detail.html'):
 
     # assert False, str(layer_bbox)
     config = layer.attribute_config()
-    #print layername
+    # print layername
     # Add required parameters for GXP lazy-loading
     layer_bbox = layer.bbox
     bbox = [float(coord) for coord in list(layer_bbox[0:4])]
@@ -285,7 +288,6 @@ def layer_detail(request, layername, template='layers/layer_detail.html'):
     }
     context_dict["phillidar2keyword"] = "PhilLiDAR2"
 
-
     context_dict["viewer"] = json.dumps(
         map_obj.viewer_json(request.user, * (NON_WMS_BASE_LAYERS + [maplayer])))
     context_dict["preview"] = getattr(
@@ -306,14 +308,14 @@ def layer_detail(request, layername, template='layers/layer_detail.html'):
         context_dict["social_links"] = build_social_links(request, layer)
 
     if request.method == 'POST':
+        pprint(request.POST)
         form = AnonDownloaderForm(request.POST)
         out = {}
-        pprint(form)
         if form.is_valid():
             pprint(form)
             out['success'] = True
             anondownload = form.save()
-            anondownload.anon_layer = Layer.objects.get(typename = layername)
+            anondownload.anon_layer = Layer.objects.get(typename=layername)
             anondownload.save()
         else:
             pprint(form)
@@ -327,11 +329,11 @@ def layer_detail(request, layername, template='layers/layer_detail.html'):
             status_code = 200
         else:
             status_code = 400
-        #Handle form
+        # Handle form
         pprint(status_code)
         return HttpResponse(status=status_code)
     else:
-        #Render form
+        # Render form
         form = AnonDownloaderForm()
     context_dict["anon_form"] = form
     context_dict["layername"] = layername
@@ -616,18 +618,46 @@ def layer_thumbnail(request, layername):
                 mimetype='text/plain'
             )
 
+
 def layer_download(request, layername):
     layer = _resolve_layer(
         request,
         layername,
         'base.view_resourcebase',
         _PERMISSION_MSG_VIEW)
-    if request.user.is_authenticated():
-        action.send(request.user, verb='downloaded', action_object=layer)
+    pprint(request.user.is_authenticated)
+    # if request.user.is_authenticated():
+    #     action.send(request.user, verb='downloaded', action_object=layer)
+    #     DownloadTracker(actor=Profile.objects.get(username=request.user),
+    #                     title=str(layername),
+    #                     resource_type=str(ResourceBase.objects.get(layer__typename=layername).csw_type),
+    #                     keywords=Layer.objects.get(typename=layername).keywords.slugs()
+    #                     ).save()
+    #     pprint('Download Tracked') #Download tracking moved to layer_tracker
 
     splits = request.get_full_path().split("/")
-    redir_url = urljoin(settings.OGC_SERVER['default']['PUBLIC_LOCATION'], "/".join(splits[4:]))
+    redir_url = urljoin(settings.OGC_SERVER['default'][
+                        'PUBLIC_LOCATION'], "/".join(splits[4:]))
     return HttpResponseRedirect(redir_url)
+
+def layer_tracker(request, layername, dl_type):
+    layer = _resolve_layer(
+        request,
+        layername,
+        'base.view_resourcebase',
+        _PERMISSION_MSG_VIEW)
+    pprint(request.user.is_authenticated)
+    if request.user.is_authenticated():
+        action.send(request.user, verb='downloaded', action_object=layer)
+        DownloadTracker(actor=Profile.objects.get(username=request.user),
+                        title=str(layername),
+                        resource_type=str(ResourceBase.objects.get(layer__typename=layername).csw_type),
+                        keywords=Layer.objects.get(typename=layername).keywords.slugs(),
+                        dl_type=dl_type
+                        ).save()
+        pprint('Download Tracked')
+    return HttpResponse(status=200)
+
 
 @login_required
 def layer_download_csv(request):
@@ -650,7 +680,7 @@ def layer_download_csv(request):
                    'Private Insitution',
                    'Other']
 
-    auth_list = Action.objects.filter(verb='downloaded').order_by('timestamp')
+    auth_list = DownloadTracker.objects.order_by('timestamp')
     writer.writerow(['username', 'lastname', 'firstname', 'email', 'organization',
                      'organization type', 'purpose', 'layer name', 'date downloaded','area','size_in_bytes'])
 
@@ -666,9 +696,9 @@ def layer_download_csv(request):
         #area = get_area_coverage(auth.action_object.typename)
         area = 0
         # pprint(dir(getprofile))
-        if auth.action_object.csw_type != 'document':
+        if auth.resource_type != 'document':
             listtowrite.append([username, lastname, firstname, email, organization, orgtype,
-                                "", auth.action_object.typename, auth.timestamp.strftime('%Y/%m/%d'),area,''])
+                                "", auth.title, auth.timestamp.strftime('%Y/%m/%d'),area,''])
 
     # writer.writerow(['\n'])
     anon_list = AnonDownloader.objects.all().order_by('date')
@@ -690,7 +720,6 @@ def layer_download_csv(request):
         if layername:
             listtowrite.append(["", lastname, firstname, email, organization, orgtype,
                                 purpose, layername.typename, anon.date.strftime('%Y/%m/%d'),area,''])
-
     listtowrite.sort(key=lambda x: datetime.datetime.strptime(
         x[8], '%Y/%m/%d'), reverse=True)
 
