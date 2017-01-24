@@ -1,3 +1,49 @@
+geonode (2.5.9+thefinal4) trusty; urgency=high
+
+  [ Francesco Bartoli ]
+  * [5430c0] Fix conflict account migrations by merging
+  * [9b013b] Move modeltranslation to 0.12
+
+  [ Simone Dalmasso ]
+  * [353ffc] inherit from user manager to keep normal functions like createsuperuser (#2835)
+
+  [ bartvde ]
+  * [b7a510] Updates to README for Ubuntu 16.04
+
+  [ Paolo Corti ]
+  * [56aa76] Handle errors when saving thumbnails. Fixes #2667 (#2841)
+
+  [ Angelos Tzotsos ]
+  * [9d528a] setup.py review/re-order, with Ubuntu Xenial packaging in mind (#2836)
+
+  [ Paolo Corti ]
+  * [2aae06] Execute signals when running updatelayers (#2840)
+
+  [ sbsimo ]
+  * [007506] docs: list the "Loading OSM Data into GeoNode" module on the index page (#2844)
+
+  [ Ariel Núñez ]
+  * [af0e03] [WIP] Simpler migrations (#2629)
+
+  [ Paolo Corti ]
+  * [8846ff] Fixes #2652 (#2842)
+
+  [ Tom Kralidis ]
+  * [cb4f23] implement ISO 19110 support for vector layers (#2810)
+
+  [ travis ]
+  * [2e70b3] Added appropriate sorting icons and fixed sorting message
+
+  [ Alessio Fabiani ]
+  * [b426c4] Fixes for ISSUE #2845: Metadata form requires TKeywords but not able to enter them (#2849)
+
+  [ Paolo Corti ]
+  * [d90dbc] Added fix_baselayers, a command to fix the base layers for one or more maps (#2848)
+
+  [ Simone Dalmasso ]
+
+ -- Simone Dalmasso <simone.dalmasso@gmail.com>  Tue, 24 Jan 2017 14:36:56 +0000
+
 geonode (2.5.9+thefinal3) trusty; urgency=high
 
   * [82cfe2] update the debian wsgi script (#2834)
