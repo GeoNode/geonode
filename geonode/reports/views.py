@@ -105,18 +105,18 @@ def report_distribution_status(request, template='reports/distribution_status.ht
     monthly_datarequest = {}
     org_count = {}
     # monthly_datarequest_list = DataRequest.objects.all().order_by('status_changed')
-    monthly_datarequest_list = DataRequestProfile.objects.all().order_by('action_date')
+    monthly_datarequest_list = DataRequestProfile.objects.all().order_by('key_created_date')
     for eachinlist in monthly_datarequest_list:
         # if eachinlist.status_changed.strftime('%Y%m') not in monthly_datarequest:
         #     monthly_datarequest[eachinlist.status_changed.strftime('%Y%m')] = {}
         # if eachinlist.status not in monthly_datarequest[eachinlist.status_changed.strftime('%Y%m')]:
         #     monthly_datarequest[eachinlist.status_changed.strftime('%Y%m')][eachinlist.status] = 0
         # monthly_datarequest[eachinlist.status_changed.strftime('%Y%m')][eachinlist.status] += 1
-        if eachinlist.action_date.strftime('%Y%m') not in monthly_datarequest:
-            monthly_datarequest[eachinlist.action_date.strftime('%Y%m')] = {}
-        if eachinlist.status not in monthly_datarequest[eachinlist.action_date.strftime('%Y%m')]:
-            monthly_datarequest[eachinlist.action_date.strftime('%Y%m')][eachinlist.status] = 0
-        monthly_datarequest[eachinlist.action_date.strftime('%Y%m')][eachinlist.status] += 1
+        if eachinlist.key_created_date.strftime('%Y%m') not in monthly_datarequest:
+            monthly_datarequest[eachinlist.key_created_date.strftime('%Y%m')] = {}
+        if eachinlist.request_status not in monthly_datarequest[eachinlist.key_created_date.strftime('%Y%m')]:
+            monthly_datarequest[eachinlist.key_created_date.strftime('%Y%m')][eachinlist.request_status] = 0
+        monthly_datarequest[eachinlist.key_created_date.strftime('%Y%m')][eachinlist.request_status] += 1
 
         # # mostrecent = ProfileRequest.objects.filter(id=eachinlist.profile_request_id).order_by('created').last()
         # # if mostrecent:
