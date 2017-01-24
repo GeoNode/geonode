@@ -20,6 +20,7 @@ class CASBackend(ModelBackend):
 
     def authenticate(self, ticket, service, request):
         """Verifies CAS ticket and gets or creates User object"""
+        user = None
         client = get_cas_client(service_url=service)
         username, attributes, pgtiou = client.verify_ticket(ticket)
         if attributes:
@@ -53,7 +54,7 @@ class CASBackend(ModelBackend):
         if not user:
             pprint("user variable is empty")
             
-        pprint(user.is_superuser)
+        pprint(str(user.is_superuser))
         
         if attributes and user:
             setattr(user, "email", attributes["email"])
