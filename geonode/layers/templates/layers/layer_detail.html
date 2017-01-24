@@ -179,10 +179,10 @@
 
                     <!-- <td><a href="{{ link | get_layer_download_url }}&srsName=EPSG:32651">{% trans link.name %}</a></td> -->
                     <!-- <td><a href="{{ link | get_layer_download_url }}&srsName=EPSG:4683">{% trans link.name %}</a></td> -->
-                    <td><a href="{{ link | get_layer_download_url }}">{% trans link.name %}</a></td>
-                    <td><a href="{{ link | get_prs92_download_url }}">{% trans link.name %}</a></td>
+                    <td><a class='Downloadlink' href="{{ link | get_layer_download_url }}" data-type="{% trans link.name %}">{% trans link.name %}</a></td>
+                    <td><a class='Downloadlink' href="{{ link | get_prs92_download_url }}" data-type="{% trans link.name %}">{% trans link.name %}</a></td>
                   </tr>
-                
+
               {% endfor %}
             </table>
             {% endif %}
@@ -199,7 +199,7 @@
       {% get_obj_perms request.user for resource.layer as "layer_perms" %}
     {% endif %}
     {% if "change_resourcebase_metadata" in perms_list or "change_resourcebase" in perms_list or "delete_resourcebase" in perms_list or "change_layer_style" in layer_perms %}
-    <li class="list-group-item"> 
+    <li class="list-group-item">
       <button class="btn btn-primary btn-md btn-block" data-toggle="modal" data-target="#edit-layer">{% trans "Edit Layer" %}</button>
     </li>
     <div class="modal fade" id="edit-layer" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
@@ -434,7 +434,18 @@
         createMapThumbnail();
         $('#edit-layer').modal('toggle');
       });
-      
+
+    </script>
+    <script type="text/javascript">
+    $('.Downloadlink').click(function(){
+      dl_type=$(this).data("type");
+      $.ajax({
+        url: window.location.pathname + "/layer_tracker/" + dl_type + "/",
+        type:"POST",
+        success: function(){
+        }
+      });
+    });
     </script>
     {% if GEONODE_SECURITY_ENABLED %}
     {% include "_permissions_form_js.html" %}
