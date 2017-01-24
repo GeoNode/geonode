@@ -79,6 +79,12 @@ var trace3 = {
       {{ value.FHM }},
     {% endfor %}
   ],
+  text: [
+    {% for key, value in monthly_count.items %}
+      '{{ value.FHM }}',
+    {% endfor %}
+  ],
+  textposition: 'auto',
   name: 'Flood Hazard Maps',
   type: 'bar',
   marker: {
@@ -188,11 +194,14 @@ var trace9 = {
   }
 };
 
-var data = [trace9, trace8, trace7, trace6, trace5, trace4, trace3, trace2, trace1];
+var data = [trace3, trace9, trace8, trace7, trace6, trace5, trace4, trace2, trace1];
 
 var layout = {
   barmode: 'stack',
-  xaxis: {autorange: 'reversed'},
+  xaxis: {
+    autorange: 'reversed',
+    tickangle: -45
+  },
   title: 'Cumulative LiPAD Downloads (Count)'};
 
 Plotly.newPlot('monthly_div', data, layout);
