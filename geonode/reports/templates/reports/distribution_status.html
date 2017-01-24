@@ -10,6 +10,7 @@
   float:left;
 }
 </style>
+{{ block.super }}
 {% endblock %}
 
 {% block body_class %}layers{% endblock %}
@@ -270,7 +271,7 @@ var data_luzvimin = [luzvimin4, luzvimin3, luzvimin2, luzvimin1];
 var layout_luzvimin = {
   barmode: 'stack',
   xaxis: {autorange: 'reversed'},
-  title: 'LuzViMin'};
+  title: 'LuzViMin Download Count'};
 
 Plotly.newPlot('luzvimin_div', data_luzvimin, layout_luzvimin);
 
