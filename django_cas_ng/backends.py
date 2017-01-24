@@ -89,9 +89,9 @@ class CASBackend(ModelBackend):
         except User.DoesNotExist:
             return None
 
-@receive(cas_user_authenticated)
-def handle_user_authenticated(sender, **kwargs):
-    user = kwargs.get("user")
-    attributes = kwargs.get("attributes")
-    pprint('User.is_superuser:'+ str(user.is_superuser))
-    pprint("atrributes: "+str(attributes))
+#@receive(cas_user_authenticated)
+#def handle_user_authenticated(sender, **kwargs):
+#    user = kwargs.get("user")
+#    attributes = kwargs.get("attributes")
+#    pprint('User.is_superuser:'+ str(user.is_superuser))
+#    pprint("atrributes: "+str(attributes))
