@@ -34,8 +34,9 @@ from geonode.eula.models import AnonDownloader
 
 from geonode.reports.models import DownloadCount
 from collections import OrderedDict, Counter
-from geonode.datarequests.models.data_request import DataRequest
-from geonode.datarequests.models.profile_request import ProfileRequest
+# from geonode.datarequests.models.data_request import DataRequest
+# from geonode.datarequests.models.profile_request import ProfileRequest
+from geonode.datarequests.models import DataRequestProfile
 from geonode.people.models import OrganizationType
 
 import urllib2, json
@@ -103,19 +104,29 @@ def report_distribution_status(request, template='reports/distribution_status.ht
     #DATAREQUEST
     monthly_datarequest = {}
     org_count = {}
-    monthly_datarequest_list = DataRequest.objects.all().order_by('status_changed')
+    # monthly_datarequest_list = DataRequest.objects.all().order_by('status_changed')
+    monthly_datarequest_list = DataRequestProfile.objects.all().order_by('action_date')
     for eachinlist in monthly_datarequest_list:
-        if eachinlist.status_changed.strftime('%Y%m') not in monthly_datarequest:
-            monthly_datarequest[eachinlist.status_changed.strftime('%Y%m')] = {}
-        if eachinlist.status not in monthly_datarequest[eachinlist.status_changed.strftime('%Y%m')]:
-            monthly_datarequest[eachinlist.status_changed.strftime('%Y%m')][eachinlist.status] = 0
-        monthly_datarequest[eachinlist.status_changed.strftime('%Y%m')][eachinlist.status] += 1
+        # if eachinlist.status_changed.strftime('%Y%m') not in monthly_datarequest:
+        #     monthly_datarequest[eachinlist.status_changed.strftime('%Y%m')] = {}
+        # if eachinlist.status not in monthly_datarequest[eachinlist.status_changed.strftime('%Y%m')]:
+        #     monthly_datarequest[eachinlist.status_changed.strftime('%Y%m')][eachinlist.status] = 0
+        # monthly_datarequest[eachinlist.status_changed.strftime('%Y%m')][eachinlist.status] += 1
+        if eachinlist.action_date.strftime('%Y%m') not in monthly_datarequest:
+            monthly_datarequest[eachinlist.action_date.strftime('%Y%m')] = {}
+        if eachinlist.status not in monthly_datarequest[eachinlist.action_date.strftime('%Y%m')]:
+            monthly_datarequest[eachinlist.action_date.strftime('%Y%m')][eachinlist.status] = 0
+        monthly_datarequest[eachinlist.action_date.strftime('%Y%m')][eachinlist.status] += 1
 
-        mostrecent = ProfileRequest.objects.filter(id=eachinlist.profile_request_id).order_by('created').last()
-        if mostrecent:
-            if mostrecent.organization_type not in org_count:
-                org_count[mostrecent.organization_type] = 0
-            org_count[mostrecent.organization_type] += 1
+        # # mostrecent = ProfileRequest.objects.filter(id=eachinlist.profile_request_id).order_by('created').last()
+        # # if mostrecent:
+        #     if mostrecent.organization_type not in org_count:
+        #         org_count[mostrecent.organization_type] = 0
+        #     org_count[mostrecent.organization_type] += 1
+
+        if eachinlist.organization_type not in org_count:
+            org_count[eachinlist.organization_type] = 0
+        org_count[eachinlist.organization_type] += 1
 
 
 
@@ -138,9 +149,9 @@ def report_distribution_status(request, template='reports/distribution_status.ht
         "luzvimin_count": reversed_luzvimin,
         "total_layers": reversed_mc[reversed_mc.keys()[0]],
         "sum_layers": sum(reversed_mc[reversed_mc.keys()[0]].values()),
-        "monthly_datarequest": reversed_md,
-        "org_count": reversed_org,
-        "total_datarequest": reversed_md[reversed_md.keys()[0]],
+        # "monthly_datarequest": reversed_md,
+        # "org_count": reversed_org,
+        # "total_datarequest": reversed_md[reversed_md.keys()[0]],
     }
 
     return render_to_response(template, RequestContext(request, context_dict))
