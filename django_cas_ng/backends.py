@@ -37,6 +37,7 @@ class CASBackend(ModelBackend):
             username = username.upper()
 
         try:
+            pprint("checking is user is present")
             user = User.objects.get(**{User.USERNAME_FIELD: username})
             created = False
         except User.DoesNotExist:
