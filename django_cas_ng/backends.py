@@ -37,25 +37,16 @@ class CASBackend(ModelBackend):
             username = username.upper()
 
         try:
-            pprint("checking if user is present")
             user = User.objects.get(**{User.USERNAME_FIELD: username})
             created = False
         except User.DoesNotExist:
             # check if we want to create new users, if we don't fail auth
-            pprint("I am here")
             if not settings.CAS_CREATE_USER:
-                pprint("I am here again")
                 return None
             # user will have an "unusable" password
-            pprint("I am here once more")
             user = User.objects.create_user(username, '')
             user.save()
             created = True
-        
-        if not user:
-            pprint("user variable is empty")
-            
-        pprint(str(user.is_superuser))
         
         if pgtiou and settings.CAS_PROXY_CALLBACK:
             request.session['pgtiou'] = pgtiou
