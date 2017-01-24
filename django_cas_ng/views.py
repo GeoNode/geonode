@@ -64,6 +64,7 @@ def login(request, next_page=None, required=False):
         if user.is_superuser:
             pprint("User is a superuser")
         pprint("user should be authenticated by now")
+        pprint("attributes: "+str(request.session['attributes']))
         if user is not None:
             auth_login(request, user)
             if not request.session.exists(request.session.session_key):
