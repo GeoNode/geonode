@@ -47,14 +47,17 @@ class CASBackend(ModelBackend):
             user.save()
             created = True
         
+        if not user:
+            pprint("user variable is empty")
+        
         if attributes and user:
             setattr(user, "email", attributes["email"])
             setattr(user, "first_name",attributes["first_name"])
             setattr(user, "last_name", attributes["last_name"])
             setattr(user,"is_active",attributes["is_active"])
             setattr(user,"is_superuser", attributes["is_superuser"])
-            pprint(attributes["is_superuser"])
-            pprint(user.is_superuser)
+            #pprint(attributes["is_superuser"])
+            #pprint(user.is_superuser)
             setattr(user,"is_staff", attributes["is_staff"])
             user.save()
 
