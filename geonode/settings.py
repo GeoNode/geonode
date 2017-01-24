@@ -242,7 +242,8 @@ GEONODE_APPS = (
     # Data Requests Management App
     'geonode.datarequests',
 
-
+    # Reports
+    'geonode.reports',
 )
 
 GEONODE_CONTRIB_APPS = (
