@@ -34,6 +34,7 @@ class DataRequestProfileForm(forms.ModelForm):
             'organization',
             # Non-commercial requester field
             'organization_type',
+            'organization_other',
             # Academe requester fields
             'request_level',
             'funding_source',
@@ -44,6 +45,9 @@ class DataRequestProfileForm(forms.ModelForm):
             'contact_number',
             'captcha'
         )
+        widgets = {
+            'organization_type': forms.RadioSelect,
+        }
 
     ORGANIZATION_TYPE_CHOICES = Choices(
         (0, _('Phil-LiDAR 1 SUC')),
@@ -124,6 +128,12 @@ class DataRequestProfileForm(forms.ModelForm):
                     Field('is_consultant'),
                     css_class='academe-fieldset',
                 ),
+
+                    Div(
+                        Field('organization_other', css_class='form-control'),
+                        css_class='form-group'
+                    ),
+
                 Div(
                     Field('location', css_class='form-control'),
                     css_class='form-group'
@@ -148,22 +158,20 @@ class DataRequestProfileForm(forms.ModelForm):
         fname = self.cleaned_data.get('first_name').strip()
         if len(fname)<1:
             raise forms.ValidationError("You have entered an empty first name")
-        
+
         return fname
-    
+
     def clean_middle_name(self):
-        
         mname = self.cleaned_data.get('middle_name').strip()
         if len(mname)<1 or not mname:
             mname = '_'
-        
         return mname
-        
+
     def clean_last_name(self):
         lname = self.cleaned_data.get('last_name').strip()
         if len(lname)<1:
             raise forms.ValidationError("You have entered an empty last name")
-        
+
         return lname
 
     def clean_email(self):
@@ -194,7 +202,14 @@ class DataRequestProfileForm(forms.ModelForm):
             raise forms.ValidationError(
                 'This field is required.')
         return funding_source
-
+    def clean_organization_other(self):
+        organization_other = self.cleaned_data.get('organization_other')
+        organization_type = self.cleaned_data.get('organization_type')
+        if (organization_type == OrganizationType.OTHER and
+                not organization_other):
+            raise forms.ValidationError(
+                'This field is required.')
+        return organization_other
     #def clean_letter_file(self):
     #    letter_file = self.cleaned_data.get('letter_file')
     #    split_filename =  os.path.splitext(str(letter_file.name))

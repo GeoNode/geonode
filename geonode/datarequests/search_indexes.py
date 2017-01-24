@@ -11,6 +11,7 @@ class DataRequestProfileIndex(indexes.SearchIndex, indexes.Indexable):
     requester_type = indexes.CharField(model_attr='requester_type', faceted=True, null=True)
     organization = indexes.CharField(model_attr='organization', null=True)
     organization_type = indexes.CharField(model_attr='organization_type', null=True)
+    organization_other = indexes.CharField(model_attr='organization_other', null=True)
     type = indexes.CharField(faceted=True)
 
     def get_model(self):
