@@ -34,7 +34,7 @@ from account.models import EmailAddress
 
 from .utils import format_address
 from django_enumfield import enum
-    
+
 class OrganizationType(enum.Enum):
     PHIL_LIDAR_1 = 0
     PHIL_LIDAR_2 = 1
@@ -45,7 +45,7 @@ class OrganizationType(enum.Enum):
     PRIVATE = 6
     OTHER = 7
 
-    
+
     labels = {
         PHIL_LIDAR_1 : 'Phil-LiDAR 1 SUC',
         PHIL_LIDAR_2 : 'Phil-LiDAR 2 SUC',
@@ -56,6 +56,7 @@ class OrganizationType(enum.Enum):
         PRIVATE : 'Private Insitution',
         OTHER : 'Other',
     }
+
 
 if 'notification' in settings.INSTALLED_APPS:
     from notification import models as notification
@@ -123,10 +124,16 @@ class Profile(AbstractUser):
 
     ### Custom Attribs
     organization_type = enum.EnumField(
-        OrganizationType, 
+        OrganizationType,
         default=OrganizationType.OTHER,
         help_text=_('Organization type based on Phil-LiDAR1 Data Distribution Policy'))
-        
+
+    organization_other = models.CharField(
+        max_length=255,
+        blank=True,
+        null=True,
+    )
+
     eula_signed = models.BooleanField(
         default=False,
         help_text=_('Whether or not this user has signed the EULA'))
