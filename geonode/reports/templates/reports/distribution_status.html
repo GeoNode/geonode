@@ -1,25 +1,32 @@
 {% extends "site_base.html" %}
 
 
-{% block title %}{% endblock %}
-
-
-
+{% block title %}Distribution Status{% endblock %}
+{% block head %}
+<style>
+.plots{
+  width:500px;
+  height:600px;
+  float:left;
+}
+</style>
+{{ block.super }}
+{% endblock %}
 
 {% block body_class %}layers{% endblock %}
 
 {% block body_outer %}
 <div class="page-header">
 </div>
-<div id = 'monthly_div' style='width: 1000px; height: 800px;'>
+<div id = 'monthly_div' class = "plots">
 </div>
-<div id = 'luzvimin_div' style='width: 1000px; height: 800px;'>
+<div id = 'luzvimin_div' class = "plots">
 </div>
-<div id = 'pie_div' style='width: 1000px; height: 800px;'>
+<div id = 'pie_div' class = "plots">
 </div>
-<div id = 'monthly_datarequest' style='width: 1000px; height: 800px;'>
+<div id = 'monthly_datarequest' class = "plots">
 </div>
-<div id = 'org_datarequest' style='width: 1000px; height: 800px;'>
+<div id = 'org_datarequest' class = "plots">
 </div>
 
 {% endblock %}
@@ -264,7 +271,7 @@ var data_luzvimin = [luzvimin4, luzvimin3, luzvimin2, luzvimin1];
 var layout_luzvimin = {
   barmode: 'stack',
   xaxis: {autorange: 'reversed'},
-  title: 'LuzViMin'};
+  title: 'LuzViMin Download Count'};
 
 Plotly.newPlot('luzvimin_div', data_luzvimin, layout_luzvimin);
 
