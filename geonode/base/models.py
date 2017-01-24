@@ -444,7 +444,7 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
 
     keywords = TaggableManager(_('keywords'), through=TaggedContentItem, blank=True, help_text=keywords_help_text,
                                manager=_HierarchicalTagManager)
-    tkeywords = models.ManyToManyField(ThesaurusKeyword, help_text=tkeywords_help_text)
+    tkeywords = models.ManyToManyField(ThesaurusKeyword, help_text=tkeywords_help_text, blank=True, null=True)
     regions = models.ManyToManyField(Region, verbose_name=_('keywords region'), blank=True,
                                      help_text=regions_help_text)
 
