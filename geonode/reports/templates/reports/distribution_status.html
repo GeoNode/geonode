@@ -81,7 +81,7 @@ var trace3 = {
   ],
   text: [
     {% for key, value in monthly_count.items %}
-      {{ value.FHM }},
+      '{{ value.FHM }}',
     {% endfor %}
   ],
   textposition: 'auto',
