@@ -175,6 +175,7 @@ def process_georefs(request):
                         try:
                             add_to_cart_unique(request, ceph_obj.id)
                         except DuplicateCartItemException:  # List each duplicate object
+                            pprint("Duplicate for "+ceph_obj.name)
                             duplicates.append(ceph_obj.name)
                 else:
                     empty_georefs += 1
