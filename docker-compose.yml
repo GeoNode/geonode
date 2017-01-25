@@ -31,7 +31,7 @@ services:
       - ./scripts/docker/env/production/django.env
 
   geoserver:
-    image: waybarrios/geoserver:piensa
+    image: geonode/geoserver:alias
     links:
       - postgres
     ports:
