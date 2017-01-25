@@ -1744,12 +1744,21 @@ def set_time_dimension(cat, layer, time_presentation, time_presentation_res, tim
     cat.save(resource)
 
 
-def create_gs_thumbnail(layer, overwrite=False):
+def create_gs_thumbnail(instance, overwrite=False):
     """
     Create a thumbnail with a GeoServer request.
     """
+    if instance.class_name == 'Map':
+        local_layers = []
+        for layer in instance.layers:
+            if layer.local:
+                local_layers.append(layer.name)
+        layers = ",".join(local_layers).encode('utf-8')
+    else:
+        layers = instance.typename.encode('utf-8')
+
     params = {
-        'layers': layer.typename.encode('utf-8'),
+        'layers': layers,
         'format': 'image/png8',
         'width': 200,
         'height': 150,
@@ -1758,8 +1767,8 @@ def create_gs_thumbnail(layer, overwrite=False):
 
     # Add the bbox param only if the bbox is different to [None, None,
     # None, None]
-    if None not in layer.bbox:
-        params['bbox'] = layer.bbox_string
+    if None not in instance.bbox:
+        params['bbox'] = instance.bbox_string
 
     # Avoid using urllib.urlencode here because it breaks the url.
     # commas and slashes in values get encoded and then cause trouble
@@ -1772,4 +1781,4 @@ def create_gs_thumbnail(layer, overwrite=False):
     thumbnail_create_url = ogc_server_settings.LOCATION + \
         "wms/reflect?" + p
 
-    create_thumbnail(layer, thumbnail_remote_url, thumbnail_create_url, ogc_client=http_client, overwrite=overwrite)
+    create_thumbnail(instance, thumbnail_remote_url, thumbnail_create_url, ogc_client=http_client, overwrite=overwrite)
