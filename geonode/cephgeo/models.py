@@ -16,6 +16,7 @@ except ImportError:
 
 from django_enumfield import enum
 
+
 class DataClassification(enum.Enum):
     UNKNOWN = 0
     LAZ = 1
@@ -23,89 +24,93 @@ class DataClassification(enum.Enum):
     DTM = 3
     DSM = 4
     ORTHOPHOTO = 5
-    
+
     labels = {
-        UNKNOWN     : "Unknown Type",
-        LAZ            : "LAZ",
-#        DEM         : "DEM TIF",
-        DSM         : "DSM TIF",
-        DTM         : "DTM TIF",
-        ORTHOPHOTO  : "Orthophoto",}
-    
+        UNKNOWN: "Unknown Type",
+        LAZ: "LAZ",
+        #        DEM         : "DEM TIF",
+        DSM: "DSM TIF",
+        DTM: "DTM TIF",
+        ORTHOPHOTO: "Orthophoto", }
+
     gs_feature_labels = {
-        UNKNOWN     : "UNSUPPORTED",
-        LAZ         : "LAZ",
-#        DEM         : "UNSUPPORTED",
-        DSM         : "DSM",
-        DTM         : "DTM",
-        ORTHOPHOTO  : "ORTHO",}
-    
+        UNKNOWN: "UNSUPPORTED",
+        LAZ: "LAZ",
+        #        DEM         : "UNSUPPORTED",
+        DSM: "DSM",
+        DTM: "DTM",
+        ORTHOPHOTO: "ORTHO", }
+
     filename_suffixes = {
-        ".laz"            : LAZ,
-#        "_dem.tif"         : DEM,
-        "_dsm.tif"         : DSM,
-        "_dtm.tif"         : DTM,
-        "_ortho.tif"    : ORTHOPHOTO,}
-    
+        ".laz": LAZ,
+        #        "_dem.tif"         : DEM,
+        "_dsm.tif": DSM,
+        "_dtm.tif": DTM,
+        "_ortho.tif": ORTHOPHOTO, }
+
 
 class FTPStatus(enum.Enum):
     DONE = 0
     PENDING = 1
     ERROR = 2
     DUPLICATE = 3
-    
+
     labels = {
         DONE: 'Done',
         PENDING: 'Pending',
         ERROR:   'Error',
-        DUPLICATE: 'Duplicate',}
+        DUPLICATE: 'Duplicate', }
 
 
 class CephDataObject(models.Model):
-    size_in_bytes   = models.IntegerField()
-    file_hash       = models.CharField(max_length=40)
-    name            = models.CharField(max_length=100)
-    last_modified   = models.DateTimeField()
-    content_type    = models.CharField(max_length=20)
+    size_in_bytes = models.IntegerField()
+    file_hash = models.CharField(max_length=40)
+    name = models.CharField(max_length=100)
+    last_modified = models.DateTimeField()
+    content_type = models.CharField(max_length=20)
     #geo_type        = models.CharField(max_length=20)
-    data_class      = enum.EnumField(DataClassification, default=DataClassification.UNKNOWN)
-    grid_ref        = models.CharField(max_length=10)
-    
+    data_class = enum.EnumField(
+        DataClassification, default=DataClassification.UNKNOWN)
+    grid_ref = models.CharField(max_length=10)
+
     def __unicode__(self):
         return "{0}:{1}".format(self.name, DataClassification.labels[self.data_class])
 
 
 class FTPRequest(models.Model):
-    name        = models.CharField(max_length=50)
-    date_time   = models.DateTimeField(default=datetime.now)
-    user        = models.ForeignKey(User, null=False, blank=False)
-    status      = enum.EnumField(FTPStatus, default=FTPStatus.PENDING)
-    size_in_bytes   = models.IntegerField()
-    num_tiles   = models.IntegerField()
-    
+    name = models.CharField(max_length=50)
+    date_time = models.DateTimeField(default=datetime.now)
+    user = models.ForeignKey(User, null=False, blank=False)
+    status = enum.EnumField(FTPStatus, default=FTPStatus.PENDING)
+    size_in_bytes = models.IntegerField()
+    num_tiles = models.IntegerField()
+
     def __unicode__(self):
         return "{0}:{1}".format(self.name, self.user.username)
+
 
 class EULA(models.Model):
     user = models.ForeignKey(User, null=False, blank=False)
     document = models.FileField(upload_to=settings.MEDIA_ROOT)
-    
+
+
 class FTPRequestToObjectIndex(models.Model):
     # FTPRequest
     ftprequest = models.ForeignKey(FTPRequest, null=False, blank=False)
     # CephObject
     cephobject = models.ForeignKey(CephDataObject, null=False, blank=False)
 
-    
+
 class UserJurisdiction(models.Model):
     user = models.ForeignKey(Profile, null=False, blank=False)
     jurisdiction_shapefile = models.ForeignKey(Layer, null=True, blank=True)
-    
+
     def get_shapefile_typename(self):
         return self.jurisdiction_shapefile.service_typename
-    
+
     def get_user_name(self):
         return self.user.username
+
 
 class MissionGridRef(models.Model):
     fieldID = models.IntegerField()
@@ -114,6 +119,7 @@ class MissionGridRef(models.Model):
     def __unicode__(self):
         return "{0}:{1}".format(self.grid_ref, self.fieldID)
 
+
 class SucToLayer(models.Model):
     suc = models.CharField(max_length=20)
     block_name = models.CharField(max_length=40)
@@ -121,16 +127,22 @@ class SucToLayer(models.Model):
     def __unicode__(self):
         return "{0}:{1}".format(self.suc, self.block_name)
 
+
 class RIDF(models.Model):
-    municipality = models.CharField(max_length=50)
-    province = models.CharField(max_length=50)
-    _100yr = models.DecimalField(max_digits=7, decimal_places=3)
-    _25yr = models.DecimalField(max_digits=7, decimal_places=3)
-    _5yr = models.DecimalField(max_digits=7, decimal_places=3)
-    layer_name = models.CharField(max_length=100, blank=True)
+    prov_code = models.CharField(max_length=11)
+    prov_name = models.CharField(max_length=50)
+    muni_code = models.CharField(max_length=11)
+    muni_name = models.CharField(max_length=50)
+    iscity = models.BooleanField(default=False)
+    _5yr = models.DecimalField(
+        max_digits=7, decimal_places=3, null=True, default=0)
+    _25yr = models.DecimalField(
+        max_digits=7, decimal_places=3, null=True, default=0)
+    _100yr = models.DecimalField(
+        max_digits=7, decimal_places=3, null=True, default=0)
+    rbs_raw = models.CharField(max_length=100, null=True, blank=True)
     riverbasins = TaggableManager(
-        _('riverbasins'),blank=True, help_text='List of riverbasins')
-    nscb_code = models.IntegerField(null=True)
+        _('riverbasins'), blank=True, help_text='List of riverbasins')
 
     # def keyword_list(self):
     #     """
@@ -139,4 +151,8 @@ class RIDF(models.Model):
     #     return [kw.name for kw in self.riverbasins.all()]
 
     def __unicode__(self):
-        return "{0}".format(self.layer_name)
+        return "{0}:{1}".format(self.prov_name, self.muni_name)
+
+class UserTiles(models.Model):
+    user = models.ForeignKey(Profile, null=False, blank=False, unique=True)
+    gridref_list = models.TextField(null=False, blank=False)

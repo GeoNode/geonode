@@ -213,6 +213,7 @@ def parse_datarequest_csv(csv_path):
                 # print '* Middle name: ', middle_name
                 # print '* Last name: ', last_name
 
-csv_path = 'data_request_list.csv'
+#csv_path = 'data_request_list.csv'
+csv_path = raw_input('CSV complete file path:')
 parse_datarequest_csv(csv_path)
 

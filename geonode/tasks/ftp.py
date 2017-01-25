@@ -204,7 +204,7 @@ Data request named [{0}] for user [{1}] has been succesfully processed.
 
 With your LiPAD username and password, please login with an FTPES client
 like Filezilla, to ftpes://ftp.dream.upd.edu.ph. Your requested datasets
-will be in a new folder named [{0}] under the directory [DL/DAD/] and will be available for 30 days only.
+will be in a new folder named [{0}] under the directory [DL/DAD/] and will be available for 30 days only due to infrastructure limitations.
 
 FTP Server: ftpes://ftp.dream.upd.edu.ph/FTP/Others/{1}/DL/DAD/lipad_requests/{0}
 Encryption: Require explicit FTP over TLS
