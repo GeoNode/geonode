@@ -24,6 +24,8 @@ import logging
 
 from pprint import pprint
 
+from .models import UserTiles
+
 _PERMISSION_VIEW = _("You are not permitted to view this layer")
 _PERMISSION_GENERIC = _('You do not have permissions for this layer.')
 # Create your views here.
@@ -115,3 +117,15 @@ def get_layer_config(request, typename, permission='base.view_resourcebase',
         map_obj.viewer_json(request.user, * (NON_WMS_BASE_LAYERS + [maplayer])))
     
     return context_dict
+
+def clean_georefs(user, georef_list):
+    filtered = []
+    
+    usertiles = UserTiles.objects.get(user=user)
+    
+    for georef in georef_list:
+        if georef in usertiles:
+            filtered.append(georef)
+    
+    return filtered
+    
