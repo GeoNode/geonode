@@ -139,7 +139,7 @@ def process_georefs(request):
             georef_area = request.POST['georef_area']
             georef_list = filter(None, georef_area.split(","))
             #pprint("Initial georef_list:" + str(georef_list))
-            #georef_list = clean_georefs(request.user, georef_list)
+            georef_list = clean_georefs(request.user, georef_list)
             #pprint("Filtered georef_list:" + str(georef_list))
             
             #Get the requested dataclasses
