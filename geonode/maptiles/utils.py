@@ -10,6 +10,7 @@ from django.contrib.auth.decorators import login_required
 from django.http import HttpResponseRedirect, HttpResponse, Http404
 from django.db.models import Q
 
+from geonode.cephgeo.models import UserTiles
 from geonode.services.models import Service
 from geonode.layers.models import Layer
 from geonode.layers.utils import is_vector, get_bbox
@@ -24,7 +25,6 @@ import logging
 
 from pprint import pprint
 
-from .models import UserTiles
 
 _PERMISSION_VIEW = _("You are not permitted to view this layer")
 _PERMISSION_GENERIC = _('You do not have permissions for this layer.')
