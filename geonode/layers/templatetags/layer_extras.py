@@ -17,7 +17,8 @@ def prs92_projection(x0, y0, x1, y1):
     source = osr.SpatialReference()
     source.ImportFromEPSG(4326)
     target = osr.SpatialReference()
-    target.ImportFromEPSG(3857)
+    # target.ImportFromEPSG(3857)
+    target.ImportFromEPSG(4683)
     transform = osr.CoordinateTransformation(source, target)
     point_str = "POINT (" + str(x0) + ' ' + str(y0) + ")"
     point1 = ogr.CreateGeometryFromWkt(str(point_str))
@@ -43,11 +44,15 @@ def analyze_link(link):
     # layer_name=link.split('geonode%3A')[1].split('%22%5D%2C%22format')[0]
     layer_name = link.split('geonode%3A')[1].split('/download/wms')[0]
     layer = Layer.objects.get(name=layer_name)
-    layout = 'phil-lidar1'
+    # layout = 'phil-lidar1'
+    isPhilLidar1 = True
+    isPhilLidar2 = False
     if 'wms' in link:  # for wms layers
         if 'PhilLiDAR2' in layer.keyword_list():
-            layout = 'phil-lidar2'
-    return layer, layout
+            isPhilLidar1 = False
+            isPhilLidar2 = True
+    return layer, isPhilLidar1, isPhilLidar2
+
 
 ##
 
@@ -58,9 +63,10 @@ def image_basemap(link, epsg, filetype):
                   username=settings.OGC_SERVER['default']['USER'],
                   password=settings.OGC_SERVER['default']['PASSWORD'])
     baseURL = settings.OGC_SERVER['default']['PUBLIC_LOCATION']
+    localURL = settings.OGC_SERVER['default']['LOCATION']
 
     # get layer name
-    layer, layout = analyze_link(link)
+    layer, isPhilLidar1, isPhilLidar2 = analyze_link(link)
     geoserver_layer = cat.get_layer(layer.name)
     layer_projection = geoserver_layer.resource.projection
     layer_projection_epsg = layer_projection.split(':')[1]
@@ -79,7 +85,7 @@ def image_basemap(link, epsg, filetype):
     # filetype_cp = filetype
 
     # transform projection from 4326 to 3857
-    if epsg == 900913:
+    if epsg == 4683:
         x0, y0, x1, y1 = prs92_projection(x0, y0, x1, y1)
 
     # bbox values
@@ -99,29 +105,25 @@ def image_basemap(link, epsg, filetype):
             jsontext['purpose'] = 'No purpose provided'
         jsontext['srs'] = to_srs_str
         jsontext['outputFormat'] = filetype
-        jsontext['outputFilename'] = layer.name
+        jsontext['outputFilename'] = layer.title.replace(',','')
         # jsontext['layers'][0]['baseURL'] = settings.OGC_SERVER['default']['LOCATION'] + 'wms?SERVICE=WMS&'
-        jsontext['layers'][0]['baseURL'] = baseURL + \
+        jsontext['layers'][0]['baseURL'] = localURL + \
             'wms?SERVICE=WMS&'  # baseURL for local
-        jsontext['layers'][1]['baseURL'] = baseURL + \
+        jsontext['layers'][1]['baseURL'] = localURL + \
             'wms?SERVICE=WMS&'  # baseURL for local
-        jsontext['layers'][0]['layers'] = [str(layer.typename)]
-        jsontext['layout'] = layout
-        # jsontext['layout'] = 'A4 portrait'
-        jsontext['pages'][0]['bbox'] = bbox
-        legendurl = baseURL + 'wms?request=GetLegendGraphic&format=image/png&LAYER=' + str(layer.typename)
-        jsontext['legends'][0]['classes'][0]['icons'][0] = legendurl
-        # jsontext['legends'][0]['classes'][0]['icons'] = ['https://lipad-tst.dream.upd.edu.ph/geoserver/wms?request=GetLegendGraphic&format=image/png&WIDTH=20&HEIGHT=20&LAYER=geonode:m_bulacan_p_bulacan_fh5yr_10m&legend_options=fontAntiAliasing:true;fontSize:12;forceLabels:on']
 
-        print '******************** J S O N ********************'
-        pprint(jsontext)
+        # jsontext['layers'][0]['layers'] = [str(layer.typename)]
+        jsontext['layers'][1]['layers'] = [str(layer.typename)]
+        jsontext['pages'][0]['bbox'] = bbox
+
+        legendurl = localURL + 'wms?request=GetLegendGraphic&format=image/png&LAYER=' + str(layer.typename)
+        jsontext['legends'][0]['classes'][0]['icons'][0] = legendurl
+        jsontext['isPhilLidar1'] = isPhilLidar1
+        jsontext['isPhilLidar2'] = isPhilLidar2
 
         jsonmini = json.dumps(jsontext, separators=(',', ':'))
         urlencoded = urllib.quote(jsonmini)
-        # print urlencoded
-
         spec = baseURL + 'pdf/print.pdf?spec=' + urlencoded
-        # print spec
         return spec
     else:
         print 'TEMPLATE NOT FOUND'
@@ -131,31 +133,24 @@ def image_basemap(link, epsg, filetype):
 
 def get_prs92_download_url(link):
     link = link.get_download_url()
-    return link
-    # Ignore the ff. for now
-    if 'GeoTIFF' in str(link):
-        epsg4683 = 'crs=EPSG%3A4683'
-        temp = link.split('crs=EPSG%3A32651')
-        link = temp[0] + epsg4683 + temp[1]
+    if 'image%2Ftiff' in str(link):
+        outputCRS = '&outputcrs=http://www.opengis.net/def/crs/EPSG/0/4683'
+        link = link + outputCRS
     elif 'image%2Fpng' in str(link):
-        link = image_basemap(link, 900193, 'png')
+        link = image_basemap(link, 4683, 'png')
         return link
     elif 'image%2Fjpeg' in str(link):  # remove this
-        link = image_basemap(link, 900913, 'jpeg')
+        link = image_basemap(link, 4683, 'jpeg')
         return link
     elif '%2Fpdf' in str(link):  # remove this
-        link = image_basemap(link, 900913, 'pdf')
-    elif 'SHAPE-ZIP' in str(link) or 'kml' in str(link):
-        link = link + '&srsName=EPSG:4683'
+        link = image_basemap(link, 4683, 'pdf')
+    # elif 'SHAPE-ZIP' in str(link) or 'kml' in str(link):
+    #     link = link + '&srsName=EPSG:4683'
     return link
 
 
 def get_layer_download_url(link):  # Only one argument.
     link = link.get_download_url()
-    return link
-    # Ignore the ff. for now
-    # format_options=check_layout(link)
-
     if 'image%2Fpng' in str(link):
         link = image_basemap(link, 4326, 'png')
         return link
