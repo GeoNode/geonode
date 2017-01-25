@@ -1,3 +1,17 @@
+geonode (2.5.9+thefinal5) trusty; urgency=high
+
+  [ Mila Frerichs ]
+  * [23c42e] Add new routes/views for simple edit (#2851)
+
+  [ Paolo Corti ]
+  * [1c882d] Refactor create_gs_thumbnail. Now we have same method for both layer and map thumb generation (#2850)
+
+  [ Simone Dalmasso ]
+  * [ffc9e0] restore the check bbox (#2852)
+  * [82e34f] migrate accounts first (#2853)
+
+ -- Simone Dalmasso <simone.dalmasso@gmail.com>  Wed, 25 Jan 2017 15:13:48 +0000
+
 geonode (2.5.9+thefinal4) trusty; urgency=high
 
   [ Francesco Bartoli ]
