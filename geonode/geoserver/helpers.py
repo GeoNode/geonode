@@ -1767,8 +1767,10 @@ def create_gs_thumbnail(instance, overwrite=False):
 
     # Add the bbox param only if the bbox is different to [None, None,
     # None, None]
+    check_bbox = False
     if None not in instance.bbox:
         params['bbox'] = instance.bbox_string
+        check_bbox = True
 
     # Avoid using urllib.urlencode here because it breaks the url.
     # commas and slashes in values get encoded and then cause trouble
@@ -1781,4 +1783,5 @@ def create_gs_thumbnail(instance, overwrite=False):
     thumbnail_create_url = ogc_server_settings.LOCATION + \
         "wms/reflect?" + p
 
-    create_thumbnail(instance, thumbnail_remote_url, thumbnail_create_url, ogc_client=http_client, overwrite=overwrite)
+    create_thumbnail(instance, thumbnail_remote_url, thumbnail_create_url,
+                     ogc_client=http_client, overwrite=overwrite, check_bbox=check_bbox)

@@ -128,5 +128,3 @@ def fix_baselayers(map_id):
             )
             map_layer.save()
         source += 1
-
-    print 'Fixed base layers for map with id %s' % id
