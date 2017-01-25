@@ -31,7 +31,7 @@ services:
       - ./scripts/docker/env/production/django.env
 
   geoserver:
-    image: geonode/geoserver
+    image: waybarrios/geoserver:piensa
     links:
       - postgres
     ports:
@@ -41,7 +41,7 @@ services:
     env_file:
       - ./scripts/docker/env/production/geoserver.env
 
-  nginx:
+  geonode:
     image: geonode/nginx:geoserver
     links:
       - django
@@ -50,7 +50,7 @@ services:
       - "80:80"
 
   data_dir_conf:
-    image: geonode/geoserver_data
+    image: geonode/geoserver_data:2.9.x-oauth2
     container_name: geoserver_data_dir
     command: /bin/true
     volumes:
