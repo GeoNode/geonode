@@ -45,6 +45,7 @@ var trace1 = {
       {{ value.Coverage }},
     {% endfor %}
   ],
+  hoverinfo:'y+name',
   name: 'Coverage',
   type: 'bar',
   marker: {
@@ -62,6 +63,7 @@ var trace2 = {
       {{ value.Document }},
     {% endfor %}
   ],
+  hoverinfo:'y+name',
   name: 'Documents',
   type: 'bar',
   marker: {
@@ -79,6 +81,13 @@ var trace3 = {
       {{ value.FHM }},
     {% endfor %}
   ],
+  text: [
+    {% for key, value in monthly_count.items %}
+      '{{ value.FHM }}',
+    {% endfor %}
+  ],
+  textposition: 'auto',
+  hoverinfo:'y+name',
   name: 'Flood Hazard Maps',
   type: 'bar',
   marker: {
@@ -96,6 +105,7 @@ var trace4 = {
       {{ value.DTM }},
     {% endfor %}
   ],
+  hoverinfo:'y+name',
   name: 'DTM',
   type: 'bar',
   marker: {
@@ -113,6 +123,7 @@ var trace5 = {
       {{ value.DSM }},
     {% endfor %}
   ],
+  hoverinfo:'y+name',
   name: 'DSM',
   type: 'bar',
   marker: {
@@ -130,6 +141,7 @@ var trace6 = {
       {{ value.LAZ }},
     {% endfor %}
   ],
+  hoverinfo:'y+name',
   name: 'LAZ',
   type: 'bar',
   marker: {
@@ -147,6 +159,7 @@ var trace7 = {
       {{ value.ORTHO }},
     {% endfor %}
   ],
+  hoverinfo:'y+name',
   name: 'Ortho',
   type: 'bar',
   marker: {
@@ -164,6 +177,7 @@ var trace8 = {
       {{ value.SAR }},
     {% endfor %}
   ],
+  hoverinfo:'y+name',
   name: 'SAR',
   type: 'bar',
   marker: {
@@ -181,6 +195,7 @@ var trace9 = {
       {{ value.Others }},
     {% endfor %}
   ],
+  hoverinfo:'y+name',
   name: 'Others',
   type: 'bar',
   marker: {
@@ -188,7 +203,7 @@ var trace9 = {
   }
 };
 
-var data = [trace9, trace8, trace7, trace6, trace5, trace4, trace3, trace2, trace1];
+var data = [trace3, trace9, trace8, trace7, trace6, trace5, trace4, trace2, trace1];
 
 var layout = {
   barmode: 'stack',
@@ -196,7 +211,12 @@ var layout = {
     autorange: 'reversed',
     tickangle: -45
   },
-  title: 'Cumulative LiPAD Downloads (Count)'};
+  title: 'Cumulative LiPAD Downloads (Count)',
+  legend:{
+    x: 0,
+    y: 1
+  }
+};
 
 Plotly.newPlot('monthly_div', data, layout);
 
@@ -274,7 +294,12 @@ var data_luzvimin = [luzvimin4, luzvimin3, luzvimin2, luzvimin1];
 var layout_luzvimin = {
   barmode: 'stack',
   xaxis: {autorange: 'reversed'},
-  title: 'LuzViMin Download Count'};
+  title: 'LuzViMin Download Count',
+  legend:{
+    x: 0,
+    y: 1
+  }
+};
 
 Plotly.newPlot('luzvimin_div', data_luzvimin, layout_luzvimin);
 
@@ -393,7 +418,12 @@ var data_datarequest = [datarequest5, datarequest4, datarequest3, datarequest2, 
 var layout_datarequest = {
   barmode: 'stack',
   xaxis: {autorange: 'reversed'},
-  title: 'Cumulative LiPAD Request'};
+  title: 'Cumulative LiPAD Request',
+  legend:{
+    x: 0,
+    y: 1
+  }
+};
 
 Plotly.newPlot('monthly_datarequest', data_datarequest, layout_datarequest);
 
@@ -420,7 +450,8 @@ var data_org = [org1];
 var layout_org = {
   barmode: 'stack',
   xaxis: {autorange: 'reversed'},
-  title: 'Data Request Tally per Organization'};
+  title: 'Data Request Tally per Organization'
+};
 
 Plotly.newPlot('org_datarequest', data_org, layout_org);
 </script>
