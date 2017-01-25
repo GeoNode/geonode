@@ -699,7 +699,6 @@ def layer_download_csv(request):
         if auth.resource_type != 'document':
             listtowrite.append([username, lastname, firstname, email, organization, orgtype,
                                 "", auth.title, auth.timestamp.strftime('%Y/%m/%d'),area,''])
-
     # writer.writerow(['\n'])
     anon_list = AnonDownloader.objects.all().order_by('date')
     # writer.writerow(['Anonymous Downloads'])

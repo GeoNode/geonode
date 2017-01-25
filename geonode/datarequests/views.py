@@ -39,7 +39,8 @@ from geonode.layers.utils import file_upload
 from geonode.people.models import Profile
 from geonode.people.views import profile_detail
 from geonode.security.views import _perms_info_json
-from geonode.tasks.jurisdiction import jurisdiction_style, compute_size_update
+from geonode.tasks.jurisdiction import place_name_update, jurisdiction_style
+from geonode.tasks.jurisdiction2 import compute_size_update, assign_grid_refs, assign_grid_refs_all
 from geonode.utils import default_map_config
 from geonode.utils import GXPLayer
 from geonode.utils import GXPMap
@@ -61,7 +62,7 @@ from .forms import (
     DataRequestProfileRejectForm, DataRequestDetailsForm)
 from .models import DataRequestProfile
 from .utils import (
-    get_place_name, get_juris_data_size, get_area_coverage)
+    get_place_name, get_area_coverage)
 
 def registration_part_one(request):
 
@@ -233,10 +234,24 @@ def registration_part_two(request):
                             title=form.cleaned_data["layer_title"],
                         )
                         interest_layer =  saved_layer
-                        #bbox = gs_layer.resource.latlon_bbox
-                        #bbox_lon = (float(bbox[0])+float(bbox[1]))/2
-                        #bbox_lat = (float(bbox[2])+float(bbox[3]))/2
-                        #place_name = get_place_name(bbox_lon, bbox_lat)
+
+                        cat = Catalog(settings.OGC_SERVER['default']['LOCATION'] + 'rest',
+                            username=settings.OGC_SERVER['default']['USER'],
+                            password=settings.OGC_SERVER['default']['PASSWORD'])
+
+                        boundary_style = cat.get_style('Boundary')
+                        gs_layer = cat.get_layer(saved_layer.name)
+                        if boundary_style:
+                            gs_layer._set_default_style(boundary_style)
+                            cat.save(gs_layer) #save in geoserver
+                            saved_layer.sld_body = boundary_style.sld_body
+                            saved_layer.save() #save in geonode
+
+                        bbox = gs_layer.resource.latlon_bbox
+                        bbox_lon = (float(bbox[0])+float(bbox[1]))/2
+                        bbox_lat = (float(bbox[2])+float(bbox[3]))/2
+                        place_name = get_place_name(bbox_lon, bbox_lat)
+                        pprint(place_name)
                         juris_data_size = 0.0
                         #area_coverage = get_area_coverage(saved_layer.name)
                         area_coverage =  0
@@ -314,7 +329,7 @@ def registration_part_two(request):
                             )
 
                     if interest_layer:
-                        #request_profile.place_name = place_name['state']
+                        request_profile.place_name = place_name['address']
                         request_profile.juris_data_size = juris_data_size
                         request_profile.area_coverage = area_coverage
                         request_profile.save()
@@ -673,6 +688,9 @@ def data_request_profile_approve(request, pk):
             request_profile.profile.save()
             if request_profile.jurisdiction_shapefile:
                 request_profile.assign_jurisdiction() #assigns/creates jurisdiction object
+                #place_name_update.delay([request_profile])
+                #compute_size_update.delay([request_profile])
+                assign_grid_refs.delay(request_profile.profile)
             else:
                 try:
                     uj = UserJurisdiction.objects.get(user=request_profile.profile)
@@ -716,6 +734,61 @@ def data_request_profile_recreate_dir(request, pk):
 
         request_profile.create_directory()
         return HttpResponseRedirect(request_profile.get_absolute_url())
+
+def data_request_compute_size(request):
+    if request.user.is_superuser:
+        data_requests = DataRequestProfile.objects.exclude(jurisdiction_shapefile=None)
+        compute_size_update.delay(data_requests)
+        messages.info(request, "The estimated data size area coverage of the requests are currently being computed")
+        return HttpResponseRedirect(reverse('datarequests:data_request_browse'))
+    else:
+        return HttpResponseRedirect('/forbidden/')
+
+
+def data_request_profile_compute_size(request, pk):
+    if request.user.is_superuser and request.method == 'POST':
+        if DataRequestProfile.objects.get(pk=pk).jurisdiction_shapefile:
+            data_requests = DataRequestProfile.objects.filter(pk=pk)
+            compute_size_update.delay(data_requests)
+            messages.info(request, "The estimated data size area coverage of the request is currently being computed")
+        else:
+            messages.info(request, "This request does not have a shape file")
+
+        return HttpResponseRedirect(reverse('datarequests:data_request_browse'))
+    else:
+        return HttpResponseRedirect('/forbidden/')
+
+def data_request_reverse_geocode(request):
+    if request.user.is_superuser:
+        data_requests = DataRequestProfile.objects.exclude(jurisdiction_shapefile=None)
+        place_name_update.delay(data_requests)
+        messages.info(request,"Retrieving approximated place names of data requests")
+        return HttpResponseRedirect(reverse('datarequests:data_request_browse'))
+    else:
+        return HttpResponseRedirect('/forbidden/')
+
+def data_request_profile_reverse_geocode(request, pk):
+    if request.user.is_superuser and request.method == 'POST':
+        if DataRequestProfile.objects.get(pk=pk).jurisdiction_shapefile:
+            data_requests = DataRequestProfile.objects.filter(pk=pk)
+            place_name_update.delay(data_requests)
+            messages.info(request, "Retrieving approximated place names of data request")
+        else:
+            messages.info(request, "This request does not have a shape file")
+
+        return HttpResponseRedirect(reverse('datarequests:data_request_browse'))
+    else:
+        return HttpResponseRedirect('/forbidden/')
+        
+def data_request_assign_gridrefs(request):
+    if request.user.is_superuser:
+        assign_grid_refs_all.delay()
+        messages.info(request, "Now processing jurisdictions. Please wait for a few minutes for them to finish")
+        return HttpResponseRedirect(reverse('datarequests:data_request_browse'))
+        
+    else:
+        return HttpResponseRedirect('/forbidden/')
+            
 
 def data_request_facet_count(request):
     if not request.user.is_superuser:

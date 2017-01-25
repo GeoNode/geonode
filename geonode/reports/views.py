@@ -63,7 +63,11 @@ def report_distribution_status(request, template='reports/distribution_status.ht
             luzvimin_count[eachinlist.date.strftime('%Y%m')][eachinlist.category] = 0
         luzvimin_count[eachinlist.date.strftime('%Y%m')][eachinlist.category] += eachinlist.count
 
+<<<<<<< HEAD
     urls_to_visit = ['https://lipad-fmc.dream.upd.edu.ph/']
+=======
+    urls_to_visit = ['https://lipad-fmctst.dream.upd.edu.ph/']
+>>>>>>> master
     for each_url in urls_to_visit:
         try:
             response = urllib2.urlopen(each_url + 'api/download_count')
