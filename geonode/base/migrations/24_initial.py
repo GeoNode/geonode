@@ -18,44 +18,12 @@ class Migration(migrations.Migration):
 
     operations = [
         migrations.CreateModel(
-            name='Backup',
-            fields=[
-                ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
-                ('identifier', models.CharField(max_length=255, editable=False)),
-                ('name', models.CharField(max_length=100)),
-                ('name_en', models.CharField(max_length=100, null=True)),
-                ('date', models.DateTimeField(auto_now_add=True)),
-                ('description', models.TextField(null=True, blank=True)),
-                ('description_en', models.TextField(null=True, blank=True)),
-                ('base_folder', models.CharField(max_length=100)),
-                ('location', models.TextField(null=True, blank=True)),
-            ],
-            options={
-                'ordering': ('date',),
-                'verbose_name_plural': 'Backups',
-            },
-        ),
-        migrations.CreateModel(
             name='ContactRole',
             fields=[
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
                 ('role', models.CharField(help_text='function performed by the responsible party', max_length=255, choices=[(b'author', 'party who authored the resource'), (b'processor', 'party who has processed the data in a manner such that the resource has been modified'), (b'publisher', 'party who published the resource'), (b'custodian', 'party that accepts accountability and responsibility for the data and ensures         appropriate care and maintenance of the resource'), (b'pointOfContact', 'party who can be contacted for acquiring knowledge about or acquisition of the resource'), (b'distributor', 'party who distributes the resource'), (b'user', 'party who uses the resource'), (b'resourceProvider', 'party that supplies the resource'), (b'originator', 'party who created the resource'), (b'owner', 'party that owns the resource'), (b'principalInvestigator', 'key party responsible for gathering information and conducting research')])),
                 ('contact', models.ForeignKey(to=settings.AUTH_USER_MODEL)),
             ],
-        ),
-        migrations.CreateModel(
-            name='HierarchicalKeyword',
-            fields=[
-                ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
-                ('name', models.CharField(unique=True, max_length=100, verbose_name='Name')),
-                ('slug', models.SlugField(unique=True, max_length=100, verbose_name='Slug')),
-                ('path', models.CharField(unique=True, max_length=255)),
-                ('depth', models.PositiveIntegerField()),
-                ('numchild', models.PositiveIntegerField(default=0)),
-            ],
-            options={
-                'abstract': False,
-            },
         ),
         migrations.CreateModel(
             name='License',
@@ -184,58 +152,6 @@ class Migration(migrations.Migration):
             },
         ),
         migrations.CreateModel(
-            name='TaggedContentItem',
-            fields=[
-                ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
-                ('content_object', models.ForeignKey(to='base.ResourceBase')),
-                ('tag', models.ForeignKey(related_name='keywords', to='base.HierarchicalKeyword')),
-            ],
-            options={
-                'abstract': False,
-            },
-        ),
-        migrations.CreateModel(
-            name='Thesaurus',
-            fields=[
-                ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
-                ('identifier', models.CharField(unique=True, max_length=255)),
-                ('title', models.CharField(max_length=255)),
-                ('date', models.CharField(default=b'', max_length=20)),
-                ('description', models.TextField(default=b'', max_length=255)),
-                ('slug', models.CharField(default=b'', max_length=64)),
-            ],
-            options={
-                'ordering': ('identifier',),
-                'verbose_name_plural': 'Thesauri',
-            },
-        ),
-        migrations.CreateModel(
-            name='ThesaurusKeyword',
-            fields=[
-                ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
-                ('about', models.CharField(max_length=255, null=True, blank=True)),
-                ('alt_label', models.CharField(default=b'', max_length=255, null=True, blank=True)),
-                ('thesaurus', models.ForeignKey(related_name='thesaurus', to='base.Thesaurus')),
-            ],
-            options={
-                'ordering': ('alt_label',),
-                'verbose_name_plural': 'Thesaurus Keywords',
-            },
-        ),
-        migrations.CreateModel(
-            name='ThesaurusKeywordLabel',
-            fields=[
-                ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
-                ('lang', models.CharField(max_length=3)),
-                ('label', models.CharField(max_length=255)),
-                ('keyword', models.ForeignKey(related_name='keyword', to='base.ThesaurusKeyword')),
-            ],
-            options={
-                'ordering': ('keyword', 'lang'),
-                'verbose_name_plural': 'Labels',
-            },
-        ),
-        migrations.CreateModel(
             name='TopicCategory',
             fields=[
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
@@ -244,8 +160,7 @@ class Migration(migrations.Migration):
                 ('description_en', models.TextField(default=b'', null=True)),
                 ('gn_description', models.TextField(default=b'', null=True, verbose_name=b'GeoNode description')),
                 ('gn_description_en', models.TextField(default=b'', null=True, verbose_name=b'GeoNode description')),
-                ('is_choice', models.BooleanField(default=True)),
-                ('fa_class', models.CharField(default=b'fa-times', max_length=64)),
+                ('is_choice', models.BooleanField(default=True))
             ],
             options={
                 'ordering': ('identifier',),
@@ -261,11 +176,6 @@ class Migration(migrations.Migration):
             model_name='resourcebase',
             name='contacts',
             field=models.ManyToManyField(to=settings.AUTH_USER_MODEL, through='base.ContactRole'),
-        ),
-        migrations.AddField(
-            model_name='resourcebase',
-            name='keywords',
-            field=taggit.managers.TaggableManager(to='base.HierarchicalKeyword', through='base.TaggedContentItem', blank=True, help_text='commonly used word(s) or formalised word(s) or phrase(s) used to describe the subject (space or comma-separated', verbose_name='keywords'),
         ),
         migrations.AddField(
             model_name='resourcebase',
@@ -298,11 +208,6 @@ class Migration(migrations.Migration):
             field=models.ForeignKey(blank=True, to='base.SpatialRepresentationType', help_text='method used to represent geographic information in the dataset.', null=True, verbose_name='spatial representation type'),
         ),
         migrations.AddField(
-            model_name='resourcebase',
-            name='tkeywords',
-            field=models.ManyToManyField(help_text='formalised word(s) or phrase(s) from a fixed thesaurus used to describe the subject (space or comma-separated', to='base.ThesaurusKeyword'),
-        ),
-        migrations.AddField(
             model_name='link',
             name='resource',
             field=models.ForeignKey(blank=True, to='base.ResourceBase', null=True),
@@ -311,14 +216,6 @@ class Migration(migrations.Migration):
             model_name='contactrole',
             name='resource',
             field=models.ForeignKey(blank=True, to='base.ResourceBase', null=True),
-        ),
-        migrations.AlterUniqueTogether(
-            name='thesauruskeywordlabel',
-            unique_together=set([('keyword', 'lang')]),
-        ),
-        migrations.AlterUniqueTogether(
-            name='thesauruskeyword',
-            unique_together=set([('thesaurus', 'alt_label')]),
         ),
         migrations.AlterUniqueTogether(
             name='contactrole',

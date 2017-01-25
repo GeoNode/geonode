@@ -51,11 +51,6 @@ class Migration(migrations.Migration):
                 ('storeType', models.CharField(max_length=128)),
                 ('name', models.CharField(max_length=128)),
                 ('typename', models.CharField(max_length=128, null=True, blank=True)),
-                ('is_mosaic', models.BooleanField(default=False)),
-                ('has_time', models.BooleanField(default=False)),
-                ('has_elevation', models.BooleanField(default=False)),
-                ('time_regex', models.CharField(blank=True, max_length=128, null=True, choices=[(b'[0-9]{8}', 'YYYYMMDD'), (b'[0-9]{8}T[0-9]{6}', "YYYYMMDD'T'hhmmss"), (b'[0-9]{8}T[0-9]{6}Z', "YYYYMMDD'T'hhmmss'Z'")])),
-                ('elevation_regex', models.CharField(max_length=128, null=True, blank=True)),
                 ('charset', models.CharField(default=b'UTF-8', max_length=255)),
             ],
             options={
@@ -73,7 +68,7 @@ class Migration(migrations.Migration):
             ],
         ),
         migrations.CreateModel(
-            name='LayerStyles',
+            name='Layer_Styles',
             fields=[
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
                 ('layer', models.ForeignKey(to='layers.Layer')),
@@ -104,7 +99,7 @@ class Migration(migrations.Migration):
             ],
         ),
         migrations.AddField(
-            model_name='layerstyles',
+            model_name='layer_styles',
             name='style',
             field=models.ForeignKey(to='layers.Style'),
         ),
