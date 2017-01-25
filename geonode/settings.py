@@ -528,7 +528,7 @@ OGP_URL = "http://geodata.tufts.edu/solr/select"
 MODIFY_TOPICCATEGORY = False
 
 MISSING_THUMBNAIL = 'geonode/img/missing_thumb.png'
-THUMBNAIL_FILE_PERMISSIONS = 0776
+THUMBNAIL_FILE_PERMISSIONS = 0666
 
 # Search Snippet Cache Time in Seconds
 CACHE_TIME = 0
@@ -778,19 +778,19 @@ DOWNLOAD_FORMATS_METADATA = [
     'Atom', 'DIF', 'Dublin Core', 'ebRIM', 'FGDC', 'ISO',
 ]
 DOWNLOAD_FORMATS_VECTOR = [
-    'JPEG', 'PNG', 'Zipped Shapefile',
+    'JPEG', 'PNG', 'PDF', 'Zipped Shapefile',
     #'PDF', 'GML 2.0', 'GML 3.1.1', 'CSV',
     #'Excel', 'GeoJSON', 'KML', 'View in Google Earth', 'Tiles',
 ]
 DOWNLOAD_FORMATS_RASTER = [
     'JPEG',
-    #'PDF',
     'PNG',
-    'ArcGrid',
+    'PDF',
+    # 'ArcGrid',
     'GeoTIFF',
     #'Gtopo30',
     #'ImageMosaic',
-    'KML',
+    # 'KML',
     'View in Google Earth',
     #'Tiles',
 ]
@@ -907,6 +907,7 @@ CELERY_IMPORTS = (
     'geonode.tasks.ftp',
     'geonode.tasks.mk_folder',
     'geonode.tasks.jurisdiction',
+    'geonode.tasks.jurisdiction2',
 )
 
 
@@ -993,3 +994,5 @@ if 'geonode.geoserver' in GEONODE_APPS:
     MAP_BASELAYERS.extend(baselayers)
 
 PH_BBOX= [116.22307468566594, 4.27103012208686, 127.09228398538997, 21.2510169394873 ]
+
+_TILE_SIZE = 1000
