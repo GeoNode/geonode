@@ -167,6 +167,9 @@ def process_georefs(request):
 
                 #Execute query
                 objects = CephDataObject.objects.filter(filter_query)
+                pprint("objects found for georef:"+ georef)
+                for o in objects:
+                    pprint(o.name)
 
                 #Count duplicates and empty references
                 count += len(objects)
@@ -174,8 +177,8 @@ def process_georefs(request):
                     for ceph_obj in objects:    # Add each Ceph object to cart
                         try:
                             add_to_cart_unique(request, ceph_obj.id)
+                            pprint("object "+ceph_obj.name +" added to cart")
                         except DuplicateCartItemException:  # List each duplicate object
-                            pprint("Duplicate for "+ceph_obj.name)
                             duplicates.append(ceph_obj.name)
                 else:
                     empty_georefs += 1
