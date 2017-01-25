@@ -137,7 +137,7 @@
                   <div class="col-sm-3">
                     <i class="fa fa-map-marker fa-3x"></i>
                     <h4>{% trans "Map" %}</h4>
-                    <a class="btn btn-default btn-block btn-xs" href="{% url "map_view" resource.id %}">{% trans "Edit" %}</a>
+                    <a class="btn btn-default btn-block btn-xs" href="{% url "map_edit" resource.id %}">{% trans "Edit" %}</a>
                     <a class="btn btn-danger btn-block btn-xs" href="{% url "map_remove" resource.id %}">{% trans "Remove" %}</a>
                   </div>
                   {% endif %}
