@@ -172,9 +172,14 @@
         {% endif %}
       </li>
 {% if user.is_superuser %}
-       <li class="list-group-item">
-             <form id="compute_size_form" method="post" class="modal-form" action='{% url "datarequests:data_request_profile_compute_size" pk=request_profile.pk%}'>{% csrf_token %}
-                <button type="submit" class="btn btn-primary btn-md btn-block"  id="compute-size-submit">{% trans "Compute Sizes" %}</button>
+    <li class="list-group-item">
+             <form id="compute_request_size_form" method="post" class="modal-form" action='{% url "datarequests:data_request_profile_compute_size" pk=request_profile.pk%}'>{% csrf_token %}
+                <button type="submit" class="btn btn-primary btn-md btn-block"  id="compute-request-size">{% trans "Compute Request Size" %}</button>
+            </form>
+        </li>
+        <li class="list-group-item">
+             <form id="get_place_name_form" method="post" class="modal-form" action='{% url "datarequests:data_request_profile_reverse_geocode" pk=request_profile.pk%}'>{% csrf_token %}
+                <button type="submit" class="btn btn-primary btn-md btn-block"  id="get-place-name">{% trans "Get Place Name" %}</button>
             </form>
         </li>
       {% if request_profile.request_status == 'approved' %}
