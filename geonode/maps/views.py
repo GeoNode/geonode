@@ -410,6 +410,7 @@ def map_json(request, mapid, snapshot=None):
                 status=400
             )
 
+
 def map_edit(request, mapid, snapshot=None, template='maps/map_edit.html'):
     """
     The view that returns the map composer opened to
