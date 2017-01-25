@@ -40,6 +40,7 @@ from geonode.cephgeo.utils import get_cart_datasize
 from django.utils.text import slugify
 from geonode.maptiles.models import SRS
 
+
 _PERMISSION_VIEW = _("You are not permitted to view this layer")
 _PERMISSION_GENERIC = _('You do not have permissions for this layer.')
 # Create your views here.
@@ -137,6 +138,7 @@ def process_georefs(request):
             #Get georef list
             georef_area = request.POST['georef_area']
             georef_list = filter(None, georef_area.split(","))
+            georef_list = clean_georefs(request.user, georef_list)
 
             #Get the requested dataclasses
             data_classes = list()
