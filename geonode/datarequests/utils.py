@@ -4,24 +4,20 @@ import ldap
 import ldap.modlist
 import geocoder
 import geonode.settings as settings
+from osgeo import ogr
 
 from pprint import pprint
 from unidecode import unidecode
 from django.core.exceptions import ObjectDoesNotExist
 from django.http import HttpResponse, HttpResponseBadRequest, HttpResponseRedirect, Http404
+from django.utils import simplejson as json
 
 from geonode.people.models import Profile
 from geonode.documents.models import Document
 from geonode.layers.models import Layer
+from geonode.cephgeo.models import UserJurisdiction, UserTiles
 
 import geocoder
-
-from osgeo import ogr
-from shapely.wkb import loads
-from shapely.geometry import Polygon
-from geonode.cephgeo.models import CephDataObject
-import math
-from shapely.ops import cascaded_union
 
 UNALLOWED_USERNAME_CHARACTERS='"[]:;|=+*?<>/\,.'
 ESCAPED_CHARACTERS="/\,"
@@ -149,13 +145,14 @@ def add_to_ad_group(group_dn=settings.LIPAD_LDAP_GROUP_DN, user_dn=""):
 
 def get_place_name(longitude,latitude):
     g = geocoder.google([latitude,longitude], method='reverse')
-    pprint(g.geojson)
+    # pprint(g.geojson)
     return {
         'street': g.street,
         'city': g.city,
         'county': g.county,
         'state': g.state,
-        'country': g.country
+        'country': g.country,
+        'address': g.address
     }
 
 def get_juris_data_size(juris_shp_name):
@@ -184,10 +181,8 @@ def get_juris_data_size(juris_shp_name):
                 total_data_size += total_size
     return total_data_size
 
-def get_area_coverage(juris_shp_name):
-    juris_shp = get_shp_ogr(juris_shp_name)
+def get_area_coverage(juris_shp):
     if juris_shp:
-        pprint(juris_shp.area)
         return juris_shp.area/1000000
     else:
         return 0

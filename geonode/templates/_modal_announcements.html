@@ -24,10 +24,14 @@
                   {% endif %}
                 </div>
               </div>
+    {% endif %}
+  {% endfor %}
+  {% for announcement in site_wide_announcements %}
+    {% if announcement.site_wide == False %}
+      {% ifchanged announcement.site_wide %}
               <div class="modal-footer">
                 <button type="button" class="btn btn-default" data-dismiss="modal">{% trans "Close" %}</button>
               </div>
-      {% ifchanged announcement.site_wide %}
             </div>
           </div>
         </div>
