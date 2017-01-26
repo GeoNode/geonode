@@ -49,7 +49,7 @@ from django.forms.util import ErrorList
 from geonode.tasks.deletion import delete_layer
 from geonode.services.models import Service
 from geonode.layers.forms import LayerForm, LayerUploadForm, NewLayerUploadForm, LayerAttributeForm
-from geonode.base.forms import CategoryForm
+from geonode.base.forms import CategoryForm, TKeywordForm
 from geonode.layers.models import Layer, Attribute, UploadSession
 from geonode.base.enumerations import CHARSETS
 from geonode.base.models import TopicCategory
@@ -65,6 +65,8 @@ from geonode.documents.models import get_related_documents
 from geonode.utils import build_social_links
 from geonode.geoserver.helpers import cascading_delete, gs_catalog
 from geonode.geoserver.helpers import ogc_server_settings
+
+from geonode.base.models import Thesaurus
 
 if 'geonode.geoserver' in settings.INSTALLED_APPS:
     from geonode.geoserver.helpers import _render_thumbnail
@@ -165,7 +167,8 @@ def layer_upload(request, template='upload/layer_upload.html'):
                     charset=form.cleaned_data["charset"],
                     abstract=form.cleaned_data["abstract"],
                     title=form.cleaned_data["layer_title"],
-                    metadata_uploaded_preserve=form.cleaned_data["metadata_uploaded_preserve"]
+                    metadata_uploaded_preserve=form.cleaned_data["metadata_uploaded_preserve"],
+                    metadata_upload_form=form.cleaned_data["metadata_upload_form"]
                 )
             except Exception as e:
                 exception_type, error, tb = sys.exc_info()
@@ -332,10 +335,10 @@ def layer_detail(request, layername, template='layers/layer_detail.html'):
     links_download = [item for idx, item in enumerate(links) if
                       item.url and 'wms' not in item.url and 'gwc' not in item.url]
     for item in links_view:
-        if item.url and access_token:
+        if item.url and access_token and 'access_token' not in item.url:
             item.url = "%s&access_token=%s" % (item.url, access_token)
     for item in links_download:
-        if item.url and access_token:
+        if item.url and access_token and 'access_token' not in item.url:
             item.url = "%s&access_token=%s" % (item.url, access_token)
 
     if request.user.has_perm('view_resourcebase', layer.get_self_resource()):
@@ -382,7 +385,7 @@ def layer_feature_catalogue(request, layername, template='../../catalogue/templa
 
 
 @login_required
-def layer_metadata(request, layername, template='layers/layer_metadata.html'):
+def layer_metadata(request, layername, template='layers/layer_metadata.html', ajax=True):
     layer = _resolve_layer(
         request,
         layername,
@@ -398,6 +401,48 @@ def layer_metadata(request, layername, template='layers/layer_metadata.html'):
 
     poc = layer.poc
     metadata_author = layer.metadata_author
+
+    # assert False, str(layer_bbox)
+    config = layer.attribute_config()
+
+    # Add required parameters for GXP lazy-loading
+    layer_bbox = layer.bbox
+    bbox = [float(coord) for coord in list(layer_bbox[0:4])]
+    config["srs"] = getattr(settings, 'DEFAULT_MAP_CRS', 'EPSG:900913')
+    config["bbox"] = bbox if config["srs"] != 'EPSG:900913' \
+        else llbbox_to_mercator([float(coord) for coord in bbox])
+    config["title"] = layer.title
+    config["queryable"] = True
+
+    if layer.storeType == "remoteStore":
+        service = layer.service
+        source_params = {
+            "ptype": service.ptype,
+            "remote": True,
+            "url": service.base_url,
+            "name": service.name}
+        maplayer = GXPLayer(
+            name=layer.typename,
+            ows_url=layer.ows_url,
+            layer_params=json.dumps(config),
+            source_params=json.dumps(source_params))
+    else:
+        maplayer = GXPLayer(
+            name=layer.typename,
+            ows_url=layer.ows_url,
+            layer_params=json.dumps(config))
+
+    # Update count for popularity ranking,
+    # but do not includes admins or resource owners
+    if request.user != layer.owner and not request.user.is_superuser:
+        Layer.objects.filter(
+            id=layer.id).update(popular_count=F('popular_count') + 1)
+
+    # center/zoom don't matter; the viewer will center on the layer bounds
+    map_obj = GXPMap(projection=getattr(settings, 'DEFAULT_MAP_CRS', 'EPSG:900913'))
+
+    NON_WMS_BASE_LAYERS = [
+        la for la in default_map_config(request)[1] if la.ows_url is None]
 
     if request.method == "POST":
         if layer.metadata_uploaded_preserve:  # layer metadata cannot be edited
@@ -421,6 +466,9 @@ def layer_metadata(request, layername, template='layers/layer_metadata.html'):
             prefix="category_choice_field",
             initial=int(
                 request.POST["category_choice_field"]) if "category_choice_field" in request.POST else None)
+        tkeywords_form = TKeywordForm(
+            request.POST,
+            prefix="tkeywords")
 
     else:
         layer_form = LayerForm(instance=layer, prefix="resource")
@@ -432,8 +480,32 @@ def layer_metadata(request, layername, template='layers/layer_metadata.html'):
             prefix="category_choice_field",
             initial=topic_category.id if topic_category else None)
 
+        # Keywords from THESAURI management
+        layer_tkeywords = layer.tkeywords.all()
+        tkeywords_list = ''
+        lang = 'en'  # TODO: use user's language
+        if layer_tkeywords and len(layer_tkeywords) > 0:
+            tkeywords_ids = layer_tkeywords.values_list('id', flat=True)
+            if hasattr(settings, 'THESAURI'):
+                for el in settings.THESAURI:
+                    thesaurus_name = el['name']
+                    try:
+                        t = Thesaurus.objects.get(identifier=thesaurus_name)
+                        for tk in t.thesaurus.filter(pk__in=tkeywords_ids):
+                            tkl = tk.keyword.filter(lang=lang)
+                            if len(tkl) > 0:
+                                tkl_ids = ",".join(map(str, tkl.values_list('id', flat=True)))
+                                tkeywords_list += "," + tkl_ids if len(tkeywords_list) > 0 else tkl_ids
+                    except:
+                        tb = traceback.format_exc()
+                        logger.error(tb)
+
+        tkeywords_form = TKeywordForm(
+            prefix="tkeywords",
+            initial={'tkeywords': tkeywords_list})
+
     if request.method == "POST" and layer_form.is_valid(
-    ) and attribute_form.is_valid() and category_form.is_valid():
+    ) and attribute_form.is_valid() and category_form.is_valid() and tkeywords_form.is_valid():
         new_poc = layer_form.cleaned_data['poc']
         new_author = layer_form.cleaned_data['metadata_author']
 
@@ -481,15 +553,22 @@ def layer_metadata(request, layername, template='layers/layer_metadata.html'):
             la.save()
 
         if new_poc is not None and new_author is not None:
+            # layer.poc = new_poc
+            # layer.metadata_author = new_author
             new_keywords = [x.strip() for x in layer_form.cleaned_data['keywords']]
             layer.keywords.clear()
             layer.keywords.add(*new_keywords)
-            the_layer = layer_form.save()
+            try:
+                the_layer = layer_form.save()
+            except:
+                tb = traceback.format_exc()
+                if tb:
+                    logger.debug(tb)
+                the_layer = layer
+
             up_sessions = UploadSession.objects.filter(layer=the_layer.id)
             if up_sessions.count() > 0 and up_sessions[0].user != the_layer.owner:
                 up_sessions.update(user=the_layer.owner)
-            the_layer.poc = new_poc
-            the_layer.metadata_author = new_author
             Layer.objects.filter(id=the_layer.id).update(
                 category=new_category
                 )
@@ -501,12 +580,50 @@ def layer_metadata(request, layername, template='layers/layer_metadata.html'):
                 except:
                     print "Could not send slack message."
 
-            return HttpResponseRedirect(
-                reverse(
-                    'layer_detail',
-                    args=(
-                        layer.service_typename,
-                    )))
+            if not ajax:
+                return HttpResponseRedirect(
+                    reverse(
+                        'layer_detail',
+                        args=(
+                            layer.service_typename,
+                        )))
+
+        message = layer.typename
+
+        try:
+            # Keywords from THESAURI management
+            tkeywords_to_add = []
+            tkeywords_cleaned = tkeywords_form.clean()
+            if tkeywords_cleaned and len(tkeywords_cleaned) > 0:
+                tkeywords_ids = []
+                for i, val in enumerate(tkeywords_cleaned):
+                    try:
+                        cleaned_data = [value for key, value
+                                        in tkeywords_cleaned[i].items()
+                                        if 'tkeywords-tkeywords' in key.lower() and 'autocomplete' not in key.lower()]
+                        tkeywords_ids.extend(map(int, cleaned_data[0]))
+                    except:
+                        pass
+
+                if hasattr(settings, 'THESAURI'):
+                    for el in settings.THESAURI:
+                        thesaurus_name = el['name']
+                        try:
+                            t = Thesaurus.objects.get(identifier=thesaurus_name)
+                            for tk in t.thesaurus.all():
+                                tkl = tk.keyword.filter(pk__in=tkeywords_ids)
+                                if len(tkl) > 0:
+                                    tkeywords_to_add.append(tkl[0].keyword_id)
+                        except:
+                            tb = traceback.format_exc()
+                            logger.error(tb)
+
+            layer.tkeywords.add(*tkeywords_to_add)
+        except:
+            tb = traceback.format_exc()
+            logger.error(tb)
+
+        return HttpResponse(json.dumps({'message': message}))
 
     if poc is not None:
         layer_form.fields['poc'].initial = poc.id
@@ -524,14 +641,38 @@ def layer_metadata(request, layername, template='layers/layer_metadata.html'):
         author_form = ProfileForm(prefix="author")
         author_form.hidden = False
 
+    if 'access_token' in request.session:
+        access_token = request.session['access_token']
+    else:
+        u = uuid.uuid1()
+        access_token = u.hex
+
+    viewer = json.dumps(
+        map_obj.viewer_json(request.user, access_token, * (NON_WMS_BASE_LAYERS + [maplayer])))
+
+    metadataxsl = False
+    if "geonode.contrib.metadataxsl" in settings.INSTALLED_APPS:
+        metadataxsl = True
+
     return render_to_response(template, RequestContext(request, {
+        "resource": layer,
         "layer": layer,
         "layer_form": layer_form,
         "poc_form": poc_form,
         "author_form": author_form,
         "attribute_form": attribute_form,
         "category_form": category_form,
+        "tkeywords_form": tkeywords_form,
+        "viewer": viewer,
+        "preview":  getattr(settings, 'LAYER_PREVIEW_LIBRARY', 'leaflet'),
+        "crs":  getattr(settings, 'DEFAULT_MAP_CRS', 'EPSG:900913'),
+        "metadataxsl": metadataxsl
     }))
+
+
+@login_required
+def layer_metadata_advanced(request, layername):
+    return layer_metadata(request, layername, template='layers/layer_metadata_advanced.html')
 
 
 @login_required
@@ -747,6 +888,15 @@ def get_layer(request, layername):
 def layer_metadata_detail(request, layername, template='layers/layer_metadata_detail.html'):
     layer = _resolve_layer(request, layername, 'view_resourcebase', _PERMISSION_MSG_METADATA)
     return render_to_response(template, RequestContext(request, {
+        "layer": layer,
+        'SITEURL': settings.SITEURL[:-1]
+    }))
+
+
+def layer_metadata_upload(request, layername, template='layers/layer_metadata_upload.html'):
+    layer = _resolve_layer(request, layername, 'view_resourcebase', _PERMISSION_MSG_METADATA)
+    return render_to_response(template, RequestContext(request, {
+        "resource": layer,
         "layer": layer,
         'SITEURL': settings.SITEURL[:-1]
     }))

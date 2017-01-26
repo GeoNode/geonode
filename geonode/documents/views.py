@@ -405,6 +405,14 @@ def document_metadata(
         }))
 
 
+@login_required
+def document_metadata_advanced(request, docid):
+    return document_metadata(
+            request,
+            docid,
+            template='documents/document_metadata_advanced.html')
+
+
 def document_search_page(request):
     # for non-ajax requests, render a generic search page
 

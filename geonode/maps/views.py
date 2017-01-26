@@ -254,13 +254,30 @@ def map_metadata(request, mapid, template='maps/map_metadata.html'):
             author_form = ProfileForm(prefix="author")
             author_form.hidden = True
 
+    if 'access_token' in request.session:
+        access_token = request.session['access_token']
+    else:
+        access_token = None
+
+    config = map_obj.viewer_json(request.user, access_token)
+    layers = MapLayer.objects.filter(map=map_obj.id)
+
     return render_to_response(template, RequestContext(request, {
+        "config": json.dumps(config),
         "map": map_obj,
         "map_form": map_form,
         "poc_form": poc_form,
         "author_form": author_form,
         "category_form": category_form,
+        "layers": layers,
+        "preview":  getattr(settings, 'LAYER_PREVIEW_LIBRARY', 'leaflet'),
+        "crs":  getattr(settings, 'DEFAULT_MAP_CRS', 'EPSG:900913'),
     }))
+
+
+@login_required
+def map_metadata_advanced(request, mapid):
+    return map_metadata(request, mapid, template='maps/map_metadata_advanced.html')
 
 
 @login_required

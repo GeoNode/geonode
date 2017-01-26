@@ -329,7 +329,9 @@
               <div class="col-sm-3">
                 <i class="fa fa-list-alt fa-3x"></i>
                 <h4>{% trans "Metadata" %}</h4>
-                <a class="btn btn-default btn-block btn-xs" href="{% url "layer_metadata" resource.service_typename %}">{% trans "Edit" %}</a>
+                <a class="btn btn-default btn-block btn-xs" href="{% url "layer_metadata" resource.service_typename %}">{% trans "Wizard" %}</a>
+                <a class="btn btn-default btn-block btn-xs" href="{% url "layer_metadata_advanced" resource.service_typename %}">{% trans "Advanced Edit" %}</a>
+                <a class="btn btn-default btn-block btn-xs" href="{% url "layer_metadata_upload" resource.service_typename %}">{% trans "Upload Metadata" %}</a>
               </div>
               {% endif %}
               {% if GEOSERVER_BASE_URL and not resource.service %}

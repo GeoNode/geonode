@@ -19,13 +19,25 @@
 #########################################################################
 
 import autocomplete_light
+
+from fields import MultiThesauriField
+from widgets import MultiThesauriWidget
+
 from autocomplete_light.contrib.taggit_field import TaggitField, TaggitWidget
 
 from django import forms
+from django.forms import models
+from django.forms.fields import ChoiceField
+from django.forms.utils import flatatt
+from django.utils.html import format_html
 from django.utils.safestring import mark_safe
 from django.utils.translation import ugettext as _
+from django.db.models import Q
 
-from mptt.forms import TreeNodeMultipleChoiceField
+from django.utils.encoding import (
+    force_text,
+)
+
 from bootstrap3_datetime.widgets import DateTimePicker
 from modeltranslation.forms import TranslationModelForm
 
@@ -33,14 +45,58 @@ from geonode.base.models import TopicCategory, Region
 from geonode.people.models import Profile
 
 
+def get_tree_data():
+    def rectree(parent, path):
+        children_list_of_tuples = list()
+        c = Region.objects.filter(parent=parent)
+        for child in c:
+            children_list_of_tuples.append(
+                tuple((path + parent.name, tuple((child.id, child.name))))
+            )
+            childrens = rectree(child, parent.name + '/')
+            if childrens:
+                children_list_of_tuples.extend(childrens)
+
+        return children_list_of_tuples
+
+    data = list()
+    try:
+        t = Region.objects.filter(Q(level=0) | Q(parent=None))
+        for toplevel in t:
+            data.append(
+                tuple((toplevel.id, toplevel.name))
+            )
+            childrens = rectree(toplevel, '')
+            if childrens:
+                data.append(
+                    tuple((toplevel.name, childrens))
+                )
+    except:
+        pass
+
+    return tuple(data)
+
+
+class AdvancedModelChoiceIterator(models.ModelChoiceIterator):
+    def choice(self, obj):
+        return (self.field.prepare_value(obj), self.field.label_from_instance(obj), obj)
+
+
 class CategoryChoiceField(forms.ModelChoiceField):
+    def _get_choices(self):
+        if hasattr(self, '_choices'):
+            return self._choices
+
+        return AdvancedModelChoiceIterator(self)
+
+    choices = property(_get_choices, ChoiceField._set_choices)
+
     def label_from_instance(self, obj):
-        return '<span class="has-popover" data-container="body" data-toggle="popover" data-placement="top" ' \
+        return '<i class="fa '+obj.fa_class+' fa-2x unchecked"></i>' \
+               '<i class="fa '+obj.fa_class+' fa-2x checked"></i>' \
+               '<span class="has-popover" data-container="body" data-toggle="popover" data-placement="top" ' \
                'data-content="' + obj.description + '" trigger="hover">' \
-               '<div class="fa-stack fa-1g">' \
-               '<i class="fa fa-square-o fa-stack-2x"></i>' \
-               '<i class="fa '+obj.fa_class+' fa-stack-1x"></i></div>' \
-               '&nbsp;' + obj.gn_description + '</span>'
+               '<br/><strong>' + obj.gn_description + '</strong></span>'
 
 
 class TreeWidget(forms.TextInput):
@@ -58,6 +114,97 @@ class TreeWidget(forms.TextInput):
                  value='%s'><br/>""" % (vals)]
             output.append('<div id="treeview" class=""></div>')
             return mark_safe(u'\n'.join(output))
+
+
+class RegionsMultipleChoiceField(forms.MultipleChoiceField):
+    def validate(self, value):
+        """
+        Validates that the input is a list or tuple.
+        """
+        if self.required and not value:
+            raise forms.ValidationError(self.error_messages['required'], code='required')
+
+
+class RegionsSelect(forms.Select):
+    allow_multiple_selected = True
+
+    def render(self, name, value, attrs=None):
+        if value is None:
+            value = []
+        final_attrs = self.build_attrs(attrs, name=name)
+        output = [format_html('<select multiple="multiple"{}>', flatatt(final_attrs))]
+        options = self.render_options(value)
+        if options:
+            output.append(options)
+        output.append('</select>')
+        return mark_safe('\n'.join(output))
+
+    def value_from_datadict(self, data, files, name):
+        try:
+            getter = data.getlist
+        except AttributeError:
+            getter = data.get
+        return getter(name)
+
+    def render_option_value(self, selected_choices, option_value, option_label, data_section=None):
+        if option_value is None:
+            option_value = ''
+        option_value = force_text(option_value)
+        if option_value in selected_choices:
+            selected_html = mark_safe(' selected')
+            if not self.allow_multiple_selected:
+                # Only allow for a single selection.
+                selected_choices.remove(option_value)
+        else:
+            selected_html = ''
+
+        label = force_text(option_label)
+
+        if data_section is None:
+            data_section = ''
+        else:
+            data_section = force_text(data_section)
+            if '/' in data_section:
+                label = format_html('{} [{}]', label, data_section.rsplit('/', 1)[1])
+
+        return format_html('<option data-section="{}" value="{}"{}>{}</option>',
+                           data_section,
+                           option_value,
+                           selected_html,
+                           label)
+
+    def render_options(self, selected_choices):
+        # Normalize to strings.
+        selected_choices = set(force_text(v) for v in selected_choices)
+        output = []
+
+        output.append(format_html('<optgroup label="{}">', 'Global'))
+        for option_value, option_label in self.choices:
+            if not isinstance(option_label, (list, tuple)) and isinstance(option_label, basestring):
+                output.append(self.render_option_value(selected_choices, option_value, option_label))
+        output.append('</optgroup>')
+
+        for option_value, option_label in self.choices:
+            if isinstance(option_label, (list, tuple)) and not isinstance(option_label, basestring):
+                output.append(format_html('<optgroup label="{}">', force_text(option_value)))
+                for option in option_label:
+                    if isinstance(option, (list, tuple)) and not isinstance(option, basestring):
+                        if isinstance(option[1][0], (list, tuple)) and not isinstance(option[1][0], basestring):
+                            for option_child in option[1][0]:
+                                output.append(self.render_option_value(selected_choices,
+                                                                       *option_child,
+                                                                       data_section=force_text(option[1][0][0])))
+                        else:
+                            output.append(self.render_option_value(selected_choices,
+                                                                   *option[1],
+                                                                   data_section=force_text(option[0])))
+                    else:
+                        output.append(self.render_option_value(selected_choices,
+                                                               *option,
+                                                               data_section=force_text(option_value)))
+                output.append('</optgroup>')
+
+        return '\n'.join(output)
 
 
 class CategoryForm(forms.Form):
@@ -79,6 +226,26 @@ class CategoryForm(forms.Form):
         return cleaned_data
 
 
+class TKeywordForm(forms.Form):
+    tkeywords = MultiThesauriField(
+        label=_("Keywords from Thesauri"),
+        required=False,
+        help_text=_("List of keywords from Thesauri"),
+        widget=MultiThesauriWidget())
+
+    def clean(self):
+        cleaned_data = None
+        if self.data:
+            try:
+                cleaned_data = [{key: self.data.getlist(key)} for key, value
+                                in self.data.items()
+                                if 'tkeywords-tkeywords' in key.lower() and 'autocomplete' not in key.lower()]
+            except:
+                pass
+
+        return cleaned_data
+
+
 class ResourceBaseForm(TranslationModelForm):
     """Base form for metadata, should be inherited by childres classes of ResourceBase"""
 
@@ -93,7 +260,8 @@ class ResourceBaseForm(TranslationModelForm):
     _date_widget_options = {
         "icon_attrs": {"class": "fa fa-calendar"},
         "attrs": {"class": "form-control input-sm"},
-        "format": "%Y-%m-%d %I:%M %p",
+        # "format": "%Y-%m-%d %I:%M %p",
+        "format": "%Y-%m-%d",
         # Options for the datetimepickers are not set here on purpose.
         # They are set in the metadata_form_js.html template because
         # bootstrap-datetimepicker uses jquery for its initialization
@@ -104,21 +272,21 @@ class ResourceBaseForm(TranslationModelForm):
     date = forms.DateTimeField(
         label=_("Date"),
         localize=True,
-        input_formats=['%Y-%m-%d %I:%M %p'],
+        input_formats=['%Y-%m-%d'],
         widget=DateTimePicker(**_date_widget_options)
     )
     temporal_extent_start = forms.DateTimeField(
         label=_("temporal extent start"),
         required=False,
         localize=True,
-        input_formats=['%Y-%m-%d %I:%M %p'],
+        input_formats=['%Y-%m-%d'],
         widget=DateTimePicker(**_date_widget_options)
     )
     temporal_extent_end = forms.DateTimeField(
         label=_("temporal extent end"),
         required=False,
         localize=True,
-        input_formats=['%Y-%m-%d %I:%M %p'],
+        input_formats=['%Y-%m-%d'],
         widget=DateTimePicker(**_date_widget_options)
     )
 
@@ -139,16 +307,23 @@ class ResourceBaseForm(TranslationModelForm):
         widget=autocomplete_light.ChoiceWidget('ProfileAutocomplete'))
 
     keywords = TaggitField(
-        label=_("Keywords"),
+        label=_("Free-text Keywords"),
         required=False,
-        help_text=_("A space or comma-separated list of keywords"),
+        help_text=_("A space or comma-separated list of keywords. Use the widget to select from Hierarchical tree."),
         widget=TaggitWidget('HierarchicalKeywordAutocomplete'))
 
+    """
     regions = TreeNodeMultipleChoiceField(
         label=_("Regions"),
         required=False,
         queryset=Region.objects.all(),
         level_indicator=u'___')
+    """
+    regions = RegionsMultipleChoiceField(
+        label=_("Regions"),
+        required=False,
+        choices=get_tree_data(),
+        widget=RegionsSelect)
     regions.widget.attrs = {"size": 20}
 
     def __init__(self, *args, **kwargs):
