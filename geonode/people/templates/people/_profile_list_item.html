@@ -7,12 +7,19 @@
         <div class="col-xs-4 profile-image">
           <a href="{{ profile.profile_detail_url }}" ><img ng-src="{{ profile.avatar_100 }}"/></a>
         </div>
-        <div class="col-xs-8 profile-details">
+        <div class="col-xs-8 profile-details" style="height: 110px;">
           <h5>
             <a href="{{ profile.profile_detail_url }}">{{ profile.first_name != '' ? profile.first_name : profile.username }} {{ profile.last_name != '' ? profile.last_name : '' }}
             </a>
           </h5>
-          <p><small>{{ profile.organization != '' ?  profile.organization : "No Organization info" }}</small></p>
+          <p>
+            <small ng-hide="profile.organization">
+              No Organization Info
+            </small>
+            <small ng-show="profile.organization">
+              {{ profile.organization | limitTo:30 }} <small ng-if="profile.organization.length > 30">...</small>
+            </small>
+          </p>
           <!-- <p>{{ profile.username }}</p> -->
           <!-- <a href="mailto:{{ profile.email }}" ng-if="profile.email != ''"><i class="fa fa-envelope"></i></a> -->
         </div>

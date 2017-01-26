@@ -36,7 +36,6 @@ from geonode.geoserver.helpers import geoserver_upload
 from geonode.geoserver.helpers import create_gs_thumbnail
 from geonode.base.models import ResourceBase
 from geonode.base.models import Link
-from geonode.layers.utils import create_thumbnail
 from geonode.people.models import Profile
 
 from geoserver.layer import Layer as GsLayer
@@ -497,34 +496,4 @@ def geoserver_pre_save_maplayer(instance, sender, **kwargs):
 
 def geoserver_post_save_map(instance, sender, **kwargs):
     instance.set_missing_info()
-    local_layers = []
-    for layer in instance.layers:
-        if layer.local:
-            local_layers.append(layer.name)
-
-    # If the map does not have any local layers, do not create the thumbnail.
-    if len(local_layers) > 0:
-        params = {
-            'layers': ",".join(local_layers).encode('utf-8'),
-            'format': 'image/png8',
-            'width': 200,
-            'height': 150,
-        }
-
-        # Add the bbox param only if the bbox is different to [None, None,
-        # None, None]
-        if None not in instance.bbox:
-            params['bbox'] = instance.bbox_string
-
-        # Avoid using urllib.urlencode here because it breaks the url.
-        # commas and slashes in values get encoded and then cause trouble
-        # with the WMS parser.
-        p = "&".join("%s=%s" % item for item in params.items())
-
-        thumbnail_remote_url = ogc_server_settings.PUBLIC_LOCATION + \
-            "wms/reflect?" + p
-
-        thumbnail_create_url = ogc_server_settings.LOCATION + \
-            "wms/reflect?" + p
-
-        create_thumbnail(instance, thumbnail_remote_url, thumbnail_create_url, check_bbox=False)
+    create_gs_thumbnail(instance, overwrite=True)

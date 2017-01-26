@@ -18,23 +18,23 @@
 #
 #########################################################################
 
-import os
+from django.core.management.base import BaseCommand
 
-__version__ = (2, 5, 11, 'alpha', 0)
-
-
-class GeoNodeException(Exception):
-    """Base class for exceptions in this module."""
-    pass
+from geonode.maps.models import Map
+from geonode.maps.utils import fix_baselayers
 
 
-def get_version():
-    import geonode.version
-    return geonode.version.get_version(__version__)
+class Command(BaseCommand):
+    help = ('Fix base layers for all of the GeoNode maps or for a given map.\n\n'
+            'Arguments:\n'
+            'map_id - numeric map ID (optional)\n')
 
+    args = 'map_id'
 
-def main(global_settings, **settings):
-    from django.core.wsgi import get_wsgi_application
-    os.environ.setdefault('DJANGO_SETTINGS_MODULE', settings.get('django_settings'))
-    app = get_wsgi_application()
-    return app
+    def handle(self, *args, **options):
+        if len(args) == 1:
+            map_id = args[0]
+            fix_baselayers(map_id)
+        else:
+            for map in Map.objects.all():
+                fix_baselayers(map.id)

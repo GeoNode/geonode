@@ -1,0 +1,19 @@
+{% extends "site_base.html" %}
+
+{% load i18n %}
+{% load base_tags %}
+
+{% block title %} {% trans "Edit Map" %} - {{ block.super }} {% endblock %}
+{% block head %}
+	{% if preview == 'geoext' %}
+		{% include 'maps/map_geoexplorer.js' %}
+	{% elif preview == 'react' %}
+		{% include 'geonode-client/edit_map.html' %}
+	{% else %}
+		{% include 'maps/map_geoexplorer.js' %}
+	{% endif %}
+
+	{{ block.super }}
+{% endblock %}
+
+{% block footer %}{% endblock %}

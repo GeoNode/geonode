@@ -86,7 +86,7 @@ function setup_django_every_time() {
     pip install $GEONODE_SHARE/GeoNode-*.zip --no-dependencies --quiet
 
     geonodedir=`python -c "import geonode;import os;print os.path.dirname(geonode.__file__)"`
-    
+
     ln -sf $GEONODE_ETC/local_settings.py $geonodedir/local_settings.py
     # Set up logging symlink
     mkdir -p $GEONODE_LOG
@@ -94,6 +94,7 @@ function setup_django_every_time() {
 
     export DJANGO_SETTINGS_MODULE=geonode.settings
 
+    django-admin migrate account --settings=geonode.settings
     geonode migrate --verbosity 0
     geonode loaddata $geonodedir/geonode/base/fixtures/initial_data.json
     geonode collectstatic --noinput --verbosity 0
@@ -112,7 +113,7 @@ function setup_django_every_time() {
 function setup_apache_once() {
     chown www-data -R $GEONODE_WWW
     a2enmod proxy_http
-        
+
     sed -i '1d' $APACHE_SITES/geonode.conf
     sed -i "1i WSGIDaemonProcess geonode user=www-data threads=15 processes=2" $APACHE_SITES/geonode.conf
 

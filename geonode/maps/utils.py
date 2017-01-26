@@ -20,6 +20,10 @@
 
 import json
 
+from django.conf import settings
+
+from .models import Map, MapLayer
+
 
 def _layer_json(layers, sources):
     """
@@ -65,3 +69,62 @@ def _layer_json(layers, sources):
         return cfg
 
     return [layer_config(l, user=None) for l in layers]
+
+
+def fix_baselayers(map_id):
+    """
+    Fix base layers for a given map.
+    """
+
+    try:
+        id = int(map_id)
+    except ValueError:
+        print 'map_id must be an integer'
+        return
+
+    if not Map.objects.filter(pk=id).exists():
+        print 'There is not a map with id %s' % id
+        return
+
+    map = Map.objects.get(pk=id)
+    # first we delete all of the base layers
+    map.layer_set.filter(local=False).delete()
+
+    # now we re-add them
+    source = 0
+    for base_layer in settings.MAP_BASELAYERS:
+        if 'group' in base_layer:
+            # layer_params
+            layer_params = {}
+            layer_params['selected'] = True
+            if 'title' in base_layer:
+                layer_params['title'] = base_layer['title']
+            if 'type' in base_layer:
+                layer_params['type'] = base_layer['type']
+            if 'args' in base_layer:
+                layer_params['args'] = base_layer['args']
+            # source_params
+            source_params = {}
+            source_params['id'] = source
+            for param in base_layer['source']:
+                source_params[param] = base_layer['source'][param]
+            # let's create the map layer
+            name = ''
+            if 'name' in base_layer:
+                name = base_layer['name']
+            else:
+                if 'args' in base_layer:
+                    name = base_layer['args'][0]
+            map_layer = MapLayer(
+                map=map,
+                stack_order=map.layer_set.count() + 1,
+                name=name,
+                opacity=1,
+                transparent=False,
+                fixed=True,
+                group='background',
+                layer_params=json.dumps(layer_params),
+                source_params=json.dumps(source_params)
+            )
+            map_layer.save()
+        source += 1
