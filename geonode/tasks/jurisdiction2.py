@@ -110,7 +110,9 @@ def assign_grid_refs(user):
 def assign_grid_refs_all():
     user_jurisdictions = UserJurisdiction.objects.all()
     for uj in  user_jurisdictions:
-        if not UserTiles.objects.get(user=uj.user):
+        try:
+            UserTiles.objects.get(user=uj.user):
+        except ObjectDoesNotExist:
             assign_grid_ref_util(uj.user)
 
 def get_shp_ogr(juris_shp_name):
