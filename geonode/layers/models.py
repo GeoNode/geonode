@@ -282,11 +282,6 @@ class Layer(ResourceBase):
         return None
 
 
-class LayerStyles(models.Model):
-    layer = models.ForeignKey(Layer)
-    style = models.ForeignKey(Style)
-
-
 class UploadSession(models.Model):
 
     """Helper class to keep track of uploads.
