@@ -1,3 +1,12 @@
+geonode (2.5.10+thefinal0) xenial; urgency=high
+
+  [ Way Barrios ]
+  * [415b0b] Oauth2 GeoServer/GeoNode implementation on Docker (#2855)
+
+  [ Angelos Tzotsos ]
+
+ -- Angelos Tzotsos <gcpp.kalxas@gmail.com>  Thu, 26 Jan 2017 03:43:09 +0200
+
 geonode (2.5.9+thefinal5) trusty; urgency=high
 
   [ Mila Frerichs ]
