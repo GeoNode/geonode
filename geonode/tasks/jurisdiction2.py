@@ -46,6 +46,7 @@ def get_juris_tiles(juris_shp):
     min_y =  int(math.floor(float(juris_shp.bounds[1]) / float(settings._TILE_SIZE))) * int(settings._TILE_SIZE)
     max_y =  int(math.ceil(float(juris_shp.bounds[3]) / float(settings._TILE_SIZE))) * int(settings._TILE_SIZE)
     tile_list = []
+    count = 0
     for tile_y in xrange(min_y+settings._TILE_SIZE, max_y+settings._TILE_SIZE, settings._TILE_SIZE):
         for tile_x in xrange(min_x, max_x, settings._TILE_SIZE):
             tile_ulp = (tile_x, tile_y)
@@ -56,6 +57,9 @@ def get_juris_tiles(juris_shp):
             
             if not tile.intersection(juris_shp).is_empty:
                 tile_list.append(tile)
+                count+=1
+                if count > 1000:
+                    return tile_list
                 
     return tile_list
 
@@ -106,7 +110,8 @@ def assign_grid_refs(user):
 def assign_grid_refs_all():
     user_jurisdictions = UserJurisdiction.objects.all()
     for uj in  user_jurisdictions:
-        assign_grid_ref_util(uj.user)
+        if not UserTiles.objects.get(user=uj.user):
+            assign_grid_ref_util(uj.user)
 
 def get_shp_ogr(juris_shp_name):
     source = ogr.Open(("PG:host={0} dbname={1} user={2} password={3}".format(settings.DATABASE_HOST,settings.DATASTORE_DB,settings.DATABASE_USER,settings.DATABASE_PASSWORD)))
