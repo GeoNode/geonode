@@ -68,13 +68,6 @@ class Migration(migrations.Migration):
             ],
         ),
         migrations.CreateModel(
-            name='Layer_Styles',
-            fields=[
-                ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
-                ('layer', models.ForeignKey(to='layers.Layer')),
-            ],
-        ),
-        migrations.CreateModel(
             name='Style',
             fields=[
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
@@ -98,11 +91,7 @@ class Migration(migrations.Migration):
                 ('user', models.ForeignKey(to=settings.AUTH_USER_MODEL)),
             ],
         ),
-        migrations.AddField(
-            model_name='layer_styles',
-            name='style',
-            field=models.ForeignKey(to='layers.Style'),
-        ),
+
         migrations.AddField(
             model_name='layerfile',
             name='upload_session',
