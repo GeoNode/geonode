@@ -231,7 +231,6 @@ GEONODE_APPS = (
     'geonode.api',
     'geonode.groups',
     'geonode.services',
-    'geonode.annotations',
     # GeoNode Contrib Apps
     # 'geonode.contrib.dynamic',
     # GeoServer Apps
