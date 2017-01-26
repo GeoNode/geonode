@@ -111,7 +111,7 @@ def assign_grid_refs_all():
     user_jurisdictions = UserJurisdiction.objects.all()
     for uj in  user_jurisdictions:
         try:
-            UserTiles.objects.get(user=uj.user):
+            UserTiles.objects.get(user=uj.user)
         except ObjectDoesNotExist:
             assign_grid_ref_util(uj.user)
 
