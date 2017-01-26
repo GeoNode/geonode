@@ -139,7 +139,11 @@ def process_georefs(request):
             georef_area = request.POST['georef_area']
             georef_list = filter(None, georef_area.split(","))
             #pprint("Initial georef_list:" + str(georef_list))
-            georef_list = clean_georefs(request.user, georef_list)
+            try:
+                georef_list = clean_georefs(request.user, georef_list)
+            except ObjectDoesNotExist:
+                messages.info(request, "Due to a recent update, your selectable tiles are still under process. We apologize for the inconvenience.")
+                return redirect('geonode.cephgeo.views.get_cart')
             #pprint("Filtered georef_list:" + str(georef_list))
             
             #Get the requested dataclasses
@@ -169,8 +173,6 @@ def process_georefs(request):
                 #Execute query
                 objects = CephDataObject.objects.filter(filter_query)
                 pprint("objects found for georef:"+ georef)
-                for o in objects:
-                    pprint(o.name)
 
                 #Count duplicates and empty references
                 count += len(objects)
