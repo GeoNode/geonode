@@ -139,7 +139,6 @@ def logout(request, next_page=None):
     ProxyGrantingTicket.objects.filter(session_key=request.session.session_key).delete()
     SessionTicket.objects.filter(session_key=request.session.session_key).delete()
     next_page = next_page or get_redirect_url(request)
-    next_page = '/'
     if settings.CAS_LOGOUT_COMPLETELY:
         protocol = get_protocol(request)
         host = request.get_host()
