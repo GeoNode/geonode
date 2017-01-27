@@ -12,7 +12,7 @@ urlpatterns = patterns(
     #old requests
     url(r'^old_requests/$',DataRequestProfileList.as_view(),name='old_requests_model_view'),
     url(r'^old_requests/(?P<pk>\d+)/$', 'old_request_detail', name="old_request_detail"),
-    #url(r'^old_requests/migrate/$','old_request_migration_all',name='old_request_migration_all'),
+    url(r'^old_requests/migrate/$','old_request_migration_all',name='old_request_migration_all'),
     url(r'^old_requests/(?P<pk>\d+)/migrate/$','old_request_migration', name='old_request_migration'),
     url(r'^old_requests/~count_facets/$','old_request_facet_count', name='old_request_facet_count'),
     
