@@ -10,7 +10,7 @@
 {% block body %}
 <div class="page-header">
     {% if request.user.is_superuser %}
-        <a class="btn btn-primary pull-right">{% trans "Migrate all requests to new model" %}</a>
+        <a href={% url 'datarequests:old_request_migration_all' %} class="btn btn-primary pull-right">{% trans "Migrate all requests to new model" %}</a>
     {% endif %}
   <h2 class="page-title">{% trans "Data Request Profiles (deprecated)" %}</h2>
 </div>
