@@ -1,6 +1,6 @@
 {% load floppyforms %}
 {% load i18n %}
-<link href="{{ STATIC_URL }}lib/css/bootstrap-select.min.css?v={{ VERSION }}" rel="stylesheet" />
+<!--<link href="{{ STATIC_URL }}lib/css/bootstrap-select.min.css?v={{ VERSION }}" rel="stylesheet" />-->
 <script type="text/javascript" src="{{ STATIC_URL}}geonode/js/utils/thumbnail.js"></script>
 <style>
 /* general panel styles */
@@ -196,7 +196,7 @@ span.grippy {
 span.grippy::after {
   content: '.. .. .. ..';
 }
-    
+
 
 </style>
 <button class="btn btn-success metadata-edit-done" id="btn_upd_md_done" type="submit" style="float:right; opacity: 0;" >Done!</button>
@@ -217,7 +217,7 @@ span.grippy::after {
 <div class="tab-content">
 <div id="edit-metadata" class="tab-content tab-pane fade in active">
   <div id="completeness-hints" class="progress">
-  
+
   <div class="mandatory-hint progress-bar" role="progressbar" style="width:25%">
     Mandatory
   </div>
@@ -373,7 +373,7 @@ span.grippy::after {
                                       </div>
                                 </div>
                                 <div class="col-lg-4">
-                                    
+
                                     <div>
                                         <span><label for="{{ layer_form.restriction_code_type|id }}">{{ layer_form.restriction_code_type.label }}</label></span>
                                         <!--<p class="xxs-font-size">(Limitation/s placed upon the access or use of data)</p>-->
@@ -452,7 +452,7 @@ span.grippy::after {
                               {{ layer_form.poc }}
                           </div>
                       </div>
-                  
+
                       <div class="panel panel-default">
                           <div class="panel-heading">Owner and Permissions</div>
                           <div class="panel-body">
@@ -582,7 +582,7 @@ span.grippy::after {
                         <span><label for="{{ layer_form.has_elevation|id }}">{{ layer_form.has_elevation.label }}</label></span>
                         {{ layer_form.has_elevation }}
                     </div>
-                    
+
                     <div>
                         <span><label for="{{ layer_form.time_regex|id }}">{{ layer_form.time_regex.label }}</label></span>
                         {{ layer_form.time_regex }}
@@ -596,7 +596,7 @@ span.grippy::after {
               </div>
             </div>
         </div>
-    </div>    
+    </div>
 </div>
 </div>
 {% endblock %}
