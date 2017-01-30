@@ -459,6 +459,7 @@ def test_integration(options):
     success = False
     try:
         if name == 'geonode.tests.csw':
+            call_task('sync')
             call_task('start')
             sh('sleep 30')
             call_task('setup_data')
