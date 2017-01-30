@@ -89,6 +89,16 @@ In case you want to be involved in static files development::
     sudo npm install -g bower
     sudo npm install -g grunt-cli
 
+Rebuild libraries through::
+
+    cd geonode/static
+    bower cache clean
+    bower update
+    grunt production
+
+On a production environment, remember to refresh also the "static_root" folder::
+
+    python manage.py collectstatic --clear -i site-packages* -i .components* -i node_modules* --noinput
 
 Windows, OSX and others
 =======================
@@ -186,6 +196,18 @@ Node and tools required for static files development::
     brew install node
     npm install -g bower
     npm install -g grunt-cli
+
+
+Rebuild libraries through::
+
+    cd geonode/static
+    bower cache clean
+    bower update
+    grunt production
+
+On a production environment, remember to refresh also the "static_root" folder::
+
+    python manage.py collectstatic --clear -i site-packages* -i .components* -i node_modules* --noinput
 
 Install pip dependencies::
 
