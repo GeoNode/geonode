@@ -285,7 +285,6 @@ def package(options):
 
 @task
 @needs(['start_geoserver',
-        'sync',
         'start_django'])
 @cmdopts([
     ('bind=', 'b', 'Bind server to provided IP address and port number.'),
