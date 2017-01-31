@@ -1,0 +1,247 @@
+#GEONODE_CLIENT_LOCATION = "http://192.168.33.16:9090/"
+
+GEOSERVER_BASE_URL = "http://192.168.33.16:8081/geoserver/"
+#GEOSERVER_BASE_URL = "http://192.168.33.16/geoserver/"
+#GEOSERVER_BASE_URL = 'http://worldmap.harvard.edu/geoserver/'
+GEONETWORK_BASE_URL = "http://192.168.33.16:8081/geonetwork/"
+
+DB_DATASTORE = True
+
+DATABASE_ENGINE = 'django.contrib.gis.db.backends.postgis'
+DATABASE_NAME = 'worldmaplegacy'
+DATABASE_USER = 'worldmap'             # Not used with sqlite3.
+DATABASE_PASSWORD = 'worldmap'         # Not used with sqlite3.
+DATABASE_HOST = 'localhost'             # Not used with sqlite3.
+DATABASE_PORT = '5432'             # Not used with sqlite3.
+
+# Name of the store in geoserver
+DB_DATASTORE_NAME = 'wmdata'
+DB_DATASTORE_DATABASE = 'wmdata'
+DB_DATASTORE_USER = 'worldmap'
+DB_DATASTORE_PASSWORD = 'worldmap'
+DB_DATASTORE_HOST = 'localhost'
+DB_DATASTORE_PORT = '5432'
+DB_DATASTORE_TYPE = 'postgis'
+DB_DATASTORE_ENGINE = 'django.contrib.gis.db.backends.postgis'
+
+DATABASES = {
+    'default': {
+        'ENGINE': DATABASE_ENGINE,
+        'NAME': DATABASE_NAME,
+        'USER' : DATABASE_USER,
+        'PASSWORD': DATABASE_PASSWORD,
+        'PORT': DATABASE_PORT,
+        'HOST': DATABASE_HOST
+    },
+    'wmdata': {
+        'ENGINE': DB_DATASTORE_ENGINE,
+        'NAME': DB_DATASTORE_DATABASE,
+        'USER' : DB_DATASTORE_USER,
+        'PASSWORD': DB_DATASTORE_PASSWORD,
+        'PORT': DB_DATASTORE_PORT,
+        'HOST': DB_DATASTORE_HOST
+    }
+
+}
+
+MAP_BASELAYERS = [
+    {
+        "source": {
+            "ptype": "gxp_gnsource",
+            "url": GEOSERVER_BASE_URL + "wms",
+            "restUrl": "/gs/rest"
+        }
+    }, {
+        "source": {"ptype": "gx_olsource"},
+        "type": "OpenLayers.Layer",
+        "args": ["No background"],
+        "visibility": False,
+        "fixed": True,
+        "group": "background"
+    }, {
+        "source": {"ptype": "gx_olsource"},
+        "type": "OpenLayers.Layer.OSM",
+        "args": ["OpenStreetMap"],
+        "visibility": False,
+        "fixed": True,
+        "group": "background"
+    }, {
+        "source": {"ptype": "gxp_mapquestsource"},
+        "name": "osm",
+        "group": "background",
+        "visibility": False
+#    },
+#{
+#        "source": {"ptype": "gxp_mapquestsource"},
+#        "name": "naip",
+#        "group": "background",
+#        "visibility": False
+#    },
+#{
+#        "source": {"ptype": "gxp_bingsource"},
+#        "name": "AerialWithLabels",
+#        "fixed": True,
+#        "visibility": False,
+#        "group": "background"
+    }, {
+        "source": {"ptype": "gxp_mapboxsource"},
+    },
+    {
+        "source": {"ptype": "gxp_stamensource"},
+        "name": "watercolor",
+        "visibility": False,
+        "group": "background",
+        "title": "Stamen Watercolor"
+        },
+    {
+        "source": {"ptype": "gxp_stamensource"},
+        "name": "toner",
+        "visibility": False,
+        "group": "background",
+        "title": "Stamen Toner"
+    },
+    {
+        "source": {
+            "url": "http://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer",
+            "ptype": "gxp_arcgiscachesource"},
+        "group": "background",
+        "name": "World Street Map",
+        "visibility": False,
+        "fixed": True,
+        "format": "jpeg",
+        "tiled" : False,
+        "title": "ESRI World Street Map"
+    },{
+        "source": {
+            "url": "http://services.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer",
+            "ptype": "gxp_arcgiscachesource"},
+        "group": "background",
+        "format": "jpeg",
+        "name": "World Imagery",
+        "visibility": False,
+        "fixed": True,
+        "tiled" : False,
+        "title": "ESRI World Imagery"
+    },
+    {
+        "source": {
+            "url": "http://services.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Base/MapServer",
+            "ptype": "gxp_arcgiscachesource"},
+        "group": "background",
+        "name": "Light Gray Canvas Base",
+        "visibility": False,
+        "fixed": True,
+        "format": "jpeg",
+        "tiled" : False,
+        "title": "ESRI Light Gray Reference"
+    },
+    {
+        "source": {"ptype": "gx_googlesource"},
+        "group": "background",
+        "name": "SATELLITE",
+        "visibility": False,
+        "fixed": True,
+    }, {
+        "source": {"ptype": "gx_googlesource"},
+        "group": "background",
+        "name": "TERRAIN",
+        "visibility": True,
+        "fixed": True,
+    }, {
+        "source": {"ptype": "gx_googlesource"},
+        "group": "background",
+        "name": "HYBRID",
+        "visibility": False,
+        "fixed": True,
+    }, {
+        "source": {"ptype": "gx_googlesource"},
+        "group": "background",
+        "name": "ROADMAP",
+        "visibility": False,
+        "fixed": True,
+        "group": "background"
+    }
+]
+
+
+LOG_FILENAME='/tmp/worldmap.log'
+
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': True,
+    'formatters': {
+        'verbose': {
+            'format': '%(levelname)s %(asctime)s %(module)s %(process)d %(thread)d %(message)s'
+        },
+        'simple': {
+            'format': '%(message)s',        },
+    },
+    'handlers': {
+        'null': {
+            'level':'DEBUG',
+            'class':'django.utils.log.NullHandler',
+        },
+        'console':{
+            'level':'DEBUG',
+            'class':'logging.StreamHandler',
+            'formatter': 'simple'
+        },
+        'logfile': {
+            'level':'INFO',
+            'class':'logging.handlers.RotatingFileHandler',
+            'filename': "/tmp/worldmap.log",
+            'maxBytes': 500000,
+            'backupCount': 2,
+            'formatter': 'verbose',
+        },
+        'mail_admins': {
+            'level': 'ERROR',
+            'class': 'django.utils.log.AdminEmailHandler',
+        }
+    },
+    'loggers': {
+        'django': {
+            'handlers':['null'],
+            'propagate': True,
+            'level':'INFO',
+        },
+        'django.request': {
+            'handlers': ['mail_admins'],
+            'level': 'ERROR',
+            'propagate': False,
+        },
+        'geonode': {
+            'handlers': ['logfile', 'console'],
+            'level': 'INFO',
+        },
+    }
+}
+
+
+DEFAULT_LAYER_SOURCE = {
+    "ptype":"gxp_gnsource",
+    "url":"/geoserver:8080/wms",
+    "restUrl": "/gs:8080/rest"
+}
+
+"""
+START GAZETTEER SETTINGS
+"""
+# Defines settings for multiple databases,
+# only use if PostGIS integration enabled
+# and USE_GAZETTEER = True
+USE_GAZETTEER = True
+GAZETTEER_DB_ALIAS = "default"
+GAZETTEER_FULLTEXTSEARCH = False
+# Uncomment the following if USE_GAZETTEER = True
+DATABASE_ROUTERS = ['geonode.utils.WorldmapDatabaseRouter']
+SOUTH_DATABASE_ADAPTERS = {
+    'default': "south.db.postgresql_psycopg2",
+    'wmdata' : "south.db.postgresql_psycopg2",
+
+   }
+SOUTH_TESTS_MIGRATE = False
+SOUTH_MIGRATION_MODULES = {}
+"""
+END GAZETTEER SETTINGS
+"""
