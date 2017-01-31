@@ -907,7 +907,7 @@ CELERY_IMPORTS = (
     'geonode.tasks.mk_folder',
     'geonode.tasks.jurisdiction',
     'geonode.tasks.jurisdiction2',
-
+    'geonode.tasks.users',
 )
 
 
@@ -921,6 +921,7 @@ CELERY_QUEUES = [
     Queue('mk_folder', routing_key='mk_folder'),
     Queue('jurisdiction',routing_key='jurisdiction'),
     Queue('requests',routing_key='requests'),
+    Queue('users',routing_key='users'),
 
 ]
 

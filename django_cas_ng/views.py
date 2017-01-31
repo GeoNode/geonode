@@ -18,6 +18,9 @@ from django.contrib import messages
 from django.utils.translation import ugettext_lazy as _
 from django.views.decorators.http import require_http_methods
 
+from geonode.groups.models import GroupProfile
+from geonode.tasks.users import join_user_to_groups
+
 from importlib import import_module
 from pprint import pprint
 
@@ -100,6 +103,12 @@ def login(request, next_page=None, required=False):
                 pprint("user.is_superuser:"+str(attributes["is_superuser"]))
                 user.is_superuser = attributes["is_superuser"]
             user.save()
+            
+            if attributes["groups"]:
+                group_diff = list(set(attribute["groups"]) - set(user.groups.values_list('name', flat = True))
+                if len(group_diff > 0):
+                    join_user_to_groups.delay(user, group_diff)
+                    
             #pprint('Superuser? '+str(user.is_superuser))
 
             if settings.CAS_LOGIN_MSG is not None:
