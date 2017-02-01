@@ -952,7 +952,7 @@ SEARCH_FILTERS = {
 # Queue non-blocking notifications.
 NOTIFICATION_QUEUE_ALL = False
 
-BROKER_URL = "django://"
+BROKER_URL = os.getenv('BROKER_URL', "django://")
 CELERY_ALWAYS_EAGER = True
 CELERY_EAGER_PROPAGATES_EXCEPTIONS = True
 CELERY_IGNORE_RESULT = True

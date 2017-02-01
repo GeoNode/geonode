@@ -1,3 +1,38 @@
+geonode (2.5.11+thefinal0) trusty; urgency=high
+
+  [ Simone Dalmasso ]
+  * [c49d46] initial 24 migrations
+
+  [ Angelos Tzotsos ]
+  * [3dd63b] Update release version
+
+  [ travislbrundage ]
+  * [7dd2d2] Format people cards to be universal height so sorting works properly (#2856)
+
+  [ Simone Dalmasso ]
+  * [a2a508] add 2.4 initial migrations and 24 to 2.6 migrations
+  * [c0ebd8] Delete unused LayerStyles model
+
+  [ Nicolas Loira ]
+  * [d45c75] Fixed typo in title
+
+  [ Seno @ ThinkPad ]
+  * [fd51d5] fix: #2858 KeyError on logout when using qgis local_settings.py sample
+
+  [ Simone Dalmasso ]
+  * [eb8d8c] paver start shouldn’t call sync (#2868)
+
+  [ Alessio Fabiani ]
+  * [803ab3] Npm, Bower, Grunt commands to rebuild static libraries
+
+  [ Seno @ ThinkPad ]
+  * [ae51d9] fix: get rabbitmq broker url from env file
+
+  [ Simone Dalmasso ]
+  * [1f77d6] add command and package logic to handle the oauth2 configuration
+
+ -- Simone Dalmasso <simone.dalmasso@gmail.com>  Wed, 01 Feb 2017 07:44:16 +0000
+
 geonode (2.5.10+thefinal0) xenial; urgency=high
 
   [ Way Barrios ]
