@@ -106,7 +106,7 @@ def login(request, next_page=None, required=False):
             
             if attributes["groups"]:
                 group_diff = list(set(attribute["groups"]) - set(user.groups.values_list('name', flat = True))
-                if len(group_diff > 0):
+                if len(group_diff) > 0:
                     join_user_to_groups.delay(user, group_diff)
                     
             #pprint('Superuser? '+str(user.is_superuser))
