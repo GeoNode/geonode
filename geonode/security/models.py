@@ -248,7 +248,7 @@ def set_geofence_all(instance):
             "<Rule><workspace>geonode</workspace><layer>{layer}</layer><access>ALLOW</access></Rule>" \
             http://<host>:<port>/geoserver/geofence/rest/rules
             """
-            url = settings.OGC_SERVER['default']['PUBLIC_LOCATION']
+            url = settings.OGC_SERVER['default']['LOCATION']
             user = settings.OGC_SERVER['default']['USER']
             passwd = settings.OGC_SERVER['default']['PASSWORD']
             headers = {'Content-type': 'application/xml'}
@@ -275,7 +275,7 @@ def set_geofence_owner(instance, username, view_perms=False, download_perms=Fals
     if hasattr(resource, "layer"):
         try:
             # Scan GeoFence for the user
-            url = settings.OGC_SERVER['default']['PUBLIC_LOCATION']
+            url = settings.OGC_SERVER['default']['LOCATION']
             user = settings.OGC_SERVER['default']['USER']
             passwd = settings.OGC_SERVER['default']['PASSWORD']
             headers = {'Content-type': 'application/xml'}
@@ -363,7 +363,7 @@ def set_geofence_group(instance, groupname, view_perms=False, download_perms=Fal
     if hasattr(resource, "layer"):
         try:
             # Scan GeoFence for the group
-            url = settings.OGC_SERVER['default']['PUBLIC_LOCATION']
+            url = settings.OGC_SERVER['default']['LOCATION']
             user = settings.OGC_SERVER['default']['USER']
             passwd = settings.OGC_SERVER['default']['PASSWORD']
             headers = {'Content-type': 'application/xml'}
@@ -466,7 +466,7 @@ def remove_object_permissions(instance):
             curl -u admin:geoserver
             http://<host>:<port>/geoserver/geofence/rest/rules.json?workspace=geonode&layer={layer}
             """
-            url = settings.OGC_SERVER['default']['PUBLIC_LOCATION']
+            url = settings.OGC_SERVER['default']['LOCATION']
             user = settings.OGC_SERVER['default']['USER']
             passwd = settings.OGC_SERVER['default']['PASSWORD']
             headers = {'Content-type': 'application/json'}
