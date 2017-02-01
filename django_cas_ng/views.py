@@ -105,7 +105,7 @@ def login(request, next_page=None, required=False):
             user.save()
             
             if attributes["groups"]:
-                group_diff = list(set(attribute["groups"]) - set(user.groups.values_list('name', flat = True)))
+                group_diff = list(set(attributes["groups"]) - set(user.groups.values_list('name', flat = True)))
                 if len(group_diff) > 0:
                     join_user_to_groups.delay(user, group_diff)
                     
