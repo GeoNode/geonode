@@ -98,7 +98,7 @@ def assign_grid_ref_util(user):
     if shapefile:    
         pprint("Computing gridrefs for {0}".format(user.username))
         tiles = get_juris_tiles(shapefile, user)
-        if len(tiles)>0:
+        if len(tiles) is 0:
             pprint("No tiles for {0}".format(user.username))
         else:
             for tile in tiles:
