@@ -1,3 +1,9 @@
+geonode (2.5.12+thefinal0) trusty; urgency=high
+
+  * [cdf75a] further fixes in oauth setup (#2874)
+
+ -- Simone Dalmasso <simone.dalmasso@gmail.com>  Wed, 01 Feb 2017 09:54:54 +0000
+
 geonode (2.5.11+thefinal0) trusty; urgency=high
 
   [ Simone Dalmasso ]
