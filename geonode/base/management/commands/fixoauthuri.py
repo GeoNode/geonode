@@ -36,13 +36,16 @@ class Command(BaseCommand):
         if 'geonode.geoserver' in settings.INSTALLED_APPS:
             from geonode.geoserver.helpers import ogc_server_settings
             if Application.objects.filter(name='GeoServer').exists():
-                Application.objects.filter(name='GeoServer').update(redirect_uris=ogc_server_settings.public_url[:-1])
+                Application.objects.filter(name='GeoServer').update(redirect_uris=ogc_server_settings.public_url)
+                app = Application.objects.filter(name='GeoServer')[0]
+                client_id = app.client_id
+                client_secret = app.client_secret
             else:
                 client_id = generate_client_id()
                 client_secret = generate_client_secret()
                 Application.objects.create(
                     skip_authorization=True,
-                    redirect_uris=ogc_server_settings.public_url[:-1],
+                    redirect_uris=ogc_server_settings.public_url,
                     name='GeoServer',
                     authorization_grant_type='authorization-code',
                     client_type='confidential',
