@@ -884,12 +884,12 @@ LEAFLET_CONFIG = {
     ],
     'PLUGINS': {
         'esri-leaflet': {
-            'js': 'lib/js/esri-leaflet.js?v=%s' % VERSION,
+            'js': 'lib/js/esri-leaflet.js',
             'auto-include': True,
         },
         'leaflet-fullscreen': {
-            'css': 'lib/css/leaflet.fullscreen.css?v=%s' % VERSION,
-            'js': 'lib/js/Leaflet.fullscreen.min.js?v=%s' % VERSION,
+            'css': 'lib/css/leaflet.fullscreen.css',
+            'js': 'lib/js/Leaflet.fullscreen.min.js',
             'auto-include': True,
         },
     },
