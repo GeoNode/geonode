@@ -123,6 +123,7 @@ fi
 
 geonode fixsitename
 
+echo "Setting up oauth"
 # Set oauth keys
 oauth_keys=$(geonode fixoauthuri 2>&1)
 client_id=`echo $oauth_keys | cut -d \, -f 1`
@@ -132,12 +133,13 @@ sed -i "s|<cliendId>.*</cliendId>|<cliendId>$client_id</cliendId>|g" $oauth_conf
 sed -i "s|<clientSecret>.*</clientSecret>|<clientSecret>$client_secret</clientSecret>|g" $oauth_config
 sed -i "s/localhost:8000/localhost/g" $oauth_config
 sed -i "s|<userAuthorizationUri>.*</userAuthorizationUri>|<userAuthorizationUri>http://$NEWIP/o/authorize/</userAuthorizationUri>|g" $oauth_config
-domain=`echo $NEWIP | sed 's/:.*//'`
-sed -i "s/localhost:8080/$domain:8080/g" $oauth_config
-sed -i "s/localhost:8000/localhost/g" "$GEOSERVER_DATA_DIR/security/role/geonode REST role service/config.xml"
+sed -i "s|<logoutUri>.*</logoutUri>|<logoutUri>http://$NEWIP/account/logout/</logoutUri>|g" $oauth_config
+sed -i "s|localhost:8080/geoserver|$NEWIP/geoserver/|g" $oauth_config
+sed -i "s|localhost:8000|localhost|g" "$GEOSERVER_DATA_DIR/security/role/geonode REST role service/config.xml"
 
 # Restart apache server
 $APACHE_SERVICE restart
+service tomcat7 restart
 
 # Run updatelayers
 geonode updatelayers
