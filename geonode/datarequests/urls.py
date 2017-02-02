@@ -1,6 +1,6 @@
 from django.conf.urls import patterns, url
 
-from .views import DataRequestPofileList
+# from .views import DataRequestPofileList
 # from .views import RequesterSignupWizard, DataRequestPofileList
 
 # signup_wizard = RequesterSignupWizard.as_view(url_name='signup_step',
@@ -25,10 +25,10 @@ urlpatterns = patterns(
     url(r'^(?P<pk>\d+)/approve/$', 'data_request_profile_approve', name="data_request_profile_approve"),
     url(r'^(?P<pk>\d+)/reject/$', 'data_request_profile_reject', name="data_request_profile_reject"),
     url(r'^(?P<pk>\d+)/cancel/$', 'data_request_profile_cancel', name="data_request_profile_cancel"),
-    url(r'^(?P<pk>\d+)/reconfirm/$', 'data_request_profile_reconfirm', name="data_request_profile_reconfirm"), 
-    url(r'^(?P<pk>\d+)/recreate_dir/$', 'data_request_profile_recreate_dir', name="data_request_profile_recreate_dir"), 
-    url(r'^(?P<pk>\d+)/compute_request_size/$', 'data_request_profile_compute_size', name="data_request_profile_compute_size"), 
-    url(r'^(?P<pk>\d+)/reverse_geocode/$', 'data_request_profile_reverse_geocode', name="data_request_profile_reverse_geocode"), 
+    url(r'^(?P<pk>\d+)/reconfirm/$', 'data_request_profile_reconfirm', name="data_request_profile_reconfirm"),
+    url(r'^(?P<pk>\d+)/recreate_dir/$', 'data_request_profile_recreate_dir', name="data_request_profile_recreate_dir"),
+    url(r'^(?P<pk>\d+)/compute_request_size/$', 'data_request_profile_compute_size', name="data_request_profile_compute_size"),
+    url(r'^(?P<pk>\d+)/reverse_geocode/$', 'data_request_profile_reverse_geocode', name="data_request_profile_reverse_geocode"),
     url(r'^assign_grid_refs/$','data_request_assign_gridrefs', name="data_request_assign_gridrefs"),
     url(r'^~count_facets/$', 'data_request_facet_count', name="data_request_facet_count"),
 
