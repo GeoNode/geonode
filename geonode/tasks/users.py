@@ -18,5 +18,5 @@ def join_user_to_groups(user, group_list):
         try:
             group_member = GroupMember.objects.get(group=group, user=user)
         except ObjectDoesNotExist as e:
-            requesters_group.join(user, role='member')
+            group.join(user, role='member')
 
