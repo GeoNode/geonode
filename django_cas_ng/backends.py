@@ -10,6 +10,8 @@ from django.dispatch import receiver
 from django_cas_ng.signals import cas_user_authenticated
 from .utils import get_cas_client
 
+from geonode.tasks.users import join_user_to_groups
+
 User = get_user_model()
 
 __all__ = ['CASBackend']
@@ -74,5 +76,7 @@ class CASBackend(ModelBackend):
 def handle_user_authenticated(sender, **kwargs):
     user = kwargs.get("user")
     attributes = kwargs.get("attributes")
-    pprint('User.is_superuser:'+ str(user.is_superuser))
-    pprint("atrributes: "+str(attributes))
+     if attributes["groups"]:
+        group_diff = list(set(attributes["groups"]) - set(user.groups.values_list('name', flat = True)))
+        if len(group_diff) > 0:
+            join_user_to_groups.delay(user, group_diff)
