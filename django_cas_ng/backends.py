@@ -12,6 +12,8 @@ from .utils import get_cas_client
 
 from geonode.tasks.users import join_user_to_groups
 
+from ast import literal_eval
+
 User = get_user_model()
 
 __all__ = ['CASBackend']
@@ -77,9 +79,9 @@ def handle_user_authenticated(sender, **kwargs):
     user = kwargs.get("user")
     attributes = kwargs.get("attributes")
     if attributes["groups"]:
-        #pprint(attributes["groups"])
+        groups_list = literal_eval(attributes["groups"])
         l1 =user.groups.values_list('name', flat = True)
-        group_diff = list(set(attributes["groups"]) - set(l1))
+        group_diff = list(set(groups_list) - set(l1))
         pprint(group_diff)
         if len(group_diff) > 0:
             join_user_to_groups.delay(user, group_diff)
