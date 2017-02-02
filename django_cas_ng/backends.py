@@ -76,7 +76,7 @@ class CASBackend(ModelBackend):
 def handle_user_authenticated(sender, **kwargs):
     user = kwargs.get("user")
     attributes = kwargs.get("attributes")
-     if attributes["groups"]:
+    if attributes["groups"]:
         group_diff = list(set(attributes["groups"]) - set(user.groups.values_list('name', flat = True)))
         if len(group_diff) > 0:
             join_user_to_groups.delay(user, group_diff)
