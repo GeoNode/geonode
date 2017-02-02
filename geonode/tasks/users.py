@@ -12,6 +12,7 @@ from geonode.groups.models import GroupProfile, GroupMember
 @task(name="geonode.tasks.requests.users", queue="users")
 
 def join_user_to_groups(user, group_list):
+    pprint(group_list)
     for g in group_list:
         group, created = GroupProfile.objects.get_or_create(
             title=str(g)
