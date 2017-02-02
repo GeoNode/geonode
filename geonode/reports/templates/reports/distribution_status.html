@@ -192,11 +192,11 @@ var trace9 = {
   ],
   y: [
     {% for key, value in monthly_count.items %}
-      {{ value.Others }},
+      {{ value.Resource }},
     {% endfor %}
   ],
   hoverinfo:'y+name',
-  name: 'Others',
+  name: 'Resource Map',
   type: 'bar',
   marker: {
     color: '#19ED88'
@@ -338,6 +338,7 @@ var datarequest1 = {
       {{ value.pending }},
     {% endfor %}
   ],
+  hoverinfo:'y+name',
   name: 'Pending',
   type: 'bar',
   marker: {
@@ -355,6 +356,13 @@ var datarequest2 = {
       {{ value.approved }},
     {% endfor %}
   ],
+  text: [
+    {% for key, value in monthly_datarequest.items %}
+      '{{ value.approved }}',
+    {% endfor %}
+  ],
+  textposition: 'auto',
+  hoverinfo:'y+name',
   name: 'Approved',
   type: 'bar',
   marker: {
@@ -372,6 +380,7 @@ var datarequest3 = {
       {{ value.cancelled }},
     {% endfor %}
   ],
+  hoverinfo:'y+name',
   name: 'Cancelled',
   type: 'bar',
   marker: {
@@ -389,6 +398,7 @@ var datarequest4 = {
       {{ value.rejected }},
     {% endfor %}
   ],
+  hoverinfo:'y+name',
   name: 'Rejected',
   type: 'bar',
   marker: {
@@ -406,6 +416,7 @@ var datarequest5 = {
       {{ value.unconfirmed }},
     {% endfor %}
   ],
+  hoverinfo:'y+name',
   name: 'Unconfirmed',
   type: 'bar',
   marker: {
@@ -413,12 +424,15 @@ var datarequest5 = {
   }
 };
 
-var data_datarequest = [datarequest5, datarequest4, datarequest3, datarequest2, datarequest1];
+var data_datarequest = [datarequest2, datarequest5, datarequest4, datarequest3, datarequest1];
 
 var layout_datarequest = {
   barmode: 'stack',
-  xaxis: {autorange: 'reversed'},
-  title: 'Cumulative LiPAD Request',
+  xaxis: {
+    autorange: 'reversed',
+    tickangle: -45
+  },
+  title: 'Cumulative LiPAD Request (Total: {{ sum_datarequest }})',
   legend:{
     x: 0,
     y: 1
@@ -438,6 +452,13 @@ var org1 = {
       {{ value }},
     {% endfor %}
   ],
+  text: [
+    {% for key, value in monthly_datarequest.items %}
+      '{{ value }}',
+    {% endfor %}
+  ],
+  textposition: 'auto',
+  hoverinfo:'y',
   name: 'LiPAD',
   type: 'bar',
   marker: {
