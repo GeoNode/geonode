@@ -11,12 +11,11 @@ from geonode.groups.models import GroupProfile, GroupMember
 def join_user_to_groups(user, group_list):
     for g in group_list:
         group, created = GroupProfile.objects.get_or_create(
-            title=g,
-            access='private',
+            title=g
         )
 
         try:
             group_member = GroupMember.objects.get(group=group, user=self.profile)
         except ObjectDoesNotExist as e:
-            requesters_group.join(self.profile, role='member')
+            requesters_group.join(user, role='member')
 
