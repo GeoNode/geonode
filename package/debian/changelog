@@ -1,3 +1,15 @@
+geonode (2.5.13+thefinal0) trusty; urgency=high
+
+  [ Alessio Fabiani ]
+  * [92e646]  - Fix for ISSUE #2875 - GeoFence rules are not updated if GeoNode cannot reach GeoServer Public Location (#2876)
+
+  [ Simone Dalmasso ]
+  * [9b74c7] updated release version (#2878)
+  * [75107b] move metadata_uploaded_preserve to the right migration
+  * [03944f] don’t use version in leaflet libraries settings (#2879)
+
+ -- Simone Dalmasso <simone.dalmasso@gmail.com>  Thu, 02 Feb 2017 07:44:53 +0000
+
 geonode (2.5.12+thefinal0) trusty; urgency=high
 
   * [cdf75a] further fixes in oauth setup (#2874)
