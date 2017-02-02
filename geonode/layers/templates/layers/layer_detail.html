@@ -12,7 +12,11 @@
 {% block title %}{{ resource.title|default:resource.typename }} — {{ block.super }}{% endblock %}
 
 {% block head %}
-
+<style>
+.gxp-icon-print{
+  display:none;
+}
+</style>
   {% if TWITTER_CARD %}
     {% include "base/_resourcebase_twittercard.html" %}
   {% endif %}
