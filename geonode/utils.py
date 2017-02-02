@@ -38,10 +38,13 @@ from django.http import Http404
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404
 from django.utils.translation import ugettext_lazy as _
+from django.db import models
 import httplib2
 import urlparse
 import urllib
 
+import gc
+import weakref
 
 try:
     import json
@@ -62,6 +65,20 @@ SIGN_CHARACTER = '$'
 http_client = httplib2.Http()
 
 custom_slugify = Slugify(separator='_')
+
+signalnames = [
+    'class_prepared',
+    'm2m_changed',
+    'post_delete',
+    'post_init',
+    'post_save',
+    'post_syncdb',
+    'pre_delete',
+    'pre_init',
+    'pre_save']
+signals_store = {}
+
+id_none = id(None)
 
 logger = logging.getLogger("geonode.utils")
 
@@ -816,3 +833,85 @@ def set_attributes(layer, attribute_map, overwrite=False, attribute_stats=None):
                         layer.name.encode('utf-8'))
     else:
         logger.debug("No attributes found")
+
+
+def id_to_obj(id_):
+    if id_ == id_none:
+        return None
+
+    for obj in gc.get_objects():
+        if id(obj) == id_:
+            return obj
+            break
+    raise Exception("Not found")
+
+
+def printsignals():
+    for signalname in signalnames:
+        logger.debug("SIGNALNAME: %s" % signalname)
+        signaltype = getattr(models.signals, signalname)
+        signals = signaltype.receivers[:]
+        for signal in signals:
+            logger.info(signal)
+
+
+def designals():
+    global signals_store
+
+    for signalname in signalnames:
+        signaltype = getattr(models.signals, signalname)
+        logger.debug("RETRIEVE: %s: %d" % (signalname, len(signaltype.receivers)))
+        signals_store[signalname] = []
+        signals = signaltype.receivers[:]
+        for signal in signals:
+            uid = receiv_call = None
+            sender_ista = sender_call = None
+            # first tuple element:
+            # - case (id(instance), id(method))
+            if not isinstance(signal[0], tuple):
+                raise "Malformed signal"
+
+            lookup = signal[0]
+
+            if isinstance(lookup[0], tuple):
+                # receiv_ista = id_to_obj(lookup[0][0])
+                receiv_call = id_to_obj(lookup[0][1])
+            else:
+                # - case id(function) or uid
+                try:
+                    receiv_call = id_to_obj(lookup[0])
+                except:
+                    uid = lookup[0]
+
+            if isinstance(lookup[1], tuple):
+                sender_call = id_to_obj(lookup[1][0])
+                sender_ista = id_to_obj(lookup[1][1])
+            else:
+                sender_ista = id_to_obj(lookup[1])
+
+            # second tuple element
+            if (isinstance(signal[1], weakref.ReferenceType)):
+                is_weak = True
+                receiv_call = signal[1]()
+            else:
+                is_weak = False
+                receiv_call = signal[1]
+
+            signals_store[signalname].append({
+                'uid': uid, 'is_weak': is_weak,
+                'sender_ista': sender_ista, 'sender_call': sender_call,
+                'receiv_call': receiv_call,
+                })
+
+            signaltype.disconnect(receiver=receiv_call, sender=sender_ista, weak=is_weak, dispatch_uid=uid)
+
+
+def resignals():
+    global signals_store
+
+    for signalname in signalnames:
+        signals = signals_store[signalname]
+        signaltype = getattr(models.signals, signalname)
+        for signal in signals:
+            signaltype.connect(signal['receiv_call'], sender=signal['sender_ista'],
+                               weak=signal['is_weak'], dispatch_uid=signal['uid'])
