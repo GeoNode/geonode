@@ -13,7 +13,6 @@ from geonode.groups.models import GroupProfile, GroupMember
 
 def join_user_to_groups(user, group_list):
     for g in group_list:
-        pprint("Group name:"+str(g))
         group, created = GroupProfile.objects.get_or_create(
             title=str(g)
         )
