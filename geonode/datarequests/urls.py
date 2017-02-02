@@ -1,6 +1,6 @@
 from django.conf.urls import patterns, url
 
-# from .views import DataRequestPofileList
+from views import DataRequestPofileList
 # from .views import RequesterSignupWizard, DataRequestPofileList
 
 # signup_wizard = RequesterSignupWizard.as_view(url_name='signup_step',
