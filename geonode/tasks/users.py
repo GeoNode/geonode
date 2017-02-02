@@ -14,12 +14,12 @@ from geonode.groups.models import GroupProfile, GroupMember
 def join_user_to_groups(user, group_list):
     pprint(group_list)
     for g in group_list:
-        group, created = GroupProfile.objects.get_or_create(
-            title=str(g)
-        )
-
+        group, created = Group.objects.get_or_create(name=str(g))
+        group_profile = GroupProfile.objects.get_or_create(group=group)
         try:
-            group_member = GroupMember.objects.get(group=group, user=user)
+            group_member = GroupMember.objects.get(group=group_profile, user=user)
         except ObjectDoesNotExist as e:
-            group.join(user, role='member')
+            group_profile.join(user, role='member')
+            
+        user.groups.add(group)
 
