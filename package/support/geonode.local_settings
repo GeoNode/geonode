@@ -60,6 +60,8 @@ OGC_SERVER = {
         'LOG_FILE':'/usr/share/geoserver/data/logs/geoserver.log',
         # Set to name of database in DATABASES dictionary to enable
         'DATASTORE': 'datastore',
+        'LOGIN_ENDPOINT': 'j_spring_oauth2_geonode_login',
+        'LOGOUT_ENDPOINT': 'j_spring_oauth2_geonode_logout',
     }
 }
 
