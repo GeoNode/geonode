@@ -3,6 +3,7 @@ import traceback
 from pprint import pprint
 from celery.task import task
 
+
 from django.core.exceptions import ObjectDoesNotExist
 
 from geonode.groups.models import GroupProfile, GroupMember
@@ -15,7 +16,7 @@ def join_user_to_groups(user, group_list):
         )
 
         try:
-            group_member = GroupMember.objects.get(group=group, user=self.profile)
+            group_member = GroupMember.objects.get(group=group, user=profile)
         except ObjectDoesNotExist as e:
             requesters_group.join(user, role='member')
 
