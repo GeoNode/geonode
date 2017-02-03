@@ -11,15 +11,15 @@
             <button type="button" class="btn btn-default" ng-disabled="!cart.getCart().items.length" data-toggle="modal" data-target="#_bulk_permissions">Set Permissions</button>
           </div>
           {% endif %}
-          {% if facet_type == 'layers' %}
+          <!-- {% if facet_type == 'layers' %}
           <div class="btn-group" role="group">
             <button type="button" class="btn btn-default" ng-disabled="!cart.getCart().items.length" ng-click="newMap()">{% trans "Create a map" %}</button>
           </div>
-          {% endif %}
+          {% endif %} -->
         </div>
         {% endblock %}
-    
-        <div class="selections">
+
+        <div class="selections" style="margin-top:0em;">
             {% trans "Filters" %}
             <a href="." id="clear-search" class="pull-right">{% trans "Clear" %}</a>
         </div>
