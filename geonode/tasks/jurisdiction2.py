@@ -92,12 +92,12 @@ def get_juris_data_size(juris_shp, user):
     return total_data_size
 
 def assign_grid_ref_util(user):
+    pprint("Computing gridrefs for {0}".format(user.username))
     shapefile_name = UserJurisdiction.objects.get(user=user).jurisdiction_shapefile.name
     shapefile = get_shp_ogr(shapefile_name)
     gridref_list = []
     
     if shapefile:    
-        pprint("Computing gridrefs for {0}".format(user.username))
         tiles = get_juris_tiles(shapefile, user)
         if len(tiles) is 0:
             pprint("No tiles for {0}".format(user.username))
