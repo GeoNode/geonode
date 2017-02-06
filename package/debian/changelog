@@ -1,3 +1,20 @@
+geonode (2.5.14+thefinal0) trusty; urgency=high
+
+  [ Simone Dalmasso ]
+  * [47a095] update release version (#2882)
+  * [b3cecf] fix fixtures load path in package install (#2883)
+  * [9a3c9a] add login logout endpoint in package local settings (#2884)
+
+  [ afabiani ]
+  * [3241ab] PR for Issue #2885 - Manage signals when performing BR
+
+  [ capooti ]
+  * [2851b5] Renaming a variable that is confusing when using pdb
+
+  [ Simone Dalmasso ]
+
+ -- Simone Dalmasso <simone.dalmasso@gmail.com>  Mon, 06 Feb 2017 06:38:09 +0000
+
 geonode (2.5.13+thefinal0) trusty; urgency=high
 
   [ Alessio Fabiani ]
