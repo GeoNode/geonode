@@ -81,9 +81,9 @@ def handle_user_authenticated(sender, **kwargs):
     if attributes["groups"]:
         groups_list = literal_eval(attributes["groups"])
         l1 =user.groups.values_list('name', flat = True)
-        group_diff =  list(set(l1)-set(groups_list))
-        if len(group_diff) > 0:
-            join_user_to_groups(user, group_diff)
+        #group_diff =  list(set(l1)-set(groups_list))
+        #if len(group_diff) > 0:
+        #    join_user_to_groups(user, group_diff)
             
         group_diff = list(set(groups_list) - set(l1))
         pprint(group_diff)
