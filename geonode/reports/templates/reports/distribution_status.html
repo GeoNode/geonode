@@ -34,6 +34,65 @@
 {% block extra_script %}
 <script src="{{ STATIC_URL }}lib/js/plotly-latest.min.js"></script>
 <script type="text/javascript">
+var org1 = {
+  x: [
+    {% for key, value in org_count.items %}
+      '{{ key }}',
+    {% endfor %}
+  ],
+  y: [
+    {% for key, value in org_count.items %}
+      {{ value }},
+    {% endfor %}
+  ],
+  text: [
+    {% for key, value in org_count.items %}
+      '{{ value }}',
+    {% endfor %}
+  ],
+  textposition: 'auto',
+  hoverinfo:'y',
+  name: 'LiPAD',
+  type: 'bar',
+  marker: {
+    color: '#5B9BD5'
+  }
+};
+
+var data_org = [org1];
+
+var layout_org = {
+  barmode: 'stack',
+  xaxis: {autorange: 'reversed'},
+  title: 'Data Request Tally per Organization'
+};
+
+Plotly.newPlot('org_datarequest', data_org, layout_org);
+
+var data_pie = [{
+  values: [
+    {% for key, value in total_layers.items %}
+      {{ value }},
+    {% endfor %}
+  ],
+  labels: [
+    {% for key, value in total_layers.items %}
+      '{{ key }}',
+    {% endfor %}
+  ],
+  type: 'pie',
+  textinfo:'label+percent',
+}];
+
+var layout_pie = {
+  title: 'Total Downloads: {{ sum_layers }}',
+  height: 600,
+  width: 500,
+  // font:{size:30}
+};
+
+Plotly.newPlot('pie_div', data_pie, layout_pie);
+
 var trace1 = {
   x: [
     {% for key, value in monthly_count.items %}
@@ -220,113 +279,6 @@ var layout = {
 
 Plotly.newPlot('monthly_div', data, layout);
 
-var luzvimin1 = {
-  x: [
-    {% for key, value in luzvimin_count.items %}
-      '{{ key }}',
-    {% endfor %}
-  ],
-  y: [
-    {% for key, value in luzvimin_count.items %}
-      {{ value.Luzon }},
-    {% endfor %}
-  ],
-  name: 'Luzon',
-  type: 'bar',
-  marker: {
-    color: '#DC3912'
-  }
-};
-var luzvimin2 = {
-  x: [
-    {% for key, value in luzvimin_count.items %}
-      '{{ key }}',
-    {% endfor %}
-  ],
-  y: [
-    {% for key, value in luzvimin_count.items %}
-      {{ value.Visayas }},
-    {% endfor %}
-  ],
-  name: 'Visayas',
-  type: 'bar',
-  marker: {
-    color: '#FF9900'
-  }
-};
-var luzvimin3 = {
-  x: [
-    {% for key, value in luzvimin_count.items %}
-      '{{ key }}',
-    {% endfor %}
-  ],
-  y: [
-    {% for key, value in luzvimin_count.items %}
-      {{ value.Mindanao }},
-    {% endfor %}
-  ],
-  name: 'Mindanao',
-  type: 'bar',
-  marker: {
-    color: '#3366CB'
-  }
-};
-var luzvimin4 = {
-  x: [
-    {% for key, value in luzvimin_count.items %}
-      '{{ key }}',
-    {% endfor %}
-  ],
-  y: [
-    {% for key, value in luzvimin_count.items %}
-      {{ value.Luzvimin_others }},
-    {% endfor %}
-  ],
-  name: 'Others',
-  type: 'bar',
-  marker: {
-    color: '#109618'
-  }
-};
-
-var data_luzvimin = [luzvimin4, luzvimin3, luzvimin2, luzvimin1];
-
-var layout_luzvimin = {
-  barmode: 'stack',
-  xaxis: {autorange: 'reversed'},
-  title: 'LuzViMin Download Count',
-  legend:{
-    x: 0,
-    y: 1
-  }
-};
-
-Plotly.newPlot('luzvimin_div', data_luzvimin, layout_luzvimin);
-
-var data_pie = [{
-  values: [
-    {% for key, value in total_layers.items %}
-      {{ value }},
-    {% endfor %}
-  ],
-  labels: [
-    {% for key, value in total_layers.items %}
-      '{{ key }}',
-    {% endfor %}
-  ],
-  type: 'pie',
-  textinfo:'label+percent',
-}];
-
-var layout_pie = {
-  title: 'Total Downloads: {{ sum_layers }}',
-  height: 600,
-  width: 500,
-  // font:{size:30}
-};
-
-Plotly.newPlot('pie_div', data_pie, layout_pie);
-
 var datarequest1 = {
   x: [
     {% for key, value in monthly_datarequest.items %}
@@ -441,39 +393,87 @@ var layout_datarequest = {
 
 Plotly.newPlot('monthly_datarequest', data_datarequest, layout_datarequest);
 
-var org1 = {
+var luzvimin1 = {
   x: [
-    {% for key, value in org_count.items %}
+    {% for key, value in luzvimin_count.items %}
       '{{ key }}',
     {% endfor %}
   ],
   y: [
-    {% for key, value in org_count.items %}
-      {{ value }},
+    {% for key, value in luzvimin_count.items %}
+      {{ value.Luzon }},
     {% endfor %}
   ],
-  text: [
-    {% for key, value in org_count.items %}
-      '{{ value }}',
-    {% endfor %}
-  ],
-  textposition: 'auto',
-  hoverinfo:'y',
-  name: 'LiPAD',
+  name: 'Luzon',
   type: 'bar',
   marker: {
-    color: '#5B9BD5'
+    color: '#DC3912'
+  }
+};
+var luzvimin2 = {
+  x: [
+    {% for key, value in luzvimin_count.items %}
+      '{{ key }}',
+    {% endfor %}
+  ],
+  y: [
+    {% for key, value in luzvimin_count.items %}
+      {{ value.Visayas }},
+    {% endfor %}
+  ],
+  name: 'Visayas',
+  type: 'bar',
+  marker: {
+    color: '#FF9900'
+  }
+};
+var luzvimin3 = {
+  x: [
+    {% for key, value in luzvimin_count.items %}
+      '{{ key }}',
+    {% endfor %}
+  ],
+  y: [
+    {% for key, value in luzvimin_count.items %}
+      {{ value.Mindanao }},
+    {% endfor %}
+  ],
+  name: 'Mindanao',
+  type: 'bar',
+  marker: {
+    color: '#3366CB'
+  }
+};
+var luzvimin4 = {
+  x: [
+    {% for key, value in luzvimin_count.items %}
+      '{{ key }}',
+    {% endfor %}
+  ],
+  y: [
+    {% for key, value in luzvimin_count.items %}
+      {{ value.Luzvimin_others }},
+    {% endfor %}
+  ],
+  name: 'Others',
+  type: 'bar',
+  marker: {
+    color: '#109618'
   }
 };
 
-var data_org = [org1];
+var data_luzvimin = [luzvimin4, luzvimin3, luzvimin2, luzvimin1];
 
-var layout_org = {
+var layout_luzvimin = {
   barmode: 'stack',
   xaxis: {autorange: 'reversed'},
-  title: 'Data Request Tally per Organization'
+  title: 'LuzViMin Download Count',
+  legend:{
+    x: 0,
+    y: 1
+  }
 };
 
-Plotly.newPlot('org_datarequest', data_org, layout_org);
+Plotly.newPlot('luzvimin_div', data_luzvimin, layout_luzvimin);
 </script>
 {% endblock extra_script %}
