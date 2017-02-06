@@ -40,7 +40,7 @@ def compute_size_update(requests_query_list, area_compute = True, data_size = Tr
                 if save:
                     r.save()
 
-def get_juris_tiles(juris_shp, user):
+def get_juris_tiles(juris_shp, user=None):
     total_data_size = 0
     min_x =  int(math.floor(float(juris_shp.bounds[0]) / float(settings._TILE_SIZE))) * int(settings._TILE_SIZE)
     max_x =  int(math.ceil(float(juris_shp.bounds[2]) / float(settings._TILE_SIZE))) * int(settings._TILE_SIZE)
@@ -60,11 +60,12 @@ def get_juris_tiles(juris_shp, user):
                 juris_shp = juris_shp.convex_hull
                 if juris_shp.convex_hull.is_valid:
                     juris_shp = juris_shp.convex_hull
-                else:    
-                    email_on_error(DataRequestProfile.objects.get(user=user).email,
-                        "Your submitted shapefile is being considered invalid by the system because some of its borders maybe overlapping or intersecting each other. Please recheck your shapefile and submit a data request once more. Thank you.",
-                        "A problem was encountered while processing your request"
-                        )
+                else: 
+                    if user:
+                        email_on_error(DataRequestProfile.objects.get(user=user).email,
+                            "Your submitted shapefile is being considered invalid by the system because some of its borders maybe overlapping or intersecting each other. Please recheck your shapefile and submit a data request once more. Thank you.",
+                            "A problem was encountered while processing your request"
+                            )
                     return []
             
             if not tile.intersection(juris_shp).is_empty:
@@ -91,12 +92,12 @@ def get_juris_data_size(juris_shp, user):
     return total_data_size
 
 def assign_grid_ref_util(user):
+    pprint("Computing gridrefs for {0}".format(user.username))
     shapefile_name = UserJurisdiction.objects.get(user=user).jurisdiction_shapefile.name
     shapefile = get_shp_ogr(shapefile_name)
     gridref_list = []
     
     if shapefile:    
-        pprint("Computing gridrefs for {0}".format(user.username))
         tiles = get_juris_tiles(shapefile, user)
         if len(tiles) is 0:
             pprint("No tiles for {0}".format(user.username))
