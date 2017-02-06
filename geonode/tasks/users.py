@@ -20,4 +20,5 @@ def join_user_to_groups(user, group_list):
             group_member = GroupMember.objects.get(group=group_profile, user=user)
         except ObjectDoesNotExist as e:
             group_profile.join(user, role='member')
-        
+    
+    
