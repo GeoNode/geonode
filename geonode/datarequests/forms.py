@@ -11,6 +11,7 @@ from crispy_forms.layout import Layout, Fieldset, HTML, Div, Column, Row, Field
 from crispy_forms.bootstrap import PrependedText, InlineRadios
 from model_utils import Choices
 
+from geonode.cephgeo.models import TileDataClass
 from geonode.datarequests.models import DataRequestProfile, DataRequest, ProfileRequest
 from geonode.layers.forms import NewLayerUploadForm, LayerUploadForm, JSONField
 from geonode.documents.models import Document
@@ -18,6 +19,7 @@ from geonode.documents.forms import DocumentCreateForm
 from geonode.people.models import OrganizationType, Profile
 
 from .models import DataRequestProfile, RequestRejectionReason, DataRequest, ProfileRequest
+from .utils import data_class_choices
 
 from pprint import pprint
 
@@ -230,6 +232,11 @@ class DataRequestForm(forms.ModelForm):
         label=_(u'Your custom purpose for the data'),
         required=False
     )
+    
+    data_type_requested = forms.TypedMultipleChoiceField(
+        label = ('Types of Data Requested. (Press CTRL to select multiple types)'),
+        choices = data_class_choices(),
+    )
 
     letter_file = forms.FileField(
         label=_('Formal Request Letter (PDF only)'),
@@ -242,7 +249,7 @@ class DataRequestForm(forms.ModelForm):
             'project_summary',
             'purpose',
             'purpose_other',
-            'data_type_requested',
+            #'data_type_requested',
             'intended_use_of_dataset',
             'letter_file',
 
@@ -333,9 +340,14 @@ class DataRequestShapefileForm(NewLayerUploadForm):
         required=False
     )
 
-    data_type_requested = forms.TypedChoiceField(
-        label = _('Types of Data Requested'),
-        choices = DATA_TYPE_CHOICES,
+    #data_type_requested = forms.TypedChoiceField(
+    #    label = _('Types of Data Requested'),
+    #    choices = DATA_TYPE_CHOICES,
+    #)
+    
+    data_type_requested = forms.TypedMultipleChoiceField(
+        label = ('Types of Data Requested'),
+        choices = data_class_choices(),
     )
 
     intended_use_of_dataset = forms.ChoiceField(
@@ -826,3 +838,5 @@ class RejectionForm(forms.ModelForm):
         rejection_reason_qs = RequestRejectionReason.objects.all()
         if rejection_reason_qs:
             self.fields['rejection_reason'].choices = [(r.reason, r.reason) for r in rejection_reason_qs]
+        
+    
