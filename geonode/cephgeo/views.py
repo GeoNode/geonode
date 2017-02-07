@@ -447,6 +447,28 @@ def ftp_request_details(request, ftp_req_name=None):
 
 
 @login_required
+def tile_check(request):
+    user = request.user
+    response = "false"
+    if not request.POST:
+        raise PermissionDenied
+    try:
+        json_tiles = UserTiles.objects.get(user=user)
+    except ObjectDoesNotExist as e:
+        return HttpResponse(status=404)
+
+    georefs = map(str, request.POST.get('georefs', ''))
+    reference_tiles = map(str, json.loads(json_tiles))
+    valid_tiles = []
+    for x in georefs:
+        if x in georefs:
+            valid_tiles.append(x)
+
+    return HttpResponse(json.dumps(valid_tiles), status=200)
+
+
+
+@login_required
 def clear_cart(request):
     delete_all_items_from_cart(request)
     response = render_to_response('cart.html',

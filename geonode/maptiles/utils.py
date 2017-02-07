@@ -10,6 +10,7 @@ from django.contrib.auth.decorators import login_required
 from django.http import HttpResponseRedirect, HttpResponse, Http404
 from django.db.models import Q
 
+from geonode.cephgeo.models import UserTiles
 from geonode.services.models import Service
 from geonode.layers.models import Layer
 from geonode.layers.utils import is_vector, get_bbox
@@ -23,6 +24,7 @@ from geonode.security.views import _perms_info_json
 import logging
 
 from pprint import pprint
+
 
 _PERMISSION_VIEW = _("You are not permitted to view this layer")
 _PERMISSION_GENERIC = _('You do not have permissions for this layer.')
@@ -115,3 +117,15 @@ def get_layer_config(request, typename, permission='base.view_resourcebase',
         map_obj.viewer_json(request.user, * (NON_WMS_BASE_LAYERS + [maplayer])))
     
     return context_dict
+
+def clean_georefs(user, georef_list):
+    filtered = []
+    
+    usertiles = UserTiles.objects.get(user=user).gridref_list
+    
+    for georef in georef_list:
+        if georef in usertiles:
+            filtered.append(georef)
+    
+    return filtered
+    
