@@ -120,7 +120,8 @@
             </li>
             {% else %}
             <li>
-              <a href="#" data-toggle="modal" data-target="#SigninModal" role="button" >
+              <!--<a href="#" data-toggle="modal" data-target="#SigninModal" role="button" >-->
+              <a href="{% url "cas_ng_login" %}" role="button">
                 {% trans "Sign in" %}
               </a>
             </li>
@@ -192,7 +193,7 @@
 
     <!-- Modal must stay outside the navbar -->
     {% if not user.is_authenticated %}
-    <div class="modal fade" id="SigninModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <!--<div class="modal fade" id="SigninModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
       <div class="modal-dialog modal-sm">
         <div class="modal-content">
           <div class="modal-header">
@@ -220,7 +221,7 @@
           </form>
         </div>
       </div>
-    </div>
+    </div>-->
     {% else %}
     <div class="modal fade" id="UserModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
       <div class="modal-dialog modal-sm">
@@ -261,10 +262,13 @@
             </ul>
           </div>
           <div class="modal-footer">
-            <form action="{% url "account_logout" %}" id="logout_form" method="post">
+            <!--<form action="{% url "account_logout" %}" id="logout_form" method="post">
               {% csrf_token %}
               <a class="btn btn-warning btn-block" href="javascript:{}" onclick="document.getElementById('logout_form').submit();">{% trans "Log out" %}</a>
-            </form>
+            </form>-->
+            <a class="btn btn-warning btn-block" href="{% url "cas_ng_logout" %}" role="button">
+                {% trans "Sign out" %}
+            </a>
           </div>
         </div>
       </div>
