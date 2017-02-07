@@ -30,7 +30,8 @@ class DataRequestProfileAdmin(admin.ModelAdmin):
         'jurisdiction_shapefile',
         'request_letter')
     list_filter = ('request_status', 'organization_type')
-    search_fields = ('username', 'first_name', 'middle_name', 'last_name', 'organization','organization_type', 'jurisdiction_shapefile', 'request_letter__title' )
+    search_fields = ('username', 'first_name', 'middle_name', 'last_name', 'organization','organization_type' )
+
 
 #admin.site.register(BaseRequest,BaseRequestAdmin)
 admin.site.register(ProfileRequest,ProfileRequestAdmin)

@@ -40,6 +40,7 @@ from geonode.cephgeo.utils import get_cart_datasize
 from django.utils.text import slugify
 from geonode.maptiles.models import SRS
 
+
 _PERMISSION_VIEW = _("You are not permitted to view this layer")
 _PERMISSION_GENERIC = _('You do not have permissions for this layer.')
 # Create your views here.
@@ -179,6 +180,9 @@ def process_georefs(request):
 
                 #Execute query
                 objects = CephDataObject.objects.filter(filter_query)
+                pprint("objects found for georef:"+ georef)
+                for o in objects:
+                    pprint(o.name)
 
                 #Count duplicates and empty references
                 count += len(objects)
@@ -186,6 +190,7 @@ def process_georefs(request):
                     for ceph_obj in objects:    # Add each Ceph object to cart
                         try:
                             add_to_cart_unique(request, ceph_obj.id)
+                            pprint("object "+ceph_obj.name +" added to cart")
                         except DuplicateCartItemException:  # List each duplicate object
                             duplicates.append(ceph_obj.name)
                 else:
