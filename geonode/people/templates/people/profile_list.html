@@ -26,7 +26,11 @@
     </div>
     <div class="row">
       <div class="tab-content col-sm-12" id="search-content">
+        {% if user.is_authenticated %}
         {% include "people/_profile_list_item.html" %}
+        {% else %}
+          <p>Please sign in to explore People.</p>
+        {% endif %}
       </div>
     </div>
   </div>
