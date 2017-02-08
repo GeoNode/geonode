@@ -46,11 +46,6 @@ def login(request, next_page=None, required=False):
     if not next_page:
         next_page = get_redirect_url(request)
 
-    if request.method == 'POST':
-        pprint("It's a POST method!!")
-        for k in request.POST:
-            pprint("K: "+k)
-
     if request.method == 'POST' and request.POST.get('logoutRequest'):
         pprint("cleaning up sessions")
         clean_sessions(client, request)
