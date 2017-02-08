@@ -194,12 +194,12 @@ class ProfileRequestForm(forms.ModelForm):
         return organization_other
 
     def save(self, commit=True, *args, **kwargs):
-        data_request = super(
+        profile_request = super(
             ProfileRequestForm, self).save(commit=False, *args, **kwargs)
 
         if commit:
-            data_request.save()
-        return data_request
+            profile_request.save()
+        return profile_request
 
 class DataRequestForm(forms.ModelForm):
 
@@ -233,7 +233,7 @@ class DataRequestForm(forms.ModelForm):
         required=False
     )
     
-    data_type_requested = forms.TypedMultipleChoiceField(
+    data_class_requested = forms.TypedMultipleChoiceField(
         label = ('Types of Data Requested. (Press CTRL to select multiple types)'),
         choices = data_class_choices(),
     )
@@ -273,7 +273,7 @@ class DataRequestForm(forms.ModelForm):
                 css_class='form-group'
             ),
             Div(
-               Field('data_type_requested', css_class='form-control'),
+               Field('data_class_requested', css_class='form-control'),
                css_class='form-group'
             ),
             Div(
@@ -285,6 +285,11 @@ class DataRequestForm(forms.ModelForm):
                     css_class='form-group'
             ),
         )
+        
+    def clean_data_class_requested(self):
+        data_classes = self.cleaned_data.get('data_class_requested')
+        pprint(data_classes)
+        return data_classes
 
     def clean_letter_file(self):
         letter_file = self.cleaned_data.get('letter_file')
@@ -293,6 +298,7 @@ class DataRequestForm(forms.ModelForm):
         if letter_file and split_filename[len(split_filename)-1].lower()[1:] != "pdf":
             raise forms.ValidationError(_("This file type is not allowed"))
         return letter_file
+        
 
 class DataRequestShapefileForm(NewLayerUploadForm):
 
@@ -345,7 +351,7 @@ class DataRequestShapefileForm(NewLayerUploadForm):
     #    choices = DATA_TYPE_CHOICES,
     #)
     
-    data_type_requested = forms.TypedMultipleChoiceField(
+    data_class_requested = forms.TypedMultipleChoiceField(
         label = ('Types of Data Requested'),
         choices = data_class_choices(),
     )
