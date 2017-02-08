@@ -307,10 +307,13 @@ class DataRequestForm(forms.ModelForm):
         data_request = super(
             DataRequestForm, self).save(commit=True, *args, **kwargs)
         
-        data_request.data_type.add(self.clean_data_class_requested())
-    
+        for data_type in self.clean_data_class_requested():
+            data_request.data_type.add(str(data_type))
+            
+        pprint(data_request.data_type.names())
         if commit:
             data_request.save()
+            
         return data_request
         
 
