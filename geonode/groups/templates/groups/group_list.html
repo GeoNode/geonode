@@ -37,6 +37,7 @@
         {% if user.is_authenticated %}
           {% include "groups/_group_list_item.html" %}
         {% else %}
+          <p>Please sign in to explore Groups.</p>
         {% endif %}
       </div>
     </div>
