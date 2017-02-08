@@ -20,7 +20,7 @@ from osgeo import ogr
 from pprint import pprint
 from pwd import getpwnam
 from string import Template
-from suc_rb_tagging import tag_layers
+# from suc_rb_tagging import tag_layers
 import datetime
 import logging
 import os
@@ -331,6 +331,6 @@ def floodplain_keywords():
                               settings.DATABASE_USER, settings.DATABASE_PASSWORD)))
     cur = conn.cursor()
 
-    tag_layers('dream', settings.RB_DELINEATION_DREAM,
-               cur, conn, source)
-    tag_layers('', settings.FP_DELINEATION_PL1, cur, conn, source)
+    # tag_layers('dream', settings.RB_DELINEATION_DREAM,
+    #            cur, conn, source)
+    # tag_layers('', settings.FP_DELINEATION_PL1, cur, conn, source)
