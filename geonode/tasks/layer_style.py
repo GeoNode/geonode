@@ -6,7 +6,7 @@ from celery.utils.log import get_task_logger
 logger = get_task_logger("geonode.tasks.update")
 
 
-def update_style(layer, style_template):
+def style_update(layer, style_template):
 
     # Get geoserver catalog
     cat = Catalog(settings.OGC_SERVER['default']['LOCATION'] + 'rest',
