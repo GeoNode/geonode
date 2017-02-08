@@ -288,7 +288,11 @@ class DataRequestForm(forms.ModelForm):
         
     def clean_data_class_requested(self):
         data_classes = self.cleaned_data.get('data_class_requested')
-        pprint(data_classes)
+        for dc in data_classes:
+            try:
+                TileDataClass.objects.get(short_name=dc)
+            except ObjectDoesNotExist:
+                raise forms.ValidationError(_("Invalid selection found. Resend the form and try again"))
         return data_classes
 
     def clean_letter_file(self):
@@ -298,6 +302,16 @@ class DataRequestForm(forms.ModelForm):
         if letter_file and split_filename[len(split_filename)-1].lower()[1:] != "pdf":
             raise forms.ValidationError(_("This file type is not allowed"))
         return letter_file
+        
+    def save(self, commit=True, *args, **kwargs):
+        data_request = super(
+            DataRequestForm, self).save(commit=True, *args, **kwargs)
+        
+        data_request.data_type.add(self.clean_data_class_requested())
+    
+        if commit:
+            data_request.save()
+        return data_request
         
 
 class DataRequestShapefileForm(NewLayerUploadForm):
