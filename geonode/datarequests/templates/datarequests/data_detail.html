@@ -89,7 +89,7 @@
 
       <tr>
       <td class="table-user-profile-attribute">{% trans "Type of Data Requested" %}</td>
-      <td>{{ data_request.get_data_type_requested_display }}</td>
+      <td>{% for type in data_types %} {{ type }}{% endfor %}</td>
       </tr>
 
       <tr>
