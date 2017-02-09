@@ -99,7 +99,7 @@ def assign_grid_ref_util(user):
     
     if shapefile:    
         tiles = get_juris_tiles(shapefile, user)
-        if len(tiles) is 0:
+        if len(tiles) < 1:
             pprint("No tiles for {0}".format(user.username))
         else:
             for tile in tiles:
@@ -107,7 +107,10 @@ def assign_grid_ref_util(user):
                 gridref = '"E{0}N{1}"'.format(int(minx / settings._TILE_SIZE), int(maxy / settings._TILE_SIZE))
                 gridref_list .append(gridref)
             
+            if len(gridref_list)==1:
+                pprint("Problematic shapefile for user{0} with shapefile{1}",user.username, shapefile_name )
             gridref_jquery = json.dumps(gridref_list)
+            
         
             try:
                 tile_list_obj = UserTiles.objects.get(user=user)
