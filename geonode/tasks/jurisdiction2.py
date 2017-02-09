@@ -108,8 +108,14 @@ def assign_grid_ref_util(user):
     shapefile = get_shp_ogr(shapefile_name)
     gridref_list = []
     
-    if shapefile:    
-        tiles = get_juris_tiles(shapefile, user)
+    if shapefile:
+        tiles = []
+        if shapefile.type=='Multipolygon':
+            for g in shapefile:
+                tiles.extend(get_juris_tiles(g, user))
+        else:
+            tiles = get_juris_tiles(shapefile, user)
+        
         if len(tiles) < 1:
             pprint("No tiles for {0}".format(user.username))
         else:
@@ -157,7 +163,6 @@ def get_shp_ogr(juris_shp_name):
             feature = data.GetNextFeature()
             shplist.append(loads(feature.GetGeometryRef().ExportToWkb()))
         juris_shp = cascaded_union(shplist)
-        pprint(juris_shp.type)
         return juris_shp
     else:
         return None
