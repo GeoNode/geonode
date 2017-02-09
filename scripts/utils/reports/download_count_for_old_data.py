@@ -5,7 +5,8 @@ from geonode.eula.models import AnonDownloader
 from geonode.reports.models import DownloadCount, SUCLuzViMin, DownloadTracker
 from datetime import datetime, timedelta
 from geonode.layers.models import Layer
-
+from geonode.cephgeo.models import FTPRequest, FTPRequestToObjectIndex, DataClassification
+from geonode.people.models import Profile
 
 
 def get_luzvimin(iterate):
