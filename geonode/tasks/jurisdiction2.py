@@ -40,12 +40,34 @@ def compute_size_update(requests_query_list, area_compute = True, data_size = Tr
                 if save:
                     r.save()
 
+def tile_floor(x):
+    return int(math.floor(x / float(settings._TILE_SIZE)) * settings._TILE_SIZE)
+    
+def tile_ceiling(x):
+    return int(math.ceil(x / float(settings._TILE_SIZE)) * settings._TILE_SIZE)
+
 def get_juris_tiles(juris_shp, user=None):
     total_data_size = 0
-    min_x =  int(math.floor(float(juris_shp.bounds[0]) / float(settings._TILE_SIZE))) * int(settings._TILE_SIZE)
-    max_x =  int(math.ceil(float(juris_shp.bounds[2]) / float(settings._TILE_SIZE))) * int(settings._TILE_SIZE)
-    min_y =  int(math.floor(float(juris_shp.bounds[1]) / float(settings._TILE_SIZE))) * int(settings._TILE_SIZE)
-    max_y =  int(math.ceil(float(juris_shp.bounds[3]) / float(settings._TILE_SIZE))) * int(settings._TILE_SIZE)
+    
+    if not juris_shp.is_valid:
+        juris_shp = juris_shp.convex_hull
+        if not juris_shp.convex_hull.is_valid:
+            if user:
+                email_on_error(DataRequestProfile.objects.get(user=user).email,
+                    "Your submitted shapefile is being considered invalid by the system because some of its borders maybe overlapping or intersecting each other. Please recheck your shapefile and submit a data request once more. Thank you.",
+                    "A problem was encountered while processing your request"
+                    )
+            pprint("A problem with the shapefile was encountered")
+            return []
+    
+    min_x =  tile_floor(juris_shp.bounds[0])
+    #max_x =  int(math.ceil(float(juris_shp.bounds[2]) / float(settings._TILE_SIZE))) * int(settings._TILE_SIZE)
+    max_x = tile_ceiling(juris_shp.bounds[2])
+    #min_y =  int(math.floor(float(juris_shp.bounds[1]) / float(settings._TILE_SIZE))) * int(settings._TILE_SIZE)
+    min_y = tile_floor(juris_shp.bounds[1])
+    #max_y =  int(math.ceil(float(juris_shp.bounds[3]) / float(settings._TILE_SIZE))) * int(settings._TILE_SIZE)
+    max_y = tile_floor(juris_shp.bounds[3])
+    pprint("user: " + user.username + " bounds: "+str((min_x, min_y, max_x, max_y)))
     tile_list = []
     count = 0
     for tile_y in xrange(min_y+settings._TILE_SIZE, max_y+settings._TILE_SIZE, settings._TILE_SIZE):
@@ -56,22 +78,11 @@ def get_juris_tiles(juris_shp, user=None):
             tile_urp = (tile_x + settings._TILE_SIZE, tile_y)
             tile = Polygon([tile_ulp, tile_dlp, tile_drp, tile_urp])
             
-            if not juris_shp.is_valid:
-                juris_shp = juris_shp.convex_hull
-                if juris_shp.convex_hull.is_valid:
-                    juris_shp = juris_shp.convex_hull
-                else: 
-                    if user:
-                        email_on_error(DataRequestProfile.objects.get(user=user).email,
-                            "Your submitted shapefile is being considered invalid by the system because some of its borders maybe overlapping or intersecting each other. Please recheck your shapefile and submit a data request once more. Thank you.",
-                            "A problem was encountered while processing your request"
-                            )
-                    return []
             
             if not tile.intersection(juris_shp).is_empty:
                 tile_list.append(tile)
                 count+=1
-                if count > 1000:
+                if count >= 1000:
                     return tile_list
                 
     return tile_list
@@ -97,17 +108,28 @@ def assign_grid_ref_util(user):
     shapefile = get_shp_ogr(shapefile_name)
     gridref_list = []
     
-    if shapefile:    
-        tiles = get_juris_tiles(shapefile, user)
-        if len(tiles) is 0:
+    if shapefile:
+        tiles = []
+        if shapefile.type=='Multipolygon':
+            for g in shapefile:
+                tiles.extend(get_juris_tiles(g, user))
+        else:
+            tiles = get_juris_tiles(shapefile, user)
+        
+        if len(tiles) < 1:
             pprint("No tiles for {0}".format(user.username))
         else:
             for tile in tiles:
                 (minx, miny, maxx, maxy) = tile.bounds
                 gridref = '"E{0}N{1}"'.format(int(minx / settings._TILE_SIZE), int(maxy / settings._TILE_SIZE))
+                
                 gridref_list .append(gridref)
             
+            if len(gridref_list)==1:
+                pprint("gridref:"+gridref_list[0])
+                pprint("Problematic shapefile for user {0} with shapefile {1}".format(user.username, shapefile_name ))
             gridref_jquery = json.dumps(gridref_list)
+            
         
             try:
                 tile_list_obj = UserTiles.objects.get(user=user)
