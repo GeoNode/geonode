@@ -78,7 +78,7 @@ auth_list = DownloadTracker.objects.order_by('timestamp')
 for auth in auth_list:
     if datetoappend == datetime.strptime(auth.timestamp.strftime('%d-%m-%Y'),'%d-%m-%Y'):#if datenow is timestamp
         getprofile_downloadtracker = Profile.objects.get(username=auth.actor)
-        if not getprofile_downloadtracker.is_staff and not any('test' in var for var in [auth.actor, getprofile_downloadtracker.first_name, getprofile_downloadtracker.last_name]):
+        if not getprofile_downloadtracker.is_staff and not any('test' in var for var in [str(auth.actor), getprofile_downloadtracker.first_name, getprofile_downloadtracker.last_name]):
             if not auth.resource_type == 'document':
                 luzvimin = get_luzvimin({
                     "timestamp": auth.timestamp,
