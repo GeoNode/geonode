@@ -108,7 +108,7 @@ def assign_grid_ref_util(user):
                 gridref_list .append(gridref)
             
             if len(gridref_list)==1:
-                pprint("Problematic shapefile for user{0} with shapefile{1}",user.username, shapefile_name )
+                pprint("Problematic shapefile for user{0} with shapefile{1}".format(user.username, shapefile_name ))
             gridref_jquery = json.dumps(gridref_list)
             
         
