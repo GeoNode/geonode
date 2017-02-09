@@ -157,6 +157,7 @@ def get_shp_ogr(juris_shp_name):
             feature = data.GetNextFeature()
             shplist.append(loads(feature.GetGeometryRef().ExportToWkb()))
         juris_shp = cascaded_union(shplist)
+        pprint(juris_shp.type)
         return juris_shp
     else:
         return None
