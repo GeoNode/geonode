@@ -47,6 +47,7 @@ def login(request, next_page=None, required=False):
         next_page = get_redirect_url(request)
 
     if request.method == 'POST' and request.POST.get('logoutRequest'):
+        pprint("cleaning up sessions")
         clean_sessions(client, request)
         return HttpResponseRedirect(next_page)
 
@@ -161,6 +162,7 @@ def logout(request, next_page=None):
 def callback(request):
     """Read PGT and PGTIOU sent by CAS"""
     if request.method == 'POST' and request.POST.get('logoutRequest'):
+        pprint("")
         clean_sessions(get_cas_client(), request)
         return HttpResponse("{0}\n".format(_('ok')), content_type="text/plain")
     elif request.method == 'GET':
