@@ -42,6 +42,18 @@ def compute_size_update(requests_query_list, area_compute = True, data_size = Tr
 
 def get_juris_tiles(juris_shp, user=None):
     total_data_size = 0
+    
+    if not juris_shp.is_valid:
+        juris_shp = juris_shp.convex_hull
+        if not juris_shp.convex_hull.is_valid:
+            if user:
+                email_on_error(DataRequestProfile.objects.get(user=user).email,
+                    "Your submitted shapefile is being considered invalid by the system because some of its borders maybe overlapping or intersecting each other. Please recheck your shapefile and submit a data request once more. Thank you.",
+                    "A problem was encountered while processing your request"
+                    )
+            pprint("A problem with the shapefile was encountered")
+            return []
+    
     min_x =  int(math.floor(float(juris_shp.bounds[0]) / float(settings._TILE_SIZE))) * int(settings._TILE_SIZE)
     max_x =  int(math.ceil(float(juris_shp.bounds[2]) / float(settings._TILE_SIZE))) * int(settings._TILE_SIZE)
     min_y =  int(math.floor(float(juris_shp.bounds[1]) / float(settings._TILE_SIZE))) * int(settings._TILE_SIZE)
@@ -57,22 +69,11 @@ def get_juris_tiles(juris_shp, user=None):
             tile_urp = (tile_x + settings._TILE_SIZE, tile_y)
             tile = Polygon([tile_ulp, tile_dlp, tile_drp, tile_urp])
             
-            if not juris_shp.is_valid:
-                juris_shp = juris_shp.convex_hull
-                if juris_shp.convex_hull.is_valid:
-                    juris_shp = juris_shp.convex_hull
-                else: 
-                    if user:
-                        email_on_error(DataRequestProfile.objects.get(user=user).email,
-                            "Your submitted shapefile is being considered invalid by the system because some of its borders maybe overlapping or intersecting each other. Please recheck your shapefile and submit a data request once more. Thank you.",
-                            "A problem was encountered while processing your request"
-                            )
-                    return []
             
             if not tile.intersection(juris_shp).is_empty:
                 tile_list.append(tile)
                 count+=1
-                if count > 1000:
+                if count >= 1000:
                     return tile_list
                 
     return tile_list
