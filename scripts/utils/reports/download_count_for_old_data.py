@@ -73,7 +73,7 @@ def add_to_monthlyc(category):
 
 for m in range(10):
     layer_count = {}
-    datetoappend = datetime.strptime((datetime.now()-timedelta(days=1)).strftime('%d-%m-%Y'),'%d-%m-%Y') #timedelta to start week count days from sunday; days=3 meaning week count if from wednesday to tuesday
+    datetoappend = datetime.strptime((datetime.now()-timedelta(days=m)).strftime('%d-%m-%Y'),'%d-%m-%Y') #timedelta to start week count days from sunday; days=3 meaning week count if from wednesday to tuesday
     # auth_list = Action.objects.filter(verb='downloaded').order_by('timestamp')
     auth_list = DownloadTracker.objects.order_by('timestamp')
     for auth in auth_list:
