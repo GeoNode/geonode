@@ -107,9 +107,11 @@ def assign_grid_ref_util(user):
             for tile in tiles:
                 (minx, miny, maxx, maxy) = tile.bounds
                 gridref = '"E{0}N{1}"'.format(int(minx / settings._TILE_SIZE), int(maxy / settings._TILE_SIZE))
+                
                 gridref_list .append(gridref)
             
             if len(gridref_list)==1:
+                pprint("gridref:"+gridref_list[0])
                 pprint("Problematic shapefile for user {0} with shapefile {1}".format(user.username, shapefile_name ))
             gridref_jquery = json.dumps(gridref_list)
             
