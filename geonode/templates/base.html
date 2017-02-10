@@ -139,7 +139,8 @@
             </li>
             {% else %}
             <li>
-              <a href="#" data-toggle="modal" data-target="#SigninModal" role="button" >
+              <!--<a href="#" data-toggle="modal" data-target="#SigninModal" role="button" >-->
+              <a href="{% url "cas_ng_login" %}" role="button">
                 {% trans "Sign in" %}
               </a>
             </li>
@@ -211,7 +212,7 @@
 
     <!-- Modal must stay outside the navbar -->
     {% if not user.is_authenticated %}
-    <div class="modal fade" id="SigninModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <!--<div class="modal fade" id="SigninModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
       <div class="modal-dialog modal-sm">
         <div class="modal-content">
           <div class="modal-header">
@@ -239,7 +240,7 @@
           </form>
         </div>
       </div>
-    </div>
+    </div>-->
     {% else %}
     <div class="modal fade" id="UserModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
       <div class="modal-dialog modal-sm">
@@ -264,7 +265,6 @@
               {% if user.is_superuser %}
               <li><a href="{% url "datarequests:data_request_browse" %}"><i class="fa fa-users"></i> {% trans "Data Request Profiles" %}</a></li>
               <li><a href="{% url "services" %}"><i class="fa fa-globe"></i> {% trans "Remote Services" %}</a></li>
-              <li><a href="{% url "account_invite_user" %}"><i class="fa fa-edit"></i> {% trans "Invite User" %}</a></li>
               <li class="modal-divider"></li>
               <li><a href="{{ GEOSERVER_BASE_URL }}"><i class="fa fa-gears"></i> {% trans "GeoServer" %}</a></li>
               {% else %}
@@ -280,10 +280,13 @@
             </ul>
           </div>
           <div class="modal-footer">
-            <form action="{% url "account_logout" %}" id="logout_form" method="post">
+            <!--<form action="{% url "account_logout" %}" id="logout_form" method="post">
               {% csrf_token %}
               <a class="btn btn-warning btn-block" href="javascript:{}" onclick="document.getElementById('logout_form').submit();">{% trans "Log out" %}</a>
-            </form>
+            </form>-->
+            <a class="btn btn-warning btn-block" href="{% url "cas_ng_logout" %}" role="button">
+                {% trans "Sign out" %}
+            </a>
           </div>
         </div>
       </div>
