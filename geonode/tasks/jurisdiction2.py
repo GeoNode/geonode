@@ -157,20 +157,22 @@ def assign_grid_refs_all():
         except ObjectDoesNotExist:
             assign_grid_ref_util(uj.user)
 
-def get_layer_ogr(juris_shp_name):
+def get_layer_ogr(juris_shp_name): #returns layer
     from osgeo import ogr, osr
     source = ogr.Open(("PG:host={0} dbname={1} user={2} password={3}".format(settings.DATABASE_HOST,settings.DATASTORE_DB,settings.DATABASE_USER,settings.DATABASE_PASSWORD)))
-    data = source.ExecuteSQL("select the_geom from "+str(juris_shp_name))
+    #data = source.ExecuteSQL("select the_geom from "+str(juris_shp_name))
+    data = source.GetLayer(juris_shp_name)
+    source = None
     
     return data
         
-def dissolve_shp(data):
+def dissolve_shp(multipolygon):
+    #take geometry, returns geometry
     from osgeo import ogr, osr
     shplist = []
-    if data:
-        for i in range(data.GetFeatureCount()):
-            feature = data.GetNextFeature()
-            shplist.append(loads(feature.GetGeometryRef().ExportToWkb()))
+    if multipolygon:
+        for g in multipolygon:
+            shplist.append(loads(g.ExportToWkb()))
         juris_shp = cascaded_union(shplist)
         return juris_shp
     else:
@@ -178,6 +180,7 @@ def dissolve_shp(data):
     
 
 def shp_reprojection(shp_name, shp, dest_proj_epsg=32651):
+    #returns geometry
     from osgeo import ogr, osr
     src_proj_epsg =  get_epsg(shp_name)
     
@@ -192,26 +195,15 @@ def shp_reprojection(shp_name, shp, dest_proj_epsg=32651):
     
     cgs_transform = osr.CoordinateTransformation(src_sref, dest_sref)
     
-    out_shp_file = r'/tmp/temp.shp'
-    driver = ogr.GetDriverByName('ESRI Shapefile')
-    if os.path.exists(out_shp):
-        driver.DeleteDataSource(out_shp)
-    out_data_set = driver.CreateDataSource(out_shp_file)
-    out_shp = out_data_set.CreateLayer("tmp_"+shp_name, geom_type=ogr.MultiPolygon)
+    multipolygon = ogr.Geometry(ogr.wkbMultiPolygon)
     
-    out_shp_def = out_shp.GetLayerDefn()
-    
-    in_shp_feature = shp.GetNextFeature()
-    while in_shp_feature:
-        geom = in_shp_feature.GetGeometryRef()
+    shp_feature = shp.GetNextFeature()
+    while shp_feature:
+        geom = shp_feature.GetGeometryRef()
         geom.Transform(cgs_transform)
-        out_f = ogr.Feature(out_shp_def)
-        out_f.SetGeometry(geom)
-        out_shp.CreateFeature(out_f)
-        out_f = None
-        in_shp_feature = shp.GetNextFeature()
+        multypolygon.AddGeometry(geom)
         
-    return out_shp
+    return multipolygon
     
 def get_epsg(shp_name):
     cat = Catalog(settings.OGC_SERVER['default']['LOCATION'] + 'rest',
@@ -223,7 +215,6 @@ def get_epsg(shp_name):
     src_proj_epsg =  int(src_proj.split(':')[1])
     
     return src_proj_epsg
-
 
 def email_on_error(recipient, message, subject):
     send_mail(subject, message, settings.LIPAD_SUPPORT_MAIL, recipient, fail_silently= False)
