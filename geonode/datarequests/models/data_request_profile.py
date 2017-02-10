@@ -827,7 +827,7 @@ class DataRequestProfile(TimeStampedModel):
             self.profile_request.save()
             
             self.additional_remarks += "migrated to data request (" + dateformat.format(datetime.datetime.now(), 'F j, Y, P') +")"
-            self.data_request = data_request.save()
+            self.data_request = data_request
             self.save()
         
             return data_request
