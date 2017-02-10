@@ -36,9 +36,7 @@ def add_to_count(category, typename):
             "SAR": 0,
             "Others": 0,
         }
-    if 'coverage' in typename:
-        layer_count[category]['Coverage'] += 1
-    elif 'fh' in typename:
+    if 'fh' in typename:
         layer_count[category]['FHM'] += 1
     elif 'dtm' in typename:
         layer_count[category]['DTM'] += 1
@@ -50,7 +48,13 @@ def add_to_count(category, typename):
         layer_count[category]['ORTHO'] += 1
     elif 'sar' in typename:
         layer_count[category]['SAR'] += 1
-    elif any(lidar2keyword in typename for lidar2keyword in ['aquaculture', 'mangroves', 'agrilandcover', 'agricoastlandcover', 'irrigation', 'streams', 'wetlands', 'trees', 'ccm', 'chm', 'agb', 'power'])
+    elif 'coverage' in typename:
+        layer_count[category]['Coverage'] += 1
+    elif 'dem' in typename:
+        layer_count[category]['Coverage'] += 1
+    elif 'mkp' in typename:
+        layer_count[category]['Coverage'] += 1
+    elif any(lidar2keyword in typename for lidar2keyword in ['aquaculture', 'mangroves', 'agrilandcover', 'agricoastlandcover', 'irrigation', 'streams', 'wetlands', 'trees', 'ccm', 'chm', 'agb', 'power']):
         layer_count[category]['Resource'] += 1
     else:
         layer_count[category]['Others'] += 1
@@ -76,7 +80,7 @@ auth_list = DownloadTracker.objects.order_by('timestamp')
 for auth in auth_list:
     if datetoappend == datetime.strptime(auth.timestamp.strftime('%d-%m-%Y'),'%d-%m-%Y'):#if datenow is timestamp
         getprofile_downloadtracker = Profile.objects.get(username=auth.actor)
-        if not getprofile_downloadtracker.is_staff and not any('test' in var for var in [auth.actor, getprofile_downloadtracker.first_name, getprofile_downloadtracker.last_name]):
+        if not getprofile_downloadtracker.is_staff and not any('test' in var for var in [str(auth.actor), getprofile_downloadtracker.first_name, getprofile_downloadtracker.last_name]):
             if not auth.resource_type == 'document':
                 luzvimin = get_luzvimin({
                     "timestamp": auth.timestamp,
