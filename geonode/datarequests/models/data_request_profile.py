@@ -789,6 +789,8 @@ class DataRequestProfile(TimeStampedModel):
             profile_request.additional_remarks = self.additional_remarks
             profile_request.save()
             
+            if not self.additional_remarks:
+                self.additional_remarks = ""
             self.additional_remarks += "migrated to profile request (" + dateformat.format(datetime.datetime.now(), 'F j, Y, P') +")"
             self.profile_request = profile_request
             self.save()
