@@ -2,6 +2,7 @@
 
 {% leaflet_js %}
 {% leaflet_css %}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/proj4js/2.3.15/proj4-src.js"></script>
 
 <style>
     .leaflet-container { /* all maps */
@@ -10,30 +11,64 @@
 </style>
 <script type="text/javascript">
     document.addEventListener("DOMContentLoaded", function (event) {
+
+        /* set base layers */
+        var osm = L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png', {
+            attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors',
+        });
+        var OpenMapSurfer_Roads = L.tileLayer('http://korona.geog.uni-heidelberg.de/tiles/roads/x={x}&y={y}&z={z}', {
+            maxZoom: 20,
+            attribution: 'Imagery from <a href="http://giscience.uni-hd.de/">GIScience Research Group @ University of Heidelberg</a> &mdash; Map data &copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+        });
+        var base_maps = {
+            "OpenMapSurfer_Roads": OpenMapSurfer_Roads,
+            'OpenStreetMap': osm
+        };
+
+        /* init overlay layers */
         var overlay_layers = {};
-        map = L.map('the_map');
+        /* init custom layer */
+        var wmsLayer = null;
 
-        var layer_control = L.control.layers().addTo(map);
+        /* set coordinate systems */
+        var firstProjection = proj4('EPSG:3857');   // google mercator
+        var secondProjection = proj4('EPSG:4326');  // WGS84 web mercator
 
-        // Add layers
+        /* transform {{resource}} point coordinates from google mercator to WSG84 system */
+        var point_wsg84 = proj4(firstProjection,secondProjection,[{{ resource.center_x }}, {{ resource.center_y }}]);
+
+        /* initialize the map on the "the_map" div with a given center and zoom */
+        map = L.map('the_map').setView([point_wsg84[1], point_wsg84[0]],6);;
+        map.setZoom({{ resource.zoom }});
+
+        /* add initial base layer to the map */
+        map.addLayer(OpenMapSurfer_Roads);
+
+        /* loop over the layers used by the map */
         {% for layer in layers %}
-            // Add tile layers
-            var tile_layer = L.tileLayer("{{ layer.ows_url }}");
-            if (tile_layer != null) {
-                if ("{{ layer.group }}" == 'background') {
-                    layer_control.addBaseLayer(tile_layer, "{{ layer.name }}");
-                } else {
-                    layer_control.addOverlay(tile_layer, "{{ layer.name }}");
 
+            if ("{{ layer.group }}" != 'background') {
+                /* if current layer not a background layer, instantiates a WMS tile layer object 
+                 * given the URL of the WMS service and a WMS parameters/options object.
+                 */
+                wmsLayer = L.tileLayer.wms('{{ layer.ows_url }}', {
+                    format: 'image/png',
+                    transparent: true,
+                    layers: '{{ layer.name }}',
+                    'opacity': 0.8
+                });   
+                /* add wmsLayer to the overlay_layers{} and to the map object itself */
+                if (wmsLayer != null) {
+                    overlay_layers["{{ resource.title }}"] = wmsLayer;
+                    map.addLayer(wmsLayer);
                 }
-                if ("{{ layer.visibility }}" === "True") {
-                    map.addLayer(tile_layer);
-                }
-                overlay_layers["{{ layer.name }}"] = tile_layer;
             }
         {% endfor %}
-        // Set view port
-        map.setView(new L.LatLng({{ resource.center_x }}, {{ resource.center_y }}), {{ resource.zoom }});
+
+        /* add layers control to allow switching between different base layers and switching overlays on/off */
+        layerControl = L.control.layers(
+                base_maps, overlay_layers
+        ).addTo(map);
     });
 
     function zoom_to_box(map, bbox) {
