@@ -52,6 +52,8 @@ def add_to_count(category, typename):
         layer_count[category]['Coverage'] += 1
     elif 'dem' in typename:
         layer_count[category]['Coverage'] += 1
+    elif 'mkp' in typename:
+        layer_count[category]['Coverage'] += 1
     elif any(lidar2keyword in typename for lidar2keyword in ['aquaculture', 'mangroves', 'agrilandcover', 'agricoastlandcover', 'irrigation', 'streams', 'wetlands', 'trees', 'ccm', 'chm', 'agb', 'power']):
         layer_count[category]['Resource'] += 1
     else:
