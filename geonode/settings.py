@@ -324,6 +324,9 @@ INSTALLED_APPS = (
     'south',
     'corsheaders',
     'captcha',
+    
+    #CAS client
+    'django_cas_ng',
 
 ) + GEONODE_APPS
 
@@ -427,10 +430,11 @@ MIDDLEWARE_CLASSES = (
 #   'django.contrib.auth.backends.ModelBackend',
 #    'guardian.backends.ObjectPermissionBackend',
 #)
-AUTHENTICATION_BACKENDS = ('django_auth_ldap.backend.LDAPBackend',
+AUTHENTICATION_BACKENDS = (#'django_auth_ldap.backend.LDAPBackend',
                            #'geonode.security.auth.GranularBackend',
                            'django.contrib.auth.backends.ModelBackend',
-                           'guardian.backends.ObjectPermissionBackend',)
+                           'guardian.backends.ObjectPermissionBackend',
+                           'django_cas_ng.backends.CASBackend',)
 
 
 ANONYMOUS_USER_ID = -1
@@ -908,6 +912,7 @@ CELERY_IMPORTS = (
     'geonode.tasks.mk_folder',
     'geonode.tasks.jurisdiction',
     'geonode.tasks.jurisdiction2',
+    'geonode.tasks.users',
 )
 
 
@@ -919,7 +924,8 @@ CELERY_QUEUES = [
     Queue('email', routing_key='email'),
     Queue('ftp', routing_key='ftp'),
     Queue('mk_folder', routing_key='mk_folder'),
-    Queue('jurisdiction',routing_key='jurisdiction')
+    Queue('jurisdiction',routing_key='jurisdiction'),
+    Queue('users',routing_key='users'),
 ]
 
 import djcelery
@@ -996,3 +1002,5 @@ if 'geonode.geoserver' in GEONODE_APPS:
 PH_BBOX= [116.22307468566594, 4.27103012208686, 127.09228398538997, 21.2510169394873 ]
 
 _TILE_SIZE = 1000
+
+CAS_VERSION = 3
