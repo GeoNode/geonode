@@ -32,7 +32,7 @@ def compute_size_update(requests_query_list, area_compute = True, data_size = Tr
     else:
         for r in requests_query_list:
             pprint("Updating request id:{0}".format(r.pk))
-            shapefile = dissolve_shp(get_layer_ogr(r.jurisdiction_shapefile.name))
+            shapefile = dissolve_shp(dissolve_shp(shp_reprojection(shapefile_name, get_layer_ogr(shapefile_name)))
             if shapefile:
                 if area_compute:
                     r.area_coverage = get_area_coverage(shapefile)
@@ -107,7 +107,7 @@ def get_juris_data_size(juris_shp, user):
 def assign_grid_ref_util(user):
     pprint("Computing gridrefs for {0}".format(user.username))
     shapefile_name = UserJurisdiction.objects.get(user=user).jurisdiction_shapefile.name
-    shapefile = dissolve_shp(shp_reprojection(get_layer_ogr(shapefile_name)))
+    shapefile = dissolve_shp(shp_reprojection(shapefile_name, get_layer_ogr(shapefile_name)))
     gridref_list = []
     
     if shapefile:
@@ -174,14 +174,12 @@ def dissolve_shp(data):
         return None
     
 
-def shp_reprojection(shp_name, shp, dest_proj_epsg):
+def shp_reprojection(shp_name, shp, dest_proj_epsg=32651):
     cat = Catalog(settings.OGC_SERVER['default']['LOCATION'] + 'rest',
         username=settings.OGC_SERVER['default']['USER'],
         password=settings.OGC_SERVER['default']['PASSWORD'])
     
-    l = cat.get_layer(shp_name)
-    src_proj = l.resource.projection
-    src_proj_epsg =  int(src_proj.split(':')[1])
+    src_proj_epsg =  get_epsg(shp_name)
     
     if src_proj_espg == dest_proj_espg:
         return shp
@@ -215,6 +213,13 @@ def shp_reprojection(shp_name, shp, dest_proj_epsg):
         
     return out_shp
     
+def get_epsg(shp_name):
+    l = cat.get_layer(shp_name)
+    src_proj = l.resource.projection
+    src_proj_epsg =  int(src_proj.split(':')[1])
+    
+    return src_proj_epsg
+
 
 def email_on_error(recipient, message, subject):
     send_mail(subject, message, settings.LIPAD_SUPPORT_MAIL, recipient, fail_silently= False)
