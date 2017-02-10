@@ -178,7 +178,7 @@ def shp_reprojection(shp_name, shp, dest_proj_epsg=32651):
     
     src_proj_epsg =  get_epsg(shp_name)
     
-    if src_proj_espg == dest_proj_espg:
+    if src_proj_epsg == dest_proj_espg:
         return shp
     
     src_sref = osr.SpatialReference()
