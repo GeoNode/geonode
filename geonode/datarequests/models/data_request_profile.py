@@ -528,6 +528,8 @@ class DataRequestProfile(TimeStampedModel):
        <p>You will be able to edit your account details by logging in and going to the following link:</p>
        {}
        </br>
+
+
        <p>To download DTMs, DSMs, Classified LAZ and Orthophotos, please proceed to <a href="http://lipad.dream.upd.edu.ph/maptiles">Data Tiles Section</a> under Data Store after logging in.</p>
        <p>To download Flood Hazard Maps, Resource Layers and other datasets, please proceed to <a href="http://lipad.dream.upd.edu.ph/layers/">Layers Section</a> under Data Store.</p>
        <p>Flood Hazard Maps and Resource Layers can be viewed and downloaded in the <a href="https://lipad.dream.upd.edu.ph/layers/">Data Store > Layers</a> Section while the LiDAR DTM, LiDAR DSM, Classified LAZ and Orthophotos can be downloaded through <a href="https://lipad.dream.upd.edu.ph/maptiles/">Data Store > Data Tiles</a> Section.</p>
@@ -787,6 +789,8 @@ class DataRequestProfile(TimeStampedModel):
             profile_request.additional_remarks = self.additional_remarks
             profile_request.save()
             
+            if not self.additional_remarks:
+                self.additional_remarks = ""
             self.additional_remarks += "migrated to profile request (" + dateformat.format(datetime.datetime.now(), 'F j, Y, P') +")"
             self.profile_request = profile_request
             self.save()
