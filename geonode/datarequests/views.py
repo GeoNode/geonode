@@ -81,7 +81,7 @@ def registration_part_one(request):
                 middle_name = request.user.middle_name,
                 last_name = request.user.last_name,
                 organization = request.user.organization,
-                organization_type = request.user.organization_type,
+                org_type = request.user.org_type,
                 organization_other = request.user.organization_other,
                 email = request.user.email,
                 contact_number = request.user.voice,
@@ -101,7 +101,7 @@ def registration_part_one(request):
                     'middle_name': request_object.middle_name,
                     'last_name': request_object.last_name,
                     'organization': request_object.organization,
-                    'organization_type': request_object.organization_type,
+                    'org_type': request_object.org_type,
                     'organization_other': request_object.organization_other,
                     'email': request_object.email,
                     'contact_number': request_object.contact_number,
@@ -410,7 +410,7 @@ def data_request_csv(request):
     response['Content-Disposition'] = 'attachment; filename="datarequests-"'+str(datetoday.month)+str(datetoday.day)+str(datetoday.year)+'.csv"'
 
     writer = csv.writer(response)
-    fields = ['id','name','email','contact_number', 'organization', 'organization_type','organization_other','has_letter','has_shapefile','project_summary', 'created','request_status', 'date of action','rejection_reason','juris_data_size','area_coverage']
+    fields = ['id','name','email','contact_number', 'organization', 'org_type','organization_other','has_letter','has_shapefile','project_summary', 'created','request_status', 'date of action','rejection_reason','juris_data_size','area_coverage']
     writer.writerow( fields)
 
     objects = DataRequestProfile.objects.all().order_by('pk')
@@ -660,7 +660,7 @@ def data_request_profile_approve(request, pk):
         if not result:
             messages.error (request, _(message))
         else:
-            request_profile.profile.organization_type = request_profile.organization_type
+            request_profile.profile.org_type = request_profile.org_type
             request_profile.profile.organization_other = request_profile.organization_other
             request_profile.profile.save()
             if request_profile.jurisdiction_shapefile:
@@ -756,16 +756,16 @@ def data_request_profile_reverse_geocode(request, pk):
         return HttpResponseRedirect(reverse('datarequests:data_request_browse'))
     else:
         return HttpResponseRedirect('/forbidden/')
-        
+
 def data_request_assign_gridrefs(request):
     if request.user.is_superuser:
         assign_grid_refs_all.delay()
         messages.info(request, "Now processing jurisdictions. Please wait for a few minutes for them to finish")
         return HttpResponseRedirect(reverse('datarequests:data_request_browse'))
-        
+
     else:
         return HttpResponseRedirect('/forbidden/')
-            
+
 
 def data_request_facet_count(request):
     if not request.user.is_superuser:
