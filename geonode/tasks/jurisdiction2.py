@@ -1,9 +1,11 @@
 import math
 import sys
 import traceback
+import os
 from pprint import pprint
 from celery.task import task
-from osgeo import ogr
+from osgeo import ogr, osr
+from pyproj import Proj, transform
 
 from shapely.wkb import loads
 from shapely.geometry import Polygon
@@ -22,7 +24,6 @@ from geonode.datarequests.utils import  get_place_name, get_area_coverage
 
 from django.core.mail import send_mail
 
-
 @task(name='geonode.tasks.jurisdiction2.compute_size_update', queue='jurisdiction')
 def compute_size_update(requests_query_list, area_compute = True, data_size = True, save=True):
     pprint("Updating requests data size and area coverage")
@@ -31,7 +32,7 @@ def compute_size_update(requests_query_list, area_compute = True, data_size = Tr
     else:
         for r in requests_query_list:
             pprint("Updating request id:{0}".format(r.pk))
-            shapefile = get_shp_ogr(r.jurisdiction_shapefile.name)
+            shapefile = dissolve_shp(get_layer_ogr(r.jurisdiction_shapefile.name))
             if shapefile:
                 if area_compute:
                     r.area_coverage = get_area_coverage(shapefile)
@@ -41,12 +42,34 @@ def compute_size_update(requests_query_list, area_compute = True, data_size = Tr
                 if save:
                     r.save()
 
+def tile_floor(x):
+    return int(math.floor(x / float(settings._TILE_SIZE)) * settings._TILE_SIZE)
+    
+def tile_ceiling(x):
+    return int(math.ceil(x / float(settings._TILE_SIZE)) * settings._TILE_SIZE)
+
 def get_juris_tiles(juris_shp, user=None):
     total_data_size = 0
-    min_x =  int(math.floor(float(juris_shp.bounds[0]) / float(settings._TILE_SIZE))) * int(settings._TILE_SIZE)
-    max_x =  int(math.ceil(float(juris_shp.bounds[2]) / float(settings._TILE_SIZE))) * int(settings._TILE_SIZE)
-    min_y =  int(math.floor(float(juris_shp.bounds[1]) / float(settings._TILE_SIZE))) * int(settings._TILE_SIZE)
-    max_y =  int(math.ceil(float(juris_shp.bounds[3]) / float(settings._TILE_SIZE))) * int(settings._TILE_SIZE)
+    
+    if not juris_shp.is_valid:
+        juris_shp = juris_shp.convex_hull
+        if not juris_shp.convex_hull.is_valid:
+            if user:
+                email_on_error(DataRequestProfile.objects.get(user=user).email,
+                    "Your submitted shapefile is being considered invalid by the system because some of its borders maybe overlapping or intersecting each other. Please recheck your shapefile and submit a data request once more. Thank you.",
+                    "A problem was encountered while processing your request"
+                    )
+            pprint("A problem with the shapefile was encountered")
+            return []
+    
+    min_x =  tile_floor(juris_shp.bounds[0])
+    #max_x =  int(math.ceil(float(juris_shp.bounds[2]) / float(settings._TILE_SIZE))) * int(settings._TILE_SIZE)
+    max_x = tile_ceiling(juris_shp.bounds[2])
+    #min_y =  int(math.floor(float(juris_shp.bounds[1]) / float(settings._TILE_SIZE))) * int(settings._TILE_SIZE)
+    min_y = tile_floor(juris_shp.bounds[1])
+    #max_y =  int(math.ceil(float(juris_shp.bounds[3]) / float(settings._TILE_SIZE))) * int(settings._TILE_SIZE)
+    max_y = tile_floor(juris_shp.bounds[3])
+    pprint("user: " + user.username + " bounds: "+str((min_x, min_y, max_x, max_y)))
     tile_list = []
     count = 0
     for tile_y in xrange(min_y+settings._TILE_SIZE, max_y+settings._TILE_SIZE, settings._TILE_SIZE):
@@ -58,28 +81,16 @@ def get_juris_tiles(juris_shp, user=None):
             tile = Polygon([tile_ulp, tile_dlp, tile_drp, tile_urp])
             
             
-            if not juris_shp.is_valid:
-                juris_shp = juris_shp.convex_hull
-                if juris_shp.convex_hull.is_valid:
-                    juris_shp = juris_shp.convex_hull
-                else:
-                    if user:
-                        email_on_error(DataRequestProfile.objects.get(user=user).email,
-                            "Your submitted shapefile is being considered invalid by the system because some of its borders maybe overlapping or intersecting each other. Please recheck your shapefile and submit a data request once more. Thank you.",
-                            "A problem was encountered while processing your request"
-                            )
-                        return []
-                        
             if not tile.intersection(juris_shp).is_empty:
                 tile_list.append(tile)
                 count+=1
-                if count > 1000:
+                if count >= 1000:
                     return tile_list
                 
     return tile_list
 
 def get_juris_data_size(juris_shp, user):
-    tile_list = get_juris_tiles(juris_shp)
+    tile_list = get_juris_tiles(juris_shp, user)
     total_data_size = 0
     
     for tile in tile_list:
@@ -96,22 +107,32 @@ def get_juris_data_size(juris_shp, user):
 def assign_grid_ref_util(user):
     pprint("Computing gridrefs for {0}".format(user.username))
     shapefile_name = UserJurisdiction.objects.get(user=user).jurisdiction_shapefile.name
-    shapefile = get_shp_ogr(shapefile_name)
+    shapefile = dissolve_shp(shp_reprojection(get_layer_ogr(shapefile_name)))
     gridref_list = []
     
-    if shapefile:    
-        pprint("Computing gridrefs for {0}".format(user.username))
-        tiles = get_juris_tiles(shapefile,user)
-        if len(tiles) is 0:
+    if shapefile:
+        tiles = []
+        if shapefile.type=='Multipolygon':
+            for g in shapefile:
+                tiles.extend(get_juris_tiles(g, user))
+        else:
+            tiles = get_juris_tiles(shapefile, user)
+        
+        if len(tiles) < 1:
             pprint("No tiles for {0}".format(user.username))
         else:
             for tile in tiles:
                 (minx, miny, maxx, maxy) = tile.bounds
                 gridref = '"E{0}N{1}"'.format(int(minx / settings._TILE_SIZE), int(maxy / settings._TILE_SIZE))
+                
                 gridref_list .append(gridref)
             
+            if len(gridref_list)==1:
+                pprint("gridref:"+gridref_list[0])
+                pprint("Problematic shapefile for user {0} with shapefile {1}".format(user.username, shapefile_name ))
             gridref_jquery = json.dumps(gridref_list)
-    
+            
+        
             try:
                 tile_list_obj = UserTiles.objects.get(user=user)
                 tile_list_obj.gridref_list = gridref_jquery
@@ -135,9 +156,13 @@ def assign_grid_refs_all():
         except ObjectDoesNotExist:
             assign_grid_ref_util(uj.user)
 
-def get_shp_ogr(juris_shp_name):
+def get_layer_ogr(juris_shp_name):
     source = ogr.Open(("PG:host={0} dbname={1} user={2} password={3}".format(settings.DATABASE_HOST,settings.DATASTORE_DB,settings.DATABASE_USER,settings.DATABASE_PASSWORD)))
     data = source.ExecuteSQL("select the_geom from "+str(juris_shp_name))
+    
+    return data
+        
+def dissolve_shp(data):
     shplist = []
     if data:
         for i in range(data.GetFeatureCount()):
@@ -147,6 +172,50 @@ def get_shp_ogr(juris_shp_name):
         return juris_shp
     else:
         return None
+    
+
+def shp_reprojection(shp_name, shp, dest_proj_epsg):
+    cat = Catalog(settings.OGC_SERVER['default']['LOCATION'] + 'rest',
+        username=settings.OGC_SERVER['default']['USER'],
+        password=settings.OGC_SERVER['default']['PASSWORD'])
+    
+    l = cat.get_layer(shp_name)
+    src_proj = l.resource.projection
+    src_proj_epsg =  int(src_proj.split(':')[1])
+    
+    if src_proj_espg == dest_proj_espg:
+        return shp
+    
+    src_sref = osr.SpatialReference()
+    src_sref.ImportFromEPSG(src_proj_epsg)
+    
+    dest_sref = osr.SpatialReference()
+    dest_sref.ImportFromEPSG(dest_proj_epsg)
+    
+    cgs_transform = osr.CoordinateTransformation(src_sref, dest_sref)
+    
+    out_shp_file = r'/tmp/temp.shp'
+    driver = ogr.GetDriverByName('ESRI Shapefile')
+    if os.path.exists(out_shp):
+        driver.DeleteDataSource(out_shp)
+    out_data_set = driver.CreateDataSource(out_shp_file)
+    out_shp = out_data_set.CreateLayer("tmp_"+shp_name, geom_type=ogr.MultiPolygon)
+    
+    out_shp_def = out_shp.GetLayerDefn()
+    
+    in_shp_feature = shp.GetNextFeature()
+    while in_shp_feature:
+        geom = in_shp_feature.GetGeometryRef()
+        geom.Transform(cgs_transform)
+        out_f = ogr.Feature(out_shp_def)
+        out_f.SetGeometry(geom)
+        out_shp.CreateFeature(out_f)
+        out_f = None
+        in_shp_feature = shp.GetNextFeature()
+        
+    return out_shp
+    
 
 def email_on_error(recipient, message, subject):
     send_mail(subject, message, settings.LIPAD_SUPPORT_MAIL, recipient, fail_silently= False)
+    
