@@ -157,12 +157,14 @@ def assign_grid_refs_all():
             assign_grid_ref_util(uj.user)
 
 def get_layer_ogr(juris_shp_name):
+    from osgeo import ogr, osr
     source = ogr.Open(("PG:host={0} dbname={1} user={2} password={3}".format(settings.DATABASE_HOST,settings.DATASTORE_DB,settings.DATABASE_USER,settings.DATABASE_PASSWORD)))
     data = source.ExecuteSQL("select the_geom from "+str(juris_shp_name))
     
     return data
         
 def dissolve_shp(data):
+    from osgeo import ogr, osr
     shplist = []
     if data:
         for i in range(data.GetFeatureCount()):
@@ -175,7 +177,7 @@ def dissolve_shp(data):
     
 
 def shp_reprojection(shp_name, shp, dest_proj_epsg=32651):
-    
+    from osgeo import ogr, osr
     src_proj_epsg =  get_epsg(shp_name)
     
     if src_proj_epsg == dest_proj_epsg:
