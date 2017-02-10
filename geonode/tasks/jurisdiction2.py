@@ -32,7 +32,7 @@ def compute_size_update(requests_query_list, area_compute = True, data_size = Tr
     else:
         for r in requests_query_list:
             pprint("Updating request id:{0}".format(r.pk))
-            shapefile = dissolve_shp(dissolve_shp(shp_reprojection(shapefile_name, get_layer_ogr(shapefile_name)))
+            shapefile = dissolve_shp(shp_reprojection(shapefile_name, get_layer_ogr(shapefile_name)))
             if shapefile:
                 if area_compute:
                     r.area_coverage = get_area_coverage(shapefile)
