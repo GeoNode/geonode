@@ -175,9 +175,6 @@ def dissolve_shp(data):
     
 
 def shp_reprojection(shp_name, shp, dest_proj_epsg=32651):
-    cat = Catalog(settings.OGC_SERVER['default']['LOCATION'] + 'rest',
-        username=settings.OGC_SERVER['default']['USER'],
-        password=settings.OGC_SERVER['default']['PASSWORD'])
     
     src_proj_epsg =  get_epsg(shp_name)
     
@@ -214,6 +211,10 @@ def shp_reprojection(shp_name, shp, dest_proj_epsg=32651):
     return out_shp
     
 def get_epsg(shp_name):
+    cat = Catalog(settings.OGC_SERVER['default']['LOCATION'] + 'rest',
+        username=settings.OGC_SERVER['default']['USER'],
+        password=settings.OGC_SERVER['default']['PASSWORD'])
+    
     l = cat.get_layer(shp_name)
     src_proj = l.resource.projection
     src_proj_epsg =  int(src_proj.split(':')[1])
