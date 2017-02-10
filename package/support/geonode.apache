@@ -26,6 +26,11 @@ WSGIDaemonProcess geonode user=www-data threads=15 processes=2
        Deny from all
     </Directory>
 
+    <Directory "/var/www/geonode/uploaded/layers/">
+       Order allow,deny
+       Deny from all
+    </Directory>
+
     <Proxy *>
       Order allow,deny
       Allow from all
