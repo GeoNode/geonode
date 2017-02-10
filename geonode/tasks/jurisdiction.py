@@ -4,7 +4,7 @@ from pprint import pprint
 from celery.task import task
 from django.conf import settings
 from geonode.geoserver.helpers import ogc_server_settings
-from geonode.layers.models import Layer
+
 from geonode.layers.models import Style
 from geoserver.catalog import Catalog
 from geonode.layers.models import Layer
@@ -56,4 +56,3 @@ def  place_name_update(requests_query_list, save=True):
                 
                 if save:
                     r.save()
-            
