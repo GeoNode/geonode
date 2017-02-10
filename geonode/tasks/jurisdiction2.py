@@ -149,6 +149,7 @@ def assign_grid_refs(user):
 
 @task(name='geonode.tasks.jurisdiction2.assign_grid_refs_all',queue='jurisdiction')
 def assign_grid_refs_all():
+    from osgeo import ogr, osr
     user_jurisdictions = UserJurisdiction.objects.all()
     for uj in  user_jurisdictions:
         try:
