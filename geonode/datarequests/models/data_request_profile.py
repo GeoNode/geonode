@@ -802,6 +802,7 @@ class DataRequestProfile(TimeStampedModel):
         
     def migrate_request_data(self):
         if self.project_summary and not self.data_request :
+            profile_request = self.profile_request
             data_request = DataRequest()
             data_request.profile = profile_request.profile
             data_request.administrator = profile_request.administrator
