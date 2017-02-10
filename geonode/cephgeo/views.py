@@ -32,7 +32,10 @@ from django.core.urlresolvers import reverse
 from geonode.maptiles.models import SRS
 from django.utils.text import slugify
 
-from geonode.tasks.update import update_fhm_metadata_task, style_update, seed_layers, pl2_metadata_update, sar_metadata_update, layer_default_style, floodplain_keywords
+from geonode.tasks.update import update_fhm_metadata_task, style_update, seed_layers
+from geonode.tasks.update import pl2_metadata_update, sar_metadata_update
+from geonode.tasks.update import layer_default_style, floodplain_keywords
+from geonode.tasks.update import update_lidar_coverage_task
 from geonode.base.enumerations import CHARSETS
 
 from django.conf import settings
@@ -447,6 +450,27 @@ def ftp_request_details(request, ftp_req_name=None):
 
 
 @login_required
+def tile_check(request):
+    user = request.user
+    response = "false"
+    if not request.POST:
+        raise PermissionDenied
+    try:
+        json_tiles = UserTiles.objects.get(user=user)
+    except ObjectDoesNotExist as e:
+        return HttpResponse(status=404)
+
+    georefs = map(str, request.POST.get('georefs', ''))
+    reference_tiles = map(str, json.loads(json_tiles))
+    valid_tiles = []
+    for x in georefs:
+        if x in georefs:
+            valid_tiles.append(x)
+
+    return HttpResponse(json.dumps(valid_tiles), status=200)
+
+
+@login_required
 def clear_cart(request):
     delete_all_items_from_cart(request)
     response = render_to_response('cart.html',
@@ -477,6 +501,14 @@ def count_duplicate_requests(ftp_request):
 @user_passes_test(lambda u: u.is_superuser, login_url='/forbidden/', redirect_field_name='')
 def management(request):
     return render_to_response('ceph_manager.html', context_instance=RequestContext(request))
+
+
+@login_required
+@user_passes_test(lambda u: u.is_superuser)
+def update_lidar_coverage(request):
+    update_lidar_coverage_task.delay()
+    messages.error(request, "Updating LiDAR Coverage")
+    return HttpResponseRedirect(reverse('data_management'))
 
 
 @login_required
@@ -577,6 +609,7 @@ def jurisdict_default_style(request):
     messages.error(
         request, "Updating Default Style of Jurisdiction Shapefiles")
     return HttpResponseRedirect(reverse('data_management'))
+
 
 @login_required
 @user_passes_test(lambda u: u.is_superuser)
