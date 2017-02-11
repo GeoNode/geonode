@@ -162,7 +162,6 @@ def get_layer_ogr(juris_shp_name): #returns layer
     source = ogr.Open(("PG:host={0} dbname={1} user={2} password={3}".format(settings.DATABASE_HOST,settings.DATASTORE_DB,settings.DATABASE_USER,settings.DATABASE_PASSWORD)))
     #data = source.ExecuteSQL("select the_geom from "+str(juris_shp_name))
     data = source.GetLayer(str(juris_shp_name))
-    source = None
     
     return data
         
