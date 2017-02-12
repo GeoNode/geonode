@@ -7,7 +7,8 @@ build:
 	docker-compose build celery
 
 sync: up
-	# set up the database tablea
+	docker-compose exec django django-admin.py makemigrations --noinput
+	docker-compose exec django django-admin.py migrate account --noinput
 	docker-compose exec django django-admin.py migrate --noinput
 	docker-compose exec django django-admin.py loaddata sample_admin
 	docker-compose exec django django-admin.py loaddata geonode/base/fixtures/default_oauth_apps_docker.json
@@ -39,7 +40,8 @@ unittest: up
 
 test: smoketest unittest
 
-reset: down up wait sync
+clear:
+	docker volume rm labsgeonode_elasticsearch_data labsgeonode_geoserver_data labsgeonode_geoserver_datadir labsgeonode_postgresql_data labsgeonode_rabbitmq_data
 
 hardreset: pull build reset
 

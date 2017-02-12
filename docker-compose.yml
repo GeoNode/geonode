@@ -1,17 +1,24 @@
 version: '2'
+
 services:
 
   postgres:
-    image: postgres
+    image: postgres:9.4
+    volumes:
+      - postgresql_data:/var/lib/postgresql/data
 
   elasticsearch:
-   image: elasticsearch
+    image: elasticsearch:5.2
+    volumes:
+      - elasticsearch_data:/usr/share/elasticsearch/data
 
   rabbitmq:
-     image: rabbitmq
+    image: rabbitmq:3.6
+    volumes:
+      - rabbitmq_data:/var/lib/rabbitmq
 
   django:
-    image: geonode/django
+    image: camptocamp/geonode_django
     links:
       - postgres
       - elasticsearch
@@ -21,7 +28,7 @@ services:
       - ./scripts/docker/env/production/django.env
 
   celery:
-    image: geonode/django
+    image: camptocamp/geonode_django
     links:
       - rabbitmq
       - postgres
@@ -41,31 +48,25 @@ services:
       - ./scripts/docker/env/production/django.env
 
   geoserver:
-    image: geonode/geoserver:alias
+    image: camptocamp/geonode_geoserver
     links:
       - postgres
+      - django
     ports:
-      - "8080"
-    volumes_from:
-      - data_dir_conf
-    env_file:
-      - ./scripts/docker/env/production/geoserver.env
+      - "8080:8080"
+    volumes:
+      - geoserver_datadir:/usr/local/tomcat/webapps/geoserver/data
 
-  geonode:
-    image: geonode/nginx:geoserver
+  nginx:
+    image: camptocamp/geonode_nginx
     links:
       - django
-      - geoserver
     ports:
       - "80:80"
 
-  data_dir_conf:
-    image: geonode/geoserver_data:2.9.x-oauth2
-    container_name: geoserver_data_dir
-    command: /bin/true
-    volumes:
-      - /geoserver_data/data
-
 volumes:
-
-  geoserver_data_dir:
+  rabbitmq_data:
+  elasticsearch_data:
+  geoserver_datadir:
+  geoserver_data:
+  postgresql_data:
