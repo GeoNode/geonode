@@ -180,7 +180,7 @@ def get_layer_ogr(juris_shp_name, dest_proj_epsg=32651): #returns layer
         if not src_proj_epsg == dest_proj_epsg:
             geom.Transform(cgs_transform)
         multipolygon.AddGeometry(geom)
-        shp_feature.GetNextFeature()
+        data.GetNextFeature()
     
     return multipolygon
         
