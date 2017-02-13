@@ -162,31 +162,27 @@ def get_layer_ogr(juris_shp_name): #returns layer
     data = source.ExecuteSQL("select the_geom from "+str(juris_shp_name))
     #data = source.GetLayer(str(juris_shp_name))
     
-    return data
     #reprojection section
-    #src_proj_epsg =  get_epsg(juris_shp_name)
+    src_proj_epsg =  get_epsg(juris_shp_name)
     
-    #if src_proj_epsg == dest_proj_epsg:
-    #    return shp
+    src_sref = osr.SpatialReference()
+    src_sref.ImportFromEPSG(src_proj_epsg)
     
-    #src_sref = osr.SpatialReference()
-    #src_sref.ImportFromEPSG(src_proj_epsg)
+    dest_sref = osr.SpatialReference()
+    dest_sref.ImportFromEPSG(dest_proj_epsg)
+    cgs_transform = osr.CoordinateTransformation(src_sref, dest_sref)
     
-    #dest_sref = osr.SpatialReference()
-    #dest_sref.ImportFromEPSG(dest_proj_epsg)
+    multipolygon = ogr.Geometry(ogr.wkbMultiPolygon)
     
-    #cgs_transform = osr.CoordinateTransformation(src_sref, dest_sref)
+    shp_feature = shp.GetNextFeature()
+    while shp_feature:
+        geom = shp_feature.GetGeometryRef()
+        if not src_proj_epsg == dest_proj_epsg:
+            geom.Transform(cgs_transform)
+        multypolygon.AddGeometry(geom)
+        shp_feature.GetNextFeature()
     
-    #multipolygon = ogr.Geometry(ogr.wkbMultiPolygon)
-    
-    #shp_feature = shp.GetNextFeature()
-    #while shp_feature:
-    #    geom = shp_feature.GetGeometryRef()
-    #    geom.Transform(cgs_transform)
-    #    multypolygon.AddGeometry(geom)
-    #    shp_feature.GetNextFeature()
-    
-    #return multipolygon
+    return multipolygon
         
 def dissolve_shp(multipolygon):
     #take geometry, returns geometry
