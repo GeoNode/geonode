@@ -66,6 +66,11 @@ Place the following content inside the file:::
             IndexOptions FancyIndexing
         </Directory>
 
+        <Directory "/var/www/geonode/uploaded/layers/">
+            Order allow,deny
+            Deny from all
+        </Directory>
+
         <Proxy *>
             Order allow,deny
             Allow from all
