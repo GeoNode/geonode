@@ -190,6 +190,7 @@ def get_layer_ogr(juris_shp_name, dest_proj_epsg=32651): #returns layer
         
 def dissolve_shp(geometries):
     #take geometry, returns geometry
+    pprint("dissolving geometries ")
     shplist = []
     if geometries:
         for g in geometries:
