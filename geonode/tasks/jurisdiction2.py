@@ -196,6 +196,7 @@ def dissolve_shp(geometries):
         for g in geometries:
             shplist.append(loads(g.ExportToWkb()))
         juris_shp = cascaded_union(shplist)
+        pprint("succesfully dissolved")
         return juris_shp
     else:
         return []
