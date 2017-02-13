@@ -107,7 +107,7 @@ def get_juris_data_size(juris_shp, user):
 def assign_grid_ref_util(user):
     pprint("Computing gridrefs for {0}".format(user.username))
     shapefile_name = UserJurisdiction.objects.get(user=user).jurisdiction_shapefile.name
-    shapefile = dissolve_shp(shp_reprojection(shapefile_name, get_layer_ogr(shapefile_name)))
+    shapefile = dissolve_shp( get_layer_ogr(shapefile_name))
     gridref_list = []
     
     if shapefile:
@@ -161,7 +161,8 @@ def get_layer_ogr(juris_shp_name, dest_proj_epsg=32651): #returns layer
     source = ogr.Open(("PG:host={0} dbname={1} user={2} password={3}".format(settings.DATABASE_HOST,settings.DATASTORE_DB,settings.DATABASE_USER,settings.DATABASE_PASSWORD)))
     data = source.ExecuteSQL("select the_geom from "+str(juris_shp_name))
     #data = source.GetLayer(str(juris_shp_name))
-    
+    if not data:
+        return None
     #reprojection section
     src_proj_epsg =  get_epsg(juris_shp_name)
     
@@ -178,7 +179,7 @@ def get_layer_ogr(juris_shp_name, dest_proj_epsg=32651): #returns layer
     while shp_feature:
         geom = shp_feature.GetGeometryRef()
         if not src_proj_epsg == dest_proj_epsg:
-            pprint("transforming now")
+            pprint("transforming shapefile "+juris_shp_name)
             geom.Transform(cgs_transform)
         multipolygon.AddGeometry(geom)
         shp_feature = data.GetNextFeature()
@@ -219,7 +220,7 @@ def shp_reprojection(shp_name, shp, dest_proj_epsg=32651):
         geom = shp_feature.GetGeometryRef()
         geom.Transform(cgs_transform)
         multypolygon.AddGeometry(geom)
-        shp_feature.GetNextFeature()
+        shp_feature = shp.GetNextFeature()
         
     return multipolygon
     
