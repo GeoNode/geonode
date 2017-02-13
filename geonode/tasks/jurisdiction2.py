@@ -32,7 +32,7 @@ def compute_size_update(requests_query_list, area_compute = True, data_size = Tr
     else:
         for r in requests_query_list:
             pprint("Updating request id:{0}".format(r.pk))
-            shapefile = dissolve_shp(shp_reprojection(shapefile_name, get_layer_ogr(shapefile_name)))
+            shapefile = dissolve_shp(get_layer_ogr(shapefile_name))
             if shapefile:
                 if area_compute:
                     r.area_coverage = get_area_coverage(shapefile)
@@ -107,10 +107,10 @@ def get_juris_data_size(juris_shp, user):
 def assign_grid_ref_util(user):
     pprint("Computing gridrefs for {0}".format(user.username))
     shapefile_name = UserJurisdiction.objects.get(user=user).jurisdiction_shapefile.name
-    shapefile = get_layer_ogr(shapefile_name)
+    geometry = dissolve_shp(get_layer_ogr(shapefile_name))
     gridref_list = []
     
-    if shapefile:
+    if geometry:
         tiles = []
         if shapefile.type=='Multipolygon':
             for g in shapefile:
@@ -161,9 +161,12 @@ def get_layer_ogr(juris_shp_name, dest_proj_epsg=32651): #returns layer
     data = source.ExecuteSQL("select the_geom from "+str(juris_shp_name))
     #data = source.GetLayer(str(juris_shp_name))
     if not data:
-        return None
+        return []
     #reprojection section
     src_proj_epsg =  get_epsg(juris_shp_name)
+    
+    if src_proj_epsg == 0:
+        return []
     
     src_sref = osr.SpatialReference()
     src_sref.ImportFromEPSG(src_proj_epsg)
@@ -172,56 +175,29 @@ def get_layer_ogr(juris_shp_name, dest_proj_epsg=32651): #returns layer
     dest_sref.ImportFromEPSG(dest_proj_epsg)
     cgs_transform = osr.CoordinateTransformation(src_sref, dest_sref)
     
-    multipolygon = ogr.Geometry(ogr.wkbMultiPolygon)
-    
+    geometry_list = []
+        
     shp_feature = data.GetNextFeature()
     while shp_feature:
         geom = shp_feature.GetGeometryRef()
         if not src_proj_epsg == dest_proj_epsg:
             pprint("transforming shapefile "+juris_shp_name)
             geom.Transform(cgs_transform)
-        multipolygon.AddGeometry(geom)
+        geometry_list.append(geom)
         shp_feature = data.GetNextFeature()
     
-    return multipolygon
+    return geometry_list
         
-def dissolve_shp(multipolygon):
+def dissolve_shp(geometries):
     #take geometry, returns geometry
     shplist = []
-    if multipolygon:
-        for g in multipolygon:
+    if geometries:
+        for g in geometries:
             shplist.append(loads(g.ExportToWkb()))
         juris_shp = cascaded_union(shplist)
         return juris_shp
     else:
-        return None
-    
-
-def shp_reprojection(shp_name, shp, dest_proj_epsg=32651):
-    #returns geometry
-    src_proj_epsg =  get_epsg(shp_name)
-    
-    if src_proj_epsg == dest_proj_epsg:
-        return shp
-    
-    src_sref = osr.SpatialReference()
-    src_sref.ImportFromEPSG(src_proj_epsg)
-    
-    dest_sref = osr.SpatialReference()
-    dest_sref.ImportFromEPSG(dest_proj_epsg)
-    
-    cgs_transform = osr.CoordinateTransformation(src_sref, dest_sref)
-    
-    multipolygon = ogr.Geometry(ogr.wkbMultiPolygon)
-    
-    shp_feature = shp.GetNextFeature()
-    while shp_feature:
-        geom = shp_feature.GetGeometryRef()
-        geom.Transform(cgs_transform)
-        multypolygon.AddGeometry(geom)
-        shp_feature = shp.GetNextFeature()
-        
-    return multipolygon
+        return []
     
 def get_epsg(shp_name):
     cat = Catalog(settings.OGC_SERVER['default']['LOCATION'] + 'rest',
@@ -230,7 +206,7 @@ def get_epsg(shp_name):
     
     l = cat.get_layer(shp_name)
     if not l:
-        return None
+        return 0
     src_proj = l.resource.projection
     src_proj_epsg =  int(src_proj.split(':')[1])
     
