@@ -1,0 +1,26 @@
+{% extends "announcements/base.html" %}
+
+{% load i18n %}
+{% load bootstrap_tags %}
+{% load url from future %}
+
+{% block body_class %}announcements{% endblock %}
+
+{% block body %}
+    <h1>{% trans "Delete Announcement?" %}</h1>
+    {% url "announcements_delete" pk=announcement.pk as post_url %}
+    <p class="lead">
+        {% trans "Are you sure you want to delete this announcement?" %}
+    </p>
+    <p><b>{{ announcement.title }}</b></p>
+    <p><em>{{ announcement.content }}</em></p>
+
+    <form action="{{ post_url }}" method="POST" class="form form-horizontal">
+        {% csrf_token %}
+        {{ form|as_bootstrap }}
+        <div class="form-actions">
+            <a href="{% url "announcements_list" %}" class="btn">{% trans "Cancel" %}</a>
+            <button type="submit" class="btn btn-danger">{% trans "Delete" %}</button>
+        </div>
+    </form>
+{% endblock %}
