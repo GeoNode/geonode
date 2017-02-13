@@ -38,7 +38,7 @@ if (window.GeoExplorer) {
         maxLayersTitle: gettext('Warning'),
         maxLayersText: gettext('You now have %n layers in your map.  With more than %max layers you may experience problems with layer ordering, info balloon display, and general performance.'),
         measureSplitText: gettext("Measure"),
-        metaDataHeader: gettext("About this Map View"),
+        metaDataHeader: gettext("Save Map"),
         metaDataMapAbstract: gettext("Abstract (brief description)"),
         metaDataMapKeywords: gettext("Keywords (for Picasa and YouTube overlays)"),
         metaDataMapIntroText: gettext("Introduction (tell visitors more about your map view)"),
