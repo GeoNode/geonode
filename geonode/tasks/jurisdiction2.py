@@ -107,7 +107,7 @@ def get_juris_data_size(juris_shp, user):
 def assign_grid_ref_util(user):
     pprint("Computing gridrefs for {0}".format(user.username))
     shapefile_name = UserJurisdiction.objects.get(user=user).jurisdiction_shapefile.name
-    shapefile = dissolve_shp( get_layer_ogr(shapefile_name))
+    shapefile = get_layer_ogr(shapefile_name)
     gridref_list = []
     
     if shapefile:
@@ -131,7 +131,6 @@ def assign_grid_ref_util(user):
                 pprint("gridref:"+gridref_list[0])
                 pprint("Problematic shapefile for user {0} with shapefile {1}".format(user.username, shapefile_name ))
             gridref_jquery = json.dumps(gridref_list)
-            
         
             try:
                 tile_list_obj = UserTiles.objects.get(user=user)
@@ -230,6 +229,8 @@ def get_epsg(shp_name):
         password=settings.OGC_SERVER['default']['PASSWORD'])
     
     l = cat.get_layer(shp_name)
+    if not l:
+        return None
     src_proj = l.resource.projection
     src_proj_epsg =  int(src_proj.split(':')[1])
     
