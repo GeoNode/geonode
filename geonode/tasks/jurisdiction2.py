@@ -163,6 +163,30 @@ def get_layer_ogr(juris_shp_name): #returns layer
     #data = source.GetLayer(str(juris_shp_name))
     
     return data
+    #reprojection section
+    #src_proj_epsg =  get_epsg(juris_shp_name)
+    
+    #if src_proj_epsg == dest_proj_epsg:
+    #    return shp
+    
+    #src_sref = osr.SpatialReference()
+    #src_sref.ImportFromEPSG(src_proj_epsg)
+    
+    #dest_sref = osr.SpatialReference()
+    #dest_sref.ImportFromEPSG(dest_proj_epsg)
+    
+    #cgs_transform = osr.CoordinateTransformation(src_sref, dest_sref)
+    
+    #multipolygon = ogr.Geometry(ogr.wkbMultiPolygon)
+    
+    #shp_feature = shp.GetNextFeature()
+    #while shp_feature:
+    #    geom = shp_feature.GetGeometryRef()
+    #    geom.Transform(cgs_transform)
+    #    multypolygon.AddGeometry(geom)
+    #    shp_feature.GetNextFeature()
+    
+    #return multipolygon
         
 def dissolve_shp(multipolygon):
     #take geometry, returns geometry
@@ -178,7 +202,6 @@ def dissolve_shp(multipolygon):
 
 def shp_reprojection(shp_name, shp, dest_proj_epsg=32651):
     #returns geometry
-    from osgeo import ogr, osr
     src_proj_epsg =  get_epsg(shp_name)
     
     if src_proj_epsg == dest_proj_epsg:
@@ -199,6 +222,7 @@ def shp_reprojection(shp_name, shp, dest_proj_epsg=32651):
         geom = shp_feature.GetGeometryRef()
         geom.Transform(cgs_transform)
         multypolygon.AddGeometry(geom)
+        shp_feature.GetNextFeature()
         
     return multipolygon
     
