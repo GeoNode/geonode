@@ -55,7 +55,7 @@ class ProfileAdmin(admin.ModelAdmin):
         (_('Permissions'), {'fields': ('is_active', 'is_staff', 'is_superuser',
                                        'groups')}),
         (_('Important dates'), {'fields': ('last_login', 'date_joined')}),
-        (_('Datastore attributes'), {'fields': ('organization_type','organization_other', 'eula_signed')}),
+        (_('Datastore attributes'), {'fields': ('org_type','organization_other', 'eula_signed')}),
         (_('Extended profile'), {'fields': ('organization', 'profile',
                                             'position', 'voice', 'fax',
                                             'delivery', 'city', 'area',
