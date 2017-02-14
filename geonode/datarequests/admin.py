@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from geonode.datarequests.models import DataRequestProfile, RequestRejectionReason
+from geonode.datarequests.models import DataRequestProfile, RequestRejectionReason, LipadOrgType
 
 class DataRequestProfileAdmin(admin.ModelAdmin):
     model = DataRequestProfile
@@ -23,3 +23,4 @@ class DataRequestProfileAdmin(admin.ModelAdmin):
 
 admin.site.register(DataRequestProfile, DataRequestProfileAdmin)
 admin.site.register(RequestRejectionReason)
+admin.site.register(LipadOrgType)
