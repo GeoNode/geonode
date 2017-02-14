@@ -175,14 +175,15 @@ def get_layer_ogr(juris_shp_name, dest_proj_epsg=32651): #returns layer
     #c_transform = osr.CoordinateTransformation(src_sref, dest_sref)
     
     geometry_list = []
+    
+    for i in range(data.GetFeatureCount()):
+        f = data.GetNextFeature()
+        geom = f.GetGeometryRef()
+        #geom = reproject(geom, get_epsg(juris_shp_name))
+        #geom.ExportToWkt()
+        if geom:
+            geometry_list.append(geom)
         
-    shp_feature = data.GetNextFeature()
-    while shp_feature:
-        geom = shp_feature.GetGeometryRef()
-        #if not src_proj_epsg == dest_proj_epsg:
-        #    pprint("transforming shapefile "+juris_shp_name)
-        #    geom.Transform(c_transform)
-        geometry_list.append(geom)
         shp_feature = data.GetNextFeature()
     
     return geometry_list
@@ -213,6 +214,22 @@ def get_epsg(shp_name):
     
     return src_proj_epsg
 
+def reproject(geom, src_epsg, dest_epsg=32651):
+    if src_epsg == 0:
+        return None
+        
+    if src_epsg == dest_epsg:
+        return geom
+    
+    src_sref = osr.SpatialReference()
+    src_sref.ImportFromEPSG(src_epsg)
+    
+    dest_sref = osr.SpatialReference()
+    dest_sref.ImportFromEPSG(dest_epsg=32651)
+    
+    c_transform = osr.CoordinateTransformation(src_sref, dest_sref)
+    
+    return geom.Transform(c_transform)
+
 def email_on_error(recipient, message, subject):
     send_mail(subject, message, settings.LIPAD_SUPPORT_MAIL, recipient, fail_silently= False)
-    
