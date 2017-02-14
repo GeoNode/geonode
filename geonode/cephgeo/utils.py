@@ -240,10 +240,10 @@ def get_ftp_details(ftp_request):
 
     if ftp_request.user.organization:
         ftp_details['organization'] = user.organization
-        ftp_details["organization_type"] = user.get_org_type_display()
+        ftp_details["organization_type"] = user.org_type
     elif dr:
         ftp_details['organization'] = dr.organization
-        ftp_details["organization_type"] = dr.get_org_type_display()
+        ftp_details["organization_type"] = dr.org_type
     else:
         ftp_details['organization'] = None
         ftp_details["organization_type"] = None
