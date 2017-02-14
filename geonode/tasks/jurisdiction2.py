@@ -148,7 +148,6 @@ def assign_grid_refs(user):
 
 @task(name='geonode.tasks.jurisdiction2.assign_grid_refs_all',queue='jurisdiction')
 def assign_grid_refs_all():
-    from osgeo import ogr, osr
     user_jurisdictions = UserJurisdiction.objects.all()
     for uj in  user_jurisdictions:
         try:
@@ -163,26 +162,26 @@ def get_layer_ogr(juris_shp_name, dest_proj_epsg=32651): #returns layer
     if not data:
         return []
     #reprojection section
-    src_proj_epsg =  get_epsg(juris_shp_name)
+    #src_proj_epsg =  get_epsg(juris_shp_name)
     
-    if src_proj_epsg == 0:
-        return []
+    #if src_proj_epsg == 0:
+    #    return []
     
-    src_sref = osr.SpatialReference()
-    src_sref.ImportFromEPSG(src_proj_epsg)
+    #src_sref = osr.SpatialReference()
+    #src_sref.ImportFromEPSG(src_proj_epsg)
     
-    dest_sref = osr.SpatialReference()
-    dest_sref.ImportFromEPSG(dest_proj_epsg)
-    cgs_transform = osr.CoordinateTransformation(src_sref, dest_sref)
+    #dest_sref = osr.SpatialReference()
+    #dest_sref.ImportFromEPSG(dest_proj_epsg)
+    #c_transform = osr.CoordinateTransformation(src_sref, dest_sref)
     
     geometry_list = []
         
     shp_feature = data.GetNextFeature()
     while shp_feature:
         geom = shp_feature.GetGeometryRef()
-        if not src_proj_epsg == dest_proj_epsg:
-            pprint("transforming shapefile "+juris_shp_name)
-            geom.Transform(cgs_transform)
+        #if not src_proj_epsg == dest_proj_epsg:
+        #    pprint("transforming shapefile "+juris_shp_name)
+        #    geom.Transform(c_transform)
         geometry_list.append(geom)
         shp_feature = data.GetNextFeature()
     
