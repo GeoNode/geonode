@@ -170,7 +170,7 @@ class DataRequestProfile(TimeStampedModel):
     )
     organization_type = enum.EnumField(
         OrganizationType,
-        default = "",
+        default = None,
         # default=OrganizationType.OTHER,
         # default="Undefined", #I assigned random default to get rid of --------- as one of the choices
         blank=True,
