@@ -72,7 +72,7 @@ class DataRequestProfileForm(forms.ModelForm):
 
     org_type = forms.ChoiceField(
         choices = ORG_TYPE_CHOICES,
-        initial = "Others",
+        initial = "Other",
         required = True
     )
 
@@ -210,7 +210,7 @@ class DataRequestProfileForm(forms.ModelForm):
     def clean_organization_other(self):
         organization_other = self.cleaned_data.get('organization_other')
         org_type = self.cleaned_data.get('org_type')
-        if (org_type == "Others" and
+        if (org_type == "Other" and
                 not organization_other):
             raise forms.ValidationError(
                 'This field is required.')
