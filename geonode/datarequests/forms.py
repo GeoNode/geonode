@@ -17,7 +17,7 @@ from geonode.documents.models import Document
 from geonode.documents.forms import DocumentCreateForm
 from geonode.people.models import OrganizationType, Profile
 
-from .models import DataRequestProfile, RequestRejectionReason
+from .models import DataRequestProfile, RequestRejectionReason, LipadOrgType
 
 from pprint import pprint
 
@@ -33,7 +33,7 @@ class DataRequestProfileForm(forms.ModelForm):
             'last_name',
             'organization',
             # Non-commercial requester field
-            'organization_type',
+            'org_type',
             'organization_other',
             # Academe requester fields
             'request_level',
@@ -45,20 +45,24 @@ class DataRequestProfileForm(forms.ModelForm):
             'contact_number',
             'captcha'
         )
-        widgets = {
-            'organization_type': forms.RadioSelect,
-        }
 
-    ORGANIZATION_TYPE_CHOICES = Choices(
-        (0, _('Phil-LiDAR 1 SUC')),
-        (1, _('Phil-LiDAR 2 SUC' )),
-        (2, _( 'Government Agency')),
-        (3, _('Academe')),
-        (4, _( 'International NGO')),
-        (5, _('Local NGO')),
-        (6, _('Private Insitution' )),
-        (7, _('Other' )),
+    ORG_TYPE_CHOICES = LipadOrgType.objects.values_list('val', 'display_val')
+    # Choices that will be used for fields
+    LOCATION_CHOICES = Choices(
+        ('local', _('Local')),
+        ('foreign', _('Foreign')),
     )
+
+    # ORGANIZATION_TYPE_CHOICES = Choices(
+    #     (0, _('Phil-LiDAR 1 SUC')),
+    #     (1, _('Phil-LiDAR 2 SUC' )),
+    #     (2, _( 'Government Agency')),
+    #     (3, _('Academe')),
+    #     (4, _( 'International NGO')),
+    #     (5, _('Local NGO')),
+    #     (6, _('Private Insitution' )),
+    #     (7, _('Other' )),
+    # )
 
     REQUEST_LEVEL_CHOICES = Choices(
         ('institution', _('Academic/ Research Institution')),
@@ -66,10 +70,11 @@ class DataRequestProfileForm(forms.ModelForm):
         ('student', _('Student')),
     )
 
-    # organization_type = forms.ChoiceField(
-    #     choices = ORGANIZATION_TYPE_CHOICES,
-    #     required = False
-    # )
+    org_type = forms.ChoiceField(
+        choices = ORG_TYPE_CHOICES,
+        initial = "Others",
+        required = True
+    )
 
     # request_level = forms.CharField(
     #     label=_('Level of the Request'),
@@ -113,7 +118,7 @@ class DataRequestProfileForm(forms.ModelForm):
                     css_class='form-group'
                 ),
                 Div(
-                    Field('organization_type', css_class='form-control'),
+                    Field('org_type', css_class='form-control'),
                     css_class='form-group'
                 ),
                 Fieldset('Academe',
@@ -194,18 +199,18 @@ class DataRequestProfileForm(forms.ModelForm):
 
     def clean_funding_source(self):
         funding_source = self.cleaned_data.get('funding_source')
-        organization_type = self.cleaned_data.get('organization_type')
+        org_type = self.cleaned_data.get('org_type')
         #intended_use_of_dataset = self.cleaned_data.get('intended_use_of_dataset')
         if (#intended_use_of_dataset == 'noncommercial' and
-                organization_type == OrganizationType.ACADEME and
+                "Academe" in org_type and
                 not funding_source):
             raise forms.ValidationError(
                 'This field is required.')
         return funding_source
     def clean_organization_other(self):
         organization_other = self.cleaned_data.get('organization_other')
-        organization_type = self.cleaned_data.get('organization_type')
-        if (organization_type == OrganizationType.OTHER and
+        org_type = self.cleaned_data.get('org_type')
+        if (org_type == "Others" and
                 not organization_other):
             raise forms.ValidationError(
                 'This field is required.')
