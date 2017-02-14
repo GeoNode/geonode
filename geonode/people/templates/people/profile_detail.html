@@ -191,7 +191,7 @@
               {% if request_profile.requester_type == 'noncommercial' or request_profile.requester_type == 'academe' %}
                 <tr>
                   <td class="table-user-profile-attribute">{% trans "Organization type based on Phil-LiDAR1 Data Distribution Policy" %}</td>
-                  <td>{{ request_profile.get_org_type_display }}</td>
+                  <td>{{ request_profile.org_type }}</td>
                 </tr>
                 {% if request_profile.requester_type == 'academe' %}
                   <tr>

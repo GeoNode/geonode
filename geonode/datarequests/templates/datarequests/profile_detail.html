@@ -110,7 +110,7 @@
       {% if request_profile.intended_use_of_dataset == 'noncommercial' or request_profile.intended_use_of_dataset == 'academe' %}
         <tr>
         <td class="table-user-profile-attribute">{% trans "Organization type based on Phil-LiDAR1 Data Distribution Policy" %}</td>
-        <td>{{ request_profile.get_org_type_display }}</td>
+        <td>{{ request_profile.org_type }}</td>
         </tr>
         {% if request_profile.intended_use_of_dataset == 'academe' %}
           <tr>
