@@ -74,8 +74,17 @@ This kind of GeoNode installation is very useful in case you want to develop usi
     # Install pip dependencies
     pip install -r requirements.txt
     pip install -e .
-    pip install pygdal==1.10.1
+    
+    sudo add-apt-repository ppa:ubuntugis/ppa && sudo apt-get update
+    sudo apt-get install gdal-bin
+    # check GDAL version
+    gdalinfo --version
+    
+    # install the correct PyGDAL version (>1.10.1)
+    pip install pygdal==`gdal-config --version`
 
+    # if you cannot find exactly the same version, be sure to install at least the closer major one e.g. 2.1.2 -> 2.1.2.3
+    
 You can now setup and start GeoNode::
 
     # Paver setup
