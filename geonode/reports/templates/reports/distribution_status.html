@@ -58,7 +58,7 @@ var data_org = [org1];
 var layout_org = {
   barmode: 'stack',
   xaxis: {autorange: 'reversed'},
-  title: 'Data Request Tally per Organization'
+  title: '<b>Data Request Tally per Organization</b>'
 };
 
 Plotly.newPlot('org_datarequest', data_org, layout_org);
@@ -79,7 +79,7 @@ var data_pie = [{
 }];
 
 var layout_pie = {
-  title: 'Total Downloads: {{ sum_layers }}',
+  title: '<b>Total Downloads: {{ sum_layers }}</b>',
   height: 600,
   width: 500,
   // font:{size:30}
@@ -264,7 +264,7 @@ var layout = {
     autorange: 'reversed',
     tickangle: -45
   },
-  title: 'Cumulative LiPAD Downloads (Count)',
+  title: '<b>Cumulative LiPAD Downloads (Count)</b>',
   legend:{
     x: 0,
     y: 1
@@ -378,7 +378,7 @@ var layout_datarequest = {
     autorange: 'reversed',
     tickangle: -45
   },
-  title: 'Cumulative LiPAD Request (Total: {{ sum_datarequest }})',
+  title: '<b>Cumulative LiPAD Request (Total: {{ sum_datarequest }})</b>',
   legend:{
     x: 0,
     y: 1
@@ -461,7 +461,7 @@ var data_luzvimin = [luzvimin4, luzvimin3, luzvimin2, luzvimin1];
 var layout_luzvimin = {
   barmode: 'stack',
   xaxis: {autorange: 'reversed'},
-  title: 'LuzViMin Download Count',
+  title: '<b>LuzViMin Download Count</b>',
   legend:{
     x: 0,
     y: 1
