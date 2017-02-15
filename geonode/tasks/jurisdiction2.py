@@ -48,7 +48,6 @@ def tile_ceiling(x):
     return int(math.ceil(x / float(settings._TILE_SIZE)) * settings._TILE_SIZE)
 
 def get_juris_tiles(juris_shp, user=None):
-    total_data_size = 0
     
     if not juris_shp.is_valid:
         juris_shp = juris_shp.convex_hull
@@ -89,8 +88,10 @@ def get_juris_tiles(juris_shp, user=None):
                 
     return tile_list
 
-def get_juris_data_size(juris_shp):
-    tile_list = get_juris_tiles(juris_shp)
+def get_juris_data_size(multipolygon):
+    tile_list = []
+    for g in multipolygon.geoms:
+        tile_list.extend(get_juris_tiles())
     total_data_size = 0
     
     for tile in tile_list:
@@ -181,7 +182,7 @@ def get_geometries_ogr(juris_shp_name, dest_epsg=32651): #returns layer
         f = data.GetNextFeature()
         geom = f.GetGeometryRef()
         if not src_epsg == dest_epsg:
-            geom = geom.Transform(c_transform)
+            geom.Transform(c_transform)
         geometry_list.append(loads(geom.ExportToWkb()))
             
     source = None
