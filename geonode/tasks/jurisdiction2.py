@@ -96,7 +96,7 @@ def get_juris_data_size(geometry):
         for g in geometry.geoms:
             tile_list.extend(get_juris_tiles(g))
     
-    pprint("Number of tiles: "+len(tile_list))
+    pprint("Number of tiles: "+str(len(tile_list)))
     
     total_data_size = 0
     
