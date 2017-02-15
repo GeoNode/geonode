@@ -32,15 +32,14 @@ def compute_size_update(requests_query_list, area_compute = True, data_size = Tr
     else:
         for r in requests_query_list:
             pprint("Updating request id:{0}".format(r.pk))
-            shapefile = dissolve_shp(get_geometries_ogr(shapefile_name))
-            if shapefile:
-                if area_compute:
-                    r.area_coverage = get_area_coverage(shapefile)
-                if data_size:
-                    r.juris_data_size = get_juris_data_size(shapefile)
+           geometries = get_geometries_ogr(shapefile_name))
+            if area_compute:
+                r.area_coverage = get_area_coverage(geometries)
+            if data_size:
+                r.juris_data_size = get_juris_data_size(dissolve_shp(geometries))
                 
-                if save:
-                    r.save()
+            if save:
+                r.save()
 
 def tile_floor(x):
     return int(math.floor(x / float(settings._TILE_SIZE)) * settings._TILE_SIZE)
@@ -112,7 +111,7 @@ def assign_grid_ref_util(user):
     
     if geometry:
         tiles = []
-        if shapefile.type=='Multipolygon':
+        if geometry.type=='Multipolygon':
             for g in shapefile:
                 tiles.extend(get_juris_tiles(g, user))
         else:
