@@ -191,10 +191,10 @@ def get_geometries_ogr(juris_shp_name, dest_epsg=32651): #returns layer
 def dissolve_shp(geometries):
     #take geometry, returns geometry
     pprint("dissolving geometries ")
-    shplist = []
-    for g in geometries:
-        shplist.append(loads(g.ExportToWkb()))
-    dissolved_geoms = cascaded_union(shplist)
+    #shplist = []
+    #for g in geometries:
+    #    shplist.append(loads(g.ExportToWkb()))
+    dissolved_geoms = cascaded_union(geometries)
     pprint("succesfully dissolved")
     return dissolved_geoms
     
