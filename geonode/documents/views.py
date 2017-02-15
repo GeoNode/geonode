@@ -478,7 +478,6 @@ def document_metadata_detail(request, docid, template='documents/document_metada
         'view_resourcebase',
         _PERMISSION_MSG_METADATA)
     return render_to_response(template, RequestContext(request, {
-        "layer": document,
-        "docid": docid,
+        "resource": document,
         'SITEURL': settings.SITEURL[:-1]
     }))

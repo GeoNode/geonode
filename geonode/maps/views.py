@@ -997,7 +997,6 @@ def map_thumbnail(request, mapid):
 def map_metadata_detail(request, mapid, template='maps/map_metadata_detail.html'):
     map_obj = _resolve_map(request, mapid, 'view_resourcebase')
     return render_to_response(template, RequestContext(request, {
-        "layer": map_obj,
-        "mapid": mapid,
+        "resource": map_obj,
         'SITEURL': settings.SITEURL[:-1]
     }))

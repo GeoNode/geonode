@@ -747,6 +747,6 @@ def get_layer(request, layername):
 def layer_metadata_detail(request, layername, template='layers/layer_metadata_detail.html'):
     layer = _resolve_layer(request, layername, 'view_resourcebase', _PERMISSION_MSG_METADATA)
     return render_to_response(template, RequestContext(request, {
-        "layer": layer,
+        "resource": layer,
         'SITEURL': settings.SITEURL[:-1]
     }))

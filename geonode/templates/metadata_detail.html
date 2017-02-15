@@ -1,8 +1,8 @@
-{% extends "layers/layer_base.html" %}
+{% extends "site_base.html" %}
 {% load i18n %}
 {% load bootstrap_tags %}
 
-{% block title %}{{ layer.typename }} — {{ block.super }}{% endblock %}
+{% block title %}{{ resource.title }} — {{ block.super }}{% endblock %}
 
 {% block body_class %}data{% endblock %}
 
@@ -22,12 +22,14 @@
 </style>
 
 <div class="page-header">
-    {% if layer.doc_file %}
-    <a href="{% url 'document_detail' docid=docid %}" class="btn btn-primary pull-right">{% trans "Return to Document" %}</a>
+    {% if resource.class_name == "Document" %}
+    <a href="{% url 'document_detail' docid=resource.id %}" class="btn btn-primary pull-right">{% trans "Return to Document" %}</a>
+    {% elif resource.class_name == "Layer" %}
+    <a href="{% url 'layer_detail' layername=resource.typename %}" class="btn btn-primary pull-right">{% trans "Return to Layer" %}</a>
     {% else %}
-    <a href="{% url 'layer_detail' layername=layer.typename %}" class="btn btn-primary pull-right">{% trans "Return to Layer" %}</a>
+    <a href="{% url 'map_detail' mapid=resource.id %}" class="btn btn-primary pull-right">{% trans "Return to Map" %}</a>
     {% endif %}
-    <h2 class="page-title">{% trans "Metadata" %} : {{ layer.title }}</h2>
+    <h2 class="page-title">{% trans "Metadata" %} : {{ resource.title }}</h2>
 </div>
 
 
@@ -37,71 +39,71 @@
     <div class="sep_title"><hr></div>
 
     <dl class="dl-horizontal">
-        {% if layer.title %}
+        {% if resource.title %}
         <dt>{% trans "Title" %}</dt>
-        <dd>{{ layer.title|truncatechars:80 }}</dd>
+        <dd>{{ resource.title|truncatechars:80 }}</dd>
         {% endif %}
 
-        {% if layer.abstract %}
+        {% if resource.abstract %}
         <dt>{% trans "Abstract" %}</dt>
-        <dd>{{ layer.abstract|escape|urlize|linebreaks|safe|truncatechars:1000 }}</dd>
+        <dd>{{ resource.abstract|escape|urlize|linebreaks|safe|truncatechars:1000 }}</dd>
         {% endif %}
 
-    </dl>    
+    </dl>
 
-    <dl class="dl-horizontal">   
+    <dl class="dl-horizontal">
 
-        {% if LICENSES_ENABLED and LICENSES_DETAIL == 'above' and layer.license %}
+        {% if LICENSES_ENABLED and LICENSES_DETAIL == 'above' and resource.license %}
         <dt>{% trans "License" %}</dt>
-        <dd>{{ layer.license.name_long }} <a href="#license-more-above" data-toggle="collapse" data-target=".license-more-above"><i class="fa fa-info-circle"></i></a></dd>
+        <dd>{{ resource.license.name_long }} <a href="#license-more-above" data-toggle="collapse" data-target=".license-more-above"><i class="fa fa-info-circle"></i></a></dd>
         {% endif %}
         <dd class="license-more-above collapse">
-            {% for bullet in layer.license.description_bullets %}
+            {% for bullet in resource.license.description_bullets %}
             {{ bullet }}<br/><br/>
             {% endfor %}
-            {% if layer.license.url %}
-            + For more info see <a href="{{ layer.license.url }}">{{ layer.license.url }}</a>.
+            {% if resource.license.url %}
+            + For more info see <a href="{{ resource.license.url }}">{{ resource.license.url }}</a>.
             {% endif %}
         </dd>
 
 
-        {% if layer.date %}
-        <dt>{% trans layer.date_type|title %} {% trans "Date" %}</dt>
-        <dd>{{ layer.date }}</dd>
+        {% if resource.date %}
+        <dt>{% trans resource.date_type|title %} {% trans "Date" %}</dt>
+        <dd>{{ resource.date }}</dd>
         {% endif %}
 
-        {% if layer.display_type %}
+        {% if resource.display_type %}
         <dt>{% trans "Type" %}</dt>
-        <dd>{{ layer.display_type }}</dd>
+        <dd>{{ resource.display_type }}</dd>
         {% endif %}
 
-        {% if layer.keyword_list %}
+        {% if resource.keyword_list %}
         <dt>{% trans "Keywords" %}</dt>
-        <dd>{% for keyword in layer.keyword_list %}
+        <dd>{% for keyword in resource.keyword_list %}
             {{ keyword }}
             {% endfor %}</dd>
         {% endif %}
 
-        {% if layer.category %}
+        {% if resource.category %}
         <dt>{% trans "Category" %}</dt>
-        <dd><a href="/search/?category__identifier__in={{ layer.category.identifier }}">{{ layer.category }}</a> {% if layer.category.description %}<a href="#category-more" data-toggle="collapse" data-target=".category-more"><i class="fa fa-info-circle"></i></a>{% endif %}</dd>
-        {% if layer.category.description %}
+        <dd><a href="/search/?category__identifier__in={{ resource.category.identifier }}">{{ resource.category }}</a> {% if resource.category.description %}<a href="#category-more" data-toggle="collapse" data-target=".category-more"><i class="fa fa-info-circle"></i></a>{% endif %}</dd>
+        {% if resource.category.description %}
         <dd class="category-more collapse">
-            {{ layer.category.description }}
+            {{ resource.category.description }}
         </dd>
         {% endif %}
         {% endif %}
 
-        {% if layer.regions.all %}
+        {% if resource.regions.all %}
         <dt>{% trans "Regions" %}</dt>
-        <dd>{{ layer.regions.all|join:", " }}</dd>
+        <dd>{{ resource.regions.all|join:", " }}</dd>
         {% endif %}
 
         <dt>{% trans "Published" %}</dt>
-        <dd>{% if layer.is_published %} {% trans "Yes" %} {% else %} {% trans "No" %} {% endif %}</dd>
+        <dd>{% if resource.is_published %} {% trans "Yes" %} {% else %} {% trans "No" %} {% endif %}</dd>
 
         <dt>{% trans "Featured" %}</dt>
-        <dd>{% if layer.featured %} {% trans "Yes" %} {% else %} {% trans "No" %} {% endif %}</dd>
+        <dd>{% if resource.featured %} {% trans "Yes" %} {% else %} {% trans "No" %} {% endif %}</dd>
 
 
     </dl>
@@ -112,8 +114,8 @@
 
     <dl class="dl-horizontal">
 
-        {% if layer.owner %}
-        {% with layer.owner as poc %}
+        {% if resource.owner %}
+        {% with resource.owner as poc %}
 
         <dt>{% trans "Name" %}</dt>
         <dd>{{ poc.name_long }}</dd>
@@ -143,19 +145,19 @@
             {% endfor %}</dd>
         {% endif %}
 
-        {% endwith %} 
+        {% endwith %}
         {% endif %}
 
     </dl>
 
-    <span class="subtitle">{% trans "Information of Layer" %}</span>
+    <span class="subtitle">{% trans "Information" %}</span>
     <div class="sep_title"><hr></div>
 
     <dl class="dl-horizontal">
 
         <dt>{% trans "Identification Image" %}</dt>
         <dd>
-            <a href="{{ layer.get_thumbnail_url }}"><img ng-src="{{ layer.get_thumbnail_url }}" src="{{ layer.get_thumbnail_url }}"></a>
+            <a href="{{ resource.get_thumbnail_url }}"><img ng-src="{{ resource.get_thumbnail_url }}" src="{{ resource.get_thumbnail_url }}"></a>
         </dd>
 
     </dl>
@@ -163,22 +165,22 @@
     <dl class="dl-horizontal">
 
         <dt>{% trans "Spatial Resolution" %}</dt>
-        <dd>{% if layer.scale %} {{ layer.scale }} {% else %} --- {% endif %}</dd>
+        <dd>{% if resource.scale %} {{ resource.scale }} {% else %} --- {% endif %}</dd>
 
         <dt>{% trans "Projetion System" %}</dt>
-        <dd>{{ layer.srid }}</dd>
+        <dd>{{ resource.srid }}</dd>
 
         <dt>{% trans "Extension x0" %}</dt>
-        <dd>{{layer.bbox_x0}}</dd>
+        <dd>{{resource.bbox_x0}}</dd>
 
         <dt>{% trans "Extension x1" %}</dt>
-        <dd>{{layer.bbox_x1}}</dd>
+        <dd>{{resource.bbox_x1}}</dd>
 
         <dt>{% trans "Extension y0" %}</dt>
-        <dd>{{layer.bbox_y0}}</dd>
+        <dd>{{resource.bbox_y0}}</dd>
 
         <dt>{% trans "Extension y1" %}</dt>
-        <dd>{{layer.bbox_y1}}</dd>
+        <dd>{{resource.bbox_y1}}</dd>
 
     </dl>
 
@@ -187,110 +189,110 @@
 
     <dl class="dl-horizontal">
 
-        {% if LICENSES_ENABLED and LICENSES_DETAIL == 'below' and layer.license %}
+        {% if LICENSES_ENABLED and LICENSES_DETAIL == 'below' and resource.license %}
         <dt>{% trans "License" %}</dt>
-        <dd>{{ layer.license.name_long }} <a href="#license-more-below" data-toggle="collapse" data-target=".license-more-below"><i class="fa fa-info-circle"></i></a></dd>
+        <dd>{{ resource.license.name_long }} <a href="#license-more-below" data-toggle="collapse" data-target=".license-more-below"><i class="fa fa-info-circle"></i></a></dd>
         <dd class="license-more-below collapse">
-            {% for bullet in layer.license.description_bullets %}
+            {% for bullet in resource.license.description_bullets %}
             {{ bullet }}<br/><br/>
             {% endfor %}
-            {% if layer.license.url %}
-            + For more info see <a href="{{ layer.license.url }}">{{ layer.license.url }}</a>.
+            {% if resource.license.url %}
+            + For more info see <a href="{{ resource.license.url }}">{{ resource.license.url }}</a>.
             {% endif %}
         </dd>
         {% endif %}
 
-        {% if layer.maintenance_frequency %}
+        {% if resource.maintenance_frequency %}
         <dt>{% trans "Maintenance Frequency" %}</dt>
-        <dd>{{ layer.maintenance_frequency_title }}</dd>
+        <dd>{{ resource.maintenance_frequency_title }}</dd>
         {% endif %}
 
-        {% if layer.restriction_code_type or layer.constraints_other %}
+        {% if resource.restriction_code_type or resource.constraints_other %}
         <dt>{% trans "Restrictions" %}</dt>
-        <dd>{% if layer.constraints_other %}
-            {{ layer.constraints_other }}
+        <dd>{% if resource.constraints_other %}
+            {{ resource.constraints_other }}
             {% else %}
-            {{ layer.restriction_code_type }}
+            {{ resource.restriction_code_type }}
             {% endif %}</dd>
         {% endif %}
 
-        {% if layer.edition %}
+        {% if resource.edition %}
         <dt>{% trans "Edition" %}</dt>
-        <dd>{{ layer.edition}}</dd>
+        <dd>{{ resource.edition}}</dd>
         {% endif %}
 
-        {% if layer.purpose %}
+        {% if resource.purpose %}
         <dt>{% trans "Purpose" %}</dt>
-        <dd>{{ layer.purpose|escape|urlize|linebreaks|safe|truncatechars:160 }}</dd>
+        <dd>{{ resource.purpose|escape|urlize|linebreaks|safe|truncatechars:160 }}</dd>
         {% endif %}
 
-        {% if layer.language %}
+        {% if resource.language %}
         <dt>{% trans "Language" %}</dt>
-        <dd>{{ layer.language_title }}</dd>
+        <dd>{{ resource.language_title }}</dd>
         {% endif %}
 
-        {% if layer.temporal_extent_start and layer.temporal_extent_end %}
+        {% if resource.temporal_extent_start and resource.temporal_extent_end %}
         <dt>{% trans "Temporal Extent" %}</dt>
-        <dd>{{ layer.temporal_extent_start }} - {{ layer.temporal_extent_end }}</dd>
+        <dd>{{ resource.temporal_extent_start }} - {{ resource.temporal_extent_end }}</dd>
         {% endif %}
 
-        {% if layer.data_quality_statement %}
+        {% if resource.data_quality_statement %}
         <dt>{% trans "Data Quality" %}</dt>
-        <dd>{{ layer.data_quality_statement }}</dd>
+        <dd>{{ resource.data_quality_statement }}</dd>
         {% endif %}
 
-        {% if layer.supplemental_information %}
+        {% if resource.supplemental_information %}
         <dt>{% trans "Supplemental Information" %}</dt>
-        <dd>{{ layer.supplemental_information|truncatechars:160|escape|urlize|linebreaks|safe }}</dd>
+        <dd>{{ resource.supplemental_information|truncatechars:160|escape|urlize|linebreaks|safe }}</dd>
         {% endif %}
 
-        {% if layer.spatial_representation_type %}
+        {% if resource.spatial_representation_type %}
         <dt>{% trans "Spatial Representation Type" %}</dt>
-        <dd>{{ layer.spatial_representation_type }}</dd>
+        <dd>{{ resource.spatial_representation_type }}</dd>
         {% endif %}
 
     </dl>
-    
-    {% if layer.poc %}   
+
+    {% if resource.poc %}
     <span class="subtitle">{% trans "Contact Points" %}</span>
     <div class="sep_title"><hr></div>
-    
+
     <dl class="dl-horizontal">
 
         <dt>{% trans "Name" %}</dt>
-        <dd>{{ layer.poc.name_long }}</dd>
+        <dd>{{ resource.poc.name_long }}</dd>
 
         <dt>{% trans "email" %}</dt>
-        <dd>{{ layer.poc.email }}</dd>
+        <dd>{{ resource.poc.email }}</dd>
 
-        <dt>{% trans "Position" %}</dt> 
-        <dd>{{ layer.poc.position }}</dd>
+        <dt>{% trans "Position" %}</dt>
+        <dd>{{ resource.poc.position }}</dd>
 
         <dt>{% trans "Organization" %}</dt>
-        <dd>{{ layer.poc.organization }}</dd>
+        <dd>{{ resource.poc.organization }}</dd>
 
         <dt>{% trans "Location" %}</dt>
-        <dd>{{ layer.poc.location }}</dd>
+        <dd>{{ resource.poc.location }}</dd>
 
         <dt>{% trans "Voice" %}</dt>
-        <dd>{{ layer.poc.voice }}</dd>
+        <dd>{{ resource.poc.voice }}</dd>
 
         <dt>{% trans "Fax" %}</dt>
-        <dd>{{ layer.poc.fax }}</dd>
+        <dd>{{ resource.poc.fax }}</dd>
 
         {% if poc.keyword_list %}
         <dt>{% trans "Keywords" %}</dt>
-        <dd>{% for keyword in layer.poc.keyword_list %}
+        <dd>{% for keyword in resource.poc.keyword_list %}
             {{ keyword }}
             {% endfor %}</dd>
         {% endif %}
-        
+
         <hr>
 
     </dl>
-    
-    
-    
+
+
+
     {% endif %}
 
     <span class="subtitle">{% trans "References" %}</span>
@@ -299,39 +301,39 @@
     <dl class="dl-horizontal">
 
         <dt>{% trans "Link Online" %}</dt>
-        <dd><a href="{{ layer.get_absolute_url }}">{{ layer.get_absolute_url }}</a></dd>
+        <dd><a href="{{ resource.get_absolute_url }}">{{ resource.get_absolute_url }}</a></dd>
 
         <dt>{% trans "Metadata Page" %}</dt>
-        <dd><a href="{{ layer.get_absolute_url }}/metadata_detail">{{ layer.get_absolute_url }}/metadata_detail</a></dd>
+        <dd><a href="{{ resource.get_absolute_url }}/metadata_detail">{{ resource.get_absolute_url }}/metadata_detail</a></dd>
 
-        {% if layer.doc_file %}
+        {% if resource.doc_file %}
         <dt>{% trans "Online Link" %}</dt>
-        <dd><a href="{{ layer.get_absolute_url }}/download">{{ layer.get_absolute_url }}/download</a></dd>
+        <dd><a href="{{ resource.get_absolute_url }}/download">{{ resource.get_absolute_url }}/download</a></dd>
         {% endif %}
 
         <hr>
 
-        {% for link in layer.link_set.download %}
+        {% for link in resource.link_set.download %}
         <dt>{{link.name}}</dt>
-        <dd><a href="{{link.url}}">{{layer.name}}.{{link.extension}}</a></dd> 
+        <dd><a href="{{link.url}}">{{resource.title}}.{{link.extension}}</a></dd>
         {% endfor %}
 
         <hr>
 
-        {% for link in layer.link_set.ows %}
+        {% for link in resource.link_set.ows %}
         <dt>{{link.name}}</dt>
         <dd><a href="{{link.url}}">Geoservice {{link.link_type}}</a></dd>
         {% endfor %}
 
     </dl>
 
-    {% if layer.metadata_author %}
+    {% if resource.metadata_author %}
     <span class="subtitle">{% trans "Metadata Author" %}</span>
     <div class="sep_title"><hr></div>
 
     <dl class="dl-horizontal">
 
-        {% with layer.metadata_author as poc %}
+        {% with resource.metadata_author as poc %}
 
         <dt>{% trans "Name" %}</dt>
         <dd>{{ poc.name_long }}</dd>
@@ -361,7 +363,7 @@
             {% endfor %}</dd>
         {% endif %}
 
-        {% endwith %} 
+        {% endwith %}
 
     </dl>
     {% endif %}
