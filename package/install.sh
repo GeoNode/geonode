@@ -96,7 +96,7 @@ function setup_django_every_time() {
 
     django-admin migrate account --settings=geonode.settings
     geonode migrate --verbosity 0
-    geonode loaddata $geonodedir/geonode/base/fixtures/initial_data.json
+    geonode loaddata $geonodedir/base/fixtures/initial_data.json
     geonode collectstatic --noinput --verbosity 0
 
     # Create an empty uploads dir

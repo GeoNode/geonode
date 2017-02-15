@@ -112,10 +112,34 @@ else
     echo "done."
 fi
 
+
+# silence the warnings from executing geonode command or they will pollute the commands output
+if grep -q "^[ 	]*SILENCED_SYSTEM_CHECKS[ 	]*=" "$GEONODE_ETC/local_settings.py"
+then
+    true
+else
+    echo "SILENCED_SYSTEM_CHECKS = ['1_8.W001', 'fields.W340']" >> $GEONODE_ETC/local_settings.py
+fi
+
 geonode fixsitename
+
+echo "Setting up oauth"
+# Set oauth keys
+oauth_keys=$(geonode fixoauthuri 2>&1)
+client_id=`echo $oauth_keys | cut -d \, -f 1`
+client_secret=`echo $oauth_keys | cut -d \, -f 2`
+oauth_config="$GEOSERVER_DATA_DIR/security/filter/geonode-oauth2/config.xml"
+sed -i "s|<cliendId>.*</cliendId>|<cliendId>$client_id</cliendId>|g" $oauth_config
+sed -i "s|<clientSecret>.*</clientSecret>|<clientSecret>$client_secret</clientSecret>|g" $oauth_config
+sed -i "s/localhost:8000/localhost/g" $oauth_config
+sed -i "s|<userAuthorizationUri>.*</userAuthorizationUri>|<userAuthorizationUri>http://$NEWIP/o/authorize/</userAuthorizationUri>|g" $oauth_config
+sed -i "s|<logoutUri>.*</logoutUri>|<logoutUri>http://$NEWIP/account/logout/</logoutUri>|g" $oauth_config
+sed -i "s|localhost:8080/geoserver|$NEWIP/geoserver/|g" $oauth_config
+sed -i "s|localhost:8000|localhost|g" "$GEOSERVER_DATA_DIR/security/role/geonode REST role service/config.xml"
 
 # Restart apache server
 $APACHE_SERVICE restart
+service tomcat7 restart
 
 # Run updatelayers
 geonode updatelayers

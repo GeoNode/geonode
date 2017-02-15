@@ -73,9 +73,18 @@ This kind of GeoNode installation is very useful in case you want to develop usi
 
     # Install pip dependencies
     pip install -r requirements.txt
-    pip install -e .
-    pip install pygdal==1.10.1
+    pip install -e . --upgrade
+    
+    sudo add-apt-repository ppa:ubuntugis/ppa && sudo apt-get update
+    sudo apt-get install gdal-bin
+    # check GDAL version
+    gdalinfo --version
+    
+    # install the correct PyGDAL version (>1.10.1)
+    pip install pygdal==`gdal-config --version`
 
+    # if you cannot find exactly the same version, be sure to install at least the closer major one e.g. 2.1.2 -> 2.1.2.3
+    
 You can now setup and start GeoNode::
 
     # Paver setup
@@ -86,9 +95,20 @@ You can now setup and start GeoNode::
 In case you want to be involved in static files development::
 
     sudo apt-get install npm
+    sudo npm install
     sudo npm install -g bower
-    sudo npm install -g grunt-cli
+    sudo npm install -g grunt
 
+Rebuild libraries through::
+
+    cd geonode/static
+    bower cache clean
+    bower update
+    grunt production
+
+On a production environment, remember to refresh also the "static_root" folder::
+
+    python manage.py collectstatic --clear -i site-packages* -i .components* -i node_modules* --noinput
 
 Windows, OSX and others
 =======================
@@ -186,6 +206,18 @@ Node and tools required for static files development::
     brew install node
     npm install -g bower
     npm install -g grunt-cli
+
+
+Rebuild libraries through::
+
+    cd geonode/static
+    bower cache clean
+    bower update
+    grunt production
+
+On a production environment, remember to refresh also the "static_root" folder::
+
+    python manage.py collectstatic --clear -i site-packages* -i .components* -i node_modules* --noinput
 
 Install pip dependencies::
 

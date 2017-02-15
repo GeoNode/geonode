@@ -104,7 +104,6 @@ class Migration(migrations.Migration):
                 ('csw_anytext', models.TextField(null=True, verbose_name='CSW anytext', blank=True)),
                 ('csw_wkt_geometry', models.TextField(default=b'POLYGON((-180 -90,-180 90,180 90,180 -90,-180 -90))', verbose_name='CSW WKT geometry')),
                 ('metadata_uploaded', models.BooleanField(default=False)),
-                ('metadata_uploaded_preserve', models.BooleanField(default=False)),
                 ('metadata_xml', models.TextField(default=b'<gmd:MD_Metadata xmlns:gmd="http://www.isotc211.org/2005/gmd"/>', null=True, blank=True)),
                 ('popular_count', models.IntegerField(default=0)),
                 ('share_count', models.IntegerField(default=0)),

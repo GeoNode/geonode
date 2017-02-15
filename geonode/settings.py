@@ -885,12 +885,12 @@ LEAFLET_CONFIG = {
     ],
     'PLUGINS': {
         'esri-leaflet': {
-            'js': 'lib/js/esri-leaflet.js?v=%s' % VERSION,
+            'js': 'lib/js/esri-leaflet.js',
             'auto-include': True,
         },
         'leaflet-fullscreen': {
-            'css': 'lib/css/leaflet.fullscreen.css?v=%s' % VERSION,
-            'js': 'lib/js/Leaflet.fullscreen.min.js?v=%s' % VERSION,
+            'css': 'lib/css/leaflet.fullscreen.css',
+            'js': 'lib/js/Leaflet.fullscreen.min.js',
             'auto-include': True,
         },
     },
@@ -934,6 +934,7 @@ CACHES = {
 }
 
 LAYER_PREVIEW_LIBRARY = 'geoext'
+# LAYER_PREVIEW_LIBRARY = 'leaflet'
 
 SERVICE_UPDATE_INTERVAL = 0
 
@@ -953,7 +954,7 @@ SEARCH_FILTERS = {
 # Queue non-blocking notifications.
 NOTIFICATION_QUEUE_ALL = False
 
-BROKER_URL = "django://"
+BROKER_URL = os.getenv('BROKER_URL', "django://")
 CELERY_ALWAYS_EAGER = True
 CELERY_EAGER_PROPAGATES_EXCEPTIONS = True
 CELERY_IGNORE_RESULT = True

@@ -658,7 +658,7 @@ def new_map_config(request):
                 layers.append(maplayer)
 
             if bbox is not None:
-                minx, miny, maxx, maxy = [float(c) for c in bbox]
+                minx, miny, maxx, maxy = [float(coord) for coord in bbox]
                 x = (minx + maxx) / 2
                 y = (miny + maxy) / 2
 

@@ -1,3 +1,80 @@
+geonode (2.5.15+thefinal0) trusty; urgency=high
+
+  * [c06f6c] update release version (#2890)
+  * [89f74c] add some ng cloaks (#2893)
+
+ -- Simone Dalmasso <simone.dalmasso@gmail.com>  Tue, 07 Feb 2017 08:09:34 +0000
+
+geonode (2.5.14+thefinal0) trusty; urgency=high
+
+  [ Simone Dalmasso ]
+  * [47a095] update release version (#2882)
+  * [b3cecf] fix fixtures load path in package install (#2883)
+  * [9a3c9a] add login logout endpoint in package local settings (#2884)
+
+  [ afabiani ]
+  * [3241ab] PR for Issue #2885 - Manage signals when performing BR
+
+  [ capooti ]
+  * [2851b5] Renaming a variable that is confusing when using pdb
+
+  [ Simone Dalmasso ]
+
+ -- Simone Dalmasso <simone.dalmasso@gmail.com>  Mon, 06 Feb 2017 06:38:09 +0000
+
+geonode (2.5.13+thefinal0) trusty; urgency=high
+
+  [ Alessio Fabiani ]
+  * [92e646]  - Fix for ISSUE #2875 - GeoFence rules are not updated if GeoNode cannot reach GeoServer Public Location (#2876)
+
+  [ Simone Dalmasso ]
+  * [9b74c7] updated release version (#2878)
+  * [75107b] move metadata_uploaded_preserve to the right migration
+  * [03944f] don’t use version in leaflet libraries settings (#2879)
+
+ -- Simone Dalmasso <simone.dalmasso@gmail.com>  Thu, 02 Feb 2017 07:44:53 +0000
+
+geonode (2.5.12+thefinal0) trusty; urgency=high
+
+  * [cdf75a] further fixes in oauth setup (#2874)
+
+ -- Simone Dalmasso <simone.dalmasso@gmail.com>  Wed, 01 Feb 2017 09:54:54 +0000
+
+geonode (2.5.11+thefinal0) trusty; urgency=high
+
+  [ Simone Dalmasso ]
+  * [c49d46] initial 24 migrations
+
+  [ Angelos Tzotsos ]
+  * [3dd63b] Update release version
+
+  [ travislbrundage ]
+  * [7dd2d2] Format people cards to be universal height so sorting works properly (#2856)
+
+  [ Simone Dalmasso ]
+  * [a2a508] add 2.4 initial migrations and 24 to 2.6 migrations
+  * [c0ebd8] Delete unused LayerStyles model
+
+  [ Nicolas Loira ]
+  * [d45c75] Fixed typo in title
+
+  [ Seno @ ThinkPad ]
+  * [fd51d5] fix: #2858 KeyError on logout when using qgis local_settings.py sample
+
+  [ Simone Dalmasso ]
+  * [eb8d8c] paver start shouldn’t call sync (#2868)
+
+  [ Alessio Fabiani ]
+  * [803ab3] Npm, Bower, Grunt commands to rebuild static libraries
+
+  [ Seno @ ThinkPad ]
+  * [ae51d9] fix: get rabbitmq broker url from env file
+
+  [ Simone Dalmasso ]
+  * [1f77d6] add command and package logic to handle the oauth2 configuration
+
+ -- Simone Dalmasso <simone.dalmasso@gmail.com>  Wed, 01 Feb 2017 07:44:16 +0000
+
 geonode (2.5.10+thefinal0) xenial; urgency=high
 
   [ Way Barrios ]
