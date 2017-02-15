@@ -50,6 +50,9 @@ DEBUG = strtobool(os.getenv('DEBUG', 'True'))
 # otherwise it will raise errors for the missing non-minified dependencies
 DEBUG_STATIC = strtobool(os.getenv('DEBUG_STATIC', 'False'))
 
+#Define email service on GeoNode
+EMAIL_ENABLE = strtobool(os.getenv('EMAIL_ENABLE', 'True')) 
+
 # This is needed for integration tests, they require
 # geonode to be listening for GeoServer auth requests.
 os.environ['DJANGO_LIVE_TEST_SERVER_ADDRESS'] = 'localhost:8000'
@@ -263,6 +266,7 @@ GEONODE_APPS = (
     'geonode.geoserver',
     'geonode.upload',
     'geonode.tasks',
+    'geonode.messaging'
 
 )
 
@@ -317,6 +321,7 @@ INSTALLED_APPS = (
     'mptt',
     # 'modeltranslation',
     'djcelery',
+    'djkombu',
     'storages',
 
     # Theme
@@ -329,7 +334,7 @@ INSTALLED_APPS = (
     'avatar',
     'dialogos',
     'agon_ratings',
-    # 'notification',
+    'notification',
     'announcements',
     'actstream',
     'user_messages',
@@ -952,7 +957,6 @@ SEARCH_FILTERS = {
 
 # Queue non-blocking notifications.
 NOTIFICATION_QUEUE_ALL = False
-
 BROKER_URL = os.getenv('BROKER_URL', "django://")
 CELERY_ALWAYS_EAGER = True
 CELERY_EAGER_PROPAGATES_EXCEPTIONS = True
@@ -1064,3 +1068,7 @@ if 'geonode.geoserver' in INSTALLED_APPS:
 # Required: (boolean, optional, default false) mandatory while editing metadata (not implemented yet)
 # Filter: (boolean, optional, default false) a filter option on that thesaurus will appear in the main search page
 THESAURI = []
+
+if EMAIL_ENABLE:
+    #Setting up email backend 
+    EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'

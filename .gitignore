@@ -96,3 +96,6 @@ slave
 
 # virtual env
 venv
+
+celerybeat-*
+manage.py
