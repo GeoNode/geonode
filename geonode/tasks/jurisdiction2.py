@@ -32,7 +32,7 @@ def compute_size_update(requests_query_list, area_compute = True, data_size = Tr
     else:
         for r in requests_query_list:
             pprint("Updating request id:{0}".format(r.pk))
-           geometries = get_geometries_ogr(shapefile_name))
+            geometries = get_geometries_ogr(shapefile_name))
             if area_compute:
                 r.area_coverage = get_area_coverage(geometries)
             if data_size:
