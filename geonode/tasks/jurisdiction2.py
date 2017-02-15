@@ -32,7 +32,7 @@ def compute_size_update(requests_query_list, area_compute = True, data_size = Tr
     else:
         for r in requests_query_list:
             pprint("Updating request id:{0}".format(r.pk))
-            shapefile = dissolve_shp(get_layer_ogr(shapefile_name))
+            shapefile = dissolve_shp(get_geometries_ogr(shapefile_name))
             if shapefile:
                 if area_compute:
                     r.area_coverage = get_area_coverage(shapefile)
@@ -107,7 +107,7 @@ def get_juris_data_size(juris_shp, user):
 def assign_grid_ref_util(user):
     pprint("Computing gridrefs for {0}".format(user.username))
     shapefile_name = UserJurisdiction.objects.get(user=user).jurisdiction_shapefile.name
-    geometry = dissolve_shp(get_layer_ogr(shapefile_name))
+    geometry = dissolve_shp(get_geometries_ogr(shapefile_name))
     gridref_list = []
     
     if geometry:
@@ -155,36 +155,37 @@ def assign_grid_refs_all():
         except ObjectDoesNotExist:
             assign_grid_ref_util(uj.user)
 
-def get_layer_ogr(juris_shp_name, dest_proj_epsg=32651): #returns layer
+def get_geometries_ogr(juris_shp_name, dest_epsg=32651): #returns layer
     source = ogr.Open(("PG:host={0} dbname={1} user={2} password={3}".format(settings.DATABASE_HOST,settings.DATASTORE_DB,settings.DATABASE_USER,settings.DATABASE_PASSWORD)))
     data = source.ExecuteSQL("select the_geom from "+str(juris_shp_name))
-    #data = source.GetLayer(str(juris_shp_name))
+
     if not data:
         return []
+        
     #reprojection section
-    #src_proj_epsg =  get_epsg(juris_shp_name)
+    src_epsg =  get_epsg(juris_shp_name)
     
-    #if src_proj_epsg == 0:
-    #    return []
+    if src_epsg == 0:
+        return []
     
-    #src_sref = osr.SpatialReference()
-    #src_sref.ImportFromEPSG(src_proj_epsg)
+    src_sref = osr.SpatialReference()
+    src_sref.ImportFromEPSG(src_epsg)
     
-    #dest_sref = osr.SpatialReference()
-    #dest_sref.ImportFromEPSG(dest_proj_epsg)
-    #c_transform = osr.CoordinateTransformation(src_sref, dest_sref)
+    dest_sref = osr.SpatialReference()
+    dest_sref.ImportFromEPSG(dest_epsg)
+    c_transform = osr.CoordinateTransformation(src_sref, dest_sref)
     
     geometry_list = []
     
     for i in range(data.GetFeatureCount()):
         f = data.GetNextFeature()
         geom = f.GetGeometryRef()
-        #geom = reproject(geom, get_epsg(juris_shp_name))
-        #geom.ExportToWkt()
-        if geom:
-            geometry_list.append(geom)
-        
-        shp_feature = data.GetNextFeature()
+        if not src_epsg == dest_epsg:
+            geom = geom.Transform(c_transform)
+        geometry_list.append(loads(geom.ExportToWkb()))
+            
+    source = None
+    data = None
     
     return geometry_list
         
@@ -192,14 +193,11 @@ def dissolve_shp(geometries):
     #take geometry, returns geometry
     pprint("dissolving geometries ")
     shplist = []
-    if geometries:
-        for g in geometries:
-            shplist.append(loads(g.ExportToWkb()))
-        juris_shp = cascaded_union(shplist)
-        pprint("succesfully dissolved")
-        return juris_shp
-    else:
-        return []
+    for g in geometries:
+        shplist.append(loads(g.ExportToWkb()))
+    dissolved_geoms = cascaded_union(shplist)
+    pprint("succesfully dissolved")
+    return dissolved_geoms
     
 def get_epsg(shp_name):
     cat = Catalog(settings.OGC_SERVER['default']['LOCATION'] + 'rest',
@@ -210,9 +208,9 @@ def get_epsg(shp_name):
     if not l:
         return 0
     src_proj = l.resource.projection
-    src_proj_epsg =  int(src_proj.split(':')[1])
+    src_epsg =  int(src_proj.split(':')[1])
     
-    return src_proj_epsg
+    return src_epsg
 
 def reproject(geom, src_epsg, dest_epsg=32651):
     if src_epsg == 0:
