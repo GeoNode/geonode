@@ -296,7 +296,7 @@ class ProfileResource(TypeFilteredResource):
         filtering = {
             'username': ALL,
         }
-        
+
         serializer = CountJSONSerializer()
 
 
@@ -360,7 +360,7 @@ class DataRequestProfileResource(ModelResource):
         return bundle.obj.get_absolute_url()
 
     def dehydrate_org_type(self, bundle):
-        return bundle.obj.get_organization_type_display()
+        return bundle.obj.org_type
 
     def dehydrate_rejection_reason(self, bundle):
         return bundle.obj.rejection_reason
