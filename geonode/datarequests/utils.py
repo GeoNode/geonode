@@ -184,7 +184,7 @@ def get_juris_data_size(juris_shp_name):
 def get_area_coverage(geoms):
     area = 0
     
-    for g in geoms
+    for g in geoms:
         area += geoms.area()
         
     return area/1000000
