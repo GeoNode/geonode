@@ -15,7 +15,7 @@ $(function() {
     $other.toggle(false);
     if ($org_type.val().indexOf("Academe")>=0) {
       $academe.toggle(true);
-    }else if ($org_type.val() == 'Others') {
+    }else if ($org_type.val() == 'Other') {
       $other.toggle(true);
     }
     $org_type.change( function() {
@@ -25,7 +25,7 @@ $(function() {
         } else {
             $academe.slideUp();
         }
-        if ($(this).val() == 'Others'){
+        if ($(this).val() == 'Other'){
             $other.slideDown();
         } else {
             $other.slideUp();

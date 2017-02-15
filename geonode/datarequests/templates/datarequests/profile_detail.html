@@ -110,7 +110,7 @@
       {% if request_profile.intended_use_of_dataset == 'noncommercial' or request_profile.intended_use_of_dataset == 'academe' %}
         <tr>
         <td class="table-user-profile-attribute">{% trans "Organization type based on Phil-LiDAR1 Data Distribution Policy" %}</td>
-        <td>{{ request_profile.get_organization_type_display }}</td>
+        <td>{{ request_profile.org_type }}</td>
         </tr>
         {% if request_profile.intended_use_of_dataset == 'academe' %}
           <tr>
@@ -284,7 +284,7 @@
          <li class="list-group-item">
              <form id="cancel_form" method="post" class="modal-form" action='{% url "datarequests:data_request_profile_cancel" pk=request_profile.pk%}'>{% csrf_token %}
                 <button type="submit" class="btn btn-default btn-md btn-block" id="cancel-request-submit">{% trans "Cancel Request" %}</button>
-        </form>            
+        </form>
         </li>
     {% endif %}
 {% endif %}
@@ -365,7 +365,7 @@
               }
             );
           };
-          
+
            var cancel_request_submit = function(){
              var message = $('#cancel_request_message');
              var $request_cancel_form = $('#request_cancel_form');
@@ -409,7 +409,7 @@
               $("#reject_request_cancel").attr("disabled", true);
               reject_request_submit();
           });
-          
+
           $("#cancel_request_submit").click(function(e){
               e.preventDefault();
               $(this).attr("disabled", true);
@@ -427,7 +427,7 @@
           $("#reject-request").on('hidden.bs.modal', function (e) {
             $('#reject_request_message').addClass("hidden");
           });
-          
+
           $("#cancel-request").on('hidden.bs.modal', function (e) {
             $('#cancel_request_message').addClass("hidden");
           });
