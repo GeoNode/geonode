@@ -90,6 +90,7 @@ def get_juris_tiles(juris_shp, user=None):
 
 def get_juris_data_size(geometry):
     tile_list = []
+    pprint("Geom_type = "+geometry.geom_type)
     if geometry.geom_type == "Polygon":
         tile_list = get_juris_tiles(geometry)
     elif geometry.geom_type == "Multipolygon":
