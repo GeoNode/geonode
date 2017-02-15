@@ -17,6 +17,7 @@ from braces.views import (
 
 from urlparse import parse_qs
 
+from geonode.cephgeo.models import UserJurisdiction
 from geonode.datarequests.forms import DataRequestRejectForm
 from geonode.datarequests.models import DataRequest
 from geonode.documents.models import get_related_documents
