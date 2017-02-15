@@ -157,11 +157,7 @@
             </form>
         </li>
       {% if data_request.status == 'approved' %}
-        <li class="list-group-item">
-             <form id="recreate_dir_form" method="post" class="modal-form" action='{% url "datarequests:data_request_recreate_dir" pk=data_request.pk%}'>{% csrf_token %}
-                <button type="submit" class="btn btn-primary btn-md btn-block"  id="recreate-dir-submit">{% trans "Create Directory" %}</button>
-            </form>
-        </li>
+        <!--haha walang laman-->
       {% else %}
         {%  if data_request.status == 'pending'%}
         <li class="list-group-item">
