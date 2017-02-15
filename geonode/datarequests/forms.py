@@ -46,7 +46,7 @@ class DataRequestProfileForm(forms.ModelForm):
             'captcha'
         )
 
-    ORG_TYPE_CHOICES = LipadOrgType.objects.values_list('val', 'display_val')
+    ORG_TYPE_CHOICES = LipadOrgType.objects.values_list('val', 'val')
     # Choices that will be used for fields
     LOCATION_CHOICES = Choices(
         ('local', _('Local')),
