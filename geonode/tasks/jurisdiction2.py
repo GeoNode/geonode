@@ -88,8 +88,8 @@ def get_juris_tiles(juris_shp, user=None):
                 
     return tile_list
 
-def get_juris_data_size(juris_shp, user):
-    tile_list = get_juris_tiles(juris_shp, user)
+def get_juris_data_size(juris_shp):
+    tile_list = get_juris_tiles(juris_shp)
     total_data_size = 0
     
     for tile in tile_list:
