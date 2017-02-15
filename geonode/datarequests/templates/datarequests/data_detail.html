@@ -146,6 +146,7 @@
         {% endif %}
       </li>
 {% if user.is_superuser %}
+    {% if data_request.jurisdiction_shapefile %}
     <li class="list-group-item">
              <form id="compute_request_size_form" method="post" class="modal-form" action='{% url "datarequests:data_request_compute_size" pk=data_request.pk %}'>{% csrf_token %}
                 <button type="submit" class="btn btn-primary btn-md btn-block"  id="compute-request-size">{% trans "Compute Request Size" %}</button>
@@ -156,6 +157,7 @@
                 <button type="submit" class="btn btn-primary btn-md btn-block"  id="get-place-name">{% trans "Get Place Name" %}</button>
             </form>
         </li>
+    {% endif %}
       {% if data_request.status == 'approved' %}
         <!--haha walang laman-->
       {% else %}
