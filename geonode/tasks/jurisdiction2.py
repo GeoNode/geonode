@@ -88,10 +88,14 @@ def get_juris_tiles(juris_shp, user=None):
                 
     return tile_list
 
-def get_juris_data_size(multipolygon):
+def get_juris_data_size(geometry):
     tile_list = []
-    for g in multipolygon.geoms:
-        tile_list.extend(get_juris_tiles())
+    if geometry.geom_type == "Polygon":
+        tile_list = get_juris_tiles(geometry)
+    elif geometry.geom_type == "Multipolygon":
+        for g in geometry.geoms:
+            tile_list.extend(get_juris_tiles(g))
+    
     total_data_size = 0
     
     for tile in tile_list:
