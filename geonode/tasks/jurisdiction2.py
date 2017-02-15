@@ -68,7 +68,8 @@ def get_juris_tiles(juris_shp, user=None):
     min_y = tile_floor(juris_shp.bounds[1])
     #max_y =  int(math.ceil(float(juris_shp.bounds[3]) / float(settings._TILE_SIZE))) * int(settings._TILE_SIZE)
     max_y = tile_floor(juris_shp.bounds[3])
-    pprint("user: " + user.username + " bounds: "+str((min_x, min_y, max_x, max_y)))
+    if user:
+        pprint("user: " + user.username + " bounds: "+str((min_x, min_y, max_x, max_y)))
     tile_list = []
     count = 0
     for tile_y in xrange(min_y+settings._TILE_SIZE, max_y+settings._TILE_SIZE, settings._TILE_SIZE):
