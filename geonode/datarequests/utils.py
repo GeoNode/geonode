@@ -185,7 +185,7 @@ def get_area_coverage(geoms):
     area = 0
     
     for g in geoms:
-        area += g.area()
+        area += g.area
         
     return area/1000000
 
