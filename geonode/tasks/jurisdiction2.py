@@ -103,8 +103,7 @@ def get_juris_data_size(geometry):
     
     for tile in tile_list:
         (minx, miny, maxx, maxy) = tile.bounds
-        gridref = "E{0}N{1}".format(minx / settings._TILE_SIZE, maxy / settings._TILE_SIZE,)
-        pprint("Gridref: "+gridref)
+        gridref = "E{0}N{1}".format(int(minx / settings._TILE_SIZE), int(maxy / settings._TILE_SIZE))
         georef_query = CephDataObject.objects.filter(name__startswith=gridref)
         total_size = 0
         for georef_query_objects in georef_query:
