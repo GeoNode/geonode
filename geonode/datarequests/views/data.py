@@ -185,7 +185,7 @@ def data_request_approve(request, pk):
         
         if not data_request.profile:
             if data_request.profile_request:
-                if not data_request.profile_request.status == 'approved'
+                if not data_request.profile_request.status == 'approved':
                     messages.info(request, "Data request #"+str(pk)+" cannot be approved because the requester does not have an approved user yet.")
                     return HttpResponseRedirect(data_request.get_absolute_url())
                     #return HttpResponseRedirect('/forbidden')
