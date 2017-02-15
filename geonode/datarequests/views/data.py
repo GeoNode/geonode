@@ -191,6 +191,9 @@ def data_request_approve(request, pk):
                     messages.info(request, "Data request #"+str(pk)+" cannot be approved because the requester does not have an approved user yet.")
                     return HttpResponseRedirect(data_request.get_absolute_url())
                     #return HttpResponseRedirect('/forbidden')
+                else:
+                    data_request.profile = profile_request.profile
+                    data_request.save()
         
         if data_request.jurisdiction_shapefile:
             data_request.assign_jurisdiction() #assigns/creates jurisdiction object
@@ -202,8 +205,9 @@ def data_request_approve(request, pk):
             except ObjectDoesNotExist as e:
                 pprint("Jurisdiction Shapefile not found, nothing to delete. Carry on")
 
+        
         data_request.set_status('approved',administrator = request.user)
-        data_request.send_approval_email()
+        data_request.send_approval_email(data_request.profile.username)
         messages.info("Request "+str(pk)+" has been approved.")
         
         return HttpResponseRedirect(data_request.get_absolute_url())
