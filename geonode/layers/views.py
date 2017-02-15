@@ -690,7 +690,7 @@ def layer_download_csv(request):
         lastname = getprofile.last_name
         email = getprofile.email
         organization = getprofile.organization
-        orgtype = orgtypelist[getprofile.organization_type]
+        orgtype = getprofile.org_type
         # pprint(dir(getprofile))
         if auth.resource_type != 'document':
             listtowrite.append([username, lastname, firstname, email, organization, orgtype,
