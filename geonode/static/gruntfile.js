@@ -75,7 +75,7 @@ module.exports = function(grunt) {
           dest: 'lib/css',
           src: [
             'datatables/media/css/jquery.dataTables.css',
-            'select2/select2.css', 
+            'select2/select2.css',
             'multi-select/css/multi-select.css',
             'jquery-ui/themes/smoothness/jquery-ui.css',
             'bootstrap/dist/css/bootstrap.min.css',
@@ -136,7 +136,7 @@ module.exports = function(grunt) {
       }
     },
 
-    /*! 
+    /*!
      * change image paths in CSS to match url('../lib/img/image.png')
      * regex should cover following url patterns:
      * /url\("?images\//g          url("images/animated-overlay.gif")
@@ -147,7 +147,7 @@ module.exports = function(grunt) {
      * must not change             url('../img/switch.png')
      * /url\('\.\.\/images\//g     url('../images/back_enabled.png')
      * must not change             alpha(opacity=25)
-     * 
+     *
      * TODO: write testcase
      * var urls = ['url("images/animated-overlay.gif")', 'url(images/ui-bg_flat_75_ffffff_40x100.png)', "url('select2.png')", "url('spinner.gif')", "url(select2x2.png)", "url('../img/switch.png')", "url('../images/back_enabled.png')", "alpha(opacity=25)"],
      * urlsClean = [];
@@ -157,16 +157,16 @@ module.exports = function(grunt) {
      * });
      * console.log(urlsClean);
      */
-    
+
     replace: {
       development: {
         src: ['lib/css/*.css'],
         overwrite: true,
-        replacements: [{ 
+        replacements: [{
           from: /url\((("?images\/)|('(?!(images|\.)))|(?!('|"))|('\.\.\/images\/))/g,
           to: 'url(\'../img/'
         }, {
-          from: /(png|gif|jpg)+(\)|'\)|"\))/g, 
+          from: /(png|gif|jpg)+(\)|'\)|"\))/g,
           to: '$1\')'
         }]
       }
@@ -218,7 +218,8 @@ module.exports = function(grunt) {
             'lib/js/ZeroClipboard.min.js',
             'lib/js/moment-with-locales.min.js',
             'lib/js/bootstrap-datetimepicker.min.js',
-            'lib/js/bootstrap-treeview.min.js'
+            'lib/js/bootstrap-treeview.min.js',
+            'lib/js/bootstrap-tokenfield.js'
           ],
           'lib/js/require.js': ['lib/js/require.js'],
           'lib/js/text.js': ['lib/js/text.js'],
