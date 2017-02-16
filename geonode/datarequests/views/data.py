@@ -208,7 +208,7 @@ def data_request_approve(request, pk):
         
         data_request.set_status('approved',administrator = request.user)
         data_request.send_approval_email(data_request.profile.username)
-        messages.info("Request "+str(pk)+" has been approved.")
+        messages.info(request, "Request "+str(pk)+" has been approved.")
         
         return HttpResponseRedirect(data_request.get_absolute_url())
 
