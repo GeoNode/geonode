@@ -282,8 +282,8 @@ class DataRequest(BaseRequest):
             settings.BASEURL + self.get_absolute_url()
         )
         
-        email_subj = "[LiPAD] A new request has been submitted"
-        self.send_email(email_subj,text_content,html_content)
+        email_subject = "[LiPAD] A new request has been submitted"
+        self.send_email(email_subject,text_content,html_content)
 
     def send_approval_email(self, username):
         site = Site.objects.get_current()
@@ -304,7 +304,7 @@ class DataRequest(BaseRequest):
          )
 
         email_subject = _('[LiPAD] Data Request Status')
-        self.send_email(email_subj,text_content,html_content)
+        self.send_email(email_subject,text_content,html_content)
 
     def send_rejection_email(self):
 
@@ -326,4 +326,4 @@ class DataRequest(BaseRequest):
         )
 
         email_subject = _('[LiPAD] Data Request Status')
-        self.send_email(email_subj,text_content,html_content)
+        self.send_email(email_subject,text_content,html_content)
