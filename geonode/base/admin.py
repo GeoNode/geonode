@@ -130,5 +130,10 @@ admin.site.register(License, LicenseAdmin)
 
 
 class ResourceBaseAdminForm(autocomplete_light.ModelForm):
-    # keywords = TaggitField(widget=TaggitWidget('TagAutocomplete'), required=False)
-    keywords = TaggitField(widget=TaggitWidget(), required=False)
+    # We need to specify autocomplete='TagAutocomplete' or admin views like
+    # /admin/maps/map/2/ raise exceptions during form rendering.
+    # But if we specify it up front, TaggitField.__init__ throws an exception
+    # which prevents app startup. Therefore, we defer setting the widget until
+    # after that's done.
+    keywords = TaggitField(required=False)
+    keywords.widget = TaggitWidget(autocomplete='TagAutocomplete')
