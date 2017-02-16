@@ -264,7 +264,7 @@ class DataRequest(BaseRequest):
             email_subject,
             text_content,
             settings.DEFAULT_FROM_EMAIL,
-            [self.email, ]
+            [self.get_email(), ]
         )
         msg.attach_alternative(html_content, "text/html")
         msg.send()
