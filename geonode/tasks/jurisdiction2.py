@@ -82,6 +82,8 @@ def get_juris_tiles(juris_shp, user=None):
             
             if not tile.intersection(juris_shp).is_empty:
                 tile_list.append(tile)
+                if len(tile_list) >= 1000:
+                    return tile_list
                 
     return tile_list
 
