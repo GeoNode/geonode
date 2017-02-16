@@ -291,12 +291,12 @@ class DataRequest(BaseRequest):
         profile_url = iri_to_uri(profile_url)
 
         text_content = email_utils.DATA_APPROVAL_TEXT.format(
-             unidecode(self.first_name),
+             unidecode(self.get_first_name()),
              local_settings.LIPAD_SUPPORT_MAIL
          )
 
         html_content =email_utils.DATA_APPROVAL_HTML.format(
-             unidecode(self.first_name),
+             unidecode(self.get_first_name()),
              local_settings.LIPAD_SUPPORT_MAIL,
              local_settings.LIPAD_SUPPORT_MAIL
          )
@@ -309,14 +309,14 @@ class DataRequest(BaseRequest):
         additional_details = 'Additional Details: ' + str(self.additional_rejection_reason)
 
         text_content = email_utils.DATA_REJECTION_TEXT.format(
-             unidecode(self.first_name),
+             unidecode(self.get_first_name()),
              self.rejection_reason,
              additional_details,
              local_settings.LIPAD_SUPPORT_MAIL,
          )
 
         html_content =email_utils.DATA_REJECTION_HTML.format(
-             unidecode(self.first_name),
+             unidecode(self.get_first_name()),
              self.rejection_reason,
              additional_details,
              local_settings.LIPAD_SUPPORT_MAIL,
