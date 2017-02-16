@@ -1,9 +1,9 @@
-{% extends "site_base.html" %}
+{% extends "geonode_base.html" %}
 {% load i18n %}
 
 {% block body %}
-    <div id="description"> 
-      <h3> 
+    <div id="description">
+      <h3>
         {% if error_title %}
           {{ error_title }}
         {% else %}
@@ -16,7 +16,7 @@
       {{ error_message }}
     {% else %}
       {% blocktrans %}
-          You are not allowed to perform this operation.  
+          You are not allowed to perform this operation.
       {% endblocktrans %}
     {% endif %}
     </p>
