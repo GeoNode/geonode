@@ -23,14 +23,15 @@ with open(csv_path, 'r') as open_file:
             continue
         tokens = line.strip().split(',')
         org_type = tokens[0].strip()
+        org_type_main = tokens[1].strip()
         try:
             model_object = LipadOrgType.objects.get(val=str(org_type),
-                                                display_val=str(org_type))
+                                                display_val=str(org_type_main))
             print ('it already exists')
         except:
             try:
                 model_object = LipadOrgType(val=str(org_type),
-                                                display_val=str(org_type))
+                                                display_val=str(org_type_main))
                 model_object.save()
                 print str(counter) + '. Saved: ', model_object.val
 
