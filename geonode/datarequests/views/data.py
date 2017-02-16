@@ -23,7 +23,7 @@ from geonode.datarequests.models import DataRequest
 from geonode.documents.models import get_related_documents
 from geonode.security.views import _perms_info_json
 from geonode.tasks.jurisdiction import place_name_update
-from geonode.tasks.jurisdiction2 import compute_size_update, assign_grid_refs_all
+from geonode.tasks.jurisdiction2 import compute_size_update, assign_grid_refs_all, assign_grid_refs
 from geonode.utils import default_map_config, resolve_object, llbbox_to_mercator
 from geonode.utils import GXPLayer, GXPMap
 
