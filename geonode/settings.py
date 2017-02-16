@@ -338,8 +338,6 @@ INSTALLED_APPS = (
     'polymorphic',
     'guardian',
     'oauth2_provider',
-
-    'overextends',
 ) + GEONODE_APPS
 
 LOGGING = {

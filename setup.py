@@ -83,7 +83,6 @@ setup(name='GeoNode',
         "django-polymorphic>=0.9.2",  # python-django-polymorphic (0.8.1) FIXME
         "django-tastypie>=0.12.2",  # python-django-tastypie (0.12.0, 0.12.2 in our ppa)
         "django-oauth-toolkit>=0.10.0",  # python-django-oauth-toolkit (0.10.0)
-        "django-overextends==0.4.2",  # python-django-overextends (0.4.2)
 
         # geopython dependencies
         "pyproj>=1.9.3",  # python-pyproj (1.9.5)
