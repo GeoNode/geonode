@@ -121,7 +121,7 @@ def assign_grid_ref_util(user):
             for g in geometry.geoms:
                 tiles.extend(get_juris_tiles(g, user))
         else:
-            tiles = get_juris_tiles(shapefile, user)
+            tiles = get_juris_tiles(geometry, user)
         
         if len(tiles) < 1:
             pprint("No tiles for {0}".format(user.username))
