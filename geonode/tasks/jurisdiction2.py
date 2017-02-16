@@ -48,7 +48,6 @@ def tile_ceiling(x):
     return int(math.ceil(x / float(settings._TILE_SIZE)) * settings._TILE_SIZE)
 
 def get_juris_tiles(juris_shp, user=None):
-    pprint("Tiling now")
     if not juris_shp.is_valid:
         juris_shp = juris_shp.convex_hull
         if not juris_shp.convex_hull.is_valid:
