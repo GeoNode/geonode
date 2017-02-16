@@ -48,7 +48,7 @@ def tile_ceiling(x):
     return int(math.ceil(x / float(settings._TILE_SIZE)) * settings._TILE_SIZE)
 
 def get_juris_tiles(juris_shp, user=None):
-    
+    pprint("Tiling now")
     if not juris_shp.is_valid:
         juris_shp = juris_shp.convex_hull
         if not juris_shp.convex_hull.is_valid:
@@ -120,11 +120,13 @@ def assign_grid_ref_util(user):
     if geometry:
         tiles = []
         if geometry.geom_type=='MultiPolygon':
+            pprint("Tiling "+str(len(geometry)) + "geometries")
             for g in geometry.geoms:
                 tiles.extend(get_juris_tiles(g, user))
         else:
             tiles = get_juris_tiles(geometry, user)
         
+        pprint("Done with tiling")
         if len(tiles) < 1:
             pprint("No tiles for {0}".format(user.username))
         else:
