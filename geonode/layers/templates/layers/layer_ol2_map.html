@@ -1,0 +1,82 @@
+<link rel="stylesheet" href="http://dev.openlayers.org/releases/OpenLayers-2.13.1/theme/default/style.css" type="text/css">
+<script src="http://dev.openlayers.org/releases/OpenLayers-2.13.1/OpenLayers.js" type="text/javascript"></script>
+<script src="http://dev.openlayers.org/releases/OpenLayers-2.13.1/lib/OpenLayers/Layer/ArcGISCache.js" type="text/javascript"></script>
+
+<style>
+    .olControlAttribution {
+        bottom: 0 !important;
+    }
+</style>
+
+<script type="text/javascript">
+  
+  document.addEventListener("DOMContentLoaded", function(event) {
+
+  	// document.getElementById('preview_map').setAttribute("style", "height:600px");
+
+    {% if resource.bbox_string %}
+    var bbox = [{{ resource.bbox_string }}];
+    {% else %}
+    var bbox = null;
+    {% endif %}
+
+    source = null;
+    {% if resource.ptype == 'gxp_wmscsource' %}
+    {% if 'access_token' in request.session %}
+    var url = '{{ resource.ows_url|safe }}?access_token={{request.session.access_token}}'
+    {% else %}
+    var url = '{{ resource.ows_url|safe }}'
+    {% endif %}
+    source = new OpenLayers.Layer.WMS("{{ resource.title|safe }}",
+    	url,
+        {layers: '{{ resource.typename }}', transparent: true},
+        {isBaseLayer: false}
+    );
+
+    {% elif resource.ptype == 'gxp_arcrestsource' %}
+    {% if 'access_token' in request.session %}
+    var url = '{{ resource.ows_url|safe }}?access_token={{request.session.access_token}}'
+    {% else %}
+    var url = '{{ resource.ows_url|safe }}'
+    {% endif %}    
+    source = new OpenLayers.Layer.ArcGISCache("{{ resource.title|safe }}",
+    	url,
+        {layers: '{{ resource.typename }}', transparent: true},
+        {isBaseLayer: false}
+    );
+
+    {% endif %}
+
+    var crs = '{{ crs }}'
+
+    if (crs != 'EPSG:4326') {
+        crs = 'EPSG:3857';
+    }
+    if (source != null) {
+    	var layers = [
+            new OpenLayers.Layer.OSM("OpenCycleMap",
+              ["http://a.tile.openstreetmap.org/${z}/${x}/${y}.png",
+               "http://b.tile.openstreetmap.org/${z}/${x}/${y}.png",
+               "http://c.tile.openstreetmap.org/${z}/${x}/${y}.png"]),
+          	source
+    	];
+    	
+    	var map = new OpenLayers.Map({
+            div: 'preview_map', 
+            projection: new OpenLayers.Projection(crs),
+            // controls: [],
+            layers: layers,
+            center: [0, 0],
+            zoom: 2
+    	});
+
+    	if (bbox != null) {
+    	    if (crs != 'EPSG:4326') {
+                bbox = new OpenLayers.Bounds(bbox).transform(new OpenLayers.Projection("EPSG:4326"),new OpenLayers.Projection("EPSG:3857"));
+    		}
+    		map.zoomToExtent(bbox);
+    	}
+    }
+  });
+
+</script>

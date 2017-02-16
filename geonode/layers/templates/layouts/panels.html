@@ -1,0 +1,602 @@
+{% load floppyforms %}
+{% load i18n %}
+<!--<link href="{{ STATIC_URL }}lib/css/bootstrap-select.min.css?v={{ VERSION }}" rel="stylesheet" />-->
+<script type="text/javascript" src="{{ STATIC_URL}}geonode/js/utils/thumbnail.js"></script>
+<style>
+/* general panel styles */
+#mdeditor_form .panel-group .panel{
+  overflow: visible;
+}
+/* date fields proper sizes */
+#mdeditor_form .input-group.date {
+  width: 100%;
+}
+
+/* resizable text-areas */
+#mdeditor_form textarea {
+  resize: vertical;
+  height: 120px;
+}
+
+/* question mark (info) distance fom label*/
+form #mdeditor_form label{
+  margin-right: 0.3em;
+}
+/* regions */
+#regions_multiselect_container .fstElement {
+  width: 100%;
+}
+#regions_multiselect_container .fstChoiceItem {
+  background-color: #2c689c;
+  border: #2c689c;
+}
+
+#mdeditor_form .mandatory-hint,#mdeditor_form .advanced-hint {
+  cursor: pointer;
+}
+
+/* publishing checkboxes */
+#mdeditor_form #id_resource-metadata_uploaded_preserve,
+#mdeditor_form #id_resource-is_published,
+#mdeditor_form #id_resource-featured  {
+  float: right;
+}
+
+/* mosaiking checkboxes */
+#mdeditor_form #id_resource-is_mosaic,
+#mdeditor_form #id_resource-has_time,
+#mdeditor_form #id_resource-has_elevation  {
+  float: right;
+}
+
+/* keywords */
+#mdeditor_form .tokenfield.form-control {
+  height: auto;
+}
+
+#mdeditor_form .thesauri_keywords label {
+  display: block;
+}
+#mdeditor_form span.autocomplete-light-widget {
+  width: 100%;
+}
+</style>
+<style>
+/* metadata edit workflow wizard */
+.wizard--progress {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: table;
+  table-layout: fixed;
+  width: 100%;
+  color: #2c689c;
+}
+.wizard--progress > li {
+  position: relative;
+  display: table-cell;
+  text-align: center;
+  font-size: 0.8em;
+}
+.wizard--progress > li:hover {
+  cursor: pointer;
+}
+.wizard--progress > li:before {
+  transition: background 0.5s ease 0.1s;
+  box-shadow: 5px 5px 5px rgba(0,0,0,.5);
+  content: attr(data-step);
+  display: block;
+  margin: 0 auto;
+  background: #DFE3E4;
+  width: 3em;
+  height: 3em;
+  text-align: center;
+  margin-bottom: 0.25em;
+  line-height: 3em;
+  border-radius: 100%;
+  position: relative;
+  z-index: 1000;
+}
+.wizard--progress > li:after {
+  transition: background 1s ease, width 1s ease;
+  width: 0px;
+  box-shadow: 5px 5px 5px rgba(0,0,0,.5);
+  content: '';
+  position: absolute;
+  display: block;
+  background: #DFE3E4;
+  height: 0.5em;
+  top: 1.25em;
+  left: 50%;
+  margin-left: 1.5em\9;
+  z-index: -1;
+}
+
+.wizard--progress > li:last-child:after {
+  display: none;
+}
+.wizard--progress > li.is-complete {
+  color: #333333;
+}
+.wizard--progress > li.is-complete:before, .wizard--progress > li.is-complete:after {
+  color: #FFF;
+  background: #333333;
+}
+.wizard--progress > li.is-complete:before {
+  z-index: 1;
+}
+.wizard--progress > li.is-complete:after {
+  transition: background 1s ease, width 1s ease;
+  z-index: 0;
+  width: 100%;
+}
+.wizard--progress > li a {
+  color: #2c689c;
+}
+.wizard--progress > li.is-active {
+  color: #2c689c;
+}
+.wizard--progress > li.is-active:before {
+  color: #FFF;
+  background: #2c689c;
+}
+
+.wizard--progress > li.is-complete a {
+  color: #000;
+}
+
+/**
+ * Needed for IE8
+ */
+.wizard--progress__last:after {
+  display: none !important;
+}
+
+/**
+ * Size Extensions
+ */
+.wizard--progress--medium {
+  font-size: 1.5em;
+}
+
+.wizard--progress--large {
+  font-size: 2em;
+}
+.wizard--progress > li:before {
+    text-decoration: none;
+}
+.wizard--progress li:hover a{
+  text-decoration: underline;
+}
+.wizard--progress a, .wizard--progress a:hover:before {
+  text-decoration: none;
+}
+
+</style>
+
+<style>
+/* draggable table */
+span.grippy {
+  content: '....';
+  width: 15px;
+  height: 26px;
+  display: inline-block;
+  overflow: hidden;
+  line-height: 5px;
+  padding: 3px 4px;
+  cursor: move;
+  vertical-align: middle;
+
+  font-size: 12px;
+  font-family: sans-serif;
+  letter-spacing: 2px;
+  color: #cccccc;
+  text-shadow: 1px 0 1px black;
+}
+span.grippy::after {
+  content: '.. .. .. ..';
+}
+
+
+</style>
+<button class="btn btn-success metadata-edit-done" id="btn_upd_md_done" type="submit" style="float:right; opacity: 0;" >Done!</button>
+
+{% block body_outer %}
+<ul id="md_tabs" class="nav nav-tabs">
+    <li id="metadata_edit_tab" class="active">
+        <a data-toggle="tab" href="#edit-metadata"><i class="fa fa-pencil"></i> Edit</a>
+    </li>
+    <li id="preview_tab" dhref="#preview">
+        <a data-toggle="tab" href="#preview"><i class="fa fa-camera"></i> Preview</a>
+    </li>
+    <li id="settings_tab" dhref="#settings">
+        <a data-toggle="tab" href="#settings"><i class="fa fa-cog"></i> Settings</a>
+    </li>
+</ul>
+
+<div class="tab-content">
+<div id="edit-metadata" class="tab-content tab-pane fade in active">
+  <div id="completeness-hints" class="progress">
+
+  <div class="mandatory-hint progress-bar" role="progressbar" style="width:25%">
+    Mandatory
+  </div>
+  <div class="advanced-hint progress-bar" role="progressbar" style="width:25%">
+    Mandatory
+  </div>
+  <div class="progress-bar" role="progressbar" style="width:50%">
+    Optional
+  </div>
+</div>
+  <ul class="wizard--progress wizard--progress--medium">
+      <li data-step="1" id="first" class="is-active" data-toggle="tab" href="#mandatory">
+          <a>Basic Metadata</a>
+      </li>
+      <li data-step="2" id="second"  data-toggle="tab" href="#advanced">
+          <a>Location and Licenses</a>
+      </li>
+      <li data-step="3" data-toggle="tab" href="#ownership">
+          <a>Optional Metadata</a>
+      </li>
+      <li data-step="4"  data-toggle="tab" href="#dataset">
+          <a>Dataset Attributes</a>
+      </li>
+  </ul>
+    <div id="mandatory" class="tab-pane fade in active">
+        <!--<br />-->
+        <div class="panel-group">
+            <div class="panel panel-default">
+                <!-- div class="panel-heading">Data info</div -->
+                <div class="panel-body">
+                    <div class="row">
+                        <div class="col">
+                            <div id="basicInfo" class="container-fluid">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col">
+                            <div id="basicDescriptiveInfo" class="container-fluid">
+                                <div class="col-lg-3">
+                                    <span><label for="{{ layer_form.thumbnail_url|id }}">{% trans "Thumbnail" %}</label></span>
+                                    <div id="embedded_map" class="mrg-btm" style="height:250px;width: 250px;">
+                                      <div id="preview_map" style="height: 90%;width: 100%;">
+                                      </div>
+                                      <div id="preview_image" style="height: 90%;width: 100%;">
+                                          <img id="preview_image_src" src="{{ layer_form.thumbnail_url.value }}" height="100%" width="100%"/>
+                                      </div>
+                                      <div>
+                                        <span class="btn-group btn-group-xs btn-group-justified">
+                                            <a class="btn btn-default" href="#" id="set_thumbnail">{% trans "Save" %}</a>
+                                            <!-- span class="input-group-addon">
+                                                <form id="form1" runat="server">
+                                                    <input type='file' id="imgInp" />
+                                                </form>
+                                            </span -->
+                                            <a class="btn btn-default" href="#" id="change_thumbnail">{% trans "Edit" %}</a>
+                                        </span>
+                                      </div>
+                                    </div>
+                                </div>
+                                <div class="col-lg-4">
+                                    <span><label for="{{ layer_form.title|id }}">{{ layer_form.title.label }}</label></span>
+                                    <!--<p class="xxs-font-size">(Name by which the cited resource is known)</p>-->
+                                    {{ layer_form.title }}
+                                    <div>
+                                        <span><label for="{{ layer_form.abstract|id }}">{{ layer_form.abstract.label }}</label></span>
+                                        <!--<p class="xxs-font-size">(Brief narrative summary of the content of the resource/s)</p>-->
+                                        {{ layer_form.abstract }}
+                                    </div>
+                                </div>
+                                <div class="col-lg-5">
+                                  <div class="col-lg-12 keywords-container">
+                                    <span><label for="{{ layer_form.keywords|id }}">{{ layer_form.keywords.label }}</label></span>
+                                    <span class="input-group">
+                                        <!--<p class="xxs-font-size">(A space or comma separated list of keywords)</p>-->
+                                        {{ layer_form.keywords }}
+                                        <span class="input-group-addon" id="treeview-toggle"><i class="fa fa-folder"></i></span>
+                                    </span>
+                                    <div id="treeview" class="" style="display: none"></div>
+                                  </div>
+                                    <div class="col-lg-12 thesauri_keywords">
+                                          {{ tkeywords_form }}
+                                    </div>
+                                    <div class="col-lg-6 col-xs-12">
+                                        <span><label for="{{ layer_form.date_type|id }}">{{ layer_form.date_type.label }}</label></span>
+                                        <!--<p class="xxs-font-size">(Identification of when a given event occurred)</p>-->
+                                        {{ layer_form.date_type }}
+                                    </div>
+                                    <div class="col-lg-6 col-xs-12">
+                                        <span><label for="{{ layer_form.date|id }}">{{ layer_form.date.label }}</label></span>
+                                        <!--<p class="xxs-font-size">(When a given event occurred on the resource)</p>-->
+                                        {{ layer_form.date }}
+                                    </div>
+                                    <div id="basicCategoryInfo" class="col-lg-12">
+                                        <span><label for="{{ category_form.category_choice_field|id }}" class="control-label required-field">{% trans "Category" %}</label></span>
+                                        <select
+                                            title="Choose one of the following..."
+                                            data-live-search="true"
+                                            data-size="5"
+                                            name="category_choice_field"
+                                            id="category_form"
+                                            class="selectpicker form-control"
+                                            >
+                                            <option style="display: none" disabled
+                                            {% if not category_form.initial %} selected="selected" {% endif %}
+                                            hidden value="">Choose one of the following...</option>
+                                          {% for choice in category_form.category_choice_field.field.choices %}
+                                              <option
+                                              {% ifequal category_form.initial choice.0 %} selected="selected" {% endifequal %}
+                                              value="{{ choice.0 }}"
+                                              data-content="<span class='has-popover' data-container='body' data-toggle='popover' data-placement='top'  data-content=' {{ choice.2.description }}' rigger='hover'><i class='fa {{choice.2.fa_class}}'></i> {{ choice.2.gn_description }}<span>"
+                                              >{{ choice.2.gn_description }}</option>
+                                          {% endfor %}
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="advanced" class="tab-pane fade">
+        <div class="panel-group">
+                <div class="panel panel-default">
+                    <!-- div class="panel-heading">Metadata info</div -->
+                    <div class="panel-body">
+                        <div class="" id="mdinfo">
+                            <div class="">
+                                <div class="col-lg-4">
+                                    <div>
+                                        <span><label for="{{ layer_form.language|id }}">{{ layer_form.language.label }}</label></span>
+                                        <!--<p class="xxs-font-size">(Language used within the dataset)</p>-->
+                                        {{ layer_form.language }}
+                                    </div>
+                                    <div>
+                                        <span><label for="{{ layer_form.license|id }}">{{ layer_form.license.label }}</label></span>
+                                        <!--<p class="xxs-font-size">(License of the dataset)</p>-->
+                                        {{ layer_form.license }}
+                                    </div>
+                                </div>
+                                <div class="col-lg-4">
+                                      <div id="regions_multiselect_container">
+                                          <span><label for="{{ layer_form.regions|id }}">{{ layer_form.regions.label }}</label></span>
+                                          {{ layer_form.regions }}
+                                      </div>
+                                      <div>
+                                          <span><label for="{{ layer_form.data_quality_statement|id }}">{{ layer_form.data_quality_statement.label }}</label></span>
+                                          <!--<p class="xxs-font-size">(General explanation of the data producer's knowledge about the lineage)</p>-->
+                                          {{ layer_form.data_quality_statement }}
+                                      </div>
+                                </div>
+                                <div class="col-lg-4">
+
+                                    <div>
+                                        <span><label for="{{ layer_form.restriction_code_type|id }}">{{ layer_form.restriction_code_type.label }}</label></span>
+                                        <!--<p class="xxs-font-size">(Limitation/s placed upon the access or use of data)</p>-->
+                                        {{ layer_form.restriction_code_type }}
+                                    </div>
+                                    <div>
+                                        <span><label for="{{ layer_form.constraints_other|id }}">{{ layer_form.constraints_other.label }}</label></span>
+                                        <!--<p class="xxs-font-size">(Other restrictions and legal prerequisites for accessing or use data and metadata)</p>-->
+                                        {{ layer_form.constraints_other }}
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+        </div>
+    </div>
+
+    <div id="ownership" class="tab-pane fade">
+        <div class="panel-group"><div class="panel panel-default"><div class="panel-body">
+        <div>
+            <div class="col-xs-12 col-lg-4">
+              <p>Other, Optional, Metadata</p>
+                <div>
+                    <span><label for="{{ layer_form.edition|id }}">{{ layer_form.edition.label }}</label></span>
+                    <!--<p class="xxs-font-size">(Version of the cited resource)</p>-->
+                    {{ layer_form.edition }}
+                </div>
+                <div>
+                    <span><label for="{{ layer_form.purpose|id }}">{{ layer_form.purpose.label }}</label></span>
+                    <!--<p class="xxs-font-size">(Brief narrative summary of the intentions with which the resource/s ...)</p>-->
+                    {{ layer_form.purpose }}
+                </div>
+                <div>
+                    <span><label for="{{ layer_form.supplemental_information|id }}">{{ layer_form.supplemental_information.label }}</label></span>
+                    <!--<p class="xxs-font-size">(Any other descriptive information about the dataset)</p>-->
+                    {{ layer_form.supplemental_information }}
+                </div>
+            </div>
+            <div class="col-xs-12 col-lg-5">
+                    <div class="col-xs-12 col-lg-6">
+                      <div class="input-group date">
+                        <span><label for="{{ layer_form.temporal_extent_start|id }}">{{ layer_form.temporal_extent_start.label }}</label></span>
+                        <!--<p class="xxs-font-size">(When a given event occurred on the resource)</p>-->
+                        {{ layer_form.temporal_extent_start }}
+                        </div>
+                    </div>
+                    <div class="col-xs-12 col-lg-6">
+                        <div class="input-group date">
+                        <span><label for="{{ layer_form.temporal_extent_end|id }}">{{ layer_form.temporal_extent_end.label }}</label></span>
+                        <!--<p class="xxs-font-size">(Identification of when a given event occurred)</p>-->
+                        {{ layer_form.temporal_extent_end }}
+                        </div>
+                    </div>
+                <div class="col-xs-12">
+                    <div style="margin-top: 5px">
+                        <span><label for="{{ layer_form.maintenance_frequency|id }}">{{ layer_form.maintenance_frequency.label }}</label></span>
+                        <!--<p class="xxs-font-size">(Identification of when a given event occurred)</p>-->
+                        {{ layer_form.maintenance_frequency }}
+                    </div>
+                    <div style="margin-top: 5px">
+                        <span><label for="{{ layer_form.spatial_representation_type|id }}">{{ layer_form.spatial_representation_type.label }}</label></span>
+                        <!--<p class="xxs-font-size">(Method used to represent geographic information in the dataset)</p>-->
+                        {{ layer_form.spatial_representation_type }}
+                    </div>
+                </div>
+            </div>
+            <div class="col-xs-12 col-lg-3">
+              <div class="panel panel-default" style="margin-top: 5px">
+                          <div class="panel-heading">Responsible Parties</div>
+                          <div class="panel-body">
+                              <span><label for="{{ layer_form.poc|id }}">{{ layer_form.poc.label }}</label></span>
+                              {{ layer_form.poc }}
+                          </div>
+                      </div>
+
+                      <div class="panel panel-default">
+                          <div class="panel-heading">Owner and Permissions</div>
+                          <div class="panel-body">
+                              <div>
+                                  <span><label for="{{ layer_form.owner|id }}">{{ layer_form.owner.label }}</label></span>
+                                  <!--<p class="xxs-font-size">(Owner of the cited resource)</p>-->
+                                  {{ layer_form.owner }}
+                              </div>
+                              <div>
+                                  <span><label for="{{ layer_form.metadata_author|id }}">{{ layer_form.metadata_author.label }}</label></span>
+                                  <!--<p class="xxs-font-size">(Author of the metadata)</p>-->
+                                  {{ layer_form.metadata_author }}
+                              </div>
+                             {% if GEONODE_SECURITY_ENABLED %}
+                              <!--<hr />
+                              <div class="modal-body" id="_permissions" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+                                  {# include "_permissions.html" #}
+                              </div>
+                              <div class="modal fade" id="_permissions_feedbacks" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+                                <div class="modal-dialog" role="document">
+                                  <div class="modal-content">
+                                    <div class="modal-header">
+                                      <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                                      <h4 class="modal-title" id="exampleModalLabel">Message box</h4>
+                                    </div>
+                                    <div class="modal-body">
+                                      ...
+                                    </div>
+                                    <div class="modal-footer">
+                                      <button type="button" class="btn btn-default" data-dismiss="modal">OK</button>
+                                    </div>
+                                  </div>
+                                </div>
+                              </div>-->
+                             {% endif %}
+                          </div>
+                      </div>
+            </div>
+        </div>
+      </div></div></div>
+    </div>
+    <div id="dataset" class="tab-pane fade">
+      <div class="panel-group"><div class="panel panel-default"><div class="panel-body">
+      <div>
+          <div style="padding: 15px">
+                      <div>
+                          {{ attribute_form.management_form }}
+                          <table class="table table-striped table-bordered table-condensed">
+                              <tr class="table-header">
+                                  <th style="width:25px;background: #efefef;"></th>
+                                  <th>{% trans "Attribute" %}</th>
+                                  <th>{% trans "Label" %}</th>
+                                  <th>{% trans "Description" %}</th>
+                                  <th>{% trans "Display Order" %}</th>
+                              </tr>
+                              {% for form in attribute_form.forms %}
+                                  {% if form.attribute %}
+                                      <tr>
+                                          <td style="width:25px;background: #efefef;"> <span class="grippy"></span></td>
+                                          <td><div style="display:none">{{form.id}}</div>{{form.attribute}}</td>
+                                          <td>{{form.attribute_label}}</td>
+                                          <td>{{form.description}}</td>
+                                          <td>{{form.display_order}}</td>
+                                      </tr>
+                                  {% endif %}
+                              {% endfor %}
+                          </table>
+                        </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+      </div>
+    </div>
+</div>
+<div id="preview" class="tab-pane fade" style="overflow: hidden;">
+    <!-- <iframe id="preview_encoder_iframe" height="100%" width="100%" style="width:0;height:0;border:0;border:none;" src="{% url 'layer_metadata_detail' resource.typename %}"></iframe> -->
+    {% if metadataxsl %}
+        <iframe id="preview_encoder_iframe" frameborder="0" scrolling="no" onload="if(this.contentWindow.document.body) {$('#preview').height(this.contentWindow.document.body.scrollHeight)}" src="/showmetadata/xsl/{{resource.id}}"></iframe>
+    {% else %}
+        <iframe id="preview_encoder_iframe" frameborder="0" scrolling="no" onload="if(this.contentWindow.document.body) {$('#preview').height(this.contentWindow.document.body.scrollHeight)}" src="/catalogue/csw_to_extra_format/{{resource.uuid}}/{{resource.title}}.html"></iframe>
+    {% endif %}
+</div>
+<div id="settings" class="tab-pane fade" style="overflow: hidden;">
+  <!--<br />-->
+    <div class="col-xs-12 col-lg-4">
+      <div class="panel-group">
+          <div class="panel panel-default">
+              <div class="panel-body">
+                <div class="panel panel-default" >
+                    <div class="panel-heading">Publishing</div>
+                      <div class="panel-body">
+                        <div>
+                            <span><label for="{{ layer_form.metadata_uploaded_preserve|id }}">{{ layer_form.metadata_uploaded_preserve.label }}</label></span>
+                            {{ layer_form.metadata_uploaded_preserve }}
+                        </div>
+                        <div>
+                            <span><label for="{{ layer_form.is_published|id }}">{{ layer_form.is_published.label }}</label></span>
+                            {{ layer_form.is_published }}
+                        </div>
+                        <div>
+                            <span><label for="{{ layer_form.featured|id }}">{{ layer_form.featured.label }}</label></span>
+                            {{ layer_form.featured }}
+                        </div>
+                      </div>
+                </div>
+              </div>
+            </div>
+     </div>
+    </div>
+    <div class="col-xs-12 col-lg-4">
+      <div class="panel-group">
+          <div class="panel panel-default">
+              <div class="panel-body">
+                <div class="panel panel-default" >
+                  <div class="panel-heading">Other Settings</div>
+                  <div class="panel-body">
+                    <div>
+                        <span><label for="{{ layer_form.is_mosaic|id }}">{{ layer_form.is_mosaic.label }}</label></span>
+                        {{ layer_form.is_mosaic }}
+                    </div>
+                    <div>
+                        <span><label for="{{ layer_form.has_time|id }}">{{ layer_form.has_time.label }}</label></span>
+                        {{ layer_form.has_time }}
+                    </div>
+                    <div>
+                        <span><label for="{{ layer_form.has_elevation|id }}">{{ layer_form.has_elevation.label }}</label></span>
+                        {{ layer_form.has_elevation }}
+                    </div>
+
+                    <div>
+                        <span><label for="{{ layer_form.time_regex|id }}">{{ layer_form.time_regex.label }}</label></span>
+                        {{ layer_form.time_regex }}
+                    </div>
+                    <div>
+                        <span><label for="{{ layer_form.elevation_regex|id }}">{{ layer_form.elevation_regex.label }}</label></span>
+                        {{ layer_form.elevation_regex }}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+        </div>
+    </div>
+</div>
+</div>
+{% endblock %}

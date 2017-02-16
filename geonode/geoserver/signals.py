@@ -371,7 +371,7 @@ def geoserver_post_save(instance, sender, **kwargs):
                                )
                                )
 
-    create_gs_thumbnail(instance, overwrite=True)
+    create_gs_thumbnail(instance, overwrite=False)
 
     legend_url = ogc_server_settings.PUBLIC_LOCATION + \
         'wms?request=GetLegendGraphic&format=image/png&WIDTH=20&HEIGHT=20&LAYER=' + \
@@ -496,4 +496,4 @@ def geoserver_pre_save_maplayer(instance, sender, **kwargs):
 
 def geoserver_post_save_map(instance, sender, **kwargs):
     instance.set_missing_info()
-    create_gs_thumbnail(instance, overwrite=True)
+    create_gs_thumbnail(instance, overwrite=False)
