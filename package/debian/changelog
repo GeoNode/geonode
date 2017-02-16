@@ -1,3 +1,33 @@
+geonode (2.6.0+alpha1) trusty; urgency=high
+
+  [ Simone Dalmasso ]
+  * [b1254a] update release version (#2894)
+
+  [ Jeffrey Johnson ]
+  * [79135f] fix requirements.txt
+
+  [ Martina ]
+  * [bcdc7e] Fix issue with Leaflet library
+
+  [ Jonathan Doig ]
+  * [dbe2e1] Removed uploaded/layers from Apache config
+
+  [ Martina ]
+  * [20a02f] LAYER_PREVIEW_LIBRARY set to geoext as default
+
+  [ Simone Dalmasso ]
+  * [dedd93] deny uploaded/layers access (#2900)
+
+  [ Alessio Fabiani ]
+  * [ffbcdc] Update quick_install.txt
+  * [472cdd] Update quick_install.txt
+  * [87b5fe] Update quick_install.txt
+
+  [ Simone Dalmasso ]
+  * [595023] make sure metadata detail is generalised
+
+ -- Simone Dalmasso <simone.dalmasso@gmail.com>  Thu, 16 Feb 2017 08:57:50 +0000
+
 geonode (2.5.15+thefinal0) trusty; urgency=high
 
   * [c06f6c] update release version (#2890)
