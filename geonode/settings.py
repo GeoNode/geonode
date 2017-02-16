@@ -268,18 +268,18 @@ GEONODE_APPS = (
 
 GEONODE_CONTRIB_APPS = (
     # GeoNode Contrib Apps
-    'geonode.contrib.dynamic',
-    'geonode.contrib.exif',
-    'geonode.contrib.favorite',
-    'geonode.contrib.geogig',
-    'geonode.contrib.geosites',
-    'geonode.contrib.nlp',
-    'geonode.contrib.slack',
-    'geonode.contrib.metadataxsl'
+    # 'geonode.contrib.dynamic',
+    # 'geonode.contrib.exif',
+    # 'geonode.contrib.favorite',
+    # 'geonode.contrib.geogig',
+    # 'geonode.contrib.geosites',
+    # 'geonode.contrib.nlp',
+    # 'geonode.contrib.slack',
+    'geonode.contrib.metadataxsl',
 )
 
 # Uncomment the following line to enable contrib apps
-# GEONODE_APPS = GEONODE_APPS + GEONODE_CONTRIB_APPS
+GEONODE_APPS = GEONODE_APPS + GEONODE_CONTRIB_APPS
 
 INSTALLED_APPS = (
 
@@ -318,6 +318,7 @@ INSTALLED_APPS = (
     # 'modeltranslation',
     'djcelery',
     'storages',
+    'floppyforms',
 
     # Theme
     "pinax_theme_bootstrap_account",
@@ -1063,4 +1064,5 @@ if 'geonode.geoserver' in INSTALLED_APPS:
 # e.g. THESAURI = [{'name':'inspire_themes', 'required':True, 'filter':True}, {'name':'inspire_concepts', 'filter':True}, ]
 # Required: (boolean, optional, default false) mandatory while editing metadata (not implemented yet)
 # Filter: (boolean, optional, default false) a filter option on that thesaurus will appear in the main search page
+# THESAURI = [{'name':'inspire_themes', 'required':False, 'filter':True}]
 THESAURI = []

@@ -67,6 +67,7 @@ class LayerUploadForm(forms.Form):
     permissions = JSONField()
 
     metadata_uploaded_preserve = forms.BooleanField(required=False)
+    metadata_upload_form = forms.BooleanField(required=False)
 
     spatial_files = [
         "base_file",

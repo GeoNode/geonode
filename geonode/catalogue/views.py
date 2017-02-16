@@ -47,9 +47,24 @@ def csw_global_dispatch(request):
 
     mdict = dict(settings.PYCSW['CONFIGURATION'], **CONFIGURATION)
 
+    access_token = None
+    if 'access_token' in request.session:
+        access_token = request.session['access_token']
+
+    absolute_uri = ('%s' % request.build_absolute_uri())
+    query_string = ('%s' % request.META['QUERY_STRING'])
+
+    if access_token and 'access_token' not in query_string:
+        absolute_uri = ('%s&access_token=%s' % (absolute_uri, access_token))
+        query_string = ('%s&access_token=%s' % (query_string, access_token))
+
     env = request.META.copy()
     env.update({'local.app_root': os.path.dirname(__file__),
-                'REQUEST_URI': request.build_absolute_uri()})
+                'REQUEST_URI': absolute_uri,
+                'QUERY_STRING': query_string})
+
+    if access_token:
+        env.update({'access_token': access_token})
 
     csw = server.Csw(mdict, env, version='2.0.2')
 

@@ -1,0 +1,4405 @@
+[
+  {
+    "pk": 1,
+    "model": "base.region",
+    "fields": {
+      "rght": 516,
+      "code": "GLO",
+      "name": "Global",
+      "parent": null,
+      "level": 0,
+      "lft": 1,
+      "tree_id": 90,
+      "bbox_x0": -180,
+      "bbox_x1": 180,
+      "bbox_y0": -90,
+      "bbox_y1": 90
+    }
+  },
+  {
+    "pk": 2,
+    "model": "base.region",
+    "fields": {
+      "rght": 212,
+      "code": "NAM",
+      "name": "North America",
+      "parent": 254,
+      "level": 2,
+      "lft": 203,
+      "tree_id": 90,
+      "bbox_x0": -167.276413,
+      "bbox_x1": -52.23304,
+      "bbox_y0": 5.49955,
+      "bbox_y1": 83.162102
+    }
+  },
+  {
+    "pk": 3,
+    "model": "base.region",
+    "fields": {
+      "rght": 202,
+      "code": "CAM",
+      "name": "Central America",
+      "parent": 254,
+      "level": 2,
+      "lft": 187,
+      "tree_id": 90,
+      "bbox_x0": -118.867172,
+      "bbox_x1": -66.869827,
+      "bbox_y0": -4.23048,
+      "bbox_y1": 32.71862
+    }
+  },
+  {
+    "pk": 4,
+    "model": "base.region",
+    "fields": {
+      "rght": 242,
+      "code": "SAM",
+      "name": "South America",
+      "parent": 254,
+      "level": 2,
+      "lft": 213,
+      "tree_id": 90,
+      "bbox_x0": -109.47493,
+      "bbox_x1": -26.33247,
+      "bbox_y0": -59.450451,
+      "bbox_y1": 13.39029
+    }
+  },
+  {
+    "pk": 5,
+    "model": "base.region",
+    "fields": {
+      "rght": 433,
+      "code": "EUR",
+      "name": "Europe",
+      "parent": null,
+      "level": 1,
+      "lft": 318,
+      "tree_id": 90,
+      "bbox_x0": -31.266001,
+      "bbox_x1": 39.869301,
+      "bbox_y0": 27.636311,
+      "bbox_y1": 81.008797
+    }
+  },
+  {
+    "pk": 6,
+    "model": "base.region",
+    "fields": {
+      "rght": 317,
+      "code": "ASI",
+      "name": "Asia",
+      "parent": null,
+      "level": 1,
+      "lft": 246,
+      "tree_id": 90,
+      "bbox_x0": 19.6381,
+      "bbox_x1": 180,
+      "bbox_y0": -12.56111,
+      "bbox_y1": 82.50045
+    }
+  },
+  {
+    "pk": 7,
+    "model": "base.region",
+    "fields": {
+      "rght": 316,
+      "code": "SEA",
+      "name": "Southeast Asia",
+      "parent": 6,
+      "level": 2,
+      "lft": 293,
+      "tree_id": 90,
+      "bbox_x0": 68.0327,
+      "bbox_x1": 141.021805,
+      "bbox_y0": -12.56111,
+      "bbox_y1": 35.504211
+    }
+  },
+  {
+    "pk": 8,
+    "model": "base.region",
+    "fields": {
+      "rght": 260,
+      "code": "CTA",
+      "name": "Central Asia",
+      "parent": 6,
+      "level": 2,
+      "lft": 247,
+      "tree_id": 90,
+      "bbox_x0": 44.236641,
+      "bbox_x1": 90.076767,
+      "bbox_y0": 33.890511,
+      "bbox_y1": 54.845139
+    }
+  },
+  {
+    "pk": 9,
+    "model": "base.region",
+    "fields": {
+      "rght": 292,
+      "code": "SAS",
+      "name": "South Asia",
+      "parent": 6,
+      "level": 2,
+      "lft": 277,
+      "tree_id": 90,
+      "bbox_x0": 19.6381,
+      "bbox_x1": 180,
+      "bbox_y0": -12.56111,
+      "bbox_y1": 82.50045
+    }
+  },
+  {
+    "pk": 10,
+    "model": "base.region",
+    "fields": {
+      "rght": 127,
+      "code": "AFR",
+      "name": "Africa",
+      "parent": null,
+      "level": 1,
+      "lft": 2,
+      "tree_id": 90,
+      "bbox_x0": -25.35874,
+      "bbox_x1": 63.525379,
+      "bbox_y0": -46.900452,
+      "bbox_y1": 37.56712
+    }
+  },
+  {
+    "pk": 11,
+    "model": "base.region",
+    "fields": {
+      "rght": 64,
+      "code": "NAF",
+      "name": "North Africa",
+      "parent": 10,
+      "level": 2,
+      "lft": 49,
+      "tree_id": 90,
+      "bbox_x0": -17.10317,
+      "bbox_x1": 38.833801,
+      "bbox_y0": 3.48639,
+      "bbox_y1": 37.56712
+    }
+  },
+  {
+    "pk": 12,
+    "model": "base.region",
+    "fields": {
+      "rght": 48,
+      "code": "EAF",
+      "name": "East Africa",
+      "parent": 10,
+      "level": 2,
+      "lft": 13,
+      "tree_id": 90,
+      "bbox_x0": 22.855089,
+      "bbox_x1": 63.94656,
+      "bbox_y0": -25.84763,
+      "bbox_y1": 17.467039
+    }
+  },
+  {
+    "pk": 13,
+    "model": "base.region",
+    "fields": {
+      "rght": 126,
+      "code": "WAF",
+      "name": "West Africa",
+      "parent": 10,
+      "level": 2,
+      "lft": 83,
+      "tree_id": 90,
+      "bbox_x0": -26.758421,
+      "bbox_x1": 24.002661,
+      "bbox_y0": -9.29925,
+      "bbox_y1": 27.702801
+    }
+  },
+  {
+    "pk": 14,
+    "model": "base.region",
+    "fields": {
+      "rght": 82,
+      "code": "SAF",
+      "name": "Southern Africa",
+      "parent": 10,
+      "level": 2,
+      "lft": 65,
+      "tree_id": 90,
+      "bbox_x0": 8.93107,
+      "bbox_x1": 42.74847,
+      "bbox_y0": -35.507481,
+      "bbox_y1": -13.27553
+    }
+  },
+  {
+    "pk": 15,
+    "model": "base.region",
+    "fields": {
+      "rght": 463,
+      "code": "MES",
+      "name": "Middle East",
+      "parent": null,
+      "level": 1,
+      "lft": 434,
+      "tree_id": 90,
+      "bbox_x0": 24.698099,
+      "bbox_x1": 63.317459,
+      "bbox_y0": 12.111,
+      "bbox_y1": 42.10751
+    }
+  },
+  {
+    "pk": 16,
+    "model": "base.region",
+    "fields": {
+      "rght": 245,
+      "code": "ANT",
+      "name": "Antarctica",
+      "parent": null,
+      "level": 1,
+      "lft": 244,
+      "tree_id": 90,
+      "bbox_x0": -180,
+      "bbox_x1": 180,
+      "bbox_y0": -90,
+      "bbox_y1": -73
+    }
+  },
+  {
+    "pk": 17,
+    "model": "base.region",
+    "fields": {
+      "rght": 249,
+      "code": "AFG",
+      "name": "Afghanistan",
+      "parent": 8,
+      "level": 3,
+      "lft": 248,
+      "tree_id": 90,
+      "bbox_x0": 60.478439,
+      "bbox_x1": 74.879433,
+      "bbox_y0": 29.37747,
+      "bbox_y1": 38.483421
+    }
+  },
+  {
+    "pk": 18,
+    "model": "base.region",
+    "fields": {
+      "rght": 320,
+      "code": "ALA",
+      "name": "Aland Islands",
+      "parent": 5,
+      "level": 2,
+      "lft": 319,
+      "tree_id": 90,
+      "bbox_x0": 19.262711,
+      "bbox_x1": 21.324409,
+      "bbox_y0": 59.736301,
+      "bbox_y1": 60.665581
+    }
+  },
+  {
+    "pk": 19,
+    "model": "base.region",
+    "fields": {
+      "rght": 322,
+      "code": "ALB",
+      "name": "Albania",
+      "parent": 5,
+      "level": 2,
+      "lft": 321,
+      "tree_id": 90,
+      "bbox_x0": 19.28219,
+      "bbox_x1": 21.057819,
+      "bbox_y0": 39.644489,
+      "bbox_y1": 42.660801
+    }
+  },
+  {
+    "pk": 20,
+    "model": "base.region",
+    "fields": {
+      "rght": 51,
+      "code": "DZA",
+      "name": "Algeria",
+      "parent": 11,
+      "level": 3,
+      "lft": 50,
+      "tree_id": 90,
+      "bbox_x0": -8.67386,
+      "bbox_x1": 11.97955,
+      "bbox_y0": 18.96002,
+      "bbox_y1": 37.093731
+    }
+  },
+  {
+    "pk": 21,
+    "model": "base.region",
+    "fields": {
+      "rght": 466,
+      "code": "ASM",
+      "name": "American Samoa",
+      "parent": 256,
+      "level": 2,
+      "lft": 465,
+      "tree_id": 90,
+      "bbox_x0": -171.091873,
+      "bbox_x1": -169.416077,
+      "bbox_y0": -14.38247,
+      "bbox_y1": -11.04969
+    }
+  },
+  {
+    "pk": 22,
+    "model": "base.region",
+    "fields": {
+      "rght": 324,
+      "code": "AND",
+      "name": "Andorra",
+      "parent": 5,
+      "level": 2,
+      "lft": 323,
+      "tree_id": 90,
+      "bbox_x0": 1.41382,
+      "bbox_x1": 1.78659,
+      "bbox_y0": 42.42873,
+      "bbox_y1": 42.65601
+    }
+  },
+  {
+    "pk": 23,
+    "model": "base.region",
+    "fields": {
+      "rght": 85,
+      "code": "AGO",
+      "name": "Angola",
+      "parent": 13,
+      "level": 3,
+      "lft": 84,
+      "tree_id": 90,
+      "bbox_x0": 11.6792,
+      "bbox_x1": 24.082109,
+      "bbox_y0": -18.04207,
+      "bbox_y1": -4.37259
+    }
+  },
+  {
+    "pk": 24,
+    "model": "base.region",
+    "fields": {
+      "rght": 131,
+      "code": "AIA",
+      "name": "Anguilla",
+      "parent": 255,
+      "level": 3,
+      "lft": 130,
+      "tree_id": 90,
+      "bbox_x0": -63.434872,
+      "bbox_x1": -62.916199,
+      "bbox_y0": 18.149549,
+      "bbox_y1": 18.61278
+    }
+  },
+  {
+    "pk": 25,
+    "model": "base.region",
+    "fields": {
+      "rght": 133,
+      "code": "ATG",
+      "name": "Antigua and Barbuda",
+      "parent": 255,
+      "level": 3,
+      "lft": 132,
+      "tree_id": 90,
+      "bbox_x0": -62.352402,
+      "bbox_x1": -61.659081,
+      "bbox_y0": 16.927219,
+      "bbox_y1": 17.72938
+    }
+  },
+  {
+    "pk": 26,
+    "model": "base.region",
+    "fields": {
+      "rght": 215,
+      "code": "ARG",
+      "name": "Argentina",
+      "parent": 4,
+      "level": 3,
+      "lft": 214,
+      "tree_id": 90,
+      "bbox_x0": -73.577782,
+      "bbox_x1": -53.637539,
+      "bbox_y0": -55.057362,
+      "bbox_y1": -21.78126
+    }
+  },
+  {
+    "pk": 27,
+    "model": "base.region",
+    "fields": {
+      "rght": 326,
+      "code": "ARM",
+      "name": "Armenia",
+      "parent": 5,
+      "level": 2,
+      "lft": 325,
+      "tree_id": 90,
+      "bbox_x0": 43.449749,
+      "bbox_x1": 46.630039,
+      "bbox_y0": 38.830521,
+      "bbox_y1": 41.30183
+    }
+  },
+  {
+    "pk": 28,
+    "model": "base.region",
+    "fields": {
+      "rght": 135,
+      "code": "ABW",
+      "name": "Aruba",
+      "parent": 255,
+      "level": 3,
+      "lft": 134,
+      "tree_id": 90,
+      "bbox_x0": -70.0611,
+      "bbox_x1": -69.8669,
+      "bbox_y0": 12.4061,
+      "bbox_y1": 12.6306
+    }
+  },
+  {
+    "pk": 29,
+    "model": "base.region",
+    "fields": {
+      "rght": 468,
+      "code": "AUS",
+      "name": "Australia",
+      "parent": 256,
+      "level": 2,
+      "lft": 467,
+      "tree_id": 90,
+      "bbox_x0": 112.921112,
+      "bbox_x1": 159.278717,
+      "bbox_y0": -54.640301,
+      "bbox_y1": -9.22882
+    }
+  },
+  {
+    "pk": 30,
+    "model": "base.region",
+    "fields": {
+      "rght": 328,
+      "code": "AUT",
+      "name": "Austria",
+      "parent": 5,
+      "level": 2,
+      "lft": 327,
+      "tree_id": 90,
+      "bbox_x0": 9.53079,
+      "bbox_x1": 17.160749,
+      "bbox_y0": 46.372299,
+      "bbox_y1": 49.02071
+    }
+  },
+  {
+    "pk": 31,
+    "model": "base.region",
+    "fields": {
+      "rght": 330,
+      "code": "AZE",
+      "name": "Azerbaijan",
+      "parent": 5,
+      "level": 2,
+      "lft": 329,
+      "tree_id": 90,
+      "bbox_x0": 44.7719,
+      "bbox_x1": 50.6078,
+      "bbox_y0": 38.3970,
+      "bbox_y1": 41.9056
+    }
+  },
+  {
+    "pk": 32,
+    "model": "base.region",
+    "fields": {
+      "rght": 137,
+      "code": "BHS",
+      "name": "Bahamas",
+      "parent": 255,
+      "level": 3,
+      "lft": 136,
+      "tree_id": 90,
+      "bbox_x0": -80.499229,
+      "bbox_x1": -72.649513,
+      "bbox_y0": 20.916059,
+      "bbox_y1": 27.933781
+    }
+  },
+  {
+    "pk": 33,
+    "model": "base.region",
+    "fields": {
+      "rght": 436,
+      "code": "BHR",
+      "name": "Bahrain",
+      "parent": 15,
+      "level": 2,
+      "lft": 435,
+      "tree_id": 90,
+      "bbox_x0": 50.385799,
+      "bbox_x1": 50.828499,
+      "bbox_y0": 25.5422,
+      "bbox_y1": 26.292391
+    }
+  },
+  {
+    "pk": 34,
+    "model": "base.region",
+    "fields": {
+      "rght": 279,
+      "code": "BGD",
+      "name": "Bangladesh",
+      "parent": 9,
+      "level": 3,
+      "lft": 278,
+      "tree_id": 90,
+      "bbox_x0": 88.028198,
+      "bbox_x1": 92.673599,
+      "bbox_y0": 20.585199,
+      "bbox_y1": 26.631701
+    }
+  },
+  {
+    "pk": 35,
+    "model": "base.region",
+    "fields": {
+      "rght": 139,
+      "code": "BRB",
+      "name": "Barbados",
+      "parent": 255,
+      "level": 3,
+      "lft": 138,
+      "tree_id": 90,
+      "bbox_x0": -59.648918,
+      "bbox_x1": -59.420368,
+      "bbox_y0": 13.03984,
+      "bbox_y1": 13.32725
+    }
+  },
+  {
+    "pk": 36,
+    "model": "base.region",
+    "fields": {
+      "rght": 332,
+      "code": "BLR",
+      "name": "Belarus",
+      "parent": 5,
+      "level": 2,
+      "lft": 331,
+      "tree_id": 90,
+      "bbox_x0": 23.17679,
+      "bbox_x1": 32.77071,
+      "bbox_y0": 51.256401,
+      "bbox_y1": 56.16571
+    }
+  },
+  {
+    "pk": 37,
+    "model": "base.region",
+    "fields": {
+      "rght": 334,
+      "code": "BEL",
+      "name": "Belgium",
+      "parent": 5,
+      "level": 2,
+      "lft": 333,
+      "tree_id": 90,
+      "bbox_x0": 2.54563,
+      "bbox_x1": 6.40791,
+      "bbox_y0": 49.496899,
+      "bbox_y1": 51.505081
+    }
+  },
+  {
+    "pk": 38,
+    "model": "base.region",
+    "fields": {
+      "rght": 189,
+      "code": "BLZ",
+      "name": "Belize",
+      "parent": 3,
+      "level": 3,
+      "lft": 188,
+      "tree_id": 90,
+      "bbox_x0": -89.224823,
+      "bbox_x1": -87.468132,
+      "bbox_y0": 15.8893,
+      "bbox_y1": 18.49655
+    }
+  },
+  {
+    "pk": 39,
+    "model": "base.region",
+    "fields": {
+      "rght": 87,
+      "code": "BEN",
+      "name": "Benin",
+      "parent": 13,
+      "level": 3,
+      "lft": 86,
+      "tree_id": 90,
+      "bbox_x0": 0.77456,
+      "bbox_x1": 3.8517,
+      "bbox_y0": 6.22574,
+      "bbox_y1": 12.41834
+    }
+  },
+  {
+    "pk": 40,
+    "model": "base.region",
+    "fields": {
+      "rght": 141,
+      "code": "BMU",
+      "name": "Bermuda",
+      "parent": 255,
+      "level": 3,
+      "lft": 140,
+      "tree_id": 90,
+      "bbox_x0": -64.896042,
+      "bbox_x1": -64.642952,
+      "bbox_y0": 32.230709,
+      "bbox_y1": 32.393829
+    }
+  },
+  {
+    "pk": 41,
+    "model": "base.region",
+    "fields": {
+      "rght": 281,
+      "code": "BTN",
+      "name": "Bhutan",
+      "parent": 9,
+      "level": 3,
+      "lft": 280,
+      "tree_id": 90,
+      "bbox_x0": 88.759521,
+      "bbox_x1": 92.125023,
+      "bbox_y0": 26.7075,
+      "bbox_y1": 28.3235
+    }
+  },
+  {
+    "pk": 42,
+    "model": "base.region",
+    "fields": {
+      "rght": 217,
+      "code": "BOL",
+      "name": "Bolivia",
+      "parent": 4,
+      "level": 3,
+      "lft": 216,
+      "tree_id": 90,
+      "bbox_x0": -69.640762,
+      "bbox_x1": -57.458092,
+      "bbox_y0": -22.89613,
+      "bbox_y1": -9.68056
+    }
+  },
+  {
+    "pk": 43,
+    "model": "base.region",
+    "fields": {
+      "rght": 336,
+      "code": "BIH",
+      "name": "Bosnia and Herzegovina",
+      "parent": 5,
+      "level": 2,
+      "lft": 335,
+      "tree_id": 90,
+      "bbox_x0": 15.74909,
+      "bbox_x1": 19.62907,
+      "bbox_y0": 42.56451,
+      "bbox_y1": 45.276001
+    }
+  },
+  {
+    "pk": 44,
+    "model": "base.region",
+    "fields": {
+      "rght": 67,
+      "code": "BWA",
+      "name": "Botswana",
+      "parent": 14,
+      "level": 3,
+      "lft": 66,
+      "tree_id": 90,
+      "bbox_x0": 19.999531,
+      "bbox_x1": 29.360781,
+      "bbox_y0": -26.90724,
+      "bbox_y1": -17.780809
+    }
+  },
+  {
+    "pk": 45,
+    "model": "base.region",
+    "fields": {
+      "rght": 219,
+      "code": "BRA",
+      "name": "Brazil",
+      "parent": 4,
+      "level": 3,
+      "lft": 218,
+      "tree_id": 90,
+      "bbox_x0": -73.985527,
+      "bbox_x1": -28.839041,
+      "bbox_y0": -33.750702,
+      "bbox_y1": 5.26486
+    }
+  },
+  {
+    "pk": 46,
+    "model": "base.region",
+    "fields": {
+      "rght": 143,
+      "code": "VGB",
+      "name": "British Virgin Islands",
+      "parent": 255,
+      "level": 3,
+      "lft": 142,
+      "tree_id": 90,
+      "bbox_x0": -64.783012,
+      "bbox_x1": -64.268761,
+      "bbox_y0": 18.312731,
+      "bbox_y1": 18.757219
+    }
+  },
+  {
+    "pk": 47,
+    "model": "base.region",
+    "fields": {
+      "rght": 295,
+      "code": "BRN",
+      "name": "Brunei Darussalam",
+      "parent": 7,
+      "level": 3,
+      "lft": 294,
+      "tree_id": 90,
+      "bbox_x0": 114.071457,
+      "bbox_x1": 115.359451,
+      "bbox_y0": 4.00309,
+      "bbox_y1": 5.04717
+    }
+  },
+  {
+    "pk": 48,
+    "model": "base.region",
+    "fields": {
+      "rght": 338,
+      "code": "BGR",
+      "name": "Bulgaria",
+      "parent": 5,
+      "level": 2,
+      "lft": 337,
+      "tree_id": 90,
+      "bbox_x0": 22.35741,
+      "bbox_x1": 28.60882,
+      "bbox_y0": 41.235931,
+      "bbox_y1": 44.227261
+    }
+  },
+  {
+    "pk": 49,
+    "model": "base.region",
+    "fields": {
+      "rght": 89,
+      "code": "BFA",
+      "name": "Burkina Faso",
+      "parent": 13,
+      "level": 3,
+      "lft": 88,
+      "tree_id": 90,
+      "bbox_x0": -5.51891,
+      "bbox_x1": 2.40539,
+      "bbox_y0": 9.4011,
+      "bbox_y1": 15.08259
+    }
+  },
+  {
+    "pk": 50,
+    "model": "base.region",
+    "fields": {
+      "rght": 15,
+      "code": "BDI",
+      "name": "Burundi",
+      "parent": 12,
+      "level": 3,
+      "lft": 14,
+      "tree_id": 90,
+      "bbox_x0": 28.993071,
+      "bbox_x1": 30.847719,
+      "bbox_y0": -4.46571,
+      "bbox_y1": -2.31012
+    }
+  },
+  {
+    "pk": 51,
+    "model": "base.region",
+    "fields": {
+      "rght": 297,
+      "code": "KHM",
+      "name": "Cambodia",
+      "parent": 7,
+      "level": 3,
+      "lft": 296,
+      "tree_id": 90,
+      "bbox_x0": 102.340012,
+      "bbox_x1": 107.627724,
+      "bbox_y0": 9.28325,
+      "bbox_y1": 14.6864
+    }
+  },
+  {
+    "pk": 52,
+    "model": "base.region",
+    "fields": {
+      "rght": 91,
+      "code": "CMR",
+      "name": "Cameroon",
+      "parent": 13,
+      "level": 3,
+      "lft": 90,
+      "tree_id": 90,
+      "bbox_x0": 8.49477,
+      "bbox_x1": 16.19211,
+      "bbox_y0": 1.65254,
+      "bbox_y1": 13.07805
+    }
+  },
+  {
+    "pk": 53,
+    "model": "base.region",
+    "fields": {
+      "rght": 205,
+      "code": "CAN",
+      "name": "Canada",
+      "parent": 2,
+      "level": 3,
+      "lft": 204,
+      "tree_id": 90,
+      "bbox_x0": -141.002701,
+      "bbox_x1": -52.620201,
+      "bbox_y0": 41.681019,
+      "bbox_y1": 83.110619
+    }
+  },
+  {
+    "pk": 54,
+    "model": "base.region",
+    "fields": {
+      "rght": 93,
+      "code": "CPV",
+      "name": "Cape Verde",
+      "parent": 13,
+      "level": 3,
+      "lft": 92,
+      "tree_id": 90,
+      "bbox_x0": -25.35874,
+      "bbox_x1": -22.666201,
+      "bbox_y0": 14.80221,
+      "bbox_y1": 17.19717
+    }
+  },
+  {
+    "pk": 55,
+    "model": "base.region",
+    "fields": {
+      "rght": 145,
+      "code": "CYM",
+      "name": "Cayman Islands",
+      "parent": 255,
+      "level": 3,
+      "lft": 144,
+      "tree_id": 90,
+      "bbox_x0": -81.420593,
+      "bbox_x1": -79.722321,
+      "bbox_y0": 19.262659,
+      "bbox_y1": 19.75738
+    }
+  },
+  {
+    "pk": 56,
+    "model": "base.region",
+    "fields": {
+      "rght": 5,
+      "code": "CAF",
+      "name": "Central African Republic",
+      "parent": 257,
+      "level": 3,
+      "lft": 4,
+      "tree_id": 90,
+      "bbox_x0": 14.42009,
+      "bbox_x1": 27.463421,
+      "bbox_y0": 2.22051,
+      "bbox_y1": 11.00756
+    }
+  },
+  {
+    "pk": 57,
+    "model": "base.region",
+    "fields": {
+      "rght": 7,
+      "code": "TCD",
+      "name": "Chad",
+      "parent": 257,
+      "level": 3,
+      "lft": 6,
+      "tree_id": 90,
+      "bbox_x0": 13.47592,
+      "bbox_x1": 24.00161,
+      "bbox_y0": 7.44237,
+      "bbox_y1": 23.478239
+    }
+  },
+  {
+    "pk": 58,
+    "model": "base.region",
+    "fields": {
+      "rght": 340,
+      "code": "CIL",
+      "name": "Channel Islands",
+      "parent": 5,
+      "level": 2,
+      "lft": 339,
+      "tree_id": 90,
+      "bbox_x0": -2.67545,
+      "bbox_x1": -2.01129,
+      "bbox_y0": 49.16209,
+      "bbox_y1": 49.7393
+    }
+  },
+  {
+    "pk": 59,
+    "model": "base.region",
+    "fields": {
+      "rght": 221,
+      "code": "CHL",
+      "name": "Chile",
+      "parent": 4,
+      "level": 3,
+      "lft": 220,
+      "tree_id": 90,
+      "bbox_x0": -109.47493,
+      "bbox_x1": -66.417549,
+      "bbox_y0": -56.533779,
+      "bbox_y1": -17.507549
+    }
+  },
+  {
+    "pk": 60,
+    "model": "base.region",
+    "fields": {
+      "rght": 263,
+      "code": "CHN",
+      "name": "China",
+      "parent": 258,
+      "level": 3,
+      "lft": 262,
+      "tree_id": 90,
+      "bbox_x0": 73.557701,
+      "bbox_x1": 134.773605,
+      "bbox_y0": 15.77539,
+      "bbox_y1": 53.5606
+    }
+  },
+  {
+    "pk": 61,
+    "model": "base.region",
+    "fields": {
+      "rght": 265,
+      "code": "HKG",
+      "name": "China - Hong Kong",
+      "parent": 258,
+      "level": 3,
+      "lft": 264,
+      "tree_id": 90,
+      "bbox_x0": 113.835083,
+      "bbox_x1": 114.441788,
+      "bbox_y0": 22.153549,
+      "bbox_y1": 22.56204
+    }
+  },
+  {
+    "pk": 62,
+    "model": "base.region",
+    "fields": {
+      "rght": 267,
+      "code": "MAC",
+      "name": "China - Macao",
+      "parent": 258,
+      "level": 3,
+      "lft": 266,
+      "tree_id": 90,
+      "bbox_x0": 113.528351,
+      "bbox_x1": 113.598297,
+      "bbox_y0": 22.10977,
+      "bbox_y1": 22.21697
+    }
+  },
+  {
+    "pk": 63,
+    "model": "base.region",
+    "fields": {
+      "rght": 223,
+      "code": "COL",
+      "name": "Colombia",
+      "parent": 4,
+      "level": 3,
+      "lft": 222,
+      "tree_id": 90,
+      "bbox_x0": -81.728111,
+      "bbox_x1": -66.869827,
+      "bbox_y0": -4.23048,
+      "bbox_y1": 13.39029
+    }
+  },
+  {
+    "pk": 64,
+    "model": "base.region",
+    "fields": {
+      "rght": 17,
+      "code": "COM",
+      "name": "Comoros",
+      "parent": 12,
+      "level": 3,
+      "lft": 16,
+      "tree_id": 90,
+      "bbox_x0": 43.215778,
+      "bbox_x1": 44.538219,
+      "bbox_y0": -12.41382,
+      "bbox_y1": -11.36238
+    }
+  },
+  {
+    "pk": 65,
+    "model": "base.region",
+    "fields": {
+      "rght": 9,
+      "code": "COG",
+      "name": "Congo",
+      "parent": 257,
+      "level": 3,
+      "lft": 8,
+      "tree_id": 90,
+      "bbox_x0": 11.205,
+      "bbox_x1": 18.64983,
+      "bbox_y0": -5.02831,
+      "bbox_y1": 3.70308
+    }
+  },
+  {
+    "pk": 66,
+    "model": "base.region",
+    "fields": {
+      "rght": 470,
+      "code": "COK",
+      "name": "Cook Islands",
+      "parent": 256,
+      "level": 2,
+      "lft": 469,
+      "tree_id": 90,
+      "bbox_x0": -165.858093,
+      "bbox_x1": -157.312119,
+      "bbox_y0": -21.94416,
+      "bbox_y1": -8.94402
+    }
+  },
+  {
+    "pk": 67,
+    "model": "base.region",
+    "fields": {
+      "rght": 191,
+      "code": "CRI",
+      "name": "Costa Rica",
+      "parent": 3,
+      "level": 3,
+      "lft": 190,
+      "tree_id": 90,
+      "bbox_x0": -87.083778,
+      "bbox_x1": -82.556,
+      "bbox_y0": 5.49955,
+      "bbox_y1": 11.21681
+    }
+  },
+  {
+    "pk": 68,
+    "model": "base.region",
+    "fields": {
+      "rght": 95,
+      "code": "CIV",
+      "name": "Cote d'Ivoire",
+      "parent": 13,
+      "level": 3,
+      "lft": 94,
+      "tree_id": 90,
+      "bbox_x0": -8.6017249,
+      "bbox_x1": -2.4930309,
+      "bbox_y0": 4.1642077,
+      "bbox_y1": 10.740015
+    }
+  },
+  {
+    "pk": 69,
+    "model": "base.region",
+    "fields": {
+      "rght": 342,
+      "code": "HRV",
+      "name": "Croatia",
+      "parent": 5,
+      "level": 2,
+      "lft": 341,
+      "tree_id": 90,
+      "bbox_x0": 13.48972,
+      "bbox_x1": 19.44722,
+      "bbox_y0": 42.392208,
+      "bbox_y1": 46.554981
+    }
+  },
+  {
+    "pk": 70,
+    "model": "base.region",
+    "fields": {
+      "rght": 147,
+      "code": "CUB",
+      "name": "Cuba",
+      "parent": 255,
+      "level": 3,
+      "lft": 146,
+      "tree_id": 90,
+      "bbox_x0": -84.957428,
+      "bbox_x1": -74.131783,
+      "bbox_y0": 19.828079,
+      "bbox_y1": 23.283779
+    }
+  },
+  {
+    "pk": 71,
+    "model": "base.region",
+    "fields": {
+      "rght": 344,
+      "code": "CYP",
+      "name": "Cyprus",
+      "parent": 5,
+      "level": 2,
+      "lft": 343,
+      "tree_id": 90,
+      "bbox_x0": 32.27309,
+      "bbox_x1": 34.597919,
+      "bbox_y0": 34.563511,
+      "bbox_y1": 35.701542
+    }
+  },
+  {
+    "pk": 72,
+    "model": "base.region",
+    "fields": {
+      "rght": 346,
+      "code": "CZE",
+      "name": "Czech Republic",
+      "parent": 5,
+      "level": 2,
+      "lft": 345,
+      "tree_id": 90,
+      "bbox_x0": 12.0905901,
+      "bbox_x1": 18.859216,
+      "bbox_y0": 48.5518144,
+      "bbox_y1": 51.0557036
+    }
+  },
+  {
+    "pk": 73,
+    "model": "base.region",
+    "fields": {
+      "rght": 269,
+      "code": "PRK",
+      "name": "Democratic People's Republic of Korea",
+      "parent": 258,
+      "level": 3,
+      "lft": 268,
+      "tree_id": 90,
+      "bbox_x0": 124.182739,
+      "bbox_x1": 130.674713,
+      "bbox_y0": 37.632881,
+      "bbox_y1": 43.006001
+    }
+  },
+  {
+    "pk": 74,
+    "model": "base.region",
+    "fields": {
+      "rght": 11,
+      "code": "COD",
+      "name": "Democratic Republic of the Congo",
+      "parent": 257,
+      "level": 3,
+      "lft": 10,
+      "tree_id": 90,
+      "bbox_x0": 12.20663,
+      "bbox_x1": 31.30591,
+      "bbox_y0": -13.45567,
+      "bbox_y1": 5.38609
+    }
+  },
+  {
+    "pk": 75,
+    "model": "base.region",
+    "fields": {
+      "rght": 348,
+      "code": "DNK",
+      "name": "Denmark",
+      "parent": 5,
+      "level": 2,
+      "lft": 347,
+      "tree_id": 90,
+      "bbox_x0": 8.07472,
+      "bbox_x1": 15.19324,
+      "bbox_y0": 54.559132,
+      "bbox_y1": 57.751949
+    }
+  },
+  {
+    "pk": 76,
+    "model": "base.region",
+    "fields": {
+      "rght": 19,
+      "code": "DJI",
+      "name": "Djibouti",
+      "parent": 12,
+      "level": 3,
+      "lft": 18,
+      "tree_id": 90,
+      "bbox_x0": 41.773441,
+      "bbox_x1": 43.450459,
+      "bbox_y0": 10.90991,
+      "bbox_y1": 12.70683
+    }
+  },
+  {
+    "pk": 77,
+    "model": "base.region",
+    "fields": {
+      "rght": 149,
+      "code": "DMA",
+      "name": "Dominica",
+      "parent": 255,
+      "level": 3,
+      "lft": 148,
+      "tree_id": 90,
+      "bbox_x0": -61.4841,
+      "bbox_x1": -61.244148,
+      "bbox_y0": 15.20168,
+      "bbox_y1": 15.6318
+    }
+  },
+  {
+    "pk": 78,
+    "model": "base.region",
+    "fields": {
+      "rght": 151,
+      "code": "DOM",
+      "name": "Dominican Republic",
+      "parent": 255,
+      "level": 3,
+      "lft": 150,
+      "tree_id": 90,
+      "bbox_x0": -72.003479,
+      "bbox_x1": -68.319992,
+      "bbox_y0": 17.469299,
+      "bbox_y1": 19.92985
+    }
+  },
+  {
+    "pk": 79,
+    "model": "base.region",
+    "fields": {
+      "rght": 225,
+      "code": "ECU",
+      "name": "Ecuador",
+      "parent": 4,
+      "level": 3,
+      "lft": 224,
+      "tree_id": 90,
+      "bbox_x0": -91.66124,
+      "bbox_x1": -75.200073,
+      "bbox_y0": -5.01734,
+      "bbox_y1": 1.45421
+    }
+  },
+  {
+    "pk": 80,
+    "model": "base.region",
+    "fields": {
+      "rght": 53,
+      "code": "EGY",
+      "name": "Egypt",
+      "parent": 11,
+      "level": 3,
+      "lft": 52,
+      "tree_id": 90,
+      "bbox_x0": 24.698099,
+      "bbox_x1": 36.89468,
+      "bbox_y0": 22,
+      "bbox_y1": 31.674179
+    }
+  },
+  {
+    "pk": 81,
+    "model": "base.region",
+    "fields": {
+      "rght": 193,
+      "code": "SLV",
+      "name": "El Salvador",
+      "parent": 3,
+      "level": 3,
+      "lft": 192,
+      "tree_id": 90,
+      "bbox_x0": -90.12867,
+      "bbox_x1": -87.682869,
+      "bbox_y0": 13.14867,
+      "bbox_y1": 14.44506
+    }
+  },
+  {
+    "pk": 82,
+    "model": "base.region",
+    "fields": {
+      "rght": 97,
+      "code": "GNQ",
+      "name": "Equatorial Guinea",
+      "parent": 13,
+      "level": 3,
+      "lft": 96,
+      "tree_id": 90,
+      "bbox_x0": 5.60236,
+      "bbox_x1": 11.33572,
+      "bbox_y0": -1.48378,
+      "bbox_y1": 3.78597
+    }
+  },
+  {
+    "pk": 83,
+    "model": "base.region",
+    "fields": {
+      "rght": 21,
+      "code": "ERI",
+      "name": "Eritrea",
+      "parent": 12,
+      "level": 3,
+      "lft": 20,
+      "tree_id": 90,
+      "bbox_x0": 36.43877,
+      "bbox_x1": 43.14864,
+      "bbox_y0": 12.35956,
+      "bbox_y1": 18.00308
+    }
+  },
+  {
+    "pk": 84,
+    "model": "base.region",
+    "fields": {
+      "rght": 350,
+      "code": "EST",
+      "name": "Estonia",
+      "parent": 5,
+      "level": 2,
+      "lft": 349,
+      "tree_id": 90,
+      "bbox_x0": 21.771851,
+      "bbox_x1": 28.20989,
+      "bbox_y0": 57.509312,
+      "bbox_y1": 59.685749
+    }
+  },
+  {
+    "pk": 85,
+    "model": "base.region",
+    "fields": {
+      "rght": 23,
+      "code": "ETH",
+      "name": "Ethiopia",
+      "parent": 12,
+      "level": 3,
+      "lft": 22,
+      "tree_id": 90,
+      "bbox_x0": 32.99992,
+      "bbox_x1": 47.986172,
+      "bbox_y0": 3.40242,
+      "bbox_y1": 14.89218
+    }
+  },
+  {
+    "pk": 86,
+    "model": "base.region",
+    "fields": {
+      "rght": 352,
+      "code": "FRO",
+      "name": "Faeroe Islands",
+      "parent": 5,
+      "level": 2,
+      "lft": 351,
+      "tree_id": 90,
+      "bbox_x0": -7.68124,
+      "bbox_x1": -6.25861,
+      "bbox_y0": 61.394932,
+      "bbox_y1": 62.400742
+    }
+  },
+  {
+    "pk": 87,
+    "model": "base.region",
+    "fields": {
+      "rght": 227,
+      "code": "FLK",
+      "name": "Falkland Islands (Malvinas)",
+      "parent": 4,
+      "level": 3,
+      "lft": 226,
+      "tree_id": 90,
+      "bbox_x0": -61.43404,
+      "bbox_x1": -57.712479,
+      "bbox_y0": -52.900581,
+      "bbox_y1": -50.966221
+    }
+  },
+  {
+    "pk": 88,
+    "model": "base.region",
+    "fields": {
+      "rght": 472,
+      "code": "FJI",
+      "name": "Fiji",
+      "parent": 256,
+      "level": 2,
+      "lft": 471,
+      "tree_id": 90,
+      "bbox_x0": 174.866196,
+      "bbox_x1": -178.203156,
+      "bbox_y0": -21.01712,
+      "bbox_y1": -12.46622
+    }
+  },
+  {
+    "pk": 89,
+    "model": "base.region",
+    "fields": {
+      "rght": 354,
+      "code": "FIN",
+      "name": "Finland",
+      "parent": 5,
+      "level": 2,
+      "lft": 353,
+      "tree_id": 90,
+      "bbox_x0": 20.548571,
+      "bbox_x1": 31.586201,
+      "bbox_y0": 59.764881,
+      "bbox_y1": 70.092308
+    }
+  },
+  {
+    "pk": 90,
+    "model": "base.region",
+    "fields": {
+      "rght": 356,
+      "code": "FRA",
+      "name": "France",
+      "parent": 5,
+      "level": 2,
+      "lft": 355,
+      "tree_id": 90,
+      "bbox_x0": -5.1406,
+      "bbox_x1": 9.55932,
+      "bbox_y0": 41.33374,
+      "bbox_y1": 51.089062
+    }
+  },
+  {
+    "pk": 91,
+    "model": "base.region",
+    "fields": {
+      "rght": 229,
+      "code": "GUF",
+      "name": "French Guiana",
+      "parent": 4,
+      "level": 3,
+      "lft": 228,
+      "tree_id": 90,
+      "bbox_x0": -54.542511,
+      "bbox_x1": -51.613941,
+      "bbox_y0": 2.12709,
+      "bbox_y1": 5.77649
+    }
+  },
+  {
+    "pk": 92,
+    "model": "base.region",
+    "fields": {
+      "rght": 474,
+      "code": "PYF",
+      "name": "French Polynesia",
+      "parent": 256,
+      "level": 2,
+      "lft": 473,
+      "tree_id": 90,
+      "bbox_x0": -154.700485,
+      "bbox_x1": -108.87291,
+      "bbox_y0": -27.65357,
+      "bbox_y1": 10.35983
+    }
+  },
+  {
+    "pk": 93,
+    "model": "base.region",
+    "fields": {
+      "rght": 99,
+      "code": "GAB",
+      "name": "Gabon",
+      "parent": 13,
+      "level": 3,
+      "lft": 98,
+      "tree_id": 90,
+      "bbox_x0": 8.69547,
+      "bbox_x1": 14.50234,
+      "bbox_y0": -3.9788,
+      "bbox_y1": 2.32261
+    }
+  },
+  {
+    "pk": 94,
+    "model": "base.region",
+    "fields": {
+      "rght": 101,
+      "code": "GMB",
+      "name": "Gambia",
+      "parent": 13,
+      "level": 3,
+      "lft": 100,
+      "tree_id": 90,
+      "bbox_x0": -16.82506,
+      "bbox_x1": -13.7978,
+      "bbox_y0": 13.06425,
+      "bbox_y1": 13.82657
+    }
+  },
+  {
+    "pk": 95,
+    "model": "base.region",
+    "fields": {
+      "rght": 358,
+      "code": "GEO",
+      "name": "Georgia",
+      "parent": 5,
+      "level": 2,
+      "lft": 357,
+      "tree_id": 90,
+      "bbox_x0": 40.01022,
+      "bbox_x1": 46.721359,
+      "bbox_y0": 41.038502,
+      "bbox_y1": 43.584549
+    }
+  },
+  {
+    "pk": 96,
+    "model": "base.region",
+    "fields": {
+      "rght": 360,
+      "code": "DEU",
+      "name": "Germany",
+      "parent": 5,
+      "level": 2,
+      "lft": 359,
+      "tree_id": 90,
+      "bbox_x0": 5.86624,
+      "bbox_x1": 15.04205,
+      "bbox_y0": 47.27021,
+      "bbox_y1": 55.05814
+    }
+  },
+  {
+    "pk": 97,
+    "model": "base.region",
+    "fields": {
+      "rght": 103,
+      "code": "GHA",
+      "name": "Ghana",
+      "parent": 13,
+      "level": 3,
+      "lft": 102,
+      "tree_id": 90,
+      "bbox_x0": -3.25542,
+      "bbox_x1": 1.19178,
+      "bbox_y0": 4.73672,
+      "bbox_y1": 11.1733
+    }
+  },
+  {
+    "pk": 98,
+    "model": "base.region",
+    "fields": {
+      "rght": 362,
+      "code": "GIB",
+      "name": "Gibraltar",
+      "parent": 5,
+      "level": 2,
+      "lft": 361,
+      "tree_id": 90,
+      "bbox_x0": -5.3579,
+      "bbox_x1": -5.33867,
+      "bbox_y0": 36.108219,
+      "bbox_y1": 36.15593
+    }
+  },
+  {
+    "pk": 99,
+    "model": "base.region",
+    "fields": {
+      "rght": 364,
+      "code": "GRC",
+      "name": "Greece",
+      "parent": 5,
+      "level": 2,
+      "lft": 363,
+      "tree_id": 90,
+      "bbox_x0": 19.37431,
+      "bbox_x1": 29.70056,
+      "bbox_y0": 34.809502,
+      "bbox_y1": 41.757111
+    }
+  },
+  {
+    "pk": 100,
+    "model": "base.region",
+    "fields": {
+      "rght": 207,
+      "code": "GRL",
+      "name": "Greenland",
+      "parent": 2,
+      "level": 3,
+      "lft": 206,
+      "tree_id": 90,
+      "bbox_x0": -73.263474,
+      "bbox_x1": -11.31232,
+      "bbox_y0": 59.777271,
+      "bbox_y1": 83.627419
+    }
+  },
+  {
+    "pk": 101,
+    "model": "base.region",
+    "fields": {
+      "rght": 153,
+      "code": "GRD",
+      "name": "Grenada",
+      "parent": 255,
+      "level": 3,
+      "lft": 152,
+      "tree_id": 90,
+      "bbox_x0": -61.79998,
+      "bbox_x1": -61.376362,
+      "bbox_y0": 11.98288,
+      "bbox_y1": 12.5415
+    }
+  },
+  {
+    "pk": 102,
+    "model": "base.region",
+    "fields": {
+      "rght": 155,
+      "code": "GLP",
+      "name": "Guadeloupe",
+      "parent": 255,
+      "level": 3,
+      "lft": 154,
+      "tree_id": 90,
+      "bbox_x0": -61.807159,
+      "bbox_x1": -61,
+      "bbox_y0": 15.83097,
+      "bbox_y1": 16.51684
+    }
+  },
+  {
+    "pk": 103,
+    "model": "base.region",
+    "fields": {
+      "rght": 476,
+      "code": "GUM",
+      "name": "Guam",
+      "parent": 256,
+      "level": 2,
+      "lft": 475,
+      "tree_id": 90,
+      "bbox_x0": 144.619263,
+      "bbox_x1": 144.953995,
+      "bbox_y0": 13.24059,
+      "bbox_y1": 13.65232
+    }
+  },
+  {
+    "pk": 104,
+    "model": "base.region",
+    "fields": {
+      "rght": 195,
+      "code": "GTM",
+      "name": "Guatemala",
+      "parent": 3,
+      "level": 3,
+      "lft": 194,
+      "tree_id": 90,
+      "bbox_x0": -92.241432,
+      "bbox_x1": -88.22319,
+      "bbox_y0": 13.7373,
+      "bbox_y1": 17.815201
+    }
+  },
+  {
+    "pk": 105,
+    "model": "base.region",
+    "fields": {
+      "rght": 366,
+      "code": "GGY",
+      "name": "Guernsey",
+      "parent": 5,
+      "level": 2,
+      "lft": 365,
+      "tree_id": 90,
+      "bbox_x0": -2.67545,
+      "bbox_x1": -2.16382,
+      "bbox_y0": 49.405762,
+      "bbox_y1": 49.7393
+    }
+  },
+  {
+    "pk": 106,
+    "model": "base.region",
+    "fields": {
+      "rght": 105,
+      "code": "GIN",
+      "name": "Guinea",
+      "parent": 13,
+      "level": 3,
+      "lft": 104,
+      "tree_id": 90,
+      "bbox_x0": -15.08625,
+      "bbox_x1": -7.64106,
+      "bbox_y0": 7.19355,
+      "bbox_y1": 12.67621
+    }
+  },
+  {
+    "pk": 107,
+    "model": "base.region",
+    "fields": {
+      "rght": 107,
+      "code": "GNB",
+      "name": "Guinea-Bissau",
+      "parent": 13,
+      "level": 3,
+      "lft": 106,
+      "tree_id": 90,
+      "bbox_x0": -16.717529,
+      "bbox_x1": -13.63652,
+      "bbox_y0": 10.85997,
+      "bbox_y1": 12.68078
+    }
+  },
+  {
+    "pk": 108,
+    "model": "base.region",
+    "fields": {
+      "rght": 231,
+      "code": "GUY",
+      "name": "Guyana",
+      "parent": 4,
+      "level": 3,
+      "lft": 230,
+      "tree_id": 90,
+      "bbox_x0": -61.396271,
+      "bbox_x1": -56.480251,
+      "bbox_y0": 1.17508,
+      "bbox_y1": 8.55756
+    }
+  },
+  {
+    "pk": 109,
+    "model": "base.region",
+    "fields": {
+      "rght": 157,
+      "code": "HTI",
+      "name": "Haiti",
+      "parent": 255,
+      "level": 3,
+      "lft": 156,
+      "tree_id": 90,
+      "bbox_x0": -74.478592,
+      "bbox_x1": -71.61335,
+      "bbox_y0": 18.02103,
+      "bbox_y1": 20.08782
+    }
+  },
+  {
+    "pk": 110,
+    "model": "base.region",
+    "fields": {
+      "rght": 368,
+      "code": "VAT",
+      "name": "Holy See (Vatican City)",
+      "parent": 5,
+      "level": 2,
+      "lft": 367,
+      "tree_id": 90,
+      "bbox_x0": 12.44584,
+      "bbox_x1": 12.45842,
+      "bbox_y0": 41.900211,
+      "bbox_y1": 41.907459
+    }
+  },
+  {
+    "pk": 111,
+    "model": "base.region",
+    "fields": {
+      "rght": 197,
+      "code": "HND",
+      "name": "Honduras",
+      "parent": 3,
+      "level": 3,
+      "lft": 196,
+      "tree_id": 90,
+      "bbox_x0": -89.350792,
+      "bbox_x1": -82.499527,
+      "bbox_y0": 12.98241,
+      "bbox_y1": 17.450451
+    }
+  },
+  {
+    "pk": 112,
+    "model": "base.region",
+    "fields": {
+      "rght": 370,
+      "code": "HUN",
+      "name": "Hungary",
+      "parent": 5,
+      "level": 2,
+      "lft": 369,
+      "tree_id": 90,
+      "bbox_x0": 16.11335,
+      "bbox_x1": 22.89657,
+      "bbox_y0": 45.737061,
+      "bbox_y1": 48.585258
+    }
+  },
+  {
+    "pk": 113,
+    "model": "base.region",
+    "fields": {
+      "rght": 372,
+      "code": "ISL",
+      "name": "Iceland",
+      "parent": 5,
+      "level": 2,
+      "lft": 371,
+      "tree_id": 90,
+      "bbox_x0": -24.54652,
+      "bbox_x1": -13.49416,
+      "bbox_y0": 63.295952,
+      "bbox_y1": 66.566193
+    }
+  },
+  {
+    "pk": 114,
+    "model": "base.region",
+    "fields": {
+      "rght": 283,
+      "code": "IND",
+      "name": "India",
+      "parent": 9,
+      "level": 3,
+      "lft": 282,
+      "tree_id": 90,
+      "bbox_x0": 68.032318,
+      "bbox_x1": 97.403023,
+      "bbox_y0": 6.7471,
+      "bbox_y1": 36.261688
+    }
+  },
+  {
+    "pk": 115,
+    "model": "base.region",
+    "fields": {
+      "rght": 299,
+      "code": "IDN",
+      "name": "Indonesia",
+      "parent": 7,
+      "level": 3,
+      "lft": 298,
+      "tree_id": 90,
+      "bbox_x0": 94.969833,
+      "bbox_x1": 141.021805,
+      "bbox_y0": -11.00485,
+      "bbox_y1": 6.07573
+    }
+  },
+  {
+    "pk": 116,
+    "model": "base.region",
+    "fields": {
+      "rght": 438,
+      "code": "IRN",
+      "name": "Iran",
+      "parent": 15,
+      "level": 2,
+      "lft": 437,
+      "tree_id": 90,
+      "bbox_x0": 44.047249,
+      "bbox_x1": 63.317459,
+      "bbox_y0": 25.064079,
+      "bbox_y1": 39.777222
+    }
+  },
+  {
+    "pk": 117,
+    "model": "base.region",
+    "fields": {
+      "rght": 440,
+      "code": "IRQ",
+      "name": "Iraq",
+      "parent": 15,
+      "level": 2,
+      "lft": 439,
+      "tree_id": 90,
+      "bbox_x0": 38.804001,
+      "bbox_x1": 48.575699,
+      "bbox_y0": 29.103001,
+      "bbox_y1": 37.378052
+    }
+  },
+  {
+    "pk": 118,
+    "model": "base.region",
+    "fields": {
+      "rght": 374,
+      "code": "IRL",
+      "name": "Ireland",
+      "parent": 5,
+      "level": 2,
+      "lft": 373,
+      "tree_id": 90,
+      "bbox_x0": -10.61834,
+      "bbox_x1": -5.9975,
+      "bbox_y0": 51.424511,
+      "bbox_y1": 55.436211
+    }
+  },
+  {
+    "pk": 119,
+    "model": "base.region",
+    "fields": {
+      "rght": 376,
+      "code": "IMN",
+      "name": "Isle of Man",
+      "parent": 5,
+      "level": 2,
+      "lft": 375,
+      "tree_id": 90,
+      "bbox_x0": -4.83018,
+      "bbox_x1": -4.31007,
+      "bbox_y0": 54.04464,
+      "bbox_y1": 54.418839
+    }
+  },
+  {
+    "pk": 120,
+    "model": "base.region",
+    "fields": {
+      "rght": 442,
+      "code": "ISR",
+      "name": "Israel",
+      "parent": 15,
+      "level": 2,
+      "lft": 441,
+      "tree_id": 90,
+      "bbox_x0": 34.2677,
+      "bbox_x1": 35.940941,
+      "bbox_y0": 29.4965,
+      "bbox_y1": 33.43338
+    }
+  },
+  {
+    "pk": 121,
+    "model": "base.region",
+    "fields": {
+      "rght": 378,
+      "code": "ITA",
+      "name": "Italy",
+      "parent": 5,
+      "level": 2,
+      "lft": 377,
+      "tree_id": 90,
+      "bbox_x0": 6.62665,
+      "bbox_x1": 18.520281,
+      "bbox_y0": 35.49308,
+      "bbox_y1": 47.091999
+    }
+  },
+  {
+    "pk": 122,
+    "model": "base.region",
+    "fields": {
+      "rght": 159,
+      "code": "JAM",
+      "name": "Jamaica",
+      "parent": 255,
+      "level": 3,
+      "lft": 158,
+      "tree_id": 90,
+      "bbox_x0": -78.366638,
+      "bbox_x1": -75.982857,
+      "bbox_y0": 16.949551,
+      "bbox_y1": 18.52697
+    }
+  },
+  {
+    "pk": 123,
+    "model": "base.region",
+    "fields": {
+      "rght": 271,
+      "code": "JPN",
+      "name": "Japan",
+      "parent": 258,
+      "level": 3,
+      "lft": 270,
+      "tree_id": 90,
+      "bbox_x0": 122.933647,
+      "bbox_x1": 153.986847,
+      "bbox_y0": 20.4251,
+      "bbox_y1": 45.557709
+    }
+  },
+  {
+    "pk": 124,
+    "model": "base.region",
+    "fields": {
+      "rght": 380,
+      "code": "JEY",
+      "name": "Jersey",
+      "parent": 5,
+      "level": 2,
+      "lft": 379,
+      "tree_id": 90,
+      "bbox_x0": -2.25505,
+      "bbox_x1": -2.01129,
+      "bbox_y0": 49.16209,
+      "bbox_y1": 49.26231
+    }
+  },
+  {
+    "pk": 125,
+    "model": "base.region",
+    "fields": {
+      "rght": 444,
+      "code": "JOR",
+      "name": "Jordan",
+      "parent": 15,
+      "level": 2,
+      "lft": 443,
+      "tree_id": 90,
+      "bbox_x0": 34.960232,
+      "bbox_x1": 39.301128,
+      "bbox_y0": 29.18409,
+      "bbox_y1": 33.374828
+    }
+  },
+  {
+    "pk": 126,
+    "model": "base.region",
+    "fields": {
+      "rght": 251,
+      "code": "KAZ",
+      "name": "Kazakhstan",
+      "parent": 8,
+      "level": 3,
+      "lft": 250,
+      "tree_id": 90,
+      "bbox_x0": 46.491859,
+      "bbox_x1": 87.312737,
+      "bbox_y0": 40.566689,
+      "bbox_y1": 55.431808
+    }
+  },
+  {
+    "pk": 127,
+    "model": "base.region",
+    "fields": {
+      "rght": 25,
+      "code": "KEN",
+      "name": "Kenya",
+      "parent": 12,
+      "level": 3,
+      "lft": 24,
+      "tree_id": 90,
+      "bbox_x0": 33.90884,
+      "bbox_x1": 41.899059,
+      "bbox_y0": -4.71712,
+      "bbox_y1": 4.62933
+    }
+  },
+  {
+    "pk": 128,
+    "model": "base.region",
+    "fields": {
+      "rght": 478,
+      "code": "KIR",
+      "name": "Kiribati",
+      "parent": 256,
+      "level": 2,
+      "lft": 477,
+      "tree_id": 90,
+      "bbox_x0": 158.418335,
+      "bbox_x1": -150.208359,
+      "bbox_y0": -11.43703,
+      "bbox_y1": 4.71956
+    }
+  },
+  {
+    "pk": 129,
+    "model": "base.region",
+    "fields": {
+      "rght": 446,
+      "code": "KWT",
+      "name": "Kuwait",
+      "parent": 15,
+      "level": 2,
+      "lft": 445,
+      "tree_id": 90,
+      "bbox_x0": 46.55751,
+      "bbox_x1": 48.78384,
+      "bbox_y0": 28.5245,
+      "bbox_y1": 30.0958
+    }
+  },
+  {
+    "pk": 130,
+    "model": "base.region",
+    "fields": {
+      "rght": 253,
+      "code": "KGZ",
+      "name": "Kyrgyzstan",
+      "parent": 8,
+      "level": 3,
+      "lft": 252,
+      "tree_id": 90,
+      "bbox_x0": 69.276619,
+      "bbox_x1": 80.28318,
+      "bbox_y0": 39.17284,
+      "bbox_y1": 43.238239
+    }
+  },
+  {
+    "pk": 131,
+    "model": "base.region",
+    "fields": {
+      "rght": 301,
+      "code": "LAO",
+      "name": "Lao People's Democratic Republic",
+      "parent": 7,
+      "level": 3,
+      "lft": 300,
+      "tree_id": 90,
+      "bbox_x0": 100.093048,
+      "bbox_x1": 107.697021,
+      "bbox_y0": 13.91002,
+      "bbox_y1": 22.500389
+    }
+  },
+  {
+    "pk": 132,
+    "model": "base.region",
+    "fields": {
+      "rght": 382,
+      "code": "LVA",
+      "name": "Latvia",
+      "parent": 5,
+      "level": 2,
+      "lft": 381,
+      "tree_id": 90,
+      "bbox_x0": 20.966061,
+      "bbox_x1": 28.244431,
+      "bbox_y0": 55.67276,
+      "bbox_y1": 58.087448
+    }
+  },
+  {
+    "pk": 133,
+    "model": "base.region",
+    "fields": {
+      "rght": 448,
+      "code": "LBN",
+      "name": "Lebanon",
+      "parent": 15,
+      "level": 2,
+      "lft": 447,
+      "tree_id": 90,
+      "bbox_x0": 35.10368,
+      "bbox_x1": 36.622791,
+      "bbox_y0": 33.048908,
+      "bbox_y1": 34.69268
+    }
+  },
+  {
+    "pk": 134,
+    "model": "base.region",
+    "fields": {
+      "rght": 69,
+      "code": "LSO",
+      "name": "Lesotho",
+      "parent": 14,
+      "level": 3,
+      "lft": 68,
+      "tree_id": 90,
+      "bbox_x0": 27.02906,
+      "bbox_x1": 29.465771,
+      "bbox_y0": -30.668961,
+      "bbox_y1": -28.57205
+    }
+  },
+  {
+    "pk": 135,
+    "model": "base.region",
+    "fields": {
+      "rght": 109,
+      "code": "LBR",
+      "name": "Liberia",
+      "parent": 13,
+      "level": 3,
+      "lft": 108,
+      "tree_id": 90,
+      "bbox_x0": -11.49208,
+      "bbox_x1": -7.36511,
+      "bbox_y0": 4.35305,
+      "bbox_y1": 8.55179
+    }
+  },
+  {
+    "pk": 136,
+    "model": "base.region",
+    "fields": {
+      "rght": 55,
+      "code": "LBY",
+      "name": "Libyan Arab Jamahiriya",
+      "parent": 11,
+      "level": 3,
+      "lft": 54,
+      "tree_id": 90,
+      "bbox_x0": 9.38702,
+      "bbox_x1": 25.15061,
+      "bbox_y0": 19.508039,
+      "bbox_y1": 33.168999
+    }
+  },
+  {
+    "pk": 137,
+    "model": "base.region",
+    "fields": {
+      "rght": 384,
+      "code": "LIE",
+      "name": "Liechtenstein",
+      "parent": 5,
+      "level": 2,
+      "lft": 383,
+      "tree_id": 90,
+      "bbox_x0": 9.47181,
+      "bbox_x1": 9.63578,
+      "bbox_y0": 47.04834,
+      "bbox_y1": 47.270649
+    }
+  },
+  {
+    "pk": 138,
+    "model": "base.region",
+    "fields": {
+      "rght": 386,
+      "code": "LTU",
+      "name": "Lithuania",
+      "parent": 5,
+      "level": 2,
+      "lft": 385,
+      "tree_id": 90,
+      "bbox_x0": 20.953199,
+      "bbox_x1": 26.835581,
+      "bbox_y0": 53.89748,
+      "bbox_y1": 56.450432
+    }
+  },
+  {
+    "pk": 139,
+    "model": "base.region",
+    "fields": {
+      "rght": 388,
+      "code": "LUX",
+      "name": "Luxembourg",
+      "parent": 5,
+      "level": 2,
+      "lft": 387,
+      "tree_id": 90,
+      "bbox_x0": 5.73579,
+      "bbox_x1": 6.53117,
+      "bbox_y0": 49.447689,
+      "bbox_y1": 50.182751
+    }
+  },
+  {
+    "pk": 140,
+    "model": "base.region",
+    "fields": {
+      "rght": 390,
+      "code": "MKD",
+      "name": "Macedonia",
+      "parent": 5,
+      "level": 2,
+      "lft": 389,
+      "tree_id": 90,
+      "bbox_x0": 20.4645,
+      "bbox_x1": 23.038071,
+      "bbox_y0": 40.860111,
+      "bbox_y1": 42.345501
+    }
+  },
+  {
+    "pk": 141,
+    "model": "base.region",
+    "fields": {
+      "rght": 27,
+      "code": "MDG",
+      "name": "Madagascar",
+      "parent": 12,
+      "level": 3,
+      "lft": 26,
+      "tree_id": 90,
+      "bbox_x0": 43.19138,
+      "bbox_x1": 50.483799,
+      "bbox_y0": -25.60894,
+      "bbox_y1": -11.94543
+    }
+  },
+  {
+    "pk": 142,
+    "model": "base.region",
+    "fields": {
+      "rght": 29,
+      "code": "MWI",
+      "name": "Malawi",
+      "parent": 12,
+      "level": 3,
+      "lft": 28,
+      "tree_id": 90,
+      "bbox_x0": 32.668991,
+      "bbox_x1": 35.920441,
+      "bbox_y0": -17.129459,
+      "bbox_y1": -9.36468
+    }
+  },
+  {
+    "pk": 143,
+    "model": "base.region",
+    "fields": {
+      "rght": 303,
+      "code": "MYS",
+      "name": "Malaysia",
+      "parent": 7,
+      "level": 3,
+      "lft": 302,
+      "tree_id": 90,
+      "bbox_x0": 98.935059,
+      "bbox_x1": 119.448433,
+      "bbox_y0": 0.66364,
+      "bbox_y1": 7.58378
+    }
+  },
+  {
+    "pk": 144,
+    "model": "base.region",
+    "fields": {
+      "rght": 285,
+      "code": "MDV",
+      "name": "Maldives",
+      "parent": 9,
+      "level": 3,
+      "lft": 284,
+      "tree_id": 90,
+      "bbox_x0": 72.616219,
+      "bbox_x1": 73.76712,
+      "bbox_y0": -2.90045,
+      "bbox_y1": 7.11712
+    }
+  },
+  {
+    "pk": 145,
+    "model": "base.region",
+    "fields": {
+      "rght": 111,
+      "code": "MLI",
+      "name": "Mali",
+      "parent": 13,
+      "level": 3,
+      "lft": 110,
+      "tree_id": 90,
+      "bbox_x0": -12.24261,
+      "bbox_x1": 4.24495,
+      "bbox_y0": 10.15951,
+      "bbox_y1": 25
+    }
+  },
+  {
+    "pk": 146,
+    "model": "base.region",
+    "fields": {
+      "rght": 392,
+      "code": "MLT",
+      "name": "Malta",
+      "parent": 5,
+      "level": 2,
+      "lft": 391,
+      "tree_id": 90,
+      "bbox_x0": 14.18341,
+      "bbox_x1": 14.5766,
+      "bbox_y0": 35.786282,
+      "bbox_y1": 36.081821
+    }
+  },
+  {
+    "pk": 147,
+    "model": "base.region",
+    "fields": {
+      "rght": 480,
+      "code": "MHL",
+      "name": "Marshall Islands",
+      "parent": 256,
+      "level": 2,
+      "lft": 479,
+      "tree_id": 90,
+      "bbox_x0": 162.143265,
+      "bbox_x1": 172.161987,
+      "bbox_y0": 4.57487,
+      "bbox_y1": 14.65516
+    }
+  },
+  {
+    "pk": 148,
+    "model": "base.region",
+    "fields": {
+      "rght": 161,
+      "code": "MTQ",
+      "name": "Martinique",
+      "parent": 255,
+      "level": 3,
+      "lft": 160,
+      "tree_id": 90,
+      "bbox_x0": -61.23011,
+      "bbox_x1": -60.81551,
+      "bbox_y0": 14.38244,
+      "bbox_y1": 14.87881
+    }
+  },
+  {
+    "pk": 149,
+    "model": "base.region",
+    "fields": {
+      "rght": 113,
+      "code": "MRT",
+      "name": "Mauritania",
+      "parent": 13,
+      "level": 3,
+      "lft": 112,
+      "tree_id": 90,
+      "bbox_x0": -17.066521,
+      "bbox_x1": -4.8352,
+      "bbox_y0": 14.71554,
+      "bbox_y1": 27.298071
+    }
+  },
+  {
+    "pk": 150,
+    "model": "base.region",
+    "fields": {
+      "rght": 31,
+      "code": "MUS",
+      "name": "Mauritius",
+      "parent": 12,
+      "level": 3,
+      "lft": 30,
+      "tree_id": 90,
+      "bbox_x0": 56.512711,
+      "bbox_x1": 63.525379,
+      "bbox_y0": -20.525709,
+      "bbox_y1": -10.31925
+    }
+  },
+  {
+    "pk": 151,
+    "model": "base.region",
+    "fields": {
+      "rght": 33,
+      "code": "MYT",
+      "name": "Mayotte",
+      "parent": 12,
+      "level": 3,
+      "lft": 32,
+      "tree_id": 90,
+      "bbox_x0": 45.01461,
+      "bbox_x1": 45.317131,
+      "bbox_y0": -13.00045,
+      "bbox_y1": -12.63383
+    }
+  },
+  {
+    "pk": 152,
+    "model": "base.region",
+    "fields": {
+      "rght": 209,
+      "code": "MEX",
+      "name": "Mexico",
+      "parent": 2,
+      "level": 3,
+      "lft": 208,
+      "tree_id": 90,
+      "bbox_x0": -118.867172,
+      "bbox_x1": -86.703392,
+      "bbox_y0": 14.53285,
+      "bbox_y1": 32.71862
+    }
+  },
+  {
+    "pk": 153,
+    "model": "base.region",
+    "fields": {
+      "rght": 482,
+      "code": "FSM",
+      "name": "Micronesia, Federated States of",
+      "parent": 256,
+      "level": 2,
+      "lft": 481,
+      "tree_id": 90,
+      "bbox_x0": 138.052856,
+      "bbox_x1": 163.034912,
+      "bbox_y0": 5.25984,
+      "bbox_y1": 10.02222
+    }
+  },
+  {
+    "pk": 154,
+    "model": "base.region",
+    "fields": {
+      "rght": 394,
+      "code": "MCO",
+      "name": "Monaco",
+      "parent": 5,
+      "level": 2,
+      "lft": 393,
+      "tree_id": 90,
+      "bbox_x0": 7.4091,
+      "bbox_x1": 7.43948,
+      "bbox_y0": 43.724789,
+      "bbox_y1": 43.7519
+    }
+  },
+  {
+    "pk": 155,
+    "model": "base.region",
+    "fields": {
+      "rght": 273,
+      "code": "MNG",
+      "name": "Mongolia",
+      "parent": 258,
+      "level": 3,
+      "lft": 272,
+      "tree_id": 90,
+      "bbox_x0": 87.749496,
+      "bbox_x1": 119.92411,
+      "bbox_y0": 41.567501,
+      "bbox_y1": 52.154099
+    }
+  },
+  {
+    "pk": 156,
+    "model": "base.region",
+    "fields": {
+      "rght": 396,
+      "code": "MNE",
+      "name": "Montenegro",
+      "parent": 5,
+      "level": 2,
+      "lft": 395,
+      "tree_id": 90,
+      "bbox_x0": 18.43705,
+      "bbox_x1": 20.41608,
+      "bbox_y0": 41.84808,
+      "bbox_y1": 43.542912
+    }
+  },
+  {
+    "pk": 157,
+    "model": "base.region",
+    "fields": {
+      "rght": 163,
+      "code": "MSR",
+      "name": "Montserrat",
+      "parent": 255,
+      "level": 3,
+      "lft": 162,
+      "tree_id": 90,
+      "bbox_x0": -62.24258,
+      "bbox_x1": -62.14642,
+      "bbox_y0": 16.671,
+      "bbox_y1": 16.81732
+    }
+  },
+  {
+    "pk": 158,
+    "model": "base.region",
+    "fields": {
+      "rght": 57,
+      "code": "MAR",
+      "name": "Morocco",
+      "parent": 11,
+      "level": 3,
+      "lft": 56,
+      "tree_id": 90,
+      "bbox_x0": -11.7805,
+      "bbox_x1": -1.02441,
+      "bbox_y0": 26.946489,
+      "bbox_y1": 35.921909
+    }
+  },
+  {
+    "pk": 159,
+    "model": "base.region",
+    "fields": {
+      "rght": 35,
+      "code": "MOZ",
+      "name": "Mozambique",
+      "parent": 12,
+      "level": 3,
+      "lft": 34,
+      "tree_id": 90,
+      "bbox_x0": 30.21731,
+      "bbox_x1": 40.844471,
+      "bbox_y0": -26.868679,
+      "bbox_y1": -10.47188
+    }
+  },
+  {
+    "pk": 160,
+    "model": "base.region",
+    "fields": {
+      "rght": 305,
+      "code": "MMR",
+      "name": "Myanmar",
+      "parent": 7,
+      "level": 3,
+      "lft": 304,
+      "tree_id": 90,
+      "bbox_x0": 92.189209,
+      "bbox_x1": 101.176788,
+      "bbox_y0": 9.60035,
+      "bbox_y1": 28.543249
+    }
+  },
+  {
+    "pk": 161,
+    "model": "base.region",
+    "fields": {
+      "rght": 71,
+      "code": "NMB",
+      "name": "Namibia",
+      "parent": 14,
+      "level": 3,
+      "lft": 70,
+      "tree_id": 90,
+      "bbox_x0": 11.71563,
+      "bbox_x1": 25.256701,
+      "bbox_y0": -28.97142,
+      "bbox_y1": -16.95989
+    }
+  },
+  {
+    "pk": 162,
+    "model": "base.region",
+    "fields": {
+      "rght": 484,
+      "code": "NRU",
+      "name": "Nauru",
+      "parent": 256,
+      "level": 2,
+      "lft": 483,
+      "tree_id": 90,
+      "bbox_x0": 166.899017,
+      "bbox_x1": 166.945267,
+      "bbox_y0": -0.55232,
+      "bbox_y1": -0.50429
+    }
+  },
+  {
+    "pk": 163,
+    "model": "base.region",
+    "fields": {
+      "rght": 287,
+      "code": "NPL",
+      "name": "Nepal",
+      "parent": 9,
+      "level": 3,
+      "lft": 286,
+      "tree_id": 90,
+      "bbox_x0": 80.056221,
+      "bbox_x1": 88.199318,
+      "bbox_y0": 26.356501,
+      "bbox_y1": 30.433001
+    }
+  },
+  {
+    "pk": 164,
+    "model": "base.region",
+    "fields": {
+      "rght": 398,
+      "code": "NLD",
+      "name": "Netherlands",
+      "parent": 5,
+      "level": 2,
+      "lft": 397,
+      "tree_id": 90,
+      "bbox_x0": 3.35794,
+      "bbox_x1": 7.2267,
+      "bbox_y0": 50.750401,
+      "bbox_y1": 53.554241
+    }
+  },
+  {
+    "pk": 165,
+    "model": "base.region",
+    "fields": {
+      "rght": 165,
+      "code": "NAN",
+      "name": "Netherlands Antilles",
+      "parent": 255,
+      "level": 3,
+      "lft": 164,
+      "tree_id": 90,
+      "bbox_x0": -69.157188,
+      "bbox_x1": -62.943661,
+      "bbox_y0": 11.97318,
+      "bbox_y1": 18.07024
+    }
+  },
+  {
+    "pk": 166,
+    "model": "base.region",
+    "fields": {
+      "rght": 486,
+      "code": "NCL",
+      "name": "New Caledonia",
+      "parent": 256,
+      "level": 2,
+      "lft": 485,
+      "tree_id": 90,
+      "bbox_x0": 158.332855,
+      "bbox_x1": 172.061417,
+      "bbox_y0": -22.90045,
+      "bbox_y1": -18.01622
+    }
+  },
+  {
+    "pk": 167,
+    "model": "base.region",
+    "fields": {
+      "rght": 488,
+      "code": "NZL",
+      "name": "New Zealand",
+      "parent": 256,
+      "level": 2,
+      "lft": 487,
+      "tree_id": 90,
+      "bbox_x0": 165.883804,
+      "bbox_x1": -175.987198,
+      "bbox_y0": -52.618591,
+      "bbox_y1": -29.20997
+    }
+  },
+  {
+    "pk": 168,
+    "model": "base.region",
+    "fields": {
+      "rght": 199,
+      "code": "NIC",
+      "name": "Nicaragua",
+      "parent": 3,
+      "level": 3,
+      "lft": 198,
+      "tree_id": 90,
+      "bbox_x0": -87.6903,
+      "bbox_x1": -82.592072,
+      "bbox_y0": 10.70754,
+      "bbox_y1": 15.0259
+    }
+  },
+  {
+    "pk": 169,
+    "model": "base.region",
+    "fields": {
+      "rght": 115,
+      "code": "NER",
+      "name": "Niger",
+      "parent": 13,
+      "level": 3,
+      "lft": 114,
+      "tree_id": 90,
+      "bbox_x0": 0.16625,
+      "bbox_x1": 15.99564,
+      "bbox_y0": 11.69697,
+      "bbox_y1": 23.525021
+    }
+  },
+  {
+    "pk": 170,
+    "model": "base.region",
+    "fields": {
+      "rght": 117,
+      "code": "NGA",
+      "name": "Nigeria",
+      "parent": 13,
+      "level": 3,
+      "lft": 116,
+      "tree_id": 90,
+      "bbox_x0": 2.66844,
+      "bbox_x1": 14.68006,
+      "bbox_y0": 4.27714,
+      "bbox_y1": 13.892
+    }
+  },
+  {
+    "pk": 171,
+    "model": "base.region",
+    "fields": {
+      "rght": 490,
+      "code": "NIU",
+      "name": "Niue",
+      "parent": 256,
+      "level": 2,
+      "lft": 489,
+      "tree_id": 90,
+      "bbox_x0": -169.951004,
+      "bbox_x1": -169.775177,
+      "bbox_y0": -19.152189,
+      "bbox_y1": -18.951059
+    }
+  },
+  {
+    "pk": 172,
+    "model": "base.region",
+    "fields": {
+      "rght": 492,
+      "code": "NFK",
+      "name": "Norfolk Island",
+      "parent": 256,
+      "level": 2,
+      "lft": 491,
+      "tree_id": 90,
+      "bbox_x0": 167.949493,
+      "bbox_x1": 168.091614,
+      "bbox_y0": -29.11937,
+      "bbox_y1": -28.99493
+    }
+  },
+  {
+    "pk": 173,
+    "model": "base.region",
+    "fields": {
+      "rght": 494,
+      "code": "MNP",
+      "name": "Northern Mariana Islands",
+      "parent": 256,
+      "level": 2,
+      "lft": 493,
+      "tree_id": 90,
+      "bbox_x0": 136.082855,
+      "bbox_x1": 146.081223,
+      "bbox_y0": 14.10735,
+      "bbox_y1": 20.41712
+    }
+  },
+  {
+    "pk": 174,
+    "model": "base.region",
+    "fields": {
+      "rght": 400,
+      "code": "NOR",
+      "name": "Norway",
+      "parent": 5,
+      "level": 2,
+      "lft": 399,
+      "tree_id": 90,
+      "bbox_x0": 4.43292,
+      "bbox_x1": 31.168409,
+      "bbox_y0": 57.962582,
+      "bbox_y1": 71.185509
+    }
+  },
+  {
+    "pk": 175,
+    "model": "base.region",
+    "fields": {
+      "rght": 450,
+      "code": "PSE",
+      "name": "Occupied Palestinian Territory",
+      "parent": 15,
+      "level": 2,
+      "lft": 449,
+      "tree_id": 90,
+      "bbox_x0": 34.230461,
+      "bbox_x1": 35.876499,
+      "bbox_y0": 31.223499,
+      "bbox_y1": 33.340099
+    }
+  },
+  {
+    "pk": 176,
+    "model": "base.region",
+    "fields": {
+      "rght": 452,
+      "code": "OMN",
+      "name": "Oman",
+      "parent": 15,
+      "level": 2,
+      "lft": 451,
+      "tree_id": 90,
+      "bbox_x0": 51.882011,
+      "bbox_x1": 59.83651,
+      "bbox_y0": 16.6457,
+      "bbox_y1": 26.50045
+    }
+  },
+  {
+    "pk": 177,
+    "model": "base.region",
+    "fields": {
+      "rght": 289,
+      "code": "PAK",
+      "name": "Pakistan",
+      "parent": 9,
+      "level": 3,
+      "lft": 288,
+      "tree_id": 90,
+      "bbox_x0": 60.87859,
+      "bbox_x1": 77.840813,
+      "bbox_y0": 23.786699,
+      "bbox_y1": 37.097
+    }
+  },
+  {
+    "pk": 178,
+    "model": "base.region",
+    "fields": {
+      "rght": 496,
+      "code": "PLW",
+      "name": "Palau",
+      "parent": 256,
+      "level": 2,
+      "lft": 495,
+      "tree_id": 90,
+      "bbox_x0": 131.169235,
+      "bbox_x1": 134.723724,
+      "bbox_y0": 3.00114,
+      "bbox_y1": 8.09291
+    }
+  },
+  {
+    "pk": 179,
+    "model": "base.region",
+    "fields": {
+      "rght": 201,
+      "code": "PAN",
+      "name": "Panama",
+      "parent": 3,
+      "level": 3,
+      "lft": 200,
+      "tree_id": 90,
+      "bbox_x0": -83.051453,
+      "bbox_x1": -77.17411,
+      "bbox_y0": 7.1979,
+      "bbox_y1": 9.65045
+    }
+  },
+  {
+    "pk": 180,
+    "model": "base.region",
+    "fields": {
+      "rght": 498,
+      "code": "PNG",
+      "name": "Papua New Guinea",
+      "parent": 256,
+      "level": 2,
+      "lft": 497,
+      "tree_id": 90,
+      "bbox_x0": 140.842865,
+      "bbox_x1": 159.48378,
+      "bbox_y0": -11.65785,
+      "bbox_y1": -0.86622
+    }
+  },
+  {
+    "pk": 181,
+    "model": "base.region",
+    "fields": {
+      "rght": 233,
+      "code": "PRY",
+      "name": "Paraguay",
+      "parent": 4,
+      "level": 3,
+      "lft": 232,
+      "tree_id": 90,
+      "bbox_x0": -62.647072,
+      "bbox_x1": -54.25935,
+      "bbox_y0": -27.60873,
+      "bbox_y1": -19.294041
+    }
+  },
+  {
+    "pk": 182,
+    "model": "base.region",
+    "fields": {
+      "rght": 235,
+      "code": "PER",
+      "name": "Peru",
+      "parent": 4,
+      "level": 3,
+      "lft": 234,
+      "tree_id": 90,
+      "bbox_x0": -81.326736,
+      "bbox_x1": -68.677979,
+      "bbox_y0": -18.34972,
+      "bbox_y1": -0.01297
+    }
+  },
+  {
+    "pk": 183,
+    "model": "base.region",
+    "fields": {
+      "rght": 307,
+      "code": "PHL",
+      "name": "Philippines",
+      "parent": 7,
+      "level": 3,
+      "lft": 306,
+      "tree_id": 90,
+      "bbox_x0": 116.812721,
+      "bbox_x1": 126.856628,
+      "bbox_y0": 4.46811,
+      "bbox_y1": 21.23415
+    }
+  },
+  {
+    "pk": 184,
+    "model": "base.region",
+    "fields": {
+      "rght": 500,
+      "code": "PCN",
+      "name": "Pitcairn",
+      "parent": 256,
+      "level": 2,
+      "lft": 499,
+      "tree_id": 90,
+      "bbox_x0": -130.746033,
+      "bbox_x1": -124.772842,
+      "bbox_y0": -25.07752,
+      "bbox_y1": -23.917271
+    }
+  },
+  {
+    "pk": 185,
+    "model": "base.region",
+    "fields": {
+      "rght": 402,
+      "code": "POL",
+      "name": "Poland",
+      "parent": 5,
+      "level": 2,
+      "lft": 401,
+      "tree_id": 90,
+      "bbox_x0": 14.12281,
+      "bbox_x1": 24.145781,
+      "bbox_y0": 49.002022,
+      "bbox_y1": 54.835812
+    }
+  },
+  {
+    "pk": 186,
+    "model": "base.region",
+    "fields": {
+      "rght": 404,
+      "code": "PRT",
+      "name": "Portugal",
+      "parent": 5,
+      "level": 2,
+      "lft": 403,
+      "tree_id": 90,
+      "bbox_x0": -31.266001,
+      "bbox_x1": -6.18931,
+      "bbox_y0": 30.028061,
+      "bbox_y1": 42.154121
+    }
+  },
+  {
+    "pk": 187,
+    "model": "base.region",
+    "fields": {
+      "rght": 167,
+      "code": "PRI",
+      "name": "Puerto Rico",
+      "parent": 255,
+      "level": 3,
+      "lft": 166,
+      "tree_id": 90,
+      "bbox_x0": -67.942719,
+      "bbox_x1": -65.219978,
+      "bbox_y0": 17.883039,
+      "bbox_y1": 18.520161
+    }
+  },
+  {
+    "pk": 188,
+    "model": "base.region",
+    "fields": {
+      "rght": 454,
+      "code": "QAT",
+      "name": "Qatar",
+      "parent": 15,
+      "level": 2,
+      "lft": 453,
+      "tree_id": 90,
+      "bbox_x0": 50.757011,
+      "bbox_x1": 52.427509,
+      "bbox_y0": 24.482901,
+      "bbox_y1": 26.177509
+    }
+  },
+  {
+    "pk": 189,
+    "model": "base.region",
+    "fields": {
+      "rght": 275,
+      "code": "KOR",
+      "name": "Republic of Korea",
+      "parent": 258,
+      "level": 3,
+      "lft": 274,
+      "tree_id": 90,
+      "bbox_x0": 124.608147,
+      "bbox_x1": 130.933899,
+      "bbox_y0": 33.10611,
+      "bbox_y1": 38.612301
+    }
+  },
+  {
+    "pk": 190,
+    "model": "base.region",
+    "fields": {
+      "rght": 406,
+      "code": "MDA",
+      "name": "Republic of Moldova",
+      "parent": 5,
+      "level": 2,
+      "lft": 405,
+      "tree_id": 90,
+      "bbox_x0": 26.618879,
+      "bbox_x1": 30.16374,
+      "bbox_y0": 45.468498,
+      "bbox_y1": 48.490162
+    }
+  },
+  {
+    "pk": 191,
+    "model": "base.region",
+    "fields": {
+      "rght": 37,
+      "code": "REU",
+      "name": "Reunion",
+      "parent": 12,
+      "level": 3,
+      "lft": 36,
+      "tree_id": 90,
+      "bbox_x0": 55.219082,
+      "bbox_x1": 55.845039,
+      "bbox_y0": -21.37221,
+      "bbox_y1": -20.85685
+    }
+  },
+  {
+    "pk": 192,
+    "model": "base.region",
+    "fields": {
+      "rght": 408,
+      "code": "ROU",
+      "name": "Romania",
+      "parent": 5,
+      "level": 2,
+      "lft": 407,
+      "tree_id": 90,
+      "bbox_x0": 20.269791,
+      "bbox_x1": 29.691,
+      "bbox_y0": 43.626999,
+      "bbox_y1": 48.266891
+    }
+  },
+  {
+    "pk": 193,
+    "model": "base.region",
+    "fields": {
+      "rght": 410,
+      "code": "RUS",
+      "name": "Russian Federation",
+      "parent": 5,
+      "level": 2,
+      "lft": 409,
+      "tree_id": 90,
+      "bbox_x0": 19.638861,
+      "bbox_x1": 180,
+      "bbox_y0": 41.185902,
+      "bbox_y1": 81.856903
+    }
+  },
+  {
+    "pk": 194,
+    "model": "base.region",
+    "fields": {
+      "rght": 39,
+      "code": "RWA",
+      "name": "Rwanda",
+      "parent": 12,
+      "level": 3,
+      "lft": 38,
+      "tree_id": 90,
+      "bbox_x0": 28.8568,
+      "bbox_x1": 30.89596,
+      "bbox_y0": -2.84067,
+      "bbox_y1": -1.05348
+    }
+  },
+  {
+    "pk": 195,
+    "model": "base.region",
+    "fields": {
+      "rght": 73,
+      "code": "SHN",
+      "name": "Saint Helena",
+      "parent": 14,
+      "level": 3,
+      "lft": 72,
+      "tree_id": 90,
+      "bbox_x0": -14.44153,
+      "bbox_x1": -5.63286,
+      "bbox_y0": -40.400452,
+      "bbox_y1": -7.87757
+    }
+  },
+  {
+    "pk": 196,
+    "model": "base.region",
+    "fields": {
+      "rght": 169,
+      "code": "KNA",
+      "name": "Saint Kitts and Nevis",
+      "parent": 255,
+      "level": 3,
+      "lft": 168,
+      "tree_id": 90,
+      "bbox_x0": -62.86956,
+      "bbox_x1": -62.543259,
+      "bbox_y0": 17.095341,
+      "bbox_y1": 17.420111
+    }
+  },
+  {
+    "pk": 197,
+    "model": "base.region",
+    "fields": {
+      "rght": 171,
+      "code": "LCA",
+      "name": "Saint Lucia",
+      "parent": 255,
+      "level": 3,
+      "lft": 170,
+      "tree_id": 90,
+      "bbox_x0": -61.07415,
+      "bbox_x1": -60.866051,
+      "bbox_y0": 13.70477,
+      "bbox_y1": 14.10324
+    }
+  },
+  {
+    "pk": 198,
+    "model": "base.region",
+    "fields": {
+      "rght": 173,
+      "code": "SPM",
+      "name": "Saint Pierre and Miquelon",
+      "parent": 255,
+      "level": 3,
+      "lft": 172,
+      "tree_id": 90,
+      "bbox_x0": -56.420658,
+      "bbox_x1": -56.157372,
+      "bbox_y0": 46.753269,
+      "bbox_y1": 47.14629
+    }
+  },
+  {
+    "pk": 199,
+    "model": "base.region",
+    "fields": {
+      "rght": 175,
+      "code": "VCT",
+      "name": "Saint Vincent and the Grenadines",
+      "parent": 255,
+      "level": 3,
+      "lft": 174,
+      "tree_id": 90,
+      "bbox_x0": -61.459251,
+      "bbox_x1": -61.11388,
+      "bbox_y0": 12.58101,
+      "bbox_y1": 13.37783
+    }
+  },
+  {
+    "pk": 200,
+    "model": "base.region",
+    "fields": {
+      "rght": 177,
+      "code": "BLM",
+      "name": "Saint-Barthelemy",
+      "parent": 255,
+      "level": 3,
+      "lft": 176,
+      "tree_id": 90,
+      "bbox_x0": -62.9338,
+      "bbox_x1": -62.78286,
+      "bbox_y0": 17.86622,
+      "bbox_y1": 17.968599
+    }
+  },
+  {
+    "pk": 201,
+    "model": "base.region",
+    "fields": {
+      "rght": 179,
+      "code": "MAF",
+      "name": "Saint-Martin (French part)",
+      "parent": 255,
+      "level": 3,
+      "lft": 178,
+      "tree_id": 90,
+      "bbox_x0": -63.15276,
+      "bbox_x1": -62.972778,
+      "bbox_y0": 18.052231,
+      "bbox_y1": 18.13069
+    }
+  },
+  {
+    "pk": 202,
+    "model": "base.region",
+    "fields": {
+      "rght": 502,
+      "code": "WSM",
+      "name": "Samoa",
+      "parent": 256,
+      "level": 2,
+      "lft": 501,
+      "tree_id": 90,
+      "bbox_x0": -172.798584,
+      "bbox_x1": -171.33287,
+      "bbox_y0": -14.06353,
+      "bbox_y1": -13.4322
+    }
+  },
+  {
+    "pk": 203,
+    "model": "base.region",
+    "fields": {
+      "rght": 412,
+      "code": "SMR",
+      "name": "San Marino",
+      "parent": 5,
+      "level": 2,
+      "lft": 411,
+      "tree_id": 90,
+      "bbox_x0": 12.40306,
+      "bbox_x1": 12.51651,
+      "bbox_y0": 43.893299,
+      "bbox_y1": 43.992168
+    }
+  },
+  {
+    "pk": 204,
+    "model": "base.region",
+    "fields": {
+      "rght": 119,
+      "code": "STP",
+      "name": "Sao Tome and Principe",
+      "parent": 13,
+      "level": 3,
+      "lft": 118,
+      "tree_id": 90,
+      "bbox_x0": 5.59955,
+      "bbox_x1": 7.46637,
+      "bbox_y0": -0.014,
+      "bbox_y1": 1.73378
+    }
+  },
+  {
+    "pk": 205,
+    "model": "base.region",
+    "fields": {
+      "rght": 456,
+      "code": "SAU",
+      "name": "Saudi Arabia",
+      "parent": 15,
+      "level": 2,
+      "lft": 455,
+      "tree_id": 90,
+      "bbox_x0": 34.508282,
+      "bbox_x1": 55.666672,
+      "bbox_y0": 16.261169,
+      "bbox_y1": 32.173481
+    }
+  },
+  {
+    "pk": 206,
+    "model": "base.region",
+    "fields": {
+      "rght": 121,
+      "code": "SEN",
+      "name": "Senegal",
+      "parent": 13,
+      "level": 3,
+      "lft": 120,
+      "tree_id": 90,
+      "bbox_x0": -17.535231,
+      "bbox_x1": -11.35588,
+      "bbox_y0": 12.30727,
+      "bbox_y1": 16.691629
+    }
+  },
+  {
+    "pk": 207,
+    "model": "base.region",
+    "fields": {
+      "rght": 414,
+      "code": "SRB",
+      "name": "Serbia",
+      "parent": 5,
+      "level": 2,
+      "lft": 413,
+      "tree_id": 90,
+      "bbox_x0": 18.814581,
+      "bbox_x1": 23.007,
+      "bbox_y0": 41.908611,
+      "bbox_y1": 46.191002
+    }
+  },
+  {
+    "pk": 208,
+    "model": "base.region",
+    "fields": {
+      "rght": 41,
+      "code": "SYC",
+      "name": "Seychelles",
+      "parent": 12,
+      "level": 3,
+      "lft": 40,
+      "tree_id": 90,
+      "bbox_x0": 46.199211,
+      "bbox_x1": 56.279499,
+      "bbox_y0": -10.21712,
+      "bbox_y1": -3.71151
+    }
+  },
+  {
+    "pk": 209,
+    "model": "base.region",
+    "fields": {
+      "rght": 123,
+      "code": "SLE",
+      "name": "Sierra Leone",
+      "parent": 13,
+      "level": 3,
+      "lft": 122,
+      "tree_id": 90,
+      "bbox_x0": -13.30763,
+      "bbox_x1": -10.28423,
+      "bbox_y0": 6.92868,
+      "bbox_y1": 10.00043
+    }
+  },
+  {
+    "pk": 210,
+    "model": "base.region",
+    "fields": {
+      "rght": 309,
+      "code": "SGP",
+      "name": "Singapore",
+      "parent": 7,
+      "level": 3,
+      "lft": 308,
+      "tree_id": 90,
+      "bbox_x0": 103.618248,
+      "bbox_x1": 104.40847,
+      "bbox_y0": 1.1158,
+      "bbox_y1": 1.47062
+    }
+  },
+  {
+    "pk": 211,
+    "model": "base.region",
+    "fields": {
+      "rght": 416,
+      "code": "SVK",
+      "name": "Slovakia",
+      "parent": 5,
+      "level": 2,
+      "lft": 415,
+      "tree_id": 90,
+      "bbox_x0": 16.833179,
+      "bbox_x1": 22.570299,
+      "bbox_y0": 47.728001,
+      "bbox_y1": 49.603001
+    }
+  },
+  {
+    "pk": 212,
+    "model": "base.region",
+    "fields": {
+      "rght": 418,
+      "code": "SVN",
+      "name": "Slovenia",
+      "parent": 5,
+      "level": 2,
+      "lft": 417,
+      "tree_id": 90,
+      "bbox_x0": 13.37551,
+      "bbox_x1": 16.59656,
+      "bbox_y0": 45.416,
+      "bbox_y1": 46.87788
+    }
+  },
+  {
+    "pk": 213,
+    "model": "base.region",
+    "fields": {
+      "rght": 504,
+      "code": "SLB",
+      "name": "Solomon Islands",
+      "parent": 256,
+      "level": 2,
+      "lft": 503,
+      "tree_id": 90,
+      "bbox_x0": 155.508667,
+      "bbox_x1": 170.200455,
+      "bbox_y0": -12.2919,
+      "bbox_y1": -5.16622
+    }
+  },
+  {
+    "pk": 214,
+    "model": "base.region",
+    "fields": {
+      "rght": 43,
+      "code": "SOM",
+      "name": "Somalia",
+      "parent": 12,
+      "level": 3,
+      "lft": 42,
+      "tree_id": 90,
+      "bbox_x0": 40.988628,
+      "bbox_x1": 51.413029,
+      "bbox_y0": -1.66205,
+      "bbox_y1": 11.9852
+    }
+  },
+  {
+    "pk": 215,
+    "model": "base.region",
+    "fields": {
+      "rght": 75,
+      "code": "ZAF",
+      "name": "South Africa",
+      "parent": 14,
+      "level": 3,
+      "lft": 74,
+      "tree_id": 90,
+      "bbox_x0": 16.46841,
+      "bbox_x1": 37.993172,
+      "bbox_y0": -46.990009,
+      "bbox_y1": -22.12472
+    }
+  },
+  {
+    "pk": 216,
+    "model": "base.region",
+    "fields": {
+      "rght": 420,
+      "code": "ESP",
+      "name": "Spain",
+      "parent": 5,
+      "level": 2,
+      "lft": 419,
+      "tree_id": 90,
+      "bbox_x0": -18.160789,
+      "bbox_x1": 4.32788,
+      "bbox_y0": 27.63546,
+      "bbox_y1": 43.789959
+    }
+  },
+  {
+    "pk": 217,
+    "model": "base.region",
+    "fields": {
+      "rght": 291,
+      "code": "LKA",
+      "name": "Sri Lanka",
+      "parent": 9,
+      "level": 3,
+      "lft": 290,
+      "tree_id": 90,
+      "bbox_x0": 79.516212,
+      "bbox_x1": 81.88121,
+      "bbox_y0": 5.9167,
+      "bbox_y1": 9.8312
+    }
+  },
+  {
+    "pk": 218,
+    "model": "base.region",
+    "fields": {
+      "rght": 59,
+      "code": "SDN",
+      "name": "Sudan",
+      "parent": 11,
+      "level": 3,
+      "lft": 58,
+      "tree_id": 90,
+      "bbox_x0": 21.83894,
+      "bbox_x1": 38.833801,
+      "bbox_y0": 3.48639,
+      "bbox_y1": 23.146891
+    }
+  },
+  {
+    "pk": 219,
+    "model": "base.region",
+    "fields": {
+      "rght": 237,
+      "code": "SUR",
+      "name": "Suriname",
+      "parent": 4,
+      "level": 3,
+      "lft": 236,
+      "tree_id": 90,
+      "bbox_x0": -58.086559,
+      "bbox_x1": -53.977489,
+      "bbox_y0": 1.83114,
+      "bbox_y1": 6.00454
+    }
+  },
+  {
+    "pk": 220,
+    "model": "base.region",
+    "fields": {
+      "rght": 422,
+      "code": "SJM",
+      "name": "Svalbard and Jan Mayen Islands",
+      "parent": 5,
+      "level": 2,
+      "lft": 421,
+      "tree_id": 90,
+      "bbox_x0": -9.07989,
+      "bbox_x1": 36.815269,
+      "bbox_y0": 70.82737,
+      "bbox_y1": 80.834061
+    }
+  },
+  {
+    "pk": 221,
+    "model": "base.region",
+    "fields": {
+      "rght": 77,
+      "code": "SWZ",
+      "name": "Swaziland",
+      "parent": 14,
+      "level": 3,
+      "lft": 76,
+      "tree_id": 90,
+      "bbox_x0": 30.7941,
+      "bbox_x1": 32.137272,
+      "bbox_y0": -27.317101,
+      "bbox_y1": -25.719641
+    }
+  },
+  {
+    "pk": 222,
+    "model": "base.region",
+    "fields": {
+      "rght": 424,
+      "code": "SWE",
+      "name": "Sweden",
+      "parent": 5,
+      "level": 2,
+      "lft": 423,
+      "tree_id": 90,
+      "bbox_x0": 10.9661,
+      "bbox_x1": 24.16634,
+      "bbox_y0": 55.33696,
+      "bbox_y1": 69.059937
+    }
+  },
+  {
+    "pk": 223,
+    "model": "base.region",
+    "fields": {
+      "rght": 426,
+      "code": "CHE",
+      "name": "Switzerland",
+      "parent": 5,
+      "level": 2,
+      "lft": 425,
+      "tree_id": 90,
+      "bbox_x0": 5.95587,
+      "bbox_x1": 10.49203,
+      "bbox_y0": 45.81802,
+      "bbox_y1": 47.80838
+    }
+  },
+  {
+    "pk": 224,
+    "model": "base.region",
+    "fields": {
+      "rght": 458,
+      "code": "SYR",
+      "name": "Syrian Arab Republic",
+      "parent": 15,
+      "level": 2,
+      "lft": 457,
+      "tree_id": 90,
+      "bbox_x0": 35.727001,
+      "bbox_x1": 42.384998,
+      "bbox_y0": 32.3106,
+      "bbox_y1": 37.319
+    }
+  },
+  {
+    "pk": 225,
+    "model": "base.region",
+    "fields": {
+      "rght": 255,
+      "code": "TJK",
+      "name": "Tajikistan",
+      "parent": 8,
+      "level": 3,
+      "lft": 254,
+      "tree_id": 90,
+      "bbox_x0": 67.387131,
+      "bbox_x1": 75.137222,
+      "bbox_y0": 36.674141,
+      "bbox_y1": 41.04224
+    }
+  },
+  {
+    "pk": 226,
+    "model": "base.region",
+    "fields": {
+      "rght": 311,
+      "code": "THA",
+      "name": "Thailand",
+      "parent": 7,
+      "level": 3,
+      "lft": 310,
+      "tree_id": 90,
+      "bbox_x0": 97.343964,
+      "bbox_x1": 105.636917,
+      "bbox_y0": 5.61257,
+      "bbox_y1": 20.464701
+    }
+  },
+  {
+    "pk": 227,
+    "model": "base.region",
+    "fields": {
+      "rght": 313,
+      "code": "TLS",
+      "name": "Timor-Leste",
+      "parent": 7,
+      "level": 3,
+      "lft": 312,
+      "tree_id": 90,
+      "bbox_x0": 124.075439,
+      "bbox_x1": 127.345337,
+      "bbox_y0": -9.51337,
+      "bbox_y1": -8.13741
+    }
+  },
+  {
+    "pk": 228,
+    "model": "base.region",
+    "fields": {
+      "rght": 125,
+      "code": "TGO",
+      "name": "Togo",
+      "parent": 13,
+      "level": 3,
+      "lft": 124,
+      "tree_id": 90,
+      "bbox_x0": -0.14731,
+      "bbox_x1": 1.80669,
+      "bbox_y0": 6.10441,
+      "bbox_y1": 11.13897
+    }
+  },
+  {
+    "pk": 229,
+    "model": "base.region",
+    "fields": {
+      "rght": 506,
+      "code": "TKL",
+      "name": "Tokelau",
+      "parent": 256,
+      "level": 2,
+      "lft": 505,
+      "tree_id": 90,
+      "bbox_x0": -172.517136,
+      "bbox_x1": -171.182083,
+      "bbox_y0": -9.43378,
+      "bbox_y1": -8.53288
+    }
+  },
+  {
+    "pk": 230,
+    "model": "base.region",
+    "fields": {
+      "rght": 508,
+      "code": "TON",
+      "name": "Tonga",
+      "parent": 256,
+      "level": 2,
+      "lft": 507,
+      "tree_id": 90,
+      "bbox_x0": -176.212646,
+      "bbox_x1": -173.702438,
+      "bbox_y0": -22.345711,
+      "bbox_y1": -15.55326
+    }
+  },
+  {
+    "pk": 231,
+    "model": "base.region",
+    "fields": {
+      "rght": 181,
+      "code": "TTO",
+      "name": "Trinidad and Tobago",
+      "parent": 255,
+      "level": 3,
+      "lft": 180,
+      "tree_id": 90,
+      "bbox_x0": -61.927391,
+      "bbox_x1": -60.49144,
+      "bbox_y0": 10.03648,
+      "bbox_y1": 11.36118
+    }
+  },
+  {
+    "pk": 232,
+    "model": "base.region",
+    "fields": {
+      "rght": 61,
+      "code": "TUN",
+      "name": "Tunisia",
+      "parent": 11,
+      "level": 3,
+      "lft": 60,
+      "tree_id": 90,
+      "bbox_x0": 7.52481,
+      "bbox_x1": 11.59827,
+      "bbox_y0": 30.240431,
+      "bbox_y1": 37.56712
+    }
+  },
+  {
+    "pk": 233,
+    "model": "base.region",
+    "fields": {
+      "rght": 428,
+      "code": "TUR",
+      "name": "Turkey",
+      "parent": 5,
+      "level": 2,
+      "lft": 427,
+      "tree_id": 90,
+      "bbox_x0": 25.664101,
+      "bbox_x1": 44.8297,
+      "bbox_y0": 35.809971,
+      "bbox_y1": 42.105499
+    }
+  },
+  {
+    "pk": 234,
+    "model": "base.region",
+    "fields": {
+      "rght": 257,
+      "code": "TKM",
+      "name": "Turkmenistan",
+      "parent": 8,
+      "level": 3,
+      "lft": 256,
+      "tree_id": 90,
+      "bbox_x0": 52.441429,
+      "bbox_x1": 66.684303,
+      "bbox_y0": 35.14109,
+      "bbox_y1": 42.795551
+    }
+  },
+  {
+    "pk": 235,
+    "model": "base.region",
+    "fields": {
+      "rght": 183,
+      "code": "TCA",
+      "name": "Turks and Caicos Islands",
+      "parent": 255,
+      "level": 3,
+      "lft": 182,
+      "tree_id": 90,
+      "bbox_x0": -72.483879,
+      "bbox_x1": -71.08033,
+      "bbox_y0": 21.170031,
+      "bbox_y1": 21.97361
+    }
+  },
+  {
+    "pk": 236,
+    "model": "base.region",
+    "fields": {
+      "rght": 510,
+      "code": "TUV",
+      "name": "Tuvalu",
+      "parent": 256,
+      "level": 2,
+      "lft": 509,
+      "tree_id": 90,
+      "bbox_x0": 176.06488,
+      "bbox_x1": 179.883789,
+      "bbox_y0": -10.75045,
+      "bbox_y1": -5.64198
+    }
+  },
+  {
+    "pk": 237,
+    "model": "base.region",
+    "fields": {
+      "rght": 45,
+      "code": "UGA",
+      "name": "Uganda",
+      "parent": 12,
+      "level": 3,
+      "lft": 44,
+      "tree_id": 90,
+      "bbox_x0": 29.573549,
+      "bbox_x1": 35.001251,
+      "bbox_y0": -1.47849,
+      "bbox_y1": 4.23403
+    }
+  },
+  {
+    "pk": 238,
+    "model": "base.region",
+    "fields": {
+      "rght": 430,
+      "code": "UKR",
+      "name": "Ukraine",
+      "parent": 5,
+      "level": 2,
+      "lft": 429,
+      "tree_id": 90,
+      "bbox_x0": 22.128811,
+      "bbox_x1": 40.218079,
+      "bbox_y0": 44.390411,
+      "bbox_y1": 52.375359
+    }
+  },
+  {
+    "pk": 239,
+    "model": "base.region",
+    "fields": {
+      "rght": 460,
+      "code": "ARE",
+      "name": "United Arab Emirates",
+      "parent": 15,
+      "level": 2,
+      "lft": 459,
+      "tree_id": 90,
+      "bbox_x0": 51.497978,
+      "bbox_x1": 56.38343,
+      "bbox_y0": 22.644409,
+      "bbox_y1": 26.28219
+    }
+  },
+  {
+    "pk": 240,
+    "model": "base.region",
+    "fields": {
+      "rght": 432,
+      "code": "GBR",
+      "name": "United Kingdom",
+      "parent": 5,
+      "level": 2,
+      "lft": 431,
+      "tree_id": 90,
+      "bbox_x0": -13.41393,
+      "bbox_x1": 1.76896,
+      "bbox_y0": 49.16209,
+      "bbox_y1": 60.854691
+    }
+  },
+  {
+    "pk": 241,
+    "model": "base.region",
+    "fields": {
+      "rght": 47,
+      "code": "TZA",
+      "name": "United Republic of Tanzania",
+      "parent": 12,
+      "level": 3,
+      "lft": 46,
+      "tree_id": 90,
+      "bbox_x0": 29.32716,
+      "bbox_x1": 40.443218,
+      "bbox_y0": -11.74569,
+      "bbox_y1": -0.99073
+    }
+  },
+  {
+    "pk": 242,
+    "model": "base.region",
+    "fields": {
+      "rght": 185,
+      "code": "VIR",
+      "name": "United States Virgin Islands",
+      "parent": 255,
+      "level": 3,
+      "lft": 184,
+      "tree_id": 90,
+      "bbox_x0": -65.086281,
+      "bbox_x1": -64.56517,
+      "bbox_y0": 17.681721,
+      "bbox_y1": 18.458139
+    }
+  },
+  {
+    "pk": 243,
+    "model": "base.region",
+    "fields": {
+      "rght": 211,
+      "code": "USA",
+      "name": "United States of America",
+      "parent": 2,
+      "level": 3,
+      "lft": 210,
+      "tree_id": 90,
+      "bbox_x0": -179.150558,
+      "bbox_x1": -66.940643,
+      "bbox_y0": 18.91172,
+      "bbox_y1": 71.441048
+    }
+  },
+  {
+    "pk": 244,
+    "model": "base.region",
+    "fields": {
+      "rght": 239,
+      "code": "URY",
+      "name": "Uruguay",
+      "parent": 4,
+      "level": 3,
+      "lft": 238,
+      "tree_id": 90,
+      "bbox_x0": -58.442719,
+      "bbox_x1": -53.073929,
+      "bbox_y0": -35.047939,
+      "bbox_y1": -30.08222
+    }
+  },
+  {
+    "pk": 245,
+    "model": "base.region",
+    "fields": {
+      "rght": 259,
+      "code": "UZB",
+      "name": "Uzbekistan",
+      "parent": 8,
+      "level": 3,
+      "lft": 258,
+      "tree_id": 90,
+      "bbox_x0": 55.996632,
+      "bbox_x1": 73.132271,
+      "bbox_y0": 37.18433,
+      "bbox_y1": 45.60519
+    }
+  },
+  {
+    "pk": 246,
+    "model": "base.region",
+    "fields": {
+      "rght": 512,
+      "code": "VUT",
+      "name": "Vanuatu",
+      "parent": 256,
+      "level": 2,
+      "lft": 511,
+      "tree_id": 90,
+      "bbox_x0": 166.524994,
+      "bbox_x1": 170.234802,
+      "bbox_y0": -20.25045,
+      "bbox_y1": -13.07345
+    }
+  },
+  {
+    "pk": 247,
+    "model": "base.region",
+    "fields": {
+      "rght": 241,
+      "code": "VEN",
+      "name": "Venezuela (Bolivarian Republic of)",
+      "parent": 4,
+      "level": 3,
+      "lft": 240,
+      "tree_id": 90,
+      "bbox_x0": -73.374313,
+      "bbox_x1": -59.803768,
+      "bbox_y0": 0.74368,
+      "bbox_y1": 12.2019
+    }
+  },
+  {
+    "pk": 248,
+    "model": "base.region",
+    "fields": {
+      "rght": 315,
+      "code": "VNM",
+      "name": "Viet Nam",
+      "parent": 7,
+      "level": 3,
+      "lft": 314,
+      "tree_id": 90,
+      "bbox_x0": 102.144592,
+      "bbox_x1": 116.521233,
+      "bbox_y0": 7.3116,
+      "bbox_y1": 23.39274
+    }
+  },
+  {
+    "pk": 249,
+    "model": "base.region",
+    "fields": {
+      "rght": 514,
+      "code": "WLF",
+      "name": "Wallis and Futuna Islands",
+      "parent": 256,
+      "level": 2,
+      "lft": 513,
+      "tree_id": 90,
+      "bbox_x0": -178.206787,
+      "bbox_x1": -176.08287,
+      "bbox_y0": -14.38779,
+      "bbox_y1": -13.17343
+    }
+  },
+  {
+    "pk": 250,
+    "model": "base.region",
+    "fields": {
+      "rght": 63,
+      "code": "ESH",
+      "name": "Western Sahara",
+      "parent": 11,
+      "level": 3,
+      "lft": 62,
+      "tree_id": 90,
+      "bbox_x0": -17.10317,
+      "bbox_x1": -8.66942,
+      "bbox_y0": 20.774151,
+      "bbox_y1": 28.219179
+    }
+  },
+  {
+    "pk": 251,
+    "model": "base.region",
+    "fields": {
+      "rght": 462,
+      "code": "YEM",
+      "name": "Yemen",
+      "parent": 15,
+      "level": 2,
+      "lft": 461,
+      "tree_id": 90,
+      "bbox_x0": 41.809608,
+      "bbox_x1": 54.535992,
+      "bbox_y0": 12.10717,
+      "bbox_y1": 19.00276
+    }
+  },
+  {
+    "pk": 252,
+    "model": "base.region",
+    "fields": {
+      "rght": 79,
+      "code": "ZMB",
+      "name": "Zambia",
+      "parent": 14,
+      "level": 3,
+      "lft": 78,
+      "tree_id": 90,
+      "bbox_x0": 21.99938,
+      "bbox_x1": 33.705711,
+      "bbox_y0": -18.07947,
+      "bbox_y1": -8.22436
+    }
+  },
+  {
+    "pk": 253,
+    "model": "base.region",
+    "fields": {
+      "rght": 81,
+      "code": "ZWE",
+      "name": "Zimbabwe",
+      "parent": 14,
+      "level": 3,
+      "lft": 80,
+      "tree_id": 90,
+      "bbox_x0": 25.23702,
+      "bbox_x1": 33.056301,
+      "bbox_y0": -22.41773,
+      "bbox_y1": -15.60883
+    }
+  },
+  {
+    "pk": 254,
+    "model": "base.region",
+    "fields": {
+      "rght": 243,
+      "code": "AME",
+      "name": "Americas",
+      "parent": null,
+      "level": 1,
+      "lft": 128,
+      "tree_id": 90,
+      "bbox_x0": -84.114449,
+      "bbox_x1": -84.097572,
+      "bbox_y0": 9.9313,
+      "bbox_y1": 9.94792
+    }
+  },
+  {
+    "pk": 255,
+    "model": "base.region",
+    "fields": {
+      "rght": 186,
+      "code": "CRB",
+      "name": "Caribbean",
+      "parent": 254,
+      "level": 2,
+      "lft": 129,
+      "tree_id": 90,
+      "bbox_x0": -85.260178,
+      "bbox_x1": -59.286541,
+      "bbox_y0": 10.18548,
+      "bbox_y1": 27.454559
+    }
+  },
+  {
+    "pk": 256,
+    "model": "base.region",
+    "fields": {
+      "rght": 515,
+      "code": "PAC",
+      "name": "Pacific",
+      "parent": null,
+      "level": 1,
+      "lft": 464,
+      "tree_id": 90,
+      "bbox_x0": 139.572356,
+      "bbox_x1": -74.531208,
+      "bbox_y0": -56.267241,
+      "bbox_y1": 62.0215969
+    }
+  },
+  {
+    "pk": 257,
+    "model": "base.region",
+    "fields": {
+      "rght": 12,
+      "code": "CFR",
+      "name": "Central Africa",
+      "parent": 10,
+      "level": 2,
+      "lft": 3,
+      "tree_id": 90,
+      "bbox_x0": -25.35874,
+      "bbox_x1": 63.525379,
+      "bbox_y0": -46.900452,
+      "bbox_y1": 37.56712
+    }
+  },
+  {
+    "pk": 258,
+    "model": "base.region",
+    "fields": {
+      "rght": 276,
+      "code": "EAS",
+      "name": "East Asia",
+      "parent": 6,
+      "level": 2,
+      "lft": 261,
+      "tree_id": 90,
+      "bbox_x0": 19.6381,
+      "bbox_x1": 180,
+      "bbox_y0": -12.56111,
+      "bbox_y1": 82.50045
+    }
+  },
+  {
+    "pk": 259,
+    "model": "base.region",
+    "fields": {
+      "rght": 59,
+      "code": "SSD",
+      "name": "South Sudan",
+      "parent": 11,
+      "level": 3,
+      "lft": 58,
+      "tree_id": 90,
+      "bbox_x0": 24.15192,
+      "bbox_x1": 35.947689,
+      "bbox_y0": 3.48639,
+      "bbox_y1": 12.21558
+    }
+  }
+]

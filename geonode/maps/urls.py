@@ -57,6 +57,7 @@ urlpatterns = patterns(
     url(r'^(?P<mapid>[^/]+)/wms$', 'map_wms', name='map_wms'),
     url(r'^(?P<mapid>[^/]+)/remove$', 'map_remove', name='map_remove'),
     url(r'^(?P<mapid>[^/]+)/metadata$', 'map_metadata', name='map_metadata'),
+    url(r'^(?P<mapid>[^/]+)/metadata_advanced$', 'map_metadata_advanced', name='map_metadata_advanced'),
     url(r'^(?P<mapid>[^/]+)/embed$', 'map_embed', name='map_embed'),
     url(r'^(?P<mapid>[^/]+)/history$', 'ajax_snapshot_history'),
     url(r'^(?P<mapid>\d+)/thumbnail$', 'map_thumbnail', name='map_thumbnail'),

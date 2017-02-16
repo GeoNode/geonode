@@ -114,7 +114,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='resourcebase',
             name='tkeywords',
-            field=models.ManyToManyField(help_text='formalised word(s) or phrase(s) from a fixed thesaurus used to describe the subject (space or comma-separated', to='base.ThesaurusKeyword'),
+            field=models.ManyToManyField(help_text='formalised word(s) or phrase(s) from a fixed thesaurus used to describe the subject (space or comma-separated', to='base.ThesaurusKeyword', null=True, blank=True),
         ),
         migrations.AlterUniqueTogether(
             name='thesauruskeywordlabel',
@@ -123,5 +123,30 @@ class Migration(migrations.Migration):
         migrations.AlterUniqueTogether(
             name='thesauruskeyword',
             unique_together=set([('thesaurus', 'alt_label')]),
+        ),
+        migrations.AddField(
+            model_name='region',
+            name='bbox_x0',
+            field=models.DecimalField(null=True, max_digits=19, decimal_places=10, blank=True),
+        ),
+        migrations.AddField(
+            model_name='region',
+            name='bbox_x1',
+            field=models.DecimalField(null=True, max_digits=19, decimal_places=10, blank=True),
+        ),
+        migrations.AddField(
+            model_name='region',
+            name='bbox_y0',
+            field=models.DecimalField(null=True, max_digits=19, decimal_places=10, blank=True),
+        ),
+        migrations.AddField(
+            model_name='region',
+            name='bbox_y1',
+            field=models.DecimalField(null=True, max_digits=19, decimal_places=10, blank=True),
+        ),
+        migrations.AddField(
+            model_name='region',
+            name='srid',
+            field=models.CharField(default=b'EPSG:4326', max_length=255),
         ),
     ]

@@ -1,0 +1,160 @@
+{% include "geonode/ext_header.html" %}
+{% include "geonode/app_header.html" %}
+{% include "geonode/geo_header_mini.html" %}
+<script type="text/javascript">
+{% autoescape off %}
+        var app;
+        Ext.onReady(function() {
+            GeoExt.Lang.set("{{ LANGUAGE_CODE }}");
+            var config = {
+                tools: [{
+                    ptype: "gxp_wmsgetfeatureinfo",
+                    format: "grid",
+                    actionTarget: "main.tbar",
+                    outputConfig: {width: 400, height: 200, panIn: false}
+                }],
+                {% if PROXY_URL %}
+                proxy: '{{ PROXY_URL }}',
+                {% endif %}
+                {% if 'access_token' in request.session %}
+                localGeoServerBaseUrl: "{{GEOSERVER_BASE_URL}}?access_token={{request.session.access_token}}",
+                {% else %}
+                localGeoServerBaseUrl: "{{GEOSERVER_BASE_URL}}",
+                {% endif %}
+                authorizedRoles: "{{ user.is_authenticated|yesno:"ROLE_ADMINISTRATOR,ROLE_ANONYMOUS" }}",
+
+                /* The URL to a REST map configuration service.  This service 
+                 * provides listing and, with an authenticated user, saving of 
+                 * maps on the server for sharing and editing.
+                 */
+                rest: "/maps/",
+                {% if MAPFISH_PRINT_ENABLED %}
+                printService: "{{GEOSERVER_BASE_URL}}pdf/",
+                {% else %}
+                printService: "",
+                {% endif %}
+
+                portalConfig: {
+                    renderTo: "preview_map",
+                    height: 250
+                },
+
+                listeners: {
+                    "ready": function() {
+                        var map = app.mapPanel.map;
+                        var layer = app.map.layers.slice(-1)[0];
+
+                        // FIXME(Ariel): Zoom to extent until #1795 is fixed.
+                        //map.zoomToExtent(layer.maxExtent, false)
+                        
+                        var bbox = layer.bbox;
+                        if (bbox != undefined)
+                        {
+                           if (!Array.isArray(bbox) && Object.keys(layer.srs) in bbox) {
+                            bbox = bbox[Object.keys(layer.srs)].bbox;
+                           }
+
+                           var extent = OpenLayers.Bounds.fromArray(bbox);
+                           var zoomToData = function()
+                           {
+                               map.zoomToExtent(extent, false);
+                               app.mapPanel.center = map.center;
+                               app.mapPanel.zoom = map.zoom;
+                               map.events.unregister('changebaselayer', null, zoomToData);
+                           };
+                           map.events.register('changebaselayer',null,zoomToData);
+                           if(map.baseLayer){
+                            map.zoomToExtent(extent, false);
+                           }
+                        }
+                    },
+                    "beforeunload": function() {
+                        if (modified) {
+                            // styleEditor.show();
+                            return false;
+                        }
+                    }
+                }
+            };
+
+            config = Ext.apply(config, {{ viewer|safe }});
+			
+			//
+			// Extrapolating the granules times
+			//
+			var is_mosaic = "{{resource.is_mosaic}}" == "True" ? true : false;
+			if(is_mosaic){
+				var resource_name = "{{resource.name}}";
+				
+				var granules_features = {% if all_granules %} {{all_granules.features}} {% else %} [] {% endif %};
+				
+				var time_list = [];
+				for(var i=0; i<granules_features.length; i++){
+					var feature = granules_features[i];
+					
+					if(feature.properties.time){
+						var date = new Date(feature.properties.time);
+						var time = date.toISOString();
+						
+						if(time){
+							time_list.push(time);
+						}
+					}
+				}
+				
+				//
+				// Setting the time dimension accordingly to the granule time list
+				// 
+				var layers = config.map.layers;
+				for(var layer in layers){
+					l = layers[layer];
+					if(!l.background && l.name && l.name.indexOf(resource_name) != -1){
+						l.dimensions = {
+							time:{
+								"name":"time",
+								"units":"ISO8601",
+								"unitsymbol":null,
+								"nearestVal":false,
+								"multipleVal":false,
+								"current":false,
+								"default":"current",
+								"values": time_list // granule time list
+							}
+						}
+					}
+				}
+			}
+            app = new GeoExplorer.Viewer(config);
+
+            for (var key in app.tools) {
+                var tool = app.tools[key];
+                if (tool.ptype == 'gxp_styler') {
+                    tool.rasterStyling = false;
+                };
+            };
+
+            // change style displayed in map
+            Ext.get(Ext.DomQuery.select("input[@name='style']")).on("click", function(evt, elem) {
+                app.selectedLayer.getLayer().mergeNewParams({
+                    "STYLES": elem.id,
+                    "_dc": Math.random()
+                }); 
+            });
+            
+            Ext.get(Ext.DomQuery.select(".style-edit")).on("click", function(evt, elem) {
+                for (var key in app.tools) {
+                    var tool = app.tools[key];
+                    if (tool.ptype == 'gxp_styler') {
+                        tool.actions[0].execute();
+                    };
+                }
+            });
+            Ext.Ajax.on('requestcomplete', function(req, cippa, opts){
+                if(opts.method == 'PUT'){
+                    $('#legend_icon').attr('src', $('#legend_icon').attr('src')+'&'+Math.random());
+                }   
+            }, this);
+        });
+    
+    {% endautoescape %}
+    </script>

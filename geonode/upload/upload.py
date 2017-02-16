@@ -609,7 +609,7 @@ def final_step(upload_session, user):
         sld = get_sld_for(publishing)
 
     style = None
-    print " **************************************** "
+    # print " **************************************** "
     if sld is not None:
         try:
             cat.create_style(name, sld)
