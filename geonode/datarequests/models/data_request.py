@@ -27,6 +27,8 @@ from geonode.people.models import Profile
 from .profile_request import ProfileRequest
 from .base_request import BaseRequest
 
+import geonode.local_settings as local_settings
+
 class DataRequest(BaseRequest):
 
     DATA_TYPE_CHOICES = Choices(
