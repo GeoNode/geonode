@@ -60,7 +60,7 @@ def get_juris_tiles(juris_shp, user=None):
                     )
             pprint("A problem with the shapefile was encountered")
             return []
-    
+    pprint("Computing bounds")
     min_x =  tile_floor(juris_shp.bounds[0])
     #max_x =  int(math.ceil(float(juris_shp.bounds[2]) / float(settings._TILE_SIZE))) * int(settings._TILE_SIZE)
     max_x = tile_ceiling(juris_shp.bounds[2])
