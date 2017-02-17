@@ -36,6 +36,7 @@ class AnonDownloaderForm(forms.ModelForm):
             'anon_purpose',
             'anon_organization',
             'anon_orgtype',
+            'anon_orgother',
             'captcha'
         )
     def __init__(self, *args, **kwargs):
@@ -59,6 +60,10 @@ class AnonDownloaderForm(forms.ModelForm):
                 Div(
                     Field('anon_orgtype', css_class='form-control'),
                     css_class='form-group', style="vertical-align:top;"
+                ),
+                Div(
+                    Field('anon_orgother', css_class='form-control'),
+                    css_class='form-group'
                 ),
                 Div(
                     Field('anon_purpose', css_class='form-control'),
