@@ -181,11 +181,14 @@ def get_juris_data_size(juris_shp_name):
                 total_data_size += total_size
     return total_data_size
 
-def get_area_coverage(juris_shp):
-    if juris_shp:
-        return juris_shp.area/1000000
-    else:
-        return 0
+def get_area_coverage(geoms):
+    area = 0
+    
+    for g in geoms:
+        area += g.area
+        
+    return area/1000000
+
 
 def get_shp_ogr(juris_shp_name):
     source = ogr.Open(("PG:host={0} dbname={1} user={2} password={3}".format(settings.DATABASE_HOST,settings.DATASTORE_DB,settings.DATABASE_USER,settings.DATABASE_PASSWORD)))
