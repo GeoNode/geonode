@@ -37,13 +37,13 @@
           <div class="modal-body" >
             <div class="form-check">
               <label class="form-check-label">
-                <input class="form-check-input" type="radio" name="sample"value="fhm">
+                <input class="form-check-input" type="radio" name="sample" value="fhm">
                 Update Flood Hazard Map Metadata
               </label>
             </div>
             <div class="form-check">
               <label class="form-check-label">
-                <input class="form-check-input" type="radio" name="sample"value="resourcelayer">
+                <input class="form-check-input" type="radio" name="sample" value="resourcelayer">
                 Update Resource Layer Metadata
               </label>
             </div>
@@ -53,6 +53,19 @@
                 Update SAR DEM Metadata
               </label>
             </div>
+           <div class="form-check">
+              <label class="form-check-label">
+                <input class="form-check-input" type="radio" name="sample" value="floodplain">
+                Update FP/RB and SUC Keywoords
+              </label>
+            </div>
+            <div class="form-check">
+              <label class="form-check-label">
+                <input class="form-check-input" type="radio" name="sample" value="lidar-cov">
+                Update LiDAR Coverage
+              </label>
+            </div>
+
                           <!-- <div>
                 <input type="radio" name="fhm" value="fhm">
                 <label>Flood Hazard Map</label>
@@ -207,7 +220,13 @@ $( "#update-metadata" ).click(function() {
     else if ($( "input:checked" ).val() == "sar"){
             window.location = "{% url 'cephgeo.views.update_sar_metadata' %}";
     }
-    
+    else if ($( "input:checked" ).val() == "floodplain"){
+            window.location = "{% url 'cephgeo.views.update_floodplain_keywords' %}";
+    }
+    else if ($( "input:checked" ).val() == "lidar-cov"){
+            window.location = "{% url 'cephgeo.views.update_lidar_coverage' %}";
+    }
+
 });
 </script>
 <script type="text/javascript">
@@ -222,7 +241,7 @@ $( "#seed-layers" ).click(function() {
     else if ($( "input:checked" ).val() == "sar"){
             window.location = "{% url 'cephgeo.views.seed_SAR_DEM' %}";
     }
-    
+
 });
 </script>
 <script type="text/javascript">
