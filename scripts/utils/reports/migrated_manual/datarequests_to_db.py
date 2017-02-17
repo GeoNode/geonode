@@ -221,6 +221,7 @@ def parse_datarequest_csv(csv_path):
                 # do not have field in DataRequestProfile
 
                 remarks = """ID: {0}
+Name of Requester: {16}
 Agency: {1}
 Position: {2}
 Mailing Address: {3}
@@ -238,7 +239,7 @@ Status: {14}
 Overall Status: {15}""".format(_id, agency, position, mailing_addr, org_sub, raw_request_date,
                                raw_date_received_by_dream, data_requested, action_related, action_id,
                                actions, raw_date_provided, supporting_document, remarks_manual,
-                               status, overall_status)
+                               status, overall_status, orig_name)
                 print 'REMARKS', remarks
                 profile_object = DataRequestProfile(first_name=str(first_name),
                                                     middle_name=str(
@@ -253,7 +254,7 @@ Overall Status: {15}""".format(_id, agency, position, mailing_addr, org_sub, raw
                                                     key_created_date=key_created_date,
                                                     created=created,
                                                     action_date=action_date)
-                profile_object.save()
+                # profile_object.save()
                 print 'Profile: ', profile_object.first_name, profile_object.last_name
                 counter += 1
 
