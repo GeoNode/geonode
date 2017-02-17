@@ -74,7 +74,9 @@ def get_juris_tiles(juris_shp, user=None):
     count = 0
     for tile_y in xrange(min_y+settings._TILE_SIZE, max_y+settings._TILE_SIZE, settings._TILE_SIZE):
         for tile_x in xrange(min_x, max_x, settings._TILE_SIZE):
+            
             tile_ulp = (tile_x, tile_y)
+            pprint("tile_ulp:"+str(tile_ulp))
             tile_dlp = (tile_x, tile_y - settings._TILE_SIZE)
             tile_drp = (tile_x + settings._TILE_SIZE, tile_y - settings._TILE_SIZE)
             tile_urp = (tile_x + settings._TILE_SIZE, tile_y)
