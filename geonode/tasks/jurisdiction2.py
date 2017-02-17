@@ -48,7 +48,6 @@ def tile_ceiling(x):
     return int(math.ceil(x / float(settings._TILE_SIZE)) * settings._TILE_SIZE)
 
 def get_juris_tiles(juris_shp, user=None):
-    
     if not juris_shp.is_valid:
         juris_shp = juris_shp.convex_hull
         if not juris_shp.convex_hull.is_valid:
@@ -67,8 +66,8 @@ def get_juris_tiles(juris_shp, user=None):
     min_y = tile_floor(juris_shp.bounds[1])
     #max_y =  int(math.ceil(float(juris_shp.bounds[3]) / float(settings._TILE_SIZE))) * int(settings._TILE_SIZE)
     max_y = tile_floor(juris_shp.bounds[3])
-    if user:
-        pprint("user: " + user.username + " bounds: "+str((min_x, min_y, max_x, max_y)))
+    #if user:
+    #    pprint("user: " + user.username + " bounds: "+str((min_x, min_y, max_x, max_y)))
     tile_list = []
     count = 0
     for tile_y in xrange(min_y+settings._TILE_SIZE, max_y+settings._TILE_SIZE, settings._TILE_SIZE):
@@ -82,8 +81,7 @@ def get_juris_tiles(juris_shp, user=None):
             
             if not tile.intersection(juris_shp).is_empty:
                 tile_list.append(tile)
-                count+=1
-                if count >= 1000:
+                if len(tile_list) >= 1000:
                     return tile_list
                 
     return tile_list
@@ -103,8 +101,7 @@ def get_juris_data_size(geometry):
     
     for tile in tile_list:
         (minx, miny, maxx, maxy) = tile.bounds
-        gridref = "E{0}N{1}".format(minx / settings._TILE_SIZE, maxy / settings._TILE_SIZE,)
-        pprint("Gridref: "+gridref)
+        gridref = "E{0}N{1}".format(int(minx / settings._TILE_SIZE), int(maxy / settings._TILE_SIZE))
         georef_query = CephDataObject.objects.filter(name__startswith=gridref)
         total_size = 0
         for georef_query_objects in georef_query:
@@ -121,12 +118,14 @@ def assign_grid_ref_util(user):
     
     if geometry:
         tiles = []
-        if geometry.type=='Multipolygon':
-            for g in shapefile:
+        if geometry.geom_type=='MultiPolygon':
+            pprint("Tiling "+str(len(geometry)) + "geometries")
+            for g in geometry.geoms:
                 tiles.extend(get_juris_tiles(g, user))
         else:
-            tiles = get_juris_tiles(shapefile, user)
+            tiles = get_juris_tiles(geometry, user)
         
+        pprint("Done with tiling")
         if len(tiles) < 1:
             pprint("No tiles for {0}".format(user.username))
         else:
@@ -135,6 +134,8 @@ def assign_grid_ref_util(user):
                 gridref = '"E{0}N{1}"'.format(int(minx / settings._TILE_SIZE), int(maxy / settings._TILE_SIZE))
                 
                 gridref_list .append(gridref)
+                if len(gridref_list) >= 1000:
+                    break
             
             if len(gridref_list)==1:
                 pprint("gridref:"+gridref_list[0])
