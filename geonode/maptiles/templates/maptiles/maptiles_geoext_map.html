@@ -136,6 +136,21 @@ $(document).ready(function(){
             document.getElementById("selection-message").style.visibility="collapse";
         });
 });
+function toggle_checkbox_check(source){
+  if (source.checked){
+    checkboxes = document.getElementsByName('georef_checkbox');
+    var is_checked = false;
+    for(var i = 0; i < checkboxes.length; i++){
+      is_checked = checkboxes[i].checked;
+      if (!is_checked) break;
+    }
+    if(is_checked){
+      document.getElementById('checkbox_all').checked = true;
+    }
+  }else{
+    document.getElementById('checkbox_all').checked = false;
+  }
+}
 
 function zoomOnBbox(bounds){
     bbox = new OpenLayers.Bounds(bounds);
@@ -183,7 +198,7 @@ function createTile(computed_corners){
 /*
 Function for displaying the georefs of selected tiles at the bottom of the page
 */
-function display_points(div_id, vec_layer){
+function display_points(div_id){
     var container = document.getElementById(div_id);
     container.removeChild(container.firstElementChild||container.firstChild);
     var table_element = document.createElement("table");
@@ -191,22 +206,35 @@ function display_points(div_id, vec_layer){
     container.appendChild(table_element);
 
     var georef_string = "";
-    //console.log(tile_list);
-    for (var i=0; i< tile_list.length/5; i++){
+    var numofrows = 1;
+    for (var i=0; i< tile_list.length/numofrows; i++){
         var row_element = document.createElement("tr");
         row_element.className += "georef_tr";
         table_element.appendChild(row_element);
-        for (var j = 0; j< Math.min(5, tile_list.length - i*5 ); j++){
+        for (var j = 0; j< Math.min(numofrows, tile_list.length - i*numofrows ); j++){
             var georef_column = document.createElement("td");
-            georef_column.setAttribute("id",tile_list[i*5+j].georef);
-            georef_column.className += "georef_td"
-            georef_column.innerHTML = tile_list[i*5+j].georef
+            georef_column.setAttribute("id",tile_list[i*numofrows+j].georef);
+            georef_column.className += "georef_td";
             row_element.appendChild(georef_column);
 
-            if(i*5+j == 0){
-                georef_string+=tile_list[i*5+j].georef;
+            var georef_checkbox = document.createElement("input");
+            georef_checkbox.type = "checkbox";
+            georef_checkbox.name = "georef_checkbox";
+            georef_checkbox.value = tile_list[i*numofrows+j].georef;
+            georef_checkbox.id = i+j;
+            georef_checkbox.onclick = function(){toggle_checkbox_check(this);};
+
+            var georef_label = document.createElement("label");
+            georef_label.htmlFor = i+j;
+            georef_label.onclick = function(){toggle_checkbox_check(this);};
+            georef_label.appendChild(document.createTextNode(tile_list[i*numofrows+j].georef));
+            georef_column.appendChild(georef_checkbox);
+            georef_column.appendChild(georef_label);
+
+            if(i*numofrows+j == 0){
+                georef_string+=tile_list[i*numofrows+j].georef;
             }else{
-                georef_string+=","+tile_list[i*5+j].georef;
+                georef_string+=","+tile_list[i*numofrows+j].georef;
             }
         }
     }
@@ -232,7 +260,7 @@ function display_message(div_id, message){
 /*
 Function for creating a box for highlighting a selected tile
 */
-function createHighlightBox(feature_attribs){
+function createHighlightBox(feature_attribs, fid){
     var pt1 = new OpenLayers.Geometry.Point(feature_attribs["ul_x"], feature_attribs["ul_y"]).transform(new OpenLayers.Projection("EPSG:32651"), new OpenLayers.Projection("EPSG:900913"));
     var pt2 = new OpenLayers.Geometry.Point(feature_attribs["ur_x"], feature_attribs["ur_y"]).transform(new OpenLayers.Projection("EPSG:32651"), new OpenLayers.Projection("EPSG:900913"));
     var pt3 = new OpenLayers.Geometry.Point(feature_attribs["lr_x"], feature_attribs["lr_y"]).transform(new OpenLayers.Projection("EPSG:32651"), new OpenLayers.Projection("EPSG:900913"));
@@ -242,6 +270,7 @@ function createHighlightBox(feature_attribs){
     var lr = new OpenLayers.Geometry.LinearRing(pts);
     var polygon  = new OpenLayers.Geometry.Polygon([lr]);
     var polygon_feature = new  OpenLayers.Feature.Vector(polygon);
+    polygon_feature.fid = fid;
 
     return polygon_feature;
 }
@@ -341,7 +370,7 @@ function hasDataFiltering( f_list){
 /*
 Function which retrieves selected tiles and filters them if  they don't have data or they are outside the jurisdiction
 */
-function filterSelectedTiles(tile_filter, single_click, send_notice, epsgproj){
+function filterSelectedTiles(tile_filter, single_click, send_notice, epsgproj, georef){
      var wfs_proto = wfs_proto_creator("{{feature_tiled}}", epsgproj,"json");
      var arg_obj = {
          filter: tile_filter,
@@ -354,38 +383,34 @@ function filterSelectedTiles(tile_filter, single_click, send_notice, epsgproj){
                  var added_count = 0;
                  feature_out = olGeoJSON.read(response.priv.responseText);
                  var tiles = hasDataFiltering(feature_out);
-                  if (jurisdiction_geoms.length > 0){
                      for (var i=0;i<tiles.length;i++){
                          var corners = {
-                                        "ur_x": tiles[i].data.MAXX, "ur_y": tiles[i].data.MAXY,
-                                        "ul_x": tiles[i].data.MINX, "ul_y": tiles[i].data.MAXY,
-                                        "ll_x": tiles[i].data.MINX, "ll_y": tiles[i].data.MINY,
-                                        "lr_x": tiles[i].data.MAXX,"lr_y": tiles[i].data.MINY
+                           "ur_x": tiles[i].data.MAXX, "ur_y": tiles[i].data.MAXY,
+                           "ul_x": tiles[i].data.MINX, "ul_y": tiles[i].data.MAXY,
+                           "ll_x": tiles[i].data.MINX, "ll_y": tiles[i].data.MINY,
+                           "lr_x": tiles[i].data.MAXX,"lr_y": tiles[i].data.MINY
                         }
                         var tile = createTile(corners);
-                         if (find_georef(tile_list, tile.georef)<0){
-                               console.log("tile is not yet in the list");
-                               tiles[i].geometry.calculateBounds();
-                               tiles[i].geometry.setBounds(tiles[i].geometry.bounds.transform(
-                                    new OpenLayers.Projection("EPSG:32651"), new OpenLayers.Projection("EPSG:4326")
-                               ));
-                               if (isInJurisdiction(jurisdiction_geoms, tiles[i])){
-                                    console.log("tile is within jurisdiction");
-                                    tile_list.push(tile);
-                                    tile.feature = createHighlightBox(tile.corners);
-                                    highlight_layer.addFeatures([tile.feature]);
-                                    highlight_layer.refresh();
-                                    added_count++;
-                                }else{
-                                    console.log("tile is not within jurisdiction")
-                                }
+                        if (find_georef(tile_list, tile.georef) < 0){
+                          console.log("tile is not yet in the list");
+                          tiles[i].geometry.calculateBounds();
+                          tiles[i].geometry.setBounds(tiles[i].geometry.bounds.transform(
+                            new OpenLayers.Projection("EPSG:32651"), new OpenLayers.Projection("EPSG:4326")
+                          ));
+                          tile_list.push(tile);
+                          tile.feature = createHighlightBox(tile.corners, georef);
+                          highlight_layer.addFeatures([tile.feature]);
+                          added_count++;
+
                         }else if (single_click){
-                                  removeHighlight(tile.georef, highlight_layer);
+                          console.log("tile is already in the list");
+                          removeHighlight(tile.georef,highlight_layer)
                         }
-                     }
+                        highlight_layer.refresh();
                  }
+
             }
-            display_points("point_display", highlight_layer);
+            display_points("point_display");
 
               //if (added_count< feature_out.length){
               //    if (feature_out.length==1){
@@ -494,6 +519,7 @@ function removeHighlight(georef, vec_layer){
     if (index < 0 )
         return;
     vec_layer.removeFeatures([tile_list[index].feature]);
+    vec_layer.refresh();
     tile_list.splice(index,1);
 }
 
@@ -533,12 +559,29 @@ var vector_style = new OpenLayers.Style({
 var vector_style_map = new OpenLayers.StyleMap({
     'default': vector_style
 });
+
+function delete_checked(){
+  var checked = $('input[type="checkbox"][name="georef_checkbox"]:checked').map(function() { return this.value; }).get();
+  for(var i=0; i<checked.length;i++){
+    console.log(checked[i]);
+    removeHighlight(checked[i], highlight_layer);
+  }
+  display_points("point_display");
+  document.getElementById('checkbox_all').checked = false;
+}
+
+function toggle_all_checkboxes(source){
+  checkboxes = document.getElementsByName('georef_checkbox');
+  for(var i = 0; i < checkboxes.length; i++){
+    checkboxes[i].checked = source.checked;
+  }
+}
 /*
 Initialization of the map UI
 */
 Ext.onReady(function (){
 
-    var juris_vec_layer = new OpenLayers.Layer.Vector();
+    //var juris_vec_layer = new OpenLayers.Layer.Vector();
 
     //definition of the Philippine grid layer
     var grid_layer_name = "geonode:{{  feature_tiled }}";
@@ -586,7 +629,7 @@ Ext.onReady(function (){
     var stored_layer = map_options["layers"].filter(function(l){ return l["name"] == grid_layer_name })[0];
     var source_index = stored_layer["source"];
 
-    map.addLayer(juris_vec_layer);
+    //map.addLayer(juris_vec_layer);
 
     // definition of the tiled layer
     var tile_layer = new OpenLayers.Layer.WMS(
@@ -716,7 +759,7 @@ Ext.onReady(function (){
                       value: createTile(computed_corners).georef//tile.georef
               });
               single_click = true;
-              filterSelectedTiles(filter, true, true, "EPSG:32651");
+              filterSelectedTiles(filter, true, true, "EPSG:32651", tile.georef);
           }
       });
 
@@ -729,7 +772,7 @@ Ext.onReady(function (){
     app = new GeoExt.MapPanel(config);
     if(jurisdiction_args ){
         map.zoomToExtent(jurisdiction_view_layer['maxExtent']);
-        getJurisdictionGeom(jurisdiction_name.split(":")[1], juris_vec_layer);
+        //getJurisdictionGeom(jurisdiction_name.split(":")[1], juris_vec_layer);
     }else{
         map.zoomToExtent(tile_layer.getExtent());
     }
