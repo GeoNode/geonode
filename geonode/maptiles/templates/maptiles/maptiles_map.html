@@ -100,7 +100,7 @@ body{
      <div class="side-navi-tab">
           <div style="padding: 25px;">
             <h4 class="list-group-item-heading">{%trans "Download Data" %}</h4>
-            <p>1. Select tiles on the left by either clicking on individual tiles, or select multiple tiles by holding down shift while drawing a bounding box. <br><i>Note: You need to upload a shapefile of your area of interest before being able to select tiles for download. To upload a shapefile, please <a href="{% url 'datarequests:request_register' %}">update your data request.</a></i></p>
+            <p>1. Select tiles on the left by either clicking on individual tiles, or select multiple tiles by holding down shift while drawing a bounding box. <br><i>Note: You need to upload a shapefile of your area of interest before being able to select tiles for download. To upload a shapefile, please <a href="{% url 'datarequests:registration_part_one' %}">update your data request.</a></i></p>
             <p>2. Select data type below and click Download.</p>
             <form name="georef_form" id="georef_form" action="/maptiles/addtocart/" method="POST" >
               {% csrf_token %}
@@ -153,34 +153,26 @@ body{
      </div>
    </div>
  </div>
-<div style="position: fixed; top: 10%; left: 50px;">
-  <div id = "floating-legend" style="background: white; padding: 15px 50px 15px 15px; width:auto; display:inline-block;">
-      <h4 class="list-group-item-heading">{%trans "Legend" %}</h4>
-      <img id="legend_icon" src="{{ grid.resource.get_legend.url }}"><br/>
-      <img id="legend_icon2" src="{{jurisdiction.resource.get_legend.url}}">
-  </div>
-  <div style="min-height: 150px; background: white; padding: 15px 15px; margin-top: 20px; width: 300px;">
-    <div id="notif" style="margin: 0px -15px;">
-    </div>
-    <div style="max-height: 500px; overflow-y: auto; overflow-x: hidden;">
-       <div class="page-header" style="margin-top: -10px;">
-          <h4 class="page-title">Selected Tiles <div id="data_size_display" style="display:inline-block;">- 0 Byte</div></h3>
-       </div>
-       <div>
-         <input id="checkbox_all" type="checkbox" onClick="toggle_all_checkboxes(this)" style="display:inline-block;">
-         <button onclick="delete_checked()"><i class="fa fa-trash-o" aria-hidden="true"></i></button>
-       </div>
-       <div class="row" id="point_display" style="padding:0px 30px 30px 30px;">
-       </div>
-    </div>
-  </div>
-</div>
+ <div id = "floating-legend" style="position: fixed; top: 10%; left: 50px; background: white; padding: 15px 50px 15px 15px;">
+    <h4 class="list-group-item-heading">{%trans "Legend" %}</h4>
+    <img id="legend_icon" src="{{ grid.resource.get_legend.url }}"><br/>
+    <img id="legend_icon2" src="{{jurisdiction.resource.get_legend.url}}">
+ </div>
  <!--ATTRIBUTION-->
-<div style="position: fixed; bottom: 50px; left: 50px; width: 220px; white-space: normal;">
+ <div style="position: fixed; bottom: 50px; left: 50px; width: 220px; white-space: normal;">
    Imagery from <br>
    <a href='http://giscience.uni-hd.de/'>GIScience Research Group @ University of Heidelberg</a> &mdash;<br>
-   Map data &copy; <a href='http://www.openstreetmap.org/copyright'>OpenStreetMap</a>
-</div>
+   Map data &copy; <a href='http://www.openstreetmap.org/copyright'>OpenStreetMap</a></div>
+ <div style="position: fixed; bottom: 0px; left: 50%; width: 60%; margin-left: -30%; min-height: 150px; background: white; padding: 0px 15px;">
+   <div id="notif" style="margin: 0px -15px;">
+
+   </div>
+   <div style="max-height: 150px; overflow-y: auto; overflow-x: hidden;">
+     <div class="page-header" style="margin-top: -10px;">
+        <h3 class="page-title">Selected Tiles <div id="data_size_display" style="display:inline-block;">- 0 Byte</div></h3>
+     </div>
+     <div class="row" id="point_display" style="padding:0px 30px 30px 30px;">
+   </div>
 {% endblock %}
 {% endblock %}
 {% block extra_script %}
