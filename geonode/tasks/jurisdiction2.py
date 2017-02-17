@@ -73,6 +73,7 @@ def get_juris_tiles(juris_shp, user=None):
     tile_list = []
     count = 0
     
+    pprint("min y, max y: "+str((min_y, max_y)))
     pprint("xrange y:"+str(list(xrange(min_y+settings._TILE_SIZE, max_y+settings._TILE_SIZE, settings._TILE_SIZE))))
     pprint("xrange x:"+str(list(xrange(min_x, max_x, settings._TILE_SIZE))))
     
