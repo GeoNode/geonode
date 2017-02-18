@@ -276,9 +276,8 @@ Filters tiles if they intersect the geometries which are part of the jurisdictio
 */
 
 function isInJurisdiction(geoms, tile){
-    console.log(tile);
     for ( var i=0; i<geoms.length; i++){
-        //console.log(geoms[i].geometry.bounds)
+        console.log(tile.geometry.bounds)
         if (geoms[i].geometry.bounds.transform(new OpenLayers.Projection("EPSG:32651"), new OpenLayers.Projection("EPSG:4326")).intersectsBounds(tile.geometry.bounds)){
             console.log("intersection found")
             return true;
@@ -292,6 +291,7 @@ function isInJurisdiction(geoms, tile){
             return true;
         }
     }
+    console.log("no intersection found")
     return false;
 }
 
@@ -374,7 +374,7 @@ function filterSelectedTiles(tile_filter, single_click, send_notice, epsgproj){
                                console.log("tile is not yet in the list");
                                
                                tiles[i].geometry.calculateBounds();
-                               console.log(tiles[i].geometry.bounds)
+
                                tiles[i].geometry.setBounds(tiles[i].geometry.bounds.transform(
                                     new OpenLayers.Projection(epsgproj), new OpenLayers.Projection("EPSG:4326")
                                ));
