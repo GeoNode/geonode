@@ -278,15 +278,18 @@ Filters tiles if they intersect the geometries which are part of the jurisdictio
 function isInJurisdiction(geoms, tile){
     for ( var i=0; i<geoms.length; i++){
         console.log(tile.geometry.bounds)
-        if (geoms[i].geometry.bounds.transform(new OpenLayers.Projection("EPSG:32651"), new OpenLayers.Projection("EPSG:4326")).intersectsBounds(tile.geometry.bounds)){
+        if (geoms[i].geometry.bounds.transform(new OpenLayers.Projection("EPSG:32651"), new OpenLayers.Projection("EPSG:4326")).containsBounds(
+                {'bounds':tile.geometry.bounds, 'partial':true})){
             console.log("intersection found")
             return true;
         }
-        if (geoms[i].geometry.bounds.transform(new OpenLayers.Projection("EPSG:900913"), new OpenLayers.Projection("EPSG:4326")).intersectsBounds(tile.geometry.bounds)){
+        if (geoms[i].geometry.bounds.transform(new OpenLayers.Projection("EPSG:900913"), new OpenLayers.Projection("EPSG:4326")).containsBounds(
+                {'bounds':tile.geometry.bounds, 'partial':true})){
             console.log("intersection found")
             return true
         }
-        if (geoms[i].geometry.bounds.intersectsBounds(tile.geometry.bounds)){
+        if (geoms[i].geometry.bounds.containsBounds(
+                {'bounds':tile.geometry.bounds, 'partial':true})){
             console.log("intersection found")
             return true;
         }
