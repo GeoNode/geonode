@@ -368,8 +368,9 @@ function filterSelectedTiles(tile_filter, single_click, send_notice, epsgproj){
                         var tile = createTile(corners);
                          if (find_georef(tile_list, tile.georef)<0){
                                console.log("tile is not yet in the list");
-                               console.log(epsgproj)
+                               
                                tiles[i].geometry.calculateBounds();
+                               console.log(tiles[i].geometry.bounds)
                                tiles[i].geometry.setBounds(tiles[i].geometry.bounds.transform(
                                     new OpenLayers.Projection(epsgproj), new OpenLayers.Projection("EPSG:4326")
                                ));
