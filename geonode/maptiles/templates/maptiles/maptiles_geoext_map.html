@@ -278,10 +278,12 @@ Filters tiles if they intersect the geometries which are part of the jurisdictio
 function isInJurisdiction(geoms, tile){
     console.log(tile);
     for ( var i=0; i<geoms.length; i++){
-        if (geoms[i].geometry.bounds.bottom > 10000) 
+        console.log(geoms[i].geometry.bounds)
+        if (geoms[i].geometry.bounds.bottom > 10000) {
+            //console.log("transform needed")
             if (geoms[i].geometry.bounds.transform(new OpenLayers.Projection("EPSG:32651"), new OpenLayers.Projection("EPSG:4326")).intersectsBounds(tile.geometry.bounds)){
-            
-            return true;
+                return true;
+            }
         }else if (geoms[i].geometry.bounds.intersectsBounds(tile.geometry.bounds)){
             return true;
         }
@@ -366,6 +368,7 @@ function filterSelectedTiles(tile_filter, single_click, send_notice, epsgproj){
                         var tile = createTile(corners);
                          if (find_georef(tile_list, tile.georef)<0){
                                console.log("tile is not yet in the list");
+                               console.log(epsgproj)
                                tiles[i].geometry.calculateBounds();
                                tiles[i].geometry.setBounds(tiles[i].geometry.bounds.transform(
                                     new OpenLayers.Projection(epsgproj), new OpenLayers.Projection("EPSG:4326")
