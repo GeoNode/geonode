@@ -74,6 +74,7 @@ var olGeoJSON = new OpenLayers.Format.GeoJSON();
 // added stuff
 
 var _TILE_SIZE = 1000;
+var tile_proj = "EPSG:32651"
 
 $(document).ready(function(){
 
@@ -386,9 +387,9 @@ function filterSelectedTiles(tile_filter, single_click, send_notice, epsgproj){
                                
                                tiles[i].geometry.calculateBounds();
 
-                               tiles[i].geometry.setBounds(tiles[i].geometry.bounds.transform(
+                               /*tiles[i].geometry.setBounds(tiles[i].geometry.bounds.transform(
                                     new OpenLayers.Projection(epsgproj), new OpenLayers.Projection("EPSG:4326")
-                               ));
+                               ));*/
                                if (isInJurisdiction(jurisdiction_geoms, tiles[i])){
                                     tile_list.push(tile);
                                     tile.feature = createHighlightBox(tile.corners);
