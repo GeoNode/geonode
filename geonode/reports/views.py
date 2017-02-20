@@ -135,7 +135,7 @@ def report_distribution_status(request, template='reports/distribution_status.ht
                 elif eachinlist.request_status == 'cancelled' and all(rearrange_dr[keytoappend] != x for x in ['approved','rejected','pending']):
                     rearrange_dr[keytoappend] = [eachinlist.created.strftime('%Y%m'), eachinlist.request_status, eachinlist.organization_type]
             else:
-                rearrange_dr[keytoappend] = [eachinlist.created.strftime('%Y%m'), eachinlist.request_status, eachinlist.organization_type]
+                rearrange_dr[keytoappend] = [eachinlist.created.strftime('%Y%m'), eachinlist.request_status, eachinlist.org_type]
     print rearrange_dr
     for eachusername, eachdr in rearrange_dr.iteritems():
         if eachdr[0] not in monthly_datarequest:
