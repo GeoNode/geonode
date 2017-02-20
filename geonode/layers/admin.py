@@ -20,19 +20,15 @@
 
 from django.contrib import admin
 
-from geonode.base.admin import MediaTranslationAdmin, ResourceBaseAdminForm
+from geonode.base.admin import MediaTranslationAdmin
 from geonode.layers.models import Layer, Attribute, Style
 from geonode.layers.models import LayerFile, UploadSession
+
+import autocomplete_light
 
 
 class AttributeInline(admin.TabularInline):
     model = Attribute
-
-
-class LayerAdminForm(ResourceBaseAdminForm):
-
-    class Meta:
-        model = Layer
 
 
 class LayerAdmin(MediaTranslationAdmin):
@@ -41,18 +37,24 @@ class LayerAdmin(MediaTranslationAdmin):
         'typename',
         'service_type',
         'title',
+        'Floodplains',
+        'SUC',
         'date',
         'category')
     list_display_links = ('id',)
     list_editable = ('title', 'category')
-    list_filter = ('storeType', 'owner', 'category',
+    list_filter = ('owner', 'category',
                    'restriction_code_type__identifier', 'date', 'date_type')
+    def Floodplains(self, obj):
+        return u", ".join(o.name for o in obj.floodplain_tag.all())
+    def SUC(self, obj):
+        return u", ".join(o.name for o in obj.SUC_tag.all())
     search_fields = ('typename', 'title', 'abstract', 'purpose',)
     filter_horizontal = ('contacts',)
     date_hierarchy = 'date'
     readonly_fields = ('uuid', 'typename', 'workspace')
     inlines = [AttributeInline]
-    form = LayerAdminForm
+    form = autocomplete_light.modelform_factory(Layer)
 
 
 class AttributeAdmin(admin.ModelAdmin):
