@@ -50,10 +50,6 @@ vec_exts = shp_exts + csv_exts + kml_exts
 
 cov_exts = ['.tif', '.tiff', '.geotiff', '.geotif']
 
-<<<<<<< HEAD
-
-=======
->>>>>>> master
 class SUCTag (TagBase):
     pass
 
@@ -67,12 +63,8 @@ class FloodplainTag (TagBase):
 
 
 class FloodplainTaggedItem (GenericTaggedItemBase):
-    tag = models.ForeignKey(FloodplainTag,related_name='floodplain_tag')
+    tag = models.ForeignKey(FloodplainTag, related_name='floodplain_tag')
 
-<<<<<<< HEAD
-
-=======
->>>>>>> master
 class Style(models.Model):
 
     """Model for storing styles.
@@ -91,12 +83,9 @@ class Style(models.Model):
     def __str__(self):
         return "%s" % self.name.encode('utf-8')
 
-<<<<<<< HEAD
     def absolute_url(self):
         return self.sld_url().split('geoserver/', 1)[1]
 
-=======
->>>>>>> master
 
 class LayerManager(ResourceBaseManager):
 
@@ -215,17 +204,12 @@ class Layer(ResourceBase):
 
         # we need to check, for shapefile, if column names are valid
         if self.storeType == 'dataStore':
-<<<<<<< HEAD
             valid_shp, wrong_column_name, list_col = check_shp_columnnames(
                 self)
             if wrong_column_name:
                 msg = 'Shapefile has an invalid column name: %s' % wrong_column_name
             else:
                 msg = _('File cannot be opened, maybe check the encoding')
-=======
-            valid_shp, wrong_column_name = check_shp_columnnames(self)
-            msg = 'Shapefile has an invalid column name: %s' % wrong_column_name
->>>>>>> master
             assert valid_shp, msg
 
         # no error, let's return the base files
@@ -277,11 +261,7 @@ class Layer(ResourceBase):
     # riverbasin tagging
     floodplain_tag = TaggableManager(
         verbose_name='Floodplain Tags', through=FloodplainTaggedItem, blank=True)
-<<<<<<< HEAD
-    
-=======
 
->>>>>>> master
     @property
     def class_name(self):
         return self.__class__.__name__
