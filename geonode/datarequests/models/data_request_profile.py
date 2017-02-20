@@ -36,13 +36,6 @@ from django.conf import settings as local_settings
 from .data_request import DataRequest
 from .profile_request import ProfileRequest
 
-class LipadOrgType(models.Model):
-    val = models.CharField(_('Value'), max_length=100)
-    display_val = models.CharField(_('Display'), max_length=100)
-
-    def __unicode__(self):
-        return (_('{}').format(self.val,))
-
 class DataRequestProfile(TimeStampedModel):
 
     # Choices that will be used for fields
