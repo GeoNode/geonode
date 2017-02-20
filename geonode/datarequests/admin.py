@@ -1,7 +1,6 @@
 from django.contrib import admin
 
-<<<<<<< HEAD
-from geonode.datarequests.models import DataRequestProfile, RequestRejectionReason, DataRequest, ProfileRequest, BaseRequest
+from geonode.datarequests.models import DataRequestProfile, RequestRejectionReason, DataRequest, ProfileRequest, BaseRequest, LipadOrgType
 
 #class BaseRequestAdmin(admin.ModelAdmin):
 #   model = BaseRequest
@@ -14,9 +13,6 @@ class ProfileRequestAdmin(admin.ModelAdmin):
 class DataRequestAdmin(admin.ModelAdmin):
     model = DataRequest
     search_fields=('id', 'status','request_letter__title','administrator__username')
-=======
-from geonode.datarequests.models import DataRequestProfile, RequestRejectionReason, LipadOrgType
->>>>>>> master
 
 class DataRequestProfileAdmin(admin.ModelAdmin):
     model = DataRequestProfile
