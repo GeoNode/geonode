@@ -114,26 +114,26 @@ def report_distribution_status(request, template='reports/distribution_status.ht
             if not eachinlist.profile.is_staff and not any('test' in var for var in [auth.actor, getprofile_downloadtracker.first_name, getprofile_downloadtracker.last_name]):
                 if username_dr in rearrange_dr.keys():
                     if eachinlist.request_status == 'approved':
-                        rearrange_dr[username_dr] = [eachinlist.created.strftime('%Y%m'), eachinlist.request_status, eachinlist.organization_type]
+                        rearrange_dr[username_dr] = [eachinlist.created.strftime('%Y%m'), eachinlist.request_status, eachinlist.org_type]
                     elif eachinlist.request_status == 'rejected' and rearrange_dr[username_dr] != 'approved':
-                        rearrange_dr[username_dr] = [eachinlist.created.strftime('%Y%m'), eachinlist.request_status, eachinlist.organization_type]
+                        rearrange_dr[username_dr] = [eachinlist.created.strftime('%Y%m'), eachinlist.request_status, eachinlist.org_type]
                     elif eachinlist.request_status == 'pending' and all(rearrange_dr[username_dr] != x for x in ['approved','rejected']):
-                        rearrange_dr[username_dr] = [eachinlist.created.strftime('%Y%m'), eachinlist.request_status, eachinlist.organization_type]
+                        rearrange_dr[username_dr] = [eachinlist.created.strftime('%Y%m'), eachinlist.request_status, eachinlist.org_type]
                     elif eachinlist.request_status == 'cancelled' and all(rearrange_dr[username_dr] != x for x in ['approved','rejected','pending']):
-                        rearrange_dr[username_dr] = [eachinlist.created.strftime('%Y%m'), eachinlist.request_status, eachinlist.organization_type]
+                        rearrange_dr[username_dr] = [eachinlist.created.strftime('%Y%m'), eachinlist.request_status, eachinlist.org_type]
                 else:
-                    rearrange_dr[username_dr] = [eachinlist.created.strftime('%Y%m'), eachinlist.request_status, eachinlist.organization_type]
+                    rearrange_dr[username_dr] = [eachinlist.created.strftime('%Y%m'), eachinlist.request_status, eachinlist.org_type]
         except:#datarequests without usernames
             keytoappend = unidecode(eachinlist.first_name) + unidecode(eachinlist.last_name)
             if keytoappend in rearrange_dr.keys():
                 if eachinlist.request_status == 'approved':
-                    rearrange_dr[keytoappend] = [eachinlist.created.strftime('%Y%m'), eachinlist.request_status, eachinlist.organization_type]
+                    rearrange_dr[keytoappend] = [eachinlist.created.strftime('%Y%m'), eachinlist.request_status, eachinlist.org_type]
                 elif eachinlist.request_status == 'rejected' and rearrange_dr[keytoappend] != 'approved':
-                    rearrange_dr[keytoappend] = [eachinlist.created.strftime('%Y%m'), eachinlist.request_status, eachinlist.organization_type]
+                    rearrange_dr[keytoappend] = [eachinlist.created.strftime('%Y%m'), eachinlist.request_status, eachinlist.org_type]
                 elif eachinlist.request_status == 'pending' and all(rearrange_dr[keytoappend] != x for x in ['approved','rejected']):
-                    rearrange_dr[keytoappend] = [eachinlist.created.strftime('%Y%m'), eachinlist.request_status, eachinlist.organization_type]
+                    rearrange_dr[keytoappend] = [eachinlist.created.strftime('%Y%m'), eachinlist.request_status, eachinlist.org_type]
                 elif eachinlist.request_status == 'cancelled' and all(rearrange_dr[keytoappend] != x for x in ['approved','rejected','pending']):
-                    rearrange_dr[keytoappend] = [eachinlist.created.strftime('%Y%m'), eachinlist.request_status, eachinlist.organization_type]
+                    rearrange_dr[keytoappend] = [eachinlist.created.strftime('%Y%m'), eachinlist.request_status, eachinlist.org_type]
             else:
                 rearrange_dr[keytoappend] = [eachinlist.created.strftime('%Y%m'), eachinlist.request_status, eachinlist.org_type]
     print rearrange_dr
