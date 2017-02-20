@@ -324,7 +324,7 @@ INSTALLED_APPS = (
     'south',
     'corsheaders',
     'captcha',
-    
+
     #CAS client
     'django_cas_ng',
 ) + GEONODE_APPS
@@ -1003,3 +1003,6 @@ PH_BBOX= [116.22307468566594, 4.27103012208686, 127.09228398538997, 21.251016939
 _TILE_SIZE = 1000
 
 CAS_VERSION = 3
+
+FP_DELINEATION_PL1 = 'fp_252_20161026v2'
+RB_DELINEATION_DREAM = 'DREAM_RB'
