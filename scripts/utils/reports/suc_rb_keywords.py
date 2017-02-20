@@ -75,7 +75,6 @@ def assign_tags(mode, results, layer):
 def tag_layer(layer):
 
     _logger.info('Layer name: %s', layer.name)
-
     # Connect to database
     conn = psycopg2.connect(("host={0} dbname={1} user={2} password={3}".format
                              (settings.DATABASE_HOST,
