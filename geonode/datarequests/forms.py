@@ -17,11 +17,7 @@ from geonode.documents.models import Document
 from geonode.documents.forms import DocumentCreateForm
 from geonode.people.models import OrganizationType, Profile
 
-<<<<<<< HEAD
-from .models import DataRequestProfile, RequestRejectionReason, DataRequest, ProfileRequest
-=======
-from .models import DataRequestProfile, RequestRejectionReason, LipadOrgType
->>>>>>> master
+from .models import DataRequestProfile, RequestRejectionReason, DataRequest, ProfileRequest, LipadOrgType
 
 from pprint import pprint
 
@@ -74,8 +70,6 @@ class ProfileRequestForm(forms.ModelForm):
         ('student', _('Student')),
     )
 
-<<<<<<< HEAD
-=======
     org_type = forms.ChoiceField(
         choices = ORG_TYPE_CHOICES,
         initial = "Other",
@@ -97,7 +91,6 @@ class ProfileRequestForm(forms.ModelForm):
     #     required=False
     # )
 
->>>>>>> master
     def __init__(self, *args, **kwargs):
 
         super(ProfileRequestForm, self).__init__(*args, **kwargs)
