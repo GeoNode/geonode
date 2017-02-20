@@ -33,6 +33,12 @@ import traceback
 from django.conf import settings as local_settings
 
 
+class LipadOrgType(models.Model):
+    val = models.CharField(_('Value'), max_length=100)
+    display_val = models.CharField(_('Display'), max_length=100)
+
+    def __unicode__(self):
+        return (_('{}').format(self.val,))
 
 class BaseRequest(TimeStampedModel, StatusModel):
     

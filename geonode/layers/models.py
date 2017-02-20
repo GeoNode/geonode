@@ -50,7 +50,6 @@ vec_exts = shp_exts + csv_exts + kml_exts
 
 cov_exts = ['.tif', '.tiff', '.geotiff', '.geotif']
 
-
 class SUCTag (TagBase):
     pass
 
@@ -65,7 +64,6 @@ class FloodplainTag (TagBase):
 
 class FloodplainTaggedItem (GenericTaggedItemBase):
     tag = models.ForeignKey(FloodplainTag, related_name='floodplain_tag')
-
 
 class Style(models.Model):
 
