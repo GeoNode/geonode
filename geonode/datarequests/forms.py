@@ -17,7 +17,7 @@ from geonode.documents.models import Document
 from geonode.documents.forms import DocumentCreateForm
 from geonode.people.models import OrganizationType, Profile
 
-from .models import DataRequestProfile, RequestRejectionReason, DataRequest, ProfileRequest#, LipadOrgType
+from .models import DataRequestProfile, RequestRejectionReason, DataRequest, ProfileRequest, LipadOrgType
 
 
 from pprint import pprint
@@ -47,8 +47,8 @@ class ProfileRequestForm(forms.ModelForm):
             'captcha'
         )
 
-    #ORG_TYPE_CHOICES = LipadOrgType.objects.values_list('val', 'val')
-    ORG_TYPE_CHOICES = (("temp","temp"),("temp1","temp1"))
+    ORG_TYPE_CHOICES = LipadOrgType.objects.values_list('val', 'val')
+    #ORG_TYPE_CHOICES = (("temp","temp"),("temp1","temp1"))
     # Choices that will be used for fields
     LOCATION_CHOICES = Choices(
         ('local', _('Local')),
