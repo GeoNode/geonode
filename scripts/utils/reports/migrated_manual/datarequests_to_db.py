@@ -254,7 +254,7 @@ Overall Status: {15}""".format(_id, agency, position, mailing_addr, org_sub, raw
                                                     key_created_date=key_created_date,
                                                     created=created,
                                                     action_date=action_date)
-                # profile_object.save()
+                profile_object.save()
                 print 'Profile: ', profile_object.first_name, profile_object.last_name
                 counter += 1
 
