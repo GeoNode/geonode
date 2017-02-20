@@ -20,19 +20,15 @@
 
 from django.contrib import admin
 
-from geonode.base.admin import MediaTranslationAdmin, ResourceBaseAdminForm
+from geonode.base.admin import MediaTranslationAdmin
 from geonode.layers.models import Layer, Attribute, Style
 from geonode.layers.models import LayerFile, UploadSession
+
+import autocomplete_light
 
 
 class AttributeInline(admin.TabularInline):
     model = Attribute
-
-
-class LayerAdminForm(ResourceBaseAdminForm):
-
-    class Meta:
-        model = Layer
 
 
 class LayerAdmin(MediaTranslationAdmin):
@@ -47,8 +43,9 @@ class LayerAdmin(MediaTranslationAdmin):
         'category')
     list_display_links = ('id',)
     list_editable = ('title', 'category')
-    list_filter = ('storeType', 'owner', 'category',
+    list_filter = ('owner', 'category',
                    'restriction_code_type__identifier', 'date', 'date_type')
+<<<<<<< HEAD
     # def get_queryset(self, request):
     #     return super(LayerAdmin, self).get_queryset(request).prefetch_related('floodplain_tag','SUC_tag')
     def Floodplains(self, obj):
@@ -60,11 +57,22 @@ class LayerAdmin(MediaTranslationAdmin):
     # def SUC(self, obj):
     #     return u", ".join(o.name for o in obj.SUC_tag.all())
     inlines = [AttributeInline]
+=======
+    def Floodplains(self, obj):
+        return u", ".join(o.name for o in obj.floodplain_tag.all())
+    def SUC(self, obj):
+        return u", ".join(o.name for o in obj.SUC_tag.all())
+>>>>>>> master
     search_fields = ('typename', 'title', 'abstract', 'purpose',)
     filter_horizontal = ('contacts',)
     date_hierarchy = 'date'
     readonly_fields = ('uuid', 'typename', 'workspace')
+<<<<<<< HEAD
     form = LayerAdminForm
+=======
+    inlines = [AttributeInline]
+    form = autocomplete_light.modelform_factory(Layer)
+>>>>>>> master
 
 
 class AttributeAdmin(admin.ModelAdmin):

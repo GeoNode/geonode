@@ -47,7 +47,11 @@ def login(request, next_page=None, required=False):
         next_page = get_redirect_url(request)
 
     if request.method == 'POST' and request.POST.get('logoutRequest'):
+<<<<<<< HEAD
         pprint("cleaning up sessions")
+=======
+        pprint("cleaning up sessions for user")
+>>>>>>> master
         clean_sessions(client, request)
         return HttpResponseRedirect(next_page)
 
