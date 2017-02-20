@@ -158,10 +158,11 @@ def report_distribution_status(request, template='reports/distribution_status.ht
         sorted_md[each[0]] = dict(counter_dict)
     #rename
     renamed_md = OrderedDict([(datetime.strptime(eachone[0],'%Y%m').strftime('%b%Y'),eachone[1]) for eachone in sorted_md.iteritems()])
-    renamed_org = OrderedDict([(OrganizationType.get(eachone[0]),eachone[1]) for eachone in sorted_org.iteritems()])
+    # converts num to OrganizationType Choices
+    # renamed_org = OrderedDict([(OrganizationType.get(eachone[0]),eachone[1]) for eachone in sorted_org.iteritems()])
 
     reversed_md = OrderedDict(reversed(list(renamed_md.items())))
-    reversed_org = OrderedDict(reversed(list(renamed_org.items())))
+    reversed_org = OrderedDict(reversed(list(sorted_org.items())))
     context_dict = {
         "monthly_count": reversed_mc,
         "luzvimin_count": reversed_luzvimin,
