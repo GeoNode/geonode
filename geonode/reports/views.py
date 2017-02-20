@@ -105,7 +105,6 @@ def report_distribution_status(request, template='reports/distribution_status.ht
     rearrange_dr = {}
     monthly_datarequest = {}
     org_count = {}
-<<<<<<< HEAD
     monthly_datarequest_list = DataRequest.objects.all().order_by('status_changed')
     for eachinlist in monthly_datarequest_list:
         if eachinlist.status_changed.strftime('%Y%m') not in monthly_datarequest:
@@ -121,49 +120,6 @@ def report_distribution_status(request, template='reports/distribution_status.ht
             org_count[mostrecent.organization_type] += 1
 
 
-=======
-    # monthly_datarequest_list = DataRequest.objects.all().order_by('status_changed')
-    monthly_datarequest_list = DataRequestProfile.objects.all().order_by('created')
-    for eachinlist in monthly_datarequest_list:
-        try: #########anonymous users dont have username
-            username_dr = eachinlist.profile.username
-            if not eachinlist.profile.is_staff and not any('test' in var for var in [auth.actor, getprofile_downloadtracker.first_name, getprofile_downloadtracker.last_name]):
-                if username_dr in rearrange_dr.keys():
-                    if eachinlist.request_status == 'approved':
-                        rearrange_dr[username_dr] = [eachinlist.created.strftime('%Y%m'), eachinlist.request_status, eachinlist.org_type]
-                    elif eachinlist.request_status == 'rejected' and rearrange_dr[username_dr] != 'approved':
-                        rearrange_dr[username_dr] = [eachinlist.created.strftime('%Y%m'), eachinlist.request_status, eachinlist.org_type]
-                    elif eachinlist.request_status == 'pending' and all(rearrange_dr[username_dr] != x for x in ['approved','rejected']):
-                        rearrange_dr[username_dr] = [eachinlist.created.strftime('%Y%m'), eachinlist.request_status, eachinlist.org_type]
-                    elif eachinlist.request_status == 'cancelled' and all(rearrange_dr[username_dr] != x for x in ['approved','rejected','pending']):
-                        rearrange_dr[username_dr] = [eachinlist.created.strftime('%Y%m'), eachinlist.request_status, eachinlist.org_type]
-                else:
-                    rearrange_dr[username_dr] = [eachinlist.created.strftime('%Y%m'), eachinlist.request_status, eachinlist.org_type]
-        except:#datarequests without usernames
-            keytoappend = unidecode(eachinlist.first_name) + unidecode(eachinlist.last_name)
-            if keytoappend in rearrange_dr.keys():
-                if eachinlist.request_status == 'approved':
-                    rearrange_dr[keytoappend] = [eachinlist.created.strftime('%Y%m'), eachinlist.request_status, eachinlist.org_type]
-                elif eachinlist.request_status == 'rejected' and rearrange_dr[keytoappend] != 'approved':
-                    rearrange_dr[keytoappend] = [eachinlist.created.strftime('%Y%m'), eachinlist.request_status, eachinlist.org_type]
-                elif eachinlist.request_status == 'pending' and all(rearrange_dr[keytoappend] != x for x in ['approved','rejected']):
-                    rearrange_dr[keytoappend] = [eachinlist.created.strftime('%Y%m'), eachinlist.request_status, eachinlist.org_type]
-                elif eachinlist.request_status == 'cancelled' and all(rearrange_dr[keytoappend] != x for x in ['approved','rejected','pending']):
-                    rearrange_dr[keytoappend] = [eachinlist.created.strftime('%Y%m'), eachinlist.request_status, eachinlist.org_type]
-            else:
-                rearrange_dr[keytoappend] = [eachinlist.created.strftime('%Y%m'), eachinlist.request_status, eachinlist.org_type]
-    print rearrange_dr
-    for eachusername, eachdr in rearrange_dr.iteritems():
-        if eachdr[0] not in monthly_datarequest:
-            monthly_datarequest[eachdr[0]] = {}
-        if eachdr[1] not in monthly_datarequest[eachdr[0]]:
-            monthly_datarequest[eachdr[0]][eachdr[1]] = 0
-        monthly_datarequest[eachdr[0]][eachdr[1]] += 1
-
-        if eachdr[2] not in org_count:
-            org_count[eachdr[2]] = 0
-        org_count[eachdr[2]] += 1
->>>>>>> master
 
     #sorted
     sorted_md = OrderedDict(sorted(monthly_datarequest.iteritems(), key=lambda x: x[0]))
