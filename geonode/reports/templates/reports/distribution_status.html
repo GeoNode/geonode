@@ -16,24 +16,77 @@
 {% block body_class %}layers{% endblock %}
 
 {% block body_outer %}
-<div class="page-header">
-</div>
-<div id = 'monthly_div' class = "plots">
-</div>
-<div id = 'luzvimin_div' class = "plots">
-</div>
-<div id = 'pie_div' class = "plots">
-</div>
-<div id = 'monthly_datarequest' class = "plots">
-</div>
-<div id = 'org_datarequest' class = "plots">
-</div>
+<div class="page-header"></div>
+<div id = 'org_datarequest' class = "plots"></div>
+<div id = 'pie_div' class = "plots"></div>
+<div id = 'monthly_div' class = "plots"></div>
+<div id = 'monthly_datarequest' class = "plots"></div>
+<div id = 'luzvimin_div' class = "plots"></div>
 
 {% endblock %}
 
 {% block extra_script %}
 <script src="{{ STATIC_URL }}lib/js/plotly-latest.min.js"></script>
 <script type="text/javascript">
+var org1 = {
+  x: [
+    {% for key, value in org_count.items %}
+      '{{ key }}',
+    {% endfor %}
+  ],
+  y: [
+    {% for key, value in org_count.items %}
+      {{ value }},
+    {% endfor %}
+  ],
+  text: [
+    {% for key, value in org_count.items %}
+      '{{ value }}',
+    {% endfor %}
+  ],
+  textposition: 'auto',
+  hoverinfo:'y',
+  name: 'LiPAD',
+  type: 'bar',
+  marker: {
+    color: '#5B9BD5'
+  }
+};
+
+var data_org = [org1];
+
+var layout_org = {
+  barmode: 'stack',
+  xaxis: {autorange: 'reversed'},
+  title: '<b>Data Request Tally per Organization</b>'
+};
+
+Plotly.newPlot('org_datarequest', data_org, layout_org);
+
+var data_pie = [{
+  values: [
+    {% for key, value in total_layers.items %}
+      {{ value }},
+    {% endfor %}
+  ],
+  labels: [
+    {% for key, value in total_layers.items %}
+      '{{ key }}',
+    {% endfor %}
+  ],
+  type: 'pie',
+  textinfo:'label+percent',
+}];
+
+var layout_pie = {
+  title: '<b>Total Downloads: {{ sum_layers }}</b>',
+  height: 600,
+  width: 500,
+  // font:{size:30}
+};
+
+Plotly.newPlot('pie_div', data_pie, layout_pie);
+
 var trace1 = {
   x: [
     {% for key, value in monthly_count.items %}
@@ -192,11 +245,11 @@ var trace9 = {
   ],
   y: [
     {% for key, value in monthly_count.items %}
-      {{ value.Others }},
+      {{ value.Resource }},
     {% endfor %}
   ],
   hoverinfo:'y+name',
-  name: 'Others',
+  name: 'Resource Map',
   type: 'bar',
   marker: {
     color: '#19ED88'
@@ -211,7 +264,7 @@ var layout = {
     autorange: 'reversed',
     tickangle: -45
   },
-  title: 'Cumulative LiPAD Downloads (Count)',
+  title: '<b>Cumulative LiPAD Downloads (Count)</b>',
   legend:{
     x: 0,
     y: 1
@@ -219,6 +272,120 @@ var layout = {
 };
 
 Plotly.newPlot('monthly_div', data, layout);
+
+var datarequest1 = {
+  x: [
+    {% for key, value in monthly_datarequest.items %}
+      '{{ key }}',
+    {% endfor %}
+  ],
+  y: [
+    {% for key, value in monthly_datarequest.items %}
+      {{ value.pending }},
+    {% endfor %}
+  ],
+  hoverinfo:'y+name',
+  name: 'Pending',
+  type: 'bar',
+  marker: {
+    color: '#DC3912'
+  }
+};
+var datarequest2 = {
+  x: [
+    {% for key, value in monthly_datarequest.items %}
+      '{{ key }}',
+    {% endfor %}
+  ],
+  y: [
+    {% for key, value in monthly_datarequest.items %}
+      {{ value.approved }},
+    {% endfor %}
+  ],
+  text: [
+    {% for key, value in monthly_datarequest.items %}
+      '{{ value.approved }}',
+    {% endfor %}
+  ],
+  textposition: 'auto',
+  hoverinfo:'y+name',
+  name: 'Approved',
+  type: 'bar',
+  marker: {
+    color: '#FF9900'
+  }
+};
+var datarequest3 = {
+  x: [
+    {% for key, value in monthly_datarequest.items %}
+      '{{ key }}',
+    {% endfor %}
+  ],
+  y: [
+    {% for key, value in monthly_datarequest.items %}
+      {{ value.cancelled }},
+    {% endfor %}
+  ],
+  hoverinfo:'y+name',
+  name: 'Cancelled',
+  type: 'bar',
+  marker: {
+    color: '#3366CB'
+  }
+};
+var datarequest4 = {
+  x: [
+    {% for key, value in monthly_datarequest.items %}
+      '{{ key }}',
+    {% endfor %}
+  ],
+  y: [
+    {% for key, value in monthly_datarequest.items %}
+      {{ value.rejected }},
+    {% endfor %}
+  ],
+  hoverinfo:'y+name',
+  name: 'Rejected',
+  type: 'bar',
+  marker: {
+    color: '#109618'
+  }
+};
+var datarequest5 = {
+  x: [
+    {% for key, value in monthly_datarequest.items %}
+      '{{ key }}',
+    {% endfor %}
+  ],
+  y: [
+    {% for key, value in monthly_datarequest.items %}
+      {{ value.unconfirmed }},
+    {% endfor %}
+  ],
+  hoverinfo:'y+name',
+  name: 'Unconfirmed',
+  type: 'bar',
+  marker: {
+    color: '#990099'
+  }
+};
+
+var data_datarequest = [datarequest2, datarequest5, datarequest4, datarequest3, datarequest1];
+
+var layout_datarequest = {
+  barmode: 'stack',
+  xaxis: {
+    autorange: 'reversed',
+    tickangle: -45
+  },
+  title: '<b>Cumulative LiPAD Request (Total: {{ sum_datarequest }})</b>',
+  legend:{
+    x: 0,
+    y: 1
+  }
+};
+
+Plotly.newPlot('monthly_datarequest', data_datarequest, layout_datarequest);
 
 var luzvimin1 = {
   x: [
@@ -294,7 +461,7 @@ var data_luzvimin = [luzvimin4, luzvimin3, luzvimin2, luzvimin1];
 var layout_luzvimin = {
   barmode: 'stack',
   xaxis: {autorange: 'reversed'},
-  title: 'LuzViMin Download Count',
+  title: '<b>LuzViMin Download Count</b>',
   legend:{
     x: 0,
     y: 1
@@ -302,157 +469,5 @@ var layout_luzvimin = {
 };
 
 Plotly.newPlot('luzvimin_div', data_luzvimin, layout_luzvimin);
-
-var data_pie = [{
-  values: [
-    {% for key, value in total_layers.items %}
-      {{ value }},
-    {% endfor %}
-  ],
-  labels: [
-    {% for key, value in total_layers.items %}
-      '{{ key }}',
-    {% endfor %}
-  ],
-  type: 'pie',
-  textinfo:'label+percent',
-}];
-
-var layout_pie = {
-  title: 'Total Downloads: {{ sum_layers }}',
-  height: 600,
-  width: 500,
-  // font:{size:30}
-};
-
-Plotly.newPlot('pie_div', data_pie, layout_pie);
-
-var datarequest1 = {
-  x: [
-    {% for key, value in monthly_datarequest.items %}
-      '{{ key }}',
-    {% endfor %}
-  ],
-  y: [
-    {% for key, value in monthly_datarequest.items %}
-      {{ value.pending }},
-    {% endfor %}
-  ],
-  name: 'Pending',
-  type: 'bar',
-  marker: {
-    color: '#DC3912'
-  }
-};
-var datarequest2 = {
-  x: [
-    {% for key, value in monthly_datarequest.items %}
-      '{{ key }}',
-    {% endfor %}
-  ],
-  y: [
-    {% for key, value in monthly_datarequest.items %}
-      {{ value.approved }},
-    {% endfor %}
-  ],
-  name: 'Approved',
-  type: 'bar',
-  marker: {
-    color: '#FF9900'
-  }
-};
-var datarequest3 = {
-  x: [
-    {% for key, value in monthly_datarequest.items %}
-      '{{ key }}',
-    {% endfor %}
-  ],
-  y: [
-    {% for key, value in monthly_datarequest.items %}
-      {{ value.cancelled }},
-    {% endfor %}
-  ],
-  name: 'Cancelled',
-  type: 'bar',
-  marker: {
-    color: '#3366CB'
-  }
-};
-var datarequest4 = {
-  x: [
-    {% for key, value in monthly_datarequest.items %}
-      '{{ key }}',
-    {% endfor %}
-  ],
-  y: [
-    {% for key, value in monthly_datarequest.items %}
-      {{ value.rejected }},
-    {% endfor %}
-  ],
-  name: 'Rejected',
-  type: 'bar',
-  marker: {
-    color: '#109618'
-  }
-};
-var datarequest5 = {
-  x: [
-    {% for key, value in monthly_datarequest.items %}
-      '{{ key }}',
-    {% endfor %}
-  ],
-  y: [
-    {% for key, value in monthly_datarequest.items %}
-      {{ value.unconfirmed }},
-    {% endfor %}
-  ],
-  name: 'Unconfirmed',
-  type: 'bar',
-  marker: {
-    color: '#990099'
-  }
-};
-
-var data_datarequest = [datarequest5, datarequest4, datarequest3, datarequest2, datarequest1];
-
-var layout_datarequest = {
-  barmode: 'stack',
-  xaxis: {autorange: 'reversed'},
-  title: 'Cumulative LiPAD Request',
-  legend:{
-    x: 0,
-    y: 1
-  }
-};
-
-Plotly.newPlot('monthly_datarequest', data_datarequest, layout_datarequest);
-
-var org1 = {
-  x: [
-    {% for key, value in org_count.items %}
-      '{{ key }}',
-    {% endfor %}
-  ],
-  y: [
-    {% for key, value in org_count.items %}
-      {{ value }},
-    {% endfor %}
-  ],
-  name: 'LiPAD',
-  type: 'bar',
-  marker: {
-    color: '#5B9BD5'
-  }
-};
-
-var data_org = [org1];
-
-var layout_org = {
-  barmode: 'stack',
-  xaxis: {autorange: 'reversed'},
-  title: 'Data Request Tally per Organization'
-};
-
-Plotly.newPlot('org_datarequest', data_org, layout_org);
 </script>
 {% endblock extra_script %}
