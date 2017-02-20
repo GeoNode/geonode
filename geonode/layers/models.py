@@ -263,11 +263,7 @@ class Layer(ResourceBase):
     # riverbasin tagging
     floodplain_tag = TaggableManager(
         verbose_name='Floodplain Tags', through=FloodplainTaggedItem, blank=True)
-<< << << < HEAD
 
-== == == =
-
->>>>>> > aff09cb... Added the ff:
     @property
     def class_name(self):
         return self.__class__.__name__
