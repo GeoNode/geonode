@@ -11,7 +11,7 @@ try:
     User = settings.AUTH_USER_MODEL
 except ImportError:
     from django.contrib.auth.models import User
-#from geonode.datarequests.models import LipadOrgType
+from geonode.datarequests.models import LipadOrgType
 
 # Create your models here.
 class EULALayerDownload(models.Model):
@@ -23,8 +23,7 @@ class EULALayerDownload(models.Model):
         return "{0}:{1}".format(self.user.username, self.layer.title)
 
 class AnonDownloader(models.Model):
-    #ORG_TYPE_CHOICES = LipadOrgType.objects.values_list('val', 'val')
-    ORG_TYPE_CHOICES = (('temp','temp'),('temp1','temp1'))
+    ORG_TYPE_CHOICES = LipadOrgType.objects.values_list('val', 'val')
     date = models.DateTimeField(auto_now=True)
     anon_first_name = models.CharField(_('First Name'), max_length=100)
     anon_last_name = models.CharField(_('Last Name'), max_length=100)
