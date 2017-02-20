@@ -31,7 +31,7 @@ from geonode.groups.models import GroupProfile, GroupMember
 from geonode.layers.models import Layer
 
 from geonode.tasks.mk_folder import create_folder
-afrom .base_request import BaseRequest, LipadOrgType
+from .base_request import BaseRequest, LipadOrgType
 
 
 class ProfileRequest(BaseRequest):
