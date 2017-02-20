@@ -11,7 +11,7 @@ try:
     User = settings.AUTH_USER_MODEL
 except ImportError:
     from django.contrib.auth.models import User
-from geonode.datarequests.models import LipadOrgType
+#from geonode.datarequests.models import LipadOrgType
 
 # Create your models here.
 class EULALayerDownload(models.Model):
