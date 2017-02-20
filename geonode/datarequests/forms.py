@@ -17,7 +17,8 @@ from geonode.documents.models import Document
 from geonode.documents.forms import DocumentCreateForm
 from geonode.people.models import OrganizationType, Profile
 
-from .models import DataRequestProfile, RequestRejectionReason, DataRequest, ProfileRequest, LipadOrgType
+from .models import DataRequestProfile, RequestRejectionReason, DataRequest, ProfileRequest#, LipadOrgType
+
 
 from pprint import pprint
 
