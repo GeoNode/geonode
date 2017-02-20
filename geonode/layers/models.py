@@ -198,9 +198,11 @@ class Layer(ResourceBase):
 
         # we need to check, for shapefile, if column names are valid
         if self.storeType == 'dataStore':
-            valid_shp, wrong_column_name = check_shp_columnnames(self)
-            msg = 'Shapefile has an invalid column name: %s' % wrong_column_name
-            assert valid_shp, msg
+            valid_shp, wrong_column_name, list_col = check_shp_columnnames(self)
+            if wrong_column_name:
+                msg = 'Shapefile has an invalid column name: %s' % wrong_column_name
+            else:
+                assert valid_shp, msg
 
         # no error, let's return the base files
         return base_files.get()
