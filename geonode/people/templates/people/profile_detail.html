@@ -191,7 +191,7 @@
               {% if request_profile.requester_type == 'noncommercial' or request_profile.requester_type == 'academe' %}
                 <tr>
                   <td class="table-user-profile-attribute">{% trans "Organization type based on Phil-LiDAR1 Data Distribution Policy" %}</td>
-                  <td>{{ request_profile.get_organization_type_display }}</td>
+                  <td>{{ request_profile.org_type }}</td>
                 </tr>
                 {% if request_profile.requester_type == 'academe' %}
                   <tr>
@@ -275,7 +275,7 @@
         </table>
     {% endif %}
 </div>
-  
+
 <div class="col-xs-12 col-md-3">
   <ul class="list-group">
       <li class="list-group-item"><a href="{% url "message_create" profile.pk %}"><i class="fa fa-paper-plane-o"></i> {% trans "Message User" %}</a></li>
