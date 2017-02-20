@@ -367,16 +367,22 @@ function filterSelectedTiles(tile_filter, single_click, send_notice, epsgproj, g
                           tiles[i].geometry.setBounds(tiles[i].geometry.bounds.transform(
                             new OpenLayers.Projection("EPSG:32651"), new OpenLayers.Projection("EPSG:4326")
                           ));
-                          tile_list.push(tile);
-                          tile.feature = createHighlightBox(tile.corners, georef);
-                          highlight_layer.addFeatures([tile.feature]);
-                          added_count++;
+                          if (isInJurisdiction(jurisdiction_geoms, tiles[i])){
+                            console.log("tile is within jurisdiction");
+                            tile_list.push(tile);
+                            tile.feature = createHighlightBox(tile.corners, georef);
+                            highlight_layer.addFeatures([tile.feature]);
+                            added_count++;
+                          }else{
+                            console.log("tile is not within jurisdiction")
+                          }
 
                         }else if (single_click){
                           console.log("tile is already in the list");
                           removeHighlight(tile.georef,highlight_layer)
                         }
                         highlight_layer.refresh();
+                      }
                  }
 
             }

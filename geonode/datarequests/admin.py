@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from geonode.datarequests.models import DataRequestProfile, RequestRejectionReason, DataRequest, ProfileRequest, BaseRequest
+from geonode.datarequests.models import DataRequestProfile, RequestRejectionReason, DataRequest, ProfileRequest, BaseRequest, LipadOrgType
 
 #class BaseRequestAdmin(admin.ModelAdmin):
 #   model = BaseRequest
@@ -38,3 +38,4 @@ admin.site.register(ProfileRequest,ProfileRequestAdmin)
 admin.site.register(DataRequest,DataRequestAdmin)
 admin.site.register(DataRequestProfile, DataRequestProfileAdmin)
 admin.site.register(RequestRejectionReason)
+admin.site.register(LipadOrgType)

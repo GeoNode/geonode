@@ -502,6 +502,12 @@ def count_duplicate_requests(ftp_request):
 def management(request):
     return render_to_response('ceph_manager.html', context_instance=RequestContext(request))
 
+@login_required
+@user_passes_test(lambda u: u.is_superuser)
+def update_lidar_coverage(request):
+    update_lidar_coverage_task.delay()
+    messages.error(request, "Updating LiDAR Coverage")
+    return HttpResponseRedirect(reverse('data_management'))
 
 @login_required
 @user_passes_test(lambda u: u.is_superuser)
@@ -609,7 +615,6 @@ def jurisdict_default_style(request):
     messages.error(
         request, "Updating Default Style of Jurisdiction Shapefiles")
     return HttpResponseRedirect(reverse('data_management'))
-
 
 @login_required
 @user_passes_test(lambda u: u.is_superuser)
