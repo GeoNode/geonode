@@ -1,0 +1,16 @@
+Not enabling BingMaps base layer as a BING_API_KEY is not defined in local_settings.py file.
+/home/geonode/geonode/geonode/utils.py:35: DeprecationWarning: django.utils.simplejson is deprecated; use json instead.
+  from django.utils import simplejson as json
+
+Importing ...
+Parsing CSV
+Opening File
+################################################################################
+################################################################################
+Traceback (most recent call last):
+  File "datarequests_to_db.py", line 168, in parse_datarequest_csv
+    str(tokens[11].strip()), '%m/%d/%Y')  # verification date key_created_date
+  File "/usr/lib/python2.7/_strptime.py", line 325, in _strptime
+    (data_string, format))
+ValueError: time data '' does not match format '%m/%d/%Y'
+None

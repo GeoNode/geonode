@@ -13,7 +13,11 @@ from layer_metadata import fhm_year_metadata
 from layer_style import style_update
 from osgeo import ogr
 from string import Template
+<<<<<<< HEAD
 from suc_rb_tagging import tag_layers
+=======
+# from suc_rb_tagging import tag_layers
+>>>>>>> master
 import logging
 import psycopg2
 import subprocess
@@ -224,6 +228,12 @@ def floodplain_keywords():
                               settings.DATABASE_USER, settings.DATABASE_PASSWORD)))
     cur = conn.cursor()
 
+<<<<<<< HEAD
     tag_layers('dream', settings.RB_DELINEATION_DREAM,
                cur, conn, source)
     tag_layers('', settings.FP_DELINEATION_PL1, cur, conn, source)
+=======
+    # tag_layers('dream', settings.RB_DELINEATION_DREAM,
+    #            cur, conn, source)
+    # tag_layers('', settings.FP_DELINEATION_PL1, cur, conn, source)
+>>>>>>> master

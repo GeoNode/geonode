@@ -32,10 +32,14 @@ from django.core.urlresolvers import reverse
 from geonode.maptiles.models import SRS
 from django.utils.text import slugify
 
+<<<<<<< HEAD
 from geonode.tasks.update import update_fhm_metadata_task, style_update, seed_layers
 from geonode.tasks.update import pl2_metadata_update, sar_metadata_update
 from geonode.tasks.update import layer_default_style, floodplain_keywords
 from geonode.tasks.update import update_lidar_coverage_task
+=======
+from geonode.tasks.update import update_fhm_metadata_task, style_update, seed_layers, pl2_metadata_update, sar_metadata_update, layer_default_style, floodplain_keywords
+>>>>>>> master
 from geonode.base.enumerations import CHARSETS
 
 from django.conf import settings
@@ -502,6 +506,12 @@ def count_duplicate_requests(ftp_request):
 def management(request):
     return render_to_response('ceph_manager.html', context_instance=RequestContext(request))
 
+@login_required
+@user_passes_test(lambda u: u.is_superuser)
+def update_lidar_coverage(request):
+    update_lidar_coverage_task.delay()
+    messages.error(request, "Updating LiDAR Coverage")
+    return HttpResponseRedirect(reverse('data_management'))
 
 @login_required
 @user_passes_test(lambda u: u.is_superuser)
@@ -610,7 +620,10 @@ def jurisdict_default_style(request):
         request, "Updating Default Style of Jurisdiction Shapefiles")
     return HttpResponseRedirect(reverse('data_management'))
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> master
 @login_required
 @user_passes_test(lambda u: u.is_superuser)
 def update_floodplain_keywords(request):
