@@ -324,7 +324,7 @@ INSTALLED_APPS = (
     'south',
     'corsheaders',
     'captcha',
-    
+
     #CAS client
     'django_cas_ng',
 ) + GEONODE_APPS
