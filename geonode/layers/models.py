@@ -34,7 +34,9 @@ from geonode.base.models import ResourceBase, ResourceBaseManager, resourcebase_
 from geonode.people.utils import get_valid_user
 from agon_ratings.models import OverallRating
 from geonode.utils import check_shp_columnnames
-from geonode.security.models import remove_object_permissions
+
+from taggit.managers import TaggableManager
+from taggit.models import GenericTaggedItemBase, TagBase
 
 logger = logging.getLogger("geonode.layers.models")
 
@@ -44,6 +46,21 @@ kml_exts = ['.kml']
 vec_exts = shp_exts + csv_exts + kml_exts
 
 cov_exts = ['.tif', '.tiff', '.geotiff', '.geotif']
+
+class SUCTag (TagBase):
+    pass
+
+
+class SUCTaggedItem (GenericTaggedItemBase):
+    tag = models.ForeignKey(SUCTag, related_name='SUC_tag')
+
+
+class FloodplainTag (TagBase):
+    pass
+
+
+class FloodplainTaggedItem (GenericTaggedItemBase):
+    tag = models.ForeignKey(FloodplainTag,related_name='floodplain_tag')
 
 class Style(models.Model):
 
@@ -62,9 +79,6 @@ class Style(models.Model):
 
     def __str__(self):
         return "%s" % self.name.encode('utf-8')
-
-    def absolute_url(self):
-        return self.sld_url.split('geoserver/', 1)[1]
 
 
 class LayerManager(ResourceBaseManager):
@@ -168,7 +182,7 @@ class Layer(ResourceBase):
 
         # If there was no upload_session return None
         if self.upload_session is None:
-            return None, None
+            return None
 
         base_exts = [x.replace('.', '') for x in cov_exts + vec_exts]
         base_files = self.upload_session.layerfile_set.filter(
@@ -177,23 +191,19 @@ class Layer(ResourceBase):
 
         # If there are no files in the upload_session return None
         if base_files_count == 0:
-            return None, None
+            return None
 
         msg = 'There should only be one main file (.shp or .geotiff), found %s' % base_files_count
         assert base_files_count == 1, msg
 
         # we need to check, for shapefile, if column names are valid
-        list_col = None
         if self.storeType == 'dataStore':
-            valid_shp, wrong_column_name, list_col = check_shp_columnnames(self)
-            if wrong_column_name:
-                msg = 'Shapefile has an invalid column name: %s' % wrong_column_name
-            else:
-                msg = _('File cannot be opened, maybe check the encoding')
+            valid_shp, wrong_column_name = check_shp_columnnames(self)
+            msg = 'Shapefile has an invalid column name: %s' % wrong_column_name
             assert valid_shp, msg
 
         # no error, let's return the base files
-        return base_files.get(), list_col
+        return base_files.get()
 
     def get_absolute_url(self):
         return reverse('layer_detail', args=(self.service_typename,))
@@ -234,6 +244,13 @@ class Layer(ResourceBase):
     def maps(self):
         from geonode.maps.models import MapLayer
         return MapLayer.objects.filter(name=self.typename)
+
+    # SUC tagging
+    SUC_tag = TaggableManager(verbose_name='SUC Tags',
+                              through=SUCTaggedItem, blank=True)
+    # riverbasin tagging
+    floodplain_tag = TaggableManager(
+        verbose_name='Floodplain Tags', through=FloodplainTaggedItem, blank=True)
 
     @property
     def class_name(self):
@@ -430,10 +447,7 @@ def pre_save_layer(instance, sender, **kwargs):
         # Set a sensible default for the typename
         instance.typename = 'geonode:%s' % instance.name
 
-    base_file, info = instance.get_base_file()
-
-    if info:
-        instance.info = info
+    base_file = instance.get_base_file()
 
     if base_file is not None:
         extension = '.%s' % base_file.name
@@ -484,9 +498,6 @@ def pre_delete_layer(instance, sender, **kwargs):
             if style != default_style:
                 style.delete()
 
-    # Delete object permissions
-    remove_object_permissions(instance)
-
 
 def post_delete_layer(instance, sender, **kwargs):
     """
@@ -494,31 +505,26 @@ def post_delete_layer(instance, sender, **kwargs):
     Remove the layer default style.
     """
     from geonode.maps.models import MapLayer
-    if instance.typename:
-        logger.debug(
-            "Going to delete associated maplayers for [%s]",
-            instance.typename.encode('utf-8'))
-        MapLayer.objects.filter(
-            name=instance.typename,
-            ows_url=instance.ows_url).delete()
+    logger.debug(
+        "Going to delete associated maplayers for [%s]",
+        instance.typename.encode('utf-8'))
+    MapLayer.objects.filter(
+        name=instance.typename,
+        ows_url=instance.ows_url).delete()
 
     if instance.service:
         return
-    if instance.typename:
-        logger.debug(
-            "Going to delete the default style for [%s]",
-            instance.typename.encode('utf-8'))
+    logger.debug(
+        "Going to delete the default style for [%s]",
+        instance.typename.encode('utf-8'))
 
     if instance.default_style and Layer.objects.filter(
             default_style__id=instance.default_style.id).count() == 0:
         instance.default_style.delete()
 
-    try:
-        if instance.upload_session:
-            for lf in instance.upload_session.layerfile_set.all():
-                lf.file.delete()
-    except UploadSession.DoesNotExist:
-        pass
+    if instance.upload_session:
+        for lf in instance.upload_session.layerfile_set.all():
+            lf.file.delete()
 
 
 signals.pre_save.connect(pre_save_layer, sender=Layer)
