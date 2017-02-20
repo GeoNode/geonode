@@ -31,7 +31,7 @@ from geonode.groups.models import GroupProfile, GroupMember
 from geonode.layers.models import Layer
 
 from geonode.tasks.mk_folder import create_folder
-from .base_request import BaseRequest#, LipadOrgType
+afrom .base_request import BaseRequest, LipadOrgType
 
 
 class ProfileRequest(BaseRequest):
@@ -240,6 +240,7 @@ class ProfileRequest(BaseRequest):
                     raise Exception("Account not created")
              else:
                  profile.organization_type = self.organization_type
+                 profile.org_type = self.org_type
                  profile.save()
         except Exception as e:
             pprint(traceback.format_exc())
