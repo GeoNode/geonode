@@ -127,9 +127,18 @@ class Profile(AbstractUser):
     ### Custom Attribs
     organization_type = enum.EnumField(
         OrganizationType,
-        default=OrganizationType.OTHER,
+        default=None,
+        blank=True,
+        null=True,
         help_text=_('Organization type based on Phil-LiDAR1 Data Distribution Policy'))
 
+    org_type = models.CharField(
+        _('Organization Type'),
+        max_length=255,
+        blank=False,
+        default="Other",
+        help_text=_('Organization type based on Phil-LiDAR1 Data Distribution Policy')
+    )
     organization_other = models.CharField(
         max_length=255,
         blank=True,

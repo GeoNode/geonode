@@ -48,8 +48,11 @@ def tile_ceiling(x):
     return int(math.ceil(x / float(settings._TILE_SIZE)) * settings._TILE_SIZE)
 
 def get_juris_tiles(juris_shp, user=None):
+<<<<<<< HEAD
     total_data_size = 0
     
+=======
+>>>>>>> master
     if not juris_shp.is_valid:
         juris_shp = juris_shp.convex_hull
         if not juris_shp.convex_hull.is_valid:
@@ -60,16 +63,26 @@ def get_juris_tiles(juris_shp, user=None):
                     )
             pprint("A problem with the shapefile was encountered")
             return []
+<<<<<<< HEAD
     pprint("Computing bounds")
+=======
+    
+>>>>>>> master
     min_x =  tile_floor(juris_shp.bounds[0])
     #max_x =  int(math.ceil(float(juris_shp.bounds[2]) / float(settings._TILE_SIZE))) * int(settings._TILE_SIZE)
     max_x = tile_ceiling(juris_shp.bounds[2])
     #min_y =  int(math.floor(float(juris_shp.bounds[1]) / float(settings._TILE_SIZE))) * int(settings._TILE_SIZE)
     min_y = tile_floor(juris_shp.bounds[1])
     #max_y =  int(math.ceil(float(juris_shp.bounds[3]) / float(settings._TILE_SIZE))) * int(settings._TILE_SIZE)
+<<<<<<< HEAD
     max_y = tile_ceiling(juris_shp.bounds[3])
     if user:
         pprint("user: " + user.username + " bounds: "+str((min_x, min_y, max_x, max_y)))
+=======
+    max_y = tile_floor(juris_shp.bounds[3])
+    #if user:
+    #    pprint("user: " + user.username + " bounds: "+str((min_x, min_y, max_x, max_y)))
+>>>>>>> master
     tile_list = []
     count = 0
     
@@ -89,19 +102,37 @@ def get_juris_tiles(juris_shp, user=None):
             
             if not tile.intersection(juris_shp).is_empty:
                 tile_list.append(tile)
+<<<<<<< HEAD
                 count+=1
                 if count >= 1000:
+=======
+                if len(tile_list) >= 1000:
+>>>>>>> master
                     return tile_list
                 
     return tile_list
 
+<<<<<<< HEAD
 def get_juris_data_size(juris_shp):
     tile_list = get_juris_tiles(juris_shp)
+=======
+def get_juris_data_size(geometry):
+    tile_list = []
+    pprint("Geom_type = "+geometry.geom_type)
+    if geometry.geom_type == "Polygon":
+        tile_list = get_juris_tiles(geometry)
+    elif geometry.geom_type == "MultiPolygon":
+        for g in geometry.geoms:
+            tile_list.extend(get_juris_tiles(g))
+    
+    pprint("Number of tiles: "+str(len(tile_list)))
+    
+>>>>>>> master
     total_data_size = 0
     
     for tile in tile_list:
         (minx, miny, maxx, maxy) = tile.bounds
-        gridref = "E{0}N{1}".format(minx / settings._TILE_SIZE, maxy / settings._TILE_SIZE,)
+        gridref = "E{0}N{1}".format(int(minx / settings._TILE_SIZE), int(maxy / settings._TILE_SIZE))
         georef_query = CephDataObject.objects.filter(name__startswith=gridref)
         total_size = 0
         for georef_query_objects in georef_query:
@@ -118,12 +149,23 @@ def assign_grid_ref_util(user):
     
     if geometry:
         tiles = []
+<<<<<<< HEAD
         if geometry.type=='Multipolygon':
             for g in shapefile:
                 tiles.extend(get_juris_tiles(g, user))
         else:
             tiles = get_juris_tiles(shapefile, user)
         
+=======
+        if geometry.geom_type=='MultiPolygon':
+            pprint("Tiling "+str(len(geometry)) + "geometries")
+            for g in geometry.geoms:
+                tiles.extend(get_juris_tiles(g, user))
+        else:
+            tiles = get_juris_tiles(geometry, user)
+        
+        pprint("Done with tiling")
+>>>>>>> master
         if len(tiles) < 1:
             pprint("No tiles for {0}".format(user.username))
         else:
@@ -132,6 +174,8 @@ def assign_grid_ref_util(user):
                 gridref = '"E{0}N{1}"'.format(int(minx / settings._TILE_SIZE), int(maxy / settings._TILE_SIZE))
                 
                 gridref_list .append(gridref)
+                if len(gridref_list) >= 1000:
+                    break
             
             if len(gridref_list)==1:
                 pprint("gridref:"+gridref_list[0])
@@ -187,7 +231,11 @@ def get_geometries_ogr(juris_shp_name, dest_epsg=32651): #returns layer
         f = data.GetNextFeature()
         geom = f.GetGeometryRef()
         if not src_epsg == dest_epsg:
+<<<<<<< HEAD
             geom = geom.Transform(c_transform)
+=======
+            geom.Transform(c_transform)
+>>>>>>> master
         geometry_list.append(loads(geom.ExportToWkb()))
             
     source = None

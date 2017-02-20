@@ -129,7 +129,12 @@ WHERE ST_Intersects(d.the_geom, l.the_geom);''')
 
         # Get no. of results
         if len(results) >= 1:
-            hc = assign_tags(mode, results, layer)
+            if 'sar_' in layer.name:
+                rm_extents = layer.name.replace('_extents', '')
+                sar_layer = Layer.objects.get(name=rm_extents)
+                hc = assign_tags(mode, results, layer)
+            else:
+                hc = assign_tags(mode, results, layer)
             if hc:
                 has_changes = True
 
@@ -195,9 +200,12 @@ def caller_function(keyword_filter):
     # tag_layer(layer)
 
     # Initialize pool
-    pool = multiprocessing.Pool()
+
     layers = Layer.objects.filter(Q(workspace='geonode') & Q(
         name__icontains=keyword_filter)).exclude(owner__username='dataRegistrationUploader')
+    # for layer in layers:
+    #     tag_layer(layer)
+    pool = multiprocessing.Pool()
     pool.map_async(tag_layer, layers)
     pool.close()
     pool.join()
