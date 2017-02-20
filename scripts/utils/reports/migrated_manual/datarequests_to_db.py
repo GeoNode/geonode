@@ -85,13 +85,11 @@ def set_name(orig_name):
             last_name = ' '.join(tokens[middle_id + 1:])
         else:
             if ',' in name:
-                # print 'Case 5'
                 for i in range(len(tokens)):
                     if ',' in tokens[i]:
                         split_id = i
                         break
             elif _is_in(name, suffixes):
-                # print 'Case 6'
                 for i in range(len(tokens)):
                     if _is_in(tokens[i], suffixes):
                         split_id = i - 1
@@ -118,7 +116,6 @@ def set_name(orig_name):
 
 
 def parse_datarequest_csv(csv_path):
-
     if not os.path.isfile(csv_path):
         print '{0} file not found! Exiting.'.format(csv_path)
         exit(1)
