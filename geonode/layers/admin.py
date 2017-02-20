@@ -20,7 +20,7 @@
 
 from django.contrib import admin
 
-from geonode.base.admin import MediaTranslationAdmin
+from geonode.base.admin import MediaTranslationAdmin, ResourceBaseAdminForm
 from geonode.layers.models import Layer, Attribute, Style
 from geonode.layers.models import LayerFile, UploadSession
 
