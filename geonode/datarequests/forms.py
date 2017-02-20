@@ -202,13 +202,14 @@ class ProfileRequestForm(forms.ModelForm):
     def clean_funding_source(self):
         funding_source = self.cleaned_data.get('funding_source')
         org_type = self.cleaned_data.get('org_type')
-        #intended_use_of_dataset = self.cleaned_data.get('intended_use_of_dataset')
-        if (#intended_use_of_dataset == 'noncommercial' and
+        intended_use_of_dataset = self.cleaned_data.get('intended_use_of_dataset')
+        if (intended_use_of_dataset == 'noncommercial' and
                 "Academe" in org_type and
                 not funding_source):
             raise forms.ValidationError(
                 'This field is required.')
         return funding_source
+        
     def clean_organization_other(self):
         organization_other = self.cleaned_data.get('organization_other')
         org_type = self.cleaned_data.get('org_type')
