@@ -43,7 +43,6 @@ class DataRequestProfile(TimeStampedModel):
         ('local', _('Local')),
         ('foreign', _('Foreign')),
     )
-
     DATA_TYPE_CHOICES = Choices(
         ('interpreted', _('Interpreted')),
         ('raw', _('Raw')),
@@ -164,7 +163,15 @@ class DataRequestProfile(TimeStampedModel):
         default = None,
         # default=OrganizationType.OTHER,
         # default="Undefined", #I assigned random default to get rid of --------- as one of the choices
+        blank=True,
+        null=True,
+        help_text=_('Organization type based on Phil-LiDAR1 Data Distribution Policy')
+    )
+    org_type = models.CharField(
+        _('Organization Type'),
+        max_length=255,
         blank=False,
+        default="Other",
         help_text=_('Organization type based on Phil-LiDAR1 Data Distribution Policy')
     )
     organization_other = models.CharField(
@@ -735,8 +742,8 @@ class DataRequestProfile(TimeStampedModel):
                     out.append(str(date_of_action.month)+"/"+str(date_of_action.day)+"/"+str(date_of_action.year))
                 else:
                     out.append('')
-            elif f is 'organization_type':
-                out.append(OrganizationType.get(getattr(self,'organization_type')))
+            elif f is 'org_type':
+                out.append(OrganizationType.get(getattr(self,'org_type')))
             elif f is 'has_letter':
                 if self.request_letter:
                     out.append('yes')
@@ -802,6 +809,7 @@ class DataRequestProfile(TimeStampedModel):
         
     def migrate_request_data(self):
         if self.project_summary and not self.data_request :
+            profile_request = self.profile_request
             data_request = DataRequest()
             data_request.profile = profile_request.profile
             data_request.administrator = profile_request.administrator
@@ -826,7 +834,7 @@ class DataRequestProfile(TimeStampedModel):
             self.profile_request.save()
             
             self.additional_remarks += "migrated to data request (" + dateformat.format(datetime.datetime.now(), 'F j, Y, P') +")"
-            self.data_request = data_request.save()
+            self.data_request = data_request
             self.save()
         
             return data_request

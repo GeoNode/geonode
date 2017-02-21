@@ -2,6 +2,7 @@ from django.utils import timezone
 from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
+from django.core.exceptions import ObjectDoesNotExist
 from django.core.urlresolvers import reverse
 from django.http import HttpResponse, HttpResponseRedirect, Http404
 from django.shortcuts import (
@@ -17,12 +18,13 @@ from braces.views import (
 from urlparse import parse_qs
 
 from geonode.cephgeo.models import TileDataClass
+from geonode.cephgeo.models import UserJurisdiction
 from geonode.datarequests.forms import DataRequestRejectForm
 from geonode.datarequests.models import DataRequest
 from geonode.documents.models import get_related_documents
 from geonode.security.views import _perms_info_json
 from geonode.tasks.jurisdiction import place_name_update
-from geonode.tasks.jurisdiction2 import compute_size_update, assign_grid_refs_all
+from geonode.tasks.jurisdiction2 import compute_size_update, assign_grid_refs_all, assign_grid_refs
 from geonode.utils import default_map_config, resolve_object, llbbox_to_mercator
 from geonode.utils import GXPLayer, GXPMap
 
@@ -184,10 +186,15 @@ def data_request_approve(request, pk):
     if request.method == 'POST':
         data_request = get_object_or_404(DataRequest, pk=pk)
         
-        if not data_request.profile or not data_request.profile_request.status == 'approved':
-            messages.info(request, "Data request #"+str(pk)+" cannot be approved because the requester does not have an approved user yet.")
-            return HttpResponseRedirect(data_request.get_absolute_url())
-            #return HttpResponseRedirect('/forbidden')
+        if not data_request.profile:
+            if data_request.profile_request:
+                if not data_request.profile_request.status == 'approved':
+                    messages.info(request, "Data request #"+str(pk)+" cannot be approved because the requester does not have an approved user yet.")
+                    return HttpResponseRedirect(data_request.get_absolute_url())
+                    #return HttpResponseRedirect('/forbidden')
+                else:
+                    data_request.profile = profile_request.profile
+                    data_request.save()
         
         if data_request.jurisdiction_shapefile:
             data_request.assign_jurisdiction() #assigns/creates jurisdiction object
@@ -199,9 +206,10 @@ def data_request_approve(request, pk):
             except ObjectDoesNotExist as e:
                 pprint("Jurisdiction Shapefile not found, nothing to delete. Carry on")
 
+        
         data_request.set_status('approved',administrator = request.user)
-        data_request.send_approval_email()
-        messages.info("Request "+str(pk)+" has been approved.")
+        data_request.send_approval_email(data_request.profile.username)
+        messages.info(request, "Request "+str(pk)+" has been approved.")
         
         return HttpResponseRedirect(data_request.get_absolute_url())
 
