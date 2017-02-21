@@ -154,6 +154,10 @@
         {% endif %}
       </li>
 {% if user.is_superuser %}
+    <li>
+        <a href='{% url "datarequests:profile_request_edit" pk=profile_request.pk %}' class="btn btn-primary btn-md btn-block"  did="approve-button">Edit Request</a>
+    </li>
+    
       {% if profile_request.status == 'approved' %}
         <li class="list-group-item">
              <form id="recreate_dir_form" method="post" class="modal-form" action='{% url "datarequests:profile_request_recreate_dir" pk=profile_request.pk%}'>{% csrf_token %}
