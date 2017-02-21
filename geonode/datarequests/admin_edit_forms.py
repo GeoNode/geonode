@@ -78,5 +78,43 @@ class ProfileRequestEditForm(forms.ModelForm):
                     Field('last_name', css_class='form-control'),
                     css_class='form-group'
                 ),
+                Div(
+                    Field('organization', css_class='form-control'),
+                    css_class='form-group'
+                ),
+                Div(
+                    Field('org_type', css_class='form-control'),
+                    css_class='form-group'
+                ),
+                Fieldset('Academe',
+                    Div(
+                        Field('request_level', css_class='form-control'),
+                        css_class='form-group'
+                    ),
+                    Div(
+                        Field('funding_source', css_class='form-control'),
+                        css_class='form-group'
+                    ),
+                    Field('is_consultant'),
+                    css_class='academe-fieldset',
+                ),
+
+                    Div(
+                        Field('organization_other', css_class='form-control'),
+                        css_class='form-group'
+                    ),
+
+                Div(
+                    Field('location', css_class='form-control'),
+                    css_class='form-group'
+                ),
+                Div(
+                    Field('email', css_class='form-control'),
+                    css_class='form-group'
+                ),
+                Div(
+                    Field('contact_number', css_class='form-control'),
+                    css_class='form-group'
+                ),
             )
         )
