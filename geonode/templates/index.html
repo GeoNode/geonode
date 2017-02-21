@@ -8,7 +8,6 @@
 {% block body_class %}home{% endblock %}
 
 {% block middle %}
-  {{ block.super }}
   {% block hero %}
   <div class="jumbotron">
   	<div class="container">
@@ -19,6 +18,9 @@
   		<a class="btn btn-default btn-lg" target="_blank" href="http://docs.geonode.org/en/master/tutorials/users/index.html" role="button">{% blocktrans %}Get Started &raquo;{% endblocktrans %}</a>
   	</div>
   </div>
+  {% include "_status_message.html" %}
+  {% include "_announcements.html" %}
+  {% include "_messages.html" %}
   {% endblock %}
 
   {% block mainbody %}
