@@ -41,6 +41,7 @@ from geonode.people.models import OrganizationType
 import urllib2, json
 from urllib2 import HTTPError
 from datetime import datetime
+from unidecode import unidecode
 
 def report_distribution_status(request, template='reports/distribution_status.html'):
     #LAYER
@@ -62,7 +63,7 @@ def report_distribution_status(request, template='reports/distribution_status.ht
             luzvimin_count[eachinlist.date.strftime('%Y%m')][eachinlist.category] = 0
         luzvimin_count[eachinlist.date.strftime('%Y%m')][eachinlist.category] += eachinlist.count
 
-    urls_to_visit = ['https://lipad-fmctst.dream.upd.edu.ph/']
+    urls_to_visit = ['https://lipad-fmc.dream.upd.edu.ph/']
     for each_url in urls_to_visit:
         try:
             response = urllib2.urlopen(each_url + 'api/download_count')
@@ -94,13 +95,14 @@ def report_distribution_status(request, template='reports/distribution_status.ht
         counter_dict.update(each[1])
         sorted_mc[each[0]] = dict(counter_dict)
     #rename
-    renamed_mc = OrderedDict([(datetime.strptime(eachone[0],'%Y%m').strftime('%b'),eachone[1]) for eachone in sorted_mc.iteritems()])
-    renamed_luzvimin = OrderedDict([(datetime.strptime(eachone[0],'%Y%m').strftime('%b'),eachone[1]) for eachone in sorted_luzvimin.iteritems()])
+    renamed_mc = OrderedDict([(datetime.strptime(eachone[0],'%Y%m').strftime('%b%Y'),eachone[1]) for eachone in sorted_mc.iteritems()])
+    renamed_luzvimin = OrderedDict([(datetime.strptime(eachone[0],'%Y%m').strftime('%b%Y'),eachone[1]) for eachone in sorted_luzvimin.iteritems()])
 
     reversed_mc = OrderedDict(reversed(list(renamed_mc.items())))
     reversed_luzvimin = OrderedDict(reversed(list(renamed_luzvimin.items())))
 
     #DATAREQUEST
+    rearrange_dr = {}
     monthly_datarequest = {}
     org_count = {}
     monthly_datarequest_list = DataRequest.objects.all().order_by('status_changed')
@@ -128,11 +130,12 @@ def report_distribution_status(request, template='reports/distribution_status.ht
         counter_dict.update(each[1])
         sorted_md[each[0]] = dict(counter_dict)
     #rename
-    renamed_md = OrderedDict([(datetime.strptime(eachone[0],'%Y%m').strftime('%b'),eachone[1]) for eachone in sorted_md.iteritems()])
-    renamed_org = OrderedDict([(OrganizationType.get(eachone[0]),eachone[1]) for eachone in sorted_org.iteritems()])
+    renamed_md = OrderedDict([(datetime.strptime(eachone[0],'%Y%m').strftime('%b%Y'),eachone[1]) for eachone in sorted_md.iteritems()])
+    # converts num to OrganizationType Choices
+    # renamed_org = OrderedDict([(OrganizationType.get(eachone[0]),eachone[1]) for eachone in sorted_org.iteritems()])
 
     reversed_md = OrderedDict(reversed(list(renamed_md.items())))
-    reversed_org = OrderedDict(reversed(list(renamed_org.items())))
+    reversed_org = OrderedDict(reversed(list(sorted_org.items())))
     context_dict = {
         "monthly_count": reversed_mc,
         "luzvimin_count": reversed_luzvimin,
@@ -141,6 +144,7 @@ def report_distribution_status(request, template='reports/distribution_status.ht
         "monthly_datarequest": reversed_md,
         "org_count": reversed_org,
         "total_datarequest": reversed_md[reversed_md.keys()[0]],
+        "sum_datarequest": sum(reversed_md[reversed_md.keys()[0]].values()),
     }
 
     return render_to_response(template, RequestContext(request, context_dict))

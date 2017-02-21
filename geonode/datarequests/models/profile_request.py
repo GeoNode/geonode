@@ -31,7 +31,7 @@ from geonode.groups.models import GroupProfile, GroupMember
 from geonode.layers.models import Layer
 
 from geonode.tasks.mk_folder import create_folder
-from .base_request import BaseRequest
+from .base_request import BaseRequest, LipadOrgType
 
 
 class ProfileRequest(BaseRequest):
@@ -106,7 +106,13 @@ class ProfileRequest(BaseRequest):
         default=OrganizationType.OTHER,
         help_text=_('Organization type based on Phil-LiDAR1 Data Distribution Policy')
     )
-    
+    org_type = models.CharField(
+        _('Organization Type'),
+        max_length=255,
+        blank=False,
+        default="Other",
+        help_text=_('Organization type based on Phil-LiDAR1 Data Distribution Policy')
+    )
     organization_other = models.CharField(
         _('If Other, please specify'),
         max_length=255,
@@ -234,6 +240,7 @@ class ProfileRequest(BaseRequest):
                     raise Exception("Account not created")
              else:
                  profile.organization_type = self.organization_type
+                 profile.org_type = self.org_type
                  profile.save()
         except Exception as e:
             pprint(traceback.format_exc())
