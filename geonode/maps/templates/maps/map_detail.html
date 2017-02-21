@@ -48,10 +48,15 @@
       </div>
 
       <div class="tab-content">
+
+        <article id="info" class="tab-pane active">
         {% include "base/resourcebase_info_panel.html" %}
+        </article>
+
         <article class="tab-pane" id="comments">
         {% include "_comments.html" %}
         </article>
+
         <article class="tab-pane" id="rate">
         <!-- TODO: Move this to a reusable template snippet -->
           {% if request.user.is_authenticated %}
@@ -64,11 +69,13 @@
           {% num_ratings resource as num_votes %}
           <div class="overall_rating" style="float:left" data-score="{{ map_rating }}"></div> ({{num_votes}})
         </article>
+
         {% block social_links %}
             {% if SOCIAL_BUTTONS %}
                 {% include "social_links.html" %}
             {% endif %}
         {% endblock %}
+        
       </div>
 
     </div>
@@ -85,7 +92,7 @@
            <a href="{% url "map_metadata_detail" resource.id %}">
                <button class="btn btn-primary btn-md btn-block" >{% trans "Metadata Detail" %}</button>
            </a>
-        </li>  
+        </li>
 
         <div class="modal fade" id="download-map" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
           <div class="modal-dialog">
@@ -180,7 +187,7 @@
           <h4>{% trans "Documents related to this map" %}</h4>
           <p>{% trans "List of documents related to this map:" %}</p>
           <ul class="list-unstyled">
-            {% for document in documents %} 
+            {% for document in documents %}
             <li><a href="{{ document.get_absolute_url }}">{{ document.title }}</a></li>
             {% endfor %}
           </ul>
@@ -218,9 +225,9 @@
         {% endif %}
 
         {% include "base/_resourcebase_contact_snippet.html" %}
-    
+
       </ul>
-      
+
     </div>
 
   </div>
@@ -302,13 +309,13 @@
       success: function() {
         $('#form_post_comment_div').modal().find('form')[0].reset();
         $('#form_post_comment_div').modal('hide');
-        $('#comments_section').load(window.location.pathname + ' #comments_section', 
+        $('#comments_section').load(window.location.pathname + ' #comments_section',
         		function(){$(this).children().unwrap()})
       }
     });
     return false;
   });
- 
+
 </script>
 {% include "_permissions_form_js.html" %}
 <script type="text/javascript" src="{{ STATIC_URL}}geonode/js/utils/thumbnail.js"></script>
@@ -318,5 +325,5 @@
     $('#edit-map').modal('toggle');
   });
 </script>
- 
+
 {% endblock %}
