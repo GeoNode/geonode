@@ -8,7 +8,7 @@ urlpatterns = patterns(
     #url for landing page for profile and data requests
     url(r'^/?$','requests_landing',name='requests_landing'),
     url(r'^requests_csv/$','requests_csv',name='requests_csv'),
-    #url(r'^old_requests/$','old_requests_model_view',name='old_requests_model_view'),
+    url(r'^old_requests/$',DataRequestProfileList.as_view(),name='old_request_model_view'),
     
     #old requests
     url(r'^old_requests/$',DataRequestProfileList.as_view(),name='old_requests_model_view'),

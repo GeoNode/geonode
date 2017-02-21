@@ -98,6 +98,27 @@
       <td>{{ profile_request.contact_number }}</td>
       </tr>
 
+      {% if request_profile.intended_use_of_dataset == 'noncommercial' or request_profile.intended_use_of_dataset == 'academe' %}
+        <tr>
+        <td class="table-user-profile-attribute">{% trans "Organization type based on Phil-LiDAR1 Data Distribution Policy" %}</td>
+        <td>{{ request_profile.org_type }}</td>
+        </tr>
+        {% if request_profile.intended_use_of_dataset == 'academe' %}
+          <tr>
+          <td class="table-user-profile-attribute">{% trans "Level of Request" %}</td>
+          <td>{{ request_profile.get_request_level_display }}</td>
+          </tr>
+
+          <tr>
+          <td class="table-user-profile-attribute">{% trans "Source of Funding" %}</td>
+          <td>{{ request_profile.funding_source }}</td>
+          </tr>
+          <tr>
+          <td class="table-user-profile-attribute">{% trans "Consultant in behalf of another organization?" %}</td>
+          <td>{{ is_consultant|yesno:"yes,no" }}</td>
+          </tr>
+        {% endif %}
+      {% endif %}
          <tr>
           <td class="table-user-profile-attribute col-md-3">{% trans "Approval/Rejection Administrator" %}</td>
           <td>{{profile_request.administrator.username}}</td>
