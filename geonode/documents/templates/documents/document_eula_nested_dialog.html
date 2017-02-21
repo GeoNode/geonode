@@ -55,8 +55,27 @@
 {% block extra_script %}
     <script type="text/javascript">
     {% if not request.user.is_authenticated %}
+    var $org_type = $("#id_anon_orgtype")
+    var $form2 = $org_type.closest('form');
+    var $other = $form2.find('div#div_id_anon_orgother');
+
+    // Initial values
+    $other.toggle(false);
+    if ($org_type.val() == 'Other') {
+      $other.toggle(true);
+    }
+    $org_type.change( function() {
+        if ($(this).val() == 'Other'){
+            $other.slideDown();
+        } else {
+            $other.slideUp();
+        }
+    });
         $("#form_eula").submit(function(e) {
           if (document.form_eula.anon_first_name.value == "" || document.form_eula.anon_last_name.value == "" || document.form_eula.anon_email.value == "" || document.form_eula.anon_organization.value == "" || document.form_eula.anon_purpose.value == "" ) {
+            document.getElementById('anon_errors').style.display = "block";
+            return false;
+          }else if (document.form_eula.anon_orgtype.value == "Other" && document.form_eula.anon_orgother.value == "") {
             document.getElementById('anon_errors').style.display = "block";
             return false;
           }else{

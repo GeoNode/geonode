@@ -28,6 +28,8 @@ from .profile_request import ProfileRequest
 from .base_request import BaseRequest
 from taggit.managers import TaggableManager
 
+import geonode.local_settings as local_settings
+
 class DataRequest(BaseRequest):
 
     DATA_TYPE_CHOICES = Choices(
@@ -265,7 +267,7 @@ class DataRequest(BaseRequest):
             email_subject,
             text_content,
             settings.DEFAULT_FROM_EMAIL,
-            [self.email, ]
+            [self.get_email(), ]
         )
         msg.attach_alternative(html_content, "text/html")
         msg.send()
@@ -283,8 +285,8 @@ class DataRequest(BaseRequest):
             settings.BASEURL + self.get_absolute_url()
         )
         
-        email_subj = "[LiPAD] A new request has been submitted"
-        self.send_email(email_subj,text_content,html_content)
+        email_subject = "[LiPAD] A new request has been submitted"
+        self.send_email(email_subject,text_content,html_content)
 
     def send_approval_email(self, username):
         site = Site.objects.get_current()
@@ -294,32 +296,32 @@ class DataRequest(BaseRequest):
         profile_url = iri_to_uri(profile_url)
 
         text_content = email_utils.DATA_APPROVAL_TEXT.format(
-             unidecode(self.first_name),
+             unidecode(self.get_first_name()),
              local_settings.LIPAD_SUPPORT_MAIL
          )
 
         html_content =email_utils.DATA_APPROVAL_HTML.format(
-             unidecode(self.first_name),
+             unidecode(self.get_first_name()),
              local_settings.LIPAD_SUPPORT_MAIL,
              local_settings.LIPAD_SUPPORT_MAIL
          )
 
         email_subject = _('[LiPAD] Data Request Status')
-        self.send_email(email_subj,text_content,html_content)
+        self.send_email(email_subject,text_content,html_content)
 
     def send_rejection_email(self):
 
         additional_details = 'Additional Details: ' + str(self.additional_rejection_reason)
 
         text_content = email_utils.DATA_REJECTION_TEXT.format(
-             unidecode(self.first_name),
+             unidecode(self.get_first_name()),
              self.rejection_reason,
              additional_details,
              local_settings.LIPAD_SUPPORT_MAIL,
          )
 
         html_content =email_utils.DATA_REJECTION_HTML.format(
-             unidecode(self.first_name),
+             unidecode(self.get_first_name()),
              self.rejection_reason,
              additional_details,
              local_settings.LIPAD_SUPPORT_MAIL,
@@ -327,4 +329,4 @@ class DataRequest(BaseRequest):
         )
 
         email_subject = _('[LiPAD] Data Request Status')
-        self.send_email(email_subj,text_content,html_content)
+        self.send_email(email_subject,text_content,html_content)
