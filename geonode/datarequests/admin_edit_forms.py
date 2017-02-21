@@ -52,6 +52,7 @@ class ProfileRequestEditForm(forms.ModelForm):
             'location',
             'email',
             'contact_number',
+            'additional_remarks',
         )
         
     org_type = forms.ChoiceField(
@@ -64,8 +65,8 @@ class ProfileRequestEditForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super(ProfileRequestEditForm, self).__init__(*args, **kwargs)
         self.helper = FormHelper()
-         self.helper.layout = Layout(
-            Fieldset('User Information',
+        self.helper.layout = Layout(
+            Fieldset('Editting Profile Request',
                 Div(
                     Field('first_name', css_class='form-control'),
                     css_class='form-group'
@@ -114,6 +115,10 @@ class ProfileRequestEditForm(forms.ModelForm):
                 ),
                 Div(
                     Field('contact_number', css_class='form-control'),
+                    css_class='form-group'
+                ),
+                Div(
+                    Field('additional_remarks', css_class='form-control'),
                     css_class='form-group'
                 ),
             )

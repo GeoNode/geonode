@@ -1,6 +1,7 @@
 from django.utils import timezone
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
+from django.forms.models import model_to_dict
 from django.http import HttpResponse, HttpResponseRedirect, Http404
 from django.shortcuts import (
     redirect, get_object_or_404, render, render_to_response)
@@ -14,6 +15,7 @@ from braces.views import (
 )
 
 from geonode.datarequests.forms import RejectionForm
+from geonode.datarequests.admin_edit_forms import ProfileRequestEditForm
 from geonode.datarequests.models import (
     ProfileRequest, DataRequest)
 
@@ -44,6 +46,23 @@ def profile_request_detail(request, pk, template='datarequests/profile_detail.ht
     context_dict["request_reject_form"]= RejectionForm(instance=profile_request)
 
     return render_to_response(template, RequestContext(request, context_dict))
+
+@login_required
+def profile_request_edit(request, pk, template ='datarequests/profile_detail_edit.html'):
+    profile_request = get_object_or_404(ProfileRequest, pk=pk)
+    
+    if not  request.user.is_superuser:
+        return HttpResponseRedirect('/forbidden')
+    
+    if request.method == 'GET': 
+        context_dict={"profile_request":profile_request}
+        context_dict["form"] = ProfileRequestEditForm(initial = model_to_dict(profile_request))
+        return render(request, template, context_dict)
+    else:
+        form = ProfileRequestEditForm(request.POST, initial = model_to_dict(profile_request))
+        if form.has_changed():
+            pprint("Perform save here")
+        return HttpResponseRedirect(profile_request.get_absolute_url())
 
 def profile_request_approve(request, pk):
     if not request.user.is_superuser:
