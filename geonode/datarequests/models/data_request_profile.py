@@ -16,35 +16,25 @@ from django_enumfield import enum
 from django.core import validators
 from django_auth_ldap.backend import LDAPBackend, ldap_error
 
-import ldap
-
 from model_utils import Choices
-from model_utils.models import TimeStampedModel
+from model_utils.models import TimeStampedModel, StatusModel
 
 from geonode.cephgeo.models import UserJurisdiction
-from geonode.groups.models import GroupProfile, GroupMember
-from geonode.layers.models import Layer
+from geonode.datarequests.utils import create_login_credentials, create_ad_account, add_to_ad_group
 from geonode.documents.models import Document
+from geonode.layers.models import Layer
 from geonode.people.models import OrganizationType, Profile
-from geonode.utils import resolve_object
-from geonode.base.models import ResourceBase
-from geonode.tasks.mk_folder import create_folder
 
 from pprint import pprint
 from unidecode import unidecode
 
 import traceback
+import datetime
 
-import geonode.settings as local_settings
+from django.conf import settings as local_settings
 
-from .utils import create_login_credentials, create_ad_account, add_to_ad_group
-
-class LipadOrgType(models.Model):
-    val = models.CharField(_('Value'), max_length=100)
-    display_val = models.CharField(_('Display'), max_length=100)
-
-    def __unicode__(self):
-        return (_('{}').format(self.val,))
+from .data_request import DataRequest
+from .profile_request import ProfileRequest
 
 class DataRequestProfile(TimeStampedModel):
 
@@ -278,8 +268,20 @@ class DataRequestProfile(TimeStampedModel):
         help_text=_('Additional remarks by an administrator'),
     )
 
+    profile_request = models.ForeignKey(
+        ProfileRequest,
+        null = True,
+        blank = True,
+    )
+    
+    data_request = models.ForeignKey(
+        DataRequest,
+        null = True,
+        blank = True,
+    )
 
     class Meta:
+        app_label = "datarequests"
         verbose_name = _('Data Request Profile')
         verbose_name_plural = _('Data Request Profiles')
         ordering = ('-created',)
@@ -299,7 +301,7 @@ class DataRequestProfile(TimeStampedModel):
         return self.date is not None
 
     def get_absolute_url(self):
-        return reverse('datarequests:data_request_profile', kwargs={'pk': self.pk})
+        return reverse('datarequests:old_request_detail', kwargs={'pk': self.pk})
 
     def set_verification_key(self):
         self.verification_key = get_random_string(length=50)
@@ -319,12 +321,9 @@ class DataRequestProfile(TimeStampedModel):
 
         text_content = """
          Dear <strong>{}</strong>,
-
         Please paste the following URL in your browser to verify your email and complete your Data Request Registration.
         {}
-
         For inquiries, you can contact us as at {}.
-
         Regards,
         LiPAD Team
          """.format(
@@ -335,7 +334,6 @@ class DataRequestProfile(TimeStampedModel):
 
         html_content = """
         <p>Dear <strong>{}</strong>,</p>
-
        <p>Please click on the following link to verify your email and complete your Data Request Registration.</p>
        <p><a rel="nofollow" target="_blank" href="{}">{}</a></p>
        <p>For inquiries, you can contact us as at <a href="mailto:{}" target="_top">{}</a></p>
@@ -370,7 +368,6 @@ class DataRequestProfile(TimeStampedModel):
 
         text_content = """
         Hello LiPAD Admins,
-
         A new data request has been submitted by {} {}. You can view the data request profile using the following link:
         {}
         """.format(
@@ -381,10 +378,8 @@ class DataRequestProfile(TimeStampedModel):
 
         html_content = """
         <p>Hello LiPAD Admins,</p>
-
         <p>A new data request has been submitted by {} {}. You can view the data request profile using the following link:</p>
         <p><a rel="nofollow" target="_blank" href="{}">{}</a></p>
-
         """.format(
             unidecode(self.first_name),
             unidecode(self.last_name),
@@ -414,13 +409,10 @@ class DataRequestProfile(TimeStampedModel):
 
         text_content = """
          Dear {},
-
         Your account registration for LiPAD was not approved.
         Reason: {}
         {}
-
         If you have further questions, you can contact us as at {}.
-
         Regards,
         LiPAD Team
          """.format(
@@ -432,7 +424,6 @@ class DataRequestProfile(TimeStampedModel):
 
         html_content = """
         <p>Dear <strong>{}</strong>,</p>
-
        <p>Your account registration for LiPAD was not approved.</p>
        <p>Reason: {} <br/>
        {}</p>
@@ -465,13 +456,10 @@ class DataRequestProfile(TimeStampedModel):
 
         text_content = """
         Dear {},
-
         Your data request for LiPAD was not approved.
         Reason: {}
         {}
-
         If you have further questions, you can contact us as at {}.
-
         Regards,
         LiPAD Team
          """.format(
@@ -483,7 +471,6 @@ class DataRequestProfile(TimeStampedModel):
 
         html_content = """
         <p>Dear <strong>{}</strong>,</p>
-
        <p>Your data request for LiPAD was not approved.</p>
        <p>Reason: {} <br/>
        {}</p>
@@ -521,24 +508,16 @@ class DataRequestProfile(TimeStampedModel):
 
         text_content = """
         Dear {},
-
         Your account registration for LiPAD was approved.
         You will now be able to log in using the following log-in credentials:
         username: {}
-
         Before you are able to login to LiPAD, visit first https://ssp.dream.upd.edu.ph/?action=sendtoken and follow the instructions to reset a password for your account.
-
         You will be able to edit your account details by logging in and going to the following link:
         {}
-
         To download DTMs, DSMs, Classified LAZ and Orthophotos, please proceed to http://lipad.dream.upd.edu.ph/maptiles after logging in.
         To download Flood Hazard Maps, Resource Layers and other datasets, please proceed to http://lipad.dream.upd.edu.ph/layers/.
-
         Flood Hazard Maps and Resource Layers can be viewed and downloaded in the Data Store > Layers Section while the LiDAR DTM, LiDAR DSM, Classified LAZ and Orthophotos can be downloaded through Data Store > Data Tiles Section.
-
-
         If you have any questions, you can contact us as at {}.
-
         Regards,
         LiPAD Team
          """.format(
@@ -550,10 +529,8 @@ class DataRequestProfile(TimeStampedModel):
 
         html_content = """
         <p>Dear <strong>{}</strong>,</p>
-
        <p>Your account registration for LiPAD was approved. You will now be able to log in using the following log-in credentials:</p>
        username: <strong>{}</strong></p>
-
        <p>Before you are able to login to LiPAD, visit first https://ssp.dream.upd.edu.ph/?action=sendtoken and follow the instructions to reset a password for your account</p></br>
        <p>You will be able to edit your account details by logging in and going to the following link:</p>
        {}
@@ -562,9 +539,7 @@ class DataRequestProfile(TimeStampedModel):
 
        <p>To download DTMs, DSMs, Classified LAZ and Orthophotos, please proceed to <a href="http://lipad.dream.upd.edu.ph/maptiles">Data Tiles Section</a> under Data Store after logging in.</p>
        <p>To download Flood Hazard Maps, Resource Layers and other datasets, please proceed to <a href="http://lipad.dream.upd.edu.ph/layers/">Layers Section</a> under Data Store.</p>
-
        <p>Flood Hazard Maps and Resource Layers can be viewed and downloaded in the <a href="https://lipad.dream.upd.edu.ph/layers/">Data Store > Layers</a> Section while the LiDAR DTM, LiDAR DSM, Classified LAZ and Orthophotos can be downloaded through <a href="https://lipad.dream.upd.edu.ph/maptiles/">Data Store > Data Tiles</a> Section.</p>
-
        <p>If you have any questions, you can contact us as at <a href="mailto:{}" target="_top">{}</a></p>
        </br>
         <p>Regards,</p>
@@ -598,16 +573,12 @@ class DataRequestProfile(TimeStampedModel):
 
         text_content = """
         Dear {},
-
         Your current data request for LiPAD was approved.
         To download DTMs, DSMs, Classified LAZ and Orthophotos, please proceed to http://lipad.dream.upd.edu.ph/maptiles after logging in.
         To download Flood Hazard Maps, Resource Layers and other datasets, please proceed to http://lipad.dream.upd.edu.ph/layers/.
-
         To download DTMs, DSMs, Classified LAZ and Orthophotos, please proceed to http://lipad.dream.upd.edu.ph/maptiles after logging in.
         To download Flood Hazard Maps, Resource Layers and other datasets, please proceed to http://lipad.dream.upd.edu.ph/layers/.
-
         If you have any questions, you can contact us as at {}.
-
         Regards,
         LiPAD Team
          """.format(
@@ -617,7 +588,6 @@ class DataRequestProfile(TimeStampedModel):
 
         html_content = """
         <p>Dear <strong>{}</strong>,</p>
-
        <p>Your current data request in LiPAD was approved.</p>
        <p>To download DTMs, DSMs, Classified LAZ and Orthophotos, please proceed to <a href="http://lipad.dream.upd.edu.ph/maptiles">Data Tiles Section</a> under Data Store after logging in.</p>
        <p>To download Flood Hazard Maps, Resource Layers and other datasets, please proceed to <a href="http://lipad.dream.upd.edu.ph/layers/">Layers Section</a> under Data Store.</p>
@@ -799,8 +769,74 @@ class DataRequestProfile(TimeStampedModel):
 
         return out
 
-class RequestRejectionReason(models.Model):
-    reason = models.CharField(_('Reason for rejection'), max_length=100)
-
-    def __unicode__(self):
-        return (_('{}').format(self.reason,))
+    def migrate_request_profile(self):
+        if not self.profile_request:
+            pprint("migrating")
+            profile_request = ProfileRequest()
+            profile_request.first_name = self.first_name
+            profile_request.middle_name = self.middle_name
+            profile_request.last_name = self.last_name
+            profile_request.email = self.email
+            profile_request.contact_number = self.contact_number
+            profile_request.organization = self.organization
+            profile_request.location = self.location
+            profile_request.organization_type = self.organization_type
+            profile_request.organization_other = self.organization_other
+            profile_request.status = self.request_status
+            profile_request.administrator =  self.administrator
+            profile_request.profile = self.profile
+            profile_request.username = self.username
+            profile_request.created = self.key_created_date
+            profile_request.verification_key = self.verification_key
+            profile_request.verification_date = self.date
+            if self.request_status == 'rejected':
+                profile_request.rejection_reason = self.rejection_reason
+                profile_request.additional_rejection_reason = self_additional_rejection_reason
+            
+            profile_request.additional_remarks = self.additional_remarks
+            profile_request.save()
+            
+            if not self.additional_remarks:
+                self.additional_remarks = ""
+            self.additional_remarks += "migrated to profile request (" + dateformat.format(datetime.datetime.now(), 'F j, Y, P') +")"
+            self.profile_request = profile_request
+            self.save()
+            
+            return profile_request
+        
+        pprint("Migration failed")
+        return None
+        
+    def migrate_request_data(self):
+        if self.project_summary and not self.data_request :
+            profile_request = self.profile_request
+            data_request = DataRequest()
+            data_request.profile = profile_request.profile
+            data_request.administrator = profile_request.administrator
+            data_request.project_summary = self.project_summary
+            data_request.purpose = self.purpose
+            data_request.data_type_requested = self.data_type_requested
+            data_request.area_coverage = self.area_coverage
+            data_request.place_name = self.place_name
+            data_request.jurisdiction_shapefile = self.jurisdiction_shapefile
+            data_request.juris_data_size = self.juris_data_size
+            data_request.request_letter = self.request_letter
+                
+            if self.request_status == 'rejected':
+                data_request.rejection_reason = self.rejection_reason
+                data_request.additional_rejection_reason = self_additional_rejection_reason
+            
+            data_request.additional_remarks = self.additional_remarks
+            data_request.profile_request = self.profile_request
+            data_request.save()
+            
+            self.profile_request.data_request = data_request
+            self.profile_request.save()
+            
+            self.additional_remarks += "migrated to data request (" + dateformat.format(datetime.datetime.now(), 'F j, Y, P') +")"
+            self.data_request = data_request
+            self.save()
+        
+            return data_request
+        
+        return None
