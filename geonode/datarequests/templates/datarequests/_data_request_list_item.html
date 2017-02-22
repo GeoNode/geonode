@@ -9,7 +9,7 @@
         <h4><a href="{{ item.data_request_detail_url }}">{{ item.first_name }} {{ item.middle_name }} {{ item.last_name }}</a></h4>
         <h6>Submitted: {{ item.date_submitted }}</h6>
         <p>
-        Purpose: <strong>{{ item.purpose }} </strong></br>
+        PROFILE REQUEST: <a href="{{ item.profile_request_detail_url }}"><strong>{{ item.profile_request_id }} </strong></a></br>
         Organization: <strong>{{ item.organization }} </strong></br>
         Organization Type: <strong>{{ item.org_type }}</strong>
         <strong ng-if="item.org_type == 'Other'">- {{ item.organization_other }}</strong>
