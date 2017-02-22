@@ -1,0 +1,106 @@
+{% extends "layers/layer_base.html" %}
+{% load i18n %}
+{% load staticfiles %}
+{% load url from future %}
+
+{% block title %} {% trans "Profile Requests" %} - {{ block.super }} {% endblock %}
+
+{% block body_class %}Profile Requests{% endblock %}
+
+{% block body %}
+<div class="page-header">
+    {% if request.user.is_superuser %}
+        <a href="{% url 'datarequests:profile_requests_csv' %}" class="btn btn-primary pull-right">{% trans "Download CSV" %}</a>
+    {% endif %}
+  <h2 class="page-title">{% trans "Profile Requests" %}</h2>
+</div>
+  {% with include_type_filter='true' %}
+    {% with facet_type='profile_requests' %}
+      {% with header='Requester Type' %}
+        {% with filter='type__in' %}
+        {% include "datarequests/_profile_request_content.html" %}
+        {% endwith %}
+      {% endwith %}
+    {% endwith %}
+  {% endwith %}
+{% endblock %}
+
+{% block extra_script %}
+  <script type="text/javascript">
+  {% autoescape off %}
+    facet_count_url = "{% url 'datarequests:profile_request_facet_count' %}",
+    csrf_token =  "{{ csrf_token }}"
+  {% endautoescape %}
+  </script>
+  <script type="text/javascript">
+      {% if HAYSTACK_SEARCH %}
+          SEARCH_URL = '{% url 'api_get_search' api_name='api' resource_name='base' %}?type__in=profile_request'
+      {% else %}
+          SEARCH_URL = '{% url 'api_dispatch_list' api_name='api' resource_name='profile_requests' %}';
+      {% endif %}
+    FILTER_TYPE = 'profile_request';
+
+    var facetCounts = function() {
+        $.ajax({
+            type: "POST",
+            url: facet_count_url,
+            dataType: 'JSON',
+            success: function(data) {
+                for (facet in data) {
+                  if (data.hasOwnProperty(facet)) {
+                      $('#' + facet).find('span').text(data[facet]);
+                    }
+                    if (data[facet] == 0) {
+                      $('#' + facet).closest('li').hide();
+                    } else {
+                      $('#' + facet).closest('li').show();
+                    }
+                }
+            }
+        });
+    }
+
+    $(".filter").on('click', '.request-filter', function() {
+      facetCounts();
+    });
+
+    var getActiveFilters = function() {
+      var vars = [], hash;
+          var hashes = window.location.href.slice(window.location.href.indexOf('?') + 1).split('&');
+          for(var i = 0; i < hashes.length; i++)
+          {
+              hash = hashes[i].split('=');
+              vars.push(hash[0]);
+              vars[hash[0]] = hash[1];
+          }
+
+      var u = window.location.href;
+      var params = u.split(/[?&]/).reduce(function(a,b,c){
+        var p=b.split("="), k=p[0], v=decodeURIComponent(p[1]);
+        if(!p[1])return a;
+        a[k]=a[k]||[];
+        a[k].push(v);
+       return a;
+      }, {})
+
+      for (facet in params) {
+        if (facet == 'status__in' || facet == 'requester_type__in') {
+          for (var i = 0; i < params[facet].length; i++) {
+          $('#' + params[facet][i]).addClass('active');
+          };
+        }
+      }
+
+    }
+
+    facetCounts();
+    getActiveFilters();
+
+
+
+  </script>
+  {% with include_spatial='false' %}
+  {% include 'search/search_scripts.html' %}
+  {% endwith %}
+
+{% endblock extra_script %}

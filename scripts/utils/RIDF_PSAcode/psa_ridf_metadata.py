@@ -121,32 +121,32 @@ def style_update(layer, style_template):
     #         #print "%s" % e
     #         raise
 
-def ridf_value(muni_code, flood_year):
-    # ridf_obj = RIDF.objects.get(muni_code__icontains=muni_code)
+# def ridf_value(muni_code, flood_year):
+#     # ridf_obj = RIDF.objects.get(muni_code__icontains=muni_code)
 
-    if ridf_obj is not None:
-        if flood_year == 5:
-            return ridf_obj._5yr
-        elif flood_year == 25:
-            return ridf_obj._25yr
-        elif flood_year == 100:
-            return ridf_obj._100yr
-    else:
-        return 'N/A'
+#     if ridf_obj is not None:
+#         if flood_year == 5:
+#             return ridf_obj._5yr
+#         elif flood_year == 25:
+#             return ridf_obj._25yr
+#         elif flood_year == 100:
+#             return ridf_obj._100yr
+#     else:
+#         return 'N/A'
 
 
-def muni_code_title(muni_code, layername, flood_year):
-    # layer.title = layer.name.replace("_10m","").replace("_30m","").replace("__"," ").
-    # replace("_"," ").replace("fh%syr" % flood_year,"%s Year Flood Hazard Map" % flood_year).title()
-    ridf_obj = RIDF.objects.get(muni_code__icontains=muni_code)
-    if ridf_obj is not None:
-        muni = ridf_obj.muni_name
-        prov = ridf_obj.prov_name
-        title = layer.name.replace("_10m", "").replace("_30m", "").replace("__", " ").replace("_", " ").replace(
-            '{0}'.format(psa_code), '{0}, {1} {2} Year Flood Hazard Map'.format(muni, prov, flood_year)).title()
-        return title
-    else:
-        return 'N/A'
+# def muni_code_title(muni_code, layername, flood_year):
+#     # layer.title = layer.name.replace("_10m","").replace("_30m","").replace("__"," ").
+#     # replace("_"," ").replace("fh%syr" % flood_year,"%s Year Flood Hazard Map" % flood_year).title()
+#     ridf_obj = RIDF.objects.get(muni_code__icontains=muni_code)
+#     if ridf_obj is not None:
+#         muni = ridf_obj.muni_name
+#         prov = ridf_obj.prov_name
+#         title = layer.name.replace("_10m", "").replace("_30m", "").replace("__", " ").replace("_", " ").replace(
+#             '{0}'.format(psa_code), '{0}, {1} {2} Year Flood Hazard Map'.format(muni, prov, flood_year)).title()
+#         return title
+#     else:
+#         return 'N/A'
 
 
 # def tag_riverbasin(layer):
