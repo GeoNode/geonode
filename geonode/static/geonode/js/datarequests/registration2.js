@@ -1,7 +1,8 @@
 $(function() {
     var $intended_use = $("#id_intended_use_of_dataset");
-    var $noncommercial = $form.find('fieldset.noncommercial-fieldset');
     var $form = $intended_use.closest('form');
+    var $noncommercial = $form.find('fieldset.noncommercial-fieldset');
+    
 
         // Data Set
     var $data_set = $("#id_data_set")
