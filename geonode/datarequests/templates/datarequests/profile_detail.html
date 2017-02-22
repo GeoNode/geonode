@@ -154,7 +154,7 @@
         {% endif %}
       </li>
 {% if user.is_superuser %}
-    <li>
+    <li  class="list-group-item">
         <a href='{% url "datarequests:profile_request_edit" pk=profile_request.pk %}' class="btn btn-primary btn-md btn-block"  did="approve-button">Edit Request</a>
     </li>
     
