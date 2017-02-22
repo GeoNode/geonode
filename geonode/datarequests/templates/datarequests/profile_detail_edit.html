@@ -33,13 +33,13 @@
 <div class="row">
   <div class="col-md-6 col-md-offset-1">
 
-    <form action='{% url "datarequests:profile_request_edit" pk=profile_request.pk %}' class="form-horizontal" method="post" enctype="multipart/form-data">{% csrf_token %}
+    <form id="edit-form" action='{% url "datarequests:profile_request_edit" pk=profile_request.pk %}' class="form-horizontal" method="post" enctype="multipart/form-data">{% csrf_token %}
 
           <div class="form-controls">
             {% crispy form %}
           </div>
           <div class="form-actions">
-            <input type="submit" class="btn btn-primary btn-md" id="form-submit" value="{% trans 'Save' %}"/>
+            <input type="submit" class="btn btn-primary btn-md" id="form-submit" name ="form-submit" value="{% trans 'Save' %}"/>
           </div>
 
       </form>
@@ -113,7 +113,11 @@
       {% load i18n %}
       <script src="{{ STATIC_URL }}geonode/js/datarequests/registration.js"></script>
         <script>
-    console.log("{{profile_form_data}}")
+    $('#form-submit').click(function(e){
+        e.preventDefault();
+        alert("click");
+        $('#edit-form').submit();
+        });
         </script>
       
 {% endblock extra_script %}
