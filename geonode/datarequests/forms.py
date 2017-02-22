@@ -48,7 +48,8 @@ class ProfileRequestForm(forms.ModelForm):
             'captcha'
         )
 
-    ORG_TYPE_CHOICES = LipadOrgType.objects.values_list('val', 'val')
+    #ORG_TYPE_CHOICES = LipadOrgType.objects.values_list('val', 'val')
+    ORG_TYPE_CHOICES = [('','')].extend(LipadOrgType.objects.values_list('val', 'val'))
     # Choices that will be used for fields
     LOCATION_CHOICES = Choices(
         ('local', _('Local')),
@@ -74,7 +75,7 @@ class ProfileRequestForm(forms.ModelForm):
 
     org_type = forms.ChoiceField(
         label = _('Organization Type'),
-        choices = ORG_TYPE_CHOICES,
+        choices = (('',''))+ ORG_TYPE_CHOICES,
         initial = "Other",
         required = True
     )
@@ -199,16 +200,25 @@ class ProfileRequestForm(forms.ModelForm):
                 'Organization name can only be 64 characters')
 
         return organization
+        
+    def clean_org_type(self):
+        org_type = self.cleaned_data.get('org_type')
+        if org_type:
+            if len(org_type) < 1:
+                raise forms.ValidationError('This field is required')
+            else:
+                return org_type
+        else:
+            raise forms.ValidationError('This field is required')
 
     def clean_funding_source(self):
         funding_source = self.cleaned_data.get('funding_source')
         org_type = self.cleaned_data.get('org_type')
         #intended_use_of_dataset = self.cleaned_data.get('intended_use_of_dataset')
-        if (#intended_use_of_dataset == 'noncommercial' and
-                "Academe" in org_type and
-                not funding_source):
-            raise forms.ValidationError(
-                'This field is required.')
+        if org_type:
+            #intended_use_of_dataset == 'noncommercial' and
+            if ("Academe" in org_type and not funding_source):
+                raise forms.ValidationError('This field is required.')
         return funding_source
         
     def clean_organization_other(self):
