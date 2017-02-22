@@ -22,7 +22,7 @@ from .forms import ProfileRequestForm
 
 class ProfileRequestEditForm(ProfileRequestForm):
     
-    ORG_TYPE_CHOICES = LipadOrgType.objects.values_list('val', 'val').append(('',''))
+    ORG_TYPE_CHOICES = LipadOrgType.objects.values_list('val', 'val')
     # Choices that will be used for fields
     LOCATION_CHOICES = Choices(
         ('local', _('Local')),
@@ -65,6 +65,8 @@ class ProfileRequestEditForm(ProfileRequestForm):
     def __init__(self, *args, **kwargs):
         super(ProfileRequestEditForm, self).__init__(*args, **kwargs)
         self.fields.pop('captcha')
+        if not self.fields['org_type'].choices[0][0] == '':
+            self.fields['org_type'].choices.insert(0, ('','---------'))
         self.helper = FormHelper()
         self.helper.layout = Layout(
             Fieldset('Editting Profile Request',
