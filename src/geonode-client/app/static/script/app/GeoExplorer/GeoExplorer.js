@@ -256,6 +256,8 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
                 // strip from urls http or https
                 url_short = url.replace(/.*?:\/\//g, "");
                 localGeoServerBaseUrl_short = this.localGeoServerBaseUrl.replace(/.*?:\/\//g, "");
+                console.log('url_short: ' + url_short);
+                console.log('localGeoServerBaseUrl_short: ' + localGeoServerBaseUrl_short);
                 if (this.localGeoServerBaseUrl) {
                     if (url_short.indexOf(localGeoServerBaseUrl_short) == 0) {
                         // replace local GeoServer url with /geoserver/
@@ -263,6 +265,7 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
                             new RegExp("^" + this.localGeoServerBaseUrl),
                             "/geoserver/"
                         );
+                        console.log('Request sent to GeoServer');
                         return;
                     }
                     var localUrl = this.localGeoServerBaseUrl.replace(
@@ -270,12 +273,14 @@ var GeoExplorer = Ext.extend(gxp.Viewer, {
                     if (url.indexOf(localUrl + "rest/") === 0) {
                         options.url = url.replace(new RegExp("^" +
                             localUrl), "/geoserver/");
+                        console.log('Request sent to GeoServer REST');
                         return;
                     }
                 }
                 // use the proxy for all non-local requests
                 if(this.proxy && options.url.indexOf(this.proxy) !== 0 &&
                     options.url.indexOf("http") === 0) {
+                    console.log('Request sent to proxy');
                     var parts = options.url.replace(/&$/, "").split("?");
                     var params = Ext.apply(parts[1] && Ext.urlDecode(
                         parts[1]) || {}, options.params);
