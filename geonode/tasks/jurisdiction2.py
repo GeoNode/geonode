@@ -192,7 +192,11 @@ def get_geometries_ogr(juris_shp_name, dest_epsg=32651): #returns layer
         geom = f.GetGeometryRef()
         if not src_epsg == dest_epsg:
             geom.Transform(c_transform)
-        geometry_list.append(loads(geom.ExportToWkb()))
+        geomWkb = loads(geom.ExportToWkb())
+        if not geomWkb.is_valid:
+            geomWkb = geomWkb.convex_hull
+        
+        geometry_list.append(geomWkb)
             
     source = None
     data = None
