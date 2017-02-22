@@ -137,5 +137,10 @@ define(['./FileType'], function (FileType) {
             format: 'raster',
             main: 'sid'
         });
+    file_types['XML'] = new FileType({
+            name: gettext('XML Metadata File'),
+            format: 'metadata',
+            main: 'xml'
+        });
     return file_types;
 });

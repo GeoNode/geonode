@@ -99,3 +99,13 @@ venv
 
 celerybeat-*
 manage.py
+
+geonode/bin/
+geonode/djcelery/
+geonode/include/
+geonode/lib/
+geonode/local/
+geonode/man/
+geonode/pip-selfcheck.json
+geonode/shapely/
+geonode/share/

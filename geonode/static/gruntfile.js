@@ -59,6 +59,8 @@ module.exports = function(grunt) {
           '.components/bootstrap/js/bootstrap-carousel.js',
           '.components/bootstrap/js/bootstrap-scrollspy.js',
           '.components/bootstrap/js/bootstrap-collapse.js',
+          '.components/bootstrap/js/bootstrap-select.js',
+          '.components/bootstrap/js/bootstrap-multiselect.js',
           '.components/bootstrap/js/bootstrap-tab.js'
         ],
         dest: 'lib/js/bootstrap.js'
@@ -75,16 +77,21 @@ module.exports = function(grunt) {
           dest: 'lib/css',
           src: [
             'datatables/media/css/jquery.dataTables.css',
-            'select2/select2.css', 
+            'select2/select2.min.css',
             'multi-select/css/multi-select.css',
             'jquery-ui/themes/smoothness/jquery-ui.css',
+            'jquery-tree-multiselect/dist/jquery.tree-multiselect.min.css',
             'bootstrap/dist/css/bootstrap.min.css',
             'leaflet-fullscreen/dist/leaflet.fullscreen.css',
             'leaflet-fullscreen/dist/fullscreen@2x.png',
             'leaflet-fullscreen/dist/fullscreen.png',
-            'eonasdan-bootstrap-datetimepicker/build/css/bootstrap-datetimepicker.css',
+            'eonasdan-bootstrap-datetimepicker/build/css/bootstrap-datetimepicker.min.css',
             'bootstrap-treeview/dist/bootstrap-treeview.min.css',
-            'bootstrap-tokenfield/dist/css/bootstrap-tokenfield.css'
+            'bootstrap-tokenfield/dist/css/bootstrap-tokenfield.min.css',
+            'bootstrap-tokenfield/dist/css/tokenfield-typeahead.min.css',
+            'bootstrap-select/dist/css/bootstrap-select.min.css',
+            'bootstrap-wysiwyghtml5/dist/bootstrap-wysihtml5-0.0.2.css',
+            'fastselect/dist/fastselect.min.css'
           ]
         }, {
           expand: true,
@@ -110,19 +117,20 @@ module.exports = function(grunt) {
             'datatables/media/js/jquery.dataTables.js',
             'jquery-timeago/jquery.timeago.js',
             'tinysort/src/jquery.tinysort.js',
-            'raty/lib/jquery.raty.js',
-            'jquery-waypoints/waypoints.js',
-            'jquery-ui/ui/jquery-ui.custom.js',
+            'raty/lib/jquery.raty.min.js',
+            'jquery-waypoints/waypoints.min.js',
+            'jquery-ui/ui/minified/jquery-ui.custom.min.js',
             'jquery-ajaxprogress/jquery.ajaxprogress.js',
-            'jquery.ajaxQueue/dist/jquery.ajaxQueue.js',
+            'jquery.ajaxQueue/dist/jquery.ajaxQueue.min.js',
             'multi-select/js/jquery.multi-select.js',
+            'jquery-tree-multiselect/dist/jquery.tree-multiselect.min.js',
             'json2/json2.js',
             'select2/select2.js',
             'requirejs/require.js',
             'requirejs-text/text.js',
-            'underscore/underscore.js',
+            'underscore/underscore-min.js',
             'qunit/qunit/qunit.js',
-            'angular/angular.js',
+            'angular/angular.min.js',
             'angular-leaflet-directive/dist/angular-leaflet-directive.min.js',
             'bootstrap/dist/js/bootstrap.min.js',
             'zeroclipboard/dist/ZeroClipboard.min.js',
@@ -130,13 +138,16 @@ module.exports = function(grunt) {
             'moment/min/moment-with-locales.min.js',
             'eonasdan-bootstrap-datetimepicker/build/js/bootstrap-datetimepicker.min.js',
             'bootstrap-treeview/dist/bootstrap-treeview.min.js',
-            'bootstrap-tokenfield/js/bootstrap-tokenfield.js'
+            'bootstrap-tokenfield/dist/bootstrap-tokenfield.min.js',
+            'bootstrap-select/dist/js/bootstrap-select.min.js',
+            'bootstrap-wysiwyghtml5/dist/bootstrap-wysihtml5-0.0.2.min.js',
+            'fastselect/dist/fastselect.standalone.min.js'
           ]
         }]
       }
     },
 
-    /*! 
+    /*!
      * change image paths in CSS to match url('../lib/img/image.png')
      * regex should cover following url patterns:
      * /url\("?images\//g          url("images/animated-overlay.gif")
@@ -147,7 +158,7 @@ module.exports = function(grunt) {
      * must not change             url('../img/switch.png')
      * /url\('\.\.\/images\//g     url('../images/back_enabled.png')
      * must not change             alpha(opacity=25)
-     * 
+     *
      * TODO: write testcase
      * var urls = ['url("images/animated-overlay.gif")', 'url(images/ui-bg_flat_75_ffffff_40x100.png)', "url('select2.png')", "url('spinner.gif')", "url(select2x2.png)", "url('../img/switch.png')", "url('../images/back_enabled.png')", "alpha(opacity=25)"],
      * urlsClean = [];
@@ -157,16 +168,16 @@ module.exports = function(grunt) {
      * });
      * console.log(urlsClean);
      */
-    
+
     replace: {
       development: {
         src: ['lib/css/*.css'],
         overwrite: true,
-        replacements: [{ 
+        replacements: [{
           from: /url\((("?images\/)|('(?!(images|\.)))|(?!('|"))|('\.\.\/images\/))/g,
           to: 'url(\'../img/'
         }, {
-          from: /(png|gif|jpg)+(\)|'\)|"\))/g, 
+          from: /(png|gif|jpg)+(\)|'\)|"\))/g,
           to: '$1\')'
         }]
       }
@@ -180,13 +191,20 @@ module.exports = function(grunt) {
         },
         files: {
           'lib/css/assets.min.css': [
-            'lib/css/jquery.dataTables.css',
-            'lib/css/select2.css',
             'lib/css/bootstrap.min.css',
+            'lib/css/bootstrap-datetimepicker.min.css',
+            'lib/css/bootstrap-treeview.min.css',
+            'lib/css/bootstrap-tokenfield.min.css',
+            'lib/css/bootstrap-select.min.css',
+            'lib/css/bootstrap-wysihtml5-0.0.2.css',
+            'lib/css/fastselect.min.css',
             'lib/css/jquery-ui.css',
-            'lib/css/bootstrap-datetimepicker.css',
-            'lib/css/multi-select.css',
-            'lib/css/bootstrap-treeview.min.css'
+            'lib/css/jquery.dataTables.css',
+            'lib/css/jquery.tree-multiselect.min.css',
+            'lib/css/jquery.treefilter.css',
+            'lib/css/leaflet.fullscreen.css',
+            'lib/css/L.Control.Pan.css',
+            'lib/css/multi-select.css'
           ]
         }
       }
@@ -201,28 +219,34 @@ module.exports = function(grunt) {
         files: {
           'lib/js/assets.min.js': [
             'lib/js/jquery.min.js',
+            'lib/js/jquery-ui.custom.min.js',
             'lib/js/jquery.dataTables.js',
+            'lib/js/jquery.raty.min.js',
             'lib/js/jquery.timeago.js',
-            'lib/js/jquery.tinysort.js',
-            'lib/js/jquery.raty.js',
-            'lib/js/waypoints.js',
-            'lib/js/jquery-ui.custom.js',
-            'lib/js/jquery.ajaxprogress.js',
-            'lib/js/jquery.ajaxQueue.js',
-            'lib/js/jquery.multi-select.js',
             'lib/js/json2.js',
+            'lib/js/waypoints.min.js',
             'lib/js/select2.js',
-            'lib/js/bootstrap.min.js',
-            'lib/js/angular.js',
-            'lib/js/angular-leaflet-directive.min.js',
-            'lib/js/ZeroClipboard.min.js',
             'lib/js/moment-with-locales.min.js',
+            'lib/js/fastselect.standalone.min.js',
+            'lib/js/bootstrap.min.js',
             'lib/js/bootstrap-datetimepicker.min.js',
-            'lib/js/bootstrap-treeview.min.js'
+            'lib/js/bootstrap-tokenfield.min.js',
+            'lib/js/bootstrap-treeview.min.js',
+            'lib/js/bootstrap-select.min.js',
+            'lib/js/bootstrap-wysihtml5-0.0.2.min.js',
+            'lib/js/angular.min.js',
+            'lib/js/jquery.ajaxprogress.js',
+            'lib/js/jquery.ajaxQueue.min.js',
+            'lib/js/jquery.multi-select.js',
+            'lib/js/jquery.tree-multiselect.min.js',
+            'lib/js/jquery.treefilter-min.js',
+            'lib/js/angular-leaflet-directive.min.js',
+            'lib/js/ZeroClipboard.min.js'
           ],
+          'lib/js/jquery.js': ['lib/js/jquery.min.js'],
           'lib/js/require.js': ['lib/js/require.js'],
           'lib/js/text.js': ['lib/js/text.js'],
-          'lib/js/underscore.js': ['lib/js/underscore.js']
+          'lib/js/underscore.js': ['lib/js/underscore-min.js']
         }
       }
     },

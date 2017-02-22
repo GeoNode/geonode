@@ -21,7 +21,9 @@
 import datetime
 import math
 import os
+import re
 import logging
+import traceback
 import uuid
 import urllib
 import urllib2
@@ -43,6 +45,7 @@ from django.db.models import signals
 from django.contrib.auth.signals import user_logged_in, user_logged_out
 from django.core.files.storage import default_storage as storage
 from django.core.files.base import ContentFile
+from django.contrib.gis.geos import GEOSGeometry
 
 from mptt.models import MPTTModel, TreeForeignKey
 
@@ -155,8 +158,28 @@ class Region(MPTTModel):
     name = models.CharField(max_length=255)
     parent = TreeForeignKey('self', null=True, blank=True, related_name='children')
 
+    # Save bbox values in the database.
+    # This is useful for spatial searches and for generating thumbnail images and metadata records.
+    bbox_x0 = models.DecimalField(max_digits=19, decimal_places=10, blank=True, null=True)
+    bbox_x1 = models.DecimalField(max_digits=19, decimal_places=10, blank=True, null=True)
+    bbox_y0 = models.DecimalField(max_digits=19, decimal_places=10, blank=True, null=True)
+    bbox_y1 = models.DecimalField(max_digits=19, decimal_places=10, blank=True, null=True)
+    srid = models.CharField(max_length=255, default='EPSG:4326')
+
     def __unicode__(self):
         return self.name
+
+    @property
+    def bbox(self):
+        return [self.bbox_x0, self.bbox_y0, self.bbox_x1, self.bbox_y1, self.srid]
+
+    @property
+    def bbox_string(self):
+        return ",".join([str(self.bbox_x0), str(self.bbox_y0), str(self.bbox_x1), str(self.bbox_y1)])
+
+    @property
+    def geographic_bounding_box(self):
+        return bbox_to_wkt(self.bbox_x0, self.bbox_x1, self.bbox_y0, self.bbox_y1, srid=self.srid)
 
     class Meta:
         ordering = ("name",)
@@ -939,6 +962,58 @@ def resourcebase_post_save(instance, *args, **kwargs):
         else:
             if urlsplit(settings.SITEURL).hostname not in link.url:
                 link.delete()
+
+    try:
+        if instance.regions and instance.regions.all():
+            """
+            try:
+                queryset = instance.regions.all().order_by('name')
+                for region in queryset:
+                    print ("%s : %s" % (region.name, region.geographic_bounding_box))
+            except:
+                tb = traceback.format_exc()
+            else:
+                tb = None
+            finally:
+                if tb:
+                    logger.debug(tb)
+            """
+            pass
+        else:
+            srid1, wkt1 = instance.geographic_bounding_box.split(";")
+            srid1 = re.findall(r'\d+', srid1)
+
+            poly1 = GEOSGeometry(wkt1, srid=int(srid1[0]))
+            poly1.transform(4326)
+
+            queryset = Region.objects.all().order_by('name')
+            global_regions = []
+            regions_to_add = []
+            for region in queryset:
+                try:
+                    srid2, wkt2 = region.geographic_bounding_box.split(";")
+                    srid2 = re.findall(r'\d+', srid2)
+
+                    poly2 = GEOSGeometry(wkt2, srid=int(srid2[0]))
+                    poly2.transform(4326)
+
+                    if poly2.intersection(poly1):
+                        regions_to_add.append(region)
+                    if region.level == 0 and region.parent is None:
+                        global_regions.append(region)
+                except:
+                    tb = traceback.format_exc()
+                    if tb:
+                        logger.debug(tb)
+            if regions_to_add or global_regions:
+                if regions_to_add and len(regions_to_add) > 0 and len(regions_to_add) <= 30:
+                    instance.regions.add(*regions_to_add)
+                else:
+                    instance.regions.add(*global_regions)
+    except:
+        tb = traceback.format_exc()
+        if tb:
+            logger.debug(tb)
 
 
 def rating_post_save(instance, *args, **kwargs):

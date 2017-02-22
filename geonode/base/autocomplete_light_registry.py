@@ -69,15 +69,16 @@ class ThesaurusKeywordLabelAutocomplete(autocomplete_light.AutocompleteModelBase
         return super(ThesaurusKeywordLabelAutocomplete, self).choices_for_request()
 
 
-for thesaurus in settings.THESAURI:
+if hasattr(settings, 'THESAURI'):
+    for thesaurus in settings.THESAURI:
 
-    tname = thesaurus['name']
-    ac_name = 'thesaurus_' + tname
+        tname = thesaurus['name']
+        ac_name = 'thesaurus_' + tname
 
-    print('Registering thesaurus autocomplete for {}: {}'.format(tname, ac_name))
+        # print('Registering thesaurus autocomplete for {}: {}'.format(tname, ac_name))
 
-    autocomplete_light.register(
-        ThesaurusKeywordLabelAutocomplete,
-        name=ac_name,
-        choices=ThesaurusKeywordLabel.objects.filter(Q(keyword__thesaurus__identifier=tname))
-    )
+        autocomplete_light.register(
+            ThesaurusKeywordLabelAutocomplete,
+            name=ac_name,
+            choices=ThesaurusKeywordLabel.objects.filter(Q(keyword__thesaurus__identifier=tname))
+        )
