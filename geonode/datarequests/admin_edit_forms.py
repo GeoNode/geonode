@@ -123,3 +123,61 @@ class ProfileRequestEditForm(forms.ModelForm):
                 ),
             )
         )
+        
+    def clean_first_name(self):
+        fname = self.cleaned_data.get('first_name').strip()
+        if len(fname)<1:
+            raise forms.ValidationError("You have entered an empty first name")
+
+        return fname
+
+    def clean_middle_name(self):
+        mname = self.cleaned_data.get('middle_name').strip()
+        if len(mname)<1 or not mname:
+            mname = '_'
+        return mname
+
+    def clean_last_name(self):
+        lname = self.cleaned_data.get('last_name').strip()
+        if len(lname)<1:
+            raise forms.ValidationError("You have entered an empty last name")
+
+        return lname
+
+    def clean_email(self):
+        email = self.cleaned_data.get('email')
+        user_emails = Profile.objects.all().values_list('email', flat=True)
+        if email in user_emails:
+            raise forms.ValidationError(
+                'That email is already being used by a registered user. lease login with your account instead.')
+
+        return email
+
+    def clean_organization(self):
+        organization = self.cleaned_data.get('organization')
+
+        if len(organization) > 64:
+            raise forms.ValidationError(
+                'Organization name can only be 64 characters')
+
+        return organization
+
+    def clean_funding_source(self):
+        funding_source = self.cleaned_data.get('funding_source')
+        org_type = self.cleaned_data.get('org_type')
+        #intended_use_of_dataset = self.cleaned_data.get('intended_use_of_dataset')
+        if (#intended_use_of_dataset == 'noncommercial' and
+                "Academe" in org_type and
+                not funding_source):
+            raise forms.ValidationError(
+                'This field is required.')
+        return funding_source
+        
+    def clean_organization_other(self):
+        organization_other = self.cleaned_data.get('organization_other')
+        org_type = self.cleaned_data.get('org_type')
+        if (org_type == "Other" and
+                not organization_other):
+            raise forms.ValidationError(
+                'This field is required.')
+        return organization_other
