@@ -162,6 +162,7 @@ def logout(request, next_page=None):
 def callback(request):
     """Read PGT and PGTIOU sent by CAS"""
     if request.method == 'POST' and request.POST.get('logoutRequest'):
+        pprint("")
         clean_sessions(get_cas_client(), request)
         return HttpResponse("{0}\n".format(_('ok')), content_type="text/plain")
     elif request.method == 'GET':

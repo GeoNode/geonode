@@ -2,7 +2,6 @@ from django.core.exceptions import PermissionDenied, ObjectDoesNotExist
 from operator import itemgetter, attrgetter
 import re
 from changuito.proxy import CartProxy
-
 from geonode.cephgeo.models import CephDataObject, DataClassification, MissionGridRef, SucToLayer, FTPRequestToObjectIndex, RIDF
 from geonode.datarequests.models import DataRequestProfile
 
