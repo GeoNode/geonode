@@ -59,8 +59,9 @@ def profile_request_edit(request, pk, template ='datarequests/profile_detail_edi
         context_dict["form"] = ProfileRequestEditForm(initial = model_to_dict(profile_request))
         return render(request, template, context_dict)
     else:
-        form = ProfileRequestEditForm(request.POST, initial = model_to_dict(profile_request))
-        pprint(form)
+        form = ProfileRequestEditForm(request.POST)
+        if form.is_valid():
+            pprint(form.cleaned_data)
         return HttpResponseRedirect(profile_request.get_absolute_url())
 
 def profile_request_approve(request, pk):
