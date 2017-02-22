@@ -17,7 +17,7 @@ from braces.views import (
 from geonode.datarequests.forms import RejectionForm
 from geonode.datarequests.admin_edit_forms import ProfileRequestEditForm
 from geonode.datarequests.models import (
-    ProfileRequest, DataRequest)
+    ProfileRequest, DataRequest, LipadOrgType)
 
 from pprint import pprint
 from urlparse import parse_qs
@@ -50,7 +50,7 @@ def profile_request_detail(request, pk, template='datarequests/profile_detail.ht
 @login_required
 def profile_request_edit(request, pk, template ='datarequests/profile_detail_edit.html'):
     profile_request = get_object_or_404(ProfileRequest, pk=pk)
-    
+    pprint( LipadOrgType.objects.values_list('val', 'val'))
     if not  request.user.is_superuser:
         return HttpResponseRedirect('/forbidden')
     
@@ -61,7 +61,9 @@ def profile_request_edit(request, pk, template ='datarequests/profile_detail_edi
     else:
         form = ProfileRequestEditForm(request.POST)
         if form.is_valid():
-            pprint(form.cleaned_data)
+            pprint("form is valid")
+        else:
+            pprint("form is invalid")
         return HttpResponseRedirect(profile_request.get_absolute_url())
 
 def profile_request_approve(request, pk):
