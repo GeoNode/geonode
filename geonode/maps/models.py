@@ -2356,8 +2356,17 @@ def post_save_layer(instance, sender, **kwargs):
         if kwargs['created']:
             instance._populate_from_gs()
 
+def post_save_map(instance, sender, **kwargs):
+    # for some reasons ows_url for hh is under SSL when saving the map in https. Let's fix this
+    for layer in instance.layers:
+        if layer.ows_url:
+            if 'hh.worldmap.harvard.edu' in layer.ows_url:
+                layer.ows_url = layer.ows_url.replace('https', 'http')
+                layer.save()
+
 signals.pre_delete.connect(delete_layer, sender=Layer)
 signals.post_save.connect(post_save_layer, sender=Layer)
+signals.post_save.connect(post_save_map, sender=Map)
 
 
 
