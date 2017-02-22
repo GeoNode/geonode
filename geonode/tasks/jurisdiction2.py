@@ -81,8 +81,8 @@ def get_juris_tiles(juris_shp, user=None):
             
             if not tile.intersection(juris_shp).is_empty:
                 tile_list.append(tile)
-                if len(tile_list) >= 1000:
-                    return tile_list
+                #if len(tile_list) >= 1000:
+                #    return tile_list
                 
     return tile_list
 
@@ -134,8 +134,8 @@ def assign_grid_ref_util(user):
                 gridref = '"E{0}N{1}"'.format(int(minx / settings._TILE_SIZE), int(maxy / settings._TILE_SIZE))
                 
                 gridref_list .append(gridref)
-                if len(gridref_list) >= 1000:
-                    break
+                #if len(gridref_list) >= 1000:
+                #    break
             
             if len(gridref_list)==1:
                 pprint("gridref:"+gridref_list[0])
