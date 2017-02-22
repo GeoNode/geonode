@@ -49,7 +49,7 @@ class ProfileRequestForm(forms.ModelForm):
         )
 
     #ORG_TYPE_CHOICES = LipadOrgType.objects.values_list('val', 'val')
-    ORG_TYPE_CHOICES = [('','')].extend(LipadOrgType.objects.values_list('val', 'val'))
+    ORG_TYPE_CHOICES = LipadOrgType.objects.all().values_list('val', 'display_val')
     # Choices that will be used for fields
     LOCATION_CHOICES = Choices(
         ('local', _('Local')),
@@ -75,8 +75,7 @@ class ProfileRequestForm(forms.ModelForm):
 
     org_type = forms.ChoiceField(
         label = _('Organization Type'),
-        choices = (('',''))+ ORG_TYPE_CHOICES,
-        initial = "Other",
+        choices = ORG_TYPE_CHOICES,
         required = True
     )
 
@@ -99,6 +98,8 @@ class ProfileRequestForm(forms.ModelForm):
 
         super(ProfileRequestForm, self).__init__(*args, **kwargs)
         self.fields['captcha'].error_messages = {'required': 'Please answer the Captcha to continue.'}
+        if not self.fields['org_type'].choices[0][0] == '':
+            self.fields['org_type'].choices.insert(0, ('','---------'))
         self.helper = FormHelper()
         # self.helper.form_class = 'form-horizontal'
         self.helper.form_tag = False
@@ -205,6 +206,8 @@ class ProfileRequestForm(forms.ModelForm):
         org_type = self.cleaned_data.get('org_type')
         if org_type:
             if len(org_type) < 1:
+                raise forms.ValidationError('This field is required')
+            else if org_type not in LipadOrgType.objects.values_list('val', flat=True)
                 raise forms.ValidationError('This field is required')
             else:
                 return org_type
