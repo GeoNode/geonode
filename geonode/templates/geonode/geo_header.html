@@ -17,10 +17,13 @@ OpenLayers.Request.DEFAULT_CONFIG.headers = {
  *  Add GetFeedFeatureInfo tool to GeoExplorer.Viewer
  */
 GeoExplorer.Viewer.prototype.loadConfig = function(config) {
-        config.viewerTools.push( {
-            ptype: "gxp_getfeedfeatureinfo",
-            checked: true
-        });
+    // remove the 3D Viewer which is broken 
+    config.viewerTools.splice(10,1);
+
+    config.viewerTools.push( {
+        ptype: "gxp_getfeedfeatureinfo",
+        checked: true
+    });
 
     // Do not include the layer styler on the map-detail view.
     {% if not map %}
