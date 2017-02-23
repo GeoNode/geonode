@@ -42,21 +42,22 @@ def lidar_coverage_permission(layer):
 
 def lidar_coverage_metadata():
     try:
-        # Absolute mount path of lidar coverage must be the same for all lipad
-        path = '''/mnt/pmsat-nas_geostorage/DAD/COVERAGES/lipad_lidar_coverage/lidar_coverage.shp'''
+
+        path = settings.LIDAR_COVERAGE_PATH# Absolute mount path of lidar coverage must be the same for all lipad
+
     except:
         print 'ERROR GETTING LIDAR COVERAGE PATH'
     try:
         # Replace lidar_coverage shapefile in postgis
-        subprocess.check_output('shp2pgsql -D -d -I -s 32651 ' + path +
-                                ' lidar_coverage | psql -h ' + settings.DATABASE_HOST +
+        subprocess.check_output('shp2pgsql -D -d -I -s 32651 ' + path + settings.target_table +
+                                ' | psql -h ' + settings.DATABASE_HOST +
                                 ' -U ' + settings.DATABASE_USER + ' -d ' + settings.DATASTORE_DB,
                                 shell=True, env=dict(os.environ, PGPASSWORD=settings.DATABASE_PASSWORD))
     except:
         print 'ERROR EXECUTING SHP2PGSQL COMMAND'
 
     # Rename columns in lidar_coverage table
-    fid_query = 'alter table lidar_coverage rename column gid to fid'
+    fid_query = 'ALTER TABLE ' + settings.target_table + 'rename column gid to fid'
     try:
         cur.execute(fid_query)
         conn.commit()
@@ -64,7 +65,7 @@ def lidar_coverage_metadata():
         print 'FID QUERY ERROR'
         conn.rollback()
         # continue
-    the_geom_query = 'ALTER TABLE lidar_coverage RENAME COLUMN geom to the_geom'
+    the_geom_query = 'ALTER TABLE ' + settings.target_table + 'RENAME COLUMN geom to the_geom'
     try:
         cur.execute(the_geom_query)
         conn.commit()
@@ -86,7 +87,7 @@ def lidar_coverage_metadata():
                 - Cal_Ref_Pt: list of calibration reference points per block
                 - Val_Ref_Pt: list of validation reference points per block
                     '''
-    layer.title = 'LiDAR Coverage'
+    layer.title = 'LiDAR Coverage for SUCs/HEIs'
 
     style_update(layer, 'Boundary')
     update_thumb_perms(layer)
