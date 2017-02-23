@@ -32,7 +32,7 @@ from django.core.urlresolvers import reverse
 from geonode.maptiles.models import SRS
 from django.utils.text import slugify
 
-from geonode.tasks.update import update_fhm_metadata_task, style_update, seed_layers, pl2_metadata_update, sar_metadata_update, layer_default_style, floodplain_keywords
+from geonode.tasks.update import update_fhm_metadata_task, style_update, seed_layers, pl2_metadata_update, sar_metadata_update, layer_default_style, floodplain_keywords, update_lidar_coverage_task
 from geonode.base.enumerations import CHARSETS
 
 from django.conf import settings
