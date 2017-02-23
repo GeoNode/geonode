@@ -699,34 +699,6 @@ Ext.onReady(function (){
     }
     // console.log(jurisdiction_view_layer);
     setMapSize();
-    var layerList = new GeoExt.tree.LayerContainer({
-        text: 'All Layers',
-        layerStore: app.layers,
-        leaf: false,
-        expanded: true,
-        loader: {
-            baseAttrs: {
-                radioGroup: "active"
-            }
-        }
-    });
-    var registerRadio = function(node){
-        if(!node.hasListener("radiochange")) {
-            node.on("radiochange", function(node){
-                /* set your active layer here */
-            });
-        }
-    }
-
-    var layerTree = new Ext.tree.TreePanel({
-        title: 'Map Layers',
-        renderTo: 'layerTree',
-        root: layerList,
-        listeners: {
-            append: registerRadio,
-            insert: registerRadio
-        }
-    });
 });
 /*
 Takes the navbar size and subtracts to window properties then Set's the mappanel size
