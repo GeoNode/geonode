@@ -324,7 +324,7 @@ INSTALLED_APPS = (
     'south',
     'corsheaders',
     'captcha',
-    
+
     #CAS client
     'django_cas_ng',
 ) + GEONODE_APPS
@@ -425,10 +425,6 @@ MIDDLEWARE_CLASSES = (
 
 # Replacement of default authentication backend in order to support
 # permissions per object.
-#AUTHENTICATION_BACKENDS = (
-#   'django.contrib.auth.backends.ModelBackend',
-#    'guardian.backends.ObjectPermissionBackend',
-#)
 AUTHENTICATION_BACKENDS = (#'django_auth_ldap.backend.LDAPBackend',
                            #'geonode.security.auth.GranularBackend',
                            'django.contrib.auth.backends.ModelBackend',
@@ -530,8 +526,9 @@ OGP_URL = "http://geodata.tufts.edu/solr/select"
 # absolutely need it set to True this variable
 MODIFY_TOPICCATEGORY = False
 
+FILE_UPLOAD_PERMISSIONS = 0776
 MISSING_THUMBNAIL = 'geonode/img/missing_thumb.png'
-THUMBNAIL_FILE_PERMISSIONS = 0666
+THUMBNAIL_FILE_PERMISSIONS = 0776
 
 # Search Snippet Cache Time in Seconds
 CACHE_TIME = 0
@@ -924,7 +921,8 @@ CELERY_QUEUES = [
     Queue('ftp', routing_key='ftp'),
     Queue('mk_folder', routing_key='mk_folder'),
     Queue('jurisdiction',routing_key='jurisdiction'),
-    Queue('users',routing_key='users')
+    Queue('requests',routing_key='requests'),
+    Queue('users',routing_key='users'),
 ]
 
 import djcelery
@@ -940,6 +938,7 @@ SELECTION_LIMIT=209715200
 MUNICIPALITY_SHAPEFILE = 'geonode:phl_adm2_municipalities_utm_z51n'
 #Upload permissions on file
 FILE_UPLOAD_PERMISSIONS = 0776
+
 GEOSTORAGE_HOST = ""
 
 FILE_UPLOAD_TEMP_DIR = "/tmp/geonode"
@@ -1003,3 +1002,8 @@ PH_BBOX= [116.22307468566594, 4.27103012208686, 127.09228398538997, 21.251016939
 _TILE_SIZE = 1000
 
 CAS_VERSION = 3
+
+FP_DELINEATION_PL1 = 'fp_252_20161026v2'
+RB_DELINEATION_DREAM = 'DREAM_RB'
+FHM_coverage = 'FHM_coverage'
+PL1_SUC_MUNIS = 'PL1_SUC_Munis'

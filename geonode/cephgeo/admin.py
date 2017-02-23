@@ -133,8 +133,8 @@ class RIDFAdmin(admin.ModelAdmin):
         return u", ".join(o.name for o in obj.riverbasins.all())
 
     search_fields = ('muni_code', 'muni_name', 'iscity', 'prov_code', 'prov_name', '_100yr',
-                     '_25yr', '_5yr', 'rbs_raw')
-                     
+                     '_25yr', '_5yr','rbs_raw')
+
 class UserTilesAdmin(admin.ModelAdmin):
     model = UserTiles
     list_display_links = ('id',)
