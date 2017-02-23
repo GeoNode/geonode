@@ -62,7 +62,6 @@ grid_args = {{grid.viewer |safe}}
 var app, map;
 var tile_list = [];
 var highlight_layer;
-var jurisdiction_geoms = [];
 var tile_cache = [];
 var single_click = true;
 
@@ -300,35 +299,6 @@ function wfs_proto_creator(layer_request, srs, outformat){
     });
 }
 
-/*
-Filters tiles if they intersect the geometries which are part of the jurisdiction
-*/
-
-function isInJurisdiction(geoms, tile){
-    console.log(tile);
-    for ( var i=0; i<geoms.length; i++){
-        console.log(geoms[i]);
-        if (geoms[i].geometry.bounds.bottom > 10000 && geoms[i].geometry.bounds.transform(new OpenLayers.Projection("EPSG:32651"), new OpenLayers.Projection("EPSG:4326")).intersectsBounds(tile.geometry.bounds)){
-            return true;
-        }else if (check_if_injuris = geoms[i].geometry.bounds.intersectsBounds(tile.geometry.bounds)){
-            return true;
-        }
-    }
-    return false;
-}
-
-function jurisdictionFilter(geoms, feature_list){
-    var tile_list = [];
-    for (var i=0;i<feature_list.length;i++){
-        if(isInJurisdiction(geoms, feature_list[i])){
-             if (find_georef(tile_list, tile.georef)<0){
-                        tile_list.push(tile);
-            }
-        }
-    }
-    return tile_list;
-}
-
 function tileHasData (feature){
     var data_filter = new OpenLayers.Filter.Logical({
         type: "||",
@@ -383,7 +353,6 @@ function filterSelectedTiles(tile_filter, single_click, send_notice, epsgproj, g
                  var added_count = 0;
                  feature_out = olGeoJSON.read(response.priv.responseText);
                  var tiles = hasDataFiltering(feature_out);
-                  if (jurisdiction_geoms.length > 0){
                      for (var i=0;i<tiles.length;i++){
                          var corners = {
                            "ur_x": tiles[i].data.MAXX, "ur_y": tiles[i].data.MAXY,
@@ -459,63 +428,8 @@ function selection_bounds(map_bounds, highlight_layer, ifbbox_form) {
             type: OpenLayers.Filter.Spatial.INTERSECTS,
             property: "the_geom",
             value: transformed_bounds.toGeometry() });
-    /*if (jurisdiction_geoms.length > 0){
-        var jstsSelectionBox= jstsParser.read(olGeoJSON.write(transformed_bounds.toGeometry()));
-        console.log(jstsSelectionBox);
-        var jstsIntersection = jstsJurisdictionGeoms.intersection(jstsSelectionBox);
-        var jstsIntersection = new jsts.geom.MultiPolygon();
-        console.log(jstsIntersection);
-
-
-        for (var i=0; i< jstsJurisdictionGeoms.length; i++){
-                    //jstsJurisdictionGeoms.push(tmp.features[i].geometry);
-                    console.log(i);
-                    if (!(jstsJurisdictionGeoms[i]  instanceof jsts.geom.GeometryCollection)){
-                        console.log(jstsJurisdictionGeoms[i].CLASS_NAME);
-                        jstsIntersection.union(jstsJurisdictionGeoms[i].intersection(jstsSelectionBox));
-                        console.log(jstsJurisdictionGeoms[i].intersection(jstsSelectionBox));
-                    }
-
-                    //jstsJurisdictionGeoms.union(tmp.features[i].geometry);
-        }
-
-        console.log(jstsWriter.write(jstsIntersection));
-        var olIntersection = olGeoJSON.parseGeometry(jstsWriter.write(jstsIntersection));
-        console.log(olIntersection);
-
-        filter = new OpenLayers.Filter.Spatial({
-            type: OpenLayers.Filter.Spatial.INTERSECTS,
-            property: "the_geom",
-            value: olIntersection
-        });
-    }else{
-        filter= new OpenLayers.Filter.Spatial({
-            type: OpenLayers.Filter.Spatial.INTERSECTS,
-            property: "the_geom",
-            value: transformed_bounds.toGeometry() });
-    }*/
-
-    //filterSelectedTiles(box_filter, false, true);
     single_click = false;
     filterSelectedTiles(filter, false, true, epsgprojection);
-}
-
-/*
-Function retrieves the list of jurisdiction geometries and puts them into a list for future use
-*/
-function getJurisdictionGeom(jurisdiction, juris_vec_layer){
-    var juris_wfs = wfs_proto_creator(jurisdiction, "EPSG:32651", "json");
-    var response = juris_wfs.read({
-      callback: function(response){
-            if (response.priv.responseText){
-                //var parser = new OpenLayers.Format.GeoJSON();
-                var feature_out =olGeoJSON.read(response.priv.responseText);
-                juris_vec_layer.addFeatures(feature_out);
-                jurisdiction_geoms = juris_vec_layer.features;
-
-            }
-        }
-    });
 }
 
 /*
@@ -588,7 +502,7 @@ Initialization of the map UI
 */
 Ext.onReady(function (){
 
-    var juris_vec_layer = new OpenLayers.Layer.Vector();
+    //var juris_vec_layer = new OpenLayers.Layer.Vector();
 
     //definition of the Philippine grid layer
     var grid_layer_name = "geonode:{{  feature_tiled }}";
@@ -636,7 +550,7 @@ Ext.onReady(function (){
     var stored_layer = map_options["layers"].filter(function(l){ return l["name"] == grid_layer_name })[0];
     var source_index = stored_layer["source"];
 
-    map.addLayer(juris_vec_layer);
+    //map.addLayer(juris_vec_layer);
 
     // definition of the tiled layer
     var tile_layer = new OpenLayers.Layer.WMS(
@@ -779,7 +693,7 @@ Ext.onReady(function (){
     app = new GeoExt.MapPanel(config);
     if(jurisdiction_args ){
         map.zoomToExtent(jurisdiction_view_layer['maxExtent']);
-        getJurisdictionGeom(jurisdiction_name.split(":")[1], juris_vec_layer);
+        //getJurisdictionGeom(jurisdiction_name.split(":")[1], juris_vec_layer);
     }else{
         map.zoomToExtent(tile_layer.getExtent());
     }

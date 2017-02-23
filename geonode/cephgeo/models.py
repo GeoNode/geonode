@@ -1,6 +1,6 @@
 from django.db import models
 from geonode.layers.models import Layer
-from geonode import settings
+from django.conf import settings
 from datetime import datetime
 import json
 from geonode.people.models import Profile
@@ -110,6 +110,11 @@ class UserJurisdiction(models.Model):
 
     def get_user_name(self):
         return self.user.username
+        
+class UserTiles(models.Model):
+    user = models.ForeignKey(Profile, null=False, blank=False, unique=True)
+    gridref_list = models.TextField(null=False, blank=False)
+
 
 
 class MissionGridRef(models.Model):
