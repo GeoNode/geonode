@@ -30,10 +30,12 @@ import geonode.cephgeo.urls
 
 from geonode.api.urls import api
 
+import django_cas_ng
+
 import autocomplete_light
 from geonode.views import forbidden
 
-from geonode import settings
+#from geonode import settings
 
 # Setup Django Admin
 autocomplete_light.autodiscover()
@@ -104,7 +106,7 @@ urlpatterns = patterns('',
                        (r'^geocoding/',include('geonode.arealocate.urls',namespace='arealocate')),
 
                        # Data Request Profiles
-                       (r'^datarequests/', include('geonode.datarequests.urls', namespace='datarequests')),
+                       (r'^requests/', include('geonode.datarequests.urls', namespace='datarequests')),
 
                        # Misc
                        # url(r'^captcha/', include('captcha.urls')),
@@ -155,7 +157,7 @@ if 'notification' in settings.INSTALLED_APPS:
                             )
 
 if 'simple_sso.sso_server' in settings.INSTALLED_APPS:
-    from simple_sso.sso_server.server import Server 
+    from simple_sso.sso_server.server import Server
     server = Server()
     urlpatterns += server.get_urls()
 

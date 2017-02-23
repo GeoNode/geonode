@@ -3,19 +3,19 @@
 {% load staticfiles %}
 {% load url from future %}
 
-{% block title %} {% trans "Data Request Profiles" %} - {{ block.super }} {% endblock %}
+{% block title %} {% trans "Data Requests" %} - {{ block.super }} {% endblock %}
 
-{% block body_class %}Data Request Profiles{% endblock %}
+{% block body_class %}Data Requests{% endblock %}
 
 {% block body %}
 <div class="page-header">
     {% if request.user.is_superuser %}
-        <a href="{% url 'datarequests:data_request_csv' %}" class="btn btn-primary pull-right">{% trans "Download CSV" %}</a>
-        <a href="{% url 'datarequests:data_request_compute_size' %}" class="btn btn-primary pull-right">{% trans "Compute Request Sizes" %}</a>
-        <a href="{% url 'datarequests:data_request_reverse_geocode' %}" class="btn btn-primary pull-right">{% trans "Assign Place Names" %}</a>
-        <a href="{% url 'datarequests:data_request_assign_gridrefs' %}" class="btn btn-primary pull-right">{% trans "Assign Grid Refs" %}</a>
+        <a href="{% url 'datarequests:data_requests_csv' %}" class="btn btn-primary pull-right">{% trans "Download CSV" %}</a>
+        <a href="{% url 'datarequests:data_request_compute_size_all' %}" class="btn btn-primary pull-right">{% trans "Compute Request Sizes" %}</a>
+        <a href="{% url 'datarequests:data_request_reverse_geocode_all' %}" class="btn btn-primary pull-right">{% trans "Assign Place Names" %}</a>
+        <a href="{% url 'datarequests:data_request_assign_gridrefs' %}" class="btn btn-primary pull-right">{% trans "Reassign Grid Refs" %}</a>
     {% endif %}
-  <h2 class="page-title">{% trans "Data Request Profiles" %}</h2>
+  <h2 class="page-title">{% trans "Data Requests" %}</h2>
 </div>
   {% with include_type_filter='true' %}
     {% with facet_type='data_requests' %}
@@ -43,7 +43,7 @@
       {% endif %}
     FILTER_TYPE = 'data_request';
 
-    var facetCounts = function() {
+    var facetCounts = function() {re
         $.ajax({
             type: "POST",
             url: facet_count_url,

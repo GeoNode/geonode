@@ -101,7 +101,7 @@ body{
      <div class="side-navi-tab">
           <div style="padding: 25px;">
             <h4 class="list-group-item-heading">{%trans "Download Data" %}</h4>
-            <p>1. Select tiles on the left by either clicking on individual tiles, or select multiple tiles by holding down shift while drawing a bounding box. <br><i>Note: You need to upload a shapefile of your area of interest before being able to select tiles for download. To upload a shapefile, please <a href="{% url 'datarequests:registration_part_one' %}">update your data request.</a></i></p>
+            <p>1. Select tiles on the left by either clicking on individual tiles, or select multiple tiles by holding down shift while drawing a bounding box. <br><i>Note: You need to upload a shapefile of your area of interest before being able to select tiles for download. To upload a shapefile, please <a href="{% url 'datarequests:request_register' %}">update your data request.</a></i></p>
             <p>2. Select data type below and click Download.</p>
             <form name="georef_form" id="georef_form" action="/maptiles/addtocart/" method="POST" >
               {% csrf_token %}
