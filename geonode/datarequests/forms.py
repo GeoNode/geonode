@@ -25,11 +25,22 @@ from pprint import pprint
 
 class ProfileRequestForm(forms.ModelForm):
 
+    ORG_TYPE_CHOICES = LipadOrgType.objects.all().values_list('val', 'display_val')
+    ORDERED_FIELDS =['org_type', 'organization_other','request_level','funding_source']
     captcha = ReCaptchaField(attrs={'theme': 'clean'})
+    
+    
+    org_type = forms.ChoiceField(
+        label = _('Organization Type'),
+        choices = ORG_TYPE_CHOICES,
+        initial = '---------',
+        required = True
+    )
+
 
     class Meta:
         model = ProfileRequest
-        fields = (
+        fields = [
             'first_name',
             'middle_name',
             'last_name',
@@ -46,10 +57,9 @@ class ProfileRequestForm(forms.ModelForm):
             'email',
             'contact_number',
             'captcha'
-        )
+        ]
 
     #ORG_TYPE_CHOICES = LipadOrgType.objects.values_list('val', 'val')
-    ORG_TYPE_CHOICES = LipadOrgType.objects.all().values_list('val', 'display_val')
     # Choices that will be used for fields
     LOCATION_CHOICES = Choices(
         ('local', _('Local')),
@@ -72,13 +82,6 @@ class ProfileRequestForm(forms.ModelForm):
         ('faculty', _('Faculty')),
         ('student', _('Student')),
     )
-
-    org_type = forms.ChoiceField(
-        label = _('Organization Type'),
-        choices = ORG_TYPE_CHOICES,
-        required = True
-    )
-
     # request_level = forms.CharField(
     #     label=_('Level of the Request'),
     #     required = False
@@ -98,8 +101,9 @@ class ProfileRequestForm(forms.ModelForm):
 
         super(ProfileRequestForm, self).__init__(*args, **kwargs)
         self.fields['captcha'].error_messages = {'required': 'Please answer the Captcha to continue.'}
-        if not self.fields['org_type'].choices[0][0] == '':
-            self.fields['org_type'].choices.insert(0, ('','---------'))
+        self.fields.keyOrder = self.ORDERED_FIELDS + [k for k in self.fields.keys() if k not in self.ORDERED_FIELDS]
+        if not self.fields['org_type'].choices[0][0] == '---------':
+            self.fields['org_type'].choices.insert(0, ('---------','---------'))
         self.helper = FormHelper()
         # self.helper.form_class = 'form-horizontal'
         self.helper.form_tag = False
@@ -163,7 +167,7 @@ class ProfileRequestForm(forms.ModelForm):
                 HTML("</section>")
             ),
         )
-
+        
     def clean_first_name(self):
         fname = self.cleaned_data.get('first_name').strip()
         if len(fname)<1:
@@ -204,15 +208,23 @@ class ProfileRequestForm(forms.ModelForm):
         
     def clean_org_type(self):
         org_type = self.cleaned_data.get('org_type')
+        pprint('org_type:'+org_type)
         if org_type:
-            if len(org_type) < 1:
+            if len(org_type) < 1 or org_type=='---------':
                 raise forms.ValidationError('This field is required')
-            else if org_type not in LipadOrgType.objects.values_list('val', flat=True)
+            elif org_type not in LipadOrgType.objects.values_list('val', flat=True):
                 raise forms.ValidationError('This field is required')
             else:
                 return org_type
         else:
             raise forms.ValidationError('This field is required')
+            
+    def clean_organization_other(self):
+        organization_other = self.cleaned_data.get('organization_other')
+        org_type = self.cleaned_data.get('org_type')
+        if (org_type == "Other" and not organization_other ):
+            raise forms.ValidationError('This field is required.')
+        return organization_other
 
     def clean_funding_source(self):
         funding_source = self.cleaned_data.get('funding_source')
@@ -223,15 +235,6 @@ class ProfileRequestForm(forms.ModelForm):
             if ("Academe" in org_type and not funding_source):
                 raise forms.ValidationError('This field is required.')
         return funding_source
-        
-    def clean_organization_other(self):
-        organization_other = self.cleaned_data.get('organization_other')
-        org_type = self.cleaned_data.get('org_type')
-        if (org_type == "Other" and
-                not organization_other):
-            raise forms.ValidationError(
-                'This field is required.')
-        return organization_other
 
     def save(self, commit=True, *args, **kwargs):
         profile_request = super(
