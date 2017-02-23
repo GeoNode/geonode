@@ -18,7 +18,7 @@ for arg in args.type:
         # pl1 suc muni
         print '#' * 40
         print 'SAR DEM'
-        keyword_filter = 'sar_'
+        keyword_filter = 'sar'
         caller_function(keyword_filter)
         print 'FINISHED SAR DEM'
         print '#' * 40
@@ -27,7 +27,7 @@ for arg in args.type:
         # dream rb
         print '#' * 40
         print 'DEM'
-        keyword_filter = 'dem_'
+        keyword_filter = 'dem'
         caller_function(keyword_filter)
         print 'FINISHED DEM COVERAGE'
         print '#' * 40
@@ -36,7 +36,7 @@ for arg in args.type:
         # fhm coverage
         print '#' * 40
         print 'FLOOD HAZARD MAPS'
-        keyword_filter = '_fh'
+        keyword_filter = 'fhm'
         caller_function(keyword_filter)
         print 'FINISHED FLOOD HAZARD MAPS'
         print '#' * 40

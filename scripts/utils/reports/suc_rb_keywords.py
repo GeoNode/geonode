@@ -86,9 +86,8 @@ def assign_tags(mode, results, layer):
     return has_changes
 
 
-def tag_layer(layer, mode):
+def tag_layer(layers, mode):
 
-    _logger.info('Layer name: %s', layer.name)
     # Connect to database
     conn = psycopg2.connect(("host={0} dbname={1} user={2} password={3}".format
                              (settings.DATABASE_HOST,
@@ -100,12 +99,13 @@ def tag_layer(layer, mode):
 
     has_changes = False
     has_results = False
+    deln = ''
 
-    for mode, deln in [('dem', settings.RB_DELINEATION_DREAM),
-                       ('sar', settings.PL1_SUC_MUNIS)
-                       ('fhm', settings.FHM_COVERAGE)]:
-
-        _logger.info('%s: mode: %s deln: %s', layer.name, mode, deln)
+    # for mode, deln in [('dem', settings.RB_DELINEATION_DREAM),
+    #                    ('sar', settings.PL1_SUC_MUNIS),
+    #                    ('fhm', settings.FHM_COVERAGE)]:
+    for layer in layers:
+        _logger.info('Layer name: %s', layer.name)
 
         # Construct query
         query = '''
@@ -115,20 +115,24 @@ WITH l AS (
 )'''
 
         if mode == 'dem':
+            deln = settings.RB_DELINEATION_DREAM
             query += '''
 SELECT d.rb_name FROM ''' + deln + ''' AS d, l '''
         elif mode == 'sar':
+            deln = settings.PL1_SUC_MUNIS
             query += '''
-SELECT d."SUC" FROM ''' + deln + ''' AS d, l'''
+SELECT DISTINCT d."SUC" FROM ''' + deln + ''' AS d, l'''
         elif mode == 'fhm':
+            deln = settings.FHM_COVERAGE
             query += '''
 SELECT d."Floodplain", d."SUC" FROM ''' + deln + ''' AS d, l'''
 #         query += '''
 # FROM ''' + deln + ''' AS d, l'''
 
+        _logger.info('%s: mode: %s deln: %s', layer.name, mode, deln)
         # Get intersect
         query_int = (query + '''
-WHERE ST_Intersects(d.the_geom, l.the_geom);''')
+ WHERE ST_Intersects(d.the_geom, l.the_geom);''')
 
         # Execute query
         try:
@@ -198,17 +202,17 @@ def caller_function(keyword_filter):
     # pool.map_async(tag_layer, layers)
     # pool.close()
     # pool.join()
-
+    layers = ''
     if keyword_filter == 'sar':
         layers = Layer.objects.filter(Q(workspace='geonode') & Q(
             name__icontains=keyword_filter) &
             Q(name__icontains='_extents')).exclude(owner__username='dataRegistrationUploader')
-    elif keyword_filter == 'dem_' or keyword_filter == 'coverage':
+    elif keyword_filter == 'dem':
         layers = Layer.objects.filter(Q(workspace='geonode') & Q(
             name__icontains=keyword_filter)).exclude(owner__username='dataRegistrationUploader')
     elif keyword_filter == 'fhm':
         layers = Layer.objects.filter(Q(workspace='geonode') & Q(
             name__icontains='_fh')).exclude(owner__username='dataRegistrationUploader')
 
-    for layer in layers:
-        tag_layer(layer, keyword_filter)
+    # for layer in layers:
+    tag_layer(layers, keyword_filter)
