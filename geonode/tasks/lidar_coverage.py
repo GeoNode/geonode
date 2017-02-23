@@ -49,14 +49,14 @@ def lidar_coverage_metadata():
     try:
         # Replace lidar_coverage shapefile in postgis
         subprocess.check_output('shp2pgsql -D -d -I -s 32651 ' + path +
-                                ' lidar_coverage_1 | psql -h ' + settings.DATABASE_HOST +
+                                ' lidar_coverage | psql -h ' + settings.DATABASE_HOST +
                                 ' -U ' + settings.DATABASE_USER + ' -d ' + settings.DATASTORE_DB,
                                 shell=True, env=dict(os.environ, PGPASSWORD=settings.DATABASE_PASSWORD))
     except:
         print 'ERROR EXECUTING SHP2PGSQL COMMAND'
 
     # Rename columns in lidar_coverage table
-    fid_query = 'alter table lidar_coverage_1 rename column gid to fid'
+    fid_query = 'alter table lidar_coverage rename column gid to fid'
     try:
         cur.execute(fid_query)
         conn.commit()
@@ -64,7 +64,7 @@ def lidar_coverage_metadata():
         print 'FID QUERY ERROR'
         conn.rollback()
         # continue
-    the_geom_query = 'ALTER TABLE lidar_coverage_1 RENAME COLUMN geom to the_geom'
+    the_geom_query = 'ALTER TABLE lidar_coverage RENAME COLUMN geom to the_geom'
     try:
         cur.execute(the_geom_query)
         conn.commit()
@@ -73,7 +73,7 @@ def lidar_coverage_metadata():
         conn.rollback()
 
     # Update metadata
-    layer = Layer.objects.get(name='lidar_coverage_1')
+    layer = Layer.objects.get(name='lidar_coverage')
     layer.abstract = '''The layer contains the following metadata per block:
                 - Sensor used
                 - Processor (DREAM or Phil-LiDAR 1)
