@@ -328,6 +328,9 @@ OpenLayers.Request.DEFAULT_CONFIG.headers = {
  *  Add GetFeedFeatureInfo tool to GeoExplorer.Viewer
  */
 GeoExplorer.Viewer.prototype.loadConfig = function(config) {
+    // remove the 3D Viewer which is broken 
+    config.viewerTools.splice(10,1);
+
 	config.viewerTools.push( {
 		ptype: "gxp_getfeedfeatureinfo",
 		checked: true
