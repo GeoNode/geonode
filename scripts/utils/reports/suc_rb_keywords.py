@@ -31,7 +31,8 @@ def assign_tags(mode, results, layer):
     suc_tags = layer.SUC_tag.names()
 
     for r in results:
-        if mode == 'dream':
+        if mode == 'dem':
+            # Riverbasin
             if len(keywords) == 0 or r['rb_name'] not in keywords:
                 _logger.info('%s: %s: Adding keyword: %s',
                              layer.name, mode, r['rb_name'])
@@ -42,23 +43,36 @@ def assign_tags(mode, results, layer):
                              layer.name, mode, r['rb_name'])
                 layer.floodplain_tag.add(r['rb_name'])
                 has_changes = True
-        elif mode == 'pl1':
-            if len(keywords) == 0 or r['FP_Name'] not in keywords:
+        elif mode == 'fhm':
+            # Floodplain - SUC
+            if len(keywords) == 0 or r['Floodplain'] not in keywords:
                 _logger.info('%s: %s: Adding keyword: %s',
-                             layer.name, mode, r['FP_Name'])
-                layer.keywords.add(r['FP_Name'])
+                             layer.name, mode, r['Floodplain'])
+                layer.keywords.add(r['Floodplain'])
                 has_changes = True
             if len(keywords) == 0 or r['SUC'] not in keywords:
                 _logger.info('%s: %s: Adding keyword: %s', layer.name, mode,
                              r['SUC'])
                 layer.keywords.add(r['SUC'])
                 has_changes = True
-            if len(fp_tags) == 0 or r['FP_Name'] not in fp_tags:
+            if len(fp_tags) == 0 or r['Floodplain'] not in fp_tags:
                 _logger.info('%s: %s: Adding FP tag: %s',
-                             layer.name, mode, r['FP_Name'])
-                layer.floodplain_tag.add(r['FP_Name'])
+                             layer.name, mode, r['Floodplain'])
+                layer.floodplain_tag.add(r['Floodplain'])
                 has_changes = True
             if len(suc_tags) == 0 or r['SUC'] not in suc_tags:
+                _logger.info('%s: %s: Adding SUC tag: %s', layer.name, mode,
+                             r['SUC'])
+                layer.SUC_tag.add(r['SUC'])
+                has_changes = True
+        elif mode == 'sar':
+            # SUC
+            if len(keywords) == 0 or r['SUC'] not in keywords:
+                _logger.info('%s: %s: Adding keyword: %s', layer.name, mode,
+                             r['SUC'])
+                layer.keywords.add(r['SUC'])
+                has_changes = True
+            if len(keywords) == 0 or r['SUC'] not in suc_tags:
                 _logger.info('%s: %s: Adding SUC tag: %s', layer.name, mode,
                              r['SUC'])
                 layer.SUC_tag.add(r['SUC'])
@@ -72,7 +86,7 @@ def assign_tags(mode, results, layer):
     return has_changes
 
 
-def tag_layer(layer):
+def tag_layer(layer, mode):
 
     _logger.info('Layer name: %s', layer.name)
     # Connect to database
@@ -85,9 +99,11 @@ def tag_layer(layer):
     cur = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
 
     has_changes = False
+    has_results = False
 
-    for mode, deln in [('dream', settings.RB_DELINEATION_DREAM),
-                       ('pl1', settings.FP_DELINEATION_PL1)]:
+    for mode, deln in [('dem', settings.RB_DELINEATION_DREAM),
+                       ('sar', settings.PL1_SUC_MUNIS)
+                       ('fhm', settings.FHM_COVERAGE)]:
 
         _logger.info('%s: mode: %s deln: %s', layer.name, mode, deln)
 
@@ -98,15 +114,17 @@ WITH l AS (
     FROM ''' + layer.name + ''' AS f
 )'''
 
-        if mode == 'dream':
+        if mode == 'dem':
             query += '''
-SELECT d.rb_name'''
-        else:
+SELECT d.rb_name FROM ''' + deln + ''' AS d, l '''
+        elif mode == 'sar':
             query += '''
-SELECT d."FP_Name", d."SUC"'''
-
-        query += '''
-FROM ''' + deln + ''' AS d, l'''
+SELECT d."SUC" FROM ''' + deln + ''' AS d, l'''
+        elif mode == 'fhm':
+            query += '''
+SELECT d."Floodplain", d."SUC" FROM ''' + deln + ''' AS d, l'''
+#         query += '''
+# FROM ''' + deln + ''' AS d, l'''
 
         # Get intersect
         query_int = (query + '''
@@ -128,44 +146,24 @@ WHERE ST_Intersects(d.the_geom, l.the_geom);''')
 
         # Get no. of results
         if len(results) >= 1:
-            if 'sar_' in layer.name:
-                rm_extents = layer.name.replace('_extents', '')
-                sar_layer = Layer.objects.get(name=rm_extents)
+            has_results = True
+            if mode == 'sar':
+                # tag SAR DEMs
+                rem_extents = layer.name.split('_extents')[0]
+                sar_layer = Layer.objects.get(name=rem_extents)
+                if sar_layer is not None:
+                    hc = assign_tags(mode, results, sar_layer)
+                else:
+                    _logger.info('DOES NOT EXIST %s', sar_layer.name)
+                # tag SAR extents
                 hc = assign_tags(mode, results, layer)
             else:
                 hc = assign_tags(mode, results, layer)
             if hc:
                 has_changes = True
 
-#         else:
-
-#             if mode == 'pl1':
-
-#                 # Get nearest boundary
-#                 query_near = (query + '''
-# ORDER BY ST_Distance(d.the_geom, l.the_geom)
-# LIMIT 1;''')
-
-#                 # Execute query
-#                 try:
-#                     _logger.info('%s query_near: %s', layer.name, query_near)
-#                     cur.execute(query_near)
-#                 except Exception:
-#                     _logger.exception(
-#                         '%s: Error executing query_near!', layer.name)
-#                     conn.rollback()
-#                     # Skip layer
-#                     continue
-
-#                 # Get all results
-#                 results = cur.fetchall()
-#                 _logger.info('%s: results: %s', layer.name, results)
-
-#                 # Get no. of results
-#                 if len(results) >= 1:
-#                     hc = assign_tags(mode, results, layer)
-#                     if hc:
-#                         has_changes = True
+    if not has_results:
+        _logger.info('NO INTERSECTION %s', layer.name)
 
     if has_changes:
         try:
@@ -195,16 +193,22 @@ def caller_function(keyword_filter):
     # fh.setFormatter(formatter)
     # _logger.addHandler(fh)
 
-    # layer = Layer.objects.get(name='ph013305000_fh5yr_10m')
-    # tag_layer(layer)
-
     # Initialize pool
+    # pool = multiprocessing.Pool()
+    # pool.map_async(tag_layer, layers)
+    # pool.close()
+    # pool.join()
 
-    layers = Layer.objects.filter(Q(workspace='geonode') & Q(
-        name__icontains=keyword_filter)).exclude(owner__username='dataRegistrationUploader')
-    # for layer in layers:
-    #     tag_layer(layer)
-    pool = multiprocessing.Pool()
-    pool.map_async(tag_layer, layers)
-    pool.close()
-    pool.join()
+    if keyword_filter == 'sar':
+        layers = Layer.objects.filter(Q(workspace='geonode') & Q(
+            name__icontains=keyword_filter) &
+            Q(name__icontains='_extents')).exclude(owner__username='dataRegistrationUploader')
+    elif keyword_filter == 'dem_' or keyword_filter == 'coverage':
+        layers = Layer.objects.filter(Q(workspace='geonode') & Q(
+            name__icontains=keyword_filter)).exclude(owner__username='dataRegistrationUploader')
+    elif keyword_filter == 'fhm':
+        layers = Layer.objects.filter(Q(workspace='geonode') & Q(
+            name__icontains='_fh')).exclude(owner__username='dataRegistrationUploader')
+
+    for layer in layers:
+        tag_layer(layer, keyword_filter)
