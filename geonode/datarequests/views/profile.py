@@ -50,7 +50,6 @@ def profile_request_detail(request, pk, template='datarequests/profile_detail.ht
 @login_required
 def profile_request_edit(request, pk, template ='datarequests/profile_detail_edit.html'):
     profile_request = get_object_or_404(ProfileRequest, pk=pk)
-    pprint( LipadOrgType.objects.values_list('val', 'val'))
     if not  request.user.is_superuser:
         return HttpResponseRedirect('/forbidden')
     
@@ -62,8 +61,13 @@ def profile_request_edit(request, pk, template ='datarequests/profile_detail_edi
         form = ProfileRequestEditForm(request.POST)
         if form.is_valid():
             pprint("form is valid")
+            for k, v in form.cleaned_data.iteritems():
+                setattr(profile_request, k, v)
+            profile_request.administrator = request.user
+            profile_request.save()
         else:
             pprint("form is invalid")
+            return render( request, template, {'form': form, 'profile_request': profile_request})
         return HttpResponseRedirect(profile_request.get_absolute_url())
 
 def profile_request_approve(request, pk):
