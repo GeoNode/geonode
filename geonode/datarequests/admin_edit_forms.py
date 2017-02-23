@@ -11,6 +11,8 @@ from crispy_forms.layout import Layout, Fieldset, HTML, Div, Column, Row, Field
 from crispy_forms.bootstrap import PrependedText, InlineRadios
 from model_utils import Choices
 
+from pprint import pprint
+
 from geonode.datarequests.models import DataRequestProfile, DataRequest, ProfileRequest
 from geonode.layers.forms import NewLayerUploadForm, LayerUploadForm, JSONField
 from geonode.documents.models import Document
@@ -22,8 +24,7 @@ from .forms import ProfileRequestForm
 
 class ProfileRequestEditForm(ProfileRequestForm):
     
-    ORG_TYPE_CHOICES = LipadOrgType.objects.values_list('val', 'val')
-    # Choices that will be used for fields
+    ORG_TYPE_CHOICES = LipadOrgType.objects.values_list('val', 'display_val')
     LOCATION_CHOICES = Choices(
         ('local', _('Local')),
         ('foreign', _('Foreign')),
@@ -59,14 +60,15 @@ class ProfileRequestEditForm(ProfileRequestForm):
     org_type = forms.ChoiceField(
         label = _('Organization Type'),
         choices = ORG_TYPE_CHOICES,
+        initial = '---------',
         required = True
     )
     
     def __init__(self, *args, **kwargs):
         super(ProfileRequestEditForm, self).__init__(*args, **kwargs)
         self.fields.pop('captcha')
-        if not self.fields['org_type'].choices[0][0] == '':
-            self.fields['org_type'].choices.insert(0, ('','---------'))
+        if not self.fields['org_type'].choices[0][0] == '---------':
+            self.fields['org_type'].choices.insert(0, ('---------','---------'))
         self.helper = FormHelper()
         self.helper.layout = Layout(
             Fieldset('Editting Profile Request',
