@@ -205,7 +205,10 @@ def layer_default_style(keyword):
 
 @task(name='geonode.tasks.update.seed_layers', queue='update')
 def seed_layers(keyword):
-    layer_list = Layer.objects.filter(keywords__name__icontains=keyword)
+    if keyword =='lidar_coverage':
+        layer_list = Layer.objects.get(name=settings.target_table)
+    else:
+        layer_list = Layer.objects.filter(keywords__name__icontains=keyword)
     for layer in layer_list:
         try:
             out = subprocess.check_output([settings.PROJECT_ROOT + '/gwc.sh', 'seed',
@@ -238,6 +241,7 @@ def update_lidar_coverage_task():
     # for year in flood_years:
     #     fhm_year_metadata(year)
     lidar_coverage_metadata()
+    seed_layers('lidar_coverage')
 
 
 @task(name='geonode.tasks.update.update_fhm_metadata_task', queue='update')
