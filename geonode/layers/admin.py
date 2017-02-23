@@ -24,9 +24,7 @@ from geonode.base.admin import MediaTranslationAdmin, ResourceBaseAdminForm
 from geonode.layers.models import Layer, Attribute, Style
 from geonode.layers.models import LayerFile, UploadSession
 
-
-class AttributeInline(admin.TabularInline):
-    model = Attribute
+import autocomplete_light
 
 
 class LayerAdminForm(ResourceBaseAdminForm):
@@ -35,23 +33,44 @@ class LayerAdminForm(ResourceBaseAdminForm):
         model = Layer
 
 
+class AttributeInline(admin.TabularInline):
+    model = Attribute
+
+
 class LayerAdmin(MediaTranslationAdmin):
     list_display = (
         'id',
         'typename',
         'service_type',
         'title',
+        'Floodplains',
+        'SUC',
         'date',
         'category')
     list_display_links = ('id',)
     list_editable = ('title', 'category')
-    list_filter = ('storeType', 'owner', 'category',
+    list_filter = ('owner', 'category',
                    'restriction_code_type__identifier', 'date', 'date_type')
+
+    # def get_queryset(self, request):
+    # return super(LayerAdmin,
+    # self).get_queryset(request).prefetch_related('floodplain_tag','SUC_tag')
+    def Floodplains(self, obj):
+        return u", ".join(o.name for o in obj.floodplain_tag.all())
+
+    def SUC(self, obj):
+        return u", ".join(o.name for o in obj.SUC_tag.all())
+    # def get_queryset(self, request):
+    #     return super(LayerAdmin, self).get_queryset(request).prefetch_related('SUC_tag')
+    # def SUC(self, obj):
+    #     return u", ".join(o.name for o in obj.SUC_tag.all())
+    inlines = [AttributeInline]
+
     search_fields = ('typename', 'title', 'abstract', 'purpose',)
     filter_horizontal = ('contacts',)
     date_hierarchy = 'date'
     readonly_fields = ('uuid', 'typename', 'workspace')
-    inlines = [AttributeInline]
+
     form = LayerAdminForm
 
 
