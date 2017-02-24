@@ -1,6 +1,6 @@
 --extra-index-url=http://dist.pinaxproject.com/dev
 
-pip==1.0
+pip
 setuptools
 paver
 
