@@ -9,40 +9,36 @@
 {% load i18n %}
 <div id="comments_section" class="comments paginate paginate-manual">
   <header>
-    <h3>{% trans 'Comments' %} <span class="total">({% comment_count resource %} total)</span></h3>
+    <h4>{% trans 'Comments' %} <span class="total">({% comment_count resource %})</span></h4>
   </header>
 
   {% if user.is_authenticated %}
   <div class="clearfix">
-    <a href="#form_post_comment_div" role="button" class="btn pull-right btn-primary" data-toggle="modal">{% trans 'Add Comment' %}</a>
+    <a href="#form_post_comment_div" role="button" class="btn pull-right btn-default" data-toggle="modal">{% trans 'Add Comment' %}</a>
   </div>
   {% else %}
   <div class="clearfix">
-    <p class="pull-right">{% trans 'Log in to add a comment' %}</p>
+    <p>{% trans 'Log in to add a comment' %}</p>
   </div>
   {% endif %}
   <div class="paginate-contents">
   {% comments resource as comment_list %}
   {% autopaginate comment_list 5 %}
-  {% for comment in comment_list %}      
-    <article class="col-md-8 comment">
-      <div class="avatar pull-left"><a href="{{ comment.author.get_absolute_url }}">{% avatar comment.author 40 %}</a></div>
-      <p class="comment-description">
-        {{ comment.comment }}
-          <div class="comment-author">
-            <p>{% trans 'By' %} <a href="{{ comment.author.get_absolute_url }}" rel="author">{{ comment.author }}</a> on <time>{{ comment.submit_date|date:"M j, Y" }}</time></p>
-          </div>
-          {% if comment|can_delete_comment:request.user %}
-          <div class="comment-manage">
-            <form method="POST" action="{% url 'delete_comment' comment.id %}">
-              {% csrf_token %}
-              <button type="submit" class="btn btn-danger btn-xs">Delete</button>
-            </form>
-          </div>
-          {% endif %}
-      </p>
-    </article>
-  {% endfor %}
+    <ul class="list-unstyled">
+      {% for comment in comment_list %}
+      <li class="comment">
+        <a class="avatar" href="{{ comment.author.get_absolute_url }}">{% avatar comment.author 48 %}</a>
+        <small>{% trans 'By' %} <a href="{{ comment.author.get_absolute_url }}" rel="author">{{ comment.author }}</a> on <time>{{ comment.submit_date|date:"M j, Y" }}</time></small>
+        <p>{{ comment.comment }}</p>
+        {% if comment|can_delete_comment:request.user %}
+        <form method="POST" action="{% url 'delete_comment' comment.id %}">
+          {% csrf_token %}
+          <button type="submit" class="btn btn-danger btn-xs">Delete</button>
+        </form>
+        {% endif %}
+      </li>
+      {% endfor %}
+    </ul>
   </div>
   {% paginate %}
 </div>
@@ -69,5 +65,5 @@
         </form>
       </div>
     </div>
-</div>
+</div> <!-- /comments_section -->
 {% endif %}
