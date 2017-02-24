@@ -1,7 +1,6 @@
 {% load friendly_loader %}
 {% friendly_load avatar_tags %}
 {% load i18n %}
-<section>
   <div class="pull-left">
   {% with 48 as avatar_size %}
     <a href="{% url "profile_detail" profile.username %}" class="avatar">{% avatar profile avatar_size %}</a>
@@ -13,5 +12,4 @@
       <br />{% if profile.organization %}{{ profile.organization }}
       {% else %}{% trans "No Group" %}
       {% endif %}</p>
-    </div>
-</section>
+  </div>
