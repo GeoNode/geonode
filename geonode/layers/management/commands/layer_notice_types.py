@@ -51,6 +51,3 @@ class Command(BaseCommand):
             "request_download_resourcebase",
             _("Request download to an owner"),
             _("A request has been sent to the owner"))
-
-
-    print('Done')

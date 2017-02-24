@@ -45,10 +45,8 @@ class Consumer(ConsumerMixin):
     def on_consume_end(self, connection, channel):
         super(Consumer, self).on_consume_end(connection, channel)
         logger.info("finished.")
-        print channel
 
     def on_message(self, body, message):
-      
         logger.info("broadcast: RECEIVED MSG - body: %r" % (body,))
         message.ack()
         return

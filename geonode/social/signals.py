@@ -188,7 +188,6 @@ if notification_app:
         instance_dict=model_to_dict(instance)
         instance_dict['app_label']=ct.app_label
         instance_dict['model']=ct.model
-        print instance_dict
         payload=json_serializer_producer(instance_dict)
         notifications_send(payload, created=created)
 
