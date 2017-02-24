@@ -187,6 +187,17 @@ class ProfileRequestForm(forms.ModelForm):
             raise forms.ValidationError("You have entered an empty last name")
 
         return lname
+        
+    def clean_request_level(self):
+        org_type = self.cleaned_data.get('org_type')
+        request_level = self.cleaned_data.get('request_level')
+        if org_type:
+            if not request_level or request_level.contains('-----'):
+                raise forms.ValidationError("Please select the proper choice")
+            else:
+                return request_level
+        else:
+            return request_level
 
     def clean_email(self):
         email = self.cleaned_data.get('email')
