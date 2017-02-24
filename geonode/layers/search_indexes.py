@@ -87,6 +87,7 @@ class LayerIndex(indexes.SearchIndex, indexes.Indexable):
     rating = indexes.IntegerField(null=True)
     num_ratings = indexes.IntegerField(stored=False)
     num_comments = indexes.IntegerField(stored=False)
+    geogig_link = indexes.CharField(null=True)
 
     def get_model(self):
         return Layer
@@ -134,3 +135,10 @@ class LayerIndex(indexes.SearchIndex, indexes.Indexable):
 
     def prepare_title_sortable(self, obj):
         return obj.title.lower()
+    
+    def prepare_geogig_link(self, obj):
+        try:
+            return obj.geogig_link
+        except:
+            return None
+        
