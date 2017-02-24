@@ -330,6 +330,7 @@ class GXPMapBase(object):
                 'title': self.title,
                 'abstract': self.abstract
             },
+            'aboutUrl': '../about',
             'defaultSourceType': "gxp_wmscsource",
             'sources': sources,
             'map': {
