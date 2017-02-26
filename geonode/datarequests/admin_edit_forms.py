@@ -25,6 +25,7 @@ from .forms import ProfileRequestForm
 class ProfileRequestEditForm(ProfileRequestForm):
     
     ORG_TYPE_CHOICES = LipadOrgType.objects.values_list('val', 'display_val')
+    ORDERED_FIELDS =['org_type', 'organization_other','request_level','funding_source']
     LOCATION_CHOICES = Choices(
         ('local', _('Local')),
         ('foreign', _('Foreign')),
@@ -67,6 +68,7 @@ class ProfileRequestEditForm(ProfileRequestForm):
     def __init__(self, *args, **kwargs):
         super(ProfileRequestEditForm, self).__init__(*args, **kwargs)
         self.fields.pop('captcha')
+        self.fields.keyOrder = self.ORDERED_FIELDS + [k for k in self.fields.keys() if k not in self.ORDERED_FIELDS]
         if not self.fields['org_type'].choices[0][0] == '---------':
             self.fields['org_type'].choices.insert(0, ('---------','---------'))
         self.helper = FormHelper()
