@@ -29,11 +29,17 @@ class ProfileRequestForm(forms.ModelForm):
     ORDERED_FIELDS =['org_type', 'organization_other','request_level','funding_source']
     captcha = ReCaptchaField(attrs={'theme': 'clean'})
     
-    
+    """
     org_type = forms.ChoiceField(
         label = _('Organization Type'),
         choices = ORG_TYPE_CHOICES,
         initial = '---------',
+        required = True
+    )
+    """
+    
+    org_type = forms.ModelChoiceField(
+        queryset=LipadOrgType.objects.all(),
         required = True
     )
 
