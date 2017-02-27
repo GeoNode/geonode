@@ -40,7 +40,8 @@ class ProfileRequestForm(forms.ModelForm):
     
     org_type = forms.ModelChoiceField(
         queryset=LipadOrgType.objects.all(),
-        required = True
+        required=True,
+        to_field_name='val',
     )
 
 
@@ -108,8 +109,6 @@ class ProfileRequestForm(forms.ModelForm):
         super(ProfileRequestForm, self).__init__(*args, **kwargs)
         self.fields['captcha'].error_messages = {'required': 'Please answer the Captcha to continue.'}
         self.fields.keyOrder = self.ORDERED_FIELDS + [k for k in self.fields.keys() if k not in self.ORDERED_FIELDS]
-        if not self.fields['org_type'].choices[0][0] == '---------':
-            self.fields['org_type'].choices.insert(0, ('---------','---------'))
         self.helper = FormHelper()
         # self.helper.form_class = 'form-horizontal'
         self.helper.form_tag = False
@@ -223,7 +222,8 @@ class ProfileRequestForm(forms.ModelForm):
                 'Organization name can only be 64 characters')
 
         return organization
-        
+    
+    """    
     def clean_org_type(self):
         org_type = self.cleaned_data.get('org_type')
         if org_type:
@@ -235,6 +235,7 @@ class ProfileRequestForm(forms.ModelForm):
                 return org_type
         else:
             raise forms.ValidationError('This field is required')
+    """
             
     def clean_organization_other(self):
         organization_other = self.cleaned_data.get('organization_other')
