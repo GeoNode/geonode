@@ -39,6 +39,7 @@ class ProfileRequestForm(forms.ModelForm):
     """
     
     org_type = forms.ModelChoiceField(
+        label = _('Organization Type'),
         queryset=LipadOrgType.objects.all(),
         required=True,
         to_field_name='val',
