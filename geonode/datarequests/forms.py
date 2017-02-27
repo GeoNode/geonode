@@ -222,27 +222,13 @@ class ProfileRequestForm(forms.ModelForm):
                 'Organization name can only be 64 characters')
 
         return organization
-    
-    """    
-    def clean_org_type(self):
-        org_type = self.cleaned_data.get('org_type')
-        if org_type:
-            if len(org_type) < 1 or org_type=='---------':
-                raise forms.ValidationError('This field is required')
-            elif org_type not in LipadOrgType.objects.values_list('val', flat=True):
-                raise forms.ValidationError('This field is required')
-            else:
-                return org_type
-        else:
-            raise forms.ValidationError('This field is required')
-    """
             
     def clean_organization_other(self):
         organization_other = self.cleaned_data.get('organization_other')
         org_type = self.cleaned_data.get('org_type')
-        if (org_type == "Other" and not organization_other ):
+        if (org_type.val == "Other" and not organization_other ):
             raise forms.ValidationError('This field is required.')
-        if (org_type == "Other" and '----' in organization_other):
+        if (org_type.val == "Other" and '----' in organization_other):
             raise forms.ValidationError('This field is required.')
         return organization_other
 
@@ -252,7 +238,7 @@ class ProfileRequestForm(forms.ModelForm):
         #intended_use_of_dataset = self.cleaned_data.get('intended_use_of_dataset')
         if org_type:
             #intended_use_of_dataset == 'noncommercial' and
-            if ("Academe" in org_type and not funding_source):
+            if "Academe" in org_type.val and not funding_source:
                 raise forms.ValidationError('This field is required.')
         return funding_source
 
