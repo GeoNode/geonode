@@ -26,6 +26,7 @@ from geonode.layers.models import Layer
 from geonode.people.models import Profile
 from .profile_request import ProfileRequest
 from .base_request import BaseRequest
+from taggit.managers import TaggableManager
 
 import geonode.local_settings as local_settings
 
@@ -58,6 +59,8 @@ class DataRequest(BaseRequest):
     jurisdiction_shapefile = models.ForeignKey(Layer, null=True, blank=True)
 
     project_summary = models.TextField(_('Summary of Project/Program'), null=True, blank=True)
+    
+    data_type = TaggableManager(_('data_types'), blank=True, help_text="Data Type Selected")
     
     data_type_requested = models.CharField(
         _('Type of Data Requested'),
