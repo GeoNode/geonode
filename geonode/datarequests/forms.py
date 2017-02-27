@@ -191,6 +191,7 @@ class ProfileRequestForm(forms.ModelForm):
     def clean_request_level(self):
         org_type = self.cleaned_data.get('org_type')
         request_level = self.cleaned_data.get('request_level')
+        pprint('request_level:'+request_level)
         if org_type:
             if "Academe" in org_type and '-----' in str(request_level):
                 raise forms.ValidationError("Please select the proper choice")
@@ -219,7 +220,6 @@ class ProfileRequestForm(forms.ModelForm):
         
     def clean_org_type(self):
         org_type = self.cleaned_data.get('org_type')
-        pprint('org_type:'+org_type)
         if org_type:
             if len(org_type) < 1 or org_type=='---------':
                 raise forms.ValidationError('This field is required')
@@ -234,6 +234,8 @@ class ProfileRequestForm(forms.ModelForm):
         organization_other = self.cleaned_data.get('organization_other')
         org_type = self.cleaned_data.get('org_type')
         if (org_type == "Other" and not organization_other ):
+            raise forms.ValidationError('This field is required.')
+        if (org_type == "Other" and '----' in organization_other):
             raise forms.ValidationError('This field is required.')
         return organization_other
 
