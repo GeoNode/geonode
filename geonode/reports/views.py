@@ -115,9 +115,9 @@ def report_distribution_status(request, template='reports/distribution_status.ht
 
         mostrecent = ProfileRequest.objects.filter(id=eachinlist.profile_request_id).order_by('created').last()
         if mostrecent:
-            if mostrecent.organization_type not in org_count:
-                org_count[mostrecent.organization_type] = 0
-            org_count[mostrecent.organization_type] += 1
+            if mostrecent.org_type not in org_count:
+                org_count[mostrecent.org_type] = 0
+            org_count[mostrecent.org_type] += 1
 
 
 
