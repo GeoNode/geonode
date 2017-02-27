@@ -66,14 +66,16 @@ def profile_request_approve(request, pk):
             messages.error (request, _(message))
         else:
             profile_request.profile.organization_type = profile_request.organization_type
+            profile_request.profile.org_type = profile_request.org_type
             profile_request.profile.organization_other = profile_request.organization_other
-            profile_request.data_request.profile = profile_request.profile
             profile_request.save()
             profile_request.profile.save()
 
             profile_request.set_status('approved',administrator = request.user)
             
             if profile_request.data_request:
+                profile_request.data_request.profile = profile_request.profile
+                profile_request.data_request.save()
                 profile_request.data_request.set_status('pending')
             
             profile_request.send_approval_email()
