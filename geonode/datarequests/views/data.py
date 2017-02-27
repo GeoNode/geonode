@@ -17,6 +17,7 @@ from braces.views import (
 
 from urlparse import parse_qs
 
+from geonode.cephgeo.models import TileDataClass
 from geonode.cephgeo.models import UserJurisdiction
 from geonode.datarequests.forms import DataRequestRejectForm
 from geonode.datarequests.models import DataRequest
@@ -69,8 +70,8 @@ def data_request_detail(request, pk, template='datarequests/data_detail.html'):
         return HttpResponseRedirect('/forbidden')
 
     context_dict={"data_request": data_request}
-    pprint("dr.pk="+str(data_request.pk))
-    
+    context_dict ['data_types'] = data_request.data_type.names()
+    pprint(context_dict ['data_types'])
     if data_request.profile:
         context_dict['profile'] = data_request.profile
     
