@@ -23,6 +23,18 @@ _CONS_LOG_LEVEL = logging.DEBUG
 _FILE_LOG_LEVEL = logging.DEBUG
 
 
+def check_floodplain_names(fp_name):
+    # In FHM Coverage
+    # ampersand for 2 floodplains
+    fp_name = fp_name.replace('_', ' ')
+    if '&' in fp_name:
+        fp_name = fp_name.split(' & ')
+    # remove underscores, replace with spaces
+    else:
+        fp_name = [fp_name]
+    return fp_name
+
+
 def assign_tags(mode, results, layer):
 
     has_changes = False
@@ -31,6 +43,8 @@ def assign_tags(mode, results, layer):
     suc_tags = layer.SUC_tag.names()
 
     for r in results:
+        print 'RESULTS ', r
+
         if mode == 'dem':
             # Riverbasin
             if len(keywords) == 0 or r['rb_name'] not in keywords:
@@ -45,20 +59,22 @@ def assign_tags(mode, results, layer):
                 has_changes = True
         elif mode == 'fhm':
             # Floodplain - SUC
-            if len(keywords) == 0 or r['Floodplain'] not in keywords:
-                _logger.info('%s: %s: Adding keyword: %s',
-                             layer.name, mode, r['Floodplain'])
-                layer.keywords.add(r['Floodplain'])
-                has_changes = True
+            temp_fp = check_floodplain_names(r['Floodplain'])
+            for t in temp_fp:
+                if len(keywords) == 0 or t not in keywords:
+                    _logger.info('%s: %s: Adding keyword: %s',
+                                 layer.name, mode, r['Floodplain'])
+                    layer.keywords.add(r['Floodplain'])
+                    has_changes = True
+                if len(fp_tags) == 0 or t not in fp_tags:
+                    _logger.info('%s: %s: Adding FP tag: %s',
+                                 layer.name, mode, r['Floodplain'])
+                    layer.floodplain_tag.add(r['Floodplain'])
+                    has_changes = True
             if len(keywords) == 0 or r['SUC'] not in keywords:
                 _logger.info('%s: %s: Adding keyword: %s', layer.name, mode,
                              r['SUC'])
                 layer.keywords.add(r['SUC'])
-                has_changes = True
-            if len(fp_tags) == 0 or r['Floodplain'] not in fp_tags:
-                _logger.info('%s: %s: Adding FP tag: %s',
-                             layer.name, mode, r['Floodplain'])
-                layer.floodplain_tag.add(r['Floodplain'])
                 has_changes = True
             if len(suc_tags) == 0 or r['SUC'] not in suc_tags:
                 _logger.info('%s: %s: Adding SUC tag: %s', layer.name, mode,
@@ -67,6 +83,8 @@ def assign_tags(mode, results, layer):
                 has_changes = True
         elif mode == 'sar':
             # SUC
+            if r['SUC'] == 'UPMin':
+                r['SUC'] = 'UPM'
             if len(keywords) == 0 or r['SUC'] not in keywords:
                 _logger.info('%s: %s: Adding keyword: %s', layer.name, mode,
                              r['SUC'])
@@ -114,11 +132,11 @@ WITH l AS (
     FROM ''' + layer.name + ''' AS f
 )'''
 
-        if mode == 'dem':
-            deln = settings.RB_DELINEATION_DREAM
-            query += '''
-SELECT d.rb_name FROM ''' + deln + ''' AS d, l '''
-        elif mode == 'sar':
+#         if mode == 'dem':
+#             deln = settings.RB_DELINEATION_DREAM
+#             query += '''
+# SELECT d.rb_name FROM ''' + deln + ''' AS d, l '''
+        if mode == 'sar':
             deln = settings.PL1_SUC_MUNIS
             query += '''
 SELECT DISTINCT d."SUC" FROM ''' + deln + ''' AS d, l'''
@@ -177,6 +195,25 @@ SELECT d."Floodplain", d."SUC" FROM ''' + deln + ''' AS d, l'''
             _logger.exception('%s: ERROR SAVING LAYER', layer.name)
 
 
+def tag_dem(layers, keyword_filter):
+    results = {}
+    for layer in layers:
+        rb_name = layer.title.split(' DEM')[0]
+        if '/' in rb_name:
+            temp = rb_name.split('/')
+            for t in temp:
+                results['rb_name'] = t
+                assign_tags(keyword_filter, results, layer)
+        elif 'CDO Iponan' in rb_name:
+            temp = ['Cagayan de Oro', 'Iponan']
+            for t in temp:
+                results['rb_name'] = t
+                assign_tags(keyword_filter, results, layer)
+        else:
+            results['rb_name'] = rb_name
+            assign_tags(keyword_filter, results, layer)
+
+
 def caller_function(keyword_filter):
 
     # Setup logging
@@ -207,12 +244,14 @@ def caller_function(keyword_filter):
         layers = Layer.objects.filter(Q(workspace='geonode') & Q(
             name__icontains=keyword_filter) &
             Q(name__icontains='_extents')).exclude(owner__username='dataRegistrationUploader')
+        tag_layer(layers, keyword_filter)
     elif keyword_filter == 'dem':
         layers = Layer.objects.filter(Q(workspace='geonode') & Q(
             name__icontains=keyword_filter)).exclude(owner__username='dataRegistrationUploader')
+        tag_dem(layers, keyword_filter)
     elif keyword_filter == 'fhm':
         layers = Layer.objects.filter(Q(workspace='geonode') & Q(
             name__icontains='_fh')).exclude(owner__username='dataRegistrationUploader')
+        tag_layer(layers, keyword_filter)
 
     # for layer in layers:
-    tag_layer(layers, keyword_filter)
