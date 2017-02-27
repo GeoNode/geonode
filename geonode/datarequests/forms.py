@@ -191,9 +191,9 @@ class ProfileRequestForm(forms.ModelForm):
     def clean_request_level(self):
         org_type = self.cleaned_data.get('org_type')
         request_level = self.cleaned_data.get('request_level')
-        pprint('request_level:'+request_level)
+        
         if org_type:
-            if "Academe" in org_type and '-----' in str(request_level):
+            if "Academe" in org_type and not request_level or '-----' in str(request_level):
                 raise forms.ValidationError("Please select the proper choice")
             else:
                 return request_level
