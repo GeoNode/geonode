@@ -140,7 +140,12 @@ class DataRequest(BaseRequest):
 
     def assign_jurisdiction(self):
         # Link shapefile to account
-        uj,created = UserJurisdiction.objects.get_or_create(user=self.profile)
+        uj = None
+        try:
+            uj = UserJurisdiction.objects.get(user=self.profile)
+        except ObjectDoesNotExist:
+            uj = UserJurisdiction()
+            uj.user = self.profile 
         uj.jurisdiction_shapefile = self.jurisdiction_shapefile
         uj.save()
         #Add view permission on resource
