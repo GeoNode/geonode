@@ -198,23 +198,30 @@ SELECT d."Floodplain", d."SUC" FROM ''' + deln + ''' AS d, l'''
 def tag_dem(layers, keyword_filter):
     results = {}
     for layer in layers:
-        rb_name = layer.title.split(' DEM')[0]
-        if '/' in rb_name:
-            temp = rb_name.split('/')
-            for t in temp:
-                results['rb_name'] = t
-                assign_tags(keyword_filter, results, layer)
-        elif 'CDO Iponan' in rb_name:
+        rb_name = layer.name.split('_calibrated')[0].split('dem_')[
+            1].replace('_', ' ')
+        # if '/' in rb_name:
+        #     temp = rb_name.split('/')
+        #     for t in temp:
+        #         results['rb_name'] = t
+        #         assign_tags(keyword_filter, results, layer)
+        if 'cdo iponan' in rb_name.lower():
             temp = ['Cagayan de Oro', 'Iponan']
             for t in temp:
                 results['rb_name'] = t
                 assign_tags(keyword_filter, results, layer)
+        elif 'ilog hilabangan' in rb_name.lower():
+            results['rb_name'] = 'Ilog-Hilabangan'
+            assign_tags(keyword_filter, results, layer)
+        elif 'magasawang tubig' in rb_name.lower():
+            results['rb_name'] = 'Mag-Asawang Tubig'
+            assign_tags(keyword_filter, results, layer)
         else:
-            results['rb_name'] = rb_name
+            results['rb_name'] = rb_name.title()
             assign_tags(keyword_filter, results, layer)
 
 
-def caller_function(keyword_filter):
+def caller_function(keyword_filter, layer_list):
 
     # Setup logging
     _logger.setLevel(_LOG_LEVEL)
@@ -239,19 +246,29 @@ def caller_function(keyword_filter):
     # pool.map_async(tag_layer, layers)
     # pool.close()
     # pool.join()
-    layers = ''
-    if keyword_filter == 'sar':
-        layers = Layer.objects.filter(Q(workspace='geonode') & Q(
-            name__icontains=keyword_filter) &
-            Q(name__icontains='_extents')).exclude(owner__username='dataRegistrationUploader')
-        tag_layer(layers, keyword_filter)
-    elif keyword_filter == 'dem':
-        layers = Layer.objects.filter(Q(workspace='geonode') & Q(
-            name__icontains=keyword_filter)).exclude(owner__username='dataRegistrationUploader')
-        tag_dem(layers, keyword_filter)
-    elif keyword_filter == 'fhm':
-        layers = Layer.objects.filter(Q(workspace='geonode') & Q(
-            name__icontains='_fh')).exclude(owner__username='dataRegistrationUploader')
-        tag_layer(layers, keyword_filter)
+    if layer_list is not None:
+        layers = ''
+        if keyword_filter == 'sar':
+            layers = Layer.objects.filter(Q(workspace='geonode') & Q(
+                name__icontains=keyword_filter) &
+                Q(name__icontains='_extents')).exclude(owner__username='dataRegistrationUploader')
+            tag_layer(layers, keyword_filter)
+        elif keyword_filter == 'dem':
+            layers = Layer.objects.filter(Q(workspace='geonode') & Q(
+                name__icontains=keyword_filter)).exclude(owner__username='dataRegistrationUploader')
+            tag_dem(layers, keyword_filter)
+        elif keyword_filter == 'fhm':
+            layers = Layer.objects.filter(Q(workspace='geonode') & Q(
+                name__icontains='_fh')).exclude(owner__username='dataRegistrationUploader')
+            tag_layer(layers, keyword_filter)
+    else:
+        layers = ''
+        for l in layer_list:
+            layers.append(Layer.objects.get(name=l))
+        print 'LAYERS ', layers
+        if keyword_filter == 'sar' or keyword_filter == 'fhm':
+            tag_layer(layers, keyword_filter)
+        else:
+            tag_dem(layers, keyword_filter)
 
     # for layer in layers:
