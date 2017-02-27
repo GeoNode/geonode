@@ -11,24 +11,36 @@ from crispy_forms.layout import Layout, Fieldset, HTML, Div, Column, Row, Field
 from crispy_forms.bootstrap import PrependedText, InlineRadios
 from model_utils import Choices
 
+from geonode.cephgeo.models import TileDataClass
 from geonode.datarequests.models import DataRequestProfile, DataRequest, ProfileRequest
 from geonode.layers.forms import NewLayerUploadForm, LayerUploadForm, JSONField
 from geonode.documents.models import Document
 from geonode.documents.forms import DocumentCreateForm
 from geonode.people.models import OrganizationType, Profile
 
+from .utils import data_class_choices
 from .models import DataRequestProfile, RequestRejectionReason, DataRequest, ProfileRequest, LipadOrgType
-
 
 from pprint import pprint
 
 class ProfileRequestForm(forms.ModelForm):
 
+    ORG_TYPE_CHOICES = LipadOrgType.objects.all().values_list('val', 'display_val')
+    ORDERED_FIELDS =['org_type', 'organization_other','request_level','funding_source']
     captcha = ReCaptchaField(attrs={'theme': 'clean'})
+    
+    
+    org_type = forms.ChoiceField(
+        label = _('Organization Type'),
+        choices = ORG_TYPE_CHOICES,
+        initial = '---------',
+        required = True
+    )
+
 
     class Meta:
         model = ProfileRequest
-        fields = (
+        fields = [
             'first_name',
             'middle_name',
             'last_name',
@@ -45,9 +57,9 @@ class ProfileRequestForm(forms.ModelForm):
             'email',
             'contact_number',
             'captcha'
-        )
+        ]
 
-    ORG_TYPE_CHOICES = LipadOrgType.objects.values_list('val', 'val')
+    #ORG_TYPE_CHOICES = LipadOrgType.objects.values_list('val', 'val')
     # Choices that will be used for fields
     LOCATION_CHOICES = Choices(
         ('local', _('Local')),
@@ -70,14 +82,6 @@ class ProfileRequestForm(forms.ModelForm):
         ('faculty', _('Faculty')),
         ('student', _('Student')),
     )
-
-    org_type = forms.ChoiceField(
-        label = _('Organization Type'),
-        choices = ORG_TYPE_CHOICES,
-        initial = "Other",
-        required = True
-    )
-
     # request_level = forms.CharField(
     #     label=_('Level of the Request'),
     #     required = False
@@ -97,6 +101,9 @@ class ProfileRequestForm(forms.ModelForm):
 
         super(ProfileRequestForm, self).__init__(*args, **kwargs)
         self.fields['captcha'].error_messages = {'required': 'Please answer the Captcha to continue.'}
+        self.fields.keyOrder = self.ORDERED_FIELDS + [k for k in self.fields.keys() if k not in self.ORDERED_FIELDS]
+        if not self.fields['org_type'].choices[0][0] == '---------':
+            self.fields['org_type'].choices.insert(0, ('---------','---------'))
         self.helper = FormHelper()
         # self.helper.form_class = 'form-horizontal'
         self.helper.form_tag = False
@@ -160,7 +167,7 @@ class ProfileRequestForm(forms.ModelForm):
                 HTML("</section>")
             ),
         )
-
+        
     def clean_first_name(self):
         fname = self.cleaned_data.get('first_name').strip()
         if len(fname)<1:
@@ -180,6 +187,17 @@ class ProfileRequestForm(forms.ModelForm):
             raise forms.ValidationError("You have entered an empty last name")
 
         return lname
+        
+    def clean_request_level(self):
+        org_type = self.cleaned_data.get('org_type')
+        request_level = self.cleaned_data.get('request_level')
+        if org_type:
+            if not request_level or request_level.contains('-----'):
+                raise forms.ValidationError("Please select the proper choice")
+            else:
+                return request_level
+        else:
+            return request_level
 
     def clean_email(self):
         email = self.cleaned_data.get('email')
@@ -198,34 +216,44 @@ class ProfileRequestForm(forms.ModelForm):
                 'Organization name can only be 64 characters')
 
         return organization
+        
+    def clean_org_type(self):
+        org_type = self.cleaned_data.get('org_type')
+        pprint('org_type:'+org_type)
+        if org_type:
+            if len(org_type) < 1 or org_type=='---------':
+                raise forms.ValidationError('This field is required')
+            elif org_type not in LipadOrgType.objects.values_list('val', flat=True):
+                raise forms.ValidationError('This field is required')
+            else:
+                return org_type
+        else:
+            raise forms.ValidationError('This field is required')
+            
+    def clean_organization_other(self):
+        organization_other = self.cleaned_data.get('organization_other')
+        org_type = self.cleaned_data.get('org_type')
+        if (org_type == "Other" and not organization_other ):
+            raise forms.ValidationError('This field is required.')
+        return organization_other
 
     def clean_funding_source(self):
         funding_source = self.cleaned_data.get('funding_source')
         org_type = self.cleaned_data.get('org_type')
-        intended_use_of_dataset = self.cleaned_data.get('intended_use_of_dataset')
-        if (intended_use_of_dataset == 'noncommercial' and
-                "Academe" in org_type and
-                not funding_source):
-            raise forms.ValidationError(
-                'This field is required.')
+        #intended_use_of_dataset = self.cleaned_data.get('intended_use_of_dataset')
+        if org_type:
+            #intended_use_of_dataset == 'noncommercial' and
+            if ("Academe" in org_type and not funding_source):
+                raise forms.ValidationError('This field is required.')
         return funding_source
-        
-    def clean_organization_other(self):
-        organization_other = self.cleaned_data.get('organization_other')
-        org_type = self.cleaned_data.get('org_type')
-        if (org_type == "Other" and
-                not organization_other):
-            raise forms.ValidationError(
-                'This field is required.')
-        return organization_other
 
     def save(self, commit=True, *args, **kwargs):
-        data_request = super(
+        profile_request = super(
             ProfileRequestForm, self).save(commit=False, *args, **kwargs)
 
         if commit:
-            data_request.save()
-        return data_request
+            profile_request.save()
+        return profile_request
 
 class DataRequestForm(forms.ModelForm):
 
@@ -258,6 +286,11 @@ class DataRequestForm(forms.ModelForm):
         label=_(u'Your custom purpose for the data'),
         required=False
     )
+    
+    data_class_requested = forms.TypedMultipleChoiceField(
+        label = ('Types of Data Requested. (Press CTRL to select multiple types)'),
+        choices = data_class_choices(),
+    )
 
     letter_file = forms.FileField(
         label=_('Formal Request Letter (PDF only)'),
@@ -270,7 +303,7 @@ class DataRequestForm(forms.ModelForm):
             'project_summary',
             'purpose',
             'purpose_other',
-            'data_type_requested',
+            #'data_type_requested',
             'intended_use_of_dataset',
             'letter_file',
 
@@ -294,7 +327,7 @@ class DataRequestForm(forms.ModelForm):
                 css_class='form-group'
             ),
             Div(
-               Field('data_type_requested', css_class='form-control'),
+               Field('data_class_requested', css_class='form-control'),
                css_class='form-group'
             ),
             Div(
@@ -306,6 +339,15 @@ class DataRequestForm(forms.ModelForm):
                     css_class='form-group'
             ),
         )
+        
+    def clean_data_class_requested(self):
+        data_classes = self.cleaned_data.get('data_class_requested')
+        for dc in data_classes:
+            try:
+                TileDataClass.objects.get(short_name=dc)
+            except ObjectDoesNotExist:
+                raise forms.ValidationError(_("Invalid selection found. Resend the form and try again"))
+        return data_classes
 
     def clean_letter_file(self):
         letter_file = self.cleaned_data.get('letter_file')
@@ -314,6 +356,20 @@ class DataRequestForm(forms.ModelForm):
         if letter_file and split_filename[len(split_filename)-1].lower()[1:] != "pdf":
             raise forms.ValidationError(_("This file type is not allowed"))
         return letter_file
+        
+    def save(self, commit=True, *args, **kwargs):
+        data_request = super(
+            DataRequestForm, self).save(commit=True, *args, **kwargs)
+        
+        for data_type in self.clean_data_class_requested():
+            data_request.data_type.add(str(data_type))
+            
+        pprint(data_request.data_type.names())
+        if commit:
+            data_request.save()
+            
+        return data_request
+        
 
 class DataRequestShapefileForm(NewLayerUploadForm):
 
@@ -361,9 +417,14 @@ class DataRequestShapefileForm(NewLayerUploadForm):
         required=False
     )
 
-    data_type_requested = forms.TypedChoiceField(
-        label = _('Types of Data Requested'),
-        choices = DATA_TYPE_CHOICES,
+    #data_type_requested = forms.TypedChoiceField(
+    #    label = _('Types of Data Requested'),
+    #    choices = DATA_TYPE_CHOICES,
+    #)
+    
+    data_class_requested = forms.TypedMultipleChoiceField(
+        label = ('Types of Data Requested'),
+        choices = data_class_choices(),
     )
 
     intended_use_of_dataset = forms.ChoiceField(
@@ -854,3 +915,5 @@ class RejectionForm(forms.ModelForm):
         rejection_reason_qs = RequestRejectionReason.objects.all()
         if rejection_reason_qs:
             self.fields['rejection_reason'].choices = [(r.reason, r.reason) for r in rejection_reason_qs]
+        
+    
