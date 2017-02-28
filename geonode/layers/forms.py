@@ -67,7 +67,7 @@ class AnonDownloaderForm(forms.ModelForm):
                     Field('anon_first_name', css_class='form-control'),
                     Field('anon_last_name', css_class='form-control'),
                     Field('anon_email', css_class='form-control'),
-                    css_class='form-group', style="text-align:right; width:1200px;"
+                    css_class='form-group', style="text-align:right; width:100%;"
                 ),
                 Div(
                     Field('anon_organization', css_class='form-control'),
@@ -83,7 +83,7 @@ class AnonDownloaderForm(forms.ModelForm):
                 ),
                 Div(
                     Field('anon_purpose', css_class='form-control'),
-                    css_class='form-group', style="text-align:right; width:1200px;"
+                    css_class='form-group', style="text-align:right; width:100%;"
                 ),
             ),
             Div(
@@ -92,6 +92,12 @@ class AnonDownloaderForm(forms.ModelForm):
                 HTML("</section>")
             ),
         )
+    def clean_anon_orgother(self):
+        anon_orgother = self.cleaned_data.get('anon_orgother')
+        anon_orgtype = self.cleaned_data.get('anon_orgtype')
+        if (anon_orgtype == "Other" and not anon_orgother ):
+            raise forms.ValidationError('This field is required.')
+        return anon_orgother
 
 class JSONField(forms.CharField):
 
