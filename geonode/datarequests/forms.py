@@ -290,6 +290,11 @@ class DataRequestForm(forms.ModelForm):
         to_field_name = 'short_name',
         required = False
     )
+    
+    data_class_other = forms.CharField(
+        label = _('What is the unlisted data type you want to download?'),
+        required = False
+    )
     #data_class_requested = forms.TypedMultipleChoiceField(
     #    label = ('Types of Data Requested. (Press CTRL to select multiple types)'),
     #    choices = data_class_choices(),
@@ -333,6 +338,12 @@ class DataRequestForm(forms.ModelForm):
                Field('data_class_requested', css_class='form-control'),
                css_class='form-group'
             ),
+            Fieldset('Other Data type',
+                Div(
+                    Field('data_type_other', css_class='form-control'),
+                    css_class='form-group'
+                ),
+            ),
             Div(
                 Field('intended_use_of_dataset', css_class='form-control'),
                 css_class='form-group'
@@ -345,12 +356,19 @@ class DataRequestForm(forms.ModelForm):
 
     def clean_data_class_requested(self):
         data_classes = self.cleaned_data.get('data_class_requested')
+        data_class_list = []
         for dc in data_classes:
-            try:
-                TileDataClass.objects.get(short_name=dc)
-            except ObjectDoesNotExist:
-                raise forms.ValidationError(_("Invalid selection found. Resend the form and try again"))
-        return data_classes
+            data_class_list.append(dc.short_name)
+        if len(data_class_list)<1:
+            raise forms.ValidationError(_(''
+        return data_class_list
+
+    def clean_data_class_other(self):
+        data_class_other = self.cleaned_data.get('data_class_other')
+        data_classes = self.cleaned_data.get('data_class_requested')
+        if 'Other' in data_classes and not data_class_other:
+            raise forms.ValidationError(_('This field is required if you selected Other'))
+        return data_class_other
 
     def clean_letter_file(self):
         letter_file = self.cleaned_data.get('letter_file')
@@ -429,7 +447,7 @@ class DataRequestShapefileForm(NewLayerUploadForm):
         label = ('Types of Data Requested'),
         choices = data_class_choices(),
     )
-
+    
     intended_use_of_dataset = forms.ChoiceField(
         label = _('Intended Use of Data Set'),
         choices = DATASET_USE_CHOICES,
@@ -454,6 +472,23 @@ class DataRequestShapefileForm(NewLayerUploadForm):
         cleaned['purpose_other'] = self.clean_purpose_other()
 
         return cleaned
+    
+    
+    def clean_data_class_requested(self):
+        data_classes = self.cleaned_data.get('data_class_requested')
+        data_class_list = []
+        for dc in data_classes:
+            data_class_list.append(dc.short_name)
+        if len(data_class_list)<1:
+            raise forms.ValidationError(_(''
+        return data_class_list
+
+    def clean_data_class_other(self):
+        data_class_other = self.cleaned_data.get('data_class_other')
+        data_classes = self.cleaned_data.get('data_class_requested')
+        if 'Other' in data_classes and not data_class_other:
+            raise forms.ValidationError(_('This field is required if you selected Other'))
+        return data_class_other
 
     def clean_letter_file(self):
         letter_file = self.cleaned_data.get('letter_file')

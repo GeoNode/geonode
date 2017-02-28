@@ -62,6 +62,12 @@ class DataRequest(BaseRequest):
     
     data_type = TaggableManager(_('data_types'), blank=True, help_text="Data Type Selected")
     
+    data_class_other = models.CharField(
+        _('Requester-specified Data Type'),
+        null = True,
+        blank = True
+    )
+    
     data_type_requested = models.CharField(
         _('Type of Data Requested'),
         choices=DATA_TYPE_CHOICES,
