@@ -284,7 +284,7 @@ class DataRequestForm(forms.ModelForm):
     
     data_class_requested = forms.ModelMultipleChoiceField(
         label = _('Types of Data Requested. (Press CTRL to select multiple types)'),
-        queryset = TileDataClass.objects.all().values_list('short_name','full_name'),
+        queryset = TileDataClass.objects.all(),
         to_field_name = 'short_name',
         required = False
     )
