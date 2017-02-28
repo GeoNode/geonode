@@ -78,10 +78,9 @@
                 $('#trigger_next_modal_btn').click();
               }
           });
-          if (document.form_eula.anon_first_name.value == "" || document.form_eula.anon_last_name.value == "" || document.form_eula.anon_email.value == "" || document.form_eula.anon_organization.value == "" || document.form_eula.anon_purpose.value == "" ) {
-            document.getElementById('anon_errors').style.display = "block";
-            return false;
-          }else if (document.form_eula.anon_orgtype.value == "Other" && document.form_eula.anon_orgother.value == "") {
+          if (document.form_eula.anon_first_name.value == "" || document.form_eula.anon_last_name.value == "" ||
+              document.form_eula.anon_email.value == "" || document.form_eula.anon_organization.value == "" ||
+              document.form_eula.anon_purpose.value == "" || (document.form_eula.anon_orgtype.value == "Other" && document.form_eula.anon_orgother.value == "")) {
             document.getElementById('anon_errors').style.display = "block";
             return false;
           }
