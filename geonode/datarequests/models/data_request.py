@@ -65,7 +65,8 @@ class DataRequest(BaseRequest):
     data_class_other = models.CharField(
         _('Requester-specified Data Type'),
         null = True,
-        blank = True
+        blank = True,
+        max_length = 50
     )
     
     data_type_requested = models.CharField(
