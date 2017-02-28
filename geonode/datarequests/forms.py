@@ -291,10 +291,6 @@ class DataRequestForm(forms.ModelForm):
         required = False
     )
     
-    data_class_other = forms.CharField(
-        label = _('What is the unlisted data type you want to download?'),
-        required = False
-    )
     #data_class_requested = forms.TypedMultipleChoiceField(
     #    label = ('Types of Data Requested. (Press CTRL to select multiple types)'),
     #    choices = data_class_choices(),
@@ -312,6 +308,7 @@ class DataRequestForm(forms.ModelForm):
             'purpose',
             'purpose_other',
             #'data_type_requested',
+            'data_class_other',
             'intended_use_of_dataset',
             'letter_file',
 
