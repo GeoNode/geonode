@@ -95,7 +95,7 @@ class AnonDownloaderForm(forms.ModelForm):
     def clean_anon_orgother(self):
         anon_orgother = self.cleaned_data.get('anon_orgother')
         anon_orgtype = self.cleaned_data.get('anon_orgtype')
-        if (anon_orgtype.val == "Other" and not anon_orgother ):
+        if (anon_orgtype == "Other" and not anon_orgother ):
             raise forms.ValidationError('This field is required.')
         return anon_orgother
 
