@@ -146,6 +146,32 @@ def data_request_detail(request, pk, template='datarequests/data_detail.html'):
     context_dict["request_reject_form"]= DataRequestRejectForm(instance=data_request)
 
     return render_to_response(template, RequestContext(request, context_dict))
+    
+@login_required
+def data_request_edit(request, pk, template ='datarequests/data_detail_edit.html'):
+    data_request = get_object_or_404(DataRequest, pk=pk)
+    if not request.user.is_superuser:
+        return HttpResponseRedirect('/forbidden')
+    
+    if request.method == 'GET': 
+        context_dict={"data_request":data_request}
+        context_dict["form"] = DataRequestEditForm(initial = model_to_dict(data_request))
+        return render(request, template, context_dict)
+    else:
+        form = DataRequestEditForm(request.POST)
+        if form.is_valid():
+            pprint("form is valid")
+            for k, v in form.cleaned_data.iteritems():
+                if k == 'data_class_requested':
+                    data_request.data_type.set(form.data_type.val clear=False)
+                    #remove original tags
+                setattr(data_request, k, v)
+            data_request.administrator = request.user
+            data_request.save()
+        else:
+            pprint("form is invalid")
+            return render( request, template, {'form': form, 'data_request': data_request})
+        return HttpResponseRedirect(data_request.get_absolute_url())
 
 def data_request_cancel(request, pk):
     data_request = get_object_or_404(DataRequest, pk=pk)

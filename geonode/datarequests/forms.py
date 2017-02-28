@@ -344,12 +344,10 @@ class DataRequestForm(forms.ModelForm):
 
     def clean_data_class_requested(self):
         data_classes = self.cleaned_data.get('data_class_requested')
+        data_class_tags = []
         for dc in data_classes:
-            try:
-                TileDataClass.objects.get(short_name=dc)
-            except ObjectDoesNotExist:
-                raise forms.ValidationError(_("Invalid selection found. Resend the form and try again"))
-        return data_classes
+            data_class_tags.append(dc.short_name)
+        return data_class_tags
 
     def clean_letter_file(self):
         letter_file = self.cleaned_data.get('letter_file')
