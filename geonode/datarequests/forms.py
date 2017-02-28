@@ -28,7 +28,7 @@ class ProfileRequestForm(forms.ModelForm):
     ORG_TYPE_CHOICES = LipadOrgType.objects.all().values_list('val', 'display_val')
     ORDERED_FIELDS =['org_type', 'organization_other','request_level','funding_source']
     captcha = ReCaptchaField(attrs={'theme': 'clean'})
-    
+
     """
     org_type = forms.ChoiceField(
         label = _('Organization Type'),
@@ -37,7 +37,7 @@ class ProfileRequestForm(forms.ModelForm):
         required = True
     )
     """
-    
+
     org_type = forms.ModelChoiceField(
         label = _('Organization Type'),
         queryset=LipadOrgType.objects.all(),
@@ -173,7 +173,7 @@ class ProfileRequestForm(forms.ModelForm):
                 HTML("</section>")
             ),
         )
-        
+
     def clean_first_name(self):
         fname = self.cleaned_data.get('first_name').strip()
         if len(fname)<1:
@@ -193,7 +193,7 @@ class ProfileRequestForm(forms.ModelForm):
             raise forms.ValidationError("You have entered an empty last name")
 
         return lname
-        
+
     def clean_request_level(self):
         org_type = self.cleaned_data.get('org_type')
         request_level = self.cleaned_data.get('request_level')
@@ -222,14 +222,15 @@ class ProfileRequestForm(forms.ModelForm):
                 'Organization name can only be 64 characters')
 
         return organization
-            
+
     def clean_organization_other(self):
         organization_other = self.cleaned_data.get('organization_other')
         org_type = self.cleaned_data.get('org_type')
-        if (org_type.val == "Other" and not organization_other ):
-            raise forms.ValidationError('This field is required.')
-        if (org_type.val == "Other" and '----' in organization_other):
-            raise forms.ValidationError('This field is required.')
+        if org_type:
+            if (org_type.val == "Other" and not organization_other ):
+                raise forms.ValidationError('This field is required.')
+            if (org_type.val == "Other" and '----' in organization_other):
+                raise forms.ValidationError('This field is required.')
         return organization_other
 
     def clean_funding_source(self):
@@ -281,7 +282,7 @@ class DataRequestForm(forms.ModelForm):
         label=_(u'Your custom purpose for the data'),
         required=False
     )
-    
+
     data_class_requested = forms.ModelMultipleChoiceField(
         label = _('Types of Data Requested. (Press CTRL to select multiple types)'),
         queryset = TileDataClass.objects.all().values_list('short_name','full_name'),
@@ -340,7 +341,7 @@ class DataRequestForm(forms.ModelForm):
                     css_class='form-group'
             ),
         )
-        
+
     def clean_data_class_requested(self):
         data_classes = self.cleaned_data.get('data_class_requested')
         for dc in data_classes:
@@ -357,20 +358,20 @@ class DataRequestForm(forms.ModelForm):
         if letter_file and split_filename[len(split_filename)-1].lower()[1:] != "pdf":
             raise forms.ValidationError(_("This file type is not allowed"))
         return letter_file
-        
+
     def save(self, commit=True, *args, **kwargs):
         data_request = super(
             DataRequestForm, self).save(commit=True, *args, **kwargs)
-        
+
         for data_type in self.clean_data_class_requested():
             data_request.data_type.add(str(data_type.short_name))
-            
+
         pprint(data_request.data_type.names())
         if commit:
             data_request.save()
-            
+
         return data_request
-        
+
 
 class DataRequestShapefileForm(NewLayerUploadForm):
 
@@ -422,7 +423,7 @@ class DataRequestShapefileForm(NewLayerUploadForm):
     #    label = _('Types of Data Requested'),
     #    choices = DATA_TYPE_CHOICES,
     #)
-    
+
     data_class_requested = forms.TypedMultipleChoiceField(
         label = ('Types of Data Requested'),
         choices = data_class_choices(),
@@ -479,7 +480,7 @@ class DataRequestShapefileForm(NewLayerUploadForm):
             else:
                 return purpose_other
         return purpose
-        
+
 class ProfileRequestRejectForm(forms.ModelForm):
 
     REJECTION_REASON_CHOICES = Choices(
@@ -505,7 +506,7 @@ class ProfileRequestRejectForm(forms.ModelForm):
         rejection_reason_qs = RequestRejectionReason.objects.all()
         if rejection_reason_qs:
             self.fields['rejection_reason'].choices = [(r.reason, r.reason) for r in rejection_reason_qs]
-            
+
 class DataRequestRejectForm(forms.ModelForm):
 
     REJECTION_REASON_CHOICES = Choices(
@@ -916,5 +917,3 @@ class RejectionForm(forms.ModelForm):
         rejection_reason_qs = RequestRejectionReason.objects.all()
         if rejection_reason_qs:
             self.fields['rejection_reason'].choices = [(r.reason, r.reason) for r in rejection_reason_qs]
-        
-    
