@@ -58,7 +58,7 @@ $(function() {
         //selected = $data_class_selector.selectedOptions
         if ($('#id_data_class_requested option[value=Other]:selected').length > 0){
             $data_class_other.slideDown();
-            $data_classs_other.find('input').focus();
+            $data_class_other.find('input').focus();
         }else {
             $data_class_other.slideDown();
         }
