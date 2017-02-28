@@ -337,7 +337,7 @@ class DataRequestForm(forms.ModelForm):
             ),
             Fieldset('Other Data type',
                 Div(
-                    Field('data_type_other', css_class='form-control'),
+                    Field('data_class_other', css_class='form-control'),
                     css_class='form-group'
                 ),
             ),
