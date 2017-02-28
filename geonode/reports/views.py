@@ -105,7 +105,7 @@ def report_distribution_status(request, template='reports/distribution_status.ht
     rearrange_dr = {}
     monthly_datarequest = {}
     org_count = {}
-    monthly_datarequest_list = DataRequest.objects.all().order_by('status_changed')
+    monthly_datarequest_list = ProfileRequest.objects.all().order_by('status_changed')
     for eachinlist in monthly_datarequest_list:
         if eachinlist.status_changed.strftime('%Y%m') not in monthly_datarequest:
             monthly_datarequest[eachinlist.status_changed.strftime('%Y%m')] = {}
