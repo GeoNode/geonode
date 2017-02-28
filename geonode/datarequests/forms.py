@@ -282,10 +282,16 @@ class DataRequestForm(forms.ModelForm):
         required=False
     )
     
-    data_class_requested = forms.TypedMultipleChoiceField(
-        label = ('Types of Data Requested. (Press CTRL to select multiple types)'),
-        choices = data_class_choices(),
+    data_class_requested = forms.ModelMultipleChoiceField(
+        label = _('Types of Data Requested. (Press CTRL to select multiple types)'),
+        queryset = TileDataClass.objects.all().values_list('short_name','full_name'),
+        to_field_name = 'short_name',
+        required = False
     )
+    #data_class_requested = forms.TypedMultipleChoiceField(
+    #    label = ('Types of Data Requested. (Press CTRL to select multiple types)'),
+    #    choices = data_class_choices(),
+    #)
 
     letter_file = forms.FileField(
         label=_('Formal Request Letter (PDF only)'),
@@ -357,7 +363,7 @@ class DataRequestForm(forms.ModelForm):
             DataRequestForm, self).save(commit=True, *args, **kwargs)
         
         for data_type in self.clean_data_class_requested():
-            data_request.data_type.add(str(data_type))
+            data_request.data_type.add(str(data_type.short_name))
             
         pprint(data_request.data_type.names())
         if commit:
