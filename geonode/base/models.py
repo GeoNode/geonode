@@ -1015,6 +1015,15 @@ def resourcebase_post_save(instance, *args, **kwargs):
         if tb:
             logger.debug(tb)
 
+    # set default License if no specified
+    if instance.license is None:
+        no_license = License.objects.filter(name="Not Specified")
+
+        if no_license and len(no_license) > 0:
+            instance.license = no_license[0]
+            print("License: %s " % (instance.license))
+            instance.save()
+
 
 def rating_post_save(instance, *args, **kwargs):
     """
