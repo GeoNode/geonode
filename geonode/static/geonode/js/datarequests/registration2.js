@@ -60,7 +60,7 @@ $(function() {
             $data_class_other.slideDown();
             $data_class_other.find('input').focus();
         }else {
-            $data_class_other.slideDown();
+            $data_class_other.slideUp();
         }
     });
     
