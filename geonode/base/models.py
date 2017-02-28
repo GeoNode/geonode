@@ -1021,7 +1021,6 @@ def resourcebase_post_save(instance, *args, **kwargs):
 
         if no_license and len(no_license) > 0:
             instance.license = no_license[0]
-            print("License: %s " % (instance.license))
             instance.save()
 
 
