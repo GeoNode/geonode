@@ -67,7 +67,7 @@ class TileDataClass(models.Model):
     description=models.CharField(max_length=300)
     
     def __unicode__(self):
-        return "{0}:{1}".format(self.short_name, full_name)
+        return "{0}:{1}".format(self.short_name, self.full_name)
 
 class CephDataObject(models.Model):
     size_in_bytes = models.IntegerField()
