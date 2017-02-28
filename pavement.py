@@ -30,7 +30,6 @@ import glob
 import fileinput
 import yaml
 
-from setuptools.command import easy_install
 from urlparse import urlparse
 
 from paver.easy import task, options, cmdopts, needs
@@ -42,6 +41,7 @@ try:
 except:
     # probably trying to run install_win_deps.
     pass
+
 
 try:
     from paver.path import pushd
@@ -177,6 +177,9 @@ def win_install_deps(options):
         print "Installing file ... " + tempfile
         grab_winfiles(url, tempfile, package)
         try:
+            # This import causes an error with six.moves on OSX
+            # let's leave it in the windows specific section.
+            from setuptools.command import easy_install
             easy_install.main([tempfile])
         except Exception, e:
             failed = True
@@ -218,6 +221,7 @@ def sync(options):
     sh("python manage.py loaddata sample_admin.json")
     sh("python manage.py loaddata geonode/base/fixtures/default_oauth_apps.json")
     sh("python manage.py loaddata geonode/base/fixtures/initial_data.json")
+    sh("python manage.py layer_notice_types")
 
 
 @task
@@ -431,7 +435,8 @@ def test(options):
     """
     Run GeoNode's Unit Test Suite
     """
-    sh("%s manage.py test %s.tests --noinput" % (options.get('prefix'),
+    prefix = options.get('prefix', 'python')
+    sh("%s manage.py test %s.tests --noinput" % (prefix,
                                                  '.tests '.join(GEONODE_APPS)))
 
 
