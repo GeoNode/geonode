@@ -144,6 +144,16 @@ class UserTilesAdmin(admin.ModelAdmin):
         'gridref_list'
     )
     search_fields = ('user__username','gridref_list')
+    
+class TileDataClassAdmin(admin.ModelAdmin):
+    model = TileDataClass
+    list_display_links=('short_name',)
+    list_display=(
+        'id',
+        'short_name',
+        'full_name',
+        'description',
+    )
 
 
 admin.site.register(Cart, CartAdmin)
@@ -156,3 +166,4 @@ admin.site.register(MissionGridRef, MissionGridRefAdmin)
 admin.site.register(SucToLayer, SucToLayerAdmin)
 admin.site.register(RIDF, RIDFAdmin)
 admin.site.register(UserTiles,UserTilesAdmin)
+admin.site.register(TileDataClass,TileDataClassAdmin)

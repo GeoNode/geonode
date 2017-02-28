@@ -31,8 +31,6 @@ with open(csv_path, 'r') as open_file:
             org_type_model = LipadOrgType.objects.get(val=org_type)
             model_object.org_type = org_type
             model_object.save()
-            print str(model_object.request_id) + '- Saved: '
+            print str(model_object.id) + '- Saved: '
         except Exception as e:
-            print e + str(request_id)
-            print traceback.print_exc()
-            exit(1)
+            print str(e) +'-'+ str(request_id)
