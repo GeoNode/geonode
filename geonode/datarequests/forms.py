@@ -335,11 +335,9 @@ class DataRequestForm(forms.ModelForm):
                Field('data_class_requested', css_class='form-control'),
                css_class='form-group'
             ),
-            Fieldset('Other Data type',
-                Div(
-                    Field('data_class_other', css_class='form-control'),
-                    css_class='form-group'
-                ),
+            Div(
+                Field('data_class_other', css_class='form-control'),
+                css_class='form-group'
             ),
             Div(
                 Field('intended_use_of_dataset', css_class='form-control'),
