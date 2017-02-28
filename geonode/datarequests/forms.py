@@ -29,11 +29,11 @@ class ProfileRequestForm(forms.ModelForm):
     ORDERED_FIELDS =['org_type', 'organization_other','request_level','funding_source']
     captcha = ReCaptchaField(attrs={'theme': 'clean'})
     
-    org_type = forms.ChoiceField(
+    org_type = forms.ModelChoiceField(
         label = _('Organization Type'),
-        choices = ORG_TYPE_CHOICES,
-        initial = '---------',
-        required = True
+        queryset=LipadOrgType.objects.all(),
+        required=True,
+        to_field_name='val',
     )
 
 
@@ -101,8 +101,6 @@ class ProfileRequestForm(forms.ModelForm):
         super(ProfileRequestForm, self).__init__(*args, **kwargs)
         self.fields['captcha'].error_messages = {'required': 'Please answer the Captcha to continue.'}
         self.fields.keyOrder = self.ORDERED_FIELDS + [k for k in self.fields.keys() if k not in self.ORDERED_FIELDS]
-        if not self.fields['org_type'].choices[0][0] == '---------':
-            self.fields['org_type'].choices.insert(0, ('---------','---------'))
         self.helper = FormHelper()
         # self.helper.form_class = 'form-horizontal'
         self.helper.form_tag = False
@@ -191,7 +189,7 @@ class ProfileRequestForm(forms.ModelForm):
         org_type = self.cleaned_data.get('org_type')
         request_level = self.cleaned_data.get('request_level')
         if org_type:
-            if "Academe" in org_type and '-----' in str(request_level):
+            if "Academe" in org_type.val and not request_level:
                 raise forms.ValidationError("Please select the proper choice")
             else:
                 return request_level
@@ -215,24 +213,13 @@ class ProfileRequestForm(forms.ModelForm):
                 'Organization name can only be 64 characters')
 
         return organization
-        
-    def clean_org_type(self):
-        org_type = self.cleaned_data.get('org_type')
-        pprint('org_type:'+org_type)
-        if org_type:
-            if len(org_type) < 1 or org_type=='---------':
-                raise forms.ValidationError('This field is required')
-            elif org_type not in LipadOrgType.objects.values_list('val', flat=True):
-                raise forms.ValidationError('This field is required')
-            else:
-                return org_type
-        else:
-            raise forms.ValidationError('This field is required')
             
     def clean_organization_other(self):
         organization_other = self.cleaned_data.get('organization_other')
         org_type = self.cleaned_data.get('org_type')
-        if (org_type == "Other" and not organization_other ):
+        if (org_type.val == "Other" and not organization_other ):
+            raise forms.ValidationError('This field is required.')
+        if (org_type.val == "Other" and '----' in organization_other):
             raise forms.ValidationError('This field is required.')
         return organization_other
 
@@ -242,7 +229,7 @@ class ProfileRequestForm(forms.ModelForm):
         #intended_use_of_dataset = self.cleaned_data.get('intended_use_of_dataset')
         if org_type:
             #intended_use_of_dataset == 'noncommercial' and
-            if ("Academe" in org_type and not funding_source):
+            if "Academe" in org_type.val and not funding_source:
                 raise forms.ValidationError('This field is required.')
         return funding_source
 
@@ -286,10 +273,16 @@ class DataRequestForm(forms.ModelForm):
         required=False
     )
     
-    data_class_requested = forms.TypedMultipleChoiceField(
-        label = ('Types of Data Requested. (Press CTRL to select multiple types)'),
-        choices = data_class_choices(),
+    data_class_requested = forms.ModelMultipleChoiceField(
+        label = _('Types of Data Requested. (Press CTRL to select multiple types)'),
+        queryset = TileDataClass.objects.all().values_list('short_name','full_name'),
+        to_field_name = 'short_name',
+        required = False
     )
+    #data_class_requested = forms.TypedMultipleChoiceField(
+    #    label = ('Types of Data Requested. (Press CTRL to select multiple types)'),
+    #    choices = data_class_choices(),
+    #)
 
     letter_file = forms.FileField(
         label=_('Formal Request Letter (PDF only)'),
@@ -361,7 +354,7 @@ class DataRequestForm(forms.ModelForm):
             DataRequestForm, self).save(commit=True, *args, **kwargs)
         
         for data_type in self.clean_data_class_requested():
-            data_request.data_type.add(str(data_type))
+            data_request.data_type.add(str(data_type.short_name))
             
         pprint(data_request.data_type.names())
         if commit:
