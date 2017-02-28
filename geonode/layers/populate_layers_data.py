@@ -19,6 +19,9 @@
 #########################################################################
 
 from geonode.layers.models import Style, Attribute, Layer
+import notification
+from django.utils.translation import ugettext as _
+
 
 styles = [{"name": "test_style_1",
            "sld_url": "http://localhost:8080/geoserver/rest/styles/test_style.sld",
@@ -121,3 +124,30 @@ def create_layer_data():
                                  visible=attr['visible'],
                                  display_order=attr['display_order']
                                  )
+
+
+def create_notifications():
+    notification.models.NoticeType.create(
+	"layer_created",
+	_("Layer Created"),
+	_("A Layer was created"))
+    notification.models.NoticeType.create(
+	"layer_updated",
+	_("Layer Updated"),
+	_("A Layer was updated"))
+    notification.models.NoticeType.create(
+	"layer_deleted",
+	_("Layer Deleted"),
+	_("A Layer was deleted"))
+    notification.models.NoticeType.create(
+	"layer_comment",
+	_("Comment on Layer"),
+	_("A layer was commented on"))
+    notification.models.NoticeType.create(
+	"layer_rated",
+	_("Rating for Layer"),
+	_("A rating was given to a layer"))
+    notification.models.NoticeType.create(
+	"request_download_resourcebase",
+	_("Request download to an owner"),
+	_("A request has been sent to the owner"))
