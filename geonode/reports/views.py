@@ -113,7 +113,7 @@ def report_distribution_status(request, template='reports/distribution_status.ht
             monthly_datarequest[eachinlist.status_changed.strftime('%Y%m')][eachinlist.status] = 0
         monthly_datarequest[eachinlist.status_changed.strftime('%Y%m')][eachinlist.status] += 1
 
-        mostrecent = ProfileRequest.objects.filter(id=eachinlist.profile_request_id).order_by('created').last()
+        mostrecent = ProfileRequest.objects.filter(id=eachinlist.id).order_by('created').last()
         if mostrecent:
             if mostrecent.org_type not in org_count:
                 org_count[mostrecent.org_type] = 0
