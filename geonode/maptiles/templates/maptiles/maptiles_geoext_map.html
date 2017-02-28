@@ -275,6 +275,41 @@ function createHighlightBox(feature_attribs, fid){
 }
 
 /*
+Filters tiles if they intersect the geometries which are part of the jurisdiction
+*/
+
+function isInJurisdiction(geoms, tile){
+    /*for ( var i=0; i<geoms.length; i++){
+        console.log(tile.geometry.bounds)
+        if (geoms[i].geometry.bounds.transform(new OpenLayers.Projection("EPSG:32651"), new OpenLayers.Projection("EPSG:4326")).intersectsBounds(
+                {'bounds':tile.geometry.bounds, 'partial':true})){
+            console.log("intersection found")
+            return true;
+        }
+        if (geoms[i].geometry.bounds.transform(new OpenLayers.Projection("EPSG:900913"), new OpenLayers.Projection("EPSG:4326")).isBounds(
+                {'bounds':tile.geometry.bounds, 'partial':true})){
+            console.log("intersection found")
+            return true
+        }
+        if (geoms[i].geometry.bounds.containsBounds(
+                {'bounds':tile.geometry.bounds, 'partial':true})){
+            console.log("intersection found")
+            return true;
+        }
+    }*/
+    var j_layer = jurisdiction_args["map"]["layers"].filter(function(l){ return l["name"] ==jurisdiction_name })[0];
+    var bbox = j_layer["bbox"]
+    j_bounds = new OpenLayers.Bounds(bbox).transform(new OpenLayers.Projection("EPSG:900913"),new OpenLayers.Projection(tile_proj))
+    if (j_bounds.intersectsBounds(tile.geometry.bounds)){
+        console.log("intersection found")
+        return true
+    }else{    
+        console.log("no intersection found")
+        return false;
+    }
+}
+
+/*
 Function returns the index of a tile with a matching georef
 */
 function find_georef(tile_list, georef){
