@@ -5,8 +5,9 @@ $(function() {
     
 
         // Data Set
-    var $data_set = $("#id_data_set")
+    var $data_set = $("#id_data_set");
     var $data_set_other = $form.find('#div_id_data_set_other').parent();
+    
 
     // Initial values
     if ($data_set.val() == 'other'){
@@ -41,4 +42,26 @@ $(function() {
             $purpose_other.slideUp();
         }
     });
+    
+    //Data Class
+    var $data_class_selector = $('id_data_class_requested');
+    var $data_class_other = $('div_id_data_class_other');
+    
+    if ($('id_data_class_requeted option[value=Other]:selected').length){
+        $data_class_other.toggle(true);
+    }else {
+        $data_class_other.toggle(false);
+    }
+    
+    //Initial values
+    $data_class_selector.change(function(){
+        //selected = $data_class_selector.selectedOptions
+        if ($('id_data_class_requeted option[value=Other]:selected').length){
+            $data_class_other.slideDown();
+            $data_classs_other.find('input').focus();
+        }else {
+            $data_class_other.slideDown();
+        }
+    });
+    
 });
