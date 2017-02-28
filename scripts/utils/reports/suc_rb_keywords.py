@@ -43,7 +43,7 @@ def assign_tags(mode, results, layer):
     suc_tags = layer.SUC_tag.names()
 
     for r in results:
-        print 'RESULTS R ', r['rb_name']
+        # print 'RESULTS R ', r['rb_name']
         # print 'RESULTS SUC', r['SUC']
 
         if mode == 'dem':
