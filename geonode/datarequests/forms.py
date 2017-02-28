@@ -360,7 +360,7 @@ class DataRequestForm(forms.ModelForm):
         for dc in data_classes:
             data_class_list.append(dc.short_name)
         if len(data_class_list)<1:
-            raise forms.ValidationError(_(''
+            raise forms.ValidationError(_('Un'))
         return data_class_list
 
     def clean_data_class_other(self):
