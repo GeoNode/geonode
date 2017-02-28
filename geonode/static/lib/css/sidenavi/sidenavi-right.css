@@ -25,6 +25,7 @@
 .side-navi-item.item1 {  top: 150px;  }
 .side-navi-item.item2 {  top: 285px;  }
 .side-navi-item.item3 {  top: 420px;  }
+.side-navi-item.item4 {  top: 555px;  }
 .side-navi-item.active,
 .side-navi-item:hover {  background-color: #fff; color: #000;  }
 .side-navi-item > div {  padding-top: 15px; text-align: center;  }
