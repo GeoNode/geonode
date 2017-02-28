@@ -14,7 +14,7 @@ def parse_arguments():
     return args
 
 args = parse_arguments()
-exit(1)
+# exit(1)
 for argType in args.type:
     if argType == 'sar':
         # SAR DEM
@@ -31,7 +31,7 @@ for argType in args.type:
         print '#' * 40
         print 'DEM'
         keyword_filter = 'dem'
-        caller_function(keyword_filter)
+        caller_function(keyword_filter,args.layer)
         print 'FINISHED DEM COVERAGE'
         print '#' * 40
     elif argType == 'fhm':
@@ -40,7 +40,7 @@ for argType in args.type:
         print '#' * 40
         print 'FLOOD HAZARD MAPS'
         keyword_filter = 'fhm'
-        caller_function(keyword_filter)
+        caller_function(keyword_filter,args.layer)
         print 'FINISHED FLOOD HAZARD MAPS'
         print '#' * 40
     elif argType == 'all':
@@ -49,7 +49,7 @@ for argType in args.type:
         keyword_filters = ['fhm','dem','sar']
         for k in keyword_filters:
             print ' TAGGING ' + k.upper()
-            caller_function(k)
+            caller_function(k,args.layer)
             print 'FINISHED ' + k.upper()
         print '#' * 40
     # elif arg == 'coverage':
