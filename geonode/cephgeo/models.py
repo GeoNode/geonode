@@ -61,6 +61,13 @@ class FTPStatus(enum.Enum):
         ERROR:   'Error',
         DUPLICATE: 'Duplicate', }
 
+class TileDataClass(models.Model):
+    short_name = models.CharField(max_length=15)
+    full_name = models.CharField(max_length=50)
+    description=models.CharField(max_length=300)
+    
+    def __unicode__(self):
+        return "{0}:{1}".format(self.short_name, self.full_name)
 
 class CephDataObject(models.Model):
     size_in_bytes = models.IntegerField()

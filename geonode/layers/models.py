@@ -35,6 +35,8 @@ from geonode.people.utils import get_valid_user
 from agon_ratings.models import OverallRating
 from geonode.utils import check_shp_columnnames
 from geonode.security.models import remove_object_permissions
+from taggit.managers import TaggableManager
+from taggit.models import GenericTaggedItemBase, TagBase
 
 from taggit.managers import TaggableManager
 from taggit.models import GenericTaggedItemBase, TagBase
@@ -85,7 +87,6 @@ class Style(models.Model):
 
     def absolute_url(self):
         return self.sld_url.split('geoserver/', 1)[1]
-
 
 class LayerManager(ResourceBaseManager):
 
