@@ -2,6 +2,7 @@ import os
 import traceback
 
 from django import forms
+from django.core.exceptions import ObjectDoesNotExist
 from django.forms import widgets
 from django.utils.translation import ugettext_lazy as _
 
