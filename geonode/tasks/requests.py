@@ -17,7 +17,7 @@ def migrate_all():
     old_requests = DataRequestProfile.objects.all()
     count = 0
     for r in old_requests:
-        pprint("Migratig DataRequestProfile ID# "+r.pk)
+        pprint("Migratig DataRequestProfile ID# "+str(r.pk))
         profile_request = r.migrate_request_profile()
         if profile_request:
             data_request = r.migrate_request_data()
