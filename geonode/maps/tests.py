@@ -37,7 +37,7 @@ from geonode.maps.utils import fix_baselayers
 from geonode.utils import default_map_config
 from geonode.base.populate_test_data import create_models
 from geonode.maps.tests_populate_maplayers import create_maplayers
-from geonode.layers.populate_test_data import create_notifications
+from geonode.layers.populate_layers_data import create_notifications
 
 class MapsTest(TestCase):
 

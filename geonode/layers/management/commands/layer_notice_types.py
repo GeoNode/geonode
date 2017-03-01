@@ -22,32 +22,11 @@ import notification
 
 from django.core.management.base import BaseCommand
 from django.utils.translation import ugettext_noop as _
+from geonode.layers.populate_test_data import create_notifications
+
 
 class Command(BaseCommand):
     help = ("Create notice types for layers")
 
     def handle(self, *args, **options):
-        notification.models.NoticeType.create(
-            "layer_created",
-            _("Layer Created"),
-            _("A Layer was created"))
-        notification.models.NoticeType.create(
-            "layer_updated",
-            _("Layer Updated"),
-            _("A Layer was updated"))
-        notification.models.NoticeType.create(
-            "layer_deleted",
-            _("Layer Deleted"),
-            _("A Layer was deleted"))
-        notification.models.NoticeType.create(
-            "layer_comment",
-            _("Comment on Layer"),
-            _("A layer was commented on"))
-        notification.models.NoticeType.create(
-            "layer_rated",
-            _("Rating for Layer"),
-            _("A rating was given to a layer"))
-        notification.models.NoticeType.create(
-            "request_download_resourcebase",
-            _("Request download to an owner"),
-            _("A request has been sent to the owner"))
+        create_notifications()

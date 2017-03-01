@@ -151,3 +151,39 @@ def create_notifications():
 	"request_download_resourcebase",
 	_("Request download to an owner"),
 	_("A request has been sent to the owner"))
+    notification.models.NoticeType.create(
+	"map_created",
+	_("Map Created"),
+	_("A Map was created"))
+    notification.models.NoticeType.create(
+	"map_updated",
+	_("Map Updated"),
+	_("A Map was updated"))
+    notification.models.NoticeType.create(
+	"map_deleted",
+	_("Map Deleted"),
+	_("A Map was deleted"))
+    notification.models.NoticeType.create(
+	"profile_created",
+	_("Profile Created"),
+	_("A Profile was created"))
+    notification.models.NoticeType.create(
+	"profile_updated",
+	_("Profile Updated"),
+	_("A Profile was updated"))
+    notification.models.NoticeType.create(
+	"profile_deleted",
+	_("Profile Deleted"),
+	_("A Profile was deleted"))
+    notification.models.NoticeType.create(
+	"document_created",
+	_("Document Created"),
+	_("A Document was created"))
+    notification.models.NoticeType.create(
+	"document_updated",
+	_("Document Updated"),
+	_("A Document was updated"))
+    notification.models.NoticeType.create(
+	"document_deleted",
+	_("Document Deleted"),
+	_("A Document was deleted"))
