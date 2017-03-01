@@ -308,15 +308,15 @@ Filters tiles if they intersect the geometries which are part of the jurisdictio
 function isInJurisdiction(tile){
     var jurisdiction_name = "{{jurisdiction_name}}";
     var j_layer = jurisdiction_args["map"]["layers"].filter(function(l){ return l["name"] ==jurisdiction_name })[0];
-    var bbox = j_layer["bbox"]
-    var j_bounds = new OpenLayers.Bounds(bbox).transform(new OpenLayers.Projection("EPSG:900913"),new OpenLayers.Projection(tile_proj))
-    console.log(j_bounds)
-    console.log(tile.geometry.bounds)
+    var bbox = j_layer["bbox"];
+    var j_bounds = new OpenLayers.Bounds(bbox).transform(new OpenLayers.Projection("EPSG:900913"),new OpenLayers.Projection(tile_proj));
+    console.log(j_bounds);
+    console.log(tile.geometry.bounds);
     if (j_bounds.intersectsBounds(tile.geometry.bounds)){
-        console.log("intersection found")
-        return true
+        console.log("intersection found");
+        return true;
     }else{
-        console.log("no intersection found")
+        console.log("no intersection found");
         return false;
     }
 }
@@ -413,7 +413,7 @@ function filterSelectedTiles(tile_filter, single_click, send_notice, epsgproj, g
               }
             }else if (single_click){
               console.log("tile is already in the list");
-              removeHighlight(tile.georef,highlight_layer)
+              removeHighlight(tile.georef,highlight_layer);
             }
             highlight_layer.refresh();
           }
