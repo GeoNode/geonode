@@ -43,7 +43,7 @@ def assign_tags(mode, results, layer):
     suc_tags = layer.SUC_tag.names()
 
     for r in results:
-        print 'RESULTS R ', r['rb_name']
+        # print 'RESULTS R ', r['rb_name']
         # print 'RESULTS SUC', r['SUC']
 
         if mode == 'dem':
@@ -154,16 +154,16 @@ def tag_layer(layers, mode):
 
     cur = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
 
-    has_changes = False
-    has_results = False
     deln = ''
-
     # for mode, deln in [('dem', settings.RB_DELINEATION_DREAM),
     #                    ('sar', settings.PL1_SUC_MUNIS),
     #                    ('fhm', settings.FHM_COVERAGE)]:
     if mode == 'dem':
         results = {}
         for layer in layers:
+            has_changes = False
+            has_results = False
+            hc = False
             rb_name = layer.name.split('_calibrated')[0].split('dem_')[
                 1].replace('_', ' ')
             # if '/' in rb_name:
@@ -201,13 +201,27 @@ def tag_layer(layers, mode):
                     results['SUC'] = suc_result
                 print 'taglayer RESULTS ', results
                 hc = assign_tags(mode, [results], layer)
-        if hc:
-            has_changes = True
-            # No intersecting query happens
-            has_results = False
+
+            # if hc:
+            #     has_changes = True
+                # No intersecting query happens
+                # has_results = False
+
+            # if not has_results:
+            #     _logger.info('NO INTERSECTION %s', layer.name)
+
+            if hc:
+                try:
+                    _logger.info('%s: Saving layer...', layer.name)
+                    layer.save()
+                except Exception:
+                    _logger.exception('%s: ERROR SAVING LAYER', layer.name)
     # if sar or fhm
     else:
         for layer in layers:
+            has_changes = False
+            has_results = False
+            hc = False
             _logger.info('Layer name: %s', layer.name)
 
             # Construct query
@@ -266,18 +280,18 @@ def tag_layer(layers, mode):
                     hc = assign_tags(mode, results, layer)
                 else:
                     hc = assign_tags(mode, results, layer)
-                if hc:
-                    has_changes = True
+                # if hc:
+                #     has_changes = True
 
-    if not has_results:
-        _logger.info('NO INTERSECTION %s', layer.name)
+            if not has_results:
+                _logger.info('NO INTERSECTION %s', layer.name)
 
-    if has_changes:
-        try:
-            _logger.info('%s: Saving layer...', layer.name)
-            layer.save()
-        except Exception:
-            _logger.exception('%s: ERROR SAVING LAYER', layer.name)
+            if hc:
+                try:
+                    _logger.info('%s: Saving layer...', layer.name)
+                    layer.save()
+                except Exception:
+                    _logger.exception('%s: ERROR SAVING LAYER', layer.name)
 
 
 # def tag_dem(layers, keyword_filter):
