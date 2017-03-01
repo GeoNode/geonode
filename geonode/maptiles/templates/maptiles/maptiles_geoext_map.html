@@ -399,9 +399,9 @@ function filterSelectedTiles(tile_filter, single_click, send_notice, epsgproj, g
             if (find_georef(tile_list, tile.georef) < 0){
               console.log("tile is not yet in the list");
               tiles[i].geometry.calculateBounds();
-              tiles[i].geometry.setBounds(tiles[i].geometry.bounds.transform(
+              /*tiles[i].geometry.setBounds(tiles[i].geometry.bounds.transform(
                 new OpenLayers.Projection("EPSG:32651"), new OpenLayers.Projection("EPSG:4326")
-              ));
+              ));*/
               if (isInJurisdiction(tiles[i])){
                 console.log("tile is within jurisdiction");
                 tile_list.push(tile);
