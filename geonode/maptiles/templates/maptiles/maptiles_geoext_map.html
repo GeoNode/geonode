@@ -310,6 +310,8 @@ function isInJurisdiction(tile){
     var j_layer = jurisdiction_args["map"]["layers"].filter(function(l){ return l["name"] ==jurisdiction_name })[0];
     var bbox = j_layer["bbox"]
     var j_bounds = new OpenLayers.Bounds(bbox).transform(new OpenLayers.Projection("EPSG:900913"),new OpenLayers.Projection(tile_proj))
+    console.log(j_bounds)
+    console.log(tile.geometry.bounds)
     if (j_bounds.intersectsBounds(tile.geometry.bounds)){
         console.log("intersection found")
         return true
