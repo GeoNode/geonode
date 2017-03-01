@@ -127,7 +127,7 @@ class FilesTests(TestCase):
                 path = os.path.join(basedir, '_%s' % f)
                 self.assertTrue(os.path.exists(path))
 
-
+""""
 class TimeFormFormTest(TestCase):
 
     def _form(self, data):
@@ -168,3 +168,4 @@ class TimeFormFormTest(TestCase):
             ('start_year', 'Number'),
             ('end_date', 'Date')
         )
+"""
