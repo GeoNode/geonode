@@ -257,6 +257,7 @@ def georefs_validation(request):
                 total_size += o.size_in_bytes
 
         request_size_last24h = 0
+        pprint('Total size:'+str(total_size))
 
         #for r in requests_last24h:
         for r in requests_today:
