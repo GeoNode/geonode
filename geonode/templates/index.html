@@ -66,20 +66,21 @@
 {% endblock %}
 
 {% block extra_script %}
+{{ block.super }}
 {% if DEBUG_STATIC %}
 <script src="{{ STATIC_URL }}lib/js/angular.js"></script>
 {% endif %}
-  <script type="text/javascript">
-    FEATURED_URL = '{% url 'api_dispatch_list' api_name='api' resource_name='featured' %}'
-    'use strict';
-    (function(){  
-      var module = angular.module('featured', []);
-      module.run(function($http, $rootScope){
-        $http.get(FEATURED_URL).success(function(data){
-          $rootScope.featured = data.objects;
-        });
+<script type="text/javascript">
+  FEATURED_URL = '{% url 'api_dispatch_list' api_name='api' resource_name='featured' %}'
+  'use strict';
+  (function(){  
+    var module = angular.module('featured', []);
+    module.run(function($http, $rootScope){
+      $http.get(FEATURED_URL).success(function(data){
+        $rootScope.featured = data.objects;
       });
-    })(); 
-  </script>
+    });
+  })(); 
+</script>
 
 {% endblock extra_script %}
