@@ -261,7 +261,7 @@ function display_message(div_id, message){
 /*
 Function for creating a box for highlighting a selected tile
 */
-function createHighlightBox(feature_attribs, fid){
+function createHighlightBox(feature_attribs){
     var pt1 = new OpenLayers.Geometry.Point(feature_attribs["ul_x"], feature_attribs["ul_y"]).transform(new OpenLayers.Projection("EPSG:32651"), new OpenLayers.Projection("EPSG:900913"));
     var pt2 = new OpenLayers.Geometry.Point(feature_attribs["ur_x"], feature_attribs["ur_y"]).transform(new OpenLayers.Projection("EPSG:32651"), new OpenLayers.Projection("EPSG:900913"));
     var pt3 = new OpenLayers.Geometry.Point(feature_attribs["lr_x"], feature_attribs["lr_y"]).transform(new OpenLayers.Projection("EPSG:32651"), new OpenLayers.Projection("EPSG:900913"));
@@ -271,7 +271,6 @@ function createHighlightBox(feature_attribs, fid){
     var lr = new OpenLayers.Geometry.LinearRing(pts);
     var polygon  = new OpenLayers.Geometry.Polygon([lr]);
     var polygon_feature = new  OpenLayers.Feature.Vector(polygon);
-    polygon_feature.fid = fid;
 
     return polygon_feature;
 }
@@ -374,7 +373,7 @@ function hasDataFiltering( f_list){
 /*
 Function which retrieves selected tiles and filters them if  they don't have data or they are outside the jurisdiction
 */
-function filterSelectedTiles(tile_filter, single_click, send_notice, epsgproj, georef){
+function filterSelectedTiles(tile_filter, single_click, send_notice, epsgproj){
   var wfs_proto = wfs_proto_creator("{{feature_tiled}}", epsgproj,"json");
   var arg_obj = {
     filter: tile_filter,
@@ -405,7 +404,7 @@ function filterSelectedTiles(tile_filter, single_click, send_notice, epsgproj, g
               if (isInJurisdiction(tiles[i])){
                 console.log("tile is within jurisdiction");
                 tile_list.push(tile);
-                tile.feature = createHighlightBox(tile.corners, georef);
+                tile.feature = createHighlightBox(tile.corners);
                 highlight_layer.addFeatures([tile.feature]);
                 added_count++;
               }else{
@@ -722,7 +721,7 @@ Ext.onReady(function (){
                       value: createTile(computed_corners).georef//tile.georef
               });
               single_click = true;
-              filterSelectedTiles(filter, true, true, "EPSG:32651", tile.georef);
+              filterSelectedTiles(filter, true, true, "EPSG:32651");
           }
       });
 
