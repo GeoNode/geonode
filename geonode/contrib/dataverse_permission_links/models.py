@@ -49,7 +49,7 @@ class DataversePermissionLink(models.Model):
             raise Exception('Username does not exist: %s' % worldmap_username)
 
         if self.worldmap_user:
-            self.name = '%s - %s' % (self.dataverse_username,
+            self.name = '%s <--> %s' % (self.dataverse_username,
                                      self.worldmap_user.username)
             self.name = self.name[:255]
 

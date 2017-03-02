@@ -117,7 +117,6 @@ def process_csv_file(data_table,
         # Iterate through header row
         #
         for column in csv_table:
-
             # Standardize column name
             #
             column.name = standardize_column_name(column.name)
@@ -633,6 +632,12 @@ def attempt_datatable_upload_from_request_params(request,\
     table_name = get_unique_tablename(splitext(basename(request.FILES['uploaded_file'].name))[0])
 
     delimiter = data['delimiter']
+
+    # cheap fix for an error where the
+    # delimiter tab isn't going through
+    if delimiter == '\\':
+        delimiter = '\t'
+
     # only joins go to dataverse db
     database = get_database_name(is_dataverse_db)
     instance = DataTable(uploaded_file=request.FILES['uploaded_file'],

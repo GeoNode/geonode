@@ -1,11 +1,26 @@
+"""
+Convenience methods to:
+    1 - "check_for_existing_layer" using DataverseInfo
+
+    2 - "retrieve_dataverse_layer_metadata_by_kwargs_installation_and_file_id"
+        - Retrieve a DataverseLayerMetadata object by DV installation and file_id
+
+    3 - add_dataverse_layer_metadata
+        - Create a DataverseLayerMetadata using a Layer object and DataverseInfo object
+
+    4 - link_layer_permissions
+        - Given a new DataverseLayerMetadata, check if any additional
+          WorldMap users should have edit permissions (via PermissionLinker)
+"""
 from __future__ import print_function
 import logging
 
 from django import forms
-from geonode.contrib.dataverse_layer_metadata.models import DataverseLayerMetadata
-from geonode.contrib.dataverse_layer_metadata.forms import DataverseLayerMetadataValidationForm
 from shared_dataverse_information.shapefile_import.forms import ShapefileImportDataForm
 
+from geonode.contrib.dataverse_layer_metadata.models import DataverseLayerMetadata
+from geonode.contrib.dataverse_layer_metadata.forms import DataverseLayerMetadataValidationForm
+from geonode.contrib.dataverse_permission_links.permission_setter import PermissionLinker
 from geonode.maps.models import Layer
 
 LOGGER = logging.getLogger("geonode.dataverse_layer_metadata.layer_metadata_helper")
@@ -159,4 +174,33 @@ def add_dataverse_layer_metadata(saved_layer, dataverse_info):
     # Save it!!
     layer_metadata.save()
 
+    is_linked, err_msg_or_None = link_layer_permissions(layer_metadata)
+    print(is_linked, err_msg_or_None)
+
     return layer_metadata
+
+
+def link_layer_permissions(layer_metadata):
+    """
+    For Dataverse-created layers:
+
+    Use the PermissionLinker to see if additional WorldMap
+    users should be given edit permissions
+
+    Returns (boolean, error message or None)
+        - It works: return (True, None)
+        - It fails: return (False, "[error message]")
+    """
+    if layer_metadata is None:
+        err_msg = "layer_metadata cannot be None"
+        LOGGER.error(err_msg)
+        return (False, err_msg)
+
+    layer_name = layer_metadata.map_layer.typename
+    dataverse_username = layer_metadata.dv_username
+
+    perm_linker = PermissionLinker(layer_name, dataverse_username)
+    if not perm_linker.link_layer():
+        return (False, pl.error_message)
+
+    return (True, None)

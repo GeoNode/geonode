@@ -1,6 +1,6 @@
 """
 Convenience methods to:
-    (1) Return the PostGres datatype of a given column
+    (1) Return the Postgres datatype of a given column
     (2) Determine whether that datatype fits into the broad category of either:
         (a) numeric data
         (b) character data
@@ -11,7 +11,7 @@ import sys
 import traceback
 import logging
 import psycopg2
-from geonode.contrib.msg_util import msg, msgt
+#from geonode.contrib.msg_util import msg, msgt
 from geonode.contrib.datatables.db_helper import get_datastore_connection_string
 
 LOGGER = logging.getLogger('geonode.contrib.datatables.column_helper')
@@ -25,7 +25,13 @@ POSTGRES_NUMERIC_DATATYPES = ('smallint', 'integer', 'bigint', 'decimal',\
 
 
 class ColumnHelper(object):
-
+    """
+    Convenience methods to:
+        (1) Return the Postgres datatype of a given column
+        (2) Determine whether that datatype fits into the broad category of either:
+            (a) numeric data
+            (b) character data
+    """
     @staticmethod
     def get_column_datatype(table_name, table_attribute):
         """
@@ -67,7 +73,8 @@ class ColumnHelper(object):
         makes it into a number
         """
 
-        success, data_type_or_err_msg = ColumnHelper.get_column_datatype(table_name, table_attribute)
+        success, data_type_or_err_msg =\
+            ColumnHelper.get_column_datatype(table_name, table_attribute)
         if success:
             return (True, ColumnHelper.is_character_column(data_type_or_err_msg))
         else:

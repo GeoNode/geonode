@@ -5,8 +5,8 @@ from django.conf import settings
 
 
 def msg(s):
-    #if settings.DEBUG:
-    print(s)
+    if settings.DEBUG:
+        print(s)
 def dashes(d='-'): msg(40*d)
 def msgd(s): dashes(); msg(s)
 def msgt(s): dashes(); msg(s); dashes()

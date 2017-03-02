@@ -2,12 +2,12 @@
 For a Dataverse-created map, check if additional users
 should have edit permissions
 """
-from django.shortcuts import get_object_or_404
+from __future__ import print_function
 
 from geonode.maps.models import Layer
-from geonode.core.models import PermissionLevelMixin
 
 from geonode.contrib.dataverse_permission_links.models import DataversePermissionLink
+from geonode.contrib.msg_util import msg
 
 
 class PermissionLinker(object):
@@ -54,13 +54,17 @@ class PermissionLinker(object):
         return True
 
     def link_layer(self):
+        """
+        - Retrieve DataversePermissionLink objects related to the dv_username
+        - Give the associated WorldMap users editing permissions on this layer
+        """
         if self.has_error:
             return False
 
         # (1) Retrieve the PermissionLink(s)
         #
         filter_params = dict(dataverse_username=self.dv_username,
-                          is_active=True)
+                             is_active=True)
         perm_links = DataversePermissionLink.objects.filter(**filter_params)
         if len(perm_links) == 0:
             # Most times, there are no links, this is OK
@@ -77,8 +81,11 @@ class PermissionLinker(object):
         # (3) Give edit permissions to each associated WorldMap user
         #
         for perm_link in perm_links:
-            # set to admin level.
-            # "set_user_level" clears perms before setting them.  It doesn't allow dupes
+            msg('perm_link: %s' % perm_link)
+            #  Set to admin level.
+            #  Note: The "set_user_level" method clears perms
+            #        before setting them--e.g. it doesn't allow dupes
+            #
             map_obj.set_user_level(perm_link.worldmap_user, Layer.LEVEL_ADMIN)
 
         self.was_layer_linked = True
