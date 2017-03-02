@@ -380,21 +380,21 @@ def setup_join(new_table_owner, table_name, layer_typename,
     # ------------------------------------------------------------------
     # Retrieve stats
     # ------------------------------------------------------------------
-    matched_count_sql = ('select count({0}) from {1} where {1}.{2}'
+    matched_count_sql = ('select count({0}) from {1} where {1}.{0}'
                          ' in (select "{2}" from {3});').format(\
                             table_attribute.attribute,
                             dt.table_name,
                             layer_attribute.attribute,
                             layer_name)
 
-    unmatched_count_sql = ('select count({0}) from {1} where {1}.{2}'
+    unmatched_count_sql = ('select count({0}) from {1} where {1}.{0}'
                            ' not in (select "{2}" from {3});').format(\
                             table_attribute.attribute,
                             dt.table_name,
                             layer_attribute.attribute,
                             layer_name)
 
-    unmatched_list_sql = ('select{0} from {1} where {1}.{2}'
+    unmatched_list_sql = ('select {0} from {1} where {1}.{0}'
                           ' not in (select "{2}" from {3}) limit 500;').format(\
                             table_attribute.attribute,
                             dt.table_name,
