@@ -153,6 +153,7 @@
 {% endblock body_outer %}
 
 {% block extra_script %}
+{{ block.super }}
     {% include 'metadata_form_js.html' %}
 
     {% if GEONODE_SECURITY_ENABLED %}
