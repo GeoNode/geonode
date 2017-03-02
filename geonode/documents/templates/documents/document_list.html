@@ -25,6 +25,7 @@
 {% endblock %}
 
 {% block extra_script %}
+{{ block.super }}
   {% if GEONODE_SECURITY_ENABLED %}
     {% include "_permissions_form_js.html" %}
   {% endif %}
