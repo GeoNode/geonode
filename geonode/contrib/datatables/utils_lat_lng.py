@@ -201,7 +201,7 @@ def create_point_col_from_lat_lon(new_table_owner, table_name, lat_column, lng_c
                 ds = datastore
 
         if ds is None:
-            err_msg = "Datastore '%s' not found" % (settings.DB_DATASTORE_NAME)
+            err_msg = "Datastore not found: '%s' (lat/lng)" % (settings.DB_DATASTORE_NAME)
             return False, err_msg
         ft = cat.publish_featuretype(table_name, ds, "EPSG:4326", srs="EPSG:4326")
         cat.save(ft)

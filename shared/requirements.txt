@@ -1,6 +1,6 @@
 --extra-index-url=http://dist.pinaxproject.com/dev
 
-pip
+pip==1.0
 setuptools
 paver
 
@@ -67,7 +67,7 @@ django-tastypie==0.9.16
 # For the Dataverse/Geoconnect/WorldMap connection
 # --------------------------------------------------
 xmltodict
-shared_dataverse_information>=0.4.8
+shared_dataverse_information>=0.5.5
 #-e git+https://github.com/IQSS/shared-dataverse-information.git#egg=shared-dataverse-information
 
 # --------------------------------------------------
