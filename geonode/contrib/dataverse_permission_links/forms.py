@@ -5,13 +5,28 @@ from django.contrib.auth.models import User
 
 class DataversePermissionLinkForm(forms.ModelForm):
 
+    def clean_dataverse_username(self):
+        """Strip whitespace from username"""
+        dataverse_username = self.cleaned_data.get('dataverse_username', None)
+        if dataverse_username is None:
+            raise forms.ValidationError("Please enter a Dataverse username.")
+
+        dataverse_username = dataverse_username.strip()
+        if len(dataverse_username) == 0:
+            raise forms.ValidationError("Please enter a Dataverse username.")
+
+        return dataverse_username
+
     def clean_worldmap_username(self):
+        """Make sure the worldmap username maps to an actual User object"""
 
         worldmap_username = self.cleaned_data.get('worldmap_username', None)
         if worldmap_username is None:
             raise forms.ValidationError("Please enter a WorldMap username.")
 
         worldmap_username = worldmap_username.strip()
+        if len(worldmap_username) == 0:
+            raise forms.ValidationError("Please enter a WorldMap username.")
 
         # Check if the username is valid
         try:

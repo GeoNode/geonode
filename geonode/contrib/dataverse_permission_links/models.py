@@ -5,8 +5,6 @@ Allow specified Dataverse users who also have WorldMap credentials to:
 reference: https://github.com/IQSS/dataverse/issues/3469
 """
 from django.db import models
-from geonode.maps.models import Layer
-from shared_dataverse_information.dataverse_info.models import DataverseInfo
 from django.contrib.auth.models import User
 
 class DataversePermissionLink(models.Model):

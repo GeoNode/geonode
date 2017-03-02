@@ -168,6 +168,7 @@ INSTALLED_APPS = (
     'geonode.capabilities',
     'geonode.queue',
     'geonode.certification',
+
     # Datatable API
     'geonode.contrib.datatables',
     #'geonode.hoods',
@@ -175,12 +176,12 @@ INSTALLED_APPS = (
     #'debug_toolbar',
     'geonode.actions',
 
-    #DVN apps
+    #Dataverse apps
     'shared_dataverse_information.dataverse_info',           # external repository: https://github.com/IQSS/shared-dataverse-information
     'shared_dataverse_information.layer_classification',     # external repository: https://github.com/IQSS/shared-dataverse-information
+    'geonode.contrib.dataverse_permission_links',
     'geonode.contrib.dataverse_layer_metadata', # uses the dataverse_info repository models
     'geonode.contrib.dataverse_connect',
-    'geonode.contrib.dataverse_permission_links',
 
 )
 LOGGING = {
