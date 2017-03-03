@@ -291,11 +291,6 @@ class DataRequestForm(forms.ModelForm):
         required = False
     )
     
-    #data_class_requested = forms.TypedMultipleChoiceField(
-    #    label = ('Types of Data Requested. (Press CTRL to select multiple types)'),
-    #    choices = data_class_choices(),
-    #)
-
     letter_file = forms.FileField(
         label=_('Formal Request Letter (PDF only)'),
         required = True
@@ -354,8 +349,6 @@ class DataRequestForm(forms.ModelForm):
         data_class_list = []
         for dc in data_classes:
             data_class_list.append(dc)
-        if len(data_class_list)<1:
-            raise forms.ValidationError(_('This field is required'))
         return data_class_list
 
     def clean_data_class_other(self):
@@ -767,7 +760,7 @@ class DataRequestDetailsForm(forms.ModelForm):
         model = DataRequestProfile
         fields=(
             #project_summary',
-            'data_class_requested',
+            'data_type_requested',
             'intended_use_of_dataset',
         )
 
