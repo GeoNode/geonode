@@ -361,8 +361,9 @@ class DataRequestForm(forms.ModelForm):
     def clean_data_class_other(self):
         data_class_other = self.cleaned_data.get('data_class_other')
         data_classes = self.cleaned_data.get('data_class_requested')
-        if 'Other' in data_classes and not data_class_other:
-            raise forms.ValidationError(_('This field is required if you selected Other'))
+        if not data_classes:
+            if 'Other' in data_classes and not data_class_other:
+                raise forms.ValidationError(_('This field is required if you selected Other'))
         return data_class_other
 
     def clean_letter_file(self):
