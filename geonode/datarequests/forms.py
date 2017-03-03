@@ -433,15 +433,20 @@ class DataRequestShapefileForm(NewLayerUploadForm):
     #)
     
     
-    data_class_requested = forms.ModelMultipleChoiceField(
-        label = _('Types of Data Requested. (Press CTRL to select multiple types)'),
-        queryset = TileDataClass.objects.all(),
-        to_field_name = 'short_name',
-        required = False
+    #data_class_requested = forms.ModelMultipleChoiceField(
+    #    label = _('Types of Data Requested. (Press CTRL to select multiple types)'),
+    #    queryset = TileDataClass.objects.all(),
+    #    to_field_name = 'short_name',
+    #    required = False
+    #)
+    
+    data_class_requested = forms.CharField(
+        label=_("Your Requested Data Types"),
+        required = True
     )
     
     data_class_other = forms.CharField(
-        label=_(u'What other data types do you wish to download?'),
+        label=_('What other data types do you wish to download?'),
         required=False
     )
     
@@ -475,13 +480,18 @@ class DataRequestShapefileForm(NewLayerUploadForm):
         data_classes = self.cleaned_data.get('data_class_requested')
         pprint(data_classes)
         data_class_list = []
-        for dc in data_classes:
-            data_class_list.append(dc)
+        for dc in data_classes.split(','):
+            try:
+                TileDataClass.objects.get(str(dc))
+                data_class_list.append(dc)
+            except Exception:
+                raise forms.ValidationError("One or more of the choices you've made are not included in the valid data types")
+                
         return data_class_list
 
     def clean_data_class_other(self):
         data_class_other = self.cleaned_data.get('data_class_other')
-        data_classes = self.cleaned_data.get('data_class_requested')
+        data_classes = self.clean_data_class_requested()
         if 'Other' in data_classes and not data_class_other:
             raise forms.ValidationError(_('This field is required if you selected Other'))
         return data_class_other
