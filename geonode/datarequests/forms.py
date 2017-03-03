@@ -352,10 +352,11 @@ class DataRequestForm(forms.ModelForm):
     def clean_data_class_requested(self):
         data_classes = self.cleaned_data.get('data_class_requested')
         data_class_list = []
+        pprint(len(data_classes))
         for dc in data_classes:
             data_class_list.append(dc.short_name)
         if len(data_class_list)<1:
-            raise forms.ValidationError(_('Un'))
+            raise forms.ValidationError(_('This field is required'))
         return data_class_list
 
     def clean_data_class_other(self):
@@ -363,7 +364,7 @@ class DataRequestForm(forms.ModelForm):
         data_classes = self.cleaned_data.get('data_class_requested')
         pprint(data_class_other)
         pprint(data_classes)
-        if not data_classes:
+        if data_classes:
             if 'Other' in data_classes and not data_class_other:
                 raise forms.ValidationError(_('This field is required if you selected Other'))
         return data_class_other
