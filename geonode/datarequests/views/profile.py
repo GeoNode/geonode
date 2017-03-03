@@ -68,7 +68,6 @@ def profile_request_approve(request, pk):
             profile_request.profile.organization_type = profile_request.organization_type
             profile_request.profile.org_type = profile_request.org_type
             profile_request.profile.organization_other = profile_request.organization_other
-            profile_request.profile.org_type = profile_request.org_type
             profile_request.save()
             profile_request.profile.save()
 
