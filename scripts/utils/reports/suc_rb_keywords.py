@@ -182,14 +182,14 @@ def tag_layer(layers, mode):
                     hc = assign_tags(mode, [results], layer)
             elif 'ilog hilabangan' in rb_name.lower():
                 results['rb_name'] = 'Ilog-Hilabangan'
-                suc_result = fhm_suc(t, cur, conn)
+                suc_result = fhm_suc(results['rb_name'], cur, conn)
                 if len(suc_result) > 0:
                     results['SUC'] = suc_result
                 print 'taglayer RESULTS ', results
                 hc = assign_tags(mode, [results], layer)
             elif 'magasawang tubig' in rb_name.lower():
                 results['rb_name'] = 'Mag-Asawang Tubig'
-                suc_result = fhm_suc(t, cur, conn)
+                suc_result = fhm_suc(results['rb_name'], cur, conn)
                 if len(suc_result) > 0:
                     results['SUC'] = suc_result
                 print 'taglayer RESULTS ', results
