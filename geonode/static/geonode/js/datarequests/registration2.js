@@ -54,9 +54,10 @@ $(function() {
     }
     
     //Initial values
-    $data_class_selector.change(function(){
+    $data_class_selector.click(function(){
         //selected = $data_class_selector.selectedOptions
         if ($('#id_data_class_requested option[value=Other]:selected').length > 0){
+            console.log()
             $data_class_other.slideDown();
             $data_class_other.find('input').focus();
         }else {

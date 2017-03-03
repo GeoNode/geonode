@@ -181,7 +181,7 @@ class DataRequest(BaseRequest):
     
     def get_contact_number(self):
         if self.profile:
-            return self.profile.contact_number
+            return self.profile.voice
         if self.profile_request:
             return self.profile_request.contact_number
             
