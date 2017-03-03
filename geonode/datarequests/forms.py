@@ -440,6 +440,11 @@ class DataRequestShapefileForm(NewLayerUploadForm):
         required = False
     )
     
+    data_class_other = forms.CharField(
+        label=_(u'What other data types do you wish to download?'),
+        required=False
+    )
+    
     intended_use_of_dataset = forms.ChoiceField(
         label = _('Intended Use of Data Set'),
         choices = DATASET_USE_CHOICES,
@@ -468,6 +473,7 @@ class DataRequestShapefileForm(NewLayerUploadForm):
     
     def clean_data_class_requested(self):
         data_classes = self.cleaned_data.get('data_class_requested')
+        pprint(data_classes)
         data_class_list = []
         for dc in data_classes:
             data_class_list.append(dc)
