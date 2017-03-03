@@ -120,7 +120,7 @@ def data_request_view(request):
         pprint(post_data)
         post_data['permissions'] = '{"users":{"dataRegistrationUploader": ["view_resourcebase"] }}'
         data_classes = []
-        for s in post_data.split['data_class_requested'](','):
+        for s in post_data['data_class_requested'].split(','):
             data_classes.append(s)
             
         if len(data_classes) > 0:
