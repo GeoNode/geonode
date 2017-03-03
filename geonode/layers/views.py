@@ -749,16 +749,16 @@ def layer_download_csv(request):
         email = ftp_detail['user'].email
         organization = ftp_detail['organization']
         organization_type = ftp_detail['organization_type']
-        date_requested = ftp_request.date_time
+        date_requested = ftp_request.date_time.strftime('%Y/%m/%d')
 
         listtowrite.append([ username, lastname, firstname, email, organization, organization_type, "",
-                    "LAZ", date_requested.date, ftp_detail['number_of_laz'], ftp_detail['size_of_laz']])
+                    "LAZ", date_requested, ftp_detail['number_of_laz'], ftp_detail['size_of_laz']])
         listtowrite.append([ username, lastname, firstname, email, organization, organization_type, "",
-                    "DSM", date_requested.date, ftp_detail['number_of_dsm'], ftp_detail['size_of_dsm']])
+                    "DSM", date_requested, ftp_detail['number_of_dsm'], ftp_detail['size_of_dsm']])
         listtowrite.append([ username, lastname, firstname, email, organization, organization_type, "",
-                    "DTM", date_requested.date, ftp_detail['number_of_dtm'], ftp_detail['size_of_dtm']])
+                    "DTM", date_requested, ftp_detail['number_of_dtm'], ftp_detail['size_of_dtm']])
         listtowrite.append([ username, lastname, firstname, email, organization, organization_type, "",
-                    "Ortho", date_requested.date, ftp_detail['number_of_ortho'], ftp_detail['size_of_ortho']])
+                    "Ortho", date_requested, ftp_detail['number_of_ortho'], ftp_detail['size_of_ortho']])
 
 
     for eachtowrite in listtowrite:
