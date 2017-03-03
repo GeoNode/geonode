@@ -908,6 +908,7 @@ CELERY_IMPORTS = (
     'geonode.tasks.mk_folder',
     'geonode.tasks.jurisdiction',
     'geonode.tasks.jurisdiction2',
+    'geonode.tasks.requests',
     'geonode.tasks.users',
 )
 
@@ -1005,6 +1006,5 @@ CAS_VERSION = 3
 
 FP_DELINEATION_PL1 = 'fp_252_201613026v2'
 # used for layer tagging
-RB_DELINEATION_DREAM = 'DREAM_RB'
-FHM_COVERAGE = 'FHM_coverage'
-PL1_SUC_MUNIS = 'PL1_SUC_Munis'
+# RB_DELINEATION_DREAM = 'DREAM_RB'
+

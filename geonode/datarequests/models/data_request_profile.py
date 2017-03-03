@@ -791,7 +791,7 @@ class DataRequestProfile(TimeStampedModel):
             profile_request.verification_date = self.date
             if self.request_status == 'rejected':
                 profile_request.rejection_reason = self.rejection_reason
-                profile_request.additional_rejection_reason = self_additional_rejection_reason
+                profile_request.additional_rejection_reason = self.additional_rejection_reason
             
             profile_request.additional_remarks = self.additional_remarks
             profile_request.save()
@@ -824,7 +824,7 @@ class DataRequestProfile(TimeStampedModel):
                 
             if self.request_status == 'rejected':
                 data_request.rejection_reason = self.rejection_reason
-                data_request.additional_rejection_reason = self_additional_rejection_reason
+                data_request.additional_rejection_reason = self.additional_rejection_reason
             
             data_request.additional_remarks = self.additional_remarks
             data_request.profile_request = self.profile_request
