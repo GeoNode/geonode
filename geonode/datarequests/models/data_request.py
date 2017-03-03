@@ -62,6 +62,13 @@ class DataRequest(BaseRequest):
     
     data_type = TaggableManager(_('data_types'), blank=True, help_text="Data Type Selected")
     
+    data_class_other = models.CharField(
+        _('Requester-specified Data Type'),
+        null = True,
+        blank = True,
+        max_length = 50
+    )
+    
     data_type_requested = models.CharField(
         _('Type of Data Requested'),
         choices=DATA_TYPE_CHOICES,
@@ -174,7 +181,7 @@ class DataRequest(BaseRequest):
     
     def get_contact_number(self):
         if self.profile:
-            return self.profile.contact_number
+            return self.profile.voice
         if self.profile_request:
             return self.profile_request.contact_number
             

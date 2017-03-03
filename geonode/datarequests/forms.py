@@ -2,6 +2,7 @@ import os
 import traceback
 
 from django import forms
+from django.core.exceptions import ObjectDoesNotExist
 from django.forms import widgets
 from django.utils.translation import ugettext_lazy as _
 
@@ -164,7 +165,7 @@ class ProfileRequestForm(forms.ModelForm):
                 HTML("</section>")
             ),
         )
-        
+
     def clean_first_name(self):
         fname = self.cleaned_data.get('first_name').strip()
         if len(fname)<1:
@@ -184,7 +185,7 @@ class ProfileRequestForm(forms.ModelForm):
             raise forms.ValidationError("You have entered an empty last name")
 
         return lname
-        
+
     def clean_request_level(self):
         org_type = self.cleaned_data.get('org_type')
         request_level = self.cleaned_data.get('request_level')
@@ -213,14 +214,15 @@ class ProfileRequestForm(forms.ModelForm):
                 'Organization name can only be 64 characters')
 
         return organization
-            
+
     def clean_organization_other(self):
         organization_other = self.cleaned_data.get('organization_other')
         org_type = self.cleaned_data.get('org_type')
-        if (org_type.val == "Other" and not organization_other ):
-            raise forms.ValidationError('This field is required.')
-        if (org_type.val == "Other" and '----' in organization_other):
-            raise forms.ValidationError('This field is required.')
+        if org_type:
+            if (org_type.val == "Other" and not organization_other ):
+                raise forms.ValidationError('This field is required.')
+            if (org_type.val == "Other" and '----' in organization_other):
+                raise forms.ValidationError('This field is required.')
         return organization_other
 
     def clean_funding_source(self):
@@ -272,18 +274,14 @@ class DataRequestForm(forms.ModelForm):
         label=_(u'Your custom purpose for the data'),
         required=False
     )
-    
+
     data_class_requested = forms.ModelMultipleChoiceField(
         label = _('Types of Data Requested. (Press CTRL to select multiple types)'),
-        queryset = TileDataClass.objects.all().values_list('short_name','full_name'),
+        queryset = TileDataClass.objects.all(),
         to_field_name = 'short_name',
         required = False
     )
-    #data_class_requested = forms.TypedMultipleChoiceField(
-    #    label = ('Types of Data Requested. (Press CTRL to select multiple types)'),
-    #    choices = data_class_choices(),
-    #)
-
+    
     letter_file = forms.FileField(
         label=_('Formal Request Letter (PDF only)'),
         required = True
@@ -296,6 +294,7 @@ class DataRequestForm(forms.ModelForm):
             'purpose',
             'purpose_other',
             #'data_type_requested',
+            'data_class_other',
             'intended_use_of_dataset',
             'letter_file',
 
@@ -323,6 +322,10 @@ class DataRequestForm(forms.ModelForm):
                css_class='form-group'
             ),
             Div(
+                Field('data_class_other', css_class='form-control'),
+                css_class='form-group'
+            ),
+            Div(
                 Field('intended_use_of_dataset', css_class='form-control'),
                 css_class='form-group'
             ),
@@ -331,15 +334,21 @@ class DataRequestForm(forms.ModelForm):
                     css_class='form-group'
             ),
         )
-        
+
     def clean_data_class_requested(self):
         data_classes = self.cleaned_data.get('data_class_requested')
+        data_class_list = []
         for dc in data_classes:
-            try:
-                TileDataClass.objects.get(short_name=dc)
-            except ObjectDoesNotExist:
-                raise forms.ValidationError(_("Invalid selection found. Resend the form and try again"))
-        return data_classes
+            data_class_list.append(dc)
+        return data_class_list
+
+    def clean_data_class_other(self):
+        data_class_other = self.cleaned_data.get('data_class_other')
+        data_classes = self.cleaned_data.get('data_class_requested')
+        if data_classes:
+            if 'Other' in data_classes and not data_class_other:
+                raise forms.ValidationError(_('This field is required if you selected Other'))
+        return data_class_other
 
     def clean_letter_file(self):
         letter_file = self.cleaned_data.get('letter_file')
@@ -348,20 +357,20 @@ class DataRequestForm(forms.ModelForm):
         if letter_file and split_filename[len(split_filename)-1].lower()[1:] != "pdf":
             raise forms.ValidationError(_("This file type is not allowed"))
         return letter_file
-        
+
     def save(self, commit=True, *args, **kwargs):
         data_request = super(
             DataRequestForm, self).save(commit=True, *args, **kwargs)
-        
+
         for data_type in self.clean_data_class_requested():
             data_request.data_type.add(str(data_type.short_name))
-            
+
         pprint(data_request.data_type.names())
         if commit:
             data_request.save()
-            
+
         return data_request
-        
+
 
 class DataRequestShapefileForm(NewLayerUploadForm):
 
@@ -408,17 +417,24 @@ class DataRequestShapefileForm(NewLayerUploadForm):
         label=_(u'Your custom purpose for the data'),
         required=False
     )
-
-    #data_type_requested = forms.TypedChoiceField(
-    #    label = _('Types of Data Requested'),
-    #    choices = DATA_TYPE_CHOICES,
+    
+    data_class_requested = forms.ModelMultipleChoiceField(
+        label = _('Types of Data Requested. (Press CTRL to select multiple types)'),
+        queryset = TileDataClass.objects.all(),
+        to_field_name = 'short_name',
+        required = False
+    )
+    
+    #data_class_requested = forms.CharField(
+    #    label=_("Your Requested Data Types"),
+    #    required = True
     #)
     
-    data_class_requested = forms.TypedMultipleChoiceField(
-        label = ('Types of Data Requested'),
-        choices = data_class_choices(),
+    data_class_other = forms.CharField(
+        label=_('What other data types do you wish to download?'),
+        required=False
     )
-
+    
     intended_use_of_dataset = forms.ChoiceField(
         label = _('Intended Use of Data Set'),
         choices = DATASET_USE_CHOICES,
@@ -443,6 +459,23 @@ class DataRequestShapefileForm(NewLayerUploadForm):
         cleaned['purpose_other'] = self.clean_purpose_other()
 
         return cleaned
+    
+    
+    def clean_data_class_requested(self):
+        data_classes = self.cleaned_data.get('data_class_requested')
+        pprint(data_classes)
+        data_class_list = []
+        for dc in data_classes:
+            data_class_list.append(dc)
+                
+        return data_class_list
+
+    def clean_data_class_other(self):
+        data_class_other = self.cleaned_data.get('data_class_other')
+        data_classes = self.cleaned_data.get(data_class_requested)
+        if 'Other' in data_classes and not data_class_other:
+            raise forms.ValidationError(_('This field is required if you selected Other'))
+        return data_class_other
 
     def clean_letter_file(self):
         letter_file = self.cleaned_data.get('letter_file')
@@ -470,7 +503,7 @@ class DataRequestShapefileForm(NewLayerUploadForm):
             else:
                 return purpose_other
         return purpose
-        
+
 class ProfileRequestRejectForm(forms.ModelForm):
 
     REJECTION_REASON_CHOICES = Choices(
@@ -496,7 +529,7 @@ class ProfileRequestRejectForm(forms.ModelForm):
         rejection_reason_qs = RequestRejectionReason.objects.all()
         if rejection_reason_qs:
             self.fields['rejection_reason'].choices = [(r.reason, r.reason) for r in rejection_reason_qs]
-            
+
 class DataRequestRejectForm(forms.ModelForm):
 
     REJECTION_REASON_CHOICES = Choices(
@@ -825,9 +858,11 @@ class DataRequestProfileShapefileForm(NewLayerUploadForm):
         required=False
     )
 
-    data_type_requested = forms.TypedChoiceField(
-        label = _('Types of Data Requested'),
-        choices = DATA_TYPE_CHOICES,
+    data_class_requested = forms.ModelMultipleChoiceField(
+        label = _('Types of Data Requested. (Press CTRL to select multiple types)'),
+        queryset = TileDataClass.objects.all(),
+        to_field_name = 'short_name',
+        required = False
     )
 
     intended_use_of_dataset = forms.ChoiceField(
@@ -907,5 +942,3 @@ class RejectionForm(forms.ModelForm):
         rejection_reason_qs = RequestRejectionReason.objects.all()
         if rejection_reason_qs:
             self.fields['rejection_reason'].choices = [(r.reason, r.reason) for r in rejection_reason_qs]
-        
-    
