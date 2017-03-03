@@ -119,6 +119,7 @@ def data_request_view(request):
         post_data = request.POST.copy()
         post_data['permissions'] = '{"users":{"dataRegistrationUploader": ["view_resourcebase"] }}'
         details_form = DataRequestForm(post_data, request.FILES)
+        pprint(post_data)
         data_request_obj = None
         
         errormsgs = []

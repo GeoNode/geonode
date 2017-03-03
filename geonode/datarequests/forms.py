@@ -475,8 +475,6 @@ class DataRequestShapefileForm(NewLayerUploadForm):
         data_class_list = []
         for dc in data_classes:
             data_class_list.append(dc.short_name)
-        if len(data_class_list)<1:
-            raise forms.ValidationError(_('This field is required if you selected Other'))
         return data_class_list
 
     def clean_data_class_other(self):
