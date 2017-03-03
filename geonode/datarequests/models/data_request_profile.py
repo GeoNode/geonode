@@ -781,6 +781,7 @@ class DataRequestProfile(TimeStampedModel):
             profile_request.organization = self.organization
             profile_request.location = self.location
             profile_request.organization_type = self.organization_type
+            profile_request.org_type = self.org_type
             profile_request.organization_other = self.organization_other
             profile_request.status = self.request_status
             profile_request.administrator =  self.administrator
