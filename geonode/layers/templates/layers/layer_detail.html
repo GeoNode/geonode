@@ -524,6 +524,7 @@
 {% endblock %}
 
 {% block extra_script %}
+{{ block.super }}
 
     {% if GEOGIG_ENABLED and resource.link_set.geogig %}
         {% with "_geogig_scripts.html" as geogig_scripts_template %}

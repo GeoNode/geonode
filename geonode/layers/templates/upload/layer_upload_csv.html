@@ -61,6 +61,7 @@ the latitude and longitude.{% endblocktrans %}</p>
 {% endblock %}
 
 {% block extra_script %}
+{{ block.super }}
 <script data-main="{% static 'geonode/js/upload/csv' %}"
   src="{% static 'lib/js/require.js' %}">
 </script>
