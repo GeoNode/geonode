@@ -104,7 +104,9 @@ class ProfileRequest(BaseRequest):
     organization_type = enum.EnumField(
         OrganizationType,
         default=OrganizationType.OTHER,
-        help_text=_('Organization type based on Phil-LiDAR1 Data Distribution Policy')
+        help_text=_('Organization type based on Phil-LiDAR1 Data Distribution Policy'),
+        blank = True,
+        null = True
     )
     org_type = models.CharField(
         _('Organization Type'),
