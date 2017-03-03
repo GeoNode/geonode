@@ -271,11 +271,13 @@ def tag_layer(layers, mode):
                 if mode == 'sar':
                     # tag SAR DEMs
                     rem_extents = layer.name.split('_extents')[0]
-                    sar_layer = Layer.objects.get(name=rem_extents)
-                    if sar_layer is not None:
+                    try:
+                        sar_layer = Layer.objects.get(name=rem_extents)
+                        # if sar_layer is not None:
                         hc = assign_tags(mode, results, sar_layer)
-                    else:
-                        _logger.info('DOES NOT EXIST %s', sar_layer.name)
+                    except Exception:
+                        _logger.exception('DOES NOT EXIST %s', sar_layer.name)
+
                     # tag SAR extents
                     hc = assign_tags(mode, results, layer)
                 else:
