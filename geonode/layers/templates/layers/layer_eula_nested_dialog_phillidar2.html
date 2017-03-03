@@ -70,6 +70,7 @@
         }
     });
         $("#form_eula").submit(function(e) {
+          e.preventDefault();
           if (document.form_eula.anon_first_name.value == "" || document.form_eula.anon_last_name.value == "" ||
               document.form_eula.anon_email.value == "" || document.form_eula.anon_organization.value == "" ||
               document.form_eula.anon_purpose.value == "" || (document.form_eula.anon_orgtype.value == "Other" && document.form_eula.anon_orgother.value == "")) {
