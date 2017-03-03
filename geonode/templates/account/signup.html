@@ -37,6 +37,7 @@
 {% endblock %}
 
 {% block extra_script %}
+{{ block.super }}
     <script type="text/javascript">
         $(document).ready(function() {
             $('#id_username').focus();

@@ -102,6 +102,7 @@
 
 
 {% block extra_script %}
+{{ block.super }}
   <script type="text/javascript">
   SEARCH_URL = '{% url 'api_dispatch_list' api_name='api' resource_name='profiles' %}'+ '?group='+ '{{ object.slug }}';
   </script>

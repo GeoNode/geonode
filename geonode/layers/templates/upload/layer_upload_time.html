@@ -153,6 +153,7 @@
 {% endblock %}
 
 {% block extra_script %}
+{{ block.super }}
 <script data-main="{% static 'geonode/js/upload/time' %}"
   src="{% static 'lib/js/require.js' %}">
 </script>
