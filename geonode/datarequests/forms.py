@@ -288,7 +288,7 @@ class DataRequestForm(forms.ModelForm):
         label = _('Types of Data Requested. (Press CTRL to select multiple types)'),
         queryset = TileDataClass.objects.all(),
         to_field_name = 'short_name',
-        required = False
+        required = True
     )
     
     letter_file = forms.FileField(
