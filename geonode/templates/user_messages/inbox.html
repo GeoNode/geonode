@@ -39,6 +39,7 @@
 {% endblock %}
 
 {% block extra_script %}
+{{ block.super }}
 <script type="text/javascript">
 $('.tab-content').click(function(event) {
   objectClicked = event.target;

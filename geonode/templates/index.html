@@ -187,6 +187,7 @@
 {% endblock %}
 
 {% block extra_script %}
+{{ block.super }}
 {% if DEBUG_STATIC %}
 <script src="{{ STATIC_URL }}lib/js/angular.js"></script>
 {% endif %}
