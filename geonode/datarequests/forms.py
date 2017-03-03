@@ -353,16 +353,17 @@ class DataRequestForm(forms.ModelForm):
         data_classes = self.cleaned_data.get('data_class_requested')
         data_class_list = []
         for dc in data_classes:
-            data_class_list.append(dc.short_name)
+            data_class_list.append(dc)
         if len(data_class_list)<1:
-            raise forms.ValidationError(_('Un'))
+            raise forms.ValidationError(_('This field is required'))
         return data_class_list
 
     def clean_data_class_other(self):
         data_class_other = self.cleaned_data.get('data_class_other')
         data_classes = self.cleaned_data.get('data_class_requested')
-        if 'Other' in data_classes and not data_class_other:
-            raise forms.ValidationError(_('This field is required if you selected Other'))
+        if data_classes:
+            if 'Other' in data_classes and not data_class_other:
+                raise forms.ValidationError(_('This field is required if you selected Other'))
         return data_class_other
 
     def clean_letter_file(self):
@@ -473,7 +474,7 @@ class DataRequestShapefileForm(NewLayerUploadForm):
         data_classes = self.cleaned_data.get('data_class_requested')
         data_class_list = []
         for dc in data_classes:
-            data_class_list.append(dc.short_name)
+            data_class_list.append(dc)
         if len(data_class_list)<1:
             raise forms.ValidationError(_('This field is required if you selected Other'))
         return data_class_list
