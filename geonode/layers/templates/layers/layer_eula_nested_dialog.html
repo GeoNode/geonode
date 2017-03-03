@@ -1,7 +1,7 @@
 {% load i18n %}
 {% load crispy_forms_tags %}
 <script src="//ajax.googleapis.com/ajax/libs/jquery/1.7/jquery.js"></script>
-<script src="https://www.google.com/recaptcha/api.js" async defer></script>
+<!-- <script src="https://www.google.com/recaptcha/api.js" async defer></script> -->
 {% load eula_extras %}
     <style>
         .modal-eula {
@@ -70,21 +70,21 @@
         }
     });
         $("#form_eula").submit(function(e) {
-          $.ajax({
-              type: "POST",
-              url: $(this).attr('action'),
-              data: $(this).serialize(),
-              success: function() {
-                $('#trigger_next_modal_btn').click();
-              }
-          });
           if (document.form_eula.anon_first_name.value == "" || document.form_eula.anon_last_name.value == "" ||
               document.form_eula.anon_email.value == "" || document.form_eula.anon_organization.value == "" ||
               document.form_eula.anon_purpose.value == "" || (document.form_eula.anon_orgtype.value == "Other" && document.form_eula.anon_orgother.value == "")) {
             document.getElementById('anon_errors').style.display = "block";
             return false;
+          }else{
+            $.ajax({
+                type: "POST",
+                url: $(this).attr('action'),
+                data: $(this).serialize(),
+                success: function() {
+                  $('#trigger_next_modal_btn').click();
+                }
+            });
           }
-          return false;
         });
     {% else %}
         $("#form_eula").submit(function(e) {
