@@ -784,7 +784,7 @@ class DataRequestDetailsForm(forms.ModelForm):
                 css_class='form-group'
             ),
             Div(
-               Field('data_class_requested', css_class='form-control'),
+               Field('data_type_requested', css_class='form-control'),
                css_class='form-group'
             ),
             Div(
@@ -861,9 +861,11 @@ class DataRequestProfileShapefileForm(NewLayerUploadForm):
         required=False
     )
 
-    data_class_requested = forms.TypedChoiceField(
-        label = _('Types of Data Requested'),
-        choices = DATA_TYPE_CHOICES,
+    data_class_requested = forms.ModelMultipleChoiceField(
+        label = _('Types of Data Requested. (Press CTRL to select multiple types)'),
+        queryset = TileDataClass.objects.all(),
+        to_field_name = 'short_name',
+        required = False
     )
 
     intended_use_of_dataset = forms.ChoiceField(
