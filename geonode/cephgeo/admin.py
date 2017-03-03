@@ -14,7 +14,7 @@ class CartAdmin(admin.ModelAdmin):
         'creation_date',
         'checked_out',
         'item_set')
-
+    search_fields = ('user__username', 'creation_date')
 
 class ItemAdmin(admin.ModelAdmin):
     model = Item
