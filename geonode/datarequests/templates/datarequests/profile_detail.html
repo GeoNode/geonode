@@ -67,7 +67,7 @@
       <td class="table-user-profile-attribute">{% trans "Organization type based on Phil-LiDAR1 Data Distribution Policy" %}</td>
       <td>{{ profile_request.org_type }}</td>
       </tr>
-      {% if profile_request.intended_use_of_dataset == 'academe' %}
+      {% if 'Academe' in profile_request.org_type %}
       <tr>
       <td class="table-user-profile-attribute">{% trans "Level of Request" %}</td>
       <td>{{ profile_request.get_request_level_display }}</td>
@@ -98,12 +98,12 @@
       <td>{{ profile_request.contact_number }}</td>
       </tr>
 
-      {% if request_profile.intended_use_of_dataset == 'noncommercial' or request_profile.intended_use_of_dataset == 'academe' %}
+      <!--{% if profile_request.intended_use_of_dataset == 'noncommercial' or profile_request.intended_use_of_dataset == 'academe' %}
         <tr>
         <td class="table-user-profile-attribute">{% trans "Organization type based on Phil-LiDAR1 Data Distribution Policy" %}</td>
-        <td>{{ request_profile.org_type }}</td>
+        <td>{{ profile_request.org_type }}</td>
         </tr>
-        {% if request_profile.intended_use_of_dataset == 'academe' %}
+        {% if profile_request.intended_use_of_dataset == 'academe' %}
           <tr>
           <td class="table-user-profile-attribute">{% trans "Level of Request" %}</td>
           <td>{{ request_profile.get_request_level_display }}</td>
@@ -118,11 +118,17 @@
           <td>{{ is_consultant|yesno:"yes,no" }}</td>
           </tr>
         {% endif %}
-      {% endif %}
+      {% endif %}-->
          <tr>
           <td class="table-user-profile-attribute col-md-3">{% trans "Approval/Rejection Administrator" %}</td>
           <td>{{profile_request.administrator.username}}</td>
       </tr>
+      {% if profile_request.additional_remarks %}
+        <tr>
+          <td class="table-user-profile-attribute col-md-3">{% trans "Approval/Rejection Administrator" %}</td>
+          <td>{{profile_request.additional_remarks}}</td>
+      </tr>
+      {% endif %}
       </tbody>
     </table>
 
