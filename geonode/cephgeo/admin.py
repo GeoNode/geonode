@@ -14,6 +14,7 @@ class CartAdmin(admin.ModelAdmin):
         'creation_date',
         'checked_out',
         'item_set')
+    search_fields = ('user', 'creation_date')
 
 
 class ItemAdmin(admin.ModelAdmin):
@@ -133,7 +134,8 @@ class RIDFAdmin(admin.ModelAdmin):
         return u", ".join(o.name for o in obj.riverbasins.all())
 
     search_fields = ('muni_code', 'muni_name', 'iscity', 'prov_code', 'prov_name', '_100yr',
-                     '_25yr', '_5yr','rbs_raw')
+                     '_25yr', '_5yr', 'rbs_raw')
+
 
 class UserTilesAdmin(admin.ModelAdmin):
     model = UserTiles
@@ -143,12 +145,13 @@ class UserTilesAdmin(admin.ModelAdmin):
         'user',
         'gridref_list'
     )
-    search_fields = ('user__username','gridref_list')
-    
+    search_fields = ('user__username', 'gridref_list')
+
+
 class TileDataClassAdmin(admin.ModelAdmin):
     model = TileDataClass
-    list_display_links=('short_name',)
-    list_display=(
+    list_display_links = ('short_name',)
+    list_display = (
         'id',
         'short_name',
         'full_name',
@@ -165,5 +168,5 @@ admin.site.register(UserJurisdiction, UserJurisdictionAdmin)
 admin.site.register(MissionGridRef, MissionGridRefAdmin)
 admin.site.register(SucToLayer, SucToLayerAdmin)
 admin.site.register(RIDF, RIDFAdmin)
-admin.site.register(UserTiles,UserTilesAdmin)
-admin.site.register(TileDataClass,TileDataClassAdmin)
+admin.site.register(UserTiles, UserTilesAdmin)
+admin.site.register(TileDataClass, TileDataClassAdmin)
