@@ -527,7 +527,7 @@ def document_csv_download(request):
         lastname = unidecode(getprofile.last_name)
         email = getprofile.email
         organization = getprofile.organization
-        orgtype = orgtypelist[getprofile.organization_type]
+        orgtype = getprofile.org_type
         #pprint(dir(getprofile))
         if auth.resource_type == 'document':
             listtowrite.append([username,lastname,firstname,email,organization,orgtype,"",auth.title,auth.timestamp.strftime('%Y/%m/%d')])

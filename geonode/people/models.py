@@ -35,6 +35,8 @@ from account.models import EmailAddress
 from .utils import format_address
 from django_enumfield import enum
 
+from pprint import pprint
+
 class OrganizationType(enum.Enum):
     PHIL_LIDAR_1 = 0
     PHIL_LIDAR_2 = 1
@@ -125,9 +127,19 @@ class Profile(AbstractUser):
     ### Custom Attribs
     organization_type = enum.EnumField(
         OrganizationType,
-        default=OrganizationType.OTHER,
+        default=None,
+        blank=True,
+        null=True,
         help_text=_('Organization type based on Phil-LiDAR1 Data Distribution Policy'))
 
+    org_type = models.CharField(
+        _('Organization Type'),
+        max_length=255,
+        default="Other",
+        help_text=_('Organization type based on Phil-LiDAR1 Data Distribution Policy'),
+        blank = True,
+        null = True
+    )
     organization_other = models.CharField(
         max_length=255,
         blank=True,
