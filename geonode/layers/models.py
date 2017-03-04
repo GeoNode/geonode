@@ -36,6 +36,12 @@ from agon_ratings.models import OverallRating
 from geonode.utils import check_shp_columnnames
 from geonode.security.models import remove_object_permissions
 
+from taggit.managers import TaggableManager
+from taggit.models import GenericTaggedItemBase, TagBase
+
+from taggit.managers import TaggableManager
+from taggit.models import GenericTaggedItemBase, TagBase
+
 logger = logging.getLogger("geonode.layers.models")
 
 shp_exts = ['.shp', ]
@@ -44,6 +50,22 @@ kml_exts = ['.kml']
 vec_exts = shp_exts + csv_exts + kml_exts
 
 cov_exts = ['.tif', '.tiff', '.geotiff', '.geotif']
+
+
+class SUCTag (TagBase):
+    pass
+
+
+class SUCTaggedItem (GenericTaggedItemBase):
+    tag = models.ForeignKey(SUCTag, related_name='SUC_tag')
+
+
+class FloodplainTag (TagBase):
+    pass
+
+
+class FloodplainTaggedItem (GenericTaggedItemBase):
+    tag = models.ForeignKey(FloodplainTag, related_name='floodplain_tag')
 
 class Style(models.Model):
 
@@ -65,7 +87,6 @@ class Style(models.Model):
 
     def absolute_url(self):
         return self.sld_url.split('geoserver/', 1)[1]
-
 
 class LayerManager(ResourceBaseManager):
 
@@ -182,10 +203,11 @@ class Layer(ResourceBase):
         msg = 'There should only be one main file (.shp or .geotiff), found %s' % base_files_count
         assert base_files_count == 1, msg
 
-        # we need to check, for shapefile, if column names are valid
         list_col = None
+        # we need to check, for shapefile, if column names are valid
         if self.storeType == 'dataStore':
-            valid_shp, wrong_column_name, list_col = check_shp_columnnames(self)
+            valid_shp, wrong_column_name, list_col = check_shp_columnnames(
+                self)
             if wrong_column_name:
                 msg = 'Shapefile has an invalid column name: %s' % wrong_column_name
             else:
@@ -234,6 +256,13 @@ class Layer(ResourceBase):
     def maps(self):
         from geonode.maps.models import MapLayer
         return MapLayer.objects.filter(name=self.typename)
+
+    # SUC tagging
+    SUC_tag = TaggableManager(verbose_name='SUC Tags',
+                              through=SUCTaggedItem, blank=True)
+    # riverbasin tagging
+    floodplain_tag = TaggableManager(
+        verbose_name='Floodplain Tags', through=FloodplainTaggedItem, blank=True)
 
     @property
     def class_name(self):
@@ -297,7 +326,8 @@ class Attribute(models.Model):
         related_name='attribute_set')
     attribute = models.CharField(
         _('attribute name'),
-        help_text=_('name of attribute as stored in shapefile/spatial database'),
+        help_text=_(
+            'name of attribute as stored in shapefile/spatial database'),
         max_length=255,
         blank=False,
         null=True,
@@ -317,7 +347,8 @@ class Attribute(models.Model):
         unique=False)
     attribute_type = models.CharField(
         _('attribute type'),
-        help_text=_('the data type of the attribute (integer, string, geometry, etc)'),
+        help_text=_(
+            'the data type of the attribute (integer, string, geometry, etc)'),
         max_length=50,
         blank=False,
         null=False,
@@ -325,11 +356,13 @@ class Attribute(models.Model):
         unique=False)
     visible = models.BooleanField(
         _('visible?'),
-        help_text=_('specifies if the attribute should be displayed in identify results'),
+        help_text=_(
+            'specifies if the attribute should be displayed in identify results'),
         default=True)
     display_order = models.IntegerField(
         _('display order'),
-        help_text=_('specifies the order in which attribute should be displayed in identify results'),
+        help_text=_(
+            'specifies the order in which attribute should be displayed in identify results'),
         default=1)
 
     # statistical derivations
@@ -429,7 +462,6 @@ def pre_save_layer(instance, sender, **kwargs):
     if instance.typename is None:
         # Set a sensible default for the typename
         instance.typename = 'geonode:%s' % instance.name
-
     base_file, info = instance.get_base_file()
 
     if info:

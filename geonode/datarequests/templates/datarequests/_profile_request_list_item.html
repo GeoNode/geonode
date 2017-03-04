@@ -1,0 +1,27 @@
+{% verbatim %}
+  <article ng-repeat="item in results" resource_id="{{ item.id }}" ng-cloak class="ng-cloak">
+    <div class="row items-list">
+      <div class="col-xs-4 thumb">
+        <a href="{{ item.profile_request_detail_url }}"><img ng-src="{{ item.shapefile_thumbnail_url }}" /></a>
+      </div>
+      <div class="col-xs-8 item-info">
+        <div class="row pull-right"><span class="label label-{{ item.status_label }}">{{ item.status }}</span></div>
+        <h4><a href="{{ item.profile_request_detail_url }}">{{ item.first_name }} {{ item.middle_name }} {{ item.last_name }}</a></h4>
+        <h6>Submitted: {{ item.date_submitted }}</h6>
+        <p>
+        DATA REQUEST: <a href="{{ item.data_request_detail_url }}"><strong>{{ item.data_request_id }} </strong></a></br>
+        Organization: <strong>{{ item.organization }} </strong></br>
+        Organization Type: <strong>{{ item.org_type }}</strong>
+        <strong ng-if="item.org_type == 'Other'">- {{ item.organization_other }}</strong>
+      </p>
+        <div ng-if="item.request_status == 'rejected'">
+           <p class="abstract">
+           Reason for rejection: {{ item.rejection_reason }} </br>
+           {{ item.additional_rejection_reason }}
+           </p>
+        </div>
+
+      </div>
+    </div>
+  </article>
+{% endverbatim %}
