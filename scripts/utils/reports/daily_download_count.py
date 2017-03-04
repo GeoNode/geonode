@@ -6,6 +6,7 @@ from geonode.reports.models import DownloadCount, SUCLuzViMin, DownloadTracker
 from datetime import datetime, timedelta
 from geonode.layers.models import Layer
 from geonode.cephgeo.models import FTPRequest, FTPRequestToObjectIndex, DataClassification
+from geonode.people.models import Profile
 
 layer_count = {}
 
@@ -35,9 +36,7 @@ def add_to_count(category, typename):
             "SAR": 0,
             "Others": 0,
         }
-    if 'coverage' in typename:
-        layer_count[category]['Coverage'] += 1
-    elif 'fh' in typename:
+    if 'fh' in typename:
         layer_count[category]['FHM'] += 1
     elif 'dtm' in typename:
         layer_count[category]['DTM'] += 1
@@ -49,6 +48,14 @@ def add_to_count(category, typename):
         layer_count[category]['ORTHO'] += 1
     elif 'sar' in typename:
         layer_count[category]['SAR'] += 1
+    elif 'coverage' in typename:
+        layer_count[category]['Coverage'] += 1
+    elif 'dem' in typename:
+        layer_count[category]['Coverage'] += 1
+    elif 'mkp' in typename:
+        layer_count[category]['Coverage'] += 1
+    elif any(lidar2keyword in typename for lidar2keyword in ['aquaculture', 'mangroves', 'agrilandcover', 'agricoastlandcover', 'irrigation', 'streams', 'wetlands', 'trees', 'ccm', 'chm', 'agb', 'power']):
+        layer_count[category]['Resource'] += 1
     else:
         layer_count[category]['Others'] += 1
 def add_to_monthlyc(category):
@@ -63,6 +70,7 @@ def add_to_monthlyc(category):
             "ORTHO": 0,
             "SAR": 0,
             "Others": 0,
+            "Resource": 0,
         }
     layer_count[category]['Document'] += 1
 
@@ -70,33 +78,39 @@ datetoappend = datetime.strptime((datetime.now()-timedelta(days=1)).strftime('%d
 # auth_list = Action.objects.filter(verb='downloaded').order_by('timestamp')
 auth_list = DownloadTracker.objects.order_by('timestamp')
 for auth in auth_list:
-    if datetoappend == datetime.strptime(auth.timestamp.strftime('%d-%m-%Y'),'%d-%m-%Y') and not auth.resource_type == 'document':#if datenow is timestamp
-        luzvimin = get_luzvimin({
-            "timestamp": auth.timestamp,
-            "typename": auth.title,
-            })
-        add_to_count(luzvimin, auth.title)
-        add_to_count('monthly', auth.title)
-    elif datetoappend == datetime.strptime(auth.timestamp.strftime('%d-%m-%Y'),'%d-%m-%Y') and auth.resource_type == 'document':#if datenow is timestamp
-        add_to_monthlyc('monthly')
+    if datetoappend == datetime.strptime(auth.timestamp.strftime('%d-%m-%Y'),'%d-%m-%Y'):#if datenow is timestamp
+        getprofile_downloadtracker = Profile.objects.get(username=auth.actor)
+        if not getprofile_downloadtracker.is_staff and not any('test' in var for var in [str(auth.actor), getprofile_downloadtracker.first_name, getprofile_downloadtracker.last_name]):
+            if not auth.resource_type == 'document':
+                luzvimin = get_luzvimin({
+                    "timestamp": auth.timestamp,
+                    "typename": auth.title,
+                    })
+                add_to_count(luzvimin, auth.title)
+                add_to_count('monthly', auth.title)
+            elif auth.resource_type == 'document':#if datenow is timestamp
+                add_to_monthlyc('monthly')
 
 anon_list = AnonDownloader.objects.all().order_by('date')
 for anon in anon_list:
-    if datetoappend == datetime.strptime(anon.date.strftime('%d-%m-%Y'),'%d-%m-%Y') and not anon.anon_document:#if datenow is timestamp
-        luzvimin = get_luzvimin({
-            "timestamp": anon.date,
-            "typename": anon.anon_layer.typename,
-            })
-        add_to_count(luzvimin, anon.anon_layer.typename)
-        add_to_count('monthly', anon.anon_layer.typename)
-    elif datetoappend == datetime.strptime(anon.date.strftime('%d-%m-%Y'),'%d-%m-%Y') and anon.anon_document:#if datenow is timestamp
-        add_to_monthlyc('monthly')
+    if datetoappend == datetime.strptime(anon.date.strftime('%d-%m-%Y'),'%d-%m-%Y'):
+        if not anon.anon_document:#if datenow is timestamp
+            luzvimin = get_luzvimin({
+                "timestamp": anon.date,
+                "typename": anon.anon_layer.typename,
+                })
+            add_to_count(luzvimin, anon.anon_layer.typename)
+            add_to_count('monthly', anon.anon_layer.typename)
+        elif anon.anon_document:#if datenow is timestamp
+            add_to_monthlyc('monthly')
 ftp_list = FTPRequest.objects.all().order_by('date_time')
 for ftp in ftp_list:
     if datetoappend == datetime.strptime(ftp.date_time.strftime('%d-%m-%Y'),'%d-%m-%Y'):
-        type_list = FTPRequestToObjectIndex.objects.filter(ftprequest=ftp.id)
-        for eachtype in type_list:
-            add_to_count('monthly', DataClassification.gs_feature_labels[eachtype.cephobject._enum_data_class].lower())
+        getprofile_ftp = Profile.objects.get(username=ftp.user)
+        if not getprofile_ftp.is_staff and not any('test' in var for var in [ftp.user, getprofile_ftp.first_name, getprofile_ftp.last_name]):
+            type_list = FTPRequestToObjectIndex.objects.filter(ftprequest=ftp.id)
+            for eachtype in type_list:
+                add_to_count('monthly', DataClassification.gs_feature_labels[eachtype.cephobject._enum_data_class].lower())
 print(layer_count)
 
 

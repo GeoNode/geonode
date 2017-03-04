@@ -22,7 +22,6 @@ import traceback
 logger = get_task_logger("geonode.tasks.update")
 logger.setLevel(logging.INFO)
 
-
 def iterate_over_layers(layers, style_template):
     count = len(layers)
     for i, layer in enumerate(layers):
