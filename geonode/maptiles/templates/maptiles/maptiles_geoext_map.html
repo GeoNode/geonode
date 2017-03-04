@@ -137,6 +137,21 @@ $(document).ready(function(){
             document.getElementById("selection-message").style.visibility="collapse";
         });
 });
+function toggle_checkbox_check(source){
+  if (source.checked){
+    checkboxes = document.getElementsByName('georef_checkbox');
+    var is_checked = false;
+    for(var i = 0; i < checkboxes.length; i++){
+      is_checked = checkboxes[i].checked;
+      if (!is_checked) break;
+    }
+    if(is_checked){
+      document.getElementById('checkbox_all').checked = true;
+    }
+  }else{
+    document.getElementById('checkbox_all').checked = false;
+  }
+}
 
 function zoomOnBbox(bounds){
     bbox = new OpenLayers.Bounds(bounds);
@@ -184,7 +199,7 @@ function createTile(computed_corners){
 /*
 Function for displaying the georefs of selected tiles at the bottom of the page
 */
-function display_points(div_id, vec_layer){
+function display_points(div_id){
     var container = document.getElementById(div_id);
     container.removeChild(container.firstElementChild||container.firstChild);
     var table_element = document.createElement("table");
@@ -192,22 +207,35 @@ function display_points(div_id, vec_layer){
     container.appendChild(table_element);
 
     var georef_string = "";
-    //console.log(tile_list);
-    for (var i=0; i< tile_list.length/5; i++){
+    var numofrows = 1;
+    for (var i=0; i< tile_list.length/numofrows; i++){
         var row_element = document.createElement("tr");
         row_element.className += "georef_tr";
         table_element.appendChild(row_element);
-        for (var j = 0; j< Math.min(5, tile_list.length - i*5 ); j++){
+        for (var j = 0; j< Math.min(numofrows, tile_list.length - i*numofrows ); j++){
             var georef_column = document.createElement("td");
-            georef_column.setAttribute("id",tile_list[i*5+j].georef);
-            georef_column.className += "georef_td"
-            georef_column.innerHTML = tile_list[i*5+j].georef
+            georef_column.setAttribute("id",tile_list[i*numofrows+j].georef);
+            georef_column.className += "georef_td";
             row_element.appendChild(georef_column);
 
-            if(i*5+j == 0){
-                georef_string+=tile_list[i*5+j].georef;
+            var georef_checkbox = document.createElement("input");
+            georef_checkbox.type = "checkbox";
+            georef_checkbox.name = "georef_checkbox";
+            georef_checkbox.value = tile_list[i*numofrows+j].georef;
+            georef_checkbox.id = i+j;
+            georef_checkbox.onclick = function(){toggle_checkbox_check(this);};
+
+            var georef_label = document.createElement("label");
+            georef_label.htmlFor = i+j;
+            georef_label.onclick = function(){toggle_checkbox_check(this);};
+            georef_label.appendChild(document.createTextNode(tile_list[i*numofrows+j].georef));
+            georef_column.appendChild(georef_checkbox);
+            georef_column.appendChild(georef_label);
+
+            if(i*numofrows+j == 0){
+                georef_string+=tile_list[i*numofrows+j].georef;
             }else{
-                georef_string+=","+tile_list[i*5+j].georef;
+                georef_string+=","+tile_list[i*numofrows+j].georef;
             }
         }
     }
@@ -276,33 +304,18 @@ function wfs_proto_creator(layer_request, srs, outformat){
 Filters tiles if they intersect the geometries which are part of the jurisdiction
 */
 
-function isInJurisdiction(geoms, tile){
-    /*for ( var i=0; i<geoms.length; i++){
-        console.log(tile.geometry.bounds)
-        if (geoms[i].geometry.bounds.transform(new OpenLayers.Projection("EPSG:32651"), new OpenLayers.Projection("EPSG:4326")).intersectsBounds(
-                {'bounds':tile.geometry.bounds, 'partial':true})){
-            console.log("intersection found")
-            return true;
-        }
-        if (geoms[i].geometry.bounds.transform(new OpenLayers.Projection("EPSG:900913"), new OpenLayers.Projection("EPSG:4326")).isBounds(
-                {'bounds':tile.geometry.bounds, 'partial':true})){
-            console.log("intersection found")
-            return true
-        }
-        if (geoms[i].geometry.bounds.containsBounds(
-                {'bounds':tile.geometry.bounds, 'partial':true})){
-            console.log("intersection found")
-            return true;
-        }
-    }*/
+function isInJurisdiction(tile){
+    var jurisdiction_name = "{{jurisdiction_name}}";
     var j_layer = jurisdiction_args["map"]["layers"].filter(function(l){ return l["name"] ==jurisdiction_name })[0];
-    var bbox = j_layer["bbox"]
-    j_bounds = new OpenLayers.Bounds(bbox).transform(new OpenLayers.Projection("EPSG:900913"),new OpenLayers.Projection(tile_proj))
+    var bbox = j_layer["bbox"];
+    var j_bounds = new OpenLayers.Bounds(bbox).transform(new OpenLayers.Projection("EPSG:900913"),new OpenLayers.Projection(tile_proj));
+    console.log(j_bounds);
+    console.log(tile.geometry.bounds);
     if (j_bounds.intersectsBounds(tile.geometry.bounds)){
-        console.log("intersection found")
-        return true
-    }else{    
-        console.log("no intersection found")
+        console.log("intersection found");
+        return true;
+    }else{
+        console.log("no intersection found");
         return false;
     }
 }
@@ -310,7 +323,7 @@ function isInJurisdiction(geoms, tile){
 function jurisdictionFilter(geoms, feature_list){
     var tile_list = [];
     for (var i=0;i<feature_list.length;i++){
-        if(isInJurisdiction(geoms, feature_list[i])){
+        if(isInJurisdiction(feature_list[i])){
              if (find_georef(tile_list, tile.georef)<0){
                         tile_list.push(tile);
             }
@@ -403,29 +416,18 @@ function filterSelectedTiles(tile_filter, single_click, send_notice, epsgproj){
                      }
                  }
             }
-            display_points("point_display", highlight_layer);
-
-              //if (added_count< feature_out.length){
-              //    if (feature_out.length==1){
-                        //alert("Selected tile either lacks data or is out of bounds. ");
-              //          display_message("notif","Selected tile either lacks data or is out of bounds." );
-              //    }else{
-                        //alert("Some selected tiles have not been included in the list due to lack of data or being outside the jurisdiction boundaries");
-              //          display_message("notif","Some selected tiles have not been included in the list due to lack of data or being outside the jurisdiction boundaries");
-               //   }
-              //}else{
-                  /*document.getElementById("warning").style.visibilty =  "visible";
-                  document.getElementById("warning").style.display =  "inline";*/
-                  //container.setAttribute("hidden","hidden");
-              //}
-              single_click=true;
-              end = new Date().getTime();
-              console.log(end);
-              console.log(end-start);
-             }
-         };
-     //};
-     var wfs_resp = wfs_proto.read(arg_obj);
+            highlight_layer.refresh();
+          }
+        }
+      }
+      display_points("point_display");
+      single_click=true;
+      end = new Date().getTime();
+      console.log(end);
+      console.log(end-start);
+    }
+  };
+  var wfs_resp = wfs_proto.read(arg_obj);
 }
 
 /*
@@ -445,7 +447,6 @@ function selection_bounds(map_bounds, highlight_layer, ifbbox_form) {
             type: OpenLayers.Filter.Spatial.INTERSECTS,
             property: "the_geom",
             value: transformed_bounds.toGeometry() });
-    
     single_click = false;
     filterSelectedTiles(filter, false, true, epsgprojection);
 }
@@ -476,6 +477,7 @@ function removeHighlight(georef, vec_layer){
     if (index < 0 )
         return;
     vec_layer.removeFeatures([tile_list[index].feature]);
+    vec_layer.refresh();
     tile_list.splice(index,1);
 }
 
@@ -515,6 +517,23 @@ var vector_style = new OpenLayers.Style({
 var vector_style_map = new OpenLayers.StyleMap({
     'default': vector_style
 });
+
+function delete_checked(){
+  var checked = $('input[type="checkbox"][name="georef_checkbox"]:checked').map(function() { return this.value; }).get();
+  for(var i=0; i<checked.length;i++){
+    console.log(checked[i]);
+    removeHighlight(checked[i], highlight_layer);
+  }
+  display_points("point_display");
+  document.getElementById('checkbox_all').checked = false;
+}
+
+function toggle_all_checkboxes(source){
+  checkboxes = document.getElementsByName('georef_checkbox');
+  for(var i = 0; i < checkboxes.length; i++){
+    checkboxes[i].checked = source.checked;
+  }
+}
 /*
 Initialization of the map UI
 */

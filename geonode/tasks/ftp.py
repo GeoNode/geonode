@@ -4,7 +4,8 @@ from fabric.api import *
 from fabric.contrib.console import confirm
 from fabric.tasks import execute
 from django.core.mail import send_mail
-from geonode import settings
+#from geonode import settings
+from django.conf import settings
 from geonode.cephgeo.models import FTPRequest, FTPStatus
 
 import logging
@@ -103,10 +104,15 @@ If error still persists, forward this email to [{2}]""".format( request_name,
         result = run("mkdir -p {0}".format(ftp_dir))    # Create toplevel directory for this FTP request
         if result.return_code is 0:
             with cd(ftp_dir):
-
+                # symlink FAQ.txt to create in every FTPrequest folder
+                ln = run('ln -sf ../../../../../FAQ.txt ./')
+                if ln.return_code != 0:
+                    logger.error('UNABLE TO CREATE SYMLINK FOR FAQ.txt')
+                else:
+                    logger.info('SYMLINK CREATED')
                 for data_class, ceph_obj_list in ceph_obj_list_by_data_class.iteritems():
                     type_dir = data_class.replace(" ", "_")
-                    
+
                     # Projection path folders
                     utm_51n_dir = os.path.join("UTM_51N",type_dir)
                     reprojected_dir = ""

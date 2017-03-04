@@ -58,7 +58,6 @@ def get_juris_tiles(juris_shp, user=None):
                     )
             pprint("A problem with the shapefile was encountered")
             return []
-    
     min_x =  tile_floor(juris_shp.bounds[0])
     #max_x =  int(math.ceil(float(juris_shp.bounds[2]) / float(settings._TILE_SIZE))) * int(settings._TILE_SIZE)
     max_x = tile_ceiling(juris_shp.bounds[2])
@@ -70,9 +69,14 @@ def get_juris_tiles(juris_shp, user=None):
     #    pprint("user: " + user.username + " bounds: "+str((min_x, min_y, max_x, max_y)))
     tile_list = []
     count = 0
+    
+    pprint("xrange y:"+str(list(xrange(min_y+settings._TILE_SIZE, max_y+settings._TILE_SIZE, settings._TILE_SIZE))))
+    pprint("xrange x:"+str(list(xrange(min_x, max_x, settings._TILE_SIZE))))
+    
     for tile_y in xrange(min_y+settings._TILE_SIZE, max_y+settings._TILE_SIZE, settings._TILE_SIZE):
         for tile_x in xrange(min_x, max_x, settings._TILE_SIZE):
             tile_ulp = (tile_x, tile_y)
+            pprint("tile_ulp:"+str(tile_ulp))
             tile_dlp = (tile_x, tile_y - settings._TILE_SIZE)
             tile_drp = (tile_x + settings._TILE_SIZE, tile_y - settings._TILE_SIZE)
             tile_urp = (tile_x + settings._TILE_SIZE, tile_y)

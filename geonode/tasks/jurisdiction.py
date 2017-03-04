@@ -9,12 +9,10 @@ from geonode.layers.models import Style
 from geonode.datarequests.models import DataRequestProfile
 from geonode.datarequests.utils import get_juris_data_size, get_area_coverage, get_shp_ogr
 from geoserver.catalog import Catalog
-
 from geonode.layers.models import Layer
 from geonode.datarequests.models import DataRequestProfile
 #from geonode.datarequests.utils2 import get_shp_ogr, assign_grid_refs, get_juris_data_size
 from geonode.datarequests.utils import  get_place_name, get_area_coverage
-
 
 @task(name='geonode.tasks.jurisdiction.jurisdiction_style', queue='jurisdiction')
 def jurisdiction_style(saved_layer):
