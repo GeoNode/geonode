@@ -118,3 +118,9 @@ cd ..
 
 echo Run updatelayers on workspace...
 python ../../../manage.py updatelayers -w $WORKSPACE
+<<<<<<< HEAD
+
+echo Apply proper permissions to osm layers...
+python osm_permissions.py
+=======
+>>>>>>> master
