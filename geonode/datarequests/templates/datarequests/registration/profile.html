@@ -4,7 +4,7 @@
 {% load i18n %}
 {% load url from future %}
 
-{% block title %} {% trans "Register" %} - {{ block.super }} {% endblock %}
+{% block title %} {% trans "Register" %} {% endblock %}
 
 {% block body_class %}Data Request Registration Input{% endblock %}
 
@@ -27,15 +27,12 @@
       </form>
     </div>
     <div class="col-md-3 col-md-offset-1">
-      <h2>Step 1</h2>
+      <h2>Profile Request</h2>
       <p>Please fill out your complete details.</p>
       <p>Registering your user details allow us to better understand who benefits from the datasets produced by the Program.</p>
+      <p><b>NOTE:</b>If you do not have a middle name, a hyphen or underscore will do.</p>
     </div>
   </div>
-<!--<section>
-        <a href="{% url 'datarequests:registration_part_one' %}" class="btn btn-default btn-md" style="margin-top: 20px;">{% trans "Prev Step" %}</a>
-        <a href="#" id="upload-button" class="btn btn-primary btn-md">{% trans "Submit" %}</a>
-      </section>-->
 
 {% endblock body_outer %}
 

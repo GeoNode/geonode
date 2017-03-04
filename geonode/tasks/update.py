@@ -2,133 +2,25 @@ import geonode.settings as settings
 
 from celery.task import task
 from celery.utils.log import get_task_logger
-from django.contrib.auth.models import Group
 from django.core.exceptions import ObjectDoesNotExist
-from django.db.models import Q
-from geonode.base.models import TopicCategory
 from geonode.documents.models import Document
-from geonode.geoserver.helpers import gs_slurp, http_client, ogc_server_settings
-from geonode.layers.models import Layer, Style
-from geonode.layers.utils import create_thumbnail
-from geonode.security.models import PermissionLevelMixin
+from geonode.geoserver.helpers import gs_slurp
+from geonode.geoserver.helpers import ogc_server_settings
+from geonode.layers.models import Layer
 from geoserver.catalog import Catalog
-from guardian.shortcuts import assign_perm, get_anonymous_user
+from lidar_coverage import lidar_coverage_metadata
 from layer_metadata import fhm_year_metadata
 from layer_style import style_update
-from lidar_coverage import lidar_coverage_metadata
 from osgeo import ogr
-from pprint import pprint
-from pwd import getpwnam
 from string import Template
-# from suc_rb_tagging import tag_layers
-import datetime
+from suc_rb_tagging import tag_layers
 import logging
-import os
 import psycopg2
 import subprocess
-import time
 import traceback
 
 logger = get_task_logger("geonode.tasks.update")
 logger.setLevel(logging.INFO)
-
-
-@task(name='geonode.tasks.update.fh_perms_update', queue='update')
-def fh_perms_update(layer):
-    # anonymous_group, created = Group.objects.get_or_create(name='anonymous')
-    #layer_list = Layer.objects.filter(name__icontains='fh')
-    #total_layers = len(layer_list)
-    #ctr = 1
-    # for layer in layer_list:
-
-    try:
-        # geoadmin = User.objects.get.filter(username='geoadmin')
-        # for user in User.objects.all():
-        layer.remove_all_permissions()
-        anon_group = Group.objects.get(name='anonymous')
-        assign_perm('view_resourcebase', anon_group, layer.get_self_resource())
-        assign_perm('download_resourcebase', anon_group,
-                    layer.get_self_resource())
-        # superusers=get_user_model().objects.filter(Q(is_superuser=True))
-        # for superuser in superusers:
-        #     assign_perm('view_resourcebase', superuser, layer.get_self_resource())
-        #     assign_perm('download_resourcebase', superuser, layer.get_self_resource())
-        assign_perm('view_resourcebase', get_anonymous_user(),
-                    layer.get_self_resource())
-        assign_perm('download_resourcebase', get_anonymous_user(),
-                    layer.get_self_resource())
-        # print "[FH PERMISSIONS] {0}/{1} : {2} ".format(ctr,total_layers,layer.name)
-        # layer.remove_all_permissions()
-        # assign_perm('view_resourcebase', get_anonymous_user(), layer.get_self_resource())
-        # assign_perm('download_resourcebase', get_anonymous_user(), layer.get_self_resource())
-        # ctr+=1
-    except:
-        ts = time.time()
-        st = datetime.datetime.fromtimestamp(ts).strftime('%Y-%m-%d %H:%M:%S')
-        Err_msg = st + " Error in updating style of " + layer.name + "\n"
-        pass
-
-
-def style_update(layer, style_template):
-    cat = Catalog(settings.OGC_SERVER['default']['LOCATION'] + 'rest',
-                  username=settings.OGC_SERVER['default']['USER'],
-                  password=settings.OGC_SERVER['default']['PASSWORD'])
-
-    # layer_list = Layer.objects.filter(name__icontains='fh')#initial run of script includes all  layers for cleaning of styles in GN + GS
-    # layer_list = Layer.objects.filter(name__icontains='fh').exclude(styles__name__icontains='fhm'
-    # total_layers = len(layer_list)
-    try:
-        layer_attrib = layer.attributes[0].attribute.encode("utf-8")
-    except Exception:
-        logger.exception('No layer attribute!')
-    ctr = 0
-    # for layer in layer_list:
-    # print "[FH STYLE] {0}/{1} : {2} ".format(ctr,total_layers,layer.name)
-    # delete thumbnail first because of permissions
-
-    if '_fh' in layer.name:
-        if layer_attrib == "Var":
-            gs_style = cat.get_style(style_template)
-        else:
-            gs_style = cat.get_style("fhm_merge")
-    else:
-        gs_style = cat.get_style(style_template)
-
-    if gs_style is not None:
-        try:
-            gn_style = Style.objects.get(name=style_template)
-            # update in geoserver
-            gs_layer = cat.get_layer(layer.name)
-            logger.info('GS LAYER: %s', gs_layer.name)
-            gs_layer._set_default_style(gs_style)
-            gs_layer._set_alternate_styles([gs_style])
-            cat.save(gs_layer)
-            # update in geonode
-            layer.default_style = gn_style
-            layer.save()
-            # delete in geonode
-            gn_orig_style = Style.objects.get(name=layer.name)
-            lstyles = layer.styles
-            try:
-                lstyles.remove(gn_orig_style)
-            except:
-                traceback.print_exc()
-            try:
-                gn_orig_style.delete()
-            except:
-                traceback.print_exc()
-            # delete in geoserver
-            gs_orig_style = cat.get_style(layer.name)
-            if gs_orig_style is not None:
-                cat.delete(gs_orig_style)
-
-            style.sld_title = style_template
-            style.save()
-
-        except Exception as e:
-            # print "%s" % e
-            raise
-
 
 def iterate_over_layers(layers, style_template):
     count = len(layers)
@@ -335,6 +227,6 @@ def floodplain_keywords():
                               settings.DATABASE_USER, settings.DATABASE_PASSWORD)))
     cur = conn.cursor()
 
-    # tag_layers('dream', settings.RB_DELINEATION_DREAM,
-    #            cur, conn, source)
-    # tag_layers('', settings.FP_DELINEATION_PL1, cur, conn, source)
+    tag_layers('dream', settings.RB_DELINEATION_DREAM,
+               cur, conn, source)
+    tag_layers('', settings.FP_DELINEATION_PL1, cur, conn, source)

@@ -20,7 +20,7 @@ from geonode.utils import GXPMap
 from geonode.utils import default_map_config
 
 from geonode.security.views import _perms_info_json
-from geonode.cephgeo.models import CephDataObject, DataClassification, FTPRequest, UserJurisdiction
+from geonode.cephgeo.models import CephDataObject, DataClassification, FTPRequest, UserJurisdiction, UserTiles
 from geonode.cephgeo.cart_utils import *
 from geonode.maptiles.utils import *
 from geonode.datarequests.models import DataRequestProfile
@@ -103,6 +103,7 @@ def tiled_view(request, overlay=settings.TILED_SHAPEFILE, template="maptiles/map
     #context_dict["projections"]= SRS.labels.values()
 
     return render_to_response(template, RequestContext(request, context_dict))
+    
 def tiled_view2(request, overlay=settings.TILED_SHAPEFILE, template="maptiles/maptiles_map2.html",test_mode=False, jurisdiction=None):
 
     context_dict = {}
@@ -135,7 +136,7 @@ def tiled_view2(request, overlay=settings.TILED_SHAPEFILE, template="maptiles/ma
 def process_georefs(request):
     if request.method == "POST":
         try:
-            #Get georef list
+            #Get georef list filtered with georefs computed upon approval of registration
             georef_area = request.POST['georef_area']
             georef_list = filter(None, georef_area.split(","))
             #pprint("Initial georef_list:" + str(georef_list))
@@ -146,6 +147,18 @@ def process_georefs(request):
                 return redirect('geonode.cephgeo.views.get_cart')
             #pprint("Filtered georef_list:" + str(georef_list))
             
+            try:
+                jurisdiction_georefs=str(UserTiles.objects.get(user=request.user).gridref_list)
+            except ObjectDoesNotExist as e:
+                pprint("No jurisdiction tiles for this user") 
+                raise PermissionDenied
+            
+            for georef in submitted_georef_list:
+                if georef in jurisdiction_georefs:
+                    georef_list.append(georef)
+
+            pprint(georef_list)
+
             #Get the requested dataclasses
             data_classes = list()
             for data_class in DataClassification.labels.values():

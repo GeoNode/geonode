@@ -7,19 +7,7 @@ from geonode.cephgeo.models import RIDF
 from geonode.layers.models import Layer
 from layer_permission import fhm_perms_update
 from layer_style import style_update
-import subprocess
-import getpass
 logger = get_task_logger("geonode.tasks.update")
-
-
-def own_thumbnail(uuid):
-    print 'USER', getpass.getuser()
-    thumbnail_str = 'layer-' + str(uuid) + '-thumb.png'
-    thumb_url = '/var/www/geonode/uploaded/thumbs/' + thumbnail_str
-    command_array = ['sudo', '/bin/chown', 'www-data:www-data', thumb_url]
-    subprocess.call(command_array)
-    command_array = ['sudo', '/bin/chmod', '666', thumb_url]
-    subprocess.call(command_array)
 
 
 @task(name='geonode.tasks.update.update_fhm_metadata_task._update', queue='update')
@@ -28,7 +16,6 @@ def _update(layer, flood_year, flood_year_probability):
         logger.info('\n\n' + '#' * 80 + '\n')
         logger.info("Layer: %s", layer.name)
         style_update(layer, 'fhm')
-        own_thumbnail(layer.uuid)
         fhm_perms_update(layer)
         # batch_seed(layer)
 
@@ -108,8 +95,8 @@ def fhm_year_metadata(flood_year):
     logger.info("Updating metadata of [{0}] Flood Hazard Maps for Flood Year [{1}]".format(
         total_layers, flood_year))
 
-    for layer in layer_list:
-        _update(layer, flood_year, flood_year_probability)
+    # for layer in layer_list:
+    #     _update(layer, flood_year, flood_year_probability)
 
-    #jobs = group(_update(layer, flood_year, flood_year_probability) for layer in layer_list)
-    #result = jobs.apply_async()
+    jobs = group(_update(layer, flood_year, flood_year_probability) for layer in layer_list)
+    result = jobs.apply_async()

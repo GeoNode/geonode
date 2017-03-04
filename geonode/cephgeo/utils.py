@@ -2,7 +2,6 @@ from django.core.exceptions import PermissionDenied, ObjectDoesNotExist
 from operator import itemgetter, attrgetter
 import re
 from changuito.proxy import CartProxy
-
 from geonode.cephgeo.models import CephDataObject, DataClassification, MissionGridRef, SucToLayer, FTPRequestToObjectIndex, RIDF
 from geonode.datarequests.models import DataRequestProfile
 
@@ -20,8 +19,8 @@ from unidecode import unidecode
 _TILE_SIZE = 1000
 ### For additional functions/definitions which may be needed by views
 
-### Sample Ceph object entry:{'hash': '524f26771b90ccea598448b8b7a263b7', 
-###                     'name': 'JE3409_ortho.tif', 'bytes': 17299767, 
+### Sample Ceph object entry:{'hash': '524f26771b90ccea598448b8b7a263b7',
+###                     'name': 'JE3409_ortho.tif', 'bytes': 17299767,
 ###                     'last_modified': '2015-02-24T07:23:11.000Z', 'content_type': 'image/tiff', 'type': 'Orthophoto'}
 
 ### A mapping of file types to their associated file extensions
@@ -57,13 +56,13 @@ TYPE_TO_IDENTIFIER_DICT = {
 #### if no matches, result is an empty string
 ### DEPRECTATED ###
 def file_classifier(file_name):
-    
+
     ext_classification = ''
     for x in TYPE_TO_IDENTIFIER_DICT:
         if len(file_name) > len(TYPE_TO_IDENTIFIER_DICT[x]):
             if file_name.lower().endswith(x):
                 ext_classification = TYPE_TO_IDENTIFIER_DICT[x]
-        
+
     return ext_classification
 
 def sort_by(sort_key, object_list, descending=False):
@@ -105,7 +104,7 @@ def ceph_object_ids_by_data_class(ceph_obj_list):
             obj_name_dict[DataClassification.labels[obj.data_class].encode('utf8')].append(obj.name.encode('utf8'))
         else:
             obj_name_dict[DataClassification.labels[obj.data_class].encode('utf8')] = [obj.name.encode('utf8'),]
-        
+
     return obj_name_dict
 
 def get_cart_datasize(request):
@@ -114,17 +113,17 @@ def get_cart_datasize(request):
     for item in cart:
         obj = CephDataObject.objects.get(id=int(item.object_id))
         total_size += obj.size_in_bytes
-    
+
     return total_size
 
 def get_data_class_from_filename(filename):
         data_classification = DataClassification.labels[DataClassification.UNKNOWN]
-        
+
         for x in DataClassification.filename_suffixes:
             filename_patterns=x.split(".")
             if filename_patterns[0] in filename.lower() and filename_patterns[1] in filename.lower():
                 data_classification = DataClassification.filename_suffixes[x]
-            
+
         return data_classification
 
 def tile_floor(x):
@@ -153,22 +152,22 @@ def filter_gridref():
 def tile_shp(tile_extents,eval_shp_poly,feature):
     # gridref_list = []
     min_x, min_y, max_x, max_y = tile_extents
-    
-    
-    for tile_y in xrange(min_y+_TILE_SIZE, max_y+_TILE_SIZE, _TILE_SIZE): #georeference 
+
+
+    for tile_y in xrange(min_y+_TILE_SIZE, max_y+_TILE_SIZE, _TILE_SIZE): #georeference
         for tile_x in xrange(min_x, max_x, _TILE_SIZE):
-            
+
             # 4 points of this tile
             tile_ulp = (tile_x, tile_y)
             tile_dlp = (tile_x, tile_y - _TILE_SIZE)
             tile_drp = (tile_x + _TILE_SIZE, tile_y - _TILE_SIZE)
             tile_urp = (tile_x + _TILE_SIZE, tile_y)
-            
+
             # Grid Ref of this tile
-            gridref = "E{0}N{1}".format(tile_x / _TILE_SIZE, tile_y / _TILE_SIZE,) 
+            gridref = "E{0}N{1}".format(tile_x / _TILE_SIZE, tile_y / _TILE_SIZE,)
             # print gridref
-             
-            tile = Polygon([tile_ulp, tile_dlp, tile_drp, tile_urp]) 
+
+            tile = Polygon([tile_ulp, tile_dlp, tile_drp, tile_urp])
             # Evaluate intersections
             if not tile.intersection(eval_shp_poly).is_empty:
                 if len(MissionGridRef.objects.filter(fieldID=feature.GetField("UID"),grid_ref=str(gridref))) == 0:
@@ -227,28 +226,28 @@ def map_blocks_suc():
 
 def get_ftp_details(ftp_request):
     dr = None
-    
+
     try:
         drs = DataRequestProfile.objects.filter(profile = ftp_request.user)
         if len(drs)>0:
             dr = drs[0]
     except ObjectDoesNotExist:
         dr = None
-    
+
     ftp_details = {}
-    user = ftp_request.user     
+    user = ftp_request.user
     ftp_details['user'] = user
-    
+
     if ftp_request.user.organization:
-        ftp_details['organization'] = unidecode(user.organization)
-        ftp_details["organization_type"] = user.get_organization_type_display()
+        ftp_details['organization'] = user.organization
+        ftp_details["organization_type"] = user.org_type
     elif dr:
-        ftp_details['organization'] = unidecode(dr.organization)
-        ftp_details["organization_type"] = dr.get_organization_type_display()
+        ftp_details['organization'] = dr.organization
+        ftp_details["organization_type"] = dr.org_type
     else:
         ftp_details['organization'] = None
         ftp_details["organization_type"] = None
-    
+
     ftp_details['total_number_of_tiles'] = ftp_request.num_tiles
     ftp_details['total_size'] = ftp_request.size_in_bytes
     ftp_details['number_of_laz'] = get_tiles_by_type(ftp_request, 1) #LAZ
@@ -259,25 +258,25 @@ def get_ftp_details(ftp_request):
     ftp_details['size_of_dsm'] = get_bytes_by_type(ftp_request, 4) #DSM
     ftp_details['number_of_ortho'] = get_tiles_by_type(ftp_request, 5) #Ortho
     ftp_details['size_of_ortho'] = get_bytes_by_type(ftp_request, 5) #Ortho
-    
+
     return ftp_details
-    
+
 def get_tiles_by_type(ftp_request, data_type):
     request_to_tiles =  FTPRequestToObjectIndex.objects.filter(ftprequest = ftp_request).filter(cephobject__data_class=data_type)
-    
+
     num_tiles = len(request_to_tiles)
-    
+
     return num_tiles
-    
+
 def get_bytes_by_type(ftp_request, data_type):
     request_to_tiles =  FTPRequestToObjectIndex.objects.filter(ftprequest = ftp_request).filter(cephobject__data_class=data_type)
     size_in_bytes = 0
-    
+
     for r in request_to_tiles:
         size_in_bytes += r.cephobject.size_in_bytes
 
     return size_in_bytes
-    
+
 #for testing of map_blocks_suc() uncomment this block:
 # from collections import defaultdict
 # from osgeo import ogr
@@ -316,9 +315,3 @@ def get_bytes_by_type(ftp_request, data_type):
 #     for v in value:
 #         obj = SucToLayer.objects.create(suc=riverbasin.GetFieldAsString("SUC"),block_name=str(v))
 #         obj.save()
-
-
-
-
-
-

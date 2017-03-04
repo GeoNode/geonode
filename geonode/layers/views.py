@@ -182,8 +182,10 @@ def layer_upload(request, template='upload/layer_upload.html'):
                 logger.exception(e)
                 out['success'] = False
                 out['errors'] = str(error)
-                # Assign the error message to the latest UploadSession from that user.
-                latest_uploads = UploadSession.objects.filter(user=request.user).order_by('-date')
+                # Assign the error message to the latest UploadSession from
+                # that user.
+                latest_uploads = UploadSession.objects.filter(
+                    user=request.user).order_by('-date')
                 if latest_uploads.count() > 0:
                     upload_session = latest_uploads[0]
                     upload_session.error = str(error)
@@ -225,7 +227,7 @@ def layer_upload(request, template='upload/layer_upload.html'):
 
 
 def layer_detail(request, layername, template='layers/layer_detail.html'):
-    #tile shapefile ng settings.tile
+    # tile shapefile ng settings.tile
     layer = _resolve_layer(
         request,
         layername,
@@ -269,7 +271,8 @@ def layer_detail(request, layername, template='layers/layer_detail.html'):
             id=layer.id).update(popular_count=F('popular_count') + 1)
 
     # center/zoom don't matter; the viewer will center on the layer bounds
-    map_obj = GXPMap(projection=getattr(settings, 'DEFAULT_MAP_CRS', 'EPSG:900913'))
+    map_obj = GXPMap(projection=getattr(
+        settings, 'DEFAULT_MAP_CRS', 'EPSG:900913'))
 
     NON_WMS_BASE_LAYERS = [
         la for la in default_map_config()[1] if la.ows_url is None]
@@ -295,6 +298,9 @@ def layer_detail(request, layername, template='layers/layer_detail.html'):
         'LAYER_PREVIEW_LIBRARY',
         'leaflet')
 
+    pprint('CONTEXT DICTIONARY')
+    pprint(context_dict)
+    pprint('END')
     if request.user.has_perm('download_resourcebase', layer.get_self_resource()):
         if layer.storeType == 'dataStore':
             links = layer.link_set.download().filter(
@@ -398,8 +404,10 @@ def layer_metadata(request, layername, template='layers/layer_metadata.html'):
             if poc_form.is_valid():
                 if len(poc_form.cleaned_data['profile']) == 0:
                     # FIXME use form.add_error in django > 1.7
-                    errors = poc_form._errors.setdefault('profile', ErrorList())
-                    errors.append(_('You must set a point of contact for this resource'))
+                    errors = poc_form._errors.setdefault(
+                        'profile', ErrorList())
+                    errors.append(
+                        _('You must set a point of contact for this resource'))
                     poc = None
             if poc_form.has_changed and poc_form.is_valid():
                 new_poc = poc_form.save()
@@ -413,8 +421,10 @@ def layer_metadata(request, layername, template='layers/layer_metadata.html'):
             if author_form.is_valid():
                 if len(author_form.cleaned_data['profile']) == 0:
                     # FIXME use form.add_error in django > 1.7
-                    errors = author_form._errors.setdefault('profile', ErrorList())
-                    errors.append(_('You must set an author for this resource'))
+                    errors = author_form._errors.setdefault(
+                        'profile', ErrorList())
+                    errors.append(
+                        _('You must set an author for this resource'))
                     metadata_author = None
             if author_form.has_changed and author_form.is_valid():
                 new_author = author_form.save()
@@ -442,12 +452,13 @@ def layer_metadata(request, layername, template='layers/layer_metadata.html'):
             the_layer.metadata_author = new_author
             Layer.objects.filter(id=the_layer.id).update(
                 category=new_category
-                )
+            )
 
             if getattr(settings, 'SLACK_ENABLED', False):
                 try:
                     from geonode.contrib.slack.utils import build_slack_message_layer, send_slack_messages
-                    send_slack_messages(build_slack_message_layer("layer_edit", the_layer))
+                    send_slack_messages(
+                        build_slack_message_layer("layer_edit", the_layer))
                 except:
                     print "Could not send slack message."
 
@@ -527,10 +538,12 @@ def layer_replace(request, layername, template='layers/layer_replace.html'):
                 tempdir, base_file = form.write_files()
                 if layer.is_vector() and is_raster(base_file):
                     out['success'] = False
-                    out['errors'] = _("You are attempting to replace a vector layer with a raster.")
+                    out['errors'] = _(
+                        "You are attempting to replace a vector layer with a raster.")
                 elif (not layer.is_vector()) and is_vector(base_file):
                     out['success'] = False
-                    out['errors'] = _("You are attempting to replace a raster layer with a vector.")
+                    out['errors'] = _(
+                        "You are attempting to replace a raster layer with a vector.")
                 else:
                     # delete geoserver's store before upload
                     cat = gs_catalog
@@ -586,7 +599,8 @@ def layer_remove(request, layername, template='layers/layer_remove.html'):
         try:
             delete_layer.delay(object_id=layer.id)
         except Exception as e:
-            message = '{0}: {1}.'.format(_('Unable to delete layer'), layer.typename)
+            message = '{0}: {1}.'.format(
+                _('Unable to delete layer'), layer.typename)
 
             if 'referenced by layer group' in getattr(e, 'message', ''):
                 message = _('This layer is a member of a layer group, you must remove the layer from the group '
@@ -685,6 +699,7 @@ def layer_download_csv(request):
                      'organization type', 'purpose', 'layer name', 'date downloaded','area','size_in_bytes'])
 
     pprint("writing authenticated downloads list")
+
     for auth in auth_list:
         username = auth.actor
         getprofile = Profile.objects.get(username=username)
@@ -731,16 +746,16 @@ def layer_download_csv(request):
         email = ftp_detail['user'].email
         organization = ftp_detail['organization']
         organization_type = ftp_detail['organization_type']
-        date_requested = ftp_request.date_time
+        date_requested = ftp_request.date_time.strftime('%Y/%m/%d')
 
         listtowrite.append([ username, lastname, firstname, email, organization, organization_type, "",
-                    "LAZ", date_requested.date(), ftp_detail['number_of_laz'], ftp_detail['size_of_laz']])
+                    "LAZ", date_requested, ftp_detail['number_of_laz'], ftp_detail['size_of_laz']])
         listtowrite.append([ username, lastname, firstname, email, organization, organization_type, "",
-                    "DSM", date_requested.date(), ftp_detail['number_of_dsm'], ftp_detail['size_of_dsm']])
+                    "DSM", date_requested, ftp_detail['number_of_dsm'], ftp_detail['size_of_dsm']])
         listtowrite.append([ username, lastname, firstname, email, organization, organization_type, "",
-                    "DTM", date_requested.date(), ftp_detail['number_of_dtm'], ftp_detail['size_of_dtm']])
+                    "DTM", date_requested, ftp_detail['number_of_dtm'], ftp_detail['size_of_dtm']])
         listtowrite.append([ username, lastname, firstname, email, organization, organization_type, "",
-                    "Ortho", date_requested.date(), ftp_detail['number_of_ortho'], ftp_detail['size_of_ortho']])
+                    "Ortho", date_requested, ftp_detail['number_of_ortho'], ftp_detail['size_of_ortho']])
 
 
     for eachtowrite in listtowrite:
