@@ -359,6 +359,48 @@ class DataRequestProfile(TimeStampedModel):
         msg.attach_alternative(html_content, "text/html")
         msg.send()
 
+    def send_request_reception_email(self):
+        self.set_verification_key()
+        site = Site.objects.get_current()
+
+        text_content = """
+        Dear <strong>{}</strong>,
+
+        Your request has been received. Our team will process your request at the soonest possible time.
+
+        For inquiries, you can contact us as at {}.
+
+        Regards,
+        LiPAD Team
+         """.format(
+             unidecode(self.first_name),
+             local_settings.LIPAD_SUPPORT_MAIL,
+         )
+
+        html_content = """
+        <p>Dear <strong>{}</strong>,</p>
+
+       <p>Your request has been received. Our team will process your request at the soonest possible time.</p>
+       <p>For inquiries, you can contact us as at <a href="mailto:{}" target="_top">{}</a></p>
+       </br>
+        <p>Regards,</p>
+        <p>LiPAD Team</p>
+        """.format(
+            unidecode(self.first_name),
+            local_settings.LIPAD_SUPPORT_MAIL,
+            local_settings.LIPAD_SUPPORT_MAIL,
+        )
+
+        email_subject = _('[LiPAD] Request Received')
+
+        msg = EmailMultiAlternatives(
+            email_subject,
+            text_content,
+            settings.DEFAULT_FROM_EMAIL,
+            [self.email, ]
+        )
+        msg.attach_alternative(html_content, "text/html")
+        msg.send()
 
     def send_new_request_notif_to_admins(self):
         site = Site.objects.get_current()

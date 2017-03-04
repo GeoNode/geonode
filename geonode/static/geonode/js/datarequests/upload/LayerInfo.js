@@ -227,11 +227,16 @@ define(function (require, exports) {
                 $('#modal-content').modal({
                         show: false
                 });
+                $('#please-wait').modal('hide');
             },
             success: function (resp, status) {
                 window.location = resp.redirect_to;
                 $('#modal-content').modal({
                         show: false
+                });
+                $('#please-wait').modal({
+                    backdrop: 'static',
+                    keyboard: false
                 });
             },
         });
@@ -250,7 +255,7 @@ define(function (require, exports) {
             empty: 'true'
         });
     };
-    
+
     LayerInfo.prototype.startPolling = function() {
         var self = this;
         if (self.polling) {
@@ -417,6 +422,7 @@ define(function (require, exports) {
                         backdrop: 'static',
                         keyboard: false
                 });
+                $('#please-wait').modal('hide');
             },
             error: function (jqXHR) {
                 self.polling = false;
@@ -426,7 +432,7 @@ define(function (require, exports) {
                     self.markError(jqXHR);
                 }
                 $('#modal-content').modal('hide');
-
+                $('#please-wait').modal('hide');
             },
             success: function (resp, status) {
                 self.logStatus({
@@ -437,6 +443,10 @@ define(function (require, exports) {
                 console.log('line 412');
                 self.doStep(resp);
                 $('#modal-content').modal('hide');
+                $('#please-wait').modal({
+                    backdrop: 'static',
+                    keyboard: false
+                });
             }
         });
     };

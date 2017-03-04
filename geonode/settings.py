@@ -324,6 +324,9 @@ INSTALLED_APPS = (
     'south',
     'corsheaders',
     'captcha',
+    
+    #CAS client
+    'django_cas_ng',
 
     #CAS client
     'django_cas_ng',
@@ -428,7 +431,7 @@ MIDDLEWARE_CLASSES = (
 AUTHENTICATION_BACKENDS = (#'django_auth_ldap.backend.LDAPBackend',
                            #'geonode.security.auth.GranularBackend',
                            'django.contrib.auth.backends.ModelBackend',
-                           #'guardian.backends.ObjectPermissionBackend',
+                           'guardian.backends.ObjectPermissionBackend',
                            'django_cas_ng.backends.CASBackend',)
 
 
