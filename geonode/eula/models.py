@@ -24,6 +24,7 @@ class EULALayerDownload(models.Model):
 
 class AnonDownloader(models.Model):
     ORG_TYPE_CHOICES = LipadOrgType.objects.values_list('val', 'display_val')
+    #ORG_TYPE_CHOICES = (('1','1'),('2','2'))
     date = models.DateTimeField(auto_now=True)
     anon_first_name = models.CharField(_('First Name'), max_length=100)
     anon_last_name = models.CharField(_('Last Name'), max_length=100)
