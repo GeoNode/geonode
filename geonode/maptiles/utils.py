@@ -120,8 +120,10 @@ def get_layer_config(request, typename, permission='base.view_resourcebase',
 
 def clean_georefs(user, georef_list):
     filtered = []
-    
-    usertiles = UserTiles.objects.get(user=user).gridref_list
+    try:
+        usertiles = UserTiles.objects.get(user=user).gridref_list
+    except ObjectDoesNotExist:
+        raise ObjectDoesNotExist
     
     for georef in georef_list:
         if georef in usertiles:
