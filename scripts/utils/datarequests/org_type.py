@@ -1,7 +1,7 @@
 from geonode.settings import GEONODE_APPS
 import geonode.settings as settings
 import codecs
-from geonode.datarequests.models import LipadOrgType
+from geonode.datarequests.models.base_request import LipadOrgType
 import re
 import os
 import traceback
@@ -11,9 +11,8 @@ if not os.path.isfile(csv_path):
     print '{0} file not found! Exiting.'.format(csv_path)
     exit(1)
 print csv_path
-# with codecs.open(csv_path, 'r', 'utf-8') as open_file:
 with open(csv_path, 'r') as open_file:
-    skip_once = False #to skip once (first column)
+    skip_once = True #to skip once (first row)
     request_list = []
     counter = 0
     for line in open_file:
@@ -22,16 +21,19 @@ with open(csv_path, 'r') as open_file:
             skip_once = False
             continue
         tokens = line.strip().split(',')
-        org_type = tokens[0].strip()
-        org_type_main = tokens[1].strip()
+        org_type_main = tokens[0].strip()
+        org_type_display = tokens[1].strip()
+        org_type_generic = tokens[2].strip()
         try:
-            model_object = LipadOrgType.objects.get(val=str(org_type),
-                                                display_val=str(org_type_main))
+            model_object = LipadOrgType.objects.get(val=str(org_type_main),
+                                                display_val=str(org_type_display),
+                                                category=str(org_type_generic))
             print ('it already exists')
         except:
             try:
-                model_object = LipadOrgType(val=str(org_type),
-                                                display_val=str(org_type_main))
+                model_object = LipadOrgType(val=str(org_type_main),
+                                                    display_val=str(org_type_display),
+                                                    category=str(org_type_generic))
                 model_object.save()
                 print str(counter) + '. Saved: ', model_object.val
 
