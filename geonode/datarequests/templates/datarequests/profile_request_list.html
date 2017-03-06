@@ -94,13 +94,13 @@
     }
 
 
-    $(document).ready(
+    $(document).ready(function (){
         facetCounts();
         getActiveFilters();
         $(".filter").on('click', '.request-filter', function() {
             facetCounts();
         });
-    )
+    });
 
   </script>
   {% with include_spatial='false' %}
