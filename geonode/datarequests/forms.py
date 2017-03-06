@@ -221,14 +221,14 @@ class ProfileRequestForm(forms.ModelForm):
 
         return organization
         
-    #def clean_org_type(self):
-    #    org_type = self.cleaned_data.get('org_type', '')
-    #    try:
-    #        LipadOrgType.objects.get(val=org_type)
-    #    except Exception as e:
-    #        raise forms.ValidationError('Invalid organization type value')
+    def clean_org_type(self):
+        org_type = self.cleaned_data.get('org_type', '')
+        #try:
+        #    LipadOrgType.objects.get(val=org_type.val)
+        #except Exception as e:
+        #    raise forms.ValidationError('Invalid organization type value')
         
-    #    return org_type.val
+        return org_type
 
     def clean_organization_other(self):
         organization_other = self.cleaned_data.get('organization_other')
