@@ -84,7 +84,7 @@
       }, {})
 
       for (facet in params) {
-        if (facet == 'status' || facet == 'requester_type__in') {
+        if (facet == 'status__in' || facet == 'requester_type__in') {
           for (var i = 0; i < params[facet].length; i++) {
           $('#' + params[facet][i]).addClass('active');
           };
