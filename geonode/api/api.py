@@ -371,7 +371,6 @@ class ProfileRequestResource(ModelResource):
         return bundle.obj.rejection_reason
 
     def dehydrate_status(self, bundle):
-        pprint(bundle.obj.status)
         return bundle.obj.get_status_display()
 
     def dehydrate_is_rejected(self, bundle):
@@ -414,7 +413,7 @@ class ProfileRequestResource(ModelResource):
 
     def apply_filters(self, request, applicable_filters):
         base_object_list = super(ProfileRequestResource, self).apply_filters(request, applicable_filters)
-
+        pprint(self.fields)
         query = request.GET.get('title__icontains', None)
         if query:
             query = query.split(' ')
