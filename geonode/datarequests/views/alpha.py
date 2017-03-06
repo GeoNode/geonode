@@ -111,7 +111,7 @@ class DataRequestProfileList(LoginRequiredMixin, TemplateView):
 
 @login_required
 def old_requests_csv(request):
-     if not request.user.is_superuser:
+    if not request.user.is_superuser:
         return HttpResponseRedirect("/forbidden")
     
     response = HttpResponse(content_type='text/csv')
