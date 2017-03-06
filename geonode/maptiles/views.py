@@ -81,6 +81,7 @@ def tiled_view(request, overlay=settings.TILED_SHAPEFILE, template="maptiles/map
 
     context_dict = {}
     context_dict["grid"] = get_layer_config(request, overlay, "base.view_resourcebase", _PERMISSION_VIEW )
+    jurisdiction_object = None
 
     if jurisdiction is None:
         try:
@@ -100,6 +101,7 @@ def tiled_view(request, overlay=settings.TILED_SHAPEFILE, template="maptiles/map
     context_dict["feature_tiled"] = overlay.split(":")[1]
     context_dict["test_mode"]=test_mode
     context_dict["data_classes"]= DataClassification.labels.values()
+    
     #context_dict["projections"]= SRS.labels.values()
 
     return render_to_response(template, RequestContext(request, context_dict))
