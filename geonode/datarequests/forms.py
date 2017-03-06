@@ -228,7 +228,7 @@ class ProfileRequestForm(forms.ModelForm):
         except Exception as e:
             raise forms.ValidationError('Invalid organization type value')
         
-        return org_type
+        return org_type.val
 
     def clean_organization_other(self):
         organization_other = self.cleaned_data.get('organization_other')
