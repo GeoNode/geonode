@@ -333,6 +333,7 @@ REQUESTER_TYPES = {
 
 class ProfileRequestResource(ModelResource):
     """Profile Request api"""
+    model = ProfileRequest
     profile_request_detail_url = fields.CharField()
     org_type = fields.CharField()
     status = fields.CharField()
@@ -370,6 +371,7 @@ class ProfileRequestResource(ModelResource):
         return bundle.obj.rejection_reason
 
     def dehydrate_status(self, bundle):
+        pprint(bundle.obj.status)
         return bundle.obj.get_status_display()
 
     def dehydrate_is_rejected(self, bundle):
