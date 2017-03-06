@@ -118,7 +118,7 @@ def old_requests_csv(request):
     datetoday = timezone.now()
     writer = csv.writer(response)
     response['Content-Disposition'] = 'attachment; filename="old-requests-"'+str(datetoday.month)+str(datetoday.day)+str(datetoday.year)+'.csv"'
-    header_fields = ['id','name','email','contact_number', 'organization', 'project_summary', 'created','request_status'
+    header_fields = ['id','name','email','contact_number', 'organization', 'project_summary', 'created','request_status']
     writer.writerow(header_fields)
     
     objects = DataRequestProfile.objects.all().order_by('pk')
