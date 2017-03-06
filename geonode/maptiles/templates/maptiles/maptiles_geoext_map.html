@@ -404,22 +404,22 @@ function filterSelectedTiles(tile_filter, single_click, send_notice, epsgproj){
                                     new OpenLayers.Projection(epsgproj), new OpenLayers.Projection("EPSG:4326")
                                ));*/
                                if (isInJurisdiction(jurisdiction_geoms, tiles[i])){
+                                    console.log("tile is within jurisdiction");
                                     tile_list.push(tile);
                                     tile.feature = createHighlightBox(tile.corners);
                                     highlight_layer.addFeatures([tile.feature]);
-                                    highlight_layer.refresh();
                                     added_count++;
+                                }else{
+                                    console.log("tile is not within jurisdiction");
                                 }
                         }else if (single_click){
+                                  console.log("tile is already in the list");
                                   removeHighlight(tile.georef, highlight_layer);
                         }
+                        highlight_layer.refresh();
                      }
                  }
             }
-            highlight_layer.refresh();
-          }
-        }
-      }
       display_points("point_display");
       single_click=true;
       end = new Date().getTime();
