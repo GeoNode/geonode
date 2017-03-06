@@ -244,9 +244,12 @@ class ProfileRequestForm(forms.ModelForm):
     def save(self, commit=True, *args, **kwargs):
         profile_request = super(
             ProfileRequestForm, self).save(commit=False, *args, **kwargs)
+        pprint(self.cleaned_data.org_type)
+        pprint(profile_request.org_type)
 
         if commit:
             profile_request.save()
+            pprint(profile_request.org_type)
         return profile_request
 
 class DataRequestForm(forms.ModelForm):
