@@ -256,8 +256,6 @@ class ProfileRequestForm(forms.ModelForm):
         profile_request = super(
             ProfileRequestForm, self).save(commit=False, *args, **kwargs)
         profile_request.org_type = self.cleaned_data.get('org_type').val
-        pprint(self.cleaned_data.get('org_type'))
-        pprint(profile_request.org_type)
 
         if commit:
             profile_request.save()
