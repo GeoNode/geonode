@@ -136,7 +136,7 @@ def old_requests_csv(request):
     response = HttpResponse(content_type='text/csv')
     datetoday = timezone.now()
     writer = csv.writer(response)
-    response['Content-Disposition'] = 'attachment; filename="old-requests-"'+str(datetoday.month)+str(datetoday.day)+str(datetoday.year)+'.csv"'
+    response['Content-Disposition'] = 'attachment; filename="oldrequests-"'+str(datetoday.month)+str(datetoday.day)+str(datetoday.year)+'.csv"'
     header_fields = ['id','name','email','contact_number', 'organization', 'project_summary', 'created','request_status', 'org_type']
     writer.writerow(header_fields)
     
