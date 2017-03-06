@@ -195,8 +195,6 @@ def profile_requests_csv(request):
         return response
 
 def profile_request_facet_count(request):
-    if not request.user.is_superuser:
-        return HttpResponseRedirect('/forbidden')
 
     facets_count = {
         'pending': ProfileRequest.objects.filter(
