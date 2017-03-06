@@ -411,7 +411,6 @@ class ProfileRequestResource(ModelResource):
 
     def apply_filters(self, request, applicable_filters):
         base_object_list = super(ProfileRequestResource, self).apply_filters(request, applicable_filters)
-        pprint(self.fields)
         query = request.GET.get('title__icontains', None)
         if query:
             query = query.split(' ')
@@ -421,7 +420,6 @@ class ProfileRequestResource(ModelResource):
                 q = q | Q(middle_name__icontains=t)
                 q = q | Q(last_name__icontains=t)
                 q = q | Q(organization__icontains=t)
-                q = q | Q(status__icontains=t)
             base_object_list = base_object_list.filter(q).distinct()
 
         return base_object_list
