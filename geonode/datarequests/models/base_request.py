@@ -36,7 +36,7 @@ from django.conf import settings as local_settings
 class LipadOrgType(models.Model):
     val = models.CharField(_('Value'), max_length=100)
     display_val = models.CharField(_('Display'), max_length=100)
-    category = models.CharField(_('Sub'), max_length=100)
+    category = models.CharField(_('Sub'), max_length=100, null=True)
 
     class Meta:
         app_label = "datarequests"
