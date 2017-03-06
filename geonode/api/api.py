@@ -411,7 +411,7 @@ class ProfileRequestResource(ModelResource):
             return False
 
     def build_filters(self, filters=None):
-        if filters = None:
+        if filters == None:
             filters = {}
             
         orm_filters = super(ProfileRequestResource, self).build_filters(filters)
