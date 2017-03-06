@@ -220,6 +220,15 @@ class ProfileRequestForm(forms.ModelForm):
                 'Organization name can only be 64 characters')
 
         return organization
+        
+    def clean_org_type(self):
+        org_type = self.cleaned_data.get('org_type', '')
+        try:
+            LipadOrgType.objects.get(val=org_type)
+        except Exception as e:
+            raise forms.ValidationError('Invalid organization type value')
+        
+        return org_type
 
     def clean_organization_other(self):
         organization_other = self.cleaned_data.get('organization_other')
@@ -244,7 +253,7 @@ class ProfileRequestForm(forms.ModelForm):
     def save(self, commit=True, *args, **kwargs):
         profile_request = super(
             ProfileRequestForm, self).save(commit=False, *args, **kwargs)
-        pprint(self.cleaned_data.org_type)
+        pprint(self.cleaned_data.get('org_type'))
         pprint(profile_request.org_type)
 
         if commit:
