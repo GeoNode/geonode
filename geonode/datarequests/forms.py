@@ -221,22 +221,22 @@ class ProfileRequestForm(forms.ModelForm):
 
         return organization
         
-    def clean_org_type(self):
-        org_type = self.cleaned_data.get('org_type', '')
-        try:
-            LipadOrgType.objects.get(val=org_type)
-        except Exception as e:
-            raise forms.ValidationError('Invalid organization type value')
+    #def clean_org_type(self):
+    #    org_type = self.cleaned_data.get('org_type', '')
+    #    try:
+    #        LipadOrgType.objects.get(val=org_type)
+    #    except Exception as e:
+    #        raise forms.ValidationError('Invalid organization type value')
         
-        return org_type.val
+    #    return org_type.val
 
     def clean_organization_other(self):
         organization_other = self.cleaned_data.get('organization_other')
         org_type = self.cleaned_data.get('org_type')
         if org_type:
-            if (org_type == "Other" and not organization_other ):
+            if (org_type.val == "Other" and not organization_other ):
                 raise forms.ValidationError('This field is required.')
-            if (org_type == "Other" and '----' in organization_other):
+            if (org_type.val == "Other" and '----' in organization_other):
                 raise forms.ValidationError('This field is required.')
         return organization_other
 
@@ -246,13 +246,14 @@ class ProfileRequestForm(forms.ModelForm):
         #intended_use_of_dataset = self.cleaned_data.get('intended_use_of_dataset')
         if org_type:
             #intended_use_of_dataset == 'noncommercial' and
-            if "Academe" in org_type and not funding_source:
+            if "Academe" in org_type.val and not funding_source:
                 raise forms.ValidationError('This field is required.')
         return funding_source
 
     def save(self, commit=True, *args, **kwargs):
         profile_request = super(
             ProfileRequestForm, self).save(commit=False, *args, **kwargs)
+        profile_request.org_type = self.cleaned_data.get('org_type').val
         pprint(self.cleaned_data.get('org_type'))
         pprint(profile_request.org_type)
 
