@@ -289,6 +289,7 @@ def package(options):
 
 @task
 @needs(['start_geoserver',
+        'start_messaging',
         'start_django'])
 @cmdopts([
     ('bind=', 'b', 'Bind server to provided IP address and port number.'),
@@ -341,6 +342,13 @@ def start_django():
     foreground = '' if options.get('foreground', False) else '&'
     sh('python manage.py runserver %s %s' % (bind, foreground))
 
+
+def start_messaging():
+    """
+    Start the GeoNode messaging server
+    """
+    foreground = '' if options.get('foreground', False) else '&'
+    sh('python manage.py runmessaging %s' % foreground)
 
 @cmdopts([
     ('java_path=', 'j', 'Full path to java install for Windows')
@@ -429,15 +437,36 @@ def start_geoserver(options):
               'It may still be running in the background.'))
         sys.exit(1)
 
-
 @task
 def test(options):
     """
     Run GeoNode's Unit Test Suite
     """
+
     prefix = options.get('prefix', 'python')
-    sh("%s manage.py test %s.tests --noinput" % (prefix,
+    sh("%s manage.py test %s.tests --noinput -v 2" % (prefix,
                                                  '.tests '.join(GEONODE_APPS)))
+
+@task
+def singletest(options):
+    """
+    Run GeoNode's Unit Test Suite
+    """
+    GEONODE_APPS = [
+        'geonode.maps.tests:MapsTest.test_map_remove',
+        'geonode.maps.tests:MapsTest.test_rating_map_remove',
+        'geonode.social.tests:SimpleTest.test_layer_activity',
+        'geonode.documents.tests:DocumentsTest.test_ajax_document_permissions',
+        'geonode.documents.tests:DocumentsTest.test_create_document_url',
+        'geonode.documents.tests:DocumentsTest.test_create_document_with_no_rel',
+        'geonode.documents.tests:DocumentsTest.test_create_document_with_rel',
+            ]
+
+    apps_to_test = ' '.join(GEONODE_APPS)
+
+    prefix = options.get('prefix', 'python')
+    sh("%s manage.py test %s --noinput --failfast" % (prefix, apps_to_test))
+
 
 
 @task
@@ -457,19 +486,20 @@ def test_integration(options):
     _reset()
     # Start GeoServer
     call_task('start_geoserver')
+    call_task('start_messaging')
     info("GeoNode is now available, running the tests now.")
 
     name = options.get('name', 'geonode.tests.integration')
 
     success = False
     try:
+        call_task('sync')
         if name == 'geonode.tests.csw':
-            call_task('sync')
             call_task('start')
             sh('sleep 30')
             call_task('setup_data')
         sh(('python manage.py test %s'
-           ' --noinput --liveserver=localhost:8000' % name))
+           ' --noinput -v 3 --liveserver=localhost:8000' % name))
     except BuildFailure, e:
         info('Tests failed! %s' % str(e))
     else:
