@@ -356,7 +356,6 @@ class ProfileRequestResource(ModelResource):
                      'requester_type': ALL,
                      'status': ALL,
                      'organization': ALL,
-                     'status': ALL,
                      'key_created_date': ALL,
                      }
 
@@ -422,6 +421,7 @@ class ProfileRequestResource(ModelResource):
                 q = q | Q(middle_name__icontains=t)
                 q = q | Q(last_name__icontains=t)
                 q = q | Q(organization__icontains=t)
+                q = q | Q(status__icontains=t)
             base_object_list = base_object_list.filter(q).distinct()
 
         return base_object_list
