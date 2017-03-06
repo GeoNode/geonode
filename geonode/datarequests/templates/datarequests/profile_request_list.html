@@ -34,9 +34,9 @@
   </script>
   <script type="text/javascript">
       {% if HAYSTACK_SEARCH %}
-          SEARCH_URL = '{% url 'api_get_search' api_name='api' resource_name='base' %}?type__in=profile_requests'
+          SEARCH_URL = '{% url 'api_get_search' api_name='api' resource_name='base' %}?type__in=profile_request'
       {% else %}
-          SEARCH_URL = '{% url 'api_dispatch_list' api_name='api' resource_name='profile_requests' %}';
+          SEARCH_URL = "{% url 'api_dispatch_list' api_name='api' resource_name='profile_requests' %}";
       {% endif %}
     FILTER_TYPE = 'profile_request';
 
