@@ -65,6 +65,7 @@ def profile_request_view(request):
                     profile_request_obj.last_name = form.cleaned_data['last_name']
                     profile_request_obj.organization = form.cleaned_data['organization']
                     profile_request_obj.org_type=form.cleaned_data['org_type']
+                    profile_request_obj.organization_other = form.cleaned_data['organization_other']
                     profile_request_obj.contact_number = form.cleaned_data['contact_number']
                     if not profile_request_obj.email == form.cleaned_data['email']:
                         profile_request_obj.email = form.cleaned_data['email']
