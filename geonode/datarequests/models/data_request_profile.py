@@ -832,6 +832,8 @@ class DataRequestProfile(TimeStampedModel):
             profile_request.created = self.key_created_date
             profile_request.verification_key = self.verification_key
             profile_request.verification_date = self.date
+            profile_request.ftp_folder = self.ftp_folder
+            profile_request.created = self.created
             if self.request_status == 'rejected':
                 profile_request.rejection_reason = self.rejection_reason
                 profile_request.additional_rejection_reason = self.additional_rejection_reason
