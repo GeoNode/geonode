@@ -34,7 +34,7 @@ from geonode.tasks.mk_folder import create_folder
 from .base_request import BaseRequest, LipadOrgType
 
 
-class ProfileRequest(BaseRequest, StatusModel):
+class ProfileRequest(BaseRequest):
 
     # Choices that will be used for fields
     LOCATION_CHOICES = Choices(

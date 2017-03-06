@@ -410,6 +410,16 @@ class ProfileRequestResource(ModelResource):
         else:
             return False
 
+    def build_filters(self, filters=None):
+        if filters = None:
+            filters = {}
+            
+        orm_filters = super(ProfileRequestResource, self).build_filters(filters)
+        pprint(orm_filters)
+        
+        return orm_filters    
+        
+
     def apply_filters(self, request, applicable_filters):
         base_object_list = super(ProfileRequestResource, self).apply_filters(request, applicable_filters)
         query = request.GET.get('title__icontains', None)
