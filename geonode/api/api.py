@@ -364,7 +364,7 @@ class ProfileRequestResource(ModelResource):
         return bundle.obj.get_absolute_url()
 
     def dehydrate_org_type(self, bundle):
-        return bundle.obj.get_organization_type_display()
+        return bundle.obj.org_type
 
     def dehydrate_rejection_reason(self, bundle):
         return bundle.obj.rejection_reason
@@ -403,7 +403,7 @@ class ProfileRequestResource(ModelResource):
             return bundle.obj.data_request.id
         else:
             return None
-            
+
     def dehydrate_has_data_request(self, bundle):
         if bundle.obj.data_request:
             return True
@@ -546,9 +546,9 @@ class DataRequestResource(ModelResource):
 
     def dehydrate_org_type(self, bundle):
         if bundle.obj.profile_request:
-            return bundle.obj.profile_request.get_organization_type_display()
+            return bundle.obj.profile_request.org_type
         elif bundle.obj.profile:
-            return bundle.obj.profile.get_organization_type_display()
+            return bundle.obj.profile.org_type
         else:
             return None
 
@@ -566,7 +566,7 @@ class DataRequestResource(ModelResource):
 
     def apply_filters(self, request, applicable_filters):
          base_object_list = super(DataRequestResource, self).apply_filters(request, applicable_filters)
-    
+
          query = request.GET.get('title__icontains', None)
          if query:
              query = query.split(' ')
@@ -578,7 +578,7 @@ class DataRequestResource(ModelResource):
                  q = q | Q(organization__icontains=t)
                  q = q | Q(username__icontains=t)
              base_object_list = base_object_list.filter(q).distinct()
-    
+
          return base_object_list
 
     def prepend_urls(self):
