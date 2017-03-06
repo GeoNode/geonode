@@ -110,6 +110,25 @@ class DataRequestProfileList(LoginRequiredMixin, TemplateView):
     raise_exception = True
 
 @login_required
+def old_requests_csv(request):
+     if not request.user.is_superuser:
+        return HttpResponseRedirect("/forbidden")
+    
+    response = HttpResponse(content_type='text/csv')
+    datetoday = timezone.now()
+    writer = csv.writer(response)
+    response['Content-Disposition'] = 'attachment; filename="old-requests-"'+str(datetoday.month)+str(datetoday.day)+str(datetoday.year)+'.csv"'
+    header_fields = ['id','name','email','contact_number', 'organization', 'project_summary', 'created','request_status'
+    writer.writerow(header_fields)
+    
+    objects = DataRequestProfile.objects.all().order_by('pk')
+    
+    for o in objects:
+        writer.writerow(o.to_values_list(header_fields))
+    
+    return response
+
+@login_required
 def old_request_detail(request, pk,template="datarequests/old_request_detail.html"):
     if not request.user.is_superuser:
         return HttpResponseRedirect("/forbidden")
