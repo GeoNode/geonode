@@ -834,7 +834,6 @@ class DataRequestProfile(TimeStampedModel):
             profile_request.verification_date = self.date
             profile_request.ftp_folder = self.ftp_folder
             profile_request.created = self.created
-            profile_request.status_changed = self.action_date
             if self.request_status == 'rejected':
                 profile_request.rejection_reason = self.rejection_reason
                 profile_request.additional_rejection_reason = self.additional_rejection_reason
@@ -847,7 +846,12 @@ class DataRequestProfile(TimeStampedModel):
             self.additional_remarks += "migrated to profile request (" + dateformat.format(datetime.datetime.now(), 'F j, Y, P') +")"
             self.profile_request = profile_request
             self.save()
-
+            
+            if self.action_date is not None:
+                profile_request.status_changed = self.action_date
+            else:
+                profile_request.status_changed = self.key_created_date
+            profile_request.save()
             return profile_request
 
         pprint("Migration failed")
@@ -884,6 +888,11 @@ class DataRequestProfile(TimeStampedModel):
             self.data_request = data_request
             self.save()
 
+            if self.action_date is not None:
+                data_request.status_changed = self.action_date
+            else:
+                data_request.status_changed = self.key_created_date
+            data_request.save()
             return data_request
 
         return None
