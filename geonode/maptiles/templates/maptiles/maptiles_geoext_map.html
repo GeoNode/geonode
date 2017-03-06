@@ -374,52 +374,50 @@ function hasDataFiltering( f_list){
 Function which retrieves selected tiles and filters them if  they don't have data or they are outside the jurisdiction
 */
 function filterSelectedTiles(tile_filter, single_click, send_notice, epsgproj){
-     var wfs_proto = wfs_proto_creator("{{feature_tiled}}", epsgproj,"json");
-     var arg_obj = {
-         filter: tile_filter,
-         single_click: single_click,
-         send_notice: send_notice,
-         callback: function(response){
-             if(response.priv.responseText){
-                 start = new Date().getTime();
-                 console.log(start);
-                 var added_count = 0;
-                 feature_out = olGeoJSON.read(response.priv.responseText);
-                 var tiles = hasDataFiltering(feature_out);
-                  if (jurisdiction_geoms.length > 0){
-                     for (var i=0;i<tiles.length;i++){
-                         var corners = {
-                                        "ur_x": tiles[i].data.MAXX, "ur_y": tiles[i].data.MAXY,
-                                        "ul_x": tiles[i].data.MINX, "ul_y": tiles[i].data.MAXY,
-                                        "ll_x": tiles[i].data.MINX, "ll_y": tiles[i].data.MINY,
-                                        "lr_x": tiles[i].data.MAXX,"lr_y": tiles[i].data.MINY
-                        }
-                        var tile = createTile(corners);
-                         if (find_georef(tile_list, tile.georef)<0){
-                               console.log("tile is not yet in the list");
-                               
-                               tiles[i].geometry.calculateBounds();
-
-                               /*tiles[i].geometry.setBounds(tiles[i].geometry.bounds.transform(
-                                    new OpenLayers.Projection(epsgproj), new OpenLayers.Projection("EPSG:4326")
-                               ));*/
-                               if (isInJurisdiction(jurisdiction_geoms, tiles[i])){
-                                    console.log("tile is within jurisdiction");
-                                    tile_list.push(tile);
-                                    tile.feature = createHighlightBox(tile.corners);
-                                    highlight_layer.addFeatures([tile.feature]);
-                                    added_count++;
-                                }else{
-                                    console.log("tile is not within jurisdiction");
-                                }
-                        }else if (single_click){
-                                  console.log("tile is already in the list");
-                                  removeHighlight(tile.georef, highlight_layer);
-                        }
-                        highlight_layer.refresh();
-                     }
-                 }
+  var wfs_proto = wfs_proto_creator("{{feature_tiled}}", epsgproj,"json");
+  var arg_obj = {
+    filter: tile_filter,
+    single_click: single_click,
+    send_notice: send_notice,
+    callback: function(response){
+      if(response.priv.responseText){
+        start = new Date().getTime();
+        console.log(start);
+        var added_count = 0;
+        feature_out = olGeoJSON.read(response.priv.responseText);
+        var tiles = hasDataFiltering(feature_out);
+        if (jurisdiction_geoms.length > 0){
+          for (var i=0;i<tiles.length;i++){
+            var corners = {
+              "ur_x": tiles[i].data.MAXX, "ur_y": tiles[i].data.MAXY,
+              "ul_x": tiles[i].data.MINX, "ul_y": tiles[i].data.MAXY,
+              "ll_x": tiles[i].data.MINX, "ll_y": tiles[i].data.MINY,
+              "lr_x": tiles[i].data.MAXX,"lr_y": tiles[i].data.MINY
             }
+            var tile = createTile(corners);
+            if (find_georef(tile_list, tile.georef) < 0){
+              console.log("tile is not yet in the list");
+              tiles[i].geometry.calculateBounds();
+              /*tiles[i].geometry.setBounds(tiles[i].geometry.bounds.transform(
+                new OpenLayers.Projection("EPSG:32651"), new OpenLayers.Projection("EPSG:4326")
+              ));*/
+              if (isInJurisdiction(tiles[i])){
+                console.log("tile is within jurisdiction");
+                tile_list.push(tile);
+                tile.feature = createHighlightBox(tile.corners);
+                highlight_layer.addFeatures([tile.feature]);
+                added_count++;
+              }else{
+                console.log("tile is not within jurisdiction");
+              }
+            }else if (single_click){
+              console.log("tile is already in the list");
+              removeHighlight(tile.georef,highlight_layer);
+            }
+            highlight_layer.refresh();
+          }
+        }
+      }
       display_points("point_display");
       single_click=true;
       end = new Date().getTime();
@@ -447,6 +445,7 @@ function selection_bounds(map_bounds, highlight_layer, ifbbox_form) {
             type: OpenLayers.Filter.Spatial.INTERSECTS,
             property: "the_geom",
             value: transformed_bounds.toGeometry() });
+
     single_click = false;
     filterSelectedTiles(filter, false, true, epsgprojection);
 }
