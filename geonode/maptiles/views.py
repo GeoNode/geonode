@@ -81,6 +81,7 @@ def tiled_view(request, overlay=settings.TILED_SHAPEFILE, template="maptiles/map
 
     context_dict = {}
     context_dict["grid"] = get_layer_config(request, overlay, "base.view_resourcebase", _PERMISSION_VIEW )
+    jurisdiction_object = None
 
     if jurisdiction is None:
         try:
@@ -100,10 +101,11 @@ def tiled_view(request, overlay=settings.TILED_SHAPEFILE, template="maptiles/map
     context_dict["feature_tiled"] = overlay.split(":")[1]
     context_dict["test_mode"]=test_mode
     context_dict["data_classes"]= DataClassification.labels.values()
+
     #context_dict["projections"]= SRS.labels.values()
 
     return render_to_response(template, RequestContext(request, context_dict))
-    
+
 def tiled_view2(request, overlay=settings.TILED_SHAPEFILE, template="maptiles/maptiles_map2.html",test_mode=False, jurisdiction=None):
 
     context_dict = {}
@@ -138,21 +140,24 @@ def process_georefs(request):
         try:
             #Get georef list filtered with georefs computed upon approval of registration
             georef_area = request.POST['georef_area']
-            georef_list = filter(None, georef_area.split(","))
-            #pprint("Initial georef_list:" + str(georef_list))
-            try:
-                georef_list = clean_georefs(request.user, georef_list)
-            except ObjectDoesNotExist:
-                messages.info(request, "Due to a recent update, your selectable tiles are still under process. We apologize for the inconvenience.")
-                return redirect('geonode.cephgeo.views.get_cart')
-            #pprint("Filtered georef_list:" + str(georef_list))
-            
+            # georef_list = filter(None, georef_area.split(","))
+            # #pprint("Initial georef_list:" + str(georef_list))
+            # try:
+            #     georef_list = clean_georefs(request.user, georef_list)
+            # except ObjectDoesNotExist:
+            #     messages.info(request, "Due to a recent update, your selectable tiles are still under process. We apologize for the inconvenience.")
+            #     return redirect('geonode.cephgeo.views.get_cart')
+            # #pprint("Filtered georef_list:" + str(georef_list))
+            submitted_georef_list = filter(None, georef_area.split(","))
+            georef_list = []
+            jurisdiction_georefs = []
+
             try:
                 jurisdiction_georefs=str(UserTiles.objects.get(user=request.user).gridref_list)
             except ObjectDoesNotExist as e:
-                pprint("No jurisdiction tiles for this user") 
+                pprint("No jurisdiction tiles for this user")
                 raise PermissionDenied
-            
+
             for georef in submitted_georef_list:
                 if georef in jurisdiction_georefs:
                     georef_list.append(georef)

@@ -273,7 +273,7 @@ class DataRequestProfile(TimeStampedModel):
         null = True,
         blank = True,
     )
-    
+
     data_request = models.ForeignKey(
         DataRequest,
         null = True,
@@ -832,24 +832,27 @@ class DataRequestProfile(TimeStampedModel):
             profile_request.created = self.key_created_date
             profile_request.verification_key = self.verification_key
             profile_request.verification_date = self.date
+            profile_request.ftp_folder = self.ftp_folder
+            profile_request.created = self.created
+            profile_request.status_changed = self.action_date
             if self.request_status == 'rejected':
                 profile_request.rejection_reason = self.rejection_reason
                 profile_request.additional_rejection_reason = self.additional_rejection_reason
-            
+
             profile_request.additional_remarks = self.additional_remarks
             profile_request.save()
-            
+
             if not self.additional_remarks:
                 self.additional_remarks = ""
             self.additional_remarks += "migrated to profile request (" + dateformat.format(datetime.datetime.now(), 'F j, Y, P') +")"
             self.profile_request = profile_request
             self.save()
-            
+
             return profile_request
-        
+
         pprint("Migration failed")
         return None
-        
+
     def migrate_request_data(self):
         if self.project_summary and not self.data_request :
             profile_request = self.profile_request
@@ -864,22 +867,23 @@ class DataRequestProfile(TimeStampedModel):
             data_request.jurisdiction_shapefile = self.jurisdiction_shapefile
             data_request.juris_data_size = self.juris_data_size
             data_request.request_letter = self.request_letter
-                
+            data_request.status = self.request_status
+
             if self.request_status == 'rejected':
                 data_request.rejection_reason = self.rejection_reason
                 data_request.additional_rejection_reason = self.additional_rejection_reason
-            
+
             data_request.additional_remarks = self.additional_remarks
             data_request.profile_request = self.profile_request
             data_request.save()
-            
+
             self.profile_request.data_request = data_request
             self.profile_request.save()
-            
+
             self.additional_remarks += "migrated to data request (" + dateformat.format(datetime.datetime.now(), 'F j, Y, P') +")"
             self.data_request = data_request
             self.save()
-        
+
             return data_request
-        
+
         return None
