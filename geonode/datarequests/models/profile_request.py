@@ -66,7 +66,7 @@ class ProfileRequest(BaseRequest):
         ('reason2', _('Reason 2')),
         ('reason3', _('Reason 3')),
     )
-    
+
     data_request = models.ForeignKey(
         'DataRequest',
         on_delete=models.SET_NULL,
@@ -90,14 +90,14 @@ class ProfileRequest(BaseRequest):
         _('Office/Organization Name'),
         max_length=255
     )
-    
+
     location = models.CharField(
         _('Are you a local or foreign entity?'),
         choices=LOCATION_CHOICES,
         default=LOCATION_CHOICES.local,
         max_length=10,
     )
-    
+
     email = models.EmailField(_('Email Address'), max_length=64)
     contact_number = models.CharField(_('Contact Number'), max_length=255)
 
@@ -112,7 +112,7 @@ class ProfileRequest(BaseRequest):
         _('Organization Type'),
         max_length=255,
         blank=False,
-        null=False, 
+        null=False,
         default="Other",
         help_text=_('Organization type based on Phil-LiDAR1 Data Distribution Policy')
     )
@@ -122,7 +122,7 @@ class ProfileRequest(BaseRequest):
         blank=True,
         null=True,
     )
-    
+
     request_level = models.CharField(
         _('Level of Request'),
         choices=REQUEST_LEVEL_CHOICES,
@@ -130,14 +130,14 @@ class ProfileRequest(BaseRequest):
         null=True,
         max_length=15,
     )
-    
+
     funding_source = models.CharField(
         _('Source of Funding'),
         max_length=255,
         blank=True,
         null=True
     )
-    
+
     is_consultant = models.BooleanField(
         _('Consultant in behalf of another organization?'),
         default=False
@@ -145,12 +145,12 @@ class ProfileRequest(BaseRequest):
 
     # For email verification
     verification_key = models.CharField(max_length=50)
-    
+
     key_created_date = models.DateTimeField(
             default=timezone.now,
             help_text=_('The date in which the verification key is sent'),
         )
-        
+
     verification_date = models.DateTimeField(
         blank=True,
         null=True,
@@ -172,8 +172,8 @@ class ProfileRequest(BaseRequest):
         verbose_name = _('Profile Request')
         verbose_name_plural = _('Profile Requests')
         ordering = ('-created',)
-        
-    
+
+
     def __init__(self, *args, **kwargs):
         models.Model.__init__(self, *args, **kwargs)
         #self.status = self.STATUS.unconfirmed
@@ -199,7 +199,7 @@ class ProfileRequest(BaseRequest):
         self.verification_key = get_random_string(length=50)
         self.key_created_date = timezone.now()
         self.save()
-        
+
     def set_status(self, status, administrator = None):
         self.status = status
         self.save()
@@ -263,7 +263,7 @@ class ProfileRequest(BaseRequest):
             return (False, "Folder creation failed, Check /var/log/apache2/error.log for more details")
 
         return  (True, "Account creation successful")
-        
+
     def join_requester_grp(self):
         # Add account to requesters group
         group_name = "Data Requesters"
@@ -281,17 +281,17 @@ class ProfileRequest(BaseRequest):
             pprint(self.profile)
             requesters_group.join(self.profile, role='member')
             #raise ValueError("Unable to add user to the group")
-    
+
     def create_directory(self):
         pprint("creating user folder for "+self.username)
         create_folder.delay(self.username)
         self.ftp_folder = "Others/"+self.username
         self.save()
-        
+
     def get_organization_type(self):
         return OrganizationType.get(getattr(self,'organization_type'))
 
-    def to_values_list(self, fields=['id','name','email','contact_number', 'organization','organization_type', 'created','status','has_data_request']):
+    def to_values_list(self, fields=['id','name','email','contact_number', 'organization','org_type', 'created','status','has_data_request']):
         out = []
         for f in fields:
             if f  is 'id':
@@ -314,9 +314,8 @@ class ProfileRequest(BaseRequest):
                     out.append(str(self.data_request.status))
                 else:
                     out.append(" ")
-            elif f is 'organization_type':
-                organization_type  = self.get_organization_type()
-                out.append(organization_type)
+            elif f is 'org_type':
+                out.append(self.org_type)
             elif f is 'rejection_reason':
                 out.append(str(getattr(self,'rejection_reason')))
             elif f is 'has_data_request':
@@ -347,7 +346,7 @@ class ProfileRequest(BaseRequest):
                     out.append(str(val))
 
         return out
-    
+
     def send_email(self, subj, msg, html_msg, recipient=settings.LIPAD_SUPPORT_MAIL):
         text_content = msg
 
@@ -363,22 +362,22 @@ class ProfileRequest(BaseRequest):
         )
         msg.attach_alternative(html_content, "text/html")
         msg.send()
-    
+
     def send_new_request_notif_to_admins(self, request_type="Profile"):
         text_content = email_utils.NEW_REQUEST_EMAIL_TEXT.format(
             request_type,
             settings.BASEURL + self.get_absolute_url()
         )
-        
+
         html_content=email_utils.NEW_REQUEST_EMAIL_HTML.format(
             request_type,
             settings.BASEURL + self.get_absolute_url(),
             settings.BASEURL + self.get_absolute_url()
         )
-        
+
         email_subj = "[LiPAD] A new request has been submitted"
         self.send_email(email_subj,text_content,html_content)
-    
+
     def send_verification_email(self):
         self.set_verification_key()
         site = Site.objects.get_current()
@@ -406,7 +405,7 @@ class ProfileRequest(BaseRequest):
 
         email_subj = _('[LiPAD] Email Confirmation')
         self.send_email(email_subj,text_content,html_content, recipient=self.email)
-    
+
     def send_approval_email(self):
         site = Site.objects.get_current()
         profile_url = (
@@ -414,22 +413,22 @@ class ProfileRequest(BaseRequest):
             reverse('profile_detail', kwargs={'username': self.username})
         )
         profile_url = iri_to_uri(profile_url)
-    
+
         text_content = email_utils.PROFILE_APPROVAL_TEXT.format(
             unidecode(self.first_name),
             self.username,
             profile_url,
             settings.LIPAD_SUPPORT_MAIL
         )
-        
+
         html_content = email_utils.PROFILE_APPROVAL_HTML.format(
             unidecode(self.first_name),
             self.username,
             profile_url,
             settings.LIPAD_SUPPORT_MAIL,
-            settings.LIPAD_SUPPORT_MAIL        
+            settings.LIPAD_SUPPORT_MAIL
         )
-        
+
         email_subj = _('[LiPAD] Account Registration Status')
         self.send_email(email_subj,text_content,html_content, recipient=self.email)
 
@@ -453,4 +452,3 @@ class ProfileRequest(BaseRequest):
 
         email_subj = _('[LiPAD] Account Registration Status')
         self.send_email(email_subj,text_content,html_content, recipient=self.email)
-
