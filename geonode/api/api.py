@@ -354,10 +354,10 @@ class ProfileRequestResource(ModelResource):
         allowed_methods = ['get']
         ordering = ['-created', ]
         filtering = {'first_name': ALL,
-                     'requester_type': ALL,
+                     #'requester_type': ALL,
                      'status': ALL,
                      'organization': ALL,
-                     'status': ALL,
+                     'org_type': ALL,
                      'key_created_date': ALL,
                      }
 
