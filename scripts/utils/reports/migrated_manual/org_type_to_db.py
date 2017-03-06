@@ -8,7 +8,7 @@ if not os.path.isfile(csv_path):
     exit(1)
 print csv_path
 with open(csv_path, 'r') as open_file:
-    skip_once = False #to skip once (first row)
+    skip_once = True #to skip once (first row)
     request_list = []
     counter = 0
     for line in open_file:
@@ -18,12 +18,11 @@ with open(csv_path, 'r') as open_file:
             continue
         tokens = line.strip().split(',')
         request_id = tokens[0].strip()
-        org_type_main = tokens[1].strip()
+        email = tokens[1].strip()
         org_type_sub = tokens[2].strip()
         try:
-            model_object = DataRequestProfile.objects.get(id=str(request_id)))
-            model_object.org_type = org_type_main
-            model_object.organization_type = 
+            model_object = DataRequestProfile.objects.get(id=str(request_id),email=str(email))
+            model_object.org_type = org_type_sub
             model_object.save()
             print str(counter) + '. Saved: ', model_object.val
         except Exception as e:
