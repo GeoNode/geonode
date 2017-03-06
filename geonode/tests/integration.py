@@ -104,6 +104,12 @@ $ geonode createsuperuser
 """
 
 
+def sync():
+    call_command('loaddata', 'default_oauth_apps.json', verbosity=0)
+    call_command('loaddata', 'initial_data', verbosity=0)
+    call_command('layer_notice_types', verbosity=0)
+
+
 class GeoNodeCoreTest(TestCase):
 
     """Tests geonode.security app/module
@@ -171,6 +177,7 @@ class GeoNodeMapTest(TestCase):
 
     def setUp(self):
         call_command('loaddata', 'people_data', verbosity=0)
+        sync()
 
     def tearDown(self):
         pass
@@ -658,6 +665,7 @@ class GeoNodePermissionsTest(TestCase):
 
     def setUp(self):
         call_command('loaddata', 'people_data', verbosity=0)
+        sync()
 
     def tearDown(self):
         pass
@@ -847,6 +855,7 @@ class GeoNodeThumbnailTest(TestCase):
 
     def setUp(self):
         call_command('loaddata', 'people_data', verbosity=0)
+        sync()
 
     def tearDown(self):
         pass
@@ -906,6 +915,7 @@ class GeoNodeMapPrintTest(TestCase):
 
     def setUp(self):
         call_command('loaddata', 'people_data', verbosity=0)
+        sync()
 
     def tearDown(self):
         pass
@@ -999,6 +1009,7 @@ class GeoNodeGeoServerSync(TestCase):
 
     def setUp(self):
         call_command('loaddata', 'people_data', verbosity=0)
+        sync()
 
     def tearDown(self):
         pass
