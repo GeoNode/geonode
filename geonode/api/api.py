@@ -353,7 +353,7 @@ class ProfileRequestResource(ModelResource):
         allowed_methods = ['get']
         ordering = ['-created', ]
         filtering = {'first_name': ALL,
-                     #'requester_type': ALL,
+                     'requester_type': ALL,
                      'status': ALL,
                      'organization': ALL,
                      'org_type': ALL,
@@ -416,6 +416,7 @@ class ProfileRequestResource(ModelResource):
             
         orm_filters = super(ProfileRequestResource, self).build_filters(filters)
         pprint(orm_filters)
+        pprint(filters)
         
         return orm_filters    
         
