@@ -411,7 +411,7 @@ class ProfileRequestResource(ModelResource):
 
     def apply_filters(self, request, applicable_filters):
         base_object_list = super(ProfileRequestResource, self).apply_filters(request, applicable_filters)
-
+        pprint(self.fields)
         query = request.GET.get('title__icontains', None)
         if query:
             query = query.split(' ')
@@ -467,7 +467,6 @@ class DataRequestResource(ModelResource):
                      'requester_type': ALL,
                      'status': ALL,
                      'organization': ALL,
-                     'status': ALL,
                      'date_submitted': ALL,
                      }
 
