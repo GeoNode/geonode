@@ -255,7 +255,7 @@ class ProfileRequestForm(forms.ModelForm):
     def save(self, commit=True, *args, **kwargs):
         profile_request = super(
             ProfileRequestForm, self).save(commit=False, *args, **kwargs)
-        profile_request.org_type = self.cleaned_data.get('org_type').val
+        #profile_request.org_type = self.cleaned_data.get('org_type').val
         pprint(self.cleaned_data.get('org_type'))
         pprint(profile_request.org_type)
 
