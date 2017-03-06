@@ -333,7 +333,6 @@ REQUESTER_TYPES = {
 
 class ProfileRequestResource(ModelResource):
     """Profile Request api"""
-    model = ProfileRequest
     profile_request_detail_url = fields.CharField()
     org_type = fields.CharField()
     status = fields.CharField()
@@ -412,8 +411,8 @@ class ProfileRequestResource(ModelResource):
             return False
 
     def apply_filters(self, request, applicable_filters):
+        pprint(applicable_filters)
         base_object_list = super(ProfileRequestResource, self).apply_filters(request, applicable_filters)
-        pprint(self.fields)
         query = request.GET.get('title__icontains', None)
         if query:
             query = query.split(' ')
