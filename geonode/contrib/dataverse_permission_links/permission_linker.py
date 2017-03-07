@@ -92,7 +92,7 @@ class PermissionLinker(object):
         return True
 
 """
-from geonode.contrib.dataverse_permission_links.permission_setter import PermissionLinker
+from geonode.contrib.dataverse_permission_links.permission_linker import PermissionLinker
 
 layer_name = 'geonode:starbucks_u_c2'
 dataverse_username = 'dv_bari'
