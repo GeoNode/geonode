@@ -93,7 +93,6 @@ def profile_request_approve(request, pk):
             profile_request.profile.organization_type = profile_request.organization_type
             profile_request.profile.org_type = profile_request.org_type
             profile_request.profile.organization_other = profile_request.organization_other
-            profile_request.profile.org_type = profile_request.org_type
             profile_request.save()
             profile_request.profile.save()
 
@@ -221,8 +220,6 @@ def profile_requests_csv(request):
         return response
 
 def profile_request_facet_count(request):
-    if not request.user.is_superuser:
-        return HttpResponseRedirect('/forbidden')
 
     facets_count = {
         'pending': ProfileRequest.objects.filter(

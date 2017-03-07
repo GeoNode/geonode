@@ -33,16 +33,26 @@
         }).addTo(map).bringToFront();
         // });
 
-         var MapQuestOpen_OSM = L.tileLayer('http://korona.geog.uni-heidelberg.de/tiles/roads/x={x}&y={y}&z={z}', {
+        var MapQuestOpen_OSM = L.tileLayer('http://korona.geog.uni-heidelberg.de/tiles/roads/x={x}&y={y}&z={z}', {
+        // // var MapQuestOpen_OSM = L.tileLayer('https://lipad-basemap.dream.upd.edu.ph/tiles/roads/x={x}&y={y}&z={z}', {
+                type: 'map',
+                ext: 'jpg',
+               attribution: 'Imagery from <a href="http://giscience.uni-hd.de/">GIScience Research Group @ University of Heidelberg</a> &mdash; Map data &copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>',
+               subdomains: '1234',
+               continuousWorld: true,
+             // 'opacity':0.8,
+            }).addTo(map).bringToBack();
+         //});
+
+         //var MapQuestOpen_OSM = L.tileLayer('http://server.arcgisonline.com/ArcGIS/rest/services/Ocean_Basemap/MapServer/tile/{z}/{y}/{x}', {
         // var MapQuestOpen_OSM = L.tileLayer('https://lipad-basemap.dream.upd.edu.ph/tiles/roads/x={x}&y={y}&z={z}', {
-            type: 'map',
-            ext: 'jpg',
-            attribution: 'Imagery from <a href="http://giscience.uni-hd.de/">GIScience Research Group @ University of Heidelberg</a> &mdash; Map data &copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>',
-            subdomains: '1234',
-            continuousWorld: true,
+        //    type: 'map',
+        //    ext: 'jpg',
+        //    attribution: 'Tiles &copy; Esri &mdash; Sources: GEBCO, NOAA, CHS, OSU, UNH, CSUMB, National Geographic, DeLorme, NAVTEQ, and Esri',
+        //    subdomains: '1234',
+        //    continuousWorld: true,
             // 'opacity':0.8,
-        }).addTo(map).bringToBack();
-        // });
+        //}).addTo(map).bringToBack();
 
         var baseMaps = {
           'MapQuestOpen OSM' : MapQuestOpen_OSM,

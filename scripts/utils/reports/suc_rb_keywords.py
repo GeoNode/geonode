@@ -182,14 +182,14 @@ def tag_layer(layers, mode):
                     hc = assign_tags(mode, [results], layer)
             elif 'ilog hilabangan' in rb_name.lower():
                 results['rb_name'] = 'Ilog-Hilabangan'
-                suc_result = fhm_suc(t, cur, conn)
+                suc_result = fhm_suc(results['rb_name'], cur, conn)
                 if len(suc_result) > 0:
                     results['SUC'] = suc_result
                 print 'taglayer RESULTS ', results
                 hc = assign_tags(mode, [results], layer)
             elif 'magasawang tubig' in rb_name.lower():
                 results['rb_name'] = 'Mag-Asawang Tubig'
-                suc_result = fhm_suc(t, cur, conn)
+                suc_result = fhm_suc(results['rb_name'], cur, conn)
                 if len(suc_result) > 0:
                     results['SUC'] = suc_result
                 print 'taglayer RESULTS ', results
@@ -271,11 +271,13 @@ def tag_layer(layers, mode):
                 if mode == 'sar':
                     # tag SAR DEMs
                     rem_extents = layer.name.split('_extents')[0]
-                    sar_layer = Layer.objects.get(name=rem_extents)
-                    if sar_layer is not None:
+                    try:
+                        sar_layer = Layer.objects.get(name=rem_extents)
+                        # if sar_layer is not None:
                         hc = assign_tags(mode, results, sar_layer)
-                    else:
-                        _logger.info('DOES NOT EXIST %s', sar_layer.name)
+                    except Exception:
+                        _logger.exception('DOES NOT EXIST %s', sar_layer.name)
+
                     # tag SAR extents
                     hc = assign_tags(mode, results, layer)
                 else:
