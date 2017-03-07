@@ -289,7 +289,6 @@ def package(options):
 
 @task
 @needs(['start_geoserver',
-        'start_messaging',
         'start_django'])
 @cmdopts([
     ('bind=', 'b', 'Bind server to provided IP address and port number.'),
@@ -300,6 +299,7 @@ def start():
     """
     Start GeoNode (Django, GeoServer & Client)
     """
+    call_task('start_messaging')
     info("GeoNode is now available.")
 
 
@@ -486,7 +486,6 @@ def test_integration(options):
     _reset()
     # Start GeoServer
     call_task('start_geoserver')
-    call_task('start_messaging')
     info("GeoNode is now available, running the tests now.")
 
     name = options.get('name', 'geonode.tests.integration')
