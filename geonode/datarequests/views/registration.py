@@ -119,6 +119,7 @@ def data_request_view(request):
         post_data = request.POST.copy()
         post_data['permissions'] = '{"users":{"dataRegistrationUploader": ["view_resourcebase"] }}'
         data_classes = post_data.get('data_class_requested',None)
+        pprint(data_classes)
         if data_classes:
             post_data['data_class_requested'] = data_classes.split(',')
             ppprint(post_data['data_class_requested'])
