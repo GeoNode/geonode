@@ -128,7 +128,7 @@ def data_request_view(request):
                     data_class_objs.append(TileDataClass.objects.get(short_name=s))
                 except Exception as e:
                     continue
-            post_data.set('data_class_requested', data_class_objs)
+            post_data['data_class_requested'] = data_class_objs
         details_form = DataRequestForm(post_data, request.FILES)
         data_request_obj = None
         
