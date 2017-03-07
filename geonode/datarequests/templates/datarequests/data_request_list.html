@@ -63,10 +63,6 @@
         });
     }
 
-    $(".filter").on('click', '.request-filter', function() {
-      facetCounts();
-    });
-
     var getActiveFilters = function() {
       var vars = [], hash;
           var hashes = window.location.href.slice(window.location.href.indexOf('?') + 1).split('&');
@@ -96,10 +92,14 @@
 
     }
 
-    facetCounts();
-    getActiveFilters();
-
-
+    $(document).ready(function (){
+        getActiveFilters();
+        facetCounts();
+        $(".filter").on('click', '.request-filter', function() {
+            getActiveFilters();
+            facetCounts();
+        });
+    });
 
   </script>
   {% with include_spatial='false' %}
