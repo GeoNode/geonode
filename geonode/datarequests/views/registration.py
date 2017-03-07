@@ -117,9 +117,10 @@ def data_request_view(request):
     if request.method == 'POST' :
         pprint("detected data request post")
         post_data = request.POST.copy()
-        pprint(post_data)
         post_data['permissions'] = '{"users":{"dataRegistrationUploader": ["view_resourcebase"] }}'
-        data_classes = []
+        data_classes = post_data.get('data_class_requested',None)
+        if data_classes:
+            post_data['data_class_requested'] = data_classes.split(',')
         details_form = DataRequestForm(post_data, request.FILES)
         data_request_obj = None
         
