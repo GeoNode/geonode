@@ -34,7 +34,7 @@ from geonode.tasks.mk_folder import create_folder
 from .base_request import BaseRequest, LipadOrgType
 
 
-class ProfileRequest(BaseRequest):
+class ProfileRequest(BaseRequest, StatusModel):
 
     # Choices that will be used for fields
     LOCATION_CHOICES = Choices(
@@ -104,12 +104,15 @@ class ProfileRequest(BaseRequest):
     organization_type = enum.EnumField(
         OrganizationType,
         default=OrganizationType.OTHER,
-        help_text=_('Organization type based on Phil-LiDAR1 Data Distribution Policy')
+        help_text=_('Organization type based on Phil-LiDAR1 Data Distribution Policy'),
+        blank = True,
+        null = True
     )
     org_type = models.CharField(
         _('Organization Type'),
         max_length=255,
         blank=False,
+        null=False,
         default="Other",
         help_text=_('Organization type based on Phil-LiDAR1 Data Distribution Policy')
     )

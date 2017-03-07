@@ -335,7 +335,7 @@ class ProfileRequestResource(ModelResource):
     """Profile Request api"""
     profile_request_detail_url = fields.CharField()
     org_type = fields.CharField()
-    status = fields.CharField()
+    status = fields.CharField(attribute='status')
     status_label = fields.CharField()
     is_rejected = fields.BooleanField(default=False)
     rejection_reason = fields.CharField()
@@ -356,7 +356,7 @@ class ProfileRequestResource(ModelResource):
                      'requester_type': ALL,
                      'status': ALL,
                      'organization': ALL,
-                     'status': ALL,
+                     'org_type': ALL,
                      'key_created_date': ALL,
                      }
 
@@ -412,7 +412,6 @@ class ProfileRequestResource(ModelResource):
 
     def apply_filters(self, request, applicable_filters):
         base_object_list = super(ProfileRequestResource, self).apply_filters(request, applicable_filters)
-
         query = request.GET.get('title__icontains', None)
         if query:
             query = query.split(' ')
@@ -440,7 +439,7 @@ class ProfileRequestResource(ModelResource):
 class DataRequestResource(ModelResource):
     """Data Request api"""
     data_request_detail_url = fields.CharField()
-    status = fields.CharField()
+    status = fields.CharField(attribute="status")
     status_label = fields.CharField()
     is_rejected = fields.BooleanField(default=False)
     rejection_reason = fields.CharField()
@@ -467,7 +466,6 @@ class DataRequestResource(ModelResource):
                      'requester_type': ALL,
                      'status': ALL,
                      'organization': ALL,
-                     'status': ALL,
                      'date_submitted': ALL,
                      }
 

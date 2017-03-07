@@ -36,6 +36,7 @@ from django.conf import settings as local_settings
 class LipadOrgType(models.Model):
     val = models.CharField(_('Value'), max_length=100)
     display_val = models.CharField(_('Display'), max_length=100)
+    category = models.CharField(_('Sub'), max_length=100, null=True)
 
     class Meta:
         app_label = "datarequests"
@@ -43,7 +44,7 @@ class LipadOrgType(models.Model):
     def __unicode__(self):
         return (_('{}').format(self.val,))
 
-class BaseRequest(TimeStampedModel, StatusModel):
+class BaseRequest(TimeStampedModel):
     
     STATUS = Choices(
         ('pending', _('Pending')),
@@ -52,40 +53,40 @@ class BaseRequest(TimeStampedModel, StatusModel):
         ('rejected', _('Rejected')),
         ('unconfirmed',_('Unconfirmed Email')),
     )
-    
+
     profile = models.ForeignKey(
         Profile,
         on_delete=models.SET_NULL,
         null=True,
         blank=True
     )
-    
+
     administrator = models.ForeignKey(
         Profile,
         null=True,
         blank=True,
         related_name="admin+"
     )
-    
+
     rejection_reason = models.CharField(
         _('Reason for Rejection'),
         blank=True,
         null=True,
         max_length=100,
     )
-    
+
     additional_remarks = models.TextField(
         blank = True,
         null = True,
         help_text= _('Additional remarks by an administrator'),
     )
-    
+
     additional_rejection_reason = models.TextField(
         _('Additional details about rejection'),
         blank=True,
         null=True,
         )
-    
+
     class Meta:
         abstract = True
         app_label = "datarequests"
@@ -95,6 +96,6 @@ class RequestRejectionReason(models.Model):
 
     class Meta:
         app_label = "datarequests"
-        
+
     def __unicode__(self):
         return (_('{}').format(self.reason,))

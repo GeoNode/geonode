@@ -74,7 +74,7 @@ def lidar_coverage_metadata():
         conn.rollback()
 
     # Update metadata
-    layer = Layer.objects.get(name='lidar_coverage_1')
+    layer = Layer.objects.get(name='lidar_coverage')
     layer.abstract = '''The layer contains the following metadata per block:
                 - Sensor used
                 - Processor (DREAM or Phil-LiDAR 1)

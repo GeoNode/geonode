@@ -6,6 +6,8 @@ from django.conf import settings
 from geonode.geoserver.helpers import ogc_server_settings
 
 from geonode.layers.models import Style
+from geonode.datarequests.models import DataRequestProfile
+from geonode.datarequests.utils import get_juris_data_size, get_area_coverage, get_shp_ogr
 from geoserver.catalog import Catalog
 from geonode.layers.models import Layer
 from geonode.datarequests.models import DataRequestProfile
@@ -53,6 +55,5 @@ def  place_name_update(requests_query_list, save=True):
                 y = (jurisdiction.bbox_y1+jurisdiction.bbox_y0)/2
                 r.place_name = get_place_name(x,y)["county"]
                 pprint("Place name is: {}".format(r.place_name))
-                
                 if save:
                     r.save()
