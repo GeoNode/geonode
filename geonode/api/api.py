@@ -335,7 +335,7 @@ class ProfileRequestResource(ModelResource):
     """Profile Request api"""
     profile_request_detail_url = fields.CharField()
     org_type = fields.CharField()
-    status = fields.CharField()
+    status = fields.CharField(attribute='status')
     status_label = fields.CharField()
     is_rejected = fields.BooleanField(default=False)
     rejection_reason = fields.CharField()
@@ -370,8 +370,7 @@ class ProfileRequestResource(ModelResource):
         return bundle.obj.rejection_reason
 
     def dehydrate_status(self, bundle):
-        pprint(bundle.obj)
-        return bundle.obj.status
+        return bundle.obj.status.get_request_status_display()
 
     def dehydrate_is_rejected(self, bundle):
         return bundle.obj.status == 'rejected'
