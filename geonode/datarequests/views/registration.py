@@ -124,18 +124,10 @@ def data_request_view(request):
         data_class_objs = []
         pprint("post_data: "+str(data_classes))
         pprint("len:"+str(len(data_classes)))
-        """
-        if isinstance(data_classes, basestring):
-            #pprint(data_classes)
-            for s in ast.literal_eval(data_classes):
-                pprint(s)
-                try:
-                    data_class_objs.append(TileDataClass.objects.get(short_name=s))
-                except Exception as e:
-                    continue
-            pprint(data_class_objs)
-            post_data['data_class_requested'] = data_class_objs
-        """
+        
+        if len(data_classes) == 1 and (data_classes[0].startswith(']') and data_classes[0].endswith(']')):
+            post_data.setlist('data_class_requested',literal_eval(data_classes[0]))
+        
         details_form = DataRequestForm(post_data, request.FILES)
         data_request_obj = None
         
