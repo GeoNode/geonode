@@ -253,6 +253,7 @@ Overall Status: {15}""".format(_id, agency, position, mailing_addr, org_sub, raw
                                                     additional_remarks=remarks,
                                                     key_created_date=key_created_date,
                                                     created=created,
+                                                    status_changed=created,
                                                     action_date=action_date)
                 profile_object.save()
                 print 'Profile: ', profile_object.first_name, profile_object.last_name
@@ -275,4 +276,3 @@ else:
     print 'Importing ...'
     csv_path = 'scripts/utils/reports/migrated_manual/new_datarequest_list.csv'
     parse_datarequest_csv(csv_path)
-
