@@ -849,7 +849,7 @@ class DataRequestProfile(TimeStampedModel):
             if self.action_date is not None:
                 profile_request.status_changed = self.action_date
             else:
-                profile_request.status_changed = self.key_created_date if self.key_created_date else self.created
+                profile_request.status_changed = self.key_created_date if self.key_created_date else self.date
             profile_request.save()
             return profile_request
 
