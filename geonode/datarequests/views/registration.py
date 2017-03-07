@@ -126,7 +126,7 @@ def data_request_view(request):
         pprint(data_classes)
         pprint("len:"+str(len(data_classes)))
         
-        if len(data_classes) == 1 and (data_classes[0]).startswith('[') and data_classes[0].endswith(']')):
+        if len(data_classes) == 1 and data_classes[0].startswith('[') and data_classes[0].endswith(']')):
             post_data.setlist('data_class_requested',literal_eval(data_classes[0]))
             pprint(post_data.getlist('data_class_requested'))
         
