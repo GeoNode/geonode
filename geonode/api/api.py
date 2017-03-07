@@ -370,6 +370,7 @@ class ProfileRequestResource(ModelResource):
         return bundle.obj.rejection_reason
 
     def dehydrate_status(self, bundle):
+        pprint(bundle.obj.status)
         return bundle.obj.status
 
     def dehydrate_is_rejected(self, bundle):
@@ -412,7 +413,7 @@ class ProfileRequestResource(ModelResource):
 
     def check_filtering(self, field_name, filter_type='exact', filter_bits = None):
         pprint(field_name)
-        pprint(self.fields[field_name])
+        pprint(self.fields[field_name].attribute)
         return super(ProfileRequestResource, self).check_filtering(field_name, filter_type, filter_bits)
 
     def build_filters(self, filters=None):
