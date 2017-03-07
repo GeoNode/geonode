@@ -122,6 +122,7 @@ def data_request_view(request):
         post_data['permissions'] = '{"users":{"dataRegistrationUploader": ["view_resourcebase"] }}'
         data_classes = post_data.get('data_class_requested',None)
         data_class_objs = []
+        pprint(data_classes)
         if isinstance(data_classes, basestring):
             #pprint(data_classes)
             for s in ast.literal_eval(data_classes):
