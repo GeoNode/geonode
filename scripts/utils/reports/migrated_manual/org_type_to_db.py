@@ -23,11 +23,15 @@ with open(csv_path, 'r') as open_file:
         email = tokens[1].strip()
         org_type_sub = tokens[2].strip()
         try:
-            model_object = DataRequestProfile.objects.get(id=str(request_id),email=str(email))
+            if email:
+                model_object = DataRequestProfile.objects.get(id=str(request_id),email=str(email))
+            else:
+                model_object = DataRequestProfile.objects.get(id=str(request_id))
             model_object.org_type = org_type_sub
             model_object.save()
-            print str(counter) + '. Saved: ', model_object.id, ' ',model_object.email
+            #print str(counter) + '. Saved: ', model_object.id, ' ',model_object.email
         except Exception as e:
+            print str(counter) + '-' + str(request_id), ' ', str(email)
             print e
             print traceback.print_exc()
-            exit(1)
+            #exit(1)

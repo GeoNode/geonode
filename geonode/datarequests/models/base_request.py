@@ -44,7 +44,6 @@ class LipadOrgType(models.Model):
     def __unicode__(self):
         return (_('{}').format(self.val,))
 
-#class BaseRequest(TimeStampedModel, StatusModel):
 class BaseRequest(TimeStampedModel):
     
     STATUS = Choices(
