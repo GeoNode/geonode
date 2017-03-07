@@ -122,7 +122,7 @@ def data_request_view(request):
         pprint(data_classes)
         if data_classes:
             post_data['data_class_requested'] = data_classes.split(',')
-            ppprint(post_data['data_class_requested'])
+            pprint(post_data['data_class_requested'])
         details_form = DataRequestForm(post_data, request.FILES)
         data_request_obj = None
         
