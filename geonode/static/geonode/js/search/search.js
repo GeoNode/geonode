@@ -355,7 +355,7 @@
           query_entry.push($scope.query[data_filter]);
         }
       }
-
+      
       // If the element is active active then deactivate it
       if(element.hasClass('active')){
         // clear the active class from it
