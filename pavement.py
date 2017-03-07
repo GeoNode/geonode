@@ -37,8 +37,6 @@ from paver.easy import task, options, cmdopts, needs
 from paver.easy import path, sh, info, call_task
 from paver.easy import BuildFailure
 
-sys.path.extend([os.path.dirname(__file__)])
-
 try:
     from geonode.settings import GEONODE_APPS
 except:
