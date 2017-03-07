@@ -355,8 +355,6 @@
           query_entry.push($scope.query[data_filter]);
         }
       }
-      console.log("query_entry:")
-      console.log(query_entry)
       
       // If the element is active active then deactivate it
       if(element.hasClass('active')){
