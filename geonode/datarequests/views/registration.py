@@ -119,6 +119,11 @@ def data_request_view(request):
         post_data = request.POST.copy()
         post_data['permissions'] = '{"users":{"dataRegistrationUploader": ["view_resourcebase"] }}'
         data_classes = post_data.get('data_class_requested',None)
+        data_class_objs = []
+        if isinstance(data_classes, basestring):
+            for s in data_classes.split(','):
+                data_class_objs.append(TileDataClass.objects.get(val=s))
+            post_data.set('data_class_requested', data_class_objs)
         details_form = DataRequestForm(post_data, request.FILES)
         data_request_obj = None
         
