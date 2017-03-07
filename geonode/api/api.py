@@ -410,6 +410,11 @@ class ProfileRequestResource(ModelResource):
         else:
             return False
 
+    def check_filtering(self, field_name, filter_type='exact', filter_bits = None):
+        pprint(field_name)
+        pprint(self.fields[field_name])
+        return super(ProfileRequestResource, self).check_filtering(field_name, filter_type, filter_bits)
+
     def build_filters(self, filters=None):
         if filters == None:
             filters = {}
@@ -419,7 +424,6 @@ class ProfileRequestResource(ModelResource):
         pprint(filters)
         
         return orm_filters    
-        
 
     def apply_filters(self, request, applicable_filters):
         base_object_list = super(ProfileRequestResource, self).apply_filters(request, applicable_filters)
