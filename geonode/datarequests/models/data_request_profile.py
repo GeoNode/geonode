@@ -846,7 +846,7 @@ class DataRequestProfile(TimeStampedModel):
             self.additional_remarks += "migrated to profile request (" + dateformat.format(datetime.datetime.now(), 'F j, Y, P') +")"
             self.profile_request = profile_request
             self.save()
-            if self.action_date is not None:
+            if self.action_date:
                 profile_request.status_changed = self.action_date
             else:
                 profile_request.status_changed = self.key_created_date if self.key_created_date else self.date
