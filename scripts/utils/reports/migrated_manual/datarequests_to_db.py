@@ -135,7 +135,7 @@ def parse_datarequest_csv(csv_path):
     "6. ready for pick-up":"approved",
     "7. data distributed":"approved",
     "8. data unavailable":"pending",
-    "9. referred to LiPAD":"approved",
+    "9. referred to lipad":"approved",
     "10. other":"pending",
     }
     print 'Parsing CSV'
