@@ -120,8 +120,8 @@ def data_request_view(request):
         pprint("detected data request post")
         post_data = request.POST.copy()
         post_data['permissions'] = '{"users":{"dataRegistrationUploader": ["view_resourcebase"] }}'
-        #data_classes = post_data.getlist('data_class_requested')
-        data_classes = post_data.get('data_class_requested')
+        data_classes = post_data.getlist('data_class_requested')
+        #data_classes = post_data.get('data_class_requested')
         data_class_objs = []
         pprint(data_classes)
         pprint("len:"+str(len(data_classes)))
