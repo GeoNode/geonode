@@ -122,7 +122,7 @@ def data_request_view(request):
         post_data['permissions'] = '{"users":{"dataRegistrationUploader": ["view_resourcebase"] }}'
         data_classes = post_data.getlist('data_class_requested')
         data_class_objs = []
-        pprint("post_data: "+str(data_classes))
+        pprint(data_classes)
         pprint("len:"+str(len(data_classes)))
         
         if len(data_classes) == 1 and (data_classes[0].startswith(']') and data_classes[0].endswith(']')):
