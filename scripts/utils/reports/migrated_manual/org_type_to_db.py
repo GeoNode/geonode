@@ -1,3 +1,5 @@
+from geonode.settings import GEONODE_APPS
+import geonode.settings as settings
 from geonode.datarequests.models.data_request_profile import DataRequestProfile
 import os
 import traceback
@@ -24,7 +26,7 @@ with open(csv_path, 'r') as open_file:
             model_object = DataRequestProfile.objects.get(id=str(request_id),email=str(email))
             model_object.org_type = org_type_sub
             model_object.save()
-            print str(counter) + '. Saved: ', model_object.val
+            print str(counter) + '. Saved: ', model_object.id, ' ',model_object.email
         except Exception as e:
             print e
             print traceback.print_exc()
