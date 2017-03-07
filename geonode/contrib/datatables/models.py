@@ -206,7 +206,7 @@ class JoinTarget(models.Model):
     layer = models.ForeignKey(Layer)
     attribute = models.ForeignKey(LayerAttribute)
     geocode_type = models.ForeignKey(GeocodeType, on_delete=models.PROTECT)
-    expected_format = models.ForeignKey(JoinTargetFormatType, null=True, blank=True)
+    expected_format = models.ForeignKey(JoinTargetFormatType)
     year = models.IntegerField()
 
     created = models.DateTimeField(auto_now_add=True)

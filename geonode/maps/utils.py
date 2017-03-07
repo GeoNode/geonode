@@ -235,20 +235,20 @@ def get_db_store_name(user=None):
     # https://osgeo-org.atlassian.net/browse/GEOS-7533
     # db_store_name = settings.DB_DATASTORE_NAME
     """
-    if settings.USE_MONTHLY_DATASTORE_FOR_TABULAR_MAPPING is False:
-        # Only one datastore, use it.
-        return settings.DB_DATASTORE_NAME
-
     # Is the user in the group "dataverse"?
     if user:
-        # only users in target-joins-uploader group will use the dataverse database
+        # only users in target-joins-uploader group will use the "dataverse" store
         if user.groups.filter(name=settings.DATAVERSE_GROUP_NAME).exists():
+            #print 'settings.DB_DATAVERSE_NAME', settings.DB_DATAVERSE_NAME
             return settings.DB_DATAVERSE_NAME
 
     # We're using a monthly db
     now = datetime.datetime.now()
     db_store_name = 'wm_%s%02d' % (now.year, now.month)
+
     return db_store_name
+
+
 
 
 def save(layer, base_file, user, overwrite = True, title=None,

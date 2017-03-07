@@ -8,7 +8,7 @@ gettext = lambda s: s
 #
 # General Django development settings
 #
-sys.path.append('/vagrant/shared-dataverse-information')
+
 
 ####################### DATAVERSE_INFO_REPOSITORY_PATH
 #
@@ -56,13 +56,6 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.contrib.gis.db.backends.postgis',
         'NAME': 'wm_db',
-        'USER': 'wm_user',
-        'PASSWORD': 'wm_password',
-        'HOST': 'localhost', 'PORT': '5432'
-        },
-    'wmdata': {
-        'ENGINE': 'django.contrib.gis.db.backends.postgis',
-        'NAME': 'wmdata',
         'USER': 'wm_user',
         'PASSWORD': 'wm_password',
         'HOST': 'localhost', 'PORT': '5432'
@@ -168,7 +161,6 @@ INSTALLED_APPS = (
     'geonode.capabilities',
     'geonode.queue',
     'geonode.certification',
-
     # Datatable API
     'geonode.contrib.datatables',
     #'geonode.hoods',
@@ -176,7 +168,7 @@ INSTALLED_APPS = (
     #'debug_toolbar',
     'geonode.actions',
 
-    #Dataverse apps
+    #DVN apps
     'shared_dataverse_information.dataverse_info',           # external repository: https://github.com/IQSS/shared-dataverse-information
     'shared_dataverse_information.layer_classification',     # external repository: https://github.com/IQSS/shared-dataverse-information
     'geonode.contrib.dataverse_permission_links',
@@ -511,25 +503,11 @@ GEONODE_CLIENT_LOCATION = "/static/geonode/"
 # GeoNode vector data backend configuration.
 
 #Import uploaded shapefiles into a database such as PostGIS?
-DB_DATASTORE = True
+DB_DATASTORE = False
 
 #
 #Database datastore connection settings
 #
-#
-USE_MONTHLY_DATASTORE_FOR_TABULAR_MAPPING = False
-
-DB_DATASTORE_DATABASE = 'wmdata'
-DB_DATASTORE_USER = 'wm_user'
-DB_DATASTORE_PASSWORD = 'wm_password'
-DB_DATASTORE_HOST = 'localhost'
-DB_DATASTORE_PORT = '5432'
-DB_DATASTORE_TYPE = 'postgis'
-# Name of the store in geoserver
-DB_DATASTORE_NAME = 'wmdata'   #wmdata'
-DB_DATASTORE_ENGINE = 'django.contrib.gis.db.backends.postgis'
-
-"""
 DB_DATASTORE_DATABASE = ''
 DB_DATASTORE_USER = ''
 DB_DATASTORE_PASSWORD = ''
@@ -539,7 +517,6 @@ DB_DATASTORE_TYPE = ''
 # Name of the store in geoserver
 DB_DATASTORE_NAME = ''
 DB_DATASTORE_ENGINE = 'django.contrib.gis.db.backends.postgis'
-"""
 
 """
 START GAZETTEER SETTINGS
