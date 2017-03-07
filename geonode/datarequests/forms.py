@@ -387,7 +387,6 @@ class DataRequestForm(forms.ModelForm):
         for data_type in self.clean_data_class_requested():
             data_request.data_type.add(str(data_type.short_name))
 
-        pprint(data_request.data_type.names())
         if commit:
             data_request.save()
 
