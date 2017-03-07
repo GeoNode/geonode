@@ -22,6 +22,7 @@ from django.views.decorators.http import require_POST
 from django.views.generic import TemplateView
 
 from geonode.base.enumerations import CHARSETS
+from geonode.cephgeo.models import TileDataClass
 from geonode.documents.models import Document
 from geonode.layers.models import UploadSession, Style
 from geonode.layers.utils import file_upload
