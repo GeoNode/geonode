@@ -410,21 +410,6 @@ class ProfileRequestResource(ModelResource):
         else:
             return False
 
-    def check_filtering(self, field_name, filter_type='exact', filter_bits = None):
-        pprint(field_name)
-        pprint(self.fields[field_name].attribute)
-        return super(ProfileRequestResource, self).check_filtering(field_name, filter_type, filter_bits)
-
-    def build_filters(self, filters=None):
-        if filters == None:
-            filters = {}
-            
-        orm_filters = super(ProfileRequestResource, self).build_filters(filters)
-        pprint(orm_filters)
-        pprint(filters)
-        
-        return orm_filters    
-
     def apply_filters(self, request, applicable_filters):
         base_object_list = super(ProfileRequestResource, self).apply_filters(request, applicable_filters)
         query = request.GET.get('title__icontains', None)
@@ -454,7 +439,7 @@ class ProfileRequestResource(ModelResource):
 class DataRequestResource(ModelResource):
     """Data Request api"""
     data_request_detail_url = fields.CharField()
-    status = fields.CharField()
+    status = fields.CharField(attribute="status")
     status_label = fields.CharField()
     is_rejected = fields.BooleanField(default=False)
     rejection_reason = fields.CharField()
