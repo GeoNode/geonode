@@ -1,3 +1,4 @@
+import ast
 import datetime
 import os
 import shutil
@@ -122,9 +123,8 @@ def data_request_view(request):
         data_classes = post_data.get('data_class_requested',None)
         data_class_objs = []
         if isinstance(data_classes, basestring):
-            pprint(data_classes)
-            for s in data_classes.split(','):
-                pprint(s)
+            #pprint(data_classes)
+            for s in ast.literal_eval(x):
                 try:
                     data_class_objs.append(TileDataClass.objects.get(short_name=s))
                 except Exception as e:
