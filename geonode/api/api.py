@@ -370,7 +370,7 @@ class ProfileRequestResource(ModelResource):
         return bundle.obj.rejection_reason
 
     def dehydrate_status(self, bundle):
-        return bundle.obj.status.get_request_status_display()
+        return bundle.obj.status.get_status_display()
 
     def dehydrate_is_rejected(self, bundle):
         return bundle.obj.status == 'rejected'
