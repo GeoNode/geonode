@@ -123,8 +123,9 @@ def data_request_view(request):
         data_classes = post_data.get('data_class_requested',None)
         data_class_objs = []
         pprint("post_data: "+str(data_classes))
-        pprint("len:"+str(len(data_classes))
-        """if isinstance(data_classes, basestring):
+        pprint("len:"+str(len(data_classes)))
+        """
+        if isinstance(data_classes, basestring):
             #pprint(data_classes)
             for s in ast.literal_eval(data_classes):
                 pprint(s)
