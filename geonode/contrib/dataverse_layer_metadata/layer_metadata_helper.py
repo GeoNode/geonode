@@ -20,7 +20,7 @@ from shared_dataverse_information.shapefile_import.forms import ShapefileImportD
 
 from geonode.contrib.dataverse_layer_metadata.models import DataverseLayerMetadata
 from geonode.contrib.dataverse_layer_metadata.forms import DataverseLayerMetadataValidationForm
-from geonode.contrib.dataverse_permission_links.permission_setter import PermissionLinker
+from geonode.contrib.dataverse_permission_links.permission_linker import PermissionLinker
 from geonode.maps.models import Layer
 
 LOGGER = logging.getLogger("geonode.dataverse_layer_metadata.layer_metadata_helper")
