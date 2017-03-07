@@ -16,6 +16,7 @@ from django_enumfield import enum
 from django.core import validators
 
 from model_utils import Choices
+from model_utils.models import StatusModel
 from pprint import pprint
 from unidecode import unidecode
 
@@ -30,7 +31,7 @@ from taggit.managers import TaggableManager
 
 import geonode.local_settings as local_settings
 
-class DataRequest(BaseRequest):
+class DataRequest(BaseRequest, StatusModel):
 
     DATA_TYPE_CHOICES = Choices(
         ('interpreted', _('Interpreted')),
