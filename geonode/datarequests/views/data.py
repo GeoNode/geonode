@@ -323,13 +323,13 @@ def data_request_facet_count(request):
     else:
         facets_count = {
             'pending': DataRequest.objects.filter(
-                status='pending').exclude(date=None).count(),
+                status='pending').count(),
             'approved': DataRequest.objects.filter(
                 status='approved').count(),
             'rejected': DataRequest.objects.filter(
                 status='rejected').count(),
             'cancelled': DataRequest.objects.filter(
-                status='cancelled').exclude(date=None).count(),
+                status='cancelled').count(),
         }
 
     return HttpResponse(
