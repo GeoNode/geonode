@@ -112,7 +112,7 @@ class ProfileRequest(BaseRequest, StatusModel):
         _('Organization Type'),
         max_length=255,
         blank=False,
-        null=False, 
+        null=False,
         default="Other",
         help_text=_('Organization type based on Phil-LiDAR1 Data Distribution Policy')
     )

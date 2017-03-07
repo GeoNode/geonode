@@ -466,7 +466,6 @@ class DataRequestResource(ModelResource):
                      'requester_type': ALL,
                      'status': ALL,
                      'organization': ALL,
-                     'status': ALL,
                      'date_submitted': ALL,
                      }
 
