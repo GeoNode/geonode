@@ -485,7 +485,6 @@ class DataRequestShapefileForm(NewLayerUploadForm):
     
     def clean_data_class_requested(self):
         data_classes = self.cleaned_data.get('data_class_requested')
-        pprint(data_classes)
         data_class_list = []
         for dc in data_classes:
             data_class_list.append(dc)
