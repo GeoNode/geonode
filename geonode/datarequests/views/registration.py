@@ -123,7 +123,7 @@ def data_request_view(request):
         data_classes = post_data.get('data_class_requested',None)
         data_class_objs = []
         pprint(data_classes)
-        if isinstance(data_classes, basestring):
+        """if isinstance(data_classes, basestring):
             #pprint(data_classes)
             for s in ast.literal_eval(data_classes):
                 pprint(s)
@@ -133,6 +133,7 @@ def data_request_view(request):
                     continue
             pprint(data_class_objs)
             post_data['data_class_requested'] = data_class_objs
+        """
         details_form = DataRequestForm(post_data, request.FILES)
         data_request_obj = None
         
