@@ -4,6 +4,7 @@ from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.urlresolvers import reverse
+from django.forms.models import model_to_dict
 from django.http import HttpResponse, HttpResponseRedirect, Http404
 from django.shortcuts import (
     redirect, get_object_or_404, render, render_to_response)
@@ -19,6 +20,7 @@ from urlparse import parse_qs
 
 from geonode.cephgeo.models import TileDataClass
 from geonode.cephgeo.models import UserJurisdiction
+from geonode.datarequests.admin_edit_forms import DataRequestEditForm
 from geonode.datarequests.forms import DataRequestRejectForm
 from geonode.datarequests.models import DataRequest
 from geonode.documents.models import get_related_documents
