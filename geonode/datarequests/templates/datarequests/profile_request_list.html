@@ -36,7 +36,7 @@
       {% if HAYSTACK_SEARCH %}
           SEARCH_URL = '{% url 'api_get_search' api_name='api' resource_name='base' %}?type__in=profile_request'
       {% else %}
-          SEARCH_URL = '{% url 'api_dispatch_list' api_name='api' resource_name='profile_requests' %}';
+          SEARCH_URL = "{% url 'api_dispatch_list' api_name='api' resource_name='profile_requests' %}";
       {% endif %}
     FILTER_TYPE = 'profile_request';
 
@@ -60,9 +60,9 @@
         });
     }
 
-    $(".filter").on('click', '.request-filter', function() {
+    /*$(".filter").on('click', '.request-filter', function() {
       facetCounts();
-    });
+    });*/
 
     var getActiveFilters = function() {
       var vars = [], hash;
@@ -93,10 +93,15 @@
 
     }
 
-    facetCounts();
-    getActiveFilters();
 
-
+    $(document).ready(function (){
+        getActiveFilters();
+        facetCounts();
+        $(".filter").on('click', '.request-filter', function() {
+            getActiveFilters();
+            facetCounts();
+        });
+    });
 
   </script>
   {% with include_spatial='false' %}
