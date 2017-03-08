@@ -40,7 +40,7 @@ srs=EPSG
 
 """
 
-class LayerMetadata:
+class LayerMetadata(object):
     """
     Prepare Layer Metadata to send back to Geoconnect, and then the Dataverse.
 
@@ -102,7 +102,7 @@ class LayerMetadata:
             print '%s: (%s)' % (k, v)
         print '-'
         '''
-        
+
         if as_json:
             try:
                 return json.dumps(params)
@@ -148,7 +148,7 @@ class LayerMetadata:
         #self.srs = layer_obj.srs
         self.attribute_info = self.get_attribute_metadata(layer_obj)
         if layer_obj.owner:
-            self.worldmap_username =  layer_obj.owner.username
+            self.worldmap_username = layer_obj.owner.username
 
         download_links_dict = self.format_download_links(layer_obj)
         if download_links_dict:
@@ -166,7 +166,7 @@ class LayerMetadata:
     def format_download_links(self, layer_obj):
         assert type(layer_obj) is Layer, "layer_obj must be type Layer"
 
-        if not hasattr(layer_obj, 'resource'):
+        if layer_obj.resource is None:
             return None
         if not hasattr(layer_obj.resource, 'resource_type'):
             return None

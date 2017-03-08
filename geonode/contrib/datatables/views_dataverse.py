@@ -1,19 +1,20 @@
+"""
+API endpoints mapping tabular files from Dataverse
+ - "view_upload_table_and_join_layer" should be rewritten/factored out
+"""
 from __future__ import print_function
 
 import traceback
 import json
-
+import sys
 from django.http import HttpResponse
 from django.views.decorators.csrf import csrf_exempt
-from django.utils.translation import ugettext_lazy as _
 from geonode.contrib.basic_auth_decorator import http_basic_auth_for_api
-
-from django.views.decorators.http import require_POST
 
 from geonode.maps.models import Layer
 from geonode.contrib.datatables.models import TableJoin, LatLngTableMappingRecord
-from geonode.contrib.dataverse_connect.dv_utils import MessageHelperJSON          # format json response object
-from geonode.contrib.dataverse_connect.layer_metadata import LayerMetadata        # object with layer metadata
+from geonode.contrib.dataverse_connect.dv_utils import MessageHelperJSON
+from geonode.contrib.dataverse_connect.layer_metadata import LayerMetadata
 from geonode.contrib.datatables.column_checker import ColumnHelper
 
 from geonode.contrib.dataverse_layer_metadata.forms import\
@@ -22,13 +23,9 @@ from geonode.contrib.dataverse_layer_metadata.forms import\
 from geonode.contrib.datatables.forms import DataTableUploadFormLatLng
 
 from geonode.contrib.datatables.views import datatable_upload_api
-#from geonode.contrib.datatables.forms import JoinTargetForm,\
-#                                        TableUploadAndJoinRequestForm,\
-#                                        DataTableResponseForm,\
-#                                        TableJoinResultForm,\
-#                                        DataTableUploadFormLatLng
-from geonode.contrib.dataverse_layer_metadata.layer_metadata_helper import add_dataverse_layer_metadata,\
-                retrieve_dataverse_layer_metadata_by_kwargs_installation_and_file_id
+from geonode.contrib.dataverse_layer_metadata.layer_metadata_helper import\
+    add_dataverse_layer_metadata,\
+    retrieve_dataverse_layer_metadata_by_kwargs_installation_and_file_id
 
 
 
@@ -40,7 +37,7 @@ from geonode.contrib.datatables.utils import attempt_tablejoin_from_request_para
     attempt_datatable_upload_from_request_params
 from geonode.contrib.datatables.utils_lat_lng import create_point_col_from_lat_lon
 
-from geonode.contrib.msg_util import *
+from geonode.contrib.msg_util import msg
 from shared_dataverse_information.shared_form_util.format_form_errors import format_errors_as_text
 
 
@@ -76,18 +73,19 @@ def view_upload_table_and_join_layer(request):
     post_data_dict = request.POST.dict()
 
     msg('step 1')
-    LOGGER.info('Upload a tabular file originating from Dataverse/Geoconnect and join it to a layer.')
-    LOGGER.info('Step 1:  Is the Dataverse Layer Metadata valid?')
+    LOGGER.info(('Upload tabular file from DV/Geoconnect and join to a layer.'
+                 '\nStep 1:  Is the Dataverse Layer Metadata valid?'))
     # -------------------------------------------
     # Is the Dataverse Layer Metadata valid?
     # -------------------------------------------
     form_dv_metadata = DataverseLayerMetadataValidationForm(post_data_dict)
     if not form_dv_metadata.is_valid():
-        LOGGER.error('check_for_existing_layer. failed validation')
-        LOGGER.error('Errors: %s' % form_dv_metadata.errors)
+        LOGGER.error(('check_for_existing_layer. failed validation'
+                      '\nErrors: %s'), form_dv_metadata.errors)
         #raise forms.ValidationError('Failed to validate dataverse_info data')
-        json_msg = MessageHelperJSON.get_json_fail_msg('Failed to validate dataverse_info data',
-                                                       data_dict=form_dv_metadata.errors)
+        json_msg = MessageHelperJSON.get_json_fail_msg(\
+                            'Failed to validate dataverse_info data',
+                            data_dict=form_dv_metadata.errors)
 
         return HttpResponse(json_msg, mimetype="application/json", status=400)
 
@@ -98,7 +96,8 @@ def view_upload_table_and_join_layer(request):
     msg('step 2')
     LOGGER.info('Step 2:  Does a layer already exist for this DataverseInfo?')
 
-    existing_dv_layer_metadata = retrieve_dataverse_layer_metadata_by_kwargs_installation_and_file_id(**post_data_dict)
+    existing_dv_layer_metadata = \
+        retrieve_dataverse_layer_metadata_by_kwargs_installation_and_file_id(**post_data_dict)
 
     #-----------------------------------------------------------
     #   A layer was found!
@@ -181,7 +180,8 @@ def view_upload_table_and_join_layer(request):
     # ---------------------------------
     LOGGER.info("Step 6: Make the JOIN to the table")
 
-    (success, tablejoin_obj_or_err_msg) = attempt_tablejoin_from_request_params(join_props, request.user)
+    (success, tablejoin_obj_or_err_msg) = \
+        attempt_tablejoin_from_request_params(join_props, request.user)
 
     if not success: # FAILED!
         new_datatable.delete()  # remove the datatable
@@ -200,7 +200,8 @@ def view_upload_table_and_join_layer(request):
     # ----------------------------------------------------
     LOGGER.info('Step 7: Make a new DataverseInfo object and attach it to the Layer')
 
-    (object_created, err_msg_or_dv_metadata) = create_dataverse_metadata_object(new_layer, post_data_dict)
+    (object_created, err_msg_or_dv_metadata) = create_dataverse_metadata(\
+                                                new_layer, post_data_dict)
     if object_created is False:
         json_msg = MessageHelperJSON.get_json_fail_msg(err_msg_or_dv_metadata)
         return HttpResponse(status=400, content=json_msg, content_type="application/json")
@@ -229,7 +230,7 @@ def view_upload_table_and_join_layer(request):
 @http_basic_auth_for_api
 @csrf_exempt
 def view_upload_lat_lng_table(request):
-
+    """Upload a tabular file with lat/lng columns"""
     msg('view_upload_lat_lng_table 0')
     # -------------------------------------------
     # Is it a POST?
@@ -240,7 +241,7 @@ def view_upload_lat_lng_table(request):
 
     post_data_dict = request.POST.dict()
 
-    LOGGER.info('Upload a lat/lng file originating from Dataverse/Geoconnect and join it to a layer.')
+    LOGGER.info('Upload lat/lng file from DV/Geoconnect and join to a layer.')
     LOGGER.info('Step 1:  Is the Dataverse Layer Metadata valid?')
 
     msg('view_upload_lat_lng_table 1')
@@ -262,7 +263,8 @@ def view_upload_lat_lng_table(request):
     msg('step 2')
     LOGGER.info('Step 2:  Does a layer already exist for this DataverseInfo?')
 
-    existing_dv_layer_metadata = retrieve_dataverse_layer_metadata_by_kwargs_installation_and_file_id(**post_data_dict)
+    existing_dv_layer_metadata =\
+     retrieve_dataverse_layer_metadata_by_kwargs_installation_and_file_id(**post_data_dict)
 
     #-----------------------------------------------------------
     #   A layer was found!
@@ -284,7 +286,7 @@ def view_upload_lat_lng_table(request):
     # -------------------------------------------
     # (2) Is the Lat/Lng request data valid? Check with the MapLatLngLayerRequestForm
     # -------------------------------------------
-    LOGGER.info('Step 2:  Is the Lat/Lng request data valid? Check with the MapLatLngLayerRequestForm')
+    LOGGER.info('Step 2:  Is Lat/Lng data valid? Check via MapLatLngLayerRequestForm')
     f = DataTableUploadFormLatLng(request.POST, request.FILES)
     if not f.is_valid():
         err_msg = "Invalid data in request: %s" % format_errors_as_text(f)
@@ -307,7 +309,9 @@ def view_upload_lat_lng_table(request):
         resp = datatable_upload_api(request, is_dataverse_db=False)
         upload_return_dict = json.loads(resp.content)
         if upload_return_dict.get('success', None) is not True:
-            return HttpResponse(json.dumps(upload_return_dict), mimetype='application/json', status=400)
+            return HttpResponse(json.dumps(upload_return_dict),
+                                mimetype='application/json',
+                                status=400)
         else:
             pass # keep going
     except:
@@ -322,15 +326,16 @@ def view_upload_lat_lng_table(request):
     # --------------------------------------
     LOGGER.info('Step 4: Create layer using the Lat/Lng columns')
     try:
-        success, latlng_record_or_err_msg = create_point_col_from_lat_lon(new_table_owner
-                        , upload_return_dict['data']['datatable_name']
-                        , f.cleaned_data['lat_attribute']
-                        , f.cleaned_data['lng_attribute']
-                    )
+        success, latlng_record_or_err_msg = create_point_col_from_lat_lon(\
+                        new_table_owner,
+                        upload_return_dict['data']['datatable_name'],
+                        f.cleaned_data['lat_attribute'],
+                        f.cleaned_data['lng_attribute'])
 
 
         if not success:
-            LOGGER.error('Failed to (2) Create layer for map lat/lng table: %s' % latlng_record_or_err_msg)
+            LOGGER.error('Failed to (2) Create layer for map lat/lng table: %s',\
+                         latlng_record_or_err_msg)
 
             # FAILED
             #
@@ -340,7 +345,7 @@ def view_upload_lat_lng_table(request):
             # -------------------------------------------
             # Add DataverseLayerMetadata object
             # -------------------------------------------
-            (object_created, err_msg_or_dv_metadata) = create_dataverse_metadata_object(\
+            (object_created, err_msg_or_dv_metadata) = create_dataverse_metadata(\
                                         latlng_record_or_err_msg.layer,\
                                         post_data_dict)
 
@@ -376,7 +381,7 @@ def view_upload_lat_lng_table(request):
 
 
 
-def create_dataverse_metadata_object(new_layer, dv_metadata):
+def create_dataverse_metadata(new_layer, dv_metadata):
     """
     Create a DataverseInfo object based on a layer name and dv_metadata
 
@@ -392,9 +397,10 @@ def create_dataverse_metadata_object(new_layer, dv_metadata):
         # --------------------
         # Log the error
         # --------------------
-        err_msg = "Error.  New map layer created but failed to save Dataverse metadata (new map has been removed)."
+        err_msg = ('Error.  New map layer created but failed'
+                   ' to save Dataverse metadata (new map has been removed).')
         LOGGER.error(err_msg)
-        LOGGER.error("New map had name/id %s/%s" % (new_layer_type_name, new_layer.id))
+        LOGGER.error("New map had name/id %s/%s", new_layer, new_layer.id)
 
         # --------------------
         # Delete the new layer
@@ -424,7 +430,7 @@ def get_layer_metadata_dict(layer, additional_params=None):
         etc.
     """
     if not isinstance(layer, Layer):
-        LOGGER.error('A Layer object must be specified, not  %s' % type(Layer))
+        LOGGER.error('A Layer object must be specified, not  %s', type(Layer))
         return None
 
     layer_metadata_obj = LayerMetadata(layer)
@@ -438,8 +444,10 @@ def get_layer_metadata_dict(layer, additional_params=None):
 
 
 def get_layer_and_join_metadata(layer):
+    """Given Metadata for a Layer created by mapping a Dataverse tabular file"""
+
     if not isinstance(layer, Layer):
-        LOGGER.error('A Layer object must be specified, not  %s' % type(Layer))
+        LOGGER.error('A Layer object must be specified, not  %s', type(Layer))
         return None
 
     additional_params = None

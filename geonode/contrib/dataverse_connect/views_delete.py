@@ -4,22 +4,21 @@ import logging
 from django.http import HttpResponse
 
 from django.views.decorators.csrf import csrf_exempt
+from django.contrib.contenttypes.models import ContentType
 
 from shared_dataverse_information.shared_form_util.format_form_errors import format_errors_as_text
 
-from geonode.contrib.dataverse_layer_metadata.models import DataverseLayerMetadata
-
-from geonode.contrib.dataverse_connect.dv_utils import MessageHelperJSON          # format json response object
-from geonode.contrib.dataverse_connect.forms import DataverseLayerIndentityForm
-
-from geonode.contrib.dataverse_layer_metadata.layer_metadata_helper import retrieve_dataverse_layer_metadata_by_installation_and_file_id,\
-    check_for_existing_layer
-from geonode.maps.models import Layer
-
 from geoserver.catalog import FailedRequestError
 
+from geonode.core.models import UserObjectRoleMapping
+from geonode.maps.models import Layer
+from geonode.contrib.dataverse_connect.dv_utils import MessageHelperJSON
+from geonode.contrib.dataverse_connect.forms import DataverseLayerIndentityForm
+from geonode.contrib.dataverse_layer_metadata.layer_metadata_helper import\
+    retrieve_dataverse_layer_metadata_by_installation_and_file_id
+
 from geonode.contrib.basic_auth_decorator import http_basic_auth_for_api
-logger = logging.getLogger(__name__)
+LOGGER = logging.getLogger(__name__)
 
 
 @csrf_exempt
@@ -47,20 +46,24 @@ def view_delete_dataverse_map_layer(request):
         #
         #   Invalid, send back an error message
         #
-        logger.error("Delete API. Error: \n%s" % format_errors_as_text(delete_form))
+        LOGGER.error("Delete API. Error: \n%s", format_errors_as_text(delete_form))
         json_msg = MessageHelperJSON.get_json_msg(success=False\
                             , msg="Invalid data for delete request.")
         return HttpResponse(status=400, content=json_msg, content_type="application/json")
 
-    logger.info("pre existing layer check")
+    LOGGER.info("pre existing layer check")
 
-    existing_dv_layer_metadata = retrieve_dataverse_layer_metadata_by_installation_and_file_id(
-                                                    delete_form.cleaned_data['datafile_id'],
-                                                    delete_form.cleaned_data['dataverse_installation_name']
-                                                )
+    existing_dv_layer_metadata = retrieve_dataverse_layer_metadata_by_installation_and_file_id(\
+                            delete_form.cleaned_data['datafile_id'],
+                            delete_form.cleaned_data['dataverse_installation_name'])
+
     if existing_dv_layer_metadata is None:
-        json_msg = MessageHelperJSON.get_json_msg(success=False, msg="Existing layer not found.")
-        return HttpResponse(status=404, content=json_msg, content_type="application/json")
+        json_msg = MessageHelperJSON.get_json_msg(\
+                                        success=False,
+                                        msg="Existing layer not found.")
+        return HttpResponse(status=404,
+                            content=json_msg,
+                            content_type="application/json")
 
     map_layer = existing_dv_layer_metadata.map_layer
 
@@ -68,7 +71,7 @@ def view_delete_dataverse_map_layer(request):
     #if not request.user.has_perm('maps.delete_layer', obj=map_layer):
     if request.user != map_layer.owner:
         err_msg = "You are not permitted to delete this Map Layer"
-        logger.error(err_msg + ' (id: %s)' % map_layer.id)
+        LOGGER.error(err_msg + ' (id: %s)' % map_layer.id)
         json_msg = MessageHelperJSON.get_json_fail_msg(err_msg)
         return HttpResponse(json_msg, mimetype='application/json', status=401)
 
@@ -112,22 +115,37 @@ def view_delete_dataverse_map_layer(request):
 
 
 def delete_map_layer(map_layer):
-    assert isinstance(map_layer, Layer), "map_layer must be a geonode.maps.models.Layer object"
-
+    """Delete a Layer object and related UserObjectRoleMapping objects"""
+    assert isinstance(map_layer, Layer),\
+        "map_layer must be a geonode.maps.models.Layer object"
 
     # Is this a part of a join_layer?
-    # If so, then the layer is a view
+    # If so, then the layer may be a view
     #
-    if hasattr(map_layer, 'join_layer') and map_layer.join_layer.count() > 0:
-        join_layer = map_layer.join_layer.all()[0]
+    #if hasattr(map_layer, 'join_layer') and map_layer.join_layer.count() > 0:
+    #    join_layer = map_layer.join_layer.all()[0]
+
+
+    # save the id for pre-delete
+    map_layer_id = map_layer.id
 
     try:
         map_layer.delete()
     except FailedRequestError as e:
         return (False, "Failed to map_layer.  Error: %s" % e.message)
     except:
-         err_msg = "Unexpected error: %s" % sys.exc_info()[0]
-         return (False, "Failed to map_layer. %s" % err_msg)
+        err_msg = "Unexpected error: %s" % sys.exc_info()[0]
+        return (False, "Failed to map_layer. %s" % err_msg)
+
+
+    # -----------------------------------------------
+    # If the Layer was deleted,
+    # Delete related UserObjectRoleMapping objects
+    # -----------------------------------------------
+    ctype = ContentType.objects.get_for_model(Layer)
+    role_params = dict(object_ct=ctype,
+                       object_id=map_layer_id)
+    UserObjectRoleMapping.objects.filter(**role_params).delete()
 
     return (True, None)
 

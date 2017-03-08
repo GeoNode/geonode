@@ -6,8 +6,6 @@ import logging
 from zipfile import ZipFile
 from random import choice
 import re
-from django.db import transaction
-from django.utils.html import escape
 from django.utils.translation import ugettext as _
 from django.contrib.auth.models import User
 from geonode.maps.models import Map, Layer, MapLayer, Contact, ContactRole, Role, get_csw
@@ -27,7 +25,6 @@ from django.utils.translation import ugettext as _
 
 # Geonode functionality
 from geonode.maps.models import Contact, Layer, LayerAttribute
-from geonode.maps.gs_helpers import cascading_delete, get_sld_for, delete_from_postgis
 
 # Geoserver functionality
 import geoserver
@@ -229,16 +226,29 @@ def cleanup(name, layer_id):
 
 
 def get_db_store_name(user=None):
+    """
+    Used for tabular mapping.
+    In production, monthly dbs are created for new layers.
+    However: for joins, the tables must be in the same db
+
     # DB_DATASTORE_NAME is not used anymore now until this is fixed:
     # https://osgeo-org.atlassian.net/browse/GEOS-7533
     # db_store_name = settings.DB_DATASTORE_NAME
+    """
+    # Is the user in the group "dataverse"?
+    if user:
+        # only users in target-joins-uploader group will use the "dataverse" store
+        if user.groups.filter(name=settings.DATAVERSE_GROUP_NAME).exists():
+            #print 'settings.DB_DATAVERSE_NAME', settings.DB_DATAVERSE_NAME
+            return settings.DB_DATAVERSE_NAME
+
+    # We're using a monthly db
     now = datetime.datetime.now()
     db_store_name = 'wm_%s%02d' % (now.year, now.month)
-    if user:
-        # only users in target-joins-uploader group will use the dataverse database
-        if user.groups.filter(name=settings.DATAVERSE_GROUP_NAME).exists():
-            db_store_name = settings.DB_DATAVERSE_NAME
+
     return db_store_name
+
+
 
 
 def save(layer, base_file, user, overwrite = True, title=None,
