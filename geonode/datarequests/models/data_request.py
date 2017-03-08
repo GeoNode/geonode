@@ -114,7 +114,7 @@ class DataRequest(BaseRequest, StatusModel):
     #For request letter
     request_letter= models.ForeignKey(Document, null=True, blank=True)
     
-    suc 
+    suc = TaggableManager(_('SUCs'),blank=True, help_text="SUC jurisdictions within this ROI", related_name="suc_tag")
 
     class Meta:
         app_label = "datarequests"
