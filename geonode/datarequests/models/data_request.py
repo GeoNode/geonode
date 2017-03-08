@@ -113,6 +113,8 @@ class DataRequest(BaseRequest, StatusModel):
 
     #For request letter
     request_letter= models.ForeignKey(Document, null=True, blank=True)
+    
+    suc 
 
     class Meta:
         app_label = "datarequests"
