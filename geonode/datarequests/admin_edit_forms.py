@@ -132,12 +132,26 @@ class DataRequestEditForm(DataRequestForm):
     
     class Meta:
         model = DataRequest
-        
+        fields = [
+            "project_summary",
+            "purpose",
+            "purpose_other",
+            "data_class_requested",
+            "data_class_other",
+            "intended_use_of_dataset",
+            "additional_remarks"
+        ]
         
     def __init__(self, *args, **kwargs):
         super(DataRequestEditForm, self).__init__(*args, **kwargs)
         self.fields.pop('letter_file')
-        pprint(kwargs)
+        if 'initial' in kwargs and 'data_type' in kwargs['initial']:
+            initial_tags = []
+            for t_item in kwargs['initial']['data_type']:
+                initial_tags.append(t_item.tag.name)
+                
+            pprint(initial_tags)
+            self.fields['data_class_requested'].initial = initial_tags
         self.helper.layout = Layout(
             Div(
                 Field('project_summary', css_class='form-control'),
@@ -161,6 +175,10 @@ class DataRequestEditForm(DataRequestForm):
             ),
             Div(
                 Field('intended_use_of_dataset', css_class='form-control'),
+                css_class='form-group'
+            ),
+            Div(
+                Field('additional_remarks', css_class='form-control'),
                 css_class='form-group'
             ),
         )

@@ -106,6 +106,12 @@
           <td class="table-user-profile-attribute col-md-3">{% trans "Approval/Rejection Administrator" %}</td>
           <td>{{data_request.administrator.username}}</td>
       </tr>
+      {% if user.is_superuser %}
+      <tr>
+          <td class="table-user-profile-attribute col-md-3">{% trans "Additional Remarks" %}</td>
+          <td>{{data_request.additional_remarks}}</td>
+      </tr>
+      {% endif %}
       </tbody>
     </table>
 
