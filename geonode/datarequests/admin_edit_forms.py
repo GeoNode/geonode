@@ -132,3 +132,35 @@ class DataRequestEditForm(DataRequestForm):
     
     class Meta:
         model = DataRequest
+        
+        
+    def __init__(self, *args, **kwargs):
+        super(DataRequestEditForm, self).__init__(*args, **kwargs)
+        self.fields.pop('letter_file')
+        pprint(kwargs)
+        self.helper.layout = Layout(
+            Div(
+                Field('project_summary', css_class='form-control'),
+                css_class='form-group'
+            ),
+            Div(
+                Field('purpose', css_class='form-control'),
+                Div(
+                    Field('purpose_other', css_class='form-control'),
+                    css_class='col-sm-11 col-sm-offset-1'
+                ),
+                css_class='form-group'
+            ),
+            Div(
+               Field('data_class_requested', css_class='form-control'),
+               css_class='form-group'
+            ),
+            Div(
+                Field('data_class_other', css_class='form-control'),
+                css_class='form-group'
+            ),
+            Div(
+                Field('intended_use_of_dataset', css_class='form-control'),
+                css_class='form-group'
+            ),
+        )
