@@ -20,7 +20,7 @@ from geonode.documents.forms import DocumentCreateForm
 from geonode.people.models import OrganizationType, Profile
 
 from .models import DataRequest, ProfileRequest, LipadOrgType
-from .forms import ProfileRequestForm
+from .forms import ProfileRequestForm, DataRequestForm
 
 class ProfileRequestEditForm(ProfileRequestForm):
     
@@ -69,8 +69,6 @@ class ProfileRequestEditForm(ProfileRequestForm):
         super(ProfileRequestEditForm, self).__init__(*args, **kwargs)
         self.fields.pop('captcha')
         self.fields.keyOrder = self.ORDERED_FIELDS + [k for k in self.fields.keys() if k not in self.ORDERED_FIELDS]
-        if not self.fields['org_type'].choices[0][0] == '---------':
-            self.fields['org_type'].choices.insert(0, ('---------','---------'))
         self.helper = FormHelper()
         self.helper.layout = Layout(
             Fieldset('Editting Profile Request',
@@ -130,3 +128,8 @@ class ProfileRequestEditForm(ProfileRequestForm):
                 ),
             )
         )
+
+class DataRequestEditForm(DataRequestForm):
+    
+    class Meta:
+        model = DataRequest
