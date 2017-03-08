@@ -324,6 +324,9 @@ INSTALLED_APPS = (
     'south',
     'corsheaders',
     'captcha',
+    
+    #CAS client
+    'django_cas_ng',
 
     #CAS client
     'django_cas_ng',
@@ -428,7 +431,7 @@ MIDDLEWARE_CLASSES = (
 AUTHENTICATION_BACKENDS = (#'django_auth_ldap.backend.LDAPBackend',
                            #'geonode.security.auth.GranularBackend',
                            'django.contrib.auth.backends.ModelBackend',
-                           #'guardian.backends.ObjectPermissionBackend',
+                           'guardian.backends.ObjectPermissionBackend',
                            'django_cas_ng.backends.CASBackend',)
 
 
@@ -908,6 +911,7 @@ CELERY_IMPORTS = (
     'geonode.tasks.mk_folder',
     'geonode.tasks.jurisdiction',
     'geonode.tasks.jurisdiction2',
+    'geonode.tasks.requests',
     'geonode.tasks.users',
 )
 
@@ -1005,6 +1009,5 @@ CAS_VERSION = 3
 
 FP_DELINEATION_PL1 = 'fp_252_201613026v2'
 # used for layer tagging
-RB_DELINEATION_DREAM = 'DREAM_RB'
-FHM_COVERAGE = 'FHM_coverage'
-PL1_SUC_MUNIS = 'PL1_SUC_Munis'
+# RB_DELINEATION_DREAM = 'DREAM_RB'
+

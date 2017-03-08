@@ -273,7 +273,7 @@ class DataRequestProfile(TimeStampedModel):
         null = True,
         blank = True,
     )
-    
+
     data_request = models.ForeignKey(
         DataRequest,
         null = True,
@@ -359,6 +359,48 @@ class DataRequestProfile(TimeStampedModel):
         msg.attach_alternative(html_content, "text/html")
         msg.send()
 
+    def send_request_reception_email(self):
+        self.set_verification_key()
+        site = Site.objects.get_current()
+
+        text_content = """
+        Dear <strong>{}</strong>,
+
+        Your request has been received. Our team will process your request at the soonest possible time.
+
+        For inquiries, you can contact us as at {}.
+
+        Regards,
+        LiPAD Team
+         """.format(
+             unidecode(self.first_name),
+             local_settings.LIPAD_SUPPORT_MAIL,
+         )
+
+        html_content = """
+        <p>Dear <strong>{}</strong>,</p>
+
+       <p>Your request has been received. Our team will process your request at the soonest possible time.</p>
+       <p>For inquiries, you can contact us as at <a href="mailto:{}" target="_top">{}</a></p>
+       </br>
+        <p>Regards,</p>
+        <p>LiPAD Team</p>
+        """.format(
+            unidecode(self.first_name),
+            local_settings.LIPAD_SUPPORT_MAIL,
+            local_settings.LIPAD_SUPPORT_MAIL,
+        )
+
+        email_subject = _('[LiPAD] Request Received')
+
+        msg = EmailMultiAlternatives(
+            email_subject,
+            text_content,
+            settings.DEFAULT_FROM_EMAIL,
+            [self.email, ]
+        )
+        msg.attach_alternative(html_content, "text/html")
+        msg.send()
 
     def send_new_request_notif_to_admins(self):
         site = Site.objects.get_current()
@@ -743,7 +785,7 @@ class DataRequestProfile(TimeStampedModel):
                 else:
                     out.append('')
             elif f is 'org_type':
-                out.append(OrganizationType.get(getattr(self,'org_type')))
+                out.append(OrganizationType.get(getattr(self,'organization_type')))
             elif f is 'has_letter':
                 if self.request_letter:
                     out.append('yes')
@@ -781,6 +823,7 @@ class DataRequestProfile(TimeStampedModel):
             profile_request.organization = self.organization
             profile_request.location = self.location
             profile_request.organization_type = self.organization_type
+            profile_request.org_type = self.org_type
             profile_request.organization_other = self.organization_other
             profile_request.status = self.request_status
             profile_request.administrator =  self.administrator
@@ -789,24 +832,31 @@ class DataRequestProfile(TimeStampedModel):
             profile_request.created = self.key_created_date
             profile_request.verification_key = self.verification_key
             profile_request.verification_date = self.date
+            profile_request.ftp_folder = self.ftp_folder
+            profile_request.created = self.created
+            profile_request.status_changed = self.action_date
             if self.request_status == 'rejected':
                 profile_request.rejection_reason = self.rejection_reason
-                profile_request.additional_rejection_reason = self_additional_rejection_reason
-            
+                profile_request.additional_rejection_reason = self.additional_rejection_reason
+
             profile_request.additional_remarks = self.additional_remarks
             profile_request.save()
-            
+
             if not self.additional_remarks:
                 self.additional_remarks = ""
             self.additional_remarks += "migrated to profile request (" + dateformat.format(datetime.datetime.now(), 'F j, Y, P') +")"
             self.profile_request = profile_request
             self.save()
-            
+            if self.action_date is not None:
+                profile_request.status_changed = self.action_date
+            else:
+                profile_request.status_changed = self.key_created_date
+            profile_request.save()
             return profile_request
-        
+
         pprint("Migration failed")
         return None
-        
+
     def migrate_request_data(self):
         if self.project_summary and not self.data_request :
             profile_request = self.profile_request
@@ -821,22 +871,28 @@ class DataRequestProfile(TimeStampedModel):
             data_request.jurisdiction_shapefile = self.jurisdiction_shapefile
             data_request.juris_data_size = self.juris_data_size
             data_request.request_letter = self.request_letter
-                
+            data_request.status = self.request_status
+
             if self.request_status == 'rejected':
                 data_request.rejection_reason = self.rejection_reason
-                data_request.additional_rejection_reason = self_additional_rejection_reason
-            
+                data_request.additional_rejection_reason = self.additional_rejection_reason
+
             data_request.additional_remarks = self.additional_remarks
             data_request.profile_request = self.profile_request
             data_request.save()
-            
+
             self.profile_request.data_request = data_request
             self.profile_request.save()
-            
+
             self.additional_remarks += "migrated to data request (" + dateformat.format(datetime.datetime.now(), 'F j, Y, P') +")"
             self.data_request = data_request
             self.save()
-        
+
+            if self.action_date is not None:
+                data_request.status_changed = self.action_date
+            else:
+                data_request.status_changed = self.key_created_date
+            data_request.save()
             return data_request
-        
+
         return None

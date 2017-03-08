@@ -16,6 +16,7 @@ from django_enumfield import enum
 from django.core import validators
 
 from model_utils import Choices
+from model_utils.models import StatusModel
 from pprint import pprint
 from unidecode import unidecode
 
@@ -30,7 +31,7 @@ from taggit.managers import TaggableManager
 
 import geonode.local_settings as local_settings
 
-class DataRequest(BaseRequest):
+class DataRequest(BaseRequest, StatusModel):
 
     DATA_TYPE_CHOICES = Choices(
         ('interpreted', _('Interpreted')),
@@ -38,7 +39,7 @@ class DataRequest(BaseRequest):
         ('processed', _('Processed')),
         ('other', _('Other')),
     )
-    
+
     DATASET_USE_CHOICES = Choices(
         ('commercial', _('Commercial')),
         ('noncommercial', _('Non-commercial')),
@@ -62,15 +63,22 @@ class DataRequest(BaseRequest):
     
     data_type = TaggableManager(_('data_types'), blank=True, help_text="Data Type Selected")
     
+    data_class_other = models.CharField(
+        _('Requester-specified Data Type'),
+        null = True,
+        blank = True,
+        max_length = 50
+    )
+    
     data_type_requested = models.CharField(
         _('Type of Data Requested'),
         choices=DATA_TYPE_CHOICES,
         default=DATA_TYPE_CHOICES.processed,
         max_length=15,
-    )    
+    )
 
     purpose = models.TextField(_('Purpose of Data'), null=True, blank = True)
-    
+
     intended_use_of_dataset = models.CharField(
         _('Intended Use of Dataset'),
         choices=DATASET_USE_CHOICES,
@@ -79,11 +87,10 @@ class DataRequest(BaseRequest):
     )
 
     #For place name
-    place_name = models.CharField(
+    place_name = models.TextField(
         _('Geolocation name provided by Google'),
         null=True,
-        blank=True,
-        max_length=50,
+        blank=True
     )
 
     area_coverage = models.DecimalField(
@@ -145,7 +152,7 @@ class DataRequest(BaseRequest):
             uj = UserJurisdiction.objects.get(user=self.profile)
         except ObjectDoesNotExist:
             uj = UserJurisdiction()
-            uj.user = self.profile 
+            uj.user = self.profile
         uj.jurisdiction_shapefile = self.jurisdiction_shapefile
         uj.save()
         #Add view permission on resource
@@ -165,31 +172,31 @@ class DataRequest(BaseRequest):
             return self.profile.last_name
         if self.profile_request:
             return self.profile_request.last_name
-            
+
     def get_email(self):
         if self.profile:
             return self.profile.email
         if self.profile_request:
             return self.profile_request.email
-    
+
     def get_contact_number(self):
         if self.profile:
-            return self.profile.contact_number
+            return self.profile.voice
         if self.profile_request:
             return self.profile_request.contact_number
-            
+
     def get_organization(self):
         if self.profile:
             return self.profile.organization
         if self.profile_request:
             return self.profile_request.organization
-            
+
     def get_organization_type(self):
         if self.profile_request:
             return self.profile_request.get_organization_type()
         else:
             return None
-    
+
     def to_values_list(self, fields=['id','name','email','contact_number', 'organization', 'project_summary', 'created','status', 'data_size','area_coverage','has_profile_request']):
         out = []
         for f in fields:
@@ -283,13 +290,13 @@ class DataRequest(BaseRequest):
             request_type,
             settings.BASEURL + self.get_absolute_url()
         )
-        
+
         html_content=email_utils.NEW_REQUEST_EMAIL_HTML.format(
             request_type,
             settings.BASEURL + self.get_absolute_url(),
             settings.BASEURL + self.get_absolute_url()
         )
-        
+
         email_subject = "[LiPAD] A new request has been submitted"
         self.send_email(email_subject,text_content,html_content)
 

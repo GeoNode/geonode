@@ -338,24 +338,24 @@ def data_request_facet_count(request):
     if not request.user.is_superuser:
         facets_count = {
             'pending': DataRequest.objects.filter(
-                status='pending', profile=request.user).exclude(date=None).count(),
+                status='pending', profile=request.user).count(),
             'approved': DataRequest.objects.filter(
                 status='approved', profile=request.user).count(),
             'rejected': DataRequest.objects.filter(
                 status='rejected', profile=request.user).count(),
             'cancelled': DataRequest.objects.filter(
-                status='cancelled', profile=request.user).exclude(date=None).count(),
+                status='cancelled', profile=request.user).count(),
         }
     else:
         facets_count = {
             'pending': DataRequest.objects.filter(
-                status='pending').exclude(date=None).count(),
+                status='pending').count(),
             'approved': DataRequest.objects.filter(
                 status='approved').count(),
             'rejected': DataRequest.objects.filter(
                 status='rejected').count(),
             'cancelled': DataRequest.objects.filter(
-                status='cancelled').exclude(date=None).count(),
+                status='cancelled').count(),
         }
 
     return HttpResponse(
