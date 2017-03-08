@@ -163,7 +163,7 @@ def data_request_edit(request, pk, template ='datarequests/data_detail_edit.html
             pprint("form is valid")
             for k, v in form.cleaned_data.iteritems():
                 if k == 'data_class_requested':
-                    data_request.data_type.set(form.data_type.val clear=False)
+                    data_request.data_type.set(form.data_type.val,clear=False)
                     #remove original tags
                 setattr(data_request, k, v)
             data_request.administrator = request.user

@@ -146,6 +146,9 @@
         {% endif %}
       </li>
 {% if user.is_superuser %}
+    <li  class="list-group-item">
+        <a href='{% url "datarequests:data_request_edit" pk=data_request.pk %}' class="btn btn-primary btn-md btn-block"  id="edit-button">Edit Request</a>
+    </li>
     {% if data_request.jurisdiction_shapefile %}
     <li class="list-group-item">
              <form id="compute_request_size_form" method="post" class="modal-form" action='{% url "datarequests:data_request_compute_size" pk=data_request.pk %}'>{% csrf_token %}
