@@ -37,6 +37,7 @@ from collections import OrderedDict, Counter
 from geonode.datarequests.models.data_request import DataRequest
 from geonode.datarequests.models.profile_request import ProfileRequest
 from geonode.people.models import OrganizationType
+from geonode.datarequests.models import LipadOrgType
 
 import urllib2, json
 from urllib2 import HTTPError
@@ -105,7 +106,7 @@ def report_distribution_status(request, template='reports/distribution_status.ht
     rearrange_dr = {}
     monthly_datarequest = {}
     org_count = {}
-    monthly_datarequest_list = DataRequest.objects.all().order_by('status_changed')
+    monthly_datarequest_list = ProfileRequest.objects.all().order_by('status_changed')
     for eachinlist in monthly_datarequest_list:
         if eachinlist.status_changed.strftime('%Y%m') not in monthly_datarequest:
             monthly_datarequest[eachinlist.status_changed.strftime('%Y%m')] = {}
@@ -113,11 +114,12 @@ def report_distribution_status(request, template='reports/distribution_status.ht
             monthly_datarequest[eachinlist.status_changed.strftime('%Y%m')][eachinlist.status] = 0
         monthly_datarequest[eachinlist.status_changed.strftime('%Y%m')][eachinlist.status] += 1
 
-        mostrecent = ProfileRequest.objects.filter(id=eachinlist.profile_request_id).order_by('created').last()
+        mostrecent = ProfileRequest.objects.filter(id=eachinlist.id).order_by('created').last()
         if mostrecent:
-            if mostrecent.org_type not in org_count:
-                org_count[mostrecent.org_type] = 0
-            org_count[mostrecent.org_type] += 1
+            org_type_sub = LipadOrgType.objects.get(val=mostrecent.org_type).category
+            if org_type_sub not in org_count:
+                org_count[org_type_sub] = 0
+            org_count[org_type_sub] += 1
 
 
 
