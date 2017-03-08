@@ -172,6 +172,7 @@ def data_request_edit(request, pk, template ='datarequests/data_detail_edit.html
             data_request.save()
         else:
             pprint("form is invalid")
+            pprint(form.errors)
             return render( request, template, {'form': form, 'data_request': data_request})
         return HttpResponseRedirect(data_request.get_absolute_url())
 
