@@ -47,11 +47,11 @@ GeoExplorer.Viewer.prototype.loadConfig = function(config) {
     GeoExplorer.Viewer.superclass.loadConfig.call(this, config);
 };
 
-//remove the 3D Viewer from GeoExplorer
-GeoExplorer.Composer.prototype.loadConfig = function(config) {
+/* GeoExplorer.Composer.prototype.loadConfig = function(config) {
+    //remove the 3D Viewer from GeoExplorer
     
     config.tools.splice(6,1);
     GeoExplorer.Composer.superclass.loadConfig.call(this, config);
 };
-
+*/
 </script>
