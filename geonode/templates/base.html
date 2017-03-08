@@ -34,6 +34,26 @@
       </style>
     <![endif]-->
     <link rel="search" type="application/opensearchdescription+xml" href="/catalogue/opensearch" title="GeoNode Search"/>
+    <!-- for Google -->
+    <meta name="description" content="LiPAD serves as the primary data access and distribution center of the Phil-LiDAR 1 and Phil-LiDAR 2 Programs, a Department of Science and Technology initiative that engages the University of the Philippines and fifteen (15) Higher Education Institutions (HEIs) throughout the country, with the aim t..." />
+    <meta name="keywords" content="" />
+
+    <meta name="author" content="" />
+    <meta name="copyright" content="" />
+    <meta name="application-name" content="" />
+
+    <!-- for Facebook -->
+    <meta property="og:title" content="Welcome! - LiDAR Portal for Archiving and Distribution" />
+    <meta property="og:type" content="website" />
+    <meta property="og:image" content="" />
+    <!--<meta property="og:url" content="" />-->
+    <meta property="og:description" content="LiPAD serves as the primary data access and distribution center of the Phil-LiDAR 1 and Phil-LiDAR 2 Programs, a Department of Science and Technology initiative that engages the University of the Philippines and fifteen (15) Higher Education Institutions (HEIs) throughout the country, with the aim t..." />
+
+    <!-- for Twitter -->
+    <meta name="twitter:card" content="summary" />
+    <meta name="twitter:title" content="Welcome! - LiDAR Portal for Archiving and Distribution" />
+    <meta name="twitter:description" content="LiPAD serves as the primary data access and distribution center of the Phil-LiDAR 1 and Phil-LiDAR 2 Programs, a Department of Science and Technology initiative that engages the University of the Philippines and fifteen (15) Higher Education Institutions (HEIs) throughout the country, with the aim t..." />
+    <meta name="twitter:image" content="" />
   </head>
 
   <body class="{% block body_class %}{% endblock %}">
@@ -72,7 +92,6 @@
 	      <ul class="dropdown-menu">
 		<li><a href="{% url "document_browse" %}">{% trans "Reports" %}</a></li>
 		<li><a href="{% url "eula" %}">{% trans "EULA" %}</a></li>
-    <li><a href="{% url "distribution_status" %}">{% trans "Distribution Status" %}</a></li>
 	      </ul>
             </li>
            {% block extra_tab %}

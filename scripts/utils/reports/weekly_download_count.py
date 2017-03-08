@@ -70,27 +70,29 @@ datetoappend = datetime.strptime((datetime.now()-timedelta(days=3)).strftime('%U
 # auth_list = Action.objects.filter(verb='downloaded').order_by('timestamp')
 auth_list = DownloadTracker.objects.order_by('timestamp')
 for auth in auth_list:
-    if datetoappend == datetime.strptime(auth.timestamp.strftime('%U-%Y')+'-3','%U-%Y-%w') and not auth.resource_type == 'document':#if datenow is timestamp
-        luzvimin = get_luzvimin({
-            "timestamp": auth.timestamp,
-            "typename": auth.title,
-            })
-        add_to_count(luzvimin, auth.title)
-        add_to_count('monthly', auth.title)
-    elif datetoappend == datetime.strptime(auth.timestamp.strftime('%U-%Y')+'-3','%U-%Y-%w') and auth.resource_type == 'document':#if datenow is timestamp
-        add_to_monthlyc('monthly')
+    if not auth.actor.is_staff:
+        if datetoappend == datetime.strptime(auth.timestamp.strftime('%U-%Y')+'-3','%U-%Y-%w') and not auth.resource_type == 'document':#if datenow is timestamp
+            luzvimin = get_luzvimin({
+                "timestamp": auth.timestamp,
+                "typename": auth.title,
+                })
+            add_to_count(luzvimin, auth.title)
+            add_to_count('monthly', auth.title)
+        elif datetoappend == datetime.strptime(auth.timestamp.strftime('%U-%Y')+'-3','%U-%Y-%w') and auth.resource_type == 'document':#if datenow is timestamp
+            add_to_monthlyc('monthly')
 
 anon_list = AnonDownloader.objects.all().order_by('date')
 for anon in anon_list:
-    if datetoappend == datetime.strptime(anon.date.strftime('%U-%Y')+'-3','%U-%Y-%w') and not anon.anon_document:#if datenow is timestamp
-        luzvimin = get_luzvimin({
-            "timestamp": anon.date,
-            "typename": anon.anon_layer.typename,
-            })
-        add_to_count(luzvimin, anon.anon_layer.typename)
-        add_to_count('monthly', anon.anon_layer.typename)
-    elif datetoappend == datetime.strptime(anon.date.strftime('%U-%Y')+'-3','%U-%Y-%w') and anon.anon_document:#if datenow is timestamp
-        add_to_monthlyc('monthly')
+    if 'test' in anon.anon_first_name.lower() or 'test' in anon.anon_last_name.lower():
+        if datetoappend == datetime.strptime(anon.date.strftime('%U-%Y')+'-3','%U-%Y-%w') and not anon.anon_document:#if datenow is timestamp
+            luzvimin = get_luzvimin({
+                "timestamp": anon.date,
+                "typename": anon.anon_layer.typename,
+                })
+            add_to_count(luzvimin, anon.anon_layer.typename)
+            add_to_count('monthly', anon.anon_layer.typename)
+        elif datetoappend == datetime.strptime(anon.date.strftime('%U-%Y')+'-3','%U-%Y-%w') and anon.anon_document:#if datenow is timestamp
+            add_to_monthlyc('monthly')
 ftp_list = FTPRequest.objects.all().order_by('date_time')
 for ftp in ftp_list:
     if datetoappend == datetime.strptime(ftp.date_time.strftime('%U-%Y')+'-3','%U-%Y-%w'):

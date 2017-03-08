@@ -214,6 +214,17 @@ class ProfileRequestForm(forms.ModelForm):
                 'Organization name can only be 64 characters')
 
         return organization
+        
+    def clean_org_type(self):
+        org_type = self.cleaned_data.get('org_type', None)
+        #try:
+        #    LipadOrgType.objects.get(val=org_type.val)
+        #except Exception as e:
+        #    raise forms.ValidationError('Invalid organization type value')
+        if not org_type:
+            raise forms.ValidationError('Invalid organization type value')
+        
+        return org_type
 
     def clean_organization_other(self):
         organization_other = self.cleaned_data.get('organization_other')
@@ -238,9 +249,11 @@ class ProfileRequestForm(forms.ModelForm):
     def save(self, commit=True, *args, **kwargs):
         profile_request = super(
             ProfileRequestForm, self).save(commit=False, *args, **kwargs)
+        profile_request.org_type = self.cleaned_data.get('org_type').val
 
         if commit:
             profile_request.save()
+            pprint(profile_request.org_type)
         return profile_request
 
 class DataRequestForm(forms.ModelForm):
@@ -279,7 +292,7 @@ class DataRequestForm(forms.ModelForm):
         label = _('Types of Data Requested. (Press CTRL to select multiple types)'),
         queryset = TileDataClass.objects.all(),
         to_field_name = 'short_name',
-        required = False
+        required = True
     )
     
     letter_file = forms.FileField(
@@ -365,7 +378,6 @@ class DataRequestForm(forms.ModelForm):
         for data_type in self.clean_data_class_requested():
             data_request.data_type.add(str(data_type.short_name))
 
-        pprint(data_request.data_type.names())
         if commit:
             data_request.save()
 
@@ -463,7 +475,6 @@ class DataRequestShapefileForm(NewLayerUploadForm):
     
     def clean_data_class_requested(self):
         data_classes = self.cleaned_data.get('data_class_requested')
-        pprint(data_classes)
         data_class_list = []
         for dc in data_classes:
             data_class_list.append(dc)
@@ -472,7 +483,7 @@ class DataRequestShapefileForm(NewLayerUploadForm):
 
     def clean_data_class_other(self):
         data_class_other = self.cleaned_data.get('data_class_other')
-        data_classes = self.cleaned_data.get(data_class_requested)
+        data_classes = self.cleaned_data.get('data_class_requested')
         if 'Other' in data_classes and not data_class_other:
             raise forms.ValidationError(_('This field is required if you selected Other'))
         return data_class_other
