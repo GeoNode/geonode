@@ -61,7 +61,6 @@ class ProfileRequestEditForm(ProfileRequestForm):
     org_type = forms.ChoiceField(
         label = _('Organization Type'),
         choices = ORG_TYPE_CHOICES,
-        initial = '---------',
         required = True
     )
     
