@@ -24,8 +24,8 @@
                 {% endif %}
                 authorizedRoles: "{{ user.is_authenticated|yesno:"ROLE_ADMINISTRATOR,ROLE_ANONYMOUS" }}",
 
-                /* The URL to a REST map configuration service.  This service 
-                 * provides listing and, with an authenticated user, saving of 
+                /* The URL to a REST map configuration service.  This service
+                 * provides listing and, with an authenticated user, saving of
                  * maps on the server for sharing and editing.
                  */
                 rest: "/maps/",
@@ -34,7 +34,7 @@
                 {% else %}
                 printService: "",
                 {% endif %}
-                
+
                 portalConfig: {
                     renderTo: "preview_map",
                     height: 600
@@ -47,7 +47,7 @@
 
                         // FIXME(Ariel): Zoom to extent until #1795 is fixed.
                         //map.zoomToExtent(layer.maxExtent, false)
-                        
+
                         var bbox = layer.bbox;
                         if (bbox != undefined)
                         {
@@ -79,33 +79,33 @@
             };
 
             config = Ext.apply(config, {{ viewer|safe }});
-			
+
 			//
 			// Extrapolating the granules times
 			//
 			var is_mosaic = "{{resource.is_mosaic}}" == "True" ? true : false;
 			if(is_mosaic){
 				var resource_name = "{{resource.name}}";
-				
+
 				var granules_features = {% if all_granules %} {{all_granules.features}} {% else %} [] {% endif %};
-				
+
 				var time_list = [];
 				for(var i=0; i<granules_features.length; i++){
 					var feature = granules_features[i];
-					
+
 					if(feature.properties.time){
 						var date = new Date(feature.properties.time);
 						var time = date.toISOString();
-						
+
 						if(time){
 							time_list.push(time);
 						}
 					}
 				}
-				
+
 				//
 				// Setting the time dimension accordingly to the granule time list
-				// 
+				//
 				var layers = config.map.layers;
 				for(var layer in layers){
 					l = layers[layer];
@@ -125,7 +125,7 @@
 					}
 				}
 			}
-			
+
             app = new GeoExplorer.Viewer(config);
 
             for (var key in app.tools) {
@@ -140,9 +140,16 @@
                 app.selectedLayer.getLayer().mergeNewParams({
                     "STYLES": elem.id,
                     "_dc": Math.random()
-                }); 
+                });
+                // change legend accordingly
+                var legend_icon_src = "{{GEOSERVER_BASE_URL}}wms?request=GetLegendGraphic&format=image/png&WIDTH=20&HEIGHT=20" +
+                  "&LAYER=geonode:subwaylines_p_odp&legend_options=fontAntiAliasing:true;fontSize:12;forceLabels:on&STYLE=" + elem.id;
+                {% if 'access_token' in request.session %}
+                  legend_icon_src += '&access_token={{request.session.access_token}}';
+                {% endif %}
+                $('#legend_icon').attr('src', legend_icon_src);
             });
-            
+
             Ext.get(Ext.DomQuery.select(".style-edit")).on("click", function(evt, elem) {
                 for (var key in app.tools) {
                     var tool = app.tools[key];
@@ -154,9 +161,9 @@
             Ext.Ajax.on('requestcomplete', function(req, cippa, opts){
                 if(opts.method == 'PUT'){
                     $('#legend_icon').attr('src', $('#legend_icon').attr('src')+'&'+Math.random());
-                }   
+                }
             }, this);
         });
-    
+
     {% endautoescape %}
     </script>
