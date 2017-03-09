@@ -48,7 +48,7 @@ def geoserver_delete(typename):
     # cascading_delete should only be called if
     # ogc_server_settings.BACKEND_WRITE_ENABLED == True
     if getattr(ogc_server_settings, "BACKEND_WRITE_ENABLED", True):
-        cascading_delete(gs_catalog, instance.typename)
+        cascading_delete(gs_catalog, typename)
 
 
 def geoserver_pre_delete(instance, sender, **kwargs):
@@ -99,15 +99,14 @@ def geoserver_post_save2(layer_id):
 
     from geonode.layers.models import Layer
     instance = Layer.objects.get(id=layer_id)
-
     # Don't run this signal if is a Layer from a remote service
     if getattr(instance, "service", None) is not None:
-        return
+        return instance
 
     # Don't run this signal handler if it is a tile layer
     #    Currently only gpkg files containing tiles will have this type & will be served via MapProxy.
     if hasattr(instance, 'storeType') and getattr(instance, 'storeType') == 'tileStore':
-        return
+        return instance
 
     gs_resource = None
 
@@ -118,7 +117,7 @@ def geoserver_post_save2(layer_id):
 
         # There is no need to process it if there is not file.
         if base_file is None:
-            return
+            return istance
 
 
         gs_name, workspace, values, gs_resource = geoserver_upload(instance,
@@ -135,9 +134,12 @@ def geoserver_post_save2(layer_id):
         # Set fields obtained via the geoserver upload.
         instance.name = gs_name
         instance.workspace = workspace
+        instance.store = values['store']
         # Iterate over values from geoserver.
         for key in ['typename', 'store', 'storeType']:
             setattr(instance, key, values[key])
+
+        instance.save()
 
     if not gs_resource:
         gs_resource = gs_catalog.get_resource(
@@ -213,16 +215,18 @@ def geoserver_post_save2(layer_id):
         # store the resource to avoid another geoserver call in the post_save
         instance.gs_resource = gs_resource
 
+    instance.save()
+
     if type(instance) is ResourceBase:
         if hasattr(instance, 'layer'):
             instance = instance.layer
         else:
-            return
+            return instance
 
     if instance.storeType == "remoteStore":
         # Save layer attributes
         set_attributes_from_geoserver(instance)
-        return
+        return instance
 
     if not getattr(instance, 'gs_resource', None):
         try:
@@ -235,12 +239,12 @@ def geoserver_post_save2(layer_id):
                 # Not the error we are looking for, re-raise
                 raise serr
             # If the connection is refused, take it easy.
-            return
+            return instance
     else:
         gs_resource = instance.gs_resource
 
     if gs_resource is None:
-        return
+        return instance
 
     if settings.RESOURCE_PUBLISHING:
         if instance.is_published != gs_resource.advertised:
@@ -499,6 +503,7 @@ def geoserver_post_save2(layer_id):
     from geonode.catalogue.models import catalogue_post_save
     from geonode.layers.models import Layer
     catalogue_post_save(instance, Layer)
+    return instance
 
 
 def geoserver_pre_save_maplayer(instance, sender, **kwargs):
