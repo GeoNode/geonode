@@ -185,7 +185,7 @@ class DataRequestEditForm(DataRequestForm):
     
     def clean_data_class_other(self):
         data_class_other = self.cleaned_data.get('data_class_other')
-        data_classes = self.cleaned_data.get('data_class_requested')
+        data_classes = self.clean_data_class_requested()
         pprint(data_class_other)
         pprint(data_classes)
         if data_classes:
