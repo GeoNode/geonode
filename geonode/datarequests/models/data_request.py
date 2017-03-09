@@ -28,8 +28,20 @@ from geonode.people.models import Profile
 from .profile_request import ProfileRequest
 from .base_request import BaseRequest
 from taggit.managers import TaggableManager
+from taggit.models import GenericTaggedItemBase, TagBase
 
 import geonode.local_settings as local_settings
+
+class SUCRequestTag (TagBase):
+    class Meta:
+        app_label = "datarequests"
+
+
+class SUCTaggedRequest (GenericTaggedItemBase):
+    tag = models.ForeignKey(SUCRequestTag, related_name='SUC_request_tag')
+    
+    class Meta:
+        app_label = "datarequests"
 
 class DataRequest(BaseRequest, StatusModel):
 
@@ -114,7 +126,8 @@ class DataRequest(BaseRequest, StatusModel):
     #For request letter
     request_letter= models.ForeignKey(Document, null=True, blank=True)
     
-    suc = TaggableManager(_('SUCs'),blank=True, help_text="SUC jurisdictions within this ROI", related_name="suc_tag")
+    suc = TaggableManager(_('SUCs'),blank=True, help_text="SUC jurisdictions within this ROI", 
+        through=SUCTaggedRequest, related_name="suc_request_tag")
 
     class Meta:
         app_label = "datarequests"

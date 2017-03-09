@@ -18,10 +18,13 @@ from django.core import validators
 class SUC_Contact(models.Model):
     institution_abrv = models.CharField(_('Institution Name(abbrev.)'), max_length=50, null=False, blank = False )
     institution_full = models.CharField(_('Institution Name(full)'), max_length=100, null=False, blank = False )
-    name = models.CharField(_('Full name of contact person')),max_length = 100)
-    position = models.CharField(_('Position')),max_length = 50)
-    email_address = models.EmailField(_('Email Address')))
-    salutation = models.CharField(_('Salutation (optional)')), max_length = 10, blank=True, null = True)
+    name = models.CharField(_('Full name of contact person'),max_length = 100)
+    position = models.CharField(_('Position'),max_length = 50)
+    email_address = models.EmailField(_('Email Address'))
+    salutation = models.CharField(_('Salutation (optional)'), max_length = 10, blank=True, null = True)
+    
+    class Meta:
+        app_label = "datarequests"
     
     def __unicode__(self):
         s = ""
