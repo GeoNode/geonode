@@ -31,8 +31,7 @@ def migrate_all():
 def tag_request_suc(data_requests):
     for dr in data_requests:
         if dr.jurisdiction_shapefile:
-            sucs = get_sucs(jurisdiction_shapefile)
-            pprint(sucs)
+            sucs = get_sucs(dr.jurisdiction_shapefile)
         
         
         
@@ -52,11 +51,11 @@ def get_sucs(layer, sucs_layer=settings.PL1_SUC_MUNIS):
     ) SELECT DISTINCT d."SUC" FROM ''' + sucs_layer + ''' AS d, l WHERE ST_Intersects(d.the_geom, l.the_geom);'''
     
     try:
-        _logger.info('%s query_int: %s', layer.name, query_int)
-        cur.execute(query_int)
+        cur.execute(query)
     except Exception:
         print traceback.format_exc()
         conn.rollback()
         return []
-        
-    return results = cur.fetchall()
+    result = cur.fetchall()
+    pprint(len(result))
+    return result
