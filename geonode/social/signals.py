@@ -62,30 +62,33 @@ if "agon_ratings" in settings.INSTALLED_APPS:
     ratings = True
     from agon_ratings.models import Rating
 
+
 def json_serializer_producer(dictionary):
-    output={}
-    #pop no useful information for others services which wants to connect to geonode
+    output = {}
+    # pop no useful information for others services which wants to connect to geonode
     if 'supplemental_information_en' in dictionary.keys():
-        dictionary.pop('supplemental_information_en',None)
+        dictionary.pop('supplemental_information_en', None)
     if 'supplemental_information' in dictionary.keys():
-        dictionary.pop('supplemental_information',None)
+        dictionary.pop('supplemental_information', None)
     if 'doc_file' in dictionary.keys():
         file_object = dictionary['doc_file']
         dictionary['doc_file'] = str(file_object)
     if 'keywords' in dictionary.keys():
         keys = dictionary['keywords']
         dictionary['keywords'] = str(keys)
-    for (x,y) in dictionary.items():
+    for (x, y) in dictionary.items():
         if not y:
-            #this is used to solve
-            #TypeError: [] is not JSON serializable when it is null
-            y=str(y)
-        #checking datetime object
-        if type(y)==datetime.datetime:
+            # this is used to solve
+            # TypeError: [] is not JSON serializable when it is null
+            y = str(y)
+        # check datetime object
+        # TODO: Use instanceof
+        if type(y) == datetime.datetime:
             y = str(y)
 
-        output[x]=y
+        output[x] = y
     return output
+
 
 def activity_post_modify_object(sender, instance, created=None, **kwargs):
     """
@@ -185,20 +188,20 @@ if notification_app:
         from django.forms.models import model_to_dict
 
         ct = ContentType.objects.get_for_model(sender)
-        instance_dict=model_to_dict(instance)
-        instance_dict['app_label']=ct.app_label
-        instance_dict['model']=ct.model
-        payload=json_serializer_producer(instance_dict)
+        instance_dict = model_to_dict(instance)
+        instance_dict['app_label'] = ct.app_label
+        instance_dict['model'] = ct.model
+        payload = json_serializer_producer(instance_dict)
         notifications_send(payload, created=created)
-
 
     def notification_post_save_resource2(instance_id, app_label, model, created, **kwargs):
         """ Send a notification when a layer, map or document is created or
         updated
         """
-        #TODO: There is a potential race condition where this code gets
+        # TODO: There is a potential race condition where this code gets
         # called but there is no information in the database yet.
-        #import time; time.sleep(4)
+        import time
+        time.sleep(4)
 
         ct = ContentType.objects.get(app_label=app_label, model=model)
         instance_class = ct.model_class()
