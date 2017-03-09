@@ -27,6 +27,7 @@ from geonode.documents.models import get_related_documents
 from geonode.security.views import _perms_info_json
 from geonode.tasks.jurisdiction import place_name_update
 from geonode.tasks.jurisdiction2 import compute_size_update, assign_grid_refs_all, assign_grid_refs
+from geonode.tasks.requests import tag_request_suc
 from geonode.utils import default_map_config, resolve_object, llbbox_to_mercator
 from geonode.utils import GXPLayer, GXPMap
 
@@ -300,6 +301,19 @@ def data_request_compute_size(request, pk):
         return HttpResponseRedirect(reverse('datarequests:data_request_browse'))
     else:
         return HttpResponseRedirect('/forbidden/')
+        
+def data_request_tag_suc(request,pk):
+    if request.user.is_superuser and request.method=='POST':
+        dr = get_object_or_404(DataRequest, pk=pk)
+        if dr.jurisdiction_shapefile:
+            tag_request_suc.delay([dr])
+            messages.info(request,"This request is currently being tagged")
+        else:
+            messages.info(request,"This request does not have a shapefile")
+        
+        return HttpResponseRedirect(dr.get_absolute_url())
+    else:
+        return  HttpResponseRedirect('/forbidden/')
 
 def data_request_reverse_geocode_all(request):
     if request.user.is_superuser:
