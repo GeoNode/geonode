@@ -107,7 +107,7 @@ ftp_list = FTPRequest.objects.all().order_by('date_time')
 for ftp in ftp_list:
     if datetoappend == datetime.strptime(ftp.date_time.strftime('%d-%m-%Y'),'%d-%m-%Y'):
         getprofile_ftp = Profile.objects.get(username=ftp.user)
-        if not getprofile_ftp.is_staff and not any('test' in var for var in [ftp.user, getprofile_ftp.first_name, getprofile_ftp.last_name]):
+        if not getprofile_ftp.is_staff and not any('test' in var for var in [str(ftp.user), getprofile_ftp.first_name, getprofile_ftp.last_name]):
             type_list = FTPRequestToObjectIndex.objects.filter(ftprequest=ftp.id)
             for eachtype in type_list:
                 add_to_count('monthly', DataClassification.gs_feature_labels[eachtype.cephobject._enum_data_class].lower())
