@@ -128,62 +128,62 @@ def create_layer_data():
 
 def create_notifications():
     notification.models.NoticeType.create(
-	"layer_created",
-	_("Layer Created"),
-	_("A Layer was created"))
+        "layer_created",
+        _("Layer Created"),
+        _("A Layer was created"))
     notification.models.NoticeType.create(
-	"layer_updated",
-	_("Layer Updated"),
-	_("A Layer was updated"))
+        "layer_updated",
+        _("Layer Updated"),
+        _("A Layer was updated"))
     notification.models.NoticeType.create(
-	"layer_deleted",
-	_("Layer Deleted"),
-	_("A Layer was deleted"))
+        "layer_deleted",
+        _("Layer Deleted"),
+        _("A Layer was deleted"))
     notification.models.NoticeType.create(
-	"layer_comment",
-	_("Comment on Layer"),
-	_("A layer was commented on"))
+        "layer_comment",
+        _("Comment on Layer"),
+        _("A layer was commented on"))
     notification.models.NoticeType.create(
-	"layer_rated",
-	_("Rating for Layer"),
-	_("A rating was given to a layer"))
+        "layer_rated",
+        _("Rating for Layer"),
+        _("A rating was given to a layer"))
     notification.models.NoticeType.create(
-	"request_download_resourcebase",
-	_("Request download to an owner"),
-	_("A request has been sent to the owner"))
+        "request_download_resourcebase",
+        _("Request download to an owner"),
+        _("A request has been sent to the owner"))
     notification.models.NoticeType.create(
-	"map_created",
-	_("Map Created"),
-	_("A Map was created"))
+        "map_created",
+        _("Map Created"),
+        _("A Map was created"))
     notification.models.NoticeType.create(
-	"map_updated",
-	_("Map Updated"),
-	_("A Map was updated"))
+        "map_updated",
+        _("Map Updated"),
+        _("A Map was updated"))
     notification.models.NoticeType.create(
-	"map_deleted",
-	_("Map Deleted"),
-	_("A Map was deleted"))
+        "map_deleted",
+        _("Map Deleted"),
+        _("A Map was deleted"))
     notification.models.NoticeType.create(
-	"profile_created",
-	_("Profile Created"),
-	_("A Profile was created"))
+        "profile_created",
+        _("Profile Created"),
+        _("A Profile was created"))
     notification.models.NoticeType.create(
-	"profile_updated",
-	_("Profile Updated"),
-	_("A Profile was updated"))
+        "profile_updated",
+        _("Profile Updated"),
+        _("A Profile was updated"))
     notification.models.NoticeType.create(
-	"profile_deleted",
-	_("Profile Deleted"),
-	_("A Profile was deleted"))
+        "profile_deleted",
+        _("Profile Deleted"),
+        _("A Profile was deleted"))
     notification.models.NoticeType.create(
-	"document_created",
-	_("Document Created"),
-	_("A Document was created"))
+        "document_created",
+        _("Document Created"),
+        _("A Document was created"))
     notification.models.NoticeType.create(
-	"document_updated",
-	_("Document Updated"),
-	_("A Document was updated"))
+        "document_updated",
+        _("Document Updated"),
+        _("A Document was updated"))
     notification.models.NoticeType.create(
-	"document_deleted",
-	_("Document Deleted"),
-	_("A Document was deleted"))
+        "document_deleted",
+        _("Document Deleted"),
+        _("A Document was deleted"))

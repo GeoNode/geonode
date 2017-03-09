@@ -29,6 +29,7 @@ logger = logging.getLogger(__package__)
 logger.addHandler(logging.StreamHandler(sys.stdout))
 logger.setLevel(logging.DEBUG)
 
+
 class Command(BaseCommand):
     help = 'Start the MQ consumer to perform non blocking tasks'
     option_list = BaseCommand.option_list + (
@@ -42,9 +43,6 @@ class Command(BaseCommand):
         )
 
     def handle(self, **options):
-        ignore_errors = options.get('ignore_errors')
-        verbosity = int(options.get('verbosity'))
-
         from kombu import BrokerConnection
         from geonode.messaging.consumer import Consumer
 

@@ -39,6 +39,7 @@ from geonode.base.populate_test_data import create_models
 from geonode.maps.tests_populate_maplayers import create_maplayers
 from geonode.layers.populate_layers_data import create_notifications
 
+
 class MapsTest(TestCase):
 
     """Tests geonode.maps app/module

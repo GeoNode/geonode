@@ -171,20 +171,18 @@ def send_email_consumer(layer_uuid, user_id):
     )
     return
 
-def send_email_owner_on_view(owner,viewer,layer_id,geonode_email="email@geo.node"):
-    #get owner and viewer emails
+
+def send_email_owner_on_view(owner, viewer, layer_id, geonode_email="email@geo.node"):
+    # get owner and viewer emails
     owner_email = Profile.objects.get(username=owner).email
     layer = Layer.objects.get(id=layer_id)
-    #check if those values are empty
+    # check if those values are empty
     if owner_email and geonode_email:
         from django.core.mail import send_mail
         subject_email = "Your Layer was seen it"
         msg = ("Your layer called {0} with uuid={1}"
-               " was seen by {2}").format(layer.name,layer.uuid,
-              viewer)
+               " was seen by {2}").format(layer.name, layer.uuid,
+                                          viewer)
         send_mail(subject_email, msg, geonode_email,
-                [owner_email,])
+                  [owner_email, ])
     return
-
-
-

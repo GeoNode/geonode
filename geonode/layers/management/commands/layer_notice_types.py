@@ -18,10 +18,7 @@
 #
 #########################################################################
 
-import notification
-
 from django.core.management.base import BaseCommand
-from django.utils.translation import ugettext_noop as _
 from geonode.layers.populate_layers_data import create_notifications
 
 
