@@ -18,15 +18,13 @@
 #
 #########################################################################
 
-import notification
-
-from django.core.management.base import BaseCommand
-from django.utils.translation import ugettext_noop as _
-from geonode.layers.populate_layers_data import create_notifications
+from django.test import TestCase
 
 
-class Command(BaseCommand):
-    help = ("Create notice types for layers")
-
-    def handle(self, *args, **options):
-        create_notifications()
+class MessagingTest(TestCase):
+    """
+    Tests geonode.messaging
+    """
+    def setUp(self):
+        self.adm_un = "admin"
+        self.adm_pw = "admin"

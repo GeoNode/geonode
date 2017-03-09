@@ -40,6 +40,7 @@ from geoserver.catalog import FailedRequestError, UploadError
 
 # from geonode.security.models import *
 from geonode.layers.models import Layer
+from geonode.geoserver.signals import geoserver_post_save2
 from geonode.maps.models import Map
 from geonode import GeoNodeException
 from geonode.layers.utils import (
@@ -54,6 +55,7 @@ from geonode.geoserver.helpers import cascading_delete, set_attributes_from_geos
 # from geonode.geoserver.helpers import get_wms
 # from geonode.geoserver.helpers import set_time_info
 from geonode.geoserver.signals import gs_catalog
+from geonode.geoserver.signals import geoserver_delete
 
 
 LOGIN_URL = "/accounts/login/"
@@ -102,6 +104,12 @@ $ geonode migrate
 $ geonode createsuperuser
 
 """
+
+
+def sync():
+    call_command('loaddata', 'default_oauth_apps.json', verbosity=0)
+    call_command('loaddata', 'initial_data', verbosity=0)
+    call_command('layer_notice_types', verbosity=0)
 
 
 class GeoNodeCoreTest(TestCase):
@@ -171,6 +179,7 @@ class GeoNodeMapTest(TestCase):
 
     def setUp(self):
         call_command('loaddata', 'people_data', verbosity=0)
+        sync()
 
     def tearDown(self):
         pass
@@ -181,6 +190,9 @@ class GeoNodeMapTest(TestCase):
         """Test that the wcs links are correctly created for a raster"""
         filename = os.path.join(gisdata.GOOD_DATA, 'raster/test_grid.tif')
         uploaded = file_upload(filename)
+
+        geoserver_post_save2(uploaded.id)
+
         wcs_link = False
         for link in uploaded.link_set.all():
             if link.mime == 'image/tiff':
@@ -432,6 +444,9 @@ class GeoNodeMapTest(TestCase):
             gisdata.VECTOR_DATA,
             'san_andres_y_providencia_poi.shp')
         shp_layer = file_upload(shp_file, overwrite=True)
+
+        geoserver_post_save2(shp_layer.id)
+
         ws = gs_cat.get_workspace(shp_layer.workspace)
         shp_store = gs_cat.get_store(shp_layer.store, ws)
         shp_store_name = shp_store.name
@@ -464,6 +479,11 @@ class GeoNodeMapTest(TestCase):
             gisdata.VECTOR_DATA,
             'san_andres_y_providencia_poi.shp')
         shp_layer = file_upload(shp_file)
+
+        geoserver_post_save2(shp_layer.id)
+
+        time.sleep(20)
+
         shp_layer_id = shp_layer.pk
         ws = gs_cat.get_workspace(shp_layer.workspace)
         shp_store = gs_cat.get_store(shp_layer.store, ws)
@@ -473,6 +493,8 @@ class GeoNodeMapTest(TestCase):
 
         # Delete it with the Layer.delete() method
         shp_layer.delete()
+
+        geoserver_delete(shp_layer.typename)
 
         # Verify that it no longer exists in GeoServer
         # self.assertIsNone(gs_cat.get_resource(name, store=shp_store))
@@ -506,6 +528,10 @@ class GeoNodeMapTest(TestCase):
             gisdata.VECTOR_DATA,
             'san_andres_y_providencia_poi.shp')
         shp_layer = file_upload(shp_file)
+
+        geoserver_post_save2(shp_layer.id)
+
+        time.sleep(20)
 
         # Save the names of the Resource/Store/Styles
         resource_name = shp_layer.name
@@ -658,6 +684,7 @@ class GeoNodePermissionsTest(TestCase):
 
     def setUp(self):
         call_command('loaddata', 'people_data', verbosity=0)
+        sync()
 
     def tearDown(self):
         pass
@@ -782,6 +809,9 @@ xsi:schemaLocation="http://www.opengis.net/sld http://schemas.opengis.net/sld/1.
             gisdata.VECTOR_DATA,
             'san_andres_y_providencia_poi.shp')
         layer = file_upload(thefile, overwrite=True)
+
+        geoserver_post_save2(layer.id)
+
         layer.set_default_permissions()
         check_layer(layer)
 
@@ -847,6 +877,7 @@ class GeoNodeThumbnailTest(TestCase):
 
     def setUp(self):
         call_command('loaddata', 'people_data', verbosity=0)
+        sync()
 
     def tearDown(self):
         pass
@@ -868,6 +899,8 @@ class GeoNodeThumbnailTest(TestCase):
             user=norman,
             overwrite=True,
         )
+
+        geoserver_post_save2(saved_layer.id)
 
         thumbnail_url = saved_layer.get_thumbnail_url()
 
@@ -906,6 +939,7 @@ class GeoNodeMapPrintTest(TestCase):
 
     def setUp(self):
         call_command('loaddata', 'people_data', verbosity=0)
+        sync()
 
     def tearDown(self):
         pass
@@ -999,6 +1033,7 @@ class GeoNodeGeoServerSync(TestCase):
 
     def setUp(self):
         call_command('loaddata', 'people_data', verbosity=0)
+        sync()
 
     def tearDown(self):
         pass

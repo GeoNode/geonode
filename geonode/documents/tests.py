@@ -41,7 +41,7 @@ from geonode.documents.models import Document
 from geonode.base.populate_test_data import create_models
 
 
-class LayersTest(TestCase):
+class DocumentsTest(TestCase):
     fixtures = ['initial_data.json', 'bobby']
 
     perm_spec = {
@@ -68,7 +68,7 @@ class LayersTest(TestCase):
             self.imgfile.read(),
             'image/gif')
 
-        superuser = get_user_model().objects.get(pk=2)
+        superuser = get_user_model().objects.filter(is_superuser=True)[0]
         c = Document.objects.create(
             doc_file=f,
             owner=superuser,
@@ -83,7 +83,7 @@ class LayersTest(TestCase):
             self.imgfile.read(),
             'image/gif')
 
-        superuser = get_user_model().objects.get(pk=2)
+        superuser = get_user_model().objects.filter(is_superuser=True)[0]
 
         m = Map.objects.all()[0]
         ctype = ContentType.objects.get_for_model(m)
@@ -100,7 +100,7 @@ class LayersTest(TestCase):
     def test_create_document_url(self):
         """Tests creating an external document instead of a file."""
 
-        superuser = get_user_model().objects.get(pk=2)
+        superuser = get_user_model().objects.filter(is_superuser=True)[0]
         c = Document.objects.create(doc_url="http://geonode.org/map.pdf",
                                     owner=superuser,
                                     title="GeoNode Map",

@@ -44,6 +44,13 @@ from geonode.social.signals import json_serializer_producer
 logger = logging.getLogger("geonode.geoserver.signals")
 
 
+def geoserver_delete(typename):
+    # cascading_delete should only be called if
+    # ogc_server_settings.BACKEND_WRITE_ENABLED == True
+    if getattr(ogc_server_settings, "BACKEND_WRITE_ENABLED", True):
+        cascading_delete(gs_catalog, instance.typename)
+
+
 def geoserver_pre_delete(instance, sender, **kwargs):
     """Removes the layer from GeoServer
     """

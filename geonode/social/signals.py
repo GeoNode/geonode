@@ -196,8 +196,9 @@ if notification_app:
         """ Send a notification when a layer, map or document is created or
         updated
         """
-        #TODO: Remove this.
-        import time; time.sleep(4)
+        #TODO: There is a potential race condition where this code gets
+        # called but there is no information in the database yet.
+        #import time; time.sleep(4)
 
         ct = ContentType.objects.get(app_label=app_label, model=model)
         instance_class = ct.model_class()
