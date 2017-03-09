@@ -872,6 +872,8 @@ xsi:schemaLocation="http://www.opengis.net/sld http://schemas.opengis.net/sld/1.
             resource.is_published = True
             resource.save()
 
+            layer = geoserver_post_save2(layer.id)
+
             request = urllib2.Request(url)
             response = urllib2.urlopen(request)
             self.assertTrue(any(str_to_check in s for s in response.readlines()))
