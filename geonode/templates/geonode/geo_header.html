@@ -49,9 +49,8 @@ GeoExplorer.Viewer.prototype.loadConfig = function(config) {
 
 //remove the 3D Viewer from GeoExplorer
 GeoExplorer.Composer.prototype.loadConfig = function(config) {
-    
-    config.tools.splice(6,1);
-    GeoExplorer.Composer.superclass.loadConfig.call(this, config);
+     config.tools.splice(6,1);
+     GeoExplorer.Composer.superclass.loadConfig.call(this, config);
 };
 
 </script>
