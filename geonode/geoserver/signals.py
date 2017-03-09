@@ -79,6 +79,7 @@ def geoserver_post_save(instance, sender, **kwargs):
     payload = json_serializer_producer(instance_dict)
     producer.geoserver_upload_layer(payload)
 
+
 def geoserver_post_save2(layer_id):
     """Save keywords to GeoServer
 
@@ -117,8 +118,7 @@ def geoserver_post_save2(layer_id):
 
         # There is no need to process it if there is not file.
         if base_file is None:
-            return istance
-
+            return instance
 
         gs_name, workspace, values, gs_resource = geoserver_upload(instance,
                                                                    base_file.file.path,
@@ -129,7 +129,6 @@ def geoserver_post_save2(layer_id):
                                                                    abstract=instance.abstract,
                                                                    # keywords=instance.keywords,
                                                                    charset=instance.charset)
-
 
         # Set fields obtained via the geoserver upload.
         instance.name = gs_name
@@ -163,8 +162,6 @@ def geoserver_post_save2(layer_id):
     # ogc_server_settings.BACKEND_WRITE_ENABLED == True
     if gs_resource and getattr(ogc_server_settings, "BACKEND_WRITE_ENABLED",
                                True):
-
-
         gs_catalog.save(gs_resource)
 
     gs_layer = gs_catalog.get_layer(instance.name)
@@ -183,8 +180,6 @@ def geoserver_post_save2(layer_id):
         # gs_layer should only be called if
         # ogc_server_settings.BACKEND_WRITE_ENABLED == True
         if getattr(ogc_server_settings, "BACKEND_WRITE_ENABLED", True):
-
-
             gs_catalog.save(gs_layer)
 
     """Get information from geoserver.

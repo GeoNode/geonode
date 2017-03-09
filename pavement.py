@@ -350,6 +350,7 @@ def start_messaging():
     foreground = '' if options.get('foreground', False) else '&'
     sh('python manage.py runmessaging %s' % foreground)
 
+
 @cmdopts([
     ('java_path=', 'j', 'Full path to java install for Windows')
 ])
@@ -437,6 +438,7 @@ def start_geoserver(options):
               'It may still be running in the background.'))
         sys.exit(1)
 
+
 @task
 def test(options):
     """
@@ -445,7 +447,8 @@ def test(options):
 
     prefix = options.get('prefix', 'python')
     sh("%s manage.py test %s.tests --noinput -v 2" % (prefix,
-                                                 '.tests '.join(GEONODE_APPS)))
+                                                      '.tests '.join(GEONODE_APPS)))
+
 
 @task
 def singletest(options):
@@ -466,7 +469,6 @@ def singletest(options):
 
     prefix = options.get('prefix', 'python')
     sh("%s manage.py test %s --noinput --failfast" % (prefix, apps_to_test))
-
 
 
 @task
@@ -610,9 +612,9 @@ def deb(options):
 
         sh(('git-dch --spawn-editor=snapshot --git-author --new-version=%s'
             ' --id-length=6 --ignore-branch --release' % (simple_version)))
-        #In case you publish from Ubuntu Xenial (git-dch is removed from upstream)
+        # In case you publish from Ubuntu Xenial (git-dch is removed from upstream)
         # use the following line instead:
-        #sh(('gbp dch --spawn-editor=snapshot --git-author --new-version=%s'
+        # sh(('gbp dch --spawn-editor=snapshot --git-author --new-version=%s'
         #    ' --id-length=6 --ignore-branch --release' % (simple_version)))
 
         deb_changelog = path('debian') / 'changelog'

@@ -49,8 +49,9 @@ def notifications_send(payload, created=None):
             routing_key='notifications'
         )
 
-def viewing_layer(user,owner,layer_id):
-     with producers[connection].acquire(block=True) as producer:
+
+def viewing_layer(user, owner, layer_id):
+    with producers[connection].acquire(block=True) as producer:
         maybe_declare(queue_layer_viewers, producer.channel)
 
         payload = {"viewer": user,
@@ -62,4 +63,3 @@ def viewing_layer(user,owner,layer_id):
             serializer='json',
             routing_key='geonode.viewer'
         )
-
