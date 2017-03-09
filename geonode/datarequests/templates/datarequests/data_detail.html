@@ -91,6 +91,10 @@
       <td class="table-user-profile-attribute">{% trans "Type of Data Requested" %}</td>
       <td>{% for type in data_types %} {{ type }}{% endfor %}</td>
       </tr>
+      <tr>
+      <td class="table-user-profile-attribute">{% trans "Other Data Requested" %}</td>
+      <td>{{ data_request.data_class_other }}</td>
+      </tr>
 
       <tr>
       <td class="table-user-profile-attribute">{% trans "Purpose/Intended Use of Data" %}</td>

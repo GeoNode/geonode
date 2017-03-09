@@ -127,7 +127,7 @@ def data_request_view(request):
         pprint("len:"+str(len(data_classes)))
         
         if len(data_classes) == 1 and ',' in data_classes[0]:
-            post_data.setlist('data_class_requested',data_classes[0].split(','))
+            post_data.setlist('data_class_requested',data_classes[0].replace('[','').replace(']','').replace('"','').split(','))
             pprint(post_data.getlist('data_class_requested'))
         
         details_form = DataRequestForm(post_data, request.FILES)
