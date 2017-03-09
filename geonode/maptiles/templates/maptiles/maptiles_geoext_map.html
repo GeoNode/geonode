@@ -611,7 +611,7 @@ Ext.onReady(function (){
             maxExtent: new OpenLayers.Bounds(stored_layer["bbox"])
         }
     );
-
+    tile_layer.mergeNewParams({SLD : "lipad-test04.tst.dream.upd.edu.ph:8000/static/philgrid_dtm.sld" });
     map.addLayer(tile_layer);
 
     // initialization of the jurisdiction display layer
