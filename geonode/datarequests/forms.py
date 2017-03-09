@@ -348,6 +348,25 @@ class DataRequestForm(forms.ModelForm):
             ),
         )
 
+    def clean_purpose_other(self):
+        purpose = self.cleaned_data.get('purpose')
+        purpose_other = self.cleaned_data.get('purpose_other')
+        if purpose == self.INTENDED_USE_CHOICES.other:
+            if not purpose_other:
+                raise forms.ValidationError(
+                    'Please state your purpose for the requested data.')
+        return purpose_other
+
+    def clean_purpose(self):
+        purpose = self.cleaned_data.get('purpose')
+        if purpose == self.INTENDED_USE_CHOICES.other:
+            purpose_other = self.cleaned_data.get('purpose_other')
+            if not purpose_other:
+                return purpose
+            else:
+                return purpose_other
+        return purpose
+
     def clean_data_class_requested(self):
         data_classes = self.cleaned_data.get('data_class_requested')
         data_class_list = []
