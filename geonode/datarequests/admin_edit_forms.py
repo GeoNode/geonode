@@ -182,13 +182,3 @@ class DataRequestEditForm(DataRequestForm):
                 css_class='form-group'
             ),
         )
-    
-    def clean_data_class_other(self):
-        data_class_other = self.cleaned_data.get('data_class_other')
-        data_classes = self.clean_data_class_requested()
-        pprint(data_class_other)
-        pprint(data_classes)
-        if data_classes:
-            if 'Other' in data_classes and not data_class_other:
-                raise forms.ValidationError(_('This field is required if you selected Other'))
-        return data_class_other
