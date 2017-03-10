@@ -73,8 +73,10 @@ def data_request_detail(request, pk, template='datarequests/data_detail.html'):
         return HttpResponseRedirect('/forbidden')
 
     context_dict={"data_request": data_request}
-    context_dict ['data_types'] = data_request.data_type.names()
-    pprint(context_dict ['data_types'])
+    context_dict['data_types'] = data_request.data_type.names()
+    context_dict['sucs']=data_request.suc.names()
+    context_dict['max_ftp_size']=settings.MAX_FTP_SIZE
+    pprint(context_dict ['sucs'])
     if data_request.profile:
         context_dict['profile'] = data_request.profile
     
@@ -314,6 +316,12 @@ def data_request_tag_suc(request,pk):
         return HttpResponseRedirect(dr.get_absolute_url())
     else:
         return  HttpResponseRedirect('/forbidden/')
+        
+def data_request_notify_suc(request,pk):
+    if request.user.is_superuser and request.method=='POST':
+        dr = get_object_or_404(DataRequest, pk=pk)
+        if len(dr.suc) == 1 and dr.juris_data_size > settings.MAX_FTP_SIZE:
+            
 
 def data_request_reverse_geocode_all(request):
     if request.user.is_superuser:

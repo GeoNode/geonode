@@ -8,7 +8,7 @@
 {% load guardian_tags %}
 {% load eula_extras %}
 
-{% block title %}{% trans "Data Request Profile" %} — {{ block.super }}{% endblock %}
+{% block title %}{% trans "Data Request" %} — {{ block.super }}{% endblock %}
 
 {% block head %}
 {% if resource %}
@@ -21,7 +21,7 @@
 {{ block.super }}
 {% endblock %}
 
-{% block body_class %}{% trans "Data Request Profile" %}{% endblock %}
+{% block body_class %}{% trans "Data Request" %}{% endblock %}
 
 {% block body_outer %}
 <div class="page-header">
@@ -115,6 +115,10 @@
           <td class="table-user-profile-attribute col-md-3">{% trans "Additional Remarks" %}</td>
           <td>{{data_request.additional_remarks}}</td>
       </tr>
+      <tr>
+          <td class="table-user-profile-attribute col-md-3"> {% trans "SUC jurisdictions within area of interest" %}</td>
+          <td> {% for suc in sucs %} {{ suc }}{% endfor %}</td>
+      </tr>
       {% endif %}
       </tbody>
     </table>
@@ -178,7 +182,13 @@
         {% endif %}
     {% endif %}
       {% if data_request.status == 'approved' %}
-        <!--haha walang laman-->
+        {% if data_request.juris_data_size > max_ftp_size and data_request.sucs|length < 2 %}
+        <li class="list-group-item">
+                  <form id="notify_suc_form" method="post" class="modal-form" action='{% url "datarequests:data_request_notify_suc" pk=data_request.pk %}'>{% csrf_token %}
+                <button type="submit" class="btn btn-primary btn-md btn-block"  id="tag-suc">{% trans "Notify SUC" %}</button>
+            </form></
+        </li>
+        {% endif %}
       {% else %}
         {%  if data_request.status == 'pending'%}
         <li class="list-group-item">
