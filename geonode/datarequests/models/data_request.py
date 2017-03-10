@@ -27,6 +27,7 @@ from geonode.layers.models import Layer
 from geonode.people.models import Profile
 from .profile_request import ProfileRequest
 from .base_request import BaseRequest
+from .suc_directory import SUC_Contact
 from taggit.managers import TaggableManager
 from taggit.models import GenericTaggedItemBase, TagBase
 
@@ -357,3 +358,13 @@ class DataRequest(BaseRequest, StatusModel):
 
         email_subject = _('[LiPAD] Data Request Status')
         self.send_email(email_subject,text_content,html_content)
+        
+    def send_suc_notification(self):
+        suc = self.suc.names()[0]
+        suc_contacts = SUC_Contact.objects.filter(institution_abrv=suc)
+        
+        
+        text_content = email_utils.DATA_SUC_FORWARD_NOTIFICATION_TEXT.format(
+        
+        )
+        

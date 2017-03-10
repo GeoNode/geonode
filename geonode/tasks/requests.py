@@ -32,10 +32,12 @@ def tag_request_suc(data_requests):
     for dr in data_requests:
         if dr.jurisdiction_shapefile:
             sucs = get_sucs(dr.jurisdiction_shapefile)
+            flatten_sucs = [s for suc in sucs for s in suc]
+            dr.suc.clear()
+            for s in flatten_sucs:
+                dr.suc.add(s)
         
-        
-        
-def get_sucs(layer, sucs_layer=settings.PL1_SUC_MUNIS):
+def get_sucs(layer, sucs_layer=settings.PL1_SUC_MUNIS, proj=32651):
     conn = psycopg2.connect(("host={0} dbname={1} user={2} password={3}".format
                              (settings.DATABASE_HOST,
                               settings.DATASTORE_DB,
@@ -46,7 +48,7 @@ def get_sucs(layer, sucs_layer=settings.PL1_SUC_MUNIS):
     
     query = '''
     WITH l AS (
-        SELECT ST_Multi(ST_Union(f.the_geom)) AS the_geom
+        SELECT ST_Multi(ST_Transform(ST_Union(f.the_geom), '''+str(proj)+''')) AS the_geom
         FROM ''' + layer.name + ''' AS f
     ) SELECT DISTINCT d."SUC" FROM ''' + sucs_layer + ''' AS d, l WHERE ST_Intersects(d.the_geom, l.the_geom);'''
     

@@ -52,6 +52,7 @@ urlpatterns = patterns(
     
     url(r'^data/(?P<pk>\d+)/compute_request_size/$', 'data_request_compute_size', name="data_request_compute_size"), 
     url(r'^data/(?P<pk>\d+)/tag_suc/$', 'data_request_tag_suc', name="data_request_tag_suc"), 
+    url(r'^data/(?P<pk>\d+)/notify_suc/$', 'data_request_notify_suc', name="data_request_notify_suc"), 
     url(r'^data/(?P<pk>\d+)/reverse_geocode/$', 'data_request_reverse_geocode', name="data_request_reverse_geocode"), 
     url(r'^data/assign_grid_refs/$','data_request_assign_gridrefs', name="data_request_assign_gridrefs"),
     
