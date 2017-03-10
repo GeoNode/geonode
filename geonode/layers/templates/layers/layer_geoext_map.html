@@ -143,7 +143,7 @@
                 });
                 // change legend accordingly
                 var legend_icon_src = "{{GEOSERVER_BASE_URL}}wms?request=GetLegendGraphic&format=image/png&WIDTH=20&HEIGHT=20" +
-                  "&LAYER=geonode:subwaylines_p_odp&legend_options=fontAntiAliasing:true;fontSize:12;forceLabels:on&STYLE=" + elem.id;
+                  "&LAYER={{resource.name}}&legend_options=fontAntiAliasing:true;fontSize:12;forceLabels:on&STYLE=" + elem.id;
                 {% if 'access_token' in request.session %}
                   legend_icon_src += '&access_token={{request.session.access_token}}';
                 {% endif %}
