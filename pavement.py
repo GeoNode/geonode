@@ -528,7 +528,7 @@ def run_tests(options):
         prefix = 'python'
     sh('%s manage.py test geonode.tests.smoke' % prefix)
     call_task('test', options={'prefix': prefix})
-    call_task('test_integration')
+    call_task('test_integration', options={'prefix': prefix})
     call_task('test_integration', options={'name': 'geonode.tests.csw'})
     sh('flake8 geonode')
 
