@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+# -*- coding: utf-8 -*-
 #########################################################################
 #
 # Copyright (C) 2016 OSGeo
@@ -18,15 +18,12 @@
 #
 #########################################################################
 
-import os
-import sys
+from django.core.management.base import BaseCommand
+from geonode.layers.populate_layers_data import create_notifications
 
-if __name__ == "__main__":
-    sys.path.insert(0,
-                    '/usr/local/Cellar/gdal/1.11.3_1/lib/python2.7/site-packages')
 
-    os.environ.setdefault("DJANGO_SETTINGS_MODULE", "geonode.settings")
+class Command(BaseCommand):
+    help = ("Create notice types for layers")
 
-    from django.core.management import execute_from_command_line
-
-    execute_from_command_line(sys.argv)
+    def handle(self, *args, **options):
+        create_notifications()
