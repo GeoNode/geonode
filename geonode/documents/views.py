@@ -125,7 +125,7 @@ def document_detail(request, docid):
                 pprint(form.cleaned_data)
                 anondownload = form.save()
                 # anondownload.anon_document = Document.objects.get(id = docid)
-                anondownload.anon_document = Document.objects.get(pk = docid)
+                anondownload.anon_document = Document.objects.get(pk = docid).title
                 anondownload.save()
             else:
                 errormsgs = []
