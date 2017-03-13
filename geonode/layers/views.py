@@ -733,7 +733,7 @@ def layer_download_csv(request):
         area = 0
         if layername:
             listtowrite.append(["", lastname, firstname, email, organization, orgtype,
-                                purpose, layername.typename, anon.date.strftime('%Y/%m/%d'),area,''])
+                                purpose, layername, anon.date.strftime('%Y/%m/%d'),area,''])
     listtowrite.sort(key=lambda x: datetime.datetime.strptime(
         x[8], '%Y/%m/%d'), reverse=True)
 
