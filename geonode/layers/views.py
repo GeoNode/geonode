@@ -321,7 +321,7 @@ def layer_detail(request, layername, template='layers/layer_detail.html'):
             pprint(form)
             out['success'] = True
             anondownload = form.save()
-            anondownload.anon_layer = Layer.objects.get(typename=layername)
+            anondownload.anon_layer = Layer.objects.get(typename=layername).name
             anondownload.save()
         else:
             pprint(form)
