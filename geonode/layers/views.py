@@ -706,7 +706,7 @@ def layer_download_csv(request):
         firstname = unidecode(getprofile.first_name)
         lastname = unidecode(getprofile.last_name)
         email = getprofile.email
-        organization = getprofile.organization
+        organization = unidecode(getprofile.organization)
         orgtype = orgtypelist[getprofile.organization_type]
         #area = get_area_coverage(auth.action_object.typename)
         area = 0
@@ -724,11 +724,11 @@ def layer_download_csv(request):
         lastname = unidecode(anon.anon_last_name)
         firstname = unidecode(anon.anon_first_name)
         email = anon.anon_email
-        layername = anon.anon_layer
-        docname = anon.anon_document
-        organization = anon.anon_organization
+        layername = unidecode(anon.anon_layer)
+        docname = unidecode(anon.anon_document)
+        organization = unidecode(anon.anon_organization)
         orgtype = anon.anon_orgtype
-        purpose = anon.anon_purpose
+        purpose = unidecode(anon.anon_purpose)
         #area = get_area_coverage(layername.typename)
         area = 0
         if layername:
@@ -744,7 +744,7 @@ def layer_download_csv(request):
         lastname = unidecode(ftp_detail['user'].last_name)
         firstname = unidecode(ftp_detail['user'].first_name)
         email = ftp_detail['user'].email
-        organization = ftp_detail['organization']
+        organization = unidecode(ftp_detail['organization'])
         organization_type = ftp_detail['organization_type']
         date_requested = ftp_request.date_time.strftime('%Y/%m/%d')
 
