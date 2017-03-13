@@ -724,11 +724,11 @@ def layer_download_csv(request):
         lastname = unidecode(anon.anon_last_name)
         firstname = unidecode(anon.anon_first_name)
         email = anon.anon_email
-        layername = unidecode(anon.anon_layer)
-        docname = unidecode(anon.anon_document)
+        layername = anon.anon_layer
+        docname = anon.anon_document
         organization = unidecode(anon.anon_organization) if anon.anon_organization is not None else anon.anon_organization
         orgtype = anon.anon_orgtype
-        purpose = unidecode(anon.anon_purpose)
+        purpose = unidecode(anon.anon_purpose) if anon.anon_purpose is not None else anon.anon_purpose
         #area = get_area_coverage(layername.typename)
         area = 0
         if layername:
