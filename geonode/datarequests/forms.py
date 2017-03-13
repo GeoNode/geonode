@@ -240,7 +240,7 @@ class ProfileRequestForm(forms.ModelForm):
         #intended_use_of_dataset = self.cleaned_data.get('intended_use_of_dataset')
         if org_type:
             #intended_use_of_dataset == 'noncommercial' and
-            if "Academe" in org_type.val and not funding_source:
+            if "Academe" in org_type and not funding_source:
                 raise forms.ValidationError('This field is required.')
         return funding_source
 
