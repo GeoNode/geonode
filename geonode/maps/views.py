@@ -18,6 +18,7 @@
 #
 #########################################################################
 
+from base64 import b64decode
 import math
 import logging
 from guardian.shortcuts import get_perms
@@ -978,7 +979,12 @@ def map_thumbnail(request, mapid):
     if request.method == 'POST':
         map_obj = _resolve_map(request, mapid)
         try:
-            image = _render_thumbnail(request.body)
+            # Base64 PNG data uploaded from the client!
+            if(request.body[0:22] == 'data:image/png;base64,'):
+                image = b64decode(request.body[22:])
+            # try the old way.
+            else:
+                image = _render_thumbnail(request.body)
 
             if not image:
                 return
