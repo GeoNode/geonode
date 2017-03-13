@@ -23,6 +23,7 @@ import sys
 import logging
 import shutil
 import traceback
+from base64 import b64decode
 import uuid
 import decimal
 
@@ -691,11 +692,16 @@ def layer_granule_remove(request, granule_id, layername, template='layers/layer_
 
 
 def layer_thumbnail(request, layername):
+    layer_obj = _resolve_layer(request, layername)
     if request.method == 'POST':
-        layer_obj = _resolve_layer(request, layername)
 
         try:
-            image = _render_thumbnail(request.body)
+            # Base64 PNG data uploaded from the client!
+            if(request.body[0:22] == 'data:image/png;base64,'):
+                image = b64decode(request.body[22:])
+            # try the old way.
+            else:
+                image = _render_thumbnail(request.body)
 
             if not image:
                 return
@@ -707,6 +713,19 @@ def layer_thumbnail(request, layername):
             return HttpResponse(
                 content='error saving thumbnail',
                 status=500,
+                content_type='text/plain'
+            )
+    else:
+        if(layer_obj.has_thumbnail()):
+            #layer_obj.get_thumbnail_url() 
+
+            return HttpResponse(
+                content=layer_obj.get_thumbnail_url(),
+                content_type='text/plain'
+            )
+        else:
+            return HttpResponse(
+                content='No Thumbnail',
                 content_type='text/plain'
             )
 
