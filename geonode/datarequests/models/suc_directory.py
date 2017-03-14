@@ -25,12 +25,13 @@ class SUC_Contact(models.Model):
     
     class Meta:
         app_label = "datarequests"
+        verbose_name = "SUC Contact"
     
     def __unicode__(self):
         s = ""
         
-        if salutation:
-            s += salutation
+        if self.salutation:
+            s += self.salutation
             
         s += "{0}, {1} for {2}".format(self.name, self.position, self.institution_full)
         
