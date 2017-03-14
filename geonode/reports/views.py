@@ -147,6 +147,7 @@ def report_distribution_status(request, template='reports/distribution_status.ht
         "monthly_datarequest": reversed_md,
         "org_count": reversed_org,
         "total_datarequest": reversed_md[reversed_md.keys()[0]],
+        "sum_org_count": sum(org_count.values()),
         "sum_datarequest": sum(reversed_md[reversed_md.keys()[0]].values()),
     }
 
