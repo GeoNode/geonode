@@ -20,10 +20,10 @@ from geonode.utils import GXPMap
 from geonode.utils import default_map_config
 
 from geonode.security.views import _perms_info_json
-from geonode.cephgeo.models import CephDataObject, DataClassification, FTPRequest, UserJurisdiction, UserTiles
+from geonode.cephgeo.models import CephDataObject, DataClassification, FTPRequest, UserJurisdiction, UserTiles, TileDataClass
 from geonode.cephgeo.cart_utils import *
 from geonode.maptiles.utils import *
-from geonode.datarequests.models import DataRequestProfile
+from geonode.datarequests.models import DataRequestProfile, DataRequest
 from geonode.documents.models import get_related_documents
 from geonode.registration.models import Province, Municipality
 from geonode.base.models import ResourceBase
@@ -101,7 +101,6 @@ def tiled_view(request, overlay=settings.TILED_SHAPEFILE, template="maptiles/map
     context_dict["feature_tiled"] = overlay.split(":")[1]
     context_dict["test_mode"]=test_mode
     context_dict["data_classes"]= DataClassification.labels.values()
-
     #context_dict["projections"]= SRS.labels.values()
 
     return render_to_response(template, RequestContext(request, context_dict))
@@ -263,6 +262,7 @@ def georefs_validation(request):
                 total_size += o.size_in_bytes
 
         request_size_last24h = 0
+        pprint('Total size:'+str(total_size))
 
         #for r in requests_last24h:
         for r in requests_today:
