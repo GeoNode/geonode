@@ -255,6 +255,7 @@ class ProfileRequestForm(forms.ModelForm):
         return profile_request
 
 class DataRequestForm(forms.ModelForm):
+    ORDERED_FIELDS = ["purpose", "purpose_other", "data_class_requested","data_class_other"]
 
     INTENDED_USE_CHOICES = Choices(
         ('Disaster Risk Management', _('Disaster Risk Management')),
@@ -313,6 +314,7 @@ class DataRequestForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         super(DataRequestForm, self).__init__(*args, **kwargs)
+        self.fields.keyOrder = self.ORDERED_FIELDS + [k for k in self.fields.keys() if k not in self.ORDERED_FIELDS]
         self.helper = FormHelper()
         self.helper.form_tag = False
         self.helper.layout = Layout(
