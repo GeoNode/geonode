@@ -232,8 +232,6 @@ class ProfileRequestForm(forms.ModelForm):
         if org_type:
             if (org_type.val == "Other" and not organization_other ):
                 raise forms.ValidationError('This field is required.')
-            if (org_type.val == "Other" and '----' in organization_other):
-                raise forms.ValidationError('This field is required.')
         return organization_other
 
     def clean_funding_source(self):
