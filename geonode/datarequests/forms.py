@@ -368,9 +368,13 @@ class DataRequestForm(forms.ModelForm):
     def clean_data_class_requested(self):
         data_classes = self.cleaned_data.get('data_class_requested')
         data_class_list = []
-        for dc in data_classes:
-            data_class_list.append(dc)
-        return data_class_list
+        if data_classes:
+            for dc in data_classes:
+                data_class_list.append(dc)
+            return data_class_list
+        else:
+            raise forms.ValidationError(
+                "Please choose the data class you want to download. If it is not in the list, select 'Other' and indicate the data class in the text box that appears")
 
     def clean_data_class_other(self):
         data_class_other = self.cleaned_data.get('data_class_other')
@@ -504,9 +508,13 @@ class DataRequestShapefileForm(NewLayerUploadForm):
     def clean_data_class_other(self):
         data_class_other = self.cleaned_data.get('data_class_other')
         data_classes = self.cleaned_data.get('data_class_requested')
-        if 'Other' in data_classes and not data_class_other:
-            raise forms.ValidationError(_('This field is required if you selected Other'))
-        return data_class_other
+        if data_classes:
+            for dc in data_classes:
+                data_class_list.append(dc)
+            return data_class_list
+        else:
+            raise forms.ValidationError(
+                "Please choose the data class you want to download. If it is not in the list, select 'Other' and indicate the data class in the text box that appears")
 
     def clean_letter_file(self):
         letter_file = self.cleaned_data.get('letter_file')
