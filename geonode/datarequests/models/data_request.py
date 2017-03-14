@@ -183,7 +183,9 @@ class DataRequest(BaseRequest, StatusModel):
 
     def get_organization_type(self):
         if self.profile_request:
-            return self.profile_request.get_organization_type()
+            return self.profile_request.org_type
+        elif self.profile:
+            return self.profile.org_type
         else:
             return None
 
