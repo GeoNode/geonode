@@ -154,7 +154,6 @@ class DataRequestEditForm(DataRequestForm):
             for t_item in kwargs['initial']['data_type']:
                 initial_tags.append(t_item.tag.name)
                 
-            pprint(initial_tags)
             self.fields['data_class_requested'].initial = initial_tags
         self.helper.layout = Layout(
             Div(
