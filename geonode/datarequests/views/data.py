@@ -170,7 +170,13 @@ def data_request_edit(request, pk, template ='datarequests/data_detail_edit.html
                     for i in v:
                         data_request.data_type.add(str(i.short_name))
                     #remove original tags
-                setattr(data_request, k, v)
+                elif k=='purpose':
+                    if v == form.INTENDED_USE_CHOICES.other:
+                        setattr(data_request,k,form.cleaned_data.get('purpose_other'))
+                    else:
+                        setattr(data_request,k,v)
+                else:
+                    setattr(data_request, k, v)
             data_request.administrator = request.user
             data_request.save()
         else:
