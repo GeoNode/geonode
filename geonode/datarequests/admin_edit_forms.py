@@ -149,6 +149,7 @@ class DataRequestEditForm(DataRequestForm):
         super(DataRequestEditForm, self).__init__(*args, **kwargs)
         self.fields.pop('letter_file')
         self.fields.keyOrder = self.ORDERED_FIELDS + [k for k in self.fields.keys() if k not in self.ORDERED_FIELDS]
+        pprint(self.fields.keyOrder)
         if 'initial' in kwargs and 'data_type' in kwargs['initial']:
             initial_tags = []
             for t_item in kwargs['initial']['data_type']:
@@ -185,3 +186,27 @@ class DataRequestEditForm(DataRequestForm):
                 css_class='form-group'
             ),
         )
+    
+    def clean_data_class_requested(self):
+        data_classes = self.cleaned_data.get('data_class_requested')
+        pprint("data_classes:"+str(data_classes))
+        data_class_list = []
+        if data_classes:
+            for dc in data_classes:
+                data_class_list.append(dc)
+            return data_class_list
+        else:
+            raise forms.ValidationError(
+                "Please choose the data class you want to download. If it is not in the list, select 'Other' and indicate the data class in the text box that appears")
+
+    def clean_data_class_other(self):
+        data_class_other = self.cleaned_data.get('data_class_other')
+        pprint(self.cleaned_data.get('data_class_requested'))
+        data_classes = [c.short_name for c in self.cleaned_data.get('data_class_requested')]#self.cleaned_data.get('data_class_requested')
+        
+        if data_classes:
+            if 'Other' in data_classes and not data_class_other:
+                raise forms.ValidationError(_('This field is required if you selected Other'))
+            if 'Other' not in data_classes and data_class_other:
+                return None
+        return data_class_other
