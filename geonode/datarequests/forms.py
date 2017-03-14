@@ -379,6 +379,7 @@ class DataRequestForm(forms.ModelForm):
 
     def clean_data_class_other(self):
         data_class_other = self.cleaned_data.get('data_class_other')
+        pprint(self.cleaned_data.get('data_class_requested'))
         data_classes = [c.short_name for c in self.cleaned_data.get('data_class_requested')]#self.cleaned_data.get('data_class_requested')
         
         if data_classes:
