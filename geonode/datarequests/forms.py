@@ -202,7 +202,7 @@ class ProfileRequestForm(forms.ModelForm):
         user_emails = Profile.objects.all().values_list('email', flat=True)
         if email in user_emails:
             raise forms.ValidationError(
-                'That email is already being used by a registered user. lease login with your account instead.')
+                'That email is already being used by a registered user. Please login with your account instead.')
 
         return email
 

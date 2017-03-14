@@ -127,8 +127,14 @@ class ProfileRequestEditForm(ProfileRequestForm):
                 ),
             )
         )
+    
+    
+    def clean_email(self):
+        
 
 class DataRequestEditForm(DataRequestForm):
+    
+    ORDERED_FIELDS = ["purpose", "purpose_other", "data_class_requested","data_class_other"]
     
     class Meta:
         model = DataRequest
@@ -145,6 +151,7 @@ class DataRequestEditForm(DataRequestForm):
     def __init__(self, *args, **kwargs):
         super(DataRequestEditForm, self).__init__(*args, **kwargs)
         self.fields.pop('letter_file')
+        self.fields.keyOrder = self.ORDERED_FIELDS + [k for k in self.fields.keys() if k not in self.ORDERED_FIELDS]
         if 'initial' in kwargs and 'data_type' in kwargs['initial']:
             initial_tags = []
             for t_item in kwargs['initial']['data_type']:
