@@ -361,10 +361,31 @@ class DataRequest(BaseRequest, StatusModel):
         
     def send_suc_notification(self):
         suc = self.suc.names()[0]
-        suc_contacts = SUC_Contact.objects.filter(institution_abrv=suc)
+        suc_contacts = SUC_Contact.objects.filter(institution_abrv=suc).exclude(position="Program Leader")
+        suc_pl = SUC.objects.get(institution_abrv=suc, position="Program Leader")
         
         
         text_content = email_utils.DATA_SUC_FORWARD_NOTIFICATION_TEXT.format(
-        
+            suc_pl.salutation,
+            suc_pl.name
         )
+        
+        html_content = email_utils.DATA_SUC_FORWARD_NOTIFICATION_HTML.format(
+            suc_pl.salutation,
+            suc_pl.name
+        )
+        
+        cc = suc_contacts.values_list('email_address',flat = True)
+        
+        email_subject = _('[LiPAD] Requesting Permission To Forward A Data Request')
+        
+        msg = EmailMultiAlternatives(
+            email_subject,
+            text_content,
+            settings.DEFAULT_FROM_EMAIL,
+            [suc_pl.email_address, ],
+            cc = cc
+        )
+        msg.attach_alternative(html_content, "text/html")
+        msg.send()
         

@@ -146,7 +146,7 @@ DATA_SUC_FORWARD_NOTIFICATION_TEXT="""
 """
 
 DATA_SUC_FORWARD_NOTIFICATION_HTML="""
-    <p>Greetings, {}!</p>
+    <p>Greetings, {} {}!</p>
     <p>We are informing you that a data requester has requested data which is too big for an FTP transfer to handle.
     We are asking your permission to forward the data to your team and let the requester retrieve the data from you. </p>
     <br/>
