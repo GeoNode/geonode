@@ -321,7 +321,7 @@ def layer_detail(request, layername, template='layers/layer_detail.html'):
             pprint(form)
             out['success'] = True
             anondownload = form.save()
-            anondownload.anon_layer = Layer.objects.get(typename=layername)
+            anondownload.anon_layer = Layer.objects.get(typename=layername).typename
             anondownload.save()
         else:
             pprint(form)
@@ -706,7 +706,7 @@ def layer_download_csv(request):
         firstname = unidecode(getprofile.first_name)
         lastname = unidecode(getprofile.last_name)
         email = getprofile.email
-        organization = getprofile.organization
+        organization = unidecode(getprofile.organization) if getprofile.organization is not None else getprofile.organization
         orgtype = orgtypelist[getprofile.organization_type]
         #area = get_area_coverage(auth.action_object.typename)
         area = 0
@@ -726,14 +726,14 @@ def layer_download_csv(request):
         email = anon.anon_email
         layername = anon.anon_layer
         docname = anon.anon_document
-        organization = anon.anon_organization
+        organization = unidecode(anon.anon_organization) if anon.anon_organization is not None else anon.anon_organization
         orgtype = anon.anon_orgtype
-        purpose = anon.anon_purpose
+        purpose = unidecode(anon.anon_purpose) if anon.anon_purpose is not None else anon.anon_purpose
         #area = get_area_coverage(layername.typename)
         area = 0
         if layername:
             listtowrite.append(["", lastname, firstname, email, organization, orgtype,
-                                purpose, layername.typename, anon.date.strftime('%Y/%m/%d'),area,''])
+                                purpose, layername, anon.date.strftime('%Y/%m/%d'),area,''])
     listtowrite.sort(key=lambda x: datetime.datetime.strptime(
         x[8], '%Y/%m/%d'), reverse=True)
 
@@ -744,7 +744,7 @@ def layer_download_csv(request):
         lastname = unidecode(ftp_detail['user'].last_name)
         firstname = unidecode(ftp_detail['user'].first_name)
         email = ftp_detail['user'].email
-        organization = ftp_detail['organization']
+        organization = unidecode(ftp_detail['organization']) if ftp_detail['organization'] is not None else ftp_detail['organization']
         organization_type = ftp_detail['organization_type']
         date_requested = ftp_request.date_time.strftime('%Y/%m/%d')
 
