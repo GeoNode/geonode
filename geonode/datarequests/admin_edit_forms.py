@@ -127,9 +127,6 @@ class ProfileRequestEditForm(ProfileRequestForm):
                 ),
             )
         )
-    
-    
-    def clean_email(self):
         
 
 class DataRequestEditForm(DataRequestForm):
