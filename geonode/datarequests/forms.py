@@ -314,8 +314,7 @@ class DataRequestForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         super(DataRequestForm, self).__init__(*args, **kwargs)
-        self.fields.keyOrder = self.ORDERED_FIELDS + [k for k in self.fields.keys() if k not in self.ORDERED_FIELDS]
-        pprint(self.fields.keyOrder)
+        #self.fields.keyOrder = self.ORDERED_FIELDS + [k for k in self.fields.keys() if k not in self.ORDERED_FIELDS]
         self.helper = FormHelper()
         self.helper.form_tag = False
         self.helper.layout = Layout(
@@ -370,7 +369,7 @@ class DataRequestForm(forms.ModelForm):
 
     def clean_data_class_requested(self):
         data_classes = self.cleaned_data.get('data_class_requested')
-        pprint(data_classes)
+        #pprint("data_classes:"+str(data_classes))
         data_class_list = []
         if data_classes:
             for dc in data_classes:
@@ -382,7 +381,7 @@ class DataRequestForm(forms.ModelForm):
 
     def clean_data_class_other(self):
         data_class_other = self.cleaned_data.get('data_class_other')
-        pprint(self.cleaned_data.get('data_class_requested'))
+        #pprint(self.cleaned_data.get('data_class_requested'))
         data_classes = [c.short_name for c in self.cleaned_data.get('data_class_requested')]#self.cleaned_data.get('data_class_requested')
         
         if data_classes:
