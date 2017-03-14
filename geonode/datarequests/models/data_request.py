@@ -201,7 +201,7 @@ class DataRequest(BaseRequest, StatusModel):
             elif f is 'contact_number':
                 out.append(self.get_contact_number())
             elif f is 'organization':
-                out.append(self.get_organization())
+                out.append(unidecode(self.get_organization()))
             elif f is 'created':
                 created = getattr(self, f)
                 out.append( str(created.month) +"/"+str(created.day)+"/"+str(created.year))
