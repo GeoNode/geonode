@@ -85,9 +85,9 @@ def get_juris_tiles(juris_shp, user=None):
             
             if not tile.intersection(juris_shp).is_empty:
                 gridref = '"E{0}N{1}"'.format(int(tile_x / settings._TILE_SIZE), int(tile_y / settings._TILE_SIZE))
-                pprint("gridref:"+str(gridref))
-                ceph_qs = CephDataObject.objects.filter(grid_ref = gridref)
                 
+                ceph_qs = CephDataObject.objects.filter(grid_ref = gridref)
+                pprint("gridref:"+str(gridref)+" query_length:"+str(len(ceph_qs)))
                 if ceph_qs.count() > 0:
                     tile_list.append(tile)
                 #if len(tile_list) >= 1000:
