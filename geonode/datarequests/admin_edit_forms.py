@@ -160,7 +160,8 @@ class DataRequestEditForm(DataRequestForm):
             if 'purpose' in kwargs['initial']:
                 initial_purpose = kwargs['initial']['purpose']
                 pprint(initial_purpose)
-                if initial_purpose not in self.INTENDED_USE_CHOICES:
+                if initial_purpose not in self.INTENDED_USE_CHOICES.__members__:
+                    pprint("it's not in the choices")
                     self.fields['purpose'].initial = self.INTENDED_USE_CHOICES.other
                     self.fields['purpose_other'].initial = initial_purpose
                 else:
