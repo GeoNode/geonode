@@ -1,24 +1,38 @@
 .. _win_binary_installer:
 
-=======================
-Window Binary Installer
-=======================
+========================
+Windows Binary Installer
+========================
 
 The GeoNode Windows Binary installer can be downloaded `here <http://build.geonode.org/windows/>`_.
+
+Current Versions
+================
+
+#. `GeoNode-2.4.x.exe <http://build.geonode.org/windows/GeoNode-2.4.x.exe>`_; Old version of GeoNode, not fully mantained anymore.
+
+#. `GeoNode-2.5.5.exe <http://build.geonode.org/windows/GeoNode-2.5.5.exe>`_; Maintenance version of GeoNode, still based on old security system.
+
+#. `GeoNode-2.6.x.exe <http://build.geonode.org/windows/GeoNode-2.6.x.exe>`_; Stable version of GeoNode, based on new OAuth2 based security system.
+
+#. `GeoNode-master.exe <http://build.geonode.org/windows/GeoNode-master.exe>`_; Development version of GeoNode, not stable.
+
+The Installer
+=============
 
 The Windows binary installer is an executable file which automatically sets up your system for GeoNode. It will install everything on the target folder, chosen by the user as a first step.
 
 In particular the installer configures the following components:
 
-#. An instance of the Oracle JRE 1.7 32bits
+#. An instance of the Oracle JRE 32bits
 
 #. An instance of Python 2.7.10 32bit with GDAL 1.11 extensions
 
-#. PostgreSQL 8.4 with PostGIS 1.5.4 spatial extensions
+#. PostgreSQL with PostGIS spatial extensions
 
-#. Apache Tomcat 7.0.39 with GeoServer for GeoNode webapp
+#. Apache Tomcat with GeoServer for GeoNode webapp
 
-#. Apache HTTPD Server 2.49
+#. Apache HTTPD Server 2.49 (WinLAMP version)
 
 The source code of the installer, along with all the components needed to build a custom executable and instructions, can be found at https://github.com/GeoNode/geonode-win-installer
 

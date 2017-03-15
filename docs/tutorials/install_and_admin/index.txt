@@ -32,6 +32,7 @@ At the end of this section you will be able to setup from scratch the whole GeoN
     vm_running_vagrant
     geonode_install/index
     setup_on_centos/index
+    win_bin_install/win_binary_installer
 
 :ref:`quick_installation`
     This section is a quick guide to get GeoNode up and running in most common operating systems. This is meant to be run on a fresh machine with no previously installed packages or GeoNode versions.
@@ -46,3 +47,6 @@ At the end of this section you will be able to setup from scratch the whole GeoN
     This section will guide the user through the steps necessary to install GeoNode on CentOS.
 
     Packaging for automatic installation are provided for Ubuntu, so, the only option for installing GeoNode on a CentOS platform is installing it from source.
+
+:ref:`win_binary_installer`
+    Install GeoNode on Windows through the binary installer.
