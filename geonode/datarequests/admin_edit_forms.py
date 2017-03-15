@@ -162,6 +162,7 @@ class DataRequestEditForm(DataRequestForm):
                     pprint('updating the purpose to something else')
                     self.fields['purpose'].initial = u'Cellular Network Mapping'
                     self.fields['purpose_other'].initial = initial_purpose
+                    pprint(self.fields['purpose'].valid_value('Cellular Network Mapping'))
                 else:
                     pprint(initial_purpose)
                     self.fields['purpose'].initial = initial_purpose
