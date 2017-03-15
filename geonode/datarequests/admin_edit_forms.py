@@ -162,7 +162,7 @@ class DataRequestEditForm(DataRequestForm):
                 pprint(initial_purpose)
                 if not self.INTENDED_USE_CHOICES.__contains__(initial_purpose):
                     pprint("it's not in the choices")
-                    self.fields['purpose'].initial = self.INTENDED_USE_CHOICES.other
+                    self.fields['purpose'].initial = 'other'
                     self.fields['purpose_other'].initial = initial_purpose
                 else:
                     pprint("it's in the choices")
