@@ -847,7 +847,11 @@ class DataRequestProfile(TimeStampedModel):
             self.additional_remarks += "migrated to profile request (" + dateformat.format(datetime.datetime.now(), 'F j, Y, P') +")"
             self.profile_request = profile_request
             self.save()
-
+            if self.action_date is not None:
+                profile_request.status_changed = self.action_date
+            else:
+                profile_request.status_changed = self.key_created_date if self.key_created_date is not None else self.date
+            profile_request.save()
             return profile_request
 
         pprint("Migration failed")
@@ -884,6 +888,11 @@ class DataRequestProfile(TimeStampedModel):
             self.data_request = data_request
             self.save()
 
+            if self.action_date is not None:
+                data_request.status_changed = self.action_date
+            else:
+                data_request.status_changed = self.key_created_date
+            data_request.save()
             return data_request
 
         return None
