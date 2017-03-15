@@ -140,7 +140,6 @@ def philgrid(request,template='index.html'):
         "is_layer": True,
         "wps_enabled": settings.OGC_SERVER['default']['WPS_ENABLED'],
         "siteurl": settings.SITEURL + 'geoserver/ows?', # for local osm layergroup
-        "siteurl": settings.SITEURL + 'geoserver/ows?',  # for local osm layergroup
     }
 
     context_dict["viewer"] = json.dumps(
