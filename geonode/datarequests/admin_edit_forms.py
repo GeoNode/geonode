@@ -160,9 +160,11 @@ class DataRequestEditForm(DataRequestForm):
             if 'purpose' in kwargs['initial']:
                 initial_purpose = kwargs['initial']['purpose']
                 if not self.INTENDED_USE_CHOICES.__contains__(initial_purpose):
-                    pprint("it's not in the choices")
                     pprint(self.INTENDED_USE_CHOICES.other)
-                    self.fields['purpose'].initial = initial_purpose
+                    self.fields['purpose'].initial = self.INTENDED_USE_CHOICES.other
+                    self.fields['purpose_other'].initial = initial_purpose
+                else:
+                    self.fiealds['purpose'].initial = initial_purpose
             
         self.helper.layout = Layout(
             Div(
