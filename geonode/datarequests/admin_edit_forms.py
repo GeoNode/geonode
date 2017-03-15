@@ -129,7 +129,7 @@ class ProfileRequestEditForm(ProfileRequestForm):
         )
         
 
-class DataRequestEditForm(DataRequestForm):
+class DataRequestEditForm(forms.ModelForm):
     
     ORDERED_FIELDS = ["purpose", "purpose_other", "data_class_requested","data_class_other"]
     
@@ -139,7 +139,7 @@ class DataRequestEditForm(DataRequestForm):
             "project_summary",
             "purpose",
             "purpose_other",
-            "data_class_requested",
+            #"data_class_requested",
             "data_class_other",
             "intended_use_of_dataset",
             "additional_remarks"
