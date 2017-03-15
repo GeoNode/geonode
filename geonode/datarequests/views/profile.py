@@ -28,7 +28,7 @@ class ProfileRequestList(LoginRequiredMixin, TemplateView):
     template_name = 'datarequests/profile_request_list.html'
     raise_exception = True
 
-@login_required    
+@login_required
 def profile_request_detail(request, pk, template='datarequests/profile_detail.html'):
 
     profile_request = get_object_or_404(ProfileRequest, pk=pk)
@@ -38,7 +38,7 @@ def profile_request_detail(request, pk, template='datarequests/profile_detail.ht
 
     pprint("profile_request "+profile_request.status)
     context_dict={"profile_request": profile_request}
-    
+
     if profile_request.data_request:
         pprint("no data request attached")
         context_dict['data_request'] = profile_request.data_request.get_absolute_url()
@@ -97,19 +97,19 @@ def profile_request_approve(request, pk):
             profile_request.profile.save()
 
             profile_request.set_status('approved',administrator = request.user)
-            
+
             if profile_request.data_request:
                 profile_request.data_request.profile = profile_request.profile
                 profile_request.data_request.save()
                 profile_request.data_request.set_status('pending')
-            
+
             profile_request.send_approval_email()
 
         return HttpResponseRedirect(profile_request.get_absolute_url())
 
     else:
         return HttpResponseRedirect("/forbidden/")
-        
+
 def profile_request_reject(request, pk):
     if not request.user.is_superuser:
         return HttpResponseRedirect('/forbidden/')
@@ -125,7 +125,7 @@ def profile_request_reject(request, pk):
         if 'additional_rejection_reason' in form.keys():
             profile_request.additional_rejection_reason = form['additional_rejection_reason'][0]
         profile_request.save()
-        
+
         profile_request.set_status('rejected',administrator = request.user)
         profile_request.send_rejection_email()
 
@@ -151,7 +151,7 @@ def profile_request_reconfirm(request, pk):
         profile_request = get_object_or_404(ProfileRequest, pk=pk)
 
         profile_request.send_verification_email()
-        
+
         messages.info(request, "Confirmation email resent")
         return HttpResponseRedirect(profile_request.get_absolute_url())
 
@@ -166,10 +166,10 @@ def profile_request_recreate_dir(request, pk):
         profile_request = get_object_or_404(ProfileRequest, pk=pk)
 
         profile_request.create_directory()
-        
+
         messages.info(request, "Folder creation has been scheduled. Check folder location in a few minutes")
         return HttpResponseRedirect(profile_request.get_absolute_url())
-        
+
 def profile_request_cancel(request,pk):
     profile_request = get_object_or_404(ProfileRequest, pk=pk)
     if not request.user.is_superuser:
@@ -182,12 +182,12 @@ def profile_request_cancel(request,pk):
         form = parse_qs(request.POST.get('form', None))
         profile_request.rejection_reason = form['rejection_reason'][0]
         profile_request.save()
-        
+
         if not request.user.is_superuser:
             profile_request.set_status('cancelled')
         else:
             profile_request.set_status('cancelled',administrator = request.user)
-            
+
     url = request.build_absolute_uri(profile_request.get_absolute_url())
 
     return HttpResponse(
@@ -199,7 +199,7 @@ def profile_request_cancel(request,pk):
         mimetype='text/plain'
     )
 
-@login_required    
+@login_required
 def profile_requests_csv(request):
     if not request.user.is_superuser:
         return HttpResponseRedirect("/forbidden")
@@ -209,14 +209,14 @@ def profile_requests_csv(request):
         response['Content-Disposition'] = 'attachment; filename="profilerequests-"'+str(datetoday.month)+str(datetoday.day)+str(datetoday.year)+'.csv"'
 
         writer = csv.writer(response)
-        fields = ['id','name','email','contact_number', 'organization', 'organization_type','organization_other', 'created','status', 'status changed','has_data_request', 'place_name', 'area_coverage','estimated_data_size', ]
+        fields = ['id','name','email','contact_number', 'organization', 'org_type','organization_other', 'created','status', 'status changed','has_data_request', 'place_name', 'area_coverage','estimated_data_size', ]
         writer.writerow( fields)
 
         objects = ProfileRequest.objects.all().order_by('pk')
 
         for o in objects:
             writer.writerow(o.to_values_list(fields))
-        
+
         return response
 
 def profile_request_facet_count(request):
