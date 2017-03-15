@@ -193,7 +193,9 @@ class DataRequest(BaseRequest, StatusModel):
 
     def get_organization_type(self):
         if self.profile_request:
-            return self.profile_request.get_organization_type()
+            return self.profile_request.org_type
+        elif self.profile:
+            return self.profile.org_type
         else:
             return None
 
@@ -211,7 +213,10 @@ class DataRequest(BaseRequest, StatusModel):
             elif f is 'contact_number':
                 out.append(self.get_contact_number())
             elif f is 'organization':
-                out.append(self.get_organization())
+                if self.get_organization():
+                    out.append(unidecode(self.get_organization()))
+                else:
+                    out.append(None)
             elif f is 'created':
                 created = getattr(self, f)
                 out.append( str(created.month) +"/"+str(created.day)+"/"+str(created.year))
