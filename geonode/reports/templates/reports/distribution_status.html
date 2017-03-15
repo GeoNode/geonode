@@ -58,7 +58,7 @@ var data_org = [org1];
 var layout_org = {
   barmode: 'stack',
   xaxis: {autorange: 'reversed'},
-  title: '<b>Data Request Tally per Organization</b>'
+  title: '<b>Data Request Tally per Organization (Total: {{ sum_org_count }})</b>'
 };
 
 Plotly.newPlot('org_datarequest', data_org, layout_org);
@@ -264,7 +264,7 @@ var layout = {
     autorange: 'reversed',
     tickangle: -45
   },
-  title: '<b>Cumulative LiPAD Downloads (Count)</b>',
+  title: '<b>Cumulative LiPAD Downloads (Total: {{ sum_layers }})</b>',
   legend:{
     x: 0,
     y: 1
