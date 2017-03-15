@@ -16,6 +16,7 @@ from django_enumfield import enum
 from django.core import validators
 
 from model_utils import Choices
+from model_utils.models import StatusModel
 from pprint import pprint
 from unidecode import unidecode
 
@@ -26,10 +27,11 @@ from geonode.layers.models import Layer
 from geonode.people.models import Profile
 from .profile_request import ProfileRequest
 from .base_request import BaseRequest
+from taggit.managers import TaggableManager
 
 import geonode.local_settings as local_settings
 
-class DataRequest(BaseRequest):
+class DataRequest(BaseRequest, StatusModel):
 
     DATA_TYPE_CHOICES = Choices(
         ('interpreted', _('Interpreted')),
@@ -58,7 +60,16 @@ class DataRequest(BaseRequest):
     jurisdiction_shapefile = models.ForeignKey(Layer, null=True, blank=True)
 
     project_summary = models.TextField(_('Summary of Project/Program'), null=True, blank=True)
-
+    
+    data_type = TaggableManager(_('data_types'), blank=True, help_text="Data Type Selected")
+    
+    data_class_other = models.CharField(
+        _('Requester-specified Data Type'),
+        null = True,
+        blank = True,
+        max_length = 50
+    )
+    
     data_type_requested = models.CharField(
         _('Type of Data Requested'),
         choices=DATA_TYPE_CHOICES,
@@ -182,7 +193,9 @@ class DataRequest(BaseRequest):
 
     def get_organization_type(self):
         if self.profile_request:
-            return self.profile_request.get_organization_type()
+            return self.profile_request.org_type
+        elif self.profile:
+            return self.profile.org_type
         else:
             return None
 
@@ -200,7 +213,10 @@ class DataRequest(BaseRequest):
             elif f is 'contact_number':
                 out.append(self.get_contact_number())
             elif f is 'organization':
-                out.append(self.get_organization())
+                if self.get_organization():
+                    out.append(unidecode(self.get_organization()))
+                else:
+                    out.append(None)
             elif f is 'created':
                 created = getattr(self, f)
                 out.append( str(created.month) +"/"+str(created.day)+"/"+str(created.year))

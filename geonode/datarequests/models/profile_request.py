@@ -34,7 +34,7 @@ from geonode.tasks.mk_folder import create_folder
 from .base_request import BaseRequest, LipadOrgType
 
 
-class ProfileRequest(BaseRequest):
+class ProfileRequest(BaseRequest, StatusModel):
 
     # Choices that will be used for fields
     LOCATION_CHOICES = Choices(
@@ -112,7 +112,7 @@ class ProfileRequest(BaseRequest):
         _('Organization Type'),
         max_length=255,
         blank=False,
-        null=False, 
+        null=False,
         default="Other",
         help_text=_('Organization type based on Phil-LiDAR1 Data Distribution Policy')
     )
@@ -289,7 +289,8 @@ class ProfileRequest(BaseRequest):
         self.save()
 
     def get_organization_type(self):
-        return OrganizationType.get(getattr(self,'organization_type'))
+        return self.org_type
+        #return OrganizationType.get(getattr(self,'organization_type'))
 
     def to_values_list(self, fields=['id','name','email','contact_number', 'organization','org_type', 'created','status','has_data_request']):
         out = []
@@ -314,7 +315,7 @@ class ProfileRequest(BaseRequest):
                     out.append(str(self.data_request.status))
                 else:
                     out.append(" ")
-            elif f is 'org_type':
+            elif f is 'org_type' or 'organization_type':
                 out.append(self.org_type)
             elif f is 'rejection_reason':
                 out.append(str(getattr(self,'rejection_reason')))

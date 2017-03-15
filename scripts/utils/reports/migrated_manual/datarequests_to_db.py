@@ -1,3 +1,4 @@
+
 from geonode.settings import GEONODE_APPS
 import geonode.settings as settings
 import codecs
@@ -125,6 +126,18 @@ def set_name(orig_name):
 
 
 def parse_datarequest_csv(csv_path):
+    status_assignment = {
+    "1. put-on-hold":"pending",
+    "2. replied only":"rejected",
+    "3. referred to other agency":"rejected",
+    "4. data being processed":"approved",
+    "5. coverletter to be signed":"approved",
+    "6. ready for pick-up":"approved",
+    "7. data distributed":"approved",
+    "8. data unavailable":"pending",
+    "9. referred to lipad":"approved",
+    "10. other":"pending",
+    }
     print 'Parsing CSV'
     if not os.path.isfile(csv_path):
         print '{0} file not found! Exiting.'.format(csv_path)
@@ -253,6 +266,7 @@ Overall Status: {15}""".format(_id, agency, position, mailing_addr, org_sub, raw
                                                     additional_remarks=remarks,
                                                     key_created_date=key_created_date,
                                                     created=created,
+                                                    request_status=status_assignment[status.lower()],
                                                     action_date=action_date)
                 profile_object.save()
                 print 'Profile: ', profile_object.first_name, profile_object.last_name
@@ -275,4 +289,3 @@ else:
     print 'Importing ...'
     csv_path = 'scripts/utils/reports/migrated_manual/new_datarequest_list.csv'
     parse_datarequest_csv(csv_path)
-
