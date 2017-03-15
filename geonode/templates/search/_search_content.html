@@ -11,7 +11,7 @@
             <button type="button" class="btn btn-default" ng-disabled="!cart.getCart().items.length" data-toggle="modal" data-target="#_bulk_permissions">{% trans "Set permissions" %}</button>
           </div>
           {% endif %}
-          {% if facet_type == 'layers' %}
+          {% if facet_type == 'layers' or include_create_map == 'true' %}
           <div class="btn-group" role="group">
             <button type="button" class="btn btn-default" ng-disabled="!cart.getCart().items.length" ng-click="newMap()">{% trans "Create a Map" %}</button>
           </div>
