@@ -155,18 +155,6 @@ class DataRequestEditForm(DataRequestForm):
                 for t_item in kwargs['initial']['data_type']:
                     initial_tags.append(t_item.tag.name)
                 self.fields['data_class_requested'].initial = initial_tags
-            #if 'purpose' in kwargs['initial']:
-            #    initial_purpose = kwargs['initial']['purpose']
-            #    if not self.INTENDED_USE_CHOICES.__contains__(initial_purpose):
-            #        pprint('updating the purpose to something else')
-            #        self.fields['purpose'].initial = u'Cellular Network Mapping'
-            #        self.fields['purpose_other'].initial = initial_purpose
-            #        pprint(self.fields['purpose'].valid_value('Cellular Network Mapping'))
-            #    else:
-            #        pprint(initial_purpose)
-            #        self.fields['purpose'].initial = initial_purpose
-            #    pprint(self.fields['purpose'].initial)
-            
         self.helper.layout = Layout(
             Div(
                 Field('project_summary', css_class='form-control'),
