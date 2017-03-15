@@ -150,7 +150,6 @@ class DataRequestEditForm(DataRequestForm):
         pprint(self.fields.keyOrder)
         self.fields.pop('letter_file')
         self.fields.keyOrder = self.ORDERED_FIELDS + [k for k in self.fields.keys() if k not in self.ORDERED_FIELDS]
-        pprint(self.fields.keyOrder)
         if 'initial' in kwargs: 
             if 'data_type' in kwargs['initial']:
                 initial_tags = []
@@ -160,7 +159,7 @@ class DataRequestEditForm(DataRequestForm):
             if 'purpose' in kwargs['initial']:
                 initial_purpose = kwargs['initial']['purpose']
                 if not self.INTENDED_USE_CHOICES.__contains__(initial_purpose):
-                    self.fields['purpose'].initial = 'other'
+                    self.fields['purpose'].initial = u'other'
                     self.fields['purpose_other'].initial = initial_purpose
                 else:
                     pprint(initial_purpose)
