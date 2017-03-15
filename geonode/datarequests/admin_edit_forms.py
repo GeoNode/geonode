@@ -149,24 +149,23 @@ class DataRequestEditForm(DataRequestForm):
         super(DataRequestEditForm, self).__init__(*args, **kwargs)
         self.fields.pop('letter_file')
         self.fields.keyOrder = self.ORDERED_FIELDS + [k for k in self.fields.keys() if k not in self.ORDERED_FIELDS]
-        pprint(self.fields['purpose'].initial)
         if 'initial' in kwargs: 
             if 'data_type' in kwargs['initial']:
                 initial_tags = []
                 for t_item in kwargs['initial']['data_type']:
                     initial_tags.append(t_item.tag.name)
                 self.fields['data_class_requested'].initial = initial_tags
-            if 'purpose' in kwargs['initial']:
-                initial_purpose = kwargs['initial']['purpose']
-                if not self.INTENDED_USE_CHOICES.__contains__(initial_purpose):
-                    pprint('updating the purpose to something else')
-                    self.fields['purpose'].initial = u'Cellular Network Mapping'
-                    self.fields['purpose_other'].initial = initial_purpose
-                    pprint(self.fields['purpose'].valid_value('Cellular Network Mapping'))
-                else:
-                    pprint(initial_purpose)
-                    self.fields['purpose'].initial = initial_purpose
-                pprint(self.fields['purpose'].initial)
+            #if 'purpose' in kwargs['initial']:
+            #    initial_purpose = kwargs['initial']['purpose']
+            #    if not self.INTENDED_USE_CHOICES.__contains__(initial_purpose):
+            #        pprint('updating the purpose to something else')
+            #        self.fields['purpose'].initial = u'Cellular Network Mapping'
+            #        self.fields['purpose_other'].initial = initial_purpose
+            #        pprint(self.fields['purpose'].valid_value('Cellular Network Mapping'))
+            #    else:
+            #        pprint(initial_purpose)
+            #        self.fields['purpose'].initial = initial_purpose
+            #    pprint(self.fields['purpose'].initial)
             
         self.helper.layout = Layout(
             Div(

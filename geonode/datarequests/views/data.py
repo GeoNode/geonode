@@ -157,7 +157,12 @@ def data_request_edit(request, pk, template ='datarequests/data_detail_edit.html
     
     if request.method == 'GET': 
         context_dict={"data_request":data_request}
-        context_dict["form"] = DataRequestEditForm(initial = model_to_dict(data_request))
+        initial_data = model_to_dict(data_request)
+        if not DataRequestEditForm.INTENDED_USE_CHOICES.__contains__(initial_data['purpose']):
+            initial_data['purpose_other'] = initial_data['purpose'] 
+            initial_data['purpose'] = 'other'
+            
+        context_dict["form"] = DataRequestEditForm(initial = initial_data)
         return render(request, template, context_dict)
     else:
         form = DataRequestEditForm(request.POST)
