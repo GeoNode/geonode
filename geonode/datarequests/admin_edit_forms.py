@@ -151,12 +151,20 @@ class DataRequestEditForm(DataRequestForm):
         self.fields.pop('letter_file')
         self.fields.keyOrder = self.ORDERED_FIELDS + [k for k in self.fields.keys() if k not in self.ORDERED_FIELDS]
         pprint(self.fields.keyOrder)
-        if 'initial' in kwargs and 'data_type' in kwargs['initial']:
-            initial_tags = []
-            for t_item in kwargs['initial']['data_type']:
-                initial_tags.append(t_item.tag.name)
-                
-            self.fields['data_class_requested'].initial = initial_tags
+        if 'initial' in kwargs: 
+            if 'data_type' in kwargs['initial']:
+                initial_tags = []
+                for t_item in kwargs['initial']['data_type']:
+                    initial_tags.append(t_item.tag.name)
+                self.fields['data_class_requested'].initial = initial_tags
+            if 'purpose' in kwargs['initial']:
+                initial_purpose = kwargs['initial']['purpose']
+                if initial_purpose not in self.INTENDED_USE_CHOICES:
+                    self.fields['purpose'].initial = self.INTENDED_USE_CHOICES.other
+                    self.fields['purpose_other'].initial = initial_purpose
+                else:
+                    self.fields['purpose'] = initial_purpose
+            
         self.helper.layout = Layout(
             Div(
                 Field('project_summary', css_class='form-control'),
