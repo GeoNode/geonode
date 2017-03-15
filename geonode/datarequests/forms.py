@@ -368,6 +368,7 @@ class DataRequestForm(forms.ModelForm):
         return purpose
 
     def clean_data_class_requested(self):
+		pprint("No shapefile form")
         data_classes = self.cleaned_data.get('data_class_requested')
         pprint("data_classes:"+str(data_classes))
         data_class_list = []
@@ -503,6 +504,7 @@ class DataRequestShapefileForm(NewLayerUploadForm):
     
     
     def clean_data_class_requested(self):
+		pprint("With shapefile form")
         data_classes = self.cleaned_data.get('data_class_requested')
         data_class_list = []
         for dc in data_classes:
