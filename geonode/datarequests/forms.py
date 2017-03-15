@@ -369,7 +369,7 @@ class DataRequestForm(forms.ModelForm):
 
     def clean_data_class_requested(self):
         data_classes = self.cleaned_data.get('data_class_requested')
-        #pprint("data_classes:"+str(data_classes))
+        pprint("data_classes:"+str(data_classes))
         data_class_list = []
         if data_classes:
             for dc in data_classes:
@@ -383,7 +383,7 @@ class DataRequestForm(forms.ModelForm):
         data_class_other = self.cleaned_data.get('data_class_other')
         #pprint(self.cleaned_data.get('data_class_requested'))
         #data_classes = [c.short_name for c in self.cleaned_data.get('data_class_requested')]#self.cleaned_data.get('data_class_requested')
-        data_class = self.clean_data_class_requested()
+        data_classes = self.clean_data_class_requested()
         
         if data_classes:
             if 'Other' in data_classes and not data_class_other:
