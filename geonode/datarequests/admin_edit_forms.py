@@ -159,11 +159,12 @@ class DataRequestEditForm(DataRequestForm):
                 self.fields['data_class_requested'].initial = initial_tags
             if 'purpose' in kwargs['initial']:
                 initial_purpose = kwargs['initial']['purpose']
+                pprint(initial_purpose)
                 if initial_purpose not in self.INTENDED_USE_CHOICES:
                     self.fields['purpose'].initial = self.INTENDED_USE_CHOICES.other
                     self.fields['purpose_other'].initial = initial_purpose
                 else:
-                    self.fields['purpose'] = initial_purpose
+                    self.fields['purpose'].initial = initial_purpose
             
         self.helper.layout = Layout(
             Div(
