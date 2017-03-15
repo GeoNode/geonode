@@ -159,7 +159,7 @@ class DataRequestEditForm(DataRequestForm):
             if 'purpose' in kwargs['initial']:
                 initial_purpose = kwargs['initial']['purpose']
                 if not self.INTENDED_USE_CHOICES.__contains__(initial_purpose):
-                    self.fields['purpose'].initial = u'other'
+                    self.fields['purpose'].initial = 'Cellular Network Mapping'
                     self.fields['purpose_other'].initial = initial_purpose
                 else:
                     pprint(initial_purpose)
