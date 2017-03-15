@@ -150,7 +150,6 @@ class DataRequestEditForm(DataRequestForm):
         pprint(self.fields.keyOrder)
         self.fields.pop('letter_file')
         self.fields.keyOrder = self.ORDERED_FIELDS + [k for k in self.fields.keys() if k not in self.ORDERED_FIELDS]
-        pprint(self.fields.keyOrder)
         if 'initial' in kwargs: 
             if 'data_type' in kwargs['initial']:
                 initial_tags = []
