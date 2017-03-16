@@ -255,7 +255,7 @@ class ProfileRequestForm(forms.ModelForm):
         return profile_request
 
 class DataRequestForm(forms.ModelForm):
-    ORDERED_FIELDS = ["purpose", "purpose_other"]#, "data_class_requested","data_class_other"]
+    ORDERED_FIELDS = ["purpose", "purpose_other", "data_class_requested","data_class_other"]
 
     INTENDED_USE_CHOICES = Choices(
         ('Disaster Risk Management', _('Disaster Risk Management')),
