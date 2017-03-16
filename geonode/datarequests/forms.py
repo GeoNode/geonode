@@ -415,6 +415,7 @@ class DataRequestForm(forms.ModelForm):
 
 
 class DataRequestShapefileForm(NewLayerUploadForm):
+    ORDERED_FIELDS = ["purpose", "purpose_other", "data_class_requested","data_class_other"]
 
     INTENDED_USE_CHOICES = Choices(
         ('Disaster Risk Management', _('Disaster Risk Management')),
@@ -491,6 +492,7 @@ class DataRequestShapefileForm(NewLayerUploadForm):
 
     def __init__(self, *args, **kwargs):
         super(DataRequestShapefileForm, self).__init__(*args, **kwargs)
+        self.fields.keyOrder = self.ORDERED_FIELDS + [k for k in self.fields.keys() if k not in self.ORDERED_FIELDS]
 
     def clean(self):
         cleaned = self.cleaned_data
@@ -511,14 +513,16 @@ class DataRequestShapefileForm(NewLayerUploadForm):
 
     def clean_data_class_other(self):
         data_class_other = self.cleaned_data.get('data_class_other')
-        data_classes = self.cleaned_data.get('data_class_requested')
+        #pprint(self.cleaned_data.get('data_class_requested'))
+        data_classes = [c.short_name for c in self.cleaned_data.get('data_class_requested')]#self.cleaned_data.get('data_class_requested')
+        #data_classes = self.clean_data_class_requested()
+        
         if data_classes:
-            for dc in data_classes:
-                data_class_list.append(dc)
-            return data_class_list
-        else:
-            raise forms.ValidationError(
-                "Please choose the data class you want to download. If it is not in the list, select 'Other' and indicate the data class in the text box that appears")
+            if 'Other' in data_classes and not data_class_other:
+                raise forms.ValidationError(_('This field is required if you selected Other'))
+            if 'Other' not in data_classes and data_class_other:
+                return None
+        return data_class_other
 
     def clean_letter_file(self):
         letter_file = self.cleaned_data.get('letter_file')
