@@ -134,6 +134,30 @@ class DataRequestEditForm(forms.ModelForm):
     
     ORDERED_FIELDS = ["purpose", "purpose_other", "data_class_requested","data_class_other"]
     
+    INTENDED_USE_CHOICES = Choices(
+        ('Disaster Risk Management', _('Disaster Risk Management')),
+        ('Urban/Land Subdivision Planning',
+            _('Urban/Land Subdivision Planning')),
+        ('Road/Infrastracture Planning', _('Road/Infrastracture Planning')),
+        ('Transport/Traffic Management', _('Transport/Traffic Management')),
+        ('Oil/Gas/Geothermal/Quarries/Minerals Exploration',
+            _('Oil/Gas/Geothermal/Quarries/Minerals Exploration')),
+        ('Biological/Agricultural/Forestry/Marine/Natural Resource Planning',
+            _('Biological/Agricultural/Forestry/Marine/Natural Resource Planning')),
+        ('Cellular Network Mapping', _('Cellular Network Mapping')),
+        ('other', _('Other, please specify:')),
+    )
+    
+    purpose = forms.ChoiceField(
+        label =_(u'Purpose of the Data'),
+        choices = INTENDED_USE_CHOICES
+    )
+
+    purpose_other = forms.CharField(
+        label=_(u'Your custom purpose for the data'),
+        required=False
+    )
+    
     data_class_requested = forms.ModelMultipleChoiceField(
         label = _('Types of Data Requested. (Press CTRL to select multiple types)'),
         queryset = TileDataClass.objects.all(),
@@ -146,7 +170,6 @@ class DataRequestEditForm(forms.ModelForm):
         fields = [
             "project_summary",
             "purpose",
-            "purpose_other",
             #"data_class_requested",
             "data_class_other",
             "intended_use_of_dataset",
@@ -155,7 +178,7 @@ class DataRequestEditForm(forms.ModelForm):
         
     def __init__(self, *args, **kwargs):
         super(DataRequestEditForm, self).__init__(*args, **kwargs)
-        self.fields.pop('letter_file')
+        #self.fields.pop('letter_file')
         self.fields.keyOrder = self.ORDERED_FIELDS + [k for k in self.fields.keys() if k not in self.ORDERED_FIELDS]
         if 'initial' in kwargs: 
             if 'data_type' in kwargs['initial']:
