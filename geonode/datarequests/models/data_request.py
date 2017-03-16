@@ -217,7 +217,7 @@ class DataRequest(BaseRequest, StatusModel):
                 else:
                     out.append('')
             elif f is 'org_type' or f is 'organization_type':
-                out.append(self.org_type)
+                out.append(self.get_organization_type())
             elif f is 'has_letter':
                 if self.request_letter:
                     out.append('yes')
