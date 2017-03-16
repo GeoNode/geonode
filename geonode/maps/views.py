@@ -1358,7 +1358,7 @@ def layer_replace(request, layername):
             try:
                 tempdir, base_file, sld_file = form.write_files()
                 name, __ = os.path.splitext(form.cleaned_data["base_file"].name)
-                saved_layer = save(layer, base_file, request.user, overwrite=True, charset = request.POST.get('charset'), sldfile = sld_file)
+                saved_layer = save(layer, base_file, request.user, overwrite=True, charset = request.POST.get('charset'), sldfile = sld_file, db_store_name = layer.store)
 
                 try:
                     #Delete layer attributes if they no longer exist in an updated layer

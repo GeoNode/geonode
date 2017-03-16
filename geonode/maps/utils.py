@@ -252,7 +252,7 @@ def get_db_store_name(user=None):
 
 
 def save(layer, base_file, user, overwrite = True, title=None,
-         abstract=None, permissions=None, keywords = (), charset = 'ISO-8859-1', sldfile = None):
+         abstract=None, permissions=None, keywords = (), charset = 'ISO-8859-1', sldfile = None, db_store_name = None):
     """Upload layer data to Geoserver and registers it with Geonode.
 
        If specified, the layer given is overwritten, otherwise a new layer
@@ -286,8 +286,9 @@ def save(layer, base_file, user, overwrite = True, title=None,
     cat = Layer.objects.gs_catalog
 
     # Check if the store exists in geoserver
+    if not db_store_name:
+        db_store_name = get_db_store_name(user)
 
-    db_store_name = get_db_store_name(user)
     try:
         if settings.DB_DATASTORE and the_layer_type == FeatureType.resource_type:
             store = cat.get_store(db_store_name)
@@ -375,7 +376,7 @@ def save(layer, base_file, user, overwrite = True, title=None,
     logger.info('>>> Step 5. Creating a [%s] resource in GeoServer...', name)
 
     try:
-        store, gs_resource = create_store_and_resource(name, data, user, overwrite=overwrite, charset=charset)
+        store, gs_resource = create_store_and_resource(name, data, user, overwrite=overwrite, charset=charset, db_store_name=db_store_name)
     except geoserver.catalog.UploadError, e:
         msg = ((_('Could not save the layer') + ' %s' +
                 _(', there was an upload error:') + ' %s')
@@ -776,13 +777,14 @@ def upload(incoming, user=None, overwrite=True, keywords = (), skip=True, ignore
             print >> console, msg
     return output
 
-def _create_db_featurestore(name, data, user, overwrite = False, charset = None):
+def _create_db_featurestore(name, data, user, overwrite = False, charset = None, db_store_name = None):
     """Create a database store then use it to import a shapefile.
 
     If the import into the database fails then delete the store
     (and delete the PostGIS table for it).
     """
-    db_store_name = get_db_store_name(user)
+    if not db_store_name:
+        db_store_name = get_db_store_name(user)
     cat = Layer.objects.gs_catalog
     try:
         ds = cat.get_store(db_store_name)
