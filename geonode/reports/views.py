@@ -37,6 +37,7 @@ from collections import OrderedDict, Counter
 from geonode.datarequests.models.data_request import DataRequest
 from geonode.datarequests.models.profile_request import ProfileRequest
 from geonode.people.models import OrganizationType
+from geonode.datarequests.models import LipadOrgType
 
 import urllib2, json
 from urllib2 import HTTPError
@@ -115,9 +116,10 @@ def report_distribution_status(request, template='reports/distribution_status.ht
 
         mostrecent = ProfileRequest.objects.filter(id=eachinlist.id).order_by('created').last()
         if mostrecent:
-            if mostrecent.org_type not in org_count:
-                org_count[mostrecent.org_type] = 0
-            org_count[mostrecent.org_type] += 1
+            org_type_sub = LipadOrgType.objects.get(val=mostrecent.org_type).category
+            if org_type_sub not in org_count:
+                org_count[org_type_sub] = 0
+            org_count[org_type_sub] += 1
 
 
 

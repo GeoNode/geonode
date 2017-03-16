@@ -1,3 +1,4 @@
+import ast
 import datetime
 import os
 import shutil
@@ -22,6 +23,7 @@ from django.views.decorators.http import require_POST
 from django.views.generic import TemplateView
 
 from geonode.base.enumerations import CHARSETS
+from geonode.cephgeo.models import TileDataClass
 from geonode.documents.models import Document
 from geonode.layers.models import UploadSession, Style
 from geonode.layers.utils import file_upload
@@ -64,7 +66,7 @@ def profile_request_view(request):
                     profile_request_obj.middle_name = form.cleaned_data['middle_name']
                     profile_request_obj.last_name = form.cleaned_data['last_name']
                     profile_request_obj.organization = form.cleaned_data['organization']
-                    profile_request_obj.org_type=form.cleaned_data['org_type']
+                    profile_request_obj.org_type=form.cleaned_data['org_type'].val
                     profile_request_obj.contact_number = form.cleaned_data['contact_number']
                     if not profile_request_obj.email == form.cleaned_data['email']:
                         profile_request_obj.email = form.cleaned_data['email']
@@ -118,8 +120,17 @@ def data_request_view(request):
         pprint("detected data request post")
         post_data = request.POST.copy()
         post_data['permissions'] = '{"users":{"dataRegistrationUploader": ["view_resourcebase"] }}'
+        data_classes = post_data.getlist('data_class_requested')
+        #data_classes = post_data.get('data_class_requested')
+        data_class_objs = []
+        pprint(data_classes)
+        pprint("len:"+str(len(data_classes)))
+        
+        if len(data_classes) == 1 and ',' in data_classes[0]:
+            post_data.setlist('data_class_requested',data_classes[0].replace('[','').replace(']','').replace('"','').split(','))
+            pprint(post_data.getlist('data_class_requested'))
+        
         details_form = DataRequestForm(post_data, request.FILES)
-        pprint(post_data)
         data_request_obj = None
         
         errormsgs = []

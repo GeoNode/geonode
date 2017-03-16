@@ -305,6 +305,7 @@ define(['underscore',
                 }
             },
             error: function(data){
+              $('#please-wait').modal('hide');
                 var errors = $.parseJSON(data.responseText).errors;
                 $('#please-wait').modal('toggle');
                 for (var key in errors ){

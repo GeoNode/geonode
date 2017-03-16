@@ -12,6 +12,7 @@ urlpatterns = patterns(
     
     #old requests
     url(r'^old_requests/$',DataRequestProfileList.as_view(),name='old_requests_model_view'),
+    url(r'^old_requests/csv$','old_requests_csv',name='old_requests_csv'),
     url(r'^old_requests/(?P<pk>\d+)/$', 'old_request_detail', name="old_request_detail"),
     url(r'^old_requests/migrate/$','old_request_migration_all',name='old_request_migration_all'),
     url(r'^old_requests/(?P<pk>\d+)/migrate/$','old_request_migration', name='old_request_migration'),
@@ -44,6 +45,7 @@ urlpatterns = patterns(
     url(r'^data/reverse_geocode/$','data_request_reverse_geocode_all', name='data_request_reverse_geocode_all'),
     
     url(r'^data/(?P<pk>\d+)/$', 'data_request_detail', name="data_request_detail"),
+    url(r'^data/(?P<pk>\d+)/edit/$', 'data_request_edit', name="data_request_edit"),
     url(r'^data/(?P<pk>\d+)/approve/$', 'data_request_approve', name="data_request_approve"),
     url(r'^data/(?P<pk>\d+)/reject/$', 'data_request_reject', name="data_request_reject"),
     url(r'^data/(?P<pk>\d+)/cancel/$', 'data_request_cancel', name="data_request_cancel"),
