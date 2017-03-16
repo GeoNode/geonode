@@ -146,7 +146,7 @@ define(['underscore',
         var files = layers[Object.keys(layers)[0]]['files'];
         var types = [];
         for (var i = 0; i<files.length; i++){
-            var base_name = files[i].name.split('.')[0];
+            var base_name = files[i].name.split('.')[0].replace(/\[|\]|\(|\)| /g, '_');
             var ext = files[i].name.split('.').pop().toLowerCase();
             if ($.inArray(ext,types) == -1){
                 types.push(ext);
@@ -199,7 +199,7 @@ define(['underscore',
         if(geogig_enabled) {
             var files = layers[Object.keys(layers)[0]]['files'];
             for (var i = 0; i<files.length; i++){
-                var base_name = files[i].name.split('.')[0];
+                var base_name = files[i].name.split('.')[0].replace(/\[|\]|\(|\)| /g, '_');
                 var geogig_store = $('#' + base_name + '\\:geogig_store').val();
                 var geogig = $('#' + base_name + '\\:geogig_toggle').is(':checked');
                 if (geogig) {
