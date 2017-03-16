@@ -150,10 +150,8 @@ def data_request_view(request):
         else:
             tempdir = None
             shapefile_form = DataRequestShapefileForm(post_data, request.FILES)
-            if shapefile_form.is_valid():
-                
-                if u'base_file' in request.FILES:
-                    
+            if u'base_file' in request.FILES:
+                if shapefile_form.is_valid():
                     title = shapefile_form.cleaned_data["layer_title"]
 
                     # Replace dots in filename - GeoServer REST API upload bug
@@ -232,16 +230,16 @@ def data_request_view(request):
                         if tempdir is not None:
                             shutil.rmtree(tempdir)
 
-            else:
-                for e in shapefile_form.errors.values():
-                    errormsgs.extend([escape(v) for v in e])
-                out['success'] = False
-                out['errors'].update(dict(
-                        (k, map(unicode, v))
-                        for (k,v) in shapefile_form.errors.iteritems()
-                ))
-                pprint(out['errors'])
-                out['errormsgs'] = out['errors']
+                else:
+                    for e in shapefile_form.errors.values():
+                        errormsgs.extend([escape(v) for v in e])
+                    out['success'] = False
+                    out['errors'].update(dict(
+                            (k, map(unicode, v))
+                            for (k,v) in shapefile_form.errors.iteritems()
+                    ))
+                    pprint(out['errors'])
+                    out['errormsgs'] = out['errors']
 
         #if out['success']:
         if not out['errors']:
