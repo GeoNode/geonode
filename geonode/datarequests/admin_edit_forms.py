@@ -133,6 +133,13 @@ class DataRequestEditForm(forms.ModelForm):
     
     ORDERED_FIELDS = ["purpose", "purpose_other", "data_class_requested","data_class_other"]
     
+    data_class_requested = forms.ModelMultipleChoiceField(
+        label = _('Types of Data Requested. (Press CTRL to select multiple types)'),
+        queryset = TileDataClass.objects.all(),
+        to_field_name = 'short_name',
+        required = True
+    )
+    
     class Meta:
         model = DataRequest
         fields = [
@@ -186,19 +193,25 @@ class DataRequestEditForm(forms.ModelForm):
             ),
         )
     
-    def clean_data_class_requested(self):
-        pprint('admin edit form')
-        data_classes = self.cleaned_data.get('data_class_requested')
-        pprint("data_classes:"+str(data_classes))
-        data_class_list = []
-        if data_classes:
-            for dc in data_classes:
-                data_class_list.append(dc)
-            return data_class_list
-        else:
-            raise forms.ValidationError(
-                "Please choose the data class you want to download. If it is not in the list, select 'Other' and indicate the data class in the text box that appears")
+    def clean_purpose_other(self):
+        purpose = self.cleaned_data.get('purpose')
+        purpose_other = self.cleaned_data.get('purpose_other')
+        if purpose == self.INTENDED_USE_CHOICES.other:
+            if not purpose_other:
+                raise forms.ValidationError(
+                    'Please state your purpose for the requested data.')
+        return purpose_other
 
+    def clean_purpose(self):
+        purpose = self.cleaned_data.get('purpose')
+        if purpose == self.INTENDED_USE_CHOICES.other:
+            purpose_other = self.cleaned_data.get('purpose_other')
+            if not purpose_other:
+                return purpose
+            else:
+                return purpose_other
+        return purpose
+    
     def clean_data_class_other(self):
         data_class_other = self.cleaned_data.get('data_class_other')
         pprint(self.cleaned_data.get('data_class_requested'))
@@ -211,3 +224,16 @@ class DataRequestEditForm(forms.ModelForm):
             if 'Other' not in data_classes and data_class_other:
                 return None
         return data_class_other
+
+    def clean_data_class_requested(self):
+        pprint('admin edit form')
+        data_classes = self.cleaned_data.get('data_class_requested')
+        pprint("data_classes:"+str(data_classes))
+        data_class_list = []
+        if data_classes:
+            for dc in data_classes:
+                data_class_list.append(dc)
+            return data_class_list
+        else:
+            raise forms.ValidationError(
+                "Please choose the data class you want to download. If it is not in the list, select 'Other' and indicate the data class in the text box that appears")
