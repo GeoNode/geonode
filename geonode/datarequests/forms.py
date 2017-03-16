@@ -495,12 +495,13 @@ class DataRequestShapefileForm(NewLayerUploadForm):
         self.fields.keyOrder = self.ORDERED_FIELDS + [k for k in self.fields.keys() if k not in self.ORDERED_FIELDS]
 
     def clean(self):
-        cleaned = self.cleaned_data
-        if cleaned['base_file']:
-            cleaned = super(NewLayerUploadForm, self).clean()
+        cleaned = super(NewLayerUploadForm, self).clean()
 
-        cleaned['purpose'] = self.clean_purpose()
-        cleaned['purpose_other'] = self.clean_purpose_other()    
+        #cleaned['purpose'] = self.clean_purpose()
+        #cleaned['purpose_other'] = self.clean_purpose_other()
+        #cleaned['data_class_requested'] = self.clean_data_class_requested()
+        #cleaned['data_class_other'] = self.clean_data_class_requested()
+        return cleaned 
     
     def clean_data_class_requested(self):
         pprint("With shapefile form")
