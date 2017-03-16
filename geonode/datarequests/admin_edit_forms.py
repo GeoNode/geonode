@@ -20,7 +20,7 @@ from geonode.documents.forms import DocumentCreateForm
 from geonode.people.models import OrganizationType, Profile
 
 from .models import DataRequest, ProfileRequest, LipadOrgType
-from .forms import ProfileRequestForm
+from .forms import ProfileRequestForm, DataRequestForm
 
 class ProfileRequestEditForm(ProfileRequestForm):
     
@@ -61,7 +61,6 @@ class ProfileRequestEditForm(ProfileRequestForm):
     org_type = forms.ChoiceField(
         label = _('Organization Type'),
         choices = ORG_TYPE_CHOICES,
-        initial = '---------',
         required = True
     )
     
@@ -69,8 +68,6 @@ class ProfileRequestEditForm(ProfileRequestForm):
         super(ProfileRequestEditForm, self).__init__(*args, **kwargs)
         self.fields.pop('captcha')
         self.fields.keyOrder = self.ORDERED_FIELDS + [k for k in self.fields.keys() if k not in self.ORDERED_FIELDS]
-        if not self.fields['org_type'].choices[0][0] == '---------':
-            self.fields['org_type'].choices.insert(0, ('---------','---------'))
         self.helper = FormHelper()
         self.helper.layout = Layout(
             Fieldset('Editting Profile Request',
@@ -129,4 +126,59 @@ class ProfileRequestEditForm(ProfileRequestForm):
                     css_class='form-group'
                 ),
             )
+        )
+
+class DataRequestEditForm(DataRequestForm):
+    
+    class Meta:
+        model = DataRequest
+        fields = [
+            "project_summary",
+            "purpose",
+            "purpose_other",
+            "data_class_requested",
+            "data_class_other",
+            "intended_use_of_dataset",
+            "additional_remarks"
+        ]
+        
+    def __init__(self, *args, **kwargs):
+        super(DataRequestEditForm, self).__init__(*args, **kwargs)
+        self.fields.pop('letter_file')
+        if 'initial' in kwargs and 'data_type' in kwargs['initial']:
+            initial_tags = []
+            for t_item in kwargs['initial']['data_type']:
+                initial_tags.append(t_item.tag.name)
+                
+            pprint(initial_tags)
+            self.fields['data_class_requested'].initial = initial_tags
+        self.helper.layout = Layout(
+            Div(
+                Field('project_summary', css_class='form-control'),
+                css_class='form-group'
+            ),
+            Div(
+                Field('purpose', css_class='form-control'),
+                Div(
+                    Field('purpose_other', css_class='form-control'),
+                    css_class='col-sm-11 col-sm-offset-1'
+                ),
+                css_class='form-group'
+            ),
+            Div(
+               Field('data_class_requested', css_class='form-control'),
+               css_class='form-group'
+            ),
+            Div(
+                Field('data_class_other', css_class='form-control'),
+                css_class='form-group'
+            ),
+            Div(
+                Field('intended_use_of_dataset', css_class='form-control'),
+                css_class='form-group'
+            ),
+            Div(
+                Field('additional_remarks', css_class='form-control'),
+                css_class='form-group'
+            ),
         )

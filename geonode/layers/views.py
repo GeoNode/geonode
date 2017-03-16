@@ -27,7 +27,7 @@ import csv
 import datetime
 from pprint import pprint
 from guardian.shortcuts import get_perms
-
+from unidecode import unidecode
 
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required, user_passes_test
@@ -321,7 +321,7 @@ def layer_detail(request, layername, template='layers/layer_detail.html'):
             pprint(form)
             out['success'] = True
             anondownload = form.save()
-            anondownload.anon_layer = Layer.objects.get(typename=layername)
+            anondownload.anon_layer = Layer.objects.get(typename=layername).typename
             anondownload.save()
         else:
             pprint(form)
@@ -703,19 +703,17 @@ def layer_download_csv(request):
     for auth in auth_list:
         username = auth.actor
         getprofile = Profile.objects.get(username=username)
-        firstname = getprofile.first_name
-        lastname = getprofile.last_name
+        firstname = unidecode(getprofile.first_name)
+        lastname = unidecode(getprofile.last_name)
         email = getprofile.email
         organization = getprofile.organization
         orgtype = orgtypelist[getprofile.organization_type]
-
         #area = get_area_coverage(auth.action_object.typename)
         area = 0
         # pprint(dir(getprofile))
         if auth.resource_type != 'document':
             listtowrite.append([username, lastname, firstname, email, organization, orgtype,
-                                "", auth.title, auth.timestamp.strftime('%Y/%m/%d')])
-
+                                "", auth.title, auth.timestamp.strftime('%Y/%m/%d'),area,''])
     # writer.writerow(['\n'])
     anon_list = AnonDownloader.objects.all().order_by('date')
     # writer.writerow(['Anonymous Downloads'])
@@ -723,20 +721,19 @@ def layer_download_csv(request):
 
     pprint("writing anonymous downloads list")
     for anon in anon_list:
-        lastname = anon.anon_last_name
-        firstname = anon.anon_first_name
+        lastname = unidecode(anon.anon_last_name)
+        firstname = unidecode(anon.anon_first_name)
         email = anon.anon_email
         layername = anon.anon_layer
         docname = anon.anon_document
         organization = anon.anon_organization
         orgtype = anon.anon_orgtype
         purpose = anon.anon_purpose
+        #area = get_area_coverage(layername.typename)
         area = 0
-
         if layername:
             listtowrite.append(["", lastname, firstname, email, organization, orgtype,
-                                purpose, layername.typename, anon.date.strftime('%Y/%m/%d'),area,''])
-
+                                purpose, layername, anon.date.strftime('%Y/%m/%d'),area,''])
     listtowrite.sort(key=lambda x: datetime.datetime.strptime(
         x[8], '%Y/%m/%d'), reverse=True)
 
@@ -744,23 +741,24 @@ def layer_download_csv(request):
     for ftp_request in FTPRequest.objects.all():
         ftp_detail = get_ftp_details(ftp_request)
         username = ftp_detail['user'].username
-        lastname = ftp_detail['user'].last_name
-        firstname = ftp_detail['user'].first_name
+        lastname = unidecode(ftp_detail['user'].last_name)
+        firstname = unidecode(ftp_detail['user'].first_name)
         email = ftp_detail['user'].email
         organization = ftp_detail['organization']
         organization_type = ftp_detail['organization_type']
-        date_requested = ftp_request.date_time
+        date_requested = ftp_request.date_time.strftime('%Y/%m/%d')
 
         listtowrite.append([ username, lastname, firstname, email, organization, organization_type, "",
-                    "LAZ", date_requested.date, ftp_detail['number_of_laz'], ftp_detail['size_of_laz']])
+                    "LAZ", date_requested, ftp_detail['number_of_laz'], ftp_detail['size_of_laz']])
         listtowrite.append([ username, lastname, firstname, email, organization, organization_type, "",
-                    "DSM", date_requested.date, ftp_detail['number_of_dsm'], ftp_detail['size_of_dsm']])
+                    "DSM", date_requested, ftp_detail['number_of_dsm'], ftp_detail['size_of_dsm']])
         listtowrite.append([ username, lastname, firstname, email, organization, organization_type, "",
-                    "DTM", date_requested.date, ftp_detail['number_of_dtm'], ftp_detail['size_of_dtm']])
+                    "DTM", date_requested, ftp_detail['number_of_dtm'], ftp_detail['size_of_dtm']])
         listtowrite.append([ username, lastname, firstname, email, organization, organization_type, "",
-                    "Ortho", date_requested.date, ftp_detail['number_of_ortho'], ftp_detail['size_of_ortho']])
+                    "Ortho", date_requested, ftp_detail['number_of_ortho'], ftp_detail['size_of_ortho']])
 
 
     for eachtowrite in listtowrite:
         writer.writerow(eachtowrite)
+
     return response

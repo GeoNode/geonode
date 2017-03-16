@@ -164,7 +164,3 @@ class RIDF(models.Model):
 
     def __unicode__(self):
         return "{0}:{1}".format(self.prov_name, self.muni_name)
-
-class UserTiles(models.Model):
-    user = models.ForeignKey(Profile, null=False, blank=False, unique=True)
-    gridref_list = models.TextField(null=False, blank=False)
