@@ -152,6 +152,7 @@ def data_request_view(request):
             shapefile_form = DataRequestShapefileForm(post_data, request.FILES)
             if shapefile_form.is_valid():
                 if u'base_file' in request.FILES:
+                    pprint(shapefile_form.cleaned_data)
                     title = shapefile_form.cleaned_data["layer_title"]
 
                     # Replace dots in filename - GeoServer REST API upload bug
