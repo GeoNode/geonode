@@ -81,6 +81,18 @@ def tiled_view(request, overlay=settings.TILED_SHAPEFILE, template="maptiles/map
 
     context_dict = {}
     context_dict["grid"] = get_layer_config(request, overlay, "base.view_resourcebase", _PERMISSION_VIEW )
+    legend_link = settings.SITEURL + \
+        'geoserver/wms?REQUEST=GetLegendGraphic&VERSION=1.0.0&FORMAT=image/png&LAYER=geonode:philgrid&STYLE='
+    try:
+        context_dict["dtm"] = legend_link + settings.DTM_SLD
+        context_dict["ortho"] = legend_link + settings.ORTHO_SLD
+        context_dict["laz"] = legend_link + settings.LAZ_SLD
+        context_dict["dsm"] = legend_link + settings.DSM_SLD
+    except Exception:
+        context_dict["dtm"] = None
+        context_dict["ortho"] = None
+        context_dict["laz"] = None
+        context_dict["dsm"] = None
     jurisdiction_object = None
 
     if jurisdiction is None:
@@ -101,6 +113,7 @@ def tiled_view(request, overlay=settings.TILED_SHAPEFILE, template="maptiles/map
     context_dict["feature_tiled"] = overlay.split(":")[1]
     context_dict["test_mode"]=test_mode
     context_dict["data_classes"]= DataClassification.labels.values()
+
     #context_dict["projections"]= SRS.labels.values()
 
     return render_to_response(template, RequestContext(request, context_dict))
