@@ -186,6 +186,8 @@ class DataRequestEditForm(forms.ModelForm):
                 for t_item in kwargs['initial']['data_type']:
                     initial_tags.append(t_item.tag.name)
                 self.fields['data_class_requested'].initial = initial_tags
+        self.helper = FormHelper()
+        self.helper.form_tag = False
         self.helper.layout = Layout(
             Div(
                 Field('project_summary', css_class='form-control'),
