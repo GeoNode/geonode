@@ -13,6 +13,7 @@ from model_utils import Choices
 
 from pprint import pprint
 
+from geonode.cephgeo.models import TileDataClass
 from geonode.datarequests.models import DataRequestProfile, DataRequest, ProfileRequest
 from geonode.layers.forms import NewLayerUploadForm, LayerUploadForm, JSONField
 from geonode.documents.models import Document
