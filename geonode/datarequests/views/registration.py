@@ -151,10 +151,10 @@ def data_request_view(request):
             tempdir = None
             shapefile_form = DataRequestShapefileForm(post_data, request.FILES)
             if shapefile_form.is_valid():
-                clean_shapefile_form = shapefile_form.clean()
+                
                 if u'base_file' in request.FILES:
                     
-                    title = clean_shapefile_form["layer_title"]
+                    title = shapefile_form.cleaned_data["layer_title"]
 
                     # Replace dots in filename - GeoServer REST API upload bug
                     # and avoid any other invalid characters.
@@ -163,7 +163,7 @@ def data_request_view(request):
                         name_base = title
                     else:
                         name_base, __ = os.path.splitext(
-                            clean_shapefile_form["base_file"].name)
+                            shapefile_form.cleaned_data["base_file"].name)
 
                     name = slugify(name_base.replace(".", "_"))
 
@@ -179,9 +179,9 @@ def data_request_view(request):
                             name=name,
                             user=registration_uploader,
                             overwrite=False,
-                            charset=clean_shapefile_form["charset"],
-                            abstract=clean_shapefile_form["abstract"],
-                            title=clean_shapefile_form["layer_title"],
+                            charset=shapefile_form.cleaned_data["charset"],
+                            abstract=shapefile_form.cleaned_data["abstract"],
+                            title=shapefile_form.cleaned_data["layer_title"],
                         )
 
                     except Exception as e:
