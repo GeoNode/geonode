@@ -315,7 +315,7 @@ class ProfileRequest(BaseRequest, StatusModel):
                     out.append(str(self.data_request.status))
                 else:
                     out.append(" ")
-            elif f is 'org_type' or 'organization_type':
+            elif f is 'org_type' or f is 'organization_type':
                 out.append(self.org_type)
             elif f is 'rejection_reason':
                 out.append(str(getattr(self,'rejection_reason')))

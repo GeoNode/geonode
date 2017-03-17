@@ -226,7 +226,7 @@ class DataRequest(BaseRequest, StatusModel):
                     out.append(str(date_of_action.month)+"/"+str(date_of_action.day)+"/"+str(date_of_action.year))
                 else:
                     out.append('')
-            elif f is 'organization_type':
+            elif f is 'org_type' or f is 'organization_type':
                 out.append(self.get_organization_type())
             elif f is 'has_letter':
                 if self.request_letter:
