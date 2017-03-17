@@ -84,10 +84,15 @@ def tiled_view(request, overlay=settings.TILED_SHAPEFILE, template="maptiles/map
     legend_link = settings.SITEURL + \
         'geoserver/wms?REQUEST=GetLegendGraphic&VERSION=1.0.0&FORMAT=image/png&LAYER=geonode:philgrid&STYLE='
     try:
-        context_dict["dtm"] = legend_link + settings.DTM_SLD
-        context_dict["ortho"] = legend_link + settings.ORTHO_SLD
-        context_dict["laz"] = legend_link + settings.LAZ_SLD
-        context_dict["dsm"] = legend_link + settings.DSM_SLD
+        context_dict["dtm_lgd"] = legend_link + settings.DTM_SLD
+        context_dict["ortho_lgd"] = legend_link + settings.ORTHO_SLD
+        context_dict["laz_lgd"] = legend_link + settings.LAZ_SLD
+        context_dict["dsm_lgd"] = legend_link + settings.DSM_SLD
+        context_dict["dtm_sld"] =  settings.DTM_SLD
+        context_dict["ortho_sld"] = settings.ORTHO_SLD
+        context_dict["laz_sld"] = settings.LAZ_SLD
+        context_dict["dsm_sld"] = settings.DSM_SLD
+        context_dict["philgrid_sld"] = settings.philgrid_sld
     except Exception:
         context_dict["dtm"] = None
         context_dict["ortho"] = None
