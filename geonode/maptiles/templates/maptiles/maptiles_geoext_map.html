@@ -783,32 +783,27 @@ function setMapSize(){
 function changeSLD(){
   console.log('Change sld');
   if($("input:checked").val()=="dtm"){
-    console.log('############# Change SLD TO DTM');
     tile_layer.mergeNewParams({
       styles: '{{ dtm_sld }}',
     });
   }
 
   else if ($("input:checked").val()=="ortho"){
-    console.log('############# Change SLD TO ORTHO');
     tile_layer.mergeNewParams({
       styles: '{{ ortho_sld }}',
     });
   }
   else if ($("input:checked").val()=="laz"){
-    console.log('############# Change SLD TO LAZ');
     tile_layer.mergeNewParams({
       styles: '{{ laz_sld }}',
     });
   }
   else if ($("input:checked").val()=="dsm"){
-    console.log('############# Change SLD TO DSM');
     tile_layer.mergeNewParams({
       styles: '{{ dsm_sld }}',
     });
   }
   else if ($("input:checked").val()=="all"){
-    console.log('&&&&&&&&&&&&&&&& ALL {{ philgrid_sld }}');
     tile_layer.mergeNewParams({
       styles: '{{ philgrid_sld }}',
     });
