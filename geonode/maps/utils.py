@@ -338,13 +338,13 @@ def save(layer, base_file, user, overwrite = True, title=None,
         if settings.DB_DATASTORE:
             create_store_and_resource = _create_db_featurestore
         else:
-            def create_store_and_resource(name, data, user, overwrite, charset):
+            def create_store_and_resource(name, data, user, overwrite, charset, db_store_name):
                 cat.create_featurestore(name, data, overwrite=overwrite, charset=charset)
                 featurestore = cat.get_store(name)
                 return featurestore, cat.get_resource(name,store=featurestore)
     elif the_layer_type == Coverage.resource_type:
         logger.debug("Uploading raster layer: [%s]", base_file)
-        def create_store_and_resource(name, data, user, overwrite, charset):
+        def create_store_and_resource(name, data, user, overwrite, charset, db_store_name):
             cat.create_coveragestore(name, data, overwrite=overwrite)
             coverage_store = cat.get_store(name)
             return coverage_store, cat.get_resource(name,store=coverage_store)
