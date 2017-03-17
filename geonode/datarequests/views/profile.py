@@ -63,7 +63,8 @@ def profile_request_edit(request, pk, template ='datarequests/profile_detail_edi
             pprint("form is valid")
             for k, v in form.cleaned_data.iteritems():
                 if k=='org_type':
-                    setattr(profile_request, k, k.val)
+                    pprint(v)
+                    setattr(profile_request, k, v.val)
                 else:
                     setattr(profile_request, k, v)
             profile_request.administrator = request.user
