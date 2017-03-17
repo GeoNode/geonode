@@ -183,17 +183,17 @@ body{
         </div>
         <div>
         <label class="form-check-label">
-          <input class="form-check-input" type="radio" name="sld" value="ortho" onclick="changeSLD()">
+          <input class="form-check-input" type="radio" name="sld" value="dsm" onclick="changeSLD()">
         </label>
         </div>
         <div>
             <label class="form-check-label">
-              <input class="form-check-input" type="radio" name="sld" value="laz" onclick="changeSLD()">
+              <input class="form-check-input" type="radio" name="sld" value="ortho" onclick="changeSLD()">
             </label>
         </div>
         <div>
             <label class="form-check-label">
-              <input class="form-check-input" type="radio" name="sld" value="dsm" onclick="changeSLD()">
+              <input class="form-check-input" type="radio" name="sld" value="laz" onclick="changeSLD()">
             </label>
         </div>
         <div>
@@ -204,9 +204,9 @@ body{
       </div>
             <div class="legend-images" style="display: block; float: left; position: relative;">
           <img id="dtm_icon" src="{{ dtm_lgd }}">
+          <img id="dsm_icon" style="position: absolute; top: 75px; left: 0px;" src="{{ dsm_lgd }}">
           <img id="ortho_icon" style="position: relative; top: 25px; left: -50px;" src="{{ ortho_lgd }}">
           <img id="laz_icon" style="position: absolute; top: 50px; left: 0px;" src="{{ laz_lgd }}">
-          <img id="dsm_icon" style="position: absolute; top: 75px; left: 0px;" src="{{ dsm_lgd }}">
           <p style="position: absolute; top: 100px; left: 0px;">A L L</p>
           <img style="position: absolute; top: 125px; left: -15px;" id="legend_icon2" src="{{jurisdiction.resource.get_legend.url}}">
 
