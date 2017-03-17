@@ -32,9 +32,8 @@ define(function (require, exports) {
         }
 
         // need to find a way converting this name to a safe selector
-        this.selector = '#' + LayerInfo.safeSelector(this.name) + '-element';
-        this.selector = this.selector.replace(' ','_');
-        this.name = this.name.replace(' ','_');
+        this.name = LayerInfo.safeSelector(this.name.split('.')[0]);
+        this.selector = '#' + this.name + '-element';
         this.errors = this.collectErrors();
         this.polling = false;
     };
@@ -45,7 +44,7 @@ define(function (require, exports) {
      *  @returns string
      */
     LayerInfo.safeSelector = function (name) {
-        return name.replace(/\[|\]|\(|\)|./g, '_');
+        return name.replace(/\[|\]|\(|\)| /g, '_');
     };
 
     /** Function to return the success template
@@ -152,14 +151,14 @@ define(function (require, exports) {
     LayerInfo.prototype.prepareFormData = function (form_data) {
         var i, ext, file, perm, geogig, geogig_store, time, mosaic;
 
-		var base_ext  = this.main.name.split('.').pop();
-		var base_name = this.main.name.slice(0, -(base_ext.length+1));
+		var base_ext  = this.name.split('.').pop();
+		var base_name = this.name.slice(0, -(base_ext.length+1));
 
-        var base_ext  = this.main.name.split('.').pop();
-        var base_name = this.main.name.slice(0, -(base_ext.length+1));
+        var base_ext  = this.name.split('.').pop();
+        var base_name = this.name.slice(0, -(base_ext.length+1));
 
-        var base_ext  = this.main.name.split('.').pop();
-        var base_name = this.main.name.slice(0, -(base_ext.length+1));
+        var base_ext  = this.name.split('.').pop();
+        var base_name = this.name.slice(0, -(base_ext.length+1));
 
         if (!form_data) {
             form_data = new FormData();
@@ -260,7 +259,7 @@ define(function (require, exports) {
 
         for (i = 0; i < this.files.length; i += 1) {
             file = this.files[i];
-            if (file.name !== this.main.name) {
+            if (file.name !== this.name) {
                 ext = path.getExt(file);
                 form_data.append(ext + '_file', file);
             }
@@ -641,7 +640,7 @@ define(function (require, exports) {
         $('#' + this.name + '\\:geogig_toggle').on('change', this.doGeoGigToggle);
 
         // Add values to the geogig store dropdown and hide.
-        this.setupGeogigDropdown($('#' + this.main.name.split('.')[0] + '\\:geogig_store'));
+        this.setupGeogigDropdown($('#' + this.name.split('.')[0] + '\\:geogig_store'));
         $("#s2id_" + this.name + "\\:geogig_store").hide()
 
         return li;
