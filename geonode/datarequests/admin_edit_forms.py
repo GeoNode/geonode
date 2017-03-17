@@ -59,11 +59,11 @@ class ProfileRequestEditForm(ProfileRequestForm):
             'additional_remarks',
         )
         
-    org_type = forms.ChoiceField(
-        label = _('Organization Type'),
-        choices = ORG_TYPE_CHOICES,
-        required = True
-    )
+    #org_type = forms.ChoiceField(
+    #    label = _('Organization Type'),
+    #    choices = ORG_TYPE_CHOICES,
+    #    required = True
+    #)
     
     def __init__(self, *args, **kwargs):
         super(ProfileRequestEditForm, self).__init__(*args, **kwargs)
