@@ -43,7 +43,7 @@ def compute_size_update(requests_query_list, area_compute = True, data_size = Tr
                 message += "https://"+settings.SITEURL + str(r.get_absolute_url()) + "\n"
                 r.save()
         subject = "Area and data size computations done"
-        recipient = settings.LIPAD_SUPPORT_MAIL
+        recipient = [settings.LIPAD_SUPPORT_MAIL]
         send_mail(subject, message, settings.LIPAD_SUPPORT_MAIL, recipient, fail_silently= False)
 
 def tile_floor(x):
