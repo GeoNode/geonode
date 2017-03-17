@@ -143,7 +143,7 @@ class UserTilesAdmin(admin.ModelAdmin):
     list_display = (
         'id',
         'user',
-        'gridref_list'
+        'num_tiles'
     )
     search_fields = ('user__username', 'gridref_list')
 
