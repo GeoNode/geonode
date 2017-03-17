@@ -121,6 +121,9 @@ class UserJurisdiction(models.Model):
 class UserTiles(models.Model):
     user = models.ForeignKey(Profile, null=False, blank=False, unique=True)
     gridref_list = models.TextField(null=False, blank=False)
+    @property
+    def num_tiles(self):
+        return self.gridref_list.count(',')+1
 
 
 
