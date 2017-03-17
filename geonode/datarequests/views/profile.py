@@ -79,7 +79,11 @@ def profile_request_approve(request, pk):
     if request.method == 'POST':
         profile_request = get_object_or_404(ProfileRequest, pk=pk)
 
-        if not profile_request.has_verified_email or profile_request.status != 'pending':
+        if not profile_request.has_verified_email:
+            messages.info(request,'This request does not have a verified email')
+            return HttpResponseRedirect(profile_request.get_absolute_url())
+        
+        if profile_request.status != 'pending':
             return HttpResponseRedirect('/forbidden')
 
         result = True
