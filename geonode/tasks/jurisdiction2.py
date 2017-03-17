@@ -30,6 +30,7 @@ def compute_size_update(requests_query_list, area_compute = True, data_size = Tr
     if len(requests_query_list) < 1:
         pprint("Requests for update is empty")
     else:
+        message = "The following area and data size computations have been completed:\n"
         for r in requests_query_list:
             pprint("Updating request id:{0}".format(r.pk))
             geometries = get_geometries_ogr(r.jurisdiction_shapefile.name)
@@ -39,7 +40,11 @@ def compute_size_update(requests_query_list, area_compute = True, data_size = Tr
                 r.juris_data_size = get_juris_data_size(dissolve_shp(geometries))
                 
             if save:
+                message += settings.SITEURL + str(r.get_absolute_url()) + "\n"
                 r.save()
+        subject = "Area and data size computations done"
+        recipient = [settings.LIPAD_SUPPORT_MAIL]
+        send_mail(subject, message, settings.LIPAD_SUPPORT_MAIL, recipient, fail_silently= False)
 
 def tile_floor(x):
     return int(math.floor(x / float(settings._TILE_SIZE)) * settings._TILE_SIZE)
