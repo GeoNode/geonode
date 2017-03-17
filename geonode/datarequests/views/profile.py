@@ -1,6 +1,7 @@
 from django.utils import timezone
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
+from django.forms.models import model_to_dict
 from django.http import HttpResponse, HttpResponseRedirect, Http404
 from django.shortcuts import (
     redirect, get_object_or_404, render, render_to_response)
@@ -14,8 +15,9 @@ from braces.views import (
 )
 
 from geonode.datarequests.forms import RejectionForm
+from geonode.datarequests.admin_edit_forms import ProfileRequestEditForm
 from geonode.datarequests.models import (
-    ProfileRequest, DataRequest)
+    ProfileRequest, DataRequest, LipadOrgType)
 
 from pprint import pprint
 from urlparse import parse_qs
@@ -45,6 +47,29 @@ def profile_request_detail(request, pk, template='datarequests/profile_detail.ht
 
     return render_to_response(template, RequestContext(request, context_dict))
 
+@login_required
+def profile_request_edit(request, pk, template ='datarequests/profile_detail_edit.html'):
+    profile_request = get_object_or_404(ProfileRequest, pk=pk)
+    if not  request.user.is_superuser:
+        return HttpResponseRedirect('/forbidden')
+    
+    if request.method == 'GET': 
+        context_dict={"profile_request":profile_request}
+        context_dict["form"] = ProfileRequestEditForm(initial = model_to_dict(profile_request))
+        return render(request, template, context_dict)
+    else:
+        form = ProfileRequestEditForm(request.POST)
+        if form.is_valid():
+            pprint("form is valid")
+            for k, v in form.cleaned_data.iteritems():
+                setattr(profile_request, k, v)
+            profile_request.administrator = request.user
+            profile_request.save()
+        else:
+            pprint("form is invalid")
+            return render( request, template, {'form': form, 'profile_request': profile_request})
+        return HttpResponseRedirect(profile_request.get_absolute_url())
+
 def profile_request_approve(request, pk):
     if not request.user.is_superuser:
         return HttpResponseRedirect('/forbidden')
@@ -54,7 +79,11 @@ def profile_request_approve(request, pk):
     if request.method == 'POST':
         profile_request = get_object_or_404(ProfileRequest, pk=pk)
 
-        if not profile_request.has_verified_email or profile_request.status != 'pending':
+        if not profile_request.has_verified_email:
+            messages.info(request,'This request does not have a verified email')
+            return HttpResponseRedirect(profile_request.get_absolute_url())
+        
+        if profile_request.status != 'pending':
             return HttpResponseRedirect('/forbidden')
 
         result = True
