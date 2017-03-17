@@ -588,9 +588,10 @@ Ext.onReady(function (){
     // );
 
     // apply local osm layer group
+    siteurl_osm = '{{ siteurl }}' +  '/geoserver/osm/wms?';
     var local_osm = new OpenLayers.Layer.WMS(
         "WMS OSM Layer",
-        "http://lipad.tst.dream.upd.edu.ph/geoserver/osm/wms?",
+        siteurl_osm,
         {
             workspace: 'osm',
             layers: 'osm:osm',
