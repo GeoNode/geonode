@@ -289,7 +289,8 @@ class ProfileRequest(BaseRequest, StatusModel):
         self.save()
 
     def get_organization_type(self):
-        return OrganizationType.get(getattr(self,'organization_type'))
+        return self.org_type
+        #return OrganizationType.get(getattr(self,'organization_type'))
 
     def to_values_list(self, fields=['id','name','email','contact_number', 'organization','org_type', 'created','status','has_data_request']):
         out = []
@@ -314,7 +315,7 @@ class ProfileRequest(BaseRequest, StatusModel):
                     out.append(str(self.data_request.status))
                 else:
                     out.append(" ")
-            elif f is 'org_type':
+            elif f is 'org_type' or f is 'organization_type':
                 out.append(self.org_type)
             elif f is 'rejection_reason':
                 out.append(str(getattr(self,'rejection_reason')))

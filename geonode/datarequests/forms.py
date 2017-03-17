@@ -202,7 +202,7 @@ class ProfileRequestForm(forms.ModelForm):
         user_emails = Profile.objects.all().values_list('email', flat=True)
         if email in user_emails:
             raise forms.ValidationError(
-                'That email is already being used by a registered user. lease login with your account instead.')
+                'That email is already being used by a registered user. Please login with your account instead.')
 
         return email
 
@@ -255,6 +255,7 @@ class ProfileRequestForm(forms.ModelForm):
         return profile_request
 
 class DataRequestForm(forms.ModelForm):
+    ORDERED_FIELDS = ["purpose", "purpose_other", "data_class_requested","data_class_other"]
 
     INTENDED_USE_CHOICES = Choices(
         ('Disaster Risk Management', _('Disaster Risk Management')),
@@ -313,6 +314,7 @@ class DataRequestForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         super(DataRequestForm, self).__init__(*args, **kwargs)
+        self.fields.keyOrder = self.ORDERED_FIELDS + [k for k in self.fields.keys() if k not in self.ORDERED_FIELDS]
         self.helper = FormHelper()
         self.helper.form_tag = False
         self.helper.layout = Layout(
@@ -365,16 +367,11 @@ class DataRequestForm(forms.ModelForm):
                 return purpose_other
         return purpose
 
-    def clean_data_class_requested(self):
-        data_classes = self.cleaned_data.get('data_class_requested')
-        data_class_list = []
-        for dc in data_classes:
-            data_class_list.append(dc)
-        return data_class_list
-
     def clean_data_class_other(self):
         data_class_other = self.cleaned_data.get('data_class_other')
+        #pprint(self.cleaned_data.get('data_class_requested'))
         data_classes = [c.short_name for c in self.cleaned_data.get('data_class_requested')]#self.cleaned_data.get('data_class_requested')
+        #data_classes = self.clean_data_class_requested()
         
         if data_classes:
             if 'Other' in data_classes and not data_class_other:
@@ -382,6 +379,19 @@ class DataRequestForm(forms.ModelForm):
             if 'Other' not in data_classes and data_class_other:
                 return None
         return data_class_other
+
+    def clean_data_class_requested(self):
+        pprint("No shapefile form")
+        data_classes = self.cleaned_data.get('data_class_requested')
+        pprint("data_classes:"+str(data_classes))
+        data_class_list = []
+        if data_classes:
+            for dc in data_classes:
+                data_class_list.append(dc)
+            return data_class_list
+        else:
+            raise forms.ValidationError(
+                "Please choose the data class you want to download. If it is not in the list, select 'Other' and indicate the data class in the text box that appears")
 
     def clean_letter_file(self):
         letter_file = self.cleaned_data.get('letter_file')
@@ -405,6 +415,7 @@ class DataRequestForm(forms.ModelForm):
 
 
 class DataRequestShapefileForm(NewLayerUploadForm):
+    ORDERED_FIELDS = ["purpose", "purpose_other", "data_class_requested","data_class_other"]
 
     INTENDED_USE_CHOICES = Choices(
         ('Disaster Risk Management', _('Disaster Risk Management')),
@@ -481,19 +492,19 @@ class DataRequestShapefileForm(NewLayerUploadForm):
 
     def __init__(self, *args, **kwargs):
         super(DataRequestShapefileForm, self).__init__(*args, **kwargs)
+        self.fields.keyOrder = self.ORDERED_FIELDS + [k for k in self.fields.keys() if k not in self.ORDERED_FIELDS]
 
     def clean(self):
-        cleaned = self.cleaned_data
-        if cleaned['base_file']:
-            cleaned = super(NewLayerUploadForm, self).clean()
+        cleaned = super(NewLayerUploadForm, self).clean()
 
-        cleaned['purpose'] = self.clean_purpose()
-        cleaned['purpose_other'] = self.clean_purpose_other()
-
-        return cleaned
-    
+        #cleaned['purpose'] = self.clean_purpose()
+        #cleaned['purpose_other'] = self.clean_purpose_other()
+        #cleaned['data_class_requested'] = self.clean_data_class_requested()
+        #cleaned['data_class_other'] = self.clean_data_class_requested()
+        return cleaned 
     
     def clean_data_class_requested(self):
+        pprint("With shapefile form")
         data_classes = self.cleaned_data.get('data_class_requested')
         data_class_list = []
         for dc in data_classes:
@@ -503,9 +514,15 @@ class DataRequestShapefileForm(NewLayerUploadForm):
 
     def clean_data_class_other(self):
         data_class_other = self.cleaned_data.get('data_class_other')
-        data_classes = self.cleaned_data.get('data_class_requested')
-        if 'Other' in data_classes and not data_class_other:
-            raise forms.ValidationError(_('This field is required if you selected Other'))
+        #pprint(self.cleaned_data.get('data_class_requested'))
+        data_classes = [c.short_name for c in self.cleaned_data.get('data_class_requested')]#self.cleaned_data.get('data_class_requested')
+        #data_classes = self.clean_data_class_requested()
+        
+        if data_classes:
+            if 'Other' in data_classes and not data_class_other:
+                raise forms.ValidationError(_('This field is required if you selected Other'))
+            if 'Other' not in data_classes and data_class_other:
+                return None
         return data_class_other
 
     def clean_letter_file(self):
