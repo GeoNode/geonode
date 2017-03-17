@@ -367,11 +367,27 @@ class DataRequestForm(forms.ModelForm):
                 return purpose_other
         return purpose
 
+    def clean_data_class_requested(self):
+        pprint("No shapefile form")
+        data_classes = self.cleaned_data.get('data_class_requested')
+        pprint("data_classes:"+str(data_classes))
+        data_class_list = []
+        if data_classes:
+            if len(data_classes) < 1:
+                raise forms.ValidationError(
+                "Please choose the data class you want to download. If it is not in the list, select 'Other' and indicate the data class in the text box that appears")
+            for dc in data_classes:
+                data_class_list.append(dc)
+            return data_class_list
+        else:
+            raise forms.ValidationError(
+                "Please choose the data class you want to download. If it is not in the list, select 'Other' and indicate the data class in the text box that appears")
+
     def clean_data_class_other(self):
         data_class_other = self.cleaned_data.get('data_class_other')
         #pprint(self.cleaned_data.get('data_class_requested'))
-        data_classes = [c.short_name for c in self.cleaned_data.get('data_class_requested')]#self.cleaned_data.get('data_class_requested')
-        #data_classes = self.clean_data_class_requested()
+        #data_classes = [c.short_name for c in self.cleaned_data.get('data_class_requested')]#self.cleaned_data.get('data_class_requested')
+        data_classes = self.clean_data_class_requested()
         
         if data_classes:
             if 'Other' in data_classes and not data_class_other:
@@ -379,19 +395,6 @@ class DataRequestForm(forms.ModelForm):
             if 'Other' not in data_classes and data_class_other:
                 return None
         return data_class_other
-
-    def clean_data_class_requested(self):
-        pprint("No shapefile form")
-        data_classes = self.cleaned_data.get('data_class_requested')
-        pprint("data_classes:"+str(data_classes))
-        data_class_list = []
-        if data_classes:
-            for dc in data_classes:
-                data_class_list.append(dc)
-            return data_class_list
-        else:
-            raise forms.ValidationError(
-                "Please choose the data class you want to download. If it is not in the list, select 'Other' and indicate the data class in the text box that appears")
 
     def clean_letter_file(self):
         letter_file = self.cleaned_data.get('letter_file')

@@ -288,10 +288,12 @@ def data_request_view(request):
                 
         else:
             status_code = 400
+        pprint("sending this out")
         return HttpResponse(
             json.dumps(out),
             mimetype='application/json',
             status=status_code)
+    pprint("i'm here")
     return render(
         request,
         'datarequests/registration/shapefile.html',
