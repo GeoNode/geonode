@@ -4,6 +4,7 @@ from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.urlresolvers import reverse
+from django.forms.models import model_to_dict
 from django.http import HttpResponse, HttpResponseRedirect, Http404
 from django.shortcuts import (
     redirect, get_object_or_404, render, render_to_response)
@@ -17,7 +18,9 @@ from braces.views import (
 
 from urlparse import parse_qs
 
+from geonode.cephgeo.models import TileDataClass
 from geonode.cephgeo.models import UserJurisdiction
+from geonode.datarequests.admin_edit_forms import DataRequestEditForm
 from geonode.datarequests.forms import DataRequestRejectForm
 from geonode.datarequests.models import DataRequest
 from geonode.documents.models import get_related_documents
@@ -69,6 +72,8 @@ def data_request_detail(request, pk, template='datarequests/data_detail.html'):
         return HttpResponseRedirect('/forbidden')
 
     context_dict={"data_request": data_request}
+    context_dict ['data_types'] = data_request.data_type.names()
+    pprint(context_dict ['data_types'])
     pprint("dr.pk="+str(data_request.pk))
 
     if data_request.profile:
@@ -145,6 +150,47 @@ def data_request_detail(request, pk, template='datarequests/data_detail.html'):
     context_dict["request_reject_form"]= DataRequestRejectForm(instance=data_request)
 
     return render_to_response(template, RequestContext(request, context_dict))
+    
+@login_required
+def data_request_edit(request, pk, template ='datarequests/data_detail_edit.html'):
+    data_request = get_object_or_404(DataRequest, pk=pk)
+    if not request.user.is_superuser:
+        return HttpResponseRedirect('/forbidden')
+    
+    if request.method == 'GET': 
+        context_dict={"data_request":data_request}
+        initial_data = model_to_dict(data_request)
+        if not DataRequestEditForm.INTENDED_USE_CHOICES.__contains__(initial_data['purpose']):
+            initial_data['purpose_other'] = initial_data['purpose'] 
+            initial_data['purpose'] = 'other'
+            
+        context_dict["form"] = DataRequestEditForm(initial = initial_data)
+        return render(request, template, context_dict)
+    else:
+        form = DataRequestEditForm(request.POST)
+        if form.is_valid():
+            pprint("form is valid")
+            for k, v in form.cleaned_data.iteritems():
+                if k == 'data_class_requested':
+                    data_types = []
+                    data_request.data_type.clear()
+                    for i in v:
+                        data_request.data_type.add(str(i.short_name))
+                    #remove original tags
+                elif k=='purpose':
+                    if v == form.INTENDED_USE_CHOICES.other:
+                        setattr(data_request,k,form.cleaned_data.get('purpose_other'))
+                    else:
+                        setattr(data_request,k,v)
+                else:
+                    setattr(data_request, k, v)
+            data_request.administrator = request.user
+            data_request.save()
+        else:
+            pprint("form is invalid")
+            pprint(form.errors)
+            return render( request, template, {'form': form, 'data_request': data_request})
+        return HttpResponseRedirect(data_request.get_absolute_url())
 
 def data_request_cancel(request, pk):
     data_request = get_object_or_404(DataRequest, pk=pk)
