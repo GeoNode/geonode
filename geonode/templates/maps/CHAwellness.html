@@ -26,10 +26,10 @@ var isMobile = {
     any: function() {
         return (isMobile.Android() || isMobile.BlackBerry() || isMobile.iOS() || isMobile.Opera() || isMobile.Windows());
     }
-};    
+};
 </script>
 
-
+<script type="text/javascript" src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
 {% include "geonode/ext_header.html" %}
 {% include "geonode/app_header.html" %}
 {% include "geonode/geo_header.html" %}
@@ -135,10 +135,10 @@ var init = function() {
     app.on("ready", function() {
         Ext.getCmp("worldmap_publish_tool").hide();
         if (!config.edit_map)
-        	Ext.getCmp("worldmap_addlayers_button").hide();    	
+        	Ext.getCmp("worldmap_addlayers_button").hide();
     });
 
-    
+
     var permalinkTemplate = new Ext.Template("{protocol}//{host}/maps/{id}/edit");
     var permalink = function(id) {
         return permalinkTemplate.apply({
@@ -148,7 +148,7 @@ var init = function() {
         })
     };
 
-   
+
     var titleTemplate = new Ext.Template("<span>{title}</span>");
     Ext.DomHelper.overwrite(Ext.get("page-breadcrumb"), titleTemplate.apply({title: (config.about.title ? config.about.title : gettext('New Map'))}));
 
@@ -156,8 +156,8 @@ var init = function() {
         //reset title header
         Ext.DomHelper.overwrite(Ext.get("page-breadcrumb"), titleTemplate.apply({title: (config.about.title ? config.about.title : gettext('New Map'))}));
     }, this);
-    
-    
+
+
     {% endautoescape %}
     }
 
@@ -168,46 +168,37 @@ var init = function() {
 {% endblock %}
 
 {% block body %}
+
 <div id="header-wrapper">
     {{ block.super }}
 
     <div id="dataTabs" class="x-hidden">
 
-<div id="searchDiv" style="background-color:#fff;width:800px;">
-<div style="float:left;position:relative;margin:10px;width:580px;">
+<div id="searchDiv" style="background-color:#fff;width:100%;">
+<div style="position:relative;float:left;margin:10px;width:500px;height:250px;">
   <div class="block">
-    <h2>{% trans "Search" %} <span class="subtitle">{% trans "for geospatial data" %}</span></h2>
-
-    <div id="search_results"></div>
-
+    <div id="search_form"></div>
   </div>
-
-  <div class="block wrap selfclear">
-  <h3>{% trans "Selected Data" %}</h3>
-  <div id="selection">
-    <div id="data_cart"></div>
-    </div>
-    <div id="data_ops">
+  <div id="refine" style="float:left;width:100%;padding-bottom:15px;">
+    <div class="bbox-controls">
+      <div class="bbox-expand">
+      </div>
     </div>
   </div>
-
-
 </div>
 
 
 
-<div style="position:relative;float:right;width:200px">
-  <div id="refine" class="block">
-    <h3>{% trans "Refine Search" %}</h3>
-    <div class="bbox-controls">
-      <div class="bbox-enabled"><input type="checkbox" /> {% trans "By area" %}</div>
-      <p><span class="explain">{% blocktrans %}Limit the search to data that includes features in the displayed area.{% endblocktrans %}</span></p>
-      <div class="bbox-expand">
-      </div>
+<div style="position:relative;float:right;width:330px;margin-right:10px;">
+  <div style="">
+    <div id="search_results" style="margin-left:15px;"></div>
+    <div id="search_controls"></div>
+    <div id="selection">
+        <div id="data_cart" style="margin-left:15px;"></div>
     </div>
-    <div class="search-button">Refine</div>
+    <div id="data_ops" style="margin-left: 15px; float:left">
+    </div>
   </div>
-
 </div>
 </div>
         <div id="externalDiv"></div>
@@ -223,14 +214,31 @@ var init = function() {
                 <div style="position:relative;float:left;">
 
 
-                    <h3>{%trans "Rectify Images"  %}</h3>    
-                    
+                    <h3>{%trans "Rectify Images"  %}</h3>
+
                     <p style="font-size: 14px">{% trans "Use <a target='_blank' href='http://warp.worldmap.harvard.edu'>WorldMap WARP</a> to upload and rectify scanned maps for use in WorldMap." %} <br/><br/> {% trans "Maps rectified using this tool can be brought into WorldMap by following the instructions under Section 4.5 in <a href='{{ STATIC_URL }}docs/WorldMap_Help.pdf'>WorldMap Help</a>." %}</p>
                     <br/><br/>
                     <div align="center"><a target="_blank" href="http://warp.worldmap.harvard.edu"><img src="{{ STATIC_URL }}theme/img/warper-sample.jpg" border="0" /></a></div>
                 </div>
             </div>
         </div>
+
+        <div id="submitEndpointDiv">
+            <div id="tabContainer" style="padding:20px;">
+
+                <div style="position:relative;float:left;">
+
+
+                    <h3>{%trans "Submit a Map Service URL"  %}</h3>
+
+                    <p style="font-size: 14px">
+                      {% trans "<a target='_blank' href='/maps/add_endpoint'>Submit a Map Service URL</a>" %}
+                    </p>
+
+                </div>
+            </div>
+        </div>
+
     </div>
 
 </div>
@@ -239,4 +247,3 @@ var init = function() {
 
 
 {% endblock %}
-
