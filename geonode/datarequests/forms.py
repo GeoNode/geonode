@@ -230,7 +230,7 @@ class ProfileRequestForm(forms.ModelForm):
         organization_other = self.cleaned_data.get('organization_other')
         org_type = self.cleaned_data.get('org_type')
         if org_type:
-            if (org_type == "Other" and not organization_other ):
+            if (org_type.val == "Other" and not organization_other ):
                 raise forms.ValidationError('This field is required.')
         return organization_other
 
