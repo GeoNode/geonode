@@ -20,10 +20,10 @@ from geonode.utils import GXPMap
 from geonode.utils import default_map_config
 
 from geonode.security.views import _perms_info_json
-from geonode.cephgeo.models import CephDataObject, DataClassification, FTPRequest, UserJurisdiction, UserTiles
+from geonode.cephgeo.models import CephDataObject, DataClassification, FTPRequest, UserJurisdiction, UserTiles, TileDataClass
 from geonode.cephgeo.cart_utils import *
 from geonode.maptiles.utils import *
-from geonode.datarequests.models import DataRequestProfile
+from geonode.datarequests.models import DataRequestProfile, DataRequest
 from geonode.documents.models import get_related_documents
 from geonode.registration.models import Province, Municipality
 from geonode.base.models import ResourceBase
@@ -81,6 +81,19 @@ def tiled_view(request, overlay=settings.TILED_SHAPEFILE, template="maptiles/map
 
     context_dict = {}
     context_dict["grid"] = get_layer_config(request, overlay, "base.view_resourcebase", _PERMISSION_VIEW )
+    legend_link = settings.SITEURL + \
+        'geoserver/wms?REQUEST=GetLegendGraphic&VERSION=1.0.0&FORMAT=image/png&LAYER=geonode:philgrid&STYLE='
+    try:
+        context_dict["dtm"] = legend_link + settings.DTM_SLD
+        context_dict["ortho"] = legend_link + settings.ORTHO_SLD
+        context_dict["laz"] = legend_link + settings.LAZ_SLD
+        context_dict["dsm"] = legend_link + settings.DSM_SLD
+    except Exception:
+        context_dict["dtm"] = None
+        context_dict["ortho"] = None
+        context_dict["laz"] = None
+        context_dict["dsm"] = None
+    jurisdiction_object = None
 
     if jurisdiction is None:
         try:
@@ -100,10 +113,11 @@ def tiled_view(request, overlay=settings.TILED_SHAPEFILE, template="maptiles/map
     context_dict["feature_tiled"] = overlay.split(":")[1]
     context_dict["test_mode"]=test_mode
     context_dict["data_classes"]= DataClassification.labels.values()
+
     #context_dict["projections"]= SRS.labels.values()
 
     return render_to_response(template, RequestContext(request, context_dict))
-    
+
 def tiled_view2(request, overlay=settings.TILED_SHAPEFILE, template="maptiles/maptiles_map2.html",test_mode=False, jurisdiction=None):
 
     context_dict = {}
@@ -138,16 +152,24 @@ def process_georefs(request):
         try:
             #Get georef list filtered with georefs computed upon approval of registration
             georef_area = request.POST['georef_area']
+            # georef_list = filter(None, georef_area.split(","))
+            # #pprint("Initial georef_list:" + str(georef_list))
+            # try:
+            #     georef_list = clean_georefs(request.user, georef_list)
+            # except ObjectDoesNotExist:
+            #     messages.info(request, "Due to a recent update, your selectable tiles are still under process. We apologize for the inconvenience.")
+            #     return redirect('geonode.cephgeo.views.get_cart')
+            # #pprint("Filtered georef_list:" + str(georef_list))
             submitted_georef_list = filter(None, georef_area.split(","))
             georef_list = []
             jurisdiction_georefs = []
-            
+
             try:
                 jurisdiction_georefs=str(UserTiles.objects.get(user=request.user).gridref_list)
             except ObjectDoesNotExist as e:
-                pprint("No jurisdiction tiles for this user") 
+                pprint("No jurisdiction tiles for this user")
                 raise PermissionDenied
-            
+
             for georef in submitted_georef_list:
                 if georef in jurisdiction_georefs:
                     georef_list.append(georef)
@@ -181,8 +203,6 @@ def process_georefs(request):
                 #Execute query
                 objects = CephDataObject.objects.filter(filter_query)
                 pprint("objects found for georef:"+ georef)
-                for o in objects:
-                    pprint(o.name)
 
                 #Count duplicates and empty references
                 count += len(objects)
@@ -255,6 +275,7 @@ def georefs_validation(request):
                 total_size += o.size_in_bytes
 
         request_size_last24h = 0
+        pprint('Total size:'+str(total_size))
 
         #for r in requests_last24h:
         for r in requests_today:

@@ -35,6 +35,7 @@ import csv
 import datetime
 
 from geonode.people.models import Profile
+from unidecode import unidecode
 
 from geonode.reports.models import DownloadTracker
 from geonode.base.models import ResourceBase
@@ -124,7 +125,7 @@ def document_detail(request, docid):
                 pprint(form.cleaned_data)
                 anondownload = form.save()
                 # anondownload.anon_document = Document.objects.get(id = docid)
-                anondownload.anon_document = Document.objects.get(pk = docid)
+                anondownload.anon_document = Document.objects.get(pk = docid).title
                 anondownload.save()
             else:
                 errormsgs = []
@@ -522,8 +523,8 @@ def document_csv_download(request):
     for auth in auth_list:
         username = auth.actor
         getprofile = Profile.objects.get(username=username)
-        firstname = getprofile.first_name
-        lastname = getprofile.last_name
+        firstname = unidecode(getprofile.first_name)
+        lastname = unidecode(getprofile.last_name)
         email = getprofile.email
         organization = getprofile.organization
         orgtype = getprofile.org_type
@@ -536,8 +537,8 @@ def document_csv_download(request):
     # writer.writerow(['Anonymous Downloads'])
     # writer.writerow( ['lastname','firstname','email','organization','organization type','purpose','layer name','doc name','date downloaded'])
     for anon in anon_list:
-        lastname = anon.anon_last_name
-        firstname = anon.anon_first_name
+        lastname = unidecode(anon.anon_last_name)
+        firstname = unidecode(anon.anon_first_name)
         email = anon.anon_email
         layername = anon.anon_layer
         docname = anon.anon_document

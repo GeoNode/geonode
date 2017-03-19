@@ -30,6 +30,7 @@ def compute_size_update(requests_query_list, area_compute = True, data_size = Tr
     if len(requests_query_list) < 1:
         pprint("Requests for update is empty")
     else:
+        message = "The following area and data size computations have been completed:\n"
         for r in requests_query_list:
             pprint("Updating request id:{0}".format(r.pk))
             geometries = get_geometries_ogr(r.jurisdiction_shapefile.name)
@@ -39,7 +40,11 @@ def compute_size_update(requests_query_list, area_compute = True, data_size = Tr
                 r.juris_data_size = get_juris_data_size(dissolve_shp(geometries))
                 
             if save:
+                message += "https://"+settings.SITEURL + str(r.get_absolute_url()) + "\n"
                 r.save()
+        subject = "Area and data size computations done"
+        recipient = settings.LIPAD_SUPPORT_MAIL
+        send_mail(subject, message, settings.LIPAD_SUPPORT_MAIL, recipient, fail_silently= False)
 
 def tile_floor(x):
     return int(math.floor(x / float(settings._TILE_SIZE)) * settings._TILE_SIZE)
@@ -70,7 +75,6 @@ def get_juris_tiles(juris_shp, user=None):
     tile_list = []
     count = 0
     
-    pprint("min y, max y: "+str((min_y, max_y)))
     pprint("xrange y:"+str(list(xrange(min_y+settings._TILE_SIZE, max_y+settings._TILE_SIZE, settings._TILE_SIZE))))
     pprint("xrange x:"+str(list(xrange(min_x, max_x, settings._TILE_SIZE))))
     
@@ -85,9 +89,14 @@ def get_juris_tiles(juris_shp, user=None):
             
             
             if not tile.intersection(juris_shp).is_empty:
-                tile_list.append(tile)
-                if len(tile_list) >= 1000:
-                    return tile_list
+                gridref = 'E{0}N{1}'.format(int(tile_x / settings._TILE_SIZE), int(tile_y / settings._TILE_SIZE))
+                
+                ceph_qs = CephDataObject.objects.filter(grid_ref = gridref)
+                pprint("gridref:"+str(gridref)+" query_length:"+str(len(ceph_qs)))
+                if ceph_qs.count() > 0:
+                    tile_list.append(tile)
+                #if len(tile_list) >= 1000:
+                #    return tile_list
                 
     return tile_list
 
@@ -138,9 +147,9 @@ def assign_grid_ref_util(user):
                 (minx, miny, maxx, maxy) = tile.bounds
                 gridref = '"E{0}N{1}"'.format(int(minx / settings._TILE_SIZE), int(maxy / settings._TILE_SIZE))
                 
-                gridref_list .append(gridref)
-                if len(gridref_list) >= 1000:
-                    break
+                gridref_list.append(gridref)
+                #if len(gridref_list) >= 1000:
+                #    break
             
             if len(gridref_list)==1:
                 pprint("gridref:"+gridref_list[0])
@@ -197,7 +206,11 @@ def get_geometries_ogr(juris_shp_name, dest_epsg=32651): #returns layer
         geom = f.GetGeometryRef()
         if not src_epsg == dest_epsg:
             geom.Transform(c_transform)
-        geometry_list.append(loads(geom.ExportToWkb()))
+        geomWkb = loads(geom.ExportToWkb())
+        if not geomWkb.is_valid:
+            geomWkb = geomWkb.convex_hull
+        
+        geometry_list.append(geomWkb)
             
     source = None
     data = None
