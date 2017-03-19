@@ -327,6 +327,9 @@ INSTALLED_APPS = (
 
     #CAS client
     'django_cas_ng',
+
+    #CAS client
+    'django_cas_ng',
 ) + GEONODE_APPS
 
 LOGGING = {
@@ -428,7 +431,7 @@ MIDDLEWARE_CLASSES = (
 AUTHENTICATION_BACKENDS = (#'django_auth_ldap.backend.LDAPBackend',
                            #'geonode.security.auth.GranularBackend',
                            'django.contrib.auth.backends.ModelBackend',
-                           #'guardian.backends.ObjectPermissionBackend',
+                           'guardian.backends.ObjectPermissionBackend',
                            'django_cas_ng.backends.CASBackend',)
 
 
@@ -1008,3 +1011,11 @@ FP_DELINEATION_PL1 = 'fp_252_201613026v2'
 # used for layer tagging
 # RB_DELINEATION_DREAM = 'DREAM_RB'
 
+LIPAD_INSTANCES = [
+'https://lipad-fmc.dream.upd.edu.ph/',
+'https://parmap.dream.upd.edu.ph/',
+'https://frexls.dream.upd.edu.ph/',
+'https://remap.dream.upd.edu.ph/',
+'https://coastmap.dream.upd.edu.ph/',
+'https://phd.dream.upd.edu.ph/',
+]

@@ -43,7 +43,7 @@
       {% endif %}
     FILTER_TYPE = 'data_request';
 
-    var facetCounts = function() {re
+    var facetCounts = function() {
         $.ajax({
             type: "POST",
             url: facet_count_url,
@@ -62,10 +62,6 @@
             }
         });
     }
-
-    $(".filter").on('click', '.request-filter', function() {
-      facetCounts();
-    });
 
     var getActiveFilters = function() {
       var vars = [], hash;
@@ -96,10 +92,14 @@
 
     }
 
-    facetCounts();
-    getActiveFilters();
-
-
+    $(document).ready(function (){
+        getActiveFilters();
+        facetCounts();
+        $(".filter").on('click', '.request-filter', function() {
+            getActiveFilters();
+            facetCounts();
+        });
+    });
 
   </script>
   {% with include_spatial='false' %}

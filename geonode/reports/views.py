@@ -37,6 +37,7 @@ from collections import OrderedDict, Counter
 from geonode.datarequests.models.data_request import DataRequest
 from geonode.datarequests.models.profile_request import ProfileRequest
 from geonode.people.models import OrganizationType
+from geonode.datarequests.models import LipadOrgType
 
 import urllib2, json
 from urllib2 import HTTPError
@@ -105,6 +106,7 @@ def report_distribution_status(request, template='reports/distribution_status.ht
     rearrange_dr = {}
     monthly_datarequest = {}
     org_count = {}
+    filter_duplicates = []
     monthly_datarequest_list = ProfileRequest.objects.all().order_by('status_changed')
     for eachinlist in monthly_datarequest_list:
         if eachinlist.status_changed.strftime('%Y%m') not in monthly_datarequest:
@@ -113,11 +115,12 @@ def report_distribution_status(request, template='reports/distribution_status.ht
             monthly_datarequest[eachinlist.status_changed.strftime('%Y%m')][eachinlist.status] = 0
         monthly_datarequest[eachinlist.status_changed.strftime('%Y%m')][eachinlist.status] += 1
 
-        mostrecent = ProfileRequest.objects.filter(id=eachinlist.id).order_by('created').last()
-        if mostrecent:
-            if mostrecent.org_type not in org_count:
-                org_count[mostrecent.org_type] = 0
-            org_count[mostrecent.org_type] += 1
+        if eachinlist.first_name+' '+eachinlist.last_name not in filter_duplicates:
+            filter_duplicates.append(eachinlist.first_name+' '+eachinlist.last_name)
+            org_type_sub = LipadOrgType.objects.get(val=eachinlist.org_type).category
+            if org_type_sub not in org_count:
+                org_count[org_type_sub] = 0
+            org_count[org_type_sub] += 1
 
 
 
@@ -144,6 +147,7 @@ def report_distribution_status(request, template='reports/distribution_status.ht
         "monthly_datarequest": reversed_md,
         "org_count": reversed_org,
         "total_datarequest": reversed_md[reversed_md.keys()[0]],
+        "sum_org_count": sum(org_count.values()),
         "sum_datarequest": sum(reversed_md[reversed_md.keys()[0]].values()),
     }
 

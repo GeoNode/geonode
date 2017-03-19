@@ -12,11 +12,12 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.http import HttpResponse, HttpResponseBadRequest, HttpResponseRedirect, Http404
 from django.utils import simplejson as json
 from django.utils import dateformat
+from django.utils.translation import ugettext_lazy as _
 
 from geonode.people.models import Profile
 from geonode.documents.models import Document
 from geonode.layers.models import Layer
-from geonode.cephgeo.models import UserJurisdiction, UserTiles
+from geonode.cephgeo.models import UserJurisdiction, UserTiles, TileDataClass
 
 import geocoder
 
@@ -190,6 +191,7 @@ def get_area_coverage(geoms):
         
     return area/1000000
 
+
 def get_shp_ogr(juris_shp_name):
     source = ogr.Open(("PG:host={0} dbname={1} user={2} password={3}".format(settings.DATABASE_HOST,settings.DATASTORE_DB,settings.DATABASE_USER,settings.DATABASE_PASSWORD)))
     data = source.ExecuteSQL("select the_geom from "+str(juris_shp_name))
@@ -202,3 +204,11 @@ def get_shp_ogr(juris_shp_name):
         return juris_shp
     else:
         return None
+        
+def data_class_choices():
+    choices =[]
+    for dc in TileDataClass.objects.all():
+        choices.append((dc.short_name, _(dc.full_name)))
+    
+    return tuple(choices)
+        

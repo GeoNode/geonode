@@ -74,12 +74,13 @@ def profile_edit(request, username=None, msg=None):
 
 def profile_detail(request, username):
     profile = get_object_or_404(Profile, username=username)
+    data_request = None 
     # combined queryset from each model content type
 
     try:
         data_request = DataRequest.objects.filter(profile=profile).latest('created')
     except DataRequest.DoesNotExist:
-        data_request_profile = None
+        data_request = None
     
     return render(request, "people/profile_detail.html", {
         "profile": profile,
