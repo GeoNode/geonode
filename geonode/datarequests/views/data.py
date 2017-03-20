@@ -45,7 +45,7 @@ def data_requests_csv(request):
     response['Content-Disposition'] = 'attachment; filename="datarequests-"'+str(datetoday.month)+str(datetoday.day)+str(datetoday.year)+'.csv"'
 
     writer = csv.writer(response)
-    fields = ['id','name','email','contact_number', 'organization', 'organization_type','has_profile_request','has_letter','has_shapefile','project_summary', 'created','status', 'status_changed','rejection_reason','juris_data_size','area_coverage']
+    fields = ['id','name','email','contact_number', 'organization', 'org_type','has_profile_request','has_letter','has_shapefile','project_summary', 'created','status', 'status_changed','rejection_reason','juris_data_size','area_coverage']
     writer.writerow( fields)
 
     objects = DataRequest.objects.all().order_by('pk')
@@ -62,7 +62,7 @@ class DataRequestList(LoginRequiredMixin, TemplateView):
 @login_required
 def user_data_request_list(request):
     data_requests = DataRequest.objects.filter(profile=request.user)
-    
+
     return None
 
 def data_request_detail(request, pk, template='datarequests/data_detail.html'):
@@ -77,12 +77,14 @@ def data_request_detail(request, pk, template='datarequests/data_detail.html'):
     context_dict['sucs']=data_request.suc.names()
     context_dict['max_ftp_size']=settings.MAX_FTP_SIZE
     pprint(context_dict ['sucs'])
+    pprint("dr.pk="+str(data_request.pk))
+
     if data_request.profile:
         context_dict['profile'] = data_request.profile
-    
+
     if data_request.profile_request:
         context_dict['profile_request'] = data_request.profile_request
-    
+
     if data_request.jurisdiction_shapefile:
          layer = data_request.jurisdiction_shapefile
          # assert False, str(layer_bbox)
@@ -91,14 +93,14 @@ def data_request_detail(request, pk, template='datarequests/data_detail.html'):
          layer_bbox = layer.bbox
          bbox = [float(coord) for coord in list(layer_bbox[0:4])]
          srid = layer.srid
-    
+
          # Transform WGS84 to Mercator.
          config["srs"] = srid if srid != "EPSG:4326" else "EPSG:900913"
          config["bbox"] = llbbox_to_mercator([float(coord) for coord in bbox])
-    
+
          config["title"] = layer.title
          config["queryable"] = True
-    
+
          if layer.storeType == "remoteStore":
              service = layer.service
              source_params = {
@@ -116,29 +118,29 @@ def data_request_detail(request, pk, template='datarequests/data_detail.html'):
                  name=layer.typename,
                  ows_url=layer.ows_url,
                  layer_params=json.dumps(config))
-    
+
          # center/zoom don't matter; the viewer will center on the layer bounds
          map_obj = GXPMap(projection="EPSG:900913")
          NON_WMS_BASE_LAYERS = [
              la for la in default_map_config()[1] if la.ows_url is None]
-    
+
          metadata = layer.link_set.metadata().filter(
              name__in=settings.DOWNLOAD_FORMATS_METADATA)
-    
+
          context_dict ["resource"] = layer
          context_dict ["permissions_json"] = _perms_info_json(layer)
          context_dict ["documents"] = get_related_documents(layer)
          context_dict ["metadata"] =  metadata
          context_dict ["is_layer"] = True
          context_dict ["wps_enabled"] = settings.OGC_SERVER['default']['WPS_ENABLED'],
-    
+
          context_dict["viewer"] = json.dumps(
              map_obj.viewer_json(request.user, * (NON_WMS_BASE_LAYERS + [maplayer])))
          context_dict["preview"] = getattr(
              settings,
              'LAYER_PREVIEW_LIBRARY',
              'leaflet')
-    
+
          if request.user.has_perm('download_resourcebase', layer.get_self_resource()):
              if layer.storeType == 'dataStore':
                  links = layer.link_set.download().filter(
@@ -147,7 +149,7 @@ def data_request_detail(request, pk, template='datarequests/data_detail.html'):
                  links = layer.link_set.download().filter(
                      name__in=settings.DOWNLOAD_FORMATS_RASTER)
              context_dict["links"] = links
-    
+
     context_dict["request_reject_form"]= DataRequestRejectForm(instance=data_request)
 
     return render_to_response(template, RequestContext(request, context_dict))
@@ -160,7 +162,12 @@ def data_request_edit(request, pk, template ='datarequests/data_detail_edit.html
     
     if request.method == 'GET': 
         context_dict={"data_request":data_request}
-        context_dict["form"] = DataRequestEditForm(initial = model_to_dict(data_request))
+        initial_data = model_to_dict(data_request)
+        if not DataRequestEditForm.INTENDED_USE_CHOICES.__contains__(initial_data['purpose']):
+            initial_data['purpose_other'] = initial_data['purpose'] 
+            initial_data['purpose'] = 'other'
+            
+        context_dict["form"] = DataRequestEditForm(initial = initial_data)
         return render(request, template, context_dict)
     else:
         form = DataRequestEditForm(request.POST)
@@ -173,7 +180,13 @@ def data_request_edit(request, pk, template ='datarequests/data_detail_edit.html
                     for i in v:
                         data_request.data_type.add(str(i.short_name))
                     #remove original tags
-                setattr(data_request, k, v)
+                elif k=='purpose':
+                    if v == form.INTENDED_USE_CHOICES.other:
+                        setattr(data_request,k,form.cleaned_data.get('purpose_other'))
+                    else:
+                        setattr(data_request,k,v)
+                else:
+                    setattr(data_request, k, v)
             data_request.administrator = request.user
             data_request.save()
         else:
@@ -195,12 +208,12 @@ def data_request_cancel(request, pk):
         form = parse_qs(request.POST.get('form', None))
         data_request.rejection_reason = form['rejection_reason'][0]
         data_request.save()
-        
+
         if not request.user.is_superuser:
             data_request.set_status('cancelled')
         else:
             data_request.set_status('cancelled',administrator = request.user)
-            
+
     url = request.build_absolute_uri(data_request.get_absolute_url())
 
     return HttpResponse(
@@ -220,7 +233,7 @@ def data_request_approve(request, pk):
 
     if request.method == 'POST':
         data_request = get_object_or_404(DataRequest, pk=pk)
-        
+
         if not data_request.profile:
             if data_request.profile_request:
                 if not data_request.profile_request.status == 'approved':
@@ -230,7 +243,7 @@ def data_request_approve(request, pk):
                 else:
                     data_request.profile = profile_request.profile
                     data_request.save()
-        
+
         if data_request.jurisdiction_shapefile:
             data_request.assign_jurisdiction() #assigns/creates jurisdiction object
             assign_grid_refs.delay(data_request.profile)
@@ -241,11 +254,11 @@ def data_request_approve(request, pk):
             except ObjectDoesNotExist as e:
                 pprint("Jurisdiction Shapefile not found, nothing to delete. Carry on")
 
-        
+
         data_request.set_status('approved',administrator = request.user)
         data_request.send_approval_email(data_request.profile.username)
         messages.info(request, "Request "+str(pk)+" has been approved.")
-        
+
         return HttpResponseRedirect(data_request.get_absolute_url())
 
     else:
@@ -266,7 +279,7 @@ def data_request_reject(request, pk):
         if 'additional_rejection_reason' in form.keys():
             data_request.additional_rejection_reason = form['additional_rejection_reason'][0]
         data_request.save()
-        
+
         data_request.set_status('rejected',administrator = request.user)
         data_request.send_rejection_email()
 
@@ -349,13 +362,13 @@ def data_request_reverse_geocode(request, pk):
         return HttpResponseRedirect(reverse('datarequests:data_request_browse'))
     else:
         return HttpResponseRedirect('/forbidden/')
-        
+
 def data_request_assign_gridrefs(request):
     if request.user.is_superuser:
         assign_grid_refs_all.delay()
         messages.info(request, "Now processing jurisdictions. Please wait for a few minutes for them to finish")
         return HttpResponseRedirect(reverse('datarequests:data_request_browse'))
-        
+
     else:
         return HttpResponseRedirect('/forbidden/')
 

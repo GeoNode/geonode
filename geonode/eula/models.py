@@ -30,7 +30,7 @@ class AnonDownloader(models.Model):
     anon_email = models.EmailField(_('Email'), max_length=50)
     anon_organization = models.CharField(_('Organization'), max_length=100)
     anon_purpose = models.CharField(_('Purpose'), max_length=100)
-    anon_layer = models.ForeignKey(Layer, null=True, blank=True, related_name='anon_layer')
+    anon_layer = models.CharField(_('Layer Name'), max_length=100, null=True, blank=True,)
     anon_orgtype = models.CharField(
         _('Organization Type'),
         max_length=100,
@@ -45,4 +45,4 @@ class AnonDownloader(models.Model):
         null=True,
     )
     # anon_resourcebase = models.ForeignKey(ResourceBase, null=True, blank=True, related_name='anon_resourcebase')
-    anon_document = models.ForeignKey(Document,null=True,blank=True)
+    anon_document = models.CharField(_('Document Name'), max_length=100, null=True, blank=True,)
