@@ -59,7 +59,7 @@ def get_fhm_count(takes_context=True):
 
 @register.assignment_tag
 def get_resourceLayers_count(takes_context=True):
-    urls_to_visit = settings.LIPAD_INSTANCES.remove('https://lipad-fmc.dream.upd.edu.ph/')
+    urls_to_visit = [links for links in settings.LIPAD_INSTANCES if links != 'https://lipad-fmc.dream.upd.edu.ph/']
     rl_count = Layer.objects.filter(keywords__name__icontains="phillidar2").count()
     for visit_url in urls_to_visit:
         try:
