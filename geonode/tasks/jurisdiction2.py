@@ -40,7 +40,7 @@ def compute_size_update(requests_query_list, area_compute = True, data_size = Tr
                 r.juris_data_size = get_juris_data_size(dissolve_shp(geometries))
                 
             if save:
-                message += settings.SITEURL + str(r.get_absolute_url()) + "\n"
+                message += settings.SITEURL + str(r.get_absolute_url().replace('//','/')) + "\n"
                 r.save()
         subject = "Area and data size computations done"
         recipient = [settings.LIPAD_SUPPORT_MAIL]

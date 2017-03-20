@@ -2,6 +2,7 @@ import sys
 import traceback
 from pprint import pprint
 from celery.task import task
+from django.core.mail import send_mail
 
 import psycopg2
 import sys
@@ -29,6 +30,7 @@ def migrate_all():
             
 @task(name="geonode.tasks.requests.tag_request_suc",queue='requests')
 def tag_request_suc(data_requests):
+    message = "The following area and data size computations have been completed:\n"
     for dr in data_requests:
         if dr.jurisdiction_shapefile:
             sucs = get_sucs(dr.jurisdiction_shapefile)
@@ -36,7 +38,11 @@ def tag_request_suc(data_requests):
             dr.suc.clear()
             for s in flatten_sucs:
                 dr.suc.add(s)
-        
+            message += settings.SITEURL + str(dr.get_absolute_url().replace('//','/')) + "\n"
+    subject = "SUC tagging done"
+    recipient = [settings.LIPAD_SUPPORT_MAIL]
+    send_mail(subject, message, settings.LIPAD_SUPPORT_MAIL, recipient, fail_silently= False)
+
 def get_sucs(layer, sucs_layer=settings.PL1_SUC_MUNIS, proj=32651):
     conn = psycopg2.connect(("host={0} dbname={1} user={2} password={3}".format
                              (settings.DATABASE_HOST,
