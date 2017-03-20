@@ -316,7 +316,20 @@ def data_request_compute_size(request, pk):
         return HttpResponseRedirect(reverse('datarequests:data_request_browse'))
     else:
         return HttpResponseRedirect('/forbidden/')
+
+def data_request_tag_suc_all(request):
+    if request.user.is_superuser:
+        drs = DataRequest.objects.exclude(jurisdiction_shapefile=None)
+        if drs.count()>0:
+            tag_request_suc.delay(drs)
+            messages.info(request,"The requests are currently being tagged")
+        else:
+            messages.info(request,"No request has a shapefile")
         
+        return HttpResponseRedirect(reverse('datarequests:data_request_browse'))
+    else:
+        return  HttpResponseRedirect('/forbidden/')
+
 def data_request_tag_suc(request,pk):
     if request.user.is_superuser and request.method=='POST':
         dr = get_object_or_404(DataRequest, pk=pk)

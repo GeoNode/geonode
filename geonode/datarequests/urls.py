@@ -43,6 +43,7 @@ urlpatterns = patterns(
     url(r'^data/data_requests_csv/$', 'data_requests_csv', name='data_requests_csv'),
     url(r'^data/compute_size/$','data_request_compute_size_all', name='data_request_compute_size_all'),
     url(r'^data/reverse_geocode/$','data_request_reverse_geocode_all', name='data_request_reverse_geocode_all'),
+    url(r'^data/tag_suc/$', 'data_request_tag_suc_all', name="data_request_tag_suc_all"), 
     
     url(r'^data/(?P<pk>\d+)/$', 'data_request_detail', name="data_request_detail"),
     url(r'^data/(?P<pk>\d+)/edit/$', 'data_request_edit', name="data_request_edit"),
