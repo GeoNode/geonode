@@ -263,7 +263,7 @@ define(['underscore',
         }
         var checked = checkFiles();
         if ($.isEmptyObject(layers) || !checked) {
-            $('#please-wait').modal('toggle');//to hide please wait modal
+            // $('#please-wait').modal('toggle');//to hide please wait modal
             alert(gettext('You are uploading an incomplete set of files.'));
             console.log('You are uploading an incomplete set of files.');
         } else {
@@ -305,9 +305,8 @@ define(['underscore',
                 }
             },
             error: function(data){
-              $('#please-wait').modal('hide');
                 var errors = $.parseJSON(data.responseText).errors;
-                $('#please-wait').modal('toggle');
+                $('#please-wait').modal('hide');
                 for (var key in errors ){
                     $('#div_id_'+key).addClass('has-error');
                     $('#div_id_'+key).find('div').append("<span id=\"error_id_"+key+"\" class=\"error-msg\">"+errors[key]+"</span>");
