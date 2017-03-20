@@ -58,9 +58,9 @@ body{
 <!--
 <div class="row">
     <div class="col-md-9">
-		<div id="embedded_map" class="mrg-btm">
+    <div id="embedded_map" class="mrg-btm">
 -->
-			<div id="preview_map" style="margin-top:9px;" ></div>
+      <div id="preview_map" style="margin-top:9px;" ></div>
       <div id="layerTree" style="margin-top:9px; position:fixed; top:100px;" ></div>
 <!--
     </div>
@@ -69,20 +69,20 @@ body{
     <!--
     <div class="col-md-3">
         <ul class="list-group">
-	   <li class="list-group-item">
+     <li class="list-group-item">
 
 
                   </nobr>
            </li>
-	         <li class="list-group-item">
+           <li class="list-group-item">
 
            </li>
-	         <li class="list-group-item">
-		           <div class="selections"><nav class="filter">
-		               <h4><a href="{% url 'cephgeo.views.get_cart' %}" class="toggle toggle-nav"><i class="fa fa-shopping-cart"></i>Data Cart</a></h4>
+           <li class="list-group-item">
+               <div class="selections"><nav class="filter">
+                   <h4><a href="{% url 'cephgeo.views.get_cart' %}" class="toggle toggle-nav"><i class="fa fa-shopping-cart"></i>Data Cart</a></h4>
                    <h4><a href="{% url 'cephgeo.views.ftp_request_list' %}" class="toggle toggle-nav"><i class="fa fa-database"></i>FTP Requests</a></h4>
-		               </nav></div>
-   	       </li>
+                   </nav></div>
+           </li>
         </ul>
     </div>
     -->
@@ -90,7 +90,7 @@ body{
 </div>
 -->
     <!--<ul class="list-group">
-	</ul>-->
+  </ul>-->
 
  <br />
  <div id="sideNavi">
@@ -173,11 +173,47 @@ body{
    </div>
  </div>
 <div style="position: fixed; top: 10%; left: 50px;">
-  <div id = "floating-legend" style="background: white; padding: 15px 50px 15px 15px; width:auto; display:inline-block;">
-      <h4 class="list-group-item-heading">{%trans "Legend" %}</h4>
-      <img id="legend_icon" src="{{ grid.resource.get_legend.url }}"><br/>
-      <img id="legend_icon2" src="{{jurisdiction.resource.get_legend.url}}">
+  <div id="floating-legend" style="background: white; padding: 15px 50px 15px 15px; width: auto; height: 200px; display: inline-block; top: 114px;">
+      <h4 class="list-group-item-heading">Legend</h4>
+      <div class="legend-radio-buttons" style="display: block; float: left;">
+        <div>
+            <label class="form-check-label">
+              <input class="form-check-input" type="radio" name="sld" value="dtm" onclick="changeSLD()">
+            </label>
+        </div>
+        <div>
+        <label class="form-check-label">
+          <input class="form-check-input" type="radio" name="sld" value="dsm" onclick="changeSLD()">
+        </label>
+        </div>
+        <div>
+            <label class="form-check-label">
+              <input class="form-check-input" type="radio" name="sld" value="ortho" onclick="changeSLD()">
+            </label>
+        </div>
+        <div>
+            <label class="form-check-label">
+              <input class="form-check-input" type="radio" name="sld" value="laz" onclick="changeSLD()">
+            </label>
+        </div>
+        <div>
+            <label class="form-check-label">
+              <input class="form-check-input" type="radio" name="sld" value="all" onclick="changeSLD()">
+            </label>
+        </div>
+      </div>
+
+            <div class="legend-images" style="display: block; float: left; position: relative;">
+          <img id="dtm_icon" src="{{ dtm_lgd }}">
+          <img id="dsm_icon" style="position: absolute; top: 25px; left: 0px;" src="{{ dsm_lgd }}">
+          <img id="ortho_icon" style="position: relative; top: 50px; left: -50px;" src="{{ ortho_lgd }}">
+          <img id="laz_icon" style="position: absolute; top: 75px; left: 0px;" src="{{ laz_lgd }}">
+          <p style="position: absolute; top: 100px; left: 0px;">A L L</p>
+          <img style="position: absolute; top: 125px; left: -15px;" id="legend_icon2" src="{{jurisdiction.resource.get_legend.url}}">
+
+      </div>
   </div>
+  <!-- <img id="legend_icon" src="{{ grid.resource.get_legend.url }}"><br/> -->
   <div style="min-height: 150px; background: white; padding: 15px 15px; margin-top: 20px; width: 300px;">
     <div id="notif" style="margin: 0px -15px;">
     </div>
@@ -195,6 +231,7 @@ body{
   </div>
 </div>
  <!--ATTRIBUTION-->
+ <!-- replaced with local OSM layergroup -->
 <div style="position: fixed; bottom: 50px; left: 50px; width: 220px; white-space: normal;">
   <!--  <a href='http://giscience.uni-hd.de/'>GIScience Research Group @ University of Heidelberg</a> &mdash;<br>
    Map data &copy; <a href='http://www.openstreetmap.org/copyright'>OpenStreetMap</a> -->
@@ -219,7 +256,7 @@ body{
                    zoomOnBbox(data.bbox);
                 },
                 error: function(data){
-		    console.log(data);
+        console.log(data);
                     alert("Invalid area");
                 }
             });
