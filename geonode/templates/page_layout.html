@@ -105,7 +105,10 @@ Note: The WorldMap team has made a major upgrade to the system.  WorldMap now pr
           <option value='{{ STATIC_URL }}docs/WorldMap_Help_fr.pdf'>French</option>
           <option value='{{ STATIC_URL }}docs/WorldMap_Help_it.pdf'>Italian</option>
         </select>
-
+      {% if user.is_superuser %}
+      | <a class="" id="mapLink" href="/admin">{% trans "Admin" %}</a>
+      | <a class="" id="mapLink" href="{{ GEOSERVER_BASE_URL }}">{% trans "GeoServer" %}</a>
+      {% endif %}
     </div><!-- /.wrap -->
   </div><!-- /#header -->
 
