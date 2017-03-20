@@ -872,7 +872,7 @@ def fix_bing_maps(commit=False):
     layers = MapLayer.objects.filter(source_params__contains='gxp_bingsource')
     for layer in layers:
         jlayer = json.loads(layer.source_params)
-        if jlayer['apiKey'] != settings.BING_API_KEY:
+        if 'apiKey' not in jlayer or jlayer['apiKey'] != settings.BING_API_KEY:
             print 'map_id: %s' % layer.map_id
             print 'Wrong API key: %s' % jlayer
             jlayer['apiKey'] = settings.BING_API_KEY
