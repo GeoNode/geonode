@@ -185,7 +185,7 @@
         {% if data_request.juris_data_size > max_ftp_size and data_request.sucs|length < 2 %}
         <li class="list-group-item">
                   <form id="notify_suc_form" method="post" class="modal-form" action='{% url "datarequests:data_request_notify_suc" pk=data_request.pk %}'>{% csrf_token %}
-                <button type="submit" class="btn btn-primary btn-md btn-block"  id="tag-suc">{% trans "Notify SUC" %}</button>
+                <button type="submit" class="btn btn-primary btn-md btn-block"  id="notify-suc">{% trans "Notify SUC" %}</button>
             </form></
         </li>
         {% endif %}
