@@ -42,11 +42,16 @@ def lidar_coverage_permission(layer):
 
 def lidar_coverage_metadata():
     try:
-
-        path = settings.LIDAR_COVERAGE_PATH# Absolute mount path of lidar coverage must be the same for all lipad
-
+        # Absolute mount path of lidar coverage must be the same for all lipad
+        path = settings.LIDAR_COVERAGE_PATH
     except:
-        print 'ERROR GETTING LIDAR COVERAGE PATH'
+        print 'NO LIDAR COVERAGE PATH IN SETTINGS'
+
+    # if path not found, exit celery task
+    if not os.path.isfile(path):
+        print 'FILE DOES NOT EXIST'
+        return
+
     try:
         # Replace lidar_coverage shapefile in postgis
         subprocess.check_output('shp2pgsql -D -d -I -s 32651 ' + path + settings.target_table +
