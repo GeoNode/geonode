@@ -173,7 +173,7 @@ body{
    </div>
  </div>
 <div style="position: fixed; top: 10%; left: 50px;">
-  <div id="floating-legend" style="background: white; padding: 15px 50px 15px 15px; width: auto; height: 200px; display: inline-block; top: 114px;">
+  <div id="floating-legend" style="background: white; padding: 15px 50px 15px 15px; width: auto; height: 220px; display: inline-block; top: 114px;">
       <h4 class="list-group-item-heading">Legend</h4>
       <div class="legend-radio-buttons" style="display: block; float: left;">
         <div>
@@ -198,7 +198,12 @@ body{
         </div>
         <div>
             <label class="form-check-label">
-              <input class="form-check-input" type="radio" name="sld" value="all" onclick="changeSLD()">
+              <input class="form-check-input" type="radio" name="sld" value="clear" onclick="changeSLD()">
+            </label>
+        </div>
+        <div>
+            <label class="form-check-label">
+              <input class="form-check-input" type="radio" name="sld" value="all" onclick="changeSLD()" checked>
             </label>
         </div>
       </div>
@@ -208,9 +213,9 @@ body{
           <img id="dsm_icon" style="position: absolute; top: 25px; left: 0px;" src="{{ dsm_lgd }}">
           <img id="ortho_icon" style="position: relative; top: 50px; left: -50px;" src="{{ ortho_lgd }}">
           <img id="laz_icon" style="position: absolute; top: 75px; left: 0px;" src="{{ laz_lgd }}">
-          <p style="position: absolute; top: 100px; left: 0px;">A L L</p>
-          <img style="position: absolute; top: 125px; left: -15px;" id="legend_icon2" src="{{jurisdiction.resource.get_legend.url}}">
-
+          <p style="position: absolute; top: 98px; left: 2px;">C L E A R</p>
+          <p style="position: absolute; top: 123px; left: 2px;">A L L</p>
+          <img style="position: absolute; top: 150px; left: 0px;" id="legend_icon2" src="{{jurisdiction.resource.get_legend.url}}">
       </div>
   </div>
   <!-- <img id="legend_icon" src="{{ grid.resource.get_legend.url }}"><br/> -->
