@@ -62,16 +62,18 @@ def lidar_coverage_metadata():
         print 'ERROR EXECUTING SHP2PGSQL COMMAND'
 
     # Rename columns in lidar_coverage table
-    fid_query = 'ALTER TABLE ' + settings.target_table + 'rename column gid to fid'
+    fid_query = 'ALTER TABLE ' + settings.target_table + ' RENAME COLUMN gid to fid'
     try:
+        print 'FID QUERY ', fid_query
         cur.execute(fid_query)
         conn.commit()
     except psycopg2.ProgrammingError:
         print 'FID QUERY ERROR'
         conn.rollback()
         # continue
-    the_geom_query = 'ALTER TABLE ' + settings.target_table + 'RENAME COLUMN geom to the_geom'
+    the_geom_query = 'ALTER TABLE ' + settings.target_table + ' RENAME COLUMN geom to the_geom'
     try:
+        print 'THE GEOM QUERY ', the_geom_query
         cur.execute(the_geom_query)
         conn.commit()
     except psycopg2.ProgrammingError:
