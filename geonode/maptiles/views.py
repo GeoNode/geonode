@@ -99,11 +99,11 @@ def tiled_view(request, overlay=settings.TILED_SHAPEFILE, template="maptiles/map
         context_dict["philgrid_sld"] = settings.PHILGRID_SLD
         context_dict["clear_sld"] = settings.CLEAR_SLD
     except Exception:
-        context_dict["dtm"] = None
-        context_dict["ortho"] = None
-        context_dict["laz"] = None
-        context_dict["dsm"] = None
-        context_dict["philgrid_sld"] = None
+        context_dict["dtm"] = ''
+        context_dict["ortho"] = ''
+        context_dict["laz"] = ''
+        context_dict["dsm"] = ''
+        context_dict["philgrid_sld"] = ''
     jurisdiction_object = None
 
     if jurisdiction is None:
