@@ -21,6 +21,8 @@ from django.core.urlresolvers import resolve
 from django.db.models import Q
 from geoserver.catalog import Catalog
 
+import geonode.settings as settings
+
 register = template.Library()
 
 @register.inclusion_tag('phil-ext.html',takes_context=True)
@@ -57,8 +59,15 @@ def get_fhm_count(takes_context=True):
 
 @register.assignment_tag
 def get_resourceLayers_count(takes_context=True):
-    rl_list = Layer.objects.filter(keywords__name__icontains="phillidar2")
-    rl_count = len(rl_list)
+    urls_to_visit = [links for links in settings.LIPAD_INSTANCES if links != 'https://lipad-fmc.dream.upd.edu.ph/']
+    rl_count = Layer.objects.filter(keywords__name__icontains="phillidar2").count()
+    for visit_url in urls_to_visit:
+        try:
+            response = urllib2.urlopen(visit_url+'api/total_count')
+            data = json.loads(response.read())
+            rl_count += data['total_count']
+        except HTTPError:
+            rl_count += 0
     return rl_count
 
 @register.assignment_tag
