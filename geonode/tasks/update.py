@@ -133,7 +133,7 @@ def update_lidar_coverage_task():
     # for year in flood_years:
     #     fhm_year_metadata(year)
     lidar_coverage_metadata()
-    seed_layers('lidar_coverage')
+    # seed_layers('lidar_coverage')
 
 
 @task(name='geonode.tasks.update.update_fhm_metadata_task', queue='update')
