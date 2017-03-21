@@ -1019,3 +1019,13 @@ LIPAD_INSTANCES = [
 'https://coastmap.dream.upd.edu.ph/',
 'https://phd.dream.upd.edu.ph/',
 ]
+
+# geoserver sld names
+DTM_SLD = 'dtm_sld'
+ORTHO_SLD = 'ortho_sld'
+DSM_SLD = 'dsm_sld'
+LAZ_SLD = 'laz_sld'
+PHILGRID_SLD = 'philgrid'
+CLEAR_SLD = 'clear_sld'
+
+
