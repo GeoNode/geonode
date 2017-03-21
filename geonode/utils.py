@@ -576,6 +576,8 @@ def json_response(body=None, errors=None, redirect_to=None, exception=None,
     exception message will be used as a format option to that string and the
     result will be a success=False, errors = body % exception
     """
+    if isinstance(body, HttpResponse):
+        return body
     if content_type is None:
         content_type = "application/json"
     if errors:
