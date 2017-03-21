@@ -186,7 +186,7 @@ def get_dir_time_suffix():
 
 def zip_dir(basedir, archivename):
     assert os.path.isdir(basedir)
-    with closing(ZipFile(archivename, "w", ZIP_DEFLATED)) as z:
+    with closing(ZipFile(archivename, "w", ZIP_DEFLATED, allowZip64=True)) as z:
         for root, dirs, files in os.walk(basedir):
             # NOTE: ignore empty directories
             for fn in files:
@@ -202,7 +202,13 @@ def copy_tree(src, dst, symlinks=False, ignore=None):
         if os.path.isdir(s):
             # shutil.rmtree(d)
             if os.path.exists(d):
-                os.remove(d)
+                try:
+                    os.remove(d)
+                except:
+                    try:
+                        shutil.rmtree(d)
+                    except:
+                        pass
             shutil.copytree(s, d, symlinks, ignore)
         else:
             shutil.copy2(s, d)
@@ -213,7 +219,7 @@ def unzip_file(zip_file, dst):
     if not os.path.exists(target_folder):
         os.makedirs(target_folder)
 
-    with ZipFile(zip_file, "r") as z:
+    with ZipFile(zip_file, "r", allowZip64=True) as z:
         z.extractall(target_folder)
 
     return target_folder
