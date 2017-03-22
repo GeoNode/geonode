@@ -79,7 +79,7 @@
 
       <tr>
       <td class="table-user-profile-attribute">{% trans "Data Size of Area Requested" %}</td>
-      <td>{{ data_request.juris_data_size|filesizeformat }}</td>
+      <td>{{ data_request.juris_data_size|filesizeformat }} {{data_request.juris_data_size}} {{max_ftp_size}}</td>
       </tr>
 
       <tr>
@@ -117,7 +117,7 @@
       </tr>
       <tr>
           <td class="table-user-profile-attribute col-md-3"> {% trans "SUC jurisdictions within area of interest" %}</td>
-          <td> {% for suc in sucs %} {{ suc }}{% endfor %}</td>
+          <td> {{ sucs|length }}{% for suc in sucs %} {{ suc }}{% endfor %}</td>
       </tr>
       {% endif %}
       </tbody>
@@ -180,7 +180,7 @@
             </form></li>
     {% endif %}
       {% if data_request.status == 'approved' %}
-        {% if data_request.juris_data_size > max_ftp_size and data_request.sucs|length == 1 %}
+        {% if data_request.juris_data_size > max_ftp_size and sucs|length == 1 %}
         <li class="list-group-item">
                   <form id="notify_suc_form" method="post" class="modal-form" action='{% url "datarequests:data_request_notify_suc" pk=data_request.pk %}'>{% csrf_token %}
                 <button type="submit" class="btn btn-primary btn-md btn-block"  id="notify-suc">{% trans "Notify SUC" %}</button>
