@@ -97,10 +97,10 @@ for anon in anon_list:
         if not anon.anon_document:#if datenow is timestamp
             luzvimin = get_luzvimin({
                 "timestamp": anon.date,
-                "typename": anon.anon_layer.typename,
+                "typename": anon.anon_layer,
                 })
-            add_to_count(luzvimin, anon.anon_layer.typename)
-            add_to_count('monthly', anon.anon_layer.typename)
+            add_to_count(luzvimin, anon.anon_layer)
+            add_to_count('monthly', anon.anon_layer)
         elif anon.anon_document:#if datenow is timestamp
             add_to_monthlyc('monthly')
 ftp_list = FTPRequest.objects.all().order_by('date_time')
