@@ -346,9 +346,9 @@ def data_request_tag_suc(request,pk):
 def data_request_notify_suc(request,pk):
     if request.user.is_superuser and request.method=='POST':
         dr = get_object_or_404(DataRequest, pk=pk)
-        if len(dr.suc) == 1 and dr.juris_data_size > settings.MAX_FTP_SIZE:
+        if len(dr.suc.names()) == 1 and dr.juris_data_size > settings.MAX_FTP_SIZE:
             dr.send_suc_notification()
-            messages.info("Email sent")
+            messages.info(request, "Email sent")
         return HttpResponseRedirect(dr.get_absolute_url())
     else:
         return HttpResponseRedirect('/forbidden/')
