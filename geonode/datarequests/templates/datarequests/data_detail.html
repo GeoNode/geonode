@@ -79,7 +79,7 @@
 
       <tr>
       <td class="table-user-profile-attribute">{% trans "Data Size of Area Requested" %}</td>
-      <td>{{ data_request.juris_data_size|filesizeformat }} {{data_request.juris_data_size}} {{max_ftp_size}}</td>
+      <td>{{ data_request.juris_data_size|filesizeformat }}</td>
       </tr>
 
       <tr>
@@ -117,7 +117,7 @@
       </tr>
       <tr>
           <td class="table-user-profile-attribute col-md-3"> {% trans "SUC jurisdictions within area of interest" %}</td>
-          <td> {{ sucs|length }}{% for suc in sucs %} {{ suc }}{% endfor %}</td>
+          <td> {% for suc in sucs %} {{ suc }}{% endfor %}</td>
       </tr>
       {% endif %}
       </tbody>
