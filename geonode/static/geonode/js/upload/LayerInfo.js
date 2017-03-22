@@ -151,14 +151,14 @@ define(function (require, exports) {
     LayerInfo.prototype.prepareFormData = function (form_data) {
         var i, ext, file, perm, geogig, geogig_store, time, mosaic;
 
-		var base_ext  = this.name.split('.').pop();
-		var base_name = this.name.slice(0, -(base_ext.length+1));
+        var base_ext  = this.main.name.split('.').pop();
+        var base_name = this.name;
 
-        var base_ext  = this.name.split('.').pop();
-        var base_name = this.name.slice(0, -(base_ext.length+1));
+        var base_ext  = this.main.name.split('.').pop();
+        var base_name = this.name;
 
-        var base_ext  = this.name.split('.').pop();
-        var base_name = this.name.slice(0, -(base_ext.length+1));
+        var base_ext  = this.main.name.split('.').pop();
+        var base_name = this.name;
 
         if (!form_data) {
             form_data = new FormData();
