@@ -375,6 +375,7 @@ class DataRequest(BaseRequest, StatusModel):
             suc_pl.name,
             unidecode(self.get_first_name()),
             unidecode(self.get_last_name()),
+            unidecode(self.get_organization()),
             self.get_email(),
             self.project_summary,
             self.purpose
@@ -386,6 +387,7 @@ class DataRequest(BaseRequest, StatusModel):
             suc_pl.name,
             unidecode(self.get_first_name()),
             unidecode(self.get_last_name()),
+            unidecode(self.get_organization()),
             self.get_email(),
             self.project_summary,
             self.purpose
