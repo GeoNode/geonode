@@ -98,14 +98,14 @@ def layer_default_style(keyword):
 @task(name='geonode.tasks.update.seed_layers', queue='update')
 def seed_layers(keyword):
     if keyword =='lidar_coverage':
-        layer_list = Layer.objects.get(name=settings.target_table)
+        layer_list = Layer.objects.filter(name=settings.target_table)
     else:
         layer_list = Layer.objects.filter(keywords__name__icontains=keyword)
     for layer in layer_list:
         try:
             out = subprocess.check_output([settings.PROJECT_ROOT + '/gwc.sh', 'seed',
                                            '{0}:{1}'.format(
-                                               layer.workspace, layer.name), 'EPSG:4326', '-v', '-a',
+                                               layer.workspace, layer.name), 'EPSG:900913', '-v', '-a',
                                            settings.OGC_SERVER['default']['USER'] + ':' +
                                            settings.OGC_SERVER['default'][
                                                'PASSWORD'], '-u',
@@ -133,7 +133,7 @@ def update_lidar_coverage_task():
     # for year in flood_years:
     #     fhm_year_metadata(year)
     lidar_coverage_metadata()
-    seed_layers('lidar_coverage')
+    # seed_layers('lidar_coverage')
 
 
 @task(name='geonode.tasks.update.update_fhm_metadata_task', queue='update')
