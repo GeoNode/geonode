@@ -30,7 +30,7 @@ def migrate_all():
             
 @task(name="geonode.tasks.requests.tag_request_suc",queue='requests')
 def tag_request_suc(data_requests):
-    message = "The following area and data size computations have been completed:\n"
+    message = "The following data requests have been tagged:\n\n"
     for dr in data_requests:
         if dr.jurisdiction_shapefile:
             sucs = get_sucs(dr.jurisdiction_shapefile)
