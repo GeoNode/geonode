@@ -174,15 +174,13 @@
                 <button type="submit" class="btn btn-primary btn-md btn-block"  id="get-place-name">{% trans "Get Place Name" %}</button>
             </form>
         </li>
-        {% if data_request.status == 'approved' %}
         <li class="list-group-item">
         <form id="tag_suc_form" method="post" class="modal-form" action='{% url "datarequests:data_request_tag_suc" pk=data_request.pk %}'>{% csrf_token %}
                 <button type="submit" class="btn btn-primary btn-md btn-block"  id="tag-suc">{% trans "Tag SUC" %}</button>
             </form></li>
-        {% endif %}
     {% endif %}
       {% if data_request.status == 'approved' %}
-        {% if data_request.juris_data_size > max_ftp_size and data_request.sucs|length < 2 %}
+        {% if data_request.juris_data_size > max_ftp_size and sucs|length == 1 %}
         <li class="list-group-item">
                   <form id="notify_suc_form" method="post" class="modal-form" action='{% url "datarequests:data_request_notify_suc" pk=data_request.pk %}'>{% csrf_token %}
                 <button type="submit" class="btn btn-primary btn-md btn-block"  id="notify-suc">{% trans "Notify SUC" %}</button>
