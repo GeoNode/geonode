@@ -27,9 +27,22 @@ from geonode.layers.models import Layer
 from geonode.people.models import Profile
 from .profile_request import ProfileRequest
 from .base_request import BaseRequest
+from .suc_directory import SUC_Contact
 from taggit.managers import TaggableManager
+from taggit.models import GenericTaggedItemBase, TagBase
 
 import geonode.local_settings as local_settings
+
+class SUCRequestTag (TagBase):
+    class Meta:
+        app_label = "datarequests"
+
+
+class SUCTaggedRequest (GenericTaggedItemBase):
+    tag = models.ForeignKey(SUCRequestTag, related_name='SUC_request_tag')
+    
+    class Meta:
+        app_label = "datarequests"
 
 class DataRequest(BaseRequest, StatusModel):
 
@@ -113,6 +126,9 @@ class DataRequest(BaseRequest, StatusModel):
 
     #For request letter
     request_letter= models.ForeignKey(Document, null=True, blank=True)
+    
+    suc = TaggableManager(_('SUCs'),blank=True, help_text="SUC jurisdictions within this ROI", 
+        through=SUCTaggedRequest, related_name="suc_request_tag")
 
     class Meta:
         app_label = "datarequests"
@@ -347,3 +363,34 @@ class DataRequest(BaseRequest, StatusModel):
 
         email_subject = _('[LiPAD] Data Request Status')
         self.send_email(email_subject,text_content,html_content)
+        
+    def send_suc_notification(self):
+        suc = self.suc.names()[0]
+        suc_contacts = SUC_Contact.objects.filter(institution_abrv=suc).exclude(position="Program Leader")
+        suc_pl = SUC_Contact.objects.get(institution_abrv=suc, position="Program Leader")
+        
+        
+        text_content = email_utils.DATA_SUC_FORWARD_NOTIFICATION_TEXT.format(
+            suc_pl.salutation,
+            suc_pl.name
+        )
+        
+        html_content = email_utils.DATA_SUC_FORWARD_NOTIFICATION_HTML.format(
+            suc_pl.salutation,
+            suc_pl.name
+        )
+        
+        cc = suc_contacts.values_list('email_address',flat = True)
+        
+        email_subject = _('[LiPAD] Requesting Permission To Forward A Data Request')
+        
+        msg = EmailMultiAlternatives(
+            email_subject,
+            text_content,
+            settings.DEFAULT_FROM_EMAIL,
+            [suc_pl.email_address, ],
+            cc = cc
+        )
+        msg.attach_alternative(html_content, "text/html")
+        msg.send()
+        
