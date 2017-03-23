@@ -16,7 +16,7 @@ def get_luzvimin(data):
             luzvimin = SUCLuzViMin.objects.filter(suc=eachkeyword)[0].luzvimin
             break
         except Exception as e:
-            print (l.typename + ' - ' + str(e))
+            print (layer_query + ' - ' + str(e))
             luzvimin = "Luzvimin_others"
     return luzvimin
 
