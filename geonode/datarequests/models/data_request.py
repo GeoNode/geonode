@@ -372,12 +372,25 @@ class DataRequest(BaseRequest, StatusModel):
         
         text_content = email_utils.DATA_SUC_FORWARD_NOTIFICATION_TEXT.format(
             suc_pl.salutation,
-            suc_pl.name
+            suc_pl.name,
+            unidecode(self.get_first_name()),
+            unidecode(self.get_last_name()),
+            unidecode(self.get_organization()),
+            self.get_email(),
+            self.project_summary,
+            self.purpose
+            
         )
         
         html_content = email_utils.DATA_SUC_FORWARD_NOTIFICATION_HTML.format(
             suc_pl.salutation,
-            suc_pl.name
+            suc_pl.name,
+            unidecode(self.get_first_name()),
+            unidecode(self.get_last_name()),
+            unidecode(self.get_organization()),
+            self.get_email(),
+            self.project_summary,
+            self.purpose
         )
         
         cc = suc_contacts.values_list('email_address',flat = True)
