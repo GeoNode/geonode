@@ -7,7 +7,7 @@ from datetime import datetime, timedelta
 from geonode.layers.models import Layer
 from geonode.cephgeo.models import FTPRequest, FTPRequestToObjectIndex, DataClassification
 from geonode.people.models import Profile
-from daily_download_count import *
+from daily_download_count import save_to_dc,main
 
 import sys
 
