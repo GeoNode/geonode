@@ -10,8 +10,9 @@ from geonode.people.models import Profile
 
 def get_luzvimin(data):
     if data['grid_ref']:
-        north = int(data['grid_ref'].split('N')[1])
-        east = int(data['grid_ref'].split('N')[0][1:])
+        north = int(data['grid_ref'].split('N')[1])*1000-500
+        east = int(data['grid_ref'].split('N')[0][1:])*1000+500
+        #32651
         luzvimin = "Luzvimin_others"
     else:
         layer_query = Layer.objects.get(typename=data['typename'])
@@ -120,11 +121,14 @@ def save_to_dc(minusdays,count_dict):
                 model_object.save()
                 print str(datetoanalyze) +'-'+ str(category) +'-'+ str(chart_group) +'-'+ str(eachtype) +'-'+ str(eachvalue)
 
-minusdays = 1
+global layer_count
 layer_count = {}
-main(minusdays,DownloadTracker.objects, 'timestamp', 'actor','resource_type','title', False)
-main(minusdays,AnonDownloader.objects, 'date', False,'anon_document','anon_layer', False)
-main(minusdays,FTPRequest.objects,'date_time','user','','',True)
-print(layer_count)
+if __name__ == "__main__":
+    minusdays = 1
+    layer_count = {}
+    main(minusdays,DownloadTracker.objects, 'timestamp', 'actor','resource_type','title', False)
+    main(minusdays,AnonDownloader.objects, 'date', False,'anon_document','anon_layer', False)
+    main(minusdays,FTPRequest.objects,'date_time','user','','',True)
+    print(layer_count)
 
-save_to_dc(minusdays,layer_count)
+    save_to_dc(minusdays,layer_count)
