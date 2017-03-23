@@ -3,10 +3,14 @@ import traceback
 from pprint import pprint
 from celery.task import task
 from django.core.mail import send_mail
+from fabric.api import *
+from fabric.contrib.console import confirm
+from fabric.tasks import execute
+
 
 import psycopg2
-import sys
 import psycopg2.extras
+import sys
 
 import geonode.settings as settings
 from geonode.datarequests.models import (
@@ -42,6 +46,8 @@ def tag_request_suc(data_requests):
     subject = "SUC tagging done"
     recipient = [settings.LIPAD_SUPPORT_MAIL]
     send_mail(subject, message, settings.LIPAD_SUPPORT_MAIL, recipient, fail_silently= False)
+
+####utility functions
 
 def get_sucs(layer, sucs_layer=settings.PL1_SUC_MUNIS, proj=32651):
     conn = psycopg2.connect(("host={0} dbname={1} user={2} password={3}".format
