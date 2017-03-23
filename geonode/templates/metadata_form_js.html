@@ -237,22 +237,23 @@
           return otherRestrictions;
         }
 
-        var toggleRestrictionsConstraints  = function(){
+        var toggleRestrictionsConstraints = function(e){
           try {
-            var e = $('#id_resource-constraints_other')[0];
-            if(e) {
-              if(otherRestrictionsSelected() && e.value !== undefined && e.value.trim() === '') {
-                if(!$(e).hasClass("input-empty")){
-                  setInputEmpty(e, true);
-                  $(e).parent().append("<p class='xxs-font-size mandatory-warning'>&nbsp;&nbsp;&nbsp;<strong>* Field declared Mandatory by the Metadata Schema</strong></p>");
-                  empty++;
+            if(e && e.target &&
+                    e.target.id == 'id_resource-constraints_other') {
+              var ee = $('#id_resource-constraints_other')[0];
+              if(otherRestrictionsSelected() && ee.value !== undefined && ee.value.trim() === '') {
+                if(!$(ee).hasClass("input-empty")) {
+                    setInputEmpty(ee, true);
+                    $(ee).parent().append("<p class='xxs-font-size mandatory-warning'>&nbsp;&nbsp;&nbsp;<strong>* Field declared Mandatory by the Metadata Schema</strong></p>");
+                    empty++;
+                } else {
+                    setInputEmpty(ee, false);
+                    $(ee).parent().find(".mandatory-warning").remove();
+                    empty--;
                 }
-              } else {
-                setInputEmpty(e, false);
-                $(e).parent().find(".mandatory-warning").remove();
-                if(empty >= 1) empty--;
               }
-            }
+             }
           } catch (err) {
             // Log error
             return false;
@@ -277,7 +278,7 @@
         }
 
         var onInputChange = function(e){
-            toggleRestrictionsConstraints();
+            toggleRestrictionsConstraints(e);
 
             if(e.target.value !== undefined && e.target.value.trim() === ''){
                 if(!$(e.target).hasClass("input-empty")){
@@ -302,7 +303,7 @@
 
             if(totalNum == prevNum) {
                 try {
-                    var perc = (totalNum-empty)/totalNum;
+                    var perc = (totalNum <= 0 ? 0 : (totalNum-empty)/totalNum);
                         perc = (perc <= 1 ? perc : 1);
                     updateCompleteness(perc);
                 } catch(err) {
@@ -335,7 +336,6 @@
 
             $(this).change(onInputChange).change();
 
-            //if(this.id.indexOf("autocomplete") < 0){
             if(isMandatoryField(this)){
                 totalNum++;
             }
@@ -462,7 +462,9 @@
 
         if(totalNum == prevNum) {
             try {
-                updateCompleteness((totalNum-empty)/totalNum);
+                var perc = (totalNum <= 0 ? 0 : (totalNum-empty)/totalNum);
+                    perc = (perc <= 1 ? perc : 1);
+                updateCompleteness(perc);
             } catch(err) {
                 // Log error
             }
