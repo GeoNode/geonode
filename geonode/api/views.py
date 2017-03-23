@@ -69,7 +69,7 @@ def api_autocomplete(request):
     # output = []
     for each_url in urls_to_visit:
         # output.append (each_url + 'autocomplete/ResourceBaseAutocomplete/?' + apiquery)
-        response = urllib2.urlopen(each_url + 'autocomplete/ResourceBaseAutocomplete?' + apiquery)
+        response = urllib2.urlopen(each_url + 'autocomplete/ResourceBaseAutocomplete/?' + apiquery)
         data = response.read()
         if 'No matches found' not in data:
             output += data
