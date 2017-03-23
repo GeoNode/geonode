@@ -120,4 +120,4 @@ main(minusdays,AnonDownloader.objects, 'date', False,'anon_document','anon_layer
 main(minusdays,FTPRequest.objects,'date_time','user','','',True)
 print(layer_count)
 
-# save_to_dc(minusdays,layer_count)
+save_to_dc(minusdays,layer_count)
