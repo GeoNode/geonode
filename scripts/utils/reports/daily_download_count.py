@@ -12,7 +12,7 @@ def get_luzvimin(data):
     if data['grid_ref']:
         north = int(data['grid_ref'].split('N')[1])
         east = int(data['grid_ref'].split('N')[0][1:])
-        
+        luzvimin = "Luzvimin_others"
     else:
         layer_query = Layer.objects.get(typename=data['typename'])
         keyword_list = layer_query.keywords.names()
