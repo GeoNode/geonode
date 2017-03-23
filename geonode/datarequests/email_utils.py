@@ -171,8 +171,44 @@ DATA_SUC_FORWARD_NOTIFICATION_HTML="""
     <p>LiPAD Team</p>
 """
 
-DATA_USER_FORWARD_PERMISSION_TEXT="""
+DATA_USER_FORWARD_NOTIFICATION_TEXT="""
+    Greetings, {} {}!
+    
+    Your requested data has now been forwarded to the {} Phil-LiDAR 1 office. Please send your follow-up queries to their office instead.
+    
+    Regards,
+    LiPAD Team
 """
 
-DATA_USER_FORWARD_PERMISSION_HTML="""
+DATA_USER_FORWARD_NOTIFICATION_HTML="""
+    <p>Greetings, {} {}!</p>
+    <br />
+    <p>Your requested data has now been forwarded to the {} Phil-LiDAR 1 office. Please send your follow-up queries to their office instead.</p>
+    <br />
+    <p>Regards,</p>
+    <p>LiPAD Team</p>
+"""
+
+DATA_USER_PRE_FORWARD_NOTIFICATION_TEXT="""
+    Greetings, {} {}!
+    
+    We sent this email to inform you that the estimated size of your data (in bytes) exceeds 10GB (gigabytes) and it maybe more convenient for you to visit the office to copy the files. 
+    As such, we would like to know which option you prefer, to copy the files in the UP Diliman office of Phil-LiDAR 1, or to visit the partner SUC which was assigned over your area of interest.
+    The assigned SUC for your area of interest is {}.
+    
+    Regards,
+    LiPAD Team
+"""
+
+DATA_USER_PRE_FORWARD_NOTIFICATION_HTML="""
+    <p>Greetings, {} {}</p>!
+    
+    <p>We would like to inform you that the estimated size of your data (in bytes) exceeds 10GB (gigabytes) and it maybe more convenient for you to visit a Phil-LiDAR 1 office to copy the files. 
+    As such, we would like to know which option you prefer, to copy the files in the UP Diliman office of Phil-LiDAR 1, or to visit the partner SUC which was assigned over your area of interest.
+    The assigned SUC for your area of interest is {} ({}) Phil-LiDAR 1 under {} {}.</p>
+    
+    <p>We hope to hear your response at the soonest possible time. Thank you!</p>
+    
+    <p>Regards,</p>
+    <p>LiPAD Team</p>
 """
