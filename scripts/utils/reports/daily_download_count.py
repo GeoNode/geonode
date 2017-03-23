@@ -9,15 +9,20 @@ from geonode.cephgeo.models import FTPRequest, FTPRequestToObjectIndex, DataClas
 from geonode.people.models import Profile
 
 def get_luzvimin(data):
-    layer_query = Layer.objects.get(typename=data['typename'])
-    keyword_list = layer_query.keywords.names()
-    for eachkeyword in keyword_list:
-        try:
-            luzvimin = SUCLuzViMin.objects.filter(suc=eachkeyword)[0].luzvimin
-            break
-        except Exception as e:
-            print (layer_query + ' - ' + str(e))
-            luzvimin = "Luzvimin_others"
+    if data['grid_ref']:
+        north = int(data['grid_ref'].split('N')[1])
+        east = int(data['grid_ref'].split('N')[0][1:])
+        
+    else:
+        layer_query = Layer.objects.get(typename=data['typename'])
+        keyword_list = layer_query.keywords.names()
+        for eachkeyword in keyword_list:
+            try:
+                luzvimin = SUCLuzViMin.objects.filter(suc=eachkeyword)[0].luzvimin
+                break
+            except Exception as e:
+                print (layer_query.typename + ' - ' + str(e))
+                luzvimin = "Luzvimin_others"
     return luzvimin
 
 def add_to_count(category, typename):
@@ -32,6 +37,7 @@ def add_to_count(category, typename):
             "ORTHO": 0,
             "SAR": 0,
             "Others": 0,
+            "Resource":0,
         }
     if 'fh' in typename:
         layer_count[category]['FHM'] += 1
@@ -81,15 +87,16 @@ def main(minusdays, query_objects, attr_date, attr_actor, attr_type, attr_filena
                     if FTP:
                         type_list = FTPRequestToObjectIndex.objects.filter(ftprequest=each_object.id)
                         for eachtype in type_list:
-                            FTPname = DataClassification.gs_feature_labels[eachtype.cephobject._enum_data_class].lower()
+                            FTPtype = DataClassification.gs_feature_labels[eachtype.cephobject._enum_data_class].lower()
                             luzvimin = get_luzvimin({
-                                "typename": FTPname,
+                                "grid_ref": eachtype.cephobject.grid_ref,
                                 })
-                            add_to_count(luzvimin, FTPname)
-                            add_to_count('monthly', FTPname)
+                            add_to_count(luzvimin, FTPtype)
+                            add_to_count('monthly', FTPtype)
                     elif getattr(each_object,attr_type) == 'dataset' or not getattr(each_object,attr_type): #for DownloadTracker(if==dataset) or AnonDownloader(if not empty) therefore layer
                         luzvimin = get_luzvimin({
                             "typename": getattr(each_object,attr_filename),
+                            "grid_ref": False
                             })
                         add_to_count(luzvimin, getattr(each_object,attr_filename))
                         add_to_count('monthly', getattr(each_object,attr_filename))
