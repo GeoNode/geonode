@@ -118,7 +118,7 @@ def save_to_dc(minusdays,count_dict):
                                             download_type=str(eachtype),
                                             count=str(eachvalue))
                 model_object.save()
-                print str(datetoappend) +'-'+ str(category) +'-'+ str(chart_group) +'-'+ str(eachtype) +'-'+ str(eachvalue)
+                print str(datetoanalyze) +'-'+ str(category) +'-'+ str(chart_group) +'-'+ str(eachtype) +'-'+ str(eachvalue)
 
 minusdays = 1
 layer_count = {}
