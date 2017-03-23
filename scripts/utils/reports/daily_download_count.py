@@ -77,7 +77,7 @@ def main(minusdays, query_objects, attr_date, attr_actor, attr_type, attr_filena
         if datetoanalyze == datetime.strptime(getattr(each_object, attr_date).strftime('%d-%m-%Y'),'%d-%m-%Y'):
             if attr_actor:
                 getprofile = Profile.objects.get(username=getattr(each_object,attr_actor))
-                if not getprofile.is_staff and not any('test' in var for var in [str(getattr(each_object,attr_actor),getprofile.first_name,getprofile.last_name)]):
+                if not getprofile.is_staff and not any('test' in var for var in [str(getattr(each_object,attr_actor)),getprofile.first_name,getprofile.last_name]):
                     if FTP:
                         type_list = FTPRequestToObjectIndex.objects.filter(ftprequest=each_object.id)
                         for eachtype in type_list:
