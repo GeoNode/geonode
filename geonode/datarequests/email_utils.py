@@ -140,7 +140,7 @@ DATA_SUC_FORWARD_NOTIFICATION_TEXT="""
     We are asking your permission to forward the data to your team and let the requester retrieve the data from you. 
     
     Listed below are the details of the data requested:
-    Name of requester: {}
+    Name of requester: {} {}
     Organization: {}
     Email Address: {}
     Project Summary: {}
@@ -159,7 +159,7 @@ DATA_SUC_FORWARD_NOTIFICATION_HTML="""
     We are asking your permission to forward the data to your team and let the requester retrieve the data from you. </p>
     <br/>
     <p>Listed below are the details of the data requested:<br />
-    Name of requester: {}<br />
+    Name of requester: {} {}<br />
     Organization: {}<br />
     Email Address: {}<br />
     Project Summary: {}<br />
@@ -167,13 +167,6 @@ DATA_SUC_FORWARD_NOTIFICATION_HTML="""
     Intended Use of the Data: {}</p>
     <p>We hope to hear your response at the soonest possible time. Thank you!<p>
     <br />
-    <p>Listed below are the details of the data request:<br />
-    Name of Requester: {} {}<br />
-    Organization: {}<br />
-    Email address: {}<br />
-    Project Summary: {}<br />
-    Type of Data Requested: {}<br />
-    Intended Use of Data: {}<p>
     <p>Regards,</p>
     <p>LiPAD Team</p>
 """
