@@ -129,6 +129,11 @@ class DataRequest(BaseRequest, StatusModel):
     
     suc = TaggableManager(_('SUCs'),blank=True, help_text="SUC jurisdictions within this ROI", 
         through=SUCTaggedRequest, related_name="suc_request_tag")
+        
+    suc_notified = models.BooleanField(null=False,blank=False,default=False)
+    suc_notified_date = models.BooleanField(null=True,blank=True)
+    forwarded = models.BooleanField(null=False,blank=False,default=False)
+    forwarded_date =  models.BooleanField(null=True,blank=True)
 
     class Meta:
         app_label = "datarequests"
@@ -391,6 +396,18 @@ class DataRequest(BaseRequest, StatusModel):
             [suc_pl.email_address, ],
             cc = cc
         )
+        
         msg.attach_alternative(html_content, "text/html")
-        msg.send()
+        msg.send()time
+        self.suc_notified =True
+        self.suc_notified_date = timezone.now()
+        self.save()
+            
+    
+    def forward_jurisdiction(self, suc=None):
+        if not suc:
+            suc = self.suc.names()
+            
+        if len(suc) > 1:
+            return (False, 'Cannot '
         
