@@ -172,6 +172,7 @@ DATA_SUC_FORWARD_NOTIFICATION_HTML="""
     Organization: {}<br />
     Email address: {}<br />
     Project Summary: {}<br />
+    Type of Data Requested: {}<br />
     Intended Use of Data: {}<p>
     <p>Regards,</p>
     <p>LiPAD Team</p>
