@@ -387,7 +387,7 @@ class DataRequest(BaseRequest, StatusModel):
             organization,
             self.get_email(),
             self.project_summary,
-            data_class,
+            data_classes,
             self.purpose,
         )
         
@@ -399,7 +399,7 @@ class DataRequest(BaseRequest, StatusModel):
             organization,
             self.get_email(),
             self.project_summary,
-            data_class,
+            data_classes,
             self.purpose,
         )
         
