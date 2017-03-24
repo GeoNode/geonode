@@ -373,7 +373,7 @@ class DataRequest(BaseRequest, StatusModel):
             organization = unidecode(self.get_organization())
         
         data_classes = ""
-        for n in self.data_class.names():
+        for n in self.data_type_requested.names():
             data_class += str(data_class)
         
         data_class += str(self.data_class_other)
