@@ -57,10 +57,10 @@ def lidar_coverage_metadata():
         query = 'shp2pgsql -D -d -I -s 32651 ' + path + ' ' + settings.target_table + \
             ' | psql -h ' + settings.DATABASE_HOST + \
             ' -U ' + settings.DATABASE_USER + ' -d ' + settings.DATASTORE_DB
-        # print 'QUERY ', query
+        print 'QUERY ', query
         _out = subprocess.check_output(query,
                                        shell=True, env=dict(os.environ, PGPASSWORD=settings.DATABASE_PASSWORD))
-        # print 'SUBPROCESS COMMAND OUTPUT ', _out
+        print 'SUBPROCESS COMMAND OUTPUT ', _out
     except:
         print 'ERROR EXECUTING SHP2PGSQL COMMAND'
 
