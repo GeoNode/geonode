@@ -374,7 +374,7 @@ class DataRequest(BaseRequest, StatusModel):
         
         data_classes = ""
         for n in self.data_type.names():
-            data_class += str(data_class)
+            data_class += str(n)
         
         data_class += str(self.data_class_other)
             
