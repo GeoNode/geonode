@@ -6,7 +6,7 @@
 #sideNavi {
     position: fixed;
     right: 50px;
-    top: 25%;
+    top: 16%;
 }
 /* items */
 .side-navi-item {
@@ -22,10 +22,10 @@
     cursor: pointer;
     padding: 0px 5px;
 }
-.side-navi-item.item1 {  top: 150px;  }
-.side-navi-item.item2 {  top: 285px;  }
-.side-navi-item.item3 {  top: 420px;  }
-.side-navi-item.item4 {  top: 555px;  }
+.side-navi-item.item1 {  top: 130px;  }
+.side-navi-item.item2 {  top: 255px;  }
+.side-navi-item.item3 {  top: 380px;  }
+.side-navi-item.item4 {  top: 505px;  }
 .side-navi-item.active,
 .side-navi-item:hover {  background-color: #fff; color: #000;  }
 .side-navi-item > div {  padding-top: 15px; text-align: center;  }
@@ -35,7 +35,7 @@
     top: 0;
     left: 50px;
     width: 250px;
-    height: 580px;
+    height: 520px;
     background-color: #fff;
 }
 /* tab wrapper */
