@@ -49,9 +49,20 @@
 
       <div class="tab-content">
         {% include "base/resourcebase_info_panel.html" %}
+
+        {% block social_links %}
+            {% if DISPLAY_SOCIAL %}
+              {% include "social_links.html" %}
+            {% endif %}
+        {% endblock %}
+
+        {% if DISPLAY_COMMENTS %}
         <article class="tab-pane" id="comments">
         {% include "_comments.html" %}
         </article>
+        {% endif %}
+
+        {% if DISPLAY_RATINGS %}
         <article class="tab-pane" id="rate">
         <!-- TODO: Move this to a reusable template snippet -->
           {% if request.user.is_authenticated %}
@@ -64,11 +75,7 @@
           {% num_ratings resource as num_votes %}
           <div class="overall_rating" style="float:left" data-score="{{ map_rating }}"></div> ({{num_votes}})
         </article>
-        {% block social_links %}
-            {% if SOCIAL_BUTTONS %}
-                {% include "social_links.html" %}
-            {% endif %}
-        {% endblock %}
+        {% endif %}
       </div>
 
     </div>
@@ -85,7 +92,7 @@
            <a href="{% url "map_metadata_detail" resource.id %}">
                <button class="btn btn-primary btn-md btn-block" >{% trans "Metadata Detail" %}</button>
            </a>
-        </li>  
+        </li>
 
         <div class="modal fade" id="download-map" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
           <div class="modal-dialog">
@@ -181,7 +188,7 @@
           <h4>{% trans "Documents related to this map" %}</h4>
           <p>{% trans "List of documents related to this map:" %}</p>
           <ul class="list-unstyled">
-            {% for document in documents %} 
+            {% for document in documents %}
             <li><a href="{{ document.get_absolute_url }}">{{ document.title }}</a></li>
             {% endfor %}
           </ul>
@@ -219,9 +226,9 @@
         {% endif %}
 
         {% include "base/_resourcebase_contact_snippet.html" %}
-    
+
       </ul>
-      
+
     </div>
 
   </div>
@@ -230,7 +237,7 @@
 
 {% block extra_script %}
 {{ block.super }}
-{% if SOCIAL_BUTTONS %}
+{% if DISPLAY_SOCIAL %}
     {% include 'facebook_sdk.html' %}
 {% endif %}
 {% if request.user.is_authenticated %}
@@ -282,7 +289,7 @@
 
 
  });
-{% if SOCIAL_BUTTONS %}
+{% if DISPLAY_SOCIAL %}
  (function() {
    var po = document.createElement('script'); po.type = 'text/javascript'; po.async = true;
    po.src = 'https://apis.google.com/js/plusone.js';
@@ -297,13 +304,13 @@
       success: function() {
         $('#form_post_comment_div').modal().find('form')[0].reset();
         $('#form_post_comment_div').modal('hide');
-        $('#comments_section').load(window.location.pathname + ' #comments_section', 
+        $('#comments_section').load(window.location.pathname + ' #comments_section',
         		function(){$(this).children().unwrap()})
       }
     });
     return false;
   });
- 
+
 </script>
 {% include "_permissions_form_js.html" %}
 <script type="text/javascript" src="{{ STATIC_URL}}geonode/js/utils/thumbnail.js"></script>
@@ -313,5 +320,5 @@
     $('#edit-map').modal('toggle');
   });
 </script>
- 
+
 {% endblock %}

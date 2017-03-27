@@ -1,6 +1,6 @@
 {% load i18n %}
 {% verbatim %}
-<div class="row">
+<div class="row resourcebase-snippet">
   <div ng-if="results.length == 0" ng-cloak>
     <div><h3>No content created yet.</h3></div>
   </div>
@@ -8,7 +8,9 @@
     <div class="col-xs-12 item-container">
       <div class="col-xs-12 profile-avatar">
         <div class="col-xs-4 item-thumb">
-          <a href="{{ item.detail_url }}"><img ng-src="{{ item.thumbnail_url }}" /></a>
+          <a href="{{ item.detail_url }}">
+            <img ng-src="{{ item.thumbnail_url }}" />
+          </a>
         </div>
         <div class="col-xs-8 item-details">
           {% endverbatim %}

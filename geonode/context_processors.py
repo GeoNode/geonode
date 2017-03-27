@@ -45,9 +45,17 @@ def resource_urls(request):
             settings,
             'PROXY_URL',
             '/proxy/?url='),
-        SOCIAL_BUTTONS=getattr(
+        DISPLAY_SOCIAL=getattr(
             settings,
-            'SOCIAL_BUTTONS',
+            'DISPLAY_SOCIAL',
+            False),
+        DISPLAY_COMMENTS=getattr(
+            settings,
+            'DISPLAY_COMMENTS',
+            False),
+        DISPLAY_RATINGS=getattr(
+            settings,
+            'DISPLAY_RATINGS',
             False),
         TWITTER_CARD=getattr(
             settings,
