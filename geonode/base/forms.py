@@ -102,9 +102,6 @@ class CategoryChoiceField(forms.ModelChoiceField):
 class TreeWidget(TaggitWidget):
         input_type = 'text'
 
-        def __init__(self, attrs=None):
-            super(TreeWidget, self).__init__(attrs)
-
         def render(self, name, values, attrs=None):
             if isinstance(values, basestring):
                 vals = values
