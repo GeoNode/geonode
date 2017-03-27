@@ -63,7 +63,7 @@ def api_autocomplete(request):
     current_url = request.build_absolute_uri()
     apiquery = '?'.join(current_url.split('?')[1:])
     local_url = 'http://'+request.META['HTTP_HOST']+'/'#for lipad.dmz""
-    urls_to_visit = [local_url,'https://lipad-fmc.dream.upd.edu.ph/']
+    urls_to_visit = [local_url] + settings.LIPAD_INSTANCES
     output = ''
 
     # output = []
