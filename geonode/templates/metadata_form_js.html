@@ -494,6 +494,7 @@
             }
 
     		    $('#id_resource-keywords').tokenfield({
+                        createTokensOnBlur: true,
     		        autocomplete: {
     		            source: kws,
     		            delay: 100
@@ -514,8 +515,8 @@
                 onNodeSelected: function($event, $data) {
                     //TODO: This seems a horribly inelegant way of doing this in 12 Lines
                     kws = $('#id_resource-keywords').tokenfield('getTokens');
-                    newToken = $data.text
-                    exists = false
+                    var newToken = $data.text
+                    var exists = false
                     for (var i=0; i<kws.length; i++) {
                         if (kws[i]['value'].indexOf(newToken) >=0) {
                             exists = true
