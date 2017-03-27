@@ -43,11 +43,8 @@ class CategoryChoiceField(forms.ModelChoiceField):
                '&nbsp;' + obj.gn_description + '</span>'
 
 
-class TreeWidget(forms.TextInput):
+class TreeWidget(TaggitWidget):
         input_type = 'text'
-
-        def __init__(self, attrs=None):
-            super(TreeWidget, self).__init__(attrs)
 
         def render(self, name, values, attrs=None):
             if isinstance(values, basestring):
@@ -142,7 +139,7 @@ class ResourceBaseForm(TranslationModelForm):
         label=_("Keywords"),
         required=False,
         help_text=_("A space or comma-separated list of keywords"),
-        widget=TaggitWidget('HierarchicalKeywordAutocomplete'))
+        widget=TreeWidget(autocomplete='HierarchicalKeywordAutocomplete'))
 
     regions = TreeNodeMultipleChoiceField(
         label=_("Regions"),
