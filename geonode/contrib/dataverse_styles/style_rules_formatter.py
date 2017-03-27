@@ -130,12 +130,39 @@ class StyleRulesFormatter(object):
             </sld:NamedLayer>
         </sld:StyledLayerDescriptor>""" % (settings.DEFAULT_WORKSPACE, self.layer_name, self.sld_name, rules_xml_formatted)
 
+        # For polgyons, add a stroke color.
+        # If this isn't a polygon, the sld wil be returned unchanged
+        #
+        xml_str = self.add_polygon_stroke(xml_str)
+        if xml_str is None:
+            return False
 
         self.formatted_sld_xml = remove_whitespace_from_xml(xml_str)
         if xml_str is None:
             return False
 
         return True
+
+
+    def add_polygon_stroke(self, sld_xml_str):
+        """
+        The default stroke (for polygons) is:  <Stroke/>
+        Update it to a lighter color.
+        (If <Stroke/> isn't found, return the sld_xml_str as is)
+        """
+        if sld_xml_str is None:
+            return None
+
+        stroke_color = '#ececec'
+
+        no_stroke = '<sld:Stroke/>'
+        default_stroke = ('<sld:Stroke>'
+                          '<sld:CssParameter name="stroke">%s</sld:CssParameter>'
+                          '<sld:CssParameter name="stroke-width">0.75</sld:CssParameter>'
+                          '</sld:Stroke>') % stroke_color
+
+        return sld_xml_str.replace(no_stroke, default_stroke)
+
 
     def get_test_rules(self):
         """Only used for testing"""
