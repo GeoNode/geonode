@@ -218,8 +218,12 @@ if notification_app:
         """
         notice_type_label = '%s_deleted' % instance.class_name.lower()
         recipients = get_notification_recipients(notice_type_label)
-        notification.send(recipients, notice_type_label, {'resource': instance})
-        send_queued_notifications.delay()
+        try:
+            notification.send(recipients, notice_type_label, {'resource': instance})
+            send_queued_notifications.delay()
+        except Exception as e:
+            print "Error: notification_post_delete_resource"
+            print "Original Error:", e
 
     def rating_post_save(instance, sender, created, **kwargs):
         """ Send a notification when rating a layer, map or document
