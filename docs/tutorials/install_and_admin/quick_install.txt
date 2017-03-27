@@ -89,7 +89,7 @@ This option installs geonode in a virtual environment. This option is very usefu
 
     # Install pip dependencies
     pip install -r requirements.txt
-    pip install -e . --upgrade
+    pip install -e .
     
     sudo add-apt-repository ppa:ubuntugis/ppa && sudo apt-get update
     sudo apt-get install gdal-bin
