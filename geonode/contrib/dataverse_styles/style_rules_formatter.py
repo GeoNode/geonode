@@ -111,13 +111,15 @@ class StyleRulesFormatter(object):
 
     def format_sld_xml(self, rules_xml):
         if not rules_xml:
-            return (False, 'You must specify the "rules_xml"')
+            self.add_err_msg('You must specify the "rules_xml"')
+            return False
 
         self.formatted_sld_xml = None
 
         rules_xml_formatted = self.format_rules_xml(rules_xml)
         if rules_xml_formatted is None:
-            return (False, "Failed to format the XML rules")
+            self.add_err_msg("Failed to format the XML rules (id:1)")
+            return False
 
         xml_str = """<?xml version="1.0"?>
         <sld:StyledLayerDescriptor xmlns:sld="http://www.opengis.net/sld" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:ogc="http://www.opengis.net/ogc" xmlns:gml="http://www.opengis.net/gml" version="1.0.0" xsi:schemaLocation="http://www.opengis.net/sld http://schemas.opengis.net/sld/1.0.0/StyledLayerDescriptor.xsd">
@@ -135,10 +137,12 @@ class StyleRulesFormatter(object):
         #
         xml_str = self.add_polygon_stroke(xml_str)
         if xml_str is None:
+            self.add_err_msg("Failed to format the XML rules (id:2)")
             return False
 
         self.formatted_sld_xml = remove_whitespace_from_xml(xml_str)
         if xml_str is None:
+            self.add_err_msg("Failed to format the XML rules (id:3)")
             return False
 
         return True
