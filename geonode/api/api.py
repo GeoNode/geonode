@@ -222,7 +222,6 @@ class ProfileResource(TypeFilteredResource):
     documents_count = fields.IntegerField(default=0)
     current_user = fields.BooleanField(default=False)
     activity_stream_url = fields.CharField(null=True)
-    keywords = fields.CharField(null=True, attribute='keywords')
     is_active = fields.BooleanField(attribute='is_active')
 
     def build_filters(self, filters={}):

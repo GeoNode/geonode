@@ -40,3 +40,7 @@ api.register(GroupResource())
 api.register(FeaturedResourceBaseResource())
 api.register(OwnersResource())
 
+# TODO: This should not live here but in geonode/contrib/favorite/urls.py
+# but its not currently working there.
+from geonode.contrib.favorite.api import FavoriteResource
+api.register(FavoriteResource())
