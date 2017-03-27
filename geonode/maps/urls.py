@@ -43,6 +43,7 @@ urlpatterns = patterns(
     'geonode.maps.views',
     url(r'^$',
         TemplateView.as_view(template_name='maps/map_list.html'),
+        {'facet_type': 'maps'},
         name='maps_browse'),
     url(r'^new$', new_map_view, name="new_map"),
     url(r'^new/data$', 'new_map_json', name='new_map_json'),
