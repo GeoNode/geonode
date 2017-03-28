@@ -559,7 +559,6 @@ def _register_indexed_service(type, url, name, username, password, verbosity=Fal
         available_resources = []
         for layer in list(wms.contents):
             available_resources.append([wms[layer].name, wms[layer].title])
-
         if settings.USE_QUEUE:
             # Create a layer import job
             WebServiceHarvestLayersJob.objects.get_or_create(service=service)
@@ -660,7 +659,6 @@ def _register_indexed_layers(service, wms=None, verbosity=False):
                     bbox_y1=bbox[3]
                 )
 
-                saved_layer.save()
                 saved_layer.set_default_permissions()
                 saved_layer.keywords.add(*keywords)
 
@@ -1165,7 +1163,7 @@ def service_detail(request, service_id):
     This view shows the details of a service
     '''
     service = get_object_or_404(Service, pk=service_id)
-    layer_list = service.layer_set.all()
+    layer_list = [sl.layer for sl in service.servicelayer_set.all()]
     service_list = service.service_set.all()
     # Show 25 services per page
     service_paginator = Paginator(service_list, 25)
