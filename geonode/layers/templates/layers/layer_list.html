@@ -13,11 +13,9 @@
   <h2 class="page-title">{% trans "Explore Layers" %}</h2>
 </div>
   {% with include_type_filter='true' %}
-  {% with facet_type='layers' %}
   {% with header='Type' %}
   {% with filter='type__in' %}
   {% include "search/_search_content.html" %}
-  {% endwith %}
   {% endwith %}
   {% endwith %}
   {% endwith %}
