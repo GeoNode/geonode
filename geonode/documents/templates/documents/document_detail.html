@@ -50,16 +50,23 @@
     </div>
 
     <div class="tab-content">
+      <article id="info" class="tab-pane{% if tab == 'info' or not tab %} active{% endif %}">
       {% include "base/resourcebase_info_panel.html" %}
+      </article>
 
       {% block social_links %}
+        {% if DISPLAY_SOCIAL %}
         {% include "social_links.html" %}
+        {% endif %}
       {% endblock %}
 
+      {% if DISPLAY_COMMENTS %}
       <article id="comments" class="tab-pane">
       {% include "_comments.html" %}
       </article>
+      {% endif %}
 
+      {% if DISPLAY_RATINGS %}
       <article id="rate" class="tab-pane">
         <!-- TODO: Move this to a reusable template snippet -->
         {% if request.user.is_authenticated %}
@@ -73,6 +80,7 @@
         <div class="overall_rating" style="float:left" data-score="{{ document_rating }}"></div> ({{num_votes}})
         <!-- TODO: Add display of who gave what rating based -->
       </article>
+      {% endif %}
 
       {% if EXIF_ENABLED and exif_data %}
         {% with "exif/_exif_document_detail.html" as exif_template %}
@@ -218,7 +226,7 @@
 
 {% block extra_script %}
 {{ block.super }}
-{% if SOCIAL_BUTTONS %}
+{% if DISPLAY_SOCIAL %}
     {% include 'facebook_sdk.html' %}
 {% endif %}
     {% if request.user.is_authenticated %}
@@ -229,7 +237,7 @@
     {% include 'rating.html' %}
     {% include 'request_download.html' %}
     <script type="text/javascript">
-        {% if SOCIAL_BUTTONS %}
+        {% if DISPLAY_SOCIAL %}
         (function() {
             var po = document.createElement('script'); po.type = 'text/javascript'; po.async = true;
             po.src = 'https://apis.google.com/js/plusone.js';

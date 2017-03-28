@@ -51,7 +51,7 @@ DEBUG = strtobool(os.getenv('DEBUG', 'True'))
 DEBUG_STATIC = strtobool(os.getenv('DEBUG_STATIC', 'False'))
 
 #Define email service on GeoNode
-EMAIL_ENABLE = strtobool(os.getenv('EMAIL_ENABLE', 'True')) 
+EMAIL_ENABLE = strtobool(os.getenv('EMAIL_ENABLE', 'True'))
 
 # This is needed for integration tests, they require
 # geonode to be listening for GeoServer auth requests.
@@ -731,7 +731,9 @@ MAP_BASELAYERS = [{
     "group": "background"
 }]
 
-SOCIAL_BUTTONS = True
+DISPLAY_SOCIAL = strtobool(os.getenv('DISPLAY_SOCIAL', 'True'))
+DISPLAY_COMMENTS = strtobool(os.getenv('DISPLAY_COMMENTS', 'True'))
+DISPLAY_RATINGS = strtobool(os.getenv('DISPLAY_RATINGS', 'True'))
 
 SOCIAL_ORIGINS = [{
     "label": "Email",
@@ -1071,5 +1073,5 @@ if 'geonode.geoserver' in INSTALLED_APPS:
 THESAURI = []
 
 if EMAIL_ENABLE:
-    #Setting up email backend 
+    #Setting up email backend
     EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
