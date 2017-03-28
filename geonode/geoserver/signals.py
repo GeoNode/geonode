@@ -67,13 +67,9 @@ def geoserver_pre_save(instance, sender, **kwargs):
         * Point of Contact name and url
     """
 
-    # Don't run this signal if is a Layer from a remote service
-    if getattr(instance, "service", None) is not None:
-        return
-
-    # Don't run this signal handler if it is a tile layer
+    # Don't run this signal handler if it is a tile layer or a remote store (Service)
     #    Currently only gpkg files containing tiles will have this type & will be served via MapProxy.
-    if hasattr(instance, 'storeType') and getattr(instance, 'storeType') == 'tileStore':
+    if hasattr(instance, 'storeType') and getattr(instance, 'storeType') in ['tileStore', 'remoteStore']:
         return
 
     gs_resource = None
@@ -180,7 +176,7 @@ def geoserver_post_save(instance, sender, **kwargs):
     """
     # Don't run this signal handler if it is a tile layer
     #    Currently only gpkg files containing tiles will have this type & will be served via MapProxy.
-    if hasattr(instance, 'storeType') and getattr(instance, 'storeType') == 'tileStore':
+    if hasattr(instance, 'storeType') and getattr(instance, 'storeType') in ['tileStore', 'remoteStore']:
         return
 
     if type(instance) is ResourceBase:
@@ -188,11 +184,6 @@ def geoserver_post_save(instance, sender, **kwargs):
             instance = instance.layer
         else:
             return
-
-    if instance.storeType == "remoteStore":
-        # Save layer attributes
-        set_attributes_from_geoserver(instance)
-        return
 
     if not getattr(instance, 'gs_resource', None):
         try:
