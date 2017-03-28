@@ -1,7 +1,7 @@
 {% load i18n %}
 <div class="row" ng-controller="CartList">
   <div class="col-md-3">
-    <resource-cart></resource-cart>
+    <resource-cart data-facet-type="{{ facet_type }}"></resource-cart>
     <div class="row">
       <div class="col-xs-12">
         {% block bulk_perms_button %}
@@ -18,7 +18,7 @@
           {% endif %}
         </div>
         {% endblock %}
-    
+
         <div class="selections">
             {% trans "Filters" %}
             <a href="." id="clear-search" class="pull-right">{% trans "Clear" %}</a>
@@ -48,14 +48,15 @@
     </div>
   </div>
   <div class="col-md-9">
-    <div class="col-md-2">
-      <span>Total: </span>
-      <span ng-bind="total_counts"></span>
+    <div class="row">
+      <div class="col-md-10"><span style="font-size: 34px;" ng-bind="total_counts + ' {{ facet_type | title }} found'"></span></div>
+      <div class="col-md-2">{% include "search/_sort_filters.html" %}</div>
     </div>
-    {% include "search/_sort_filters.html" %}
-    <div class="col-md-12 grid-spacer">
-    {% include 'base/_resourcebase_snippet.html' %}
-    {% include 'search/_pagination.html' %}
+    <div class="row">
+      <div class="col-md-12 grid-spacer">
+        {% include 'base/_resourcebase_snippet.html' %}
+        {% include 'search/_pagination.html' %}
+      </div>
     </div>
   </div>
   {% include "_bulk_permissions_form.html" %}

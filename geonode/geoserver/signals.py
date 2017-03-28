@@ -104,9 +104,9 @@ def geoserver_post_save2(layer_id):
     if getattr(instance, "service", None) is not None:
         return instance
 
-    # Don't run this signal handler if it is a tile layer
+    # Don't run this signal handler if it is a tile layer or a remote store (Service)
     #    Currently only gpkg files containing tiles will have this type & will be served via MapProxy.
-    if hasattr(instance, 'storeType') and getattr(instance, 'storeType') == 'tileStore':
+    if hasattr(instance, 'storeType') and getattr(instance, 'storeType') in ['tileStore', 'remoteStore']:
         return instance
 
     gs_resource = None

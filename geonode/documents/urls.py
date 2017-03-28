@@ -29,7 +29,9 @@ js_info_dict = {
 }
 
 urlpatterns = patterns('geonode.documents.views',
-                       url(r'^$', TemplateView.as_view(template_name='documents/document_list.html'),
+                       url(r'^$',
+                           TemplateView.as_view(template_name='documents/document_list.html'),
+                           {'facet_type': 'documents'},
                            name='document_browse'),
                        url(r'^(?P<docid>\d+)/?$', 'document_detail', name='document_detail'),
                        url(r'^(?P<docid>\d+)/download/?$', 'document_download', name='document_download'),
