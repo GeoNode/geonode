@@ -38,7 +38,11 @@ def get_luzvimin(data):
         except:
             luzvimin = "Luzvimin_others"
     else:
-        layer_query = Layer.objects.get(typename=data['typename'])
+        luzvimin = "Luzvimin_others"
+        try:
+            layer_query = Layer.objects.get(typename=data['typename'])
+        except:
+            return luzvimin
         keyword_list = layer_query.keywords.names()
         for eachkeyword in keyword_list:
             try:
@@ -46,7 +50,6 @@ def get_luzvimin(data):
                 break
             except Exception as e:
                 print (layer_query.typename + ' - ' + str(e))
-                luzvimin = "Luzvimin_others"
     return luzvimin
 
 def add_to_count(category, typename):
