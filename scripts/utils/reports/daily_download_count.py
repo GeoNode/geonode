@@ -8,22 +8,50 @@ from geonode.layers.models import Layer
 from geonode.cephgeo.models import FTPRequest, FTPRequestToObjectIndex, DataClassification
 from geonode.people.models import Profile
 
+from osgeo import ogr
+from shapely.geometry import Polygon
+from shapely.wkb import loads
+from shapely.ops import cascaded_union
+
+global layer_count, source
+layer_count = {}
+source = ogr.Open(("PG:host={0} dbname={1} user={2} password={3}".format(settings.DATABASE_HOST,settings.DATASTORE_DB,settings.DATABASE_USER,settings.DATABASE_PASSWORD)))
+
+def get_SUC_using_gridref(abscissa, ordinate, _TILE_SIZE = 1000):
+    data = source.ExecuteSQL("select * from "+settings.PL1_SUC_MUNIS)
+    tile_ulp = "%s %s" % (abscissa, ordinate)
+    tile_dlp = "%s %s" % (abscissa, ordinate - _TILE_SIZE)
+    tile_drp = "%s %s" % (abscissa + _TILE_SIZE, ordinate - _TILE_SIZE)
+    tile_urp = "%s %s" % (abscissa + _TILE_SIZE, ordinate)
+    tilestr = "POLYGON ((%s, %s, %s, %s, %s))"% (tile_ulp, tile_dlp, tile_drp, tile_urp, tile_ulp)
+    data.SetSpatialFilter(ogr.CreateGeometryFromWkt(tilestr))
+    for feature in data:
+        return feature.GetField("SUC")
+
 def get_luzvimin(data):
-    if data['grid_ref']:
-        north = int(data['grid_ref'].split('N')[1])*1000-500
-        east = int(data['grid_ref'].split('N')[0][1:])*1000+500
-        #32651
-        luzvimin = "Luzvimin_others"
+    if data['grid_ref']:#If FTP
+        east = int(data['grid_ref'].split('N')[0][1:])*1000
+        north = int(data['grid_ref'].split('N')[1])*1000
+        SUC = get_SUC_using_gridref(east,north)
+        try:
+            query = SUCLuzViMin.objects.filter(suc=SUC)[0].luzvimin
+            luzvimin = SUC
+        except:
+            luzvimin = "Luzvimin_others"
     else:
-        layer_query = Layer.objects.get(typename=data['typename'])
+        luzvimin = "Luzvimin_others"
+        try:
+            layer_query = Layer.objects.get(typename=data['typename'])
+        except:
+            return luzvimin
         keyword_list = layer_query.keywords.names()
         for eachkeyword in keyword_list:
             try:
-                luzvimin = SUCLuzViMin.objects.filter(suc=eachkeyword)[0].luzvimin
+                query = SUCLuzViMin.objects.filter(suc=eachkeyword)[0].luzvimin
+                luzvimin = eachkeyword
                 break
             except Exception as e:
                 print (layer_query.typename + ' - ' + str(e))
-                luzvimin = "Luzvimin_others"
     return luzvimin
 
 def add_to_count(category, typename):
@@ -107,10 +135,10 @@ def main(minusdays, query_objects, attr_date, attr_actor, attr_type, attr_filena
 def save_to_dc(minusdays,count_dict):
     datetoanalyze = datetime.strptime((datetime.now()-timedelta(days=minusdays)).strftime('%d-%m-%Y'),'%d-%m-%Y')
     for category, eachdict in count_dict.iteritems():
-        if category == 'Luzon' or category == 'Visayas' or category == 'Mindanao' or category == 'Luzvimin_others':
-            chart_group = 'luzvimin'
-        elif category == 'monthly':
+        if category == 'monthly':
             chart_group = 'monthly'
+        else:
+            chart_group = 'luzvimin'
         for eachtype, eachvalue in eachdict.iteritems():
             if eachvalue:
                 model_object = DownloadCount(date=str(datetoanalyze),
@@ -121,8 +149,6 @@ def save_to_dc(minusdays,count_dict):
                 model_object.save()
                 print str(datetoanalyze) +'-'+ str(category) +'-'+ str(chart_group) +'-'+ str(eachtype) +'-'+ str(eachvalue)
 
-global layer_count
-layer_count = {}
 if __name__ == "__main__":
     minusdays = 1
     layer_count = {}
