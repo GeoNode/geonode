@@ -46,13 +46,12 @@ def add_company_organization(dn, company = None, org = None, initial_org = None)
 def test():
     test_list = ['test_dac-group','test_dac-leaders','test_dpc-lms','test_dlms_alms',
         'test_dleaders_alms','test_dpc-terra','test_dterra-aterra','test_dleaders_aterra','test_dpc-arc']
-    for r in test_list:
-        uname = search_dn(r.profile.username)
-        dn, organization = search_dn(uname)
-        pprint(add_company_organization(dn,company=r.org_type,org=r.organization,initial_org = organization))
+    for t in test_list:
+        dn, organization = search_dn(t)
+        pprint(add_company_organization(dn,company="Other",org="test",initial_org = organization))
     
 def live():
     for r in profile_request.object.exclude(profile=None):
-        uname = search_dn(r.profile.username)
+        uname = r.profile.username
         dn, organization = search_dn(uname)
         pprint(add_company_organization(dn,company=r.org_type,org=r.organization,initial_org = organization))
