@@ -3,6 +3,7 @@ import ldap.modlist
 import geonode.settings as settings
 from geonode.datarequests.models import ProfileRequest
 from pprint import pprint
+from unidecode import unidecode
 
 def search_dn(uname):
     con =ldap.initialize(settings.AUTH_LDAP_SERVER_URI)
@@ -54,4 +55,4 @@ def live():
     for r in ProfileRequest.objects.exclude(profile=None):
         uname = r.profile.username
         dn, organization = search_dn(uname)
-        pprint(add_company_organization(dn,company=r.org_type,org=r.organization,initial_org = organization))
+        pprint(add_company_organization(dn,company=unidecode(r.org_type),org=unidecode(r.organization),initial_org = organization))
