@@ -51,7 +51,7 @@ def test():
         pprint(add_company_organization(dn,company="Other",org="test",initial_org = organization))
     
 def live():
-    for r in profile_request.object.exclude(profile=None):
+    for r in profile_request.objects.exclude(profile=None):
         uname = r.profile.username
         dn, organization = search_dn(uname)
         pprint(add_company_organization(dn,company=r.org_type,org=r.organization,initial_org = organization))
