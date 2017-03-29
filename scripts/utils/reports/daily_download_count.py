@@ -135,10 +135,10 @@ def main(minusdays, query_objects, attr_date, attr_actor, attr_type, attr_filena
 def save_to_dc(minusdays,count_dict):
     datetoanalyze = datetime.strptime((datetime.now()-timedelta(days=minusdays)).strftime('%d-%m-%Y'),'%d-%m-%Y')
     for category, eachdict in count_dict.iteritems():
-        if category == 'Luzon' or category == 'Visayas' or category == 'Mindanao' or category == 'Luzvimin_others':
-            chart_group = 'luzvimin'
-        elif category == 'monthly':
+        if category == 'monthly':
             chart_group = 'monthly'
+        else:
+            chart_group = 'luzvimin'
         for eachtype, eachvalue in eachdict.iteritems():
             if eachvalue:
                 model_object = DownloadCount(date=str(datetoanalyze),
