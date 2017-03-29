@@ -25,6 +25,8 @@ PROJECT_ROOT = os.path.abspath(os.path.dirname(__file__))
 
 SITEURL = "http://localhost:8000/"
 
+ALLOWED_HOSTS = ['localhost', 'geonode.example.com']
+
 TIME_ZONE = 'America/Chicago'
 
 DATABASES = {
