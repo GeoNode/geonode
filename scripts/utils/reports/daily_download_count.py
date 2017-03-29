@@ -34,7 +34,8 @@ def get_luzvimin(data):
         north = int(data['grid_ref'].split('N')[1])*1000
         SUC = get_SUC_using_gridref(east,north)
         try:
-            luzvimin = SUCLuzViMin.objects.filter(suc=SUC)[0].luzvimin
+            query = SUCLuzViMin.objects.filter(suc=SUC)[0].luzvimin
+            luzvimin = SUC
         except:
             luzvimin = "Luzvimin_others"
     else:
@@ -46,7 +47,8 @@ def get_luzvimin(data):
         keyword_list = layer_query.keywords.names()
         for eachkeyword in keyword_list:
             try:
-                luzvimin = SUCLuzViMin.objects.filter(suc=eachkeyword)[0].luzvimin
+                query = SUCLuzViMin.objects.filter(suc=eachkeyword)[0].luzvimin
+                luzvimin = eachkeyword
                 break
             except Exception as e:
                 print (layer_query.typename + ' - ' + str(e))
