@@ -366,6 +366,10 @@ class DataRequest(BaseRequest, StatusModel):
         
     def send_suc_notification(self):
         suc = self.suc.names()[0]
+        
+        if len(self.suc.names()) > 1:
+            suc = "UPD"
+            
         suc_contacts = SUC_Contact.objects.filter(institution_abrv=suc).exclude(position="Program Leader")
         suc_pl = SUC_Contact.objects.get(institution_abrv=suc, position="Program Leader")
         organization = ""
