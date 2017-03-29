@@ -45,7 +45,7 @@ def add_company_organization(dn, company = None, org = None, initial_org = None)
 
 def test():
     test_list = ['test_dac-group','test_dac-leaders','test_dpc-lms','test_dlms_alms',
-        'test_dleaders_alms','test_dpc-terra','test_dterra-aterra','test_dleaders_aterra','test_dpc-arc'
+        'test_dleaders_alms','test_dpc-terra','test_dterra-aterra','test_dleaders_aterra','test_dpc-arc']
     for r in test_list:
         uname = search_dn(r.profile.username)
         dn, organization = search_dn(uname)
