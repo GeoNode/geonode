@@ -1,7 +1,7 @@
 import ldap
 import ldap.modlist
 import geonode.settings as settings
-from geonode.datarequests.models import profile_request 
+from geonode.datarequests.models import ProfileRequest
 from pprint import pprint
 
 def search_dn(uname):
@@ -51,7 +51,7 @@ def test():
         pprint(add_company_organization(dn,company="Other",org="test",initial_org = organization))
     
 def live():
-    for r in profile_request.objects.exclude(profile=None):
+    for r in ProfileRequest.objects.exclude(profile=None):
         uname = r.profile.username
         dn, organization = search_dn(uname)
         pprint(add_company_organization(dn,company=r.org_type,org=r.organization,initial_org = organization))
