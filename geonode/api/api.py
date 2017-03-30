@@ -443,7 +443,7 @@ class DataRequestResource(ModelResource):
     status_label = fields.CharField()
     is_rejected = fields.BooleanField(default=False)
     rejection_reason = fields.CharField()
-    created = fields.CharField()
+    date_submitted = fields.CharField()
     shapefile_thumbnail_url = fields.CharField(null=True)
     username = fields.CharField()
     profile_request_id = fields.CharField()
