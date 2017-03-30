@@ -133,7 +133,7 @@ DATA_REJECTION_HTML= """
     <p>LiPAD Team</p>
     """
 
-DATA_SUC_FORWARD_NOTIFICATION_TEXT="""
+DATA_SUC_REQUEST_NOTIFICATION_TEXT="""
     Greetings, {} {}!
     
     We are informing you that a data requester has requested data which is too big for an FTP transfer to handle.
@@ -153,7 +153,7 @@ DATA_SUC_FORWARD_NOTIFICATION_TEXT="""
     LiPAD Team
 """
 
-DATA_SUC_FORWARD_NOTIFICATION_HTML="""
+DATA_SUC_REQUEST_NOTIFICATION_HTML="""
     <p>Greetings, {} {}!</p>
     <p>We are informing you that a data requester has requested data which is too big for an FTP transfer to handle.
     We are asking your permission to forward the data to your team and let the requester retrieve the data from you. </p>
@@ -171,10 +171,32 @@ DATA_SUC_FORWARD_NOTIFICATION_HTML="""
     <p>LiPAD Team</p>
 """
 
+DATA_SUC_JURISDICTION_TEXT ="""
+    Greetings, {} {}!
+    
+    Here is the link to the user's uploaded area of interest:
+    
+    We have already notified the user about forwarding the request to you. Thank you very much for your assistance.
+    
+    Regards,
+    LiPAD Team
+"""
+
+DATA_SUC_JURISDICTION_HTML ="""
+    <p>Greetings, {} {}!</p>
+    <br />
+    <p>Here is the link to the user's uploaded area of interest:</p>
+    <br />
+    <p>We have already notified the user about forwarding the request to you. Thank you very much for your assistance.</p>
+    <br />
+    <p>Regards,</p>
+    <p>LiPAD Team</p>
+"""
+
 DATA_USER_FORWARD_NOTIFICATION_TEXT="""
     Greetings, {} {}!
     
-    Your requested data has now been forwarded to the {} Phil-LiDAR 1 office. Please send your follow-up queries to their office instead.
+    Your request has now been forwarded to the {} Phil-LiDAR 1 office. Please send your follow-up queries to their office instead.
     
     Regards,
     LiPAD Team
@@ -183,7 +205,7 @@ DATA_USER_FORWARD_NOTIFICATION_TEXT="""
 DATA_USER_FORWARD_NOTIFICATION_HTML="""
     <p>Greetings, {} {}!</p>
     <br />
-    <p>Your requested data has now been forwarded to the {} Phil-LiDAR 1 office. Please send your follow-up queries to their office instead.</p>
+    <p>Your request data has now been forwarded to the {} Phil-LiDAR 1 office. Please send your follow-up queries to their office instead.</p>
     <br />
     <p>Regards,</p>
     <p>LiPAD Team</p>
