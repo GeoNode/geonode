@@ -188,6 +188,7 @@
             </form></
         </li>
         {% endif %}
+        {% if data_request.suc_notified
       {% else %}
         {%  if data_request.status == 'pending'%}
         <li class="list-group-item">
