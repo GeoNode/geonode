@@ -426,19 +426,80 @@ class DataRequest(BaseRequest, StatusModel):
         )
         
         msg.attach_alternative(html_content, "text/html")
-        msg.send()time
+        msg.send()
         self.suc_notified =True
         self.suc_notified_date = timezone.now()
         self.save()
             
     
-    def forward_jurisdiction(self, suc=None):
+    def send_jurisdiction(self, suc=None):
         if not suc:
             if len(self.suc.names()) == 1:
                 suc = self.suc.names()[0]
+            else:
+                suc = "UPD"
+                
+        suc_contacts = SUC_Contact.objects.filter(institution_abrv=suc).exclude(position="Program Leader")
+        suc_pl = SUC_Contact.objects.get(institution_abrv=suc, position="Program Leader")
+        
+        text_content = email_utils.DATA_SUC_JURISDICTION_TEXT.format(
+            suc_pl.salutation,
+            suc_pl.name,
+            self.jurisdiction_shapefile.get_absolute_url(),
+        )
         
         
-            
-            
+        html_content = email_utils.DATA_SUC_JURISDICTION_HTML.format(
+            suc_pl.salutation,
+            suc_pl.name,
+            self.jurisdiction_shapefile.get_absolute_url(),
+            self.jurisdiction_shapefile.get_absolute_url(),
+        )
+        
+        cc = suc_contacts.values_list('email_address',flat = True)
+        
+        msg = EmailMultiAlternatives(
+            email_subject,
+            text_content,
+            settings.DEFAULT_FROM_EMAIL,
+            [suc_pl.email_address, ],
+            cc = cc
+        )
+        
+        msg.attach_alternative(html_content, "text/html")
+        msg.send()
+        
+    def notify_user_preforward(self, suc=None):
+        if not suc:
+            if len(self.suc.names()) == 1:
+                suc = self.suc.names()[0]
+            else:
+                suc = "UPD"
+        
+        text_content = email_utils.DATA_USER_PRE_FORWARD_NOTIFICATION_HTML.format(
+            self,
+            suc_pl.name,
+        )
+        
+        
+        html_content = email_utils.DATA_USER_PRE_FORWARD_NOTIFICATION_HTML.format(
+            suc_pl.salutation,
+            suc_pl.name,
+            self.jurisdiction_shapefile.get_absolute_url(),
+            self.jurisdiction_shapefile.get_absolute_url(),
+        )
+        
+        msg = EmailMultiAlternatives(
+            email_subject,
+            text_content,
+            settings.DEFAULT_FROM_EMAIL,
+            [suc_pl.email_address, ],
+        )
+        
+        msg.attach_alternative(html_content, "text/html")
+        msg.send()
+
+###utility functions
+
         
         
