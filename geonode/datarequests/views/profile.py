@@ -85,6 +85,9 @@ def profile_request_approve(request, pk):
         profile_request = get_object_or_404(ProfileRequest, pk=pk)
 
         if not profile_request.has_verified_email:
+            if profile_request.status == 'pending':
+                profile_request.status = 'unconfirmed'
+                profile_request.save()
             messages.info(request,'This request does not have a verified email')
             return HttpResponseRedirect(profile_request.get_absolute_url())
         
