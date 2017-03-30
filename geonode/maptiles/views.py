@@ -47,6 +47,7 @@ _PERMISSION_GENERIC = _('You do not have permissions for this layer.')
 
 logger = logging.getLogger("geonode")
 
+
 def _resolve_layer(request, typename, permission='base.view_resourcebase',
                    msg=_PERMISSION_GENERIC, **kwargs):
     """
@@ -73,14 +74,17 @@ def _resolve_layer(request, typename, permission='base.view_resourcebase',
                               **kwargs)
 
 #
-#This function generates the layer configuration details required for the map view.
-#Returns the template with the configuration details as context
+# This function generates the layer configuration details required for the map view.
+# Returns the template with the configuration details as context
 #
+
+
 @login_required
-def tiled_view(request, overlay=settings.TILED_SHAPEFILE, template="maptiles/maptiles_map.html",test_mode=False, jurisdiction=None):
+def tiled_view(request, overlay=settings.TILED_SHAPEFILE, template="maptiles/maptiles_map.html", test_mode=False, jurisdiction=None):
 
     context_dict = {}
-    context_dict["grid"] = get_layer_config(request, overlay, "base.view_resourcebase", _PERMISSION_VIEW )
+    context_dict["grid"] = get_layer_config(
+        request, overlay, "base.view_resourcebase", _PERMISSION_VIEW)
     legend_link = settings.SITEURL + \
         'geoserver/wms?REQUEST=GetLegendGraphic&VERSION=1.0.0&FORMAT=image/png&LAYER=geonode:philgrid&STYLE='
     try:
@@ -88,63 +92,77 @@ def tiled_view(request, overlay=settings.TILED_SHAPEFILE, template="maptiles/map
         context_dict["ortho_lgd"] = legend_link + settings.ORTHO_SLD
         context_dict["laz_lgd"] = legend_link + settings.LAZ_SLD
         context_dict["dsm_lgd"] = legend_link + settings.DSM_SLD
-        context_dict["dtm_sld"] =  settings.DTM_SLD
+        context_dict["dtm_sld"] = settings.DTM_SLD
         context_dict["ortho_sld"] = settings.ORTHO_SLD
         context_dict["laz_sld"] = settings.LAZ_SLD
         context_dict["dsm_sld"] = settings.DSM_SLD
-        context_dict["philgrid_sld"] = settings.philgrid_sld
+        context_dict["philgrid_sld"] = settings.PHILGRID_SLD
+        context_dict["clear_sld"] = settings.CLEAR_SLD
     except Exception:
-        context_dict["dtm"] = None
-        context_dict["ortho"] = None
-        context_dict["laz"] = None
-        context_dict["dsm"] = None
+        context_dict["dtm"] = ''
+        context_dict["ortho"] = ''
+        context_dict["laz"] = ''
+        context_dict["dsm"] = ''
+        context_dict["philgrid_sld"] = ''
     jurisdiction_object = None
 
     if jurisdiction is None:
         try:
-            jurisdiction_object = UserJurisdiction.objects.get(user=request.user)
+            jurisdiction_object = UserJurisdiction.objects.get(
+                user=request.user)
             jurisdiction_shapefile = jurisdiction_object.jurisdiction_shapefile
-            context_dict["jurisdiction"] = get_layer_config(request,jurisdiction_object.jurisdiction_shapefile.typename, "base.view_resourcebase", _PERMISSION_VIEW)
-            context_dict["jurisdiction_name"] = jurisdiction_object.jurisdiction_shapefile.typename
+            context_dict["jurisdiction"] = get_layer_config(
+                request, jurisdiction_object.jurisdiction_shapefile.typename, "base.view_resourcebase", _PERMISSION_VIEW)
+            context_dict[
+                "jurisdiction_name"] = jurisdiction_object.jurisdiction_shapefile.typename
             context_dict["jurisdiction_yes"] = True
         except Exception as e:
             context_dict["jurisdiction_yes"] = False
             print e
 
     else:
-        context_dict["jurisdiction"] = get_layer_config(request,jurisdiction, "base.view_resourcebase", _PERMISSION_VIEW)
+        context_dict["jurisdiction"] = get_layer_config(
+            request, jurisdiction, "base.view_resourcebase", _PERMISSION_VIEW)
 
-    context_dict["feature_municipality"]  = settings.MUNICIPALITY_SHAPEFILE.split(":")[1]
+    context_dict["feature_municipality"] = settings.MUNICIPALITY_SHAPEFILE.split(":")[
+        1]
     context_dict["feature_tiled"] = overlay.split(":")[1]
-    context_dict["test_mode"]=test_mode
-    context_dict["data_classes"]= DataClassification.labels.values()
+    context_dict["test_mode"] = test_mode
+    context_dict["data_classes"] = DataClassification.labels.values()
 
     #context_dict["projections"]= SRS.labels.values()
 
     return render_to_response(template, RequestContext(request, context_dict))
 
-def tiled_view2(request, overlay=settings.TILED_SHAPEFILE, template="maptiles/maptiles_map2.html",test_mode=False, jurisdiction=None):
+
+def tiled_view2(request, overlay=settings.TILED_SHAPEFILE, template="maptiles/maptiles_map2.html", test_mode=False, jurisdiction=None):
 
     context_dict = {}
-    context_dict["grid"] = get_layer_config(request, overlay, "base.view_resourcebase", _PERMISSION_VIEW )
+    context_dict["grid"] = get_layer_config(
+        request, overlay, "base.view_resourcebase", _PERMISSION_VIEW)
 
     if jurisdiction is None:
         try:
-            jurisdiction_object = UserJurisdiction.objects.get(user=request.user)
+            jurisdiction_object = UserJurisdiction.objects.get(
+                user=request.user)
             jurisdiction_shapefile = jurisdiction_object.jurisdiction_shapefile
-            context_dict["jurisdiction"] = get_layer_config(request,jurisdiction_object.jurisdiction_shapefile.typename, "base.view_resourcebase", _PERMISSION_VIEW)
-            context_dict["jurisdiction_name"] = jurisdiction_object.jurisdiction_shapefile.typename
+            context_dict["jurisdiction"] = get_layer_config(
+                request, jurisdiction_object.jurisdiction_shapefile.typename, "base.view_resourcebase", _PERMISSION_VIEW)
+            context_dict[
+                "jurisdiction_name"] = jurisdiction_object.jurisdiction_shapefile.typename
             context_dict["jurisdiction_yes"] = True
         except Exception as e:
             context_dict["jurisdiction_yes"] = False
             print e
     else:
-        context_dict["jurisdiction"] = get_layer_config(request,jurisdiction, "base.view_resourcebase", _PERMISSION_VIEW)
+        context_dict["jurisdiction"] = get_layer_config(
+            request, jurisdiction, "base.view_resourcebase", _PERMISSION_VIEW)
 
-    context_dict["feature_municipality"]  = settings.MUNICIPALITY_SHAPEFILE.split(":")[1]
+    context_dict["feature_municipality"] = settings.MUNICIPALITY_SHAPEFILE.split(":")[
+        1]
     context_dict["feature_tiled"] = overlay.split(":")[1]
-    context_dict["test_mode"]=test_mode
-    context_dict["data_classes"]= DataClassification.labels.values()
+    context_dict["test_mode"] = test_mode
+    context_dict["data_classes"] = DataClassification.labels.values()
     #context_dict["projections"]= SRS.labels.values()
 
     return render_to_response(template, RequestContext(request, context_dict))
@@ -152,10 +170,13 @@ def tiled_view2(request, overlay=settings.TILED_SHAPEFILE, template="maptiles/ma
 #
 # Function for processing the georefs submitted by the user
 #
+
+
 def process_georefs(request):
     if request.method == "POST":
         try:
-            #Get georef list filtered with georefs computed upon approval of registration
+            # Get georef list filtered with georefs computed upon approval of
+            # registration
             georef_area = request.POST['georef_area']
             # georef_list = filter(None, georef_area.split(","))
             # #pprint("Initial georef_list:" + str(georef_list))
@@ -170,7 +191,8 @@ def process_georefs(request):
             jurisdiction_georefs = []
 
             try:
-                jurisdiction_georefs=str(UserTiles.objects.get(user=request.user).gridref_list)
+                jurisdiction_georefs = str(
+                    UserTiles.objects.get(user=request.user).gridref_list)
             except ObjectDoesNotExist as e:
                 pprint("No jurisdiction tiles for this user")
                 raise PermissionDenied
@@ -181,62 +203,65 @@ def process_georefs(request):
 
             pprint(georef_list)
 
-            #Get the requested dataclasses
+            # Get the requested dataclasses
             data_classes = list()
             for data_class in DataClassification.labels.values():
                 if request.POST.get(slugify(data_class.decode('cp1252'))):
                     data_classes.append(data_class)
 
-            #Construct filter for excluding unselected data classes
+            # Construct filter for excluding unselected data classes
             dataclass_filter = DataClassification.labels.keys()
             for dataclass, label in DataClassification.labels.iteritems():
                 if label in data_classes:
                     dataclass_filter.remove(dataclass)
 
-            #Initialize variables for counting empty and duplicates
+            # Initialize variables for counting empty and duplicates
             count = 0
             empty_georefs = 0
             duplicates = []
 
             for georef in georef_list:      # Process each georef in list
 
-                #Build filter query to exclude unselected data classes
+                # Build filter query to exclude unselected data classes
                 filter_query = Q(name__startswith=georef)
                 for filtered_class in dataclass_filter:
                     filter_query = filter_query & ~Q(data_class=filtered_class)
 
-                #Execute query
+                # Execute query
                 objects = CephDataObject.objects.filter(filter_query)
-                pprint("objects found for georef:"+ georef)
+                pprint("objects found for georef:" + georef)
 
-                #Count duplicates and empty references
+                # Count duplicates and empty references
                 count += len(objects)
                 if len(objects) > 0:
                     for ceph_obj in objects:    # Add each Ceph object to cart
                         try:
                             add_to_cart_unique(request, ceph_obj.id)
-                            pprint("object "+ceph_obj.name +" added to cart")
+                            pprint("object " + ceph_obj.name + " added to cart")
                         except DuplicateCartItemException:  # List each duplicate object
                             duplicates.append(ceph_obj.name)
                 else:
                     empty_georefs += 1
 
-            #if len(duplicates) > 0:         # Warn on duplicates
+            # if len(duplicates) > 0:         # Warn on duplicates
             #    messages.warning(request, "WARNING: The following items are already in the cart and have not been added: \n{0}".format(str(duplicates)))
 
             if empty_georefs > 0:
-                messages.error(request, "ERROR: [{0}] out of selected [{1}] georef tiles have no data! A total of [{2}] objects have been added to cart. \n".format(empty_georefs,len(georef_list),(count - len(duplicates))))
-            elif len(duplicates)>0: # Inform user of the number of processed georefs and objects
-                messages.info(request, "Processed [{0}] georefs tiles. [{2}] duplicate objects found in cart have been skipped. A total of [{1}] objects have been added to cart. ".format(len(georef_list),(count - len(duplicates)),len(duplicates)))
-            else: # Inform user of the number of processed georefs and objects
-                messages.info(request, "Processed [{0}] georefs tiles. A total of [{1}] objects have been added to cart.".format(len(georef_list),(count - len(duplicates))))
+                messages.error(request, "ERROR: [{0}] out of selected [{1}] georef tiles have no data! A total of [{2}] objects have been added to cart. \n".format(
+                    empty_georefs, len(georef_list), (count - len(duplicates))))
+            elif len(duplicates) > 0:  # Inform user of the number of processed georefs and objects
+                messages.info(request, "Processed [{0}] georefs tiles. [{2}] duplicate objects found in cart have been skipped. A total of [{1}] objects have been added to cart. ".format(
+                    len(georef_list), (count - len(duplicates)), len(duplicates)))
+            else:  # Inform user of the number of processed georefs and objects
+                messages.info(request, "Processed [{0}] georefs tiles. A total of [{1}] objects have been added to cart.".format(
+                    len(georef_list), (count - len(duplicates))))
 
             return redirect('geonode.cephgeo.views.get_cart')
 
         except ValidationError:             # Redirect and inform if an invalid georef is encountered
             messages.error(request, "Invalid georefs list")
             return HttpResponseRedirect('/maptiles/')
-            #return redirect('geonode.maptiles.views.tiled_view')
+            # return redirect('geonode.maptiles.views.tiled_view')
 
     else:   # Must process HTTP POST method from form
         raise Exception("HTTP method must be POST!")
@@ -244,6 +269,8 @@ def process_georefs(request):
 #
 # Validates if the total file size requested is less than the limit specified in local settings
 #
+
+
 @login_required
 def georefs_validation(request):
     """
@@ -262,14 +289,15 @@ def georefs_validation(request):
         georefs_list = filter(None, georefs.split(","))
         cart_total_size = get_cart_datasize(request)
 
-        #Retrieve FTPRequests from the last 24 hours
+        # Retrieve FTPRequests from the last 24 hours
         #yesterday = datetime.now() -  timedelta(days=1)
         #requests_last24h = FTPRequest.objects.filter(date_time__gt=yesterday, user=request.user)
 
-        #Retrieve FTPRequests since midnight
+        # Retrieve FTPRequests since midnight
         today_min = datetime.combine(date.today(), time.min)
         today_max = datetime.combine(date.today(), time.max)
-        requests_today = FTPRequest.objects.filter(user=request.user, date_time__range=(today_min, today_max))
+        requests_today = FTPRequest.objects.filter(
+            user=request.user, date_time__range=(today_min, today_max))
         #requests_today = FTPRequest.objects.filter(date_time__gt=today_min, user=request.user)
         print "PREVIOUS REQUESTS:  "
         pprint(requests_today)
@@ -280,39 +308,43 @@ def georefs_validation(request):
                 total_size += o.size_in_bytes
 
         request_size_last24h = 0
-        pprint('Total size:'+str(total_size))
+        pprint('Total size:' + str(total_size))
 
-        #for r in requests_last24h:
+        # for r in requests_last24h:
         for r in requests_today:
             request_size_last24h += r.size_in_bytes
 
         if total_size + cart_total_size + request_size_last24h > settings.SELECTION_LIMIT:
             return HttpResponse(
-               content=json.dumps({ "response": False, "total_size": total_size, "cart_size":cart_total_size, "recent_requests_size": request_size_last24h }),
+                content=json.dumps({"response": False, "total_size": total_size,
+                                    "cart_size": cart_total_size, "recent_requests_size": request_size_last24h}),
                 status=200,
-                #mimetype='text/plain'
+                # mimetype='text/plain'
                 content_type="application/json"
             )
         else:
             return HttpResponse(
-                content=json.dumps({ "response": True, "total_size": total_size, "cart_size": cart_total_size }),
+                content=json.dumps(
+                    {"response": True, "total_size": total_size, "cart_size": cart_total_size}),
                 status=200,
-                #mimetype='text/plain'
+                # mimetype='text/plain'
                 content_type="application/json"
             )
 
 #
 # Function for looking up the municipalities within a province
 #
+
+
 @login_required
 def province_lookup(request, province=""):
-    if province=="":
+    if province == "":
         provinces = []
         for p in Province.objects.all():
             p.append(p.province_name)
 
         return HttpResponse(
-            content=json.dumps({"provinces":provinces}),
+            content=json.dumps({"provinces": provinces}),
             status=200,
             content_type="application/json"
         )
@@ -323,13 +355,16 @@ def province_lookup(request, province=""):
             m.append(m.municipality_name)
 
         return HTTPResponse(
-            content=json.dumps({"province":province, "municipalities": municipalities }),
+            content=json.dumps(
+                {"province": province, "municipalities": municipalities}),
             status=200,
             content_type="application/json",
         )
 #
 # Function for showing the data size of a georef
 #
+
+
 @login_required
 def georefs_datasize(request):
     if request.method != 'POST':
@@ -346,13 +381,15 @@ def georefs_datasize(request):
 
         for eachgeoref_clicked in georefs_clicked_list:
             # pprint(eachgeoref_clicked)
-            clicked_objects = CephDataObject.objects.filter(name__startswith=eachgeoref_clicked)
+            clicked_objects = CephDataObject.objects.filter(
+                name__startswith=eachgeoref_clicked)
             for o in clicked_objects:
                 total_data_size_clicked += o.size_in_bytes
                 # pprint(o.size_in_bytes)
             # pprint(total_data_size_clicked)
         return HttpResponse(
-            content=json.dumps({ "total_data_size_clicked": total_data_size_clicked }),
+            content=json.dumps(
+                {"total_data_size_clicked": total_data_size_clicked}),
             status=200,
             content_type="application/json"
         )

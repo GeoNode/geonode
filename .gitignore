@@ -3,7 +3,7 @@
 .pydevproject
 .settings
 
-# 
+#
 build artifacts
 *.pyc
 *.egg-info
@@ -126,6 +126,7 @@ development.db
 master
 slave
 
+scripts/utils/osm
 
 #CSV files
 *.csv

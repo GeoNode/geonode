@@ -371,18 +371,45 @@ class DataRequest(BaseRequest, StatusModel):
         
     def send_suc_notification(self):
         suc = self.suc.names()[0]
+        
+        if len(self.suc.names()) > 1:
+            suc = "UPD"
+            
         suc_contacts = SUC_Contact.objects.filter(institution_abrv=suc).exclude(position="Program Leader")
         suc_pl = SUC_Contact.objects.get(institution_abrv=suc, position="Program Leader")
+        organization = ""
+        if self.get_organization():
+            organization = unidecode(self.get_organization())
         
+        data_classes = ""
+        for n in self.data_type.names():
+            data_classes += str(n)
+        
+        data_classes += str(self.data_class_other)
+            
         
         text_content = email_utils.DATA_SUC_FORWARD_NOTIFICATION_TEXT.format(
             suc_pl.salutation,
-            suc_pl.name
+            suc_pl.name,
+            unidecode(self.get_first_name()),
+            unidecode(self.get_last_name()),
+            organization,
+            self.get_email(),
+            self.project_summary,
+            data_classes,
+            self.purpose,
         )
         
         html_content = email_utils.DATA_SUC_FORWARD_NOTIFICATION_HTML.format(
             suc_pl.salutation,
-            suc_pl.name
+            suc_pl.name,
+            unidecode(self.get_first_name()),
+            unidecode(self.get_last_name()),
+            organization,
+            self.get_email(),
+            self.project_summary,
+            data_classes,
+            self.purpose,
         )
         
         cc = suc_contacts.values_list('email_address',flat = True)
