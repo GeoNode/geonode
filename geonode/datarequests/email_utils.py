@@ -134,13 +134,13 @@ DATA_REJECTION_HTML= """
     """
 
 DATA_SUC_FORWARD_NOTIFICATION_TEXT="""
-    Greetings, {}!
+    Greetings, {} {}!
     
     We are informing you that a data requester has requested data which is too big for an FTP transfer to handle.
     We are asking your permission to forward the data to your team and let the requester retrieve the data from you. 
     
     Listed below are the details of the data requested:
-    Name of requester: {}
+    Name of requester: {} {}
     Organization: {}
     Email Address: {}
     Project Summary: {}
@@ -159,7 +159,7 @@ DATA_SUC_FORWARD_NOTIFICATION_HTML="""
     We are asking your permission to forward the data to your team and let the requester retrieve the data from you. </p>
     <br/>
     <p>Listed below are the details of the data requested:<br />
-    Name of requester: {}<br />
+    Name of requester: {} {}<br />
     Organization: {}<br />
     Email Address: {}<br />
     Project Summary: {}<br />
@@ -211,4 +211,3 @@ DATA_USER_PRE_FORWARD_NOTIFICATION_HTML="""
     
     <p>Regards,</p>
     <p>LiPAD Team</p>
-"""

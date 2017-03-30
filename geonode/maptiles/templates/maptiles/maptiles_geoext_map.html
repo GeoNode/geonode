@@ -807,6 +807,11 @@ function changeSLD(){
       styles: '{{ philgrid_sld }}',
     });
   }
+  else if ($("input:checked").val()=="clear"){
+    tile_layer.mergeNewParams({
+      styles: '{{ clear_sld }}',
+    });
+  }
 
 }
 

@@ -40,3 +40,4 @@ https://www.openstreetmap.org/copyright'''
     print 'OK'
 
 # osm script for abstract and permission
+#
