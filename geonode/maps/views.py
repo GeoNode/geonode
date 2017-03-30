@@ -28,6 +28,7 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.core.urlresolvers import reverse
 from django.core.serializers.json import DjangoJSONEncoder
 from django.http import HttpResponse, HttpResponseRedirect, HttpResponseNotAllowed, HttpResponseServerError
+from django.http import Http404
 from django.shortcuts import render_to_response, get_object_or_404
 from django.conf import settings
 from django.template import RequestContext
@@ -573,6 +574,9 @@ def new_map_config(request):
                     layer = _resolve_layer(request, layer_name)
                 except ObjectDoesNotExist:
                     # bad layer, skip
+                    continue
+                except Http404:
+                    # can't find the layer, skip it.
                     continue
 
                 if not request.user.has_perm(
