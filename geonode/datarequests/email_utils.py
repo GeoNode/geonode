@@ -174,7 +174,7 @@ DATA_SUC_REQUEST_NOTIFICATION_HTML="""
 DATA_SUC_JURISDICTION_TEXT ="""
     Greetings, {} {}!
     
-    Here is the link to the user's uploaded area of interest:
+    Here is the link to the user's uploaded area of interest: {}
     
     We have already notified the user about forwarding the request to you. Thank you very much for your assistance.
     
@@ -185,7 +185,7 @@ DATA_SUC_JURISDICTION_TEXT ="""
 DATA_SUC_JURISDICTION_HTML ="""
     <p>Greetings, {} {}!</p>
     <br />
-    <p>Here is the link to the user's uploaded area of interest:</p>
+    <p>Here is the link to the user's uploaded area of interest: <a href={} >{}</a></p>
     <br />
     <p>We have already notified the user about forwarding the request to you. Thank you very much for your assistance.</p>
     <br />
@@ -216,7 +216,9 @@ DATA_USER_PRE_FORWARD_NOTIFICATION_TEXT="""
     
     We sent this email to inform you that the estimated size of your data (in bytes) exceeds 10GB (gigabytes) and it maybe more convenient for you to visit the office to copy the files. 
     As such, we would like to know which option you prefer, to copy the files in the UP Diliman office of Phil-LiDAR 1, or to visit the partner SUC which was assigned over your area of interest.
-    The assigned SUC for your area of interest is {}.
+    The assigned SUC for your area of interest is {} ({}).
+    
+    We hope to hear your response at the soonest possible time. Thank you!
     
     Regards,
     LiPAD Team
