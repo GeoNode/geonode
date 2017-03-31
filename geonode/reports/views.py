@@ -55,7 +55,7 @@ def report_distribution_status(request, template='reports/distribution_status.ht
             monthly_count[eachinlist.date.strftime('%Y%m')][eachinlist.download_type] = 0
         monthly_count[eachinlist.date.strftime('%Y%m')][eachinlist.download_type] += eachinlist.count
 
-    luzvimin_count = OrderedDict([('Luzon',OrderedDict()),('Visayas',OrderedDict()),('Mindanao',OrderedDict()),('Others',OrderedDict())])
+    luzvimin_count = {'Luzon':{},'Visayas':{},'Mindanao':{},'Others':{}}
     luzvimin_list = DownloadCount.objects.filter(chart_group='luzvimin').order_by('category','date')
     for eachinlist in luzvimin_list:
         try:
@@ -63,10 +63,10 @@ def report_distribution_status(request, template='reports/distribution_status.ht
         except:
             luzvimin = 'Others'
         if eachinlist.category not in luzvimin_count[luzvimin]:
-            luzvimin_count[luzvimin][eachinlist.category] = OrderedDict()
-        if eachinlist.date.strftime('%b%Y') not in luzvimin_count[luzvimin][eachinlist.category]:
-            luzvimin_count[luzvimin][eachinlist.category][eachinlist.date.strftime('%b%Y')] = 0
-        luzvimin_count[luzvimin][eachinlist.category][eachinlist.date.strftime('%b%Y')] += eachinlist.count
+            luzvimin_count[luzvimin][eachinlist.category] = {}
+        if eachinlist.date.strftime('%Y%m') not in luzvimin_count[luzvimin][eachinlist.category]:
+            luzvimin_count[luzvimin][eachinlist.category][eachinlist.date.strftime('%Y%m')] = 0
+        luzvimin_count[luzvimin][eachinlist.category][eachinlist.date.strftime('%Y%m')] += eachinlist.count
 
     urls_to_visit = ['https://lipad-fmc.dream.upd.edu.ph/']
     for each_url in urls_to_visit:
@@ -83,20 +83,20 @@ def report_distribution_status(request, template='reports/distribution_status.ht
                         monthly_count[date_of_entry][eachentry[u'download_type']] = 0
                     monthly_count[date_of_entry][eachentry[u'download_type']] += eachentry[u'count']
                 elif eachentry[u'chart_group'] == 'luzvimin':
+                    try:
+                        luzvimin = SUCLuzViMin.objects.filter(suc=eachentry[u'category'])[0].luzvimin
+                    except:
+                        luzvimin = 'Others'
                     if eachentry[u'category'] not in luzvimin_count:
-                        luzvimin_count[eachentry[u'category']] = OrderedDict()
+                        luzvimin_count[luzvimin][eachentry[u'category']] = {}
                     if date_of_entry not in luzvimin_count[eachentry[u'category']]:
-                        luzvimin_count[eachentry[u'category']][date_of_entry] = 0
-                    luzvimin_count[eachentry[u'category']][date_of_entry] += eachentry[u'count']
+                        luzvimin_count[luzvimin][eachentry[u'category']][date_of_entry] = 0
+                    luzvimin_count[luzvimin][eachentry[u'category']][date_of_entry] += eachentry[u'count']
         except HTTPError:
             continue
 
     #sorted
     sorted_mc = OrderedDict(sorted(monthly_count.iteritems(), key=lambda x: x[0]))
-    sorted_luz = OrderedDict(sorted(luzvimin_count['Luzon'].iteritems(), key=lambda x: x[0]))
-    sorted_vi = OrderedDict(sorted(luzvimin_count['Visayas'].iteritems(), key=lambda x: x[0]))
-    sorted_min = OrderedDict(sorted(luzvimin_count['Mindanao'].iteritems(), key=lambda x: x[0]))
-    sorted_others = OrderedDict(sorted(luzvimin_count['Others'].iteritems(), key=lambda x: x[0]))
     #cumulative
     counter_dict = Counter()
     for each in sorted_mc.iteritems():
@@ -137,16 +137,24 @@ def report_distribution_status(request, template='reports/distribution_status.ht
     for each in sorted_md.iteritems():
         counter_dict.update(each[1])
         sorted_md[each[0]] = dict(counter_dict)
+    sorted_luzvimin = OrderedDict([('Luzon',OrderedDict()),('Visayas',OrderedDict()),('Mindanao',OrderedDict()),('Others',OrderedDict())])
+    for chart_group, sucdatevalue in luzvimin_count.iteritems():
+        for suc in sorted(sucdatevalue):
+            sorted_luzvimin[chart_group][suc]=OrderedDict()
+            cumulative_value = 0
+            for date in sorted(sucdatevalue[suc]):
+                cumulative_value += sucdatevalue[suc][date]
+                sorted_luzvimin[chart_group][suc][datetime.strptime(date,'%Y%m').strftime('%b%Y')] = cumulative_value
+
     #rename
     renamed_md = OrderedDict([(datetime.strptime(eachone[0],'%Y%m').strftime('%b%Y'),eachone[1]) for eachone in sorted_md.iteritems()])
     # converts num to OrganizationType Choices
     # renamed_org = OrderedDict([(OrganizationType.get(eachone[0]),eachone[1]) for eachone in sorted_org.iteritems()])
-    pprint(luzvimin_count)
     reversed_md = OrderedDict(reversed(list(renamed_md.items())))
     reversed_org = OrderedDict(reversed(list(sorted_org.items())))
     context_dict = {
         "monthly_count": reversed_mc,
-        "luzvimin_count": luzvimin_count,
+        "luzvimin_count": sorted_luzvimin,
         "total_layers": reversed_mc[reversed_mc.keys()[0]],
         "sum_layers": sum(reversed_mc[reversed_mc.keys()[0]].values()),
         "monthly_datarequest": reversed_md,
