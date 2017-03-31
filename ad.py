@@ -19,14 +19,19 @@ def search_dn(uname):
                 y = fields['o']
             return x,y
 
-def add_company_organization(dn, company = None, org = None, initial_org = None):
+def add_company_organization(dn, company = None, org = None, initial_company=None, initial_org = None):
     mod_attrs = []
     if not company and not org:
         raise Exception("Are you fucking kidding me?")
     if company:
-        mod_attrs.append(
-            (ldap.MOD_ADD, 'company', company)
-        )
+        if initial_company:
+            mod_attrs.append(
+                (ldap.MOD_REPLACE,'company',company)
+            )
+        else:
+            mod_attrs.append(
+                (ldap.MOD_ADD, 'company', company)
+            )
     if org:
         if not initial_org or len(initial_org) < 1:
             mod_attrs.append(

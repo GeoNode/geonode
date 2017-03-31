@@ -352,6 +352,24 @@ def data_request_notify_suc(request,pk):
         return HttpResponseRedirect(dr.get_absolute_url())
     else:
         return HttpResponseRedirect('/forbidden/')
+        
+def data_request_notify_requester(request,pk):
+    if request.user.is_superuser and request.method=='POST':
+        dr = get_object_or_404(DataRequest, pk=pk)
+        dr.notify_user_preforward()
+        messages.info(request, "Email sent")
+        return HttpResponseRedirect(dr.get_absolute_url())
+    else:
+        return HttpResponseRedirect('/forbidden/')
+        
+def data_request_forward_request(request,pk):
+    if request.user.is_superuser and request.method=='POST':
+        dr = get_object_or_404(DataRequest, pk=pk)
+        dr.send_jurisdiction()
+        messages.info(request, "Shapefile link sent")
+        return HttpResponseRedirect(dr.get_absolute_url())
+    else:
+        return HttpResponseRedirect('/forbidden/')
             
 
 def data_request_reverse_geocode_all(request):
