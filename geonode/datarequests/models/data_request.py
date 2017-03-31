@@ -131,9 +131,9 @@ class DataRequest(BaseRequest, StatusModel):
         through=SUCTaggedRequest, related_name="suc_request_tag")
         
     suc_notified = models.BooleanField(null=False,blank=False,default=False)
-    suc_notified_date = models.BooleanField(null=True,blank=True)
+    suc_notified_date = models.DateTimeField(null=True,blank=True)
     forwarded = models.BooleanField(null=False,blank=False,default=False)
-    forwarded_date =  models.BooleanField(null=True,blank=True)
+    forwarded_date =  models.DateTimeField(null=True,blank=True)
 
     class Meta:
         app_label = "datarequests"
