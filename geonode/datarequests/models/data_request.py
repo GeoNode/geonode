@@ -458,6 +458,8 @@ class DataRequest(BaseRequest, StatusModel):
         
         cc = suc_contacts.values_list('email_address',flat = True)
         
+        email_subject = _('[LiPAD] Data Request Forwarding')
+        
         msg = EmailMultiAlternatives(
             email_subject,
             text_content,
@@ -465,6 +467,13 @@ class DataRequest(BaseRequest, StatusModel):
             [suc_pl.email_address, ],
             cc = cc
         )
+        
+        if not suc == "UPD":
+            resource = self.jurisdiction_shapefile
+            perms = resource.get_all_level_info()
+            perms["users"][str(suc).lower()]=["view_resourcebase","download_resourcebase"]
+            resource.set_permissions(perms)
+            
         
         msg.attach_alternative(html_content, "text/html")
         msg.send()
@@ -475,25 +484,61 @@ class DataRequest(BaseRequest, StatusModel):
                 suc = self.suc.names()[0]
             else:
                 suc = "UPD"
+                
+        suc_contact = SUC_Contact.objects.get(institution_abrv=suc, position="Program Leader")
         
-        text_content = email_utils.DATA_USER_PRE_FORWARD_NOTIFICATION_HTML.format(
-            self,
-            suc_pl.name,
+        text_content = email_utils.DATA_USER_PRE_FORWARD_NOTIFICATION_TEXT.format(
+            self.get_first_name(),
+            self.get_last_name(),
+            str(suc),
         )
         
         
         html_content = email_utils.DATA_USER_PRE_FORWARD_NOTIFICATION_HTML.format(
-            suc_pl.salutation,
-            suc_pl.name,
-            self.jurisdiction_shapefile.get_absolute_url(),
-            self.jurisdiction_shapefile.get_absolute_url(),
+            self.get_first_name(),
+            self.get_last_name(),
+            str(suc),
         )
+        
+        email_subject = _('[LiPAD] Data Request Forwarding')
         
         msg = EmailMultiAlternatives(
             email_subject,
             text_content,
             settings.DEFAULT_FROM_EMAIL,
-            [suc_pl.email_address, ],
+            [self.get_email(), ],
+        )
+        
+        msg.attach_alternative(html_content, "text/html")
+        msg.send()
+    
+    def notify_user_forward(self, suc=None):
+        if not suc:
+            if len(self.suc.names()) == 1:
+                suc = self.suc.names()[0]
+            else:
+                suc = "UPD"
+        
+        text_content = email_utils.DATA_USER_FORWARD_NOTIFICATION_TEXT.format(
+            self.get_first_name(),
+            self.get_last_name(),
+            suc
+        )
+        
+        
+        html_content = email_utils.DATA_USER_FORWARD_NOTIFICATION_HTML.format(
+            self.get_first_name(),
+            self.get_last_name(),
+            suc
+        )
+        
+        email_subject = _('[LiPAD] Data Request Forwarding')
+        
+        msg = EmailMultiAlternatives(
+            email_subject,
+            text_content,
+            settings.DEFAULT_FROM_EMAIL,
+            [self.get_email(), ],
         )
         
         msg.attach_alternative(html_content, "text/html")

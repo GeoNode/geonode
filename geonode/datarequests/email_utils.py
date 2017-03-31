@@ -216,7 +216,7 @@ DATA_USER_PRE_FORWARD_NOTIFICATION_TEXT="""
     
     We sent this email to inform you that the estimated size of your data (in bytes) exceeds 10GB (gigabytes) and it maybe more convenient for you to visit the office to copy the files. 
     As such, we would like to know which option you prefer, to copy the files in the UP Diliman office of Phil-LiDAR 1, or to visit the partner SUC which was assigned over your area of interest.
-    The assigned SUC for your area of interest is {} ({}).
+    The assigned SUC for your area of interest is {} ({}) Phil-LiDAR 1 under {} {}.
     
     We hope to hear your response at the soonest possible time. Thank you!
     
