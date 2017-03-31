@@ -183,7 +183,7 @@
         {% if data_request.juris_data_size > max_ftp_size %}
         <li class="list-group-item">
                   <form id="notify_suc_form" method="post" class="modal-form" action='{% url "datarequests:data_request_notify_suc" pk=data_request.pk %}'>{% csrf_token %}
-                <button type="submit" class="btn btn-primary btn-md btn-block"  id="notify-suc">{% trans "Notify SUC" %} ({% if sucs|length == 1 }{{sucs.0}}{% else %} UPD {% endif %})
+                <button type="submit" class="btn btn-primary btn-md btn-block"  id="notify-suc">{% trans "Notify SUC" %} ({% if sucs|length == 1 %}{{sucs.0}}{% else %} UPD {% endif %})
                 </button>
             </form></
         </li>
