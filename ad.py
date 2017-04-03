@@ -13,6 +13,7 @@ def search_dn(uname):
     pprint(result)
     con.unbind_s()
     for x,fields in result:
+        z = None
         if x:
             y = None
             if 'o' in list(fields.keys()):
