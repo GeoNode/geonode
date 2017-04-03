@@ -62,4 +62,4 @@ def live():
     for r in ProfileRequest.objects.exclude(profile=None):
         uname = r.profile.username
         dn, organization, company = search_dn(uname)
-        pprint(add_company_organization(dn,company=unidecode(r.org_type),initial_company=unidecode(company), org=unidecode(r.organization),initial_org = organization))
+        pprint(add_company_organization(dn,company=unidecode(r.org_type),initial_company=company, org=unidecode(r.organization),initial_org = organization))
