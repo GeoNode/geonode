@@ -27,10 +27,12 @@
 <div id = 'luzvimin_div2' class = "plots"></div>
 <div id = 'luzvimin_div3' class = "plots"></div>
 -->
-<div id = 'div_total_luzvimin0' class = "plots"></div>
+<!--
+<div id = 'div_total_luzvimin0' class = "plots" style="width:1000px"></div>
 <div id = 'div_total_luzvimin1' class = "plots"></div>
 <div id = 'div_total_luzvimin2' class = "plots"></div>
 <div id = 'div_total_luzvimin3' class = "plots"></div>
+-->
 {% endblock %}
 
 {% block extra_script %}
@@ -430,37 +432,41 @@ var layout_luzvimin{{ forloop.counter0 }} = {
   }
 };
 
-Plotly.newPlot('luzvimin_div{{ forloop.counter0 }}', data_luzvimin{{ forloop.counter0 }}, layout_luzvimin{{ forloop.counter0 }});
+//Plotly.newPlot('luzvimin_div{{ forloop.counter0 }}', data_luzvimin{{ forloop.counter0 }}, layout_luzvimin{{ forloop.counter0 }});
 {% endfor %}
 
 
+var data_total_luzvimin = [];
 {% for chart_group, sucvalue in total_luzvimin.items %}
-    var data_total_luzvimin{{ forloop.counter0 }} = [];
     var total_luzvimin{{ forloop.counter0 }} = {
-        x: [
+      x: [
         {% for suc, value in sucvalue.items %}
-            '{{ suc }}',
+          '{{ suc }}',
         {% endfor %}
-        ],
-        y: [
+      ],
+      y: [
         {% for suc, value in sucvalue.items %}
-            {{ value }},
+          {{ value }},
         {% endfor %}
-        ],
-        type: 'bar',
+      ],
+      name: '{{ chart_group }}',
+      type: 'bar',
+      marker: {
+        color: '#{{ color_list.forloop.counter0 }}'
+      }
     };
-    data_total_luzvimin{{ forloop.counter0 }}.push(total_luzvimin{{ forloop.counter0}})
-var layout_total_luzvimin{{ forloop.counter0 }} = {
+    data_total_luzvimin.push(total_luzvimin{{ forloop.counter0}})
+{% endfor %}
+var layout_total_luzvimin = {
   barmode: 'stack',
-  title: '<b>{{ chart_group }} Download Count</b>',
+  title: '<b>SUC Download Count</b>',
   legend:{
     x: 0,
     y: 1
   }
 };
 
-Plotly.newPlot('div_total_luzvimin{{ forloop.counter0 }}', data_total_luzvimin{{ forloop.counter0 }}, layout_total_luzvimin{{ forloop.counter0 }});
-{% endfor %}
+Plotly.newPlot('div_total_luzvimin0', data_total_luzvimin, layout_total_luzvimin);
 
 </script>
 {% endblock extra_script %}
