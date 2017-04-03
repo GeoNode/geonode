@@ -225,7 +225,7 @@ DATA_USER_PRE_FORWARD_NOTIFICATION_TEXT="""
 """
 
 DATA_USER_PRE_FORWARD_NOTIFICATION_HTML="""
-    <p>Greetings, {} {}</p>!
+    <p>Greetings, {} {}!</p>
     
     <p>We would like to inform you that the estimated size of your data (in bytes) exceeds 10GB (gigabytes) and it maybe more convenient for you to visit a Phil-LiDAR 1 office to copy the files. 
     As such, we would like to know which option you prefer, to copy the files in the UP Diliman office of Phil-LiDAR 1, or to visit the partner SUC which was assigned over your area of interest.

@@ -445,15 +445,15 @@ class DataRequest(BaseRequest, StatusModel):
         text_content = email_utils.DATA_SUC_JURISDICTION_TEXT.format(
             suc_pl.salutation,
             suc_pl.name,
-            self.jurisdiction_shapefile.get_absolute_url(),
+            settings.BASEURL+self.jurisdiction_shapefile.get_absolute_url(),
         )
         
         
         html_content = email_utils.DATA_SUC_JURISDICTION_HTML.format(
             suc_pl.salutation,
             suc_pl.name,
-            self.jurisdiction_shapefile.get_absolute_url(),
-            self.jurisdiction_shapefile.get_absolute_url(),
+            settings.BASEURL+self.jurisdiction_shapefile.get_absolute_url(),
+            settings.BASEURL+self.jurisdiction_shapefile.get_absolute_url(),
         )
         
         cc = suc_contacts.values_list('email_address',flat = True)
@@ -478,6 +478,10 @@ class DataRequest(BaseRequest, StatusModel):
         msg.attach_alternative(html_content, "text/html")
         msg.send()
         
+        self.forwarded = True
+        self.forwarded_date = timezone.now()
+        self.save()
+        
     def notify_user_preforward(self, suc=None):
         if not suc:
             if len(self.suc.names()) == 1:
@@ -490,14 +494,20 @@ class DataRequest(BaseRequest, StatusModel):
         text_content = email_utils.DATA_USER_PRE_FORWARD_NOTIFICATION_TEXT.format(
             self.get_first_name(),
             self.get_last_name(),
-            str(suc),
+            suc_contact.institution_full,
+            suc_contact.institution_abrv,
+            suc_contact.salutation,
+            suc_contact.name
         )
         
         
         html_content = email_utils.DATA_USER_PRE_FORWARD_NOTIFICATION_HTML.format(
             self.get_first_name(),
             self.get_last_name(),
-            str(suc),
+            suc_contact.institution_full,
+            suc_contact.institution_abrv,
+            suc_contact.salutation,
+            suc_contact.name
         )
         
         email_subject = _('[LiPAD] Data Request Forwarding')

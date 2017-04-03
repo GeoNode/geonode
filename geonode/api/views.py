@@ -47,7 +47,7 @@ def api_combined(request, apiname):
                 try:
                     if data.keys().index(each_key) == 1: ##dict's key == u'object'
                         for i_object in range(len(data[each_key])):
-                            data[each_key][i_object]['thumbnail_url'] = each_url + data[each_key][i_object]['thumbnail_url'][1:]
+                            data[each_key][i_object]['thumbnail_url'] = each_url + data[each_key][i_object]['thumbnail_url'][1:] if 'upd.edu.ph/' not in data[each_key][i_object]['thumbnail_url'] else each_url + data[each_key][i_object]['thumbnail_url'].split('up.edu.ph/')[1]
                             data[each_key][i_object]['detail_url'] = each_url + data[each_key][i_object]['detail_url'][1:]
                         output[each_key] += data[each_key]
                     else:##dict's key == u'meta'
