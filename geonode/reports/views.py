@@ -62,6 +62,7 @@ def report_distribution_status(request, template='reports/distribution_status.ht
             luzvimin = SUCLuzViMin.objects.filter(suc=eachinlist.category)[0].luzvimin
         except:
             luzvimin = 'Others'
+        if eachinlist.category=='Luzvimin_others': eachinlist.category='Others'
         if eachinlist.category not in luzvimin_count[luzvimin]:
             luzvimin_count[luzvimin][eachinlist.category] = {}
         if eachinlist.date.strftime('%Y%m') not in luzvimin_count[luzvimin][eachinlist.category]:
@@ -87,6 +88,7 @@ def report_distribution_status(request, template='reports/distribution_status.ht
                         luzvimin = SUCLuzViMin.objects.filter(suc=eachentry[u'category'])[0].luzvimin
                     except:
                         luzvimin = 'Others'
+                    if eachentry[u'category']=='Luzvimin_others': eachentry[u'category']='Others'
                     if eachentry[u'category'] not in luzvimin_count[luzvimin]:
                         luzvimin_count[luzvimin][eachentry[u'category']] = {}
                     if date_of_entry not in luzvimin_count[luzvimin][eachentry[u'category']]:
