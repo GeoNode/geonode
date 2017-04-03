@@ -115,6 +115,18 @@
           <td class="table-user-profile-attribute col-md-3">{% trans "Additional Remarks" %}</td>
           <td>{{data_request.additional_remarks}}</td>
       </tr>
+      {% if data_request.suc_notified %}
+      <tr>
+          <td class="table-user-profile-attribute col-md-3">{% trans "Additional Remarks" %}</td>
+          <td>{{data_request.suc_notified_date}}</td>
+      </tr>
+      {% endif %}
+      {% if data_request.forwarded %}
+      <tr>
+          <td class="table-user-profile-attribute col-md-3">{% trans "Additional Remarks" %}</td>
+          <td>{{data_request.forwarded_date}}</td>
+      </tr>
+      {% endif %}
       <tr>
           <td class="table-user-profile-attribute col-md-3"> {% trans "SUC jurisdictions within area of interest" %}</td>
           <td> {% for suc in sucs %} {{ suc }}{% endfor %}</td>

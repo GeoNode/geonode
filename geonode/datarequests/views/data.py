@@ -348,6 +348,9 @@ def data_request_notify_suc(request,pk):
         dr = get_object_or_404(DataRequest, pk=pk)
         if dr.juris_data_size > settings.MAX_FTP_SIZE:
             dr.send_suc_notification()
+            dr.suc_notified=True
+            dr.suc_notified_date=timezone.now()
+            dr.save()
             messages.info(request, "Email sent")
         return HttpResponseRedirect(dr.get_absolute_url())
     else:
