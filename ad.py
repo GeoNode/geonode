@@ -17,7 +17,9 @@ def search_dn(uname):
             y = None
             if 'o' in list(fields.keys()):
                 y = fields['o']
-            return x,y
+            if 'company' in list(fields.keys()):
+                z = fields['company']
+            return x,y,z
 
 def add_company_organization(dn, company = None, org = None, initial_company=None, initial_org = None):
     mod_attrs = []
@@ -53,11 +55,11 @@ def test():
     test_list = ['test_dac-group','test_dac-leaders','test_dpc-lms','test_dlms_alms',
         'test_dleaders_alms','test_dpc-terra','test_dterra-aterra','test_dleaders_aterra','test_dpc-arc']
     for t in test_list:
-        dn, organization = search_dn(t)
-        pprint(add_company_organization(dn,company="Other",org="test",initial_org = organization))
+        dn, organization, company = search_dn(t)
+        pprint(add_company_organization(dn,company="Other",org="test",initial_company=company, initial_org = organization))
     
 def live():
     for r in ProfileRequest.objects.exclude(profile=None):
         uname = r.profile.username
-        dn, organization = search_dn(uname)
-        pprint(add_company_organization(dn,company=unidecode(r.org_type),org=unidecode(r.organization),initial_org = organization))
+        dn, organization, company = search_dn(uname)
+        pprint(add_company_organization(dn,company=unidecode(r.org_type),initial_company=unidecode(company), org=unidecode(r.organization),initial_org = organization))
