@@ -195,21 +195,40 @@ def layer_style_manage(request, layername):
             all_available_gs_styles = cat.get_styles()
             gs_styles = []
             for style in all_available_gs_styles:
-                gs_styles.append((style.name, style.sld_title))
+                sld_title = style.name
+                try:
+                    if style.sld_title:
+                        sld_title = style.sld_title
+                except:
+                    pass
+                gs_styles.append((style.name, sld_title))
 
             current_layer_styles = layer.styles.all()
             layer_styles = []
             for style in current_layer_styles:
-                layer_styles.append((style.name, style.sld_title))
+                sld_title = style.name
+                try:
+                    if style.sld_title:
+                        sld_title = style.sld_title
+                except:
+                    pass
+                layer_styles.append((style.name, sld_title))
 
             # Render the form
+            sld_title = layer.default_style.name
+            try:
+                if layer.default_style.sld_title:
+                    sld_title = layer.default_style.sld_title
+            except:
+                pass
+            default_style = (layer.default_style.name, sld_title)
             return render_to_response(
                 'layers/layer_style_manage.html',
                 RequestContext(request, {
                     "layer": layer,
                     "gs_styles": gs_styles,
                     "layer_styles": layer_styles,
-                    "default_style": (layer.default_style.name, layer.default_style.sld_title)
+                    "default_style": default_style
                 }
                 )
             )
