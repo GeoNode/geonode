@@ -34,6 +34,10 @@ class LayerIndex(indexes.SearchIndex, indexes.Indexable):
     csw_wkt_geometry = indexes.CharField(model_attr="csw_wkt_geometry")
     detail_url = indexes.CharField(model_attr="get_absolute_url")
     owner__username = indexes.CharField(model_attr="owner", faceted=True, null=True)
+    owner__first_name = indexes.CharField(model_attr="owner__first_name", faceted=True, null=True)
+    owner__last_name = indexes.CharField(model_attr="owner__last_name", faceted=True, null=True)
+    is_published = indexes.BooleanField(model_attr="is_published")
+    featured = indexes.BooleanField(model_attr="featured")
     popular_count = indexes.IntegerField(
         model_attr="popular_count",
         default=0,
