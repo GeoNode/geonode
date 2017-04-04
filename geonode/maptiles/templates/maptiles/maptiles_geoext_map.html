@@ -49,6 +49,8 @@ if ("{{test_mode}}"=="True"){
     geoserver = curr_location+"/geoserver/" ;
 }
 
+geoserver = '{{ geoserver_url }}'
+
 {% if jurisdiction.viewer %}
 jurisdiction_args = {{jurisdiction.viewer|safe}};
 {% else %}
@@ -536,15 +538,36 @@ function toggle_all_checkboxes(source){
 /*
 Initialization of the map UI
 */
+
+// add for dynamic sld
+var map_options = grid_args["map"];
+var grid_layer_name = "geonode:{{  feature_tiled }}";
+var stored_layer = map_options["layers"].filter(function(l){ return l["name"] == grid_layer_name })[0];
+var tile_layer = new OpenLayers.Layer.WMS(
+    grid_layer_name + "- Tiled", geoserver+"geonode/wms",
+    {
+        LAYERS: stored_layer["name"],
+        format:  'image/png',
+        bbox: stored_layer["bbox"],
+        transparent: true,
+        opacity: 0.3
+    },
+    {
+        buffer: 0,
+        displayOutsideMaxExtent: true,
+        isBaseLayer: false,
+        projection: "EPSG:900913",
+        maxExtent: new OpenLayers.Bounds(stored_layer["bbox"])
+    }
+);
+
 Ext.onReady(function (){
 
     var juris_vec_layer = new OpenLayers.Layer.Vector();
 
     //definition of the Philippine grid layer
-    var grid_layer_name = "geonode:{{  feature_tiled }}";
 
     //definition of the map object
-    var map_options = grid_args["map"];
     map = new OpenLayers.Map({
       units: map_options["units"],
       maxResolution: map_options["maxResolution"],
@@ -588,9 +611,11 @@ Ext.onReady(function (){
     // );
 
     // apply local osm layer group
+    //siteurl_osm = '{{ siteurl }}' +  '/geoserver/osm/wms?';
+    siteurl_osm = '{{ geoserver_url }}' + 'osm/wms?'
     var local_osm = new OpenLayers.Layer.WMS(
         "WMS OSM Layer",
-        "http://lipad.tst.dream.upd.edu.ph/geoserver/osm/wms?",
+        siteurl_osm,
         {
             workspace: 'osm',
             layers: 'osm:osm',
@@ -606,29 +631,11 @@ Ext.onReady(function (){
 
     map.addLayer(local_osm);
 
-    var stored_layer = map_options["layers"].filter(function(l){ return l["name"] == grid_layer_name })[0];
     var source_index = stored_layer["source"];
 
     map.addLayer(juris_vec_layer);
 
     // definition of the tiled layer
-    var tile_layer = new OpenLayers.Layer.WMS(
-        grid_layer_name + "- Tiled", geoserver+"geonode/wms",
-        {
-            LAYERS: stored_layer["name"],
-            format:  'image/png',
-            bbox: stored_layer["bbox"],
-            transparent: true,
-            opacity: 0.3
-        },
-        {
-            buffer: 0,
-            displayOutsideMaxExtent: true,
-            isBaseLayer: false,
-            projection: "EPSG:900913",
-            maxExtent: new OpenLayers.Bounds(stored_layer["bbox"])
-        }
-    );
 
     map.addLayer(tile_layer);
 
@@ -775,6 +782,42 @@ function setMapSize(){
 
   document.getElementById('floating-legend').style.top = navheight+15 +"px";
 }
+
+function changeSLD(){
+  if($("input:checked").val()=="dtm"){
+    tile_layer.mergeNewParams({
+      styles: '{{ dtm_sld }}',
+    });
+  }
+
+  else if ($("input:checked").val()=="ortho"){
+    tile_layer.mergeNewParams({
+      styles: '{{ ortho_sld }}',
+    });
+  }
+  else if ($("input:checked").val()=="laz"){
+    tile_layer.mergeNewParams({
+      styles: '{{ laz_sld }}',
+    });
+  }
+  else if ($("input:checked").val()=="dsm"){
+    tile_layer.mergeNewParams({
+      styles: '{{ dsm_sld }}',
+    });
+  }
+  else if ($("input:checked").val()=="all"){
+    tile_layer.mergeNewParams({
+      styles: '{{ philgrid_sld }}',
+    });
+  }
+  else if ($("input:checked").val()=="clear"){
+    tile_layer.mergeNewParams({
+      styles: '{{ clear_sld }}',
+    });
+  }
+
+}
+
 $(window).resize(function() {
   //resize just happened, pixels changed
   setMapSize()

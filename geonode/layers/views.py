@@ -707,7 +707,7 @@ def layer_download_csv(request):
         lastname = unidecode(getprofile.last_name)
         email = getprofile.email
         organization = unidecode(getprofile.organization) if getprofile.organization is not None else getprofile.organization
-        orgtype = orgtypelist[getprofile.organization_type]
+        orgtype = getprofile.org_type
         #area = get_area_coverage(auth.action_object.typename)
         area = 0
         # pprint(dir(getprofile))

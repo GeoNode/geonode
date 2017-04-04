@@ -14,6 +14,7 @@ from braces.views import (
     SuperuserRequiredMixin, LoginRequiredMixin,
 )
 
+from geonode.people.models import Profile
 from geonode.datarequests.forms import RejectionForm
 from geonode.datarequests.admin_edit_forms import ProfileRequestEditForm
 from geonode.datarequests.models import (
@@ -62,7 +63,11 @@ def profile_request_edit(request, pk, template ='datarequests/profile_detail_edi
         if form.is_valid():
             pprint("form is valid")
             for k, v in form.cleaned_data.iteritems():
-                setattr(profile_request, k, v)
+                if k=='org_type':
+                    pprint(v)
+                    setattr(profile_request, k, v.val)
+                else:
+                    setattr(profile_request, k, v)
             profile_request.administrator = request.user
             profile_request.save()
         else:
@@ -79,7 +84,15 @@ def profile_request_approve(request, pk):
     if request.method == 'POST':
         profile_request = get_object_or_404(ProfileRequest, pk=pk)
 
-        if not profile_request.has_verified_email or profile_request.status != 'pending':
+        if not profile_request.has_verified_email:
+            messages.info(request,'This request does not have a verified email')
+            return HttpResponseRedirect(profile_request.get_absolute_url())
+        
+        if profile_request.email in Profile.objects.all().values_list('email', flat=True):
+            messages.info(request,'The email for this profile request is already in use')
+            return HttpResponseRedirect(profile_request.get_absolute_url())
+        
+        if profile_request.status != 'pending':
             return HttpResponseRedirect('/forbidden')
 
         result = True
