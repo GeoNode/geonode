@@ -267,11 +267,11 @@ def data_remove(request):
             return render_to_response("update_task.html", RequestContext(request, ctx))
         else:
             messages.error(request, "Invalid input on data form")
-            return redirect('geonode.cephgeo.views.data_input')
+            return redirect('geonode.cephgeo.views.data_remove')
     # if a GET (or any other method) we'll create a blank form
     else:
-        form = DataInputForm()
-        return render(request, 'ceph_data_delete.html', {'data_input_form': form})
+        form = DataDeleteForm()
+        return render(request, 'ceph_data_delete.html', {'data_delete_form': form})
 
 
 @login_required
