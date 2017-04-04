@@ -85,8 +85,8 @@ def tiled_view(request, overlay=settings.TILED_SHAPEFILE, template="maptiles/map
     context_dict = {}
     context_dict["grid"] = get_layer_config(
         request, overlay, "base.view_resourcebase", _PERMISSION_VIEW)
-    legend_link = settings.SITEURL + \
-        'geoserver/wms?REQUEST=GetLegendGraphic&VERSION=1.0.0&FORMAT=image/png&LAYER=geonode:philgrid&STYLE='
+    legend_link = settings.OGC_SERVER['default']['PUBLIC_LOCATION'] + \
+        'wms?REQUEST=GetLegendGraphic&VERSION=1.0.0&FORMAT=image/png&LAYER=geonode:philgrid&STYLE='
     try:
         context_dict["dtm_lgd"] = legend_link + settings.DTM_SLD
         context_dict["ortho_lgd"] = legend_link + settings.ORTHO_SLD
@@ -104,6 +104,8 @@ def tiled_view(request, overlay=settings.TILED_SHAPEFILE, template="maptiles/map
         context_dict["laz"] = None
         context_dict["dsm"] = None
         context_dict["philgrid_sld"] = None
+        
+    context_dict["geoserver_url"] = settings.OGC_SERVER['default']['PUBLIC_LOCATION']
     jurisdiction_object = None
 
     if jurisdiction is None:
