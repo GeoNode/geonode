@@ -27,6 +27,7 @@ class DataInputForm(forms.Form):
 class DataDeleteForm(forms.Form):
     data = forms.CharField(widget=forms.Textarea(attrs={'style' : 'resize:none; width:100%; height:60%;', 'wrap' : 'virtual'}))
     update_grid = forms.BooleanField(required=False)
+    delete_from_ceph = forms.BooleanField(required=False)
 
     def __init__(self, *args, **kwargs):
         self.helper = FormHelper()
@@ -41,7 +42,7 @@ class DataDeleteForm(forms.Form):
                 Submit('submit', 'Submit', css_class='button white')
             )
         )
-        super(DataInputForm, self).__init__(*args, **kwargs)
+        super(DataDeleteForm, self).__init__(*args, **kwargs)
         self.fields['update_grid'].initial  = True
         self.fields['delete_from_ceph'].initial  = False
 
