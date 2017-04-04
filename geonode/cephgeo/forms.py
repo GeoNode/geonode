@@ -24,6 +24,28 @@ class DataInputForm(forms.Form):
         super(DataInputForm, self).__init__(*args, **kwargs)
         self.fields['update_grid'].initial  = True
 
+class DataDeleteForm(forms.Form):
+    data = forms.CharField(widget=forms.Textarea(attrs={'style' : 'resize:none; width:100%; height:60%;', 'wrap' : 'virtual'}))
+    update_grid = forms.BooleanField(required=False)
+
+    def __init__(self, *args, **kwargs):
+        self.helper = FormHelper()
+        self.helper.layout = Layout(
+            Fieldset(
+                'Metadata/object list for deletion',
+                'data',
+                'update_grid',
+                'delete_from_ceph',
+            ),
+            ButtonHolder(
+                Submit('submit', 'Submit', css_class='button white')
+            )
+        )
+        super(DataInputForm, self).__init__(*args, **kwargs)
+        self.fields['update_grid'].initial  = True
+        self.fields['delete_from_ceph'].initial  = False
+
+
 class RequestDataClassForm(forms.Form):
     LAZ = forms.BooleanField()
     DEM = forms.BooleanField()
