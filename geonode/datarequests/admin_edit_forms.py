@@ -38,6 +38,13 @@ class ProfileRequestEditForm(ProfileRequestForm):
         ('student', _('Student')),
     )
     
+    org_type = forms.ModelChoiceField(
+        label = _('Organization Type'),
+        queryset=LipadOrgType.objects.all(),
+        required=True,
+        to_field_name='val',
+    )
+    
     class Meta:
         model = ProfileRequest
         
@@ -58,12 +65,6 @@ class ProfileRequestEditForm(ProfileRequestForm):
             'contact_number',
             'additional_remarks',
         )
-        
-    org_type = forms.ChoiceField(
-        label = _('Organization Type'),
-        choices = ORG_TYPE_CHOICES,
-        required = True
-    )
     
     def __init__(self, *args, **kwargs):
         super(ProfileRequestEditForm, self).__init__(*args, **kwargs)

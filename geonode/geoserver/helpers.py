@@ -1049,6 +1049,10 @@ def geoserver_upload(
     # Get a short handle to the gsconfig geoserver catalog
     cat = gs_catalog
 
+    # Fix bug on layer replace #2642
+    # https://github.com/GeoNode/geonode/issues/2462
+    cat.reload()
+
     workspace = cat.get_default_workspace()
     # Check if the store exists in geoserver
     try:
