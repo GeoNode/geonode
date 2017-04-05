@@ -47,7 +47,7 @@ def api_combined(request, apiname):
                 try:
                     if data.keys().index(each_key) == 1: ##dict's key == u'object'
                         for i_object in range(len(data[each_key])):
-                            data[each_key][i_object]['thumbnail_url'] = each_url + data[each_key][i_object]['thumbnail_url'][1:]
+                            data[each_key][i_object]['thumbnail_url'] = each_url + data[each_key][i_object]['thumbnail_url'][1:] if 'upd.edu.ph/' not in data[each_key][i_object]['thumbnail_url'] else each_url + data[each_key][i_object]['thumbnail_url'].split('up.edu.ph/')[1]
                             data[each_key][i_object]['detail_url'] = each_url + data[each_key][i_object]['detail_url'][1:]
                         output[each_key] += data[each_key]
                     else:##dict's key == u'meta'
@@ -63,7 +63,7 @@ def api_autocomplete(request):
     current_url = request.build_absolute_uri()
     apiquery = '?'.join(current_url.split('?')[1:])
     local_url = 'http://'+request.META['HTTP_HOST']+'/'#for lipad.dmz""
-    urls_to_visit = [local_url,'https://lipad-fmc.dream.upd.edu.ph/']
+    urls_to_visit = [local_url] + settings.LIPAD_INSTANCES
     output = ''
 
     # output = []
