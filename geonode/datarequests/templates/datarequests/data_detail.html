@@ -115,6 +115,18 @@
           <td class="table-user-profile-attribute col-md-3">{% trans "Additional Remarks" %}</td>
           <td>{{data_request.additional_remarks}}</td>
       </tr>
+      {% if data_request.suc_notified %}
+      <tr>
+          <td class="table-user-profile-attribute col-md-3">{% trans "Additional Remarks" %}</td>
+          <td>{{data_request.suc_notified_date}}</td>
+      </tr>
+      {% endif %}
+      {% if data_request.forwarded %}
+      <tr>
+          <td class="table-user-profile-attribute col-md-3">{% trans "Additional Remarks" %}</td>
+          <td>{{data_request.forwarded_date}}</td>
+      </tr>
+      {% endif %}
       <tr>
           <td class="table-user-profile-attribute col-md-3"> {% trans "SUC jurisdictions within area of interest" %}</td>
           <td> {% for suc in sucs %} {{ suc }}{% endfor %}</td>
@@ -182,13 +194,25 @@
       {% if data_request.status == 'approved' %}
         {% if data_request.juris_data_size > max_ftp_size %}
         <li class="list-group-item">
+                <form id="notify_requester_form" method="post" class="modal-form" action='{% url "datarequests:data_request_notify_requester" pk=data_request.pk %}'>{% csrf_token %}
+                <button type="submit" class="btn btn-primary btn-md btn-block"  id="notify-suc">{% trans "Notify Requester" %} </button>
+            </form></
+        </li>
+        <li class="list-group-item">
                   <form id="notify_suc_form" method="post" class="modal-form" action='{% url "datarequests:data_request_notify_suc" pk=data_request.pk %}'>{% csrf_token %}
-                <button type="submit" class="btn btn-primary btn-md btn-block"  id="notify-suc">{% trans "Notify SUC" %} ({% if sucs|length == 1 }{{sucs.0}}{% else %} UPD {% endif %})
+                <button type="submit" class="btn btn-primary btn-md btn-block"  id="notify-suc">{% trans "Notify SUC" %} ({% if sucs|length == 1 %}{{sucs.0}}{% else %} UPD {% endif %})
                 </button>
             </form></
         </li>
         {% endif %}
-        {% if data_request.suc_notified
+        {% if data_request.suc_notified %}
+        <li class="list-group-item">
+                  <form id="forward_request_form" method="post" class="modal-form" action='{% url "datarequests:data_request_forward_request" pk=data_request.pk %}'>{% csrf_token %}
+                <button type="submit" class="btn btn-primary btn-md btn-block"  id="notify-suc">{% trans "Forward to SUC" %} ({% if sucs|length == 1 %}{{sucs.0}}{% else %} UPD {% endif %})
+                </button>
+            </form></
+        </li>
+        {% endif %}
       {% else %}
         {%  if data_request.status == 'pending'%}
         <li class="list-group-item">
