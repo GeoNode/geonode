@@ -32,7 +32,7 @@ def migrate_all():
             data_request = r.migrate_request_data()
             
             
-@task(name="geonode.tasks.requests.tag_request_suc",queue='requests')
+@task(name="geonode.tasks.requests.tag_suc",queue='requests')
 def tag_request_suc(data_requests):
     message = "The following data requests have been tagged:\n\n"
     for dr in data_requests:

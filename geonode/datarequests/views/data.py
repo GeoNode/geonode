@@ -346,9 +346,30 @@ def data_request_tag_suc(request,pk):
 def data_request_notify_suc(request,pk):
     if request.user.is_superuser and request.method=='POST':
         dr = get_object_or_404(DataRequest, pk=pk)
-        if dr.juris_data_size > settings.MAX_FTP_SIZE
+        if dr.juris_data_size > settings.MAX_FTP_SIZE:
             dr.send_suc_notification()
+            dr.suc_notified=True
+            dr.suc_notified_date=timezone.now()
+            dr.save()
             messages.info(request, "Email sent")
+        return HttpResponseRedirect(dr.get_absolute_url())
+    else:
+        return HttpResponseRedirect('/forbidden/')
+        
+def data_request_notify_requester(request,pk):
+    if request.user.is_superuser and request.method=='POST':
+        dr = get_object_or_404(DataRequest, pk=pk)
+        dr.notify_user_preforward()
+        messages.info(request, "Email sent")
+        return HttpResponseRedirect(dr.get_absolute_url())
+    else:
+        return HttpResponseRedirect('/forbidden/')
+        
+def data_request_forward_request(request,pk):
+    if request.user.is_superuser and request.method=='POST':
+        dr = get_object_or_404(DataRequest, pk=pk)
+        dr.send_jurisdiction()
+        messages.info(request, "Shapefile link sent")
         return HttpResponseRedirect(dr.get_absolute_url())
     else:
         return HttpResponseRedirect('/forbidden/')
