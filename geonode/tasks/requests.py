@@ -3,10 +3,6 @@ import traceback
 from pprint import pprint
 from celery.task import task
 from django.core.mail import send_mail
-from fabric.api import *
-from fabric.contrib.console import confirm
-from fabric.tasks import execute
-
 
 import psycopg2
 import psycopg2.extras
@@ -17,7 +13,7 @@ from geonode.datarequests.models import (
     ProfileRequest, DataRequest, DataRequestProfile, SUC_Contact)
 
 @task(name="geonode.tasks.requests.set_status_for_multiple_requests",queue='requests')
-def set_status_for_multiple_requests(requests, status, administrator=None):
+def set_status_for_multiple_requests(requests, statusf, administrator=None):
     for r in requests:
         r.set_status(status, administrator)
     
@@ -32,7 +28,7 @@ def migrate_all():
             data_request = r.migrate_request_data()
             
             
-@task(name="geonode.tasks.requests.tag_suc",queue='requests')
+@task(name="geonode.tasks.requests.tag_request_suc",queue='requests')
 def tag_request_suc(data_requests):
     message = "The following data requests have been tagged:\n\n"
     for dr in data_requests:
