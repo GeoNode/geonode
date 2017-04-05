@@ -412,7 +412,11 @@ class OwnersResource(TypeFilteredResource):
             semi_filtered = semi_filtered.filter(interest_list)
         
         if q:
-            semi_filtered = semi_filtered.filter(username__icontains=q)
+            semi_filtered = semi_filtered.filter(
+                Q(username__icontains=q) | 
+                Q(first_name__icontains=q) | 
+                Q(last_name__icontains=q)
+            )
 
         return semi_filtered
         
@@ -425,5 +429,7 @@ class OwnersResource(TypeFilteredResource):
 
         filtering = {
             'username': ALL,
+            'city': ALL,
+            'country': ALL
         }
         serializer = CountJSONSerializer()
