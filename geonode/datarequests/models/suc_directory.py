@@ -22,7 +22,7 @@ class SUC_Contact(models.Model):
     position = models.CharField(_('Position'),max_length = 50)
     email_address = models.EmailField(_('Email Address'))
     salutation = models.CharField(_('Salutation (optional)'), max_length = 10, blank=True, null = True)
-    username = models.CharField(_('Username associated with this SUC contact'), max_length=50, null=True, blank=True)
+    username = models.CharField(_('Username associated with this SUC contact'), max_length=50, null=True, blank=True)   
     
     class Meta:
         app_label = "datarequests"
