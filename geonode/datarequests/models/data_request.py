@@ -470,7 +470,7 @@ class DataRequest(BaseRequest, StatusModel):
         if not suc == "UPD":
             resource = self.jurisdiction_shapefile
             perms = resource.get_all_level_info()
-            perms["users"][str(suc).lower()]=["view_resourcebase","download_resourcebase"]
+            perms["users"][str(suc).lower()+"_user"]=["view_resourcebase","download_resourcebase"]
             resource.set_permissions(perms)
             
         
