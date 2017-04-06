@@ -473,7 +473,8 @@ class DataRequest(BaseRequest, StatusModel):
             
             resource = self.jurisdiction_shapefile
             perms = resource.get_all_level_info()
-            user_perms = getattr(perms["user"],str(username),[])
+            #user_level_perms = getattr(perms, "user", {})
+            user_perms = getattr(perms["users"],str(username),[])
             if "view_resourcebase" not in user_perms:
                 user_perms.append("view_resourcebase")
             
