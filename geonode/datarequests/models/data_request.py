@@ -467,10 +467,20 @@ class DataRequest(BaseRequest, StatusModel):
             cc = cc
         )
         
+        username = suc_pl.username
+        
         if not suc == "UPD":
+            
             resource = self.jurisdiction_shapefile
             perms = resource.get_all_level_info()
-            perms["users"][uname]=["view_resourcebase","download_resourcebase"]
+            user_perms = getattr(perms["user"],str(username),[])
+            if "view_resourcebase" not in user_perms:
+                user_perms.append("view_resourcebase")
+            
+            if "download_resourcebase" not in user_perms:
+                user_perms.append("download_resourcebase")
+                
+            perms["users"][suc_pl.username]=user_perms
             resource.set_permissions(perms)
             
         
