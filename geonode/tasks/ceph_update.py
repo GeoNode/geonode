@@ -92,6 +92,7 @@ def ceph_metadata_remove(uploaded_objects_list, update_grid=True, delete_from_ce
     # Pop first line containing header
     uploaded_objects_list.pop(0)
     """NAME,LAST_MODIFIED,SIZE_IN_BYTES,CONTENT_TYPE,GEO_TYPE,FILE_HASH GRID_REF"""
+    print "Update grid: ["+str(update_grid)+"] Delete Ceph Objects: ["+str(delete_from_ceph)+"]"
 
     # Loop through each metadata element
     csv_delimiter=','
@@ -128,8 +129,11 @@ def ceph_metadata_remove(uploaded_objects_list, update_grid=True, delete_from_ce
                     # Delete from Ceph Object Storage
                     if delete_from_ceph:
                         try:
-                            cephclient.delete_object(ceph_obj.name)
+                            print "Deleting ceph object: " + ceph_obj.name
+                            result = cephclient.delete_object(ceph_obj.name, container = settings.CEPH_OGW['default']['CONTAINER'])
+                            print "Result: " + str(result) 
                         except ClientException as e:
+                            print str(e)
                             logger.warn("Cannot delete object {0} in Ceph Object Storage. Deleting metadata...".format(ceph_obj.name))
                     
                     # Delete object from database
