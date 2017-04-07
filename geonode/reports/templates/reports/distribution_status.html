@@ -71,7 +71,11 @@ var data_pie = [{
   ],
   labels: [
     {% for key, value in total_layers.items %}
-      '{{ key }}',
+        {% if key == 'FHM' %}
+            'Flood Hazard Map',
+        {% else %}
+            '{{ key }}',
+        {% endif %}
     {% endfor %}
   ],
   type: 'pie',
