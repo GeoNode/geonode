@@ -49,6 +49,8 @@ if ("{{test_mode}}"=="True"){
     geoserver = curr_location+"/geoserver/" ;
 }
 
+geoserver = '{{ geoserver_url }}'
+
 {% if jurisdiction.viewer %}
 jurisdiction_args = {{jurisdiction.viewer|safe}};
 {% else %}
@@ -609,7 +611,8 @@ Ext.onReady(function (){
     // );
 
     // apply local osm layer group
-    siteurl_osm = '{{ siteurl }}' +  '/geoserver/osm/wms?';
+    //siteurl_osm = '{{ siteurl }}' +  '/geoserver/osm/wms?';
+    siteurl_osm = '{{ geoserver_url }}' + 'osm/wms?'
     var local_osm = new OpenLayers.Layer.WMS(
         "WMS OSM Layer",
         siteurl_osm,
