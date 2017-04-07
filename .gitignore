@@ -126,7 +126,13 @@ development.db
 master
 slave
 
+<<<<<<< HEAD
 scripts/utils/osm
 
+=======
+>>>>>>> ceph-deletion
 #CSV files
 *.csv
+
+# ignore zipped shapefiles for local osm setup
+scripts/utils/osm

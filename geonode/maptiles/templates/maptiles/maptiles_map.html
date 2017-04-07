@@ -1,55 +1,71 @@
-{% extends "maptiles/maptiles_base.html" %}
-{% load i18n %}
-{% load dialogos_tags %}
-{% load agon_ratings_tags %}
-{% load bootstrap_tags %}
-{% load url from future %}
-{% load base_tags %}
-{% load guardian_tags %}
-
-{% block title %}Data Tiles Selection — {{ block.super }}{% endblock %}
-
-{% block head %}
+{% extends "maptiles/maptiles_base.html" %} {% load i18n %} {% load dialogos_tags %} {% load agon_ratings_tags %} {% load bootstrap_tags %} {% load url from future %} {% load base_tags %} {% load guardian_tags %} {% block title %}Data Tiles Selection — {{ block.super }}{% endblock %} {% block head %}
 <style>
 div#site_wide_announcements {
-  display:none;
+    display: none;
 }
-body{
-  overflow:hidden;
+
+body {
+    overflow: hidden;
 }
+
+
 /*** custom checkboxes ***/
-    input[type=checkbox] { display:none; } /* to hide the checkbox itself */
-    input[type=checkbox] + label:before {
-      font-family: FontAwesome;
-      font-size: 16px;
-      display: inline-block;
-    }
-    .label-dataclass{
-        font-size: 16px;
-    }
-    input[type=checkbox] + label:before { content: "\f096"; } /* unchecked icon */
-    input[type=checkbox] + label:before { letter-spacing: 20px; } /* space between checkbox and label */
 
-    input[type=checkbox]:checked + label:before { content: "\f046"; } /* checked icon */
-    input[type=checkbox]:checked + label:before { letter-spacing: 20px; } /* allow space for check mark */
+input[type=checkbox] {
+    display: none;
+}
 
 
-    form table tr td { padding: 2px 1px; }
-    div.side-navi-tab p {font-size:12px; font-weight:300;}
+/* to hide the checkbox itself */
+
+input[type=checkbox] + label:before {
+    font-family: FontAwesome;
+    font-size: 16px;
+    display: inline-block;
+}
+
+.label-dataclass {
+    font-size: 16px;
+}
+
+input[type=checkbox] + label:before {
+    content: "\f096";
+}
+
+
+/* unchecked icon */
+
+input[type=checkbox] + label:before {
+    letter-spacing: 20px;
+}
+
+
+/* space between checkbox and label */
+
+input[type=checkbox]:checked + label:before {
+    content: "\f046";
+}
+
+
+/* checked icon */
+
+input[type=checkbox]:checked + label:before {
+    letter-spacing: 20px;
+}
+
+
+/* allow space for check mark */
+
+form table tr td {
+    padding: 2px 1px;
+}
+
+div.side-navi-tab p {
+    font-size: 12px;
+    font-weight: 300;
+}
 </style>
-{# {% if preview == 'geoext' %}  #}
-    {# {% include "maptiles/maptiles_explorer_map.html" %} #}
- {#{% else %} #}
-    {#{% include "maptiles/maptiles_leaflet_map.html" %} #}
-{% include "maptiles/maptiles_geoext_map.html" %}
-{# {% endif %} #}
-{{ block.super }}
-{% endblock %}
-
-{% block body_class %}maptiles{% endblock %}
-
-{% block body_outer %}
-{% block body %}
+{# {% if preview == 'geoext' %} #} {# {% include "maptiles/maptiles_explorer_map.html" %} #} {#{% else %} #} {#{% include "maptiles/maptiles_leaflet_map.html" %} #} {% include "maptiles/maptiles_geoext_map.html" %} {# {% endif %} #} {{ block.super }} {% endblock %} {% block body_class %}maptiles{% endblock %} {% block body_outer %} {% block body %}
 <!--
 <div class="page-header">
   <h2 class="page-title">Data Tiles</h2>
@@ -60,13 +76,13 @@ body{
     <div class="col-md-9">
     <div id="embedded_map" class="mrg-btm">
 -->
-      <div id="preview_map" style="margin-top:9px;" ></div>
-      <div id="layerTree" style="margin-top:9px; position:fixed; top:100px;" ></div>
+<div id="preview_map" style="margin-top:9px;"></div>
+<div id="layerTree" style="margin-top:9px; position:fixed; top:100px;"></div>
 <!--
     </div>
     </div>
 -->
-    <!--
+<!--
     <div class="col-md-3">
         <ul class="list-group">
      <li class="list-group-item">
@@ -89,68 +105,43 @@ body{
 <!--
 </div>
 -->
-    <!--<ul class="list-group">
+<!--<ul class="list-group">
   </ul>-->
-
- <br />
- <div id="sideNavi">
-   <div id="side-navi" class="side-navi-item item1"><div>Download Data</div></div>
-   <div class="side-navi-item item2"><div>Area Search</div></div>
-   <div class="side-navi-item item3"><div style="margin-top: -10px;">Bounding Box Selection</div></div>
-   <div class="side-navi-item item4"><div>FAQ</div></div>
-   <div class="side-navi-data">
-     <div class="side-navi-tab">
-          <div style="padding: 25px;">
-            <h4 class="list-group-item-heading">{%trans "Download Data" %}</h4>
-            <p>1. Select tiles on the left by either clicking on individual tiles, or select multiple tiles by holding down shift while drawing a bounding box. <br><i>Note: You need to upload a shapefile of your area of interest before being able to select tiles for download. To upload a shapefile, please <a href="{% url 'datarequests:request_register' %}">update your data request.</a></i></p>
-            <p>2. Select data type below and click Download.</p>
-            <form name="georef_form" id="georef_form" action="/maptiles/addtocart/" method="POST" >
-              {% csrf_token %}
-              <ul>
-                {% for class in data_classes %}
-                  {% if class != 'Unknown Type' %}
-                    <li>
-                      <input id="{{ class | slugify }}" name="{{ class | slugify }}" type="checkbox" />
-                      <label class="label-dataclass" for="{{ class | slugify }}">{{ class }}</label>
-                    </li>
-                  {% endif %}
-                {% endfor %}
-              </ul>
-              <input type="text" id="georef_area" name="georef_area" style="display:none" />
-              <input type="submit" id="georef_submit" name="georef_submit" value="Submit" class="btn btn-default" />
-            </form>
-          </div>
-     </div>
-     <div class="side-navi-tab">
-        <div>
-          <h4 class="list-group-item-heading">{%trans "Area Search" %}</h4>
-          <p>
-            Type in location to zoom into it.
-          </p>
-          <form name='geocode_form' id="geocode_form">
-            {% csrf_token %}
-            <input type="text" id="geocode_input" name="geocode_input"/>
-          </form>
-          <br />
-          <a  id="geocode_submit" name="geocode_submit" class="btn btn-default">Search</a>
-        </div>
-     </div>
-     <div class="side-navi-tab">
-        <div>
-         <h4 class="list-group-item-heading">{%trans "Bounding Box Selection" %}</h4>
-         <p>
-           Select a dataset according to its location. Use WGS 1984 or EPSG:4326 in decimal degrees.
-         </p>
-         <form id="bbox_form">
-           <table>
-             <tr><td>Upper Lat (&deg;N) limit: </td><td><input type="number" id="upperlimit" name="upperlimit" value=0 step="any" /></td></tr>
-             <tr><td>Left Lng (&deg;E) limit: </td><td><input type="number" id="leftlimit" name="leftlimit"value=0 step="any"/></td></tr>
-             <tr><td>Right Lng (&deg;E) limit: </td><td><input type="number" id="rightlimit" name="rightlimit" value=0 step="any"/></td></tr>
-             <tr><td>Lower Lat (&deg;N) limit: </td><td><input type="number" id="lowerlimit" name="lowerlimit" value=0 step="any"/></td></tr>
-           </table>
-           <br />
-           <input type="submit" id="bbox_submit" name="bbox_submit" value="Submit Bounding Box" class="btn btn-default" />
-         </form>
+<br />
+<div id="sideNavi">
+    <div id="side-navi" class="side-navi-item item1">
+        <div>Download Data</div>
+    </div>
+    <div class="side-navi-item item2">
+        <div>Area Search</div>
+    </div>
+    <div class="side-navi-item item3">
+        <div style="margin-top: -10px;">Bounding Box Selection</div>
+    </div>
+    <div class="side-navi-item item4">
+        <div>FAQ</div>
+    </div>
+    <div class="side-navi-data">
+        <div class="side-navi-tab">
+            <div style="padding: 25px;">
+                <h4 class="list-group-item-heading">{%trans "Download Data" %}</h4>
+                <p>1. Select tiles on the left by either clicking on individual tiles, or select multiple tiles by holding down shift while drawing a bounding box.
+                    <br><i>Note: You need to upload a shapefile of your area of interest before being able to select tiles for download. To upload a shapefile, please <a href="{% url 'datarequests:request_register' %}">update your data request.</a></i></p>
+                <p>2. Select data type below and click Download.</p>
+                <form name="georef_form" id="georef_form" action="/maptiles/addtocart/" method="POST">
+                    {% csrf_token %}
+                    <ul>
+                        {% for class in data_classes %} {% if class != 'Unknown Type' %}
+                        <li>
+                            <input id="{{ class | slugify }}" name="{{ class | slugify }}" type="checkbox" />
+                            <label class="label-dataclass" for="{{ class | slugify }}">{{ class }}</label>
+                        </li>
+                        {% endif %} {% endfor %}
+                    </ul>
+                    <input type="text" id="georef_area" name="georef_area" style="display:none" />
+                    <input type="submit" id="georef_submit" name="georef_submit" value="Submit" class="btn btn-default" />
+                </form>
+            </div>
         </div>
      </div>
       <div class="side-navi-tab">
@@ -180,21 +171,112 @@ body{
             <label class="form-check-label">
               <input class="form-check-input" type="radio" name="sld" value="dtm" onclick="changeSLD()">
             </label>
+        <div class="side-navi-tab">
+            <div>
+                <h4 class="list-group-item-heading">{%trans "Area Search" %}</h4>
+                <p>
+                    Type in location to zoom into it.
+                </p>
+                <form name='geocode_form' id="geocode_form">
+                    {% csrf_token %}
+                    <input type="text" id="geocode_input" name="geocode_input" />
+                </form>
+                <br />
+                <a id="geocode_submit" name="geocode_submit" class="btn btn-default">Search</a>
+            </div>
         </div>
-        <div>
-        <label class="form-check-label">
-          <input class="form-check-input" type="radio" name="sld" value="dsm" onclick="changeSLD()">
-        </label>
+        <div class="side-navi-tab">
+            <div>
+                <h4 class="list-group-item-heading">{%trans "Bounding Box Selection" %}</h4>
+                <p>
+                    Select a dataset according to its location. Use WGS 1984 or EPSG:4326 in decimal degrees.
+                </p>
+                <form id="bbox_form">
+                    <table>
+                        <tr>
+                            <td>Upper Lat (&deg;N) limit: </td>
+                            <td>
+                                <input type="number" id="upperlimit" name="upperlimit" value=0 step="any" />
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>Left Lng (&deg;E) limit: </td>
+                            <td>
+                                <input type="number" id="leftlimit" name="leftlimit" value=0 step="any" />
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>Right Lng (&deg;E) limit: </td>
+                            <td>
+                                <input type="number" id="rightlimit" name="rightlimit" value=0 step="any" />
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>Lower Lat (&deg;N) limit: </td>
+                            <td>
+                                <input type="number" id="lowerlimit" name="lowerlimit" value=0 step="any" />
+                            </td>
+                        </tr>
+                    </table>
+                    <br />
+                    <input type="submit" id="bbox_submit" name="bbox_submit" value="Submit Bounding Box" class="btn btn-default" />
+                </form>
+            </div>
         </div>
-        <div>
-            <label class="form-check-label">
-              <input class="form-check-input" type="radio" name="sld" value="ortho" onclick="changeSLD()">
-            </label>
+        <div class="side-navi-tab">
+            <div>
+                <h4 class="list-group-item-heading">{%trans "General Information" %}</h4>
+                <p>
+                    All digital elevation models were acquired and processed by the UP Training Center for Applied Geodesy and Photogrammetry (UP-TCAGP), through the DOST-GIA funded Disaster Risk and Exposure Assessment for Mitigation (DREAM) Program.
+                </p>
+                <p>
+                    The Digital Terrain Models (DTM) and Digital Surface Models (DSM) were acquired by an Optech ALTM Pegasus LiDAR system.
+                </p>
+                <p>
+                    All digital elevation models, point cloud and orthophotographs were acquired and processed by the DREAM/PHIL-LiDAR 1 Program.
+                </p>
+                <p>
+                    All rights reserved 2013-2017
+                </p>
+            </div>
         </div>
-        <div>
-            <label class="form-check-label">
-              <input class="form-check-input" type="radio" name="sld" value="laz" onclick="changeSLD()">
-            </label>
+    </div>
+</div>
+<div style="position: fixed; top: 99px; left: 50px;">
+    <div id="floating-legend" style="background: white; padding: 0px 50px 15px 15px; width: auto; height: 200px; display: inline-block; top: 114px;">
+        <h4 class="list-group-item-heading">Legend</h4>
+        <div class="legend-radio-buttons" style="display: block; float: left;">
+            <div>
+                <label class="form-check-label">
+                    <input class="form-check-input" type="radio" name="sld" value="dtm" onclick="changeSLD()">
+                </label>
+            </div>
+            <div>
+                <label class="form-check-label">
+                    <input class="form-check-input" type="radio" name="sld" value="dsm" onclick="changeSLD()">
+                </label>
+            </div>
+            <div>
+                <label class="form-check-label">
+                    <input class="form-check-input" type="radio" name="sld" value="ortho" onclick="changeSLD()">
+                </label>
+            </div>
+            <div>
+                <label class="form-check-label">
+                    <input class="form-check-input" type="radio" name="sld" value="laz" onclick="changeSLD()">
+                </label>
+            </div>
+            <div>
+                <label class="form-check-label">
+                    <input class="form-check-input" type="radio" name="sld" value="clear" onclick="changeSLD()">
+                </label>
+            </div>
+            <div>
+                <label class="form-check-label">
+                    <input class="form-check-input" type="radio" name="sld" value="all" onclick="changeSLD()" checked>
+                </label>
+            </div>
+
         </div>
         <div>
             <label class="form-check-label">
@@ -208,7 +290,7 @@ body{
         </div>
       </div>
 
-            <div class="legend-images" style="display: block; float: left; position: relative;">
+      <div class="legend-images" style="display: block; float: left; position: relative;">
           <img id="dtm_icon" src="{{ dtm_lgd }}">
           <img id="dsm_icon" style="position: absolute; top: 25px; left: 0px;" src="{{ dsm_lgd }}">
           <img id="ortho_icon" style="position: relative; top: 50px; left: -50px;" src="{{ ortho_lgd }}">
@@ -221,10 +303,25 @@ body{
   <!-- <img id="legend_icon" src="{{ grid.resource.get_legend.url }}"><br/> -->
   <div style="min-height: 150px; background: white; padding: 15px 15px; margin-top: 20px; width: 300px;">
     <div id="notif" style="margin: 0px -15px;">
+<!-- for checking
+        <div class="legend-images" style="display: block; float: left; position: relative;">
+            <img id="dtm_icon" src="{{ dtm_lgd }}">
+            <img id="dsm_icon" style="position: absolute; top: 25px; left: 0px;" src="{{ dsm_lgd }}">
+            <img id="ortho_icon" style="position: relative; top: 50px; left: -50px;" src="{{ ortho_lgd }}">
+            <img id="laz_icon" style="position: absolute; top: 75px; left: 0px;" src="{{ laz_lgd }}">
+            <p style="position: absolute; top: 98px; left: 2px;">C L E A R</p>
+            <p style="position: absolute; top: 123px; left: 2px;">A L L</p>
+            <img style="position: absolute; top: 150px; left: 0px;" id="legend_icon2" src="{{jurisdiction.resource.get_legend.url}}">
+        </div>
+-->
     </div>
-    <div style="max-height: 500px; overflow-y: auto; overflow-x: hidden;">
-       <div class="page-header" style="margin-top: -10px;">
-          <h4 class="page-title">Selected Tiles <div id="data_size_display" style="display:inline-block;">- 0 Byte</div></h3>
+    <!-- <img id="legend_icon" src="{{ grid.resource.get_legend.url }}"><br/> -->
+    <div style="min-height: 150px; background: white; padding: 15px 15px; margin-top: 20px; width: 300px;">
+        <div id="notif" style="margin: 0px -15px;">
+        </div>
+        <div style="max-height: 500px; overflow-y: auto; overflow-x: hidden;">
+            <div class="page-header" style="margin-top: -10px;">
+                <h4 class="page-title">Selected Tiles <div id="data_size_display" style="display:inline-block;">- 0 Byte</div></h3>
        </div>
        <div>
          <input id="checkbox_all" type="checkbox" onClick="toggle_all_checkboxes(this)" style="display:inline-block;">
