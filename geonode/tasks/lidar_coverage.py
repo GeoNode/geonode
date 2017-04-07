@@ -14,7 +14,7 @@ import subprocess
 # geonode,geoserver,postgis
 
 # connect to db
-#source = ogr.Open(("PG:host={0} dbname={1} user={2} password={3}".format
+# source = ogr.Open(("PG:host={0} dbname={1} user={2} password={3}".format
 #                   (settings.DATABASE_HOST, settings.GIS_DATABASE_NAME,
 #                    settings.DATABASE_USER, settings.DATABASE_PASSWORD)))
 conn = psycopg2.connect(("host={0} dbname={1} user={2} password={3}".format
@@ -42,31 +42,42 @@ def lidar_coverage_permission(layer):
 
 def lidar_coverage_metadata():
     try:
-
-        path = settings.LIDAR_COVERAGE_PATH# Absolute mount path of lidar coverage must be the same for all lipad
-
+        # Absolute mount path of lidar coverage must be the same for all lipad
+        path = settings.LIDAR_COVERAGE_PATH
     except:
-        print 'ERROR GETTING LIDAR COVERAGE PATH'
+        print 'NO LIDAR COVERAGE PATH IN SETTINGS'
+
+    # if path not found, exit celery task
+    if not os.path.isfile(path):
+        print 'FILE DOES NOT EXIST'
+        return
+
     try:
         # Replace lidar_coverage shapefile in postgis
-        subprocess.check_output('shp2pgsql -D -d -I -s 32651 ' + path + settings.target_table +
-                                ' | psql -h ' + settings.DATABASE_HOST +
-                                ' -U ' + settings.DATABASE_USER + ' -d ' + settings.DATASTORE_DB,
-                                shell=True, env=dict(os.environ, PGPASSWORD=settings.DATABASE_PASSWORD))
+        query = 'shp2pgsql -D -d -I -s 32651 ' + path + ' ' + settings.target_table + \
+            ' | psql -h ' + settings.DATABASE_HOST + \
+            ' -U ' + settings.DATABASE_USER + ' -d ' + settings.DATASTORE_DB
+        print 'QUERY ', query
+        _out = subprocess.check_output(query,
+                                       shell=True, env=dict(os.environ, PGPASSWORD=settings.DATABASE_PASSWORD))
+        print 'SUBPROCESS COMMAND OUTPUT ', _out
     except:
         print 'ERROR EXECUTING SHP2PGSQL COMMAND'
 
     # Rename columns in lidar_coverage table
-    fid_query = 'ALTER TABLE ' + settings.target_table + 'rename column gid to fid'
+    fid_query = 'ALTER TABLE ' + settings.target_table + ' RENAME COLUMN gid to fid'
     try:
+        # print 'FID QUERY ', fid_query
         cur.execute(fid_query)
         conn.commit()
     except psycopg2.ProgrammingError:
         print 'FID QUERY ERROR'
         conn.rollback()
         # continue
-    the_geom_query = 'ALTER TABLE ' + settings.target_table + 'RENAME COLUMN geom to the_geom'
+    the_geom_query = 'ALTER TABLE ' + settings.target_table + \
+        ' RENAME COLUMN geom to the_geom'
     try:
+        # print 'THE GEOM QUERY ', the_geom_query
         cur.execute(the_geom_query)
         conn.commit()
     except psycopg2.ProgrammingError:
@@ -74,7 +85,7 @@ def lidar_coverage_metadata():
         conn.rollback()
 
     # Update metadata
-    layer = Layer.objects.get(name='lidar_coverage')
+    layer = Layer.objects.get(name=settings.target_table)
     layer.abstract = '''The layer contains the following metadata per block:
                 - Sensor used
                 - Processor (DREAM or Phil-LiDAR 1)

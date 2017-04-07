@@ -14,6 +14,7 @@ from braces.views import (
     SuperuserRequiredMixin, LoginRequiredMixin,
 )
 
+from geonode.people.models import Profile
 from geonode.datarequests.forms import RejectionForm
 from geonode.datarequests.admin_edit_forms import ProfileRequestEditForm
 from geonode.datarequests.models import (
@@ -84,7 +85,14 @@ def profile_request_approve(request, pk):
         profile_request = get_object_or_404(ProfileRequest, pk=pk)
 
         if not profile_request.has_verified_email:
+            if profile_request.status == 'pending':
+                profile_request.status = 'unconfirmed'
+                profile_request.save()
             messages.info(request,'This request does not have a verified email')
+            return HttpResponseRedirect(profile_request.get_absolute_url())
+        
+        if profile_request.email in Profile.objects.all().values_list('email', flat=True):
+            messages.info(request,'The email for this profile request is already in use')
             return HttpResponseRedirect(profile_request.get_absolute_url())
         
         if profile_request.status != 'pending':

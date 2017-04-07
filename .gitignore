@@ -130,3 +130,6 @@ scripts/utils/osm
 
 #CSV files
 *.csv
+
+# ignore zipped shapefiles for local osm setup
+scripts/utils/osm
