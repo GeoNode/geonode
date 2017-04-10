@@ -2,7 +2,7 @@
 #sideNavi,
 .side-navi-item,
 .side-navi-data,
-.side-navi-tab {  margin: 0; padding: 0;  }
+.side-navi-tab {  margin: 0; padding: 0;  outline: #000000 dotted;}
 #sideNavi {
     position: fixed;
     right: 50px;
@@ -42,3 +42,4 @@
 .side-navi-tab {  display: none;  }
 .side-navi-tab.active {  display: inline-block;  }
 .side-navi-tab > div {  padding: 25px;  }
+.floating-tab-left {  margin: 0; padding: 0;  outline: #000000 dotted;}
