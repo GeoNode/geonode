@@ -126,11 +126,7 @@ development.db
 master
 slave
 
-<<<<<<< HEAD
 scripts/utils/osm
-
-=======
->>>>>>> ceph-deletion
 #CSV files
 *.csv
 

@@ -1,0 +1,9 @@
+{% extends "site_base.html" %}
+{% load i18n %}
+
+{% block body %}
+  <div id="description"><h3>{% trans "Problematic Layer" %}</h3></div>
+  {% blocktrans %}
+      Please contact <a href="mailto:lipad@dream.upd.edu.ph">LiPAD administrator</a>
+  {% endblocktrans %}
+{% endblock %}

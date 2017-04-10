@@ -34,7 +34,8 @@ def get_luzvimin(data):
         north = int(data['grid_ref'].split('N')[1])*1000
         SUC = get_SUC_using_gridref(east,north)
         try:
-            luzvimin = SUCLuzViMin.objects.filter(suc=SUC)[0].luzvimin
+            query = SUCLuzViMin.objects.filter(suc=SUC)[0].luzvimin
+            luzvimin = SUC
         except:
             luzvimin = "Luzvimin_others"
     else:
@@ -46,7 +47,8 @@ def get_luzvimin(data):
         keyword_list = layer_query.keywords.names()
         for eachkeyword in keyword_list:
             try:
-                luzvimin = SUCLuzViMin.objects.filter(suc=eachkeyword)[0].luzvimin
+                query = SUCLuzViMin.objects.filter(suc=eachkeyword)[0].luzvimin
+                luzvimin = eachkeyword
                 break
             except Exception as e:
                 print (layer_query.typename + ' - ' + str(e))
@@ -133,10 +135,10 @@ def main(minusdays, query_objects, attr_date, attr_actor, attr_type, attr_filena
 def save_to_dc(minusdays,count_dict):
     datetoanalyze = datetime.strptime((datetime.now()-timedelta(days=minusdays)).strftime('%d-%m-%Y'),'%d-%m-%Y')
     for category, eachdict in count_dict.iteritems():
-        if category == 'Luzon' or category == 'Visayas' or category == 'Mindanao' or category == 'Luzvimin_others':
-            chart_group = 'luzvimin'
-        elif category == 'monthly':
+        if category == 'monthly':
             chart_group = 'monthly'
+        else:
+            chart_group = 'luzvimin'
         for eachtype, eachvalue in eachdict.iteritems():
             if eachvalue:
                 model_object = DownloadCount(date=str(datetoanalyze),
