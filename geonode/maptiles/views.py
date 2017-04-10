@@ -87,7 +87,7 @@ def tiled_view(request, overlay=settings.TILED_SHAPEFILE, template="maptiles/map
     context_dict["grid"] = get_layer_config(
         request, overlay, "base.view_resourcebase", _PERMISSION_VIEW)
     legend_link = ''
-    if 'localhost' in settings.BASEURL:
+    if not 'localhost' in settings.BASEURL:
         legend_link = settings.OGC_SERVER['default']['PUBLIC_LOCATION'] + \
             'wms?REQUEST=GetLegendGraphic&VERSION=1.0.0&FORMAT=image/png&LAYER=geonode:philgrid&STYLE='
     else:
