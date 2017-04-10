@@ -1,3 +1,16 @@
+geonode (2.6.0+rc1) trusty; urgency=high
+
+  [ Simone Dalmasso ]
+  * [8a8ffe] keywords and regions default should be list and not tuple
+
+  [ Ariel Núñez ]
+  * [9b5134] Peg django-tastypie to 0.13.1
+
+  [ Simone Dalmasso ]
+  * [783f7c] make sure Layer delete also removes the associated Tileset (#2999)
+
+ -- Simone Dalmasso <simone.dalmasso@gmail.com>  Mon, 10 Apr 2017 13:32:40 +0000
+
 geonode (2.6.0+beta1) trusty; urgency=high
 
   [ Simone Dalmasso ]
