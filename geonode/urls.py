@@ -45,6 +45,9 @@ urlpatterns = patterns('',
                 {'template': 'developer.html'}, name='dev'),
     url(r'^upload_terms/$', 'django.views.generic.simple.direct_to_template',
             {'template': 'maps/upload_terms.html'}, name='upload_terms'),
+    # Redirects
+    (r'^tweetmap/?$', 'django.views.generic.simple.direct_to_template',
+                {'template': 'maps/tweetmap_redirect.html'}),
      # Data views
     (r'^data/', include(geonode.maps.urls.datapatterns)),
     url(r'^layers/acls/?$', 'geonode.maps.views.layer_acls', name='data_acls'),

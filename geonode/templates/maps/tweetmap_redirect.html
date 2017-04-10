@@ -1,0 +1,23 @@
+{% extends "page_layout.html" %}
+{% load i18n %}
+
+  {% block breadcrumb %}
+      					<a id="logo" href="{% url home %}"><img src="{{STATIC_URL}}theme/img/WorldMap-Logo_26px.png" border="0"></a>
+  						<div id="page-breadcrumb"><span>Change Password</span></div>
+
+  {% endblock %}
+
+{% block main %}
+<h3>TweetMap</h3>
+<div class="twocol">
+
+      <p>TweetMap is being enhanced to support real-time tweets, better search,
+      and download of content via a new, open source, big streaming data system,
+      the Billion Object Platform or BOP. Click <a href="http://bop.worldmap.harvard.edu/bop">here</a> to play with an early Alpha
+      version of the platform.</p>
+
+      <p>Click here for information on the BOP project.</p>
+
+      <p>Any questions please contact <a href="mailto:worldmap@harvard.edu">worldmap@harvard.edu</a>.</p>
+</div>
+{% endblock %}
