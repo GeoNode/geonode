@@ -66,6 +66,9 @@ def profile_request_edit(request, pk, template ='datarequests/profile_detail_edi
                 if k=='org_type':
                     pprint(v)
                     setattr(profile_request, k, v.val)
+                elif k=='email':
+                    if form.cleaned_data[k] != profile_request.email and profile_request.status == 'pending' :
+                        profile_request.status = 'unconfirmed'
                 else:
                     setattr(profile_request, k, v)
             profile_request.administrator = request.user
