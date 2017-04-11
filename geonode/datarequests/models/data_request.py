@@ -386,7 +386,7 @@ class DataRequest(BaseRequest, StatusModel):
         for n in self.data_type.names():
             data_classes += str(n)
         
-        data_classes += str(self.data_class_other)
+        data_classes += ", "+str(self.data_class_other)
             
         
         text_content = email_utils.DATA_SUC_REQUEST_NOTIFICATION_TEXT.format(

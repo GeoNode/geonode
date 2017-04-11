@@ -33,12 +33,16 @@ def add_company_organization(dn, company = None, org = None, initial_company=Non
             )
         else:
             mod_attrs.append(
-                (ldap.MOD_ADD, 'company', company)
+                (ldap.MOD_REPLACE, 'company', company)
             )
     if org:
         if not initial_org or len(initial_org) < 1:
             mod_attrs.append(
                 (ldap.MOD_ADD, 'o', org)
+            )
+        else:
+            mod_attrs.append(
+                (ldap.MOD_REPLACE, 'o', org)
             )
     try:
         con = ldap.initialize(settings.AUTH_LDAP_SERVER_URI)
