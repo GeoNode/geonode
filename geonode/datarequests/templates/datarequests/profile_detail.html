@@ -123,9 +123,9 @@
           <td class="table-user-profile-attribute col-md-3">{% trans "Approval/Rejection Administrator" %}</td>
           <td>{{profile_request.administrator.username}}</td>
       </tr>
-      {% if profile_request.additional_remarks %}
-        <tr>
-          <td class="table-user-profile-attribute col-md-3">{% trans "Approval/Rejection Administrator" %}</td>
+      {% if user.is_superuser %}
+      <tr>
+          <td class="table-user-profile-attribute col-md-3">{% trans "Additional Remarks" %}</td>
           <td>{{profile_request.additional_remarks}}</td>
       </tr>
       {% endif %}
@@ -160,6 +160,10 @@
         {% endif %}
       </li>
 {% if user.is_superuser %}
+    <li  class="list-group-item">
+        <a href='{% url "datarequests:profile_request_edit" pk=profile_request.pk %}' class="btn btn-primary btn-md btn-block"  did="approve-button">Edit Request</a>
+    </li>
+    
       {% if profile_request.status == 'approved' %}
         <li class="list-group-item">
              <form id="recreate_dir_form" method="post" class="modal-form" action='{% url "datarequests:profile_request_recreate_dir" pk=profile_request.pk%}'>{% csrf_token %}

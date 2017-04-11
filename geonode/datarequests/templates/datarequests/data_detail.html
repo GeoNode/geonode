@@ -89,7 +89,11 @@
 
       <tr>
       <td class="table-user-profile-attribute">{% trans "Type of Data Requested" %}</td>
-      <td>{{ data_request.get_data_type_requested_display }}</td>
+      <td>{% for type in data_types %} {{ type }}{% endfor %}</td>
+      </tr>
+      <tr>
+      <td class="table-user-profile-attribute">{% trans "Other Data Requested" %}</td>
+      <td>{{ data_request.data_class_other }}</td>
       </tr>
 
       <tr>
@@ -106,6 +110,12 @@
           <td class="table-user-profile-attribute col-md-3">{% trans "Approval/Rejection Administrator" %}</td>
           <td>{{data_request.administrator.username}}</td>
       </tr>
+      {% if user.is_superuser %}
+      <tr>
+          <td class="table-user-profile-attribute col-md-3">{% trans "Additional Remarks" %}</td>
+          <td>{{data_request.additional_remarks}}</td>
+      </tr>
+      {% endif %}
       </tbody>
     </table>
 
@@ -146,6 +156,9 @@
         {% endif %}
       </li>
 {% if user.is_superuser %}
+    <li  class="list-group-item">
+        <a href='{% url "datarequests:data_request_edit" pk=data_request.pk %}' class="btn btn-primary btn-md btn-block"  id="edit-button">Edit Request</a>
+    </li>
     {% if data_request.jurisdiction_shapefile %}
     <li class="list-group-item">
              <form id="compute_request_size_form" method="post" class="modal-form" action='{% url "datarequests:data_request_compute_size" pk=data_request.pk %}'>{% csrf_token %}

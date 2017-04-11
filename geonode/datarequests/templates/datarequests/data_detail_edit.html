@@ -1,0 +1,85 @@
+{% extends "layers/layer_base.html" %}
+{% load i18n %}
+{% load dialogos_tags %}
+{% load agon_ratings_tags %}
+{% load crispy_forms_tags %}
+{% load bootstrap_tags %}
+{% load url from future %}
+{% load base_tags %}
+{% load guardian_tags %}
+{% load eula_extras %}
+
+{% block title %}{% trans "Data Request Details Edit" %} — {{ block.super }}{% endblock %}
+
+{% block head %}
+{{ block.super }}
+{% endblock %}
+
+{% block body_class %}{% trans "Data Request" %}{% endblock %}
+
+{% block body_outer %}
+<div class="page-header">
+  <a href="{% url 'datarequests:data_request_browse' %}" class="btn btn-primary pull-right">{% trans "View All Requests" %}</a>
+  <h2 class="page-title">{% trans "Data Request Details" %}</h2>
+</div>
+
+<div class="row">
+  <div class="col-md-6 col-md-offset-1">
+
+    <form id="edit-form" action='{% url "datarequests:data_request_edit" pk=data_request.pk %}' class="form-horizontal" method="post" enctype="multipart/form-data">{% csrf_token %}
+
+          <div class="form-controls">
+            {% crispy form %}
+          </div>
+          <div class="form-actions">
+            <input type="submit" class="btn btn-primary btn-md" id="form-submit" name ="form-submit" value="{% trans 'Save' %}"/>
+            <a href='{% url "datarequests:data_request_detail" pk=data_request.pk %}' class="btn btn-default" >{% trans "Cancel Editing" %}</a>
+          </div>
+
+      </form>
+
+  </div>
+
+  <div class="col-md-4">
+
+    <ul class="list-group">
+      <li class="list-group-item">
+        <h5 class="list-group-item-heading">{%trans "Data Request Status" %}</h5>
+
+        <div class="row data-request-status-parent">
+          {% if data_request.status == 'pending' %}
+            <div class="col-sm-12 data-request-status label pending-request">
+          {% elif data_request.status == 'approved' %}
+            <div class="col-sm-12 label data-request-status label-success">
+          {% else %}
+            <div class="col-sm-12 label data-request-status label-danger">
+          {% endif %}
+              <strong>{{ data_request.get_status_display }}</strong>
+            </div>
+        </div>
+
+        {% if data_request.status == 'rejected' or data_request.status == 'cancelled' %}
+          <p><strong>{% trans "Reason" %}</strong>: {{ data_request.rejection_reason }}</p>
+          {% if data_request.additional_rejection_reason %}
+              <p><strong>{% trans "Additional Details" %}</strong>: {{ data_request.additional_rejection_reason }}</p>
+          {% endif %}
+        {% endif %}
+      </li>
+  </ul>
+  <input type="hidden" id="data_request_id" value="{{data_request.pk}}"></input>
+  </div> <!-- col-md-4 -->
+</div> <!-- row -->
+{% endblock %}
+
+{% block extra_script %}
+
+      {% load i18n %}
+      <script src="{{ STATIC_URL }}geonode/js/datarequests/registration2.js"></script>
+        <script>
+    $('#form-submit').click(function(e){
+        e.preventDefault();
+        $('#edit-form').submit();
+        });
+        </script>
+      
+{% endblock extra_script %}

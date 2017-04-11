@@ -21,8 +21,16 @@
 <div id = 'pie_div' class = "plots"></div>
 <div id = 'monthly_datarequest' class = "plots"></div>
 <div id = 'monthly_div' class = "plots"></div>
-<!-- <div id = 'luzvimin_div' class = "plots"></div> -->
-
+<!--
+<div id = 'luzvimin_div0' class = "plots"></div>
+<div id = 'luzvimin_div1' class = "plots"></div>
+<div id = 'luzvimin_div2' class = "plots"></div>
+<div id = 'luzvimin_div3' class = "plots"></div>
+-->
+<div id = 'div_total_luzvimin0' class = "plots"></div>
+<div id = 'div_total_luzvimin1' class = "plots"></div>
+<div id = 'div_total_luzvimin2' class = "plots"></div>
+<div id = 'div_total_luzvimin3' class = "plots"></div>
 {% endblock %}
 
 {% block extra_script %}
@@ -71,7 +79,11 @@ var data_pie = [{
   ],
   labels: [
     {% for key, value in total_layers.items %}
-      '{{ key }}',
+        {% if key == 'FHM' %}
+            'Flood Hazard Map',
+        {% else %}
+            '{{ key }}',
+        {% endif %}
     {% endfor %}
   ],
   type: 'pie',
@@ -387,87 +399,68 @@ var layout_datarequest = {
 
 Plotly.newPlot('monthly_datarequest', data_datarequest, layout_datarequest);
 
-var luzvimin1 = {
-  x: [
-    {% for key, value in luzvimin_count.items %}
-      '{{ key }}',
+{% for chart_group, sucdatevalue in luzvimin_count.items %}
+    var data_luzvimin{{ forloop.counter0 }} = [];
+    {% for suc, datevalue in sucdatevalue.items %}
+        var luzvimin{{ forloop.parentloop.counter0 }}{{ forloop.counter0 }} = {
+            x: [
+            {% for date, value in datevalue.items %}
+                '{{ date }}',
+            {% endfor %}
+            ],
+            y: [
+            {% for date, value in datevalue.items %}
+                {{ value }},
+            {% endfor %}
+            ],
+            name: '{{ suc }}',
+            type: 'bar',
+            marker: {
+                color: '#{{ color_list.forloop.counter0 }}'
+            }
+        };
+        data_luzvimin{{ forloop.parentloop.counter0 }}.push(luzvimin{{ forloop.parentloop.counter0 }}{{ forloop.counter0}})
     {% endfor %}
-  ],
-  y: [
-    {% for key, value in luzvimin_count.items %}
-      {{ value.Luzon }},
-    {% endfor %}
-  ],
-  name: 'Luzon',
-  type: 'bar',
-  marker: {
-    color: '#DC3912'
-  }
-};
-var luzvimin2 = {
-  x: [
-    {% for key, value in luzvimin_count.items %}
-      '{{ key }}',
-    {% endfor %}
-  ],
-  y: [
-    {% for key, value in luzvimin_count.items %}
-      {{ value.Visayas }},
-    {% endfor %}
-  ],
-  name: 'Visayas',
-  type: 'bar',
-  marker: {
-    color: '#FF9900'
-  }
-};
-var luzvimin3 = {
-  x: [
-    {% for key, value in luzvimin_count.items %}
-      '{{ key }}',
-    {% endfor %}
-  ],
-  y: [
-    {% for key, value in luzvimin_count.items %}
-      {{ value.Mindanao }},
-    {% endfor %}
-  ],
-  name: 'Mindanao',
-  type: 'bar',
-  marker: {
-    color: '#3366CB'
-  }
-};
-var luzvimin4 = {
-  x: [
-    {% for key, value in luzvimin_count.items %}
-      '{{ key }}',
-    {% endfor %}
-  ],
-  y: [
-    {% for key, value in luzvimin_count.items %}
-      {{ value.Luzvimin_others }},
-    {% endfor %}
-  ],
-  name: 'Others',
-  type: 'bar',
-  marker: {
-    color: '#109618'
-  }
-};
-
-var data_luzvimin = [luzvimin4, luzvimin3, luzvimin2, luzvimin1];
-
-var layout_luzvimin = {
+var layout_luzvimin{{ forloop.counter0 }} = {
   barmode: 'stack',
-  xaxis: {autorange: 'reversed'},
-  title: '<b>LuzViMin Download Count</b>',
+  title: '<b>{{ chart_group }} Download Count</b>',
   legend:{
     x: 0,
     y: 1
   }
 };
 
-Plotly.newPlot('luzvimin_div', data_luzvimin, layout_luzvimin);
+Plotly.newPlot('luzvimin_div{{ forloop.counter0 }}', data_luzvimin{{ forloop.counter0 }}, layout_luzvimin{{ forloop.counter0 }});
+{% endfor %}
+
+
+{% for chart_group, sucvalue in total_luzvimin.items %}
+    var data_total_luzvimin{{ forloop.counter0 }} = [];
+    var total_luzvimin{{ forloop.counter0 }} = {
+        x: [
+        {% for suc, value in sucvalue.items %}
+            '{{ suc }}',
+        {% endfor %}
+        ],
+        y: [
+        {% for suc, value in sucvalue.items %}
+            {{ value }},
+        {% endfor %}
+        ],
+        type: 'bar',
+    };
+    data_total_luzvimin{{ forloop.counter0 }}.push(total_luzvimin{{ forloop.counter0}})
+var layout_total_luzvimin{{ forloop.counter0 }} = {
+  barmode: 'stack',
+  title: '<b>{{ chart_group }} Download Count</b>',
+  legend:{
+    x: 0,
+    y: 1
+  }
+};
+
+Plotly.newPlot('div_total_luzvimin{{ forloop.counter0 }}', data_total_luzvimin{{ forloop.counter0 }}, layout_total_luzvimin{{ forloop.counter0 }});
+{% endfor %}
+
 </script>
 {% endblock extra_script %}

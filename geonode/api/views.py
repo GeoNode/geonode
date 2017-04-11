@@ -28,12 +28,14 @@ import json
 from urlparse import urljoin
 from urllib2 import HTTPError
 
+import geonode.settings as settings
+
 def api_combined(request, apiname):
     current_url = request.build_absolute_uri()
     tostrip = 'limit='+str(request.GET.get('limit'))+'&offset='+str(request.GET.get('offset'))
     apiquery = '?'.join(current_url.split('?')[1:]).replace(tostrip,'').rstrip('&').lstrip('&')
     local_url = urljoin(current_url,'../')
-    urls_to_visit = ['https://lipad-fmc.dream.upd.edu.ph/']
+    urls_to_visit = settings.LIPAD_INSTANCES
     output = {}
     # output = []
     for each_url in urls_to_visit:
@@ -45,7 +47,7 @@ def api_combined(request, apiname):
                 try:
                     if data.keys().index(each_key) == 1: ##dict's key == u'object'
                         for i_object in range(len(data[each_key])):
-                            data[each_key][i_object]['thumbnail_url'] = each_url + data[each_key][i_object]['thumbnail_url'][1:]
+                            data[each_key][i_object]['thumbnail_url'] = each_url + data[each_key][i_object]['thumbnail_url'][1:] if 'upd.edu.ph/' not in data[each_key][i_object]['thumbnail_url'] else each_url + data[each_key][i_object]['thumbnail_url'].split('up.edu.ph/')[1]
                             data[each_key][i_object]['detail_url'] = each_url + data[each_key][i_object]['detail_url'][1:]
                         output[each_key] += data[each_key]
                     else:##dict's key == u'meta'
@@ -60,15 +62,18 @@ def api_combined(request, apiname):
 def api_autocomplete(request):
     current_url = request.build_absolute_uri()
     apiquery = '?'.join(current_url.split('?')[1:])
-    local_url = urljoin(current_url,'../')
-    urls_to_visit = [local_url,'https://lipad-fmc.dream.upd.edu.ph/']
+    local_url = 'http://'+request.META['HTTP_HOST']+'/'#for lipad.dmz""
+    urls_to_visit = [local_url] + settings.LIPAD_INSTANCES
     output = ''
 
     # output = []
     for each_url in urls_to_visit:
-        # output.append (each_url + 'autocomplete/ResourceBaseAutocomplete/?' + apiquery)
-        response = urllib2.urlopen(each_url + 'autocomplete/ResourceBaseAutocomplete?' + apiquery)
-        data = response.read()
-        if 'No matches found' not in data:
-            output += data
+        try:
+            # output.append (each_url + 'autocomplete/ResourceBaseAutocomplete/?' + apiquery)
+            response = urllib2.urlopen(each_url + 'autocomplete/ResourceBaseAutocomplete/?' + apiquery)
+            data = response.read()
+            if 'No matches found' not in data:
+                output += data
+        except:
+            pass
     return HttpResponse(output,mimetype='application/json',status=200)

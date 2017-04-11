@@ -61,6 +61,13 @@ class FTPStatus(enum.Enum):
         ERROR:   'Error',
         DUPLICATE: 'Duplicate', }
 
+class TileDataClass(models.Model):
+    short_name = models.CharField(max_length=15)
+    full_name = models.CharField(max_length=50)
+    description=models.CharField(max_length=300)
+    
+    def __unicode__(self):
+        return "{0}:{1}".format(self.short_name, self.full_name)
 
 class CephDataObject(models.Model):
     size_in_bytes = models.IntegerField()
@@ -114,6 +121,9 @@ class UserJurisdiction(models.Model):
 class UserTiles(models.Model):
     user = models.ForeignKey(Profile, null=False, blank=False, unique=True)
     gridref_list = models.TextField(null=False, blank=False)
+    @property
+    def num_tiles(self):
+        return self.gridref_list.count(',')+1
 
 
 
@@ -157,7 +167,3 @@ class RIDF(models.Model):
 
     def __unicode__(self):
         return "{0}:{1}".format(self.prov_name, self.muni_name)
-
-class UserTiles(models.Model):
-    user = models.ForeignKey(Profile, null=False, blank=False, unique=True)
-    gridref_list = models.TextField(null=False, blank=False)

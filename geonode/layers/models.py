@@ -35,7 +35,6 @@ from geonode.people.utils import get_valid_user
 from agon_ratings.models import OverallRating
 from geonode.utils import check_shp_columnnames
 from geonode.security.models import remove_object_permissions
-
 from taggit.managers import TaggableManager
 from taggit.models import GenericTaggedItemBase, TagBase
 
@@ -66,6 +65,7 @@ class FloodplainTag (TagBase):
 
 class FloodplainTaggedItem (GenericTaggedItemBase):
     tag = models.ForeignKey(FloodplainTag, related_name='floodplain_tag')
+
 
 class Style(models.Model):
 
@@ -211,8 +211,7 @@ class Layer(ResourceBase):
             if wrong_column_name:
                 msg = 'Shapefile has an invalid column name: %s' % wrong_column_name
             else:
-                msg = _('File cannot be opened, maybe check the encoding')
-            assert valid_shp, msg
+                assert valid_shp, msg
 
         # no error, let's return the base files
         return base_files.get(), list_col

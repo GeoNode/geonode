@@ -3,7 +3,7 @@
 .pydevproject
 .settings
 
-# 
+#
 build artifacts
 *.pyc
 *.egg-info
@@ -55,7 +55,7 @@ docs/i18n/pot/
 #geonode/static/.components/
 #geonode/static/geoexplorer/
 #geonode/static_root/
-#geonode/static/node_modules/
+geonode/static/node_modules/
 #node_modules/
 # Listing all of them instead of putting geonode/static/lib out of version control.
 geonode/cephgeo/logs/
@@ -126,6 +126,8 @@ development.db
 master
 slave
 
-
 #CSV files
 *.csv
+
+# ignore zipped shapefiles for local osm setup
+scripts/utils/osm
