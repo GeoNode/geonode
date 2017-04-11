@@ -1,0 +1,123 @@
+{% extends "layers/layer_base.html" %}
+{% load i18n %}
+{% load dialogos_tags %}
+{% load agon_ratings_tags %}
+{% load crispy_forms_tags %}
+{% load bootstrap_tags %}
+{% load url from future %}
+{% load base_tags %}
+{% load guardian_tags %}
+{% load eula_extras %}
+
+{% block title %}{% trans "Profile Request Details" %} — {{ block.super }}{% endblock %}
+
+{% block head %}
+{% if resource %}
+    {% if preview == 'geoext' %}
+      {% include "layers/layer_geoext_map.html" %}
+    {% else %}
+      {% include "layers/layer_leaflet_map.html" %}
+    {% endif %}
+{% endif %}
+{{ block.super }}
+{% endblock %}
+
+{% block body_class %}{% trans "Profile Request" %}{% endblock %}
+
+{% block body_outer %}
+<div class="page-header">
+  <a href="{% url 'datarequests:profile_request_browse' %}" class="btn btn-primary pull-right">{% trans "View All Requests" %}</a>
+  <h2 class="page-title">{% trans "Profile Request Details" %}</h2>
+</div>
+
+<div class="row">
+  <div class="col-md-6 col-md-offset-1">
+
+    <form id="edit-form" action='{% url "datarequests:profile_request_edit" pk=profile_request.pk %}' class="form-horizontal" method="post" enctype="multipart/form-data">{% csrf_token %}
+
+          <div class="form-controls">
+            {% crispy form %}
+          </div>
+          <div class="form-actions">
+            <input type="submit" class="btn btn-primary btn-md" id="form-submit" name ="form-submit" value="{% trans 'Save' %}"/>
+            <a href='{% url "datarequests:profile_request_detail" pk=profile_request.pk %}' class="btn btn-default" >{% trans "Cancel Editing" %}</a>
+          </div>
+
+      </form>
+
+  </div>
+
+  <div class="col-md-4">
+
+    <ul class="list-group">
+      <li class="list-group-item">
+        <h5 class="list-group-item-heading">{%trans "Data Request Status" %}</h5>
+
+        <div class="row data-request-status-parent">
+          {% if profile_request.status == 'pending' %}
+            <div class="col-sm-12 data-request-status label pending-request">
+          {% elif profile_request.status == 'approved' %}
+            <div class="col-sm-12 label data-request-status label-success">
+          {% else %}
+            <div class="col-sm-12 label data-request-status label-danger">
+          {% endif %}
+              <strong>{{ profile_request.get_status_display }}</strong>
+            </div>
+        </div>
+
+        {% if profile_request.status == 'rejected' or profile_request.status == 'cancelled' %}
+          <p><strong>{% trans "Reason" %}</strong>: {{ profile_request.rejection_reason }}</p>
+          {% if profile_request.additional_rejection_reason %}
+              <p><strong>{% trans "Additional Details" %}</strong>: {{ profile_request.additional_rejection_reason }}</p>
+          {% endif %}
+        {% endif %}
+      </li>
+  </ul>
+  <input type="hidden" id="profile_request_id" value="{{profile_request.pk}}"></input>
+  </div> <!-- col-md-4 -->
+</div> <!-- row -->
+{% endblock %}
+
+{% block extra_script %}
+
+    {% if GEOGIG_ENABLED and resource.link_set.geogig %}
+        {% with "_geogig_scripts.html" as geogig_scripts_template %}
+            {% include  geogig_scripts_template %}
+        {% endwith %}
+    {% endif %}
+    <script type="text/javascript">
+      // $('#layer').css('opacity', 0);
+      // $('#layer').css('visibility', 'hidden');
+      // $('.nav-tabs').on('click', 'a[href="#layer"]', function() {
+      //   $('#layer').css('opacity', 1);
+      //   $('#layer').css('visibility', 'visible');
+
+      // });
+      {% if resource.get_legend.link_type == 'json' %}
+      $.getJSON('{{resource.get_legend_url}}', function (data) {
+          var legend = data.layers[0].legend;
+          var items = [];
+          $.each(legend, function (key, dvalue) {
+              items.push('<li><img src="data:image/png;base64,' + dvalue.imageData + '">'+dvalue.label+'</li>');
+          });
+
+          $('<ul/>', {
+              'class': 'arcgis-legend',
+              html: items.join('')
+
+          }).appendTo('#legend_placeholder');
+
+      });
+      {% endif %}
+    </script>
+
+      {% load i18n %}
+      <script src="{{ STATIC_URL }}geonode/js/datarequests/registration.js"></script>
+        <script>
+    $('#form-submit').click(function(e){
+        e.preventDefault();
+        $('#edit-form').submit();
+        });
+        </script>
+      
+{% endblock extra_script %}

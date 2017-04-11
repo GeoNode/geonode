@@ -1,3 +1,4 @@
+import ast
 import datetime
 import os
 import shutil
@@ -22,6 +23,7 @@ from django.views.decorators.http import require_POST
 from django.views.generic import TemplateView
 
 from geonode.base.enumerations import CHARSETS
+from geonode.cephgeo.models import TileDataClass
 from geonode.documents.models import Document
 from geonode.layers.models import UploadSession, Style
 from geonode.layers.utils import file_upload
@@ -118,6 +120,16 @@ def data_request_view(request):
         pprint("detected data request post")
         post_data = request.POST.copy()
         post_data['permissions'] = '{"users":{"dataRegistrationUploader": ["view_resourcebase"] }}'
+        data_classes = post_data.getlist('data_class_requested')
+        #data_classes = post_data.get('data_class_requested')
+        data_class_objs = []
+        pprint(data_classes)
+        pprint("len:"+str(len(data_classes)))
+        
+        if len(data_classes) == 1 and ',' in data_classes[0]:
+            post_data.setlist('data_class_requested',data_classes[0].replace('[','').replace(']','').replace('"','').split(','))
+            pprint(post_data.getlist('data_class_requested'))
+        
         details_form = DataRequestForm(post_data, request.FILES)
         data_request_obj = None
         
@@ -138,8 +150,8 @@ def data_request_view(request):
         else:
             tempdir = None
             shapefile_form = DataRequestShapefileForm(post_data, request.FILES)
-            if shapefile_form.is_valid():
-                if u'base_file' in request.FILES:
+            if u'base_file' in request.FILES:
+                if shapefile_form.is_valid():
                     title = shapefile_form.cleaned_data["layer_title"]
 
                     # Replace dots in filename - GeoServer REST API upload bug
@@ -218,16 +230,16 @@ def data_request_view(request):
                         if tempdir is not None:
                             shutil.rmtree(tempdir)
 
-            else:
-                for e in shapefile_form.errors.values():
-                    errormsgs.extend([escape(v) for v in e])
-                out['success'] = False
-                out['errors'].update(dict(
-                        (k, map(unicode, v))
-                        for (k,v) in shapefile_form.errors.iteritems()
-                ))
-                pprint(out['errors'])
-                out['errormsgs'] = out['errors']
+                else:
+                    for e in shapefile_form.errors.values():
+                        errormsgs.extend([escape(v) for v in e])
+                    out['success'] = False
+                    out['errors'].update(dict(
+                            (k, map(unicode, v))
+                            for (k,v) in shapefile_form.errors.iteritems()
+                    ))
+                    pprint(out['errors'])
+                    out['errormsgs'] = out['errors']
 
         #if out['success']:
         if not out['errors']:
@@ -276,10 +288,12 @@ def data_request_view(request):
                 
         else:
             status_code = 400
+        pprint("sending this out")
         return HttpResponse(
             json.dumps(out),
             mimetype='application/json',
             status=status_code)
+    pprint("i'm here")
     return render(
         request,
         'datarequests/registration/shapefile.html',

@@ -36,7 +36,7 @@ from django.http import HttpResponse, HttpResponseRedirect, HttpResponseForbidde
 from django.shortcuts import (
     redirect, get_object_or_404, render, render_to_response)
 from django.conf import settings
-from django.template import RequestContext
+from django.template import RequestContext, loader
 from django.utils.translation import ugettext as _
 from django.utils import simplejson as json
 from django.utils.html import escape
@@ -234,6 +234,16 @@ def layer_detail(request, layername, template='layers/layer_detail.html'):
         'base.view_resourcebase',
         _PERMISSION_MSG_VIEW)
 
+    # check if problematic in geoserver
+    cat = gs_catalog
+    try:
+        gs_layer = cat.get_layer(layername)
+        gs_layer.resource.latlon_bbox
+    except:
+        print 'GEOSERVER LAYER ERROR'
+        return HttpResponse(loader.render_to_string('layers/layer_error.html', RequestContext(request, {'error_message': _("Error in layer.")})), status=404)
+        # return HttpResponse(status=404)
+
     # assert False, str(layer_bbox)
     config = layer.attribute_config()
     # print layername
@@ -321,7 +331,8 @@ def layer_detail(request, layername, template='layers/layer_detail.html'):
             pprint(form)
             out['success'] = True
             anondownload = form.save()
-            anondownload.anon_layer = Layer.objects.get(typename=layername).typename
+            anondownload.anon_layer = Layer.objects.get(
+                typename=layername).typename
             anondownload.save()
         else:
             pprint(form)
@@ -654,6 +665,7 @@ def layer_download(request, layername):
                         'PUBLIC_LOCATION'], "/".join(splits[4:]))
     return HttpResponseRedirect(redir_url)
 
+
 def layer_tracker(request, layername, dl_type):
     layer = _resolve_layer(
         request,
@@ -665,8 +677,10 @@ def layer_tracker(request, layername, dl_type):
         action.send(request.user, verb='downloaded', action_object=layer)
         DownloadTracker(actor=Profile.objects.get(username=request.user),
                         title=str(layername),
-                        resource_type=str(ResourceBase.objects.get(layer__typename=layername).csw_type),
-                        keywords=Layer.objects.get(typename=layername).keywords.slugs(),
+                        resource_type=str(ResourceBase.objects.get(
+                            layer__typename=layername).csw_type),
+                        keywords=Layer.objects.get(
+                            typename=layername).keywords.slugs(),
                         dl_type=dl_type
                         ).save()
         pprint('Download Tracked')
@@ -696,7 +710,7 @@ def layer_download_csv(request):
 
     auth_list = DownloadTracker.objects.order_by('timestamp')
     writer.writerow(['username', 'lastname', 'firstname', 'email', 'organization',
-                     'organization type', 'purpose', 'layer name', 'date downloaded','area','size_in_bytes'])
+                     'organization type', 'purpose', 'layer name', 'date downloaded', 'area', 'size_in_bytes'])
 
     pprint("writing authenticated downloads list")
 
@@ -706,14 +720,15 @@ def layer_download_csv(request):
         firstname = unidecode(getprofile.first_name)
         lastname = unidecode(getprofile.last_name)
         email = getprofile.email
-        organization = unidecode(getprofile.organization) if getprofile.organization is not None else getprofile.organization
-        orgtype = orgtypelist[getprofile.organization_type]
+        organization = unidecode(
+            getprofile.organization) if getprofile.organization is not None else getprofile.organization
+        orgtype = getprofile.org_type
         #area = get_area_coverage(auth.action_object.typename)
         area = 0
         # pprint(dir(getprofile))
         if auth.resource_type != 'document':
             listtowrite.append([username, lastname, firstname, email, organization, orgtype,
-                                "", auth.title, auth.timestamp.strftime('%Y/%m/%d'),area,''])
+                                "", auth.title, auth.timestamp.strftime('%Y/%m/%d'), area, ''])
     # writer.writerow(['\n'])
     anon_list = AnonDownloader.objects.all().order_by('date')
     # writer.writerow(['Anonymous Downloads'])
@@ -726,14 +741,16 @@ def layer_download_csv(request):
         email = anon.anon_email
         layername = anon.anon_layer
         docname = anon.anon_document
-        organization = unidecode(anon.anon_organization) if anon.anon_organization is not None else anon.anon_organization
+        organization = unidecode(
+            anon.anon_organization) if anon.anon_organization is not None else anon.anon_organization
         orgtype = anon.anon_orgtype
-        purpose = unidecode(anon.anon_purpose) if anon.anon_purpose is not None else anon.anon_purpose
+        purpose = unidecode(
+            anon.anon_purpose) if anon.anon_purpose is not None else anon.anon_purpose
         #area = get_area_coverage(layername.typename)
         area = 0
         if layername:
             listtowrite.append(["", lastname, firstname, email, organization, orgtype,
-                                purpose, layername, anon.date.strftime('%Y/%m/%d'),area,''])
+                                purpose, layername, anon.date.strftime('%Y/%m/%d'), area, ''])
     listtowrite.sort(key=lambda x: datetime.datetime.strptime(
         x[8], '%Y/%m/%d'), reverse=True)
 
@@ -744,19 +761,19 @@ def layer_download_csv(request):
         lastname = unidecode(ftp_detail['user'].last_name)
         firstname = unidecode(ftp_detail['user'].first_name)
         email = ftp_detail['user'].email
-        organization = unidecode(ftp_detail['organization']) if ftp_detail['organization'] is not None else ftp_detail['organization']
+        organization = unidecode(ftp_detail['organization']) if ftp_detail[
+            'organization'] is not None else ftp_detail['organization']
         organization_type = ftp_detail['organization_type']
         date_requested = ftp_request.date_time.strftime('%Y/%m/%d')
 
-        listtowrite.append([ username, lastname, firstname, email, organization, organization_type, "",
-                    "LAZ", date_requested, ftp_detail['number_of_laz'], ftp_detail['size_of_laz']])
-        listtowrite.append([ username, lastname, firstname, email, organization, organization_type, "",
-                    "DSM", date_requested, ftp_detail['number_of_dsm'], ftp_detail['size_of_dsm']])
-        listtowrite.append([ username, lastname, firstname, email, organization, organization_type, "",
-                    "DTM", date_requested, ftp_detail['number_of_dtm'], ftp_detail['size_of_dtm']])
-        listtowrite.append([ username, lastname, firstname, email, organization, organization_type, "",
-                    "Ortho", date_requested, ftp_detail['number_of_ortho'], ftp_detail['size_of_ortho']])
-
+        listtowrite.append([username, lastname, firstname, email, organization, organization_type, "",
+                            "LAZ", date_requested, ftp_detail['number_of_laz'], ftp_detail['size_of_laz']])
+        listtowrite.append([username, lastname, firstname, email, organization, organization_type, "",
+                            "DSM", date_requested, ftp_detail['number_of_dsm'], ftp_detail['size_of_dsm']])
+        listtowrite.append([username, lastname, firstname, email, organization, organization_type, "",
+                            "DTM", date_requested, ftp_detail['number_of_dtm'], ftp_detail['size_of_dtm']])
+        listtowrite.append([username, lastname, firstname, email, organization, organization_type, "",
+                            "Ortho", date_requested, ftp_detail['number_of_ortho'], ftp_detail['size_of_ortho']])
 
     for eachtowrite in listtowrite:
         writer.writerow(eachtowrite)

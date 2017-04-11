@@ -31,33 +31,27 @@
             visibility:true,
             continuousWorld: true,
         }).addTo(map).bringToFront();
-        // });
 
-        var MapQuestOpen_OSM = L.tileLayer('http://korona.geog.uni-heidelberg.de/tiles/roads/x={x}&y={y}&z={z}', {
-        // // var MapQuestOpen_OSM = L.tileLayer('https://lipad-basemap.dream.upd.edu.ph/tiles/roads/x={x}&y={y}&z={z}', {
-                type: 'map',
-                ext: 'jpg',
-               attribution: 'Imagery from <a href="http://giscience.uni-hd.de/">GIScience Research Group @ University of Heidelberg</a> &mdash; Map data &copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>',
-               subdomains: '1234',
-               continuousWorld: true,
-             // 'opacity':0.8,
-            }).addTo(map).bringToBack();
-         //});
-
-         //var MapQuestOpen_OSM = L.tileLayer('http://server.arcgisonline.com/ArcGIS/rest/services/Ocean_Basemap/MapServer/tile/{z}/{y}/{x}', {
-        // var MapQuestOpen_OSM = L.tileLayer('https://lipad-basemap.dream.upd.edu.ph/tiles/roads/x={x}&y={y}&z={z}', {
-        //    type: 'map',
-        //    ext: 'jpg',
-        //    attribution: 'Tiles &copy; Esri &mdash; Sources: GEBCO, NOAA, CHS, OSU, UNH, CSUMB, National Geographic, DeLorme, NAVTEQ, and Esri',
-        //    subdomains: '1234',
-        //    continuousWorld: true,
-            // 'opacity':0.8,
-        //}).addTo(map).bringToBack();
+        // apply local osm group as overlay
+        var local_osm = L.tileLayer.wms('{{ resource.ows_url|safe }}', {
+            ptype: 'gxp_wmsgetfeatureinfo',
+            type: 'map',
+            // ext: 'jpg',
+            layers: 'osm:osm',
+            format: 'image/png',
+            transparent: false,
+            attribution:  'LiPAD uses basemaps from OSM. &copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>',
+            // bgcolor: '0x000000',
+            // 'opacity': 1,
+            tiled: true,
+            visibility: true,
+            continuousWorld: true
+        }).addTo(map).bringToBack();
 
         var baseMaps = {
-          'MapQuestOpen OSM' : MapQuestOpen_OSM,
-          // 'cdo' : cdo
+          'Local OSM' : local_osm,
         };
+
 
         var fhms_5yr = L.tileLayer.wms('https://lipad-fmc.dream.upd.edu.ph/geoserver/ows?', {
             ptype: 'gxp_wmsgetfeatureinfo',
@@ -91,15 +85,6 @@
             visibility: true,
             continuousWorld: true
         });
-
-        // L.control.layers(baseMaps).addTo(map);
-        // if (tile_layer != null) {
-            // map.layerscontrol.addOverlay(tile_layer,"{{ resource.title }}");
-            // map.layerscontrol.addOverlay(fhms_5yr, 'Flood Hazard Maps 5yr');
-            // map.layerscontrol.addOverlay(fhms_25yr, 'Flood Hazard Maps 25yr');
-            // map.layerscontrol.addOverlay(fhms_100yr, 'Flood Hazard Maps 100yr');
-            // map.addLayer(tile_layer);
-        // }
 
         var overlays = {
             "{{ resource.title }}": tile_layer,
