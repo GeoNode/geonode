@@ -1,11 +1,31 @@
+# -*- coding: utf-8 -*-
+#########################################################################
+#
+# Copyright (C) 2016 OSGeo
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program. If not, see <http://www.gnu.org/licenses/>.
+#
+#########################################################################
+
 import os
 import logging
 from shutil import rmtree
+
 from django.db import models
 from django.conf import settings
 
 from geonode.layers.models import Layer
-from geonode.maps.models import MapLayer
 
 logger = logging.getLogger("geonode.qgis_server.models")
 
@@ -60,4 +80,4 @@ class QGISServerLayer(models.Model):
         except OSError:
             pass
 
-import geonode.qgis_server.signals
+from geonode.qgis_server import signals  # noqa: F402.F401

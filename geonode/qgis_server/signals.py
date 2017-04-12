@@ -1,19 +1,39 @@
 # -*- coding: utf-8 -*-
+#########################################################################
+#
+# Copyright (C) 2016 OSGeo
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program. If not, see <http://www.gnu.org/licenses/>.
+#
+#########################################################################
+
 import logging
 import shutil
 import os
 from urllib2 import urlopen, quote
 from urlparse import urljoin
+
 from django.db.models import signals, ObjectDoesNotExist
 from django.dispatch import Signal
 from django.core.urlresolvers import reverse
 from django.conf import settings
 
 from geonode.qgis_server.models import QGISServerLayer
-from geonode.base.models import ResourceBase, Link
+from geonode.base.models import Link
 from geonode.layers.models import Layer
 from geonode.maps.models import Map, MapLayer
-from geonode.layers.utils import create_thumbnail
+from geonode.qgis_server.tasks.update import create_qgis_server_thumbnail
 from geonode.geoserver.helpers import http_client
 from geonode.qgis_server.gis_tools import set_attributes
 
@@ -153,8 +173,13 @@ def qgis_server_post_save(instance, sender, **kwargs):
         logger.debug('Result : %s' % data)
 
     tile_url = reverse(
-            'qgis-server-tile',
-            kwargs={'layername': instance.name, 'x': 5678, 'y':910, 'z': 1234})
+        'qgis-server-tile',
+        kwargs={
+            'layername': instance.name,
+            'x': 5678,
+            'y': 910,
+            'z': 1234
+        })
     tile_url = urljoin(base_url, tile_url)
     logger.debug('tile_url: %s' % tile_url)
     tile_url = tile_url.replace('1234/5678/910', '{z}/{x}/{y}')
@@ -211,8 +236,6 @@ def qgis_server_post_save(instance, sender, **kwargs):
         'qgis-server-thumbnail', kwargs={'layername': instance.name})
     thumbnail_remote_url = urljoin(base_url, thumbnail_remote_url)
     logger.debug(thumbnail_remote_url)
-
-    from geonode.qgis_server.tasks.update import create_qgis_server_thumbnail
 
     create_qgis_server_thumbnail.delay(
         instance, thumbnail_remote_url, ogc_client=http_client)

@@ -1,4 +1,22 @@
 # -*- coding: utf-8 -*-
+#########################################################################
+#
+# Copyright (C) 2016 OSGeo
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program. If not, see <http://www.gnu.org/licenses/>.
+#
+#########################################################################
 
 import os
 import logging
@@ -7,11 +25,11 @@ import StringIO
 import urllib2
 import json
 from imghdr import what as image_format
-
 from urllib import urlretrieve
+
+from django.conf import settings
 from django.http import HttpResponse, Http404
 from django.db.models import ObjectDoesNotExist
-from django.http import HttpResponse
 from django.core.urlresolvers import reverse
 from django.contrib.gis.gdal import SpatialReference, CoordTransform
 from django.contrib.gis.geos import Point
@@ -20,13 +38,7 @@ from geonode.maps.models import Map
 from geonode.layers.models import Layer
 from geonode.qgis_server.models import QGISServerLayer
 from geonode.qgis_server.gis_tools import num2deg
-from django.conf import settings
 
-__author__ = 'ismailsunni'
-__project_name__ = 'geonode'
-__filename__ = 'views'
-__date__ = '1/29/16'
-__copyright__ = 'imajimatika@gmail.com'
 
 logger = logging.getLogger('geonode.qgis_server.views')
 
@@ -363,7 +375,6 @@ def tile(request, layername, z, x, y):
 
         bbox = ','.join([str(val) for val in [left, bottom, right, top]])
 
-
         qgis_server = QGIS_SERVER_CONFIG['qgis_server_url']
         query_string = {
             'SERVICE': 'WMS',
@@ -610,34 +621,44 @@ def qgis_server_pdf(request):
     print_url = reverse('qgis-server-map-print')
 
     response_data = {
-        "scales":[
-            {"name":"1:25,000","value":"25000.0"},
-            {"name":"1:50,000","value":"50000.0"},
-            {"name":"1:100,000","value":"100000.0"},
-            {"name":"1:200,000","value":"200000.0"},
-            {"name":"1:500,000","value":"500000.0"},
-            {"name":"1:1,000,000","value":"1000000.0"},
-            {"name":"1:2,000,000","value":"2000000.0"},
-            {"name":"1:4,000,000","value":"4000000.0"}
+        "scales": [
+            {"name": "1:25,000", "value": "25000.0"},
+            {"name": "1:50,000", "value": "50000.0"},
+            {"name": "1:100,000", "value": "100000.0"},
+            {"name": "1:200,000", "value": "200000.0"},
+            {"name": "1:500,000", "value": "500000.0"},
+            {"name": "1:1,000,000", "value": "1000000.0"},
+            {"name": "1:2,000,000", "value": "2000000.0"},
+            {"name": "1:4,000,000", "value": "4000000.0"}
         ],
-        "dpis":[
-            {"name":"75","value":"75"},
-            {"name":"150","value":"150"},
-            {"name":"300","value":"300"}
+        "dpis": [
+            {"name": "75", "value": "75"},
+            {"name": "150", "value": "150"},
+            {"name": "300", "value": "300"}
         ],
-        "outputFormats":[
-            {"name":"pdf"}
+        "outputFormats": [
+            {"name": "pdf"}
         ],
-        "layouts":[
-            {"name":"A4 portrait",
-             "map":{"width":440,"height":483},
-             "rotation":True},
-            {"name":"Legal",
-             "map":{"width":440,"height":483},
-             "rotation":False}
+        "layouts": [
+            {
+                "name": "A4 portrait",
+                "map": {
+                    "width": 440,
+                    "height": 483
+                },
+                "rotation": True
+            },
+            {
+                "name": "Legal",
+                "map": {
+                    "width": 440,
+                    "height": 483
+                },
+                "rotation": False
+            }
         ],
-        "printURL":"%s" % print_url,
-        "createURL":"%s" % print_url
+        "printURL": "%s" % print_url,
+        "createURL": "%s" % print_url
     }
 
     return HttpResponse(
