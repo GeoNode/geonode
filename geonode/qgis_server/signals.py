@@ -37,7 +37,6 @@ from geonode.qgis_server.tasks.update import create_qgis_server_thumbnail
 from geonode.geoserver.helpers import http_client
 from geonode.qgis_server.gis_tools import set_attributes
 
-
 logger = logging.getLogger("geonode.qgis_server.signals")
 QGIS_layer_directory = settings.QGIS_SERVER_CONFIG['layer_directory']
 
@@ -87,7 +86,8 @@ def qgis_server_post_save(instance, sender, **kwargs):
     # 1. Create or update associated QGISServerLayer [Done]
     # 2. Create Link for the tile and legend.
     logger.debug('QGIS Server Post Save')
-    qgis_layer, created = QGISServerLayer.objects.get_or_create(layer=instance)
+    qgis_layer, created = QGISServerLayer.objects.get_or_create(
+        layer=instance)
     # copy layer to QGIS Layer Directory
     try:
         geonode_layer_path = instance.get_base_file()[0].file.path
@@ -136,21 +136,21 @@ def qgis_server_post_save(instance, sender, **kwargs):
 
     # Set Link for Download Raw in Zip File
     zip_download_url = reverse(
-            'qgis-server-download-zip',
-            kwargs={'layername': instance.name})
+        'qgis-server-download-zip',
+        kwargs={'layername': instance.name})
     zip_download_url = urljoin(base_url, zip_download_url)
     logger.debug('zip_download_url: %s' % zip_download_url)
     Link.objects.get_or_create(
-            resource=instance.resourcebase_ptr,
+        resource=instance.resourcebase_ptr,
+        url=zip_download_url,
+        defaults=dict(
+            extension='zip',
+            name='Zipped Shapefile',
+            mime='SHAPE-ZIP',
             url=zip_download_url,
-            defaults=dict(
-                        extension='zip',
-                        name='Zipped Shapefile',
-                        mime='SHAPE-ZIP',
-                        url=zip_download_url,
-                        link_type='data'
-                )
-            )
+            link_type='data'
+        )
+    )
 
     # Create the QGIS Project
     qgis_server = settings.QGIS_SERVER_CONFIG['qgis_server_url']
@@ -293,7 +293,9 @@ def qgis_server_post_save_map(instance, sender, **kwargs):
     url = url[:-1]
 
     data = urlopen(url).read()
-    logger.debug('Creating the QGIS Project : %s -> %s' % (project_path, data))
+    logger.debug(
+        'Creating the QGIS Project : %s -> %s' % (project_path, data))
+
 
 logger.debug('Register signals QGIS Server')
 signals.pre_save.connect(

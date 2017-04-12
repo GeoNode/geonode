@@ -1,0 +1,20 @@
+version: '2'
+services:
+
+  qgis-server:
+    image: kartoza/qgis-server:LTR
+    volumes:
+      - './geonode:/usr/src/app'
+      - './otf-project:/opt/qgis-server/plugins/otf-project'
+    environment:
+      - QGIS_LOG_FILE=/tmp/qgis-server/qgis.log
+      - QGIS_SERVER_LOG_FILE=/tmp/qgis-server/qgis-server.log
+      - QGIS_DEBUG=5
+      - QGIS_SERVER_LOG_LEVEL=5
+      - QGIS_PLUGINPATH=/opt/qgis-server/plugins/
+      # It is important to include this environment variable
+      # QGIS-Server:LTR cgi needs it
+      - QGIS_PROJECT_FILE=
+    ports:
+      - "9000:80"
+    network_mode: "bridge"

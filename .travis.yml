@@ -1,3 +1,5 @@
+sudo: required
+
 language: python
 
 python:
@@ -6,11 +8,31 @@ python:
 virtualenv:
   system_site_packages: true
 
+services:
+  - docker
+  # GeoServer used Rabbitmq for notifier services
+  - rabbitmq
+
+env:
+  DOCKER_COMPOSE_VERSION: 1.11.2
+  # This is qgis server address
+  QGIS_SERVER_URL: http://localhost:9000/
+  # This is the IP of docker network bridge
+  # So QGIS server can access this address
+  SITEURL: http://172.17.0.1:8000/
+
 branches:
   only:
     - master
     - 2.7.x
     - 2.6.x
+
+before_install:
+  - ifconfig
+  - docker --version
+  - pip install docker-compose==$DOCKER_COMPOSE_VERSION
+  - docker-compose --version
+  - docker pull kartoza/qgis-server:LTR
 
 install:
   - sudo apt-get -qq -y update
@@ -18,19 +40,40 @@ install:
   - sudo apt-get install -y python-virtualenv python-imaging python-lxml python-pyproj python-shapely python-nose python-httplib2 python-httplib2 gettext
   - sudo add-apt-repository -y ppa:webupd8team/java
   - sudo apt-get update
-  - sudo apt-get install -y --force-yes oracle-java8-installer ant maven2 libjai-imageio-core-java --no-install-recommends
+  - sudo apt-get install -y --force-yes oracle-java8-installer ant maven2 libjai-core-java --no-install-recommends
+  # install libjai-imageio-core-java in trusty
+  - wget https://launchpad.net/ubuntu/+archive/primary/+files/libjai-imageio-core-java_1.2-3_amd64.deb
+  - sudo dpkg -i libjai-imageio-core-java_1.2-3_amd64.deb
   - sudo update-java-alternatives --set java-8-oracle
-  - pip install -r requirements.txt --use-mirrors
-  - pip install -e . --use-mirrors --no-deps
+  - pip install -r requirements.txt
+  - pip install -e . --no-deps
   - pip install coveralls
 
 before_script:
   - paver setup
 
+  # For QGIS Server
+  - git clone https://github.com/kartoza/otf-project.git
+  - cd otf-project
+  - git checkout master
+  - cd ../
+  - docker-compose -f docker-compose-qgis-server.yml up -d qgis-server
+  - docker ps
+
 script:
+  # Default Geoserver tests
+  - paver run_tests --coverage
+  # QGIS Server tests
+  - cp geonode/local_settings.py.qgis.sample geonode/local_settings.py
+  - paver stop_geoserver
   - paver run_tests --coverage
 
 after_script:
+  # For QGIS Server
+  - docker-compose -f docker-compose-qgis-server.yml down
+  - rm geonode/local_settings.py
+
+  # Cleanup
   - paver reset_hard
 
 after_success:
