@@ -8,7 +8,7 @@ from lxml import etree
 
 from django.conf import settings as geonode_config
 from geonode.layers.models import Attribute
-from geonode_qgis_server.models import QGISServerLayer
+from geonode.qgis_server.models import QGISServerLayer
 
 logger = logging.getLogger(__name__)
 

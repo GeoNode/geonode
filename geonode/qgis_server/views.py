@@ -18,8 +18,8 @@ from django.contrib.gis.geos import Point
 
 from geonode.maps.models import Map
 from geonode.layers.models import Layer
-from geonode_qgis_server.models import QGISServerLayer
-from geonode_qgis_server.gis_tools import num2deg
+from geonode.qgis_server.models import QGISServerLayer
+from geonode.qgis_server.gis_tools import num2deg
 from django.conf import settings
 
 __author__ = 'ismailsunni'
@@ -28,7 +28,7 @@ __filename__ = 'views'
 __date__ = '1/29/16'
 __copyright__ = 'imajimatika@gmail.com'
 
-logger = logging.getLogger('geonode_qgis_server.views')
+logger = logging.getLogger('geonode.qgis_server.views')
 
 QGIS_SERVER_CONFIG = settings.QGIS_SERVER_CONFIG
 

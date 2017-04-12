@@ -169,7 +169,7 @@ def get_files(filename):
                'distinct by spelling and not just case.') % filename
         raise GeoNodeException(msg)
 
-    if 'geonode_qgis_server' in settings.INSTALLED_APPS:
+    if 'geonode.qgis_server' in settings.INSTALLED_APPS:
         matches = glob.glob(glob_name + ".[qQ][mM][lL]")
         logger.debug('Checking QML file')
         logger.debug('Number of matches QML file : %s' % len(matches))

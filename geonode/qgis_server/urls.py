@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from django.conf.urls import patterns, url
-from geonode_qgis_server.views import (
+from geonode.qgis_server.views import (
     download_zip,
     tile,
     legend,

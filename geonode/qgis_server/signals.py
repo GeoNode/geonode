@@ -9,16 +9,16 @@ from django.dispatch import Signal
 from django.core.urlresolvers import reverse
 from django.conf import settings
 
-from geonode_qgis_server.models import QGISServerLayer
+from geonode.qgis_server.models import QGISServerLayer
 from geonode.base.models import ResourceBase, Link
 from geonode.layers.models import Layer
 from geonode.maps.models import Map, MapLayer
 from geonode.layers.utils import create_thumbnail
 from geonode.geoserver.helpers import http_client
-from geonode_qgis_server.gis_tools import set_attributes
+from geonode.qgis_server.gis_tools import set_attributes
 
 
-logger = logging.getLogger("geonode_qgis_server.signals")
+logger = logging.getLogger("geonode.qgis_server.signals")
 QGIS_layer_directory = settings.QGIS_SERVER_CONFIG['layer_directory']
 
 qgis_map_with_layers = Signal(providing_args=[])
@@ -61,6 +61,8 @@ def qgis_server_post_save(instance, sender, **kwargs):
        The way keywords are implemented requires the layer
        to be saved to the database before accessing them.
     """
+    if not sender == Layer:
+        return
     # TODO
     # 1. Create or update associated QGISServerLayer [Done]
     # 2. Create Link for the tile and legend.
@@ -210,7 +212,7 @@ def qgis_server_post_save(instance, sender, **kwargs):
     thumbnail_remote_url = urljoin(base_url, thumbnail_remote_url)
     logger.debug(thumbnail_remote_url)
 
-    from geonode_qgis_server.tasks.update import create_qgis_server_thumbnail
+    from geonode.qgis_server.tasks.update import create_qgis_server_thumbnail
 
     create_qgis_server_thumbnail.delay(
         instance, thumbnail_remote_url, ogc_client=http_client)
@@ -271,10 +273,27 @@ def qgis_server_post_save_map(instance, sender, **kwargs):
     logger.debug('Creating the QGIS Project : %s -> %s' % (project_path, data))
 
 logger.debug('Register signals QGIS Server')
-signals.post_save.connect(qgis_server_post_save, sender=ResourceBase)
-signals.pre_save.connect(qgis_server_pre_save, sender=Layer)
-signals.pre_delete.connect(qgis_server_pre_delete, sender=Layer)
-signals.post_save.connect(qgis_server_post_save, sender=Layer)
-signals.pre_save.connect(qgis_server_pre_save_maplayer, sender=MapLayer)
-signals.post_save.connect(qgis_server_post_save_map, sender=Map)
-signals.pre_delete.connect(qgis_server_layer_pre_delete, sender=QGISServerLayer)
+signals.pre_save.connect(
+    qgis_server_pre_save,
+    dispatch_uid='Layer-qgis_server_pre_save',
+    sender=Layer)
+signals.pre_delete.connect(
+    qgis_server_pre_delete,
+    dispatch_uid='Layer-qgis_server_pre_delete',
+    sender=Layer)
+signals.post_save.connect(
+    qgis_server_post_save,
+    dispatch_uid='Layer-qgis_server_post_save',
+    sender=Layer)
+signals.pre_save.connect(
+    qgis_server_pre_save_maplayer,
+    dispatch_uid='MapLayer-qgis_server_pre_save_maplayer',
+    sender=MapLayer)
+signals.post_save.connect(
+    qgis_server_post_save_map,
+    dispatch_uid='Map-qgis_server_post_save_map',
+    sender=Map)
+signals.pre_delete.connect(
+    qgis_server_layer_pre_delete,
+    dispatch_uid='QGISServerLayer-qgis_server_layer_pre_delete',
+    sender=QGISServerLayer)

@@ -13,7 +13,7 @@ logger = logging.getLogger(__name__)
 
 
 @task(
-    name='geonode_qgis_server.tasks.update.create_qgis_server_thumbnail',
+    name='geonode.qgis_server.tasks.update.create_qgis_server_thumbnail',
     queue='update')
 def create_qgis_server_thumbnail(instance, thumbnail_remote_url, ogc_client):
     try:

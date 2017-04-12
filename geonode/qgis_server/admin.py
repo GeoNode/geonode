@@ -6,7 +6,7 @@ __copyright__ = 'imajimatika@gmail.com'
 
 
 from django.contrib import admin
-from geonode_qgis_server.models import QGISServerLayer
+from geonode.qgis_server.models import QGISServerLayer
 
 
 # Register your models here.

@@ -270,7 +270,7 @@ GEONODE_APPS = (
     'geonode.services',
 
     # QGIS Server Apps
-    # 'geonode_qgis_server',
+    # 'geonode.qgis_server',
 
     # GeoServer Apps
     # Geoserver needs to come last because

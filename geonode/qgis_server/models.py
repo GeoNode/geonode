@@ -7,7 +7,7 @@ from django.conf import settings
 from geonode.layers.models import Layer
 from geonode.maps.models import MapLayer
 
-logger = logging.getLogger("geonode_qgis_server.models")
+logger = logging.getLogger("geonode.qgis_server.models")
 
 QGIS_LAYER_DIRECTORY = settings.QGIS_SERVER_CONFIG['layer_directory']
 QGIS_TILES_DIRECTORY = settings.QGIS_SERVER_CONFIG['tiles_directory']
@@ -60,4 +60,4 @@ class QGISServerLayer(models.Model):
         except OSError:
             pass
 
-import geonode_qgis_server.signals
+import geonode.qgis_server.signals

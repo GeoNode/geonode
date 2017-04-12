@@ -1,5 +1,5 @@
 # coding=utf-8
-from geonode_qgis_server.tasks.update import *
+from geonode.qgis_server.tasks.update import *
 
 
 __author__ = 'Rizky Maulana Nugraha <lana.pcfre@gmail.com>'
