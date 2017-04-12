@@ -360,7 +360,12 @@ def start_geoserver(options):
     Start GeoServer with GeoNode extensions
     """
 
-    from geonode.settings import OGC_SERVER
+    try:
+        from geonode.settings import OGC_SERVER
+    except ImportError:
+        sys.path.extend([os.path.dirname(__file__)])
+        from geonode.settings import OGC_SERVER
+
     GEOSERVER_BASE_URL = OGC_SERVER['default']['LOCATION']
     url = GEOSERVER_BASE_URL
 
