@@ -79,8 +79,7 @@ def create_geoserver_db_featurestore(
             db = ogc_server_settings.datastore_db
             ds.connection_parameters.update(
                 host=db['HOST'],
-                port=db['PORT'] if isinstance(
-                    db['PORT'], basestring) else str(db['PORT']) or '5432',
+                port=str(db.get('PORT', 5432)),
                 database=db['NAME'],
                 user=db['USER'],
                 passwd=db['PASSWORD'],
