@@ -292,6 +292,13 @@ def feature_edit_check(request, layername):
     layer = _resolve_layer(request, layername)
     datastore = ogc_server_settings.DATASTORE
     feature_edit = getattr(settings, "GEOGIG_DATASTORE", None) or datastore
+    
+    stores = get_stores()
+    for store in stores:
+        if store['name'] == layer.store:
+            if store['type'] == 'shapefile':
+                feature_edit = False
+
     if request.user.has_perm(
             'change_layer_data',
             obj=layer) and layer.storeType == 'dataStore' and feature_edit:
