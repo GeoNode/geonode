@@ -129,7 +129,10 @@ def activity_post_modify_object(sender, instance, created=None, **kwargs):
     action = action_settings[obj_type]
     if created:
         # object was created
-        verb = action.get('created_verb')
+        if action.get('created_verb') in [u'créé']:
+            verb = 'created'
+        else:
+            verb = action.get('created_verb')
         raw_action = 'created'
 
     else:
