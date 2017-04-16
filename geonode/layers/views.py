@@ -120,7 +120,8 @@ def _resolve_layer(request, typename, permission='base.view_resourcebase',
     else:
         return resolve_object(request,
                               Layer,
-                              {'typename': typename},
+                              {'typename': typename,
+                               'service': None},
                               permission=permission,
                               permission_msg=msg,
                               **kwargs)
