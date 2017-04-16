@@ -123,7 +123,7 @@ STATICFILES_FINDERS = (
 )
 
 # Note that Django automatically includes the "templates" dir in all the
-# INSTALLED_APPS, se there is no need to add maps/templates or admin/templates
+# INSTALLED_APPS, so there is no need to add maps/templates or admin/templates
 TEMPLATE_DIRS = (
     os.path.join(PROJECT_ROOT, "templates"),
 )
@@ -134,7 +134,7 @@ LOCALE_PATHS = (
 )
 
 # Make this unique, and don't share it with anybody.
-SECRET_KEY = 'myv-y4#7j-d*p-__@j#*3z@!y24fz8%^z2v6atuy4bo9vqr1_a'
+# SECRET_KEY = PLEASE DEFINE ME
 
 # Location of url mappings
 ROOT_URLCONF = 'geonode.urls'
