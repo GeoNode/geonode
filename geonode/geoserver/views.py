@@ -28,7 +28,6 @@ from django.contrib.auth import authenticate
 from django.http import HttpResponse, HttpResponseRedirect
 from django.views.decorators.http import require_POST
 from django.shortcuts import render_to_response
-from django.conf import settings
 from django.contrib.auth.decorators import user_passes_test
 from django.contrib.auth import get_user_model
 from django.contrib.auth.decorators import login_required
@@ -290,11 +289,10 @@ def feature_edit_check(request, layername):
     Otherwise, return a status of 401 (unauthorized).
     """
     layer = _resolve_layer(request, layername)
-    datastore = ogc_server_settings.DATASTORE
-    feature_edit = getattr(settings, "GEOGIG_DATASTORE", None) or datastore
+
     if request.user.has_perm(
             'change_layer_data',
-            obj=layer) and layer.storeType == 'dataStore' and feature_edit:
+            obj=layer) and layer.storeType == 'dataStore':
         return HttpResponse(
             json.dumps({'authorized': True}), content_type="application/json")
     else:
