@@ -67,7 +67,7 @@ django-tastypie==0.9.16
 # For the Dataverse/Geoconnect/WorldMap connection
 # --------------------------------------------------
 xmltodict
-shared_dataverse_information>=0.5.5
+shared_dataverse_information>=0.5.7
 #-e git+https://github.com/IQSS/shared-dataverse-information.git#egg=shared-dataverse-information
 
 # --------------------------------------------------
