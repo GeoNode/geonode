@@ -1,0 +1,503 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2010-11-24 07:43-0600\n"
+"PO-Revision-Date: 2011-08-19 18:46+0200\n"
+"Last-Translator: \n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Translated-Using: django-rosetta 0.5.6\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#: maps/templates/lang.js:5
+#: maps/templates/lang.js.py:8
+msgid "Add Layers"
+msgstr "Προσθήκη Επιφανειών"
+
+#: maps/templates/lang.js:6
+msgid "Area"
+msgstr "Έκταση"
+
+#: maps/templates/lang.js:7
+msgid "Background"
+msgstr "Φόντο"
+
+#: maps/templates/lang.js:9
+msgid "Done"
+msgstr "Ολοκληρώθηκε"
+
+#: maps/templates/lang.js:10
+msgid "Available Layers"
+msgstr "Διαθέσιμες Επιφάνειες"
+
+#: maps/templates/lang.js:11
+msgid "Connection Error"
+msgstr "Σφάλμα σύνδεσης"
+
+#: maps/templates/lang.js:12
+msgid "The server returned an error"
+msgstr "Ο διακομιστής επέστρεψε ένα σφάλμα"
+
+#: maps/templates/lang.js:13
+msgid "Details..."
+msgstr "Λεπτομέρειες..."
+
+#: maps/templates/lang.js:15
+#: maps/templates/lang.js.py:107
+msgid "Height"
+msgstr "Ύψος"
+
+#: maps/templates/lang.js:16
+msgid "Get Feature Info"
+msgstr "Λήψη Πληροφοριών Χαρακτηριστικού"
+
+#: maps/templates/lang.js:17
+#: maps/templates/lang.js.py:108
+msgid "Large"
+msgstr "Μεγάλο"
+
+#: maps/templates/lang.js:18
+msgid "or add a new server."
+msgstr "ή να προσθέσετε ένα νέο διακομιστή."
+
+#: maps/templates/lang.js:19
+msgid "Map Layers"
+msgstr "Επιφάνειες Χάρτη"
+
+#: maps/templates/lang.js:20
+msgid "View available data from:"
+msgstr "Δείτε τα διαθέσιμα δεδομένα από:"
+
+#: maps/templates/lang.js:21
+msgid "Data"
+msgstr "Δεδομένα"
+
+#: maps/templates/lang.js:22
+msgid "Layers"
+msgstr "Επιφάνειες"
+
+#: maps/templates/lang.js:23
+msgid "Legend"
+msgstr "Υπόμνημα"
+
+#: maps/templates/lang.js:24
+msgid "Length"
+msgstr "Μήκος"
+
+#: maps/templates/lang.js:25
+msgid "Loading Map..."
+msgstr "Φόρτωση χάρτη..."
+
+#: maps/templates/lang.js:26
+#: maps/templates/lang.js.py:109
+msgid "Map Size"
+msgstr "Μέγεθος Χάρτη"
+
+#: maps/templates/lang.js:27
+msgid "Measure"
+msgstr "Μέτρο"
+
+#: maps/templates/lang.js:28
+msgid "About this Map"
+msgstr "Σχετικά με αυτό το χάρτη"
+
+#: maps/templates/lang.js:29
+#: maps/templates/lang.js.py:82
+#: maps/templates/lang.js:151
+msgid "Abstract"
+msgstr "Περίληψη"
+
+#: maps/templates/lang.js:30
+#: maps/templates/lang.js.py:83
+#: maps/templates/lang.js:149
+msgid "Contact"
+msgstr "Επικοινωνία"
+
+#: maps/templates/lang.js:31
+#: maps/templates/lang.js.py:41
+msgid "Permalink"
+msgstr "Μόνιμος σύνδεσμος"
+
+#: maps/templates/lang.js:32
+#: maps/templates/lang.js.py:222
+msgid "Cancel"
+msgstr "Ακύρωση"
+
+#: maps/templates/lang.js:33
+msgid "Save as Copy"
+msgstr "Αποθήκευση ως Αντίγραφο"
+
+#: maps/templates/lang.js:34
+msgid "Save"
+msgstr "Αποθήκευση"
+
+#: maps/templates/lang.js:35
+#: maps/templates/lang.js.py:86
+#: maps/templates/lang.js:95
+#: maps/templates/lang.js.py:148
+#: maps/templates/lang.js:170
+#: maps/templates/lang.js.py:205
+msgid "Title"
+msgstr "Τίτλος"
+
+#: maps/templates/lang.js:36
+#: maps/templates/lang.js.py:110
+msgid "Mini"
+msgstr "Μικρογραφία"
+
+#: maps/templates/lang.js:37
+msgid "Pan Map"
+msgstr "Μετακίνηση Χάρτη"
+
+#: maps/templates/lang.js:38
+msgid "Zoom to Next Extent"
+msgstr "Ζουμ στο επόμενο Επίπεδο"
+
+#: maps/templates/lang.js:39
+msgid "Zoom to Previous Extent"
+msgstr "Ζουμ στο προηγούμενο Επίπεδο"
+
+#: maps/templates/lang.js:40
+msgid "This map has not yet been saved."
+msgstr "Ο χάρτης αυτός δεν έχει ακόμη αποθηκευτεί."
+
+#: maps/templates/lang.js:42
+#: maps/templates/lang.js.py:111
+msgid "Premium"
+msgstr "Εξαιρετικά ποιοτικό"
+
+#: maps/templates/lang.js:43
+msgid "Print Map"
+msgstr "Εκτύπωση Χάρτη"
+
+#: maps/templates/lang.js:44
+msgid "Print Preview"
+msgstr "Προεπισκόπηση εκτύπωσης"
+
+#: maps/templates/lang.js:45
+msgid "Properties"
+msgstr "Επιλογές"
+
+#: maps/templates/lang.js:46
+#: maps/templates/lang.js.py:112
+msgid "Publish Map"
+msgstr "Δημοσίευση Χάρτη"
+
+#: maps/templates/lang.js:47
+#: maps/templates/lang.js.py:48
+msgid "Remove Layer"
+msgstr "Κατάργηση Επιφάνειας"
+
+#: maps/templates/lang.js:49
+msgid "Sorry, your map could not be saved."
+msgstr "Λυπούμαστε, δεν μπορέσαμε να αποθηκεύσουμε τον χάρτη σας."
+
+#: maps/templates/lang.js:50
+msgid "Error While Saving"
+msgstr "Λάθος κατά την αποθήκευση"
+
+#: maps/templates/lang.js:51
+msgid "Save Map"
+msgstr "Αποθήκευση Χάρτη"
+
+#: maps/templates/lang.js:52
+msgid "You must be logged in to save this map."
+msgstr "Θα πρέπει να συνδεθείτε για να μπορείτε να σώσετε αυτό το χάρτη."
+
+#: maps/templates/lang.js:53
+#: maps/templates/lang.js.py:114
+msgid "Small"
+msgstr "Μικρό"
+
+#: maps/templates/lang.js:54
+#: maps/templates/lang.js:55
+msgid "Layer Properties"
+msgstr "Επιλογές Επιφάνειας"
+
+#: maps/templates/lang.js:56
+msgid "Change layer format and style"
+msgstr "Αλλαγή μορφής επιφάνειας και στυλ"
+
+#: maps/templates/lang.js:57
+msgid "Edit Styles"
+msgstr "Επεξεργασία στυλ"
+
+#: maps/templates/lang.js:58
+msgid "Edit layer styles"
+msgstr "Επεξεργασία στυλ επιφάνειας"
+
+#: maps/templates/lang.js:59
+msgid "Switch to Google Earth 3D Viewer"
+msgstr "Μεταβείτε στο Google Earth 3D Viewer"
+
+#: maps/templates/lang.js:60
+msgid "The map that you are trying to load does not exist.  Creating a new map instead."
+msgstr "Ο χάρτης που προσπαθείτε να φορτώσετε δεν υπάρχει. Δημιουργήστε ένα νέο χάρτη αντί αυτού."
+
+#: maps/templates/lang.js:61
+msgid "Unknown Map"
+msgstr "Άγνωστος Χάρτης"
+
+#: maps/templates/lang.js:62
+#: maps/templates/lang.js.py:115
+msgid "Width"
+msgstr "Πλάτος"
+
+#: maps/templates/lang.js:63
+msgid "Zoom In"
+msgstr "Μεγέθυνση"
+
+#: maps/templates/lang.js:64
+msgid "Zoom Out"
+msgstr "Σμίκρυνση"
+
+#: maps/templates/lang.js:65
+msgid "Zoom level"
+msgstr "Επίπεδο ζουμ"
+
+#: maps/templates/lang.js:66
+msgid "Zoom Level"
+msgstr "Επίπεδο Ζουμ"
+
+#: maps/templates/lang.js:67
+msgid "Zoom to Layer Extent"
+msgstr "Ζουμ σε Έκταση Επιφάνειας"
+
+#: maps/templates/lang.js:68
+msgid "Zoom to Visible Extent"
+msgstr "Ζουμ σε Ορατή Έκταση"
+
+#: maps/templates/lang.js:74
+#, perl-brace-format
+msgid "Zoom Level {zoom}"
+msgstr "Επίπεδο ζουμ {ζουμ}"
+
+#: maps/templates/lang.js:80
+msgid "Create Map"
+msgstr "Δημιουργία Χάρτη"
+
+#: maps/templates/lang.js:81
+msgid "Export Map"
+msgstr "Εξαγωγή Χάρτη"
+
+#: maps/templates/lang.js:84
+msgid "Map"
+msgstr "Χάρτης"
+
+#: maps/templates/lang.js:85
+#: maps/templates/lang.js.py:152
+msgid "View this Map"
+msgstr "Δείτε αυτό το Χάρτη"
+
+#: maps/templates/lang.js:87
+msgid "Open Map"
+msgstr "Ανοίξτε Χάρτη"
+
+#: maps/templates/lang.js:93
+#: maps/templates/lang.js.py:169
+msgid "Name"
+msgstr "Όνομα"
+
+#: maps/templates/lang.js:94
+msgid "Queryable"
+msgstr "Μπορούν να γίνουν επερωτήσεις"
+
+#: maps/templates/lang.js:101
+msgid "No background"
+msgstr "Καθόλου φόντο"
+
+#: maps/templates/lang.js:113
+msgid "Your map is ready to be published to the web!  Simply copy the following HTML to embed the map in your website:"
+msgstr "Ο χάρτης σας είναι έτοιμος να δημοσιευθεί στο διαδίκτυο! Απλά αντιγράψτε τον παρακάτω σύνδεσμο HTML για να ενσωματώσετε τον χάρτη στην ιστοσελίδα σας:"
+
+#: maps/templates/lang.js:122
+#: maps/templates/lang.js.py:188
+msgid "Abstract:"
+msgstr "Περίληψη:"
+
+#: maps/templates/lang.js:123
+#: maps/templates/lang.js.py:190
+msgid "No attribution information is provided for this layer."
+msgstr "Δεν υπάρχουν πληροφορίες απόδοσης για αυτή την επιφάνεια."
+
+#: maps/templates/lang.js:124
+#: maps/templates/lang.js.py:191
+msgid "Provided by:"
+msgstr "Παρέχεται από:"
+
+#: maps/templates/lang.js:125
+#: maps/templates/lang.js.py:192
+msgid "Download:"
+msgstr "Λήψη:"
+
+#: maps/templates/lang.js:126
+#: maps/templates/lang.js.py:194
+msgid "No keywords are listed for this layer."
+msgstr "Δεν υπάρχουν λέξεις-κλειδιά για αυτή την επιφάνεια."
+
+#: maps/templates/lang.js:127
+#: maps/templates/lang.js.py:195
+msgid "Keywords:"
+msgstr "Λέξεις-κλειδιά:"
+
+#: maps/templates/lang.js:128
+#: maps/templates/lang.js.py:196
+msgid "No metadata URLs are defined for this layer."
+msgstr "Δεν έχουν οριστεί διευθύνσεις URL μεταδεδομένων για αυτή την επιφάνεια."
+
+#: maps/templates/lang.js:129
+#: maps/templates/lang.js.py:197
+msgid "Metadata Links:"
+msgstr "Σύνδεσμοι Μεταδεδομένων:"
+
+#: maps/templates/lang.js:135
+msgid "Paper size:"
+msgstr "Μέγεθος χαρτιού:"
+
+#: maps/templates/lang.js:136
+msgid "Resolution:"
+msgstr "Ανάλυση:"
+
+#: maps/templates/lang.js:137
+msgid "Print"
+msgstr "Εκτύπωση"
+
+#: maps/templates/lang.js:138
+msgid "Enter map title here."
+msgstr "Εισάγετε τον τίτλο χάρτη εδώ."
+
+#: maps/templates/lang.js:139
+msgid "Include legend?"
+msgstr "Συμπεριλάβετε υπόμνημα;"
+
+#: maps/templates/lang.js:140
+msgid "Enter comments here."
+msgstr "Εισάγετε τα σχόλια εδώ."
+
+#: maps/templates/lang.js:141
+msgid "Creating PDF..."
+msgstr "Δημιουργία PDF ..."
+
+#: maps/templates/lang.js:150
+msgid "Last Modified"
+msgstr "Τελευταία Τροποποίηση"
+
+#: maps/templates/lang.js:153
+#: maps/templates/lang.js.py:174
+msgid "Prev"
+msgstr "Προηγούμενη"
+
+#: maps/templates/lang.js:154
+#: maps/templates/lang.js.py:175
+msgid "Next"
+msgstr "Επόμενη"
+
+#: maps/templates/lang.js:155
+#: maps/templates/lang.js.py:176
+msgid "of"
+msgstr "του"
+
+#: maps/templates/lang.js:156
+#: maps/templates/lang.js.py:177
+msgid "Your search did not match any items."
+msgstr "Η αναζήτησή σας δεν ταιριάζει με κανένα αντικείμενο."
+
+#: maps/templates/lang.js:157
+msgid "Search Maps"
+msgstr "Αναζητήστε Χάρτες"
+
+#: maps/templates/lang.js:158
+#: maps/templates/lang.js.py:178
+msgid "Search"
+msgstr "Αναζήτηση"
+
+#: maps/templates/lang.js:159
+#: maps/templates/lang.js.py:179
+msgid "Showing"
+msgstr "Έχουν βρεθεί"
+
+#: maps/templates/lang.js:160
+msgid "Loading"
+msgstr "Φόρτωση"
+
+#: maps/templates/lang.js:161
+#: maps/templates/lang.js.py:181
+msgid "permalink"
+msgstr "μόνιμος σύνδεσμος"
+
+#: maps/templates/lang.js:168
+msgid "Select"
+msgstr "Επιλέξτε"
+
+#: maps/templates/lang.js:171
+msgid "Select:"
+msgstr "Επιλέξτε:"
+
+#: maps/templates/lang.js:172
+msgid "All"
+msgstr "Όλα"
+
+#: maps/templates/lang.js:173
+msgid "None"
+msgstr "Κανένα"
+
+#: maps/templates/lang.js:180
+msgid "Loading..."
+msgstr "Φόρτωση..."
+
+#: maps/templates/lang.js:182
+msgid "You do not have permission to view this data"
+msgstr "Δεν έχετε άδεια για να δείτε αυτά τα δεδομένα"
+
+#: maps/templates/lang.js:183
+msgid "This data is stored on a remote server"
+msgstr "Αυτά τα δεδομένα είναι αποθηκευμένα σε έναν απομακρυσμένο διακομιστή"
+
+#: maps/templates/lang.js:189
+msgid "No abstract is provided for this layer."
+msgstr "Δεν υπάρχει περίληψη για αυτή την επιφάνεια."
+
+#: maps/templates/lang.js:193
+msgid "No download URLs are definied for this layer."
+msgstr "Δεν έχουν οριστεί URL λήψης για αυτή την επιφάνεια."
+
+#: maps/templates/lang.js:203
+msgid "Selected Layers"
+msgstr "Επιλεγμένες Επιφάνειες"
+
+#: maps/templates/lang.js:204
+msgid "No Layers Selected"
+msgstr "Καμία Επιφάνεια Επιλεγμένη"
+
+#: maps/templates/lang.js:206
+msgid "Clear Selected"
+msgstr "Καθαρίστε τα επιλεγμένα"
+
+#: maps/templates/lang.js:207
+msgid "Clear All"
+msgstr "Κατάργηση όλων"
+
+#: maps/templates/lang.js:213
+msgid "Operation Failed"
+msgstr "Η λειτουργία απέτυχε"
+
+#: maps/templates/lang.js:214
+msgid "No layers are currently selected."
+msgstr "Δεν έχει επιλεγεί καμία επιφάνεια μέχρι στιγμής."
+
+#: maps/templates/lang.js:221
+msgid "Downloading..."
+msgstr "Λήψη..."
+
+#: maps/templates/lang.js:223
+msgid "Please wait"
+msgstr "Παρακαλώ περιμένετε"
+
