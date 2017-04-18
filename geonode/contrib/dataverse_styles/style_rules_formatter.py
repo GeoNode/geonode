@@ -111,13 +111,15 @@ class StyleRulesFormatter(object):
 
     def format_sld_xml(self, rules_xml):
         if not rules_xml:
-            return (False, 'You must specify the "rules_xml"')
+            self.add_err_msg('You must specify the "rules_xml"')
+            return False
 
         self.formatted_sld_xml = None
 
         rules_xml_formatted = self.format_rules_xml(rules_xml)
         if rules_xml_formatted is None:
-            return (False, "Failed to format the XML rules")
+            self.add_err_msg("Failed to format the XML rules (id:1)")
+            return False
 
         xml_str = """<?xml version="1.0"?>
         <sld:StyledLayerDescriptor xmlns:sld="http://www.opengis.net/sld" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:ogc="http://www.opengis.net/ogc" xmlns:gml="http://www.opengis.net/gml" version="1.0.0" xsi:schemaLocation="http://www.opengis.net/sld http://schemas.opengis.net/sld/1.0.0/StyledLayerDescriptor.xsd">
@@ -130,12 +132,41 @@ class StyleRulesFormatter(object):
             </sld:NamedLayer>
         </sld:StyledLayerDescriptor>""" % (settings.DEFAULT_WORKSPACE, self.layer_name, self.sld_name, rules_xml_formatted)
 
+        # For polgyons, add a stroke color.
+        # If this isn't a polygon, the sld wil be returned unchanged
+        #
+        xml_str = self.add_polygon_stroke(xml_str)
+        if xml_str is None:
+            self.add_err_msg("Failed to format the XML rules (id:2)")
+            return False
 
         self.formatted_sld_xml = remove_whitespace_from_xml(xml_str)
         if xml_str is None:
+            self.add_err_msg("Failed to format the XML rules (id:3)")
             return False
 
         return True
+
+
+    def add_polygon_stroke(self, sld_xml_str):
+        """
+        The default stroke (for polygons) is:  <Stroke/>
+        Update it to a lighter color.
+        (If <Stroke/> isn't found, return the sld_xml_str as is)
+        """
+        if sld_xml_str is None:
+            return None
+
+        stroke_color = '#ececec'
+
+        no_stroke = '<sld:Stroke/>'
+        default_stroke = ('<sld:Stroke>'
+                          '<sld:CssParameter name="stroke">%s</sld:CssParameter>'
+                          '<sld:CssParameter name="stroke-width">0.75</sld:CssParameter>'
+                          '</sld:Stroke>') % stroke_color
+
+        return sld_xml_str.replace(no_stroke, default_stroke)
+
 
     def get_test_rules(self):
         """Only used for testing"""
