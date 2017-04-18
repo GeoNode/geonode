@@ -51,7 +51,7 @@ def is_valid_lat_lng_attribute(dt_attr, lng_check=False):
     if lng_check:
         col_type = 'longitude'
 
-    err_msg = 'Not a valid %s column. Column "%s" is type "%s".   All data in the column must be a float or double.' \
+    err_msg = 'Not a valid %s column. Column "%s" is type "%s".   All data in the column must be numeric.' \
                                     % (col_type, dt_attr.attribute, dt_attr.attribute_type)
     return False, err_msg
 
