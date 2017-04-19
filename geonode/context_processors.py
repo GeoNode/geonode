@@ -35,6 +35,7 @@ def resource_urls(request):
         SITE_NAME=site.name,
         SITE_DOMAIN=site.domain,
         SITEURL=settings.SITEURL,
+        INSTALLED_APPS=settings.INSTALLED_APPS,
         RESOURCE_PUBLISHING=settings.RESOURCE_PUBLISHING,
         THEME_ACCOUNT_CONTACT_EMAIL=settings.THEME_ACCOUNT_CONTACT_EMAIL,
         DEBUG_STATIC=getattr(

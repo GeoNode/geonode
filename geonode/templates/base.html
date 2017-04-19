@@ -126,7 +126,9 @@
                 <li><a href="{% url "messages_inbox" %}">{% trans "Inbox" %}</a></li>
                 <li role="separator" class="divider"></li>
                 <li><a href="{% url "admin:index" %}">Admin</a></li>
+                {% if 'geonode.geoserver' in INSTALLED_APPS %}
                 <li><a href="{{ GEOSERVER_BASE_URL }}">GeoServer</a></li>
+                {% endif %}
                 <li role="separator" class="divider"></li>
                 <li><a href="{% url "help" %}">{% trans "Help" %}</li>
                 <li role="separator" class="divider"></li>
