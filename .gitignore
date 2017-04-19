@@ -126,6 +126,8 @@ development.db
 master
 slave
 
+scripts/utils/osm
+
 #CSV files
 *.csv
 

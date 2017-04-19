@@ -38,7 +38,7 @@ from geonode.datarequests.models import DataRequestProfile, DataRequest, Profile
 
 from geonode.tasks.jurisdiction import place_name_update, jurisdiction_style
 from geonode.tasks.jurisdiction2 import compute_size_update
-from geonode.tasks.requests import set_status_for_multiple_requests
+from geonode.tasks.requests import set_status_for_multiple_requests, tag_request_suc
 
 from pprint import pprint
 from unidecode import unidecode
@@ -266,6 +266,7 @@ def data_request_view(request):
                 data_request_obj.save()
                 place_name_update.delay([data_request_obj])
                 compute_size_update.delay([data_request_obj])
+                tag_request_suc.delay([data_request_obj])
             status_code = 200
             pprint("request has been succesfully submitted")
             if profile_request_obj and not request.user.is_authenticated():

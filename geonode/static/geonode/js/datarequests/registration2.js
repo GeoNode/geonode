@@ -47,7 +47,7 @@ $(function() {
     var $data_class_selector = $('#id_data_class_requested');
     var $data_class_other = $('#div_id_data_class_other');
     
-    if ($('#id_data_class_requested option[value=Other]:selected').length > 0){
+    if ($('#id_data_class_requested option[value=OTHER]:selected').length > 0){
         $data_class_other.toggle(true);
     }else {
         $data_class_other.toggle(false);
@@ -56,7 +56,7 @@ $(function() {
     //Initial values
     $data_class_selector.click(function(){
         //selected = $data_class_selector.selectedOptions
-        if ($('#id_data_class_requested option[value=Other]:selected').length > 0){
+        if ($('#id_data_class_requested option[value=OTHER]:selected').length > 0){
             console.log()
             $data_class_other.slideDown();
             $data_class_other.find('input').focus();

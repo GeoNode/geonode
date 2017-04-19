@@ -54,12 +54,14 @@ class FTPStatus(enum.Enum):
     PENDING = 1
     ERROR = 2
     DUPLICATE = 3
+    FORWARDED = 4
 
     labels = {
         DONE: 'Done',
         PENDING: 'Pending',
         ERROR:   'Error',
-        DUPLICATE: 'Duplicate', }
+        DUPLICATE: 'Duplicate', 
+        FORWARDED: 'Forwarded'}
 
 class TileDataClass(models.Model):
     short_name = models.CharField(max_length=15)

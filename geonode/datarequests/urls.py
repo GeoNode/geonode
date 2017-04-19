@@ -43,6 +43,7 @@ urlpatterns = patterns(
     url(r'^data/data_requests_csv/$', 'data_requests_csv', name='data_requests_csv'),
     url(r'^data/compute_size/$','data_request_compute_size_all', name='data_request_compute_size_all'),
     url(r'^data/reverse_geocode/$','data_request_reverse_geocode_all', name='data_request_reverse_geocode_all'),
+    url(r'^data/tag_suc/$', 'data_request_tag_suc_all', name="data_request_tag_suc_all"), 
     
     url(r'^data/(?P<pk>\d+)/$', 'data_request_detail', name="data_request_detail"),
     url(r'^data/(?P<pk>\d+)/edit/$', 'data_request_edit', name="data_request_edit"),
@@ -51,6 +52,10 @@ urlpatterns = patterns(
     url(r'^data/(?P<pk>\d+)/cancel/$', 'data_request_cancel', name="data_request_cancel"),
     
     url(r'^data/(?P<pk>\d+)/compute_request_size/$', 'data_request_compute_size', name="data_request_compute_size"), 
+    url(r'^data/(?P<pk>\d+)/tag_suc/$', 'data_request_tag_suc', name="data_request_tag_suc"), 
+    url(r'^data/(?P<pk>\d+)/notify_suc/$', 'data_request_notify_suc', name="data_request_notify_suc"), 
+    url(r'^data/(?P<pk>\d+)/notify_requester/$', 'data_request_notify_requester', name="data_request_notify_requester"), 
+    url(r'^data/(?P<pk>\d+)/forward_request/$', 'data_request_forward_request', name="data_request_forward_request"), 
     url(r'^data/(?P<pk>\d+)/reverse_geocode/$', 'data_request_reverse_geocode', name="data_request_reverse_geocode"), 
     url(r'^data/assign_grid_refs/$','data_request_assign_gridrefs', name="data_request_assign_gridrefs"),
     

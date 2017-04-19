@@ -219,7 +219,7 @@ class DataRequestEditForm(forms.ModelForm):
                 css_class='form-group'
             ),
         )
-    
+
     def clean_purpose_other(self):
         purpose = self.cleaned_data.get('purpose')
         purpose_other = self.cleaned_data.get('purpose_other')
