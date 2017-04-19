@@ -132,3 +132,107 @@ DATA_REJECTION_HTML= """
     <p>Regards,</p>
     <p>LiPAD Team</p>
     """
+
+DATA_SUC_REQUEST_NOTIFICATION_TEXT="""
+    Greetings, {} {}!
+    
+    We are informing you that a data requester has requested data which is too big for an FTP transfer to handle.
+    We are asking your permission to forward the data to your team and let the requester retrieve the data from you. 
+    
+    Listed below are the details of the data requested:
+    Name of requester: {} {}
+    Organization: {}
+    Email Address: {}
+    Project Summary: {}
+    Type of Data Requested: {}
+    Intended Use of the Data: {}
+    
+    We hope to hear your response at the soonest possible time. Thank you!
+    
+    Regards,
+    LiPAD Team
+"""
+
+DATA_SUC_REQUEST_NOTIFICATION_HTML="""
+    <p>Greetings, {} {}!</p>
+    <p>We are informing you that a data requester has requested data which is too big for an FTP transfer to handle.
+    We are asking your permission to forward the data to your team and let the requester retrieve the data from you. </p>
+    <br/>
+    <p>Listed below are the details of the data requested:<br />
+    Name of requester: {} {}<br />
+    Organization: {}<br />
+    Email Address: {}<br />
+    Project Summary: {}<br />
+    Type of Data Requested: {}<br />
+    Intended Use of the Data: {}</p>
+    <p>We hope to hear your response at the soonest possible time. Thank you!<p>
+    <br />
+    <p>Regards,</p>
+    <p>LiPAD Team</p>
+"""
+
+DATA_SUC_JURISDICTION_TEXT ="""
+    Greetings, {} {}!
+    
+    Here is the link to the user's uploaded area of interest: {}
+    
+    We have already notified the user about forwarding the request to you. Thank you very much for your assistance.
+    
+    Regards,
+    LiPAD Team
+"""
+
+DATA_SUC_JURISDICTION_HTML ="""
+    <p>Greetings, {} {}!</p>
+    <br />
+    <p>Here is the link to the user's uploaded area of interest: <a href={} >{}</a></p>
+    <br />
+    <p>We have already notified the user about forwarding the request to you. Thank you very much for your assistance.</p>
+    <br />
+    <p>Regards,</p>
+    <p>LiPAD Team</p>
+"""
+
+DATA_USER_FORWARD_NOTIFICATION_TEXT="""
+    Greetings, {} {}!
+    
+    Your request has now been forwarded to the {} Phil-LiDAR 1 office. Please send your follow-up queries to their office instead.
+    
+    Regards,
+    LiPAD Team
+"""
+
+DATA_USER_FORWARD_NOTIFICATION_HTML="""
+    <p>Greetings, {} {}!</p>
+    <br />
+    <p>Your request data has now been forwarded to the {} Phil-LiDAR 1 office. Please send your follow-up queries to their office instead.</p>
+    <br />
+    <p>Regards,</p>
+    <p>LiPAD Team</p>
+"""
+
+DATA_USER_PRE_FORWARD_NOTIFICATION_TEXT="""
+    Greetings, {} {}!
+    
+    We sent this email to inform you that the estimated size of your data (in bytes) exceeds 10GB (gigabytes) and it maybe more convenient for you to visit the office to copy the files. 
+    As such, we would like to know which option you prefer, to copy the files in the UP Diliman office of Phil-LiDAR 1, or to visit the partner SUC which was assigned over your area of interest.
+    The assigned SUC for your area of interest is {} ({}) Phil-LiDAR 1 under {} {}.
+    
+    We hope to hear your response at the soonest possible time. Thank you!
+    
+    Regards,
+    LiPAD Team
+"""
+
+DATA_USER_PRE_FORWARD_NOTIFICATION_HTML="""
+    <p>Greetings, {} {}!</p>
+    
+    <p>We would like to inform you that the estimated size of your data (in bytes) exceeds 10GB (gigabytes) and it maybe more convenient for you to visit a Phil-LiDAR 1 office to copy the files. 
+    As such, we would like to know which option you prefer, to copy the files in the UP Diliman office of Phil-LiDAR 1, or to visit the partner SUC which was assigned over your area of interest.
+    The assigned SUC for your area of interest is {} ({}) Phil-LiDAR 1 under {} {}.</p>
+    
+    <p>We hope to hear your response at the soonest possible time. Thank you!</p>
+    
+    <p>Regards,</p>
+    <p>LiPAD Team</p>
+"""

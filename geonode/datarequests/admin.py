@@ -1,10 +1,14 @@
 from django.contrib import admin
 
-from geonode.datarequests.models import DataRequestProfile, RequestRejectionReason, DataRequest, ProfileRequest, BaseRequest, LipadOrgType
+from geonode.datarequests.models import DataRequestProfile, RequestRejectionReason, DataRequest, ProfileRequest, BaseRequest, LipadOrgType, SUC_Contact
 
 #class BaseRequestAdmin(admin.ModelAdmin):
 #   model = BaseRequest
 #    search_fields = ('id','status','created')
+
+class SUC_ContactAdmin(admin.ModelAdmin):
+    model = SUC_Contact
+    search_fields=('id', 'name','position','email_address')
 
 class ProfileRequestAdmin(admin.ModelAdmin):
     model = ProfileRequest
@@ -34,6 +38,7 @@ class DataRequestProfileAdmin(admin.ModelAdmin):
 
 
 #admin.site.register(BaseRequest,BaseRequestAdmin)
+admin.site.register(SUC_Contact, SUC_ContactAdmin)
 admin.site.register(ProfileRequest,ProfileRequestAdmin)
 admin.site.register(DataRequest,DataRequestAdmin)
 admin.site.register(DataRequestProfile, DataRequestProfileAdmin)

@@ -27,6 +27,7 @@ from geonode.documents.models import get_related_documents
 from geonode.security.views import _perms_info_json
 from geonode.tasks.jurisdiction import place_name_update
 from geonode.tasks.jurisdiction2 import compute_size_update, assign_grid_refs_all, assign_grid_refs
+from geonode.tasks.requests import tag_request_suc
 from geonode.utils import default_map_config, resolve_object, llbbox_to_mercator
 from geonode.utils import GXPLayer, GXPMap
 
@@ -72,8 +73,10 @@ def data_request_detail(request, pk, template='datarequests/data_detail.html'):
         return HttpResponseRedirect('/forbidden')
 
     context_dict={"data_request": data_request}
-    context_dict ['data_types'] = data_request.data_type.names()
-    pprint(context_dict ['data_types'])
+    context_dict['data_types'] = data_request.data_type.names()
+    context_dict['sucs']=data_request.suc.names()
+    context_dict['max_ftp_size']=settings.MAX_FTP_SIZE
+    pprint(context_dict ['sucs'])
     pprint("dr.pk="+str(data_request.pk))
 
     if data_request.profile:
@@ -313,6 +316,64 @@ def data_request_compute_size(request, pk):
         return HttpResponseRedirect(reverse('datarequests:data_request_browse'))
     else:
         return HttpResponseRedirect('/forbidden/')
+
+def data_request_tag_suc_all(request):
+    if request.user.is_superuser:
+        drs = DataRequest.objects.exclude(jurisdiction_shapefile=None)
+        if drs.count()>0:
+            tag_request_suc.delay(drs)
+            messages.info(request,"The requests are currently being tagged")
+        else:
+            messages.info(request,"No request has a shapefile")
+        
+        return HttpResponseRedirect(reverse('datarequests:data_request_browse'))
+    else:
+        return  HttpResponseRedirect('/forbidden/')
+
+def data_request_tag_suc(request,pk):
+    if request.user.is_superuser and request.method=='POST':
+        dr = get_object_or_404(DataRequest, pk=pk)
+        if dr.jurisdiction_shapefile:
+            tag_request_suc.delay([dr])
+            messages.info(request,"This request is currently being tagged")
+        else:
+            messages.info(request,"This request does not have a shapefile")
+        
+        return HttpResponseRedirect(dr.get_absolute_url())
+    else:
+        return  HttpResponseRedirect('/forbidden/')
+        
+def data_request_notify_suc(request,pk):
+    if request.user.is_superuser and request.method=='POST':
+        dr = get_object_or_404(DataRequest, pk=pk)
+        if dr.juris_data_size > settings.MAX_FTP_SIZE:
+            dr.send_suc_notification()
+            dr.suc_notified=True
+            dr.suc_notified_date=timezone.now()
+            dr.save()
+            messages.info(request, "Email sent")
+        return HttpResponseRedirect(dr.get_absolute_url())
+    else:
+        return HttpResponseRedirect('/forbidden/')
+        
+def data_request_notify_requester(request,pk):
+    if request.user.is_superuser and request.method=='POST':
+        dr = get_object_or_404(DataRequest, pk=pk)
+        dr.notify_user_preforward()
+        messages.info(request, "Email sent")
+        return HttpResponseRedirect(dr.get_absolute_url())
+    else:
+        return HttpResponseRedirect('/forbidden/')
+        
+def data_request_forward_request(request,pk):
+    if request.user.is_superuser and request.method=='POST':
+        dr = get_object_or_404(DataRequest, pk=pk)
+        dr.send_jurisdiction()
+        messages.info(request, "Shapefile link sent")
+        return HttpResponseRedirect(dr.get_absolute_url())
+    else:
+        return HttpResponseRedirect('/forbidden/')
+            
 
 def data_request_reverse_geocode_all(request):
     if request.user.is_superuser:
