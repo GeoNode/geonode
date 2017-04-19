@@ -42,7 +42,7 @@ Enable the SSL module in Apache with the command::
 
     sudo a2enmod ssl
 
-Next as root edit the Apache geonode config file :file:`/etc/apache2/sites-available/geonode`.  At the beginning of the file replace::
+Next as root edit the Apache geonode config file :file:`/etc/apache2/sites-available/geonode.conf`.  At the beginning of the file replace::
 
     <VirtualHost *:80>
 
