@@ -57,5 +57,4 @@ nosetests.xml
 
 #Other things
 .vagrant/
-Vagrantfile
 deploy/
