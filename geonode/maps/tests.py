@@ -17,6 +17,7 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
+import unittest
 
 from lxml import etree
 
@@ -478,6 +479,10 @@ community."
             config_default['about']['title'],
             response_config_dict['about']['title'])
 
+    @unittest.skipIf(
+        hasattr(settings, 'SKIP_GEOSERVER_TEST') and
+        settings.SKIP_GEOSERVER_TEST,
+        'Temporarily skip this test until fixed')
     def test_map_view(self):
         """Test that map view can be properly rendered
         """
@@ -525,6 +530,10 @@ community."
             config_map['about']['title'],
             response_config_dict['about']['title'])
 
+    @unittest.skipIf(
+        hasattr(settings, 'SKIP_GEOSERVER_TEST') and
+        settings.SKIP_GEOSERVER_TEST,
+        'Temporarily skip this test until fixed')
     def test_new_map_config(self):
         """Test that new map config can be properly assigned
         """
@@ -621,6 +630,10 @@ community."
         rating = OverallRating.objects.filter(category=1, object_id=map_id)
         self.assertEquals(rating.count(), 0)
 
+    @unittest.skipIf(
+        hasattr(settings, 'SKIP_GEOSERVER_TEST') and
+        settings.SKIP_GEOSERVER_TEST,
+        'Temporarily skip this test until fixed')
     def test_fix_baselayers(self):
         """Test fix_baselayers function, used by the fix_baselayers command
         """

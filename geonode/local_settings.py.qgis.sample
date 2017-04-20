@@ -21,6 +21,8 @@
 # flake8: noqa
 # Disable flake8 check, since this is just a custom settings file
 
+import os
+
 try:
     # import geonode settings
     from geonode.settings import *
@@ -90,3 +92,7 @@ QGIS_SERVER_CONFIG = {
     'qgis_server_url': QGIS_SERVER_URL,
     'layer_directory': os.path.join(PROJECT_ROOT, "qgis_layer")
 }
+
+
+on_travis = os.environ.get('ON_TRAVIS', False)
+SKIP_GEOSERVER_TEST = on_travis

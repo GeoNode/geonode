@@ -20,6 +20,7 @@ env:
   # This is the IP of docker network bridge
   # So QGIS server can access this address
   SITEURL: http://172.17.0.1:8000/
+  ON_TRAVIS: True
 
 branches:
   only:
