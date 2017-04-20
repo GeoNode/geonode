@@ -227,21 +227,17 @@ DEFAULT_LAYER_SOURCE = {
 """
 START GAZETTEER SETTINGS
 """
-# Defines settings for multiple databases,
-# only use if PostGIS integration enabled
-# and USE_GAZETTEER = True
-USE_GAZETTEER = True
-GAZETTEER_DB_ALIAS = "default"
-GAZETTEER_FULLTEXTSEARCH = False
+USE_GAZETTEER = False
 # Uncomment the following if USE_GAZETTEER = True
-DATABASE_ROUTERS = ['geonode.utils.WorldmapDatabaseRouter']
-SOUTH_DATABASE_ADAPTERS = {
-    'default': "south.db.postgresql_psycopg2",
-    'wmdata' : "south.db.postgresql_psycopg2",
-
-   }
-SOUTH_TESTS_MIGRATE = False
-SOUTH_MIGRATION_MODULES = {}
+# GAZETTEER_DB_ALIAS = "default"
+# GAZETTEER_FULLTEXTSEARCH = False
+# DATABASE_ROUTERS = ['geonode.utils.WorldmapDatabaseRouter']
+# SOUTH_DATABASE_ADAPTERS = {
+#     'default': "south.db.postgresql_psycopg2",
+#     'wmdata' : "south.db.postgresql_psycopg2",
+#    }
+# SOUTH_TESTS_MIGRATE = False
+# SOUTH_MIGRATION_MODULES = {}
 """
 END GAZETTEER SETTINGS
 """
