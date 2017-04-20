@@ -236,7 +236,8 @@ With your LiPAD username and password, please login with an FTPES client
 like Filezilla, to ftpes://ftp.dream.upd.edu.ph. Your requested datasets
 will be in a new folder named [{0}] under the directory [DL/DAD/] and will be available for 30 days only due to infrastructure limitations.
 
-FTP Server: ftpes://ftp.dream.upd.edu.ph/FTP/Others/{1}/DL/DAD/lipad_requests/{0}
+FTP Server: ftpes://ftp.dream.upd.edu.ph/
+Folder location: /mnt/FTP/Others/{1}/DL/DAD/lipad_requests/{0}
 Encryption: Require explicit FTP over TLS
 Logon Type: Normal
 Username: {1}
@@ -280,7 +281,7 @@ Please forward this mail to the system administrator ({2}).
                 error_trace,)
 
         mail_ftp_user(username, user_email, request_name, mail_msg)
-        return "ERROR: Unexpected error occured:\n[{0}]".format(e.message)
+        return "ERROR: Unexpected error occurred:\n[{0}]".format(e.message)
 
     finally:
         ftp_request.save()
