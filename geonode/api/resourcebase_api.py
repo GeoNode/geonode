@@ -410,7 +410,7 @@ class CommonModelApi(ModelResource):
 
             try:
                 page = paginator.page(
-                    int(request.GET.get('offset')) /
+                    int(request.GET.get('offset') or 0) /
                     int(request.GET.get('limit'), 0) + 1)
             except InvalidPage:
                 raise Http404("Sorry, no results on that page.")
