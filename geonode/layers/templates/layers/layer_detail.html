@@ -53,7 +53,9 @@
 
     <div class="tab-content">
 
+    <article id="info" class="tab-pane active">
     {% include "base/resourcebase_info_panel.html" %}
+    </article>
 
      {% if resource.is_mosaic %}
       <article id="granules" class="description tab-pane {% if tab and tab == 'granules' %}active{% endif %}">
@@ -131,7 +133,7 @@
       </article>
      {% endif %}
 
-      <article id="attributes" class="tab-pane">
+          <article id="attributes" class="tab-pane">
         {% if resource.is_mosaic %}
             <table class="table table-striped table-bordered table-condensed">
               <thead>
@@ -522,6 +524,7 @@
 {% endblock %}
 
 {% block extra_script %}
+{{ block.super }}
 
     {% if GEOGIG_ENABLED and resource.link_set.geogig %}
         {% with "_geogig_scripts.html" as geogig_scripts_template %}

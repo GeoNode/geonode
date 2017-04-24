@@ -121,6 +121,7 @@
 {% endblock %}
 
 {% block extra_script %}
+{{ block.super }}
 {% with "none" as layer %}
 {% include "_permissions_form_js.html" %}
 {% endwith %}

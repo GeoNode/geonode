@@ -36,6 +36,7 @@
 {% endblock %}
 
 {% block extra_script %}
+{{ block.super }}
 {% include "_permissions_form_js.html" %}
 
 <script type="text/javascript">
