@@ -95,6 +95,8 @@ def login(request, next_page=None, required=False):
             user.email = attributes["email"]
             user.first_name = attributes["first_name"]
             user.last_name = attributes["last_name"]
+            user.org_type = attributes["org_type"]
+            user.organization = attributes["organization"]
             if attributes["is_active"] is True:
                 user.is_active = attributes["is_active"]
             if attributes["is_staff"] is True:
