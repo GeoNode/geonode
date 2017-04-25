@@ -80,20 +80,21 @@ def get_unames_starting_with(name):
         return e
     return result
 
-def create_ad_account(datarequest, username):
+def create_ad_account(profilerequest, username):
     objectClass =  ["organizationalPerson", "person", "top", "user"]
     sAMAccountName = str(username)
     password = unicode("\""+string_randomizer(16)+"\"", "iso-8859-1").encode("utf-16-le")
-    sn= unidecode(datarequest.last_name)
-    givenName = unidecode(datarequest.first_name)
-    initials=unidecode(datarequest.middle_name[0])
-    cn = unidecode(givenName+" "+datarequest.middle_name+" "+sn)
+    sn= unidecode(profilerequest.last_name)
+    givenName = unidecode(profilerequest.first_name)
+    initials=unidecode(profilerequest.middle_name[0])
+    cn = unidecode(givenName+" "+profilerequest.middle_name+" "+sn)
     displayName=unidecode(givenName+" "+initials+". "+sn)
-    telephoneNumber = str(datarequest.contact_number)
-    mail=str(datarequest.email)
+    telephoneNumber = str(profilerequest.contact_number)
+    mail=str(profilerequest.email)
     userPrincipalName=str(username+"@ad.dream.upd.edu.ph")
     userAccountControl = "512"
-    o=unidecode(datarequest.organization)
+    o=unidecode(profilerequest.organization)
+    company = profilerequest.org_type
 
     for c in cn:
         if c in ESCAPED_CHARACTERS:
@@ -114,6 +115,7 @@ def create_ad_account(datarequest, username):
         "userAccountControl": [userAccountControl],
         "telephoneNumber": [telephoneNumber],
         "o": [o],
+        "company": [company],
         "initials": [initials]
     }
 
