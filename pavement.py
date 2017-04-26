@@ -35,6 +35,7 @@ from urlparse import urlparse
 from paver.easy import task, options, cmdopts, needs
 from paver.easy import path, sh, info, call_task
 from paver.easy import BuildFailure
+from paver.path import pushd
 
 try:
     from geonode.settings import GEONODE_APPS
