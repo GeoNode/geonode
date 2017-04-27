@@ -34,7 +34,6 @@ from django.conf.urls import url
 from django.core.paginator import Paginator, InvalidPage
 from django.http import Http404
 from django.core.exceptions import ObjectDoesNotExist
-from django.forms.models import model_to_dict
 
 from tastypie.utils.mime import build_content_type
 
