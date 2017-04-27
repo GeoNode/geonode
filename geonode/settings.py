@@ -20,6 +20,7 @@
 
 # Django settings for the GeoNode project.
 import os
+import re
 
 from kombu import Queue
 from geonode import __file__ as geonode_path
@@ -57,7 +58,8 @@ EMAIL_ENABLE = strtobool(os.getenv('EMAIL_ENABLE', 'True'))
 # geonode to be listening for GeoServer auth requests.
 os.environ['DJANGO_LIVE_TEST_SERVER_ADDRESS'] = 'localhost:8000'
 
-ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', ['localhost', 'django'])
+ALLOWED_HOSTS = ['localhost', 'django'] if os.getenv('ALLOWED_HOSTS') is None \
+    else re.split(r' *[,|:|;] *', os.getenv('ALLOWED_HOSTS'))
 
 # AUTH_IP_WHITELIST property limits access to users/groups REST endpoints
 # to only whitelisted IP addresses.
