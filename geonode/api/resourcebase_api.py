@@ -46,7 +46,7 @@ from geonode.base.models import HierarchicalKeyword
 
 from .authorization import GeoNodeAuthorization
 
-from .api import TagResource, RegionResource, ProfileResource
+from .api import TagResource, RegionResource, OwnersResource
 from .api import ThesaurusKeywordResource
 from .api import TopicCategoryResource
 from .api import FILTER_TYPES
@@ -85,7 +85,7 @@ class CommonModelApi(ModelResource):
         'category',
         null=True,
         full=True)
-    owner = fields.ToOneField(ProfileResource, 'owner', full=True)
+    owner = fields.ToOneField(OwnersResource, 'owner', full=True)
     tkeywords = fields.ToManyField(ThesaurusKeywordResource, 'tkeywords', null=True)
     VALUES = [
         # fields in the db
@@ -565,20 +565,6 @@ class FeaturedResourceBaseResource(CommonModelApi):
 class LayerResource(CommonModelApi):
 
     """Layer API"""
-
-    def format_objects(self, objects):
-        """
-        Formats the object then adds a geogig_link as necessary.
-        """
-        formatted_objects = []
-        for obj in objects:
-            # convert the object to a dict using the standard values.
-            formatted_obj = model_to_dict(obj, fields=self.VALUES)
-            # add the geogig link
-            formatted_obj['geogig_link'] = obj.geogig_link
-            # put the object on the response stack
-            formatted_objects.append(formatted_obj)
-        return formatted_objects
 
     class Meta(CommonMetaApi):
         queryset = Layer.objects.distinct().order_by('-date')
