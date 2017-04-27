@@ -28,7 +28,7 @@ Ubuntu (standard deployment)
 
 The easiest way to get the .deb is to install it using APT, the standard installation management tool for Ubuntu. The current release, 2.4 is available only for Ubuntu 14.04.
 
-These instructions have been tested on a fresh install of Ubuntu 14.04.5 LTS 64 bit server edition. Please ensure the latest packages are installed with:
+These instructions have been tested on a fresh install of Ubuntu 14.04.5 LTS 64 bit server edition. Please ensure the latest packages are installed with::
 
     sudo apt-get update; sudo apt-get upgrade
 
@@ -36,26 +36,26 @@ Amongst other things, this will ensure that the ``software-properties-common`` p
 
 The steps to install geonode and all dependencies in Ubuntu 14.04 are as follows:
 
-1. Set up the GeoNode PPA repository (you only need to do this once; the repository will still be available for upgrades later).
+1. Set up the GeoNode PPA repository (you only need to do this once; the repository will still be available for upgrades later)::
 
     sudo add-apt-repository ppa:geonode/stable
 
-2. Install the geonode package and dependencies.
+2. Install the geonode package and dependencies::
 
     sudo apt-get update; sudo apt-get install geonode
 
-3. Set the correct IP address (NB: the first command below looks up the IP address automatically).
+3. Set the correct IP address (NB: the first command below looks up the IP address automatically)::
 
     IP_ADDRESS=$(ip route get 8.8.8.8 | awk '{print $NF; exit}')
     sudo geonode-updateip $IP_ADDRESS
    
    NB: The IP address must be set to enable access from another machine, e.g. the host machine if geonode is installed in a virtual machine.
     
-4. Create a geonode superuser, which is used in the geonode web application. You will be prompted for a username, email and password.
+4. Create a geonode superuser, which is used in the geonode web application. You will be prompted for a username, email and password::
 
     geonode createsuperuser
 
-5. Access geonode from your web browser, using the IP address from step 3 above. The neonode web applicaiton should be displayed and you can log in using the superuser details entered immediately above.
+5. Access geonode from your web browser, using the IP address from step 3 above. The neonode web applicaiton should be displayed and you can log in using the superuser details entered immediately above::
 
     http://[IP_ADDRESS]
 
@@ -191,7 +191,7 @@ Start the servers.  You have the option to set the JAVA_HOME environment variabl
 
     paver start --java_path="C:\path\to\java\java.exe"
 
-or if you set your JAVA_HOME environment variables (e.g. JAVA_HOME="C:\Program Files\Java\jdk1.7.0_75\")
+or if you set your JAVA_HOME environment variables (e.g. JAVA_HOME="C:\Program Files\Java\jdk1.7.0_75\")::
 
     paver start
 
