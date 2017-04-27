@@ -34,9 +34,11 @@ from django.conf.urls import url
 from django.core.paginator import Paginator, InvalidPage
 from django.http import Http404
 from django.core.exceptions import ObjectDoesNotExist
+from django.forms.models import model_to_dict
 
 from tastypie.utils.mime import build_content_type
 
+from geonode import get_version
 from geonode.layers.models import Layer
 from geonode.maps.models import Map
 from geonode.documents.models import Document
@@ -517,6 +519,9 @@ class CommonModelApi(ModelResource):
             else:
                 data['objects'] = list(self.format_objects(data['objects']))
 
+            # give geonode version
+            data['geonode_version'] = get_version()
+
         desired_format = self.determine_format(request)
         serialized = self.serialize(request, data, desired_format)
 
@@ -565,6 +570,34 @@ class LayerResource(CommonModelApi):
 
     """Layer API"""
 
+    def format_objects(self, objects):
+        """
+        Formats the object then adds a geogig_link as necessary.
+        """
+        formatted_objects = []
+        for obj in objects:
+            # convert the object to a dict using the standard values.
+            formatted_obj = model_to_dict(obj, fields=self.VALUES)
+            # add the geogig link
+            formatted_obj['geogig_link'] = obj.geogig_link
+            # add Link link
+            link_fields = [
+                'extension',
+                'link_type',
+                'name',
+                'mime',
+                'url'
+            ]
+            links = []
+            for l in obj.link_set.all():
+                formatted_link = model_to_dict(l, fields=link_fields)
+                links.append(formatted_link)
+
+            formatted_obj['links'] = links
+            # put the object on the response stack
+            formatted_objects.append(formatted_obj)
+        return formatted_objects
+
     class Meta(CommonMetaApi):
         queryset = Layer.objects.distinct().order_by('-date')
         if settings.RESOURCE_PUBLISHING:
@@ -576,6 +609,42 @@ class LayerResource(CommonModelApi):
 class MapResource(CommonModelApi):
 
     """Maps API"""
+
+    def format_objects(self, objects):
+        """
+        Formats the objects and provides reference to list of layers in map
+        resources.
+
+        :param objects: Map objects
+        """
+        formatted_objects = []
+        for obj in objects:
+            # convert the object to a dict using the standard values.
+            formatted_obj = model_to_dict(obj, fields=self.VALUES)
+            # get map layers
+            map_layers = obj.layers
+            formatted_layers = []
+            map_layer_fields = [
+                'id'
+                'stack_order',
+                'format',
+                'name',
+                'opacity',
+                'group',
+                'visibility',
+                'transparent',
+                'ows_url',
+                'layer_params',
+                'source_params',
+                'local'
+            ]
+            for layer in map_layers:
+                formatted_map_layer = model_to_dict(
+                     layer, fields=map_layer_fields)
+                formatted_layers.append(formatted_map_layer)
+            formatted_obj['layers'] = formatted_layers
+            formatted_objects.append(formatted_obj)
+        return formatted_objects
 
     class Meta(CommonMetaApi):
         queryset = Map.objects.distinct().order_by('-date')
