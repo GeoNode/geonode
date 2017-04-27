@@ -14,26 +14,25 @@ services:
   - rabbitmq
 
 env:
-  DOCKER_COMPOSE_VERSION: 1.11.2
-  # This is qgis server address
-  QGIS_SERVER_URL: http://localhost:9000/
-  # This is the IP of docker network bridge
-  # So QGIS server can access this address
-  SITEURL: http://172.17.0.1:8000/
-  ON_TRAVIS: True
+  - BACKEND: 'geonode.geoserver'
+  - BACKEND: 'geonode.qgis_server'
+    DOCKER_COMPOSE_VERSION: 1.11.2
+    # This is qgis server address
+    QGIS_SERVER_URL: http://localhost:9000/
+    # This is the IP of docker network bridge
+    # So QGIS server can access this address
+    SITEURL: http://172.17.0.1:8000/
+    ON_TRAVIS: True
 
 branches:
   only:
     - master
+    - master-qgis_server
     - 2.7.x
     - 2.6.x
 
 before_install:
-  - ifconfig
-  - docker --version
-  - pip install docker-compose==$DOCKER_COMPOSE_VERSION
-  - docker-compose --version
-  - docker pull kartoza/qgis-server:LTR
+  - scripts/misc/qgis_server_setup.sh before_install
 
 install:
   - sudo apt-get -qq -y update
@@ -54,25 +53,14 @@ before_script:
   - paver setup
 
   # For QGIS Server
-  - git clone https://github.com/kartoza/otf-project.git
-  - cd otf-project
-  - git checkout master
-  - cd ../
-  - docker-compose -f docker-compose-qgis-server.yml up -d qgis-server
-  - docker ps
+  - scripts/misc/qgis_server_setup.sh before_script
 
 script:
-  # Default Geoserver tests
-  - paver run_tests --coverage
-  # QGIS Server tests
-  - cp geonode/local_settings.py.qgis.sample geonode/local_settings.py
-  - paver stop_geoserver
   - paver run_tests --coverage
 
 after_script:
   # For QGIS Server
-  - docker-compose -f docker-compose-qgis-server.yml down
-  - rm geonode/local_settings.py
+  - scripts/misc/qgis_server_setup.sh after_script
 
   # Cleanup
   - paver reset_hard
