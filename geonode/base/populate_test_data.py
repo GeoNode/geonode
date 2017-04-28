@@ -126,7 +126,7 @@ def create_models(type=None):
     from django.contrib.auth.models import Group
     map_data, user_data, people_data, layer_data, document_data = create_fixtures()
     anonymous_group, created = Group.objects.get_or_create(name='anonymous')
-    u, _ = get_user_model().objects.get_or_create(username='admin', defaults=dict(is_superuser=True, first_name='admin'))
+    u, _ = get_user_model().objects.get_or_create(username='admin', is_superuser=True, first_name='admin')
     u.set_password('admin')
     u.save()
     users = []

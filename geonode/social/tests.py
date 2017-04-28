@@ -32,7 +32,7 @@ from django.contrib.auth import get_user_model
 from django.contrib.contenttypes.models import ContentType
 from django.test import TestCase
 from django.utils.translation import ugettext as _
-from geonode.layers.populate_layers_data import create_layer_data, create_notifications
+from geonode.layers.populate_layers_data import create_layer_data
 from geonode.base.populate_test_data import create_models
 from geonode.social.templatetags.social_tags import activity_item
 from geonode.layers.models import Layer
@@ -50,7 +50,6 @@ class SimpleTest(TestCase):
         create_models(type='layer')
         create_layer_data()
         self.user = get_user_model().objects.filter(username='admin')[0]
-        create_notifications()
 
     def test_layer_activity(self):
         """

@@ -1,4 +1,3 @@
-
 # -*- coding: utf-8 -*-
 #########################################################################
 #
@@ -255,15 +254,11 @@ def layer_detail(request, layername, template='layers/layer_detail.html'):
             ows_url=layer.ows_url,
             layer_params=json.dumps(config))
 
-    ###
-    # counting layer views
-    ###
-
     # Update count for popularity ranking,
     # but do not includes admins or resource owners
     if request.user != layer.owner and not request.user.is_superuser:
-        from geonode.messaging import producer
-        producer.viewing_layer(str(request.user), str(layer.owner), layer.id)
+        Layer.objects.filter(
+            id=layer.id).update(popular_count=F('popular_count') + 1)
 
     # center/zoom don't matter; the viewer will center on the layer bounds
     map_obj = GXPMap(projection=getattr(settings, 'DEFAULT_MAP_CRS', 'EPSG:900913'))
@@ -898,12 +893,6 @@ def layer_metadata_detail(request, layername, template='layers/layer_metadata_de
         "resource": layer,
         'SITEURL': settings.SITEURL[:-1]
     }))
-
-
-def layer_view_counter(layer_id):
-    Layer.objects.filter(
-        id=layer_id).update(popular_count=F('popular_count') + 1)
-    return
 
 
 def layer_metadata_upload(request, layername, template='layers/layer_metadata_upload.html'):

@@ -30,6 +30,7 @@ import glob
 import fileinput
 import yaml
 
+from setuptools.command import easy_install
 from urlparse import urlparse
 
 from paver.easy import task, options, cmdopts, needs
@@ -41,7 +42,6 @@ try:
 except:
     # probably trying to run install_win_deps.
     pass
-
 
 try:
     from paver.path import pushd
@@ -177,9 +177,6 @@ def win_install_deps(options):
         print "Installing file ... " + tempfile
         grab_winfiles(url, tempfile, package)
         try:
-            # This import causes an error with six.moves on OSX
-            # let's leave it in the windows specific section.
-            from setuptools.command import easy_install
             easy_install.main([tempfile])
         except Exception, e:
             failed = True
@@ -221,7 +218,6 @@ def sync(options):
     sh("python manage.py loaddata sample_admin.json")
     sh("python manage.py loaddata geonode/base/fixtures/default_oauth_apps.json")
     sh("python manage.py loaddata geonode/base/fixtures/initial_data.json")
-    sh("python manage.py layer_notice_types")
 
 
 @task
@@ -299,7 +295,6 @@ def start():
     """
     Start GeoNode (Django, GeoServer & Client)
     """
-    call_task('start_messaging')
     info("GeoNode is now available.")
 
 
@@ -341,14 +336,6 @@ def start_django():
     bind = options.get('bind', '')
     foreground = '' if options.get('foreground', False) else '&'
     sh('python manage.py runserver %s %s' % (bind, foreground))
-
-
-def start_messaging():
-    """
-    Start the GeoNode messaging server
-    """
-    foreground = '' if options.get('foreground', False) else '&'
-    sh('python manage.py runmessaging %s' % foreground)
 
 
 @cmdopts([
@@ -444,31 +431,8 @@ def test(options):
     """
     Run GeoNode's Unit Test Suite
     """
-
-    prefix = options.get('prefix', 'python')
-    sh("%s manage.py test %s.tests --noinput -v 2" % (prefix,
-                                                      '.tests '.join(GEONODE_APPS)))
-
-
-@task
-def singletest(options):
-    """
-    Run GeoNode's Unit Test Suite
-    """
-    GEONODE_APPS = [
-        'geonode.maps.tests:MapsTest.test_map_remove',
-        'geonode.maps.tests:MapsTest.test_rating_map_remove',
-        'geonode.social.tests:SimpleTest.test_layer_activity',
-        'geonode.documents.tests:DocumentsTest.test_ajax_document_permissions',
-        'geonode.documents.tests:DocumentsTest.test_create_document_url',
-        'geonode.documents.tests:DocumentsTest.test_create_document_with_no_rel',
-        'geonode.documents.tests:DocumentsTest.test_create_document_with_rel',
-            ]
-
-    apps_to_test = ' '.join(GEONODE_APPS)
-
-    prefix = options.get('prefix', 'python')
-    sh("%s manage.py test %s --noinput --failfast" % (prefix, apps_to_test))
+    sh("%s manage.py test %s.tests --noinput" % (options.get('prefix'),
+                                                 '.tests '.join(GEONODE_APPS)))
 
 
 @task
@@ -494,13 +458,13 @@ def test_integration(options):
 
     success = False
     try:
-        call_task('sync')
         if name == 'geonode.tests.csw':
+            call_task('sync')
             call_task('start')
             sh('sleep 30')
             call_task('setup_data')
         sh(('python manage.py test %s'
-           ' --noinput -v 3 --liveserver=localhost:8000' % name))
+           ' --noinput --liveserver=localhost:8000' % name))
     except BuildFailure, e:
         info('Tests failed! %s' % str(e))
     else:
@@ -528,7 +492,7 @@ def run_tests(options):
         prefix = 'python'
     sh('%s manage.py test geonode.tests.smoke' % prefix)
     call_task('test', options={'prefix': prefix})
-    call_task('test_integration', options={'prefix': prefix})
+    call_task('test_integration')
     call_task('test_integration', options={'name': 'geonode.tests.csw'})
     sh('flake8 geonode')
 
