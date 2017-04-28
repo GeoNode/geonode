@@ -26,15 +26,15 @@ define(function (require, exports) {
         this.main     = null;
 
         this.element  = null;
+
         $.extend(this, options || {});
         if (!this.main || !this.type) {
             this.guessFileType();
         }
 
         // need to find a way converting this name to a safe selector
-        this.selector = '#' + LayerInfo.safeSelector(this.name) + '-element';
-        this.selector = this.selector.replace(' ','_');
-        this.name = this.name.replace(' ','_');
+        this.name = LayerInfo.safeSelector(this.name.split('.')[0]);
+        this.selector = '#' + this.name + '-element';
         this.errors = this.collectErrors();
         this.polling = false;
     };
@@ -45,7 +45,7 @@ define(function (require, exports) {
      *  @returns string
      */
     LayerInfo.safeSelector = function (name) {
-        return name.replace(/\[|\]|\(|\)|./g, '_');
+        return name.replace(/\[|\]|\(|\)| /g, '_');
     };
 
     /** Function to return the success template
@@ -86,8 +86,14 @@ define(function (require, exports) {
             // if we find the type of the file, we also find the "main"
             // file
             if (results) {
-                self.type = results.type;
-                self.main = results.file;
+                // Avoid assuming the metadata file as main one
+                if (results.type.main == 'xml' && self.main != undefined) {
+                   self.type = self.type;
+                   self.main = self.main;
+                } else {
+                   self.type = results.type;
+                   self.main = results.file;
+                }
             }
         });
     };
@@ -100,20 +106,18 @@ define(function (require, exports) {
      */
     LayerInfo.prototype.collectErrors = function () {
         var errors = [];
-
-		var mosaic_is_valid = true;
-		var is_granule = $('#' + this.name + '-mosaic').is(':checked');
+	var mosaic_is_valid = true;
+	var is_granule = $('#' + this.name + '-mosaic').is(':checked');
 
         var is_time_enabled = $('#' + this.name + '-timedim').is(':checked');
-		var is_time_valid = is_time_enabled && !$('#' + this.name + '-timedim-value-valid').is(':visible');
+	var is_time_valid = is_time_enabled && !$('#' + this.name + '-timedim-value-valid').is(':visible');
 
         if (is_granule && is_time_enabled) {
-			mosaic_is_valid = is_time_valid;
-		}
-
-		if (is_granule && !mosaic_is_valid) {
-			errors.push('The configuration of the file as a Mosaic Granule is not valid, please fix the issue and try again');
-		}
+		mosaic_is_valid = is_time_valid;
+	}
+	if (is_granule && !mosaic_is_valid) {
+		errors.push('The configuration of the file as a Mosaic Granule is not valid, please fix the issue and try again');
+	}
 
         if (this.type) {
             errors = this.type.findTypeErrors(this.getExtensions());
@@ -152,14 +156,14 @@ define(function (require, exports) {
     LayerInfo.prototype.prepareFormData = function (form_data) {
         var i, ext, file, perm, geogig, geogig_store, time, mosaic;
 
-		var base_ext  = this.main.name.split('.').pop();
-		var base_name = this.main.name.slice(0, -(base_ext.length+1));
+        var base_ext  = this.main.name.split('.').pop();
+        var base_name = this.name;
 
         var base_ext  = this.main.name.split('.').pop();
-        var base_name = this.main.name.slice(0, -(base_ext.length+1));
+        var base_name = this.name;
 
         var base_ext  = this.main.name.split('.').pop();
-        var base_name = this.main.name.slice(0, -(base_ext.length+1));
+        var base_name = this.name;
 
         if (!form_data) {
             form_data = new FormData();
@@ -260,7 +264,7 @@ define(function (require, exports) {
 
         for (i = 0; i < this.files.length; i += 1) {
             file = this.files[i];
-            if (file.name !== this.main.name) {
+            if (file.name !== this.name) {
                 ext = path.getExt(file);
                 form_data.append(ext + '_file', file);
             }
@@ -585,15 +589,15 @@ define(function (require, exports) {
 
              time_re_txt = input.val();
 
-			 var base_name = this.name.split('-timedim')[0];
+	     var base_name = this.name.split('-timedim')[0];
 
-			 $('#' + base_name + '-timedim-value-valid').show();
+	     $('#' + base_name + '-timedim-value-valid').show();
         });
 
         $('#' + this.name + '-timedim-presentation-format-select').on('change', function() {
              var input = $(this);
 
-			 var base_name = this.name.split('-timedim')[0];
+             var base_name = this.name.split('-timedim')[0];
 
              if (input.val() === 'DISCRETE_INTERVAL') {
                 $('#' + base_name + '-mosaic-timedim-presentation-res-options').show();
@@ -605,7 +609,7 @@ define(function (require, exports) {
         $('#' + this.name + '-timedim-defaultvalue-format-select').on('change', function() {
              var input = $(this);
 
-			 var base_name = this.name.split('-timedim')[0];
+              var base_name = this.name.split('-timedim')[0];
 
              if (input.val() === 'NEAREST' || input.val() === 'FIXED') {
                 $('#' + base_name + '-mosaic-timedim-defaultvalue-res-options').show();
@@ -620,10 +624,10 @@ define(function (require, exports) {
            var re = new RegExp(time_re_txt, "g");
            var is_valid = re.test(input.val());
            if(is_valid){
-		      $('#' + this.name + '-valid').hide();
-		   } else {
-		      $('#' + this.name + '-valid').show();
-	       }
+	      $('#' + this.name + '-valid').hide();
+	   } else {
+	      $('#' + this.name + '-valid').show();
+           }
         });
 
         $('#' + this.name + '-timedim-defaultvalue-ref-value').on('input', function() {
@@ -641,7 +645,7 @@ define(function (require, exports) {
         $('#' + this.name + '\\:geogig_toggle').on('change', this.doGeoGigToggle);
 
         // Add values to the geogig store dropdown and hide.
-        this.setupGeogigDropdown($('#' + this.main.name.split('.')[0] + '\\:geogig_store'));
+        this.setupGeogigDropdown($('#' + this.name.split('.')[0] + '\\:geogig_store'));
         $("#s2id_" + this.name + "\\:geogig_store").hide()
 
         return li;

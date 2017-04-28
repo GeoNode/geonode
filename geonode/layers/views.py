@@ -784,6 +784,7 @@ def layer_remove(request, layername, template='layers/layer_remove.html'):
             with transaction.atomic():
                 delete_layer.delay(object_id=layer.id)
         except Exception as e:
+            traceback.print_exc()
             message = '{0}: {1}.'.format(_('Unable to delete layer'), layer.typename)
 
             if 'referenced by layer group' in getattr(e, 'message', ''):
@@ -818,6 +819,7 @@ def layer_granule_remove(request, granule_id, layername, template='layers/layer_
             coverages = cat.mosaic_coverages(store)
             cat.mosaic_delete_granule(coverages['coverages']['coverage'][0]['name'], store, granule_id)
         except Exception as e:
+            traceback.print_exc()
             message = '{0}: {1}.'.format(_('Unable to delete layer'), layer.typename)
 
             if 'referenced by layer group' in getattr(e, 'message', ''):

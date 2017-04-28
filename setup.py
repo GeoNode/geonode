@@ -60,7 +60,7 @@ setup(name='GeoNode',
         "MultipartPostHandler>=0.1.0",  # python-multipartposthandler (0.1.0)
         "httplib2>=0.9.2",  # python-httplib2 (0.9.1, 0.9.2 in our ppa)
         "transifex-client>=0.10",  # transifex-client (0.11.1)
-        "Paver>=1.2.1",  # python-paver (1.2.1)
+        "Paver>=1.2.4",  # python-paver (1.2.4)
         "nose>=1.3.1",  # python-nose (1.3.7)
         "django-nose>=1.4",  # python-django-nose (1.4.3)
         "awesome-slugify>=1.6.2",
@@ -120,15 +120,22 @@ setup(name='GeoNode',
         "gisdata>=0.5.4",
 
         # haystack/elasticsearch, uncomment to use
-        "django-haystack>=2.4.1",  # missing from ppa FIXME
-        "elasticsearch>=2.4.0",
-        "pyelasticsearch>=0.6.1",
+        "django-haystack==2.6.0",  # missing from ppa FIXME
+        "elasticsearch==2.4.0",
+        "pyelasticsearch==0.6.1",
 
         # datetimepicker widget
         "django-bootstrap3-datetimepicker>=2.2.3",
 
         # AWS S3 dependencies
-        "django-storages>=1.1.8"
+        "django-storages>=1.1.8",
+
+        # Contribs
+        "xlrd==1.0.0",
+        # tests
+        "factory_boy",
+        # "WeasyPrint",
+
         ],
       zip_safe=False,
       )

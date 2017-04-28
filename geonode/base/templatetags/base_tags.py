@@ -130,3 +130,11 @@ def get_context_resourcetype(context):
         if "/{0}/".format(resource_type) in c_path:
             return resource_type
     return 'error'
+
+
+@register.simple_tag(takes_context=True)
+def fullurl(context, url):
+    if not url:
+        return ''
+    r = context['request']
+    return r.build_absolute_uri(url)

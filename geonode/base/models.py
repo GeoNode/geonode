@@ -570,6 +570,8 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
     @property
     def license_light(self):
         a = []
+        if not self.license:
+            return ''
         if (not (self.license.name is None)) and (len(self.license.name) > 0):
             a.append(self.license.name)
         if (not (self.license.url is None)) and (len(self.license.url) > 0):
@@ -1015,6 +1017,14 @@ def resourcebase_post_save(instance, *args, **kwargs):
         if tb:
             logger.debug(tb)
 
+    # set default License if no specified
+    if instance.license is None:
+        no_license = License.objects.filter(name="Not Specified")
+
+        if no_license and len(no_license) > 0:
+            instance.license = no_license[0]
+            instance.save()
+
 
 def rating_post_save(instance, *args, **kwargs):
     """
@@ -1131,8 +1141,9 @@ def do_logout(sender, user, request, **kwargs):
         gs_request = urllib2.Request(url, data, header_params)
 
         try:
-            urllib2.urlopen(gs_request).open()
+            urllib2.urlopen(gs_request)
         except:
+            traceback.print_exc()
             pass
 
         if 'access_token' in request.session:

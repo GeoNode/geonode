@@ -46,7 +46,7 @@
     // done button tooltip variables
     var tooltipShown = false;
     var gotIt = false;
-    var tooltipContent =  'All mandatory fields are completed, you can continue editing the optional fields or click on "Done" to save your changes and close this page. '
+    var tooltipContent =  'All fields declared mandatory by the schema are completed, you can continue editing the optional fields or click on "Done" to save your changes and close this page. '
       + '<a id="close-popover-done" data-toggle="clickover" class="btn btn-small btn-primary pull-right">Got it</a><br/>';
     $('.metadata-edit-done').popover({
         placement: 'left',
@@ -64,15 +64,13 @@
       $('#completeness-hints .mandatory-hint')
         .toggleClass('progress-bar-danger', mandatoryMissing)
         .toggleClass('progress-bar-success', !mandatoryMissing)
-        .attr('title', mandatoryMissing ? "some mandatory fields are missing" : "Mandatory fields completed" )
+        .attr('title', mandatoryMissing ? "some schema mandatory fields are missing" : "Metadata Schema mandatory fields completed" )
         .tooltip('fixTitle');
       $('#completeness-hints .advanced-hint')
         .toggleClass('progress-bar-danger', advancedMissing)
         .toggleClass('progress-bar-success', !advancedMissing)
-        .attr('title', advancedMissing ? "some mandatory fields are missing" : "Mandatory fields completed" )
+        .attr('title', advancedMissing ? "some schema mandatory fields are missing" : "Metadata Schema mandatory fields completed" )
         .tooltip('fixTitle');
-
-
 
         //done button tooltip
         if(completeness === 1 && $('.metadata-edit-done').css('opacity')+"" === "0" && !tooltipShown && !gotIt) {
@@ -224,17 +222,71 @@
         }
 
         //check if a field is mandatory
-        var isMandatoryField = function (el) {
-          return el.id.indexOf("autocomplete") < 0 && !$(el).hasClass('value-select') && el.type !== 'radio'  && el.type !== 'button'
+        var otherRestrictionsSelected  = function(e){
+          var otherRestrictions = false
+          try {
+            idx = $('#id_resource-restriction_code_type')[0].selectedIndex;
+            value = $('#id_resource-restriction_code_type')[0].options[idx].text;
+            if(value === "otherRestrictions") {
+                otherRestrictions = true;
+            }
+          } catch (err) {
+              otherRestrictions = false;
+          }
+
+          return otherRestrictions;
         }
+
+        var toggleRestrictionsConstraints = function(e){
+          try {
+            if(e && e.target &&
+                    e.target.id == 'id_resource-constraints_other') {
+              var ee = $('#id_resource-constraints_other')[0];
+              if(otherRestrictionsSelected() && ee.value !== undefined && ee.value.trim() === '') {
+                if(!$(ee).hasClass("input-empty")) {
+                    setInputEmpty(ee, true);
+                    $(ee).parent().append("<p class='xxs-font-size mandatory-warning'>&nbsp;&nbsp;&nbsp;<strong>* Field declared Mandatory by the Metadata Schema</strong></p>");
+                    empty++;
+                } else {
+                    setInputEmpty(ee, false);
+                    $(ee).parent().find(".mandatory-warning").remove();
+                    empty--;
+                }
+              }
+             }
+          } catch (err) {
+            // Log error
+            return false;
+          }
+
+          return true;
+        }
+
+        var isMandatoryField = function (el) {
+          if(el.id.indexOf("resource-constraints") >= 0) {
+            if(otherRestrictionsSelected()) {
+              return true;
+            }
+            return false;
+          }
+
+          var is_mandatory = (el.id.indexOf("autocomplete") < 0 &&
+                        !$(el).hasClass('value-select') &&
+                        el.type !== 'radio' &&
+                        el.type !== 'button');
+          return is_mandatory;
+        }
+
         var onInputChange = function(e){
+            toggleRestrictionsConstraints(e);
+
             if(e.target.value !== undefined && e.target.value.trim() === ''){
                 if(!$(e.target).hasClass("input-empty")){
-                    setInputEmpty(e.target, true);
-                    if(!!$(this).closest('#mdinfo').length) {
-                        $(e.target).parent().append("<p class='xxs-font-size mandatory-warning'>&nbsp;&nbsp;&nbsp;<strong>* Mandatory field</strong></p>");
-                    }
                     if(isMandatoryField(this)) {
+                        setInputEmpty(e.target, true);
+                        if(!!$(this).closest('#mdinfo').length) {
+                            $(e.target).parent().append("<p class='xxs-font-size mandatory-warning'>&nbsp;&nbsp;&nbsp;<strong>* Field declared Mandatory by the Metadata Schema</strong></p>");
+                        }
                         empty++;
                     }
                 }
@@ -244,19 +296,22 @@
                     if(isMandatoryField(this)) {
                         empty--;
                     }
+                    setInputEmpty(e.target, false);
+                    $(e.target).parent().find(".mandatory-warning").remove();
                 }
-                setInputEmpty(e.target, false);
-                $(e.target).parent().find(".mandatory-warning").remove();
             }
+
             if(totalNum == prevNum) {
                 try {
-                    updateCompleteness((totalNum-empty)/totalNum);
+                    var perc = (totalNum <= 0 ? 0 : (totalNum-empty)/totalNum);
+                        perc = (perc <= 1 ? perc : 1);
+                    updateCompleteness(perc);
                 } catch(err) {
                     // Log error
                 }
             }
-
         };
+
         $('#category_form').change(onInputChange).change();
         $('#id_resource-regions').change(onInputChange).change();
         $('#mandatory').find(":input:not(.value-select):not(.autocomplete)").each(function(){
@@ -281,10 +336,11 @@
 
             $(this).change(onInputChange).change();
 
-            if(this.id.indexOf("autocomplete") < 0){
+            if(isMandatoryField(this)){
                 totalNum++;
             }
         });
+
         // Dataset attributes sorting
         $(document).ready(function() {
             //Helper function to keep table row from collapsing when being sorted
@@ -323,7 +379,6 @@
                   $(this).closest('tr').insertAfter(to.children().eq(nextIndex));
                 }
                 renumber_table('#dataset table')
-
               }
             });
         });
@@ -407,7 +462,9 @@
 
         if(totalNum == prevNum) {
             try {
-                updateCompleteness((totalNum-empty)/totalNum);
+                var perc = (totalNum <= 0 ? 0 : (totalNum-empty)/totalNum);
+                    perc = (perc <= 1 ? perc : 1);
+                updateCompleteness(perc);
             } catch(err) {
                 // Log error
             }
@@ -437,6 +494,7 @@
             }
 
     		    $('#id_resource-keywords').tokenfield({
+                        createTokensOnBlur: true,
     		        autocomplete: {
     		            source: kws,
     		            delay: 100
@@ -457,8 +515,8 @@
                 onNodeSelected: function($event, $data) {
                     //TODO: This seems a horribly inelegant way of doing this in 12 Lines
                     kws = $('#id_resource-keywords').tokenfield('getTokens');
-                    newToken = $data.text
-                    exists = false
+                    var newToken = $data.text
+                    var exists = false
                     for (var i=0; i<kws.length; i++) {
                         if (kws[i]['value'].indexOf(newToken) >=0) {
                             exists = true

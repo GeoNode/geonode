@@ -1,4 +1,4 @@
-{% extends "site_base.html" %}
+{% extends "geonode_base.html" %}
 {% load i18n %}
 {% load url from future %}
 {% load bootstrap_tags %}
@@ -153,6 +153,7 @@
 {% endblock body_outer %}
 
 {% block extra_script %}
+{{ block.super }}
     {% include 'metadata_form_js.html' %}
 
     {% if GEONODE_SECURITY_ENABLED %}

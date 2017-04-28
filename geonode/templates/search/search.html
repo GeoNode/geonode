@@ -1,4 +1,4 @@
-{% extends "site_base.html" %}
+{% extends "geonode_base.html" %}
 {% load i18n %}
 {% load staticfiles %}
 {% load url from future %}
@@ -21,6 +21,7 @@
 {% endblock %}
 
 {% block extra_script %}
+{{ block.super }}
   {% if GEONODE_SECURITY_ENABLED %}
     {% include "_permissions_form_js.html" %}
   {% endif %}

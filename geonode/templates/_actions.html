@@ -7,11 +7,15 @@
   {% if resource.is_mosaic %}
   <li><a href="#granules" data-toggle="tab"><i class="fa fa-bars"></i>{% trans "Granules" %}</a></li>
   {% endif %}
-  {% if SOCIAL_BUTTONS %}
+  {% if DISPLAY_SOCIAL %}
   <li><a href="#share" data-toggle="tab"><i class="fa fa-share"></i>{% trans "Share" %}</a></li>
   {% endif %}
+  {% if DISPLAY_RATINGS %}
   <li><a href="#rate" data-toggle="tab"><i class="fa fa-star"></i>{% trans "Ratings" %}</a></li>
+  {% endif %}
+  {% if DISPLAY_COMMENTS %}
   <li><a href="#comments" data-toggle="tab"><i class="fa fa-comment-o"></i> {% trans "Comments" %}</a></li>
+  {% endif %}
   {% if GEOGIG_ENABLED and resource.link_set.geogig %}
   <li><a href="#geogig" data-toggle="tab"><i class="fa fa-code-fork"></i> {% trans "GeoGig" %}</a></li>
   {% endif %}

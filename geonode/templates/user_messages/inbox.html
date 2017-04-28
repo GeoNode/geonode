@@ -1,4 +1,4 @@
-{% extends "site_base.html" %}
+{% extends "geonode_base.html" %}
 
 {% load i18n %}
 {% load avatar_tags %}
@@ -39,11 +39,12 @@
 {% endblock %}
 
 {% block extra_script %}
+{{ block.super }}
 <script type="text/javascript">
 $('.tab-content').click(function(event) {
   objectClicked = event.target;
   // If we clicked the delete button
-  if ($(objectClicked)[0].className.includes('message_delete_btn')) {
+  if ($(objectClicked)[0].className.indexOf('message_delete_btn') >= 0) {
     // Grab the correct form
     form = $(objectClicked).closest('form')[0];
     // Asynchronous delete thread and refresh on same page

@@ -20,7 +20,7 @@
 
 from django.contrib import admin
 
-from geonode.services.models import Service
+from geonode.services.models import Service, ServiceLayer
 from geonode.base.admin import ResourceBaseAdminForm
 
 
@@ -39,3 +39,4 @@ class ServiceAdmin(admin.ModelAdmin):
 
 
 admin.site.register(Service, ServiceAdmin)
+admin.site.register(ServiceLayer)

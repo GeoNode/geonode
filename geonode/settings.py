@@ -20,6 +20,8 @@
 
 # Django settings for the GeoNode project.
 import os
+import sys
+import re
 
 from kombu import Queue
 from geonode import __file__ as geonode_path
@@ -50,11 +52,15 @@ DEBUG = strtobool(os.getenv('DEBUG', 'True'))
 # otherwise it will raise errors for the missing non-minified dependencies
 DEBUG_STATIC = strtobool(os.getenv('DEBUG_STATIC', 'False'))
 
+#Define email service on GeoNode
+EMAIL_ENABLE = strtobool(os.getenv('EMAIL_ENABLE', 'True'))
+
 # This is needed for integration tests, they require
 # geonode to be listening for GeoServer auth requests.
 os.environ['DJANGO_LIVE_TEST_SERVER_ADDRESS'] = 'localhost:8000'
 
-ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', ['localhost', 'django'])
+ALLOWED_HOSTS = ['localhost', 'django'] if os.getenv('ALLOWED_HOSTS') is None \
+    else re.split(r' *[,|:|;] *', os.getenv('ALLOWED_HOSTS'))
 
 # AUTH_IP_WHITELIST property limits access to users/groups REST endpoints
 # to only whitelisted IP addresses.
@@ -279,7 +285,7 @@ GEONODE_CONTRIB_APPS = (
 )
 
 # Uncomment the following line to enable contrib apps
-GEONODE_APPS = GEONODE_APPS + GEONODE_CONTRIB_APPS
+GEONODE_APPS = GEONODE_CONTRIB_APPS + GEONODE_APPS
 
 INSTALLED_APPS = (
 
@@ -536,6 +542,8 @@ THEME_ACCOUNT_CONTACT_EMAIL = os.getenv(
 # some problematic 3rd party apps
 TEST_RUNNER = 'django_nose.NoseTestSuiteRunner'
 
+
+TEST = 'test' in sys.argv
 # Arguments for the test runner
 NOSE_ARGS = [
     '--nocapture',
@@ -568,8 +576,17 @@ CACHE_TIME = int(os.getenv('CACHE_TIME', '0'))
 GEOSERVER_LOCATION = os.getenv(
     'GEOSERVER_LOCATION', 'http://localhost:8080/geoserver/'
 )
+
 GEOSERVER_PUBLIC_LOCATION = os.getenv(
     'GEOSERVER_PUBLIC_LOCATION', 'http://localhost:8080/geoserver/'
+)
+
+OGC_SERVER_DEFAULT_USER = os.getenv(
+    'GEOSERVER_ADMIN_USER', 'admin'
+)
+
+OGC_SERVER_DEFAULT_PASSWORD = os.getenv(
+    'GEOSERVER_ADMIN_PASSWORD', 'geoserver'
 )
 
 # OGC (WMS/WFS/WCS) Server Settings
@@ -584,8 +601,8 @@ OGC_SERVER = {
         # the proxy won't work and the integration tests will fail
         # the entire block has to be overridden in the local_settings
         'PUBLIC_LOCATION': GEOSERVER_PUBLIC_LOCATION,
-        'USER': 'admin',
-        'PASSWORD': 'geoserver',
+        'USER': OGC_SERVER_DEFAULT_USER,
+        'PASSWORD': OGC_SERVER_DEFAULT_PASSWORD,
         'MAPFISH_PRINT_ENABLED': True,
         'PRINT_NG_ENABLED': True,
         'GEONODE_SECURITY_ENABLED': True,
@@ -726,7 +743,9 @@ MAP_BASELAYERS = [{
     "group": "background"
 }]
 
-SOCIAL_BUTTONS = True
+DISPLAY_SOCIAL = strtobool(os.getenv('DISPLAY_SOCIAL', 'True'))
+DISPLAY_COMMENTS = strtobool(os.getenv('DISPLAY_COMMENTS', 'True'))
+DISPLAY_RATINGS = strtobool(os.getenv('DISPLAY_RATINGS', 'True'))
 
 SOCIAL_ORIGINS = [{
     "label": "Email",
@@ -1065,3 +1084,12 @@ if 'geonode.geoserver' in INSTALLED_APPS:
 # Filter: (boolean, optional, default false) a filter option on that thesaurus will appear in the main search page
 # THESAURI = [{'name':'inspire_themes', 'required':False, 'filter':True}]
 THESAURI = []
+
+# use when geonode.contrib.risks is in installed apps.
+RISKS = {'DEFAULT_LOCATION': None,
+         'PDF_GENERATOR': {'NAME': 'wkhtml2pdf',
+                           'BIN': '/usr/bin/wkhtml2pdf',
+                           'ARGS': []}}
+if EMAIL_ENABLE:
+    #Setting up email backend
+    EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'

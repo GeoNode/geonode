@@ -1,7 +1,7 @@
 Django==1.8.7
 MultipartPostHandler==0.1.0
 OWSLib==0.11.0
-Paver==1.2.1
+Paver==1.2.4
 Unidecode==0.4.19
 amqp==1.4.9
 anyjson==0.3.3
@@ -24,7 +24,7 @@ django-forms-bootstrap==3.0.1
 django-friendly-tag-loader==1.2.1
 django-geoexplorer==4.0.5
 django-guardian==1.4.6
-django-haystack==2.4.1
+django-haystack==2.6.0
 django-jsonfield==0.9.16
 django-leaflet==0.13.7
 django-modeltranslation==0.12
@@ -72,3 +72,5 @@ transifex-client==0.10
 xmltodict==0.9.2
 django-treebeard==3.0
 django-geonode-client==0.0.15
+xlrd==1.0.0
+redis==2.10.5

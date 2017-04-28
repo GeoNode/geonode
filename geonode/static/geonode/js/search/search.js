@@ -72,7 +72,7 @@
           if(node.nodes){
             for(var i=0; i<node.nodes.length;i++){
               $('#treeview').treeview('selectNode', node.nodes[i]);
-            } 
+            }
           }
         },
         onNodeUnselected: function($event, node){
@@ -81,7 +81,7 @@
             for(var i=0; i<node.nodes.length;i++){
               $('#treeview').treeview('unselectNode', node.nodes[i]);
               $('#treeview').trigger('nodeUnselected', $.extend(true, {}, node.nodes[i]));
-            } 
+            }
           }
         }
       });
@@ -206,7 +206,7 @@
     //   module.load_keywords($http, $rootScope, $location);
     //}
     module.load_h_keywords($http, $rootScope, $location);
-    
+
     if ($('#regions').length > 0){
        module.load_regions($http, $rootScope, $location);
     }
@@ -249,10 +249,11 @@
     $scope.query.limit = $scope.query.limit || CLIENT_RESULTS_LIMIT;
     $scope.query.offset = $scope.query.offset || 0;
     $scope.page = Math.round(($scope.query.offset / $scope.query.limit) + 1);
-   
+
     //Get data from apis and make them available to the page
     function query_api(data){
       $http.get(Configs.url, {params: data || {}}).success(function(data){
+        setTimeout(function(){$('[ng-controller="CartList"] [data-toggle="tooltip"]').tooltip();},0);
         $scope.results = data.objects;
         $scope.total_counts = data.meta.total_count;
         $scope.$root.query_data = data;
@@ -350,7 +351,7 @@
           query_entry.push($scope.query[data_filter]);
         }
       }
-  
+
       // Add the entry in the correct query
       if (query_entry.indexOf(value) == -1){
         query_entry.push(value);
@@ -377,7 +378,7 @@
           query_entry.push($scope.query[data_filter]);
         }
       }
-  
+
       query_entry.splice(query_entry.indexOf(value), 1);
 
       //save back the new query entry to the scope query
@@ -609,7 +610,7 @@
         }
       });
 
-			
+
       var leafletData = $injector.get('leafletData'),
           map = leafletData.getMap('filter-map');
 
@@ -619,7 +620,7 @@
           query_api($scope.query);
         });
       });
-    
+
       var showMap = false;
       $('#_extent_filter').click(function(evt) {
      	  showMap = !showMap
@@ -627,7 +628,7 @@
           leafletData.getMap().then(function(map) {
             map.invalidateSize();
           });
-        } 
+        }
       });
     }
   });

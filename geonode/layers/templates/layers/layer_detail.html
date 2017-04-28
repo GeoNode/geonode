@@ -52,10 +52,11 @@
     </div>
 
     <div class="tab-content">
+      <article id="info" class="tab-pane{% if tab == 'info' or not tab %} active{% endif %}">
+        {% include "base/resourcebase_info_panel.html" %}
+      </article>
 
-    {% include "base/resourcebase_info_panel.html" %}
-
-     {% if resource.is_mosaic %}
+      {% if resource.is_mosaic %}
       <article id="granules" class="description tab-pane {% if tab and tab == 'granules' %}active{% endif %}">
         <div class="paginate-contents">
 
@@ -200,16 +201,18 @@
       </article>
 
       {% block social_links %}
-      {% if SOCIAL_BUTTONS %}
+      {% if DISPLAY_SOCIAL %}
         {% include "social_links.html" %}
       {% endif %}
       {% endblock %}
 
+      {% if DISPLAY_COMMENTS %}
       <article id="comments" class="tab-pane">
         {% with resource as obj %}
           {% include "_comments.html" %}
         {% endwith %}
       </article>
+      {% endif %}
 
       {% if GEOGIG_ENABLED and resource.link_set.geogig %}
         {% with "_geogig_layer_detail.html" as geogig_template %}
@@ -221,6 +224,7 @@
         {% endwith %}
       {% endif %}
 
+      {% if DISPLAY_RATINGS %}
       <article id="rate" class="tab-pane">
         <!-- TODO: Move this to a reusable template snippet -->
         {% if request.user.is_authenticated %}
@@ -233,6 +237,7 @@
         {% num_ratings resource as num_votes %}
         <div class="overall_rating" data-score="{{ layer_rating }}"></div> ({{num_votes}})
       </article>
+      {% endif %}
 
     </div>
 
@@ -341,8 +346,8 @@
                   <h4>{% trans "Styles" %}</h4>
                   {% if preview == 'geoext' %}
                   <a class="btn btn-default btn-block btn-xs style-edit" data-dismiss="modal" href="#">{% trans "Edit" %}</a>
-                  <a class="btn btn-default btn-block btn-xs" href="{% url "layer_style_manage" resource.service_typename %}">{% trans "Manage" %}</a>
                   {% endif %}
+                  <a class="btn btn-default btn-block btn-xs" href="{% url "layer_style_manage" resource.service_typename %}">{% trans "Manage" %}</a>
                 </div>
                 {% endif %}
               {% endif %}
@@ -522,6 +527,7 @@
 {% endblock %}
 
 {% block extra_script %}
+{{ block.super }}
 
     {% if GEOGIG_ENABLED and resource.link_set.geogig %}
         {% with "_geogig_scripts.html" as geogig_scripts_template %}

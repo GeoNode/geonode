@@ -126,10 +126,7 @@ class Layer(ResourceBase):
     def service(self):
         """Get the related service object dynamically
         """
-        # TODO: Get rid of this import by finding a way
-        # to use the Django ORM without having to import from geonode.services.
-        from geonode.services.models import ServiceLayer
-        service_layers = ServiceLayer.objects.filter(layer=self)
+        service_layers = self.servicelayer_set.all()
         if len(service_layers) == 0:
             return None
         else:
@@ -507,7 +504,18 @@ def pre_delete_layer(instance, sender, **kwargs):
     Default style will be deleted in post_delete_layer
     """
     if instance.is_remote:
+        # we need to delete the maplayers here because in the post save layer.service is not available anymore
+        # REFACTOR
+        from geonode.maps.models import MapLayer
+        if instance.typename:
+            logger.debug(
+                "Going to delete associated maplayers for [%s]",
+                instance.typename.encode('utf-8'))
+            MapLayer.objects.filter(
+                name=instance.typename,
+                ows_url=instance.ows_url).delete()
         return
+
     logger.debug(
         "Going to delete the styles associated for [%s]",
         instance.typename.encode('utf-8'))
@@ -530,6 +538,9 @@ def post_delete_layer(instance, sender, **kwargs):
     Removed the layer from any associated map, if any.
     Remove the layer default style.
     """
+    if instance.is_remote:
+        return
+
     from geonode.maps.models import MapLayer
     if instance.typename:
         logger.debug(
@@ -539,8 +550,6 @@ def post_delete_layer(instance, sender, **kwargs):
             name=instance.typename,
             ows_url=instance.ows_url).delete()
 
-    if instance.is_remote:
-        return
     if instance.typename:
         logger.debug(
             "Going to delete the default style for [%s]",
