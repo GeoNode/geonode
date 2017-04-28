@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+# -*- coding: utf-8 -*-
 #########################################################################
 #
 # Copyright (C) 2016 OSGeo
@@ -18,15 +18,23 @@
 #
 #########################################################################
 
-import os
-import sys
+from django.core.management.base import BaseCommand
 
-if __name__ == "__main__":
-    sys.path.insert(0,
-                    '/usr/local/Cellar/gdal/1.11.3_1/lib/python2.7/site-packages')
+from geonode.messaging.queues import queue_email_events, queue_geoserver_events, \
+                   queue_notifications_events, queue_all_events, \
+                   queue_geoserver_catalog, queue_geoserver_data, \
+                   queue_geoserver, queue_layer_viewers
 
-    os.environ.setdefault("DJANGO_SETTINGS_MODULE", "geonode.settings")
 
-    from django.core.management import execute_from_command_line
+class Command(BaseCommand):
+    help = 'Start the MQ consumer to perform non blocking tasks'
 
-    execute_from_command_line(sys.argv)
+    def handle(self, **options):
+        queue_geoserver_events.purge()
+        queue_notifications_events.purge()
+        queue_email_events.purge()
+        queue_all_events.purge()
+        queue_geoserver_catalog.purge()
+        queue_geoserver_data.purge()
+        queue_geoserver.purge()
+        queue_layer_viewers.purge()

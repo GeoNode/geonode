@@ -45,7 +45,7 @@ from geonode.people.utils import get_valid_user
 from geonode.base.models import TopicCategory
 from geonode.base.populate_test_data import create_models, all_public
 from geonode.layers.forms import JSONField, LayerUploadForm
-from .populate_layers_data import create_layer_data
+from .populate_layers_data import create_layer_data, create_notifications
 
 
 class LayersTest(TestCase):
@@ -60,6 +60,7 @@ class LayersTest(TestCase):
         self.passwd = 'admin'
         create_models(type='layer')
         create_layer_data()
+        create_notifications()
         self.anonymous_user = get_anonymous_user()
 
     # Data Tests
@@ -755,14 +756,18 @@ class UnpublishedObjectTests(TestCase):
     fixtures = ['initial_data.json', 'bobby']
 
     def setUp(self):
-        super(UnpublishedObjectTests, self).setUp()
+        self.user = 'admin'
+        self.passwd = 'admin'
+        create_models(type='layer')
+        create_layer_data()
+        create_notifications()
+        self.anonymous_user = get_anonymous_user()
 
         self.list_url = reverse(
             'api_dispatch_list',
             kwargs={
                 'api_name': 'api',
                 'resource_name': 'layers'})
-        create_models(type='layer')
         all_public()
 
     def test_unpublished_layer(self):

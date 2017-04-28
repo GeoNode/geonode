@@ -60,18 +60,18 @@ Or if you want to use the provided Makefile::
 **Note:**  
 For deveployment you need to add `geonode` alias into `/ect/hosts/` file as following:
 
-```
-$ sudo vim /etc/hosts
-##
-# Host Database
-#
-# localhost is used to configure the loopback interface
-# when the system is booting.  Do not change this entry.
-##
-127.0.0.1       localhost geonode
-255.255.255.255 broadcasthost
-::1             localhost
-```
+        
+        $ sudo vim /etc/hosts
+        ##
+        # Host Database
+        #
+        # localhost is used to configure the loopback interface
+        # when the system is booting.  Do not change this entry.
+        ##
+        127.0.0.1       localhost geonode
+        255.255.255.255 broadcasthost
+        ::1             localhost
+        
 To access GeoNode just enter the following url: `http://geonode/` on your web browser. 
 For GeoServer: `http://geonode/geoserver/web/`
 

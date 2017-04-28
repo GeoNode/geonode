@@ -248,7 +248,7 @@
     <ul class="list-group">
       {% if resource.storeType != "remoteStore" %}
         <li class="list-group-item">
-        {% if links or links_download %}
+        {% if links_download %}
            <button class="btn btn-primary btn-md btn-block" data-toggle="modal" data-target="#download-layer">{% trans "Download Layer" %}</button>
         {% else %}
           {% if request.user.is_authenticated %}

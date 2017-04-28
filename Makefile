@@ -12,6 +12,7 @@ sync: up
 	docker-compose exec django django-admin.py loaddata sample_admin
 	docker-compose exec django django-admin.py loaddata geonode/base/fixtures/default_oauth_apps_docker.json
 	docker-compose exec django django-admin.py loaddata geonode/base/fixtures/initial_data.json
+	docker-compose exec django django-admin.py layer_notice_types
 
 migrate:
 	django-admin.py migrate --noinput

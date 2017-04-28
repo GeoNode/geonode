@@ -37,6 +37,7 @@ from geonode.maps.utils import fix_baselayers
 from geonode.utils import default_map_config
 from geonode.base.populate_test_data import create_models
 from geonode.maps.tests_populate_maplayers import create_maplayers
+from geonode.layers.populate_layers_data import create_notifications
 
 
 class MapsTest(TestCase):
@@ -52,6 +53,7 @@ class MapsTest(TestCase):
         create_models(type='map')
         create_models(type='layer')
         create_maplayers()
+        create_notifications()
 
     default_abstract = "This is a demonstration of GeoNode, an application \
 for assembling and publishing web based maps.  After adding layers to the map, \

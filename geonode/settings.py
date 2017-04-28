@@ -269,6 +269,7 @@ GEONODE_APPS = (
     'geonode.geoserver',
     'geonode.upload',
     'geonode.tasks',
+    'geonode.messaging'
 
 )
 
@@ -323,6 +324,7 @@ INSTALLED_APPS = (
     'mptt',
     # 'modeltranslation',
     'djcelery',
+    'djkombu',
     'storages',
     'floppyforms',
 
@@ -336,7 +338,7 @@ INSTALLED_APPS = (
     'avatar',
     'dialogos',
     'agon_ratings',
-    # 'notification',
+    'notification',
     'announcements',
     'actstream',
     'user_messages',
@@ -971,7 +973,6 @@ SEARCH_FILTERS = {
 
 # Queue non-blocking notifications.
 NOTIFICATION_QUEUE_ALL = False
-
 BROKER_URL = os.getenv('BROKER_URL', "django://")
 CELERY_ALWAYS_EAGER = True
 CELERY_EAGER_PROPAGATES_EXCEPTIONS = True
@@ -1085,11 +1086,6 @@ if 'geonode.geoserver' in INSTALLED_APPS:
 # THESAURI = [{'name':'inspire_themes', 'required':False, 'filter':True}]
 THESAURI = []
 
-# use when geonode.contrib.risks is in installed apps.
-RISKS = {'DEFAULT_LOCATION': None,
-         'PDF_GENERATOR': {'NAME': 'wkhtml2pdf',
-                           'BIN': '/usr/bin/wkhtml2pdf',
-                           'ARGS': []}}
 if EMAIL_ENABLE:
     #Setting up email backend
     EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'

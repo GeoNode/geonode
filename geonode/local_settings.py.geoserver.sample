@@ -38,6 +38,8 @@ ALLOWED_HOSTS = ['localhost', 'geonode.example.com']
 
 # TIME_ZONE = 'Europe/Paris'
 
+ALLOWED_HOSTS = ['localhost', 'geonode.example.com']
+
 DATABASES = {
     'default': {
          'ENGINE': 'django.db.backends.postgresql_psycopg2',
@@ -64,6 +66,14 @@ GEOSERVER_LOCATION = os.getenv(
 GEOSERVER_PUBLIC_LOCATION = os.getenv(
 #    'GEOSERVER_PUBLIC_LOCATION', '{}/geoserver/'.format(SITEURL)
     'GEOSERVER_LOCATION', 'http://localhost:8080/geoserver/'
+)
+
+OGC_SERVER_DEFAULT_USER = os.getenv(
+    'GEOSERVER_ADMIN_USER', 'admin'
+)
+
+OGC_SERVER_DEFAULT_PASSWORD = os.getenv(
+    'GEOSERVER_ADMIN_PASSWORD', 'geoserver'
 )
 
 OGC_SERVER_DEFAULT_USER = os.getenv(

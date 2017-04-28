@@ -100,21 +100,7 @@ def catalogue_post_save(instance, sender, **kwargs):
 
 
 def catalogue_pre_save(instance, sender, **kwargs):
-    """Send information to catalogue"""
-    record = None
-
-    # if the layer is in the catalogue, try to get the distribution urls
-    # that cannot be precalculated.
-    try:
-        catalogue = get_catalogue()
-        record = catalogue.get_record(instance.uuid)
-    except EnvironmentError, err:
-        msg = 'Could not connect to catalogue to save information for layer "%s"' % instance.name
-        LOGGER.warn(msg, err)
-        raise err
-
-    if record is None:
-        return
+    pass
 
 
 if 'geonode.catalogue' in settings.INSTALLED_APPS:
