@@ -893,10 +893,6 @@ class GeoNodeThumbnailTest(TestCase):
     def tearDown(self):
         pass
 
-    @unittest.skipIf(
-        hasattr(settings, 'SKIP_GEOSERVER_TEST') and
-        settings.SKIP_GEOSERVER_TEST,
-        'Temporarily skip this test until fixed')
     def test_layer_thumbnail(self):
         """Test the layer save method generates a thumbnail link
         """
@@ -919,10 +915,6 @@ class GeoNodeThumbnailTest(TestCase):
 
         assert thumbnail_url != staticfiles.static(settings.MISSING_THUMBNAIL)
 
-    @unittest.skipIf(
-        hasattr(settings, 'SKIP_GEOSERVER_TEST') and
-        settings.SKIP_GEOSERVER_TEST,
-        'Temporarily skip this test until fixed')
     def test_map_thumbnail(self):
         """Test the map save method generates a thumbnail link
         """

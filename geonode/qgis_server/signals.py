@@ -34,7 +34,6 @@ from geonode.base.models import Link
 from geonode.layers.models import Layer
 from geonode.maps.models import Map, MapLayer
 from geonode.qgis_server.tasks.update import create_qgis_server_thumbnail
-from geonode.geoserver.helpers import http_client
 from geonode.qgis_server.gis_tools import set_attributes
 
 logger = logging.getLogger("geonode.qgis_server.signals")
@@ -232,13 +231,8 @@ def qgis_server_post_save(instance, sender, **kwargs):
     )
 
     # Create thumbnail
-    thumbnail_remote_url = reverse(
-        'qgis-server-thumbnail', kwargs={'layername': instance.name})
-    thumbnail_remote_url = urljoin(base_url, thumbnail_remote_url)
-    logger.debug(thumbnail_remote_url)
-
     create_qgis_server_thumbnail.delay(
-        instance, thumbnail_remote_url, ogc_client=http_client)
+        instance, overwrite=True)
 
     # Attributes
     set_attributes(instance)
@@ -277,6 +271,18 @@ def qgis_server_post_save_map(instance, sender, **kwargs):
         # The signal is called to early, the map has not layer yet.
         return
 
+    # Set bounding box based on all layers extents.
+    bbox = instance.get_bbox_from_layers(instance.local_layers)
+    instance.set_bounds_from_bbox(bbox)
+    Map.objects.filter(id=map_id).update(
+        bbox_x0=instance.bbox_x0,
+        bbox_x1=instance.bbox_x1,
+        bbox_y0=instance.bbox_y0,
+        bbox_y1=instance.bbox_y1,
+        zoom=instance.zoom,
+        center_x=instance.center_x,
+        center_y=instance.center_y)
+
     # Create the QGIS Project
     qgis_server = settings.QGIS_SERVER_CONFIG['qgis_server_url']
     project_path = os.path.join(QGIS_layer_directory, 'map_%s.qgs' % map_id)
@@ -284,7 +290,8 @@ def qgis_server_post_save_map(instance, sender, **kwargs):
         'SERVICE': 'MAPCOMPOSITION',
         'PROJECT': project_path,
         'FILES': ';'.join(files),
-        'NAMES': ';'.join(names)
+        'NAMES': ';'.join(names),
+        'OVERWRITE': 'true',
     }
 
     url = qgis_server + '?'
@@ -295,6 +302,9 @@ def qgis_server_post_save_map(instance, sender, **kwargs):
     data = urlopen(url).read()
     logger.debug(
         'Creating the QGIS Project : %s -> %s' % (project_path, data))
+
+    create_qgis_server_thumbnail.delay(
+        instance, overwrite=True)
 
 
 logger.debug('Register signals QGIS Server')
