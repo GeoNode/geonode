@@ -70,6 +70,7 @@ def report_distribution_status(request, template='reports/distribution_status.ht
         luzvimin_count[luzvimin][eachinlist.category][eachinlist.date.strftime('%Y%m')] += eachinlist.count
 
     urls_to_visit = ['https://lipad-fmc.dream.upd.edu.ph/']
+#    urls_to_visit = []
     for each_url in urls_to_visit:
         try:
             response = urllib2.urlopen(each_url + 'api/download_count/')
@@ -154,8 +155,7 @@ def report_distribution_status(request, template='reports/distribution_status.ht
                 if date in sucdatevalue[suc].keys():
                     cumulative_value += sucdatevalue[suc][date]
                 sorted_luzvimin[chart_group][suc][datetime.strptime(date,'%Y%m').strftime('%b%Y')] = cumulative_value
-                if date_list.index(date)==len(date_list)-1:
-                    total_luzvimin[chart_group].update({suc:cumulative_value})
+                total_luzvimin[chart_group].update({suc:cumulative_value})
     #rename
     renamed_md = OrderedDict([(datetime.strptime(eachone[0],'%Y%m').strftime('%b%Y'),eachone[1]) for eachone in sorted_md.iteritems()])
     # converts num to OrganizationType Choices
