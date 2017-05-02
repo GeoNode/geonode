@@ -181,6 +181,19 @@ def get_files(filename):
                    'distinct by spelling and not just case.') % filename
             raise GeoNodeException(msg)
 
+        matches = glob.glob(glob_name + ".[jJ][sS][oO][nN]")
+        logger.debug('Checking JSON File')
+        logger.debug(
+            'Number of matches JSON file : %s' % len(matches))
+        logger.debug('glob name: %s' % glob)
+
+        if len(matches) == 1:
+            files['json'] = matches[0]
+        elif len(matches) > 1:
+            msg = ('Multiple json files (json) for %s exist; they need to be '
+                   'distinct by spelling and not just case.') % filename
+            raise GeoNodeException(msg)
+
     return files
 
 
