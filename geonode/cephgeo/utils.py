@@ -91,7 +91,7 @@ def is_valid_grid_ref_range(grid_ref_string):
 
 def is_valid_grid_ref(grid_ref_string):
     # E648N803_DSM
-    ptn = re.compile('^[a-zA-Z]{1}[0-9]{3}[a-zA-Z]{1}[0-9]{3,4}$')
+    ptn = re.compile('^[a-zA-Z]{1}-[0-9]{3}[a-zA-Z]{1}[0-9]{3,4}$')
     if ptn.match(grid_ref_string) is not None:
         return True
     else:
