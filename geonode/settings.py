@@ -225,7 +225,7 @@ GEONODE_APPS = (
     'geonode.maps',
     'geonode.proxy',
     'geonode.security',
-    'geonode.social',
+    # 'geonode.social',
     'geonode.catalogue',
     'geonode.documents',
     'geonode.api',

@@ -656,6 +656,6 @@ class MapSnapshot(models.Model):
             "url": num_encode(self.id)
         }
 
-signals.pre_delete.connect(pre_delete_map, sender=Map)
-signals.post_save.connect(resourcebase_post_save, sender=Map)
+# signals.pre_delete.connect(pre_delete_map, sender=Map)
+# signals.post_save.connect(resourcebase_post_save, sender=Map)
 signals.post_save.connect(resourcebase_post_save, sender=MapStory)
