@@ -225,7 +225,7 @@ GEONODE_APPS = (
     'geonode.maps',
     'geonode.proxy',
     'geonode.security',
-    # 'geonode.social',
+    'geonode.social',
     'geonode.catalogue',
     'geonode.documents',
     'geonode.api',
@@ -239,6 +239,7 @@ GEONODE_APPS = (
     'geonode.geoserver',
     'geonode.upload',
     'geonode.tasks'
+    'actstream',
 )
 
 GEONODE_CONTRIB_APPS = (
@@ -305,7 +306,6 @@ INSTALLED_APPS = (
     'agon_ratings',
     'notification',
     'announcements',
-    'actstream',
     'user_messages',
     'tastypie',
     'polymorphic',
