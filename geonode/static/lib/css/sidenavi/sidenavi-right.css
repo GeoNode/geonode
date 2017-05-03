@@ -2,7 +2,7 @@
 #sideNavi,
 .side-navi-item,
 .side-navi-data,
-.side-navi-tab {  margin: 0; padding: 0;  }
+.side-navi-tab {  margin: 0; padding: 0;  outline: #000000 thin groove;}
 #sideNavi {
     position: fixed;
     right: 50px;
@@ -42,3 +42,6 @@
 .side-navi-tab {  display: none;  }
 .side-navi-tab.active {  display: inline-block;  }
 .side-navi-tab > div {  padding: 25px;  }
+
+/* class for floating tabs in maptiles */
+.floating-tab {  margin: 0; padding: 0;  outline: #000000 thin groove;}
