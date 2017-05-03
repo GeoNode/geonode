@@ -19,7 +19,7 @@
 	{% if sort_type == sort %}
 		<b>{{ sort_type }}</b>
 	{% else %}
-		<a href="{% url 'cephgeo.views.file_list_ceph' sort_type %}">{{ sort_type }}</a>
+		<a href="{% url 'geonode.cephgeo.views.file_list_ceph' sort_type %}">{{ sort_type }}</a>
 	{% endif %}
   {% endfor %}
   <br /><br /><br />
