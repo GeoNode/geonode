@@ -225,7 +225,7 @@ GEONODE_APPS = (
     'geonode.maps',
     'geonode.proxy',
     'geonode.security',
-    'geonode.social',
+    # 'geonode.social',
     'geonode.catalogue',
     'geonode.documents',
     'geonode.api',
@@ -239,7 +239,6 @@ GEONODE_APPS = (
     'geonode.geoserver',
     'geonode.upload',
     'geonode.tasks'
-    'actstream',
 )
 
 GEONODE_CONTRIB_APPS = (
@@ -435,13 +434,6 @@ AGON_RATINGS_CATEGORY_CHOICES = {
     }
 }
 
-# Activity Stream
-ACTSTREAM_SETTINGS = {
-    'FETCH_RELATIONS': True,
-    'USE_PREFETCH': False,
-    'USE_JSONFIELD': True,
-    'GFK_FETCH_DEPTH': 1,
-}
 
 # Settings for Social Apps
 REGISTRATION_OPEN = False
