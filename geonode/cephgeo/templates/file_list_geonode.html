@@ -25,13 +25,13 @@
 	  {% if sort_type == sort %}
 	  	<li><b class="selected" >{{ sort_type }}</b></li>
 	  {% elif grid_ref != None %}
-		<li><a href="{% url 'cephgeo.views.file_list_geonode' sort_type grid_ref %}" >{{ sort_type }}</a></li>
+		<li><a href="{% url 'geonode.cephgeo.views.file_list_geonode' sort_type grid_ref %}" >{{ sort_type }}</a></li>
 	  {% else %}
-		<li><a href="{% url 'cephgeo.views.file_list_geonode' sort_type %}" >{{ sort_type }}</a></li>
+		<li><a href="{% url 'geonode.cephgeo.views.file_list_geonode' sort_type %}" >{{ sort_type }}</a></li>
 	  {% endif %}
     {% endfor %}
     {% if grid_ref != None %}
-	  <li><a href="{% url 'cephgeo.views.file_list_geonode' 'default' %}" >full list</a></li>
+	  <li><a href="{% url 'geonode.cephgeo.views.file_list_geonode' 'default' %}" >full list</a></li>
     {% endif %}
   </ul>  
   </div>
@@ -51,7 +51,7 @@
         {% for file in file_list %}
 		<tr id="{{ file.name }}" name="{{ file.name }}" style="text-align: center;">
             <td>{{ file.name }}</td>
-            <td><a href="{% url 'cephgeo.views.file_list_geonode' 'default' file.grid_ref %}">{{ file.grid_ref }}</a></td>
+            <td><a href="{% url 'geonode.cephgeo.views.file_list_geonode' 'default' file.grid_ref %}">{{ file.grid_ref }}</a></td>
 			<td>{{ file.file_hash }}</td>
 			<td>{{ file.data_class | get_data_class_label}}</td>
 			<td>{{ file.last_modified }}</td>
@@ -66,7 +66,7 @@
 		<li><h4>
               <b>{{ file.name }}</b>
             </h4>
-			<br /><b>Grid Reference:</b> <a href="{% url 'cephgeo.views.file_list_geonode' 'default' file.grid_ref %}">{{ file.grid_ref }}</a>
+			<br /><b>Grid Reference:</b> <a href="{% url 'geonode.cephgeo.views.file_list_geonode' 'default' file.grid_ref %}">{{ file.grid_ref }}</a>
 			<br /><b>File Hash:</b> {{ file.file_hash }}
 			<br /><b>Data Class:</b> {{ file.data_class | get_data_class_label}}
 			<br /><b>Last Modified:</b> {{ file.last_modified }}
