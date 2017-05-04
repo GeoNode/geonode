@@ -932,6 +932,7 @@ CELERY_QUEUES = [
 import djcelery
 djcelery.setup_loader()
 
+#### Custom LiPAD Settings ####
 #TILED_SHAPEFILE = "geonode:cut_phl_001k_grid_utm_z51n"
 # TILED_SHAPEFILE = "geonode:index"
 TILED_SHAPEFILE = "geonode:philgrid_20160301"
@@ -948,6 +949,35 @@ GEOSTORAGE_HOST = ""
 FILE_UPLOAD_TEMP_DIR = "/tmp/geonode"
 # THUMBNAIL_FILE_PERMISSIONS = 0664
 THUMBNAIL_FILE_PERMISSIONS = 0776
+
+PH_BBOX= [116.22307468566594, 4.27103012208686, 127.09228398538997, 21.2510169394873 ]
+
+_TILE_SIZE = 1000
+
+CAS_VERSION = 3
+
+FP_DELINEATION_PL1 = 'fp_252_201613026v2'
+# used for layer tagging
+# RB_DELINEATION_DREAM = 'DREAM_RB'
+
+LIPAD_INSTANCES = [
+'https://lipad-fmc.dream.upd.edu.ph/',
+'https://parmap.dream.upd.edu.ph/',
+'https://frexls.dream.upd.edu.ph/',
+'https://remap.dream.upd.edu.ph/',
+'https://coastmap.dream.upd.edu.ph/',
+'https://phd.dream.upd.edu.ph/',
+]
+
+# geoserver sld names
+DTM_SLD = 'dtm_sld'
+ORTHO_SLD = 'ortho_sld'
+DSM_SLD = 'dsm_sld'
+LAZ_SLD = 'laz_sld'
+PHILGRID_SLD = 'philgrid'
+CLEAR_SLD = 'clear_sld'
+
+MAX_FTP_SIZE = 1073741824
 
 # Load more settings from a file called local_settings.py if it exists
 try:
@@ -1000,32 +1030,4 @@ if 'geonode.geoserver' in GEONODE_APPS:
     baselayers = MAP_BASELAYERS
     MAP_BASELAYERS = [LOCAL_GEOSERVER]
     MAP_BASELAYERS.extend(baselayers)
-
-PH_BBOX= [116.22307468566594, 4.27103012208686, 127.09228398538997, 21.2510169394873 ]
-
-_TILE_SIZE = 1000
-
-CAS_VERSION = 3
-
-FP_DELINEATION_PL1 = 'fp_252_201613026v2'
-# used for layer tagging
-# RB_DELINEATION_DREAM = 'DREAM_RB'
-
-LIPAD_INSTANCES = [
-'https://lipad-fmc.dream.upd.edu.ph/',
-'https://parmap.dream.upd.edu.ph/',
-'https://frexls.dream.upd.edu.ph/',
-'https://remap.dream.upd.edu.ph/',
-'https://coastmap.dream.upd.edu.ph/',
-'https://phd.dream.upd.edu.ph/',
-]
-
-# geoserver sld names
-DTM_SLD = 'dtm_sld'
-ORTHO_SLD = 'ortho_sld'
-DSM_SLD = 'dsm_sld'
-LAZ_SLD = 'laz_sld'
-PHILGRID_SLD = 'philgrid'
-CLEAR_SLD = 'clear_sld'
-
 
