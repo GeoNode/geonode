@@ -614,6 +614,9 @@
           map = leafletData.getMap('filter-map');
 
       map.then(function(map){
+        /* prevent the user from wrapping around the world. */
+        map.setMaxBounds([[-180, -90], [180, 90]]);
+
         map.on('moveend', function(){
           $scope.query['extent'] = map.getBounds().toBBoxString();
           query_api($scope.query);
