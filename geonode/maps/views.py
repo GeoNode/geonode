@@ -517,7 +517,7 @@ def new_map_json(request):
                       center_x=0, center_y=0)
         map_obj.save()
         map_obj.set_default_permissions()
-
+        map_obj.handle_moderated_uploads()
         # If the body has been read already, use an empty string.
         # See https://github.com/django/django/commit/58d555caf527d6f1bdfeab14527484e4cca68648
         # for a better exception to catch when we move to Django 1.7.
@@ -570,6 +570,7 @@ def new_map_config(request):
             map_obj.owner = request.user
 
         config = map_obj.viewer_json(request.user, access_token)
+        map_obj.handle_moderated_uploads()
         del config['id']
     else:
         if request.method == 'GET':
@@ -690,6 +691,7 @@ def new_map_config(request):
                 map_obj.center_y = center[1]
                 map_obj.zoom = math.ceil(min(width_zoom, height_zoom))
 
+            map_obj.handle_moderated_uploads()
             config = map_obj.viewer_json(
                 request.user, access_token, *(DEFAULT_BASE_LAYERS + layers))
             config['fromLayer'] = True

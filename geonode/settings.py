@@ -1101,3 +1101,5 @@ RISKS = {'DEFAULT_LOCATION': None,
 if EMAIL_ENABLE:
     #Setting up email backend
     EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+
+ADMIN_MODERATE_UPLOADS = False
