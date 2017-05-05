@@ -322,8 +322,10 @@ INSTALLED_APPS = (
     'autocomplete_light',
     'mptt',
     # 'modeltranslation',
+    # 'djkombu',
     'djcelery',
-    'djkombu',
+    'kombu.transport.django',
+
     'storages',
     'floppyforms',
 
