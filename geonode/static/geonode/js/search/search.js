@@ -625,8 +625,7 @@
     
       var showMap = false;
       $('#_extent_filter').click(function(evt) {
-        console.log('clicked extent header');
-     	  showMap = !showMap
+     	showMap = !showMap
         if (showMap){
           leafletData.getMap().then(function(map) {
             map.invalidateSize();
