@@ -142,10 +142,13 @@ class Command(BaseCommand):
                 if (helpers.GS_DUMP_RASTER_DATA):
                     # Restore '$GS_DATA_DIR/data/geonode'
                     gs_data_root = os.path.join(helpers.GS_DATA_DIR, 'data', 'geonode')
+                    if not os.path.isabs(gs_data_root):
+                        gs_data_root = os.path.join(settings.PROJECT_ROOT, '..', gs_data_root)
                     gs_data_folder = os.path.join(target_folder, 'gs_data_dir', 'data', 'geonode')
 
                     try:
                         shutil.rmtree(gs_data_root)
+                        print 'Cleaned out old GeoServer Data Dir: ' + gs_data_root
                     except:
                         pass
 

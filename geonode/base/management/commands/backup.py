@@ -138,6 +138,8 @@ class Command(BaseCommand):
                 if (helpers.GS_DUMP_RASTER_DATA):
                     # Dump '$GS_DATA_DIR/data/geonode'
                     gs_data_root = os.path.join(helpers.GS_DATA_DIR, 'data', 'geonode')
+                    if not os.path.isabs(gs_data_root):
+                        gs_data_root = os.path.join(settings.PROJECT_ROOT, '..', gs_data_root)
                     gs_data_folder = os.path.join(target_folder, 'gs_data_dir', 'data', 'geonode')
                     if not os.path.exists(gs_data_folder):
                         os.makedirs(gs_data_folder)
