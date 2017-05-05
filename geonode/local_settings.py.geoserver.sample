@@ -256,7 +256,10 @@ INSTALLED_APPS = (
     'autocomplete_light',
     'mptt',
     # 'modeltranslation',
+    # 'djkombu',
     'djcelery',
+    'kombu.transport.django',
+
     'storages',
     'floppyforms',
 
@@ -328,12 +331,17 @@ if 'geonode.geoserver' in INSTALLED_APPS:
     MAP_BASELAYERS = [LOCAL_GEOSERVER]
     MAP_BASELAYERS.extend(baselayers)
 
-#REDIS_URL = 'redis://localhost:6379/1'
-#BROKER_URL = REDIS_URL
-#CELERY_RESULT_BACKEND = REDIS_URL
-CELERYD_HIJACK_ROOT_LOGGER = False
+# Use kombu broker by default
+# REDIS_URL = 'redis://localhost:6379/1'
+# BROKER_URL = REDIS_URL
+# CELERY_RESULT_BACKEND = REDIS_URL
+CELERYD_HIJACK_ROOT_LOGGER = True
 CELERYD_CONCURENCY = 1
-CELERY_ALWAYS_EAGER = False
+# Set this to False to run real async tasks
+CELERY_ALWAYS_EAGER = True
+CELERYD_LOG_FILE = None
+CELERY_REDIRECT_STDOUTS = True
+CELERYD_LOG_LEVEL = 1
 
 # Haystack Search Backend Configuration. To enable,
 # first install the following:
@@ -385,7 +393,7 @@ LOGGING = {
             'class': 'django.utils.log.NullHandler',
         },
         'console': {
-            'level': 'ERROR',
+            'level': 'DEBUG',
             'class': 'logging.StreamHandler',
             'formatter': 'simple'
         },
@@ -398,11 +406,11 @@ LOGGING = {
         "django": {
             "handlers": ["console"], "level": "ERROR", },
         "geonode": {
-            "handlers": ["console"], "level": "ERROR", },
+            "handlers": ["console"], "level": "DEBUG", },
         "gsconfig.catalog": {
-            "handlers": ["console"], "level": "ERROR", },
+            "handlers": ["console"], "level": "DEBUG", },
         "owslib": {
-            "handlers": ["console"], "level": "ERROR", },
+            "handlers": ["console"], "level": "DEBUG", },
         "pycsw": {
             "handlers": ["console"], "level": "ERROR", },
         },

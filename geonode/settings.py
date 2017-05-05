@@ -323,6 +323,7 @@ INSTALLED_APPS = (
     'mptt',
     # 'modeltranslation',
     'djcelery',
+    'djkombu',
     'storages',
     'floppyforms',
 
