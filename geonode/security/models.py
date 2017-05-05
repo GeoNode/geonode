@@ -17,6 +17,10 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
+try:
+    import json
+except ImportError:
+    from django.utils import simplejson as json
 import logging
 import traceback
 import requests
@@ -155,9 +159,6 @@ class PermissionLevelMixin(object):
         if settings.DEFAULT_ANONYMOUS_DOWNLOAD_PERMISSION:
             assign_perm('download_resourcebase', anonymous_group, self.get_self_resource())
 
-            # Assign GeoFence Layer Access to ALL Users
-            set_geofence_all(self)
-
         # default permissions for resource owner
         set_owner_permissions(self)
 
@@ -242,26 +243,53 @@ def set_geofence_all(instance):
 
     if hasattr(resource, "layer"):
         try:
+            url = settings.OGC_SERVER['default']['LOCATION']
+            user = settings.OGC_SERVER['default']['USER']
+            passwd = settings.OGC_SERVER['default']['PASSWORD']
+            # Check first that the rules does not exist already
+            """
+            curl -X GET -u admin:geoserver -H "Content-Type: application/json" \
+                  http://<host>:<port>/geoserver/geofence/rest/rules.json?layer=<layer_name>
+            """
+            headers = {'Content-type': 'application/json'}
+            r = requests.get(url + 'geofence/rest/rules.json?layer=' + resource.layer.name,
+                             headers=headers,
+                             auth=HTTPBasicAuth(user, passwd))
+
+            rules_already_present = False
+            if (r.status_code != 200):
+                logger.warning("Could not GET GeoServer Rules for Layer " + str(resource.layer.name))
+            else:
+                try:
+                    rules_objs = json.loads(r.text)
+                    rules_count = rules_objs['count']
+                    rules = rules_objs['rules']
+                    if rules_count > 1:
+                        for rule in rules:
+                            if rule['userName'] is None and rule['access'] == 'ALLOW':
+                                rules_already_present = True
+                except:
+                    tb = traceback.format_exc()
+                    logger.debug(tb)
+
             # Create GeoFence Rules for ANONYMOUS to the Layer
             """
             curl -X POST -u admin:geoserver -H "Content-Type: text/xml" -d \
             "<Rule><workspace>geonode</workspace><layer>{layer}</layer><access>ALLOW</access></Rule>" \
             http://<host>:<port>/geoserver/geofence/rest/rules
             """
-            url = settings.OGC_SERVER['default']['LOCATION']
-            user = settings.OGC_SERVER['default']['USER']
-            passwd = settings.OGC_SERVER['default']['PASSWORD']
             headers = {'Content-type': 'application/xml'}
             payload = "<Rule><workspace>geonode</workspace><layer>"
             payload = payload + resource.layer.name
             payload = payload + "</layer><access>ALLOW</access></Rule>"
 
-            r = requests.post(url + 'geofence/rest/rules',
-                              headers=headers,
-                              data=payload,
-                              auth=HTTPBasicAuth(user, passwd))
-            if (r.status_code != 200):
-                logger.warning("Could not ADD GeoServer ANONYMOUS Rule for Layer " + str(resource.layer.name))
+            if not rules_already_present:
+                r = requests.post(url + 'geofence/rest/rules',
+                                  headers=headers,
+                                  data=payload,
+                                  auth=HTTPBasicAuth(user, passwd))
+                if (r.status_code != 200):
+                    logger.warning("Could not ADD GeoServer ANONYMOUS Rule for Layer " + str(resource.layer.name))
 
         except:
             tb = traceback.format_exc()
@@ -441,7 +469,7 @@ def set_owner_permissions(resource):
     """assign all admin permissions to the owner"""
     if resource.polymorphic_ctype:
         if resource.polymorphic_ctype.name == 'layer':
-            # TODO: Assign GeoFence Layer Access to Owner
+            # Assign GeoFence Layer Access to Owner
             for perm in LAYER_ADMIN_PERMISSIONS:
                 assign_perm(perm, resource.owner, resource.layer)
 

@@ -619,15 +619,17 @@ def final_step(upload_session, user):
                 name, str(e))
             try:
                 cat.create_style(name + '_layer', sld)
-                style = cat.get_style(name + '_layer')
             except geoserver.catalog.ConflictingDataError as e:
                 msg = 'There was already a style named %s in GeoServer, cannot overwrite: "%s"' % (
                     name, str(e))
                 logger.error(msg)
                 e.args = (msg,)
 
-                # what are we doing with this var?
-                msg = 'No style could be created for the layer, falling back to POINT default one'
+            # what are we doing with this var?
+            msg = 'No style could be created for the layer, falling back to POINT default one'
+            try:
+                style = cat.get_style(name + '_layer')
+            except:
                 style = cat.get_style('point')
                 logger.warn(msg)
                 e.args = (msg,)
