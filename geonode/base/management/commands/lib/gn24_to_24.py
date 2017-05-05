@@ -19,8 +19,11 @@
 #########################################################################
 
 import re
-import json
 import datetime
+try:
+    import json
+except ImportError:
+    from django.utils import simplejson as json
 
 
 class DefaultMangler(json.JSONDecoder):

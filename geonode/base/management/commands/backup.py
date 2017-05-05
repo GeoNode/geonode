@@ -18,12 +18,15 @@
 #
 #########################################################################
 
+try:
+    import json
+except ImportError:
+    from django.utils import simplejson as json
 import os
 import time
 import shutil
 import requests
 import helpers
-import simplejson as json
 
 from requests.auth import HTTPBasicAuth
 from optparse import make_option
