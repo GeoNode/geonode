@@ -381,11 +381,14 @@ def gs_slurp(
     if verbosity > 1:
         print >> console, "Inspecting the available layers in GeoServer ..."
     cat = Catalog(ogc_server_settings.internal_rest, _user, _password)
+    layergroups = []
+
     if workspace is not None:
         workspace = cat.get_workspace(workspace)
         if workspace is None:
             resources = []
         else:
+            layergroups = cat.get_layergroups(workspace=workspace)
             # obtain the store from within the workspace. if it exists, obtain resources
             # directly from store, otherwise return an empty list:
             if store is not None:
@@ -402,6 +405,10 @@ def gs_slurp(
         resources = cat.get_resources(store=store)
     else:
         resources = cat.get_resources()
+        workspaces = cat.get_workspaces()
+        for ws in workspaces:
+            layergroups = layergroups + cat.get_layergroups(workspace=ws.name)
+
     if remove_deleted:
         resources_for_delete_compare = resources[:]
         workspace_for_delete_compare = workspace
@@ -428,6 +435,8 @@ def gs_slurp(
         resources = [k for k in resources
                      if not '%s:%s' % (k.workspace.name, k.name) in layer_names]
 
+        layergroups = [lg for lg in layergroups if not '%s:%s' % (lg.workspace, lg.name) in layer_names]
+
     # TODO: Should we do something with these?
     # i.e. look for matching layers in GeoNode and also disable?
     # disabled_resources = [k for k in resources if k.enabled == "false"]
@@ -444,6 +453,7 @@ def gs_slurp(
             'deleted': 0,
         },
         'layers': [],
+        'layer_groups': [],
         'deleted_layers': []
     }
     start = datetime.datetime.now()
@@ -521,6 +531,78 @@ def gs_slurp(
         if verbosity > 0:
             print >> console, msg
 
+    lg_count = len(layergroups)
+    for i, lg in enumerate(layergroups):
+        name = lg.name
+        workspace = lg.workspace
+        try:
+            layer, created = Layer.objects.get_or_create(name=name, defaults={
+                "workspace": workspace,
+                "storeType": lg.resource_type,
+                "typename": "%s:%s" % (workspace.encode('utf-8'), name.encode('utf-8')),
+                #"layers": lg.layers,
+                "title": 'No title provided',
+                "abstract": unicode(_('No abstract provided')).encode('utf-8'),
+                "owner": owner,
+                "uuid": str(uuid.uuid4()),
+                "bbox_x0": Decimal(lg.bounds[0]),
+                "bbox_x1": Decimal(lg.bounds[1]),
+                "bbox_y0": Decimal(lg.bounds[2]),
+                "bbox_y1": Decimal(lg.bounds[3])
+            })
+
+            # recalculate the layer statistics
+            set_attributes_from_geoserver(layer, overwrite=True)
+
+            # in some cases we need to explicitily save the resource to execute the signals
+            # (for sure when running updatelayers)
+            if execute_signals:
+                layer.save()
+
+            # Fix metadata links if the ip has changed
+            if layer.link_set.metadata().count() > 0:
+                if not created and settings.SITEURL not in layer.link_set.metadata()[0].url:
+                    layer.link_set.metadata().delete()
+                    layer.save()
+                    metadata_links = []
+                    for link in layer.link_set.metadata():
+                        metadata_links.append((link.mime, link.name, link.url))
+
+        except Exception as e:
+            if ignore_errors:
+                status = 'failed'
+                exception_type, error, traceback = sys.exc_info()
+            else:
+                if verbosity > 0:
+                    msg = "Stopping process because --ignore-errors was not set and an error was found."
+                    print >> sys.stderr, msg
+                raise Exception(
+                    'Failed to process %s' %
+                    lg.name.encode('utf-8'), e), None, sys.exc_info()[2]
+        else:
+            if created:
+                if not permissions:
+                    layer.set_default_permissions()
+                else:
+                    layer.set_permissions(permissions)
+
+                status = 'created'
+                output['stats']['created'] += 1
+            else:
+                status = 'updated'
+                output['stats']['updated'] += 1
+
+        msg = "[%s] Layer Group %s (%d/%d)" % (status, name, i + 1, lg_count)
+        info = {'name': name, 'status': status}
+        if status == 'failed':
+            output['stats']['failed'] += 1
+            info['traceback'] = traceback
+            info['exception_type'] = exception_type
+            info['error'] = error
+        output['layer_groups'].append(info)
+        if verbosity > 0:
+            print >> console, msg
+
     if remove_deleted:
         q = Layer.objects.filter()
         if workspace_for_delete_compare is not None:
@@ -564,6 +646,11 @@ def gs_slurp(
                             resource.workspace.name,
                             resource.store.name)
                         layer_found_in_geoserver = True
+
+            for lg in layergroups:
+              if layer.name == lg.name and layer.workspace == lg.workspace:
+                  layer_found_in_geoserver = True
+
             if not layer_found_in_geoserver:
                 logger.debug(
                     "----- Layer %s not matched, marked for deletion ---------------",

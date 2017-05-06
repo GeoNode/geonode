@@ -39,6 +39,7 @@ from geonode.base.models import Link
 from geonode.people.models import Profile
 
 from geoserver.layer import Layer as GsLayer
+import geoserver
 
 logger = logging.getLogger("geonode.geoserver.signals")
 
@@ -125,7 +126,11 @@ def geoserver_pre_save(instance, sender, **kwargs):
     if gs_resource and getattr(ogc_server_settings, "BACKEND_WRITE_ENABLED", True):
         gs_catalog.save(gs_resource)
 
-    gs_layer = gs_catalog.get_layer(instance.name)
+    if instance.storeType and instance.storeType == 'layerGroup':
+        gs_layer = gs_catalog.get_layergroup(name=instance.name, workspace=instance.workspace)
+    else:
+        gs_layer = gs_catalog.get_layer(instance.name)
+
 
     if instance.poc and instance.poc:
         # gsconfig now utilizes an attribution dictionary
@@ -141,7 +146,11 @@ def geoserver_pre_save(instance, sender, **kwargs):
         # gs_layer should only be called if
         # ogc_server_settings.BACKEND_WRITE_ENABLED == True
         if getattr(ogc_server_settings, "BACKEND_WRITE_ENABLED", True):
-            gs_catalog.save(gs_layer)
+            try:
+                # Some geogig layers will return a 500 on save
+                gs_catalog.save(gs_layer)
+            except geoserver.catalog.FailedRequestError:
+                pass
 
     """Get information from geoserver.
 
@@ -188,6 +197,10 @@ def geoserver_post_save(instance, sender, **kwargs):
             instance = instance.layer
         else:
             return
+
+    if instance.storeType == 'layerGroup':
+        set_attributes_from_geoserver(instance)
+        return
 
     if instance.storeType == "remoteStore":
         # Save layer attributes
