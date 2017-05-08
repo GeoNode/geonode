@@ -1,22 +1,57 @@
 {% extends "base.html" %}
 {% block extra_head %}
-<!--<link href="https://cityfutures.be.unsw.edu.au/static/semantic.min.css" rel="stylesheet" />-->
-<link href="{{ STATIC_URL }}cityfutures/css/cf.css" rel="stylesheet" />
+<link href="https://cityfutures.be.unsw.edu.au/static/semantic.min.css" rel="stylesheet" />
+<!--<link href="{{ STATIC_URL }}cityfutures/css/cf.css" rel="stylesheet" />-->
+<style>
+    .navbar-fixed-top {
+        position: initial;
+    }
+</style>
 {% endblock %}
 
-{% block site-header %}
-<div id="unsw-header-block">
-    <div id="unsw-header-wrapper" class="ui container grid">
-        <div class="fourteen wide computer sixteen wide mobile column">
-            <a href="https://www.unsw.edu.au"><img class="ui left floated image unsw-logo" src="https://cityfutures.be.unsw.edu.au/static/images/01_Sydney-Landscape_web.png"></a>
-            <h1 class="site-logo">
-                    <span class="site-name"><a href="https://cityfutures.be.unsw.edu.au" title="home">City Futures Research Centre</a></span>
+{% block header %}
+    <div style="width: 100%; border-bottom: 10px solid #FC0;">
+        <div id="unsw-header-wrapper" class="ui container grid">
+            <div class="fourteen wide computer sixteen wide mobile column">
+                <a href="https://www.unsw.edu.au"><img class="ui left floated image unsw-logo" src="https://cityfutures.be.unsw.edu.au/static/images/01_Sydney-Landscape_web.png"></a>
+                <h1 class="site-logo">
+                    <span class="site-name"><a href="https://cityfutures.be.unsw.edu.au/" title="home">City Futures Research Centre</a></span>
                     <span class="site-name-subtitle"><a href="http://www.be.unsw.edu.au">UNSW Built Environment</a></span>
                 </h1>
-        </div>
-        <div class="two wide computer only column">
-            <a href="https://cityfutures.be.unsw.edu.au"><img class="ui right floated image research-centre-image-logo" src="https://cityfutures.be.unsw.edu.au//static/images/CF-logo.png"></a>
+            </div>
+            <div class="two wide computer only column">
+                <a href="https://cityfutures.be.unsw.edu.au/"><img class="ui right floated image research-centre-image-logo" src="https://cityfutures.be.unsw.edu.au/static/images/CF-logo.png"></a>
+            </div>
         </div>
     </div>
-</div>
+    {{ block.super }}
 {% endblock %}
+
+{% block footer %}
+    {{ block.super }}
+    <!-- Footer -->
+    <div class="ui hidden divider"></div>
+
+    <div id="footer" class="ui inverted vertical segment">
+        <div class="ui stackable two column container grid">
+            <div class="column">
+                <p>Telephone +61 2 9385 7777<span>\\</span>UNSW Sydney NSW 2052 Australia</p>
+                <p>CRICOS Provider Code 00098G<span>\\</span>ABN 57 195 873 179</p>
+                <p>Copyright © 2015 UNSW Built Environment Authorised by Built Environment</p>
+            </div>
+
+            <div class="column">
+                <p>Follow us on: <a href="https://twitter.com/unswcityfutures"><i class="inverted blue twitter icon"></i></a></p>
+                <p></p>
+                <div class="ui unsw-site-menu inverted horizontal list">
+                    <a class="item" href="http://www.unsw.edu.au/gen/pad/privacy.html" title="Privacy policy">Privacy Policy</a>
+                    <a class="item" href="http://www.unsw.edu.au/gen/pad/copyright.html" title="Copyright &amp; Disclaimer">Copyright &amp; Disclaimer</a>
+                    <a class="item" href="http://www.unsw.edu.au/gen/ced/accessibility.html" title="Accessibility">Accessibility</a>
+                    <a class="item" href="mailto:cityfutures@unsw.edu.au?Subject=Site%20feedback" title="Site feedback">Site feedback</a>
+                </div>
+            </div>
+
+        </div>
+    </div>
+    <!-- End Footer -->
+{% endblock footer %}
