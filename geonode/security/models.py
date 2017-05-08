@@ -256,6 +256,27 @@ def set_geofence_all(instance):
             payload = payload + resource.layer.name
             payload = payload + "</layer><access>ALLOW</access></Rule>"
 
+            # Check rules already exists
+            params = {
+                'workspace': 'geonode',
+                'layer': resource.layer.name
+            }
+
+            r = requests.get(url + 'geofence/rest/rules.json',
+                             params=params,
+                             auth=HTTPBasicAuth(user, passwd))
+            if r.status_code == 200:
+                gs_rules = r.json()
+                for rule in gs_rules['rules']:
+                    workspace = rule['workspace']
+                    layer = rule['layer']
+                    access = rule['access']
+                    if (workspace == 'geonode' and
+                            layer == resource.layer.name and
+                            access.lower() == 'allow'):
+                        # Do not recreate a rule
+                        return
+
             r = requests.post(url + 'geofence/rest/rules',
                               headers=headers,
                               data=payload,
