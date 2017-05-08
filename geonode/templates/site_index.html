@@ -1,4 +1,9 @@
-{% extends "index.html" %} {% block extra_head %} {{block.super}}
+{% extends "index.html" %}
+
+{% block title %}CityData - {{ SITE_NAME }}{% endblock %}
+
+{% block extra_head %}
+{{block.super}}
 <style type="text/css">
     /*    CityFutures banner styles*/
     
@@ -32,7 +37,9 @@
         display: none;
     }
 </style>
-{% endblock %} {% block hero %}
+{% endblock %}
+
+{% block hero %}
 <div class=" yellow-header">
     <div class="ui vertical yellow inverted padded one column grid page-title-wrapper">
         <div class="bottom aligned row">
