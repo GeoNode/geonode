@@ -1,1 +1,22 @@
 {% extends "base.html" %}
+{% block extra_head %}
+<!--<link href="https://cityfutures.be.unsw.edu.au/static/semantic.min.css" rel="stylesheet" />-->
+<link href="{{ STATIC_URL }}cityfutures/css/cf.css" rel="stylesheet" />
+{% endblock %}
+
+{% block site-header %}
+<div id="unsw-header-block">
+    <div id="unsw-header-wrapper" class="ui container grid">
+        <div class="fourteen wide computer sixteen wide mobile column">
+            <a href="https://www.unsw.edu.au"><img class="ui left floated image unsw-logo" src="https://cityfutures.be.unsw.edu.au/static/images/01_Sydney-Landscape_web.png"></a>
+            <h1 class="site-logo">
+                    <span class="site-name"><a href="https://cityfutures.be.unsw.edu.au" title="home">City Futures Research Centre</a></span>
+                    <span class="site-name-subtitle"><a href="http://www.be.unsw.edu.au">UNSW Built Environment</a></span>
+                </h1>
+        </div>
+        <div class="two wide computer only column">
+            <a href="https://cityfutures.be.unsw.edu.au"><img class="ui right floated image research-centre-image-logo" src="https://cityfutures.be.unsw.edu.au//static/images/CF-logo.png"></a>
+        </div>
+    </div>
+</div>
+{% endblock %}

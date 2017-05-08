@@ -1,0 +1,121 @@
+/*Inline styles from index.html*/
+
+.yellow-header .cf-page-title,
+.category {
+    background-color: #ffcc00;
+    display: block;
+    float: left;
+    padding: 5px 15px;
+    clear: left;
+    color: black;
+    font-weight: bold;
+}
+
+.yellow-header .cf-page-title {
+    margin-top: 0.2em;
+}
+
+.yellow-header .page-title-wrapper {
+    height: 200px;
+    /*  background-image: url('/media/original_images/Riderlog_Sydney1_-_banner.jpg');*/
+    background-size: cover;
+}
+
+
+/* Based on semantic.min.css*/
+
+.yellow-header h1.cf-page-title {
+    min-height: 1rem;
+    font-size: 28px;
+    text-shadow: none;
+    font-family: Arial, 'Helvetica Neue', Arial, Helvetica, sans-serif;
+    /*    font-size: 2rem;*/
+}
+
+
+/*New image for home page*/
+
+.jumbotron {
+    background-image: url(../img/banner.jpg);
+}
+
+.jumbotron .container {
+    margin-top: 30px;
+}
+
+
+/*UNSW header*/
+
+.site-logo a {
+    text-decoration: none;
+}
+
+.site-logo a,
+.site-logo a:active,
+.site-logo a:hover,
+.site-logo a:visited {
+    color: #1B1C1D;
+}
+
+.site-name,
+.site-name-subtitle {
+    font-family: Sommet;
+}
+
+h1.site-logo {
+    font-size: 36px;
+    font-weight: 500;
+    margin-top: 0;
+    display: inline-block;
+}
+
+.site-name-subtitle {
+    display: block;
+    font-size: 13px;
+    line-height: 13px;
+    text-transform: uppercase;
+    padding-top: 5px;
+}
+
+#unsw-header-block {
+    width: 100%;
+    background-color: white;
+}
+
+#unsw-header-wrapper {
+    width: 87.5%;
+    display: flex;
+    padding-top: 10px;
+    min-height: 120px;
+}
+
+.unsw-logo {
+    padding-right: 20px;
+    border-right: 1px solid #1B1C1D;
+    max-height: 70px;
+}
+
+
+/*Move the navbar below the UNSW header*/
+
+.navbar-fixed-top {
+    position: relative;
+    border-top: solid 10px rgb(255, 204, 0);
+    /*    position: fixed;*/
+    /*    right: 0;*/
+    /*    left: 0;*/
+}
+
+body {
+    padding-top: 0px;
+}
+
+.research-centre-image-logo {
+    max-height: 70px;
+}
+
+@media only screen and (min-width: 1200px) .ui.container {
+    width: 1127px;
+    margin-left: auto!important;
+    margin-right: auto!important;
+}
