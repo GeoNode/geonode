@@ -17,23 +17,3 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
-
-from django.conf import settings
-from django.db.models import signals
-from django.utils.translation import ugettext_noop as _
-import logging
-logger = logging.getLogger(__name__)
-
-if "notification" in settings.INSTALLED_APPS:
-    import notification
-
-    def create_notice_types(app, created_models, verbosity, **kwargs):
-        notification.models.NoticeType.create("layer_uploaded", _("Layer Uploaded"), _("A layer was uploaded"))
-        notification.models.NoticeType.create("layer_comment", _("Comment on Layer"), _("A layer was commented on"))
-        notification.models.NoticeType.create("layer_rated", _("Rating for Layer"), _("A rating was given to a layer"))
-
-    signals.post_migrate.connect(create_notice_types, sender=notification)
-    logger.info("Notifications Configured for geonode.layers.managment.commands")
-else:
-    logger.info("Skipping creation of NoticeTypes for geonode.layers.management.commands, since notification app was \
-        not found.")

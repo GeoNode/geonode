@@ -917,6 +917,6 @@ max\ connections={db_conn_max}"""
         cat = gs_catalog
         cat._cache.clear()
         cat.reset()
-        cat.reload()
+        # cat.reload()
 
         return append_to_mosaic_name

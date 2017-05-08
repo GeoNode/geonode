@@ -142,11 +142,11 @@ if 'geonode_qgis_server' in settings.INSTALLED_APPS:
                             (r'', include('geonode_qgis_server.urls')),
                             )
 
-if 'notification' in settings.INSTALLED_APPS:
+if settings.NOTIFICATIONS_MODULE in settings.INSTALLED_APPS:
+    notifications_urls = '{}.urls'.format(settings.NOTIFICATIONS_MODULE)
     urlpatterns += patterns('',
-                            (r'^notifications/', include('notification.urls')),
+                            (r'^notifications/', include(notifications_urls)),
                             )
-
 if "djmp" in settings.INSTALLED_APPS:
     urlpatterns += patterns('',
                             (r'^djmp/', include('djmp.urls')),
