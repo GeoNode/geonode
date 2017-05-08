@@ -46,6 +46,10 @@ from geonode.base.models import TopicCategory
 from geonode.base.populate_test_data import create_models, all_public
 from geonode.layers.forms import JSONField, LayerUploadForm
 from .populate_layers_data import create_layer_data
+from geonode.utils import designals, resignals
+from geonode.tests.utils import NotificationsTestsHelper
+from geonode.layers import LayersAppConfig
+from geonode.notifications_helper import has_notifications
 
 
 class LayersTest(TestCase):
@@ -800,3 +804,38 @@ class UnpublishedObjectTests(TestCase):
 
         layer.is_published = True
         layer.save()
+
+if has_notifications:
+    class LayerNotificationsTestCase(NotificationsTestsHelper):
+
+        fixtures = ['initial_data.json', 'bobby']
+        def setUp(self):
+            super(LayerNotificationsTestCase, self).setUp()
+            self.user = 'admin'
+            self.passwd = 'admin'
+            create_models(type='layer')
+            create_layer_data()
+            self.anonymous_user = get_anonymous_user()
+            self.u = get_user_model().objects.get(username=self.user)
+            self.u.email = 'test@email.com'
+            self.u.is_active = True
+            self.u.save()
+            notifications = self.setup_notifications_for(LayersAppConfig.NOTIFICATIONS, self.u)
+
+
+        def testLayerNotifications(self):
+            with self.settings(NOTIFICATION_QUEUE_ALL=True):
+                self.clear_notifications_queue()
+                l = Layer.objects.create(name='test notifications')
+                #resignals()
+                l.name = 'test notifications 2'
+                l.save()
+                self.assertTrue(self.check_notification_out('layer_updated', self.u))
+
+                from dialogos.models import Comment
+                lct = ContentType.objects.get_for_model(l)
+                comment = Comment(author=self.u, name=self.u.username, content_type=lct, object_id=l.id, content_object=l, comment='test comment')
+                comment.save()
+
+                self.assertTrue(self.check_notification_out('layer_comment', self.u))
+
