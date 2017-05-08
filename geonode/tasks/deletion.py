@@ -21,6 +21,9 @@
 from geonode.layers.models import Layer
 from geonode.maps.models import Map
 from celery.task import task
+from celery.utils.log import get_task_logger
+
+logger = get_task_logger(__name__)
 
 
 @task(name='geonode.tasks.deletion.delete_layer', queue='cleanup')
@@ -28,6 +31,7 @@ def delete_layer(object_id):
     """
     Deletes a layer.
     """
+    logger.info('Deleting Layer ID {0}'.format(object_id))
     try:
         layer = Layer.objects.get(id=object_id)
     except Layer.DoesNotExist:

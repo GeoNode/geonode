@@ -378,7 +378,7 @@ def gs_slurp(
     if console is None:
         console = open(os.devnull, 'w')
 
-    if verbosity > 1:
+    if verbosity > 0:
         print >> console, "Inspecting the available layers in GeoServer ..."
     cat = Catalog(ogc_server_settings.internal_rest, _user, _password)
     if workspace is not None:
@@ -433,7 +433,7 @@ def gs_slurp(
     # disabled_resources = [k for k in resources if k.enabled == "false"]
 
     number = len(resources)
-    if verbosity > 1:
+    if verbosity > 0:
         msg = "Found %d layers, starting processing" % number
         print >> console, msg
     output = {
@@ -571,7 +571,7 @@ def gs_slurp(
                 deleted_layers.append(layer)
 
         number_deleted = len(deleted_layers)
-        if verbosity > 1:
+        if verbosity > 0:
             msg = "\nFound %d layers to delete, starting processing" % number_deleted if number_deleted > 0 else \
                 "\nFound %d layers to delete" % number_deleted
             print >> console, msg
