@@ -92,6 +92,7 @@ class LayerIndex(indexes.SearchIndex, indexes.Indexable):
     num_ratings = indexes.IntegerField(stored=False)
     num_comments = indexes.IntegerField(stored=False)
     geogig_link = indexes.CharField(null=True)
+    has_time = indexes.BooleanField(faceted=True, null=True)
 
     def get_model(self):
         return Layer
@@ -145,4 +146,14 @@ class LayerIndex(indexes.SearchIndex, indexes.Indexable):
             return obj.geogig_link
         except:
             return None
-        
+
+    # Check to see if either time extent is set on the object,
+    # if so, then it is time enabled.
+    def prepare_has_time(self, obj):
+        try:
+            # if either time field is set to a value then time is enabled.
+            if(obj.temporal_extent_start is not None or obj.temporal_extent_end is not None):
+                return True
+        except:
+            # when in doubt, it's false.
+            return False
