@@ -30,7 +30,10 @@ import sys
 import time
 import shutil
 
-import json
+try:
+    import json
+except ImportError:
+    from django.utils import simplejson as json
 
 MEDIA_ROOT = 'uploaded'
 STATIC_ROOT = 'static_root'
@@ -111,11 +114,12 @@ def dump_db(db_name, db_user, db_port, db_host, db_passwd, target_folder):
     curs = conn.cursor()
 
     try:
-        curs.execute("""SELECT tablename from pg_tables where tableowner = 'geonode'""")
+        sql_dump = """SELECT tablename from pg_tables where tableowner = '%s'""" % (db_user)
+        curs.execute(sql_dump)
         pg_tables = curs.fetchall()
         for table in pg_tables:
             print "Dumping GeoServer Vectorial Data : " + table[0]
-            os.system('PGPASSWORD="' + db_passwd + '" ' + PG_DUMP_CMD + ' -i -h ' + db_host +
+            os.system('PGPASSWORD="' + db_passwd + '" ' + PG_DUMP_CMD + ' -h ' + db_host +
                       ' -p ' + db_port + ' -U ' + db_user + ' -F c -b -d ' + db_name +
                       ' -t ' + table[0] + ' -f ' +
                       os.path.join(target_folder, table[0] + '.dump'))
