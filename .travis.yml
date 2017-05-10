@@ -9,6 +9,8 @@ virtualenv:
 branches:
   only:
     - master
+    - 2.7.x
+    - 2.6.x
 
 install:
   - sudo apt-get -qq -y update
