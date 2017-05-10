@@ -771,7 +771,7 @@ def set_styles(layer, gs_catalog):
         try:
             gs_layer.default_style = default_style
             gs_catalog.save(gs_layer)
-        except Exception as e:
+        except:
             logger.exception("GeoServer Layer Default Style issues!")
     layer.default_style = save_style(default_style)
     # FIXME: This should remove styles that are no longer valid
