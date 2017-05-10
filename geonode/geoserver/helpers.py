@@ -183,16 +183,34 @@ def _style_name(resource):
     return _punc.sub("_", resource.store.workspace.name + ":" + resource.name)
 
 
-def get_sld_for(layer):
-    # FIXME: GeoServer sometimes fails to associate a style with the data, so
+def get_sld_for(gs_catalog, layer):
+    # GeoServer sometimes fails to associate a style with the data, so
     # for now we default to using a point style.(it works for lines and
     # polygons, hope this doesn't happen for rasters  though)
-    name = layer.default_style.name if layer.default_style is not None else "point"
+    if layer.default_style is None:
+        gs_catalog._cache.clear()
+        layer = gs_catalog.get_layer(layer.name)
+    name = layer.default_style.name if layer.default_style is not None else "raster"
+
+    # Detect geometry type if it is a FeatureType
+    if layer.resource.resource_type == 'featureType':
+        res = layer.resource
+        res.fetch()
+        ft = res.store.get_resources(res.name)
+        ft.fetch()
+        for attr in ft.dom.find("attributes").getchildren():
+            attr_binding = attr.find("binding")
+            if "jts.geom" in attr_binding.text:
+                if "Polygon" in attr_binding.text:
+                    name = "polygon"
+                elif "Line" in attr_binding.text:
+                    name = "line"
+                else:
+                    name = "point"
 
     # FIXME: When gsconfig.py exposes the default geometry type for vector
     # layers we should use that rather than guessing based on the auto-detected
     # style.
-
     if name in _style_templates:
         fg, bg, mark = _style_contexts.next()
         return _style_templates[name] % dict(
@@ -213,7 +231,7 @@ def fixup_style(cat, resource, style):
             logger.info("%s uses a default style, generating a new one", lyr)
             name = _style_name(resource)
             if style is None:
-                sld = get_sld_for(lyr)
+                sld = get_sld_for(cat, lyr)
             else:
                 sld = style.read()
             logger.info("Creating style [%s]", name)
@@ -746,7 +764,15 @@ def set_attributes_from_geoserver(layer, overwrite=False):
 def set_styles(layer, gs_catalog):
     style_set = []
     gs_layer = gs_catalog.get_layer(layer.name)
-    default_style = gs_layer.default_style
+    if gs_layer.default_style:
+        default_style = gs_layer.default_style
+    else:
+        default_style = gs_catalog.get_style(layer.name)
+        try:
+            gs_layer.default_style = default_style
+            gs_catalog.save(gs_layer)
+        except Exception as e:
+            logger.exception("GeoServer Layer Default Style issues!")
     layer.default_style = save_style(default_style)
     # FIXME: This should remove styles that are no longer valid
     style_set.append(layer.default_style)
@@ -1168,7 +1194,7 @@ def geoserver_upload(
         sld = f.read()
         f.close()
     else:
-        sld = get_sld_for(publishing)
+        sld = get_sld_for(cat, publishing)
 
     style = None
     if sld is not None:
