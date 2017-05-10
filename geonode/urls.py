@@ -31,6 +31,9 @@ from geonode.api.urls import api
 
 import autocomplete_light
 
+# For robots.txt
+from django.http import HttpResponse
+
 # Setup Django Admin
 autocomplete_light.autodiscover()
 
@@ -100,6 +103,9 @@ urlpatterns = patterns('',
                        (r'^documents/', include('geonode.documents.urls')),
                        (r'^services/', include('geonode.services.urls')),
                        url(r'', include(api.urls)),
+                       
+                       # Keep out web crawlers: dev and test sites only
+                       (r'^robots.txt$', lambda r: HttpResponse("User-agent: *\nDisallow: /", mimetype="text/plain")),
                        )
 
 if "geonode.contrib.dynamic" in settings.INSTALLED_APPS:
