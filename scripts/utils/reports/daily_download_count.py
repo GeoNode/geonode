@@ -17,6 +17,19 @@ global layer_count, source
 layer_count = {}
 source = ogr.Open(("PG:host={0} dbname={1} user={2} password={3}".format(settings.DATABASE_HOST,settings.DATASTORE_DB,settings.DATABASE_USER,settings.DATABASE_PASSWORD)))
 
+def get_area(typename):
+    shp_name = Layer.objects.get(typename=typename).name
+    try:
+        data = source.ExecuteSQL("select the_geom from "+str(shp_name))
+    except:
+        data = source.ExecuteSQL("select the_geom from "+str(shp_name)+"_extents")
+    shp_list = []
+    for i in range(data.GetFeatureCount()):
+        feature = data.GetNextFeature()
+        shplist.append(loads(feature.GetGeometryRef().ExportToWkb()))
+    juris_shp = cascaded_union(shplist)
+    return juris_shp.area/1000000
+
 def get_SUC_using_gridref(abscissa, ordinate, _TILE_SIZE = 1000):
     data = source.ExecuteSQL("select * from "+settings.PL1_SUC_MUNIS)
     tile_ulp = "%s %s" % (abscissa, ordinate)
@@ -54,7 +67,7 @@ def get_luzvimin(data):
                 print (layer_query.typename + ' - ' + str(e))
     return luzvimin
 
-def add_to_count(category, typename):
+def add_to_count(category, typename, count):
     if category not in layer_count:
         layer_count[category] = {
             "Coverage": 0,
@@ -69,27 +82,27 @@ def add_to_count(category, typename):
             "Resource":0,
         }
     if 'fh' in typename:
-        layer_count[category]['FHM'] += 1
+        layer_count[category]['FHM'] += count
     elif 'dtm' in typename:
-        layer_count[category]['DTM'] += 1
+        layer_count[category]['DTM'] += count
     elif 'dsm' in typename:
-        layer_count[category]['DSM'] += 1
+        layer_count[category]['DSM'] += count
     elif 'laz' in typename:
-        layer_count[category]['LAZ'] += 1
+        layer_count[category]['LAZ'] += count
     elif 'ortho' in typename:
-        layer_count[category]['ORTHO'] += 1
+        layer_count[category]['ORTHO'] += count
     elif 'sar' in typename:
-        layer_count[category]['SAR'] += 1
+        layer_count[category]['SAR'] += count
     elif 'coverage' in typename:
-        layer_count[category]['Coverage'] += 1
+        layer_count[category]['Coverage'] += count
     elif 'dem' in typename:
-        layer_count[category]['Coverage'] += 1
+        layer_count[category]['Coverage'] += count
     elif 'mkp' in typename:
-        layer_count[category]['Coverage'] += 1
+        layer_count[category]['Coverage'] += count
     elif any(lidar2keyword in typename for lidar2keyword in ['aquaculture', 'mangroves', 'agrilandcover', 'agricoastlandcover', 'irrigation', 'streams', 'wetlands', 'trees', 'ccm', 'chm', 'agb', 'power']):
-        layer_count[category]['Resource'] += 1
+        layer_count[category]['Resource'] += count
     else:
-        layer_count[category]['Others'] += 1
+        layer_count[category]['Others'] += count
 def add_to_monthlyc(category):
     if category not in layer_count:
         layer_count[category] = {
@@ -120,15 +133,18 @@ def main(minusdays, query_objects, attr_date, attr_actor, attr_type, attr_filena
                             luzvimin = get_luzvimin({
                                 "grid_ref": eachtype.cephobject.grid_ref,
                                 })
-                            add_to_count(luzvimin, FTPtype)
-                            add_to_count('monthly', FTPtype)
+                            add_to_count(luzvimin, FTPtype, 1)
+                            add_to_count('monthly', FTPtype, 1)
+                            add_to_count('area', FTPtype, 1)
                     elif getattr(each_object,attr_type) == 'dataset' or not getattr(each_object,attr_type): #for DownloadTracker(if==dataset) or AnonDownloader(if not empty) therefore layer
                         luzvimin = get_luzvimin({
                             "typename": getattr(each_object,attr_filename),
                             "grid_ref": False
                             })
-                        add_to_count(luzvimin, getattr(each_object,attr_filename))
-                        add_to_count('monthly', getattr(each_object,attr_filename))
+                        area = int(get_area(getattr(each_object,attr_filename)))
+                        add_to_count(luzvimin, getattr(each_object,attr_filename),1)
+                        add_to_count('monthly', getattr(each_object,attr_filename),1)
+                        add_to_count('area', FTPtype, area)
                     else: #else document
                         add_to_monthlyc('monthly')
 
@@ -137,6 +153,9 @@ def save_to_dc(minusdays,count_dict):
     for category, eachdict in count_dict.iteritems():
         if category == 'monthly':
             chart_group = 'monthly'
+        elif category == 'area':
+            chart_group = 'area'
+            category = 'monthly'
         else:
             chart_group = 'luzvimin'
         for eachtype, eachvalue in eachdict.iteritems():
