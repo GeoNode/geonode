@@ -8,7 +8,7 @@ from geonode.layers.models import Layer
 from geonode.cephgeo.models import FTPRequest, FTPRequestToObjectIndex, DataClassification
 from geonode.people.models import Profile
 
-from osgeo import ogr
+from osgeo import ogr, gdal
 from shapely.geometry import Polygon
 from shapely.wkb import loads
 from shapely.ops import cascaded_union
@@ -19,9 +19,8 @@ source = ogr.Open(("PG:host={0} dbname={1} user={2} password={3}".format(setting
 
 def get_area(typename):
     shp_name = Layer.objects.get(typename=typename).name
-    try:
-        data = source.ExecuteSQL("select the_geom from "+str(shp_name))
-    except:
+    data = source.ExecuteSQL("select the_geom from "+str(shp_name))
+    if not data:
         data = source.ExecuteSQL("select the_geom from "+str(shp_name)+"_extents")
     shp_list = []
     for i in range(data.GetFeatureCount()):
