@@ -771,7 +771,7 @@ def set_styles(layer, gs_catalog):
         try:
             gs_layer.default_style = default_style
             gs_catalog.save(gs_layer)
-        except Exception as e:
+        except:
             logger.exception("GeoServer Layer Default Style issues!")
     layer.default_style = save_style(default_style)
     # FIXME: This should remove styles that are no longer valid
@@ -1200,21 +1200,28 @@ def geoserver_upload(
     if sld is not None:
         try:
             cat.create_style(name, sld)
-            style = cat.get_style(name)
         except geoserver.catalog.ConflictingDataError as e:
             msg = ('There was already a style named %s in GeoServer, '
                    'try to use: "%s"' % (name + "_layer", str(e)))
             logger.warn(msg)
             e.args = (msg,)
-            try:
-                cat.create_style(name + '_layer', sld)
+
+            style = cat.get_style(name)
+            if style is None:
+                try:
+                    cat.create_style(name + '_layer', sld)
+                except geoserver.catalog.ConflictingDataError as e:
+                    msg = ('There was already a style named %s in GeoServer, '
+                           'cannot overwrite: "%s"' % (name, str(e)))
+                    logger.warn(msg)
+                    e.args = (msg,)
+
                 style = cat.get_style(name + "_layer")
-            except geoserver.catalog.ConflictingDataError as e:
-                style = cat.get_style('point')
-                msg = ('There was already a style named %s in GeoServer, '
-                       'cannot overwrite: "%s"' % (name, str(e)))
-                logger.error(msg)
-                e.args = (msg,)
+                if style is None:
+                    style = cat.get_style('point')
+                    msg = ('Could not find any suitable style in GeoServer '
+                           'for Layer: "%s"' % (name))
+                    logger.error(msg)
 
         # FIXME: Should we use the fully qualified typename?
         publishing.default_style = style
