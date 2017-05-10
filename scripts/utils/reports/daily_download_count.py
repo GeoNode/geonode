@@ -13,6 +13,7 @@ from shapely.geometry import Polygon
 from shapely.wkb import loads
 from shapely.ops import cascaded_union
 
+gdal.UseExceptions()
 global layer_count, source
 layer_count = {}
 source = ogr.Open(("PG:host={0} dbname={1} user={2} password={3}".format(settings.DATABASE_HOST,settings.DATASTORE_DB,settings.DATABASE_USER,settings.DATABASE_PASSWORD)))
@@ -25,7 +26,7 @@ def get_area(typename):
     shp_list = []
     for i in range(data.GetFeatureCount()):
         feature = data.GetNextFeature()
-        shplist.append(loads(feature.GetGeometryRef().ExportToWkb()))
+        shp_list.append(loads(feature.GetGeometryRef().ExportToWkb()))
     juris_shp = cascaded_union(shplist)
     return juris_shp.area/1000000
 
