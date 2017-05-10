@@ -125,13 +125,20 @@ def make_geogig_rest_payload(author_name='admin',
         "authorName": author_name,
         "authorEmail": author_email
     }
+
     if settings.OGC_SERVER['default']['PG_GEOGIG'] is True:
         datastore = settings.OGC_SERVER['default']['DATASTORE']
         pg_geogig_db = settings.DATABASES[datastore]
+        schema = 'public'
+
+        if 'OPTIONS' in pg_geogig_db and 'options' in pg_geogig_db['OPTIONS']:
+            search_path = pg_geogig_db['OPTIONS']['options'].split('=')[-1]
+            schema = map(str.strip, search_path.split(','))[0]
+
         payload["dbHost"] = pg_geogig_db['HOST']
         payload["dbPort"] = pg_geogig_db.get('PORT', '5432')
         payload["dbName"] = pg_geogig_db['NAME']
-        payload["dbSchema"] = pg_geogig_db.get('SCHEMA', 'public')
+        payload["dbSchema"] = schema
         payload["dbUser"] = pg_geogig_db['USER']
         payload["dbPassword"] = pg_geogig_db['PASSWORD']
     else:
