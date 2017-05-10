@@ -144,7 +144,7 @@ def main(minusdays, query_objects, attr_date, attr_actor, attr_type, attr_filena
                         area = int(get_area(getattr(each_object,attr_filename)))
                         add_to_count(luzvimin, getattr(each_object,attr_filename),1)
                         add_to_count('monthly', getattr(each_object,attr_filename),1)
-                        add_to_count('area', FTPtype, area)
+                        add_to_count('area', getattr(each_object,attr_filename), area)
                     else: #else document
                         add_to_monthlyc('monthly')
 
