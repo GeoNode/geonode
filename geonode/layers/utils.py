@@ -532,7 +532,7 @@ def file_upload(filename, name=None, user=None, title=None, abstract=None,
 
 
 def upload(incoming, user=None, overwrite=False,
-           keywords=(), category=None, regions=(),
+           keywords=[], category=None, regions=[],
            skip=True, ignore_errors=True,
            verbosity=1, console=None, title=None, date=None,
            private=False, metadata_uploaded_preserve=False):

@@ -114,6 +114,9 @@ class ServiceLayer(models.Model):
     description = models.TextField(_("Layer Description"), null=True)
     styles = models.TextField(_("Layer Styles"), null=True)
 
+    def __unicode__(self):
+        return self.layer.title
+
 
 class WebServiceHarvestLayersJob(models.Model):
     service = models.OneToOneField(Service, blank=False, null=False)
@@ -134,7 +137,7 @@ def post_save_service(instance, sender, created, **kwargs):
 
 
 def pre_delete_service(instance, sender, **kwargs):
-    for layer in instance.layer_set.all():
+    for layer in [s.layer for s in instance.servicelayer_set.all()]:
         layer.delete()
     # if instance.method == 'H':
     #     gn = Layer.objects.gn_catalog
