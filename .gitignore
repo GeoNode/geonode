@@ -127,7 +127,6 @@ master
 slave
 
 scripts/utils/osm
-
 #CSV files
 *.csv
 

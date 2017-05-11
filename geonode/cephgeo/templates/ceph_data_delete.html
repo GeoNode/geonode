@@ -1,0 +1,23 @@
+{% extends "ceph_base.html" %}
+{% load i18n %}
+{% load url from future %}
+
+{% block title %} {% trans "Ceph Object and Metadata Deletion Form" %} - {{ block.super }} {% endblock %}
+
+{% block body_class %}Ceph Object List for Deletion{% endblock %}
+
+{% block body_outer %}
+  {% block body %}
+  
+  <div class="page-header">
+    <h2 class="page-title">{% trans "Ceph Object and Metadata Deletion Form" %}</h2>
+  </div>
+  
+  {% load crispy_forms_tags %}
+  {% crispy data_delete_form %}
+{% endblock body %}
+ {% block sidebar %}{% endblock sidebar %}
+{% endblock body_outer %}
+
+
+
