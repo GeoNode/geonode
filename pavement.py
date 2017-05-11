@@ -576,9 +576,9 @@ def deb(options):
 
         sh(('git-dch --spawn-editor=snapshot --git-author --new-version=%s'
             ' --id-length=6 --ignore-branch --release' % (simple_version)))
-        #In case you publish from Ubuntu Xenial (git-dch is removed from upstream)
-        # use the following line instead:
-        #sh(('gbp dch --spawn-editor=snapshot --git-author --new-version=%s'
+        # In case you publish from Ubuntu Xenial (git-dch is removed from upstream)
+        #  use the following line instead:
+        # sh(('gbp dch --spawn-editor=snapshot --git-author --new-version=%s'
         #    ' --id-length=6 --ignore-branch --release' % (simple_version)))
 
         deb_changelog = path('debian') / 'changelog'
