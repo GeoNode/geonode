@@ -19,6 +19,8 @@ layer_count = {}
 source = ogr.Open(("PG:host={0} dbname={1} user={2} password={3}".format(settings.DATABASE_HOST,settings.DATASTORE_DB,settings.DATABASE_USER,settings.DATABASE_PASSWORD)))
 
 def get_area(typename):
+    if typename[:4] == 'osm:':
+        return 0
     shp_name = Layer.objects.get(typename=typename).name
     data = source.ExecuteSQL("select the_geom from "+str(shp_name))
     if not data:
