@@ -24,10 +24,8 @@ from importlib import import_module
 from django.apps import AppConfig
 from django.conf import settings
 from django.db.models import signals
-from django.utils.translation import ugettext_noop as _
 
 from geonode.tasks.email import send_queued_notifications
-
 
 M = getattr(settings, 'NOTIFICATIONS_MODULE', '')
 notifications = None
@@ -37,15 +35,15 @@ has_notifications = M and M in settings.INSTALLED_APPS
 if has_notifications:
     notifications = import_module(M)
 
+
 class NotificationsAppConfigBase(AppConfig):
     """
     Base class for AppConfig notifications setup
 
     You should subclass it and provide list of notifications
-    in NOTIFICATIONS attribute to automatically register to 
+    in NOTIFICATIONS attribute to automatically register to
     post_migrate signal.
     """
-    
     # override in subclass
     NOTIFICATIONS = tuple()
 
@@ -59,9 +57,9 @@ class NotificationsAppConfigBase(AppConfig):
                 notifications.models.NoticeType.create(label, display, description)
 
     def ready(self):
-        logger = self._get_logger()
         signals.post_migrate.connect(self._register_notifications, sender=self)
-        
+
+
 def call_celery(func):
     def wrap(*args, **kwargs):
         ret = func(*args, **kwargs)
@@ -73,16 +71,17 @@ def call_celery(func):
 
 def send_now_notification(*args, **kwargs):
     """
-    Simple wrapper around notifications.model send(). 
+    Simple wrapper around notifications.model send().
     This can be called safely if notifications are not installed.
     """
     if has_notifications:
         return notifications.models.send_now(*args, **kwargs)
 
+
 @call_celery
 def send_notification(*args, **kwargs):
     """
-    Simple wrapper around notifications.model send(). 
+    Simple wrapper around notifications.model send().
     This can be called safely if notifications are not installed.
     """
     if has_notifications:
@@ -90,6 +89,7 @@ def send_notification(*args, **kwargs):
         if settings.NOTIFICATION_QUEUE_ALL:
             return queue_notification(*args, **kwargs)
         return notifications.models.send(*args, **kwargs)
+
 
 def queue_notification(*args, **kwargs):
     if has_notifications:
