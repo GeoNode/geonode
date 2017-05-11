@@ -1143,8 +1143,9 @@ def do_logout(sender, user, request, **kwargs):
         try:
             urllib2.urlopen(gs_request)
         except:
-            traceback.print_exc()
-            pass
+            tb = traceback.format_exc()
+            if tb:
+                logger.debug(tb)
 
         if 'access_token' in request.session:
             del request.session['access_token']
