@@ -39,6 +39,7 @@ import logging
 from geonode.cephgeo.utils import get_cart_datasize
 from django.utils.text import slugify
 from geonode.maptiles.models import SRS
+from httplib import HTTPResponse
 
 
 _PERMISSION_VIEW = _("You are not permitted to view this layer")
@@ -86,7 +87,7 @@ def tiled_view(request, overlay=settings.TILED_SHAPEFILE, template="maptiles/map
     context_dict["grid"] = get_layer_config(
         request, overlay, "base.view_resourcebase", _PERMISSION_VIEW)
     legend_link = ''
-    if 'localhost' in settings.BASEURL:
+    if not 'localhost' in settings.BASEURL:
         legend_link = settings.OGC_SERVER['default']['PUBLIC_LOCATION'] + \
             'wms?REQUEST=GetLegendGraphic&VERSION=1.0.0&FORMAT=image/png&LAYER=geonode:philgrid&STYLE='
     else:
@@ -109,6 +110,8 @@ def tiled_view(request, overlay=settings.TILED_SHAPEFILE, template="maptiles/map
         context_dict["laz"] = None
         context_dict["dsm"] = None
         context_dict["philgrid_sld"] = None
+        
+    context_dict["geoserver_url"] = settings.OGC_SERVER['default']['PUBLIC_LOCATION']
     jurisdiction_object = None
 
     if jurisdiction is None:

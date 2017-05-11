@@ -979,6 +979,15 @@ CLEAR_SLD = 'clear_sld'
 
 MAX_FTP_SIZE = 1073741824
 
+CEPH_OGW = {
+    'default' : {
+        'USER' : '<ceph-user>',
+        'KEY' : '<ceph-user-key>',
+        'LOCATION' : 'http://ceph-radosgw.prd.dream.upd.edu.ph',
+        'CONTAINER' : 'test-container',
+    }
+}
+
 # Load more settings from a file called local_settings.py if it exists
 try:
     from local_settings import *  # noqa

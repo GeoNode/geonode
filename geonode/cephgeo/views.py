@@ -11,7 +11,7 @@ from django.template import RequestContext
 
 from pprint import pprint
 
-from geonode.cephgeo.forms import DataInputForm
+from geonode.cephgeo.forms import DataInputForm, DataDeleteForm
 from geonode.cephgeo.models import CephDataObject, FTPRequest, FTPStatus, FTPRequestToObjectIndex, UserTiles
 from geonode.cephgeo.utils import get_data_class_from_filename
 from geonode.tasks.ftp import process_ftp_request
@@ -244,7 +244,7 @@ def data_remove(request):
     if request.method == 'POST':
         # create a form instance and populate it with data from the request:
         # pprint(request.POST)
-        form = DataInputForm(request.POST)
+        form = DataDeleteForm(request.POST)
         # check whether it's valid:
         if form.is_valid():
             # Commented out until a way is figured out how to assign database writes/saves
@@ -254,8 +254,10 @@ def data_remove(request):
             uploaded_objects_list = smart_str(
                 form.cleaned_data['data']).splitlines()
             update_grid = form.cleaned_data['update_grid']
+            delete_from_ceph = form.cleaned_data['delete_from_ceph']
 
-            ceph_metadata_remove.delay(uploaded_objects_list, update_grid)
+
+            ceph_metadata_remove.delay(uploaded_objects_list, update_grid, delete_from_ceph)
 
             ctx = {
                 'charsets': CHARSETS,
@@ -265,11 +267,11 @@ def data_remove(request):
             return render_to_response("update_task.html", RequestContext(request, ctx))
         else:
             messages.error(request, "Invalid input on data form")
-            return redirect('geonode.cephgeo.views.data_input')
+            return redirect('geonode.cephgeo.views.data_remove')
     # if a GET (or any other method) we'll create a blank form
     else:
-        form = DataInputForm()
-        return render(request, 'ceph_data_input.html', {'data_input_form': form})
+        form = DataDeleteForm()
+        return render(request, 'ceph_data_delete.html', {'data_delete_form': form})
 
 
 @login_required
