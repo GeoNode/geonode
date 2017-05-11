@@ -263,9 +263,9 @@ define(['underscore',
         }
         var checked = checkFiles();
         if ($.isEmptyObject(layers) || !checked) {
-            // $('#please-wait').modal('toggle');//to hide please wait modal
             alert(gettext('You are uploading an incomplete set of files.'));
             console.log('You are uploading an incomplete set of files.');
+            $('#please-wait').modal('hide');//to hide please wait modal
         } else {
             $.each(layers, function (name, layerinfo) {
                 layerinfo.uploadFiles();
