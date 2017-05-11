@@ -5,6 +5,13 @@
 
 {% block title %} {% trans "New Map" %} - {{ block.super }} {% endblock %}
 {% block head %}
+
+    <style>
+        #paneltbar {
+            margin-top: 90px !important;
+        }
+    </style>
+
 	{% if preview == 'geoext' %}
 		{% include 'maps/map_geoexplorer.js' %}
 	{% elif preview == 'react' %}
