@@ -72870,9 +72870,9 @@ OpenLayers.Layer.OSM = OpenLayers.Class(OpenLayers.Layer.XYZ, {
      * (end)
      */
     url: [
-        'http://a.tile.openstreetmap.org/${z}/${x}/${y}.png',
-        'http://b.tile.openstreetmap.org/${z}/${x}/${y}.png',
-        'http://c.tile.openstreetmap.org/${z}/${x}/${y}.png'
+        'https://a.tile.openstreetmap.org/${z}/${x}/${y}.png',
+        'https://b.tile.openstreetmap.org/${z}/${x}/${y}.png',
+        'https://c.tile.openstreetmap.org/${z}/${x}/${y}.png'
     ],
 
     /**
@@ -73047,9 +73047,9 @@ gxp.plugins.OSMSource = Ext.extend(gxp.plugins.LayerSource, {
             new OpenLayers.Layer.OSM(
                 "OpenStreetMap",
                 [
-                    "http://a.tile.openstreetmap.org/${z}/${x}/${y}.png",
-                    "http://b.tile.openstreetmap.org/${z}/${x}/${y}.png",
-                    "http://c.tile.openstreetmap.org/${z}/${x}/${y}.png"
+                    "https://a.tile.openstreetmap.org/${z}/${x}/${y}.png",
+                    "https://b.tile.openstreetmap.org/${z}/${x}/${y}.png",
+                    "https://c.tile.openstreetmap.org/${z}/${x}/${y}.png"
                 ],
                 OpenLayers.Util.applyDefaults({                
                     attribution: this.mapnikAttribution,
