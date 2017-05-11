@@ -18,25 +18,14 @@
 #
 #########################################################################
 
-try:
-    import json
-except ImportError:
-    from django.utils import simplejson as json
-import os
-import time
-import shutil
-import requests
 import helpers
 
-from requests.auth import HTTPBasicAuth
 from optparse import make_option
 
-from django.conf import settings
-from django.core.management import call_command
 from django.core.management.base import BaseCommand, CommandError
 
 from geonode.layers.models import Layer, Style
-from geonode.maps.models import Map, MapLayer, MapSnapshot
+from geonode.maps.models import Map
 from geonode.base.models import Link
 
 from geonode.utils import designals, resignals
@@ -45,7 +34,6 @@ from geonode.utils import designals, resignals
 class Command(BaseCommand):
 
     help = 'Migrate GeoNode VM Base URL'
-
 
     option_list = BaseCommand.option_list + (
         make_option(
@@ -85,7 +73,8 @@ class Command(BaseCommand):
         if not target_address or len(target_address) == 0:
             raise CommandError("Target Address '--target-address' is mandatory")
 
-        print "This will change all Maps, Layers, Styles and Links Base URLs from [%s] to [%s]." % (source_address, target_address)
+        print "This will change all Maps, Layers, \
+Styles and Links Base URLs from [%s] to [%s]." % (source_address, target_address)
         print "The operation may take some time, depending on the amount of Layer on GeoNode."
         message = 'You want to proceed?'
 
@@ -103,7 +92,7 @@ class Command(BaseCommand):
                     if map.thumbnail_url:
                         map.thumbnail_url = map.thumbnail_url.replace(source_address, target_address)
                     map_layers = map.layers
-                    for layer in map.layers:
+                    for layer in map_layers:
                         if layer.ows_url:
                             original = layer.ows_url
                             layer.ows_url = layer.ows_url.replace(source_address, target_address)
