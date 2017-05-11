@@ -10,12 +10,16 @@ from geonode.people.models import Profile
 from daily_download_count import *
 
 import sys
+from datetime import datetime
 
-timedeltadays = int(sys.argv[1])
-
-main(timedeltadays,DownloadTracker.objects, 'timestamp', 'actor','resource_type','title', False)
-main(timedeltadays,AnonDownloader.objects, 'date', False,'anon_document','anon_layer', False)
-main(timedeltadays,FTPRequest.objects,'date_time','user','','',True)
-print(layer_count)
-
-# save_to_dc(timedeltadays,layer_count)
+start = int(sys.argv[1])
+end = int(sys.argv[2])
+for timedeltadays in reversed(range(start,end)):
+    layer_count.clear()
+    print(datetime.strptime((datetime.now()-timedelta(days=timedeltadays)).strftime('%d-%m-%Y'),'%d-%m-%Y')) #if minusdays = 1, analyzes downlo
+ads day before; because python code is ran early morning
+    main(timedeltadays,DownloadTracker.objects, 'timestamp', 'actor','resource_type','title', False)
+    main(timedeltadays,AnonDownloader.objects, 'date', False,'anon_document','anon_layer', False)
+    main(timedeltadays,FTPRequest.objects,'date_time','user','','',True)
+    print(layer_count)
+    save_to_dc(timedeltadays,layer_count)
