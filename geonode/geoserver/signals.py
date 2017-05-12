@@ -102,7 +102,13 @@ def geoserver_post_save2(layer_id):
         """
 
     from geonode.layers.models import Layer
-    instance = Layer.objects.get(id=layer_id)
+
+    # If it is a layer object, post process it. If not, abort.
+    try:
+        instance = Layer.objects.get(id=layer_id)
+    except Layer.DoesNotExist:
+        return
+
     # Don't run this signal if is a Layer from a remote service
     if getattr(instance, "service", None) is not None:
         return instance
