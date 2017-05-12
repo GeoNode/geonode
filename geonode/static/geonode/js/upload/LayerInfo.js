@@ -26,6 +26,7 @@ define(function (require, exports) {
         this.main     = null;
 
         this.element  = null;
+
         $.extend(this, options || {});
         if (!this.main || !this.type) {
             this.guessFileType();
@@ -85,8 +86,14 @@ define(function (require, exports) {
             // if we find the type of the file, we also find the "main"
             // file
             if (results) {
-                self.type = results.type;
-                self.main = results.file;
+                // Avoid assuming the metadata file as main one
+                if (results.type.main == 'xml' && self.main != undefined) {
+                   self.type = self.type;
+                   self.main = self.main;
+                } else {
+                   self.type = results.type;
+                   self.main = results.file;
+                }
             }
         });
     };
@@ -99,20 +106,18 @@ define(function (require, exports) {
      */
     LayerInfo.prototype.collectErrors = function () {
         var errors = [];
-
-		var mosaic_is_valid = true;
-		var is_granule = $('#' + this.name + '-mosaic').is(':checked');
+	var mosaic_is_valid = true;
+	var is_granule = $('#' + this.name + '-mosaic').is(':checked');
 
         var is_time_enabled = $('#' + this.name + '-timedim').is(':checked');
-		var is_time_valid = is_time_enabled && !$('#' + this.name + '-timedim-value-valid').is(':visible');
+	var is_time_valid = is_time_enabled && !$('#' + this.name + '-timedim-value-valid').is(':visible');
 
         if (is_granule && is_time_enabled) {
-			mosaic_is_valid = is_time_valid;
-		}
-
-		if (is_granule && !mosaic_is_valid) {
-			errors.push('The configuration of the file as a Mosaic Granule is not valid, please fix the issue and try again');
-		}
+		mosaic_is_valid = is_time_valid;
+	}
+	if (is_granule && !mosaic_is_valid) {
+		errors.push('The configuration of the file as a Mosaic Granule is not valid, please fix the issue and try again');
+	}
 
         if (this.type) {
             errors = this.type.findTypeErrors(this.getExtensions());
@@ -584,15 +589,15 @@ define(function (require, exports) {
 
              time_re_txt = input.val();
 
-			 var base_name = this.name.split('-timedim')[0];
+	     var base_name = this.name.split('-timedim')[0];
 
-			 $('#' + base_name + '-timedim-value-valid').show();
+	     $('#' + base_name + '-timedim-value-valid').show();
         });
 
         $('#' + this.name + '-timedim-presentation-format-select').on('change', function() {
              var input = $(this);
 
-			 var base_name = this.name.split('-timedim')[0];
+             var base_name = this.name.split('-timedim')[0];
 
              if (input.val() === 'DISCRETE_INTERVAL') {
                 $('#' + base_name + '-mosaic-timedim-presentation-res-options').show();
@@ -604,7 +609,7 @@ define(function (require, exports) {
         $('#' + this.name + '-timedim-defaultvalue-format-select').on('change', function() {
              var input = $(this);
 
-			 var base_name = this.name.split('-timedim')[0];
+              var base_name = this.name.split('-timedim')[0];
 
              if (input.val() === 'NEAREST' || input.val() === 'FIXED') {
                 $('#' + base_name + '-mosaic-timedim-defaultvalue-res-options').show();
@@ -619,10 +624,10 @@ define(function (require, exports) {
            var re = new RegExp(time_re_txt, "g");
            var is_valid = re.test(input.val());
            if(is_valid){
-		      $('#' + this.name + '-valid').hide();
-		   } else {
-		      $('#' + this.name + '-valid').show();
-	       }
+	      $('#' + this.name + '-valid').hide();
+	   } else {
+	      $('#' + this.name + '-valid').show();
+           }
         });
 
         $('#' + this.name + '-timedim-defaultvalue-ref-value').on('input', function() {

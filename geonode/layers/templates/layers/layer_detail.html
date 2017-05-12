@@ -248,7 +248,7 @@
     <ul class="list-group">
       {% if resource.storeType != "remoteStore" %}
         <li class="list-group-item">
-        {% if links_download %}
+        {% if links or links_download %}
            <button class="btn btn-primary btn-md btn-block" data-toggle="modal" data-target="#download-layer">{% trans "Download Layer" %}</button>
         {% else %}
           {% if request.user.is_authenticated %}
@@ -346,8 +346,8 @@
                   <h4>{% trans "Styles" %}</h4>
                   {% if preview == 'geoext' %}
                   <a class="btn btn-default btn-block btn-xs style-edit" data-dismiss="modal" href="#">{% trans "Edit" %}</a>
-                  <a class="btn btn-default btn-block btn-xs" href="{% url "layer_style_manage" resource.service_typename %}">{% trans "Manage" %}</a>
                   {% endif %}
+                  <a class="btn btn-default btn-block btn-xs" href="{% url "layer_style_manage" resource.service_typename %}">{% trans "Manage" %}</a>
                 </div>
                 {% endif %}
               {% endif %}

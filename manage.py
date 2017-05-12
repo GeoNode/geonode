@@ -22,9 +22,6 @@ import os
 import sys
 
 if __name__ == "__main__":
-    sys.path.insert(0,
-                    '/usr/local/Cellar/gdal/1.11.3_1/lib/python2.7/site-packages')
-
     os.environ.setdefault("DJANGO_SETTINGS_MODULE", "geonode.settings")
 
     from django.core.management import execute_from_command_line

@@ -570,6 +570,8 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
     @property
     def license_light(self):
         a = []
+        if not self.license:
+            return ''
         if (not (self.license.name is None)) and (len(self.license.name) > 0):
             a.append(self.license.name)
         if (not (self.license.url is None)) and (len(self.license.url) > 0):

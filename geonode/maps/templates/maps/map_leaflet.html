@@ -8,6 +8,14 @@
     .leaflet-container { /* all maps */
         height: 400px;
     }
+    .leaflet-container { /* all maps */
+        height: 400px;
+    }
+    
+    .leaflet-control-zoom, .leaflet-control-zoomslider {  /* all controls */
+        position: relative;
+        left: 0px !important;
+    }
 </style>
 <script type="text/javascript">
     document.addEventListener("DOMContentLoaded", function (event) {
@@ -21,8 +29,8 @@
             attribution: 'Imagery from <a href="http://giscience.uni-hd.de/">GIScience Research Group @ University of Heidelberg</a> &mdash; Map data &copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
         });
         var base_maps = {
-            "OpenMapSurfer_Roads": OpenMapSurfer_Roads,
-            'OpenStreetMap': osm
+            'OpenStreetMap': osm,
+            'OpenMapSurfer_Roads': OpenMapSurfer_Roads
         };
 
         /* init overlay layers */
@@ -38,15 +46,14 @@
         var point_wsg84 = proj4(firstProjection,secondProjection,[{{ resource.center_x }}, {{ resource.center_y }}]);
 
         /* initialize the map on the "the_map" div with a given center and zoom */
-        map = L.map('the_map').setView([point_wsg84[1], point_wsg84[0]],6);;
+        map = L.map('the_map').setView([point_wsg84[1], point_wsg84[0]],6);
         map.setZoom({{ resource.zoom }});
 
         /* add initial base layer to the map */
-        map.addLayer(OpenMapSurfer_Roads);
+        map.addLayer(osm);
 
         /* loop over the layers used by the map */
         {% for layer in layers %}
-
             if ("{{ layer.group }}" != 'background') {
                 /* if current layer not a background layer, instantiates a WMS tile layer object 
                  * given the URL of the WMS service and a WMS parameters/options object.
@@ -59,7 +66,7 @@
                 });   
                 /* add wmsLayer to the overlay_layers{} and to the map object itself */
                 if (wmsLayer != null) {
-                    overlay_layers["{{ resource.title }}"] = wmsLayer;
+                    overlay_layers["{{ layer.layer_title }}"] = wmsLayer;
                     map.addLayer(wmsLayer);
                 }
             }

@@ -27,7 +27,6 @@ from socket import error as socket_error
 
 from django.utils.translation import ugettext
 from django.conf import settings
-from django.forms.models import model_to_dict
 
 from geonode.geoserver.ows import wcs_links, wfs_links, wms_links
 from geonode.geoserver.helpers import cascading_delete, set_attributes_from_geoserver
@@ -38,17 +37,10 @@ from geonode.geoserver.helpers import create_gs_thumbnail
 from geonode.base.models import ResourceBase
 from geonode.base.models import Link
 from geonode.people.models import Profile
+
 from geoserver.layer import Layer as GsLayer
-from geonode.social.signals import json_serializer_producer
 
 logger = logging.getLogger("geonode.geoserver.signals")
-
-
-def geoserver_delete(typename):
-    # cascading_delete should only be called if
-    # ogc_server_settings.BACKEND_WRITE_ENABLED == True
-    if getattr(ogc_server_settings, "BACKEND_WRITE_ENABLED", True):
-        cascading_delete(gs_catalog, typename)
 
 
 def geoserver_pre_delete(instance, sender, **kwargs):
@@ -63,46 +55,21 @@ def geoserver_pre_delete(instance, sender, **kwargs):
 
 
 def geoserver_pre_save(instance, sender, **kwargs):
-    """
-    move the content of this task to post save signal
-    :param instance:
-    :param sender:
-    :param kwargs:
-    :return:
-    """
-    pass
-
-
-def geoserver_post_save(instance, sender, **kwargs):
-    from geonode.messaging import producer
-    instance_dict = model_to_dict(instance)
-    payload = json_serializer_producer(instance_dict)
-    producer.geoserver_upload_layer(payload)
-
-
-def geoserver_post_save2(layer_id):
-    """Save keywords to GeoServer
-
-       The way keywords are implemented requires the layer
-       to be saved to the database before accessing them.
-    """
     """Send information to geoserver.
 
-           The attributes sent include:
+       The attributes sent include:
 
-            * Title
-            * Abstract
-            * Name
-            * Keywords
-            * Metadata Links,
-            * Point of Contact name and url
-        """
+        * Title
+        * Abstract
+        * Name
+        * Keywords
+        * Metadata Links,
+        * Point of Contact name and url
+    """
 
-    from geonode.layers.models import Layer
-    instance = Layer.objects.get(id=layer_id)
     # Don't run this signal if is a Layer from a remote service
     if getattr(instance, "service", None) is not None:
-        return instance
+        return
 
     # Don't run this signal handler if it is a tile layer or a remote store (Service)
     #    Currently only gpkg files containing tiles will have this type & will be served via MapProxy.
@@ -118,8 +85,7 @@ def geoserver_post_save2(layer_id):
 
         # There is no need to process it if there is not file.
         if base_file is None:
-            return instance
-
+            return
         gs_name, workspace, values, gs_resource = geoserver_upload(instance,
                                                                    base_file.file.path,
                                                                    instance.owner,
@@ -129,16 +95,12 @@ def geoserver_post_save2(layer_id):
                                                                    abstract=instance.abstract,
                                                                    # keywords=instance.keywords,
                                                                    charset=instance.charset)
-
         # Set fields obtained via the geoserver upload.
         instance.name = gs_name
         instance.workspace = workspace
-        instance.store = values['store']
         # Iterate over values from geoserver.
         for key in ['typename', 'store', 'storeType']:
             setattr(instance, key, values[key])
-
-        instance.save()
 
     if not gs_resource:
         gs_resource = gs_catalog.get_resource(
@@ -160,8 +122,7 @@ def geoserver_post_save2(layer_id):
         gs_resource.metadata_links = metadata_links
     # gs_resource should only be called if
     # ogc_server_settings.BACKEND_WRITE_ENABLED == True
-    if gs_resource and getattr(ogc_server_settings, "BACKEND_WRITE_ENABLED",
-                               True):
+    if gs_resource and getattr(ogc_server_settings, "BACKEND_WRITE_ENABLED", True):
         gs_catalog.save(gs_resource)
 
     gs_layer = gs_catalog.get_layer(instance.name)
@@ -176,7 +137,7 @@ def geoserver_post_save2(layer_id):
                                 'type': None}
         profile = Profile.objects.get(username=instance.poc.username)
         gs_layer.attribution_link = settings.SITEURL[
-                                    :-1] + profile.get_absolute_url()
+            :-1] + profile.get_absolute_url()
         # gs_layer should only be called if
         # ogc_server_settings.BACKEND_WRITE_ENABLED == True
         if getattr(ogc_server_settings, "BACKEND_WRITE_ENABLED", True):
@@ -199,7 +160,7 @@ def geoserver_post_save2(layer_id):
         # self.srid = gs_resource.src
 
         instance.srid_url = "http://www.spatialreference.org/ref/" + \
-                            instance.srid.replace(':', '/').lower() + "/"
+            instance.srid.replace(':', '/').lower() + "/"
 
         # Set bounding box values
         instance.bbox_x0 = bbox[0]
@@ -210,18 +171,28 @@ def geoserver_post_save2(layer_id):
         # store the resource to avoid another geoserver call in the post_save
         instance.gs_resource = gs_resource
 
-    instance.save()
+
+def geoserver_post_save(instance, sender, **kwargs):
+    """Save keywords to GeoServer
+
+       The way keywords are implemented requires the layer
+       to be saved to the database before accessing them.
+    """
+    # Don't run this signal handler if it is a tile layer
+    #    Currently only gpkg files containing tiles will have this type & will be served via MapProxy.
+    if hasattr(instance, 'storeType') and getattr(instance, 'storeType') == 'tileStore':
+        return
 
     if type(instance) is ResourceBase:
         if hasattr(instance, 'layer'):
             instance = instance.layer
         else:
-            return instance
+            return
 
     if instance.storeType == "remoteStore":
         # Save layer attributes
         set_attributes_from_geoserver(instance)
-        return instance
+        return
 
     if not getattr(instance, 'gs_resource', None):
         try:
@@ -234,12 +205,12 @@ def geoserver_post_save2(layer_id):
                 # Not the error we are looking for, re-raise
                 raise serr
             # If the connection is refused, take it easy.
-            return instance
+            return
     else:
         gs_resource = instance.gs_resource
 
     if gs_resource is None:
-        return instance
+        return
 
     if settings.RESOURCE_PUBLISHING:
         if instance.is_published != gs_resource.advertised:
@@ -498,7 +469,6 @@ def geoserver_post_save2(layer_id):
     from geonode.catalogue.models import catalogue_post_save
     from geonode.layers.models import Layer
     catalogue_post_save(instance, Layer)
-    return instance
 
 
 def geoserver_pre_save_maplayer(instance, sender, **kwargs):

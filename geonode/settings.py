@@ -20,6 +20,7 @@
 
 # Django settings for the GeoNode project.
 import os
+import sys
 import re
 
 from kombu import Queue
@@ -268,7 +269,6 @@ GEONODE_APPS = (
     'geonode.geoserver',
     'geonode.upload',
     'geonode.tasks',
-    'geonode.messaging'
 
 )
 
@@ -285,7 +285,7 @@ GEONODE_CONTRIB_APPS = (
 )
 
 # Uncomment the following line to enable contrib apps
-GEONODE_APPS = GEONODE_APPS + GEONODE_CONTRIB_APPS
+GEONODE_APPS = GEONODE_CONTRIB_APPS + GEONODE_APPS
 
 INSTALLED_APPS = (
 
@@ -323,7 +323,6 @@ INSTALLED_APPS = (
     'mptt',
     # 'modeltranslation',
     'djcelery',
-    'djkombu',
     'storages',
     'floppyforms',
 
@@ -337,7 +336,7 @@ INSTALLED_APPS = (
     'avatar',
     'dialogos',
     'agon_ratings',
-    'notification',
+    # 'notification',
     'announcements',
     'actstream',
     'user_messages',
@@ -543,6 +542,8 @@ THEME_ACCOUNT_CONTACT_EMAIL = os.getenv(
 # some problematic 3rd party apps
 TEST_RUNNER = 'django_nose.NoseTestSuiteRunner'
 
+
+TEST = 'test' in sys.argv
 # Arguments for the test runner
 NOSE_ARGS = [
     '--nocapture',
@@ -970,6 +971,7 @@ SEARCH_FILTERS = {
 
 # Queue non-blocking notifications.
 NOTIFICATION_QUEUE_ALL = False
+
 BROKER_URL = os.getenv('BROKER_URL', "django://")
 CELERY_ALWAYS_EAGER = True
 CELERY_EAGER_PROPAGATES_EXCEPTIONS = True
@@ -1083,6 +1085,11 @@ if 'geonode.geoserver' in INSTALLED_APPS:
 # THESAURI = [{'name':'inspire_themes', 'required':False, 'filter':True}]
 THESAURI = []
 
+# use when geonode.contrib.risks is in installed apps.
+RISKS = {'DEFAULT_LOCATION': None,
+         'PDF_GENERATOR': {'NAME': 'wkhtml2pdf',
+                           'BIN': '/usr/bin/wkhtml2pdf',
+                           'ARGS': []}}
 if EMAIL_ENABLE:
     #Setting up email backend
     EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'

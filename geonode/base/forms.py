@@ -26,6 +26,7 @@ from widgets import MultiThesauriWidget
 from autocomplete_light.contrib.taggit_field import TaggitField, TaggitWidget
 
 from django import forms
+from django.core import validators
 from django.forms import models
 from django.forms.fields import ChoiceField
 from django.forms.utils import flatatt
@@ -366,3 +367,20 @@ class ResourceBaseForm(TranslationModelForm):
             'rating',
             'detail_url'
             )
+
+
+class ValuesListField(forms.Field):
+
+    def to_python(self, value):
+        if value in validators.EMPTY_VALUES:
+            return []
+
+        value = [item.strip() for item in value.split(',') if item.strip()]
+
+        return value
+
+    def clean(self, value):
+        value = self.to_python(value)
+        self.validate(value)
+        self.run_validators(value)
+        return value

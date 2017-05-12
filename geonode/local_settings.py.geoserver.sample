@@ -19,12 +19,24 @@
 #########################################################################
 
 import os
+from kombu import Queue
+from geonode.settings import *
 
 PROJECT_ROOT = os.path.abspath(os.path.dirname(__file__))
 
-SITEURL = "http://localhost:8000/"
+MEDIA_ROOT = os.getenv('MEDIA_ROOT', os.path.join(PROJECT_ROOT, "uploaded"))
+
+STATIC_ROOT = os.getenv('STATIC_ROOT',
+                        os.path.join(PROJECT_ROOT, "static_root")
+                        )
+
+# SECRET_KEY = '************************'
+
+SITEURL = "http://localhost:8000"
 
 ALLOWED_HOSTS = ['localhost', 'geonode.example.com']
+
+# TIME_ZONE = 'Europe/Paris'
 
 DATABASES = {
     'default': {
@@ -50,7 +62,8 @@ GEOSERVER_LOCATION = os.getenv(
 )
 
 GEOSERVER_PUBLIC_LOCATION = os.getenv(
-    'GEOSERVER_PUBLIC_LOCATION', 'http://localhost:8080/geoserver/'
+#    'GEOSERVER_PUBLIC_LOCATION', '{}/geoserver/'.format(SITEURL)
+    'GEOSERVER_LOCATION', 'http://localhost:8080/geoserver/'
 )
 
 OGC_SERVER_DEFAULT_USER = os.getenv(
@@ -112,7 +125,7 @@ CATALOGUE = {
         # 'ENGINE': 'geonode.catalogue.backends.generic',
 
         # The FULLY QUALIFIED base url to the CSW instance for this GeoNode
-        'URL': '%scatalogue/csw' % SITEURL,
+        'URL': '%s/catalogue/csw' % SITEURL,
         # 'URL': 'http://localhost:8080/geonetwork/srv/en/csw',
         # 'URL': 'http://localhost:8080/deegree-csw-demo-3.0.4/services',
 
@@ -122,5 +135,275 @@ CATALOGUE = {
     }
 }
 
+
 # Default preview library
-#LAYER_PREVIEW_LIBRARY = 'geoext'
+LAYER_PREVIEW_LIBRARY = 'geoext'
+#LAYER_PREVIEW_LIBRARY = 'leaflet'
+#LEAFLET_CONFIG = {
+#    'TILES': [
+#        # Find tiles at:
+#        # http://leaflet-extras.github.io/leaflet-providers/preview/
+#
+#        # Map Quest
+#        ('Map Quest',
+#         'http://otile4.mqcdn.com/tiles/1.0.0/osm/{z}/{x}/{y}.png',
+#         'Tiles Courtesy of <a href="http://www.mapquest.com/">MapQuest</a> '
+#         '&mdash; Map data &copy; '
+#         '<a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'),
+#        # Stamen toner lite.
+#        # ('Watercolor',
+#        #  'http://{s}.tile.stamen.com/watercolor/{z}/{x}/{y}.png',
+#        #  'Map tiles by <a href="http://stamen.com">Stamen Design</a>, \
+#        #  <a href="http://creativecommons.org/licenses/by/3.0">CC BY 3.0</a> &mdash; Map data &copy; \
+#        #  <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, \
+#        #  <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>'),
+#        # ('Toner Lite',
+#        #  'http://{s}.tile.stamen.com/toner-lite/{z}/{x}/{y}.png',
+#        #  'Map tiles by <a href="http://stamen.com">Stamen Design</a>, \
+#        #  <a href="http://creativecommons.org/licenses/by/3.0">CC BY 3.0</a> &mdash; Map data &copy; \
+#        #  <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, \
+#        #  <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>'),
+#    ],
+#    'PLUGINS': {
+#        'esri-leaflet': {
+#            'js': 'lib/js/esri-leaflet.js',
+#            'auto-include': True,
+#        },
+#        'leaflet-fullscreen': {
+#            'css': 'lib/css/leaflet.fullscreen.css',
+#            'js': 'lib/js/Leaflet.fullscreen.min.js',
+#            'auto-include': True,
+#        },
+#    },
+#    'SRID': 3857,
+#    'RESET_VIEW': False
+#}
+
+GEONODE_APPS = (
+    # GeoNode internal apps
+    # 'geonode.contrib.risks',
+    'geonode.people',
+    'geonode.base',
+    'geonode.layers',
+    'geonode.maps',
+    'geonode.proxy',
+    'geonode.security',
+    'geonode.social',
+    'geonode.catalogue',
+    'geonode.documents',
+    'geonode.api',
+    'geonode.groups',
+    'geonode.services',
+
+    # QGIS Server Apps
+    # 'geonode_qgis_server',
+
+    # GeoServer Apps
+    # Geoserver needs to come last because
+    # it's signals may rely on other apps' signals.
+    'geonode.geoserver',
+    'geonode.upload',
+    'geonode.tasks',
+
+)
+
+GEONODE_CONTRIB_APPS = (
+    # GeoNode Contrib Apps
+    # 'geonode.contrib.dynamic',
+    # 'geonode.contrib.exif',
+    # 'geonode.contrib.favorite',
+    # 'geonode.contrib.geogig',
+    # 'geonode.contrib.geosites',
+    # 'geonode.contrib.nlp',
+    # 'geonode.contrib.slack',
+    'geonode.contrib.metadataxsl',
+)
+
+GEONODE_APPS = GEONODE_APPS + GEONODE_CONTRIB_APPS
+
+INSTALLED_APPS = (
+
+    'modeltranslation',
+
+    # Boostrap admin theme
+    # 'django_admin_bootstrapped.bootstrap3',
+    # 'django_admin_bootstrapped',
+
+    # Apps bundled with Django
+    'django.contrib.auth',
+    'django.contrib.contenttypes',
+    'django.contrib.sessions',
+    'django.contrib.sites',
+    'django.contrib.admin',
+    'django.contrib.sitemaps',
+    'django.contrib.staticfiles',
+    'django.contrib.messages',
+    'django.contrib.humanize',
+    'django.contrib.gis',
+
+    # Third party apps
+
+    # Utility
+    'pagination',
+    'taggit',
+    'treebeard',
+    'friendlytagloader',
+    'geoexplorer',
+    'leaflet',
+    'django_extensions',
+    #'geonode-client',
+    #'haystack',
+    'autocomplete_light',
+    'mptt',
+    # 'modeltranslation',
+    'djcelery',
+    'storages',
+    'floppyforms',
+
+    # Theme
+    "pinax_theme_bootstrap_account",
+    "pinax_theme_bootstrap",
+    'django_forms_bootstrap',
+
+    # Social
+    'account',
+    'avatar',
+    'dialogos',
+    'agon_ratings',
+    # 'notification',
+    'announcements',
+    'actstream',
+    'user_messages',
+    #'tastypie',
+    'polymorphic',
+    'guardian',
+    'oauth2_provider',
+) + GEONODE_APPS + ('tastypie',)
+
+# default map projection
+# Note: If set to EPSG:4326, then only EPSG:4326 basemaps will work.
+DEFAULT_MAP_CRS = "EPSG:900913"
+
+# Where should newly created maps be focused?
+DEFAULT_MAP_CENTER = (0, 0)
+
+# How tightly zoomed should newly created maps be?
+# 0 = entire world;
+# maximum zoom is between 12 and 15 (for Google Maps, coverage varies by area)
+DEFAULT_MAP_ZOOM = 0
+
+ALT_OSM_BASEMAPS = os.environ.get('ALT_OSM_BASEMAPS', False)
+CARTODB_BASEMAPS = os.environ.get('CARTODB_BASEMAPS', False)
+STAMEN_BASEMAPS = os.environ.get('STAMEN_BASEMAPS', False)
+THUNDERFOREST_BASEMAPS = os.environ.get('THUNDERFOREST_BASEMAPS', False)
+MAPBOX_ACCESS_TOKEN = os.environ.get('MAPBOX_ACCESS_TOKEN', None)
+BING_API_KEY = os.environ.get('BING_API_KEY', None)
+
+MAP_BASELAYERS = [{
+    "source": {"ptype": "gxp_olsource"},
+    "type": "OpenLayers.Layer",
+    "args": ["No background"],
+    "name": "background",
+    "visibility": False,
+    "fixed": True,
+    "group":"background"
+}, {
+    "source": {"ptype": "gxp_osmsource"},
+    "type": "OpenLayers.Layer.OSM",
+    "name": "mapnik",
+    "visibility": True,
+    "fixed": True,
+    "group": "background"
+}]
+
+if 'geonode.geoserver' in INSTALLED_APPS:
+    LOCAL_GEOSERVER = {
+        "source": {
+            "ptype": "gxp_wmscsource",
+            "url": OGC_SERVER['default']['PUBLIC_LOCATION'] + "wms",
+            "restUrl": "/gs/rest"
+        }
+    }
+    baselayers = MAP_BASELAYERS
+    MAP_BASELAYERS = [LOCAL_GEOSERVER]
+    MAP_BASELAYERS.extend(baselayers)
+
+#REDIS_URL = 'redis://localhost:6379/1'
+#BROKER_URL = REDIS_URL
+#CELERY_RESULT_BACKEND = REDIS_URL
+CELERYD_HIJACK_ROOT_LOGGER = False
+CELERYD_CONCURENCY = 1
+CELERY_ALWAYS_EAGER = False
+
+# Haystack Search Backend Configuration. To enable,
+# first install the following:
+# - pip install django-haystack
+# - pip install elasticsearch==2.4.0
+# - pip install woosh
+# - pip install pyelasticsearch
+# Set HAYSTACK_SEARCH to True
+# Run "python manage.py rebuild_index"
+# HAYSTACK_SEARCH = False
+# Avoid permissions prefiltering
+SKIP_PERMS_FILTER = True
+# Update facet counts from Haystack
+HAYSTACK_FACET_COUNTS = False
+HAYSTACK_CONNECTIONS = {
+   'default': {
+       'ENGINE': 'haystack.backends.elasticsearch2_backend.Elasticsearch2SearchEngine',
+       'URL': 'http://127.0.0.1:9200/',
+       'INDEX_NAME': 'haystack',
+       },
+#    'db': {
+#        'ENGINE': 'haystack.backends.simple_backend.SimpleEngine',
+#        'EXCLUDED_INDEXES': ['thirdpartyapp.search_indexes.BarIndex'],
+#        }
+   }
+HAYSTACK_SIGNAL_PROCESSOR = 'haystack.signals.RealtimeSignalProcessor'
+# HAYSTACK_SEARCH_RESULTS_PER_PAGE = 20
+
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': True,
+    'formatters': {
+        'verbose': {
+            'format': '%(levelname)s %(asctime)s %(module)s %(process)d '
+                      '%(thread)d %(message)s'
+        },
+        'simple': {
+            'format': '%(message)s',
+        },
+    },
+    'filters': {
+        'require_debug_false': {
+            '()': 'django.utils.log.RequireDebugFalse'
+        }
+    },
+    'handlers': {
+        'null': {
+            'level': 'ERROR',
+            'class': 'django.utils.log.NullHandler',
+        },
+        'console': {
+            'level': 'ERROR',
+            'class': 'logging.StreamHandler',
+            'formatter': 'simple'
+        },
+        'mail_admins': {
+            'level': 'ERROR', 'filters': ['require_debug_false'],
+            'class': 'django.utils.log.AdminEmailHandler',
+        }
+    },
+    "loggers": {
+        "django": {
+            "handlers": ["console"], "level": "ERROR", },
+        "geonode": {
+            "handlers": ["console"], "level": "ERROR", },
+        "gsconfig.catalog": {
+            "handlers": ["console"], "level": "ERROR", },
+        "owslib": {
+            "handlers": ["console"], "level": "ERROR", },
+        "pycsw": {
+            "handlers": ["console"], "level": "ERROR", },
+        },
+    }

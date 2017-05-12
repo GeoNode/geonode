@@ -26,6 +26,9 @@ import math
 import os
 import re
 import uuid
+import subprocess
+import select
+from StringIO import StringIO
 
 from osgeo import ogr
 from slugify import Slugify
@@ -918,3 +921,28 @@ def resignals():
         for signal in signals:
             signaltype.connect(signal['receiv_call'], sender=signal['sender_ista'],
                                weak=signal['is_weak'], dispatch_uid=signal['uid'])
+
+
+def run_subprocess(*cmd, **kwargs):
+    p = subprocess.Popen(' '.join(cmd), stdout=subprocess.PIPE, stderr=subprocess.PIPE, **kwargs)
+    stdout = StringIO()
+    stderr = StringIO()
+    buff_size = 1024
+    while p.poll() is None:
+        inr = [p.stdout.fileno(), p.stderr.fileno()]
+        inw = []
+        rlist, wlist, xlist = select.select(inr, inw, [])
+
+        for r in rlist:
+            if r == p.stdout.fileno():
+                readfrom = p.stdout
+                readto = stdout
+            else:
+                readfrom = p.stderr
+                readto = stderr
+            readto.write(readfrom.read(buff_size))
+
+        for w in wlist:
+            w.write('')
+
+    return p.returncode, stdout.getvalue(), stderr.getvalue()

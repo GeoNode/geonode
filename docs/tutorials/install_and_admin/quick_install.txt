@@ -302,3 +302,4 @@ CentOS/RHEL and other \*nix distros
 We recommend you to download the latest release and modify the included ``install.sh`` and ``support/config.sh``. GeoNode has been installed in CentOS/RHEL using this mechanism.
 
 Once the package is installed, please consult the :ref:`custom_install` to learn how to create the admin user and tweak the settings to get more performance.
+

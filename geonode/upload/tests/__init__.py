@@ -128,7 +128,6 @@ class FilesTests(TestCase):
                 self.assertTrue(os.path.exists(path))
 
 
-""""
 class TimeFormFormTest(TestCase):
 
     def _form(self, data):
@@ -169,4 +168,3 @@ class TimeFormFormTest(TestCase):
             ('start_year', 'Number'),
             ('end_date', 'Date')
         )
-"""
