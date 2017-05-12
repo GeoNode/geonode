@@ -388,7 +388,7 @@ def gs_slurp(
         else:
             # obtain the store from within the workspace. if it exists, obtain resources
             # directly from store, otherwise return an empty list:
-            if store is not None:
+            if store is not None and len(store) > 0:
                 store = get_store(cat, store, workspace=workspace)
                 if store is None:
                     resources = []
@@ -397,7 +397,7 @@ def gs_slurp(
             else:
                 resources = cat.get_resources(workspace=workspace)
 
-    elif store is not None:
+    elif store is not None and len(store) > 0:
         store = get_store(cat, store)
         resources = cat.get_resources(store=store)
     else:

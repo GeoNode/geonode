@@ -22,8 +22,6 @@ import os
 import json
 import datetime
 import urllib2
-# import base64
-import time
 import logging
 import gisdata
 
@@ -40,7 +38,6 @@ from geoserver.catalog import FailedRequestError, UploadError
 
 # from geonode.security.models import *
 from geonode.layers.models import Layer
-from geonode.geoserver.signals import geoserver_post_save2
 from geonode.maps.models import Map
 from geonode import GeoNodeException
 from geonode.layers.utils import (
@@ -190,8 +187,6 @@ class GeoNodeMapTest(TestCase):
         """Test that the wcs links are correctly created for a raster"""
         filename = os.path.join(gisdata.GOOD_DATA, 'raster/test_grid.tif')
         uploaded = file_upload(filename)
-
-        geoserver_post_save2(uploaded.id)
 
         wcs_link = False
         for link in uploaded.link_set.all():
@@ -444,9 +439,6 @@ class GeoNodeMapTest(TestCase):
             gisdata.VECTOR_DATA,
             'san_andres_y_providencia_poi.shp')
         shp_layer = file_upload(shp_file, overwrite=True)
-
-        shp_layer = geoserver_post_save2(shp_layer.id)
-
         ws = gs_cat.get_workspace(shp_layer.workspace)
         shp_store = gs_cat.get_store(shp_layer.store, ws)
         shp_store_name = shp_store.name
@@ -459,8 +451,6 @@ class GeoNodeMapTest(TestCase):
         # Test Uploading then Deleting a TIFF file from GeoServer
         tif_file = os.path.join(gisdata.RASTER_DATA, 'test_grid.tif')
         tif_layer = file_upload(tif_file)
-
-        tif_layer = geoserver_post_save2(tif_layer.id)
 
         ws = gs_cat.get_workspace(tif_layer.workspace)
         tif_store = gs_cat.get_store(tif_layer.store, ws)
@@ -482,10 +472,6 @@ class GeoNodeMapTest(TestCase):
             gisdata.VECTOR_DATA,
             'san_andres_y_providencia_poi.shp')
         shp_layer = file_upload(shp_file)
-
-        shp_layer = geoserver_post_save2(shp_layer.id)
-
-        time.sleep(20)
 
         shp_layer_id = shp_layer.pk
         ws = gs_cat.get_workspace(shp_layer.workspace)
@@ -531,10 +517,6 @@ class GeoNodeMapTest(TestCase):
             gisdata.VECTOR_DATA,
             'san_andres_y_providencia_poi.shp')
         shp_layer = file_upload(shp_file)
-
-        shp_layer = geoserver_post_save2(shp_layer.id)
-
-        time.sleep(20)
 
         # Save the names of the Resource/Store/Styles
         self.assertIsNotNone(shp_layer.name)
@@ -711,7 +693,6 @@ class GeoNodePermissionsTest(TestCase):
         check_layer(layer)
 
         # we need some time to have the service up and running
-        time.sleep(20)
 
         # Set the layer private for not authenticated users
         layer.set_permissions({'users': {'AnonymousUser': []}})
@@ -817,13 +798,8 @@ xsi:schemaLocation="http://www.opengis.net/sld http://schemas.opengis.net/sld/1.
             'san_andres_y_providencia_poi.shp')
         layer = file_upload(thefile, overwrite=True)
 
-        layer = geoserver_post_save2(layer.id)
-
         layer.set_default_permissions()
         check_layer(layer)
-
-        # we need some time to have the service up and running
-        time.sleep(20)
 
         # request getCapabilities: layer must be there as it is published and
         # advertised: we need to check if in response there is
@@ -849,13 +825,8 @@ xsi:schemaLocation="http://www.opengis.net/sld http://schemas.opengis.net/sld/1.
                 'san_andres_y_providencia_administrative.shp')
             layer = file_upload(thefile, overwrite=True)
 
-            layer = geoserver_post_save2(layer.id)
-
             layer.set_default_permissions()
             check_layer(layer)
-
-            # we need some time to have the service up and running
-            time.sleep(20)
 
             str_to_check = '<Name>san_andres_y_providencia_administrative</Name>'
 
@@ -871,8 +842,6 @@ xsi:schemaLocation="http://www.opengis.net/sld http://schemas.opengis.net/sld/1.
             resource = layer.get_self_resource()
             resource.is_published = True
             resource.save()
-
-            layer = geoserver_post_save2(layer.id)
 
             request = urllib2.Request(url)
             response = urllib2.urlopen(request)
@@ -911,8 +880,6 @@ class GeoNodeThumbnailTest(TestCase):
             user=norman,
             overwrite=True,
         )
-
-        saved_layer = geoserver_post_save2(saved_layer.id)
 
         thumbnail_url = saved_layer.get_thumbnail_url()
 

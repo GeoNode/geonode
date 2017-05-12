@@ -299,7 +299,8 @@ def start():
     """
     Start GeoNode (Django, GeoServer & Client)
     """
-    call_task('start_messaging')
+    # Uncomment when running with GEONODE_PUBSUB=True
+    #call_task('start_messaging')
     info("GeoNode is now available.")
 
 

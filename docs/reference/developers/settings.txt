@@ -660,3 +660,10 @@ AWS_QUERYSTRING_AUTH
 Default: ``False``
 
 Generate an S3 auth querystring.
+
+
+GEONODE_PUBSUB
+--------------
+Default: ``False``
+
+Send notifications about activities instead of performing time intensive functions on the main request / response cycle. If enabled, another process with the `runmessaging` command should be run in paralell to take care of the tasks. Requires Kombu and RabbitMQ.
