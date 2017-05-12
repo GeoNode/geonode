@@ -306,7 +306,7 @@ class GeoNodeMapTest(TestCase):
 
         self.assertEqual(
             uploaded.title,
-            'Air_Runways',
+            'Air Runways',
             'Expected specific title from uploaded layer XML metadata')
 
         self.assertEqual(
@@ -649,6 +649,27 @@ class GeoNodeMapTest(TestCase):
              'prj_file': layer_prj
              })
         self.assertEquals(response.status_code, 401)
+
+    def test_importlayer_mgmt_command(self):
+            """Test layer import management command
+            """
+            vector_file = os.path.join(
+                gisdata.VECTOR_DATA,
+                'san_andres_y_providencia_administrative.shp')
+
+            call_command('importlayers', vector_file, overwrite=True,
+                         keywords="test, import, san andreas",
+                         title="Test San Andres y Providencia Administrative",
+                         verbosity=1)
+
+            lyr = Layer.objects.get(title='Test San Andres y Providencia Administrative')
+            self.assertIsNotNone(lyr)
+            self.assertEqual(lyr.name, "test_san_andres_y_providencia_administrative")
+            self.assertEqual(lyr.title, "Test San Andres y Providencia Administrative")
+            self.assertEqual(
+                lyr.keyword_list(), [
+                    u'import', u'san andreas', u'test'])
+            lyr.delete()
 
 
 class GeoNodePermissionsTest(TestCase):
