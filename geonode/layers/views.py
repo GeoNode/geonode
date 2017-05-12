@@ -187,6 +187,7 @@ def layer_upload(request, template='upload/layer_upload.html'):
                     out['traceback'] = upload_session.traceback
                     out['context'] = upload_session.context
                     out['upload_session'] = upload_session.id
+
             else:
                 out['success'] = True
                 if hasattr(saved_layer, 'info'):
