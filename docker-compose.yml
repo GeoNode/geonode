@@ -19,6 +19,7 @@ services:
 
   django:
     image: camptocamp/geonode_django
+    build: .
     links:
       - postgres
       - elasticsearch

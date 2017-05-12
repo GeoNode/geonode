@@ -3,8 +3,9 @@ up:
 	docker-compose up -d
 
 build:
-	docker-compose build django
-	docker-compose build celery
+	docker pull python:2.7.9
+	docker build -t camptocamp/geonode_django:latest .
+	docker build -t camptocamp/geonode_django:`date +%Y%m%d%H%M%S` .
 
 sync: up
 	docker-compose exec django django-admin.py makemigrations --noinput
