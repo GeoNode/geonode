@@ -507,18 +507,16 @@ def gs_slurp(
                 raise Exception(
                     'Failed to process %s' %
                     resource.name.encode('utf-8'), e), None, sys.exc_info()[2]
-        else:
-            if created:
-                if not permissions:
-                    layer.set_default_permissions()
-                else:
-                    layer.set_permissions(permissions)
 
-                status = 'created'
-                output['stats']['created'] += 1
-            else:
-                status = 'updated'
-                output['stats']['updated'] += 1
+        if created:
+            if permissions:
+                layer.set_permissions(permissions)
+
+            status = 'created'
+            output['stats']['created'] += 1
+        else:
+            status = 'updated'
+            output['stats']['updated'] += 1
 
         msg = "[%s] Layer %s (%d/%d)" % (status, name, i + 1, number)
         info = {'name': name, 'status': status}
@@ -579,18 +577,16 @@ def gs_slurp(
                 raise Exception(
                     'Failed to process %s' %
                     lg.name.encode('utf-8'), e), None, sys.exc_info()[2]
-        else:
-            if created:
-                if not permissions:
-                    layer.set_default_permissions()
-                else:
-                    layer.set_permissions(permissions)
 
-                status = 'created'
-                output['stats']['created'] += 1
-            else:
-                status = 'updated'
-                output['stats']['updated'] += 1
+        if created:
+            if permissions:
+                layer.set_permissions(permissions)
+
+            status = 'created'
+            output['stats']['created'] += 1
+        else:
+            status = 'updated'
+            output['stats']['updated'] += 1
 
         msg = "[%s] Layer Group %s (%d/%d)" % (status, name, i + 1, lg_count)
         info = {'name': name, 'status': status}
