@@ -69,6 +69,15 @@ def report_distribution_status(request, template='reports/distribution_status.ht
             luzvimin_count[luzvimin][eachinlist.category][eachinlist.date.strftime('%Y%m')] = 0
         luzvimin_count[luzvimin][eachinlist.category][eachinlist.date.strftime('%Y%m')] += int(eachinlist.count)
 
+    area_count = {}
+    area_list = DownloadCount.objects.filter(chart_group='area').order_by('date')
+    for eachinlist in area_list:
+        if eachinlist.date.strftime('%Y%m') not in area_count:
+            area_count[eachinlist.date.strftime('%Y%m')] = {}
+        if eachinlist.download_type not in area_count[eachinlist.date.strftime('%Y%m')]:
+            area_count[eachinlist.date.strftime('%Y%m')][eachinlist.download_type] = 0
+        area_count[eachinlist.date.strftime('%Y%m')][eachinlist.download_type] += int(eachinlist.count)
+
     urls_to_visit = ['https://lipad-fmc.dream.upd.edu.ph/']
 #    urls_to_visit = []
     for each_url in urls_to_visit:
@@ -95,20 +104,32 @@ def report_distribution_status(request, template='reports/distribution_status.ht
                     if date_of_entry not in luzvimin_count[luzvimin][eachentry[u'category']]:
                         luzvimin_count[luzvimin][eachentry[u'category']][date_of_entry] = 0
                     luzvimin_count[luzvimin][eachentry[u'category']][date_of_entry] += int(eachentry[u'count'])
+                elif eachentry[u'chart_group'] == 'area':
+                    if date_of_entry not in area_count:
+                        area_count[date_of_entry] = {}
+                    if eachentry[u'download_type'] not in area_count[date_of_entry]:
+                        area_count[date_of_entry][eachentry[u'download_type']] = 0
+                    area_count[date_of_entry][eachentry[u'download_type']] += int(eachentry[u'count'])
         except HTTPError:
             continue
 
     #sorted
     sorted_mc = OrderedDict(sorted(monthly_count.iteritems(), key=lambda x: x[0]))
+    sorted_ac = OrderedDict(sorted(area_count.iteritems(), key=lambda x: x[0]))
     #cumulative
     counter_dict = Counter()
     for each in sorted_mc.iteritems():
         counter_dict.update(each[1])
         sorted_mc[each[0]] = dict(counter_dict)
+    area_counter = Counter()
+    for each in sorted_ac.iteritems():
+        area_counter.update(each[1])
+        sorted_ac[each[0]] = dict(area_counter)
     #rename
     renamed_mc = OrderedDict([(datetime.strptime(eachone[0],'%Y%m').strftime('%b%Y'),eachone[1]) for eachone in sorted_mc.iteritems()])
-
+    renamed_ac = OrderedDict([(datetime.strptime(eachone[0],'%Y%m').strftime('%b%Y'),eachone[1]) for eachone in sorted_ac.iteritems()])
     reversed_mc = OrderedDict(reversed(list(renamed_mc.items())))
+    reversed_ac = OrderedDict(reversed(list(renamed_ac.items())))
 
     #DATAREQUEST
     rearrange_dr = {}
@@ -165,10 +186,13 @@ def report_distribution_status(request, template='reports/distribution_status.ht
     color_list = ['FF3333','FF9900','F2DB00','00CC66','0099FF','3BB9C4','D4502F','C2C14C','9865CF','D19E45']
     context_dict = {
         "monthly_count": reversed_mc,
+        "area_count": reversed_ac,
         "luzvimin_count": sorted_luzvimin,
         "total_luzvimin": total_luzvimin,
         "total_layers": reversed_mc[reversed_mc.keys()[0]],
+        "total_area": reversed_ac[reversed_ac.keys()[0]],
         "sum_layers": sum(reversed_mc[reversed_mc.keys()[0]].values()),
+        "sum_area": sum(reversed_ac[reversed_ac.keys()[0]].values()),
         "monthly_datarequest": reversed_md,
         "org_count": reversed_org,
         "total_datarequest": reversed_md[reversed_md.keys()[0]],
