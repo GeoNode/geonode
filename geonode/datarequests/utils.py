@@ -94,7 +94,7 @@ def create_ad_account(profilerequest, username):
     userPrincipalName=str(username+"@ad.dream.upd.edu.ph")
     userAccountControl = "512"
     o=unidecode(profilerequest.organization)
-    company = profilerequest.org_type   # Added setting of org_type to company AD field
+    company = unidecode(profilerequest.org_type)   # Added setting of org_type to company AD field
 
     for c in cn:
         if c in ESCAPED_CHARACTERS:
