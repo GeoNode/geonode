@@ -287,6 +287,202 @@ var layout = {
 
 Plotly.newPlot('monthly_div', data, layout);
 
+var data_area_pie = [{
+  values: [
+    {% for key, value in total_area.items %}
+      {{ value }},
+    {% endfor %}
+  ],
+  labels: [
+    {% for key, value in total_area.items %}
+        {% if key == 'FHM' %}
+            'Flood Hazard Map',
+        {% else %}
+            '{{ key }}',
+        {% endif %}
+    {% endfor %}
+  ],
+  type: 'pie',
+  textinfo:'label+percent',
+}];
+
+var layout_area_pie = {
+  title: '<b>Total Downloads in Area: {{ sum_area }}</b>',
+  height: 600,
+  width: 500,
+  // font:{size:30}
+};
+
+Plotly.newPlot('pie_area_div', data_area_pie, layout_area_pie);
+
+var area1 = {
+  x: [
+    {% for key, value in area_count.items %}
+      '{{ key }}',
+    {% endfor %}
+  ],
+  y: [
+    {% for key, value in area_count.items %}
+      {{ value.Coverage }},
+    {% endfor %}
+  ],
+  hoverinfo:'y+name',
+  name: 'Coverage',
+  type: 'bar',
+  marker: {
+    color: '#DC3912'
+  }
+};
+var area3 = {
+  x: [
+    {% for key, value in area_count.items %}
+      '{{ key }}',
+    {% endfor %}
+  ],
+  y: [
+    {% for key, value in area_count.items %}
+      {{ value.FHM }},
+    {% endfor %}
+  ],
+  text: [
+    {% for key, value in area_count.items %}
+      '{{ value.FHM }}',
+    {% endfor %}
+  ],
+  textposition: 'auto',
+  hoverinfo:'y+name',
+  name: 'Flood Hazard Maps',
+  type: 'bar',
+  marker: {
+    color: '#3366CB'
+  }
+};
+var area4 = {
+  x: [
+    {% for key, value in area_count.items %}
+      '{{ key }}',
+    {% endfor %}
+  ],
+  y: [
+    {% for key, value in area_count.items %}
+      {{ value.DTM }},
+    {% endfor %}
+  ],
+  hoverinfo:'y+name',
+  name: 'DTM',
+  type: 'bar',
+  marker: {
+    color: '#109618'
+  }
+};
+var area5 = {
+  x: [
+    {% for key, value in area_count.items %}
+      '{{ key }}',
+    {% endfor %}
+  ],
+  y: [
+    {% for key, value in area_count.items %}
+      {{ value.DSM }},
+    {% endfor %}
+  ],
+  hoverinfo:'y+name',
+  name: 'DSM',
+  type: 'bar',
+  marker: {
+    color: '#990099'
+  }
+};
+var area6 = {
+  x: [
+    {% for key, value in area_count.items %}
+      '{{ key }}',
+    {% endfor %}
+  ],
+  y: [
+    {% for key, value in area_count.items %}
+      {{ value.LAZ }},
+    {% endfor %}
+  ],
+  hoverinfo:'y+name',
+  name: 'LAZ',
+  type: 'bar',
+  marker: {
+    color: '#0099C6'
+  }
+};
+var area7 = {
+  x: [
+    {% for key, value in area_count.items %}
+      '{{ key }}',
+    {% endfor %}
+  ],
+  y: [
+    {% for key, value in area_count.items %}
+      {{ value.ORTHO }},
+    {% endfor %}
+  ],
+  hoverinfo:'y+name',
+  name: 'Ortho',
+  type: 'bar',
+  marker: {
+    color: '#DD4477'
+  }
+};
+var area8 = {
+  x: [
+    {% for key, value in area_count.items %}
+      '{{ key }}',
+    {% endfor %}
+  ],
+  y: [
+    {% for key, value in area_count.items %}
+      {{ value.SAR }},
+    {% endfor %}
+  ],
+  hoverinfo:'y+name',
+  name: 'SAR',
+  type: 'bar',
+  marker: {
+    color: '#FFF328'
+  }
+};
+var area9 = {
+  x: [
+    {% for key, value in area_count.items %}
+      '{{ key }}',
+    {% endfor %}
+  ],
+  y: [
+    {% for key, value in area_count.items %}
+      {{ value.Resource }},
+    {% endfor %}
+  ],
+  hoverinfo:'y+name',
+  name: 'Resource Map',
+  type: 'bar',
+  marker: {
+    color: '#19ED88'
+  }
+};
+
+var data = [area3, area9, area8, area7, area6, area5, area4, area1];
+
+var layout = {
+  barmode: 'stack',
+  xaxis: {
+    autorange: 'reversed',
+    tickangle: -45
+  },
+  title: '<b>Cumulative LiPAD Downloads (Total: {{ sum_layers }})</b>',
+  legend:{
+    x: 0,
+    y: 1
+  }
+};
+
+Plotly.newPlot('monthly_div', data, layout);
+
 var datarequest1 = {
   x: [
     {% for key, value in monthly_datarequest.items %}
