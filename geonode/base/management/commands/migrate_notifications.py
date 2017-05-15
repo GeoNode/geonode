@@ -19,8 +19,7 @@
 #########################################################################
 import logging
 
-from django.conf import settings
-from django.core.management.base import BaseCommand, CommandError
+from django.core.management.base import BaseCommand
 from django.db import connection, IntegrityError
 from django.db.utils import ProgrammingError
 
@@ -53,8 +52,8 @@ class Command(BaseCommand):
                 if self.has_duplicate(ns):
                     log.debug('settings for %s have duplicate', ns)
                     continue
-                c.execute("""insert into pinax_notifications_noticesetting 
-                               (medium, send, notice_type_id, user_id) 
+                c.execute("""insert into pinax_notifications_noticesetting
+                               (medium, send, notice_type_id, user_id)
                              values (%s, %s, %s, %s)""", ns)
             except IntegrityError, err:
                 log.error('Cannot insert notifications for %s: %s', ns, err, exc_info=err)
