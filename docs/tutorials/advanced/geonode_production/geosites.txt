@@ -98,16 +98,16 @@ To add a new site follow the following steps:
 2. from geonode administration pannel add 'new site'
 3. create a virtualhost in the webserver related to the new created site. Remember to setup the WSGIDeamonProcess with the name you gave to the folder created at point 1. and the path to the geosites directory. WSGIProcessGroup have to be pointed to the name you choose for the folder you created at point 1. Eventually, WSGIScriptAlias have to be set to the wsgi.py you have in your site folder.
 4. check the configuration files: local_settings.py, pre_settings.py, post_settings.py in /geonode-project as well as local_settings.py and settings.py in your site folder:
-    - in /geonode-project/local_settings.py set the variable SERVE_PATH. it has to point geosites folder.
+    - in /geonode-project/local_settings.py set the variable SERVE_PATH. It has to point geosites folder.
     - in the local_setting of the site folder insert the values to the following variables: 
             * SITE_ID
             * SITE_NAME
             * SITE_URL
-5. create static_root directory where you usually let the webserver serve webpages (e.g., /var/www ) and give it grants to be accessed bu the user www-data
-6. create an uploaded/layers and uploaded/thumbs in your geonode-project folder and give them grants as follow:
-    sudo mkdir -p ../geonode-project/uploaded/thumbs
-    sudo mkdir -p ../geonode-project/uploaded/layers
-    sudo chmod -Rf 755 ../geonode-project/uploaded/thumbs
-    sudo chmod -Rf 755 ../geonode-project/uploaded/layers
+5. create static_root directory where you usually let the webserver serve webpages (e.g., /var/www ) and give it grants to be accessed by the user www-data
+6. create an uploaded/layers and uploaded/thumbs folder in your geonode-project folder and give them grants as follow:
+    sudo mkdir -p geonode-project/uploaded/thumbs
+    sudo mkdir -p geonode-project/uploaded/layers
+    sudo chmod -Rf 755 geonode-project/uploaded/thumbs
+    sudo chmod -Rf 755 geonode-project/uploaded/layers
 7. run python manage.py collectstatics - Pay attention on the folder where you are running the command and the folder structure of your geonode/geosites project, in case pass to the path the settings file by using --settings to the python command
 8. you can customize the look and feel of your site working on the css and html file you find in your template site directory. After a change, run again collectstatics command.  
