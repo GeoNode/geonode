@@ -183,16 +183,34 @@ def _style_name(resource):
     return _punc.sub("_", resource.store.workspace.name + ":" + resource.name)
 
 
-def get_sld_for(layer):
-    # FIXME: GeoServer sometimes fails to associate a style with the data, so
+def get_sld_for(gs_catalog, layer):
+    # GeoServer sometimes fails to associate a style with the data, so
     # for now we default to using a point style.(it works for lines and
     # polygons, hope this doesn't happen for rasters  though)
-    name = layer.default_style.name if layer.default_style is not None else "point"
+    if layer.default_style is None:
+        gs_catalog._cache.clear()
+        layer = gs_catalog.get_layer(layer.name)
+    name = layer.default_style.name if layer.default_style is not None else "raster"
+
+    # Detect geometry type if it is a FeatureType
+    if layer.resource.resource_type == 'featureType':
+        res = layer.resource
+        res.fetch()
+        ft = res.store.get_resources(res.name)
+        ft.fetch()
+        for attr in ft.dom.find("attributes").getchildren():
+            attr_binding = attr.find("binding")
+            if "jts.geom" in attr_binding.text:
+                if "Polygon" in attr_binding.text:
+                    name = "polygon"
+                elif "Line" in attr_binding.text:
+                    name = "line"
+                else:
+                    name = "point"
 
     # FIXME: When gsconfig.py exposes the default geometry type for vector
     # layers we should use that rather than guessing based on the auto-detected
     # style.
-
     if name in _style_templates:
         fg, bg, mark = _style_contexts.next()
         return _style_templates[name] % dict(
@@ -213,7 +231,7 @@ def fixup_style(cat, resource, style):
             logger.info("%s uses a default style, generating a new one", lyr)
             name = _style_name(resource)
             if style is None:
-                sld = get_sld_for(lyr)
+                sld = get_sld_for(cat, lyr)
             else:
                 sld = style.read()
             logger.info("Creating style [%s]", name)
@@ -378,7 +396,7 @@ def gs_slurp(
     if console is None:
         console = open(os.devnull, 'w')
 
-    if verbosity > 1:
+    if verbosity > 0:
         print >> console, "Inspecting the available layers in GeoServer ..."
     cat = Catalog(ogc_server_settings.internal_rest, _user, _password)
     if workspace is not None:
@@ -433,7 +451,7 @@ def gs_slurp(
     # disabled_resources = [k for k in resources if k.enabled == "false"]
 
     number = len(resources)
-    if verbosity > 1:
+    if verbosity > 0:
         msg = "Found %d layers, starting processing" % number
         print >> console, msg
     output = {
@@ -571,7 +589,7 @@ def gs_slurp(
                 deleted_layers.append(layer)
 
         number_deleted = len(deleted_layers)
-        if verbosity > 1:
+        if verbosity > 0:
             msg = "\nFound %d layers to delete, starting processing" % number_deleted if number_deleted > 0 else \
                 "\nFound %d layers to delete" % number_deleted
             print >> console, msg
@@ -746,7 +764,15 @@ def set_attributes_from_geoserver(layer, overwrite=False):
 def set_styles(layer, gs_catalog):
     style_set = []
     gs_layer = gs_catalog.get_layer(layer.name)
-    default_style = gs_layer.default_style
+    if gs_layer.default_style:
+        default_style = gs_layer.default_style
+    else:
+        default_style = gs_catalog.get_style(layer.name)
+        try:
+            gs_layer.default_style = default_style
+            gs_catalog.save(gs_layer)
+        except:
+            logger.exception("GeoServer Layer Default Style issues!")
     layer.default_style = save_style(default_style)
     # FIXME: This should remove styles that are no longer valid
     style_set.append(layer.default_style)
@@ -1168,27 +1194,34 @@ def geoserver_upload(
         sld = f.read()
         f.close()
     else:
-        sld = get_sld_for(publishing)
+        sld = get_sld_for(cat, publishing)
 
     style = None
     if sld is not None:
         try:
             cat.create_style(name, sld)
-            style = cat.get_style(name)
         except geoserver.catalog.ConflictingDataError as e:
             msg = ('There was already a style named %s in GeoServer, '
                    'try to use: "%s"' % (name + "_layer", str(e)))
             logger.warn(msg)
             e.args = (msg,)
-            try:
-                cat.create_style(name + '_layer', sld)
+
+            style = cat.get_style(name)
+            if style is None:
+                try:
+                    cat.create_style(name + '_layer', sld)
+                except geoserver.catalog.ConflictingDataError as e:
+                    msg = ('There was already a style named %s in GeoServer, '
+                           'cannot overwrite: "%s"' % (name, str(e)))
+                    logger.warn(msg)
+                    e.args = (msg,)
+
                 style = cat.get_style(name + "_layer")
-            except geoserver.catalog.ConflictingDataError as e:
-                style = cat.get_style('point')
-                msg = ('There was already a style named %s in GeoServer, '
-                       'cannot overwrite: "%s"' % (name, str(e)))
-                logger.error(msg)
-                e.args = (msg,)
+                if style is None:
+                    style = cat.get_style('point')
+                    msg = ('Could not find any suitable style in GeoServer '
+                           'for Layer: "%s"' % (name))
+                    logger.error(msg)
 
         # FIXME: Should we use the fully qualified typename?
         publishing.default_style = style

@@ -30,7 +30,10 @@ import sys
 import time
 import shutil
 
-import json
+try:
+    import json
+except ImportError:
+    from django.utils import simplejson as json
 
 MEDIA_ROOT = 'uploaded'
 STATIC_ROOT = 'static_root'
@@ -111,11 +114,12 @@ def dump_db(db_name, db_user, db_port, db_host, db_passwd, target_folder):
     curs = conn.cursor()
 
     try:
-        curs.execute("""SELECT tablename from pg_tables where tableowner = 'geonode'""")
+        sql_dump = """SELECT tablename from pg_tables where tableowner = '%s'""" % (db_user)
+        curs.execute(sql_dump)
         pg_tables = curs.fetchall()
         for table in pg_tables:
             print "Dumping GeoServer Vectorial Data : " + table[0]
-            os.system('PGPASSWORD="' + db_passwd + '" ' + PG_DUMP_CMD + ' -i -h ' + db_host +
+            os.system('PGPASSWORD="' + db_passwd + '" ' + PG_DUMP_CMD + ' -h ' + db_host +
                       ' -p ' + db_port + ' -U ' + db_user + ' -F c -b -d ' + db_name +
                       ' -t ' + table[0] + ' -f ' +
                       os.path.join(target_folder, table[0] + '.dump'))
@@ -186,7 +190,7 @@ def get_dir_time_suffix():
 
 def zip_dir(basedir, archivename):
     assert os.path.isdir(basedir)
-    with closing(ZipFile(archivename, "w", ZIP_DEFLATED)) as z:
+    with closing(ZipFile(archivename, "w", ZIP_DEFLATED, allowZip64=True)) as z:
         for root, dirs, files in os.walk(basedir):
             # NOTE: ignore empty directories
             for fn in files:
@@ -202,7 +206,13 @@ def copy_tree(src, dst, symlinks=False, ignore=None):
         if os.path.isdir(s):
             # shutil.rmtree(d)
             if os.path.exists(d):
-                os.remove(d)
+                try:
+                    os.remove(d)
+                except:
+                    try:
+                        shutil.rmtree(d)
+                    except:
+                        pass
             shutil.copytree(s, d, symlinks, ignore)
         else:
             shutil.copy2(s, d)
@@ -213,7 +223,7 @@ def unzip_file(zip_file, dst):
     if not os.path.exists(target_folder):
         os.makedirs(target_folder)
 
-    with ZipFile(zip_file, "r") as z:
+    with ZipFile(zip_file, "r", allowZip64=True) as z:
         z.extractall(target_folder)
 
     return target_folder

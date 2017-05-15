@@ -18,12 +18,15 @@
 #
 #########################################################################
 
+try:
+    import json
+except ImportError:
+    from django.utils import simplejson as json
 import os
 import time
 import shutil
 import requests
 import helpers
-import simplejson as json
 
 from requests.auth import HTTPBasicAuth
 from optparse import make_option
@@ -79,7 +82,8 @@ class Command(BaseCommand):
             target_folder = os.path.join(backup_dir, dir_time_suffix)
             if not os.path.exists(target_folder):
                 os.makedirs(target_folder)
-            os.chmod(target_folder, 0755)
+            # Temporary folder to store backup files. It will be deleted at the end.
+            os.chmod(target_folder, 0777)
 
             # Create GeoServer Backup
             url = settings.OGC_SERVER['default']['PUBLIC_LOCATION']
@@ -240,8 +244,11 @@ class Command(BaseCommand):
                 # Create Final ZIP Archive
                 helpers.zip_dir(target_folder, os.path.join(backup_dir, dir_time_suffix+'.zip'))
 
-                # Cleanup Temp Folder
-                shutil.rmtree(target_folder)
+                # Clean-up Temp Folder
+                try:
+                    shutil.rmtree(target_folder)
+                except:
+                    print "WARNING: Could not be possible to delete the temp folder: '" + str(target_folder) + "'"
 
                 print "Backup Finished. Archive generated."
 
