@@ -53,7 +53,7 @@ def report_distribution_status(request, template='reports/distribution_status.ht
             monthly_count[eachinlist.date.strftime('%Y%m')] = {}
         if eachinlist.download_type not in monthly_count[eachinlist.date.strftime('%Y%m')]:
             monthly_count[eachinlist.date.strftime('%Y%m')][eachinlist.download_type] = 0
-        monthly_count[eachinlist.date.strftime('%Y%m')][eachinlist.download_type] += eachinlist.count
+        monthly_count[eachinlist.date.strftime('%Y%m')][eachinlist.download_type] += int(eachinlist.count)
 
     luzvimin_count = {'Luzon':{},'Visayas':{},'Mindanao':{},'Others':{}}
     luzvimin_list = DownloadCount.objects.filter(chart_group='luzvimin').order_by('category','date')
@@ -67,7 +67,7 @@ def report_distribution_status(request, template='reports/distribution_status.ht
             luzvimin_count[luzvimin][eachinlist.category] = {}
         if eachinlist.date.strftime('%Y%m') not in luzvimin_count[luzvimin][eachinlist.category]:
             luzvimin_count[luzvimin][eachinlist.category][eachinlist.date.strftime('%Y%m')] = 0
-        luzvimin_count[luzvimin][eachinlist.category][eachinlist.date.strftime('%Y%m')] += eachinlist.count
+        luzvimin_count[luzvimin][eachinlist.category][eachinlist.date.strftime('%Y%m')] += int(eachinlist.count)
 
     urls_to_visit = ['https://lipad-fmc.dream.upd.edu.ph/']
 #    urls_to_visit = []
@@ -83,7 +83,7 @@ def report_distribution_status(request, template='reports/distribution_status.ht
                         monthly_count[date_of_entry] = {}
                     if eachentry[u'download_type'] not in monthly_count[date_of_entry]:
                         monthly_count[date_of_entry][eachentry[u'download_type']] = 0
-                    monthly_count[date_of_entry][eachentry[u'download_type']] += eachentry[u'count']
+                    monthly_count[date_of_entry][eachentry[u'download_type']] += int(eachentry[u'count'])
                 elif eachentry[u'chart_group'] == 'luzvimin':
                     try:
                         luzvimin = SUCLuzViMin.objects.filter(suc=eachentry[u'category'])[0].luzvimin
@@ -94,7 +94,7 @@ def report_distribution_status(request, template='reports/distribution_status.ht
                         luzvimin_count[luzvimin][eachentry[u'category']] = {}
                     if date_of_entry not in luzvimin_count[luzvimin][eachentry[u'category']]:
                         luzvimin_count[luzvimin][eachentry[u'category']][date_of_entry] = 0
-                    luzvimin_count[luzvimin][eachentry[u'category']][date_of_entry] += eachentry[u'count']
+                    luzvimin_count[luzvimin][eachentry[u'category']][date_of_entry] += int(eachentry[u'count'])
         except HTTPError:
             continue
 
@@ -153,7 +153,7 @@ def report_distribution_status(request, template='reports/distribution_status.ht
             cumulative_value = 0
             for date in sorted(date_list):
                 if date in sucdatevalue[suc].keys():
-                    cumulative_value += sucdatevalue[suc][date]
+                    cumulative_value += int(sucdatevalue[suc][date])
                 sorted_luzvimin[chart_group][suc][datetime.strptime(date,'%Y%m').strftime('%b%Y')] = cumulative_value
                 total_luzvimin[chart_group].update({suc:cumulative_value})
     #rename
