@@ -21,18 +21,9 @@
 <div id = 'pie_div' class = "plots"></div>
 <div id = 'monthly_datarequest' class = "plots"></div>
 <div id = 'monthly_div' class = "plots"></div>
-<!--
-<div id = 'luzvimin_div0' class = "plots"></div>
-<div id = 'luzvimin_div1' class = "plots"></div>
-<div id = 'luzvimin_div2' class = "plots"></div>
-<div id = 'luzvimin_div3' class = "plots"></div>
--->
 <div id = 'div_total_luzvimin0' class = "plots" style="width:1000px"></div>
-<!--
-<div id = 'div_total_luzvimin1' class = "plots"></div>
-<div id = 'div_total_luzvimin2' class = "plots"></div>
-<div id = 'div_total_luzvimin3' class = "plots"></div>
--->
+<div id = 'pie_area_div' class = "plots"></div>
+<div id = 'area_div' class = "plots"></div>
 {% endblock %}
 
 {% block extra_script %}
@@ -466,22 +457,22 @@ var area9 = {
   }
 };
 
-var data = [area3, area9, area8, area7, area6, area5, area4, area1];
+var data_area = [area3, area9, area8, area7, area6, area5, area4, area1];
 
-var layout = {
+var layout_area = {
   barmode: 'stack',
   xaxis: {
     autorange: 'reversed',
     tickangle: -45
   },
-  title: '<b>Cumulative LiPAD Downloads (Total: {{ sum_layers }})</b>',
+  title: '<b>Cumulative LiPAD Downloads in Area (Total: {{ sum_area }})</b>',
   legend:{
     x: 0,
     y: 1
   }
 };
 
-Plotly.newPlot('monthly_div', data, layout);
+Plotly.newPlot('area_div', data_area, layout_area);
 
 var datarequest1 = {
   x: [
