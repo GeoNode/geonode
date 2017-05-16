@@ -877,7 +877,6 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
             self.is_published = False
             self.save()
 
-
     metadata_author = property(_get_metadata_author, _set_metadata_author)
 
     objects = ResourceBaseManager()
