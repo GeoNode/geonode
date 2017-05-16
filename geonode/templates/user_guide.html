@@ -1,0 +1,480 @@
+{% extends "site_base.html" %}
+
+{% load i18n %}
+{% block title %} {% trans "User Guide" %} - {{ block.super }} {% endblock %}
+
+{% block body_outer %}
+<div class="page-header">
+  <h2>{% trans "User Guide" %}</h2>
+</div>
+<div class="row">
+  <div class="col-md-8">
+    <p class="lead">CityData lets you securely store, map and share
+data.</p>
+
+    <p>With CityData it’s easy to upload and store spatial data like shapefiles as well as other non-spatial data and documents. You can describe your data with metadata to aid discovery and use, share it with others and download it.</p>
+
+    <p>Once you upload a spatial layer you can use it to create and share online maps.  What’s more, your layer is automatically served online as map and feature services (WMS and WFS) that anyone can access in desktop GIS (like ArcMap or QGIS) or use in a web application.</p>
+
+    <p>Data can be made private and not shared if it is sensitive for privacy, commercial or other reasons. Set permissions to choose the individuals and groups who may view, download, edit and manage your data.</p>
+
+    <p>CityData can help us overcome problems of finding and identifying the right version of spatial data and knowing the licence conditions, even when the person responsible is no longer around to ask. It complements our research papers as a repository for publishing the data underpinning our research.</p>
+
+    <p>This document explains how to use CityData including the conventions we have adopted to ensure reliable data management through quality data and metadata.</p>
+
+    <p>Please email questions or suggested changes to <a href="mailto:citydata@unsw.edu.au">citydata@unsw.edu.au</a>.</p>
+
+    <p>CityData is powered by <a href="http://geonode.org/">GeoNode</a> open source geospatial content management system.</p>
+
+    <h3><a name="access">Accessing data on CityData</a></h3>
+
+    <p>Anyone can use CityData. Data made public by its owner is accessible to the public without registering or logging on. Just visit the site at <a href="citydata.be.unsw.edu.au">citydata.be.unsw.edu.au</a> and explore Layers, Maps and Documents (non-spatial data).</p>
+
+    <p>Our public data is also automatically published to <a href="https://researchdata.ands.org.au/">Research Data Australia</a> by the Australian National Data Service (ANDS).</p>
+
+    <h3><a name="when-to-load">When to load data to CityData</a></h3>
+
+    <p>If you work with spatial data, load it to CityData when you:</p>
+
+    <ul>
+      <li>reach a project milestone or put a project on pause: upload and document your data so you (or others) know what’s where when you return</li>
+
+      <li>need to share your data with others in your team or beyond</li>
+
+      <li>complete a project and want to publish your results.</li>
+
+    </ul>
+    <h3><a name="request-account">Request an account</a></h3>
+
+    <p>To upload data to CityData or access restricted data, you will need an account. This is separately managed from your UNSW account. Email <a href="mailto:citydata@unsw.edu.au">citydata@unsw.edu.au</a> and provide:</p>
+
+    <ol>
+      <li>Preferred username (one word)</li>
+
+      <li>Full name</li>
+
+      <li>Email address</li>
+
+      <li>Mobile phone number</li>
+
+      <li>The reason you need the account (if you’re not a City Futures staff member)
+      </li>
+    </ol>
+
+    <p>Once your account is created you’ll receive an email notification and an SMS with your temporary password.</p>
+
+    {% if user.is_authenticated %}
+
+      <h3><a name="groups">Groups</a></h3>
+
+      <p>Access to layers and other resources can be granted to individuals or Groups.</p>
+
+      <p>In CityData we use these groups:</p>
+
+      <ul>
+        <li>‘CF’ for CityFutures</li>
+
+        <li>‘BE’ for Built Environment</li>
+
+        <li>one group for each project involving spatial data</li>
+
+      </ul>
+
+      <p>Create new groups in CityData for your projects as required and add existing CityData users as group members. Please follow the conventions shown in the existing groups.</p>
+
+      <h3><a name="keywords">Keywords</a></h3>
+
+      <p>Layers and other resources can be tagged with keywords. Keywords may be any combination of letters and numbers. Try to avoid punctuation as this makes the keyword harder to remember.</p>
+
+      <p>We use a keyword for each project. This should also match the name of the group for that project.</p>
+
+      <p>Additionally, we have the ‘test’ keyword for testing. All data with the ‘test’ keyword should remain hidden from public view.</p>
+
+      <h3><a name="admin">Administrator role</a></h3>
+
+      <p>The CityData Administrator (username: ‘admin’, email <a href="mailto:citydata@unsw.edu.au">citydata@unsw.edu.au</a>) responds to any technical problems or issues with the site.</p>
+
+      <p>S/he also regularly reviews public data for basic quality checks (see this document for guidelines) and may remove public access from any resources that don’t meet these guidelines. In this case, the administrator will of course contact the resource owner to help rectify the problem.</p>
+
+      <h3><a name="loading">Loading data</a></h3>
+
+      <p>Sign in to upload spatial data in shapefile, GeoTIFF, CSV or KML formats.</p>
+
+      <p>KML is not fully supported, please let the <a href="mailto:citydata@unsw.edu.au">site administrator</a> know how you go with this.
+      </p>
+
+      <h4><a name="permissions">Set permissions</a></h4>
+
+      <p>By default, data you upload is accessible only to you. You will need to change the permissions to allow others to access and use it.</p>
+
+      <p>Access control is quite granular: on each resource, you can grant different groups and users permission to view, download, change metadata, edit data, edit styles and manage (update, delete, change permissions, publish/unpublish).
+      </p>
+
+      <p>However, permission to view a layer also allows a user to map and query it. There is no separate permission to view the metadata for a layer without also viewing its data (<a href="https://github.com/GeoNode/geonode/issues/3039">GeoNode issue #3039</a>).</p>
+
+      <p>CityFutures staff should generally make their internal data viewable to the CF group (CityFutures). Other BE staff should share with BE or with their own group within BE.</p>
+
+      <p>To publish your data, tick the boxes to allow ‘Anyone’ to both view and download the data:</p>
+
+      <p style='text-indent:36.0pt'><img border=0 width=146 height=58 id="Picture 5" src="/static/cityfutures/img/user_guide/image001.png">              <img border=0 width=146 height=58 id="Picture 6" src="/static/cityfutures/img/user_guide/image002.png"></p>
+
+      <h5><a name="permissions-multi">Tip: set permissions on multiple layers</a></h5>
+
+      <p>From the Layers page, click <img border=0 width=30 height=26 id="Picture 1" src="/static/cityfutures/img/user_guide/image003.jpg"> beside layers to add them to the Shopping Cart which appears at top left under ‘Explore Layers’.</p>
+
+      <p>Then click ‘Set Permissions’ under the Shopping Cart to set permissions on the selected layers.</p>
+
+      <h4><a name="uploading">Uploading a shapefile</a></h4>
+
+      <p>When uploading a shapefile, you <i>must</i> upload at least four files: .dbf, .prj, .shp and .shx. If available, you should also upload the .xml file. Other files such as .sbn, .sbx, .cpg or .lyr are not used.</p>
+
+      <p style='margin-bottom:6.0pt'>Here is an explanation of the relevant file types:</p>
+
+      <table border=1 cellspacing=0 cellpadding=0 style='border-collapse:collapse;border:none'>
+        <tr>
+          <td width=77 valign=top style='width:58.1pt;border:solid #4F81BD 1.0pt;
+    background:#4F81BD;padding:0cm 5.4pt 0cm 5.4pt'>
+            <p style='margin-top:0cm;page-break-after:avoid'><b><span
+    style='color:white'>Filename</span></b></p>
+          </td>
+          <td width=66 valign=top style='width:49.35pt;border:solid #4F81BD 1.0pt;
+    border-left:none;background:#4F81BD;padding:0cm 5.4pt 0cm 5.4pt'>
+            <p style='margin-top:0cm;page-break-after:avoid'><b><span
+    style='color:white'>Format</span></b></p>
+          </td>
+          <td width=309 valign=top style='width:231.8pt;border:solid #4F81BD 1.0pt;
+    border-left:none;background:#4F81BD;padding:0cm 5.4pt 0cm 5.4pt'>
+            <p style='margin-top:0cm;page-break-after:avoid'><b><span
+    style='color:white'>Description</span></b></p>
+          </td>
+        </tr>
+        <tr>
+          <td width=77 valign=top style='width:58.1pt;border:solid #4F81BD 1.0pt;
+    border-top:none;padding:0cm 5.4pt 0cm 5.4pt'>
+            <p style='margin-top:0cm;page-break-after:avoid'><i>layer</i>.dbf</p>
+          </td>
+          <td width=66 valign=top style='width:49.35pt;border-top:none;border-left:
+    none;border-bottom:solid #4F81BD 1.0pt;border-right:solid #4F81BD 1.0pt;
+    padding:0cm 5.4pt 0cm 5.4pt'>
+            <p>Dbase</p>
+          </td>
+          <td width=309 valign=top style='width:231.8pt;border-top:none;border-left:
+    none;border-bottom:solid #4F81BD 1.0pt;border-right:solid #4F81BD 1.0pt;
+    padding:0cm 5.4pt 0cm 5.4pt'>
+            <p>Attribute table</p>
+          </td>
+        </tr>
+        <tr>
+          <td width=77 valign=top style='width:58.1pt;border:solid #4F81BD 1.0pt;
+    border-top:none;padding:0cm 5.4pt 0cm 5.4pt'>
+            <p style='margin-top:0cm;page-break-after:avoid'><i>layer</i>.prj</p>
+          </td>
+          <td width=66 valign=top style='width:49.35pt;border-top:none;border-left:
+    none;border-bottom:solid #4F81BD 1.0pt;border-right:solid #4F81BD 1.0pt;
+    padding:0cm 5.4pt 0cm 5.4pt'>
+            <p style='margin-top:0cm;page-break-after:avoid'>ASCII</p>
+          </td>
+          <td width=309 valign=top style='width:231.8pt;border-top:none;border-left:
+    none;border-bottom:solid #4F81BD 1.0pt;border-right:solid #4F81BD 1.0pt;
+    padding:0cm 5.4pt 0cm 5.4pt'>
+            <p style='margin-top:0cm;page-break-after:avoid'>Projection (coordinate reference system) details</p>
+          </td>
+        </tr>
+        <tr>
+          <td width=77 valign=top style='width:58.1pt;border:solid #4F81BD 1.0pt;
+    border-top:none;padding:0cm 5.4pt 0cm 5.4pt'>
+            <p style='margin-top:0cm;page-break-after:avoid'><i>layer</i>.shp</p>
+          </td>
+          <td width=66 valign=top style='width:49.35pt;border-top:none;border-left:
+    none;border-bottom:solid #4F81BD 1.0pt;border-right:solid #4F81BD 1.0pt;
+    padding:0cm 5.4pt 0cm 5.4pt'>
+            <p style='margin-top:0cm;page-break-after:avoid'>Binary</p>
+          </td>
+          <td width=309 valign=top style='width:231.8pt;border-top:none;border-left:
+    none;border-bottom:solid #4F81BD 1.0pt;border-right:solid #4F81BD 1.0pt;
+    padding:0cm 5.4pt 0cm 5.4pt'>
+            <p style='margin-top:0cm;page-break-after:avoid'>Geometry</p>
+          </td>
+        </tr>
+        <tr>
+          <td width=77 valign=top style='width:58.1pt;border:solid #4F81BD 1.0pt;
+    border-top:none;padding:0cm 5.4pt 0cm 5.4pt'>
+            <p style='margin-top:0cm;page-break-after:avoid'><i>layer</i>.shx</p>
+          </td>
+          <td width=66 valign=top style='width:49.35pt;border-top:none;border-left:
+    none;border-bottom:solid #4F81BD 1.0pt;border-right:solid #4F81BD 1.0pt;
+    padding:0cm 5.4pt 0cm 5.4pt'>
+            <p style='margin-top:0cm;page-break-after:avoid'>Binary</p>
+          </td>
+          <td width=309 valign=top style='width:231.8pt;border-top:none;border-left:
+    none;border-bottom:solid #4F81BD 1.0pt;border-right:solid #4F81BD 1.0pt;
+    padding:0cm 5.4pt 0cm 5.4pt'>
+            <p style='margin-top:0cm;page-break-after:avoid'>Spatial index to geometry</p>
+          </td>
+        </tr>
+        <tr>
+          <td width=77 valign=top style='width:58.1pt;border:solid #4F81BD 1.0pt;
+    border-top:none;padding:0cm 5.4pt 0cm 5.4pt'>
+            <p style='margin-top:0cm'><i>layer</i>.xml</p>
+          </td>
+          <td width=66 valign=top style='width:49.35pt;border-top:none;border-left:
+    none;border-bottom:solid #4F81BD 1.0pt;border-right:solid #4F81BD 1.0pt;
+    padding:0cm 5.4pt 0cm 5.4pt'>
+            <p style='margin-top:0cm'>XML</p>
+          </td>
+          <td width=309 valign=top style='width:231.8pt;border-top:none;border-left:
+    none;border-bottom:solid #4F81BD 1.0pt;border-right:solid #4F81BD 1.0pt;
+    padding:0cm 5.4pt 0cm 5.4pt'>
+            <p style='margin-top:0cm'>Metadata</p>
+          </td>
+        </tr>
+      </table>
+
+      <h4><a name="attributes">Attribute names</a></h4>
+
+      <p>Attribute (column) names in shapefiles must start with a letter and are limited to 10 characters (letter, digits and underscore) only.</p>
+
+      <p>Column names starting with a digit will cause the uploader to hang with the message ‘Processing data, please wait’.</p>
+
+      <p>You can use the “Refactor fields” tool in QGIS to rename your attributes before uploading:</p>
+
+      <p style='text-indent:36.0pt'><img border=0 width=293 height=125 id="Picture 3" src="/static/cityfutures/img/user_guide/image004.png"></p>
+
+      <p>After upload, you can use ‘Edit Layer &gt; Metadata &gt; Edit’ (and scroll to the bottom of the metadata form) to label and describe any attributes that are not self-explanatory:</p>
+
+      <p style='text-indent:36.0pt'><img border=0 width=459 height=79 id="Picture 4" src="/static/cityfutures/img/user_guide/image005.jpg"></p>
+
+      <h4><a name="metadata">Good metadata</a></h4>
+
+      <p>Metadata should be easy to write and should describe a dataset so others can find it and use it with confidence. Not all available fields need to be completed; recommended fields are shown below. Mandatory fields are shown with an asterisk*.</p>
+
+      <table border=1 cellspacing=0 cellpadding=0 style='border-collapse:collapse;border:none'>
+        <thead>
+          <tr>
+            <td width=187 valign=top style='width:140.1pt;border:solid #4F81BD 1.0pt;
+     background:#4F81BD;padding:0cm 5.4pt 0cm 5.4pt'>
+              <p style='margin-top:0cm;page-break-after:avoid'><b><span
+    style='color:white'>Field</span></b></p>
+            </td>
+            <td width=429 valign=top style='width:322.0pt;border:solid #4F81BD 1.0pt;
+     border-left:none;background:#4F81BD;padding:0cm 5.4pt 0cm 5.4pt'>
+              <p style='margin-top:0cm;page-break-after:avoid'><b><span
+    style='color:white'>Description</span></b></p>
+            </td>
+          </tr>
+        </thead>
+        <tr>
+          <td width=187 valign=top style='width:140.1pt;border:solid #4F81BD 1.0pt;
+    border-top:none;padding:0cm 5.4pt 0cm 5.4pt'>
+            <p>Title*</p>
+          </td>
+          <td width=429 valign=top style='width:322.0pt;border-top:none;border-left:
+    none;border-bottom:solid #4F81BD 1.0pt;border-right:solid #4F81BD 1.0pt;
+    padding:0cm 5.4pt 0cm 5.4pt'>
+            <p>What, how (if needed), where and when (if not current), in that order. English words or spelt-out acronyms only</p>
+          </td>
+        </tr>
+        <tr>
+          <td width=187 valign=top style='width:140.1pt;border:solid #4F81BD 1.0pt;
+    border-top:none;padding:0cm 5.4pt 0cm 5.4pt'>
+            <p>Date &amp; Date type*</p>
+          </td>
+          <td width=429 valign=top style='width:322.0pt;border-top:none;border-left:
+    none;border-bottom:solid #4F81BD 1.0pt;border-right:solid #4F81BD 1.0pt;
+    padding:0cm 5.4pt 0cm 5.4pt'>
+            <p>Enter a creation, publication or revision date</p>
+          </td>
+        </tr>
+        <tr>
+          <td width=187 valign=top style='width:140.1pt;border:solid #4F81BD 1.0pt;
+    border-top:none;padding:0cm 5.4pt 0cm 5.4pt'>
+            <p>Abstract*</p>
+          </td>
+          <td width=429 valign=top style='width:322.0pt;border-top:none;border-left:
+    none;border-bottom:solid #4F81BD 1.0pt;border-right:solid #4F81BD 1.0pt;
+    padding:0cm 5.4pt 0cm 5.4pt'>
+            <p>A brief narrative summary of the contents of the resource.</p>
+            <p><b><span style='color:red'>Important:</span></b><span style='color:red'> </span>As authorship is not recorded elsewhere in the metadata, include the preferred citation format in the Abstract. E.g.:</p>
+            <p>&nbsp;</p>
+            <p>Doig, Jonathan P. (2016): Airbnb nightly price per SA2, Sydney. City Futures Research Centre. <a href="https://citydata.be.unsw.edu.au/layers/geonode%3Aairbnb_price_per_sa2_sydney">https://citydata.be.unsw.edu.au/layers/geonode%3Aairbnb_price_per_sa2_sydney</a></p>
+          </td>
+        </tr>
+        <tr>
+          <td width=187 valign=top style='width:140.1pt;border:solid #4F81BD 1.0pt;
+    border-top:none;padding:0cm 5.4pt 0cm 5.4pt'>
+            <p>Purpose</p>
+          </td>
+          <td width=429 valign=top style='width:322.0pt;border-top:none;border-left:
+    none;border-bottom:solid #4F81BD 1.0pt;border-right:solid #4F81BD 1.0pt;
+    padding:0cm 5.4pt 0cm 5.4pt'>
+            <p>Summarise the intentions with which the resource was developed
+            </p>
+          </td>
+        </tr>
+        <tr>
+          <td width=187 valign=top style='width:140.1pt;border:solid #4F81BD 1.0pt;
+    border-top:none;padding:0cm 5.4pt 0cm 5.4pt'>
+            <p>Licence*</p>
+          </td>
+          <td width=429 valign=top style='width:322.0pt;border-top:none;border-left:
+    none;border-bottom:solid #4F81BD 1.0pt;border-right:solid #4F81BD 1.0pt;
+    padding:0cm 5.4pt 0cm 5.4pt'>
+            <p>Data created by CityFutures researchers should be licensed as <a href="https://creativecommons.org/licenses/by-nc/4.0/">Creative Commons
+    Attribution-NonCommercial 4.0 International</a>.</p>
+            <p>When republishing data from another source, apply the licence used by the original author. If not listed, ask the <a href="mailto:citydata@unsw.edu.au">administrator</a> to add it.</p>
+          </td>
+        </tr>
+        <tr>
+          <td width=187 valign=top style='width:140.1pt;border:solid #4F81BD 1.0pt;
+    border-top:none;padding:0cm 5.4pt 0cm 5.4pt'>
+            <p>Restrictions</p>
+          </td>
+          <td width=429 valign=top style='width:322.0pt;border-top:none;border-left:
+    none;border-bottom:solid #4F81BD 1.0pt;border-right:solid #4F81BD 1.0pt;
+    padding:0cm 5.4pt 0cm 5.4pt'>
+            <p>Detail any restrictions not covered by a formal licence</p>
+          </td>
+        </tr>
+        <tr>
+          <td width=187 valign=top style='width:140.1pt;border:solid #4F81BD 1.0pt;
+    border-top:none;padding:0cm 5.4pt 0cm 5.4pt'>
+            <p>Spatial representation type</p>
+          </td>
+          <td width=429 valign=top style='width:322.0pt;border-top:none;border-left:
+    none;border-bottom:solid #4F81BD 1.0pt;border-right:solid #4F81BD 1.0pt;
+    padding:0cm 5.4pt 0cm 5.4pt'>
+            <p>E.g. Vector data</p>
+          </td>
+        </tr>
+        <tr>
+          <td width=187 valign=top style='width:140.1pt;border:solid #4F81BD 1.0pt;
+    border-top:none;padding:0cm 5.4pt 0cm 5.4pt'>
+            <p>Temporal extent start &amp; end</p>
+          </td>
+          <td width=429 valign=top style='width:322.0pt;border-top:none;border-left:
+    none;border-bottom:solid #4F81BD 1.0pt;border-right:solid #4F81BD 1.0pt;
+    padding:0cm 5.4pt 0cm 5.4pt'>
+            <p>Enter the start and end of the time period covered for the data (if known)</p>
+          </td>
+        </tr>
+        <tr>
+          <td width=187 valign=top style='width:140.1pt;border:solid #4F81BD 1.0pt;
+    border-top:none;padding:0cm 5.4pt 0cm 5.4pt'>
+            <p>Data quality statement</p>
+          </td>
+          <td width=429 valign=top style='width:322.0pt;border-top:none;border-left:
+    none;border-bottom:solid #4F81BD 1.0pt;border-right:solid #4F81BD 1.0pt;
+    padding:0cm 5.4pt 0cm 5.4pt'>
+            <p>Describe the dataset’s lineage (source and methodology). Include a link to the source if applicable.</p>
+          </td>
+        </tr>
+        <tr>
+          <td width=187 valign=top style='width:140.1pt;border:solid #4F81BD 1.0pt;
+    border-top:none;padding:0cm 5.4pt 0cm 5.4pt'>
+            <p>Keywords*</p>
+          </td>
+          <td width=429 valign=top style='width:322.0pt;border-top:none;border-left:
+    none;border-bottom:solid #4F81BD 1.0pt;border-right:solid #4F81BD 1.0pt;
+    padding:0cm 5.4pt 0cm 5.4pt'>
+            <p>Use project keywords only (or ‘test’). Type a character to see what’s available.</p>
+          </td>
+        </tr>
+        <tr>
+          <td width=187 valign=top style='width:140.1pt;border:solid #4F81BD 1.0pt;
+    border-top:none;padding:0cm 5.4pt 0cm 5.4pt'>
+            <p>Category*</p>
+          </td>
+          <td width=429 valign=top style='width:322.0pt;border-top:none;border-left:
+    none;border-bottom:solid #4F81BD 1.0pt;border-right:solid #4F81BD 1.0pt;
+    padding:0cm 5.4pt 0cm 5.4pt'>
+            <p>Common choices in built environment would include:</p>
+            <ul>
+              <li>Boundaries (e.g. LGAs)</li>
+              <li>Economy (e.g. employment)</li>
+              <li>Planning Cadastre</li>
+              <li>Society (e.g. demography)</li>
+              <li>Structure (e.g. buildings)</li>
+              <li>Transportation (e.g. cycling)</li>
+            </ul>
+          </td>
+        </tr>
+        <tr>
+          <td width=187 valign=top style='width:140.1pt;border:solid #4F81BD 1.0pt;
+    border-top:none;padding:0cm 5.4pt 0cm 5.4pt'>
+            <p>Attributes</p>
+          </td>
+          <td width=429 valign=top style='width:322.0pt;border-top:none;border-left:
+    none;border-bottom:solid #4F81BD 1.0pt;border-right:solid #4F81BD 1.0pt;
+    padding:0cm 5.4pt 0cm 5.4pt'>
+            <p>Label and describe any attributes that are not self-explanatory </p>
+          </td>
+        </tr>
+      </table>
+
+      <h4><a name="thumbnail">Setting a thumbnail image</a></h4>
+
+      <p>Choose your thumbnail on the layer map, then Edit Layer &gt; Thumbnail &gt; Set</p>
+
+      <p><b><i><span style='color:red'>Warning:</span></i></b> A bug in our version of GeoNode is causing problems with this function; sometimes the thumbnail image only contains the basemap, or only the layer itself. If this occurs, please contact the <a href="mailto:citydata@unsw.edu.au">administrator</a> for a workaround.</p>
+
+      <h3><a name="replacing">Replacing a layer</a></h3>
+
+      <p><b><i><span style='color:red'>Warning:</span></i></b> A bug in our version of GeoNode prevents replacing a layer (with Edit Layer &gt; Layer: Replace) or even re-uploading a shapefile that has been previously uploaded and then deleted.</p>
+
+      <p>This will be fixed in the next version of GeoNode. In the meantime, please rename your shapefile on your computer before uploading again. You can do this in ArcMap or ArcCatalog, or using the DOS Command Window.</p>
+
+      <p>To rename a group of files from Windows Explorer:</p>
+
+      <p style='margin-left:36.0pt'>Navigate to folder</p>
+
+      <p style='margin-left:36.0pt'>Shift-Right-Click &gt; Open command window here</p>
+
+      <p style='margin-left:36.0pt'>Type: <span style='font-size:
+  10.0pt;font-family:"Monospac821 BT"'>rename &lt;oldname&gt;.* &lt;newname&gt;.*</span></p>
+
+      <p style='margin-left:36.0pt'>Press Enter key</p>
+
+      <h3><a name="more">More help</a></h3>
+
+      <p>For more help on the GeoNode features provided by CityData, see:
+      </p>
+
+      <ul>
+        <li><a href="https://citydata-test.be.unsw.edu.au/help/">GeoNode Help</a></li>
+
+        <li><a href="http://geonode.org/user_features/">GeoNode User Features</a></li>
+      </ul>
+
+      <p>Or contact the <a href="mailto:citydata@unsw.edu.au">CityData
+  administrator</a>.</p>
+    {% endif %}
+  </div>
+  <div class="col-md-4">
+    {% if user.is_authenticated %}
+      <div class="panel panel-default">
+        <div class="panel-body"><a href="/static/cityfutures/doc/CityData_User_Guide.pdf" target="_blank"><img src="/static/cityfutures/img/pdf_icon.png" width=24> View and print a PDF version of this user guide</a></div>
+      </div>
+    {% endif %}
+    <ul class="list-group">
+      <li class="list-group-item"><h5>{% trans "Sections" %}</h5></li>
+      <li class="list-group-item"><a href="#access">Accessing data on CityData</a></li>
+      <li class="list-group-item"><a href="#when-to-load">When to load data to CityData</a></li>
+      <li class="list-group-item"><a href="#request-account">Request an account</a></li>
+      {% if user.is_authenticated %}
+        <li class="list-group-item"><a href="#groups">Groups</a></li>
+        <li class="list-group-item"><a href="#keywords">Keywords</a></li>
+        <li class="list-group-item"><a href="#admin">Administrator role</a></li>
+        <li class="list-group-item"><a href="#loading">Loading data</a></li>
+        <li class="list-group-item"><a href="#permissions">Set permissions</a></li>
+        <li class="list-group-item"><a href="#permissions-multi">Tip: set permissions on multiple layers</a></li>
+        <li class="list-group-item"><a href="#uploading">Uploading a shapefile</a></li>
+        <li class="list-group-item"><a href="#attributes">Attribute names</a></li>
+        <li class="list-group-item"><a href="#metadata">Good metadata</a></li>
+        <li class="list-group-item"><a href="#thumbnail">Setting a thumbnail image</a></li>
+        <li class="list-group-item"><a href="#replacing">Replacing a layer</a></li>
+        <li class="list-group-item"><a href="#more">More help</a></li>
+      {% endif %}
+    </ul>
+  </div>
+</div>
+{% endblock %}
