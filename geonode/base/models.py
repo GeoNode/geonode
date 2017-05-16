@@ -29,6 +29,7 @@ import urllib
 import urllib2
 import cookielib
 
+from geonode.decorators import on_ogc_backend
 from pyproj import transform, Proj
 from urlparse import urljoin, urlsplit
 
@@ -53,6 +54,7 @@ from polymorphic.models import PolymorphicModel
 from polymorphic.managers import PolymorphicManager
 from agon_ratings.models import OverallRating
 
+from geonode import geoserver
 from geonode.base.enumerations import ALL_LANGUAGES, \
     HIERARCHY_LEVELS, UPDATE_FREQUENCIES, \
     DEFAULT_SUPPLEMENTAL_INFORMATION, LINK_TYPES
@@ -1041,6 +1043,7 @@ def rating_post_save(instance, *args, **kwargs):
 signals.post_save.connect(rating_post_save, sender=OverallRating)
 
 
+@on_ogc_backend(geoserver.BACKEND_PACKAGE)
 def do_login(sender, user, request, **kwargs):
     """
     Take action on user login. Generate a new user access_token to be shared
@@ -1085,6 +1088,7 @@ def do_login(sender, user, request, **kwargs):
         request.session['JSESSIONID'] = jsessionid
 
 
+@on_ogc_backend(geoserver.BACKEND_PACKAGE)
 def do_logout(sender, user, request, **kwargs):
     """
     Take action on user logout. Cleanup user access_token and send logout

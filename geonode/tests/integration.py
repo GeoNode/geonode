@@ -584,6 +584,10 @@ class GeoNodeMapTest(TestCase):
         resp = self.client.get(uploaded.get_absolute_url())
         self.assertEquals(resp.status_code, 200)
 
+    @unittest.skipIf(
+        hasattr(settings, 'SKIP_GEOSERVER_TEST') and
+        settings.SKIP_GEOSERVER_TEST,
+        'Temporarily skip this test until fixed')
     def test_layer_replace(self):
         """Test layer replace functionality
         """

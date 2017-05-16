@@ -19,4 +19,30 @@
 #########################################################################
 
 
-BACKEND_PACKAGE = 'geonode.qgis_server'
+from functools import wraps
+
+from geonode.utils import check_ogc_backend
+
+
+def on_ogc_backend(backend_package):
+    """Decorator for function specific to a certain ogc backend.
+
+    This decorator will wrap function so it only gets executed if the
+    specified ogc backend is currently used. If not, the function will just
+    be skipped.
+
+    Useful to decorate features/tests that only available for specific
+    backend.
+    """
+
+    def decorator(func):
+
+        @wraps(func)
+        def wrapper(*args, **kwargs):
+            on_backend = check_ogc_backend(backend_package)
+            if on_backend:
+                return func(*args, **kwargs)
+
+        return wrapper
+
+    return decorator

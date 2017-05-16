@@ -70,13 +70,14 @@ LEAFLET_CONFIG = {
 }
 
 # Legacy from Geoserver
-# OGC_URL_INSIDE = os.environ.get('OGC_URL_INSIDE', SITEURL)
-# OGC_SERVER = {
-#     'default': {
-#         'LOCATION': OGC_URL_INSIDE + 'qgis-server/',
-#         'PUBLIC_LOCATION': SITEURL + 'qgis-server/'
-#     }
-# }
+OGC_URL_INSIDE = os.environ.get('OGC_URL_INSIDE', SITEURL)
+OGC_SERVER = {
+    'default': {
+    	'BACKEND': 'geonode.qgis_server',
+        'LOCATION': OGC_URL_INSIDE + 'qgis-server/',
+        'PUBLIC_LOCATION': SITEURL + 'qgis-server/'
+    }
+}
 
 # OGC (WMS/WFS/WCS) Server Settings
 tiles_directory = os.path.join(PROJECT_ROOT, "qgis_tiles")
