@@ -23,6 +23,8 @@ from geonode import get_version
 from geonode.catalogue import default_catalogue_backend
 from django.contrib.sites.models import Site
 
+from geonode.notifications_helper import has_notifications
+
 
 def resource_urls(request):
     """Global values to pass to templates"""
@@ -114,7 +116,7 @@ def resource_urls(request):
             dict()).get(
             'METADATA',
             'never'),
-        USE_NOTIFICATIONS=('notification' in settings.INSTALLED_APPS),
+        USE_NOTIFICATIONS=has_notifications,
         DEFAULT_ANONYMOUS_VIEW_PERMISSION=getattr(settings, 'DEFAULT_ANONYMOUS_VIEW_PERMISSION', False),
         DEFAULT_ANONYMOUS_DOWNLOAD_PERMISSION=getattr(settings, 'DEFAULT_ANONYMOUS_DOWNLOAD_PERMISSION', False),
         EXIF_ENABLED=getattr(

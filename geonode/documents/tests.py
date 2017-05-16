@@ -39,6 +39,8 @@ from .forms import DocumentCreateForm
 from geonode.maps.models import Map
 from geonode.documents.models import Document
 from geonode.base.populate_test_data import create_models
+from geonode.tests.utils import NotificationsTestsHelper
+from geonode.documents import DocumentsAppConfig
 
 
 class LayersTest(TestCase):
@@ -318,3 +320,38 @@ class LayersTest(TestCase):
 
         # Test that the method returns 200
         self.assertEquals(response.status_code, 200)
+
+
+class DocumentNotificationsTestCase(NotificationsTestsHelper):
+
+    fixtures = ['initial_data.json', 'bobby']
+
+    def setUp(self):
+        super(DocumentNotificationsTestCase, self).setUp()
+        self.user = 'admin'
+        self.passwd = 'admin'
+        create_models(type='document')
+        self.anonymous_user = get_anonymous_user()
+        self.u = get_user_model().objects.get(username=self.user)
+        self.u.email = 'test@email.com'
+        self.u.is_active = True
+        self.u.save()
+        self.setup_notifications_for(DocumentsAppConfig.NOTIFICATIONS, self.u)
+
+    def testDocumentNotifications(self):
+        with self.settings(NOTIFICATION_QUEUE_ALL=True):
+            self.clear_notifications_queue()
+            l = Document.objects.create(title='test notifications', owner=self.u)
+            self.assertTrue(self.check_notification_out('document_created', self.u))
+            l.title = 'test notifications 2'
+            l.save()
+            self.assertTrue(self.check_notification_out('document_updated', self.u))
+
+            from dialogos.models import Comment
+            lct = ContentType.objects.get_for_model(l)
+            comment = Comment(author=self.u, name=self.u.username,
+                              content_type=lct, object_id=l.id,
+                              content_object=l, comment='test comment')
+            comment.save()
+
+            self.assertTrue(self.check_notification_out('document_comment', self.u))

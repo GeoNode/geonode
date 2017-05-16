@@ -330,7 +330,6 @@ INSTALLED_APPS = (
     'floppyforms',
 
     # Theme
-    "pinax_theme_bootstrap_account",
     "pinax_theme_bootstrap",
     'django_forms_bootstrap',
 
@@ -1029,6 +1028,12 @@ if S3_MEDIA_ENABLED:
     DEFAULT_FILE_STORAGE = 'storages.backends.s3boto.S3BotoStorage'
     MEDIA_URL = "https://%s/%s/" % (AWS_S3_BUCKET_DOMAIN, MEDIAFILES_LOCATION)
 
+# pinax.notifications
+# or notification
+NOTIFICATIONS_MODULE = 'pinax.notifications'
+
+if TEST:
+    INSTALLED_APPS += (NOTIFICATIONS_MODULE, )
 
 djcelery.setup_loader()
 

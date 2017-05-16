@@ -17,3 +17,17 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
+
+from django.utils.translation import ugettext_noop as _
+from geonode.notifications_helper import NotificationsAppConfigBase
+
+
+class GeoserverAppConfig(NotificationsAppConfigBase):
+    name = 'geonode.geoserver'
+    NOTIFICATIONS = (("layer_uploaded", _("Layer Uploaded"), _("A layer was uploaded"),),
+                     ("layer_comment", _("Comment on Layer"), _("A layer was commented on"),),
+                     ("layer_rated", _("Rating for Layer"), _("A rating was given to a layer"),),
+                     )
+
+
+default_app_config = 'geonode.geoserver.GeoserverAppConfig'

@@ -43,8 +43,10 @@ geonode-announcements==1.0.8
 geonode-arcrest==10.2
 geonode-avatar==2.1.6
 geonode-dialogos==0.7
-geonode-notification==1.1.1
-geonode-user-accounts==1.0.13
+pinax-notifications<4.0
+# we can't use django-user-account until upstream merge changes for geonode.
+# this is temporary solution
+https://github.com/cezio/django-user-accounts/archive/252_255_mixed.zip#egg=django-user-accounts-2.0.2
 geonode-user-messages==0.1.5
 gisdata==0.5.4
 gsconfig==1.0.6
@@ -57,7 +59,6 @@ oauthlib==2.0.1
 pep8==1.6.2
 pillow==3.3.1
 pinax-theme-bootstrap==3.0a11
-pinax-theme-bootstrap-account==1.0b2
 pycsw==2.0.2
 elasticsearch==2.4.0
 pyflakes==1.2.3

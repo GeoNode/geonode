@@ -37,6 +37,39 @@ from geonode.maps.utils import fix_baselayers
 from geonode.utils import default_map_config
 from geonode.base.populate_test_data import create_models
 from geonode.maps.tests_populate_maplayers import create_maplayers
+from geonode.tests.utils import NotificationsTestsHelper
+from geonode.maps import MapsAppConfig
+
+
+VIEWER_CONFIG = """
+{
+  "defaultSourceType": "gx_wmssource",
+  "about": {
+      "title": "Title",
+      "abstract": "Abstract"
+  },
+  "sources": {
+    "capra": {
+      "url":"http://localhost:8080/geoserver/wms"
+    }
+  },
+  "map": {
+    "projection":"EPSG:900913",
+    "units":"m",
+    "maxResolution":156543.0339,
+    "maxExtent":[-20037508.34,-20037508.34,20037508.34,20037508.34],
+    "center":[-9428760.8688778,1436891.8972581],
+    "layers":[{
+      "source":"capra",
+      "buffer":0,
+      "wms":"capra",
+      "name":"base:nic_admin"
+    }],
+    "keywords":["saving", "keywords"],
+    "zoom":7
+  }
+}
+"""
 
 
 class MapsTest(TestCase):
@@ -62,35 +95,7 @@ community."
 
     # This is a valid map viewer config, based on the sample data provided
     # by andreas in issue 566. -dwins
-    viewer_config = """
-    {
-      "defaultSourceType": "gx_wmssource",
-      "about": {
-          "title": "Title",
-          "abstract": "Abstract"
-      },
-      "sources": {
-        "capra": {
-          "url":"http://localhost:8080/geoserver/wms"
-        }
-      },
-      "map": {
-        "projection":"EPSG:900913",
-        "units":"m",
-        "maxResolution":156543.0339,
-        "maxExtent":[-20037508.34,-20037508.34,20037508.34,20037508.34],
-        "center":[-9428760.8688778,1436891.8972581],
-        "layers":[{
-          "source":"capra",
-          "buffer":0,
-          "wms":"capra",
-          "name":"base:nic_admin"
-        }],
-        "keywords":["saving", "keywords"],
-        "zoom":7
-      }
-    }
-    """
+    viewer_config = VIEWER_CONFIG
 
     viewer_config_alternative = """
     {
@@ -631,3 +636,45 @@ community."
         fix_baselayers(map_id)
 
         self.assertEquals(map_obj.layer_set.all().count(), n_baselayers + n_locallayers)
+
+
+class MapsNotificationsTestCase(NotificationsTestsHelper):
+
+    fixtures = ['initial_data.json', 'bobby']
+
+    def setUp(self):
+        super(MapsNotificationsTestCase, self).setUp()
+        self.user = 'admin'
+        self.passwd = 'admin'
+        create_models(type='layer')
+        create_models(type='map')
+        self.u = get_user_model().objects.get(username=self.user)
+        self.u.email = 'test@email.com'
+        self.u.is_active = True
+        self.u.save()
+        self.setup_notifications_for(MapsAppConfig.NOTIFICATIONS, self.u)
+
+    def testMapsNotifications(self):
+        with self.settings(NOTIFICATION_QUEUE_ALL=True):
+            self.clear_notifications_queue()
+            self.client.login(username=self.user, password=self.passwd)
+            new_map = reverse('new_map_json')
+            response = self.client.post(new_map,
+                                        data=VIEWER_CONFIG,
+                                        content_type="text/json")
+            self.assertEquals(response.status_code, 200)
+            map_id = int(json.loads(response.content)['id'])
+            l = Map.objects.get(id=map_id)
+            self.assertTrue(self.check_notification_out('map_created', self.u))
+            l.title = 'test notifications 2'
+            l.save()
+            self.assertTrue(self.check_notification_out('map_updated', self.u))
+
+            from dialogos.models import Comment
+            lct = ContentType.objects.get_for_model(l)
+            comment = Comment(author=self.u, name=self.u.username,
+                              content_type=lct, object_id=l.id,
+                              content_object=l, comment='test comment')
+            comment.save()
+
+            self.assertTrue(self.check_notification_out('map_comment', self.u))
