@@ -1,3 +1,29 @@
+geonode (2.6.0+thefinal0) trusty; urgency=high
+
+  [ Alessio Fabiani ]
+  * [d32a09] [Backport 2.6.x] - Add support for big ZIP files and being sure the target folder is cleaned
+
+  [ Simone Dalmasso ]
+  * [583b3c] remove loop from layer api (remove geogig_link) and use faster owner api
+  * [f0cfdb] remove unused import, thanks flake8
+  * [96dc6d] add null and blank to tkeywords in migrations
+
+  [ afabiani ]
+  * [ff6bad]  - Backup/Restore command: fix json import
+  * [df805e]  Fix for Issue #3030 - Backup/Restore command: fix json import
+  * [47723c] Fix for ISSUE #2975 - Upload Layer Issue #2975
+  * [655e97] Fix for ISSUE #2975 - Upload Layer Issue #2975
+
+  [ Angelos Tzotsos ]
+  * [8f2d77] Updating version number to rc1
+
+  [ frippe12573 ]
+  * [28d6a4] Update geosites.txt (#3009)
+
+  [ Simone Dalmasso ]
+
+ -- Simone Dalmasso <simone.dalmasso@gmail.com>  Tue, 16 May 2017 13:00:07 +0000
+
 geonode (2.6.0+rc1) trusty; urgency=high
 
   [ Simone Dalmasso ]
