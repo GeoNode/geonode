@@ -119,7 +119,18 @@
             <li><a href="{% url "account_signup" %}">{% trans "Register" %}</a></li>
             {% endif %}
             {% if user.is_authenticated %}
-            <li><a href="#" class="dropdown-toggle avatar" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">{% avatar user 42 %} {{ user.username }}<i class="fa fa-angle-down fa-lg"></i></a>
+            <li>
+              <a href="#" class="dropdown-toggle avatar" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
+                {% avatar user 42 %}
+                {% with full_name=user.first_name|add:' '|add:user.last_name %}
+                  {% if full_name.strip %}
+                    {{ full_name | truncatechars:20 }}
+                  {% else %}
+                    {{ user.username | truncatechars:20 }}
+                  {% endif %}
+                {% endwith %}
+                <i class="fa fa-angle-down fa-lg"></i>
+              </a>
               <ul class="dropdown-menu">
                 <li><a href="{{ user.get_absolute_url }}">{% trans "Profile" %}</a></li>
                 <li><a href="{% url "recent-activity" %}">{% trans "Recent Activity" %}</a></li>
