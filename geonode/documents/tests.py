@@ -23,9 +23,11 @@ This file demonstrates writing tests using the unittest module. These will pass
 when you run "manage.py test".
 
 """
+import os
 import StringIO
 import json
 
+import gisdata
 from django.test import TestCase
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.contrib.auth import get_user_model
@@ -320,6 +322,71 @@ class LayersTest(TestCase):
 
         # Test that the method returns 200
         self.assertEquals(response.status_code, 200)
+
+
+class DocumentModerationTestCase(TestCase):
+
+    fixtures = ['initial_data.json', 'bobby']
+
+    def setUp(self):
+        super(DocumentModerationTestCase, self).setUp()
+        self.user = 'admin'
+        self.passwd = 'admin'
+        create_models(type='document')
+        create_models(type='map')
+        self.u = get_user_model().objects.get(username=self.user)
+        self.u.email = 'test@email.com'
+        self.u.is_active = True
+        self.u.save()
+
+    def _get_input_path(self):
+        base_path = gisdata.GOOD_DATA
+        return os.path.join(base_path, 'vector', 'readme.txt')
+
+    def test_moderated_upload(self):
+        """
+        Test if moderation flag works
+        """
+        with self.settings(ADMIN_MODERATE_UPLOADS=False):
+            document_upload_url = reverse('document_upload')
+            self.client.login(username=self.user, password=self.passwd)
+
+            input_path = self._get_input_path()
+
+            with open(input_path, 'rb') as f:
+                data = {'title': 'document title',
+                        'doc_file': f,
+                        'doc_url': '',
+                        'resource': '',
+                        'permissions': '{}',
+                        }
+                resp = self.client.post(document_upload_url, data=data)
+            self.assertEqual(resp.status_code, 302)
+            dname = 'document title'
+            l = Document.objects.get(title=dname)
+
+            self.assertTrue(l.is_published)
+            l.delete()
+
+        with self.settings(ADMIN_MODERATE_UPLOADS=True):
+            document_upload_url = reverse('document_upload')
+            self.client.login(username=self.user, password=self.passwd)
+
+            input_path = self._get_input_path()
+
+            with open(input_path, 'rb') as f:
+                data = {'title': 'document title',
+                        'doc_file': f,
+                        'doc_url': '',
+                        'resource': '',
+                        'permissions': '{}',
+                        }
+                resp = self.client.post(document_upload_url, data=data)
+            self.assertEqual(resp.status_code, 302)
+            dname = 'document title'
+            l = Document.objects.get(title=dname)
+
+            self.assertFalse(l.is_published)
 
 
 class DocumentNotificationsTestCase(NotificationsTestsHelper):

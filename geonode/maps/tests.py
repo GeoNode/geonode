@@ -638,6 +638,50 @@ community."
         self.assertEquals(map_obj.layer_set.all().count(), n_baselayers + n_locallayers)
 
 
+class MapModerationTestCase(TestCase):
+
+    fixtures = ['initial_data.json', 'bobby']
+
+    def setUp(self):
+        super(MapModerationTestCase, self).setUp()
+        self.user = 'admin'
+        self.passwd = 'admin'
+        create_models(type='layer')
+        create_models(type='map')
+        self.u = get_user_model().objects.get(username=self.user)
+        self.u.email = 'test@email.com'
+        self.u.is_active = True
+        self.u.save()
+
+    def test_moderated_upload(self):
+        """
+        Test if moderation flag works
+        """
+        with self.settings(ADMIN_MODERATE_UPLOADS=False):
+            self.client.login(username=self.user, password=self.passwd)
+            new_map = reverse('new_map_json')
+            response = self.client.post(new_map,
+                                        data=VIEWER_CONFIG,
+                                        content_type="text/json")
+            self.assertEquals(response.status_code, 200)
+            map_id = int(json.loads(response.content)['id'])
+            l = Map.objects.get(id=map_id)
+
+            self.assertTrue(l.is_published)
+
+        with self.settings(ADMIN_MODERATE_UPLOADS=True):
+            self.client.login(username=self.user, password=self.passwd)
+            new_map = reverse('new_map_json')
+            response = self.client.post(new_map,
+                                        data=VIEWER_CONFIG,
+                                        content_type="text/json")
+            self.assertEquals(response.status_code, 200)
+            map_id = int(json.loads(response.content)['id'])
+            l = Map.objects.get(id=map_id)
+
+            self.assertFalse(l.is_published)
+
+
 class MapsNotificationsTestCase(NotificationsTestsHelper):
 
     fixtures = ['initial_data.json', 'bobby']

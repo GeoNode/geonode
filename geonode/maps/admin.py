@@ -39,8 +39,8 @@ class MapAdminForm(ResourceBaseAdminForm):
 class MapAdmin(MediaTranslationAdmin):
     inlines = [MapLayerInline, ]
     list_display_links = ('title',)
-    list_display = ('id', 'title', 'owner',)
-    list_filter = ('owner', 'category',)
+    list_display = ('id', 'title', 'owner', 'is_published', 'featured',)
+    list_filter = ('owner', 'category', 'featured', 'is_published',)
     search_fields = ('title', 'abstract', 'purpose',)
     form = MapAdminForm
 

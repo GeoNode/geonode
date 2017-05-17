@@ -23,7 +23,10 @@ import shutil
 import tempfile
 import zipfile
 import StringIO
+import contextlib
+import json
 
+import gisdata
 from django.test import TestCase
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.forms import ValidationError
@@ -802,6 +805,91 @@ class UnpublishedObjectTests(TestCase):
 
         layer.is_published = True
         layer.save()
+
+
+class LayerModerationTestCase(TestCase):
+
+    fixtures = ['initial_data.json', 'bobby']
+
+    def setUp(self):
+        super(LayerModerationTestCase, self).setUp()
+        self.user = 'admin'
+        self.passwd = 'admin'
+        create_models(type='layer')
+        create_layer_data()
+        self.anonymous_user = get_anonymous_user()
+        self.u = get_user_model().objects.get(username=self.user)
+        self.u.email = 'test@email.com'
+        self.u.is_active = True
+        self.u.save()
+
+    def _get_input_paths(self):
+        base_name = 'single_point'
+        suffixes = 'shp shx dbf prj'.split(' ')
+        base_path = gisdata.GOOD_DATA
+        paths = [os.path.join(base_path, 'vector', '{}.{}'.format(base_name, suffix)) for suffix in suffixes]
+        return paths, suffixes,
+
+    def test_moderated_upload(self):
+        """
+        Test if moderation flag works
+        """
+
+        with self.settings(ADMIN_MODERATE_UPLOADS=False):
+            layer_upload_url = reverse('layer_upload')
+            self.client.login(username=self.user, password=self.passwd)
+
+            # we get list of paths to shp files and list of suffixes
+            input_paths, suffixes = self._get_input_paths()
+
+            # we need file objects from above..
+            input_files = [open(fp, 'rb') for fp in input_paths]
+
+            # ..but also specific mapping for upload
+            files = dict(zip(['{}_file'.format(s) for s in suffixes], input_files))
+
+            # don't forget about renaming main file
+            files['base_file'] = files.pop('shp_file')
+
+            with contextlib.nested(*input_files):
+                files['permissions'] = '{}'
+                files['charset'] = 'utf-8'
+                files['layer_title'] = 'test layer'
+                resp = self.client.post(layer_upload_url, data=files)
+            self.assertEqual(resp.status_code, 200)
+            data = json.loads(resp.content)
+            lname = data['url'].split(':')[-1]
+            l = Layer.objects.get(name=lname)
+
+            self.assertTrue(l.is_published)
+
+        with self.settings(ADMIN_MODERATE_UPLOADS=True):
+            layer_upload_url = reverse('layer_upload')
+            self.client.login(username=self.user, password=self.passwd)
+
+            # we get list of paths to shp files and list of suffixes
+            input_paths, suffixes = self._get_input_paths()
+
+            # we need file objects from above..
+            input_files = [open(fp, 'rb') for fp in input_paths]
+
+            # ..but also specific mapping for upload
+            files = dict(zip(['{}_file'.format(s) for s in suffixes], input_files))
+
+            # don't forget about renaming main file
+            files['base_file'] = files.pop('shp_file')
+
+            with contextlib.nested(*input_files):
+                files['permissions'] = '{}'
+                files['charset'] = 'utf-8'
+                files['layer_title'] = 'test layer'
+                resp = self.client.post(layer_upload_url, data=files)
+            self.assertEqual(resp.status_code, 200)
+            data = json.loads(resp.content)
+            lname = data['url'].split(':')[-1]
+            l = Layer.objects.get(name=lname)
+
+            self.assertFalse(l.is_published)
 
 
 class LayerNotificationsTestCase(NotificationsTestsHelper):

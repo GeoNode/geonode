@@ -199,6 +199,7 @@ def layer_upload(request, template='upload/layer_upload.html'):
                 permissions = form.cleaned_data["permissions"]
                 if permissions is not None and len(permissions.keys()) > 0:
                     saved_layer.set_permissions(permissions)
+                saved_layer.handle_moderated_uploads()
             finally:
                 if tempdir is not None:
                     shutil.rmtree(tempdir)
