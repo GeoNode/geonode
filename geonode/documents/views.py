@@ -170,11 +170,10 @@ class DocumentUploadView(CreateView):
             self.object.object_id = resource_id
         # by default, if RESOURCE_PUBLISHING=True then document.is_published
         # must be set to False
-        is_published = True
-        if settings.RESOURCE_PUBLISHING:
-            is_published = False
+        # RESOURCE_PUBLISHING works in similar way as ADMIN_MODERATE_UPLOADS,
+        # but is applied to documents only. ADMIN_MODERATE_UPLOADS has wider usage
+        is_published = not (settings.RESOURCE_PUBLISHING or settings.ADMIN_MODERATE_UPLOADS)
         self.object.is_published = is_published
-
         self.object.save()
         self.object.set_permissions(form.cleaned_data['permissions'])
 
