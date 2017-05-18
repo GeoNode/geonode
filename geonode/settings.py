@@ -1032,6 +1032,10 @@ if S3_MEDIA_ENABLED:
 # or notification
 NOTIFICATIONS_MODULE = 'pinax.notifications'
 
+# set to true to have multiple recipients in /message/create/
+USER_MESSAGES_ALLOW_MULTIPLE_RECIPIENTS = False
+
+
 if TEST:
     INSTALLED_APPS += (NOTIFICATIONS_MODULE, )
 
