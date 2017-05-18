@@ -72,12 +72,7 @@
 
   $(function() {
 
-    $('#permissions-body').ready(function(){
-      {% if resource %}
-      $.ajax(
-        "{% url "resource_permissions" resource.id %}",
-        {
-          success: function(data){
+ 	var populate_form = function(data){
             var users = {
               view_resourcebase: [],
               download_resourcebase: [],
@@ -95,8 +90,7 @@
             /*
             * Compile the users fields after receiving the current permissions status from the server
             */
-            var perms = $.parseJSON($.parseJSON(data).permissions);
-
+            var perms = (data.users)? data: $.parseJSON($.parseJSON(data).permissions);
             var perms_users = perms.users;
 
             /*
@@ -189,13 +183,28 @@
             }
             
             addSelectGroups();
+          };
 
+
+
+    $('#permissions-body').ready(function(){
+      {% if resource %}
+      $.ajax(
+        "{% url "resource_permissions" resource.id %}",
+        {
+          success: function(data){
+		populate_form(data);
           }
         }
       );
       {% else %}
-      addSelectUsers();
-      addSelectGroups();
+        var perms_current_user = {"users": {"AnonymousUser": ["view_resourcebase", "download_resourcebase"], 
+    "{{ request.user.username }}": ["view_resourcebase", "download_resourcebase", "change_resourcebase_metadata", 
+    "change_resourcebase", "delete_resourcebase", "change_resourcebase_permissions", "publish_resourcebase", 
+    "change_layer_style", "change_layer_data"]}, "groups": {"anonymous": ["download_resourcebase", 
+    "view_resourcebase"]}};
+    
+       populate_form(perms_current_user);
       {% endif %}
     });
     

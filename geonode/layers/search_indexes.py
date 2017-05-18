@@ -34,6 +34,10 @@ class LayerIndex(indexes.SearchIndex, indexes.Indexable):
     csw_wkt_geometry = indexes.CharField(model_attr="csw_wkt_geometry")
     detail_url = indexes.CharField(model_attr="get_absolute_url")
     owner__username = indexes.CharField(model_attr="owner", faceted=True, null=True)
+    owner__first_name = indexes.CharField(model_attr="owner__first_name", faceted=True, null=True)
+    owner__last_name = indexes.CharField(model_attr="owner__last_name", faceted=True, null=True)
+    is_published = indexes.BooleanField(model_attr="is_published")
+    featured = indexes.BooleanField(model_attr="featured")
     popular_count = indexes.IntegerField(
         model_attr="popular_count",
         default=0,
@@ -87,6 +91,7 @@ class LayerIndex(indexes.SearchIndex, indexes.Indexable):
     rating = indexes.IntegerField(null=True)
     num_ratings = indexes.IntegerField(stored=False)
     num_comments = indexes.IntegerField(stored=False)
+    geogig_link = indexes.CharField(null=True)
 
     def get_model(self):
         return Layer
@@ -134,3 +139,10 @@ class LayerIndex(indexes.SearchIndex, indexes.Indexable):
 
     def prepare_title_sortable(self, obj):
         return obj.title.lower()
+    
+    def prepare_geogig_link(self, obj):
+        try:
+            return obj.geogig_link
+        except:
+            return None
+        

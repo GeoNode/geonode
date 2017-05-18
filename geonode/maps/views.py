@@ -18,6 +18,7 @@
 #
 #########################################################################
 
+from base64 import b64decode
 import math
 import logging
 from guardian.shortcuts import get_perms
@@ -27,6 +28,7 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.core.urlresolvers import reverse
 from django.core.serializers.json import DjangoJSONEncoder
 from django.http import HttpResponse, HttpResponseRedirect, HttpResponseNotAllowed, HttpResponseServerError
+from django.http import Http404
 from django.shortcuts import render_to_response, get_object_or_404
 from django.conf import settings
 from django.template import RequestContext
@@ -573,6 +575,9 @@ def new_map_config(request):
                 except ObjectDoesNotExist:
                     # bad layer, skip
                     continue
+                except Http404:
+                    # can't find the layer, skip it.
+                    continue
 
                 if not request.user.has_perm(
                         'view_resourcebase',
@@ -978,7 +983,12 @@ def map_thumbnail(request, mapid):
     if request.method == 'POST':
         map_obj = _resolve_map(request, mapid)
         try:
-            image = _render_thumbnail(request.body)
+            # Base64 PNG data uploaded from the client!
+            if(request.body[0:22] == 'data:image/png;base64,'):
+                image = b64decode(request.body[22:])
+            # try the old way.
+            else:
+                image = _render_thumbnail(request.body)
 
             if not image:
                 return

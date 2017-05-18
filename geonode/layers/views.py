@@ -23,6 +23,7 @@ import sys
 import logging
 import shutil
 import traceback
+from base64 import b64decode
 import uuid
 import decimal
 
@@ -262,9 +263,6 @@ def layer_detail(request, layername, template='layers/layer_detail.html'):
     # center/zoom don't matter; the viewer will center on the layer bounds
     map_obj = GXPMap(projection=getattr(settings, 'DEFAULT_MAP_CRS', 'EPSG:900913'))
 
-    NON_WMS_BASE_LAYERS = [
-        la for la in default_map_config(request)[1] if la.ows_url is None]
-
     metadata = layer.link_set.metadata().filter(
         name__in=settings.DOWNLOAD_FORMATS_METADATA)
 
@@ -313,7 +311,8 @@ def layer_detail(request, layername, template='layers/layer_detail.html'):
         access_token = u.hex
 
     context_dict["viewer"] = json.dumps(
-        map_obj.viewer_json(request.user, access_token, * (NON_WMS_BASE_LAYERS + [maplayer])))
+        map_obj.viewer_json(request.user, access_token, * (default_map_config(request)[1] + [maplayer])))
+
     context_dict["preview"] = getattr(
         settings,
         'LAYER_PREVIEW_LIBRARY',
@@ -492,9 +491,9 @@ def layer_metadata(request, layername, template='layers/layer_metadata.html'):
                 up_sessions.update(user=the_layer.owner)
             the_layer.poc = new_poc
             the_layer.metadata_author = new_author
-            Layer.objects.filter(id=the_layer.id).update(
-                category=new_category
-                )
+            l = Layer.objects.get(id=the_layer.id)
+            l.category=new_category
+            l.save()
 
             if getattr(settings, 'SLACK_ENABLED', False):
                 try:
@@ -693,11 +692,16 @@ def layer_granule_remove(request, granule_id, layername, template='layers/layer_
 
 
 def layer_thumbnail(request, layername):
+    layer_obj = _resolve_layer(request, layername)
     if request.method == 'POST':
-        layer_obj = _resolve_layer(request, layername)
 
         try:
-            image = _render_thumbnail(request.body)
+            # Base64 PNG data uploaded from the client!
+            if(request.body[0:22] == 'data:image/png;base64,'):
+                image = b64decode(request.body[22:])
+            # try the old way.
+            else:
+                image = _render_thumbnail(request.body)
 
             if not image:
                 return
@@ -709,6 +713,19 @@ def layer_thumbnail(request, layername):
             return HttpResponse(
                 content='error saving thumbnail',
                 status=500,
+                content_type='text/plain'
+            )
+    else:
+        if(layer_obj.has_thumbnail()):
+            #layer_obj.get_thumbnail_url() 
+
+            return HttpResponse(
+                content=layer_obj.get_thumbnail_url(),
+                content_type='text/plain'
+            )
+        else:
+            return HttpResponse(
+                content='No Thumbnail',
                 content_type='text/plain'
             )
 
@@ -726,6 +743,7 @@ def get_layer(request, layername):
     logger.debug('Call get layer')
     if request.method == 'GET':
         layer_obj = _resolve_layer(request, layername)
+        visible_attributes = layer_obj.attribute_set.visible()
         logger.debug(layername)
         response = {
             'typename': layername,
@@ -737,6 +755,7 @@ def get_layer(request, layername):
             'bbox_x1': layer_obj.bbox_x1,
             'bbox_y0': layer_obj.bbox_y0,
             'bbox_y1': layer_obj.bbox_y1,
+            'attributes': dict([(l.attribute, l.attribute_label) for l in visible_attributes]),
         }
         return HttpResponse(json.dumps(
             response,
