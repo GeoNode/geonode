@@ -25,7 +25,13 @@
           </div>
 
           <div class="modal-body">
-            {% show_eula %}
+            {% if phillidar2keyword in resource.keyword_list %}
+              {% show_eula_phillidar2 %}
+            {% elif phillidar1keyword in resource.keyword_list %}
+              {% show_eula_dream %}
+            {% else %}
+              {% show_eula_phillidar1 %}
+            {% endif %}
           </div>
 
           <div class="modal-footer">
