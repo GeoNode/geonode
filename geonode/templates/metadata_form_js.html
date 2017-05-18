@@ -24,7 +24,7 @@
       $('#id_resource-temporal_extent_end_picker').datetimepicker(pickerOptions);
     });
 
-    $('.modal-forms').css('max-height', '500px').css('overflow-y', 'scroll');    
+    $('.modal-forms').css('max-height', '500px').css('overflow-y', 'scroll');
     $('.modal-cloose-btn').css('margin','20px');
 
     $('.modal-cloose-btn').click(function(){
@@ -51,14 +51,8 @@
 
         var params = typeof FILTER_TYPE == 'undefined' ? {} : {'type': FILTER_TYPE};
         $('#id_resource-keywords').tokenfield({
-            /*
-            autocomplete: {
-                source: ['red','blue','green','yellow','violet','brown','purple','black','white'],
-                delay: 100
-            },
-            showAutocompleteOnFocus: true
-            */
-        })
+          createTokensOnBlur: true
+        });
 
         $.ajax('/h_keywords_api', {params: params}).success(function(data){
             $('#treeview').treeview({
@@ -67,8 +61,8 @@
                 onNodeSelected: function($event, $data) {
                     //TODO: This seems a horribly inelegant way of doing this in 12 Lines
                     kws = $('#id_resource-keywords').tokenfield('getTokens');
-                    newToken = $data.text
-                    exists = false 
+                    var newToken = $data.text;
+                    var exists = false;
                     for (kw in kws) {
                         if (kws[kw]['value'].indexOf(newToken) >=0) {
                             exists = true
