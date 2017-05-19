@@ -48,7 +48,7 @@ RUN pip install --no-cache-dir --no-deps -e /usr/src/app/
 VOLUME ["/mnt/geonode_config", "/mnt/geonode_data"]
 RUN mkdir -p /mnt/geonode_data/uploaded /mnt/geonode_data/static /mnt/geonode_config \
   && cd /usr/src/app/geonode/ \
-  && mv local_settings.py.docker /mnt/geonode_config/ \
+  && mv local_settings.py.docker /mnt/geonode_config/local_settings.py \
   && ln -s /mnt/geonode_config/local_settings.py
 
 EXPOSE 8000
