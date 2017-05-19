@@ -140,7 +140,7 @@
       {% if resource.storeType != "remoteStore" %}
         <li class="list-group-item">
         {% if links %}
-           <button class="btn btn-primary btn-md btn-block" data-toggle="modal" data-target="#download-layer">{% trans "Download Layer" %}</button>
+           <button class="btn btn-primary btn-md btn-block" data-toggle="modal" data-target="#download-layer">Download or Connect to Layer</button>
         {% else %}
           {% if request.user.is_authenticated %}
           <button class="btn btn-primary btn-md btn-block" id="request-download">{% trans "Request Download" %}</button>
@@ -154,7 +154,8 @@
         <div class="modal-content">
           <div class="modal-header">
             <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-            <h4 class="modal-title" id="myModalLabel">{% trans "Download Layer" %}</h4>
+            <h4 class="modal-title" id="myModalLabel">Download or Connect to Layer</h4>
+            <p>Download this layer, or use the URLs below to connect to it directly from your desktop GIS via Web Map Service (WMS) or Web Feature Service (WFS).</p>
           </div>
           <div class="modal-body">
             {% if links %}
