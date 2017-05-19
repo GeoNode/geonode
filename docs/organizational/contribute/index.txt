@@ -11,7 +11,7 @@ If you are interested in helping us to make GeoNode, there are many ways to do s
 Participate in the Discussion
 -----------------------------
 
-GeoNode has a mailing list (https://groups.google.com/forum/#!forum/geonode-users) where users can ask and answer questions about the software.
+GeoNode has a mailing list (http://geonode.org/communication/#mailing-lists) where users can ask and answer questions about the software.
 There are also IRC chats on Gitter where users (https://gitter.im/GeoNode/general) and developers (https://gitter.im/GeoNode) can discuss GeoNode in real time.
 Sometimes users also post interesting tips for managing sites running GeoNode.
 If you want to help out with GeoNode, one easy way is to sign up for the mailing list and help answer questions.
