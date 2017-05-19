@@ -24,6 +24,7 @@ from optparse import make_option
 
 from django.core.management.base import BaseCommand, CommandError
 
+from geonode.base.models import ResourceBase
 from geonode.layers.models import Layer, Style
 from geonode.maps.models import Map
 from geonode.base.models import Link
@@ -133,6 +134,17 @@ Styles and Links Base URLs from [%s] to [%s]." % (source_address, target_address
                         link.url = link.url.replace(source_address, target_address)
                         link.save()
                         print "Updated URL from [%s] to [%s]" % (original, link.url)
+
+                resources = ResourceBase.objects.all()
+
+                for res in resources:
+                    print "Checking Resource[%s]" % (res)
+                    if res.metadata_xml:
+                        original = res.metadata_xml
+                        res.metadata_xml = res.metadata_xml.replace(source_address, target_address)
+                        res.save()
+                        print "Updated URL in metadata XML for resource [%s]" % (res)
+
             finally:
                 # Reactivate GeoNode Signals
                 print "Reactivating GeoNode Signals..."
