@@ -77,7 +77,7 @@ module.exports = function(grunt) {
           dest: 'lib/css',
           src: [
             'datatables/media/css/jquery.dataTables.css',
-            'select2/select2.min.css',
+            'select2/select2.css',
             'multi-select/css/multi-select.css',
             'jquery-ui/themes/smoothness/jquery-ui.css',
             'jquery-tree-multiselect/dist/jquery.tree-multiselect.min.css',
@@ -100,7 +100,7 @@ module.exports = function(grunt) {
           dest: 'lib/img',
           src: [
             'bootstrap/img/*.png',
-            'select2/*.png', 'select2/spinner.gif',
+            'select2*.png', 'select2-spinner.gif',
             'raty/lib/img/*.png',
             'multi-select/img/switch.png',
             'datatables/media/images/*.png',
@@ -204,7 +204,8 @@ module.exports = function(grunt) {
             'lib/css/jquery.treefilter.css',
             'lib/css/leaflet.fullscreen.css',
             'lib/css/L.Control.Pan.css',
-            'lib/css/multi-select.css'
+            'lib/css/multi-select.css',
+            'lib/css/select2.css'
           ]
         }
       }
@@ -225,7 +226,7 @@ module.exports = function(grunt) {
             'lib/js/jquery.timeago.js',
             'lib/js/json2.js',
             'lib/js/waypoints.min.js',
-            'lib/js/select2.js',
+            'lib/js/select2.min.js',
             'lib/js/moment-with-locales.min.js',
             'lib/js/fastselect.standalone.min.js',
             'lib/js/bootstrap.min.js',

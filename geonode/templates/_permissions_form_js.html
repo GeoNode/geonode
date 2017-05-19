@@ -1,4 +1,7 @@
 {% load i18n %}
+
+
+
 <script type="text/javascript">
 
   function permissionsString(form, type) {
@@ -9,7 +12,7 @@
     if (typeof form === 'string'){
       form = $(form);
     }
-    var data = form.serializeObject();   
+    var data = form.serializeObject();
 
     /*
     * If there's the anonymous user then set it's view permission and pop it
@@ -32,7 +35,7 @@
     * Cycle through permissions to map the form structure perm = ['user1',',user2'] to
     * the geonode user = ['perm1','perm2'], the same for groups
     */
-    
+
     for(var perm in data){
       if(data[perm][0] !== ''){
         var perms_to_assign = [perm];
@@ -128,16 +131,16 @@
                     }
                   }
                 }
-              }          
+              }
             }
-            
+
             // If "anyone" is checked then don't show all the users in the view perms field
-            // if (perms_users.hasOwnProperty('AnonymousUser') 
+            // if (perms_users.hasOwnProperty('AnonymousUser')
             //   && perms_users['AnonymousUser'].indexOf('view_resourcebase') > -1){
             //   users.view_resourcebase=[]
             // };
-            
-            // if (perms_users.hasOwnProperty('AnonymousUser') 
+
+            // if (perms_users.hasOwnProperty('AnonymousUser')
             //   && perms_users['AnonymousUser'].indexOf('download_resourcebase') > -1){
             //   users.download_resourcebase=[]
             // };
@@ -187,7 +190,7 @@
             for (var perm in groups){
               $('#' + perm + '_groups').val(groups[perm].join());
             }
-            
+
             addSelectGroups();
 
           }
@@ -198,10 +201,12 @@
       addSelectGroups();
       {% endif %}
     });
-    
+
     function addSelectUsers(){
       $("input.user-select").select2({
         placeholder: '{% trans "Choose users..." %}',
+        tags: true,
+        tokenSeparators: [',', ' '],
         minimumInputLength: 1,
         multiple: true,
         width: 'copy',
@@ -225,7 +230,7 @@
           var data = [];
           var val = element.val().split(",");
           $(element.val().split(",")).each(function (index,value) {
-              data.push({username: value});
+            data.push({username: value});
           });
           callback(data);
         }
@@ -264,7 +269,7 @@
         }
       });
     }
-    
+
     function userID(user) {
       return user.username;
     }
@@ -326,7 +331,7 @@
     {% if resource %}
     $("#permission_form").submit(perms_submit);
     {% endif %}
-    
+
     $("#_bulk_permissions").on('hidden.bs.modal', function (e) {
       $('#bulk_perms_message').addClass("hidden");
     });
