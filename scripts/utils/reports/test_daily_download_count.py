@@ -7,7 +7,7 @@ from datetime import datetime, timedelta
 from geonode.layers.models import Layer
 from geonode.cephgeo.models import FTPRequest, FTPRequestToObjectIndex, DataClassification
 from geonode.people.models import Profile
-from daily_download_count import *
+from copy_daily_download_count import *
 
 import sys
 from datetime import datetime
@@ -21,4 +21,4 @@ for timedeltadays in reversed(range(start,end)):
     main(timedeltadays,AnonDownloader.objects, 'date', False,'anon_document','anon_layer', False)
     main(timedeltadays,FTPRequest.objects,'date_time','user','','',True)
     print(layer_count)
-    save_to_dc(timedeltadays,layer_count)
+    #save_to_dc(timedeltadays,layer_count)
