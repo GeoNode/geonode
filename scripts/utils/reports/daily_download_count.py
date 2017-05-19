@@ -55,11 +55,15 @@ def get_luzvimin(data):
             luzvimin = "Luzvimin_others"
     else:
         luzvimin = "Luzvimin_others"
-        try:
-            layer_query = Layer.objects.get(typename=data['typename'])
-        except:
-            return luzvimin
-        keyword_list = layer_query.keywords.names()
+        if data['keywords']:
+            keyword_list = data['keywords']
+        else:
+            try:
+                layer_query = Layer.objects.get(typename=data['typename'])
+            except:
+                print data['typename']
+                return luzvimin
+            keyword_list = layer_query.keywords.names()
         for eachkeyword in keyword_list:
             try:
                 query = SUCLuzViMin.objects.filter(suc=eachkeyword)[0].luzvimin
@@ -139,9 +143,11 @@ def main(minusdays, query_objects, attr_date, attr_actor, attr_type, attr_filena
                             add_to_count('monthly', FTPtype, 1)
                             add_to_count('area', FTPtype, 1)
                     elif getattr(each_object,attr_type) == 'dataset' or not getattr(each_object,attr_type): #for DownloadTracker(if==dataset) or AnonDownloader(if not empty) therefore layer
+                        keywordslist = getattr(each_object,'keywords') if attr_filename == 'title' else False #for DownloadTracker only
                         luzvimin = get_luzvimin({
                             "typename": getattr(each_object,attr_filename),
-                            "grid_ref": False
+                            "grid_ref": False,
+                            "keywords": keywordslist
                             })
                         area = int(get_area(getattr(each_object,attr_filename)))
                         add_to_count(luzvimin, getattr(each_object,attr_filename),1)
