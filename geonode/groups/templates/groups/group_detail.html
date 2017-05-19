@@ -44,6 +44,15 @@
           <a href="mailto:{{ object.email }}">{{ object.email }}</a>
         </p>
         {% endif %}
+
+        {% if object.categories.exists %}
+        <p>
+          {% for category in object.categories.all %}
+            <a href="{{ category.get_absolute_url }}"><span class="label label-info">{{ category.name }}</span></a>
+          {% endfor %}
+        </p>
+        {% endif %}
+
       </div>
     </div>
   </div>

@@ -22,13 +22,14 @@ from django import forms
 from django.core.validators import validate_email, ValidationError
 from slugify import slugify
 from django.utils.translation import ugettext_lazy as _
+from modeltranslation.forms import TranslationModelForm
 
 from django.contrib.auth import get_user_model
 
 from geonode.groups.models import GroupProfile
 
 
-class GroupForm(forms.ModelForm):
+class GroupForm(TranslationModelForm):
 
     slug = forms.SlugField(
         max_length=20,
@@ -62,7 +63,7 @@ class GroupForm(forms.ModelForm):
 
     class Meta:
         model = GroupProfile
-        exclude = ['group']
+        exclude = ['group',]
 
 
 class GroupUpdateForm(forms.ModelForm):

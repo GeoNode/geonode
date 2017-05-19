@@ -25,6 +25,15 @@ from .views import GroupDetailView, GroupActivityView
 
 urlpatterns = patterns('geonode.groups.views',
                        url(r'^$', TemplateView.as_view(template_name='groups/group_list.html'), name="group_list"),
+
+                       url(r'^categories/$',
+                           TemplateView.as_view(template_name="groups/category_list.html"),
+                           name="group_category_list"),
+                       url(r'^categories/_create/$', 'group_category_create', name="group_category_create"),
+                       url(r'^categories/(?P<slug>[-\w]+)/$', 'group_category_detail', name="group_category_detail"),
+                       url(r'^categories/(?P<slug>[-\w]+)/update/$', 'group_category_update',
+                           name="group_category_update"),
+
                        url(r'^create/$', 'group_create', name="group_create"),
                        url(r'^group/(?P<slug>[-\w]+)/$', GroupDetailView.as_view(), name='group_detail'),
                        url(r'^group/(?P<slug>[-\w]+)/update/$', 'group_update', name='group_update'),

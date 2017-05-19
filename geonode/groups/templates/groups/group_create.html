@@ -8,7 +8,7 @@
 {% block body %}
     <div class="block">
       <div class="col-md-10">
-        <h2 class="page-title">{% trans "Create a Group" %}</h2>
+        <h2 class="page-title">{% block body_page_title %}{% trans "Create a Group" %}{% endblock %}</h2>
         {% if errors %}
           <div id="errors">
             {% for error in errors %}
@@ -23,7 +23,7 @@
             {{ form|as_bootstrap }}
             <div class="form_block">
                 <input type="hidden" name="action" value="create" />
-                <input type="submit" class="btn btn-primary" value="{% trans 'Create' %}"/>
+                <input type="submit" class="btn btn-primary" value="{% block form_button %}{% trans 'Create' %}{% endblock %}"/>
             </div>
         </fieldset>
     </form>
