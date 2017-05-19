@@ -478,9 +478,9 @@
     });
 
     $(document).ready(function() {
-        {% if layer.metadata_uploaded_preserve %}
+      {% if layer.metadata_uploaded_preserve %}
         $('#metadata_update :input').attr('readonly','readonly');
-        {% endif %}
+      {% endif %}
         $('.has-popover').popover({'trigger':'hover'});
 
         var params = typeof FILTER_TYPE == 'undefined' ? {} : {'type': FILTER_TYPE};
@@ -493,14 +493,14 @@
                 }
             }
 
-    		    $('#id_resource-keywords').tokenfield({
-                        createTokensOnBlur: true,
-    		        autocomplete: {
-    		            source: kws,
-    		            delay: 100
-    		        },
-    		        showAutocompleteOnFocus: true
-    		    } )
+            $('#id_resource-keywords').tokenfield({
+                createTokensOnBlur: true,
+                autocomplete: {
+                    source: kws,
+                    delay: 100
+                },
+                showAutocompleteOnFocus: true
+            });
 
             $('#treeview').treeview({
                 color: "#428bca",
@@ -528,6 +528,7 @@
                     $('#treeview-toggle').click();
                 }
             });
+
             $('#treeview-toggle').click((e, value) => {
               $('#treeview').toggle();
               var icon = $(this).find('i');

@@ -7024,7 +7024,7 @@ article.tab-pane {
 .home #showcase p {
   font-size: 18px;
 }
-/* autocomplete 
+/* autocomplete
 ------------------------*/
 .yourlabs-autocomplete {
   top: 100%;
@@ -7554,7 +7554,10 @@ footer form {
   /*filter: progid:DXImageTransform.Microsoft.BasicImage(rotation=1);*/
 }
 .select2-container-multi .select2-choices .select2-search-field input {
-  height: auto;
+  height: auto !important;
+}
+.tokenfield {
+  height: auto !important;
 }
 .datepicker {
   border-radius: 0px;
