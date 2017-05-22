@@ -70,7 +70,8 @@ def get_luzvimin(data):
                 luzvimin = eachkeyword
                 break
             except Exception as e:
-                print (layer_query.typename + ' - ' + str(e))
+                pass
+        if luzvimin == "Luzvimin_others": print data['typename']
     return luzvimin
 
 def add_to_count(category, typename, count):
