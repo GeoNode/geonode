@@ -30,8 +30,14 @@ def get_area(typename):
     for i in range(data.GetFeatureCount()):
         feature = data.GetNextFeature()
         shp_list.append(loads(feature.GetGeometryRef().ExportToWkb()))
-    juris_shp = cascaded_union(shp_list)
-    return juris_shp.area/1000000
+    try:
+        juris_shp = cascaded_union(shp_list)
+        return juris_shp.area/1000000
+    except:
+        area = 0
+        for eachshp in shp_list:
+            area += eachshp.area
+        return area/1000000
 
 def get_SUC_using_gridref(abscissa, ordinate, _TILE_SIZE = 1000):
     data = source.ExecuteSQL("select * from "+settings.PL1_SUC_MUNIS)
