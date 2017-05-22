@@ -74,7 +74,7 @@ def get_luzvimin(data):
         for eachkeyword in keyword_list:
             try:
                 query = SUCLuzViMin.objects.filter(suc__iexact=eachkeyword)[0].luzvimin
-                luzvimin = eachkeyword
+                luzvimin = SUCLuzViMin.objects.filter(suc__iexact=eachkeyword)[0].suc
                 break
             except Exception as e:
                 pass
