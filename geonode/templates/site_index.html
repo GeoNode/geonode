@@ -1,7 +1,4 @@
-{% extends "index.html" %}
-
-{% block extra_head %}
-{{block.super}}
+{% extends "index.html" %} {% block extra_head %} {{block.super}}
 <style type="text/css">
     /*    CityFutures banner styles*/
     
@@ -22,11 +19,11 @@
     
     .yellow-header .page-title-wrapper {
         height: 200px;
-        background-image: url('https://citydata-dev.be.unsw.edu.au/static/cityfutures/img/banner.jpg');
+        background-image: url('/static/cityfutures/img/banner.jpg');
         background-size: cover;
     }
+    /*    No gap above banner*/
     
-/*    No gap above banner*/
     #wrap {
         padding-top: 0;
     }
@@ -34,10 +31,25 @@
     #wrap .container:first-child .row {
         display: none;
     }
+    
+    .attribution {
+        position: absolute;
+        bottom: -14px;
+        right: -14px;
+        opacity: 0;
+        background: rgba(255, 255, 255, .5);
+        padding: 0px 5px;
+        font-size: 0.8rem;
+        transition: opacity 0.5s;
+        -webkit-transition: opacity 0.5s;
+        /* Safari */
+    }
+    
+    .page-title-wrapper:hover .attribution {
+        opacity: 1;
+    }
 </style>
-{% endblock %}
-
-{% block hero %}
+{% endblock %} {% block hero %}
 <div class=" yellow-header">
     <div class="ui vertical yellow inverted padded one column grid page-title-wrapper">
         <div class="bottom aligned row">
@@ -45,8 +57,13 @@
                 <div class="ui container">
                     <h1 class="page-title">CityData</h1>
                 </div>
+                <div class="attribution">
+                    <a about="/static/cityfutures/img/banner.jpg" rel="cc:attributionURL" href="https://commons.wikimedia.org/wiki/File:Social_Network_Analysis_Visualization.png" target="_blank">Image</a> <a about="/static/cityfutures/img/banner.jpg" rel="dc:creator" href="https://commons.wikimedia.org/wiki/User:SlvrKy" property="cc:attributionName" target="_blank">Martin Grandjean</a> / <a about="/static/cityfutures/img/banner.jpg" rel="license" href="https://creativecommons.org/licenses/by-sa/3.0/deed.en" target="_blank">CC BY-SA 3.0</a>
+                </div>
             </div>
         </div>
+        <!--        <div class="bottom aligned row">-->
+        <!--        </div>-->
     </div>
 </div>
 {% endblock %}
