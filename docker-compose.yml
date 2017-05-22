@@ -20,7 +20,7 @@ services:
       - rabbitmq_data:/var/lib/rabbitmq
 
   django:
-    image: geonode/django
+    image: geonode/geonode
     links:
       - database
       - elasticsearch
@@ -50,7 +50,7 @@ services:
       - geonode_config:/mnt/geonode_config
 
   celery:
-    image: geonode/django
+    image: geonode/geonode
     links:
       - rabbitmq
       - database
