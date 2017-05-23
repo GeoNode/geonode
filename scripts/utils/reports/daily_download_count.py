@@ -73,7 +73,7 @@ def get_luzvimin(data):
             keyword_list = layer_query.keywords.names()
         for eachkeyword in keyword_list:
             try:
-                query = SUCLuzViMin.objects.filter(suc__iexact=eachkeyword)[0].luzvimin
+                query = SUCLuzViMin.objects.filter(suc__iexact=eachkeyword.split("_")[0])[0].luzvimin
                 luzvimin = SUCLuzViMin.objects.filter(suc__iexact=eachkeyword)[0].suc
                 break
             except Exception as e:
