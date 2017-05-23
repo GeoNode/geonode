@@ -55,6 +55,15 @@ DEBUG_STATIC = strtobool(os.getenv('DEBUG_STATIC', 'False'))
 #Define email service on GeoNode
 EMAIL_ENABLE = strtobool(os.getenv('EMAIL_ENABLE', 'True'))
 
+if EMAIL_ENABLE:
+    EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+    EMAIL_HOST = 'localhost'
+    EMAIL_PORT = 25
+    EMAIL_HOST_USER = ''
+    EMAIL_HOST_PASSWORD = ''
+    EMAIL_USE_TLS = False
+    DEFAULT_FROM_EMAIL = 'GeoNode <no-reply@geonode.org>'
+
 # This is needed for integration tests, they require
 # geonode to be listening for GeoServer auth requests.
 os.environ['DJANGO_LIVE_TEST_SERVER_ADDRESS'] = 'localhost:8000'
@@ -338,7 +347,6 @@ INSTALLED_APPS = (
     'avatar',
     'dialogos',
     'agon_ratings',
-    # 'notification',
     'announcements',
     'actstream',
     'user_messages',
@@ -870,9 +878,6 @@ AUTO_GENERATE_AVATAR_SIZES = (
     20, 30, 32, 40, 50, 65, 70, 80, 100, 140, 200, 240
 )
 
-# notification settings
-NOTIFICATION_LANGUAGE_MODULE = "account.Account"
-
 # Number of results per page listed in the GeoNode search pages
 CLIENT_RESULTS_LIMIT = 100
 
@@ -971,8 +976,22 @@ SEARCH_FILTERS = {
     'EXTENT_ENABLED': True,
 }
 
+# notification settings
+NOTIFICATION_ENABLED = False
+NOTIFICATION_LANGUAGE_MODULE = "account.Account"
+
 # Queue non-blocking notifications.
 NOTIFICATION_QUEUE_ALL = False
+
+# pinax.notifications
+# or notification
+NOTIFICATIONS_MODULE = 'pinax.notifications'
+
+# set to true to have multiple recipients in /message/create/
+USER_MESSAGES_ALLOW_MULTIPLE_RECIPIENTS = False
+
+if NOTIFICATION_ENABLED or TEST:
+    INSTALLED_APPS += (NOTIFICATIONS_MODULE, )
 
 BROKER_URL = os.getenv('BROKER_URL', "django://")
 CELERY_ALWAYS_EAGER = True
@@ -1028,16 +1047,6 @@ if S3_MEDIA_ENABLED:
     DEFAULT_FILE_STORAGE = 'storages.backends.s3boto.S3BotoStorage'
     MEDIA_URL = "https://%s/%s/" % (AWS_S3_BUCKET_DOMAIN, MEDIAFILES_LOCATION)
 
-# pinax.notifications
-# or notification
-NOTIFICATIONS_MODULE = 'pinax.notifications'
-
-# set to true to have multiple recipients in /message/create/
-USER_MESSAGES_ALLOW_MULTIPLE_RECIPIENTS = False
-
-
-if TEST:
-    INSTALLED_APPS += (NOTIFICATIONS_MODULE, )
 
 djcelery.setup_loader()
 
@@ -1102,8 +1111,5 @@ RISKS = {'DEFAULT_LOCATION': None,
          'PDF_GENERATOR': {'NAME': 'wkhtml2pdf',
                            'BIN': '/usr/bin/wkhtml2pdf',
                            'ARGS': []}}
-if EMAIL_ENABLE:
-    #Setting up email backend
-    EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 
 ADMIN_MODERATE_UPLOADS = False
