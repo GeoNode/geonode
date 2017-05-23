@@ -72390,7 +72390,7 @@ gxp.plugins.GoogleSource = Ext.extend(gxp.plugins.LayerSource, {
      *  ``String``
      *  Description of the SATELLITE layer (i18n).
      */
-    satelliteAbstract: "Show satellite imagery",
+    satelliteAbstract: "Zoom in to view",
 
     /** api: config[hybridAbstract]
      *  ``String``
@@ -72626,7 +72626,7 @@ gxp.plugins.GoogleSource.loader = new (Ext.extend(Ext.util.Observable, {
         };
         
         var script = document.createElement("script");
-        script.src = "http://www.google.com/jsapi?" + Ext.urlEncode(params);
+        script.src = "https://www.google.com/jsapi?" + Ext.urlEncode(params);
 
         // cancel loading if monitor is not ready within timeout
         var errback = options.errback || Ext.emptyFn;
