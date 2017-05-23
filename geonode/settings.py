@@ -977,7 +977,7 @@ SEARCH_FILTERS = {
 }
 
 # notification settings
-NOTIFICATION_ENABLED = False
+NOTIFICATION_ENABLED = False or TEST
 NOTIFICATION_LANGUAGE_MODULE = "account.Account"
 
 # Queue non-blocking notifications.
@@ -990,7 +990,7 @@ NOTIFICATIONS_MODULE = 'pinax.notifications'
 # set to true to have multiple recipients in /message/create/
 USER_MESSAGES_ALLOW_MULTIPLE_RECIPIENTS = False
 
-if NOTIFICATION_ENABLED or TEST:
+if NOTIFICATION_ENABLED:
     INSTALLED_APPS += (NOTIFICATIONS_MODULE, )
 
 BROKER_URL = os.getenv('BROKER_URL', "django://")
