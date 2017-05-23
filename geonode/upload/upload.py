@@ -638,7 +638,6 @@ def final_step(upload_session, user):
                     e.args = (msg,)
 
         if style:
-            # FIXME: Should we use the fully qualified typename?
             publishing.default_style = style
             _log('default style set to %s', name)
             cat.save(publishing)

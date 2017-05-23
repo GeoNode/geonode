@@ -371,6 +371,7 @@ def geoserver_post_save(instance, sender, **kwargs):
                                )
                                )
 
+    logger.info("Creating Thumbnail for Layer [%s]" % (instance.typename))
     create_gs_thumbnail(instance, overwrite=False)
 
     legend_url = ogc_server_settings.PUBLIC_LOCATION + \

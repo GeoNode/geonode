@@ -305,9 +305,11 @@ def cascading_delete(cat, layer_name):
         # Due to a possible bug of geoserver, we need this trick for now
         # TODO: inspect the issue reported by this hack. Should be solved
         #       with GS 2.7+
-        # try:
+        try:
             cat.delete(resource, recurse=True)  # This may fail
-        # except:
+        except:
+            cat._cache.clear()
+            cat.reset()
         #    cat.reload()  # this preservers the integrity of geoserver
 
         if store.resource_type == 'dataStore' and 'dbtype' in store.connection_parameters and \
@@ -1206,8 +1208,10 @@ def geoserver_upload(
             logger.warn(msg)
             e.args = (msg,)
 
-            style = cat.get_style(name)
-            if style is None:
+        if style is None:
+            try:
+                style = cat.get_style(name)
+            except:
                 try:
                     cat.create_style(name + '_layer', sld)
                 except geoserver.catalog.ConflictingDataError as e:
@@ -1223,9 +1227,10 @@ def geoserver_upload(
                            'for Layer: "%s"' % (name))
                     logger.error(msg)
 
-        # FIXME: Should we use the fully qualified typename?
-        publishing.default_style = style
-        cat.save(publishing)
+        if style:
+            publishing.default_style = style
+            logger.info('default style set to %s', name)
+            cat.save(publishing)
 
     # Step 10. Create the Django record for the layer
     logger.info('>>> Step 10. Creating Django record for [%s]', name)
@@ -1792,10 +1797,10 @@ def create_gs_thumbnail(instance, overwrite=False):
 
     params = {
         'layers': layers,
-        'format': 'image/png8',
+        'format': 'image/png',
         'width': 200,
-        'height': 150,
-        'TIME': '-99999999999-01-01T00:00:00.0Z/99999999999-01-01T00:00:00.0Z'
+        'height': 150
+        # 'TIME': '-99999999999-01-01T00:00:00.0Z/99999999999-01-01T00:00:00.0Z'
     }
 
     # Add the bbox param only if the bbox is different to [None, None,
