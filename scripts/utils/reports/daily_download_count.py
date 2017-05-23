@@ -107,16 +107,19 @@ def add_to_count(category, typename, count):
         layer_count[category]['ORTHO'] += count
     elif 'sar' in typename:
         layer_count[category]['SAR'] += count
-    elif 'coverage' in typename:
-        layer_count[category]['Coverage'] += count
-    elif 'dem' in typename:
-        layer_count[category]['Coverage'] += count
-    elif 'mkp' in typename:
-        layer_count[category]['Coverage'] += count
     elif any(lidar2keyword in typename for lidar2keyword in ['aquaculture', 'mangroves', 'agrilandcover', 'agricoastlandcover', 'irrigation', 'streams', 'wetlands', 'trees', 'ccm', 'chm', 'agb', 'power']):
         layer_count[category]['Resource'] += count
-    else:
-        layer_count[category]['Others'] += count
+    elif category == 'area' or category == 'monthly':
+        if 'coverage' in typename:
+            layer_count[category]['Coverage'] += count
+        elif 'dem' in typename:
+            layer_count[category]['Coverage'] += count
+        elif 'mkp' in typename:
+            layer_count[category]['Coverage'] += count
+        else:
+            layer_count[category]['Others'] += count
+    # else:
+    #     layer_count[category]['Others'] += count
 def add_to_monthlyc(category):
     if category not in layer_count:
         layer_count[category] = {
