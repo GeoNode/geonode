@@ -14,7 +14,11 @@
         $('#poc_form').modal();
       }
     });
+
+    var metadata_uri = $(location).attr('pathname').split('/').pop();
     var metadata_update_done = false;
+    var is_advanced = (metadata_uri.match(/metadata_advanced/i) != null);
+
     var updateWizard = function() {
       var activeTab = $("#edit-metadata .wizard--progress li.is-active");
       var first = $("#edit-metadata .wizard--progress li:first-child");
@@ -395,39 +399,61 @@
         $('#btn_next_dwn').click(function(){getNextTab()});
 
         $('#btn_upd_md_up').click(function(){
-            $('#preview_pleaseWaitDialog').modal();
+            if((!is_advanced && $('#category_form').hasClass("input-empty")) ||
+                (is_advanced && !$('#category_form input:checked').val())) {
+                $('#category_mandatoryDialog').modal();
+            } else {
+                $('#preview_pleaseWaitDialog').modal();
+            }
         });
         $('#btn_upd_md_dwn').click(function(){
-            $('#preview_pleaseWaitDialog').modal();
+            if((!is_advanced && $('#category_form').hasClass("input-empty")) ||
+                (is_advanced && !$('#category_form input:checked').val())) {
+                $('#category_mandatoryDialog').modal();
+            } else {
+                $('#preview_pleaseWaitDialog').modal();
+            }
         });
 
         $('#btn_upd_md_done').click(function(){
-            $('#preview_pleaseWaitDialog').modal();
-            $('#metadata_update').submit();
-            metadata_update_done = true;
+            if((!is_advanced && $('#category_form').hasClass("input-empty")) ||
+                (is_advanced && !$('#category_form input:checked').val())) {
+                $('#category_mandatoryDialog').modal();
+            } else {
+                $('#preview_pleaseWaitDialog').modal();
+                $('#metadata_update').submit();
+                metadata_update_done = true;
+            }
         });
 
         $('#preview_tab').on('show.bs.tab', function(){
-            $('#preview_pleaseWaitDialog').modal();
-            try {
-                $('#preview_encoder_iframe')[0].style.width='0';
-                $('#preview_encoder_iframe')[0].style.height='0';
-                $('#metadata_update').submit();
+            if((!is_advanced && $('#category_form').hasClass("input-empty")) ||
+                (is_advanced && !$('#category_form input:checked').val())) {
+                $('#category_mandatoryDialog').modal();
+            } else {
+                $('#preview_pleaseWaitDialog').modal();
+                try {
+                    $('#preview_encoder_iframe')[0].style.width='0';
+                    $('#preview_encoder_iframe')[0].style.height='0';
+                    $('#metadata_update').submit();
 
-                // buttons visibility
-                $('#btn_back_dwn').hide();
-                $('#btn_next_dwn').hide();
-                $('#btn_upd_md_dwn').hide();
-            } catch(err) {
-                // Log error
+                    // buttons visibility
+                    $('#btn_back_dwn').hide();
+                    $('#btn_next_dwn').hide();
+                    $('#btn_upd_md_dwn').hide();
+                } catch(err) {
+                    // Log error
+                }
             }
         });
+
         $('#settings_tab').on('show.bs.tab', function(){
             // buttons visibility
             $('#btn_back_dwn').hide();
             $('#btn_next_dwn').hide();
             $('#btn_upd_md_dwn').show();
           });
+
         $('#metadata_edit_tab').on('show.bs.tab', function(){
           // buttons visibility
           $('#btn_upd_md_dwn').show();
@@ -435,28 +461,36 @@
         });
 
         $('#metadata_update').submit(function(e){
-            var formData = $(this).serializeArray();
-            // edit data here
-                /* var date = $('#id_resource-date').val();
-                var resource_date = $.grep(formData, function(e){ return e.name == 'resource-date'; });
-                if (resource_date.length >= 1) {
-                    resource_date[0].value = date + ' AM';
-                } */
-            $.post('metadata', /*$(this).serialize()*/ $.param(formData), function(data){
-                // Do something more fancy with your respone
-                // $('.message').html(data.message);
-                try {
-                    $('#preview_encoder_iframe')[0].style.width='100%';
-                    $('#preview_encoder_iframe')[0].style.height='100%';
-                    $('#preview_encoder_iframe')[0].contentWindow.location.reload(true);
-                } catch(err) {
-                    // Log error
-                }
-                $('#preview_pleaseWaitDialog').modal('hide');
-            });
+            if((!is_advanced && $('#category_form').hasClass("input-empty")) ||
+                (is_advanced && !$('#category_form input:checked').val())) {
+                $('#category_mandatoryDialog').modal();
+            } else {
+                var formData = $(this).serializeArray();
+                // edit data here
+                    /* var date = $('#id_resource-date').val();
+                    var resource_date = $.grep(formData, function(e){ return e.name == 'resource-date'; });
+                    if (resource_date.length >= 1) {
+                        resource_date[0].value = date + ' AM';
+                    } */
+                $.post('metadata', /*$(this).serialize()*/ $.param(formData), function(data){
+                    // Do something more fancy with your respone
+                    // $('.message').html(data.message);
+                    if (!is_advanced) {
+                        try {
+                            $('#preview_encoder_iframe')[0].style.width='100%';
+                            $('#preview_encoder_iframe')[0].style.height='100%';
+                            $('#preview_encoder_iframe')[0].contentWindow.location.reload(true);
+                        } catch(err) {
+                            // Log error
+                            console.log(err);
+                        }
+                    }
+                    $('#preview_pleaseWaitDialog').modal('hide');
+                });
+            }
             e.preventDefault();
             if (metadata_update_done) {
-                window.location.replace(e.target.action.replace('/metadata',''));
+                window.location.replace(e.target.action.replace('/'+metadata_uri,''));
             }
         });
 
@@ -467,6 +501,7 @@
                 updateCompleteness(perc);
             } catch(err) {
                 // Log error
+                console.log(err);
             }
         }
     });
