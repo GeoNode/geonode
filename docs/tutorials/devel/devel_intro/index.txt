@@ -61,6 +61,7 @@ Core development tools and libraries
   - https://docs.python.org/2/tutorial/
   - http://www.learnpython.org/
   - https://learnpythonthehardway.org/book/
+  - http://www.guru99.com/python-tutorials.html
 
 - Django
 
