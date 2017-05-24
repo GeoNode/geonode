@@ -63,7 +63,7 @@ class GroupForm(TranslationModelForm):
 
     class Meta:
         model = GroupProfile
-        exclude = ['group',]
+        exclude = ['group']
 
 
 class GroupUpdateForm(forms.ModelForm):

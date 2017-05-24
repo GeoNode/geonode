@@ -462,7 +462,6 @@ class GroupCategoriesTestCase(TestCase):
     """
     def setUp(self):
         c1 = GroupCategory.objects.create(name='test #1 category')
-        c2 = GroupCategory.objects.create(name='test #2 category')
         g = GroupProfile.objects.create(title='test')
         g.categories.add(c1)
         g.save()
@@ -496,7 +495,7 @@ class GroupCategoriesTestCase(TestCase):
         view_url = reverse('group_category_create')
         r = self.client.get(view_url)
         self.assertEqual(r.status_code, 200)
-        
+
         r = self.client.post(view_url)
         self.assertEqual(r.status_code, 200)
 
