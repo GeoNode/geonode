@@ -43,6 +43,26 @@
             }
         });
     }
+  // Load group categories
+
+  module.load_group_categories = function ($http, $rootScope, $location){
+        var params = typeof FILTER_TYPE == 'undefined' ? {} : {'type': FILTER_TYPE};
+        if ($location.search().hasOwnProperty('name__icontains')){
+          params['name__icontains'] = $location.search()['name__icontains'];
+        }
+        $http.get(GROUP_CATEGORIES_ENDPOINT, {params: params}).success(function(data){
+            if($location.search().hasOwnProperty('slug')){
+                data.objects = module.set_initial_filters_from_query(data.objects,
+                    $location.search()['slug'], 'identifier');
+            }
+            $rootScope.categories = data.objects;
+            if (HAYSTACK_FACET_COUNTS && $rootScope.query_data) {
+                module.haystack_facets($http, $rootScope, $location);
+            }
+        });
+    }
+
+
 
   module.load_keywords = function ($http, $rootScope, $location){
         var params = typeof FILTER_TYPE == 'undefined' ? {} : {'type': FILTER_TYPE};
@@ -202,6 +222,11 @@
     if ($('#categories').length > 0){
        module.load_categories($http, $rootScope, $location);
     }
+
+    if ($('#groupcategories').length > 0){
+       module.load_group_categories($http, $rootScope, $location);
+    }
+
     //if ($('#keywords').length > 0){
     //   module.load_keywords($http, $rootScope, $location);
     //}
@@ -505,7 +530,8 @@
                 // the /people page, filter by username instead
                 var query_key = 'username__icontains';
             else
-                var query_key = 'title__icontains';
+                console.log('search key', $('#text_search_input').data());
+                var query_key = $('#text_search_input').data('query-key')||'title__icontains';
             $scope.query[query_key] = $('#text_search_input').val();
         query_api($scope.query);
     });

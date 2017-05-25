@@ -27,7 +27,7 @@ from django.conf import settings
 
 from guardian.shortcuts import get_anonymous_user
 
-from geonode.groups.models import GroupProfile, GroupInvitation
+from geonode.groups.models import GroupProfile, GroupInvitation, GroupCategory
 from geonode.documents.models import Document
 from geonode.layers.models import Layer
 from geonode.maps.models import Map
@@ -454,3 +454,56 @@ class InvitationTest(TestCase):
 
         self.assert_(not group.user_is_member(normal))
         self.assert_(invitation.state == "declined")
+
+
+class GroupCategoriesTestCase(TestCase):
+    """
+    Group Categories tests
+    """
+    def setUp(self):
+        c1 = GroupCategory.objects.create(name='test #1 category')
+        g = GroupProfile.objects.create(title='test')
+        g.categories.add(c1)
+        g.save()
+        User = get_user_model()
+        u = User.objects.create(username='test')
+        u.set_password('test')
+        u.save()
+
+    def test_api(self):
+        api_url = '/api/groupcategory/'
+
+        r = self.client.get(api_url)
+        self.assertEqual(r.status_code, 200)
+        data = json.loads(r.content)
+        self.assertEqual(data['meta']['total_count'], GroupCategory.objects.all().count())
+
+        # check if we have non-empty group category
+        self.assertTrue(GroupCategory.objects.filter(groups__isnull=False).exists())
+
+        for item in data['objects']:
+            self.assertTrue(GroupCategory.objects.filter(slug=item['slug']).count() == 1)
+            g = GroupCategory.objects.get(slug=item['slug'])
+            self.assertEqual(item['member_count'], g.groups.all().count())
+
+    def test_group_categories_list(self):
+        view_url = reverse('group_category_list')
+        r = self.client.get(view_url)
+        self.assertEqual(r.status_code, 200)
+
+    def test_group_categories_add(self):
+        view_url = reverse('group_category_create')
+        r = self.client.get(view_url)
+        self.assertEqual(r.status_code, 200)
+
+        r = self.client.post(view_url)
+        self.assertEqual(r.status_code, 200)
+
+        self.client.login(username='test', password='test')
+        category = 'test #3 category'
+        r = self.client.post(view_url, {'name': category})
+
+        self.assertEqual(r.status_code, 302)
+        q = GroupCategory.objects.filter(name=category)
+        self.assertEqual(q.count(), 1)
+        self.assertTrue(q.get().slug)

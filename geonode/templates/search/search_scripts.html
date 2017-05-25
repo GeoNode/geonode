@@ -22,6 +22,7 @@
 <script type="text/javascript">
   $("body").attr('ng-controller', 'geonode_search_controller');
   CATEGORIES_ENDPOINT = '{% url 'api_dispatch_list' api_name='api' resource_name='categories' %}';
+  GROUP_CATEGORIES_ENDPOINT = '{% url 'api_dispatch_list' api_name='api' resource_name='groupcategory' %}';
   KEYWORDS_ENDPOINT = '{% url 'api_dispatch_list' api_name='api' resource_name='keywords' %}';
   H_KEYWORDS_ENDPOINT = '{% url 'h_keywords_api' %}';
   T_KEYWORDS_ENDPOINT = '{% url 'api_dispatch_list' api_name='api' resource_name='thesaurus/keywords' %}';

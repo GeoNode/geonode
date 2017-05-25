@@ -41,13 +41,13 @@ from geonode.base.models import ThesaurusKeywordLabel
 from geonode.layers.models import Layer
 from geonode.maps.models import Map
 from geonode.documents.models import Document
-from geonode.groups.models import GroupProfile
+from geonode.groups.models import GroupProfile, GroupCategory
 
 from django.core.serializers.json import DjangoJSONEncoder
 from tastypie.serializers import Serializer
 from tastypie import fields
 from tastypie.resources import ModelResource
-from tastypie.constants import ALL
+from tastypie.constants import ALL, ALL_WITH_RELATIONS
 from tastypie.utils import trailing_slash
 
 
@@ -246,12 +246,32 @@ class TopicCategoryResource(TypeFilteredResource):
         serializer = CountJSONSerializer()
 
 
+class GroupCategoryResource(TypeFilteredResource):
+    detail_url = fields.CharField()
+    member_count = fields.IntegerField()
+
+    class Meta:
+        queryset = GroupCategory.objects.all()
+        allowed_methods = ['get']
+        include_resource_uri = False
+        fields = ['name', 'slug']
+        filtering = {'slug': ALL,
+                     'name': ALL}
+
+    def dehydrate_detail_url(self, bundle):
+        return bundle.obj.get_absolute_url()
+
+    def dehydrate_member_count(self, bundle):
+        return bundle.obj.groups.all().count()
+
+
 class GroupResource(ModelResource):
     """Groups api"""
 
     detail_url = fields.CharField()
     member_count = fields.IntegerField()
     manager_count = fields.IntegerField()
+    categories = fields.ToManyField(GroupCategoryResource, 'categories', full=True)
 
     def dehydrate_member_count(self, bundle):
         return bundle.obj.member_queryset().count()
@@ -267,7 +287,8 @@ class GroupResource(ModelResource):
         resource_name = 'groups'
         allowed_methods = ['get']
         filtering = {
-            'title': ALL
+            'title': ALL,
+            'categories': ALL_WITH_RELATIONS,
         }
         ordering = ['title', 'last_modified']
 
