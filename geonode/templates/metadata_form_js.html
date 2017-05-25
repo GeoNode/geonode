@@ -1,6 +1,7 @@
 {% load staticfiles %}
 <script type="text/javascript">
 {% autoescape off %}
+    var select_button_active = false;
 
     $('.modal-forms').css('max-height', '500px').css('overflow-y', 'scroll');
     $('.modal-cloose-btn').css('margin','20px');
@@ -528,14 +529,43 @@
                 }
             }
 
-            $('#id_resource-keywords').tokenfield({
-                createTokensOnBlur: true,
-                autocomplete: {
-                    source: kws,
-                    delay: 100
-                },
-                showAutocompleteOnFocus: true
+            {% if freetext_readonly %}
+                $('#id_resource-keywords').tokenfield({
+                    createTokensOnBlur: false,
+                    autocomplete: {
+                        source: kws,
+                        delay: 100
+                    },
+                    showAutocompleteOnFocus: true
+                });
+                $('#id_resource-keywords').tokenfield('readonly');
+                $('div.token .close').click(function() {
+                    const token_close_button = $(this);
+                    const token_item = token_close_button.parent();
+                    token_item.remove();
+                    return false;
+                });
+            {% else %}
+                $('#id_resource-keywords').tokenfield({
+                    createTokensOnBlur: true,
+                    autocomplete: {
+                        source: kws,
+                        delay: 100
+                    },
+                    showAutocompleteOnFocus: true
+                });
+            {% endif %}
+
+            if (!select_button_active) {
+                const select_button = $('<button id="id_freetext_keyword_select" class="btn btn-primary">Select</button>');
+                const select_button_parent = $('#id_resource-keywords').parent().parent();
+                select_button_parent.append(select_button);
+                select_button_active = true;
+            }
+            $('#id_freetext_keyword_select').click(function() {
+                $('#id_resource-keywords-tokenfield').blur().focus();
             });
+
 
             $('#treeview').treeview({
                 color: "#428bca",
