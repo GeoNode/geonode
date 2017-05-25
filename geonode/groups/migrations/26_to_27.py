@@ -18,6 +18,7 @@ class Migration(migrations.Migration):
                 ('slug', models.SlugField(unique=True, max_length=255)),
                 ('name', models.CharField(unique=True, max_length=255)),
                 ('name_en', models.CharField(max_length=255, unique=True, null=True)),
+                ('description', models.TextField(default=None, null=True, blank=True)),
             ],
             options={
                 'verbose_name_plural': 'Group Categories',
