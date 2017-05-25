@@ -527,8 +527,10 @@ ACTSTREAM_SETTINGS = {
     'GFK_FETCH_DEPTH': 1,
 }
 
-# Settings for Social Apps
-REGISTRATION_OPEN = strtobool(os.getenv('REGISTRATION_OPEN', 'False'))
+
+# prevent signing up by default
+ACCOUNT_OPEN_SIGNUP = True
+
 ACCOUNT_EMAIL_CONFIRMATION_EMAIL = strtobool(
     os.getenv('ACCOUNT_EMAIL_CONFIRMATION_EMAIL', 'False')
 )
