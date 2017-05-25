@@ -37,19 +37,6 @@ class ProfileCreationForm(UserCreationForm):
         model = Profile
         fields = ("username",)
 
-    def clean_username(self):
-        # Since User.username is unique, this check is redundant,
-        # but it sets a nicer error message than the ORM. See #13147.
-        username = self.cleaned_data["username"]
-        try:
-            Profile.objects.get(username=username)
-        except Profile.DoesNotExist:
-            return username
-        raise forms.ValidationError(
-            self.error_messages['duplicate_username'],
-            code='duplicate_username',
-        )
-
 
 class ProfileChangeForm(UserChangeForm):
 
