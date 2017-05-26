@@ -5,7 +5,7 @@
 {% block title %} {% trans "About GeoNode" %} — {{ block.super }} {% endblock %}
 
 {% block body_outer %}
-    {% show_eula %}
+    {% show_eula_phillidar1 %}
     <form id="form_eula" name="form_eula" action={% target_url %} onsubmit="return checkForm(this);" method="POST">
         {% csrf_token %}
         
