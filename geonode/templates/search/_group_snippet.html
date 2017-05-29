@@ -23,6 +23,7 @@
                         <ng-pluralize count="group.manager_count" when="{'1': 'Manager', 'other': 'Managers'}"></ng-pluralize>
                     </a>
                 </li>
+                <li>{{ group.created|date:"d.M.y" }}</li>
               </ul>
             </div>
           </div>

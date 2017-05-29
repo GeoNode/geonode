@@ -53,10 +53,10 @@
             {% include 'search/_group_snippet.html' %}
         {% elif facet_type == 'groupcategories' %}
             {% include 'search/_groupcategory_snippet.html' %}
-        {% elif facet_type == 'people' %}    
+        {% elif facet_type == 'people' %}
             {% include "people/_profile_list_item.html" %}
         {% endif %}
     </div>
-        {% include 'search/_pagination.html' %}
+    {% include 'search/_pagination.html' %}
   </div>
 </div>
