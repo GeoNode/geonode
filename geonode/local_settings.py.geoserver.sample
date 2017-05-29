@@ -181,7 +181,6 @@ LAYER_PREVIEW_LIBRARY = 'geoext'
 
 GEONODE_APPS = (
     # GeoNode internal apps
-    # 'geonode.contrib.risks',
     'geonode.people',
     'geonode.base',
     'geonode.layers',
@@ -252,7 +251,7 @@ INSTALLED_APPS = (
     'leaflet',
     'django_extensions',
     #'geonode-client',
-    #'haystack',
+    # 'haystack',
     'autocomplete_light',
     'mptt',
     # 'modeltranslation',
@@ -264,7 +263,6 @@ INSTALLED_APPS = (
     'floppyforms',
 
     # Theme
-    "pinax_theme_bootstrap_account",
     "pinax_theme_bootstrap",
     'django_forms_bootstrap',
 
@@ -273,15 +271,14 @@ INSTALLED_APPS = (
     'avatar',
     'dialogos',
     'agon_ratings',
-    # 'notification',
     'announcements',
     'actstream',
     'user_messages',
-    #'tastypie',
+    'tastypie',
     'polymorphic',
     'guardian',
     'oauth2_provider',
-) + GEONODE_APPS + ('tastypie',)
+) + GEONODE_APPS
 
 # default map projection
 # Note: If set to EPSG:4326, then only EPSG:4326 basemaps will work.
@@ -310,7 +307,19 @@ MAP_BASELAYERS = [{
     "visibility": False,
     "fixed": True,
     "group":"background"
-}, {
+},
+# {
+#     "source": {"ptype": "gxp_olsource"},
+#     "type": "OpenLayers.Layer.XYZ",
+#     "title": "TEST TILE",
+#     "args": ["TEST_TILE", "http://test_tiles/tiles/${z}/${x}/${y}.png"],
+#     "name": "background",
+#     "attribution": "&copy; TEST TILE",
+#     "visibility": False,
+#     "fixed": True,
+#     "group":"background"
+# },
+{
     "source": {"ptype": "gxp_osmsource"},
     "type": "OpenLayers.Layer.OSM",
     "name": "mapnik",

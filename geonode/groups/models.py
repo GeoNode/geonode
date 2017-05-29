@@ -22,10 +22,12 @@ import datetime
 import hashlib
 
 from django.conf import settings
+from django.core.urlresolvers import reverse
 from django.contrib.auth.models import Group
 from django.contrib.auth import get_user_model
 from django.db import models, IntegrityError
 from django.utils.translation import ugettext_lazy as _
+from django.utils.text import slugify
 from django.db.models import signals
 from django.contrib.sites.models import Site
 from django.template.loader import render_to_string
@@ -33,6 +35,28 @@ from django.core.mail import send_mail
 
 from taggit.managers import TaggableManager
 from guardian.shortcuts import get_objects_for_group
+
+
+class GroupCategory(models.Model):
+    slug = models.SlugField(max_length=255, unique=True, null=False, blank=False)
+    name = models.CharField(max_length=255, unique=True, null=False, blank=False)
+    description = models.TextField(null=True, default=None, blank=True)
+
+    class Meta:
+        verbose_name_plural = _('Group Categories')
+
+    def __str__(self):
+        return 'Category: {}'.format(self.name)
+
+    def get_absolute_url(self):
+        return reverse('group_category_detail', args=(self.slug,))
+
+
+def group_category_pre_save(sender, instance, *args, **kwargs):
+    instance.slug = slugify(instance.name)
+
+
+signals.pre_save.connect(group_category_pre_save, sender=GroupCategory)
 
 
 class GroupProfile(models.Model):
@@ -71,6 +95,8 @@ class GroupProfile(models.Model):
         choices=GROUP_CHOICES,
         help_text=access_help_text)
     last_modified = models.DateTimeField(auto_now=True)
+    categories = models.ManyToManyField(GroupCategory, blank=True, related_name='groups')
+    created = models.DateTimeField(auto_now_add=True)
 
     def save(self, *args, **kwargs):
         group, created = Group.objects.get_or_create(name=self.slug)

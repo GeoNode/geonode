@@ -20,7 +20,16 @@
 
 from django.contrib import admin
 
-from geonode.groups.models import GroupMember, GroupProfile, GroupInvitation
+from modeltranslation.admin import TranslationAdmin
+
+from geonode.groups.models import (GroupMember, GroupProfile,
+                                   GroupInvitation, GroupCategory)
+
+
+@admin.register(GroupCategory)
+class GroupCategoryAdmin(TranslationAdmin):
+    list_display = ('name', 'slug',)
+    readonly_fields = ('slug',)
 
 
 class GroupMemberInline(admin.TabularInline):

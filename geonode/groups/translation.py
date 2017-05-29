@@ -18,26 +18,18 @@
 #
 #########################################################################
 
-from tastypie.api import Api
+from modeltranslation.translator import translator, TranslationOptions
 
-from .api import TagResource, TopicCategoryResource, ProfileResource, \
-    GroupResource, RegionResource, OwnersResource, ThesaurusKeywordResource, \
-    GroupCategoryResource
-from .resourcebase_api import LayerResource, MapResource, DocumentResource, \
-    ResourceBaseResource, FeaturedResourceBaseResource
+from geonode.groups.models import GroupCategory, GroupProfile
 
-api = Api(api_name='api')
 
-api.register(LayerResource())
-api.register(MapResource())
-api.register(DocumentResource())
-api.register(ProfileResource())
-api.register(ResourceBaseResource())
-api.register(TagResource())
-api.register(RegionResource())
-api.register(TopicCategoryResource())
-api.register(GroupResource())
-api.register(FeaturedResourceBaseResource())
-api.register(OwnersResource())
-api.register(ThesaurusKeywordResource())
-api.register(GroupCategoryResource())
+class GroupCategoryTranslationOptions(TranslationOptions):
+    fields = ('name',)
+
+
+class GroupProfileTranslationOptions(TranslationOptions):
+    fields = ('title', 'description',)
+
+
+translator.register(GroupCategory, GroupCategoryTranslationOptions)
+translator.register(GroupProfile, GroupProfileTranslationOptions)

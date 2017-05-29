@@ -32,7 +32,7 @@ def resource_urls(request):
     defaults = dict(
         STATIC_URL=settings.STATIC_URL,
         CATALOGUE_BASE_URL=default_catalogue_backend()['URL'],
-        REGISTRATION_OPEN=settings.REGISTRATION_OPEN,
+        ACCOUNT_OPEN_SIGNUP=settings.ACCOUNT_OPEN_SIGNUP,
         VERSION=get_version(),
         SITE_NAME=site.name,
         SITE_DOMAIN=site.domain,
