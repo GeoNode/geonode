@@ -40,9 +40,10 @@ from django.contrib.auth import get_user_model
 from geoserver.catalog import FailedRequestError, UploadError
 
 # from geonode.security.models import *
+from geonode.decorators import on_ogc_backend
 from geonode.layers.models import Layer
 from geonode.maps.models import Map
-from geonode import GeoNodeException
+from geonode import GeoNodeException, geoserver
 from geonode.layers.utils import (
     upload,
     file_upload,
@@ -1049,6 +1050,7 @@ class GeoNodeGeoServerSync(TestCase):
     def tearDown(self):
         pass
 
+    @on_ogc_backend(geoserver.BACKEND_PACKAGE)
     def test_set_attributes_from_geoserver(self):
         """Test attributes syncronization
         """

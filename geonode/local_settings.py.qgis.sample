@@ -40,6 +40,9 @@ try:
     INSTALLED_APPS.remove("geonode.geoserver")
     MAP_BASELAYERS.remove(LOCAL_GEOSERVER)
     del LOCAL_GEOSERVER
+
+    geoserver_context_processor = 'geonode.geoserver.context_processors.geoserver_urls'
+    TEMPLATES[0]['OPTIONS']['context_processors'].remove(geoserver_context_processor)
 except:
     pass
 

@@ -469,7 +469,7 @@ def test_integration(options):
             sh('sleep 30')
             call_task('setup_data')
         sh(('python manage.py test %s'
-           ' --noinput -v 3 --liveserver=localhost:8000' % name))
+           ' --noinput -v 3 --liveserver=0.0.0.0:8000' % name))
     except BuildFailure, e:
         info('Tests failed! %s' % str(e))
     else:

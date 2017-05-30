@@ -20,6 +20,7 @@
 
 import logging
 import time
+import socket
 from urlparse import urljoin
 
 from celery.task import task
@@ -51,10 +52,15 @@ def create_qgis_server_thumbnail(instance, overwrite=False):
             # instance type does not have associated thumbnail
             return True
         thumbnail_remote_url = urljoin(base_url, thumbnail_remote_url)
-        logger.debug(thumbnail_remote_url)
         logger.debug('Create thumbnail for %s' % thumbnail_remote_url)
         create_thumbnail(instance, thumbnail_remote_url, overwrite=overwrite)
         return True
+    # if it is socket exception, we should raise it, because there is
+    # something wrong with the url
+    except socket.error as e:
+        logger.exception(e)
+        # reraise exception with original traceback
+        raise
     except Exception as e:
         logger.exception(e)
         return False

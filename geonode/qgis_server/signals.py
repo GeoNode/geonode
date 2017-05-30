@@ -300,6 +300,7 @@ def qgis_server_post_save_map(instance, sender, **kwargs):
     url = url[:-1]
 
     data = urlopen(url).read()
+    logger.debug('Create project url: {url}'.format(url=url))
     logger.debug(
         'Creating the QGIS Project : %s -> %s' % (project_path, data))
 
