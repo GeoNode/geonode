@@ -29,6 +29,8 @@ try:
 except ImportError:
     pass
 
+GEONODE_APPS += ("geonode.qgis_server", )
+GEONODE_APPS = list(GEONODE_APPS)
 INSTALLED_APPS += ("geonode.qgis_server", )
 INSTALLED_APPS = list(INSTALLED_APPS)
 
@@ -36,15 +38,19 @@ INSTALLED_APPS = list(INSTALLED_APPS)
 
 # Delete Geoserver settings
 
-try:
+if 'geonode.geoserver' in INSTALLED_APPS:
     INSTALLED_APPS.remove("geonode.geoserver")
+
+if 'geonode.geoserver' in GEONODE_APPS:
+    GEONODE_APPS.remove("geonode.geoserver")
+
+if 'LOCAL_GEOSERVER' in locals():
     MAP_BASELAYERS.remove(LOCAL_GEOSERVER)
     del LOCAL_GEOSERVER
 
-    geoserver_context_processor = 'geonode.geoserver.context_processors.geoserver_urls'
+geoserver_context_processor = 'geonode.geoserver.context_processors.geoserver_urls'
+if geoserver_context_processor in TEMPLATES[0]['OPTIONS']['context_processors']:
     TEMPLATES[0]['OPTIONS']['context_processors'].remove(geoserver_context_processor)
-except:
-    pass
 
 # Leaflet config
 LAYER_PREVIEW_LIBRARY = 'leaflet'
