@@ -68,13 +68,16 @@ after_script:
 after_success:
   - coveralls
 
-notifications:
-  irc:
-    channels:
-      - "irc.freenode.org#geonode"
-    use_notice: true
-  email:
-    - geonode-dev@boundlessgeo.com
-    - ingenieroariel@gmail.com
-    - simone.dalmasso@gmail.com
-  slack: geonode-sprint:oQylJRkU9feZ8JruGi6czWwe
+# Commented out until changes are merged upstream.
+#  We don't have to bother geonode core developer.
+
+#notifications:
+#  irc:
+#    channels:
+#      - "irc.freenode.org#geonode"
+#    use_notice: true
+#  email:
+#    - geonode-dev@boundlessgeo.com
+#    - ingenieroariel@gmail.com
+#    - simone.dalmasso@gmail.com
+#  slack: geonode-sprint:oQylJRkU9feZ8JruGi6czWwe
