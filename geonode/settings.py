@@ -997,6 +997,10 @@ SEARCH_FILTERS = {
     'EXTENT_ENABLED': True,
 }
 
+# Make Free-Text Kaywords writable from users or read-only
+# - if True only admins can edit free-text kwds from admin dashboard
+FREETEXT_KEYWORDS_READONLY = False
+
 # notification settings
 NOTIFICATION_ENABLED = False or TEST
 NOTIFICATION_LANGUAGE_MODULE = "account.Account"
