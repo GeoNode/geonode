@@ -137,7 +137,8 @@ setup(name='GeoNode',
         # tests
         "factory_boy",
         # "WeasyPrint",
-
+        "user-agents",
+        "xmljson",
         ],
       zip_safe=False,
       dependency_links=[

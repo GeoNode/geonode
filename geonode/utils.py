@@ -946,3 +946,12 @@ def run_subprocess(*cmd, **kwargs):
             w.write('')
 
     return p.returncode, stdout.getvalue(), stderr.getvalue()
+
+
+def parse_datetime(value):
+    for patt in settings.DATETIME_INPUT_FORMATS:
+        try:
+            return datetime.datetime.strptime(value, patt)
+        except ValueError:
+            pass
+    raise ValueError("Invalid datetime input: {}".format(value))
