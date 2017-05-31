@@ -18,7 +18,7 @@
 <div class="tab-content">
 <div id="edit-metadata" class="tab-content tab-pane fade in active">
   <div id="completeness-hints" class="progress">
-  
+
   <div class="mandatory-hint progress-bar" role="progressbar" style="width:33%">
     Mandatory
   </div>
@@ -128,6 +128,34 @@
                                               data-content="<span class='has-popover' data-container='body' data-toggle='popover' data-placement='top'  data-content=' {{ choice.2.description }}' rigger='hover'><i class='fa {{choice.2.fa_class}}'></i> {{ choice.2.gn_description }}<span>"
                                               >{{ choice.2.gn_description }}</option>
                                           {% endfor %}
+                                        </select>
+                                    </div>
+                                    <div class="col-lg-12">
+                                        <span><label for="id_resource-group" class="control-label required-field">{% trans "Group" %}</label></span>
+                                        <select
+                                            title="Choose one of the following..."
+                                            data-live-search="true"
+                                            data-size="5"
+                                            name="resource-group"
+                                            id="id_resource-group"
+                                            class="selectpicker form-control"
+                                            >
+                                            <option
+                                              style="display: none"
+                                              disabled
+                                              hidden
+                                              value=""
+                                              >
+                                                Choose one of the following...
+                                            </option>
+                                            {% for group in metadata_author_groups %}
+                                            <option
+                                                value="{{ group.group.id }}"
+                                                {% ifequal resource.group group.group %} selected="selected" {% endifequal %}
+                                                >
+                                                {{ group.group.name }}
+                                            </option>
+                                            {% endfor %}
                                         </select>
                                     </div>
                                 </div>
@@ -248,7 +276,7 @@
                               {{ map_form.poc }}
                           </div>
                       </div>
-                  
+
                       <div class="panel panel-default">
                           <div class="panel-heading">Owner and Permissions</div>
                           <div class="panel-body">
