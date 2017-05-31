@@ -18,7 +18,8 @@
 #
 #########################################################################
 
-from django.test import LiveServerTestCase as TestCase
+import requests
+from unittest import TestCase
 from django.conf import settings
 from geonode.decorators import on_ogc_backend
 from geonode import qgis_server
@@ -61,7 +62,18 @@ class QGISSettingsTest(TestCase):
     def test_qgis_server_connection(self):
         """Test that QGIS Server url is reachable."""
         qgis_server_url = settings.QGIS_SERVER_URL
-        response = self.client.get(qgis_server_url)
+        response = requests.get(qgis_server_url)
         message = 'Cannot reach QGIS Server url at {url}'
         message = message.format(url=qgis_server_url)
         self.assertEqual(response.status_code, 200, message)
+        self.assertIn(
+            'Service unknown or unsupported', response.content, message)
+
+        # Test if OTF-Plugin is installed
+        url = qgis_server_url + '?SERVICE=MAPCOMPOSITION'
+        response = requests.get(url)
+        message = 'OTF-Project is not installed on QGIS-Server {url}'
+        message = message.format(url=qgis_server_url)
+        self.assertEqual(response.status_code, 200, message)
+        self.assertIn(
+            'PROJECT parameter is missing.', response.content, message)
