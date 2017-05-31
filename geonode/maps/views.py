@@ -56,6 +56,7 @@ from geonode.security.views import _perms_info_json
 from geonode.base.forms import CategoryForm
 from geonode.base.models import TopicCategory
 from geonode.tasks.deletion import delete_map
+from geonode.groups.models import GroupProfile
 
 from geonode.documents.models import get_related_documents
 from geonode.people.forms import ProfileForm
@@ -265,6 +266,11 @@ def map_metadata(request, mapid, template='maps/map_metadata.html'):
     config = map_obj.viewer_json(request.user, access_token)
     layers = MapLayer.objects.filter(map=map_obj.id)
 
+    metadata_author_groups = []
+    if request.user.is_superuser:
+        metadata_author_groups = GroupProfile.objects.all()
+    else:
+        metadata_author_groups = metadata_author.group_list_all()
     return render_to_response(template, RequestContext(request, {
         "config": json.dumps(config),
         "map": map_obj,
@@ -275,6 +281,7 @@ def map_metadata(request, mapid, template='maps/map_metadata.html'):
         "layers": layers,
         "preview":  getattr(settings, 'LAYER_PREVIEW_LIBRARY', 'leaflet'),
         "crs":  getattr(settings, 'DEFAULT_MAP_CRS', 'EPSG:900913'),
+        "metadata_author_groups": metadata_author_groups,
     }))
 
 

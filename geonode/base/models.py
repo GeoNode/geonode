@@ -35,14 +35,14 @@ from urlparse import urljoin, urlsplit
 
 from django.db import models
 from django.core import serializers
-from django.db.models import Q
+from django.db.models import Q, signals
 from django.utils.translation import ugettext_lazy as _
 from django.core.exceptions import ValidationError
 from django.conf import settings
 from django.contrib.staticfiles.templatetags import staticfiles
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.auth import get_user_model
-from django.db.models import signals
+from django.contrib.auth.models import Group
 from django.contrib.auth.signals import user_logged_in, user_logged_out
 from django.core.files.storage import default_storage as storage
 from django.core.files.base import ContentFile
@@ -506,6 +506,8 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
     # Section 8
     data_quality_statement = models.TextField(_('data quality statement'), blank=True, null=True,
                                               help_text=data_quality_statement_help_text)
+
+    group = models.ForeignKey(Group, null=True, blank=True)
 
     # Section 9
     # see metadata_author property definition below
