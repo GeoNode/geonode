@@ -147,10 +147,10 @@ class RequestEvent(models.Model):
         """
         Return serialized resources affected by request
         """
-        rqmeta = getattr(request, '_metadata', {})
+        rqmeta = getattr(request, '_monitoring', {})
         resources = []
         for type_name in 'layer map document style'.split():
-            res = rqmeta.get('{}s'.format(type_name)) or []
+            res = rqmeta['resources'].get('{}s'.format(type_name)) or []
             for r in res:
                 resources.append('{}={}'.format(type_name, r))
         return '\n'.join(resources)
@@ -162,12 +162,12 @@ class RequestEvent(models.Model):
     @classmethod
     def from_geonode(cls, service,  request, response):
         received = datetime.now()
-        rqmeta = getattr(request, '_metadata', {})
+        rqmeta = getattr(request, '_monitoring', {})
         created = rqmeta.get('started', received)
         if not isinstance(created, datetime):
             created = parse_datetime(created)
         _ended = rqmeta.get('finished', datetime.now())
-        duration = (_ended - created).seconds
+        duration = (_ended - created).microseconds
 
         ua = request.META['HTTP_USER_AGENT']
         ua_family = cls._get_ua_family(ua)

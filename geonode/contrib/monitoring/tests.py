@@ -623,9 +623,9 @@ class RequestsTestCase(TestCase):
         self.ua = "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/59.0.3071.47 Safari/537.36" 
         populate()
 
-        self.host = Host.objects.create(name='local', ip='127.0.0.1')
+        self.host = Host.objects.create(name='localhost', ip='127.0.0.1')
         self.service_type = ServiceType.objects.get(name=ServiceType.TYPE_GEONODE)
-        self.service = Service.objects.create(name='geonode local', host=self.host, service_type=self.service_type)
+        self.service = Service.objects.create(name='geonode', host=self.host, service_type=self.service_type)
 
     def test_gs_req(self):
         rq = RequestEvent.from_geoserver(self.service, req_big)
@@ -635,10 +635,8 @@ class RequestsTestCase(TestCase):
 
         l = Layer.objects.all().first()
         self.client.login(username=self.user, password=self.passwd)
-        resp = self.client.get(reverse('layer_detail', args=(l.typename,)), **{"HTTP_USER_AGENT": self.ua})
-        req = resp.wsgi_request
-        rq = RequestEvent.from_geonode(self.service, req, resp)
-        self.assertTrue(rq)
+        self.client.get(reverse('layer_detail', args=(l.typename,)), **{"HTTP_USER_AGENT": self.ua})
 
-        
-
+        self.assertEqual(RequestEvent.objects.all().count(), 1)
+        rq = RequestEvent.objects.get()
+        self.assertTrue(rq.response_time > 0)

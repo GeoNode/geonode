@@ -357,6 +357,9 @@ INSTALLED_APPS = (
     'oauth2_provider',
 ) + GEONODE_APPS
 
+MONITORING_ENABLED = False
+
+
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': True,
@@ -1131,3 +1134,9 @@ RISKS = {'DEFAULT_LOCATION': None,
                            'ARGS': []}}
 
 ADMIN_MODERATE_UPLOADS = False
+
+# add following lines to your local settings to enable monitoring
+if MONITORING_ENABLED:
+    INSTALLED_APPS + ('geonode.contrib.monitoring',)
+    MIDDLEWARE_CLASSES + ('geonode.contrib.monitoring.middleware.MonitoringMiddleware',)
+
