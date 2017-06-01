@@ -4,7 +4,7 @@ services:
   qgis-server:
     image: kartoza/qgis-server:LTR
     volumes:
-      - './geonode:/usr/src/app'
+      - './:${GEONODE_PROJECT_PATH}'
       - './otf-project:/opt/qgis-server/plugins/otf-project'
     environment:
       - QGIS_LOG_FILE=/tmp/qgis-server/qgis.log

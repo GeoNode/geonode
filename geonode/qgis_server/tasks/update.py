@@ -19,17 +19,14 @@
 #########################################################################
 
 import logging
-import time
 import socket
-from urlparse import urljoin
 
 from celery.task import task
-from django.conf import settings
-from django.core.urlresolvers import reverse
 
 from geonode.layers.models import Layer
 from geonode.layers.utils import create_thumbnail
 from geonode.maps.models import Map
+from geonode.qgis_server.helpers import map_thumbnail_url, layer_thumbnail_url
 
 logger = logging.getLogger(__name__)
 
@@ -38,26 +35,26 @@ logger = logging.getLogger(__name__)
     name='geonode.qgis_server.tasks.update.create_qgis_server_thumbnail',
     queue='update')
 def create_qgis_server_thumbnail(instance, overwrite=False):
+    thumbnail_remote_url = None
     try:
         # to make sure it is executed after the instance saved
-        time.sleep(5)
-        base_url = settings.SITEURL
         if isinstance(instance, Layer):
-            thumbnail_remote_url = reverse(
-                'qgis-server-thumbnail', kwargs={'layername': instance.name})
+            thumbnail_remote_url = layer_thumbnail_url(instance)
         elif isinstance(instance, Map):
-            thumbnail_remote_url = reverse(
-                'qgis-server-map-thumbnail', kwargs={'map_id': instance.id})
+            thumbnail_remote_url = map_thumbnail_url(instance)
         else:
             # instance type does not have associated thumbnail
             return True
-        thumbnail_remote_url = urljoin(base_url, thumbnail_remote_url)
+        if not thumbnail_remote_url:
+            return True
         logger.debug('Create thumbnail for %s' % thumbnail_remote_url)
         create_thumbnail(instance, thumbnail_remote_url, overwrite=overwrite)
         return True
     # if it is socket exception, we should raise it, because there is
     # something wrong with the url
     except socket.error as e:
+        logger.error('Thumbnail url not accessed {url}'.format(
+            url=thumbnail_remote_url))
         logger.exception(e)
         # reraise exception with original traceback
         raise

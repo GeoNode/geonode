@@ -491,8 +491,8 @@ def pre_save_layer(instance, sender, **kwargs):
 
     bbox = [
         instance.bbox_x0,
-        instance.bbox_x1,
         instance.bbox_y0,
+        instance.bbox_x1,
         instance.bbox_y1]
 
     instance.set_bounds_from_bbox(bbox)

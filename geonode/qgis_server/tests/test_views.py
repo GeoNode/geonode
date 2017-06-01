@@ -19,18 +19,16 @@
 #########################################################################
 
 from django.test import TestCase
-from django.test.client import RequestFactory
-
-from geonode.qgis_server.context_processors import qgis_server_urls
 
 
 class ViewsTest(TestCase):
 
     def test_default_context(self):
         """Test default context provided by qgis_server."""
-        request = RequestFactory().get('/')
 
-        context = qgis_server_urls(request)
+        response = self.client.get('/')
+
+        context = response.context
 
         # Necessary context to ensure compatibility with views
         # Some view needs these context to do some javascript logic.

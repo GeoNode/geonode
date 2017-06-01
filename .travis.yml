@@ -21,8 +21,10 @@ env:
     QGIS_SERVER_URL: http://localhost:9000/
     # This is the IP of docker network bridge
     # So QGIS server can access this address
-    SITEURL: http://172.17.0.1:8000/
+    SITEURL: http://localhost:8000/
+    GEONODE_PROJECT_PATH: /home/travis/build/kartoza/geonode/
     ON_TRAVIS: True
+    CELERY_ALWAYS_EAGER: True
 
 branches:
   only:

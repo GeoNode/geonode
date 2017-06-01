@@ -44,7 +44,8 @@ from django.views.decorators.clickjacking import xframe_options_exempt
 from geonode.layers.models import Layer
 from geonode.maps.models import Map, MapLayer, MapSnapshot
 from geonode.layers.views import _resolve_layer
-from geonode.utils import forward_mercator, llbbox_to_mercator
+from geonode.utils import forward_mercator, llbbox_to_mercator, \
+    check_ogc_backend
 from geonode.utils import DEFAULT_TITLE
 from geonode.utils import DEFAULT_ABSTRACT
 from geonode.utils import default_map_config
@@ -60,9 +61,10 @@ from geonode.documents.models import get_related_documents
 from geonode.people.forms import ProfileForm
 from geonode.utils import num_encode, num_decode
 from geonode.utils import build_social_links
+from geonode import geoserver, qgis_server
 import urlparse
 
-if 'geonode.geoserver' in settings.INSTALLED_APPS:
+if check_ogc_backend(geoserver.BACKEND_PACKAGE):
     # FIXME: The post service providing the map_status object
     # should be moved to geonode.geoserver.
     from geonode.geoserver.helpers import ogc_server_settings
@@ -70,7 +72,8 @@ if 'geonode.geoserver' in settings.INSTALLED_APPS:
     # Use the http_client with one that knows the username
     # and password for GeoServer's management user.
     from geonode.geoserver.helpers import http_client, _render_thumbnail
-else:
+elif check_ogc_backend(qgis_server.BACKEND_PACKAGE):
+    from geonode.qgis_server.helpers import ogc_server_settings
     from geonode.utils import http_client
 
 logger = logging.getLogger("geonode.maps.views")
@@ -604,8 +607,8 @@ def new_map_config(request):
                     bbox = list(layer_bbox[0:4])
                 else:
                     bbox[0] = min(bbox[0], layer_bbox[0])
-                    bbox[1] = max(bbox[1], layer_bbox[1])
-                    bbox[2] = min(bbox[2], layer_bbox[2])
+                    bbox[1] = min(bbox[1], layer_bbox[1])
+                    bbox[2] = max(bbox[2], layer_bbox[2])
                     bbox[3] = max(bbox[3], layer_bbox[3])
 
                 config = layer.attribute_config()

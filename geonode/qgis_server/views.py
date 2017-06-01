@@ -18,27 +18,25 @@
 #
 #########################################################################
 
-import os
-import logging
-import zipfile
 import StringIO
 import json
-import requests
+import logging
+import os
 import shutil
+import zipfile
 from imghdr import what as image_format
 
+import requests
 from django.conf import settings
-from django.http import HttpResponse, Http404
-from django.core.urlresolvers import reverse
 from django.contrib.gis.gdal import SpatialReference, CoordTransform
 from django.contrib.gis.geos import Point
+from django.core.urlresolvers import reverse
+from django.http import HttpResponse, Http404
 from django.shortcuts import get_object_or_404
 
-from geonode.maps.models import Map
 from geonode.layers.models import Layer
-from geonode.qgis_server.models import QGISServerLayer
 from geonode.qgis_server.gis_tools import num2deg
-
+from geonode.qgis_server.models import QGISServerLayer
 
 logger = logging.getLogger('geonode.qgis_server.views')
 
@@ -136,151 +134,6 @@ def legend(request, layername, layertitle=None, access_token=None):
         return HttpResponse('The legend could not be found.', status=409)
 
     with open(legend_filename, 'rb') as f:
-        return HttpResponse(f.read(), content_type='image/png')
-
-
-def map_thumbnail(request, map_id):
-    logger.debug('Fetching thumbnail for the map %s.' % map_id)
-    map_object = get_object_or_404(Map, id=id)
-
-    map_file = 'map_%s' % map_id
-    map_project = os.path.join(
-        QGIS_SERVER_CONFIG['layer_directory'], map_file + '.qgs')
-    if not os.path.exists(map_project):
-        msg = 'Map project not found for %s' % map_project
-        logger.debug(msg)
-        raise Http404(msg)
-
-    thumbnail_filename = QGIS_SERVER_CONFIG['thumbnail_path'] % map_file
-
-    if not os.path.exists(thumbnail_filename):
-
-        if not os.path.exists(os.path.dirname(thumbnail_filename)):
-            os.makedirs(os.path.dirname(thumbnail_filename))
-
-        # We get the extent of these layers.
-        bbox = [float(i) for i in map_object.bbox_string.split(',')]
-        x_min, x_max, y_min, y_max = bbox
-
-        # We calculate the margins according to 10 percent.
-        percent = 10
-        delta_x = (x_max - x_min) / 100 * percent
-        delta_y = (y_max - y_min) / 100 * percent
-
-        # We apply the margins to the extent.
-        margin = [
-            y_min - delta_y,
-            x_min - delta_x,
-            y_max + delta_y,
-            x_max + delta_x
-        ]
-
-        # Call the WMS.
-        bbox = ','.join([str(val) for val in margin])
-        qgis_server = QGIS_SERVER_CONFIG['qgis_server_url']
-        query_string = {
-            'SERVICE': 'WMS',
-            'VERSION': '1.3.0',
-            'REQUEST': 'GetMap',
-            'BBOX': bbox,
-            'CRS': 'EPSG:4326',
-            'WIDTH': '250',
-            'HEIGHT': '250',
-            'MAP': map_project,
-            'LAYERS': map_file,
-            'STYLES': 'default',
-            'FORMAT': 'image/png',
-            'TRANSPARENT': 'true',
-            'DPI': '96',
-            'MAP_RESOLUTION': '96',
-            'FORMAT_OPTIONS': 'dpi:96'
-        }
-
-        response = requests.get(qgis_server, params=query_string, stream=True)
-        with open(thumbnail_filename, 'wb') as out_file:
-            shutil.copyfileobj(response.raw, out_file)
-        del response
-
-        if image_format(thumbnail_filename) != 'png':
-            logger.error('%s is not valid PNG.' % thumbnail_filename)
-            os.remove(thumbnail_filename)
-
-        if not os.path.exists(thumbnail_filename):
-            msg = 'The thumbnail could not be found.'
-            return HttpResponse(msg, status=409)
-
-    with open(thumbnail_filename, 'rb') as f:
-        return HttpResponse(f.read(), content_type='image/png')
-
-
-def thumbnail(request, layername):
-    layer = get_object_or_404(Layer, name=layername)
-    qgis_layer = get_object_or_404(QGISServerLayer, layer=layer)
-    basename, _ = os.path.splitext(qgis_layer.base_layer_path)
-
-    thumbnail_path = QGIS_SERVER_CONFIG['thumbnail_path']
-    thumbnail_filename = thumbnail_path % os.path.basename(basename)
-
-    if not os.path.exists(thumbnail_filename):
-
-        if not os.path.exists(os.path.dirname(thumbnail_filename)):
-            os.makedirs(os.path.dirname(thumbnail_filename))
-
-        # We get the extent of the layer.
-        x_min = layer.resourcebase_ptr.bbox_x0
-        x_max = layer.resourcebase_ptr.bbox_x1
-        y_min = layer.resourcebase_ptr.bbox_y0
-        y_max = layer.resourcebase_ptr.bbox_y1
-
-        # We calculate the margins according to 10 percent.
-        percent = 10
-        delta_x = (x_max - x_min) / 100 * percent
-        delta_y = (y_max - y_min) / 100 * percent
-
-        # We apply the margins to the extent.
-        margin = [
-            y_min - delta_y,
-            x_min - delta_x,
-            y_max + delta_y,
-            x_max + delta_x
-        ]
-
-        # Call the WMS.
-        bbox = ','.join([str(val) for val in margin])
-
-        qgis_server = QGIS_SERVER_CONFIG['qgis_server_url']
-        query_string = {
-            'SERVICE': 'WMS',
-            'VERSION': '1.3.0',
-            'REQUEST': 'GetMap',
-            'BBOX': bbox,
-            'CRS': 'EPSG:4326',
-            'WIDTH': '250',
-            'HEIGHT': '250',
-            'MAP': basename + '.qgs',
-            'LAYERS': layer.name,
-            'STYLES': 'default',
-            'FORMAT': 'image/png',
-            'TRANSPARENT': 'true',
-            'DPI': '96',
-            'MAP_RESOLUTION': '96',
-            'FORMAT_OPTIONS': 'dpi:96'
-        }
-
-        response = requests.get(qgis_server, params=query_string, stream=True)
-        with open(thumbnail_filename, 'wb') as out_file:
-            shutil.copyfileobj(response.raw, out_file)
-        del response
-
-        if image_format(thumbnail_filename) != 'png':
-            logger.error('%s is not valid PNG.' % thumbnail_filename)
-            os.remove(thumbnail_filename)
-
-        if not os.path.exists(thumbnail_filename):
-            msg = 'The thumbnail could not be found.'
-            return HttpResponse(msg, status=409)
-
-    with open(thumbnail_filename, 'rb') as f:
         return HttpResponse(f.read(), content_type='image/png')
 
 

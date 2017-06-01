@@ -24,8 +24,6 @@ from geonode.qgis_server.views import (
     download_zip,
     tile,
     legend,
-    thumbnail,
-    map_thumbnail,
     qgis_server_request,
     qgis_server_pdf,
     qgis_server_map_print,
@@ -73,16 +71,6 @@ urlpatterns = patterns(
     #     legend,
     #     name='qgis-server-legend'
     # ),
-    url(
-        r'^qgis-server/thumbnail/(?P<layername>[\w]*)$',
-        thumbnail,
-        name='qgis-server-thumbnail'
-    ),
-    url(
-        r'^qgis-server/map/thumbnail/(?P<map_id>[\w]*)$',
-        map_thumbnail,
-        name='qgis-server-map-thumbnail'
-    ),
     # WMS entry point, this URL is not specific to WMS, you should remove it ?
     url(
         r'^qgis-server/wms/$',

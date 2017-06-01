@@ -18,9 +18,17 @@ if [ $BACKEND = "geonode.qgis_server" ] && [ $1 = "before_script" ]; then
 	cd otf-project
 	git checkout master
 	cd ../
+	echo "Create QGIS Server related folder"
+	mkdir -p geonode/qgis_layer
+	mkdir -p geonode/qgis_tiles
+	chmod 777 geonode/qgis_layer
+	chmod 777 geonode/qgis_tiles
 	echo "Start QGIS Server docker container"
 	docker-compose -f docker-compose-qgis-server.yml up -d qgis-server
 	docker ps
+	echo "Test connection to QGIS Server"
+	wget -qO- $QGIS_SERVER_URL
+	wget -qO- ${QGIS_SERVER_URL}?SERVICE=MAPCOMPOSITION
 	echo "Copy QGIS Server configuration"
 	cp geonode/local_settings.py.qgis.sample geonode/local_settings.py
 fi

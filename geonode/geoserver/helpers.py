@@ -49,6 +49,7 @@ from django.db.models.signals import pre_delete
 from django.template.loader import render_to_string
 from django.utils.translation import ugettext as _
 import geoserver
+from geonode.maps.models import Map
 from geoserver.catalog import Catalog
 from geoserver.catalog import ConflictingDataError
 from geoserver.catalog import FailedRequestError, UploadError
@@ -1786,7 +1787,7 @@ def create_gs_thumbnail(instance, overwrite=False):
     """
     Create a thumbnail with a GeoServer request.
     """
-    if instance.class_name == 'Map':
+    if isinstance(instance, Map):
         local_layers = []
         for layer in instance.layers:
             if layer.local:

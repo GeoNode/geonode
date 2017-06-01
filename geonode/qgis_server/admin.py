@@ -29,4 +29,5 @@ class QGISServerLayerAdmin(admin.ModelAdmin):
         'base_layer_path'
     ]
 
+
 admin.site.register(QGISServerLayer, QGISServerLayerAdmin)

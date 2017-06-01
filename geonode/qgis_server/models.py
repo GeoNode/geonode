@@ -80,4 +80,5 @@ class QGISServerLayer(models.Model):
         except OSError:
             pass
 
+
 from geonode.qgis_server import signals  # noqa: F402.F401

@@ -19,11 +19,12 @@
 #########################################################################
 
 import requests
-from unittest import TestCase
+from django.test import TestCase
 from django.conf import settings
 from geonode.decorators import on_ogc_backend
 from geonode import qgis_server
 from geonode.qgis_server.helpers import validate_django_settings
+from geonode.qgis_server.helpers import ogc_server_settings
 
 
 class QGISSettingsTest(TestCase):
@@ -40,7 +41,7 @@ class QGISSettingsTest(TestCase):
         response = requests.get(qgis_server_url)
         message = 'Cannot reach QGIS Server url at {url}'
         message = message.format(url=qgis_server_url)
-        self.assertEqual(response.status_code, 200, message)
+        self.assertTrue(response.ok, message)
         self.assertIn(
             'Service unknown or unsupported', response.content, message)
 
@@ -48,7 +49,23 @@ class QGISSettingsTest(TestCase):
         url = qgis_server_url + '?SERVICE=MAPCOMPOSITION'
         response = requests.get(url)
         message = 'OTF-Project is not installed on QGIS-Server {url}'
-        message = message.format(url=qgis_server_url)
-        self.assertEqual(response.status_code, 200, message)
+        message = message.format(url=url)
+        self.assertTrue(response.ok, message)
         self.assertIn(
             'PROJECT parameter is missing.', response.content, message)
+
+    @on_ogc_backend(qgis_server.BACKEND_PACKAGE)
+    def test_siteurl_connection(self):
+        """Test that SITEURL is properly configured and reachable."""
+        siteurl = settings.SITEURL
+        response = self.client.get(siteurl)
+        message = 'SITEURL were not properly configured: {url}'
+        message = message.format(url=siteurl)
+
+        self.assertEqual(response.status_code, 200, message)
+
+    @on_ogc_backend(qgis_server.BACKEND_PACKAGE)
+    def test_ogc_server_wrapper(self):
+        """Test that OGC_Server settings were properly wrapped."""
+        self.assertTrue(ogc_server_settings.PUBLIC_LOCATION)
+        self.assertTrue(ogc_server_settings.LOCATION)

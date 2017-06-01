@@ -110,3 +110,5 @@ QGIS_SERVER_CONFIG = {
 
 on_travis = os.environ.get('ON_TRAVIS', False)
 SKIP_GEOSERVER_TEST = on_travis
+
+CELERY_ALWAYS_EAGER = os.environ.get('CELERY_ALWAYS_EAGER', True)

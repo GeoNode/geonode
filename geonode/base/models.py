@@ -559,6 +559,7 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
 
     @property
     def bbox(self):
+        """BBOX is in the format: [x0,y0,x1,y1]."""
         return [self.bbox_x0, self.bbox_y0, self.bbox_x1, self.bbox_y1, self.srid]
 
     @property
@@ -624,8 +625,8 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
         Set the four bounds in lat lon projection
         """
         self.bbox_x0 = box[0]
-        self.bbox_x1 = box[1]
-        self.bbox_y0 = box[2]
+        self.bbox_y0 = box[1]
+        self.bbox_x1 = box[2]
         self.bbox_y1 = box[3]
 
     def set_bounds_from_center_and_zoom(self, center_x, center_y, zoom):
@@ -672,6 +673,10 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
     def set_bounds_from_bbox(self, bbox):
         """
         Calculate zoom level and center coordinates in mercator.
+
+        :param bbox: BBOX is in the  format: [x0, y0, x1, y1], which is:
+            [min lon, min lat, max lon, max lat]
+        :type bbox: list
         """
         self.set_latlon_bounds(bbox)
 

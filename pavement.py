@@ -436,8 +436,8 @@ def test(options):
     """
     Run GeoNode's Unit Test Suite
     """
-    sh("%s manage.py test %s.tests --noinput" % (options.get('prefix'),
-                                                 '.tests '.join(GEONODE_APPS)))
+    sh("%s manage.py test %s.tests --noinput --liveserver=0.0.0.0:8000" % (
+        options.get('prefix'), '.tests '.join(GEONODE_APPS)))
 
 
 @task
