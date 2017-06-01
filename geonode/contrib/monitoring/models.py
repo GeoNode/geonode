@@ -19,8 +19,10 @@
 #########################################################################
 
 import logging
+import types
+
 from socket import gethostbyname
-from datetime import datetime
+from datetime import datetime, timedelta
 
 from django.db import models
 from django.conf import settings
@@ -46,6 +48,7 @@ geoip = GeoIP()
 class Host(models.Model):
     name = models.CharField(max_length=255, unique=True, blank=False, null=False)
     ip = models.GenericIPAddressField(null=False, blank=False)
+    active = models.BooleanField(null=False, blank=False, default=True)
 
 
 class ServiceType(models.Model):
@@ -63,7 +66,11 @@ class ServiceType(models.Model):
 class Service(models.Model):
     name = models.CharField(max_length=255, unique=True, blank=False, null=False)
     host = models.ForeignKey(Host, null=False)
+    check_interval = models.DurationField(null=False, blank=False, default=timedelta(seconds=60))
+    last_check = models.DateTimeField(null=True, blank=True)
     service_type = models.ForeignKey(ServiceType, null=False)
+    active = models.BooleanField(null=False, blank=False, default=True)
+    notes = models.TextField(null=True, blank=True)
 
 
 class MetricType(models.Model):
@@ -150,7 +157,7 @@ class RequestEvent(models.Model):
         rqmeta = getattr(request, '_monitoring', {})
         resources = []
         for type_name in 'layer map document style'.split():
-            res = rqmeta['resources'].get('{}s'.format(type_name)) or []
+            res = rqmeta['resources'].get(type_name) or []
             for r in res:
                 resources.append('{}={}'.format(type_name, r))
         return '\n'.join(resources)
@@ -270,9 +277,20 @@ class ExceptionEvent(models.Model):
     @classmethod
     def add_error(cls, from_service, error_type, stack_trace, request=None, created=None):
         received = datetime.now()
+        if not isinstance(error_type, types.StringTypes):
+            _cls = error_type.__class__
+            error_type = '{}.{}'.format(_cls.__module__, _cls.__name__)
+
+        if isinstance(stack_trace, (list,tuple,)):
+            stack_trace = ''.join(stack_trace)
         if not isinstance(created, datetime):
             created = received
-        return cls.objects.create(created, received, from_service, error_type, stack_trace, request=request)
+        return cls.objects.create(created=created, 
+                                  received=received, 
+                                  service=from_service, 
+                                  error_type=error_type, 
+                                  error_data=stack_trace, 
+                                  request=request)
 
 
 class Event(models.Model):

@@ -18,10 +18,13 @@
 #
 #########################################################################
 
-
+import time
+import threading
+import traceback
+import Queue
 import logging
 
-from geonode.contrib.monitoring.models import RequestEvent
+from geonode.contrib.monitoring.models import RequestEvent, ExceptionEvent
 
 class MonitoringHandler(logging.Handler):
 
@@ -33,5 +36,31 @@ class MonitoringHandler(logging.Handler):
         exc_info = record.exc_info
         req = record.request
         resp = record.response
-        re = RequestEvent.from_geonode(self.service, req, resp)
-        
+        if not req._monitoring.get('processed'):
+            re = RequestEvent.from_geonode(self.service, req, resp)
+            req._monitoring['processed'] = re
+        re = req._monitoring.get('processed')
+
+        if exc_info:
+            tb = traceback.format_exception(*exc_info)
+            ExceptionEvent.add_error(self.service, exc_info[1], tb, request=re)
+
+
+class RequestToMonitoringThread(threading.Thread):
+    q = Queue.Queue()
+
+    def __init__(self, service, *args, **kwargs):
+        super(RequestToMonitoring, self).__init__(*args, **kwargs)
+        self.service = service
+
+    def add(self, req, resp):
+        item = (req, resp,)
+        RequestToMonitoring.q.put(item)
+
+    def run(self):
+        q = RequestToMonitoring.q
+        while True:
+            if not q.empty():
+                item = q.get()
+                req, resp = item
+                re = RequestEvent.from_geonode(self.service, req, resp)

@@ -567,6 +567,8 @@ def resolve_object(request, model, query, permission='base.view_resourcebase',
     if not allowed:
         mesg = permission_msg or _('Permission Denied')
         raise PermissionDenied(mesg)
+    if settings.MONITORING_ENABLED:
+        request.add_resource(model._meta.verbose_name_raw, obj.typename if hasattr(obj, 'typename') else obj.title)
     return obj
 
 

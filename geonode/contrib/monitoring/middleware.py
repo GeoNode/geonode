@@ -24,6 +24,7 @@ from datetime import datetime
 from django.conf import settings
 from geonode.contrib.monitoring.models import Service, Host
 from geonode.contrib.monitoring.utils import MonitoringHandler
+from django.http import HttpResponse
 
 
 class MonitoringMiddleware(object):
@@ -68,6 +69,12 @@ class MonitoringMiddleware(object):
         if self.service:
             self.log.info('request', extra={'request': request, 'response': response})
 
+    def register_exception(self, request, exception):
+        if self.service:
+            response = HttpResponse('')
+            self.log.info('request', exc_info=exception, extra={'request': request, 'response': response})
+            
+
     def process_request(self, request):
         now = datetime.now()
         meta = {'started': now,
@@ -85,3 +92,10 @@ class MonitoringMiddleware(object):
         request._monitoring['finished'] = now
         self.register_request(request, response)
         return response
+
+    def process_exception(self, request, exception):
+        now = datetime.now()
+        request._monitoring['finished'] = now
+        self.register_exception(request, exception)
+
+        

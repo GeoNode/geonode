@@ -24,7 +24,7 @@ from django.test import TestCase, RequestFactory
 from django.contrib.auth import get_user_model
 from django.core.urlresolvers import reverse
 
-from geonode.contrib.monitoring.models import RequestEvent, Host, Service, ServiceType, populate
+from geonode.contrib.monitoring.models import RequestEvent, Host, Service, ServiceType, populate, ExceptionEvent
 from geonode.base.populate_test_data import create_models
 from geonode.layers.models import Layer
 from geonode.layers.populate_layers_data import create_layer_data
@@ -640,3 +640,20 @@ class RequestsTestCase(TestCase):
         self.assertEqual(RequestEvent.objects.all().count(), 1)
         rq = RequestEvent.objects.get()
         self.assertTrue(rq.response_time > 0)
+        self.assertEqual(rq.resources, 'layer={}'.format(l.typename))
+        self.assertEqual(rq.request_method, 'GET')
+
+    def test_gn_error(self):
+        l = Layer.objects.all().first()
+        self.client.login(username=self.user, password=self.passwd)
+        resp = self.client.get(reverse('layer_detail', args=('nonex',)), **{"HTTP_USER_AGENT": self.ua})
+
+        self.assertEqual(RequestEvent.objects.all().count(), 1)
+        rq = RequestEvent.objects.get()
+        self.assertEqual(ExceptionEvent.objects.all().count(), 1)
+        eq = ExceptionEvent.objects.get()
+        self.assertEqual('django.http.response.Http404', eq.error_type)
+
+
+
+        
