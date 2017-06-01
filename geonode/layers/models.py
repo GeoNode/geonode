@@ -89,6 +89,7 @@ class Style(models.Model):
             logger.error("SLD URL is empty for Style %s" % self.name.encode('utf-8'))
             return None
 
+
 class LayerManager(ResourceBaseManager):
 
     def __init__(self):
