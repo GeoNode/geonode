@@ -48,9 +48,13 @@ if 'LOCAL_GEOSERVER' in locals():
     MAP_BASELAYERS.remove(LOCAL_GEOSERVER)
     del LOCAL_GEOSERVER
 
+
+# Change context processors
 geoserver_context_processor = 'geonode.geoserver.context_processors.geoserver_urls'
 if geoserver_context_processor in TEMPLATES[0]['OPTIONS']['context_processors']:
     TEMPLATES[0]['OPTIONS']['context_processors'].remove(geoserver_context_processor)
+qgis_server_context_processor = 'geonode.qgis_server.context_processors.qgis_server_urls'
+TEMPLATES[0]['OPTIONS']['context_processors'].append(qgis_server_context_processor)
 
 # Leaflet config
 LAYER_PREVIEW_LIBRARY = 'leaflet'

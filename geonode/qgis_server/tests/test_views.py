@@ -1,0 +1,43 @@
+# -*- coding: utf-8 -*-
+#########################################################################
+#
+# Copyright (C) 2016 OSGeo
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program. If not, see <http://www.gnu.org/licenses/>.
+#
+#########################################################################
+
+from django.test import TestCase
+from django.test.client import RequestFactory
+
+from geonode.qgis_server.context_processors import qgis_server_urls
+
+
+class ViewsTest(TestCase):
+
+    def test_default_context(self):
+        """Test default context provided by qgis_server."""
+        request = RequestFactory().get('/')
+
+        context = qgis_server_urls(request)
+
+        # Necessary context to ensure compatibility with views
+        # Some view needs these context to do some javascript logic.
+        self.assertIn('UPLOADER_URL', context)
+        self.assertIn('MAPFISH_PRINT_ENABLED', context)
+        self.assertIn('PRINT_NG_ENABLED', context)
+        self.assertIn('GEONODE_SECURITY_ENABLED', context)
+        self.assertIn('GEOGIG_ENABLED', context)
+        self.assertIn('TIME_ENABLED', context)
+        self.assertIn('MOSAIC_ENABLED', context)
