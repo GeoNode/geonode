@@ -83,8 +83,15 @@ urlpatterns = patterns(
         map_thumbnail,
         name='qgis-server-map-thumbnail'
     ),
+    # WMS entry point, this URL is not specific to WMS, you should remove it ?
     url(
         r'^qgis-server/wms/$',
+        qgis_server_request,
+        name='qgis-server-request'
+    ),
+    # Generic OGC entry points
+    url(
+        r'^qgis-server/ogc/$',
         qgis_server_request,
         name='qgis-server-request'
     ),
