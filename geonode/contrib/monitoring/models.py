@@ -51,17 +51,24 @@ class Host(models.Model):
     active = models.BooleanField(null=False, blank=False, default=True)
 
 
+    def __str__(self):
+        return 'Host: {} ({})'.format(self.name, self.ip)
+
 class ServiceType(models.Model):
     TYPE_GEONODE = 'geonode'
     TYPE_GEOSERVER = 'geoserver'
-    TYPE_HOST = 'host'
+    TYPE_HOST_GN = 'hostgeonode'
+    TYPE_HOST_GS = 'hostgeoserver'
 
     TYPES = ((TYPE_GEONODE, _("GeoNode"),),
              (TYPE_GEOSERVER, _("GeoServer"),),
-             (TYPE_HOST, _("Host",),),
+             (TYPE_HOST_GS, _("Host (GeoServer)",),),
+             (TYPE_HOST_GN, _("Host (GeoNode)",),),
              )
     name = models.CharField(max_length=255, unique=True, blank=False, null=False, choices=TYPES)
 
+    def __str__(self):
+        return 'Service Type: {}'.format(self.name)
 
 class Service(models.Model):
     name = models.CharField(max_length=255, unique=True, blank=False, null=False)
@@ -71,7 +78,10 @@ class Service(models.Model):
     service_type = models.ForeignKey(ServiceType, null=False)
     active = models.BooleanField(null=False, blank=False, default=True)
     notes = models.TextField(null=True, blank=True)
+    url = models.URLField(null=True, blank=True, default='')
 
+    def __str__(self):
+        return 'Service: {}@{}'.format(self.name, self.host.name)
 
 class MetricType(models.Model):
     TYPE_COUNTER = 'counter'
@@ -306,7 +316,7 @@ class Event(models.Model):
 
 class BuiltIns(object):
     metric_types = (MetricType.TYPE_COUNTER, MetricType.TYPE_RATE, MetricType.TYPE_VALUE,)
-    service_types = (ServiceType.TYPE_GEONODE, ServiceType.TYPE_GEOSERVER, ServiceType.TYPE_HOST,)
+    service_types = (ServiceType.TYPE_GEONODE, ServiceType.TYPE_GEOSERVER, ServiceType.TYPE_HOST_GN, ServiceType.TYPE_HOST_GS,)
     geonode_metrics = ('requests', 'requests.wms', 'requests.wfs', 'requests.wcs', 'requests.layer',
                        'requests.document', 'requests.map', 'requests.admin', 'requests.response',
                        'requests.response.time', 'requests.response.ok', 'requests.response.error',

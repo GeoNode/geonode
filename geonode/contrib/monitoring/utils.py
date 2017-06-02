@@ -18,13 +18,19 @@
 #
 #########################################################################
 
+import os
 import time
 import threading
 import traceback
 import Queue
 import logging
 
+from xml.etree import ElementTree as etree
+from bs4 import BeautifulSoup as bs
+import requests
+
 from geonode.contrib.monitoring.models import RequestEvent, ExceptionEvent
+
 
 class MonitoringHandler(logging.Handler):
 
@@ -64,3 +70,43 @@ class RequestToMonitoringThread(threading.Thread):
                 item = q.get()
                 req, resp = item
                 re = RequestEvent.from_geonode(self.service, req, resp)
+
+
+class GeoServerMonitorClient(object):
+    
+    REPORT_FORMATS = ('html', 'xml', 'json',)
+
+    def __init__(self, base_url):
+        self.base_url = base_url
+
+    def get_href(self, link, format=None):
+        href = link['href']
+        if format is None:
+            return href
+        if format in self.REPORT_FORMATS:
+            href, ext = os.path.splitext(href)
+            return '{}.{}'.format(href, format)
+        return format
+
+    def get_requests(self, format=None):
+        """
+        Returns list of requests from monitoring
+        """
+        rest_url = '{}rest/monitor/requests/'.format(self.base_url)
+        resp = requests.get(rest_url)
+        doc = bs(resp.content)
+        links = doc.find_all('a')
+        for l in links:
+            if l.get('href').startswith(self.base_url):
+                href = self.get_href(l, format)
+                yield self.get_request(href) 
+
+    def get_request(self, href):
+        r = requests.get(href)
+        try:
+            return r.json()
+        except ValueError, TypeError:
+            try:
+                return etree.fromstring(r.content)
+            except Exception:
+                return bs(r.content)
