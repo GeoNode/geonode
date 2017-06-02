@@ -20,10 +20,11 @@
 
 import os
 import logging
+from datetime import datetime
 
-import requests
 from pydash import services as pydash
 from geonode.contrib.monitoring.utils import GeoServerMonitorClient
+from geonode.contrib.monitoring.models import RequestEvent
 
 log = logging.getLogger(__name__)
 
@@ -46,16 +47,17 @@ def get_mem():
         percent = (100 - ((freemem * 100) / allmem))
         usage = (allmem - freemem)
 
-        mem_usage = {'all': allmem, 
-                     'usage': usage, 
-                     'buffers': buffers, 
-                     'free': freemem, 
+        mem_usage = {'all': allmem,
+                     'usage': usage,
+                     'buffers': buffers,
+                     'free': freemem,
                      'percent': percent}
         data = mem_usage
 
     except Exception as err:
         data = str(err)
     return data
+
 
 def get_disk():
     """
@@ -89,7 +91,8 @@ class BaseServiceExpose(object):
     @classmethod
     def get_name(cls):
         n = cls.__name__
-        return cls[:len('serviceexpose')].lower()
+        return n[:len('serviceexpose')].lower()
+
 
 class HostGeoNodeServiceExpose(BaseServiceExpose):
 
@@ -104,7 +107,7 @@ class HostGeoNodeServiceExpose(BaseServiceExpose):
         except (AttributeError, OSError,):
             load = []
         mem = get_mem()
-        
+
         data = {'uptime': uptime,
                 'network': [],
                 'disks': {'df': df,
@@ -119,14 +122,15 @@ class HostGeoNodeServiceExpose(BaseServiceExpose):
                                     'traffic': pydash.get_traffic(ip)})
         return data
 
+
 class GeoNodeServiceExpose(BaseServiceExpose):
-    
+
     def expose(self, *args, **kwargs):
         pass
 
 
 class BaseServiceHandler(object):
-    
+
     def __init__(self, service):
         self.service = service
         self.setup()
@@ -135,6 +139,19 @@ class BaseServiceHandler(object):
         pass
 
     def collect(self):
+        now = datetime.now()
+        if self.service.last_check:
+            if self.service.last_check + self.service.check_interval > now:
+                log.warning("Next check too soon")
+                return
+        self.service.last_check = now
+        self.service.save()
+        return self._collect()
+
+    def _collect(self):
+        raise NotImplemented()
+
+    def handle_collected(self):
         raise NotImplemented()
 
     @classmethod
@@ -142,11 +159,15 @@ class BaseServiceHandler(object):
         n = cls.__name__
         return n[:-len('service')].lower()
 
+
 class GeoNodeService(BaseServiceHandler):
 
-    def collect(self):
+    def _collect(self):
         return
-     
+
+    def handle_collected(self, *args):
+        pass
+
 
 class GeoServerService(BaseServiceHandler):
 
@@ -155,17 +176,23 @@ class GeoServerService(BaseServiceHandler):
             raise ValueError("Monitoring is not configured to fetch from %s" % self.service.name)
         self.gs_monitor = GeoServerMonitorClient(self.service.url)
 
-    def collect(self):
+    def _collect(self):
         requests = list(self.gs_monitor.get_requests(format='json'))
         return requests
 
+    def handle_collected(self, requests):
+        for r in requests:
+            RequestEvent.from_geoserver(self.service, r)
+
+
 class HostGeoServerService(BaseServiceHandler):
-    
-    def collect(self):
+
+    def _collect(self):
         pass
 
 
 services = dict((c.get_name(), c,) for c in (GeoNodeService, GeoServerService,))
+
 
 def get_for_service(sname):
     return services[sname]

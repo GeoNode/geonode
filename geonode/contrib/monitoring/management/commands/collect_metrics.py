@@ -60,4 +60,7 @@ class Command(BaseCommand):
         print('checking', service.name)
         Handler = get_for_service(service.service_type.name)
         h = Handler(service)
-        h.collect()
+        collected = h.collect()
+        if collected:
+            h.handle_collected(collected)
+

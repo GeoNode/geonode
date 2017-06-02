@@ -147,7 +147,7 @@ class RequestEvent(models.Model):
     response_status = models.PositiveIntegerField(null=False, blank=False)
     response_size = models.PositiveIntegerField(null=False, default=0)
     response_time = models.PositiveIntegerField(null=False, default=0, help_text=_("Response processing time in ms"))
-    response_type = models.CharField(max_length=255, null=False, default='')
+    response_type = models.CharField(max_length=255, null=True, blank=True, default='')
     user_agent = models.CharField(max_length=255, null=True, blank=True, default=None)
     user_agent_family = models.CharField(max_length=255, null=True, default=None, blank=True)
     client_ip = models.GenericIPAddressField(null=False)
@@ -157,7 +157,7 @@ class RequestEvent(models.Model):
     client_region = models.CharField(max_length=255, null=True, default=None, blank=True)
     client_city = models.CharField(max_length=255, null=True, default=None, blank=True)
 
-    custom_id = models.CharField(max_length=255, null=True, default=None, db_index=True)
+    custom_id = models.CharField(max_length=255, null=True, default=None, blank=True, db_index=True)
 
     @staticmethod
     def _get_geonode_resources(request):
@@ -253,15 +253,17 @@ class RequestEvent(models.Model):
 
         start_time = parse_datetime(rd['startTime'])
 
+        print(rd)
+        rl = rd['responseLength']
         data = {'created': start_time,
                 'received': received,
                 'host': rd['host'],
                 'service': service,
                 'request_path': rd['path'],
                 'request_method': rd['httpMethod'],
-                'resources': rd['resources']['string'] if rd['service'] in cls._ows_types else [],
+                'resources': rd['resources']['string'] if rd.get('service') in cls._ows_types else [],
                 'response_status': rd['responseStatus'],
-                'response_size': rd['responseLength'],
+                'response_size': rl[0] if isinstance(rl, list) else rl,
                 'response_type': rd.get('responseContentType'),
                 'response_time': rd['totalTime'],
                 'user_agent': ua,
