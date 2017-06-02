@@ -24,6 +24,8 @@ import zipfile
 import StringIO
 import urllib2
 import json
+import requests
+import shutil
 from imghdr import what as image_format
 from urllib import urlretrieve
 
@@ -33,6 +35,7 @@ from django.db.models import ObjectDoesNotExist
 from django.core.urlresolvers import reverse
 from django.contrib.gis.gdal import SpatialReference, CoordTransform
 from django.contrib.gis.geos import Point
+from django.shortcuts import get_object_or_404
 
 from geonode.maps.models import Map
 from geonode.layers.models import Layer
@@ -46,18 +49,8 @@ QGIS_SERVER_CONFIG = settings.QGIS_SERVER_CONFIG
 
 
 def download_zip(request, layername, access_token=None):
-    try:
-        layer = Layer.objects.get(name=layername)
-    except ObjectDoesNotExist:
-        logger.debug('No layer found for %s' % layername)
-        return
-
-    try:
-        qgis_layer = QGISServerLayer.objects.get(layer=layer)
-    except ObjectDoesNotExist:
-        logger.debug('No QGIS Server Layer for existing layer %s' % layername)
-        return
-
+    layer = get_object_or_404(Layer, name=layername)
+    qgis_layer = get_object_or_404(QGISServerLayer, layer=layer)
     basename, _ = os.path.splitext(qgis_layer.base_layer_path)
     # Files (local path) to put in the .zip
     filenames = []
@@ -103,20 +96,8 @@ def download_zip(request, layername, access_token=None):
 
 
 def legend(request, layername, layertitle=None, access_token=None):
-    try:
-        layer = Layer.objects.get(name=layername)
-    except ObjectDoesNotExist:
-        msg = 'No layer found for %s' % layername
-        logger.debug(msg)
-        raise Http404(msg)
-
-    try:
-        qgis_layer = QGISServerLayer.objects.get(layer=layer)
-    except ObjectDoesNotExist:
-        msg = 'No QGIS Server Layer for existing layer %s' % layername
-        logger.debug(msg)
-        raise Http404(msg)
-
+    layer = get_object_or_404(Layer, name=layername)
+    qgis_layer = get_object_or_404(QGISServerLayer, layer=layer)
     basename, _ = os.path.splitext(qgis_layer.base_layer_path)
 
     legend_path = QGIS_SERVER_CONFIG['legend_path']
@@ -141,15 +122,14 @@ def legend(request, layername, layertitle=None, access_token=None):
             'FORMAT': 'image/png',
             'TILED': 'true',
             'TRANSPARENT': 'true',
-            'LEGEND_OPTIONS': 'fontAntiAliasing:true;fontSize:11;fontName:Arial'
+            'LEGEND_OPTIONS': (
+                'fontAntiAliasing:true;fontSize:11;fontName:Arial')
         }
 
-        url = qgis_server + '?'
-        for param, value in query_string.iteritems():
-            url += param + '=' + value + '&'
-
-        urlretrieve(url, legend_filename)
-        logger.info(url)
+        response = requests.get(qgis_server, params=query_string, stream=True)
+        with open(legend_filename, 'wb') as out_file:
+            shutil.copyfileobj(response.raw, out_file)
+        del response
 
         if image_format(legend_filename) != 'png':
             logger.error('%s is not valid PNG.' % legend_filename)
@@ -164,12 +144,7 @@ def legend(request, layername, layertitle=None, access_token=None):
 
 def map_thumbnail(request, map_id):
     logger.debug('Fetching thumbnail for the map %s.' % map_id)
-    try:
-        map_object = Map.objects.get(id=map_id)
-    except ObjectDoesNotExist:
-        msg = 'Maps not found for %s' % map_id
-        logger.debug(msg)
-        raise Http404(msg)
+    map_object = get_object_or_404(Map, id=id)
 
     map_file = 'map_%s' % map_id
     map_project = os.path.join(
@@ -224,12 +199,10 @@ def map_thumbnail(request, map_id):
             'FORMAT_OPTIONS': 'dpi:96'
         }
 
-        url = qgis_server + '?'
-        for param, value in query_string.iteritems():
-            url += param + '=' + value + '&'
-
-        urlretrieve(url, thumbnail_filename)
-        logger.info(url)
+        response = requests.get(qgis_server, params=query_string, stream=True)
+        with open(thumbnail_filename, 'wb') as out_file:
+            shutil.copyfileobj(response.raw, out_file)
+        del response
 
         if image_format(thumbnail_filename) != 'png':
             logger.error('%s is not valid PNG.' % thumbnail_filename)
@@ -244,20 +217,8 @@ def map_thumbnail(request, map_id):
 
 
 def thumbnail(request, layername):
-    try:
-        layer = Layer.objects.get(name=layername)
-    except ObjectDoesNotExist:
-        msg = 'No layer found for %s' % layername
-        logger.debug(msg)
-        raise Http404(msg)
-
-    try:
-        qgis_layer = QGISServerLayer.objects.get(layer=layer)
-    except ObjectDoesNotExist:
-        msg = 'No QGIS Server Layer for existing layer %s' % layername
-        logger.debug(msg)
-        raise Http404(msg)
-
+    layer = get_object_or_404(Layer, name=layername)
+    qgis_layer = get_object_or_404(QGISServerLayer, layer=layer)
     basename, _ = os.path.splitext(qgis_layer.base_layer_path)
 
     thumbnail_path = QGIS_SERVER_CONFIG['thumbnail_path']
@@ -309,12 +270,10 @@ def thumbnail(request, layername):
             'FORMAT_OPTIONS': 'dpi:96'
         }
 
-        url = qgis_server + '?'
-        for param, value in query_string.iteritems():
-            url += param + '=' + value + '&'
-
-        urlretrieve(url, thumbnail_filename)
-        logger.info(url)
+        response = requests.get(qgis_server, params=query_string, stream=True)
+        with open(thumbnail_filename, 'wb') as out_file:
+            shutil.copyfileobj(response.raw, out_file)
+        del response
 
         if image_format(thumbnail_filename) != 'png':
             logger.error('%s is not valid PNG.' % thumbnail_filename)
@@ -333,20 +292,8 @@ def tile(request, layername, z, x, y):
     y = int(y)
     z = int(z)
 
-    try:
-        layer = Layer.objects.get(name=layername)
-    except ObjectDoesNotExist:
-        msg = 'No layer found for %s' % layername
-        logger.debug(msg)
-        raise Http404(msg)
-
-    try:
-        qgis_layer = QGISServerLayer.objects.get(layer=layer)
-    except ObjectDoesNotExist:
-        msg = 'No QGIS Server Layer for existing layer %s' % layername
-        logger.debug(msg)
-        raise Http404(msg)
-
+    layer = get_object_or_404(Layer, name=layername)
+    qgis_layer = get_object_or_404(QGISServerLayer, layer=layer)
     basename, _ = os.path.splitext(qgis_layer.base_layer_path)
 
     tile_path = QGIS_SERVER_CONFIG['tile_path']
@@ -394,11 +341,10 @@ def tile(request, layername, z, x, y):
             'FORMAT_OPTIONS': 'dpi:96'
         }
 
-        url = qgis_server + '?'
-        for param, value in query_string.iteritems():
-            url += param + '=' + value + '&'
-
-        urlretrieve(url, tile_filename)
+        response = requests.get(qgis_server, params=query_string, stream=True)
+        with open(tile_filename, 'wb') as out_file:
+            shutil.copyfileobj(response.raw, out_file)
+        del response
 
         if image_format(tile_filename) != 'png':
             logger.error('%s is not valid PNG.' % tile_filename)
@@ -412,20 +358,8 @@ def tile(request, layername, z, x, y):
 
 
 def geotiff(request, layername, access_token=None):
-    try:
-        layer = Layer.objects.get(name=layername)
-    except ObjectDoesNotExist:
-        msg = 'No layer found for %s' % layername
-        logger.debug(msg)
-        raise Http404(msg)
-
-    try:
-        qgis_layer = QGISServerLayer.objects.get(layer=layer)
-    except ObjectDoesNotExist:
-        msg = 'No QGIS Server Layer for existing layer %s' % layername
-        logger.debug(msg)
-        return Http404(msg)
-
+    layer = get_object_or_404(Layer, name=layername)
+    qgis_layer = get_object_or_404(QGISServerLayer, layer=layer)
     basename, _ = os.path.splitext(qgis_layer.base_layer_path)
 
     # get geotiff file if exists
@@ -453,12 +387,7 @@ def wms_get_map(params):
 
     layer = Layer.objects.get(typename=params.pop('LAYERS'))
     params['LAYERS'] = layer.name
-    try:
-        qgis_layer = QGISServerLayer.objects.get(layer=layer)
-    except ObjectDoesNotExist:
-        msg = 'No QGIS Server Layer for existing layer %s' % layer.name
-        logger.debug(msg)
-        raise Http404(msg)
+    qgis_layer = get_object_or_404(QGISServerLayer, layer=layer)
 
     basename, _ = os.path.splitext(qgis_layer.base_layer_path)
 
@@ -615,6 +544,8 @@ def qgis_server_request(request):
         if params.get('REQUEST') == 'DescribeFeatureType':
             return wfs_describe_feature_type(params)
         # May be we need to implement for GetFeature, Transaction also
+
+    raise Http404('OGC service not found.')
 
 
 def qgis_server_pdf(request):
