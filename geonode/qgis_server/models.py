@@ -45,6 +45,8 @@ class QGISServerLayer(models.Model):
 
     geotiff_format = ['tif', 'tiff']
 
+    ascii_format = ['asc']
+
     layer = models.OneToOneField(
         Layer,
         primary_key=True,

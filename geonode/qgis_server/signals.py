@@ -195,22 +195,41 @@ def qgis_server_post_save(instance, sender, **kwargs):
         )
     )
 
-    # geotiff link
-    geotiff_url = reverse(
-        'qgis-server-geotiff', kwargs={'layername': instance.name})
-    geotiff_url = urljoin(base_url, geotiff_url)
-    logger.debug('geotif_url: %s' % geotiff_url)
+    if original_ext.split('.')[-1] in QGISServerLayer.geotiff_format:
+        # geotiff link
+        geotiff_url = reverse(
+            'qgis-server-geotiff', kwargs={'layername': instance.name})
+        geotiff_url = urljoin(base_url, geotiff_url)
+        logger.debug('geotif_url: %s' % geotiff_url)
 
-    Link.objects.get_or_create(
-        resource=instance.resourcebase_ptr,
-        url=geotiff_url,
-        defaults=dict(
-            extension='tif',
-            name="GeoTIFF",
-            mime='image/tif',
-            link_type='image'
+        Link.objects.get_or_create(
+            resource=instance.resourcebase_ptr,
+            url=geotiff_url,
+            defaults=dict(
+                extension='tif',
+                name="GeoTIFF",
+                mime='image/tif',
+                link_type='image'
+            )
         )
-    )
+
+    if original_ext.split('.')[-1] in QGISServerLayer.ascii_format:
+        # ascii link
+        ascii_url = reverse(
+            'qgis-server-ascii', kwargs={'layername': instance.name})
+        ascii_url = urljoin(base_url, ascii_url)
+        logger.debug('ascii_url: %s' % ascii_url)
+
+        Link.objects.get_or_create(
+            resource=instance.resourcebase_ptr,
+            url=ascii_url,
+            defaults=dict(
+                extension='asc',
+                name="ASCII",
+                mime='image/tif',
+                link_type='image'
+            )
+        )
 
     # Create legend link
     legend_url = reverse(

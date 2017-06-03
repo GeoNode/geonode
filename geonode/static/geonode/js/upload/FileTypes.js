@@ -9,6 +9,11 @@ define(['./FileType'], function (FileType) {
             main: 'shp',
             requires: ['shp', 'prj', 'dbf', 'shx']
         });
+    file_types['ASCII'] = new FileType({
+            name: gettext('ASCII Text File'),
+            format: 'raster',
+            main: 'asc'
+        });
     file_types['TIF'] = new FileType({
             name: gettext('GeoTIFF'),
             format: 'raster',
