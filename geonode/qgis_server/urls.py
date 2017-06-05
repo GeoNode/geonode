@@ -35,7 +35,8 @@ from geonode.qgis_server.views import (
 urlpatterns = patterns(
     '',
     url(
-        r'^qgis-server/download-zip/(?P<layername>[^/]*)'
+        r'^qgis-server/download-zip/'
+        r'(?P<layername>[\w]*)'
         r'[\?]?'
         r'(?:&access_token=(?P<access_token>[\w]*))?$',
         download_zip,

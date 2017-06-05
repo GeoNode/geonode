@@ -43,7 +43,7 @@ from geoserver.catalog import FailedRequestError, UploadError
 from geonode.decorators import on_ogc_backend
 from geonode.layers.models import Layer
 from geonode.maps.models import Map
-from geonode import GeoNodeException, geoserver
+from geonode import GeoNodeException, geoserver, qgis_server
 from geonode.layers.utils import (
     upload,
     file_upload,
@@ -179,10 +179,6 @@ class GeoNodeMapTest(TestCase):
 
     # geonode.maps.utils
 
-    @unittest.skipIf(
-        hasattr(settings, 'SKIP_GEOSERVER_TEST') and
-        settings.SKIP_GEOSERVER_TEST,
-        'Temporarily skip this test until fixed')
     def test_raster_upload(self):
         """Test that the wcs links are correctly created for a raster"""
         filename = os.path.join(gisdata.GOOD_DATA, 'raster/test_grid.tif')
@@ -192,6 +188,17 @@ class GeoNodeMapTest(TestCase):
             if link.mime == 'image/tiff':
                 wcs_link = True
         self.assertTrue(wcs_link)
+
+    @on_ogc_backend(qgis_server.BACKEND_PACKAGE)
+    def test_zipped_files(self):
+        """Test that the zipped files is created for raster."""
+        filename = os.path.join(gisdata.GOOD_DATA, 'raster/test_grid.tif')
+        uploaded = file_upload(filename)
+        zip_link = False
+        for link in uploaded.link_set.all():
+            if link.mime == 'ZIP':
+                zip_link = True
+        self.assertTrue(zip_link)
 
     def test_layer_upload(self):
         """Test that layers can be uploaded to running GeoNode/GeoServer

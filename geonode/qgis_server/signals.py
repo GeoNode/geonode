@@ -98,9 +98,12 @@ def qgis_server_post_save(instance, sender, **kwargs):
     base_filename, original_ext = os.path.splitext(geonode_layer_path)
     extensions = QGISServerLayer.accepted_format
 
+    is_shapefile = False
+
     for ext in extensions:
         if os.path.exists(base_filename + '.' + ext):
             logger.debug('Copying %s' % base_filename + '.' + ext)
+            is_shapefile = is_shapefile or ext == 'shp'
             try:
                 if created:
                     # Assuming different layer has different filename because
@@ -139,13 +142,20 @@ def qgis_server_post_save(instance, sender, **kwargs):
         kwargs={'layername': instance.name})
     zip_download_url = urljoin(base_url, zip_download_url)
     logger.debug('zip_download_url: %s' % zip_download_url)
+    if is_shapefile:
+        link_name = 'Zipped Shapefile'
+        link_mime = 'SHAPE-ZIP'
+    else:
+        link_name = 'Zipped All Files'
+        link_mime = 'ZIP'
+
     Link.objects.get_or_create(
         resource=instance.resourcebase_ptr,
         url=zip_download_url,
         defaults=dict(
             extension='zip',
-            name='Zipped Shapefile',
-            mime='SHAPE-ZIP',
+            name=link_name,
+            mime=link_mime,
             url=zip_download_url,
             link_type='data'
         )
@@ -206,9 +216,9 @@ def qgis_server_post_save(instance, sender, **kwargs):
             resource=instance.resourcebase_ptr,
             url=geotiff_url,
             defaults=dict(
-                extension='tif',
+                extension=original_ext.split('.')[-1],
                 name="GeoTIFF",
-                mime='image/tif',
+                mime='image/tiff',
                 link_type='image'
             )
         )
@@ -224,9 +234,9 @@ def qgis_server_post_save(instance, sender, **kwargs):
             resource=instance.resourcebase_ptr,
             url=ascii_url,
             defaults=dict(
-                extension='asc',
+                extension=original_ext.split('.')[-1],
                 name="ASCII",
-                mime='image/tif',
+                mime='image/asc',
                 link_type='image'
             )
         )

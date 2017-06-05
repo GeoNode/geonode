@@ -881,7 +881,8 @@ DOWNLOAD_FORMATS_RASTER = [
     'Tiles',
     'GML',
     'GZIP',
-    'ASCII'
+    'ASCII',
+    'Zipped All Files'
 ]
 
 ACCOUNT_NOTIFY_ON_PASSWORD_CHANGE = False
