@@ -197,6 +197,8 @@
                         'opacity': 0.8
                     });
 
+        {% elif resource.ows_url %}
+
             L.tileLayer.betterWms('{{ resource.ows_url|safe }}', {
               layers: '{{ resource.typename }}',
               transparent: true,

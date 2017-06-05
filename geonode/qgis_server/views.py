@@ -201,7 +201,7 @@ def tile(request, layername, z, x, y):
             os.remove(tile_filename)
 
     if not os.path.exists(tile_filename):
-        return HttpResponse('The legend could not be found.', status=409)
+        return HttpResponse('The tile could not be found.', status=409)
 
     with open(tile_filename, 'rb') as f:
         return HttpResponse(f.read(), content_type='image/png')
