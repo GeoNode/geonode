@@ -2,6 +2,7 @@
 from __future__ import unicode_literals
 
 from django.db import migrations, models
+from datetime import datetime
 
 
 class Migration(migrations.Migration):
@@ -38,5 +39,11 @@ class Migration(migrations.Migration):
             model_name='groupprofile',
             name='categories',
             field=models.ManyToManyField(related_name='groups', to='groups.GroupCategory', blank=True),
+        ),
+        migrations.AddField(
+            model_name='groupprofile',
+            name='created',
+            field=models.DateTimeField(default=datetime.now(), auto_now_add=True),
+            preserve_default=False,
         ),
     ]

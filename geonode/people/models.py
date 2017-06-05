@@ -149,6 +149,9 @@ def profile_post_save(instance, sender, **kwargs):
     from django.contrib.auth.models import Group
     anon_group, created = Group.objects.get_or_create(name='anonymous')
     instance.groups.add(anon_group)
+    # do not create email, when user-account signup code is in use
+    if getattr(instance, '_disable_account_creation', False):
+        return
     # keep in sync Profile email address with Account email address
     if instance.email not in [u'', '', None] and not kwargs.get('raw', False):
         address, created = EmailAddress.objects.get_or_create(

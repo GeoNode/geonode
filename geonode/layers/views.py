@@ -672,9 +672,10 @@ def layer_metadata(request, layername, template='layers/layer_metadata.html', aj
         "category_form": category_form,
         "tkeywords_form": tkeywords_form,
         "viewer": viewer,
-        "preview":  getattr(settings, 'LAYER_PREVIEW_LIBRARY', 'leaflet'),
-        "crs":  getattr(settings, 'DEFAULT_MAP_CRS', 'EPSG:900913'),
-        "metadataxsl": metadataxsl
+        "preview": getattr(settings, 'LAYER_PREVIEW_LIBRARY', 'leaflet'),
+        "crs": getattr(settings, 'DEFAULT_MAP_CRS', 'EPSG:900913'),
+        "metadataxsl": metadataxsl,
+        "freetext_readonly": getattr(settings, 'FREETEXT_KEYWORDS_READONLY', False)
     }))
 
 

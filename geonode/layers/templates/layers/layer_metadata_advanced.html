@@ -74,7 +74,6 @@
         <div class="col-md-6 form-controls">
           {{ layer_form|as_bootstrap }}
         </div>
-        
         <div class="row">
           <div class="col-md-12">
             <label class="control-label required-field">{% trans "Category" %}</label>
@@ -90,7 +89,7 @@
               </div>
               <!-- div class="radio col-md-6">
                 <input type="radio" name="category_choice_field" value="{{ choice.0 }}"
-                  {% ifequal category_form.initial choice.0 %} checked="checked" {% endifequal %}> 
+                  {% ifequal category_form.initial choice.0 %} checked="checked" {% endifequal %}>
                   {{ choice.1 }}
                 </input>
               </div -->
@@ -145,5 +144,5 @@
 {% endblock %}
 {% block extra_script %}
 {{ block.super }}
- {% include 'metadata_form_js.html' %} 
+ {% include 'metadata_form_js.html' %}
 {% endblock %}
