@@ -36,7 +36,10 @@ except:
     # if not available, read in GeoSites pre_settings
     execfile(os.path.join(GEOSITES_ROOT, 'pre_settings.py'))
 
-SITE_ID = $SITE_ID  # flake8: noqa
+# invalid syntax error when building package
+# manually comment line below and uncomment the original SITE_NAME entry
+SITE_ID = 0
+#SITE_ID = $SITE_ID  # flake8: noqa
 SITE_NAME = '$SITE_NAME'
 # Should be unique for each site
 SECRET_KEY = "fbk3CC3N6jt1AU9mGIcI"
