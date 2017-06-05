@@ -38,6 +38,7 @@ class Command(BaseCommand):
     help = 'Migrate existing Layers and Maps on GeoNode'
 
     option_list = BaseCommand.option_list + (
+        helpers.Config.option,
         make_option(
             '-i',
             '--ignore-errors',
@@ -58,6 +59,7 @@ class Command(BaseCommand):
 
     def handle(self, **options):
         # ignore_errors = options.get('ignore_errors')
+        config = helpers.Config(options)
         backup_file = options.get('backup_file')
         owner = options.get('owner')
 
@@ -88,8 +90,8 @@ class Command(BaseCommand):
                     higher_pk = 0
 
                 # Restore Fixtures
-                for app_name, dump_name in zip(helpers.app_names, helpers.dump_names):
-                    for mig_name, mangler in zip(helpers.migrations, helpers.manglers):
+                for app_name, dump_name in zip(config.app_names, config.dump_names):
+                    for mig_name, mangler in zip(config.migrations, config.manglers):
                         if app_name == mig_name:
                             fixture_file = os.path.join(target_folder, dump_name+'.json')
 
