@@ -26,6 +26,7 @@ from django.utils.translation import ugettext_noop as _
 
 from geonode.contrib.monitoring.models import Service
 from geonode.contrib.monitoring.service_handlers import get_for_service
+from geonode.contrib.monitoring.collector import CollectorAPI
 
 log = logging.getLogger(__name__)
 
@@ -53,14 +54,26 @@ class Command(BaseCommand):
                     print('    not checked yet')
                 print(' ')
             return
+        c = CollectorAPI()
         for s in services:
-            self.run_check(s)
+            try:
+                self.run_check(s, collector=c)
+            except Exception, err:
+                log.error("Cannot collect from %s: %s", s, err, exc_info=err)
 
-    def run_check(self, service):
+    def run_check(self, service, collector):
         print('checking', service.name)
         Handler = get_for_service(service.service_type.name)
         h = Handler(service)
         collected = h.collect()
         if collected:
             h.handle_collected(collected)
+        requests = h.get_collected_set()
+        q = requests.order_by('created')
+        if requests:
+            c.process_requests(service, requests, q.first().created, q.last().created)
+
+        print(len(requests))
+        
+
 

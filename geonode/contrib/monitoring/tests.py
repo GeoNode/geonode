@@ -25,6 +25,7 @@ from django.contrib.auth import get_user_model
 from django.core.urlresolvers import reverse
 
 from geonode.contrib.monitoring.models import RequestEvent, Host, Service, ServiceType, populate, ExceptionEvent
+from geonode.contrib.monitoring.collector import CollectorAPI
 from geonode.base.populate_test_data import create_models
 from geonode.layers.models import Layer
 from geonode.layers.populate_layers_data import create_layer_data
@@ -640,7 +641,7 @@ class RequestsTestCase(TestCase):
         self.assertEqual(RequestEvent.objects.all().count(), 1)
         rq = RequestEvent.objects.get()
         self.assertTrue(rq.response_time > 0)
-        self.assertEqual(rq.resources, 'layer={}'.format(l.typename))
+        self.assertEqual(list(rq.resources.all().values_list('name', 'type')), [(l.typename, u'layer',)])
         self.assertEqual(rq.request_method, 'GET')
 
     def test_gn_error(self):
@@ -655,5 +656,13 @@ class RequestsTestCase(TestCase):
         self.assertEqual('django.http.response.Http404', eq.error_type)
 
 
+    def test_service_handlers(self):
+        self.client.login(username=self.user, password=self.passwd)
+        for idx, l in enumerate(Layer.objects.all()):
+            for inum in range(0, idx+1):
+                self.client.get(reverse('layer_detail', args=(l.typename,)), **{"HTTP_USER_AGENT": self.ua})
+        requests = RequestEvent.objects.all()
 
-        
+        c = CollectorAPI()
+        q = requests.order_by('created')
+        c.process_requests(self.service, requests, q.last().created, q.first().created)

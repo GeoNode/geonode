@@ -83,42 +83,45 @@ class Service(models.Model):
     def __str__(self):
         return 'Service: {}@{}'.format(self.name, self.host.name)
 
-class MetricType(models.Model):
-    TYPE_COUNTER = 'counter'
-    TYPE_RATE = 'rate'
-    TYPE_VALUE = 'value'
-    TYPES = ((TYPE_COUNTER, _('Counter'),),
-             (TYPE_RATE, _('Rate'),),
-             (TYPE_VALUE, _('Value'),),
-             )
-    UNIT_NONE = ''
-    UNIT_BPS = 'bps'
-    UNIT_SECOND = 'second'
-    UNIT_BIT = 'bit'
-    UNIT_BYTE = 'byte'
-    UNIT_MINUTE = 'minute'
 
-    UNITS = ((UNIT_NONE, _('no unit'),),
-             (UNIT_BPS, _('bits per second',),),
-             (UNIT_SECOND, _('second'),),
-             (UNIT_BIT, _('bit'),),
-             (UNIT_BYTE, _('byte'),),
-             (UNIT_MINUTE, _('minute'),),
-             )
+class MonitoredResource(models.Model):
+    TYPE_EMPTY = ''
+    TYPE_LAYER = 'layer'
+    TYPE_MAP = 'map'
+    TYPE_DOCUMENT = 'document'
+    TYPE_STYLE = 'style'
+    TYPE_ADMIN = 'admin'
+    TYPE_OTHER = 'other'
 
-    name = models.CharField(max_length=32, choices=TYPES)
-    unit = models.CharField(max_length=32, choices=UNITS, default=UNIT_NONE)
+    TYPES = ((TYPE_EMPTY, _("No resource"),),
+             (TYPE_LAYER, _("Layer"),),
+             (TYPE_MAP, _("Map"),),
+             (TYPE_DOCUMENT, _("Document"),),
+             (TYPE_STYLE, _("Style"),),
+             (TYPE_ADMIN, _("Admin"),),
+             (TYPE_OTHER, _("Other"),))
 
+    name = models.CharField(max_length=255, null=False, blank=True, default='')
+    type = models.CharField(max_length=255, null=False, blank=False, choices=TYPES, default=TYPE_EMPTY)
+
+    class Meta:
+        unique_together = (('name', 'type',),)
+
+    def __str__(self):
+        return 'Monitored Resource: {} {}'.format(self.name, self.type)
 
 class Metric(models.Model):
     name = models.CharField(max_length=255, db_index=True)
-    type = models.ForeignKey(MetricType, null=False)
 
+    def __str__(self):
+        return "Metric: {}".format(self.name)
 
 class ServiceTypeMetric(models.Model):
     service_type = models.ForeignKey(ServiceType)
     metric = models.ForeignKey(Metric)
 
+    def __str__(self):
+        return '{} - {}'.format(self.service_type, self.metric)
 
 class RequestEvent(models.Model):
     _methods = 'get post head options put delete'.upper().split(' ')
@@ -141,7 +144,8 @@ class RequestEvent(models.Model):
     #  map=some map
     #
     # list is separated with newline
-    resources = models.TextField(blank=True, default='', help_text=_("Resources name (style, layer, document, map)"))
+    #resources = models.TextField(blank=True, default='', help_text=_("Resources name (style, layer, document, map)"))
+    resources = models.ManyToManyField(MonitoredResource, null=True, blank=True, help_text=_("List of resources affected"), related_name='requests')
 
     request_method = models.CharField(max_length=16, choices=METHODS)
     response_status = models.PositiveIntegerField(null=False, blank=False)
@@ -159,8 +163,16 @@ class RequestEvent(models.Model):
 
     custom_id = models.CharField(max_length=255, null=True, default=None, blank=True, db_index=True)
 
-    @staticmethod
-    def _get_geonode_resources(request):
+    @classmethod
+    def _get_resources(cls, type_name, resources_list):
+        out = []
+        for r in resources_list:
+            rinst, _= MonitoredResource.objects.get_or_create(name=r, type=type_name)
+            out.append(rinst)
+        return out
+
+    @classmethod
+    def _get_geonode_resources(cls, request):
         """
         Return serialized resources affected by request
         """
@@ -168,9 +180,8 @@ class RequestEvent(models.Model):
         resources = []
         for type_name in 'layer map document style'.split():
             res = rqmeta['resources'].get(type_name) or []
-            for r in res:
-                resources.append('{}={}'.format(type_name, r))
-        return '\n'.join(resources)
+            resources.extend(cls._get_resources(type_name, res))
+        return resources
 
     @staticmethod
     def _get_ua_family(ua):
@@ -185,7 +196,7 @@ class RequestEvent(models.Model):
             created = parse_datetime(created)
         _ended = rqmeta.get('finished', datetime.now())
         duration = (_ended - created).microseconds
-
+    
         ua = request.META['HTTP_USER_AGENT']
         ua_family = cls._get_ua_family(ua)
 
@@ -196,6 +207,7 @@ class RequestEvent(models.Model):
             ip = ip.split(':')[0]
             if settings.TEST and ip == 'testserver':
                 ip = '127.0.0.1'
+            ip = gethostbyname(ip)
             client_loc = geoip.city(ip)
 
             if client_loc:
@@ -203,14 +215,12 @@ class RequestEvent(models.Model):
                 country = client_loc['country_code']
                 region = client_loc['region']
                 city = client_loc['city']
-
         data = {'received': received,
                 'created': created,
                 'host': request.get_host(),
                 'service': service,
                 'request_path': request.get_full_path(),
                 'request_method': request.method,
-                'resources': cls._get_geonode_resources(request),
                 'response_status': response.status_code,
                 'response_size': response.get('Content-length') or len(response.getvalue()),
                 'response_type': response.get('Content-type'),
@@ -223,10 +233,15 @@ class RequestEvent(models.Model):
                 'client_country': country,
                 'client_region': region,
                 'client_city': city}
-        return cls.objects.create(**data)
+        inst = cls.objects.create(**data)
+        resources = cls._get_geonode_resources(request)
+        if resources:
+            inst.resources.add(*resources)
+            inst.save()
+        return inst
 
     @classmethod
-    def from_geoserver(cls, service, request_data):
+    def from_geoserver(cls, service, request_data, received=None):
         """
         Writes RequestEvent for data from audit log in GS
         """
@@ -237,7 +252,7 @@ class RequestEvent(models.Model):
         if not rd.get('status') == 'FINISHED':
             log.warning("request not finished %s", request_data)
             return
-        received = datetime.now()
+        received = received or datetime.now()
         ua = rd['remoteUserAgent']
         ua_family = cls._get_ua_family(ua)
         ip = rd['remoteAddr']
@@ -253,7 +268,6 @@ class RequestEvent(models.Model):
 
         start_time = parse_datetime(rd['startTime'])
 
-        print(rd)
         rl = rd['responseLength']
         data = {'created': start_time,
                 'received': received,
@@ -261,21 +275,26 @@ class RequestEvent(models.Model):
                 'service': service,
                 'request_path': rd['path'],
                 'request_method': rd['httpMethod'],
-                'resources': rd['resources']['string'] if rd.get('service') in cls._ows_types else [],
                 'response_status': rd['responseStatus'],
                 'response_size': rl[0] if isinstance(rl, list) else rl,
                 'response_type': rd.get('responseContentType'),
                 'response_time': rd['totalTime'],
                 'user_agent': ua,
                 'user_agent_family': ua_family,
+                'custom_id': rd['internalid'],
                 'client_ip': ip,
                 'client_lat': lat,
                 'client_lon': lon,
                 'client_country': country,
                 'client_region': region,
                 'client_city': city}
-
-        return cls.objects.create(**data)
+        inst = cls.objects.create(**data)
+        resources_names = rd['resources']['string'] if rd.get('service') in cls._ows_types else []
+        resources = cls._get_resources('layer', resources_names)
+        if resources:
+            inst.resources.add(*resources)
+            inst.save()
+        return inst
 
 
 class ExceptionEvent(models.Model):
@@ -284,7 +303,7 @@ class ExceptionEvent(models.Model):
     service = models.ForeignKey(Service)
     error_type = models.CharField(max_length=255, null=False, db_index=True)
     error_data = models.TextField(null=False, default='')
-    request = models.ForeignKey(RequestEvent)
+    request = models.ForeignKey(RequestEvent, related_name='exceptions')
 
     @classmethod
     def add_error(cls, from_service, error_type, stack_trace, request=None, created=None):
@@ -305,29 +324,74 @@ class ExceptionEvent(models.Model):
                                   request=request)
 
 
-class Event(models.Model):
-    created = models.DateTimeField(db_index=True, null=False)
-    received = models.DateTimeField(db_index=True, null=False)
-    service_type = models.ForeignKey(ServiceTypeMetric)
+class MetricLabel(models.Model):
+    name = models.TextField(null=False, blank=True, default='')
+
+    def __str__(self):
+        return 'Metric Label: {}'.format(self.name)
+
+class MetricValue(models.Model):
+    
+    valid_from = models.DateTimeField(db_index=True, null=False)
+    valid_to = models.DateTimeField(db_index=True, null=False)
+    service_metric = models.ForeignKey(ServiceTypeMetric)
     service = models.ForeignKey(Service)
+    resource = models.ForeignKey(MonitoredResource, related_name='metric_values')
+    label = models.ForeignKey(MetricLabel)
     value = models.CharField(max_length=255, null=False, blank=False)
     value_num = models.DecimalField(max_digits=16, decimal_places=4, null=True, default=None, blank=True)
     value_raw = models.TextField(null=True, default=None, blank=True)
     data = JSONField(null=False, default={})
 
+    class Meta:
+        unique_together = (('valid_from', 'valid_to', 'service', 'service_metric', 'resource', 'label',))
+
+    @classmethod
+    def add(cls, metric, valid_from, valid_to, service, label, value_raw, resource=None, value=None, value_num=None, data=None):
+        """
+        Create new MetricValue shortcut
+        """
+
+        service_metric = ServiceTypeMetric.objects.get(service_type=service.service_type, metric__name=metric)
+        label, _ = MetricLabel.objects.get_or_create(name=label)
+        if not resource:
+            resource, _ = MonitoredResource.objects.get_or_create(type=MonitoredResource.TYPE_EMPTY, name='')
+
+        print('adding stat', service, service_metric, label, resource, value_raw)
+        return cls.objects.create(valid_from=valid_from,
+                                  valid_to=valid_to,
+                                  service=service,
+                                  service_metric=service_metric,
+                                  label=label,
+                                  resource=resource,
+                                  value=value_raw,
+                                  value_raw=value_raw,
+                                  value_num=value_num,
+                                  data=data or {})
+
 
 class BuiltIns(object):
-    metric_types = (MetricType.TYPE_COUNTER, MetricType.TYPE_RATE, MetricType.TYPE_VALUE,)
     service_types = (ServiceType.TYPE_GEONODE, ServiceType.TYPE_GEOSERVER, ServiceType.TYPE_HOST_GN, ServiceType.TYPE_HOST_GS,)
-    geonode_metrics = ('requests', 'requests.wms', 'requests.wfs', 'requests.wcs', 'requests.layer',
-                       'requests.document', 'requests.map', 'requests.admin', 'requests.response',
-                       'requests.response.time', 'requests.response.ok', 'requests.response.error',
-                       'requests.response.size', 'request.response',
-                       )
+    geonode_metrics = ('request', 'request.count', 'request.ip', 'request.ua', 'request.ua.family', 'request.method',
+                       'request.country', 'request.region', 'request.city',
+                       'response', 'response.time', 'response.ok', 'response.error',
+                       'response.size', 'response.status.2xx', 'response.status.3xx', 'response.status.4xx', 'response.status.5xx',)
+
+
     geoserver_metrics = ('requests',)
     host_metrics = ('load.1m', 'load.5m', 'load.10m',)
 
 
 def populate():
+    for m in BuiltIns.geonode_metrics:
+        Metric.objects.get_or_create(name=m)
     for st in BuiltIns.service_types:
         ServiceType.objects.get_or_create(name=st)
+
+    for st in BuiltIns.service_types:
+        for m in BuiltIns.geonode_metrics:
+            _st = ServiceType.objects.get(name=st)
+            _m = Metric.objects.get(name=m)
+            ServiceTypeMetric.objects.get_or_create(service_type=_st, metric=_m)
+
+

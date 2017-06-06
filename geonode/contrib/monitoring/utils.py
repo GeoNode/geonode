@@ -24,12 +24,31 @@ import threading
 import traceback
 import Queue
 import logging
+import types
+import re
 
 from xml.etree import ElementTree as etree
 from bs4 import BeautifulSoup as bs
 import requests
 
 from geonode.contrib.monitoring.models import RequestEvent, ExceptionEvent
+
+
+class MonitoringFilter(logging.Filter):
+    def __init__(self, service, skip_urls = tuple, *args, **kwargs):
+        super(MonitoringFilter, self).__init__(*args, **kwargs)
+        self.service = service
+        self.skip_urls = skip_urls
+
+    def filter(self, record):
+        fp = record.request.get_full_path()
+        for skip_url in self.skip_urls:
+            if isinstance(skip_url, types.StringTypes):
+                if fp.startswith(skip_url):
+                    return False
+            elif isinstance(skip_url, re.RegexObject):
+                return skip_url.match(fp)
+        return record
 
 
 class MonitoringHandler(logging.Handler):

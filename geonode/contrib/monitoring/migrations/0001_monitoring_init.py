@@ -3,6 +3,7 @@ from __future__ import unicode_literals
 
 from django.db import migrations, models
 import jsonfield.fields
+import datetime
 
 
 class Migration(migrations.Migration):
@@ -11,18 +12,6 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
-        migrations.CreateModel(
-            name='Event',
-            fields=[
-                ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
-                ('created', models.DateTimeField(db_index=True)),
-                ('received', models.DateTimeField(db_index=True)),
-                ('value', models.CharField(max_length=255)),
-                ('value_num', models.DecimalField(default=None, null=True, max_digits=16, decimal_places=4, blank=True)),
-                ('value_raw', models.TextField(default=None, null=True, blank=True)),
-                ('data', jsonfield.fields.JSONField(default={})),
-            ],
-        ),
         migrations.CreateModel(
             name='ExceptionEvent',
             fields=[
@@ -39,6 +28,7 @@ class Migration(migrations.Migration):
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
                 ('name', models.CharField(unique=True, max_length=255)),
                 ('ip', models.GenericIPAddressField()),
+                ('active', models.BooleanField(default=True)),
             ],
         ),
         migrations.CreateModel(
@@ -49,11 +39,31 @@ class Migration(migrations.Migration):
             ],
         ),
         migrations.CreateModel(
-            name='MetricType',
+            name='MetricLabel',
             fields=[
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
-                ('name', models.CharField(max_length=32, choices=[(b'counter', b'Counter'), (b'rate', b'Rate'), (b'value', b'Value')])),
-                ('unit', models.CharField(default=b'', max_length=32, choices=[(b'', b'no unit'), (b'bps', b'bits per second'), (b'second', b'second'), (b'bit', b'bit'), (b'byte', b'byte'), (b'minute', b'minute')])),
+                ('name', models.TextField(default=b'', blank=True)),
+            ],
+        ),
+        migrations.CreateModel(
+            name='MetricValue',
+            fields=[
+                ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
+                ('valid_from', models.DateTimeField(db_index=True)),
+                ('valid_to', models.DateTimeField(db_index=True)),
+                ('value', models.CharField(max_length=255)),
+                ('value_num', models.DecimalField(default=None, null=True, max_digits=16, decimal_places=4, blank=True)),
+                ('value_raw', models.TextField(default=None, null=True, blank=True)),
+                ('data', jsonfield.fields.JSONField(default={})),
+                ('label', models.ForeignKey(to='monitoring.MetricLabel')),
+            ],
+        ),
+        migrations.CreateModel(
+            name='MonitoredResource',
+            fields=[
+                ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
+                ('name', models.CharField(default=b'', max_length=255, blank=True)),
+                ('type', models.CharField(default=b'', max_length=255, choices=[(b'', b'No resource'), (b'layer', b'Layer'), (b'map', b'Map'), (b'document', b'Document'), (b'style', b'Style'), (b'admin', b'Admin'), (b'other', b'Other')])),
             ],
         ),
         migrations.CreateModel(
@@ -70,7 +80,7 @@ class Migration(migrations.Migration):
                 ('response_status', models.PositiveIntegerField()),
                 ('response_size', models.PositiveIntegerField(default=0)),
                 ('response_time', models.PositiveIntegerField(default=0, help_text=b'Response processing time in ms')),
-                ('response_type', models.CharField(default=b'', max_length=255)),
+                ('response_type', models.CharField(default=b'', max_length=255, null=True, blank=True)),
                 ('user_agent', models.CharField(default=None, max_length=255, null=True, blank=True)),
                 ('user_agent_family', models.CharField(default=None, max_length=255, null=True, blank=True)),
                 ('client_ip', models.GenericIPAddressField()),
@@ -79,7 +89,7 @@ class Migration(migrations.Migration):
                 ('client_country', models.CharField(default=None, max_length=255, null=True, blank=True)),
                 ('client_region', models.CharField(default=None, max_length=255, null=True, blank=True)),
                 ('client_city', models.CharField(default=None, max_length=255, null=True, blank=True)),
-                ('custom_id', models.CharField(default=None, max_length=255, null=True, db_index=True)),
+                ('custom_id', models.CharField(default=None, max_length=255, null=True, db_index=True, blank=True)),
             ],
         ),
         migrations.CreateModel(
@@ -87,6 +97,11 @@ class Migration(migrations.Migration):
             fields=[
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
                 ('name', models.CharField(unique=True, max_length=255)),
+                ('check_interval', models.DurationField(default=datetime.timedelta(0, 60))),
+                ('last_check', models.DateTimeField(null=True, blank=True)),
+                ('active', models.BooleanField(default=True)),
+                ('notes', models.TextField(null=True, blank=True)),
+                ('url', models.URLField(default=b'', null=True, blank=True)),
                 ('host', models.ForeignKey(to='monitoring.Host')),
             ],
         ),
@@ -94,7 +109,7 @@ class Migration(migrations.Migration):
             name='ServiceType',
             fields=[
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
-                ('name', models.CharField(unique=True, max_length=255, choices=[(b'geonode', b'GeoNode'), (b'geoserver', b'GeoServer'), (b'host', b'Host')])),
+                ('name', models.CharField(unique=True, max_length=255, choices=[(b'geonode', b'GeoNode'), (b'geoserver', b'GeoServer'), (b'hostgeoserver', b'Host (GeoServer)'), (b'hostgeonode', b'Host (GeoNode)')])),
             ],
         ),
         migrations.CreateModel(
@@ -115,10 +130,24 @@ class Migration(migrations.Migration):
             name='service',
             field=models.ForeignKey(to='monitoring.Service'),
         ),
+        migrations.AlterUniqueTogether(
+            name='monitoredresource',
+            unique_together=set([('name', 'type')]),
+        ),
         migrations.AddField(
-            model_name='metric',
-            name='type',
-            field=models.ForeignKey(to='monitoring.MetricType'),
+            model_name='metricvalue',
+            name='resource',
+            field=models.ForeignKey(to='monitoring.MonitoredResource'),
+        ),
+        migrations.AddField(
+            model_name='metricvalue',
+            name='service',
+            field=models.ForeignKey(to='monitoring.Service'),
+        ),
+        migrations.AddField(
+            model_name='metricvalue',
+            name='service_metric',
+            field=models.ForeignKey(to='monitoring.ServiceTypeMetric'),
         ),
         migrations.AddField(
             model_name='exceptionevent',
@@ -129,15 +158,5 @@ class Migration(migrations.Migration):
             model_name='exceptionevent',
             name='service',
             field=models.ForeignKey(to='monitoring.Service'),
-        ),
-        migrations.AddField(
-            model_name='event',
-            name='service',
-            field=models.ForeignKey(to='monitoring.Service'),
-        ),
-        migrations.AddField(
-            model_name='event',
-            name='service_type',
-            field=models.ForeignKey(to='monitoring.ServiceTypeMetric'),
         ),
     ]

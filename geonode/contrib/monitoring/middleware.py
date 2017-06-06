@@ -23,9 +23,11 @@ import logging
 from datetime import datetime
 from django.conf import settings
 from geonode.contrib.monitoring.models import Service, Host
-from geonode.contrib.monitoring.utils import MonitoringHandler
+from geonode.contrib.monitoring.utils import MonitoringHandler, MonitoringFilter
 from django.http import HttpResponse
 
+
+FILTER_URLS = (settings.MEDIA_URL, settings.STATIC_URL, '/admin/jsi18n/',)
 
 class MonitoringMiddleware(object):
 
@@ -39,7 +41,9 @@ class MonitoringMiddleware(object):
         self.service = self.get_service()
         self.handler = MonitoringHandler(self.service)
         self.handler.setLevel(logging.DEBUG)
+        self.filter = MonitoringFilter(self.service, FILTER_URLS)
         self.log.addHandler(self.handler)
+        self.log.addFilter(self.filter)
 
     def get_service(self):
         hname = getattr(settings, 'MONITORING_HOST_NAME', None) or 'localhost'

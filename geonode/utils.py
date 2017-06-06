@@ -41,7 +41,7 @@ from django.http import Http404
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404
 from django.utils.translation import ugettext_lazy as _
-from django.db import models
+from django.db import models, connection, transaction
 import httplib2
 import urlparse
 import urllib
@@ -957,3 +957,17 @@ def parse_datetime(value):
         except ValueError:
             pass
     raise ValueError("Invalid datetime input: {}".format(value))
+
+
+@transaction.atomic
+def raw_sql(query, params=None, ret=True):
+    """
+    Execute raw query
+    param ret=True returns data from cursor as iterator
+    """
+    with connection.cursor() as c:
+        c.execute(query, params)
+        if ret:
+            desc = [r[0] for r in c.description]
+            for row in c:
+                yield dict(zip(desc, row))

@@ -2,7 +2,7 @@ from django.contrib import admin
 
 # Register your models here.
 
-from geonode.contrib.monitoring.models import Host, Service, ServiceType, ServiceTypeMetric, Metric, MetricType, RequestEvent, ExceptionEvent 
+from geonode.contrib.monitoring.models import Host, Service, ServiceType, ServiceTypeMetric, Metric, RequestEvent, ExceptionEvent 
 
 
 @admin.register(Host)
@@ -30,13 +30,7 @@ class ServiceAdmin(admin.ModelAdmin):
 @admin.register(ServiceTypeMetric)
 class ServiceTypeMetricAdmin(admin.ModelAdmin):
     list_display = ('service_type', 'metric',)
-
     list_select_related = True
-
-
-@admin.register(MetricType)
-class MetricTypeAdmin(admin.ModelAdmin):
-    list_display = ('name',)
 
 
 @admin.register(Metric)
@@ -47,5 +41,4 @@ class MetricAdmin(admin.ModelAdmin):
 @admin.register(RequestEvent)
 class RequestEvent(admin.ModelAdmin):
     list_display = ('host', 'request_method', 'request_path', 'response_status',)
-
     list_filter = ('host', 'request_method', 'response_status', 'ows_type',)
