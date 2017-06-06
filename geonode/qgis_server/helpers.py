@@ -19,9 +19,12 @@
 #########################################################################
 import logging
 import os
+from urlparse import urljoin
 
 from django.conf import settings
 from django.core.exceptions import ImproperlyConfigured
+from django.core.urlresolvers import reverse
+
 from geonode.qgis_server.models import QGISServerLayer
 
 from geonode import qgis_server
@@ -89,6 +92,29 @@ def validate_django_settings():
             "{package}.".format(package=qgis_server.BACKEND_PACKAGE))
 
     return True
+
+
+def tile_url(layer_name):
+    """Construct QGIS Server URL for tiles according to a layer.
+
+    :param layer_name: The layer name from the QGIS backend
+    :type layer_name: basestring
+
+    :return: Tile url
+    :rtype: basestring
+    """
+    # We request a fake tile to get the real URL.
+    url = reverse(
+        'qgis-server-tile',
+        kwargs={
+            'layername': layer_name,
+            'x': 5678,
+            'y': 910,
+            'z': 1234
+        })
+    url = urljoin(settings.SITEURL, url)
+    url = url.replace('1234/5678/910', '{z}/{x}/{y}')
+    return url
 
 
 def map_thumbnail_url(instance):

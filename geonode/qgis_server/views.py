@@ -33,9 +33,11 @@ from django.contrib.gis.geos import Point
 from django.core.urlresolvers import reverse
 from django.http import HttpResponse, Http404
 from django.shortcuts import get_object_or_404
+from django.utils.translation import ugettext as _
 
 from geonode.layers.models import Layer
 from geonode.qgis_server.gis_tools import num2deg
+from geonode.qgis_server.helpers import tile_url
 from geonode.qgis_server.models import QGISServerLayer
 
 logger = logging.getLogger('geonode.qgis_server.views')
@@ -135,6 +137,20 @@ def legend(request, layername, layertitle=None, access_token=None):
 
     with open(legend_filename, 'rb') as f:
         return HttpResponse(f.read(), content_type='image/png')
+
+
+def tile_404(request, layername):
+    """This view is used when the user try to use the raw tile URL.
+
+    When the URL contains {z}/{x}/{y}.png.
+    """
+    layer = get_object_or_404(Layer, name=layername)
+    get_object_or_404(QGISServerLayer, layer=layer)
+
+    msg = _(
+        'You should use a GIS software or a library which support TMS service '
+        'to use this URL : {url}').format(url=tile_url(layername))
+    return HttpResponse(msg)
 
 
 def tile(request, layername, z, x, y):
