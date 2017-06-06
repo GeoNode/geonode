@@ -35,6 +35,7 @@ from geonode.layers.models import Layer
 from geonode.maps.models import Map, MapLayer
 from geonode.qgis_server.tasks.update import create_qgis_server_thumbnail
 from geonode.qgis_server.gis_tools import set_attributes
+from geonode.qgis_server.helpers import tile_url
 
 logger = logging.getLogger("geonode.qgis_server.signals")
 QGIS_layer_directory = settings.QGIS_SERVER_CONFIG['layer_directory']
@@ -181,22 +182,9 @@ def qgis_server_post_save(instance, sender, **kwargs):
     if data != 'OK':
         logger.debug('Result : %s' % data)
 
-    tile_url = reverse(
-        'qgis-server-tile',
-        kwargs={
-            'layername': instance.name,
-            'x': 5678,
-            'y': 910,
-            'z': 1234
-        })
-    tile_url = urljoin(base_url, tile_url)
-    logger.debug('tile_url: %s' % tile_url)
-    tile_url = tile_url.replace('1234/5678/910', '{z}/{x}/{y}')
-    logger.debug('tile_url: %s' % tile_url)
-
     Link.objects.get_or_create(
         resource=instance.resourcebase_ptr,
-        url=tile_url,
+        url=tile_url(instance.name),
         defaults=dict(
             extension='tiles',
             name="Tiles",
