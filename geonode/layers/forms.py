@@ -48,7 +48,6 @@ class JSONField(forms.CharField):
 
 
 class LayerForm(ResourceBaseForm):
-
     class Meta(ResourceBaseForm.Meta):
         model = Layer
         exclude = ResourceBaseForm.Meta.exclude + (
@@ -80,6 +79,7 @@ class LayerForm(ResourceBaseForm):
                         'data-html': 'true'
                     }
                 )
+
 
 class LayerUploadForm(forms.Form):
     base_file = forms.FileField()

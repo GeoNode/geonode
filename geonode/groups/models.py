@@ -96,6 +96,7 @@ class GroupProfile(models.Model):
         help_text=access_help_text)
     last_modified = models.DateTimeField(auto_now=True)
     categories = models.ManyToManyField(GroupCategory, blank=True, related_name='groups')
+    created = models.DateTimeField(auto_now_add=True)
 
     def save(self, *args, **kwargs):
         group, created = Group.objects.get_or_create(name=self.slug)

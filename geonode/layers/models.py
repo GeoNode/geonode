@@ -78,7 +78,16 @@ class Style(models.Model):
         return "%s" % self.name.encode('utf-8')
 
     def absolute_url(self):
-        return self.sld_url.split(settings.OGC_SERVER['default']['LOCATION'], 1)[1]
+        if self.sld_url:
+            if self.sld_url.startswith(settings.OGC_SERVER['default']['LOCATION']):
+                return self.sld_url.split(settings.OGC_SERVER['default']['LOCATION'], 1)[1]
+            elif self.sld_url.startswith(settings.OGC_SERVER['default']['PUBLIC_LOCATION']):
+                return self.sld_url.split(settings.OGC_SERVER['default']['PUBLIC_LOCATION'], 1)[1]
+
+            return self.sld_url
+        else:
+            logger.error("SLD URL is empty for Style %s" % self.name.encode('utf-8'))
+            return None
 
 
 class LayerManager(ResourceBaseManager):
