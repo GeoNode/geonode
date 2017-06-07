@@ -211,24 +211,6 @@ def qgis_server_post_save(instance, sender, **kwargs):
             )
         )
 
-    if original_ext.split('.')[-1] in QGISServerLayer.ascii_format:
-        # ascii link
-        ascii_url = reverse(
-            'qgis-server-ascii', kwargs={'layername': instance.name})
-        ascii_url = urljoin(base_url, ascii_url)
-        logger.debug('ascii_url: %s' % ascii_url)
-
-        Link.objects.get_or_create(
-            resource=instance.resourcebase_ptr,
-            url=ascii_url,
-            defaults=dict(
-                extension=original_ext.split('.')[-1],
-                name="ASCII",
-                mime='image/asc',
-                link_type='image'
-            )
-        )
-
     # Create legend link
     legend_url = reverse(
         'qgis-server-legend',

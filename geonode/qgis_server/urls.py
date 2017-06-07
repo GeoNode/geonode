@@ -29,7 +29,6 @@ from geonode.qgis_server.views import (
     qgis_server_pdf,
     qgis_server_map_print,
     geotiff,
-    ascii
 )
 
 
@@ -61,11 +60,6 @@ urlpatterns = patterns(
         r'^geotiff/(?P<layername>[\w]*)$',
         geotiff,
         name='qgis-server-geotiff'
-    ),
-    url(
-        r'^ascii/(?P<layername>[\w]*)$',
-        ascii,
-        name='qgis-server-ascii'
     ),
     url(
         r'^legend/(?P<layername>[\w]*)(?:/(?P<layertitle>[\w]*))?$',
