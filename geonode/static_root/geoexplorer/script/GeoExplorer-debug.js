@@ -72626,7 +72626,7 @@ gxp.plugins.GoogleSource.loader = new (Ext.extend(Ext.util.Observable, {
         };
         
         var script = document.createElement("script");
-        script.src = "https://www.google.com/jsapi?" + Ext.urlEncode(params);
+        script.src = "//www.google.com/jsapi?" + Ext.urlEncode(params);
 
         // cancel loading if monitor is not ready within timeout
         var errback = options.errback || Ext.emptyFn;
@@ -72870,9 +72870,9 @@ OpenLayers.Layer.OSM = OpenLayers.Class(OpenLayers.Layer.XYZ, {
      * (end)
      */
     url: [
-        'https://a.tile.openstreetmap.org/${z}/${x}/${y}.png',
-        'https://b.tile.openstreetmap.org/${z}/${x}/${y}.png',
-        'https://c.tile.openstreetmap.org/${z}/${x}/${y}.png'
+        '//a.tile.openstreetmap.org/${z}/${x}/${y}.png',
+        '//b.tile.openstreetmap.org/${z}/${x}/${y}.png',
+        '//c.tile.openstreetmap.org/${z}/${x}/${y}.png'
     ],
 
     /**
@@ -73047,9 +73047,9 @@ gxp.plugins.OSMSource = Ext.extend(gxp.plugins.LayerSource, {
             new OpenLayers.Layer.OSM(
                 "OpenStreetMap",
                 [
-                    "https://a.tile.openstreetmap.org/${z}/${x}/${y}.png",
-                    "https://b.tile.openstreetmap.org/${z}/${x}/${y}.png",
-                    "https://c.tile.openstreetmap.org/${z}/${x}/${y}.png"
+                    "//a.tile.openstreetmap.org/${z}/${x}/${y}.png",
+                    "//b.tile.openstreetmap.org/${z}/${x}/${y}.png",
+                    "//c.tile.openstreetmap.org/${z}/${x}/${y}.png"
                 ],
                 OpenLayers.Util.applyDefaults({                
                     attribution: this.mapnikAttribution,
