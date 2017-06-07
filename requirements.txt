@@ -27,7 +27,7 @@ django-haystack==2.4.1
 django-jsonfield==0.9.16
 django-leaflet==0.13.7
 django-modeltranslation==0.12
-django-oauth-toolkit==0.10.0
+django-oauth-toolkit<1.0
 django-mptt==0.8.6
 django-nose==1.4.4
 django-pagination==1.0.7
