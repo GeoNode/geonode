@@ -151,6 +151,10 @@ The resulting configuration file should look like this::
     # Default preview library
     #LAYER_PREVIEW_LIBRARY = 'geoext'
 
+If you want to add a "Register" link so new users can register on the site, add the following line to the end of the file::
+
+    REGISTRATION_OPEN = True
+
 Initialize the Database
 =======================
 
