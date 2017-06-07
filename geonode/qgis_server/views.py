@@ -60,7 +60,7 @@ def download_zip(request, layername):
     filenames = []
     for ext in QGISServerLayer.accepted_format:
         target_file = basename + '.' + ext
-        if os.path.exists(target_file):
+        if os.path.exists(target_file) and ext != 'qgs':
             filenames.append(target_file)
 
     # Folder name in ZIP archive which contains the above files

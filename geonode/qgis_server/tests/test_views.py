@@ -18,10 +18,24 @@
 #
 #########################################################################
 
+import os
+import StringIO
+import zipfile
+import gisdata
+
+from django.core.management import call_command
 from django.test import TestCase
+from django.core.urlresolvers import reverse
+
+from geonode.decorators import on_ogc_backend
+from geonode.layers.utils import file_upload
+from geonode import qgis_server
 
 
 class ViewsTest(TestCase):
+
+    def setUp(self):
+        call_command('loaddata', 'people_data', verbosity=0)
 
     def test_default_context(self):
         """Test default context provided by qgis_server."""
@@ -39,3 +53,59 @@ class ViewsTest(TestCase):
         self.assertIn('GEOGIG_ENABLED', context)
         self.assertIn('TIME_ENABLED', context)
         self.assertIn('MOSAIC_ENABLED', context)
+
+    @on_ogc_backend(qgis_server.BACKEND_PACKAGE)
+    def test_ogc_specific_layer(self):
+        """Test we can use QGIS Server API for a layer.
+
+        For now, we are just checking we can call these views without any
+        exceptions. We should improve this test by checking the result.
+        """
+        filename = os.path.join(gisdata.GOOD_DATA, 'raster/test_grid.tif')
+        uploaded = file_upload(filename)
+
+        params = {'layername': uploaded.name}
+
+        # Zip
+        response = self.client.get(
+            reverse('qgis-server-download-zip', kwargs=params))
+        self.assertEqual(response.status_code, 200)
+        try:
+            f = StringIO.StringIO(response.content)
+            zipped_file = zipfile.ZipFile(f, 'r')
+
+            for one_file in zipped_file.namelist():
+                if one_file.endswith('.qgs'):
+                    # We shoudn't get any QGIS project
+                    assert False
+            self.assertIsNone(zipped_file.testzip())
+        finally:
+            zipped_file.close()
+            f.close()
+
+        # Legend
+        response = self.client.get(
+            reverse('qgis-server-legend', kwargs=params))
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.get('Content-Type'), 'image/png')
+
+        # Tile
+        coordinates = {'z': '0', 'x': '1', 'y': '0'}
+        coordinates.update(params)
+        response = self.client.get(
+            reverse('qgis-server-tile', kwargs=coordinates))
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.get('Content-Type'), 'image/png')
+
+        # Tile 404
+        response = self.client.get(
+            reverse('qgis-server-tile', kwargs=params))
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(
+            response.get('Content-Type'), 'text/html; charset=utf-8')
+
+        # Geotiff
+        response = self.client.get(
+            reverse('qgis-server-geotiff', kwargs=params))
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.get('Content-Type'), 'image/tiff')
