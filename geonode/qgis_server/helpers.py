@@ -19,6 +19,7 @@
 #########################################################################
 import logging
 import os
+from requests import Request
 from urlparse import urljoin
 
 from django.conf import settings
@@ -155,7 +156,7 @@ def map_thumbnail_url(instance):
 
     # Call the WMS.
     bbox = ','.join([str(val) for val in margin])
-    qgis_server = qgis_server_config['qgis_server_url']
+    qgis_server_url = qgis_server_config['qgis_server_url']
     query_string = {
         'SERVICE': 'WMS',
         'VERSION': '1.3.0',
@@ -174,11 +175,7 @@ def map_thumbnail_url(instance):
         'FORMAT_OPTIONS': 'dpi:96'
     }
 
-    query_pairs = [
-        '{0}={1}'.format(param, value)
-        for param, value in query_string.iteritems()]
-    query_params = '&'.join(query_pairs)
-    url = qgis_server + '?' + query_params
+    url = Request('GET', qgis_server_url, params=query_string).prepare().url
     return url
 
 
@@ -224,7 +221,7 @@ def layer_thumbnail_url(instance):
     # Call the WMS.
     bbox = ','.join([str(val) for val in margin])
 
-    qgis_server = qgis_server_config['qgis_server_url']
+    qgis_server_url = qgis_server_config['qgis_server_url']
     query_string = {
         'SERVICE': 'WMS',
         'VERSION': '1.3.0',
@@ -243,10 +240,5 @@ def layer_thumbnail_url(instance):
         'FORMAT_OPTIONS': 'dpi:96'
     }
 
-    query_pairs = [
-        '{0}={1}'.format(param, value)
-        for param, value in query_string.iteritems()]
-    query_params = '&'.join(query_pairs)
-    url = qgis_server + '?' + query_params
-
+    url = Request('GET', qgis_server_url, params=query_string).prepare().url
     return url

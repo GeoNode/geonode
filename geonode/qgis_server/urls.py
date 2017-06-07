@@ -38,10 +38,7 @@ urlpatterns = patterns(
     # Specific for a QGIS Layer
     '',
     url(
-        r'^download-zip/'
-        r'(?P<layername>[\w]*)'
-        r'[\?]?'
-        r'(?:&access_token=(?P<access_token>[\w]*))?$',
+        r'^download-zip/(?P<layername>[\w]*)$',
         download_zip,
         name='qgis-server-download-zip'
     ),
@@ -56,31 +53,22 @@ urlpatterns = patterns(
     ),
     url(
         r'^tiles/'
-        r'(?P<layername>[^/]*)/\{z\}/\{x\}/\{y\}.png',
+        r'(?P<layername>[^/]*)/\{z\}/\{x\}/\{y\}.png$',
         tile_404,
         name='qgis-server-tile'
     ),
     url(
-        r'^geotiff/'
-        r'(?P<layername>[\w]*)'
-        r'[\?]?'
-        r'(?:&access_token=(?P<access_token>[\w]*))?$',
+        r'^geotiff/(?P<layername>[\w]*)$',
         geotiff,
         name='qgis-server-geotiff'
     ),
     url(
-        r'^ascii/'
-        r'(?P<layername>[\w]*)'
-        r'[\?]?'
-        r'(?:&access_token=(?P<access_token>[\w]*))?$',
+        r'^ascii/(?P<layername>[\w]*)$',
         ascii,
         name='qgis-server-ascii'
     ),
     url(
-        r'^legend/(?P<layername>[\w]*)'
-        r'(?:/(?P<layertitle>[\w]*))?'
-        r'[\?]?'
-        r'(?:&access_token=(?P<access_token>[\w]*))?$',
+        r'^legend/(?P<layername>[\w]*)(?:/(?P<layertitle>[\w]*))?$',
         legend,
         name='qgis-server-legend'
     ),

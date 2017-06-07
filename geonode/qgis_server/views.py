@@ -45,7 +45,14 @@ logger = logging.getLogger('geonode.qgis_server.views')
 QGIS_SERVER_CONFIG = settings.QGIS_SERVER_CONFIG
 
 
-def download_zip(request, layername, access_token=None):
+def download_zip(request, layername):
+    """Download a zip file containing every files we have about the layer.
+
+    :param layername: The layer name in Geonode.
+    :type layername: basestring
+
+    :return: The HTTPResponse with a ZIP.
+    """
     layer = get_object_or_404(Layer, name=layername)
     qgis_layer = get_object_or_404(QGISServerLayer, layer=layer)
     basename, _ = os.path.splitext(qgis_layer.base_layer_path)
@@ -68,14 +75,10 @@ def download_zip(request, layername, access_token=None):
     zf = zipfile.ZipFile(s, "w")
 
     for fpath in filenames:
-        logger.debug('fpath: %s' % fpath)
         # Calculate path for file in zip
         fdir, fname = os.path.split(fpath)
-        logger.debug('fdir: %s' % fdir)
-        logger.debug('fname: %s' % fname)
 
         zip_path = os.path.join(zip_subdir, fname)
-        logger.debug('zip_path: %s' % zip_path)
 
         # Add file, at correct path
         zf.write(fpath, zip_path)
@@ -92,7 +95,17 @@ def download_zip(request, layername, access_token=None):
     return resp
 
 
-def legend(request, layername, layertitle=None, access_token=None):
+def legend(request, layername, layertitle=False):
+    """Get the legend from a layer.
+
+    :param layername: The layer name in Geonode.
+    :type layername: basestring
+
+    :param layertitle: Add the layer title in the legend. Default to False.
+    :type layertitle: bool
+
+    :return: The HTTPResponse with a PNG.
+    """
     layer = get_object_or_404(Layer, name=layername)
     qgis_layer = get_object_or_404(QGISServerLayer, layer=layer)
     basename, _ = os.path.splitext(qgis_layer.base_layer_path)
@@ -105,9 +118,6 @@ def legend(request, layername, layertitle=None, access_token=None):
         if not os.path.exists(os.path.dirname(legend_filename)):
             os.makedirs(os.path.dirname(legend_filename))
 
-        if not layertitle:
-            layertitle = 'FALSE'
-
         qgis_server = QGIS_SERVER_CONFIG['qgis_server_url']
         query_string = {
             'MAP': basename + '.qgs',
@@ -115,7 +125,7 @@ def legend(request, layername, layertitle=None, access_token=None):
             'VERSION': '1.3.0',
             'REQUEST': 'GetLegendGraphic',
             'LAYER': layer.name,
-            'LAYERTITLE': layertitle,
+            'LAYERTITLE': str(layertitle).upper(),
             'FORMAT': 'image/png',
             'TILED': 'true',
             'TRANSPARENT': 'true',
@@ -143,6 +153,9 @@ def tile_404(request, layername):
     """This view is used when the user try to use the raw tile URL.
 
     When the URL contains {z}/{x}/{y}.png.
+
+    :param layername: The layer name in Geonode.
+    :type layername: basestring
     """
     layer = get_object_or_404(Layer, name=layername)
     get_object_or_404(QGISServerLayer, layer=layer)
@@ -154,6 +167,16 @@ def tile_404(request, layername):
 
 
 def tile(request, layername, z, x, y):
+    """Get the tile from a layer.
+
+    :param layername: The layer name in Geonode.
+    :type layername: basestring
+
+    :param z,x,y: TMS coordinates.
+    :type z,x,y: basestring
+
+    :return: The HTTPResponse with a PNG.
+    """
     x = int(x)
     y = int(y)
     z = int(z)
@@ -223,7 +246,14 @@ def tile(request, layername, z, x, y):
         return HttpResponse(f.read(), content_type='image/png')
 
 
-def geotiff(request, layername, access_token=None):
+def geotiff(request, layername):
+    """Get the GeoTiff from a layer if available.
+
+    :param layername: The layer name in Geonode.
+    :type layername: basestring
+
+    :return: The HTTPResponse with a geotiff.
+    """
     layer = get_object_or_404(Layer, name=layername)
     qgis_layer = get_object_or_404(QGISServerLayer, layer=layer)
     basename, _ = os.path.splitext(qgis_layer.base_layer_path)
@@ -246,7 +276,14 @@ def geotiff(request, layername, access_token=None):
         return HttpResponse(f.read(), content_type='image/tiff')
 
 
-def ascii(request, layername, access_token=None):
+def ascii(request, layername):
+    """Get the ASC file from a layer if available.
+
+    :param layername: The layer name in Geonode.
+    :type layername: basestring
+
+    :return: The HTTPResponse with a asc text.
+    """
     layer = get_object_or_404(Layer, name=layername)
     qgis_layer = get_object_or_404(QGISServerLayer, layer=layer)
 
