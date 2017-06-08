@@ -26,6 +26,8 @@ import Queue
 import logging
 import types
 import re
+from datetime import date, datetime, timedelta
+from math import floor
 
 from xml.etree import ElementTree as etree
 from bs4 import BeautifulSoup as bs
@@ -129,3 +131,28 @@ class GeoServerMonitorClient(object):
                 return etree.fromstring(r.content)
             except Exception:
                 return bs(r.content)
+
+
+def align_period_start(start, interval):
+    day_start = datetime(*start.date().timetuple()[:6])
+    # timedelta
+    diff = (start - day_start)
+    # seconds
+    diff_s = diff.total_seconds()
+    int_s = interval.total_seconds()
+    # rounding to last lower full period
+    interval_num = floor(diff_s / float(int_s))
+
+    return day_start + timedelta(seconds=(interval_num * interval.total_seconds()))
+
+
+def generate_periods(since, interval, end=None):
+    """
+    Generator of periods: tuple of [start, end). 
+    since parameter will be aligned to closest interval before since.
+    """
+    end = end or datetime.now()
+    since_aligned = align_period_start(since, interval)
+    while since_aligned < end:
+        yield (since_aligned, since_aligned + interval,)
+        since_aligned = since_aligned + interval

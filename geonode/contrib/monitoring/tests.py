@@ -18,7 +18,10 @@
 #
 #########################################################################
 import os
+from datetime import datetime, timedelta
+
 from xml.etree.ElementTree import fromstring
+from datetime import date, datetime, timedelta
 import xmljson
 from django.test import TestCase, RequestFactory
 from django.contrib.auth import get_user_model
@@ -26,6 +29,7 @@ from django.core.urlresolvers import reverse
 
 from geonode.contrib.monitoring.models import RequestEvent, Host, Service, ServiceType, populate, ExceptionEvent
 from geonode.contrib.monitoring.collector import CollectorAPI
+from geonode.contrib.monitoring.utils import generate_periods, align_period_start
 from geonode.base.populate_test_data import create_models
 from geonode.layers.models import Layer
 from geonode.layers.populate_layers_data import create_layer_data
@@ -629,11 +633,16 @@ class RequestsTestCase(TestCase):
         self.service = Service.objects.create(name='geonode', host=self.host, service_type=self.service_type)
 
     def test_gs_req(self):
+        """
+        Test if we can parse geoserver requests
+        """
         rq = RequestEvent.from_geoserver(self.service, req_big)
         self.assertTrue(rq)
 
     def test_gn_request(self):
-
+        """
+        Test if we have geonode requests logged
+        """
         l = Layer.objects.all().first()
         self.client.login(username=self.user, password=self.passwd)
         self.client.get(reverse('layer_detail', args=(l.typename,)), **{"HTTP_USER_AGENT": self.ua})
@@ -645,6 +654,9 @@ class RequestsTestCase(TestCase):
         self.assertEqual(rq.request_method, 'GET')
 
     def test_gn_error(self):
+        """
+        Test if we get geonode errors logged
+        """
         l = Layer.objects.all().first()
         self.client.login(username=self.user, password=self.passwd)
         resp = self.client.get(reverse('layer_detail', args=('nonex',)), **{"HTTP_USER_AGENT": self.ua})
@@ -657,6 +669,9 @@ class RequestsTestCase(TestCase):
 
 
     def test_service_handlers(self):
+        """
+        Test if we can calculate metrics
+        """
         self.client.login(username=self.user, password=self.passwd)
         for idx, l in enumerate(Layer.objects.all()):
             for inum in range(0, idx+1):
@@ -666,3 +681,46 @@ class RequestsTestCase(TestCase):
         c = CollectorAPI()
         q = requests.order_by('created')
         c.process_requests(self.service, requests, q.last().created, q.first().created)
+        interval = self.service.check_interval
+        now = datetime.now()
+
+        valid_from = now - (2* interval)
+        valid_to = now
+
+        self.assertTrue(isinstance(valid_from, datetime))
+        self.assertTrue(isinstance(valid_to, datetime))
+        self.assertTrue(isinstance(interval, timedelta))
+
+        metrics = c.get_metrics_for(metric_name='request.ip', 
+                                    valid_from=valid_from, 
+                                    valid_to=valid_to, 
+                                    interval=interval)
+                                    #label="Count")
+
+        self.assertIsNotNone(metrics)
+        print(metrics)
+
+
+class MonitoringUtilsTestCase(TestCase):
+
+    def test_time_periods(self):
+        """
+        Test if we can use time periods
+        """
+        start = datetime(year=2017, month=06, day=20, hour=12, minute=22, second=50)
+        start_aligned = datetime(year=2017, month=06, day=20, hour=12, minute=20, second=0)
+
+        interval = timedelta(minutes=5)
+        # 12:22:50+ 0:05:20 = 12:27:02
+        end = start + timedelta(minutes=5, seconds=22)
+
+        expected_periods = [(start_aligned, start_aligned + interval,),
+                            (start_aligned + interval, start_aligned + (2*interval),),
+                            ]
+
+        aligned = align_period_start(start, interval)
+        self.assertEqual(start_aligned, aligned)
+
+        periods = list(generate_periods(start, interval, end))
+
+        self.assertEqual(expected_periods, periods)

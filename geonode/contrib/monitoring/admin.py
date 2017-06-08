@@ -35,7 +35,8 @@ class ServiceTypeMetricAdmin(admin.ModelAdmin):
 
 @admin.register(Metric)
 class MetricAdmin(admin.ModelAdmin):
-    list_display = ('name',)
+    list_display = ('name','type',)
+    list_filter = ('type',)
 
 
 @admin.register(RequestEvent)

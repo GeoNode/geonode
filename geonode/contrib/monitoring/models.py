@@ -111,14 +111,30 @@ class MonitoredResource(models.Model):
         return 'Monitored Resource: {} {}'.format(self.name, self.type)
 
 class Metric(models.Model):
+    TYPE_RATE = 'rate' 
+    TYPE_COUNT = 'count'
+    TYPE_VALUE = 'value'
+    TYPES = ((TYPE_RATE, _("Rate"),),
+             (TYPE_COUNT, _("Count"),),
+             (TYPE_VALUE, _("Value"),),
+            )
+
+    AGGREGATE_MAP = {TYPE_RATE: 'avg',
+                     TYPE_VALUE: None,
+                     TYPE_COUNT: 'sum'}
+
     name = models.CharField(max_length=255, db_index=True)
+    type = models.CharField(max_length=255, null=False, blank=False, default=TYPE_RATE, choices=TYPES)
+    
+    def get_aggregate_name(self):
+        return self.AGGREGATE_MAP[self.type]
 
     def __str__(self):
         return "Metric: {}".format(self.name)
 
 class ServiceTypeMetric(models.Model):
-    service_type = models.ForeignKey(ServiceType)
-    metric = models.ForeignKey(Metric)
+    service_type = models.ForeignKey(ServiceType, related_name='metric')
+    metric = models.ForeignKey(Metric, related_name='service_type')
 
     def __str__(self):
         return '{} - {}'.format(self.service_type, self.metric)
@@ -325,8 +341,8 @@ class ExceptionEvent(models.Model):
 
 
 class MetricLabel(models.Model):
-    name = models.TextField(null=False, blank=True, default='')
 
+    name = models.TextField(null=False, blank=True, default='')
     def __str__(self):
         return 'Metric Label: {}'.format(self.name)
 
@@ -347,17 +363,31 @@ class MetricValue(models.Model):
         unique_together = (('valid_from', 'valid_to', 'service', 'service_metric', 'resource', 'label',))
 
     @classmethod
-    def add(cls, metric, valid_from, valid_to, service, label, value_raw, resource=None, value=None, value_num=None, data=None):
+    def add(cls, metric, valid_from, valid_to, service, label, value_raw=None, resource=None, value=None, value_num=None, data=None):
         """
         Create new MetricValue shortcut
         """
 
         service_metric = ServiceTypeMetric.objects.get(service_type=service.service_type, metric__name=metric)
-        label, _ = MetricLabel.objects.get_or_create(name=label)
+
+        label, _ = MetricLabel.objects.get_or_create(name=label or 'count')
         if not resource:
             resource, _ = MonitoredResource.objects.get_or_create(type=MonitoredResource.TYPE_EMPTY, name='')
-
-        print('adding stat', service, service_metric, label, resource, value_raw)
+        try:
+            inst = cls.objects.get(valid_from=valid_from, 
+                                   valid_to=valid_to, 
+                                   service=service, 
+                                   label=label,
+                                   resource=resource,
+                                   service_metric=service_metric)
+            inst.value = value_raw
+            inst.value_raw = value_raw
+            inst.value_num = value_num
+            inst.data = data or {}
+            inst.save()
+            return inst
+        except cls.DoesNotExist:
+            pass
         return cls.objects.create(valid_from=valid_from,
                                   valid_to=valid_to,
                                   service=service,
@@ -372,6 +402,10 @@ class MetricValue(models.Model):
 
 class BuiltIns(object):
     service_types = (ServiceType.TYPE_GEONODE, ServiceType.TYPE_GEOSERVER, ServiceType.TYPE_HOST_GN, ServiceType.TYPE_HOST_GS,)
+
+    metrics_rate = ('response.time', 'response.size',)
+    #metrics_count = ('request.count', 'request.method', 'request.
+
     geonode_metrics = ('request', 'request.count', 'request.ip', 'request.ua', 'request.ua.family', 'request.method',
                        'request.country', 'request.region', 'request.city',
                        'response', 'response.time', 'response.ok', 'response.error',

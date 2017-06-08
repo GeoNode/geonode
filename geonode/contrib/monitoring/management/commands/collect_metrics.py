@@ -74,6 +74,3 @@ class Command(BaseCommand):
             c.process_requests(service, requests, q.first().created, q.last().created)
 
         print(len(requests))
-        
-
-
