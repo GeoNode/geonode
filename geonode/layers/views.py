@@ -71,6 +71,8 @@ from geonode.base.models import Thesaurus
 
 if 'geonode.geoserver' in settings.INSTALLED_APPS:
     from geonode.geoserver.helpers import _render_thumbnail
+if 'geonode.qgis_server' in settings.INSTALLED_APPS:
+    from geonode.qgis_server.models import QGISServerLayer
 CONTEXT_LOG_FILE = ogc_server_settings.LOG_FILE
 
 logger = logging.getLogger("geonode.layers.views")
@@ -741,9 +743,18 @@ def layer_replace(request, layername, template='layers/layer_replace.html'):
                     out['success'] = False
                     out['errors'] = _("You are attempting to replace a raster layer with a vector.")
                 else:
-                    # delete geoserver's store before upload
-                    cat = gs_catalog
-                    cascading_delete(cat, layer.typename)
+                    if 'geonode.geoserver' in settings.INSTALLED_APPS:
+                        # delete geoserver's store before upload
+                        cat = gs_catalog
+                        cascading_delete(cat, layer.typename)
+                    elif 'geonode.qgis_server' in settings.INSTALLED_APPS:
+                        try:
+                            qgis_layer = QGISServerLayer.objects.get(
+                                layer=layer)
+                            qgis_layer.delete_qgis_layer()
+                        except QGISServerLayer.DoesNotExist:
+                            pass
+
                     saved_layer = file_upload(
                         base_file,
                         name=layer.name,
