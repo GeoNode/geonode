@@ -20,7 +20,6 @@
 
 import base64
 import json
-import unittest
 
 from django.contrib.auth import get_user_model
 from django.http import HttpRequest
@@ -48,10 +47,6 @@ class LayerTests(TestCase):
         create_models(type='layer')
         create_layer_data()
 
-    @unittest.skipIf(
-        hasattr(settings, 'SKIP_GEOSERVER_TEST') and
-        settings.SKIP_GEOSERVER_TEST,
-        'Temporarily skip this test until fixed')
     def test_style_manager(self):
         """
         Ensures the layer_style_manage route returns a 200.
@@ -66,10 +61,6 @@ class LayerTests(TestCase):
         response = self.client.get(reverse('layer_style_manage', args=(layer.typename,)))
         self.assertEqual(response.status_code, 200)
 
-    @unittest.skipIf(
-        hasattr(settings, 'SKIP_GEOSERVER_TEST') and
-        settings.SKIP_GEOSERVER_TEST,
-        'Temporarily skip this test until fixed')
     def test_feature_edit_check(self):
         """Verify that the feature_edit_check view is behaving as expected
         """
@@ -141,10 +132,6 @@ class LayerTests(TestCase):
             response_json = json.loads(response.content)
             self.assertEquals(response_json['authorized'], True)
 
-    @unittest.skipIf(
-        hasattr(settings, 'SKIP_GEOSERVER_TEST') and
-        settings.SKIP_GEOSERVER_TEST,
-        'Temporarily skip this test until fixed')
     def test_layer_acls(self):
         """ Verify that the layer_acls view is behaving as expected
         """
@@ -207,10 +194,6 @@ class LayerTests(TestCase):
         # TODO Lots more to do here once jj0hns0n understands the ACL system
         # better
 
-    @unittest.skipIf(
-        hasattr(settings, 'SKIP_GEOSERVER_TEST') and
-        settings.SKIP_GEOSERVER_TEST,
-        'Temporarily skip this test until fixed')
     def test_resolve_user(self):
         """Verify that the resolve_user view is behaving as expected
         """
@@ -380,10 +363,6 @@ class SecurityTest(TestCase):
         self.admin, created = get_user_model().objects.get_or_create(
             username='admin', password='admin', is_superuser=True)
 
-    @unittest.skipIf(
-        hasattr(settings, 'SKIP_GEOSERVER_TEST') and
-        settings.SKIP_GEOSERVER_TEST,
-        'Temporarily skip this test until fixed')
     def test_login_middleware(self):
         """
         Tests the Geonode login required authentication middleware.

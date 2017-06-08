@@ -21,14 +21,12 @@
 import os
 import shutil
 import tempfile
-import unittest
 import zipfile
 import StringIO
 import contextlib
 import json
 
 import gisdata
-from django.conf import settings
 from django.test import TestCase
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.forms import ValidationError
@@ -42,7 +40,7 @@ from agon_ratings.models import OverallRating
 from guardian.shortcuts import get_anonymous_user
 from guardian.shortcuts import assign_perm, remove_perm
 
-from geonode import GeoNodeException
+from geonode import GeoNodeException, geoserver, qgis_server
 from geonode.layers.models import Layer, Style
 from geonode.layers.utils import layer_type, get_files, get_valid_name, \
     get_valid_layer_name
@@ -50,6 +48,7 @@ from geonode.people.utils import get_valid_user
 from geonode.base.models import TopicCategory
 from geonode.base.populate_test_data import create_models, all_public
 from geonode.layers.forms import JSONField, LayerUploadForm
+from geonode.utils import check_ogc_backend
 from .populate_layers_data import create_layer_data
 from geonode.tests.utils import NotificationsTestsHelper
 from geonode.layers import LayersAppConfig
@@ -369,10 +368,6 @@ class LayersTest(TestCase):
         # basically anything else should produce a GeoNodeException
         self.assertRaises(GeoNodeException, lambda: layer_type('foo.gml'))
 
-    @unittest.skipIf(
-        hasattr(settings, 'SKIP_GEOSERVER_TEST') and
-        settings.SKIP_GEOSERVER_TEST,
-        'Temporarily skip this test until fixed')
     def test_get_files(self):
 
         # Check that a well-formed Shapefile has its components all picked up
@@ -415,28 +410,59 @@ class LayersTest(TestCase):
 
         # Check that including an SLD with a valid shapefile results in the SLD
         # getting picked up
-        d = None
-        try:
-            d = tempfile.mkdtemp()
-            for f in ("foo.shp", "foo.shx", "foo.prj", "foo.dbf", "foo.sld"):
-                path = os.path.join(d, f)
-                # open and immediately close to create empty file
-                open(path, 'w').close()
+        if check_ogc_backend(geoserver.BACKEND_PACKAGE):
+            d = None
+            try:
+                d = tempfile.mkdtemp()
+                for f in ("foo.shp", "foo.shx", "foo.prj", "foo.dbf", "foo.sld"):
+                    path = os.path.join(d, f)
+                    # open and immediately close to create empty file
+                    open(path, 'w').close()
 
-            gotten_files = get_files(os.path.join(d, "foo.shp"))
-            gotten_files = dict((k, v[len(d) + 1:])
-                                for k, v in gotten_files.iteritems())
-            self.assertEquals(
-                gotten_files,
-                dict(
-                    shp="foo.shp",
-                    shx="foo.shx",
-                    prj="foo.prj",
-                    dbf="foo.dbf",
-                    sld="foo.sld"))
-        finally:
-            if d is not None:
-                shutil.rmtree(d)
+                gotten_files = get_files(os.path.join(d, "foo.shp"))
+                gotten_files = dict((k, v[len(d) + 1:])
+                                    for k, v in gotten_files.iteritems())
+                self.assertEquals(
+                    gotten_files,
+                    dict(
+                        shp="foo.shp",
+                        shx="foo.shx",
+                        prj="foo.prj",
+                        dbf="foo.dbf",
+                        sld="foo.sld"))
+            finally:
+                if d is not None:
+                    shutil.rmtree(d)
+
+        # Check that including a QML with a valid shapefile
+        # results in the QML
+        # getting picked up
+        if check_ogc_backend(qgis_server.BACKEND_PACKAGE):
+            d = None
+            try:
+                d = tempfile.mkdtemp()
+                for f in (
+                        "foo.shp", "foo.shx", "foo.prj", "foo.dbf", "foo.qml",
+                        "foo.json"):
+                    path = os.path.join(d, f)
+                    # open and immediately close to create empty file
+                    open(path, 'w').close()
+
+                gotten_files = get_files(os.path.join(d, "foo.shp"))
+                gotten_files = dict((k, v[len(d) + 1:])
+                                    for k, v in gotten_files.iteritems())
+                self.assertEquals(
+                    gotten_files,
+                    dict(
+                        shp="foo.shp",
+                        shx="foo.shx",
+                        prj="foo.prj",
+                        dbf="foo.dbf",
+                        qml="foo.qml",
+                        json="foo.json"))
+            finally:
+                if d is not None:
+                    shutil.rmtree(d)
 
         # Check that capitalized extensions are ok
         d = None
@@ -543,38 +569,39 @@ class LayersTest(TestCase):
 
         # Check that including both capital and lowercase SLD (this is
         # special-cased in the implementation)
-        d = None
-        try:
-            d = tempfile.mkdtemp()
-            files = (
-                "foo.SHP",
-                "foo.SHX",
-                "foo.PRJ",
-                "foo.DBF",
-                "foo.SLD",
-                "foo.sld")
-            for f in files:
-                path = os.path.join(d, f)
-                # open and immediately close to create empty file
-                open(path, 'w').close()
+        if check_ogc_backend(geoserver.BACKEND_PACKAGE):
+            d = None
+            try:
+                d = tempfile.mkdtemp()
+                files = (
+                    "foo.SHP",
+                    "foo.SHX",
+                    "foo.PRJ",
+                    "foo.DBF",
+                    "foo.SLD",
+                    "foo.sld")
+                for f in files:
+                    path = os.path.join(d, f)
+                    # open and immediately close to create empty file
+                    open(path, 'w').close()
 
-            # Only run the tests if this is a case sensitive OS
-            if len(os.listdir(d)) == len(files):
-                self.assertRaises(
-                    GeoNodeException,
-                    lambda: get_files(
-                        os.path.join(
-                            d,
-                            "foo.SHP")))
-                self.assertRaises(
-                    GeoNodeException,
-                    lambda: get_files(
-                        os.path.join(
-                            d,
-                            "foo.shp")))
-        finally:
-            if d is not None:
-                shutil.rmtree(d)
+                # Only run the tests if this is a case sensitive OS
+                if len(os.listdir(d)) == len(files):
+                    self.assertRaises(
+                        GeoNodeException,
+                        lambda: get_files(
+                            os.path.join(
+                                d,
+                                "foo.SHP")))
+                    self.assertRaises(
+                        GeoNodeException,
+                        lambda: get_files(
+                            os.path.join(
+                                d,
+                                "foo.shp")))
+            finally:
+                if d is not None:
+                    shutil.rmtree(d)
 
     def test_get_valid_name(self):
         self.assertEquals(get_valid_name("blug"), "blug")

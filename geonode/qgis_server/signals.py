@@ -17,28 +17,33 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
+from __future__ import absolute_import
 
 import logging
-import shutil
 import os
+import shutil
 from urllib2 import urlopen, quote
 from urlparse import urljoin
 
-from django.db.models import signals, ObjectDoesNotExist
-from django.dispatch import Signal
-from django.core.urlresolvers import reverse
 from django.conf import settings
+from django.core.urlresolvers import reverse
+from django.db.models import ObjectDoesNotExist, signals
+from django.dispatch import Signal
 
-from geonode.qgis_server.models import QGISServerLayer
+from geonode import qgis_server
 from geonode.base.models import Link
 from geonode.layers.models import Layer
 from geonode.maps.models import Map, MapLayer
-from geonode.qgis_server.tasks.update import create_qgis_server_thumbnail
 from geonode.qgis_server.gis_tools import set_attributes
 from geonode.qgis_server.helpers import tile_url
+from geonode.qgis_server.models import QGISServerLayer
+from geonode.qgis_server.tasks.update import create_qgis_server_thumbnail
+from geonode.utils import check_ogc_backend
 
 logger = logging.getLogger("geonode.qgis_server.signals")
-QGIS_layer_directory = settings.QGIS_SERVER_CONFIG['layer_directory']
+
+if check_ogc_backend(qgis_server.BACKEND_PACKAGE):
+    QGIS_layer_directory = settings.QGIS_SERVER_CONFIG['layer_directory']
 
 qgis_map_with_layers = Signal(providing_args=[])
 
@@ -307,28 +312,29 @@ def qgis_server_post_save_map(instance, sender, **kwargs):
         instance, overwrite=True)
 
 
-logger.debug('Register signals QGIS Server')
-signals.pre_save.connect(
-    qgis_server_pre_save,
-    dispatch_uid='Layer-qgis_server_pre_save',
-    sender=Layer)
-signals.pre_delete.connect(
-    qgis_server_pre_delete,
-    dispatch_uid='Layer-qgis_server_pre_delete',
-    sender=Layer)
-signals.post_save.connect(
-    qgis_server_post_save,
-    dispatch_uid='Layer-qgis_server_post_save',
-    sender=Layer)
-signals.pre_save.connect(
-    qgis_server_pre_save_maplayer,
-    dispatch_uid='MapLayer-qgis_server_pre_save_maplayer',
-    sender=MapLayer)
-signals.post_save.connect(
-    qgis_server_post_save_map,
-    dispatch_uid='Map-qgis_server_post_save_map',
-    sender=Map)
-signals.pre_delete.connect(
-    qgis_server_layer_pre_delete,
-    dispatch_uid='QGISServerLayer-qgis_server_layer_pre_delete',
-    sender=QGISServerLayer)
+if check_ogc_backend(qgis_server.BACKEND_PACKAGE):
+    logger.debug('Register signals QGIS Server')
+    signals.pre_save.connect(
+        qgis_server_pre_save,
+        dispatch_uid='Layer-qgis_server_pre_save',
+        sender=Layer)
+    signals.pre_delete.connect(
+        qgis_server_pre_delete,
+        dispatch_uid='Layer-qgis_server_pre_delete',
+        sender=Layer)
+    signals.post_save.connect(
+        qgis_server_post_save,
+        dispatch_uid='Layer-qgis_server_post_save',
+        sender=Layer)
+    signals.pre_save.connect(
+        qgis_server_pre_save_maplayer,
+        dispatch_uid='MapLayer-qgis_server_pre_save_maplayer',
+        sender=MapLayer)
+    signals.post_save.connect(
+        qgis_server_post_save_map,
+        dispatch_uid='Map-qgis_server_post_save_map',
+        sender=Map)
+    signals.pre_delete.connect(
+        qgis_server_layer_pre_delete,
+        dispatch_uid='QGISServerLayer-qgis_server_layer_pre_delete',
+        sender=QGISServerLayer)

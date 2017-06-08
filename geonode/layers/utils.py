@@ -43,14 +43,14 @@ from django.db import transaction
 from django.db.models import Q
 
 # Geonode functionality
-from geonode import GeoNodeException
+from geonode import GeoNodeException, geoserver, qgis_server
 from geonode.people.utils import get_valid_user
 from geonode.layers.models import Layer, UploadSession
 from geonode.base.models import Link, SpatialRepresentationType, TopicCategory, Region, License, \
     ResourceBase
 from geonode.layers.models import shp_exts, csv_exts, vec_exts, cov_exts
 from geonode.layers.metadata import set_metadata
-from geonode.utils import http_client
+from geonode.utils import http_client, check_ogc_backend
 
 import tarfile
 
@@ -148,7 +148,8 @@ def get_files(filename):
     elif extension.lower() in cov_exts:
         files[extension.lower().replace('.', '')] = filename
 
-    if 'geonode.geoserver' in settings.INSTALLED_APPS:
+    # Only for GeoServer
+    if check_ogc_backend(geoserver.BACKEND_PACKAGE):
         matches = glob.glob(glob_name + ".[sS][lL][dD]")
         if len(matches) == 1:
             files['sld'] = matches[0]
@@ -171,7 +172,8 @@ def get_files(filename):
                'distinct by spelling and not just case.') % filename
         raise GeoNodeException(msg)
 
-    if 'geonode.qgis_server' in settings.INSTALLED_APPS:
+    # Only for QGIS Server
+    if check_ogc_backend(qgis_server.BACKEND_PACKAGE):
         matches = glob.glob(glob_name + ".[qQ][mM][lL]")
         logger.debug('Checking QML file')
         logger.debug('Number of matches QML file : %s' % len(matches))
@@ -183,6 +185,7 @@ def get_files(filename):
                    'distinct by spelling and not just case.') % filename
             raise GeoNodeException(msg)
 
+        # Provides json files for additional extra data
         matches = glob.glob(glob_name + ".[jJ][sS][oO][nN]")
         logger.debug('Checking JSON File')
         logger.debug(
