@@ -25,6 +25,7 @@ import shutil
 import traceback
 import uuid
 import decimal
+from requests import Request
 
 from guardian.shortcuts import get_perms
 from django.contrib import messages
@@ -337,10 +338,12 @@ def layer_detail(request, layername, template='layers/layer_detail.html'):
                       item.url and 'wms' not in item.url and 'gwc' not in item.url]
     for item in links_view:
         if item.url and access_token and 'access_token' not in item.url:
-            item.url = "%s&access_token=%s" % (item.url, access_token)
+            params = {'access_token': access_token}
+            item.url = Request('GET', item.url, params=params).prepare().url
     for item in links_download:
         if item.url and access_token and 'access_token' not in item.url:
-            item.url = "%s&access_token=%s" % (item.url, access_token)
+            params = {'access_token': access_token}
+            item.url = Request('GET', item.url, params=params).prepare().url
 
     if request.user.has_perm('view_resourcebase', layer.get_self_resource()):
         context_dict["links"] = links_view
