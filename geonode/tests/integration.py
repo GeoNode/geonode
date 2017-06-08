@@ -576,7 +576,7 @@ class GeoNodeMapTest(TestCase):
 
         # try to access a tile to trigger tile cache
         tile_url = reverse(
-            'qgis-server-tile',
+            'qgis_server:tile',
             kwargs={
                 'layername': shp_layer.name,
                 'z': 9,

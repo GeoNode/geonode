@@ -33,6 +33,7 @@ from django.contrib.gis.geos import Point
 from django.core.urlresolvers import reverse
 from django.http import HttpResponse, Http404
 from django.shortcuts import get_object_or_404
+from django.template.response import TemplateResponse
 from django.utils.translation import ugettext as _
 
 from geonode.layers.models import Layer
@@ -163,7 +164,13 @@ def tile_404(request, layername):
     msg = _(
         'You should use a GIS software or a library which support TMS service '
         'to use this URL : {url}').format(url=tile_url(layername))
-    return HttpResponse(msg)
+    return TemplateResponse(
+        request,
+        '404.html',
+        {
+            'message': msg
+        },
+        status=404).render()
 
 
 def tile(request, layername, z, x, y):
@@ -268,7 +275,7 @@ def layer_ogc_request(request, layername):
     # the public Geonode URL.
     public_url = settings.SITEURL
     public_url += reverse(
-        'qgis-server-layer-request', kwargs={'layername': layername})
+        'qgis_server:layer-request', kwargs={'layername': layername})
 
     is_text = response.headers.get('content-type').startswith('text')
     raw = response.content
@@ -358,7 +365,7 @@ def qgis_server_request(request):
 
 
 def qgis_server_pdf(request):
-    print_url = reverse('qgis-server-map-print')
+    print_url = reverse('qgis_server:map-print')
 
     response_data = {
         "scales": [

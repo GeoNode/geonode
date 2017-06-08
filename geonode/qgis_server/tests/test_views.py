@@ -68,7 +68,7 @@ class ViewsTest(TestCase):
 
         # Zip
         response = self.client.get(
-            reverse('qgis-server-download-zip', kwargs=params))
+            reverse('qgis_server:download-zip', kwargs=params))
         self.assertEqual(response.status_code, 200)
         try:
             f = StringIO.StringIO(response.content)
@@ -85,7 +85,7 @@ class ViewsTest(TestCase):
 
         # Legend
         response = self.client.get(
-            reverse('qgis-server-legend', kwargs=params))
+            reverse('qgis_server:legend', kwargs=params))
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.get('Content-Type'), 'image/png')
 
@@ -93,20 +93,20 @@ class ViewsTest(TestCase):
         coordinates = {'z': '0', 'x': '1', 'y': '0'}
         coordinates.update(params)
         response = self.client.get(
-            reverse('qgis-server-tile', kwargs=coordinates))
+            reverse('qgis_server:tile', kwargs=coordinates))
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.get('Content-Type'), 'image/png')
 
         # Tile 404
         response = self.client.get(
-            reverse('qgis-server-tile', kwargs=params))
-        self.assertEqual(response.status_code, 200)
+            reverse('qgis_server:tile', kwargs=params))
+        self.assertEqual(response.status_code, 404)
         self.assertEqual(
             response.get('Content-Type'), 'text/html; charset=utf-8')
 
         # Geotiff
         response = self.client.get(
-            reverse('qgis-server-geotiff', kwargs=params))
+            reverse('qgis_server:geotiff', kwargs=params))
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.get('Content-Type'), 'image/tiff')
 
@@ -119,7 +119,7 @@ class ViewsTest(TestCase):
             'LAYERS': uploaded.name,
         }
         response = self.client.get(
-            reverse('qgis-server-layer-request', kwargs=params), query_string)
+            reverse('qgis_server:layer-request', kwargs=params), query_string)
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.get('Content-Type'), 'image/png')
 
@@ -133,7 +133,7 @@ class ViewsTest(TestCase):
             'LAYERS': uploaded.name,
         }
         response = self.client.get(
-            reverse('qgis-server-request'), query_string)
+            reverse('qgis_server:request'), query_string)
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.get('Content-Type'), 'image/png')
 
@@ -149,7 +149,7 @@ class ViewsTest(TestCase):
             'BBOX': '-5.2820,96.9406,-5.54025,97.1250',
         }
         response = self.client.get(
-            reverse('qgis-server-request'), query_string)
+            reverse('qgis_server:request'), query_string)
         self.assertEqual(response.status_code, 200, response.content)
         self.assertEqual(
             response.get('Content-Type'), 'image/png', response.content)

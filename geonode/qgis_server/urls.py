@@ -40,7 +40,7 @@ urlpatterns = patterns(
     url(
         r'^download-zip/(?P<layername>[\w]*)$',
         download_zip,
-        name='qgis-server-download-zip'
+        name='download-zip'
     ),
     url(
         r'^tiles/'
@@ -49,28 +49,28 @@ urlpatterns = patterns(
         r'(?P<x>[0-9]*)/'
         r'(?P<y>[0-9]*).png$',
         tile,
-        name='qgis-server-tile'
+        name='tile'
     ),
     url(
         r'^tiles/'
         r'(?P<layername>[^/]*)/\{z\}/\{x\}/\{y\}.png$',
         tile_404,
-        name='qgis-server-tile'
+        name='tile'
     ),
     url(
         r'^geotiff/(?P<layername>[\w]*)$',
         geotiff,
-        name='qgis-server-geotiff'
+        name='geotiff'
     ),
     url(
         r'^legend/(?P<layername>[\w]*)(?:/(?P<layertitle>[\w]*))?$',
         legend,
-        name='qgis-server-legend'
+        name='legend'
     ),
     url(
         r'^ogc/(?P<layername>[\w]+)$',
         layer_ogc_request,
-        name='qgis-server-layer-request'
+        name='layer-request'
     ),
 
     # Generic for OGC
@@ -78,23 +78,23 @@ urlpatterns = patterns(
     url(
         r'^wms/$',
         qgis_server_request,
-        name='qgis-server-request'
+        name='request'
     ),
     url(
         r'^ogc/$',
         qgis_server_request,
-        name='qgis-server-request'
+        name='request'
     ),
 
     # Generic for the app
     url(
         r'^pdf/info\.json$',
         qgis_server_pdf,
-        name='qgis-server-pdf'
+        name='pdf'
     ),
     url(
         r'^map/print$',
         qgis_server_map_print,
-        name='qgis-server-map-print'
+        name='map-print'
     ),
 )

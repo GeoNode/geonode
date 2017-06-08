@@ -106,7 +106,7 @@ def tile_url(layer_name):
     """
     # We request a fake tile to get the real URL.
     url = reverse(
-        'qgis-server-tile',
+        'qgis_server:tile',
         kwargs={
             'layername': layer_name,
             'x': 5678,

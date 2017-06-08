@@ -144,7 +144,7 @@ def qgis_server_post_save(instance, sender, **kwargs):
 
     # Set Link for Download Raw in Zip File
     zip_download_url = reverse(
-        'qgis-server-download-zip',
+        'qgis_server:download-zip',
         kwargs={'layername': instance.name})
     zip_download_url = urljoin(base_url, zip_download_url)
     logger.debug('zip_download_url: %s' % zip_download_url)
@@ -201,7 +201,7 @@ def qgis_server_post_save(instance, sender, **kwargs):
     if original_ext.split('.')[-1] in QGISServerLayer.geotiff_format:
         # geotiff link
         geotiff_url = reverse(
-            'qgis-server-geotiff', kwargs={'layername': instance.name})
+            'qgis_server:geotiff', kwargs={'layername': instance.name})
         geotiff_url = urljoin(base_url, geotiff_url)
         logger.debug('geotif_url: %s' % geotiff_url)
 
@@ -218,7 +218,7 @@ def qgis_server_post_save(instance, sender, **kwargs):
 
     # Create legend link
     legend_url = reverse(
-        'qgis-server-legend',
+        'qgis_server:legend',
         kwargs={'layername': instance.name}
     )
     legend_url = urljoin(base_url, legend_url)
