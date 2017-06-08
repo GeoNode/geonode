@@ -68,6 +68,12 @@ class QGISServerLayer(models.Model):
                 file_path = base_name + '.' + ext
                 if os.path.exists(file_path):
                     os.remove(file_path)
+
+            # QGIS can create a .aux.xml too
+            file_path = self.base_layer_path + '.aux.xml'
+            if os.path.exists(file_path):
+                os.remove(file_path)
+
         except QGISServerLayer.DoesNotExist:
             logger.debug('QGIS Server Layer not found. Not deleting.')
             pass

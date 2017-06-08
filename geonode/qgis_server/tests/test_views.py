@@ -153,3 +153,6 @@ class ViewsTest(TestCase):
         self.assertEqual(response.status_code, 200, response.content)
         self.assertEqual(
             response.get('Content-Type'), 'image/png', response.content)
+
+        # End of the test, we should remove every files related to the test.
+        uploaded.delete()
