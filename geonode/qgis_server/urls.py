@@ -25,6 +25,7 @@ from geonode.qgis_server.views import (
     tile,
     tile_404,
     legend,
+    layer_ogc_request,
     qgis_server_request,
     qgis_server_pdf,
     qgis_server_map_print,
@@ -65,6 +66,11 @@ urlpatterns = patterns(
         r'^legend/(?P<layername>[\w]*)(?:/(?P<layertitle>[\w]*))?$',
         legend,
         name='qgis-server-legend'
+    ),
+    url(
+        r'^ogc/(?P<layername>[\w]+)$',
+        layer_ogc_request,
+        name='qgis-server-layer-request'
     ),
 
     # Generic for OGC

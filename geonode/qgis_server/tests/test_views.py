@@ -109,3 +109,47 @@ class ViewsTest(TestCase):
             reverse('qgis-server-geotiff', kwargs=params))
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.get('Content-Type'), 'image/tiff')
+
+        # OGC Server specific for THE layer
+        query_string = {
+            'SERVICE': 'WMS',
+            'VERSION': '1.3.3',
+            'REQUEST': 'GetLegendGraphics',
+            'FORMAT': 'image/png',
+            'LAYERS': uploaded.name,
+        }
+        response = self.client.get(
+            reverse('qgis-server-layer-request', kwargs=params), query_string)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.get('Content-Type'), 'image/png')
+
+        # OGC Server for the Geonode instance
+        # GetLegendGraphics is a shortcut when using the main OGC server.
+        query_string = {
+            'SERVICE': 'WMS',
+            'VERSION': '1.3.3',
+            'REQUEST': 'GetLegendGraphics',
+            'FORMAT': 'image/png',
+            'LAYERS': uploaded.name,
+        }
+        response = self.client.get(
+            reverse('qgis-server-request'), query_string)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.get('Content-Type'), 'image/png')
+
+        query_string = {
+            'SERVICE': 'WMS',
+            'VERSION': '1.3.3',
+            'REQUEST': 'GetMap',
+            'FORMAT': 'image/png',
+            'LAYERS': uploaded.name,
+            'HEIGHT': 250,
+            'WIDTH': 250,
+            'SRS': 'EPSG:4326',
+            'BBOX': '-5.2820,96.9406,-5.54025,97.1250',
+        }
+        response = self.client.get(
+            reverse('qgis-server-request'), query_string)
+        self.assertEqual(response.status_code, 200, response.content)
+        self.assertEqual(
+            response.get('Content-Type'), 'image/png', response.content)

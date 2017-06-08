@@ -246,6 +246,39 @@ def tile(request, layername, z, x, y):
         return HttpResponse(f.read(), content_type='image/png')
 
 
+def layer_ogc_request(request, layername):
+    """Provide one OGC server per layer, with their own GetCapabilities.
+
+    :param layername: The layer name in Geonode.
+    :type layername: basestring
+
+    :return: The HTTPResponse with the response from QGIS Server.
+    """
+    layer = get_object_or_404(Layer, name=layername)
+    qgis_layer = get_object_or_404(QGISServerLayer, layer=layer)
+    basename, _ = os.path.splitext(qgis_layer.base_layer_path)
+
+    params = {
+        'MAP': basename + '.qgs',
+    }
+    params.update(request.GET or request.POST)
+    response = requests.get(QGIS_SERVER_CONFIG['qgis_server_url'], params)
+
+    # We need to replace every references to the internal QGIS Server IP to
+    # the public Geonode URL.
+    public_url = settings.SITEURL
+    public_url += reverse(
+        'qgis-server-layer-request', kwargs={'layername': layername})
+
+    is_text = response.headers.get('content-type').startswith('text')
+    raw = response.content
+    if is_text:
+        raw = raw.replace(
+           QGIS_SERVER_CONFIG['qgis_server_url'], public_url)
+
+    return HttpResponse(raw, content_type=response.headers.get('content-type'))
+
+
 def geotiff(request, layername):
     """Get the GeoTiff from a layer if available.
 
