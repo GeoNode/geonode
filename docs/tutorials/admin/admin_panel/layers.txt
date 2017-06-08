@@ -10,5 +10,7 @@ Some of the layers information can be edited directly through the admin interfac
 
 Is not recommended to modify the Attributes neither the Styles.
 
-Clicking on the Layers link will present a list of layers. By selecting one of them is possible to modify some information like the metadata, the keywords etc.
-It's strongly recommended to limit the edits to the metadata and similar information. 
+Clicking on the Layers link will present a list of layers. Metadata information can be changed for multiple layers at once with "Metadata batch edit" action.
+By clicking one of the layers presents you with the page for modifing some of the information like metadata, keywords etc. It's strongly recommended to limit the edits to the metadata and similar information.
+
+.. figure:: img/admin-layers-batch.png

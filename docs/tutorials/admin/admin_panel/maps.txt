@@ -12,3 +12,4 @@ The "Map Layers" section should not be used.
 
 By clicking on a map in the maps list the metadata web form will be presented.
 Is possible to add or modify the information here. As for the layers, the more specific entries like the layers stack or the map coordinates should not be modified.
+Just like for layers, you can edit metadata for multiple maps at once with "Metadata batch edit" action.

@@ -72,6 +72,7 @@ urlpatterns = patterns(
         name='map_json'),
     url(r'^check/$', 'map_download_check', name='map_download_check'),
     url(r'^embed/$', 'map_embed', name='map_embed'),
+    url(r'^metadata/batch/(?P<ids>[^/]*)/$', 'map_batch_metadata', name='map_batch_metadata'),
     url(r'^(?P<mapid>[^/]*)/metadata_detail$',
         'map_metadata_detail',
         name='map_metadata_detail'),
