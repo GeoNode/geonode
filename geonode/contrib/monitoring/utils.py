@@ -26,6 +26,7 @@ import Queue
 import logging
 import types
 import re
+from urllib import urlencode
 from datetime import date, datetime, timedelta
 from math import floor
 
@@ -35,6 +36,7 @@ import requests
 
 from geonode.contrib.monitoring.models import RequestEvent, ExceptionEvent
 
+GS_FORMAT = '%Y-%m-%dT%H:%M:%S' #2010-06-20T2:00:00
 
 class MonitoringFilter(logging.Filter):
     def __init__(self, service, skip_urls = tuple, *args, **kwargs):
@@ -109,11 +111,20 @@ class GeoServerMonitorClient(object):
             return '{}.{}'.format(href, format)
         return format
 
-    def get_requests(self, format=None):
+    def get_requests(self, format=None, since=None, until=None):
         """
         Returns list of requests from monitoring
         """
-        rest_url = '{}rest/monitor/requests/'.format(self.base_url)
+        rest_url = '{}rest/monitor/requests.html'.format(self.base_url)
+        qargs = {}
+        if since:
+            qargs['from'] = since.strftime(GS_FORMAT)
+        if until:
+            qargs['to'] = until.strftime(GS_FORMAT)
+        if qargs:
+            rest_url = '{}?{}'.format(rest_url, urlencode(qargs))
+
+        print('checking', rest_url)
         resp = requests.get(rest_url)
         doc = bs(resp.content)
         links = doc.find_all('a')

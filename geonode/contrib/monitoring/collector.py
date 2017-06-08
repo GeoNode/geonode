@@ -27,7 +27,7 @@ from django import db
 from geonode.utils import raw_sql
 from geonode.contrib.monitoring.models import (Host, ServiceType, Service,
     Metric, MetricValue, ServiceTypeMetric, RequestEvent, ExceptionEvent,
-    RequestEvent, MonitoredResource)
+    RequestEvent, MonitoredResource, MetricLabel)
 
 from geonode.contrib.monitoring.utils import generate_periods
 
@@ -47,6 +47,40 @@ class CollectorAPI(object):
 
     def collect_from_system(self):
         pass
+    
+    def get_labels_for_metric(self, metric_name):
+        mt = ServiceTypeMetric.objects.filter(metric__name=metric_name)
+        if not mt:
+            raise ValueError("No metric for {}".format(metric_name))
+        return list(MetricLabel.objects.filter(metricvalue__service_metric__in=mt).distinct().values_list('name'))
+
+    def get_resources_for_metric(self, metric_name):
+        mt = ServiceTypeMetric.objects.filter(metric__name=metric_name)
+        if not mt:
+            raise ValueError("No metric for {}".format(metric_name))
+        return list(MonitoredResource.objects.filter(metric_values__service_metric__in=mt).distinct().values_list('name'))
+
+    def get_metric_names(self):
+        """
+        Returns list of tuples: (service type, list of metrics)
+        """
+        q = ServiceTypeMetric.objects.all().select_related().order_by('service_type', 'metric')
+        out = []
+        current_service = None
+        current_set = []
+        for item in q:
+            service, metric = item.service_type, item.metric
+            if current_service != service:
+                if current_service is not None:
+                    out.append((current_service, current_set,))
+                    current_set = []
+                current_service = service
+            current_set.append(metric)
+        if current_set:
+            out.append((current_service, current_set,))
+
+        return out
+
 
     def extract_resources(self, requests):
         resources = MonitoredResource.objects.filter(requests__in=requests).distinct()
@@ -127,7 +161,7 @@ class CollectorAPI(object):
 
 
     def get_metrics_for(self, metric_name, valid_from=None, valid_to=None, interval=None, service=None, label=None, resource=None):
-        interval = interval or timedelta(minutes=5)
+        interval = interval or timedelta(minutes=1)
         now = datetime.now()
         valid_from = valid_from or (now - interval)
         valid_to = valid_to or now
@@ -140,8 +174,8 @@ class CollectorAPI(object):
                'data': []}
         periods = generate_periods(valid_from, interval, valid_to)
         for pstart, pend in periods:
-            pdata = self.get_metrics_data(metric_name, valid_from, valid_to, interval=interval, service=service, label=label, resource=resource)
-            out['data'].append(pdata)
+            pdata = self.get_metrics_data(metric_name, pstart, pend, interval=interval, service=service, label=label, resource=resource)
+            out['data'].append({'valid_from': pstart, 'valid_to': pend, 'data': pdata})
         return out
 
 
@@ -171,13 +205,15 @@ class CollectorAPI(object):
                        'valid_from': valid_from, 
                        'valid_to': valid_to})
         
-        if not (service or label or resource):
-            agg = 'mv.value_num'
-            q_group.append(agg)
-        else:
-            agg = self.get_aggregate_function('value_num', metric_name, service)
+        col = 'mv.value_num'
+        #if not (service or label or resource):
+        #    agg_f = col
+            #q_group.append(agg)
+        #else:
+        agg_f = self.get_aggregate_function(col, metric_name, service)
+        has_agg = agg_f != col
         
-        q_select = ['select {} '.format(agg)]
+        q_select = ['select {} as val'.format(agg_f)]
         if service:
             q_where.append('and mv.service_id = %(service_id)s')
             params['service_id'] = service.id
@@ -188,17 +224,17 @@ class CollectorAPI(object):
         if resource:
             q_from.append('join monitoring_monitoredresource mr on (mv.resource_id = mr.id and mr.id = %(resource_id)s)')
             params['resource_id'] = resource.id
-        if not label or not resource:
-            q_group.append('mv.service_metric_id')
-        else:
-            if label:
-                q_group.extend(['mv.service_metric_id', 'ml.name'])
-            if resource:
-                q_group.append('mr.name')
+        #if not label or not resource:
+        #    q_group.append('mv.valid_to')
+        #else:
+        if label and has_agg:
+            q_group.extend(['ml.name'])
+        if resource and has_agg:
+            q_group.append('mr.name')
         if q_group:
-            q_group = [ 'group by', ','.join(q_group)]
+            q_group = [ ' group by ', ','.join(q_group)]
                 
         q = ' '.join(chain(q_select, q_from, q_where, q_group))
-        print('  ', q, params)
-        print()
+        #print('  ', q, params)
+        #print()
         return list(raw_sql(q, params))

@@ -20,10 +20,12 @@
 from __future__ import print_function
 import logging
 import argparse
+from datetime import datetime
 
 from django.core.management.base import BaseCommand
 from django.utils.translation import ugettext_noop as _
 
+from geonode.utils import parse_datetime
 from geonode.contrib.monitoring.models import Service
 from geonode.contrib.monitoring.service_handlers import get_for_service
 from geonode.contrib.monitoring.collector import CollectorAPI
@@ -39,6 +41,14 @@ class Command(BaseCommand):
     def add_arguments(self, parser):
         parser.add_argument('-l', '--list', dest='list_services', action='store_true', default=False,
                             help=_("Show list of services"))
+        parser.add_argument('-s', '--since', dest='since', default=None, type=parse_datetime,
+                            help=_("Process data since specific timestamp (YYYY-MM-DD HH:MM:SS format). If not provided, last sync will be used."))
+        parser.add_argument('-u', '--until', dest='until', default=None, type=parse_datetime,
+                            help=_("Process data until specific timestamp (YYYY-MM-DD HH:MM:SS format). If not provided, now will be used."))
+
+        parser.add_argument('-f', '--force', dest='force_check', action='store_true', default=False,
+                            help=_("Force check"))
+
 
     def handle(self, *args, **options):
         services = Service.objects.all()
@@ -57,20 +67,21 @@ class Command(BaseCommand):
         c = CollectorAPI()
         for s in services:
             try:
-                self.run_check(s, collector=c)
+                self.run_check(s, collector=c, since=options['since'], until=options['until'], force_check=options['force_check'])
             except Exception, err:
                 log.error("Cannot collect from %s: %s", s, err, exc_info=err)
 
-    def run_check(self, service, collector):
-        print('checking', service.name)
+    def run_check(self, service, collector, since=None, until=None, force_check=None):
+        print('checking', service.name, 'since', since, 'until', until )
         Handler = get_for_service(service.service_type.name)
-        h = Handler(service)
-        collected = h.collect()
-        if collected:
-            h.handle_collected(collected)
-        requests = h.get_collected_set()
-        q = requests.order_by('created')
-        if requests:
-            c.process_requests(service, requests, q.first().created, q.last().created)
 
-        print(len(requests))
+        last_check = service.last_check
+        now = datetime.now()
+        since = since or last_check
+        until = until or now
+        
+        h = Handler(service, force_check=force_check)
+        requests = h.collect(since=since, until=until)
+        if requests:
+            print(len(requests))    
+            collector.process_requests(service, requests, since, until)

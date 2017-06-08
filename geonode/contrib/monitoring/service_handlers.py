@@ -131,9 +131,10 @@ class GeoNodeServiceExpose(BaseServiceExpose):
 
 class BaseServiceHandler(object):
 
-    def __init__(self, service):
+    def __init__(self, service, force_check=False):
         self.service = service
         self.check_since = service.last_check
+        self.force_check = force_check
         self.setup()
 
     def setup(self):
@@ -148,29 +149,28 @@ class BaseServiceHandler(object):
         if r:
             return r.created
 
-    def collect(self):
+    def collect(self, since=None, until=None):
         now = datetime.now()
-        if self.service.last_check:
+
+        if since is None:
+            since = self.service.last_check
+        if until is None:
+            until = now
+        if self.service.last_check and not self.force_check:
             if self.service.last_check + self.service.check_interval > now:
                 log.warning("Next check too soon")
                 return
         self.service.last_check = now
         self.service.save()
-        self.check_since = self.get_last_request_timestamp() or now - self.service.check_interval
-        return self._collect()
+        _collected = self._collect(since, until)
+        return self.handle_collected(_collected)
 
-    def _collect(self):
+    def _collect(self, since, until):
         raise NotImplemented()
 
     def handle_collected(self):
         raise NotImplemented()
 
-    def get_collected_set(self, since=None):
-        filter_kwargs = {'service': self.service}
-        since = since or self.check_since
-        if since:
-            filter_kwargs = {'created__gt': since}
-        return RequestEvent.objects.filter(**filter_kwargs)
 
     @classmethod
     def get_name(cls):
@@ -180,11 +180,17 @@ class BaseServiceHandler(object):
 
 class GeoNodeService(BaseServiceHandler):
 
-    def _collect(self):
-        return
+    def _get_collected_set(self, since=None, until=None):
+        filter_kwargs = {'service': self.service}
+        if since:
+            filter_kwargs = {'created__gt': since}
+        return RequestEvent.objects.filter(**filter_kwargs)
 
-    def handle_collected(self, *args):
-        pass
+    def _collect(self, since=None, until=None):
+        return self._get_collected_set(since=since, until=until)
+
+    def handle_collected(self, requests, *args, **kwargs):
+        return requests
     
 
 class GeoServerService(BaseServiceHandler):
@@ -194,14 +200,15 @@ class GeoServerService(BaseServiceHandler):
             raise ValueError("Monitoring is not configured to fetch from %s" % self.service.name)
         self.gs_monitor = GeoServerMonitorClient(self.service.url)
 
-    def _collect(self):
-        requests = list(self.gs_monitor.get_requests(format='json'))
+    def _collect(self, since, until):
+        requests = list(self.gs_monitor.get_requests(format='json', since=since, until=until))
         return requests
 
     def handle_collected(self, requests):
+        now = datetime.now()
         for r in requests:
-            RequestEvent.from_geoserver(self.service, r)
-
+            RequestEvent.from_geoserver(self.service, r, received=now)
+        return RequestEvent.objects.filter(service=self.service, received=now)
 
 class HostGeoServerService(BaseServiceHandler):
 

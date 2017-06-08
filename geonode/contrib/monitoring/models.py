@@ -383,7 +383,6 @@ class MetricValue(models.Model):
             inst.value = value_raw
             inst.value_raw = value_raw
             inst.value_num = value_num
-            inst.data = data or {}
             inst.save()
             return inst
         except cls.DoesNotExist:
