@@ -17,13 +17,11 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
-import os
 from datetime import datetime, timedelta
 
 from xml.etree.ElementTree import fromstring
-from datetime import date, datetime, timedelta
 import xmljson
-from django.test import TestCase, RequestFactory
+from django.test import TestCase
 from django.contrib.auth import get_user_model
 from django.core.urlresolvers import reverse
 
@@ -32,7 +30,6 @@ from geonode.contrib.monitoring.collector import CollectorAPI
 from geonode.contrib.monitoring.utils import generate_periods, align_period_start
 from geonode.base.populate_test_data import create_models
 from geonode.layers.models import Layer
-from geonode.layers.populate_layers_data import create_layer_data
 
 req_xml = """<org.geoserver.monitor.RequestData>
 <internalid>12681</internalid>
@@ -610,14 +607,13 @@ Inverse flattening derived from four defining parameters (semi-major axis; C20 =
 
 req_big = xmljson.yahoo.data(fromstring(req_xml))
 
+
 class RequestsTestCase(TestCase):
 
     fixtures = ['initial_data.json', 'bobby']
 
     def setUp(self):
-        
         create_models('layer')
-
         self.user = 'admin'
         self.passwd = 'admin'
         self.u, _ = get_user_model().objects.get_or_create(username=self.user)
@@ -625,7 +621,7 @@ class RequestsTestCase(TestCase):
         self.u.email = 'test@email.com'
         self.u.set_password(self.passwd)
         self.u.save()
-        self.ua = "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/59.0.3071.47 Safari/537.36" 
+        self.ua = "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/59.0.3071.47 Safari/537.36"
         populate()
 
         self.host = Host.objects.create(name='localhost', ip='127.0.0.1')
@@ -657,16 +653,15 @@ class RequestsTestCase(TestCase):
         """
         Test if we get geonode errors logged
         """
-        l = Layer.objects.all().first()
+        Layer.objects.all().first()
         self.client.login(username=self.user, password=self.passwd)
-        resp = self.client.get(reverse('layer_detail', args=('nonex',)), **{"HTTP_USER_AGENT": self.ua})
+        self.client.get(reverse('layer_detail', args=('nonex',)), **{"HTTP_USER_AGENT": self.ua})
 
         self.assertEqual(RequestEvent.objects.all().count(), 1)
-        rq = RequestEvent.objects.get()
+        RequestEvent.objects.get()
         self.assertEqual(ExceptionEvent.objects.all().count(), 1)
         eq = ExceptionEvent.objects.get()
         self.assertEqual('django.http.response.Http404', eq.error_type)
-
 
     def test_service_handlers(self):
         """
@@ -684,18 +679,17 @@ class RequestsTestCase(TestCase):
         interval = self.service.check_interval
         now = datetime.now()
 
-        valid_from = now - (2* interval)
+        valid_from = now - (2*interval)
         valid_to = now
 
         self.assertTrue(isinstance(valid_from, datetime))
         self.assertTrue(isinstance(valid_to, datetime))
         self.assertTrue(isinstance(interval, timedelta))
 
-        metrics = c.get_metrics_for(metric_name='request.ip', 
-                                    valid_from=valid_from, 
-                                    valid_to=valid_to, 
+        metrics = c.get_metrics_for(metric_name='request.ip',
+                                    valid_from=valid_from,
+                                    valid_to=valid_to,
                                     interval=interval)
-                                    #label="Count")
 
         self.assertIsNotNone(metrics)
         print(metrics)

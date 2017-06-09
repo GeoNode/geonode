@@ -21,19 +21,28 @@ from __future__ import print_function
 import logging
 import argparse
 import types
-from datetime import datetime
+from datetime import datetime, timedelta
 
 from django.core.management.base import BaseCommand, CommandError
 from django.utils.translation import ugettext_noop as _
 
 from geonode.utils import parse_datetime
-from geonode.contrib.monitoring.models import Service
+from geonode.contrib.monitoring.models import Service, MonitoredResource, MetricLabel
 from geonode.contrib.monitoring.service_handlers import get_for_service
 from geonode.contrib.monitoring.collector import CollectorAPI
 
 log = logging.getLogger(__name__)
 
 TIMESTAMP_OUTPUT = '%Y-%m-%d %H:%M:%S'
+
+def resource_type(val):
+    try:
+        rtype, rname = val.split('=')
+    except (ValueError, IndexError,):
+        raise ValueError("{} is not valid resource description".format(val))
+    return MonitoredResource.objects.get(type=rtype, name=rname)
+
+
 class Command(BaseCommand):
     """
     Run collecting for monitoring
@@ -53,14 +62,22 @@ class Command(BaseCommand):
         parser.add_argument('-u', '--until', dest='until', default=None, type=parse_datetime,
                             help=_("Process data until specific timestamp (YYYY-MM-DD HH:MM:SS format). If not provided, now will be used."))
 
+        parser.add_argument('-i', '--interval', dest='interval', default=60, type=int,
+                            help=_("Data aggregation interval in seconds (default: 60)"))
         parser.add_argument('metric_name', default=None, nargs="?", help=_("Metric name"))
+
+        parser.add_argument('-rr', '--for-resource', dest='resource', type=resource_type,
+                            help=_("Show data for specific resource in resource_type=resource_name format"))
 
     def handle(self, *args, **options):
         self.collector = CollectorAPI()
         if options['list_metrics']:
             self.list_metrics()
-
+            return
+        
+        interval = timedelta(seconds=options['interval'])
         metric_names = options['metric_name']
+        resource = options['resource']
         if not metric_names:
             raise CommandError("No metric name")
         if isinstance(metric_names, types.StringTypes):
@@ -70,12 +87,12 @@ class Command(BaseCommand):
             if options['list_labels']:
                 self.list_labels(m)
             elif options['list_resources']:
-                self.list_resources(m)
+                self.list_resources(m, resource=resource)
             else:
-                self.show_metrics(m, options['since'], options['until'])
+                self.show_metrics(m, options['since'], options['until'], interval, resource=resource)
 
-    def list_labels(self, metric):
-        labels = self.collector.get_labels_for_metric(metric)
+    def list_labels(self, metric, resource=None):
+        labels = self.collector.get_labels_for_metric(metric, resource=resource)
         print('Labels for metric {}'.format(metric))
         for label in labels:
             print(' ', *label)
@@ -84,16 +101,23 @@ class Command(BaseCommand):
         resources = self.collector.get_resources_for_metric(metric)
         print('Resources for metric {}'.format(metric))
         for res in resources:
-            print(' ', *res)
+            print(' ', '='.join(res))
 
-    def show_metrics(self, metric, since, until):
-        data = self.collector.get_metrics_for(metric, valid_from=since, valid_to=until)
+    def show_metrics(self, metric, since, until, interval, resource=None, label=None):
+        data = self.collector.get_metrics_for(metric, valid_from=since, valid_to=until, interval=interval, resource=resource, label=label)
         print('Monitoring Metric values for {}'.format(metric))
+        if resource:
+            print(' for {}={} resource'.format(resource.type, resource.name))
+        if label:
+            print(' with {} label'.format(label.name))
+            
         print(' since {} until {}\n'.format(data['input_valid_from'].strftime(TIMESTAMP_OUTPUT),
                                           data['input_valid_to'].strftime(TIMESTAMP_OUTPUT)))
 
         for row in data['data']:
-            val = row['data'][0]['val']
+            val = None
+            if row['data']:
+                val = row['data'][0]['val']
             print(' ', row['valid_to'].strftime(TIMESTAMP_OUTPUT), '->', '' if not val else val)
 
 

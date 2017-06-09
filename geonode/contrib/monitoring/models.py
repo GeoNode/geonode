@@ -50,9 +50,9 @@ class Host(models.Model):
     ip = models.GenericIPAddressField(null=False, blank=False)
     active = models.BooleanField(null=False, blank=False, default=True)
 
-
     def __str__(self):
         return 'Host: {} ({})'.format(self.name, self.ip)
+
 
 class ServiceType(models.Model):
     TYPE_GEONODE = 'geonode'
@@ -69,6 +69,7 @@ class ServiceType(models.Model):
 
     def __str__(self):
         return 'Service Type: {}'.format(self.name)
+
 
 class Service(models.Model):
     name = models.CharField(max_length=255, unique=True, blank=False, null=False)
@@ -110,14 +111,15 @@ class MonitoredResource(models.Model):
     def __str__(self):
         return 'Monitored Resource: {} {}'.format(self.name, self.type)
 
+
 class Metric(models.Model):
-    TYPE_RATE = 'rate' 
+    TYPE_RATE = 'rate'
     TYPE_COUNT = 'count'
     TYPE_VALUE = 'value'
     TYPES = ((TYPE_RATE, _("Rate"),),
              (TYPE_COUNT, _("Count"),),
              (TYPE_VALUE, _("Value"),),
-            )
+             )
 
     AGGREGATE_MAP = {TYPE_RATE: 'avg',
                      TYPE_VALUE: None,
@@ -125,12 +127,13 @@ class Metric(models.Model):
 
     name = models.CharField(max_length=255, db_index=True)
     type = models.CharField(max_length=255, null=False, blank=False, default=TYPE_RATE, choices=TYPES)
-    
+
     def get_aggregate_name(self):
         return self.AGGREGATE_MAP[self.type]
 
     def __str__(self):
         return "Metric: {}".format(self.name)
+
 
 class ServiceTypeMetric(models.Model):
     service_type = models.ForeignKey(ServiceType, related_name='metric')
@@ -138,6 +141,7 @@ class ServiceTypeMetric(models.Model):
 
     def __str__(self):
         return '{} - {}'.format(self.service_type, self.metric)
+
 
 class RequestEvent(models.Model):
     _methods = 'get post head options put delete'.upper().split(' ')
@@ -160,8 +164,10 @@ class RequestEvent(models.Model):
     #  map=some map
     #
     # list is separated with newline
-    #resources = models.TextField(blank=True, default='', help_text=_("Resources name (style, layer, document, map)"))
-    resources = models.ManyToManyField(MonitoredResource, null=True, blank=True, help_text=_("List of resources affected"), related_name='requests')
+    # resources = models.TextField(blank=True, default='', help_text=_("Resources name (style, layer, document, map)"))
+    resources = models.ManyToManyField(MonitoredResource, null=True, blank=True,
+                                       help_text=_("List of resources affected"),
+                                       related_name='requests')
 
     request_method = models.CharField(max_length=16, choices=METHODS)
     response_status = models.PositiveIntegerField(null=False, blank=False)
@@ -183,7 +189,7 @@ class RequestEvent(models.Model):
     def _get_resources(cls, type_name, resources_list):
         out = []
         for r in resources_list:
-            rinst, _= MonitoredResource.objects.get_or_create(name=r, type=type_name)
+            rinst, _ = MonitoredResource.objects.get_or_create(name=r, type=type_name)
             out.append(rinst)
         return out
 
@@ -212,7 +218,7 @@ class RequestEvent(models.Model):
             created = parse_datetime(created)
         _ended = rqmeta.get('finished', datetime.now())
         duration = (_ended - created).microseconds
-    
+
         ua = request.META['HTTP_USER_AGENT']
         ua_family = cls._get_ua_family(ua)
 
@@ -328,26 +334,28 @@ class ExceptionEvent(models.Model):
             _cls = error_type.__class__
             error_type = '{}.{}'.format(_cls.__module__, _cls.__name__)
 
-        if isinstance(stack_trace, (list,tuple,)):
+        if isinstance(stack_trace, (list, tuple,)):
             stack_trace = ''.join(stack_trace)
         if not isinstance(created, datetime):
             created = received
-        return cls.objects.create(created=created, 
-                                  received=received, 
-                                  service=from_service, 
-                                  error_type=error_type, 
-                                  error_data=stack_trace, 
+        return cls.objects.create(created=created,
+                                  received=received,
+                                  service=from_service,
+                                  error_type=error_type,
+                                  error_data=stack_trace,
                                   request=request)
 
 
 class MetricLabel(models.Model):
 
     name = models.TextField(null=False, blank=True, default='')
+
     def __str__(self):
         return 'Metric Label: {}'.format(self.name)
 
+
 class MetricValue(models.Model):
-    
+
     valid_from = models.DateTimeField(db_index=True, null=False)
     valid_to = models.DateTimeField(db_index=True, null=False)
     service_metric = models.ForeignKey(ServiceTypeMetric)
@@ -363,7 +371,8 @@ class MetricValue(models.Model):
         unique_together = (('valid_from', 'valid_to', 'service', 'service_metric', 'resource', 'label',))
 
     @classmethod
-    def add(cls, metric, valid_from, valid_to, service, label, value_raw=None, resource=None, value=None, value_num=None, data=None):
+    def add(cls, metric, valid_from, valid_to, service, label,
+            value_raw=None, resource=None, value=None, value_num=None, data=None):
         """
         Create new MetricValue shortcut
         """
@@ -374,9 +383,9 @@ class MetricValue(models.Model):
         if not resource:
             resource, _ = MonitoredResource.objects.get_or_create(type=MonitoredResource.TYPE_EMPTY, name='')
         try:
-            inst = cls.objects.get(valid_from=valid_from, 
-                                   valid_to=valid_to, 
-                                   service=service, 
+            inst = cls.objects.get(valid_from=valid_from,
+                                   valid_to=valid_to,
+                                   service=service,
                                    label=label,
                                    resource=resource,
                                    service_metric=service_metric)
@@ -400,16 +409,18 @@ class MetricValue(models.Model):
 
 
 class BuiltIns(object):
-    service_types = (ServiceType.TYPE_GEONODE, ServiceType.TYPE_GEOSERVER, ServiceType.TYPE_HOST_GN, ServiceType.TYPE_HOST_GS,)
+    service_types = (ServiceType.TYPE_GEONODE, ServiceType.TYPE_GEOSERVER,
+                     ServiceType.TYPE_HOST_GN, ServiceType.TYPE_HOST_GS,)
 
     metrics_rate = ('response.time', 'response.size',)
-    #metrics_count = ('request.count', 'request.method', 'request.
+    # metrics_count = ('request.count', 'request.method', 'request.
 
-    geonode_metrics = ('request', 'request.count', 'request.ip', 'request.ua', 'request.ua.family', 'request.method',
+    geonode_metrics = ('request', 'request.count', 'request.ip', 'request.ua',
+                       'request.ua.family', 'request.method',
                        'request.country', 'request.region', 'request.city',
                        'response', 'response.time', 'response.ok', 'response.error',
-                       'response.size', 'response.status.2xx', 'response.status.3xx', 'response.status.4xx', 'response.status.5xx',)
-
+                       'response.size', 'response.status.2xx', 'response.status.3xx',
+                       'response.status.4xx', 'response.status.5xx',)
 
     geoserver_metrics = ('requests',)
     host_metrics = ('load.1m', 'load.5m', 'load.10m',)
@@ -426,5 +437,3 @@ def populate():
             _st = ServiceType.objects.get(name=st)
             _m = Metric.objects.get(name=m)
             ServiceTypeMetric.objects.get_or_create(service_type=_st, metric=_m)
-
-

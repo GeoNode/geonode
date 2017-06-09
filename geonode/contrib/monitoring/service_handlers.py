@@ -143,7 +143,7 @@ class BaseServiceHandler(object):
     def get_last_request(self):
         s = self.service
         return RequestEvent.objects.filter(service=s).order_by('-created').first()
-        
+
     def get_last_request_timestamp(self):
         r = self.get_last_request()
         if r:
@@ -171,7 +171,6 @@ class BaseServiceHandler(object):
     def handle_collected(self):
         raise NotImplemented()
 
-
     @classmethod
     def get_name(cls):
         n = cls.__name__
@@ -191,7 +190,7 @@ class GeoNodeService(BaseServiceHandler):
 
     def handle_collected(self, requests, *args, **kwargs):
         return requests
-    
+
 
 class GeoServerService(BaseServiceHandler):
 
@@ -210,10 +209,12 @@ class GeoServerService(BaseServiceHandler):
             RequestEvent.from_geoserver(self.service, r, received=now)
         return RequestEvent.objects.filter(service=self.service, received=now)
 
+
 class HostGeoServerService(BaseServiceHandler):
 
     def _collect(self):
         pass
+
 
 services = dict((c.get_name(), c,) for c in (GeoNodeService, GeoServerService,))
 

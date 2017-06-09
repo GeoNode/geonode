@@ -22,12 +22,9 @@ from datetime import datetime, timedelta
 from decimal import Decimal
 from itertools import chain
 
-from django import db
-
 from geonode.utils import raw_sql
-from geonode.contrib.monitoring.models import (Host, ServiceType, Service,
-    Metric, MetricValue, ServiceTypeMetric, RequestEvent, ExceptionEvent,
-    RequestEvent, MonitoredResource, MetricLabel)
+from geonode.contrib.monitoring.models import (Metric, MetricValue, ServiceTypeMetric,
+                                               MonitoredResource, MetricLabel)
 
 from geonode.contrib.monitoring.utils import generate_periods
 
@@ -37,28 +34,34 @@ class CollectorAPI(object):
     def __init__(self):
         pass
 
-
     def collect_from_endpoints(self):
         pass
-
 
     def collect_from_geonode(self):
         pass
 
     def collect_from_system(self):
         pass
-    
-    def get_labels_for_metric(self, metric_name):
+
+    def get_labels_for_metric(self, metric_name, resource=None):
         mt = ServiceTypeMetric.objects.filter(metric__name=metric_name)
         if not mt:
             raise ValueError("No metric for {}".format(metric_name))
-        return list(MetricLabel.objects.filter(metricvalue__service_metric__in=mt).distinct().values_list('name'))
+        
+        qparams = {'metricvalue__service_metric__in': mt}
+        if resource:
+            qparams['metricvalue__resource'] = resource
+        return list(MetricLabel.objects.filter(**qparams).distinct().values_list('name'))
 
     def get_resources_for_metric(self, metric_name):
         mt = ServiceTypeMetric.objects.filter(metric__name=metric_name)
         if not mt:
             raise ValueError("No metric for {}".format(metric_name))
-        return list(MonitoredResource.objects.filter(metric_values__service_metric__in=mt).distinct().values_list('name'))
+        return list(MonitoredResource.objects.filter(metric_values__service_metric__in=mt)
+                                             .exclude(name='', type='')
+                                             .distinct()
+                                             .order_by('type', 'name')
+                                             .values_list('type', 'name'))
 
     def get_metric_names(self):
         """
@@ -81,7 +84,6 @@ class CollectorAPI(object):
 
         return out
 
-
     def extract_resources(self, requests):
         resources = MonitoredResource.objects.filter(requests__in=requests).distinct()
         out = []
@@ -89,19 +91,23 @@ class CollectorAPI(object):
             out.append((res, requests.filter(resources=res).distinct(),))
         return out
 
-    def set_metric_values(self, metric_name, column_name, service, valid_from, valid_to, resource=None):
+    def set_metric_values(self, metric_name, column_name, service, valid_from, valid_to, resource=None, distinct=False):
+        if distinct:
+            sel = 'select distinct {}'.format(column_name)
+        else:
+            sel = 'select {}'.format(column_name)
         if resource:
-            _sql = 'select re.{} as res, count(1) as cnt from monitoring_requestevent re join monitoring_requestevent_resources mr on (mr.requestevent_id = re.id) where re.service_id = %s and re.created > %s and re.created < %s and mr.monitoredresource_id = %s group by re.{} order by cnt desc limit 100'
+            _sql = '{} as res, count(1) as cnt from monitoring_requestevent re join monitoring_requestevent_resources mr on (mr.requestevent_id = re.id) where re.service_id = %s and re.created > %s and re.created < %s and mr.monitoredresource_id = %s group by {} order by cnt desc limit 100'
             args = (service.id, valid_from, valid_to, resource.id,)
         else:
-            _sql = 'select re.{} as res, count(1) as cnt from monitoring_requestevent re where re.service_id = %s and re.created > %s and re.created < %s group by re.{} order by cnt desc limit 100'
+            _sql = '{} as res, count(1) as cnt from monitoring_requestevent re where re.service_id = %s and re.created > %s and re.created < %s group by {} order by cnt desc limit 100'
             args = (service.id, valid_from, valid_to,)
             
-        sql = _sql.format(column_name, column_name)
+        sql = _sql.format(sel, column_name)
         rows = raw_sql(sql, args)
         metric_values = {'metric': metric_name,
                          'valid_from': valid_from,
-                         'valid_to': valid_to, 
+                         'valid_to': valid_to,
                          'service': service,
                          'resource': resource}
         for row in rows:
@@ -131,18 +137,18 @@ class CollectorAPI(object):
         metric_defaults = {'valid_from': valid_from,
                            'valid_to': valid_to,
                            'service': service}
-        MetricValue.objects.filter(valid_from=valid_from, valid_to=valid_to, service=service).delete()
+        MetricValue.objects.filter(valid_from__gte=valid_from, valid_to__lte=valid_to, service=service).delete()
         resources = self.extract_resources(requests)
         count = requests.count()
         MetricValue.add('request.count', valid_from, valid_to, service, 'Count', value=count, value_num=count, 
                             value_raw=count, resource=None)
         # calculate overall stats
-        self.set_metric_values('request.ip', 'client_ip', **metric_defaults)
-        self.set_metric_values('request.country', 'client_country',  **metric_defaults)
-        self.set_metric_values('request.city', 'client_city', **metric_defaults)
-        self.set_metric_values('request.region', 'client_region', **metric_defaults)
-        self.set_metric_values('request.ua', 'user_agent', **metric_defaults)
-        self.set_metric_values('request.ua.family', 'user_agent_family', **metric_defaults)
+        self.set_metric_values('request.ip', 're.client_ip', **metric_defaults)
+        self.set_metric_values('request.country', 're.client_country',  **metric_defaults)
+        self.set_metric_values('request.city', 're.client_city', **metric_defaults)
+        self.set_metric_values('request.region', 're.client_region', **metric_defaults)
+        self.set_metric_values('request.ua', 're.user_agent', **metric_defaults)
+        self.set_metric_values('request.ua.family', 're.user_agent_family', **metric_defaults)
 
         # for each resource we should calculate another set of stats
         for resource, _requests in [(None, requests,)] + resources:
@@ -152,12 +158,12 @@ class CollectorAPI(object):
             #def add(cls, metric, valid_from, valid_to, service, label, value_raw, resource=None, value=None, value_num=None, data=None):
             MetricValue.add('request.count', valid_from, valid_to, service, 'Count', value=count, value_num=count, 
                             value_raw=count, resource=resource)
-            self.set_metric_values('request.ip', 'client_ip', **metric_defaults)
-            self.set_metric_values('request.country', 'client_country', **metric_defaults)
-            self.set_metric_values('request.city', 'client_city', **metric_defaults)
-            self.set_metric_values('request.region', 'client_region',  **metric_defaults)
-            self.set_metric_values('request.ua', 'user_agent', **metric_defaults)
-            self.set_metric_values('request.ua.family', 'user_agent_family', **metric_defaults)
+            self.set_metric_values('request.ip', 're.client_ip', **metric_defaults)
+            self.set_metric_values('request.country', 're.client_country', **metric_defaults)
+            self.set_metric_values('request.city', 're.client_city', **metric_defaults)
+            self.set_metric_values('request.region', 're.client_region',  **metric_defaults)
+            self.set_metric_values('request.ua', 're.user_agent', **metric_defaults)
+            self.set_metric_values('request.ua.family', 're.user_agent_family', **metric_defaults)
 
 
     def get_metrics_for(self, metric_name, valid_from=None, valid_to=None, interval=None, service=None, label=None, resource=None):
@@ -195,21 +201,17 @@ class CollectorAPI(object):
        
         params = {}
 
-        q_from = [  ' from monitoring_metricvalue mv',
-                    ' join monitoring_servicetypemetric mt on (mv.service_metric_id = mt.id) '
-                    ' join monitoring_metric m on (m.id = mt.metric_id)' ]
-        q_where = ['where', 'mv.valid_from = %(valid_from)s and mv.valid_to = %(valid_to)s '
-                    'and m.name = %(metric_name)s',]
+        q_from = [  'from monitoring_metricvalue mv',
+                    'join monitoring_servicetypemetric mt on (mv.service_metric_id = mt.id)'
+                    'join monitoring_metric m on (m.id = mt.metric_id)' ]
+        q_where = ['where', 'mv.valid_from >= %(valid_from)s and mv.valid_to <= %(valid_to)s '
+                   'and m.name = %(metric_name)s',]
         q_group = []
         params.update({'metric_name': metric_name, 
                        'valid_from': valid_from, 
                        'valid_to': valid_to})
         
         col = 'mv.value_num'
-        #if not (service or label or resource):
-        #    agg_f = col
-            #q_group.append(agg)
-        #else:
         agg_f = self.get_aggregate_function(col, metric_name, service)
         has_agg = agg_f != col
         
@@ -220,13 +222,9 @@ class CollectorAPI(object):
         if label:
             q_from.append('join monitoring_metriclabel ml on (mv.label_id = ml.id and ml.name = %(label)s)')
             params['label'] = label
-
         if resource:
             q_from.append('join monitoring_monitoredresource mr on (mv.resource_id = mr.id and mr.id = %(resource_id)s)')
             params['resource_id'] = resource.id
-        #if not label or not resource:
-        #    q_group.append('mv.valid_to')
-        #else:
         if label and has_agg:
             q_group.extend(['ml.name'])
         if resource and has_agg:

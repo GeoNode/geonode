@@ -19,7 +19,6 @@
 #########################################################################
 
 import os
-import time
 import threading
 import traceback
 import Queue
@@ -27,7 +26,7 @@ import logging
 import types
 import re
 from urllib import urlencode
-from datetime import date, datetime, timedelta
+from datetime import datetime, timedelta
 from math import floor
 
 from xml.etree import ElementTree as etree
@@ -36,10 +35,11 @@ import requests
 
 from geonode.contrib.monitoring.models import RequestEvent, ExceptionEvent
 
-GS_FORMAT = '%Y-%m-%dT%H:%M:%S' #2010-06-20T2:00:00
+GS_FORMAT = '%Y-%m-%dT%H:%M:%S'  # 2010-06-20T2:00:00
+
 
 class MonitoringFilter(logging.Filter):
-    def __init__(self, service, skip_urls = tuple, *args, **kwargs):
+    def __init__(self, service, skip_urls=tuple(), *args, **kwargs):
         super(MonitoringFilter, self).__init__(*args, **kwargs)
         self.service = service
         self.skip_urls = skip_urls
@@ -79,24 +79,24 @@ class RequestToMonitoringThread(threading.Thread):
     q = Queue.Queue()
 
     def __init__(self, service, *args, **kwargs):
-        super(RequestToMonitoring, self).__init__(*args, **kwargs)
+        super(RequestToMonitoringThread, self).__init__(*args, **kwargs)
         self.service = service
 
     def add(self, req, resp):
         item = (req, resp,)
-        RequestToMonitoring.q.put(item)
+        RequestToMonitoringThread.q.put(item)
 
     def run(self):
-        q = RequestToMonitoring.q
+        q = RequestToMonitoringThread.q
         while True:
             if not q.empty():
                 item = q.get()
                 req, resp = item
-                re = RequestEvent.from_geonode(self.service, req, resp)
+                RequestEvent.from_geonode(self.service, req, resp)
 
 
 class GeoServerMonitorClient(object):
-    
+
     REPORT_FORMATS = ('html', 'xml', 'json',)
 
     def __init__(self, base_url):
@@ -131,13 +131,13 @@ class GeoServerMonitorClient(object):
         for l in links:
             if l.get('href').startswith(self.base_url):
                 href = self.get_href(l, format)
-                yield self.get_request(href) 
+                yield self.get_request(href)
 
     def get_request(self, href):
         r = requests.get(href)
         try:
             return r.json()
-        except ValueError, TypeError:
+        except (ValueError, TypeError,):
             try:
                 return etree.fromstring(r.content)
             except Exception:
@@ -159,7 +159,7 @@ def align_period_start(start, interval):
 
 def generate_periods(since, interval, end=None):
     """
-    Generator of periods: tuple of [start, end). 
+    Generator of periods: tuple of [start, end).
     since parameter will be aligned to closest interval before since.
     """
     end = end or datetime.now()
