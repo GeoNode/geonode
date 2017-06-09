@@ -60,6 +60,11 @@ class Command(BaseCommand):
             default=False,
             help='Forces the execution without asking for confirmation.'),
         make_option(
+            '--skip-geoserver',
+            action='store_true',
+            default=False,
+            help='Skips geoserver backup'),
+        make_option(
             '--backup-file',
             dest='backup_file',
             type="string",
@@ -72,10 +77,153 @@ class Command(BaseCommand):
             default=None,
             help='Backup directory containing GeoNode data to restore.'))
 
+    def restore_geoserver_backup(self, settings, target_folder):
+        """Restore GeoServer Catalog"""
+        url = settings.OGC_SERVER['default']['PUBLIC_LOCATION']
+        user = settings.OGC_SERVER['default']['USER']
+        passwd = settings.OGC_SERVER['default']['PASSWORD']
+        geoserver_bk_file = os.path.join(target_folder, 'geoserver_catalog.zip')
+
+        if not os.path.exists(geoserver_bk_file):
+            print('Skipping geoserver restore: ' +
+                  'file "{}" not found.'.format(geoserver_bk_file))
+            return
+
+        print "Restoring 'GeoServer Catalog ["+url+"]' into '"+geoserver_bk_file+"'."
+
+        # Best Effort Restore: 'options': {'option': ['BK_BEST_EFFORT=true']}
+        data = {'restore': {'archiveFile': geoserver_bk_file, 'options': {}}}
+        headers = {'Content-type': 'application/json'}
+        r = requests.post(url + 'rest/br/restore/', data=json.dumps(data),
+                          headers=headers, auth=HTTPBasicAuth(user, passwd))
+        error_backup = 'Could not successfully restore GeoServer ' + \
+                       'catalog [{}rest/br/backup/]: {} - {}'
+
+        if (r.status_code > 201):
+
+            try:
+                gs_backup = r.json()
+            except ValueError:
+                raise ValueError(error_backup.format(url, r.status_code, r.text))
+
+            gs_bk_exec_id = gs_backup['restore']['execution']['id']
+            r = requests.get(url + 'rest/br/restore/' + str(gs_bk_exec_id) + '.json',
+                             auth=HTTPBasicAuth(user, passwd))
+            if (r.status_code == 200):
+
+                try:
+                    gs_backup = r.json()
+                except ValueError:
+                    raise ValueError(error_backup.format(url, r.status_code, r.text))
+
+                gs_bk_progress = gs_backup['restore']['execution']['progress']
+                print gs_bk_progress
+
+            raise ValueError(error_backup.format(url, r.status_code, r.text))
+
+        else:
+
+            try:
+                gs_backup = r.json()
+            except ValueError:
+                raise ValueError(error_backup.format(url, r.status_code, r.text))
+
+            gs_bk_exec_id = gs_backup['restore']['execution']['id']
+            r = requests.get(url + 'rest/br/restore/' + str(gs_bk_exec_id) + '.json',
+                             auth=HTTPBasicAuth(user, passwd))
+            if (r.status_code == 200):
+                gs_bk_exec_status = gs_backup['restore']['execution']['status']
+                gs_bk_exec_progress = gs_backup['restore']['execution']['progress']
+                gs_bk_exec_progress_updated = '0/0'
+                while (gs_bk_exec_status != 'COMPLETED' and gs_bk_exec_status != 'FAILED'):
+                    if (gs_bk_exec_progress != gs_bk_exec_progress_updated):
+                        gs_bk_exec_progress_updated = gs_bk_exec_progress
+                    r = requests.get(url + 'rest/br/restore/' + str(gs_bk_exec_id) + '.json',
+                                     auth=HTTPBasicAuth(user, passwd))
+                    if (r.status_code == 200):
+
+                        try:
+                            gs_backup = r.json()
+                        except ValueError:
+                            raise ValueError(error_backup.format(url, r.status_code, r.text))
+
+                        gs_bk_exec_status = gs_backup['restore']['execution']['status']
+                        gs_bk_exec_progress = gs_backup['restore']['execution']['progress']
+                        print str(gs_bk_exec_status) + ' - ' + gs_bk_exec_progress
+                        time.sleep(3)
+                    else:
+                        raise ValueError(error_backup.format(url, r.status_code, r.text))
+            else:
+                raise ValueError(error_backup.format(url, r.status_code, r.text))
+
+    def restore_geoserver_raster_data(self, settings, target_folder):
+        if (helpers.GS_DATA_DIR):
+            if (helpers.GS_DUMP_RASTER_DATA):
+
+                gs_data_folder = os.path.join(target_folder, 'gs_data_dir', 'data', 'geonode')
+                if not os.path.exists(gs_data_folder):
+                    print('Skipping geoserver raster data restore: ' +
+                          'directory "{}" not found.'.format(gs_data_folder))
+                    return
+
+                # Restore '$GS_DATA_DIR/data/geonode'
+                gs_data_root = os.path.join(helpers.GS_DATA_DIR, 'data', 'geonode')
+                if not os.path.isabs(gs_data_root):
+                    gs_data_root = os.path.join(settings.PROJECT_ROOT, '..', gs_data_root)
+
+                try:
+                    shutil.rmtree(gs_data_root)
+                    print 'Cleaned out old GeoServer Data Dir: ' + gs_data_root
+                except:
+                    pass
+
+                if not os.path.exists(gs_data_root):
+                    os.makedirs(gs_data_root)
+
+                helpers.copy_tree(gs_data_folder, gs_data_root)
+                helpers.chmod_tree(gs_data_root)
+                print "GeoServer Uploaded Data Restored to '"+gs_data_root+"'."
+
+                # Cleanup '$GS_DATA_DIR/gwc-layers'
+                gwc_layers_root = os.path.join(helpers.GS_DATA_DIR, 'gwc-layers')
+                if not os.path.isabs(gwc_layers_root):
+                    gwc_layers_root = os.path.join(settings.PROJECT_ROOT, '..', gwc_layers_root)
+
+                try:
+                    shutil.rmtree(gwc_layers_root)
+                    print 'Cleaned out old GeoServer GWC Layers Config: ' + gwc_layers_root
+                except:
+                    pass
+
+                if not os.path.exists(gwc_layers_root):
+                    os.makedirs(gwc_layers_root)
+
+    def restore_geoserver_vector_data(self, settings, target_folder):
+        """Restore Vectorial Data from DB"""
+        if (helpers.GS_DUMP_VECTOR_DATA):
+
+            gs_data_folder = os.path.join(target_folder, 'gs_data_dir', 'data', 'geonode')
+            if not os.path.exists(gs_data_folder):
+                print('Skipping geoserver vector data restore: ' +
+                      'directory "{}" not found.'.format(gs_data_folder))
+                return
+
+            datastore = settings.OGC_SERVER['default']['DATASTORE']
+            if (datastore):
+                ogc_db_name = settings.DATABASES[datastore]['NAME']
+                ogc_db_user = settings.DATABASES[datastore]['USER']
+                ogc_db_passwd = settings.DATABASES[datastore]['PASSWORD']
+                ogc_db_host = settings.DATABASES[datastore]['HOST']
+                ogc_db_port = settings.DATABASES[datastore]['PORT']
+
+                helpers.restore_db(ogc_db_name, ogc_db_user, ogc_db_port, ogc_db_host,
+                                   ogc_db_passwd, gs_data_folder)
+
     def handle(self, **options):
         # ignore_errors = options.get('ignore_errors')
         force_exec = options.get('force_exec')
         backup_file = options.get('backup_file')
+        skip_geoserver = options.get('skip_geoserver')
         backup_dir = options.get('backup_dir')
 
         if not any([backup_file, backup_dir]):
@@ -106,131 +254,12 @@ class Command(BaseCommand):
                 # Extract ZIP Archive to Target Folder
                 target_folder = helpers.unzip_file(backup_file, restore_folder)
 
-            # Restore GeoServer Catalog
-            url = settings.OGC_SERVER['default']['PUBLIC_LOCATION']
-            user = settings.OGC_SERVER['default']['USER']
-            passwd = settings.OGC_SERVER['default']['PASSWORD']
-            geoserver_bk_file = os.path.join(target_folder, 'geoserver_catalog.zip')
-
-            print "Restoring 'GeoServer Catalog ["+url+"]' into '"+geoserver_bk_file+"'."
-            if not os.path.exists(geoserver_bk_file):
-                raise ValueError('Could not find GeoServer Backup file [' + geoserver_bk_file + ']')
-
-            # Best Effort Restore: 'options': {'option': ['BK_BEST_EFFORT=true']}
-            data = {'restore': {'archiveFile': geoserver_bk_file, 'options': {}}}
-            headers = {'Content-type': 'application/json'}
-            r = requests.post(url + 'rest/br/restore/', data=json.dumps(data),
-                              headers=headers, auth=HTTPBasicAuth(user, passwd))
-            error_backup = 'Could not successfully restore GeoServer ' + \
-                           'catalog [{}rest/br/backup/]: {} - {}'
-
-            if (r.status_code > 201):
-
-                try:
-                    gs_backup = r.json()
-                except ValueError:
-                    raise ValueError(error_backup.format(url, r.status_code, r.text))
-
-                gs_bk_exec_id = gs_backup['restore']['execution']['id']
-                r = requests.get(url + 'rest/br/restore/' + str(gs_bk_exec_id) + '.json',
-                                 auth=HTTPBasicAuth(user, passwd))
-                if (r.status_code == 200):
-
-                    try:
-                        gs_backup = r.json()
-                    except ValueError:
-                        raise ValueError(error_backup.format(url, r.status_code, r.text))
-
-                    gs_bk_progress = gs_backup['restore']['execution']['progress']
-                    print gs_bk_progress
-
-                raise ValueError(error_backup.format(url, r.status_code, r.text))
-
+            if not skip_geoserver:
+                self.restore_geoserver_backup(settings, target_folder)
+                self.restore_geoserver_raster_data(settings, target_folder)
+                self.restore_geoserver_vector_data(settings, target_folder)
             else:
-
-                try:
-                    gs_backup = r.json()
-                except ValueError:
-                    raise ValueError(error_backup.format(url, r.status_code, r.text))
-
-                gs_bk_exec_id = gs_backup['restore']['execution']['id']
-                r = requests.get(url + 'rest/br/restore/' + str(gs_bk_exec_id) + '.json',
-                                 auth=HTTPBasicAuth(user, passwd))
-                if (r.status_code == 200):
-                    gs_bk_exec_status = gs_backup['restore']['execution']['status']
-                    gs_bk_exec_progress = gs_backup['restore']['execution']['progress']
-                    gs_bk_exec_progress_updated = '0/0'
-                    while (gs_bk_exec_status != 'COMPLETED' and gs_bk_exec_status != 'FAILED'):
-                        if (gs_bk_exec_progress != gs_bk_exec_progress_updated):
-                            gs_bk_exec_progress_updated = gs_bk_exec_progress
-                        r = requests.get(url + 'rest/br/restore/' + str(gs_bk_exec_id) + '.json',
-                                         auth=HTTPBasicAuth(user, passwd))
-                        if (r.status_code == 200):
-
-                            try:
-                                gs_backup = r.json()
-                            except ValueError:
-                                raise ValueError(error_backup.format(url, r.status_code, r.text))
-
-                            gs_bk_exec_status = gs_backup['restore']['execution']['status']
-                            gs_bk_exec_progress = gs_backup['restore']['execution']['progress']
-                            print str(gs_bk_exec_status) + ' - ' + gs_bk_exec_progress
-                            time.sleep(3)
-                        else:
-                            raise ValueError(error_backup.format(url, r.status_code, r.text))
-                else:
-                    raise ValueError(error_backup.format(url, r.status_code, r.text))
-
-            # Restore GeoServer Data
-            if (helpers.GS_DATA_DIR):
-                if (helpers.GS_DUMP_RASTER_DATA):
-                    # Restore '$GS_DATA_DIR/data/geonode'
-                    gs_data_root = os.path.join(helpers.GS_DATA_DIR, 'data', 'geonode')
-                    if not os.path.isabs(gs_data_root):
-                        gs_data_root = os.path.join(settings.PROJECT_ROOT, '..', gs_data_root)
-                    gs_data_folder = os.path.join(target_folder, 'gs_data_dir', 'data', 'geonode')
-
-                    try:
-                        shutil.rmtree(gs_data_root)
-                        print 'Cleaned out old GeoServer Data Dir: ' + gs_data_root
-                    except:
-                        pass
-
-                    if not os.path.exists(gs_data_root):
-                        os.makedirs(gs_data_root)
-
-                    helpers.copy_tree(gs_data_folder, gs_data_root)
-                    helpers.chmod_tree(gs_data_root)
-                    print "GeoServer Uploaded Data Restored to '"+gs_data_root+"'."
-
-                    # Cleanup '$GS_DATA_DIR/gwc-layers'
-                    gwc_layers_root = os.path.join(helpers.GS_DATA_DIR, 'gwc-layers')
-                    if not os.path.isabs(gwc_layers_root):
-                        gwc_layers_root = os.path.join(settings.PROJECT_ROOT, '..', gwc_layers_root)
-
-                    try:
-                        shutil.rmtree(gwc_layers_root)
-                        print 'Cleaned out old GeoServer GWC Layers Config: ' + gwc_layers_root
-                    except:
-                        pass
-
-                    if not os.path.exists(gwc_layers_root):
-                        os.makedirs(gwc_layers_root)
-
-            if (helpers.GS_DUMP_VECTOR_DATA):
-                # Restore Vectorial Data from DB
-                datastore = settings.OGC_SERVER['default']['DATASTORE']
-                if (datastore):
-                    ogc_db_name = settings.DATABASES[datastore]['NAME']
-                    ogc_db_user = settings.DATABASES[datastore]['USER']
-                    ogc_db_passwd = settings.DATABASES[datastore]['PASSWORD']
-                    ogc_db_host = settings.DATABASES[datastore]['HOST']
-                    ogc_db_port = settings.DATABASES[datastore]['PORT']
-
-                    gs_data_folder = os.path.join(target_folder, 'gs_data_dir', 'data', 'geonode')
-
-                    helpers.restore_db(ogc_db_name, ogc_db_user, ogc_db_port, ogc_db_host,
-                                       ogc_db_passwd, gs_data_folder)
+                print("Skipping geoserver backup restore")
 
             # Prepare Target DB
             try:
