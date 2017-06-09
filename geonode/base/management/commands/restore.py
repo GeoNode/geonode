@@ -121,20 +121,38 @@ class Command(BaseCommand):
             headers = {'Content-type': 'application/json'}
             r = requests.post(url + 'rest/br/restore/', data=json.dumps(data),
                               headers=headers, auth=HTTPBasicAuth(user, passwd))
+            error_backup = 'Could not successfully restore GeoServer ' + \
+                           'catalog [{}rest/br/backup/]: {} - {}'
+
             if (r.status_code > 201):
-                gs_backup = r.json()
+
+                try:
+                    gs_backup = r.json()
+                except ValueError:
+                    raise ValueError(error_backup.format(url, r.status_code, r.text))
+
                 gs_bk_exec_id = gs_backup['restore']['execution']['id']
                 r = requests.get(url + 'rest/br/restore/' + str(gs_bk_exec_id) + '.json',
                                  auth=HTTPBasicAuth(user, passwd))
                 if (r.status_code == 200):
-                    gs_backup = r.json()
+
+                    try:
+                        gs_backup = r.json()
+                    except ValueError:
+                        raise ValueError(error_backup.format(url, r.status_code, r.text))
+
                     gs_bk_progress = gs_backup['restore']['execution']['progress']
                     print gs_bk_progress
 
-                raise ValueError('Could not successfully restore GeoServer catalog [' + url +
-                                 'rest/br/restore/]: ' + str(r.status_code) + ' - ' + str(r.text))
+                raise ValueError(error_backup.format(url, r.status_code, r.text))
+
             else:
-                gs_backup = r.json()
+
+                try:
+                    gs_backup = r.json()
+                except ValueError:
+                    raise ValueError(error_backup.format(url, r.status_code, r.text))
+
                 gs_bk_exec_id = gs_backup['restore']['execution']['id']
                 r = requests.get(url + 'rest/br/restore/' + str(gs_bk_exec_id) + '.json',
                                  auth=HTTPBasicAuth(user, passwd))
@@ -148,17 +166,20 @@ class Command(BaseCommand):
                         r = requests.get(url + 'rest/br/restore/' + str(gs_bk_exec_id) + '.json',
                                          auth=HTTPBasicAuth(user, passwd))
                         if (r.status_code == 200):
-                            gs_backup = r.json()
+
+                            try:
+                                gs_backup = r.json()
+                            except ValueError:
+                                raise ValueError(error_backup.format(url, r.status_code, r.text))
+
                             gs_bk_exec_status = gs_backup['restore']['execution']['status']
                             gs_bk_exec_progress = gs_backup['restore']['execution']['progress']
                             print str(gs_bk_exec_status) + ' - ' + gs_bk_exec_progress
                             time.sleep(3)
                         else:
-                            raise ValueError('Could not successfully restore GeoServer catalog [' + url +
-                                             'rest/br/restore/]: ' + str(r.status_code) + ' - ' + str(r.text))
+                            raise ValueError(error_backup.format(url, r.status_code, r.text))
                 else:
-                    raise ValueError('Could not successfully restore GeoServer catalog [' + url +
-                                     'rest/br/restore/]: ' + str(r.status_code) + ' - ' + str(r.text))
+                    raise ValueError(error_backup.format(url, r.status_code, r.text))
 
             # Restore GeoServer Data
             if (helpers.GS_DATA_DIR):
