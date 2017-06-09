@@ -63,28 +63,48 @@ class Command(BaseCommand):
             '--backup-file',
             dest='backup_file',
             type="string",
-            help='Backup archive containing GeoNode data to restore.'))
+            default=None,
+            help='Backup archive containing GeoNode data to restore.'),
+        make_option(
+            '--backup-dir',
+            dest='backup_dir',
+            type="string",
+            default=None,
+            help='Backup directory containing GeoNode data to restore.'))
 
     def handle(self, **options):
         # ignore_errors = options.get('ignore_errors')
         force_exec = options.get('force_exec')
         backup_file = options.get('backup_file')
+        backup_dir = options.get('backup_dir')
 
-        if not backup_file or len(backup_file) == 0:
-            raise CommandError("Backup archive '--backup-file' is mandatory")
+        if not any([backup_file, backup_dir]):
+            raise CommandError("Mandatory option (--backup-file|--backup-dir)")
+
+        if all([backup_file, backup_dir]):
+            raise CommandError("Exclusive option (--backup-file|--backup-dir)")
+
+        if backup_file and not os.path.isfile(backup_file):
+            raise CommandError("Provided '--backup-file' is not a file")
+
+        if backup_dir and not os.path.isdir(backup_dir):
+            raise CommandError("Provided '--backup-dir' is not a directory")
 
         print "Before proceeding with the Restore, please ensure that:"
         print " 1. The backend (DB or whatever) is accessible and you have rights"
         print " 2. The GeoServer is up and running and reachable from this machine"
         message = 'WARNING: The restore will overwrite ALL GeoNode data. You want to proceed?'
         if force_exec or helpers.confirm(prompt=message, resp=False):
-            # Create Target Folder
-            restore_folder = os.path.join(tempfile.gettempdir(), 'restore')
-            if not os.path.exists(restore_folder):
-                os.makedirs(restore_folder)
+            target_folder = backup_dir
 
-            # Extract ZIP Archive to Target Folder
-            target_folder = helpers.unzip_file(backup_file, restore_folder)
+            if backup_file:
+                # Create Target Folder
+                restore_folder = os.path.join(tempfile.gettempdir(), 'restore')
+                if not os.path.exists(restore_folder):
+                    os.makedirs(restore_folder)
+
+                # Extract ZIP Archive to Target Folder
+                target_folder = helpers.unzip_file(backup_file, restore_folder)
 
             # Restore GeoServer Catalog
             url = settings.OGC_SERVER['default']['PUBLIC_LOCATION']
