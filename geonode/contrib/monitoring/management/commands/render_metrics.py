@@ -30,18 +30,11 @@ from geonode.utils import parse_datetime
 from geonode.contrib.monitoring.models import Service, MonitoredResource, MetricLabel
 from geonode.contrib.monitoring.service_handlers import get_for_service
 from geonode.contrib.monitoring.collector import CollectorAPI
+from geonode.contrib.monitoring.utils import TypeChecks
 
 log = logging.getLogger(__name__)
 
 TIMESTAMP_OUTPUT = '%Y-%m-%d %H:%M:%S'
-
-def resource_type(val):
-    try:
-        rtype, rname = val.split('=')
-    except (ValueError, IndexError,):
-        raise ValueError("{} is not valid resource description".format(val))
-    return MonitoredResource.objects.get(type=rtype, name=rname)
-
 
 class Command(BaseCommand):
     """
@@ -66,8 +59,11 @@ class Command(BaseCommand):
                             help=_("Data aggregation interval in seconds (default: 60)"))
         parser.add_argument('metric_name', default=None, nargs="?", help=_("Metric name"))
 
-        parser.add_argument('-rr', '--for-resource', dest='resource', type=resource_type,
+        parser.add_argument('-rr', '--for-resource', dest='resource', type=TypeChecks.resource_type,
                             help=_("Show data for specific resource in resource_type=resource_name format"))
+
+        parser.add_argument('-ss', '--service', dest='service', type=TypeChecks.service_type,
+                            help=_("Show data for specific resource"))
 
     def handle(self, *args, **options):
         self.collector = CollectorAPI()
@@ -78,6 +74,7 @@ class Command(BaseCommand):
         interval = timedelta(seconds=options['interval'])
         metric_names = options['metric_name']
         resource = options['resource']
+        service = options['service']
         if not metric_names:
             raise CommandError("No metric name")
         if isinstance(metric_names, types.StringTypes):
@@ -87,7 +84,7 @@ class Command(BaseCommand):
             if options['list_labels']:
                 self.list_labels(m)
             elif options['list_resources']:
-                self.list_resources(m, resource=resource)
+                self.list_resources(m)
             else:
                 self.show_metrics(m, options['since'], options['until'], interval, resource=resource)
 
@@ -103,14 +100,16 @@ class Command(BaseCommand):
         for res in resources:
             print(' ', '='.join(res))
 
-    def show_metrics(self, metric, since, until, interval, resource=None, label=None):
-        data = self.collector.get_metrics_for(metric, valid_from=since, valid_to=until, interval=interval, resource=resource, label=label)
+    def show_metrics(self, metric, since, until, interval, resource=None, label=None, service=None):
         print('Monitoring Metric values for {}'.format(metric))
+        if service:
+            print(' for {} service'.format(service))
         if resource:
             print(' for {}={} resource'.format(resource.type, resource.name))
         if label:
             print(' with {} label'.format(label.name))
             
+        data = self.collector.get_metrics_for(metric, valid_from=since, valid_to=until, interval=interval, resource=resource, label=label, service=service)
         print(' since {} until {}\n'.format(data['input_valid_from'].strftime(TIMESTAMP_OUTPUT),
                                           data['input_valid_to'].strftime(TIMESTAMP_OUTPUT)))
 

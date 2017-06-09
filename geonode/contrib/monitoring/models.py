@@ -311,8 +311,10 @@ class RequestEvent(models.Model):
                 'client_region': region,
                 'client_city': city}
         inst = cls.objects.create(**data)
-        resources_names = rd['resources']['string'] if rd.get('service') in cls._ows_types else []
-        resources = cls._get_resources('layer', resources_names)
+        resource_names = rd['resources']['string'] if rd.get('service') in cls._ows_types else []
+        if not isinstance(resource_names, (list, tuple,)):
+            resource_names = [resource_names]
+        resources = cls._get_resources('layer', resource_names)
         if resources:
             inst.resources.add(*resources)
             inst.save()

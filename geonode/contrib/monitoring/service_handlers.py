@@ -149,7 +149,7 @@ class BaseServiceHandler(object):
         if r:
             return r.created
 
-    def collect(self, since=None, until=None):
+    def collect(self, since=None, until=None, **kwargs):
         now = datetime.now()
 
         if since is None:
@@ -162,7 +162,7 @@ class BaseServiceHandler(object):
                 return
         self.service.last_check = now
         self.service.save()
-        _collected = self._collect(since, until)
+        _collected = self._collect(since, until, **kwargs)
         return self.handle_collected(_collected)
 
     def _collect(self, since, until):
@@ -185,7 +185,7 @@ class GeoNodeService(BaseServiceHandler):
             filter_kwargs = {'created__gt': since}
         return RequestEvent.objects.filter(**filter_kwargs)
 
-    def _collect(self, since=None, until=None):
+    def _collect(self, since=None, until=None, **kwargs):
         return self._get_collected_set(since=since, until=until)
 
     def handle_collected(self, requests, *args, **kwargs):
@@ -199,8 +199,9 @@ class GeoServerService(BaseServiceHandler):
             raise ValueError("Monitoring is not configured to fetch from %s" % self.service.name)
         self.gs_monitor = GeoServerMonitorClient(self.service.url)
 
-    def _collect(self, since, until):
-        requests = list(self.gs_monitor.get_requests(format='json', since=since, until=until))
+    def _collect(self, since, until, format=None, **kwargs):
+        format = format or 'json'
+        requests = list(self.gs_monitor.get_requests(format=format, since=since, until=until))
         return requests
 
     def handle_collected(self, requests):

@@ -23,6 +23,7 @@ import threading
 import traceback
 import Queue
 import logging
+import xmljson
 import types
 import re
 from urllib import urlencode
@@ -131,18 +132,33 @@ class GeoServerMonitorClient(object):
         for l in links:
             if l.get('href').startswith(self.base_url):
                 href = self.get_href(l, format)
-                yield self.get_request(href)
+                yield self.get_request(href, format=format)
 
-    def get_request(self, href):
+    def get_request(self, href, format=format):
         r = requests.get(href)
+        data = None
         try:
-            return r.json()
+            data = r.json()
         except (ValueError, TypeError,):
             try:
-                return etree.fromstring(r.content)
+                data = etree.fromstring(r.content)
             except Exception:
-                return bs(r.content)
+                data = bs(r.content)
+        if data and format != 'json':
+            return self.to_json(data, format)
+        return data
 
+    def _from_xml(self, val):
+        return xmljson.yahoo.data(val)
+
+    def _from_html(self, val):
+        raise ValueError("Cannot convert from html")
+
+    def to_json(self, data, from_format):
+        h = getattr(self, '_from_{}'.format(from_format), None)
+        if not h:
+            raise ValueError("Cannot convert from {} - no handler".format(from_format))
+        return h(data)
 
 def align_period_start(start, interval):
     day_start = datetime(*start.date().timetuple()[:6])
@@ -167,3 +183,29 @@ def generate_periods(since, interval, end=None):
     while since_aligned < end:
         yield (since_aligned, since_aligned + interval,)
         since_aligned = since_aligned + interval
+
+
+class TypeChecks(object):
+    AUDIT_TYPE_JSON = 'json'
+    AUDIT_TYPE_XML = 'xml'
+    AUDIT_FORMATS = (AUDIT_TYPE_JSON, AUDIT_TYPE_XML,)
+
+    @classmethod
+    def audit_format(cls, val):
+        if not val in cls.AUDIT_FORMATS:
+            raise ValueError("Invalid value for audit format: {}".format(val))
+        return val
+
+    @staticmethod
+    def resource_type(val):
+        try:
+            rtype, rname = val.split('=')
+        except (ValueError, IndexError,):
+            raise ValueError("{} is not valid resource description".format(val))
+        from geonode.contrib.monitoring.models import MonitoredResource
+        return MonitoredResource.objects.get(type=rtype, name=rname)
+
+    @staticmethod
+    def service_type(val):
+        from geonode.contrib.monitoring.models import Service
+        return Service.objects.get(name=val)
