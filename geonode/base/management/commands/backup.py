@@ -43,6 +43,7 @@ class Command(BaseCommand):
     help = 'Backup the GeoNode application data'
 
     option_list = BaseCommand.option_list + (
+        helpers.Config.option,
         make_option(
             '-i',
             '--ignore-errors',
@@ -141,11 +142,11 @@ class Command(BaseCommand):
             else:
                 raise ValueError(error_backup.format(url, r.status_code, r.text))
 
-    def dump_geoserver_raster_data(self, settings, target_folder):
-        if (helpers.GS_DATA_DIR):
-            if (helpers.GS_DUMP_RASTER_DATA):
-                # Dump '$GS_DATA_DIR/data/geonode'
-                gs_data_root = os.path.join(helpers.GS_DATA_DIR, 'data', 'geonode')
+    def dump_geoserver_raster_data(self, config, settings, target_folder):
+        if (config.gs_data_dir):
+            if (config.gs_dump_raster_data):
+                # Dump '$config.gs_data_dir/data/geonode'
+                gs_data_root = os.path.join(config.gs_data_dir, 'data', 'geonode')
                 if not os.path.isabs(gs_data_root):
                     gs_data_root = os.path.join(settings.PROJECT_ROOT, '..', gs_data_root)
                 gs_data_folder = os.path.join(target_folder, 'gs_data_dir', 'data', 'geonode')
@@ -155,8 +156,8 @@ class Command(BaseCommand):
                 helpers.copy_tree(gs_data_root, gs_data_folder)
                 print "Dumped GeoServer Uploaded Data from '"+gs_data_root+"'."
 
-    def dump_geoserver_vector_data(self, settings, target_folder):
-        if (helpers.GS_DUMP_VECTOR_DATA):
+    def dump_geoserver_vector_data(self, config, settings, target_folder):
+        if (config.gs_dump_vector_data):
             # Dump Vectorial Data from DB
             datastore = settings.OGC_SERVER['default']['DATASTORE']
             if (datastore):
@@ -170,10 +171,12 @@ class Command(BaseCommand):
                 if not os.path.exists(gs_data_folder):
                     os.makedirs(gs_data_folder)
 
-                helpers.dump_db(ogc_db_name, ogc_db_user, ogc_db_port, ogc_db_host, ogc_db_passwd, gs_data_folder)
+                helpers.dump_db(config, ogc_db_name, ogc_db_user, ogc_db_port,
+                                ogc_db_host, ogc_db_passwd, gs_data_folder)
 
     def handle(self, **options):
         # ignore_errors = options.get('ignore_errors')
+        config = helpers.Config(options)
         force_exec = options.get('force_exec')
         backup_dir = options.get('backup_dir')
         skip_geoserver = options.get('skip_geoserver')
@@ -198,8 +201,8 @@ class Command(BaseCommand):
 
             if not skip_geoserver:
                 self.create_geoserver_backup(settings, target_folder)
-                self.dump_geoserver_raster_data(settings, target_folder)
-                self.dump_geoserver_vector_data(settings, target_folder)
+                self.dump_geoserver_raster_data(config, settings, target_folder)
+                self.dump_geoserver_vector_data(config, settings, target_folder)
             else:
                 print("Skipping geoserver backup")
 
@@ -210,7 +213,7 @@ class Command(BaseCommand):
                 print "...done!"
 
                 # Dump Fixtures
-                for app_name, dump_name in zip(helpers.app_names, helpers.dump_names):
+                for app_name, dump_name in zip(config.app_names, config.dump_names):
                     print "Dumping '"+app_name+"' into '"+dump_name+".json'."
                     # Point stdout at a file for dumping data to.
                     output = open(os.path.join(target_folder, dump_name+'.json'), 'w')

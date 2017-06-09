@@ -45,6 +45,7 @@ class Command(BaseCommand):
     help = 'Restore the GeoNode application data'
 
     option_list = BaseCommand.option_list + (
+        helpers.Config.option,
         make_option(
             '-i',
             '--ignore-errors',
@@ -156,9 +157,9 @@ class Command(BaseCommand):
             else:
                 raise ValueError(error_backup.format(url, r.status_code, r.text))
 
-    def restore_geoserver_raster_data(self, settings, target_folder):
-        if (helpers.GS_DATA_DIR):
-            if (helpers.GS_DUMP_RASTER_DATA):
+    def restore_geoserver_raster_data(self, config, settings, target_folder):
+        if (config.gs_data_dir):
+            if (config.gs_dump_raster_data):
 
                 gs_data_folder = os.path.join(target_folder, 'gs_data_dir', 'data', 'geonode')
                 if not os.path.exists(gs_data_folder):
@@ -166,8 +167,8 @@ class Command(BaseCommand):
                           'directory "{}" not found.'.format(gs_data_folder))
                     return
 
-                # Restore '$GS_DATA_DIR/data/geonode'
-                gs_data_root = os.path.join(helpers.GS_DATA_DIR, 'data', 'geonode')
+                # Restore '$config.gs_data_dir/data/geonode'
+                gs_data_root = os.path.join(config.gs_data_dir, 'data', 'geonode')
                 if not os.path.isabs(gs_data_root):
                     gs_data_root = os.path.join(settings.PROJECT_ROOT, '..', gs_data_root)
 
@@ -184,8 +185,8 @@ class Command(BaseCommand):
                 helpers.chmod_tree(gs_data_root)
                 print "GeoServer Uploaded Data Restored to '"+gs_data_root+"'."
 
-                # Cleanup '$GS_DATA_DIR/gwc-layers'
-                gwc_layers_root = os.path.join(helpers.GS_DATA_DIR, 'gwc-layers')
+                # Cleanup '$config.gs_data_dir/gwc-layers'
+                gwc_layers_root = os.path.join(config.gs_data_dir, 'gwc-layers')
                 if not os.path.isabs(gwc_layers_root):
                     gwc_layers_root = os.path.join(settings.PROJECT_ROOT, '..', gwc_layers_root)
 
@@ -198,9 +199,9 @@ class Command(BaseCommand):
                 if not os.path.exists(gwc_layers_root):
                     os.makedirs(gwc_layers_root)
 
-    def restore_geoserver_vector_data(self, settings, target_folder):
+    def restore_geoserver_vector_data(self, config, settings, target_folder):
         """Restore Vectorial Data from DB"""
-        if (helpers.GS_DUMP_VECTOR_DATA):
+        if (config.gs_dump_vector_data):
 
             gs_data_folder = os.path.join(target_folder, 'gs_data_dir', 'data', 'geonode')
             if not os.path.exists(gs_data_folder):
@@ -216,11 +217,12 @@ class Command(BaseCommand):
                 ogc_db_host = settings.DATABASES[datastore]['HOST']
                 ogc_db_port = settings.DATABASES[datastore]['PORT']
 
-                helpers.restore_db(ogc_db_name, ogc_db_user, ogc_db_port, ogc_db_host,
-                                   ogc_db_passwd, gs_data_folder)
+                helpers.restore_db(config, ogc_db_name, ogc_db_user, ogc_db_port,
+                                   ogc_db_host, ogc_db_passwd, gs_data_folder)
 
     def handle(self, **options):
         # ignore_errors = options.get('ignore_errors')
+        config = helpers.Config(options)
         force_exec = options.get('force_exec')
         backup_file = options.get('backup_file')
         skip_geoserver = options.get('skip_geoserver')
@@ -256,8 +258,8 @@ class Command(BaseCommand):
 
             if not skip_geoserver:
                 self.restore_geoserver_backup(settings, target_folder)
-                self.restore_geoserver_raster_data(settings, target_folder)
-                self.restore_geoserver_vector_data(settings, target_folder)
+                self.restore_geoserver_raster_data(config, settings, target_folder)
+                self.restore_geoserver_vector_data(config, settings, target_folder)
             else:
                 print("Skipping geoserver backup restore")
 
@@ -283,7 +285,7 @@ class Command(BaseCommand):
                 print "...done!"
 
                 # Restore Fixtures
-                for app_name, dump_name in zip(helpers.app_names, helpers.dump_names):
+                for app_name, dump_name in zip(config.app_names, config.dump_names):
                     fixture_file = os.path.join(target_folder, dump_name+'.json')
 
                     print "Deserializing "+fixture_file
