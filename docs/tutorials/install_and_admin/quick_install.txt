@@ -40,21 +40,25 @@ The steps to install geonode and all dependencies in Ubuntu 14.04 are as follows
 
     sudo add-apt-repository ppa:geonode/stable
 
+   .. note:: If you want to try latest unstable version of GeoNode, add the repository::
+
+       sudo add-apt-repository ppa:geonode/test
+
 2. Install the geonode package and dependencies::
 
     sudo apt-get update; sudo apt-get install geonode
 
-3. Set the correct IP address (NB: the first command below looks up the IP address automatically)::
+3. Create a geonode superuser, which is used in the geonode web application. You will be prompted for a username, email and password::
+
+    geonode createsuperuser
+
+4. Set the correct IP address (NB: the first command below looks up the IP address automatically)::
 
     IP_ADDRESS=$(ip route get 8.8.8.8 | awk '{print $NF; exit}')
     sudo geonode-updateip $IP_ADDRESS
    
    NB: The IP address must be set to enable access from another machine, e.g. the host machine if geonode is installed in a virtual machine.
     
-4. Create a geonode superuser, which is used in the geonode web application. You will be prompted for a username, email and password::
-
-    geonode createsuperuser
-
 5. Access geonode from your web browser, using the IP address from step 3 above. The neonode web applicaiton should be displayed and you can log in using the superuser details entered immediately above::
 
     http://[IP_ADDRESS]
