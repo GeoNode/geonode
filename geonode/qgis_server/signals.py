@@ -39,6 +39,7 @@ from geonode.qgis_server.helpers import tile_url
 from geonode.qgis_server.models import QGISServerLayer
 from geonode.qgis_server.tasks.update import create_qgis_server_thumbnail
 from geonode.utils import check_ogc_backend
+from geonode.qgis_server.xml_utilities import update_xml
 
 logger = logging.getLogger("geonode.qgis_server.signals")
 
@@ -240,6 +241,24 @@ def qgis_server_post_save(instance, sender, **kwargs):
 
     # Attributes
     set_attributes(instance)
+
+    # Update xml file
+    # Get the path of the metadata file
+    basename, _ = os.path.splitext(qgis_layer.base_layer_path)
+    xml_file_path = basename + '.xml'
+    if os.path.exists(xml_file_path):
+        try:
+            # Read metadata from layer that InaSAFE use.
+            # Some are not found: organisation, email, url
+            new_values = {
+                'date': instance.date.isoformat(),
+                'abstract': instance.abstract,
+                'title': instance.title,
+                'license': instance.license_verbose,
+            }
+            update_xml(xml_file_path, new_values)
+        except (TypeError, AttributeError):
+            pass
 
 
 def qgis_server_pre_save_maplayer(instance, sender, **kwargs):
