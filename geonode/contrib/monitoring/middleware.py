@@ -77,7 +77,11 @@ class MonitoringMiddleware(object):
         if self.service:
             response = HttpResponse('')
             self.log.info('request', exc_info=exception, extra={'request': request, 'response': response})
-            
+      
+    def process_view(self, request, view_func, view_args, view_kwargs):
+        m = request.resolver_match
+        if request.resolver_match.namespace in ('admin', 'monitoring',):
+            del request._monitoring
 
     def process_request(self, request):
         now = datetime.now()
@@ -92,14 +96,21 @@ class MonitoringMiddleware(object):
         request.add_resource = add_resource
 
     def process_response(self, request, response):
+        m = getattr(request, '_monitoring', None)
+        if m is None:
+            return response
         now = datetime.now()
-        request._monitoring['finished'] = now
+        m['finished'] = now
         self.register_request(request, response)
         return response
 
     def process_exception(self, request, exception):
+        m = getattr(request, '_monitoring', None)
+        if m is None:
+            return
+        
         now = datetime.now()
-        request._monitoring['finished'] = now
+        m['finished'] = now
         self.register_exception(request, exception)
 
         

@@ -197,6 +197,11 @@ class TypeChecks(object):
         return val
 
     @staticmethod
+    def host_type(val):
+        from geonode.contrib.monitoring.models import Host
+        return Host.objects.get(name=val)
+
+    @staticmethod
     def resource_type(val):
         try:
             rtype, rname = val.split('=')
@@ -215,7 +220,7 @@ class TypeChecks(object):
         from geonode.contrib.monitoring.models import MetricLabel
         try:
             return MetricLabel.objects.get(id=val)
-        except MetricLabel.DoesNotExist:
+        except (ValueError, TypeError, MetricLabel.DoesNotExist,), err:
             try:
                 return MetricLabel.objects.get(name=val)
             except MetricLabel.DoesNotExist:

@@ -68,6 +68,7 @@ class CollectorAPI(object):
         Returns list of tuples: (service type, list of metrics)
         """
         q = ServiceTypeMetric.objects.all().select_related().order_by('service_type', 'metric')
+
         out = []
         current_service = None
         current_set = []
@@ -171,12 +172,14 @@ class CollectorAPI(object):
         now = datetime.now()
         valid_from = valid_from or (now - interval)
         valid_to = valid_to or now
+        if (valid_to - valid_from).total_seconds() > 24*3600:
+            interval = timedelta(seconds=3600)
         #label = None #label or 'count'
         out = {'metric': metric_name,
                'input_valid_from': valid_from,
                'input_valid_to': valid_to,
-               'interval': interval,
-               'label': label,
+               'interval': interval.total_seconds(),
+               'label': label.name,
                'data': []}
         periods = generate_periods(valid_from, interval, valid_to)
         for pstart, pend in periods:

@@ -42,6 +42,7 @@ from django.http import HttpResponse
 from django.shortcuts import get_object_or_404
 from django.utils.translation import ugettext_lazy as _
 from django.db import models, connection, transaction
+from django.core.serializers.json import DjangoJSONEncoder
 import httplib2
 import urlparse
 import urllib
@@ -615,7 +616,7 @@ def json_response(body=None, errors=None, redirect_to=None, exception=None,
         status = 200
 
     if not isinstance(body, basestring):
-        body = json.dumps(body)
+        body = json.dumps(body, cls=DjangoJSONEncoder)
     return HttpResponse(body, content_type=content_type, status=status)
 
 
