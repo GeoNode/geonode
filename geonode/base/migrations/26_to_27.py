@@ -16,4 +16,9 @@ class Migration(migrations.Migration):
             name='tkeywords',
             field=models.ManyToManyField(help_text='formalised word(s) or phrase(s) from a fixed thesaurus used to describe the subject (space or comma-separated', to='base.ThesaurusKeyword', blank=True),
         ),
+        migrations.AddField(
+            model_name='resourcebase',
+            name='group',
+            field=models.ForeignKey(blank=True, to='auth.Group', null=True),
+        ),
     ]
