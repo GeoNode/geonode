@@ -50,7 +50,7 @@ class Command(BaseCommand):
                             help=_("Force check"))
         parser.add_argument('-t', '--format', default=TypeChecks.AUDIT_TYPE_JSON, type=TypeChecks.audit_format,
                             help=_("Format of audit log (xml, json)"))
-        parser.add_argument('service', type=TypeChecks.service_type,
+        parser.add_argument('service', type=TypeChecks.service_type, nargs="?",
                             help=_("Collect data from this service only"))
 
     def handle(self, *args, **options):

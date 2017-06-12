@@ -209,3 +209,15 @@ class TypeChecks(object):
     def service_type(val):
         from geonode.contrib.monitoring.models import Service
         return Service.objects.get(name=val)
+
+    @staticmethod
+    def label_type(val):
+        from geonode.contrib.monitoring.models import MetricLabel
+        try:
+            return MetricLabel.objects.get(id=val)
+        except MetricLabel.DoesNotExist:
+            try:
+                return MetricLabel.objects.get(name=val)
+            except MetricLabel.DoesNotExist:
+                pass
+        raise ValuError("Invalid label value: {}".format(val))

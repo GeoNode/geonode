@@ -42,9 +42,9 @@ class Command(BaseCommand):
     """
 
     def add_arguments(self, parser):
-        parser.add_argument('-l', '--list-metrics', dest='list_metrics', action='store_true', default=False,
+        parser.add_argument('-m', '--list-metrics', dest='list_metrics', action='store_true', default=False,
                             help=_("Show list of metrics"))
-        parser.add_argument('-n', '--list-labels', dest='list_labels', action='store_true', default=False,
+        parser.add_argument('-l', '--list-labels', dest='list_labels', action='store_true', default=False,
                     help=_("Show list of labels for metric"))
 
         parser.add_argument('-r', '--list-resources', dest='list_resources', action='store_true', default=False,
@@ -65,6 +65,10 @@ class Command(BaseCommand):
         parser.add_argument('-ss', '--service', dest='service', type=TypeChecks.service_type,
                             help=_("Show data for specific resource"))
 
+        parser.add_argument('-ll', '--label', dest='label', type=TypeChecks.label_type,
+                            help=_("Show data for specific label"))
+
+
     def handle(self, *args, **options):
         self.collector = CollectorAPI()
         if options['list_metrics']:
@@ -75,6 +79,7 @@ class Command(BaseCommand):
         metric_names = options['metric_name']
         resource = options['resource']
         service = options['service']
+        label = options['label']
         if not metric_names:
             raise CommandError("No metric name")
         if isinstance(metric_names, types.StringTypes):
@@ -86,7 +91,7 @@ class Command(BaseCommand):
             elif options['list_resources']:
                 self.list_resources(m)
             else:
-                self.show_metrics(m, options['since'], options['until'], interval, resource=resource)
+                self.show_metrics(m, options['since'], options['until'], interval, resource=resource, label=label)
 
     def list_labels(self, metric, resource=None):
         labels = self.collector.get_labels_for_metric(metric, resource=resource)
@@ -103,13 +108,19 @@ class Command(BaseCommand):
     def show_metrics(self, metric, since, until, interval, resource=None, label=None, service=None):
         print('Monitoring Metric values for {}'.format(metric))
         if service:
-            print(' for {} service'.format(service))
+            print(' for service: {} '.format(service))
         if resource:
-            print(' for {}={} resource'.format(resource.type, resource.name))
+            print(' for resource: {}={} '.format(resource.type, resource.name))
         if label:
-            print(' with {} label'.format(label.name))
-            
-        data = self.collector.get_metrics_for(metric, valid_from=since, valid_to=until, interval=interval, resource=resource, label=label, service=service)
+            print(' for label: {} label'.format(label.name))
+
+        data = self.collector.get_metrics_for(metric,
+                                              valid_from=since,
+                                              valid_to=until,
+                                              interval=interval,
+                                              resource=resource, 
+                                              label=label,
+                                              service=service)
         print(' since {} until {}\n'.format(data['input_valid_from'].strftime(TIMESTAMP_OUTPUT),
                                           data['input_valid_to'].strftime(TIMESTAMP_OUTPUT)))
 

@@ -51,7 +51,7 @@ class CollectorAPI(object):
         qparams = {'metricvalue__service_metric__in': mt}
         if resource:
             qparams['metricvalue__resource'] = resource
-        return list(MetricLabel.objects.filter(**qparams).distinct().values_list('name'))
+        return list(MetricLabel.objects.filter(**qparams).distinct().values_list('id', 'name'))
 
     def get_resources_for_metric(self, metric_name):
         mt = ServiceTypeMetric.objects.filter(metric__name=metric_name)
@@ -171,7 +171,7 @@ class CollectorAPI(object):
         now = datetime.now()
         valid_from = valid_from or (now - interval)
         valid_to = valid_to or now
-        label = None #label or 'count'
+        #label = None #label or 'count'
         out = {'metric': metric_name,
                'input_valid_from': valid_from,
                'input_valid_to': valid_to,
@@ -220,8 +220,8 @@ class CollectorAPI(object):
             q_where.append('and mv.service_id = %(service_id)s')
             params['service_id'] = service.id
         if label:
-            q_from.append('join monitoring_metriclabel ml on (mv.label_id = ml.id and ml.name = %(label)s)')
-            params['label'] = label
+            q_from.append('join monitoring_metriclabel ml on (mv.label_id = ml.id and ml.id = %(label)s)')
+            params['label'] = label.id
         if resource:
             q_from.append('join monitoring_monitoredresource mr on (mv.resource_id = mr.id and mr.id = %(resource_id)s)')
             params['resource_id'] = resource.id
