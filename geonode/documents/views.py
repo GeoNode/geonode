@@ -43,6 +43,7 @@ from geonode.documents.models import Document
 from geonode.documents.forms import DocumentForm, DocumentCreateForm, DocumentReplaceForm
 from geonode.documents.models import IMGTYPES
 from geonode.utils import build_social_links
+from geonode.groups.models import GroupProfile
 
 ALLOWED_DOC_TYPES = settings.ALLOWED_DOCUMENT_TYPES
 
@@ -395,12 +396,18 @@ def document_metadata(
             author_form = ProfileForm(prefix="author")
             author_form.hidden = True
 
+        metadata_author_groups = []
+        if request.user.is_superuser:
+            metadata_author_groups = GroupProfile.objects.all()
+        else:
+            metadata_author_groups = metadata_author.group_list_all()
         return render_to_response(template, RequestContext(request, {
             "document": document,
             "document_form": document_form,
             "poc_form": poc_form,
             "author_form": author_form,
             "category_form": category_form,
+            "metadata_author_groups": metadata_author_groups,
         }))
 
 

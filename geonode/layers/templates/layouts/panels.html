@@ -333,6 +333,34 @@ span.grippy::after {
                                           {% endfor %}
                                         </select>
                                     </div>
+                                    <div class="col-lg-12">
+                                        <span><label for="id_resource-group" class="control-label required-field">{% trans "Group" %}</label></span>
+                                        <select
+                                            title="Choose one of the following..."
+                                            data-live-search="true"
+                                            data-size="5"
+                                            name="resource-group"
+                                            id="id_resource-group"
+                                            class="selectpicker form-control"
+                                            >
+                                            <option
+                                              style="display: none"
+                                              disabled
+                                              hidden
+                                              value=""
+                                              >
+                                                Choose one of the following...
+                                            </option>
+                                            {% for group in metadata_author_groups %}
+                                            <option
+                                                value="{{ group.group.id }}"
+                                                {% ifequal resource.group group.group %} selected="selected" {% endifequal %}
+                                                >
+                                                {{ group.group.name }}
+                                            </option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
                                 </div>
                             </div>
                         </div>
