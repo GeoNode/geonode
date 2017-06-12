@@ -30,6 +30,8 @@ import sys
 import time
 import shutil
 
+from optparse import make_option
+
 try:
     import json
 except ImportError:
@@ -41,19 +43,41 @@ STATICFILES_DIRS = 'static_dirs'
 TEMPLATE_DIRS = 'template_dirs'
 LOCALE_PATHS = 'locale_dirs'
 
-config = ConfigParser.ConfigParser()
-config.read(os.path.join(os.path.abspath(os.path.dirname(__file__)), 'settings.ini'))
 
-PG_DUMP_CMD = config.get('database', 'pgdump')
-PG_RESTORE_CMD = config.get('database', 'pgrestore')
-GS_DATA_DIR = config.get('geoserver', 'datadir')
-GS_DUMP_VECTOR_DATA = config.getboolean('geoserver', 'dumpvectordata')
-GS_DUMP_RASTER_DATA = config.getboolean('geoserver', 'dumprasterdata')
+class Config(object):
 
-app_names = config.get('fixtures', 'apps').split(',')
-dump_names = config.get('fixtures', 'dumps').split(',')
-migrations = config.get('fixtures', 'migrations').split(',')
-manglers = config.get('fixtures', 'manglers').split(',')
+    option = make_option(
+        '-c',
+        '--config',
+        type="string",
+        help='Use custom settings.ini configuration file')
+
+    def __init__(self, options):
+        self.load_settings(settings_path=options.get('config'))
+
+    def load_settings(self, settings_path=None):
+
+        if not settings_path:
+            settings_dir = os.path.abspath(os.path.dirname(__file__))
+            settings_path = os.path.join(settings_dir, 'settings.ini')
+
+        config = ConfigParser.ConfigParser()
+        config.read(settings_path)
+
+        self.pg_dump_cmd = config.get('database', 'pgdump')
+        self.pg_restore_cmd = config.get('database', 'pgrestore')
+
+        self.gs_data_dir = config.get('geoserver', 'datadir')
+        self.gs_dump_vector_data = \
+            config.getboolean('geoserver', 'dumpvectordata')
+        self.gs_dump_raster_data = \
+            config.getboolean('geoserver', 'dumprasterdata')
+
+        self.app_names = config.get('fixtures', 'apps').split(',')
+        self.dump_names = config.get('fixtures', 'dumps').split(',')
+        self.migrations = config.get('fixtures', 'migrations').split(',')
+        self.manglers = config.get('fixtures', 'manglers').split(',')
+
 
 sys.path.append(os.path.join(os.path.dirname(__file__), "lib"))
 
@@ -106,7 +130,7 @@ def cleanup_db(db_name, db_user, db_port, db_host, db_passwd):
     conn.commit()
 
 
-def dump_db(db_name, db_user, db_port, db_host, db_passwd, target_folder):
+def dump_db(config, db_name, db_user, db_port, db_host, db_passwd, target_folder):
     """Dump Full DB into target folder"""
     db_host = db_host if db_host is not None else 'localhost'
     db_port = db_port if db_port is not None else 5432
@@ -119,7 +143,7 @@ def dump_db(db_name, db_user, db_port, db_host, db_passwd, target_folder):
         pg_tables = curs.fetchall()
         for table in pg_tables:
             print "Dumping GeoServer Vectorial Data : " + table[0]
-            os.system('PGPASSWORD="' + db_passwd + '" ' + PG_DUMP_CMD + ' -h ' + db_host +
+            os.system('PGPASSWORD="' + db_passwd + '" ' + config.pg_dump_cmd + ' -h ' + db_host +
                       ' -p ' + db_port + ' -U ' + db_user + ' -F c -b -d ' + db_name +
                       ' -t ' + table[0] + ' -f ' +
                       os.path.join(target_folder, table[0] + '.dump'))
@@ -135,7 +159,7 @@ def dump_db(db_name, db_user, db_port, db_host, db_passwd, target_folder):
     conn.commit()
 
 
-def restore_db(db_name, db_user, db_port, db_host, db_passwd, source_folder):
+def restore_db(config, db_name, db_user, db_port, db_host, db_passwd, source_folder):
     """Restore Full DB into target folder"""
     db_host = db_host if db_host is not None else 'localhost'
     db_port = db_port if db_port is not None else 5432
@@ -148,7 +172,7 @@ def restore_db(db_name, db_user, db_port, db_host, db_passwd, source_folder):
                       if any(fn.endswith(ext) for ext in included_extenstions)]
         for table in file_names:
             print "Restoring GeoServer Vectorial Data : " + os.path.splitext(table)[0]
-            os.system('PGPASSWORD="' + db_passwd + '" ' + PG_RESTORE_CMD + ' -c -h ' + db_host +
+            os.system('PGPASSWORD="' + db_passwd + '" ' + config.pg_restore_cmd + ' -c -h ' + db_host +
                       ' -p ' + db_port + ' -U ' + db_user + ' -F c -d ' + db_name +
                       ' -t ' + table[0] + ' ' +
                       os.path.join(source_folder, table))
