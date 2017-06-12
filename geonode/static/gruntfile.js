@@ -83,8 +83,9 @@ module.exports = function(grunt) {
             'jquery-tree-multiselect/dist/jquery.tree-multiselect.min.css',
             'bootstrap/dist/css/bootstrap.min.css',
             'leaflet-fullscreen/dist/leaflet.fullscreen.css',
-            'leaflet-fullscreen/dist/fullscreen@2x.png',
-            'leaflet-fullscreen/dist/fullscreen.png',
+            'leaflet-opacity/lib/opacity/Control.Opacity.css',
+            'leaflet-measure/dist/leaflet-measure.css',
+            'leaflet-navbar/src/Leaflet.NavBar.css',
             'eonasdan-bootstrap-datetimepicker/build/css/bootstrap-datetimepicker.min.css',
             'bootstrap-treeview/dist/bootstrap-treeview.min.css',
             'bootstrap-tokenfield/dist/css/bootstrap-tokenfield.min.css',
@@ -100,8 +101,15 @@ module.exports = function(grunt) {
           dest: 'lib/img',
           src: [
             'bootstrap/img/*.png',
-            'select2*.png', 'select2-spinner.gif',
+            'select2/select2*.png',
+            'select2/select2*.gif',
             'raty/lib/img/*.png',
+            'jquery-ui/themes/base/images/*',
+            'leaflet-fullscreen/dist/*.png',
+            'leaflet-opacity/lib/opacity/images/*',
+            'leaflet-opacity/lib/jquery/images/*',
+            'leaflet-measure/dist/images/*',
+            'leaflet-navbar/src/img/*',
             'multi-select/img/switch.png',
             'datatables/media/images/*.png',
             'jquery-ui/themes/smoothness/images/animated-overlay.gif',
@@ -117,11 +125,11 @@ module.exports = function(grunt) {
             'datatables/media/js/jquery.dataTables.js',
             'jquery-timeago/jquery.timeago.js',
             'tinysort/src/jquery.tinysort.js',
-            'raty/lib/jquery.raty.min.js',
-            'jquery-waypoints/waypoints.min.js',
-            'jquery-ui/ui/minified/jquery-ui.custom.min.js',
+            'raty/lib/jquery.raty.js',
+            'jquery-waypoints/waypoints.js',
+            'jquery-ui/ui/jquery-ui.custom.js',
             'jquery-ajaxprogress/jquery.ajaxprogress.js',
-            'jquery.ajaxQueue/dist/jquery.ajaxQueue.min.js',
+            'jquery.ajaxQueue/dist/jquery.ajaxQueue.js',
             'multi-select/js/jquery.multi-select.js',
             'jquery-tree-multiselect/dist/jquery.tree-multiselect.min.js',
             'json2/json2.js',
@@ -130,11 +138,14 @@ module.exports = function(grunt) {
             'requirejs-text/text.js',
             'underscore/underscore-min.js',
             'qunit/qunit/qunit.js',
-            'angular/angular.min.js',
+            'angular/angular.js',
             'angular-leaflet-directive/dist/angular-leaflet-directive.min.js',
             'bootstrap/dist/js/bootstrap.min.js',
             'zeroclipboard/dist/ZeroClipboard.min.js',
             'leaflet-fullscreen/dist/Leaflet.fullscreen.min.js',
+            'leaflet-opacity/lib/opacity/Control.Opacity.js',
+            'leaflet-measure/dist/leaflet-measure.js',
+            'leaflet-navbar/src/Leaflet.NavBar.js',
             'moment/min/moment-with-locales.min.js',
             'eonasdan-bootstrap-datetimepicker/build/js/bootstrap-datetimepicker.min.js',
             'bootstrap-treeview/dist/bootstrap-treeview.min.js',
@@ -173,13 +184,68 @@ module.exports = function(grunt) {
       development: {
         src: ['lib/css/*.css'],
         overwrite: true,
-        replacements: [{
-          from: /url\((("?images\/)|('(?!(images|\.)))|(?!('|"))|('\.\.\/images\/))/g,
-          to: 'url(\'../img/'
-        }, {
-          from: /(png|gif|jpg)+(\)|'\)|"\))/g,
-          to: '$1\')'
-        }]
+        /*
+         * We separate each pattern so it will be easy for us to read
+         * and recognize
+         */
+        replacements: [
+          /*
+           * Pattern:
+           * url('img/image _.png') or url("img/image _.png")
+           */
+          {
+            from: /url\([\"\']?(img\/)([\w-\.\s@]+)[\"\']?\)/g,
+            to: 'url("../img/$2")'
+          },
+          /*
+           * Pattern:
+           * url('images/image _.png') or url("images/image _.png")
+           */
+          {
+            from: /url\([\"\']?(images\/)([\w-\.\s@]+)[\"\']?\)/g,
+            to: 'url("../img/$2")'
+          },
+          /*
+           * Pattern:
+           * url('image/image _.png') or url("image/image _.png")
+           */
+          {
+            from: /url\([\"\']?(image\/)([\w-\.\s@]+)[\"\']?\)/g,
+            to: 'url("../img/$2")'
+          },
+          /*
+           * Pattern:
+           * url('./image _.png') or url("./image _.png")
+           */
+          {
+            from: /url\([\"\']?(\.\/)([\w-\.\s@]+)[\"\']?\)/g,
+            to: 'url("../img/$2")'
+          },
+          /*
+           * Pattern:
+           * url('image _.png') or url("image _.png")
+           */
+          {
+            from: /url\([\"\']?([\w-\.\s@]+)[\"\']?\)/g,
+            to: 'url("../img/$1")'
+          },
+          /*
+           * Pattern:
+           * url('../images/image _.png') or url("../images/image _.png")
+           */
+          {
+            from: /url\([\"\']?(\.\.\/images\/)([\w-\.\s@]+)[\"\']?\)/g,
+            to: 'url("../img/$1")'
+          },
+          /*
+           * Pattern:
+           * url('../image/image _.png') or url("../image/image _.png")
+           */
+          {
+            from: /url\([\"\']?(\.\.\/image\/)([\w-\.\s@]+)[\"\']?\)/g,
+            to: 'url("../img/$1")'
+          }
+        ]
       }
     },
 
@@ -202,10 +268,15 @@ module.exports = function(grunt) {
             'lib/css/jquery.dataTables.css',
             'lib/css/jquery.tree-multiselect.min.css',
             'lib/css/jquery.treefilter.css',
-            'lib/css/leaflet.fullscreen.css',
             'lib/css/L.Control.Pan.css',
             'lib/css/multi-select.css',
             'lib/css/select2.css'
+          ],
+          'lib/css/leaflet-plugins.min.css': [
+            'lib/css/leaflet.fullscreen.css',
+            'lib/css/Leaflet.NavBar.css',
+            'lib/css/leaflet-measure.css',
+            'lib/css/Control.Opacity.css'
           ]
         }
       }
@@ -220,12 +291,12 @@ module.exports = function(grunt) {
         files: {
           'lib/js/assets.min.js': [
             'lib/js/jquery.min.js',
-            'lib/js/jquery-ui.custom.min.js',
+            'lib/js/jquery-ui.custom.js',
             'lib/js/jquery.dataTables.js',
-            'lib/js/jquery.raty.min.js',
+            'lib/js/jquery.raty.js',
             'lib/js/jquery.timeago.js',
             'lib/js/json2.js',
-            'lib/js/waypoints.min.js',
+            'lib/js/waypoints.js',
             'lib/js/select2.min.js',
             'lib/js/moment-with-locales.min.js',
             'lib/js/fastselect.standalone.min.js',
@@ -235,19 +306,25 @@ module.exports = function(grunt) {
             'lib/js/bootstrap-treeview.min.js',
             'lib/js/bootstrap-select.min.js',
             'lib/js/bootstrap-wysihtml5-0.0.2.min.js',
-            'lib/js/angular.min.js',
             'lib/js/jquery.ajaxprogress.js',
-            'lib/js/jquery.ajaxQueue.min.js',
+            'lib/js/jquery.ajaxQueue.js',
             'lib/js/jquery.multi-select.js',
             'lib/js/jquery.tree-multiselect.min.js',
             'lib/js/jquery.treefilter-min.js',
+            'lib/js/angular.js',
             'lib/js/angular-leaflet-directive.min.js',
             'lib/js/ZeroClipboard.min.js'
           ],
           'lib/js/jquery.js': ['lib/js/jquery.min.js'],
           'lib/js/require.js': ['lib/js/require.js'],
           'lib/js/text.js': ['lib/js/text.js'],
-          'lib/js/underscore.js': ['lib/js/underscore-min.js']
+          'lib/js/underscore.js': ['lib/js/underscore-min.js'],
+          'lib/js/leaflet-plugins.min.js': [
+            'lib/js/Leaflet.fullscreen.min.js',
+            'lib/js/Leaflet.NavBar.js',
+            'lib/js/leaflet-measure.js',
+            'lib/js/Control.Opacity.js'
+          ]
         }
       }
     },
@@ -278,6 +355,6 @@ module.exports = function(grunt) {
   grunt.registerTask('default', ['jshint', 'less:development', 'concat:bootstrap', 'copy', 'replace']);
 
   // build production
-  grunt.registerTask('production', ['jshint', 'less:production', 'concat:bootstrap', 'copy', 'cssmin', 'uglify' ]);
+  grunt.registerTask('production', ['jshint', 'less:production', 'concat:bootstrap', 'copy', 'replace', 'cssmin', 'uglify' ]);
 
 };
