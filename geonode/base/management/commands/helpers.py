@@ -52,8 +52,52 @@ class Config(object):
         type="string",
         help='Use custom settings.ini configuration file')
 
+    geoserver_option_list = (
+        make_option(
+            '--geoserver-data-dir',
+            dest="gs_data_dir",
+            type="string",
+            default=None,
+            help="Geoserver data directory"),
+        make_option(
+            '--dump-geoserver-vector-data',
+            dest="dump_gs_vector_data",
+            action="store_true",
+            default=None,
+            help="Dump geoserver vector data"),
+        make_option(
+            '--no-geoserver-vector-data',
+            dest="dump_gs_vector_data",
+            action="store_false",
+            default=None,
+            help="Don't dump geoserver vector data"),
+        make_option(
+            '--dump-geoserver-raster-data',
+            dest="dump_gs_raster_data",
+            action="store_true",
+            default=None,
+            help="Dump geoserver raster data"),
+        make_option(
+            '--no-geoserver-raster-data',
+            dest="dump_gs_raster_data",
+            action="store_false",
+            default=None,
+            help="Don't dump geoserver raster data"),
+    )
+
     def __init__(self, options):
         self.load_settings(settings_path=options.get('config'))
+        self.load_options(options)
+
+    def load_options(self, options):
+        if options.get("gs_data_dir", None):
+            self.gs_data_dir = options.get("gs_data_dir")
+
+        if options.get("dump_gs_vector_data", None) is not None:
+            self.gs_dump_vector_data = options.get("dump_gs_vector_data")
+
+        if options.get("dump_gs_raster_data", None) is not None:
+            self.gs_dump_raster_data = options.get("dump_gs_raster_data")
 
     def load_settings(self, settings_path=None):
 
