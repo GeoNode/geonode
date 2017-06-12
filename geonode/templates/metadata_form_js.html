@@ -556,15 +556,34 @@
                 });
             {% endif %}
 
-            if (!select_button_active) {
-                const select_button = $('<button id="id_freetext_keyword_select" class="btn btn-primary">Select</button>');
-                const select_button_parent = $('#id_resource-keywords').parent().parent();
-                select_button_parent.append(select_button);
-                select_button_active = true;
+            if (window.location.href.match('/metadata_advanced$')) {
+                if (!select_button_active) {
+                    const select_button = $('<button id="id_freetext_keyword_select" class="btn btn-primary">Select</button>');
+                    const select_button_parent = $('#id_resource-keywords').parent().parent();
+                    select_button_parent.append(select_button);
+                    select_button_active = true;
+                }
+                $('#id_freetext_keyword_select').click(function() {
+                    $('#id_resource-keywords-tokenfield').blur().focus();
+                });
+
+                const resource_group = $('#id_resource-group');
+                resource_group.empty();
+                resource_group.append('<option value="">-----</option>');
+                {% for group in metadata_author_groups %}
+                    {% if resource.group == group.group %}
+                        resource_group.append(
+                            '<option value="{{ group.group.id }}" selected="selected">{{ group.group.name }}</option>'
+                        );
+                    {% else %}
+                        resource_group.append(
+                            '<option value="{{ group.group.id }}">{{ group.group.name }}</option>'
+                        );
+                    {% endif %}
+                {% endfor %}
+
+
             }
-            $('#id_freetext_keyword_select').click(function() {
-                $('#id_resource-keywords-tokenfield').blur().focus();
-            });
 
 
             $('#treeview').treeview({

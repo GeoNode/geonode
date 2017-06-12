@@ -54,6 +54,7 @@ from geonode.base.forms import CategoryForm, TKeywordForm
 from geonode.layers.models import Layer, Attribute, UploadSession
 from geonode.base.enumerations import CHARSETS
 from geonode.base.models import TopicCategory
+from geonode.groups.models import GroupProfile
 
 from geonode.utils import default_map_config
 from geonode.utils import GXPLayer
@@ -665,6 +666,12 @@ def layer_metadata(request, layername, template='layers/layer_metadata.html', aj
     if "geonode.contrib.metadataxsl" in settings.INSTALLED_APPS:
         metadataxsl = True
 
+    metadata_author_groups = []
+    if request.user.is_superuser:
+        metadata_author_groups = GroupProfile.objects.all()
+    else:
+        metadata_author_groups = metadata_author.group_list_all()
+    print(metadata_author_groups)
     return render_to_response(template, RequestContext(request, {
         "resource": layer,
         "layer": layer,
@@ -678,7 +685,8 @@ def layer_metadata(request, layername, template='layers/layer_metadata.html', aj
         "preview": getattr(settings, 'LAYER_PREVIEW_LIBRARY', 'leaflet'),
         "crs": getattr(settings, 'DEFAULT_MAP_CRS', 'EPSG:900913'),
         "metadataxsl": metadataxsl,
-        "freetext_readonly": getattr(settings, 'FREETEXT_KEYWORDS_READONLY', False)
+        "freetext_readonly": getattr(settings, 'FREETEXT_KEYWORDS_READONLY', False),
+        "metadata_author_groups": metadata_author_groups,
     }))
 
 

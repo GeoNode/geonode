@@ -27,8 +27,9 @@ import os
 import time
 import shutil
 import requests
-import helpers
 import tempfile
+import helpers
+from helpers import Config
 
 from distutils import dir_util
 from requests.auth import HTTPBasicAuth
@@ -45,8 +46,8 @@ class Command(BaseCommand):
 
     help = 'Restore the GeoNode application data'
 
-    option_list = BaseCommand.option_list + (
-        helpers.Config.option,
+    option_list = BaseCommand.option_list + Config.geoserver_option_list + (
+        Config.option,
         make_option(
             '-i',
             '--ignore-errors',
@@ -228,7 +229,7 @@ class Command(BaseCommand):
 
     def handle(self, **options):
         # ignore_errors = options.get('ignore_errors')
-        config = helpers.Config(options)
+        config = Config(options)
         force_exec = options.get('force_exec')
         backup_file = options.get('backup_file')
         skip_geoserver = options.get('skip_geoserver')
