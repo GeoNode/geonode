@@ -43,6 +43,7 @@ class Command(BaseCommand):
     help = 'Backup the GeoNode application data'
 
     option_list = BaseCommand.option_list + (
+        helpers.Config.option,
         make_option(
             '-i',
             '--ignore-errors',
@@ -58,15 +59,127 @@ class Command(BaseCommand):
             default=False,
             help='Forces the execution without asking for confirmation.'),
         make_option(
+            '--skip-geoserver',
+            action='store_true',
+            default=False,
+            help='Skips geoserver backup'),
+        make_option(
             '--backup-dir',
             dest='backup_dir',
             type="string",
             help='Destination folder where to store the backup archive. It must be writable.'))
 
+    def create_geoserver_backup(self, settings, target_folder):
+        # Create GeoServer Backup
+        url = settings.OGC_SERVER['default']['PUBLIC_LOCATION']
+        user = settings.OGC_SERVER['default']['USER']
+        passwd = settings.OGC_SERVER['default']['PASSWORD']
+        geoserver_bk_file = os.path.join(target_folder, 'geoserver_catalog.zip')
+
+        print "Dumping 'GeoServer Catalog ["+url+"]' into '"+geoserver_bk_file+"'."
+        data = {'backup': {'archiveFile': geoserver_bk_file, 'overwrite': 'true',
+                           'options': {'option': ['BK_BEST_EFFORT=true']}}}
+        headers = {'Content-type': 'application/json'}
+        r = requests.post(url + 'rest/br/backup/', data=json.dumps(data),
+                          headers=headers, auth=HTTPBasicAuth(user, passwd))
+        error_backup = 'Could not successfully backup GeoServer ' + \
+                       'catalog [{}rest/br/backup/]: {} - {}'
+
+        if (r.status_code > 201):
+
+            try:
+                gs_backup = r.json()
+            except ValueError:
+                raise ValueError(error_backup.format(url, r.status_code, r.text))
+
+            gs_bk_exec_id = gs_backup['backup']['execution']['id']
+            r = requests.get(url + 'rest/br/backup/' + str(gs_bk_exec_id) + '.json',
+                             auth=HTTPBasicAuth(user, passwd))
+            if (r.status_code == 200):
+
+                try:
+                    gs_backup = r.json()
+                except ValueError:
+                    raise ValueError(error_backup.format(url, r.status_code, r.text))
+
+                gs_bk_progress = gs_backup['backup']['execution']['progress']
+                print gs_bk_progress
+
+            raise ValueError(error_backup.format(url, r.status_code, r.text))
+
+        else:
+
+            try:
+                gs_backup = r.json()
+            except ValueError:
+                raise ValueError(error_backup.format(url, r.status_code, r.text))
+
+            gs_bk_exec_id = gs_backup['backup']['execution']['id']
+            r = requests.get(url + 'rest/br/backup/' + str(gs_bk_exec_id) + '.json',
+                             auth=HTTPBasicAuth(user, passwd))
+            if (r.status_code == 200):
+                gs_bk_exec_status = gs_backup['backup']['execution']['status']
+                gs_bk_exec_progress = gs_backup['backup']['execution']['progress']
+                gs_bk_exec_progress_updated = '0/0'
+                while (gs_bk_exec_status != 'COMPLETED' and gs_bk_exec_status != 'FAILED'):
+                    if (gs_bk_exec_progress != gs_bk_exec_progress_updated):
+                        gs_bk_exec_progress_updated = gs_bk_exec_progress
+                    r = requests.get(url + 'rest/br/backup/' + str(gs_bk_exec_id) + '.json',
+                                     auth=HTTPBasicAuth(user, passwd))
+                    if (r.status_code == 200):
+
+                        try:
+                            gs_backup = r.json()
+                        except ValueError:
+                            raise ValueError(error_backup.format(url, r.status_code, r.text))
+
+                        gs_bk_exec_status = gs_backup['backup']['execution']['status']
+                        gs_bk_exec_progress = gs_backup['backup']['execution']['progress']
+                        print str(gs_bk_exec_status) + ' - ' + gs_bk_exec_progress
+                        time.sleep(3)
+                    else:
+                        raise ValueError(error_backup.format(url, r.status_code, r.text))
+            else:
+                raise ValueError(error_backup.format(url, r.status_code, r.text))
+
+    def dump_geoserver_raster_data(self, config, settings, target_folder):
+        if (config.gs_data_dir):
+            if (config.gs_dump_raster_data):
+                # Dump '$config.gs_data_dir/data/geonode'
+                gs_data_root = os.path.join(config.gs_data_dir, 'data', 'geonode')
+                if not os.path.isabs(gs_data_root):
+                    gs_data_root = os.path.join(settings.PROJECT_ROOT, '..', gs_data_root)
+                gs_data_folder = os.path.join(target_folder, 'gs_data_dir', 'data', 'geonode')
+                if not os.path.exists(gs_data_folder):
+                    os.makedirs(gs_data_folder)
+
+                helpers.copy_tree(gs_data_root, gs_data_folder)
+                print "Dumped GeoServer Uploaded Data from '"+gs_data_root+"'."
+
+    def dump_geoserver_vector_data(self, config, settings, target_folder):
+        if (config.gs_dump_vector_data):
+            # Dump Vectorial Data from DB
+            datastore = settings.OGC_SERVER['default']['DATASTORE']
+            if (datastore):
+                ogc_db_name = settings.DATABASES[datastore]['NAME']
+                ogc_db_user = settings.DATABASES[datastore]['USER']
+                ogc_db_passwd = settings.DATABASES[datastore]['PASSWORD']
+                ogc_db_host = settings.DATABASES[datastore]['HOST']
+                ogc_db_port = settings.DATABASES[datastore]['PORT']
+
+                gs_data_folder = os.path.join(target_folder, 'gs_data_dir', 'data', 'geonode')
+                if not os.path.exists(gs_data_folder):
+                    os.makedirs(gs_data_folder)
+
+                helpers.dump_db(config, ogc_db_name, ogc_db_user, ogc_db_port,
+                                ogc_db_host, ogc_db_passwd, gs_data_folder)
+
     def handle(self, **options):
         # ignore_errors = options.get('ignore_errors')
+        config = helpers.Config(options)
         force_exec = options.get('force_exec')
         backup_dir = options.get('backup_dir')
+        skip_geoserver = options.get('skip_geoserver')
 
         if not backup_dir or len(backup_dir) == 0:
             raise CommandError("Destination folder '--backup-dir' is mandatory")
@@ -77,6 +190,7 @@ class Command(BaseCommand):
         message = 'You want to proceed?'
 
         if force_exec or helpers.confirm(prompt=message, resp=False):
+
             # Create Target Folder
             dir_time_suffix = helpers.get_dir_time_suffix()
             target_folder = os.path.join(backup_dir, dir_time_suffix)
@@ -85,86 +199,12 @@ class Command(BaseCommand):
             # Temporary folder to store backup files. It will be deleted at the end.
             os.chmod(target_folder, 0777)
 
-            # Create GeoServer Backup
-            url = settings.OGC_SERVER['default']['PUBLIC_LOCATION']
-            user = settings.OGC_SERVER['default']['USER']
-            passwd = settings.OGC_SERVER['default']['PASSWORD']
-            geoserver_bk_file = os.path.join(target_folder, 'geoserver_catalog.zip')
-
-            print "Dumping 'GeoServer Catalog ["+url+"]' into '"+geoserver_bk_file+"'."
-            data = {'backup': {'archiveFile': geoserver_bk_file, 'overwrite': 'true',
-                               'options': {'option': ['BK_BEST_EFFORT=true']}}}
-            headers = {'Content-type': 'application/json'}
-            r = requests.post(url + 'rest/br/backup/', data=json.dumps(data),
-                              headers=headers, auth=HTTPBasicAuth(user, passwd))
-            if (r.status_code > 201):
-                gs_backup = r.json()
-                gs_bk_exec_id = gs_backup['backup']['execution']['id']
-                r = requests.get(url + 'rest/br/backup/' + str(gs_bk_exec_id) + '.json',
-                                 auth=HTTPBasicAuth(user, passwd))
-                if (r.status_code == 200):
-                    gs_backup = r.json()
-                    gs_bk_progress = gs_backup['backup']['execution']['progress']
-                    print gs_bk_progress
-
-                raise ValueError('Could not successfully backup GeoServer catalog [' + url +
-                                 'rest/br/backup/]: ' + str(r.status_code) + ' - ' + str(r.text))
+            if not skip_geoserver:
+                self.create_geoserver_backup(settings, target_folder)
+                self.dump_geoserver_raster_data(config, settings, target_folder)
+                self.dump_geoserver_vector_data(config, settings, target_folder)
             else:
-                gs_backup = r.json()
-                gs_bk_exec_id = gs_backup['backup']['execution']['id']
-                r = requests.get(url + 'rest/br/backup/' + str(gs_bk_exec_id) + '.json',
-                                 auth=HTTPBasicAuth(user, passwd))
-                if (r.status_code == 200):
-                    gs_bk_exec_status = gs_backup['backup']['execution']['status']
-                    gs_bk_exec_progress = gs_backup['backup']['execution']['progress']
-                    gs_bk_exec_progress_updated = '0/0'
-                    while (gs_bk_exec_status != 'COMPLETED' and gs_bk_exec_status != 'FAILED'):
-                        if (gs_bk_exec_progress != gs_bk_exec_progress_updated):
-                            gs_bk_exec_progress_updated = gs_bk_exec_progress
-                        r = requests.get(url + 'rest/br/backup/' + str(gs_bk_exec_id) + '.json',
-                                         auth=HTTPBasicAuth(user, passwd))
-                        if (r.status_code == 200):
-                            gs_backup = r.json()
-                            gs_bk_exec_status = gs_backup['backup']['execution']['status']
-                            gs_bk_exec_progress = gs_backup['backup']['execution']['progress']
-                            print str(gs_bk_exec_status) + ' - ' + gs_bk_exec_progress
-                            time.sleep(3)
-                        else:
-                            raise ValueError('Could not successfully backup GeoServer catalog [' + url +
-                                             'rest/br/backup/]: ' + str(r.status_code) + ' - ' + str(r.text))
-                else:
-                    raise ValueError('Could not successfully backup GeoServer catalog [' + url +
-                                     'rest/br/backup/]: ' + str(r.status_code) + ' - ' + str(r.text))
-
-            # Dump GeoServer Data
-            if (helpers.GS_DATA_DIR):
-                if (helpers.GS_DUMP_RASTER_DATA):
-                    # Dump '$GS_DATA_DIR/data/geonode'
-                    gs_data_root = os.path.join(helpers.GS_DATA_DIR, 'data', 'geonode')
-                    if not os.path.isabs(gs_data_root):
-                        gs_data_root = os.path.join(settings.PROJECT_ROOT, '..', gs_data_root)
-                    gs_data_folder = os.path.join(target_folder, 'gs_data_dir', 'data', 'geonode')
-                    if not os.path.exists(gs_data_folder):
-                        os.makedirs(gs_data_folder)
-
-                    helpers.copy_tree(gs_data_root, gs_data_folder)
-                    print "Dumped GeoServer Uploaded Data from '"+gs_data_root+"'."
-
-            if (helpers.GS_DUMP_VECTOR_DATA):
-                # Dump Vectorial Data from DB
-                datastore = settings.OGC_SERVER['default']['DATASTORE']
-                if (datastore):
-                    ogc_db_name = settings.DATABASES[datastore]['NAME']
-                    ogc_db_user = settings.DATABASES[datastore]['USER']
-                    ogc_db_passwd = settings.DATABASES[datastore]['PASSWORD']
-                    ogc_db_host = settings.DATABASES[datastore]['HOST']
-                    ogc_db_port = settings.DATABASES[datastore]['PORT']
-
-                    gs_data_folder = os.path.join(target_folder, 'gs_data_dir', 'data', 'geonode')
-                    if not os.path.exists(gs_data_folder):
-                        os.makedirs(gs_data_folder)
-
-                    helpers.dump_db(ogc_db_name, ogc_db_user, ogc_db_port, ogc_db_host, ogc_db_passwd, gs_data_folder)
+                print("Skipping geoserver backup")
 
             try:
                 # Deactivate GeoNode Signals
@@ -173,7 +213,7 @@ class Command(BaseCommand):
                 print "...done!"
 
                 # Dump Fixtures
-                for app_name, dump_name in zip(helpers.app_names, helpers.dump_names):
+                for app_name, dump_name in zip(config.app_names, config.dump_names):
                     print "Dumping '"+app_name+"' into '"+dump_name+".json'."
                     # Point stdout at a file for dumping data to.
                     output = open(os.path.join(target_folder, dump_name+'.json'), 'w')
