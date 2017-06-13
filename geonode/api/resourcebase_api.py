@@ -106,6 +106,8 @@ class CommonModelApi(ModelResource):
         'thumbnail_url',
         'detail_url',
         'rating',
+        'typename',
+        'name'
     ]
 
     def build_filters(self, filters=None):
