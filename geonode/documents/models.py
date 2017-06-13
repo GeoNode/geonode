@@ -85,54 +85,16 @@ class Document(ResourceBase):
         else:
             return '%s (%s)' % (self.title, self.id)
 
-    def _render_thumbnail(self):
-        from cStringIO import StringIO
+    def find_placeholder(self):
+        placeholder = 'documents/{0}-placeholder.png'
+        return finders.find(placeholder.format(self.extension), False) or \
+            finders.find(placeholder.format('generic'), False)
 
-        size = 200, 150
+    def is_file(self):
+        return self.doc_file and self.extension
 
-        try:
-            from PIL import Image, ImageOps
-        except ImportError, e:
-            logger.error(
-                '%s: Pillow not installed, cannot generate thumbnails.' %
-                e)
-            return None
-
-        try:
-            # if wand is installed, than use it for pdf thumbnailing
-            from wand import image
-        except:
-            wand_available = False
-        else:
-            wand_available = True
-
-        if wand_available and self.extension and self.extension.lower(
-        ) == 'pdf' and self.doc_file:
-            logger.debug(
-                u'Generating a thumbnail for document: {0}'.format(
-                    self.title))
-            try:
-                with image.Image(filename=self.doc_file.path) as img:
-                    img.sample(*size)
-                    return img.make_blob('png')
-            except:
-                logger.debug('Error generating the thumbnail with Wand, cascading to a default image...')
-        # if we are still here, we use a default image thumb
-        if self.extension and self.extension.lower() in IMGTYPES and self.doc_file:
-            img = Image.open(self.doc_file.path)
-            img = ImageOps.fit(img, size, Image.ANTIALIAS)
-        else:
-            filename = finders.find('documents/{0}-placeholder.png'.format(self.extension), False) or \
-                finders.find('documents/generic-placeholder.png', False)
-
-            if not filename:
-                return None
-
-            img = Image.open(filename)
-
-        imgfile = StringIO()
-        img.save(imgfile, format='PNG')
-        return imgfile.getvalue()
+    def is_image(self):
+        return self.is_file() and self.extension.lower() in IMGTYPES
 
     @property
     def class_name(self):
