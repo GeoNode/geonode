@@ -1,3 +1,18 @@
+geonode (2.6.1+thefinal0) trusty; urgency=high
+
+  [ Angelos Tzotsos ]
+  * [b6dfc7] Fixing the version number
+
+  [ afabiani ]
+  * [923fcd]  - Fix for ISSUE #3110: Django Outh2 updated version requires updated version of DJango too
+
+  [ Sara Safavi ]
+  * [703a5d] Bump version number for bugfix on 2.6 release
+
+  [ Simone Dalmasso ]
+
+ -- Simone Dalmasso <simone.dalmasso@gmail.com>  Tue, 13 Jun 2017 05:26:12 +0000
+
 geonode (2.6.0+thefinal0) trusty; urgency=high
 
   [ Alessio Fabiani ]
