@@ -273,9 +273,9 @@ def layer_ogc_request(request, layername):
 
     # We need to replace every references to the internal QGIS Server IP to
     # the public Geonode URL.
-    public_url = settings.SITEURL
-    public_url += reverse(
-        'qgis_server:layer-request', kwargs={'layername': layername})
+    public_url = requests.compat.urljoin(
+        settings.SITEURL,
+        reverse('qgis_server:layer-request', kwargs={'layername': layername}))
 
     is_text = response.headers.get('content-type').startswith('text')
     raw = response.content

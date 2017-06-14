@@ -22,8 +22,8 @@ from __future__ import absolute_import
 import logging
 import os
 import shutil
-from urllib2 import urlopen, quote
-from urlparse import urljoin
+import requests
+from requests.compat import urljoin
 
 from django.conf import settings
 from django.core.urlresolvers import reverse
@@ -50,16 +50,14 @@ qgis_map_with_layers = Signal(providing_args=[])
 
 
 def qgis_server_layer_pre_delete(instance, sender, **kwargs):
-    """Removes the layer from Local Storage
-    """
+    """Removes the layer from Local Storage."""
     logger.debug('QGIS Server Layer Pre Delete')
     instance.delete_qgis_layer()
 
 
 def qgis_server_pre_delete(instance, sender, **kwargs):
-    """Removes the layer from Local Storage
-    """
-    logger.debug('QGIS Server Pre Delete')
+    """Removes the layer from Local Storage."""
+    # logger.debug('QGIS Server Pre Delete')
     # Deleting QGISServerLayer object happened on geonode level since it's
     # OneToOne relationship
     # Delete file is included when deleting the object.
@@ -77,14 +75,14 @@ def qgis_server_pre_save(instance, sender, **kwargs):
         * Metadata Links,
         * Point of Contact name and url
     """
-    logger.debug('QGIS Server Pre Save')
+    # logger.debug('QGIS Server Pre Save')
 
 
 def qgis_server_post_save(instance, sender, **kwargs):
-    """Save keywords to QGIS Server
+    """Save keywords to QGIS Server.
 
-       The way keywords are implemented requires the layer
-       to be saved to the database before accessing them.
+    The way keywords are implemented requires the layer to be saved to the
+    database before accessing them.
     """
     if not sender == Layer:
         return
@@ -109,7 +107,6 @@ def qgis_server_post_save(instance, sender, **kwargs):
 
     for ext in extensions:
         if os.path.exists(base_filename + '.' + ext):
-            logger.debug('Copying %s' % base_filename + '.' + ext)
             is_shapefile = is_shapefile or ext == 'shp'
             try:
                 if created:
@@ -127,9 +124,11 @@ def qgis_server_post_save(instance, sender, **kwargs):
                         base_filename + '.' + ext,
                         qgis_layer_base_filename + '.' + ext
                     )
-                logger.debug('Success')
+                logger.debug(
+                    'Copying %s' % base_filename + '.' + ext + ' Success')
             except IOError as e:
-                logger.debug('Error copying file. %s' % e)
+                logger.debug(
+                    'Copying %s' % base_filename + '.' + ext + ' FAILED ' + e)
     if created:
         # Only set when creating new QGISServerLayer Object
         geonode_filename = os.path.basename(geonode_layer_path)
@@ -145,8 +144,7 @@ def qgis_server_post_save(instance, sender, **kwargs):
 
     # Set Link for Download Raw in Zip File
     zip_download_url = reverse(
-        'qgis_server:download-zip',
-        kwargs={'layername': instance.name})
+        'qgis_server:download-zip', kwargs={'layername': instance.name})
     zip_download_url = urljoin(base_url, zip_download_url)
     logger.debug('zip_download_url: %s' % zip_download_url)
     if is_shapefile:
@@ -156,6 +154,7 @@ def qgis_server_post_save(instance, sender, **kwargs):
         link_name = 'Zipped All Files'
         link_mime = 'ZIP'
 
+    # Zip file
     Link.objects.get_or_create(
         resource=instance.resourcebase_ptr,
         url=zip_download_url,
@@ -168,6 +167,48 @@ def qgis_server_post_save(instance, sender, **kwargs):
         )
     )
 
+    # WMS link layer workspace
+    ogc_wms_url = urljoin(
+        settings.SITEURL,
+        reverse(
+            'qgis_server:layer-request', kwargs={'layername': instance.name}))
+    ogc_wms_name = 'OGC WMS: %s Service' % instance.workspace
+    ogc_wms_link_type = 'OGC:WMS'
+    Link.objects.get_or_create(
+        resource=instance.resourcebase_ptr,
+        url=ogc_wms_url,
+        link_type=ogc_wms_link_type,
+        defaults=dict(
+            extension='html',
+            name=ogc_wms_name,
+            url=ogc_wms_url,
+            mime='text/html',
+            link_type=ogc_wms_link_type
+        )
+    )
+
+    if instance.is_vector():
+        # WFS link layer workspace
+        ogc_wfs_url = urljoin(
+            settings.SITEURL,
+            reverse(
+                'qgis_server:layer-request',
+                kwargs={'layername': instance.name}))
+        ogc_wfs_name = 'OGC WFS: %s Service' % instance.workspace
+        ogc_wfs_link_type = 'OGC:WFS'
+        Link.objects.get_or_create(
+            resource=instance.resourcebase_ptr,
+            url=ogc_wfs_url,
+            link_type=ogc_wfs_link_type,
+            defaults=dict(
+                extension='html',
+                name=ogc_wfs_name,
+                url=ogc_wfs_url,
+                mime='text/html',
+                link_type=ogc_wfs_link_type
+            )
+        )
+
     # Create the QGIS Project
     qgis_server = settings.QGIS_SERVER_CONFIG['qgis_server_url']
     basename, _ = os.path.splitext(qgis_layer.base_layer_path)
@@ -177,16 +218,11 @@ def qgis_server_post_save(instance, sender, **kwargs):
         'FILES': qgis_layer.base_layer_path,
         'NAMES': instance.name
     }
+    response = requests.get(qgis_server, params=query_string)
 
-    url = qgis_server + '?'
-    for param, value in query_string.iteritems():
-        url += param + '=' + value + '&'
-    url = url[:-1]
-
-    data = urlopen(url).read()
-    logger.debug('Creating the QGIS Project : %s' % url)
-    if data != 'OK':
-        logger.debug('Result : %s' % data)
+    logger.debug('Creating the QGIS Project : %s' % response.url)
+    if response.content != 'OK':
+        logger.debug('Result : %s' % response.content)
 
     Link.objects.get_or_create(
         resource=instance.resourcebase_ptr,
@@ -316,16 +352,12 @@ def qgis_server_post_save_map(instance, sender, **kwargs):
         'NAMES': ';'.join(names),
         'OVERWRITE': 'true',
     }
+    response = requests.get(qgis_server, params=query_string)
 
-    url = qgis_server + '?'
-    for param, value in query_string.iteritems():
-        url += param + '=' + quote(value) + '&'
-    url = url[:-1]
-
-    data = urlopen(url).read()
-    logger.debug('Create project url: {url}'.format(url=url))
+    logger.debug('Create project url: {url}'.format(url=response.url))
     logger.debug(
-        'Creating the QGIS Project : %s -> %s' % (project_path, data))
+        'Creating the QGIS Project : %s -> %s' % (
+            project_path, response.content))
 
     create_qgis_server_thumbnail.delay(
         instance, overwrite=True)
