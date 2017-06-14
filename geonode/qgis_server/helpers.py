@@ -187,7 +187,11 @@ def thumbnail_url(bbox, layers, qgis_project):
     :return: The WMS URL to fetch the thumbnail.
     :rtype: basestring
     """
-    qgis_server_config = settings.QGIS_SERVER_CONFIG
+    # The generated URL is not a direct URL to QGIS Server,
+    # but it was a proxy from django instead.
+    endpoint_url = reverse('qgis_server:request')
+    site_url = settings.SITEURL
+    qgis_server_url = urljoin(site_url, endpoint_url)
     x_min, y_min, x_max, y_max = bbox
     # We calculate the margins according to 10 percent.
     percent = 10
@@ -202,7 +206,6 @@ def thumbnail_url(bbox, layers, qgis_project):
     ]
     # Call the WMS.
     bbox = ','.join([str(val) for val in margin])
-    qgis_server_url = qgis_server_config['qgis_server_url']
     query_string = {
         'SERVICE': 'WMS',
         'VERSION': '1.3.0',
