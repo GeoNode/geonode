@@ -24,11 +24,13 @@ from django.conf.urls import url
 from geonode.contrib.monitoring import views
 
 urlpatterns = [
+                # serve calculated metrics
                 url(r'^api/metrics/$', views.api_metrics, name='api_metrics'),
                 url(r'^api/services/$', views.api_services, name='api_services'),
                 url(r'^api/hosts/$', views.api_hosts, name='api_hosts'),
                 url(r'^api/metric_data/(?P<metric_name>[\w\.]+)/$', views.api_metric_data, 
                                                                     name='api_metric_data'),
-
-
+                # serve raw check data to outside
+                url(r'^api/beacon/$', views.api_beacon, name='api_beacon'),
+                url(r'^api/beacon/(?P<exposed>.*?)/$', views.api_beacon, name='api_beacon_exposed'),
               ]

@@ -70,6 +70,9 @@ class ServiceType(models.Model):
     def __str__(self):
         return 'Service Type: {}'.format(self.name)
 
+    @property
+    def is_system_monitor(self):
+        return self.name in (self.TYPE_HOST_GN, self.TYPE_HOST_GS,)
 
 class Service(models.Model):
     name = models.CharField(max_length=255, unique=True, blank=False, null=False)
@@ -84,6 +87,12 @@ class Service(models.Model):
     def __str__(self):
         return 'Service: {}@{}'.format(self.name, self.host.name)
 
+    def get_metrics(self):
+        return [m.metric for m in self.service_type.metric.all()]
+
+    @property
+    def is_system_monitor(self):
+        return self.service_type.is_system_monitor
 
 class MonitoredResource(models.Model):
     TYPE_EMPTY = ''
@@ -122,7 +131,7 @@ class Metric(models.Model):
              )
 
     AGGREGATE_MAP = {TYPE_RATE: 'avg',
-                     TYPE_VALUE: None,
+                     TYPE_VALUE: 'max',
                      TYPE_COUNT: 'sum'}
 
     name = models.CharField(max_length=255, db_index=True)
@@ -372,6 +381,13 @@ class MetricValue(models.Model):
     class Meta:
         unique_together = (('valid_from', 'valid_to', 'service', 'service_metric', 'resource', 'label',))
 
+    def __str__(self):
+        metric = self.service_metric.metric.name
+        if self.label:
+            metric = '{} [{}]'.format(metric, self.label.name)
+        if self.resource and self.resource.type:
+            metric = '{} for {}'.format(metric, '{}={}'.format(self.resource.name, self.resource.type))
+        return 'Metric Value: {}: {} (since {} until {})'.format(metric, self.value, self.valid_from, self.valid_to)
     @classmethod
     def add(cls, metric, valid_from, valid_to, service, label,
             value_raw=None, resource=None, value=None, value_num=None, data=None):
@@ -411,8 +427,8 @@ class MetricValue(models.Model):
 
 
 class BuiltIns(object):
-    service_types = (ServiceType.TYPE_GEONODE, ServiceType.TYPE_GEOSERVER,
-                     ServiceType.TYPE_HOST_GN, ServiceType.TYPE_HOST_GS,)
+    service_types = (ServiceType.TYPE_GEONODE, ServiceType.TYPE_GEOSERVER,)
+    host_service_types = (ServiceType.TYPE_HOST_GN, ServiceType.TYPE_HOST_GS,)
 
     metrics_rate = ('response.time', 'response.size',)
     # metrics_count = ('request.count', 'request.method', 'request.
@@ -423,19 +439,24 @@ class BuiltIns(object):
                        'response', 'response.time', 'response.ok', 'response.error',
                        'response.size', 'response.status.2xx', 'response.status.3xx',
                        'response.status.4xx', 'response.status.5xx',)
-
-    geoserver_metrics = ('requests',)
-    host_metrics = ('load.1m', 'load.5m', 'load.10m',)
-
+    host_metrics = ('load.1m', 'load.5m', 'load.15m', 
+                     'mem.free', 'mem.use', 'mem.free', 'mem.buffers', 
+                     'mem.all', 'uptime', 'storage.df', 'network.in', 'network.out',
+                     'cpu.usage',)
 
 def populate():
-    for m in BuiltIns.geonode_metrics:
+    for m in BuiltIns.geonode_metrics + BuiltIns.host_metrics:
         Metric.objects.get_or_create(name=m)
-    for st in BuiltIns.service_types:
+    for st in BuiltIns.service_types + BuiltIns.host_service_types:
         ServiceType.objects.get_or_create(name=st)
 
     for st in BuiltIns.service_types:
         for m in BuiltIns.geonode_metrics:
+            _st = ServiceType.objects.get(name=st)
+            _m = Metric.objects.get(name=m)
+            ServiceTypeMetric.objects.get_or_create(service_type=_st, metric=_m)
+    for st in BuiltIns.host_service_types:
+        for m in BuiltIns.host_metrics:
             _st = ServiceType.objects.get(name=st)
             _m = Metric.objects.get(name=m)
             ServiceTypeMetric.objects.get_or_create(service_type=_st, metric=_m)

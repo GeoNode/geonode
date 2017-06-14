@@ -22,6 +22,7 @@ import os
 import logging
 from datetime import datetime
 
+import requests
 from pydash import services as pydash
 from geonode.contrib.monitoring.utils import GeoServerMonitorClient
 from geonode.contrib.monitoring.models import RequestEvent
@@ -78,6 +79,8 @@ def get_disk():
 
 
 class BaseServiceExpose(object):
+    NAME = None
+
     def __init__(self, *args, **kwargs):
         self.args = args
         self.kwargs = kwargs
@@ -90,11 +93,15 @@ class BaseServiceExpose(object):
 
     @classmethod
     def get_name(cls):
+        if cls.NAME:
+            return cls.NAME
         n = cls.__name__
         return n[:len('serviceexpose')].lower()
 
 
 class HostGeoNodeServiceExpose(BaseServiceExpose):
+
+    NAME = 'hostgeonode'
 
     def expose(self, *args, **kwargs):
         uptime = pydash.get_uptime()
@@ -125,6 +132,7 @@ class HostGeoNodeServiceExpose(BaseServiceExpose):
 
 class GeoNodeServiceExpose(BaseServiceExpose):
 
+    NAME = 'geonode'
     def expose(self, *args, **kwargs):
         pass
 
@@ -161,7 +169,6 @@ class BaseServiceHandler(object):
                 log.warning("Next check too soon")
                 return
         self.service.last_check = now
-        self.service.save()
         _collected = self._collect(since, until, **kwargs)
         return self.handle_collected(_collected)
 
@@ -217,8 +224,32 @@ class HostGeoServerService(BaseServiceHandler):
         pass
 
 
-services = dict((c.get_name(), c,) for c in (GeoNodeService, GeoServerService,))
+class HostGeoNodeService(BaseServiceHandler):
+    
+    def _collect(self, since, until, *args, **kwargs):
+        base_url = self.service.url
+        if not base_url:
+            raise ValueError("Service {} should have url provided".format(self.service.name))
+        url = '{}/monitoring/api/beacon/{}/'.format(base_url.rstrip('/'), self.service.service_type.name)
+        rdata = requests.get(url)
+        if rdata.status_code != 200:
+            raise ValueError("Error response from api: ({}) {}".format(url, rdata))
+        data = rdata.json()
+        return data
+
+    def handle_collected(self, data, *args, **kwargs):
+
+        return data
+        
+
+
+services = dict((c.get_name(), c,) for c in (GeoNodeService, GeoServerService, HostGeoNodeService,))
 
 
 def get_for_service(sname):
     return services[sname]
+
+exposes = dict((c.get_name(), c) for c in (GeoNodeServiceExpose, HostGeoNodeServiceExpose,))
+
+def exposes_for_service(sname):
+    return exposes[sname]

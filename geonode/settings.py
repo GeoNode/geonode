@@ -743,7 +743,7 @@ MAPBOX_ACCESS_TOKEN = os.environ.get('MAPBOX_ACCESS_TOKEN', None)
 BING_API_KEY = os.environ.get('BING_API_KEY', None)
 
 # handle timestamps like 2017-05-30 16:04:00.719 UTC
-DATETIME_INPUT_FORMATS = global_settings.DATETIME_INPUT_FORMATS + ('%Y-%m-%d %H:%M:%S.%f %Z',)
+DATETIME_INPUT_FORMATS = global_settings.DATETIME_INPUT_FORMATS + ('%Y-%m-%d %H:%M:%S.%f %Z', '%Y-%m-%dT%H:%M:%S.%f')
 
 MAP_BASELAYERS = [{
     "source": {"ptype": "gxp_olsource"},

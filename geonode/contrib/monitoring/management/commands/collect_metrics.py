@@ -88,7 +88,6 @@ class Command(BaseCommand):
         until = until or now
         
         h = Handler(service, force_check=force_check)
-        requests = h.collect(since=since, until=until, format=format)
-        if requests:
-            print(len(requests))
-            collector.process_requests(service, requests, since, until)
+        data_in = h.collect(since=since, until=until, format=format)
+        if data_in:
+            return collector.process(service, data_in, since, until)

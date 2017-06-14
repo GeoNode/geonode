@@ -18,16 +18,20 @@
 #
 #########################################################################
 
+from datetime import datetime
+
 from django.shortcuts import render
 
 from django import forms
 from django.views.generic.base import View
 from django.utils.decorators import method_decorator
+from django.core.urlresolvers import reverse
 
 from geonode.utils import json_response
 from geonode.contrib.monitoring.collector import CollectorAPI
 from geonode.contrib.monitoring.models import Service, Host, Metric
 from geonode.contrib.monitoring.utils import TypeChecks
+from geonode.contrib.monitoring.service_handlers import exposes
 
 # Create your views here.
 
@@ -125,7 +129,26 @@ class MetricDataView(View):
         return json_response({'data': out})
 
 
+
+class BeaconView(View):
+    
+
+    def get(self, request, *args, **kwargs):
+        service = kwargs.get('exposed')
+        if not service:
+            data = [{'name': s, 'url': reverse('monitoring:api_beacon_exposed', args=(s,))} for s in exposes.keys()]
+            return json_response({'exposed': data})
+        try:
+            ex = exposes[service]()
+        except KeyError:
+            return json_response(errors={'exposed': 'No service for {}'.format(service)}, status=404)
+        out = {'data': ex.expose(),
+               'timestamp': datetime.now()}
+        return json_response(out)
+
+
 api_metrics = MetricsList.as_view()
 api_services = ServicesList.as_view()
 api_hosts = HostsList.as_view()
 api_metric_data = MetricDataView.as_view()
+api_beacon = BeaconView.as_view()

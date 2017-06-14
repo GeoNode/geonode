@@ -28,7 +28,7 @@ import types
 import re
 from urllib import urlencode
 from datetime import datetime, timedelta
-from math import floor
+from math import floor, ceil
 
 from xml.etree import ElementTree as etree
 from bs4 import BeautifulSoup as bs
@@ -159,6 +159,20 @@ class GeoServerMonitorClient(object):
         if not h:
             raise ValueError("Cannot convert from {} - no handler".format(from_format))
         return h(data)
+
+
+def align_period_end(end, interval):
+    day_end = datetime(*end.date().timetuple()[:6])
+    # timedelta
+    diff = (end - day_end)
+    # seconds
+    diff_s = diff.total_seconds()
+    int_s = interval.total_seconds()
+    # rounding to last lower full period
+    interval_num = ceil(diff_s / float(int_s))
+
+    return day_end + timedelta(seconds=(interval_num * interval.total_seconds()))
+
 
 def align_period_start(start, interval):
     day_start = datetime(*start.date().timetuple()[:6])

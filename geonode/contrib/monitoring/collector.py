@@ -26,7 +26,8 @@ from geonode.utils import raw_sql
 from geonode.contrib.monitoring.models import (Metric, MetricValue, ServiceTypeMetric,
                                                MonitoredResource, MetricLabel)
 
-from geonode.contrib.monitoring.utils import generate_periods
+from geonode.contrib.monitoring.utils import generate_periods, align_period_start, align_period_end
+from geonode.utils import parse_datetime
 
 
 class CollectorAPI(object):
@@ -42,6 +43,45 @@ class CollectorAPI(object):
 
     def collect_from_system(self):
         pass
+
+    def process_system_metrics(self, service, data, valid_from, valid_to):
+        # host_metrics = ('load.1m', 'load.5m', 'load.15m', 
+        #             'mem.free', 'mem.use', 'mem.free', 'mem.buffers', 
+        #             'mem.all', 'uptime', 'storage.df', 'network.in', 'network.out',
+        #             'cpu.usage',)
+
+
+        collected_at = parse_datetime(data['timestamp'])
+
+        valid_from = align_period_start(collected_at, service.check_interval)
+        valid_to = align_period_end(collected_at, service.check_interval)
+
+        mdefaults = {'valid_from': valid_from,
+                     'valid_to': valid_to,
+                     'service': service}
+        ldata = data['data']['cpu']['load']
+        llabel = ['1', '5', '15']
+
+        for lidx, l in enumerate(ldata):
+            mdata = {'value': l,
+                     'value_raw': l,
+                     'value_num': l,
+                     'metric': 'load.{}m'.format(llabel[lidx]),
+                     'label': 'Value',
+                     'resource': None,
+                     }
+
+            #def add(cls, metric, valid_from, valid_to, service, label,
+            #value_raw=None, resource=None, value=None, value_num=None, data=None):
+
+            mdata.update(mdefaults)
+            MetricValue.objects.filter(service_metric__metric__name=mdata['metric'],
+                                       valid_from=mdata['valid_from'],
+                                       valid_to=mdata['valid_to'],
+                                       label__name='Value',
+                                       service=service)\
+                                       .delete()
+            print MetricValue.add(**mdata)
 
     def get_labels_for_metric(self, metric_name, resource=None):
         mt = ServiceTypeMetric.objects.filter(metric__name=metric_name)
@@ -122,6 +162,11 @@ class CollectorAPI(object):
 
             MetricValue.add(**metric_values)
 
+    def process(self, service, data, valid_from, valid_to, *args, **kwargs):
+        if service.is_system_monitor:
+            return self.process_system_metrics(service, data, valid_from, valid_to, *args, **kwargs)
+        else:
+            return self.process_requests(service, data, valid_from, valid_to, *args, **kwargs)
         
     def process_requests(self, service, requests, valid_from, valid_to):
         """
@@ -179,7 +224,7 @@ class CollectorAPI(object):
                'input_valid_from': valid_from,
                'input_valid_to': valid_to,
                'interval': interval.total_seconds(),
-               'label': label.name,
+               'label': label.name if label else None,
                'data': []}
         periods = generate_periods(valid_from, interval, valid_to)
         for pstart, pend in periods:
