@@ -41,13 +41,30 @@ EXPOSE 8000
 ENTRYPOINT ["/docker-entrypoint.sh"]
 CMD ["django-admin.py", "runserver", "0.0.0.0:8000", "--settings=geonode.settings"]
 
+# Install tools for frontend (node, npm, grunt, bower, ...)
+ADD https://nodejs.org/dist/v6.10.3/node-v6.10.3-linux-x64.tar.xz /usr/local/
+RUN cd /usr/local/ \
+  && wget https://nodejs.org/dist/v6.10.3/node-v6.10.3-linux-x64.tar.xz \
+  && tar Jxvf node-v6.10.3-linux-x64.tar.xz \
+  && rm node-v6.10.3-linux-x64.tar.xz \
+  && ln -s node-v6.10.3-linux-x64 node \
+  && cd /usr/local/bin \
+  && ln -s /usr/local/node-v6.10.3-linux-x64/bin/node \
+  && ln -s /usr/local/node-v6.10.3-linux-x64/bin/npm \
+  && npm install npm@latest -g \
+  && npm install -g bower \
+  && npm install -g grunt
+ENV PATH=/usr/local/node/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+
 # Install geonode code and dependencies
 RUN mkdir -p /usr/src/app
 WORKDIR /usr/src/app
 COPY requirements.txt /usr/src/app/
 RUN pip install --no-cache-dir -r requirements.txt
 COPY . /usr/src/app/
-RUN pip install --no-cache-dir --no-deps -e /usr/src/app/
+RUN pip install --no-cache-dir --no-deps -e /usr/src/app/ \
+  && cd /usr/src/app/geonode/static \
+  && grunt production
 
 # Install geonode configuration
 RUN mkdir -p /mnt/geonode_data/uploaded /mnt/geonode_data/static /mnt/geonode_config \
