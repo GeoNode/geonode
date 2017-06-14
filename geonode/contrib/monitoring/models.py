@@ -443,7 +443,8 @@ class BuiltIns(object):
     host_metrics = ('load.1m', 'load.5m', 'load.15m',
                      'mem.free', 'mem.usage', 'mem.free', 
                      'mem.buffers', 'mem.all',
-                     'uptime', 'cpu.usage', 'storage.df', 
+                     'uptime', 'cpu.usage', 
+                     'storage.free', 'storage.total', 'storage.used', # mountpoint is the label
                      'network.in', 'network.out')
 
 def populate():

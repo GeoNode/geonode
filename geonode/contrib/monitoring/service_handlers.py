@@ -30,6 +30,21 @@ from geonode.contrib.monitoring.models import RequestEvent
 log = logging.getLogger(__name__)
 
 
+
+
+def get_uptime():
+    """
+    Get uptime
+    """
+    try:
+        with open('/proc/uptime', 'r') as f:
+            data = float(f.readline().split()[0])
+    except Exception as err:
+        data = str(err)
+
+    return data
+
+
 def get_mem():
     """
     Get memory usage
@@ -66,7 +81,7 @@ def get_disk():
     """
     try:
         pipe = os.popen(
-            "df -Ph | tail -n +2 | awk '{print $1, $2, $3, $4, $5, $6}'")
+            "df -P | tail -n +2 | awk '{print $1, $2, $3, $4, $5, $6}'")
         data = pipe.read().strip().split('\n')
         pipe.close()
 
@@ -104,7 +119,7 @@ class HostGeoNodeServiceExpose(BaseServiceExpose):
     NAME = 'hostgeonode'
 
     def expose(self, *args, **kwargs):
-        uptime = pydash.get_uptime()
+        uptime = get_uptime()
         ips = pydash.get_ipaddress()
         df = get_disk()
         io = pydash.get_disk_rw()

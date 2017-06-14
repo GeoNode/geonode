@@ -85,6 +85,29 @@ class CollectorAPI(object):
                                        .delete()
             print MetricValue.add(**mdata)
 
+        for df in data['data']['disks']['df']:
+            dev, total, used, free, free_pct, mount = df
+
+            MetricValue.objects.filter(service_metric__metric__name__in=('storage.total', 'storage.used', 'storage.free',),
+                                       valid_from=valid_from,
+                                       valid_to=valid_to,
+                                       service=service)\
+                                       .delete()
+            # 'storage.free', 'storage.total', 'storage.used', # mountpoint is the label
+            for metric, val in (('storage.total', total,),
+                                ('storage.used', used,),
+                                ('storage.free', free,),):
+
+                mdata = {'value': val,
+                         'value_raw': val,
+                         'value_num': val,
+                         'metric': metric,
+                         'label': mount,
+                         'resource': None,
+                         }
+                mdata.update(mdefaults)
+
+                print MetricValue.add(**mdata)
 
         for lidx, l in enumerate(ldata):
             mdata = {'value': l,
