@@ -47,7 +47,8 @@ class CollectorAPI(object):
     def process_system_metrics(self, service, data, valid_from, valid_to):
         # host_metrics = ('load.1m', 'load.5m', 'load.15m', 
         #             'mem.free', 'mem.use', 'mem.free', 'mem.buffers', 
-        #             'mem.all', 'uptime', 'storage.df', 'network.in', 'network.out',
+        #             'mem.all', 'uptime', 'storage.df', 
+        #             'network.in', 'network.out',
         #             'cpu.usage',)
 
 
@@ -56,14 +57,35 @@ class CollectorAPI(object):
         valid_from = align_period_start(collected_at, service.check_interval)
         valid_to = align_period_end(collected_at, service.check_interval)
 
+
         mdefaults = {'valid_from': valid_from,
                      'valid_to': valid_to,
+                     'resource': None,
                      'service': service}
+
+        MetricValue.objects.filter(service_metric__metric__name__in=('network.in', 'network.out'),
+                                   valid_from=valid_from,
+                                   valid_to=valid_to,
+                                   service=service)\
+                                   .delete()
+
+        for iface in data['data']['network']:
+            ip = iface['ip']
+            ifname = iface['name']
+            for tx_label, tx_value in iface['traffic'].iteritems():
+                if tx_label not in ('in', 'out'):
+                    continue
+                mdata = {'value': tx_value,
+                         'value_raw': tx_value,
+                         'value_num': tx_value,
+                         'label': ifname,
+                         'metric': 'network.{}'.format(tx_label)}
+                mdata.update(mdefaults)
+                print MetricValue.add(**mdata)
+
         ldata = data['data']['cpu']['load']
         llabel = ['1', '5', '15']
 
-            #def add(cls, metric, valid_from, valid_to, service, label,
-            #value_raw=None, resource=None, value=None, value_num=None, data=None):
         memory_info = data['data']['memory']
         mkeys = [m.name[len('mem.'):] for m in service.get_metrics() if m.name.startswith('mem.')]
         for mkey in mkeys:
@@ -74,7 +96,6 @@ class CollectorAPI(object):
                      'value_num': mdata,
                      'metric': 'mem.{}'.format(mkey),
                      'label': 'MB',
-                     'resource': None,
                      }
             mdata.update(mdefaults)
             MetricValue.objects.filter(service_metric__metric__name=mdata['metric'],
@@ -93,7 +114,7 @@ class CollectorAPI(object):
                                        valid_to=valid_to,
                                        service=service)\
                                        .delete()
-            # 'storage.free', 'storage.total', 'storage.used', # mountpoint is the label
+
             for metric, val in (('storage.total', total,),
                                 ('storage.used', used,),
                                 ('storage.free', free,),):
@@ -103,10 +124,8 @@ class CollectorAPI(object):
                          'value_num': val,
                          'metric': metric,
                          'label': mount,
-                         'resource': None,
                          }
                 mdata.update(mdefaults)
-
                 print MetricValue.add(**mdata)
 
         for lidx, l in enumerate(ldata):
@@ -115,7 +134,6 @@ class CollectorAPI(object):
                      'value_num': l,
                      'metric': 'load.{}m'.format(llabel[lidx]),
                      'label': 'Value',
-                     'resource': None,
                      }
 
             mdata.update(mdefaults)

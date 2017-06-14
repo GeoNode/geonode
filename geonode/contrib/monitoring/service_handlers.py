@@ -138,10 +138,15 @@ class HostGeoNodeServiceExpose(BaseServiceExpose):
                         'load': load},
                 'memory': mem}
         for ipidx, ip in enumerate(ips['interface']):
+            # let's make nicer data structure here
+            tx_data = pydash.get_traffic(ip)
+            tx = {'in': tx_data['traffic_in'],
+                  'out': tx_data['traffic_out']}
+
             data['network'].append({'ip': ips['itfip'][ipidx][2],
                                     'mac': ips['itfip'][ipidx][1],
                                     'name': ip,
-                                    'traffic': pydash.get_traffic(ip)})
+                                    'traffic': tx})
         return data
 
 
