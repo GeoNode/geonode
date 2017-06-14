@@ -439,10 +439,12 @@ class BuiltIns(object):
                        'response', 'response.time', 'response.ok', 'response.error',
                        'response.size', 'response.status.2xx', 'response.status.3xx',
                        'response.status.4xx', 'response.status.5xx',)
-    host_metrics = ('load.1m', 'load.5m', 'load.15m', 
-                     'mem.free', 'mem.use', 'mem.free', 'mem.buffers', 
-                     'mem.all', 'uptime', 'storage.df', 'network.in', 'network.out',
-                     'cpu.usage',)
+
+    host_metrics = ('load.1m', 'load.5m', 'load.15m',
+                     'mem.free', 'mem.usage', 'mem.free', 
+                     'mem.buffers', 'mem.all',
+                     'uptime', 'cpu.usage', 'storage.df', 
+                     'network.in', 'network.out')
 
 def populate():
     for m in BuiltIns.geonode_metrics + BuiltIns.host_metrics:
