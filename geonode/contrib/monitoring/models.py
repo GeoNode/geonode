@@ -74,6 +74,7 @@ class ServiceType(models.Model):
     def is_system_monitor(self):
         return self.name in (self.TYPE_HOST_GN, self.TYPE_HOST_GS,)
 
+
 class Service(models.Model):
     name = models.CharField(max_length=255, unique=True, blank=False, null=False)
     host = models.ForeignKey(Host, null=False)
@@ -94,6 +95,7 @@ class Service(models.Model):
     def is_system_monitor(self):
         return self.service_type.is_system_monitor
 
+
 class MonitoredResource(models.Model):
     TYPE_EMPTY = ''
     TYPE_LAYER = 'layer'
@@ -102,8 +104,8 @@ class MonitoredResource(models.Model):
     TYPE_STYLE = 'style'
     TYPE_ADMIN = 'admin'
     TYPE_OTHER = 'other'
-    _TYPES = (TYPE_EMPTY, TYPE_LAYER, TYPE_MAP, 
-              TYPE_DOCUMENT, TYPE_STYLE, TYPE_ADMIN, 
+    _TYPES = (TYPE_EMPTY, TYPE_LAYER, TYPE_MAP,
+              TYPE_DOCUMENT, TYPE_STYLE, TYPE_ADMIN,
               TYPE_OTHER,)
 
     TYPES = ((TYPE_EMPTY, _("No resource"),),
@@ -391,6 +393,7 @@ class MetricValue(models.Model):
         if self.resource and self.resource.type:
             metric = '{} for {}'.format(metric, '{}={}'.format(self.resource.name, self.resource.type))
         return 'Metric Value: {}: {} (since {} until {})'.format(metric, self.value, self.valid_from, self.valid_to)
+
     @classmethod
     def add(cls, metric, valid_from, valid_to, service, label,
             value_raw=None, resource=None, value=None, value_num=None, data=None):
@@ -444,11 +447,19 @@ class BuiltIns(object):
                        'response.status.4xx', 'response.status.5xx',)
 
     host_metrics = ('load.1m', 'load.5m', 'load.15m',
-                     'mem.free', 'mem.usage', 'mem.free', 
-                     'mem.buffers', 'mem.all',
-                     'uptime', 'cpu.usage', 
-                     'storage.free', 'storage.total', 'storage.used', # mountpoint is the label
-                     'network.in', 'network.out')
+                    'mem.free', 'mem.usage', 'mem.free',
+                    'mem.buffers', 'mem.all',
+                    'uptime', 'cpu.usage',
+                    'storage.free', 'storage.total', 'storage.used',  # mountpoint is the label
+                    'network.in', 'network.out', 'network.in.rate', 'network.out.rate',)
+
+    counters = ('request.count',  'network.in', 'network.out',)
+    rates = ('response.time', 'response.size', 'network.in.rate', 'network.out.rate', 'load.1m', 'load.5m', 'load.15m',)
+    values = ('request.ip', 'request.ua', 'request.ua.family', 'request.method',
+              'request.country', 'request.region', 'request.city', 'response.ok', 'response.error',
+              'response.status.2xx', 'response.status', 'response.status.3xx', 'response.status.4xx',
+              'response.status.5xx',)
+
 
 def populate():
     for m in BuiltIns.geonode_metrics + BuiltIns.host_metrics:
@@ -466,3 +477,6 @@ def populate():
             _st = ServiceType.objects.get(name=st)
             _m = Metric.objects.get(name=m)
             ServiceTypeMetric.objects.get_or_create(service_type=_st, metric=_m)
+    Metric.objects.filter(name__in=BuiltIns.counters).update(type=Metric.TYPE_COUNT)
+    Metric.objects.filter(name__in=BuiltIns.rates).update(type=Metric.TYPE_RATE)
+    Metric.objects.filter(name__in=BuiltIns.values).update(type=Metric.TYPE_VALUE)

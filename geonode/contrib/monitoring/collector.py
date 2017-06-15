@@ -38,18 +38,26 @@ class CollectorAPI(object):
     def __init__(self):
         pass
 
+    def _calculate_network_rate(self, metric_name, ifname, tx_value, valid_to):
+        """
+        Find previous network metric value and caclulate rate between them
+        """
+        prev = MetricValue.objects.filter(service_metric__metric__name=metric_name, label__name=ifname, valid_to__lt=valid_to).order_by('-valid_to').first()
+        if not prev:
+            return
+        prev_val = prev.value_num
+        interval = valid_to - prev.valid_to
+        rate = float((tx_value - prev_val)) / interval.total_seconds()
+        return rate
+
     def process_system_metrics(self, service, data, valid_from, valid_to):
         """
         Generates mertic values for system-level measurements
-
         """
-
-
         collected_at = parse_datetime(data['timestamp'])
 
         valid_from = align_period_start(collected_at, service.check_interval)
         valid_to = align_period_end(collected_at, service.check_interval)
-
 
         mdefaults = {'valid_from': valid_from,
                      'valid_to': valid_to,
@@ -60,10 +68,9 @@ class CollectorAPI(object):
                                    valid_from=valid_from,
                                    valid_to=valid_to,
                                    service=service)\
-                                   .delete()
+                           .delete()
 
         for iface in data['data']['network']:
-            ip = iface['ip']
             ifname = iface['name']
             for tx_label, tx_value in iface['traffic'].iteritems():
                 if tx_label not in ('in', 'out'):
@@ -74,7 +81,15 @@ class CollectorAPI(object):
                          'label': ifname,
                          'metric': 'network.{}'.format(tx_label)}
                 mdata.update(mdefaults)
+                rate = self._calculate_network_rate(mdata['metric'], ifname, tx_value, valid_to)
                 print MetricValue.add(**mdata)
+                if rate:
+                    mdata['metric'] = '{}.rate'.format(mdata['metric'])
+                    mdata['value'] = rate
+                    mdata['value_num'] = rate
+                    mdata['value_raw'] = rate
+                    print MetricValue.add(**mdata)
+
 
         ldata = data['data']['cpu']['load']
         llabel = ['1', '5', '15']
@@ -96,20 +111,17 @@ class CollectorAPI(object):
                                        valid_to=mdata['valid_to'],
                                        label__name='MB',
                                        service=service)\
-                                       .delete()
+                               .delete()
             print MetricValue.add(**mdata)
-
 
         MetricValue.objects.filter(service_metric__metric__name__in=('storage.total', 'storage.used', 'storage.free',),
                                    valid_from=valid_from,
                                    valid_to=valid_to,
                                    service=service)\
-                                   .delete()
+                           .delete()
 
         for df in data['data']['disks']['df']:
             dev, total, used, free, free_pct, mount = df
-
-
             for metric, val in (('storage.total', total,),
                                 ('storage.used', used,),
                                 ('storage.free', free,),):
@@ -137,14 +149,14 @@ class CollectorAPI(object):
                                        valid_to=mdata['valid_to'],
                                        label__name='Value',
                                        service=service)\
-                                       .delete()
+                               .delete()
             print MetricValue.add(**mdata)
 
     def get_labels_for_metric(self, metric_name, resource=None):
         mt = ServiceTypeMetric.objects.filter(metric__name=metric_name)
         if not mt:
             raise ValueError("No metric for {}".format(metric_name))
-        
+
         qparams = {'metricvalue__service_metric__in': mt}
         if resource:
             qparams['metricvalue__resource'] = resource
@@ -195,12 +207,17 @@ class CollectorAPI(object):
         else:
             sel = 'select {}'.format(column_name)
         if resource:
-            _sql = '{} as res, count(1) as cnt from monitoring_requestevent re join monitoring_requestevent_resources mr on (mr.requestevent_id = re.id) where re.service_id = %s and re.created > %s and re.created < %s and mr.monitoredresource_id = %s group by {} order by cnt desc limit 100'
+            _sql = ('{} as res, count(1) as cnt from monitoring_requestevent re '
+                    'join monitoring_requestevent_resources mr on (mr.requestevent_id = re.id)'
+                    'where re.service_id = %s and re.created > %s and re.created < %s '
+                    'and mr.monitoredresource_id = %s group by {} order by cnt desc '
+                    'limit 100')
             args = (service.id, valid_from, valid_to, resource.id,)
         else:
-            _sql = '{} as res, count(1) as cnt from monitoring_requestevent re where re.service_id = %s and re.created > %s and re.created < %s group by {} order by cnt desc limit 100'
+            _sql = ('{} as res, count(1) as cnt from monitoring_requestevent re '
+                    'where re.service_id = %s and re.created > %s and re.created < %s '
+                    'group by {} order by cnt desc limit 100')
             args = (service.id, valid_from, valid_to,)
-            
         sql = _sql.format(sel, column_name)
         rows = raw_sql(sql, args)
         metric_values = {'metric': metric_name,
@@ -215,7 +232,7 @@ class CollectorAPI(object):
             metric_values.update({'value': cnt,
                                   'label': label,
                                   'value_raw': cnt,
-                                  'value_num': cnt if isinstance(cnt, (int,float,long,Decimal,)) else None,})
+                                  'value_num': cnt if isinstance(cnt, (int, float, long, Decimal,)) else None})
 
             MetricValue.add(**metric_values)
 
@@ -224,7 +241,7 @@ class CollectorAPI(object):
             return self.process_system_metrics(service, data, valid_from, valid_to, *args, **kwargs)
         else:
             return self.process_requests(service, data, valid_from, valid_to, *args, **kwargs)
-        
+
     def process_requests(self, service, requests, valid_from, valid_to):
         """
         Processes request list for specific service, generate stats
@@ -234,7 +251,7 @@ class CollectorAPI(object):
         for pstart, pend in periods:
             requests_batch = requests.filter(created__gte=pstart, created__lt=pend)
             self.process_requests_batch(service, requests_batch, pstart, pend)
-         
+
     def process_requests_batch(self, service, requests, valid_from, valid_to):
         """
         Processes requests information into metric values
@@ -245,8 +262,11 @@ class CollectorAPI(object):
         MetricValue.objects.filter(valid_from__gte=valid_from, valid_to__lte=valid_to, service=service).delete()
         resources = self.extract_resources(requests)
         count = requests.count()
-        MetricValue.add('request.count', valid_from, valid_to, service, 'Count', value=count, value_num=count, 
-                            value_raw=count, resource=None)
+        MetricValue.add('request.count', valid_from, valid_to, service, 'Count',
+                        value=count,
+                        value_num=count,
+                        value_raw=count,
+                        resource=None)
         # calculate overall stats
         self.set_metric_values('request.ip', 're.client_ip', **metric_defaults)
         self.set_metric_values('request.country', 're.client_country',  **metric_defaults)
@@ -260,8 +280,7 @@ class CollectorAPI(object):
             count = _requests.count()
 
             metric_defaults['resource'] = resource
-            #def add(cls, metric, valid_from, valid_to, service, label, value_raw, resource=None, value=None, value_num=None, data=None):
-            MetricValue.add('request.count', valid_from, valid_to, service, 'Count', value=count, value_num=count, 
+            MetricValue.add('request.count', valid_from, valid_to, service, 'Count', value=count, value_num=count,
                             value_raw=count, resource=resource)
             self.set_metric_values('request.ip', 're.client_ip', **metric_defaults)
             self.set_metric_values('request.country', 're.client_country', **metric_defaults)
@@ -270,8 +289,8 @@ class CollectorAPI(object):
             self.set_metric_values('request.ua', 're.user_agent', **metric_defaults)
             self.set_metric_values('request.ua.family', 're.user_agent_family', **metric_defaults)
 
-
-    def get_metrics_for(self, metric_name, valid_from=None, valid_to=None, interval=None, service=None, label=None, resource=None):
+    def get_metrics_for(self, metric_name, valid_from=None, valid_to=None, interval=None, service=None,
+                        label=None, resource=None):
         """
         Returns metric data for given metric. Returned dataset contains list of periods and values in that periods
         """
@@ -281,7 +300,6 @@ class CollectorAPI(object):
         valid_to = valid_to or now
         if (valid_to - valid_from).total_seconds() > 24*3600:
             interval = timedelta(seconds=3600)
-        #label = None #label or 'count'
         out = {'metric': metric_name,
                'input_valid_from': valid_from,
                'input_valid_to': valid_to,
@@ -290,10 +308,13 @@ class CollectorAPI(object):
                'data': []}
         periods = generate_periods(valid_from, interval, valid_to)
         for pstart, pend in periods:
-            pdata = self.get_metrics_data(metric_name, pstart, pend, interval=interval, service=service, label=label, resource=resource)
+            pdata = self.get_metrics_data(metric_name, pstart, pend,
+                                          interval=interval,
+                                          service=service,
+                                          label=label,
+                                          resource=resource)
             out['data'].append({'valid_from': pstart, 'valid_to': pend, 'data': pdata})
         return out
-
 
     def get_aggregate_function(self, column_name, metric_name, service=None):
         """
@@ -318,20 +339,20 @@ class CollectorAPI(object):
         """
         params = {}
 
-        q_from = [  'from monitoring_metricvalue mv',
-                    'join monitoring_servicetypemetric mt on (mv.service_metric_id = mt.id)'
-                    'join monitoring_metric m on (m.id = mt.metric_id)' ]
-        q_where = ['where', 'mv.valid_from >= %(valid_from)s and mv.valid_to <= %(valid_to)s '
-                   'and m.name = %(metric_name)s',]
+        q_from = ['from monitoring_metricvalue mv',
+                  'join monitoring_servicetypemetric mt on (mv.service_metric_id = mt.id)',
+                  'join monitoring_metric m on (m.id = mt.metric_id)']
+        q_where = ['where', 'mv.valid_from >= %(valid_from)s and mv.valid_to <= %(valid_to)s ',
+                   'and m.name = %(metric_name)s']
         q_group = []
-        params.update({'metric_name': metric_name, 
-                       'valid_from': valid_from, 
+        params.update({'metric_name': metric_name,
+                       'valid_from': valid_from,
                        'valid_to': valid_to})
-        
+
         col = 'mv.value_num'
         agg_f = self.get_aggregate_function(col, metric_name, service)
         has_agg = agg_f != col
-        
+
         q_select = ['select {} as val'.format(agg_f)]
         if service:
             q_where.append('and mv.service_id = %(service_id)s')
@@ -340,26 +361,25 @@ class CollectorAPI(object):
             q_from.append('join monitoring_metriclabel ml on (mv.label_id = ml.id and ml.id = %(label)s)')
             params['label'] = label.id
         if resource:
-            q_from.append('join monitoring_monitoredresource mr on (mv.resource_id = mr.id and mr.id = %(resource_id)s)')
+            q_from.append('join monitoring_monitoredresource mr on '
+                          '(mv.resource_id = mr.id and mr.id = %(resource_id)s)')
             params['resource_id'] = resource.id
         if label and has_agg:
             q_group.extend(['ml.name'])
         if resource and has_agg:
             q_group.append('mr.name')
         if q_group:
-            q_group = [ ' group by ', ','.join(q_group)]
-                
+            q_group = [' group by ', ','.join(q_group)]
+
         q = ' '.join(chain(q_select, q_from, q_where, q_group))
-        #print('  ', q, params)
-        #print()
         return list(raw_sql(q, params))
 
     def clear_old_data(self):
         threshold = settings.MONITORING_DATA_TTL
         if not isinstance(threshold, timedelta):
-            raise TypeError("MONITORING_DATA_TTL should be an instance of datatime.timedelta, not {}".format(threshold.__class__))
+            raise TypeError("MONITORING_DATA_TTL should be an instance of "
+                            "datatime.timedelta, not {}".format(threshold.__class__))
         cutoff = datetime.now() - threshold
         ExceptionEvent.objects.filter(created__lte=cutoff).delete()
         RequestEvent.objects.filter(created__lte=cutoff).delete()
         MetricValue.objects.filter(valid_to__lte=cutoff).delete()
-
