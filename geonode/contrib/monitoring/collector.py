@@ -35,21 +35,11 @@ class CollectorAPI(object):
     def __init__(self):
         pass
 
-    def collect_from_endpoints(self):
-        pass
-
-    def collect_from_geonode(self):
-        pass
-
-    def collect_from_system(self):
-        pass
-
     def process_system_metrics(self, service, data, valid_from, valid_to):
-        # host_metrics = ('load.1m', 'load.5m', 'load.15m', 
-        #             'mem.free', 'mem.use', 'mem.free', 'mem.buffers', 
-        #             'mem.all', 'uptime', 'storage.df', 
-        #             'network.in', 'network.out',
-        #             'cpu.usage',)
+        """
+        Generates mertic values for system-level measurements
+
+        """
 
 
         collected_at = parse_datetime(data['timestamp'])
@@ -106,14 +96,16 @@ class CollectorAPI(object):
                                        .delete()
             print MetricValue.add(**mdata)
 
+
+        MetricValue.objects.filter(service_metric__metric__name__in=('storage.total', 'storage.used', 'storage.free',),
+                                   valid_from=valid_from,
+                                   valid_to=valid_to,
+                                   service=service)\
+                                   .delete()
+
         for df in data['data']['disks']['df']:
             dev, total, used, free, free_pct, mount = df
 
-            MetricValue.objects.filter(service_metric__metric__name__in=('storage.total', 'storage.used', 'storage.free',),
-                                       valid_from=valid_from,
-                                       valid_to=valid_to,
-                                       service=service)\
-                                       .delete()
 
             for metric, val in (('storage.total', total,),
                                 ('storage.used', used,),
@@ -241,7 +233,9 @@ class CollectorAPI(object):
             self.process_requests_batch(service, requests_batch, pstart, pend)
          
     def process_requests_batch(self, service, requests, valid_from, valid_to):
-        
+        """
+        Processes requests information into metric values
+        """
         metric_defaults = {'valid_from': valid_from,
                            'valid_to': valid_to,
                            'service': service}
@@ -275,6 +269,9 @@ class CollectorAPI(object):
 
 
     def get_metrics_for(self, metric_name, valid_from=None, valid_to=None, interval=None, service=None, label=None, resource=None):
+        """
+        Returns metric data for given metric. Returned dataset contains list of periods and values in that periods
+        """
         interval = interval or timedelta(minutes=1)
         now = datetime.now()
         valid_from = valid_from or (now - interval)
@@ -296,6 +293,11 @@ class CollectorAPI(object):
 
 
     def get_aggregate_function(self, column_name, metric_name, service=None):
+        """
+        Returns string with metric value column name surrounded by aggregate function
+        based on metric type (which tells how to interpret value - is it a counter,
+        rate or something else).
+        """
         if service:
             metric = Metric.objects.get(name=metric_name, service_type___service_type_id=service.id)
         else:
@@ -308,7 +310,9 @@ class CollectorAPI(object):
         return '{}({})'.format(f, column_name)
 
     def get_metrics_data(self, metric_name, valid_from, valid_to, interval, service=None, label=None, resource=None):
-       
+        """
+        Returns metric values for metric within given time span
+        """
         params = {}
 
         q_from = [  'from monitoring_metricvalue mv',

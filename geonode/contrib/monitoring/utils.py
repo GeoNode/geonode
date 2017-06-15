@@ -225,6 +225,21 @@ class TypeChecks(object):
         return MonitoredResource.objects.get(type=rtype, name=rname)
 
     @staticmethod
+    def resource_type_type(val):
+        from geonode.contrib.monitoring.models import MonitoredResource
+        if val in MonitoredResource._TYPES:
+            return val
+        raise ValueError("Invalid monitored resource type: {}".format(val))
+
+    @staticmethod
+    def metric_name_type(val):
+        from geonode.contrib.monitoring.models import Metric
+        try:
+            return Metric.objects.get(name=val)
+        except Metric.DoesNotExist:
+            raise ValueError("Metric {} doesn't exist".format(val))
+
+    @staticmethod
     def service_type(val):
         from geonode.contrib.monitoring.models import Service
         return Service.objects.get(name=val)

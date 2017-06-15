@@ -29,7 +29,7 @@ from django.core.urlresolvers import reverse
 
 from geonode.utils import json_response
 from geonode.contrib.monitoring.collector import CollectorAPI
-from geonode.contrib.monitoring.models import Service, Host, Metric
+from geonode.contrib.monitoring.models import Service, Host, Metric, ServiceTypeMetric, MetricLabel, MonitoredResource
 from geonode.contrib.monitoring.utils import TypeChecks
 from geonode.contrib.monitoring.service_handlers import exposes
 
@@ -76,14 +76,9 @@ class HostsList(View):
 
         return json_response({'hosts': out})
 
-class MetricsFilters(forms.Form):
-    valid_from = forms.DateTimeField(required=False)
-    valid_to = forms.DateTimeField(required=False)
-    interval = forms.IntegerField(min_value=60, required=False)
-    service = forms.CharField(required=False)
-    label = forms.CharField(required=False)
-    resource = forms.CharField(required=False)
 
+
+class CheckTypeForm(forms.Form):
     def _check_type(self, tname):
         d = self.cleaned_data
         if not d:
@@ -99,6 +94,15 @@ class MetricsFilters(forms.Form):
         except (Exception,), err:
             raise forms.ValidationError(err)
 
+
+class MetricsFilters(CheckTypeForm):
+    valid_from = forms.DateTimeField(required=False)
+    valid_to = forms.DateTimeField(required=False)
+    interval = forms.IntegerField(min_value=60, required=False)
+    service = forms.CharField(required=False)
+    label = forms.CharField(required=False)
+    resource = forms.CharField(required=False)
+
     def clean_resource(self):
         return self._check_type('resource')
 
@@ -107,6 +111,83 @@ class MetricsFilters(forms.Form):
 
     def clean_label(self):
         return self._check_type('label')
+
+
+class LabelsFilterForm(CheckTypeForm):
+    metric_name = forms.CharField(required=False)
+
+    def clean_metric(self):
+        return self._check_type('metric_name')
+
+
+class ResourcesFilterForm(LabelsFilterForm):
+    resource_type = forms.CharField(required=False)
+    
+    def clean_resource_type(self):
+        return self._check_type('resource_type')
+
+
+
+class FilteredView(View):
+    # form which validates request.GET for get_queryset()
+    filter_form = None
+
+    # iterable of pairs (from model field, to key name) to map
+    # fields from model to elements of output data
+    fields_map = tuple()    
+  
+    # key name for output ({output_name: data})
+    output_name = None
+
+    def get_filter_args(self, request):
+        if not self.filter_form:
+            return {}
+        f = self.filter_form(data=request.GET)
+        if f.is_valid():
+            return f.cleaned_data
+        return {}
+
+    def get(self, request, *args, **kwargs):
+        qargs = self.get_filter_args(request)
+        q = self.get_queryset(**qargs)
+        from_fields = [f[0] for f in self.fields_map]
+        to_fields = [f[1] for f in self.fields_map]
+        out = [dict(zip(to_fields, (getattr(item, f) for f in from_fields))) for item in q]
+        return json_response({self.output_name: out})
+
+
+class ResourcesList(FilteredView):
+
+    filter_form = ResourcesFilterForm
+    fields_map = (('id', 'id',),
+                  ('type', 'type',),
+                  ('name', 'name',),)
+
+    output_name = 'resources'
+
+    def get_queryset(self, metric_name=None, resource_type=None):
+        q = MonitoredResource.objects.all().distinct()
+        if resource_type:
+            q = q.filter(type=resource_type)
+        if metric_name:
+            sm = ServiceTypeMetric.objects.filter(metric__name=metric_name)
+            q = q.filter(metric_values__service_metric__in=sm)
+        return q
+
+
+class LabelsList(FilteredView):
+
+    filter_form = LabelsFilterForm
+    fields_map = (('id', 'id',),
+                  ('name', 'name',),)
+    output_names = 'labels'
+
+    def get_queryset(self, metric_name):
+        q = MetricLabel.objects.all().distinct()
+        if metric_name:
+            sm = ServiceTypeMetric.objects.filter(metric__name=metric_name)
+            q = q.filter(metric_values__service_metric__in=sm)
+        return q
 
 
 class MetricDataView(View):
@@ -150,5 +231,7 @@ class BeaconView(View):
 api_metrics = MetricsList.as_view()
 api_services = ServicesList.as_view()
 api_hosts = HostsList.as_view()
+api_labels = LabelsList.as_view()
+api_resources = ResourcesList.as_view()
 api_metric_data = MetricDataView.as_view()
 api_beacon = BeaconView.as_view()

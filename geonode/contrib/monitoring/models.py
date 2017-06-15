@@ -102,6 +102,9 @@ class MonitoredResource(models.Model):
     TYPE_STYLE = 'style'
     TYPE_ADMIN = 'admin'
     TYPE_OTHER = 'other'
+    _TYPES = (TYPE_EMPTY, TYPE_LAYER, TYPE_MAP, 
+              TYPE_DOCUMENT, TYPE_STYLE, TYPE_ADMIN, 
+              TYPE_OTHER,)
 
     TYPES = ((TYPE_EMPTY, _("No resource"),),
              (TYPE_LAYER, _("Layer"),),
@@ -372,7 +375,7 @@ class MetricValue(models.Model):
     service_metric = models.ForeignKey(ServiceTypeMetric)
     service = models.ForeignKey(Service)
     resource = models.ForeignKey(MonitoredResource, related_name='metric_values')
-    label = models.ForeignKey(MetricLabel)
+    label = models.ForeignKey(MetricLabel, related_name='metric_values')
     value = models.CharField(max_length=255, null=False, blank=False)
     value_num = models.DecimalField(max_digits=16, decimal_places=4, null=True, default=None, blank=True)
     value_raw = models.TextField(null=True, default=None, blank=True)
