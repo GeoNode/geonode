@@ -194,17 +194,16 @@
       </div>
 
       <li class="list-group-item">
-        <h4>{% trans "Resource using this document" %}</h4>
+        <h4>{% trans "Resources using this document" %}</h4>
         {% if layer.maps %}
         <p>{% trans "List of resources using this document:" %}</p>
         {% endif %}
         <ul class="list-unstyled">
-          {% if related.title %}
-          <p>{% trans "This document is related to a " %} {{ resource.content_type.name }}</p>
-          <a href='{{ related.get_absolute_url }}'>{{ related.title }}</a>
-          {% else %}
+          {% for resource in related %}
+          <li><a href="{{ resource.get_absolute_url }}">{{ resource.title }}</a></li>
+          {% empty %}
           <p>{% trans "This document is not related to any maps or layers" %}</p>
-          {% endif %}
+          {% endfor %}
         </ul>
       </li>
 

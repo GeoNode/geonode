@@ -45,28 +45,9 @@
             $('#id_title').val($('#id_doc_file').val().replace("C:\\fakepath\\", ""));
         }
     });
-    $("#resource").select2({
-        minimumInputLength: 1,
-        placeholder: 'Select layer, map or empty',
-        width: 'element',
-        ajax: {
-          traditional: true,
-          url: '{% url 'api_dispatch_list' api_name='api' resource_name='base' %}',
-          data: function(term,page){
-            return {
-              type__in: ['layer','map'],
-              title__contains: term.replace(/[`~!@#$%^&*()_|+\-=?;:'",.<>\{\}\[\]\\\/]/gi, '')
-            }
-          },
-          results: function(data) {
-            return {
-              results: $.map(data.objects,function(object){
-                return {id: object.id, text: object.title};
-              })
-            }
-          }
-        }
-      });
+    $("#id_links").select2({
+        width: '100%'
+    });
     $('#upload_form').submit(function(){
       $('#permissions').val(JSON.stringify(permissionsString($('#permission_form'),'base')));
     });

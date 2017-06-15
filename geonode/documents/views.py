@@ -38,8 +38,8 @@ from geonode.utils import resolve_object
 from geonode.security.views import _perms_info_json
 from geonode.people.forms import ProfileForm
 from geonode.base.forms import CategoryForm
-from geonode.base.models import TopicCategory, ResourceBase
-from geonode.documents.models import Document
+from geonode.base.models import TopicCategory
+from geonode.documents.models import Document, get_related_resources
 from geonode.documents.forms import DocumentForm, DocumentCreateForm, DocumentReplaceForm
 from geonode.documents.models import IMGTYPES
 from geonode.utils import build_social_links
@@ -98,11 +98,7 @@ def document_detail(request, docid):
         )
 
     else:
-        try:
-            related = document.content_type.get_object_for_this_type(
-                id=document.object_id)
-        except:
-            related = ''
+        related = get_related_resources(document)
 
         # Update count for popularity ranking,
         # but do not includes admins or resource owners
@@ -165,10 +161,6 @@ class DocumentUploadView(CreateView):
         """
         self.object = form.save(commit=False)
         self.object.owner = self.request.user
-        resource_id = self.request.POST.get('resource', None)
-        if resource_id:
-            self.object.content_type = ResourceBase.objects.get(id=resource_id).polymorphic_ctype
-            self.object.object_id = resource_id
         # by default, if RESOURCE_PUBLISHING=True then document.is_published
         # must be set to False
         # RESOURCE_PUBLISHING works in similar way as ADMIN_MODERATE_UPLOADS,
@@ -176,6 +168,7 @@ class DocumentUploadView(CreateView):
         is_published = not (settings.RESOURCE_PUBLISHING or settings.ADMIN_MODERATE_UPLOADS)
         self.object.is_published = is_published
         self.object.save()
+        form.save_many2many()
         self.object.set_permissions(form.cleaned_data['permissions'])
 
         abstract = None
@@ -370,6 +363,7 @@ def document_metadata(
                 the_document.poc = new_poc
                 the_document.metadata_author = new_author
                 the_document.keywords.add(*new_keywords)
+                document_form.save_many2many()
                 Document.objects.filter(id=the_document.id).update(category=new_category)
 
                 if getattr(settings, 'SLACK_ENABLED', False):
