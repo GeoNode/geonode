@@ -74,7 +74,11 @@ class Command(BaseCommand):
         c = CollectorAPI()
         for s in services:
             try:
-                self.run_check(s, collector=c, since=options['since'], until=options['until'], force_check=options['force_check'], format=options['format'])
+                self.run_check(s, collector=c,
+                                  since=options['since'], 
+                                  until=options['until'],
+                                  force_check=options['force_check'],
+                                  format=options['format'])
             except Exception, err:
                 log.error("Cannot collect from %s: %s", s, err, exc_info=err)
 
@@ -84,7 +88,7 @@ class Command(BaseCommand):
 
         last_check = service.last_check
         now = datetime.now()
-        since = since or last_check
+        since = since or last_check or now - service.interval
         until = until or now
         
         h = Handler(service, force_check=force_check)
