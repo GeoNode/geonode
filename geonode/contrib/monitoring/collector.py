@@ -22,9 +22,12 @@ from datetime import datetime, timedelta
 from decimal import Decimal
 from itertools import chain
 
+from django.conf import settings
 from geonode.utils import raw_sql
 from geonode.contrib.monitoring.models import (Metric, MetricValue, ServiceTypeMetric,
-                                               MonitoredResource, MetricLabel)
+                                               MonitoredResource, MetricLabel, RequestEvent,
+                                               ExceptionEvent)
+
 
 from geonode.contrib.monitoring.utils import generate_periods, align_period_start, align_period_end
 from geonode.utils import parse_datetime
@@ -350,3 +353,13 @@ class CollectorAPI(object):
         #print('  ', q, params)
         #print()
         return list(raw_sql(q, params))
+
+    def clear_old_data(self):
+        threshold = settings.MONITORING_DATA_TTL
+        if not isinstance(threshold, timedelta):
+            raise TypeError("MONITORING_DATA_TTL should be an instance of datatime.timedelta, not {}".format(threshold.__class__))
+        cutoff = datetime.now() - threshold
+        ExceptionEvent.objects.filter(created__lte=cutoff).delete()
+        RequestEvent.objects.filter(created__lte=cutoff).delete()
+        MetricValue.objects.filter(valid_to__lte=cutoff).delete()
+

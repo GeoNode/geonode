@@ -50,6 +50,10 @@ class Command(BaseCommand):
                             help=_("Force check"))
         parser.add_argument('-t', '--format', default=TypeChecks.AUDIT_TYPE_JSON, type=TypeChecks.audit_format,
                             help=_("Format of audit log (xml, json)"))
+
+        parser.add_argument('-c', '--clear', default=False, action='store_true', dest='clear',
+                            help=_("Should data be cleared (default: no)"))
+
         parser.add_argument('service', type=TypeChecks.service_type, nargs="?",
                             help=_("Collect data from this service only"))
 
@@ -81,6 +85,8 @@ class Command(BaseCommand):
                                   format=options['format'])
             except Exception, err:
                 log.error("Cannot collect from %s: %s", s, err, exc_info=err)
+        if options['clear']:
+            c.clear_old_data()
 
     def run_check(self, service, collector, since=None, until=None, force_check=None, format=None):
         print('checking', service.name, 'since', since, 'until', until )
@@ -88,7 +94,7 @@ class Command(BaseCommand):
 
         last_check = service.last_check
         now = datetime.now()
-        since = since or last_check or now - service.interval
+        since = since or last_check or now - service.check_interval
         until = until or now
         
         h = Handler(service, force_check=force_check)

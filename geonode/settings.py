@@ -22,6 +22,7 @@
 import os
 import sys
 import re
+from datetime import timedelta
 
 from kombu import Queue
 from geonode import __file__ as geonode_path
@@ -358,6 +359,7 @@ INSTALLED_APPS = (
 ) + GEONODE_APPS
 
 MONITORING_ENABLED = False
+MONITORING_DATA_TTL = timedelta(days=14)
 
 
 LOGGING = {
