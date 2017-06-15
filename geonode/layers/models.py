@@ -44,7 +44,7 @@ csv_exts = ['.csv']
 kml_exts = ['.kml']
 vec_exts = shp_exts + csv_exts + kml_exts
 
-cov_exts = ['.tif', '.tiff', '.geotiff', '.geotif']
+cov_exts = ['.tif', '.tiff', '.geotiff', '.geotif', '.asc']
 
 TIME_REGEX = (
     ('[0-9]{8}', _('YYYYMMDD')),
@@ -216,7 +216,7 @@ class Layer(ResourceBase):
         if base_files_count == 0:
             return None, None
 
-        msg = 'There should only be one main file (.shp or .geotiff), found %s' % base_files_count
+        msg = 'There should only be one main file (.shp or .geotiff or .asc), found %s' % base_files_count
         assert base_files_count == 1, msg
 
         # we need to check, for shapefile, if column names are valid
@@ -500,8 +500,8 @@ def pre_save_layer(instance, sender, **kwargs):
 
     bbox = [
         instance.bbox_x0,
-        instance.bbox_x1,
         instance.bbox_y0,
+        instance.bbox_x1,
         instance.bbox_y1]
 
     instance.set_bounds_from_bbox(bbox)

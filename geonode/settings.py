@@ -270,7 +270,7 @@ GEONODE_APPS = (
     'geonode.services',
 
     # QGIS Server Apps
-    # 'geonode_qgis_server',
+    # 'geonode.qgis_server',
 
     # GeoServer Apps
     # Geoserver needs to come last because
@@ -880,7 +880,8 @@ DOWNLOAD_FORMATS_RASTER = [
     'View in Google Earth',
     'Tiles',
     'GML',
-    'GZIP'
+    'GZIP',
+    'Zipped All Files'
 ]
 
 ACCOUNT_NOTIFY_ON_PASSWORD_CHANGE = strtobool(os.getenv('ACCOUNT_NOTIFY_ON_PASSWORD_CHANGE', 'False'))

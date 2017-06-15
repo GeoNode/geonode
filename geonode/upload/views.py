@@ -572,6 +572,7 @@ _steps = {
 _pages = {
     'shp': ('srs', 'time', 'run', 'final'),
     'tif': ('run', 'final'),
+    'asc': ('run', 'final'),
     'kml': ('run', 'final'),
     'csv': ('csv', 'time', 'run', 'final'),
     'geojson': ('run', 'final'),

@@ -35,7 +35,7 @@ if 'geonode.geoserver' in settings.INSTALLED_APPS:
     new_map_view = 'new_map'
     existing_map_view = 'map_view'
 
-elif 'geonode_qgis_server' in settings.INSTALLED_APPS:
+elif 'geonode.qgis_server' in settings.INSTALLED_APPS:
     new_map_view = MapCreateView.as_view()
     existing_map_view = MapDetailView.as_view()
 

@@ -35,13 +35,15 @@ from django.core.urlresolvers import reverse
 from django.contrib.staticfiles.templatetags import staticfiles
 from django.contrib.auth import get_user_model
 # from guardian.shortcuts import assign_perm
+from geonode.qgis_server.models import QGISServerLayer
 
 from geoserver.catalog import FailedRequestError, UploadError
 
 # from geonode.security.models import *
+from geonode.decorators import on_ogc_backend
 from geonode.layers.models import Layer
 from geonode.maps.models import Map
-from geonode import GeoNodeException
+from geonode import GeoNodeException, geoserver, qgis_server
 from geonode.layers.utils import (
     upload,
     file_upload,
@@ -186,6 +188,17 @@ class GeoNodeMapTest(TestCase):
             if link.mime == 'image/tiff':
                 wcs_link = True
         self.assertTrue(wcs_link)
+
+    @on_ogc_backend(qgis_server.BACKEND_PACKAGE)
+    def test_zipped_files(self):
+        """Test that the zipped files is created for raster."""
+        filename = os.path.join(gisdata.GOOD_DATA, 'raster/test_grid.tif')
+        uploaded = file_upload(filename)
+        zip_link = False
+        for link in uploaded.link_set.all():
+            if link.mime == 'ZIP':
+                zip_link = True
+        self.assertTrue(zip_link)
 
     def test_layer_upload(self):
         """Test that layers can be uploaded to running GeoNode/GeoServer
@@ -417,6 +430,7 @@ class GeoNodeMapTest(TestCase):
 
     # geonode.maps.views
 
+    @on_ogc_backend(geoserver.BACKEND_PACKAGE)
     def test_layer_delete_from_geoserver(self):
         """Verify that layer is correctly deleted from GeoServer
         """
@@ -453,6 +467,7 @@ class GeoNodeMapTest(TestCase):
                 shp_layer.name,
                 store=tif_store))
 
+    @on_ogc_backend(geoserver.BACKEND_PACKAGE)
     def test_delete_layer(self):
         """Verify that the 'delete_layer' pre_delete hook is functioning
         """
@@ -485,7 +500,7 @@ class GeoNodeMapTest(TestCase):
         self.assertRaises(ObjectDoesNotExist,
                           lambda: Layer.objects.get(pk=shp_layer_id))
 
-    # geonode.geoserver.helpers
+        # geonode.geoserver.helpers
         # If catalogue is installed, then check that it is deleted from there
         # too.
         if 'geonode.catalogue' in settings.INSTALLED_APPS:
@@ -496,7 +511,8 @@ class GeoNodeMapTest(TestCase):
             shp_layer_gn_info = catalogue.get_record(uuid)
             assert shp_layer_gn_info is None
 
-    def test_cascading_delete(self):
+    @on_ogc_backend(geoserver.BACKEND_PACKAGE)
+    def test_geoserver_cascading_delete(self):
         """Verify that the helpers.cascading_delete() method is working properly
         """
         gs_cat = gs_catalog
@@ -537,6 +553,58 @@ class GeoNodeMapTest(TestCase):
 
         # Clean up by deleting the layer from GeoNode's DB and GeoNetwork
         shp_layer.delete()
+
+    @on_ogc_backend(qgis_server.BACKEND_PACKAGE)
+    def test_qgis_server_cascading_delete(self):
+        """Verify that QGIS Server layer deleted and cascaded."""
+        # Upload a Shapefile
+        shp_file = os.path.join(
+            gisdata.VECTOR_DATA,
+            'san_andres_y_providencia_poi.shp')
+        shp_layer = file_upload(shp_file)
+
+        # get layer and QGIS Server Layer object
+        qgis_layer = shp_layer.qgisserverlayer
+        base_path = qgis_layer.base_layer_path
+        base_name, _ = os.path.splitext(base_path)
+
+        # get existing files
+        file_paths = qgis_layer.files
+
+        for path in file_paths:
+            self.assertTrue(os.path.exists(path))
+
+        # try to access a tile to trigger tile cache
+        tile_url = reverse(
+            'qgis_server:tile',
+            kwargs={
+                'layername': shp_layer.name,
+                'z': 9,
+                'x': 139,
+                'y': 238
+            })
+        response = self.client.get(tile_url)
+
+        self.assertTrue(response.status_code, 200)
+
+        self.assertTrue(os.path.exists(qgis_layer.cache_path))
+
+        # delete layer
+        shp_layer.delete()
+
+        # verify that qgis server layer no longer exists
+        with self.assertRaises(QGISServerLayer.DoesNotExist):
+            QGISServerLayer.objects.get(pk=qgis_layer.pk)
+
+        with self.assertRaises(QGISServerLayer.DoesNotExist):
+            QGISServerLayer.objects.get(layer__id=shp_layer.id)
+
+        # verify that related files in QGIS Server object gets deleted.
+        for path in file_paths:
+            self.assertFalse(os.path.exists(path))
+
+        # verify that cache path gets deleted
+        self.assertFalse(os.path.exists(qgis_layer.cache_path))
 
     def test_keywords_upload(self):
         """Check that keywords can be passed to file_upload
@@ -795,6 +863,7 @@ xsi:schemaLocation="http://www.opengis.net/sld http://schemas.opengis.net/sld/1.
         layer.delete()
     """
 
+    @on_ogc_backend(geoserver.BACKEND_PACKAGE)
     def test_unpublished(self):
         """Test permissions on an unpublished layer
         """
@@ -1024,6 +1093,7 @@ class GeoNodeGeoServerSync(TestCase):
     def tearDown(self):
         pass
 
+    @on_ogc_backend(geoserver.BACKEND_PACKAGE)
     def test_set_attributes_from_geoserver(self):
         """Test attributes syncronization
         """

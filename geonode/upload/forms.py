@@ -45,7 +45,7 @@ class LayerUploadForm(forms.Form):
 
     if 'geonode.geoserver' in settings.INSTALLED_APPS:
         sld_file = forms.FileField(required=False)
-    if 'geonode_qgis_server' in settings.INSTALLED_APPS:
+    if 'geonode.qgis_server' in settings.INSTALLED_APPS:
         qml_file = forms.FileField(required=False)
 
     geogig = forms.BooleanField(required=False)
@@ -79,7 +79,7 @@ class LayerUploadForm(forms.Form):
     # Adding style file based on the backend
     if 'geonode.geoserver' in settings.INSTALLED_APPS:
         spatial_files.append('sld_file')
-    if 'geonode_qgis_server' in settings.INSTALLED_APPS:
+    if 'geonode.qgis_server' in settings.INSTALLED_APPS:
         spatial_files.append('qml_file')
 
     spatial_files = tuple(spatial_files)

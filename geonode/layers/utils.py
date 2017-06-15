@@ -29,6 +29,7 @@ import glob
 import sys
 import tempfile
 
+from geonode.maps.models import Map
 from osgeo import gdal
 
 # Django functionality
@@ -42,13 +43,14 @@ from django.db import transaction
 from django.db.models import Q
 
 # Geonode functionality
-from geonode import GeoNodeException
+from geonode import GeoNodeException, geoserver, qgis_server
 from geonode.people.utils import get_valid_user
 from geonode.layers.models import Layer, UploadSession
-from geonode.base.models import Link, SpatialRepresentationType, TopicCategory, Region, License
+from geonode.base.models import Link, SpatialRepresentationType, TopicCategory, Region, License, \
+    ResourceBase
 from geonode.layers.models import shp_exts, csv_exts, vec_exts, cov_exts
 from geonode.layers.metadata import set_metadata
-from geonode.utils import http_client
+from geonode.utils import http_client, check_ogc_backend
 
 import tarfile
 
@@ -146,7 +148,8 @@ def get_files(filename):
     elif extension.lower() in cov_exts:
         files[extension.lower().replace('.', '')] = filename
 
-    if 'geonode.geoserver' in settings.INSTALLED_APPS:
+    # Only for GeoServer
+    if check_ogc_backend(geoserver.BACKEND_PACKAGE):
         matches = glob.glob(glob_name + ".[sS][lL][dD]")
         if len(matches) == 1:
             files['sld'] = matches[0]
@@ -169,7 +172,8 @@ def get_files(filename):
                'distinct by spelling and not just case.') % filename
         raise GeoNodeException(msg)
 
-    if 'geonode_qgis_server' in settings.INSTALLED_APPS:
+    # Only for QGIS Server
+    if check_ogc_backend(qgis_server.BACKEND_PACKAGE):
         matches = glob.glob(glob_name + ".[qQ][mM][lL]")
         logger.debug('Checking QML file')
         logger.debug('Number of matches QML file : %s' % len(matches))
@@ -178,6 +182,20 @@ def get_files(filename):
             files['qml'] = matches[0]
         elif len(matches) > 1:
             msg = ('Multiple style files (qml) for %s exist; they need to be '
+                   'distinct by spelling and not just case.') % filename
+            raise GeoNodeException(msg)
+
+        # Provides json files for additional extra data
+        matches = glob.glob(glob_name + ".[jJ][sS][oO][nN]")
+        logger.debug('Checking JSON File')
+        logger.debug(
+            'Number of matches JSON file : %s' % len(matches))
+        logger.debug('glob name: %s' % glob)
+
+        if len(matches) == 1:
+            files['json'] = matches[0]
+        elif len(matches) > 1:
+            msg = ('Multiple json files (json) for %s exist; they need to be '
                    'distinct by spelling and not just case.') % filename
             raise GeoNodeException(msg)
 
@@ -734,10 +752,15 @@ def upload(incoming, user=None, overwrite=False,
 def create_thumbnail(instance, thumbnail_remote_url, thumbnail_create_url=None,
                      check_bbox=True, ogc_client=None, overwrite=False):
     thumbnail_dir = os.path.join(settings.MEDIA_ROOT, 'thumbs')
-    thumbnail_name = 'layer-%s-thumb.png' % instance.uuid
+    thumbnail_name = None
+    if isinstance(instance, Layer):
+        thumbnail_name = 'layer-%s-thumb.png' % instance.uuid
+    elif isinstance(instance, Map):
+        thumbnail_name = 'map-%s-thumb.png' % instance.uuid
     thumbnail_path = os.path.join(thumbnail_dir, thumbnail_name)
 
     if overwrite is True or storage.exists(thumbnail_path) is False:
+        logger.debug('Will fetch thumbnail %s' % thumbnail_remote_url)
         if not ogc_client:
             ogc_client = http_client
         BBOX_DIFFERENCE_THRESHOLD = 1e-5
@@ -764,6 +787,7 @@ def create_thumbnail(instance, thumbnail_remote_url, thumbnail_create_url=None,
         image = None
 
         if valid_x and valid_y:
+            logger.debug('Valid bbox. Will create Remote Thumbnail Link.')
             Link.objects.get_or_create(resource=instance.get_self_resource(),
                                        url=thumbnail_remote_url,
                                        defaults=dict(
@@ -773,7 +797,7 @@ def create_thumbnail(instance, thumbnail_remote_url, thumbnail_create_url=None,
                                            link_type='image',
                                            )
                                        )
-            Layer.objects.filter(id=instance.id) \
+            ResourceBase.objects.filter(id=instance.id) \
                 .update(thumbnail_url=thumbnail_remote_url)
             # Download thumbnail and save it locally.
             resp, image = ogc_client.request(thumbnail_create_url)
@@ -785,5 +809,4 @@ def create_thumbnail(instance, thumbnail_remote_url, thumbnail_create_url=None,
                 image = None
 
         if image is not None:
-            filename = 'layer-%s-thumb.png' % instance.uuid
-            instance.save_thumbnail(filename, image=image)
+            instance.save_thumbnail(thumbnail_name, image=image)

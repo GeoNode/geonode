@@ -24,6 +24,8 @@ from unittest import TestCase
 from lxml import etree
 import gisdata
 from geonode.catalogue import get_catalogue
+from geonode.utils import check_ogc_backend
+from geonode import geoserver, qgis_server
 
 
 class GeoNodeCSWTest(TestCase):
@@ -120,14 +122,30 @@ class GeoNodeCSWTest(TestCase):
 
         # test for correct service link articulation
         for link in record.references:
-            if link['scheme'] == 'OGC:WMS':
-                self.assertEqual(link['url'],
-                                 'http://localhost:8080/geoserver/geonode/wms',
-                                 'Expected a specific OGC:WMS URL')
-            elif link['scheme'] == 'OGC:WFS':
-                self.assertEqual(link['url'],
-                                 'http://localhost:8080/geoserver/geonode/wfs',
-                                 'Expected a specific OGC:WFS URL')
+            if check_ogc_backend(geoserver.BACKEND_PACKAGE):
+                if link['scheme'] == 'OGC:WMS':
+                    self.assertEqual(
+                        link['url'],
+                        'http://localhost:8080/geoserver/geonode/wms',
+                        'Expected a specific OGC:WMS URL')
+                elif link['scheme'] == 'OGC:WFS':
+                    self.assertEqual(
+                        link['url'],
+                        'http://localhost:8080/geoserver/geonode/wfs',
+                        'Expected a specific OGC:WFS URL')
+            elif check_ogc_backend(qgis_server.BACKEND_PACKAGE):
+                if link['scheme'] == 'OGC:WMS':
+                    self.assertEqual(
+                        link['url'],
+                        'http://localhost:8000/qgis-server/ogc/'
+                        'san_andres_y_providencia_location',
+                        'Expected a specific OGC:WMS URL')
+                elif link['scheme'] == 'OGC:WFS':
+                    self.assertEqual(
+                        link['url'],
+                        'http://localhost:8000/qgis-server/ogc/'
+                        'san_andres_y_providencia_location',
+                        'Expected a specific OGC:WFS URL')
 
     def test_csw_outputschema_iso(self):
         """Verify that GeoNode CSW can handle ISO metadata with ISO outputSchema"""
@@ -175,14 +193,30 @@ class GeoNodeCSWTest(TestCase):
 
         # test for correct link articulation
         for link in record.distribution.online:
-            if link.protocol == 'OGC:WMS':
-                self.assertEqual(link.url,
-                                 'http://localhost:8080/geoserver/geonode/wms',
-                                 'Expected a specific OGC:WMS URL')
-            elif link.protocol == 'OGC:WFS':
-                self.assertEqual(link.url,
-                                 'http://localhost:8080/geoserver/geonode/wfs',
-                                 'Expected a specific OGC:WFS URL')
+            if check_ogc_backend(geoserver.BACKEND_PACKAGE):
+                if link.protocol == 'OGC:WMS':
+                    self.assertEqual(
+                        link.url,
+                        'http://localhost:8080/geoserver/geonode/wms',
+                        'Expected a specific OGC:WMS URL')
+                elif link.protocol == 'OGC:WFS':
+                    self.assertEqual(
+                        link.url,
+                        'http://localhost:8080/geoserver/geonode/wfs',
+                        'Expected a specific OGC:WFS URL')
+            if check_ogc_backend(qgis_server.BACKEND_PACKAGE):
+                if link.protocol == 'OGC:WMS':
+                    self.assertEqual(
+                        link.url,
+                        'http://localhost:8000/qgis-server/ogc/'
+                        'san_andres_y_providencia_location',
+                        'Expected a specific OGC:WMS URL')
+                elif link.protocol == 'OGC:WFS':
+                    self.assertEqual(
+                        link.url,
+                        'http://localhost:8000/qgis-server/ogc/'
+                        'san_andres_y_providencia_location',
+                        'Expected a specific OGC:WFS URL')
 
     def test_csw_outputschema_dc_bbox(self):
         """Verify that GeoNode CSW can handle ISO metadata BBOX model with Dublin Core outputSchema"""

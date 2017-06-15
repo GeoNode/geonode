@@ -223,8 +223,8 @@ class Map(ResourceBase, GXPMapBase):
                 bbox = list(layer_bbox[0:4])
             else:
                 bbox[0] = min(bbox[0], layer_bbox[0])
-                bbox[1] = max(bbox[1], layer_bbox[1])
-                bbox[2] = min(bbox[2], layer_bbox[2])
+                bbox[1] = min(bbox[1], layer_bbox[1])
+                bbox[2] = max(bbox[2], layer_bbox[2])
                 bbox[3] = max(bbox[3], layer_bbox[3])
 
         return bbox
@@ -239,6 +239,9 @@ class Map(ResourceBase, GXPMapBase):
         self.center_y = 0
         bbox = None
         index = 0
+
+        if self.uuid is None or self.uuid == '':
+            self.uuid = str(uuid.uuid1())
 
         DEFAULT_MAP_CONFIG, DEFAULT_BASE_LAYERS = default_map_config(None)
 

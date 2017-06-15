@@ -17,8 +17,14 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
+import json
 
+from django.conf import settings
 from django.views.generic import CreateView, DetailView
+
+from geonode.maps.views import _resolve_map, _PERMISSION_MSG_VIEW, \
+    snapshot_config
+
 from geonode.maps.models import Map, MapLayer
 from geonode.layers.models import Layer
 
@@ -52,13 +58,39 @@ class MapDetailView(DetailView):
     context_object_name = 'map'
 
     def get_context_data(self, **kwargs):
+        """Prepare context data."""
+
+        mapid = self.kwargs.get('mapid')
+        snapshot = self.kwargs.get('snapshot')
+        request = self.request
+
+        map_obj = _resolve_map(
+            request, mapid, 'base.view_resourcebase', _PERMISSION_MSG_VIEW)
+
+        if 'access_token' in request.session:
+            access_token = request.session['access_token']
+        else:
+            access_token = None
+
+        if snapshot is None:
+            config = map_obj.viewer_json(request.user, access_token)
+        else:
+            config = snapshot_config(snapshot, map_obj, request.user,
+                                     access_token)
         # list all required layers
         layers = Layer.objects.all()
+        map_layers = MapLayer.objects.filter(
+            map_id=mapid).order_by('stack_order')
         context = {
+            'config': json.dumps(config),
             'create': False,
             'layers': layers,
-            'map': Map.objects.get(id=self.kwargs.get("mapid")),
-            'map_layers': MapLayer.objects.filter(map_id=self.kwargs.get("mapid")).order_by('stack_order')
+            'map': map_obj,
+            'map_layers': map_layers,
+            'preview': getattr(
+                settings,
+                'LAYER_PREVIEW_LIBRARY',
+                '')
         }
         return context
 
