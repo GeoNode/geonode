@@ -37,6 +37,7 @@ from geonode.contrib.monitoring.service_handlers import exposes
 
 capi = CollectorAPI()
 
+
 class MetricsList(View):
     
     def get(self, *args, **kwargs):
@@ -46,6 +47,7 @@ class MetricsList(View):
             out.append({'service': srv.name,
                         'metrics': [{'name': m.name, 'type': m.type} for m in mlist]})
         return json_response({'metrics': out})
+
 
 class ServicesList(View):
     
@@ -63,6 +65,7 @@ class ServicesList(View):
 
         return json_response({'services': out})
 
+
 class HostsList(View):
     
     def get_queryset(self):
@@ -75,7 +78,6 @@ class HostsList(View):
             out.append({'name': item.name, 'ip': item.ip})
 
         return json_response({'hosts': out})
-
 
 
 class CheckTypeForm(forms.Form):

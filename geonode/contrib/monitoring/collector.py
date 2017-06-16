@@ -18,6 +18,7 @@
 #
 #########################################################################
 
+import logging
 from datetime import datetime, timedelta
 from decimal import Decimal
 from itertools import chain
@@ -28,9 +29,11 @@ from geonode.contrib.monitoring.models import (Metric, MetricValue, ServiceTypeM
                                                MonitoredResource, MetricLabel, RequestEvent,
                                                ExceptionEvent)
 
-
 from geonode.contrib.monitoring.utils import generate_periods, align_period_start, align_period_end
 from geonode.utils import parse_datetime
+
+
+log = logging.getLogger(__name__)
 
 
 class CollectorAPI(object):
@@ -202,23 +205,31 @@ class CollectorAPI(object):
         return out
 
     def set_metric_values(self, metric_name, column_name, service, valid_from, valid_to, resource=None, distinct=False):
-        if distinct:
-            sel = 'select distinct {}'.format(column_name)
+        metric = Metric.get_for(metric_name, service=service)
+        if metric.is_rate:
+            sel = " 'value' as res, coalesce(avg({}), 0) as cnt".format(column_name)
+            group_by = ''
+
+        elif metric.is_value:
+            sel = ' distinct {} as res, count(1) as cnt '.format(column_name)
+            group_by = 'group by {}'.format(column_name)
         else:
-            sel = 'select {}'.format(column_name)
+            sel = ' {} as res, count(1) as cnt '.format(column_name)
+            group_by = 'group by {}'.format(column_name)
         if resource:
-            _sql = ('{} as res, count(1) as cnt from monitoring_requestevent re '
+            _sql = ('select {} from monitoring_requestevent re '
                     'join monitoring_requestevent_resources mr on (mr.requestevent_id = re.id)'
                     'where re.service_id = %s and re.created > %s and re.created < %s '
-                    'and mr.monitoredresource_id = %s group by {} order by cnt desc '
+                    'and mr.monitoredresource_id = %s {} order by cnt desc '
                     'limit 100')
             args = (service.id, valid_from, valid_to, resource.id,)
         else:
-            _sql = ('{} as res, count(1) as cnt from monitoring_requestevent re '
+            _sql = ('select {} from monitoring_requestevent re '
                     'where re.service_id = %s and re.created > %s and re.created < %s '
-                    'group by {} order by cnt desc limit 100')
+                    '{} order by cnt desc limit 100')
             args = (service.id, valid_from, valid_to,)
-        sql = _sql.format(sel, column_name)
+
+        sql = _sql.format(sel, group_by)
         rows = raw_sql(sql, args)
         metric_values = {'metric': metric_name,
                          'valid_from': valid_from,
@@ -228,13 +239,12 @@ class CollectorAPI(object):
         for row in rows:
             label = row['res']
             cnt = row['cnt']
-
             metric_values.update({'value': cnt,
                                   'label': label,
                                   'value_raw': cnt,
                                   'value_num': cnt if isinstance(cnt, (int, float, long, Decimal,)) else None})
 
-            MetricValue.add(**metric_values)
+            print MetricValue.add(**metric_values)
 
     def process(self, service, data, valid_from, valid_to, *args, **kwargs):
         if service.is_system_monitor:
@@ -256,13 +266,16 @@ class CollectorAPI(object):
         """
         Processes requests information into metric values
         """
+        log.info("Processing batch of %s requests from %s to %s", requests.count(), valid_from, valid_to)
+        if not requests.count():
+            return 
         metric_defaults = {'valid_from': valid_from,
                            'valid_to': valid_to,
                            'service': service}
         MetricValue.objects.filter(valid_from__gte=valid_from, valid_to__lte=valid_to, service=service).delete()
         resources = self.extract_resources(requests)
         count = requests.count()
-        MetricValue.add('request.count', valid_from, valid_to, service, 'Count',
+        print MetricValue.add('request.count', valid_from, valid_to, service, 'Count',
                         value=count,
                         value_num=count,
                         value_raw=count,
@@ -274,6 +287,11 @@ class CollectorAPI(object):
         self.set_metric_values('request.region', 're.client_region', **metric_defaults)
         self.set_metric_values('request.ua', 're.user_agent', **metric_defaults)
         self.set_metric_values('request.ua.family', 're.user_agent_family', **metric_defaults)
+        self.set_metric_values('response.time', 're.response_time', **metric_defaults)
+        self.set_metric_values('response.size', 're.response_size', **metric_defaults)
+        self.set_metric_values('response.status', 're.response_status', **metric_defaults)
+        self.set_metric_values('request.method', 're.request_method', **metric_defaults)
+            
 
         # for each resource we should calculate another set of stats
         for resource, _requests in [(None, requests,)] + resources:
@@ -288,6 +306,10 @@ class CollectorAPI(object):
             self.set_metric_values('request.region', 're.client_region',  **metric_defaults)
             self.set_metric_values('request.ua', 're.user_agent', **metric_defaults)
             self.set_metric_values('request.ua.family', 're.user_agent_family', **metric_defaults)
+            self.set_metric_values('response.time', 're.response_time', **metric_defaults)
+            self.set_metric_values('response.size', 're.response_size', **metric_defaults)
+            self.set_metric_values('response.status', 're.response_status', **metric_defaults)
+            self.set_metric_values('request.method', 're.request_method', **metric_defaults)
 
     def get_metrics_for(self, metric_name, valid_from=None, valid_to=None, interval=None, service=None,
                         label=None, resource=None):
@@ -322,13 +344,11 @@ class CollectorAPI(object):
         based on metric type (which tells how to interpret value - is it a counter,
         rate or something else).
         """
-        if service:
-            metric = Metric.objects.get(name=metric_name, service_type___service_type_id=service.id)
-        else:
-            metric = Metric.objects.filter(name=metric_name).first()
+        metric = Metric.get_for(metric_name, service=service)
         if not metric:
             raise ValueError("Invalid metric {}".format(metric_name))
         f = metric.get_aggregate_name()
+        print('agg', metric, f)
         if not f:
             return column_name
         return '{}({})'.format(f, column_name)

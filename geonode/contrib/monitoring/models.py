@@ -148,6 +148,27 @@ class Metric(models.Model):
     def __str__(self):
         return "Metric: {}".format(self.name)
 
+    @property
+    def is_rate(self):
+        return self.type == self.TYPE_RATE
+
+    @property
+    def is_count(self):
+        return self.type == self.TYPE_COUNT
+
+    @property
+    def is_value(self):
+        return self.type == self.TYPE_VALUE
+
+    @classmethod
+    def get_for(cls, name, service=None):
+        if service:
+            stype = ServiceTypeMetric.objects.get(service_type=service.service_type, metric__name=name)
+            metric = stype.metric
+        else:
+            metric = Metric.objects.filter(name=name).first()
+        return metric
+
 
 class ServiceTypeMetric(models.Model):
     service_type = models.ForeignKey(ServiceType, related_name='metric')
@@ -392,7 +413,7 @@ class MetricValue(models.Model):
             metric = '{} [{}]'.format(metric, self.label.name)
         if self.resource and self.resource.type:
             metric = '{} for {}'.format(metric, '{}={}'.format(self.resource.name, self.resource.type))
-        return 'Metric Value: {}: {} (since {} until {})'.format(metric, self.value, self.valid_from, self.valid_to)
+        return 'Metric Value: {}: {}[{}] (since {} until {})'.format(metric, self.value, self.value_num, self.valid_from, self.valid_to)
 
     @classmethod
     def add(cls, metric, valid_from, valid_to, service, label,
@@ -442,10 +463,7 @@ class BuiltIns(object):
     geonode_metrics = ('request', 'request.count', 'request.ip', 'request.ua',
                        'request.ua.family', 'request.method',
                        'request.country', 'request.region', 'request.city',
-                       'response', 'response.time', 'response.ok', 'response.error',
-                       'response.size', 'response.status.2xx', 'response.status.3xx',
-                       'response.status.4xx', 'response.status.5xx',)
-
+                       'response.time', 'response.status', 'response.size',)
     host_metrics = ('load.1m', 'load.5m', 'load.15m',
                     'mem.free', 'mem.usage', 'mem.free',
                     'mem.buffers', 'mem.all',
@@ -456,9 +474,7 @@ class BuiltIns(object):
     counters = ('request.count',  'network.in', 'network.out',)
     rates = ('response.time', 'response.size', 'network.in.rate', 'network.out.rate', 'load.1m', 'load.5m', 'load.15m',)
     values = ('request.ip', 'request.ua', 'request.ua.family', 'request.method',
-              'request.country', 'request.region', 'request.city', 'response.ok', 'response.error',
-              'response.status.2xx', 'response.status', 'response.status.3xx', 'response.status.4xx',
-              'response.status.5xx',)
+              'request.country', 'request.region', 'request.city', 'response.status',)
 
 
 def populate():
