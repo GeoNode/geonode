@@ -40,6 +40,9 @@ else
     python manage.py migrate account --noinput
     python manage.py migrate --noinput
 
+    echo " Populate db with admin:admin account and some categories"
+    paver sync
+
 fi
 
 # Check if geoserver database exists

@@ -27,6 +27,7 @@ services:
       - database
       - elasticsearch
       - rabbitmq
+      - geoserver
     command: django-admin.py runserver 0.0.0.0:8000 --settings=geonode.settings
     ports:
       - "8000:8000"
@@ -45,6 +46,9 @@ services:
       - DB_GEOSERVER_NAME=geoserver
       - DB_GEOSERVER_USER=geoserver
       - DB_GEOSERVER_PASSWORD=secret
+    volumes:
+      - geonode_config:/mnt/geonode_config
+      - geonode_data:/mnt/geonode_data
 
   celery:
     image: camptocamp/geonode_django
@@ -78,7 +82,6 @@ services:
     image: camptocamp/geonode_geoserver
     links:
       - database
-      - django
     ports:
       - "8080:8080"
     volumes:
@@ -90,3 +93,5 @@ volumes:
   geoserver_datadir:
   geoserver_data:
   postgresql_data:
+  geonode_data:
+  geonode_config:

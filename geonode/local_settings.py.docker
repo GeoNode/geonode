@@ -1,0 +1,195 @@
+# -*- coding: utf-8 -*-
+# wb-django:/etc/geonode/local_settings.py
+import os
+import geonode
+
+# Setting debug to true makes Django serve static media and
+# present pretty error pages.
+DEBUG = True
+
+# Set to True to load non-minified versions of (static) client dependencies
+# Requires to set-up Node and tools that are required for static development 
+# otherwise it will raise errors for the missing non-minified dependencies
+DEBUG_STATIC = False
+
+SITENAME = 'GeoNode'
+SITEURL = 'http://localhost:8000/'
+PROXY_URL = None
+GEONODE_ROOT = os.path.dirname(geonode.__file__)
+
+DATABASE_HOST = os.getenv('DB_HOST', 'database')
+DATABASE_PORT = os.getenv('DB_PORT', '5432')
+
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'NAME': os.getenv('DB_GEONODE_NAME', 'geonode'),
+        'USER': os.getenv('DB_GEONODE_USER', 'geonode'),
+        'PASSWORD': os.getenv('DB_GEONODE_PASSWORD', 'secret'),
+        'HOST': DATABASE_HOST,
+        'PORT': DATABASE_PORT,
+    },
+    'datastore': {
+        'ENGINE': 'django.contrib.gis.db.backends.postgis',
+        'NAME': os.getenv('DB_GEOSERVER_NAME', 'geoserver'),
+        'USER': os.getenv('DB_GEOSERVER_USER', 'geoserver'),
+        'PASSWORD': os.getenv('DB_GEOSERVER_PASSWORD', 'secret'),
+        'HOST': DATABASE_HOST,
+        'PORT': DATABASE_PORT,
+    }
+}
+
+GEOSERVER_PUBLIC_LOCATION = 'http://localhost:8080/geoserver/'
+GEOSERVER_INTERNAL_LOCATION = 'http://geoserver:8080/geoserver/'
+GEOSERVER_URL = GEOSERVER_PUBLIC_LOCATION
+
+# OGC (WMS/WFS/WCS) Server Settings
+OGC_SERVER = {
+    'default': {
+        'BACKEND': 'geonode.geoserver',
+        'LOCATION': GEOSERVER_INTERNAL_LOCATION,
+        'LOGIN_ENDPOINT': '', #'j_spring_oauth2_geonode_login',
+        'LOGOUT_ENDPOINT': '', #'j_spring_oauth2_geonode_logout',
+        'PUBLIC_LOCATION': GEOSERVER_URL,
+        'USER': 'admin',
+        'PASSWORD': os.getenv('GEOSERVER_ADMIN_PASSWORD', 'secret'),
+        'MAPFISH_PRINT_ENABLED': True,
+        'PRINT_NG_ENABLED': True,
+        'GEONODE_SECURITY_ENABLED': True,
+        'GEOGIG_ENABLED': False,
+        'WMST_ENABLED': False,
+        'BACKEND_WRITE_ENABLED': True,
+        'WPS_ENABLED': True,
+        'LOG_FILE': '/usr/share/geoserver/data/logs/geoserver.log',
+        # Set to name of database in DATABASES dictionary to enable
+        'DATASTORE': 'datastore',
+        'PG_GEOGIG': False,
+        'TIMEOUT': 10,
+    }
+}
+
+LANGUAGE_CODE = 'en'
+
+MEDIA_ROOT = '/mnt/geonode_data/uploaded/'
+STATIC_ROOT = '/mnt/geonode_data/static/'
+
+# secret key used in hashing, should be a long, unique string for each
+# site.  See http://docs.djangoproject.com/en/1.2/ref/settings/#secret-key
+SECRET_KEY = 'SVp7KiF6FKaymGw1en'
+
+
+CATALOGUE = {
+    'default': {
+        # The underlying CSW backend
+        # ("pycsw_http", "pycsw_local", "geonetwork", "deegree")
+        'ENGINE': 'geonode.catalogue.backends.pycsw_local',
+        # The FULLY QUALIFIED base url to the CSW instance for this GeoNode
+        'URL': '%scatalogue/csw' % SITEURL,
+    }
+}
+
+# A Google Maps API key is needed for the 3D Google Earth view of maps
+# See http://code.google.com/apis/maps/signup.html
+GOOGLE_API_KEY = ''
+
+# Django automatically includes the "templates" dir in all the INSTALLED_APPS.
+TEMPLATES = [
+    {
+        'NAME': 'GeoNode Project Templates',
+        'BACKEND': 'django.template.backends.django.DjangoTemplates',
+        'DIRS': ['/mnt/geonode_config/templates', os.path.join(GEONODE_ROOT, "templates")],
+        'APP_DIRS': True,
+        'OPTIONS': {
+            'context_processors': [
+                'django.contrib.auth.context_processors.auth',
+                'django.core.context_processors.debug',
+                'django.core.context_processors.i18n',
+                'django.core.context_processors.tz',
+                'django.core.context_processors.media',
+                'django.core.context_processors.static',
+                'django.core.context_processors.request',
+                'django.contrib.messages.context_processors.messages',
+                'account.context_processors.account',
+                'geonode.context_processors.resource_urls',
+                'geonode.geoserver.context_processors.geoserver_urls',
+            ],
+            'debug': DEBUG,
+        },
+    },
+]
+# Additional directories which hold static files
+STATICFILES_DIRS = [
+    '/mnt/geonode_config/media',
+    os.path.join(GEONODE_ROOT, 'static'),
+]
+
+MAP_BASELAYERS = [{
+    "source": {
+        "ptype": "gxp_wmscsource",
+        "url": GEOSERVER_URL + "wms",
+        "restUrl": "/gs/rest"
+     }
+  },{
+    "source": {"ptype": "gxp_olsource"},
+    "type":"OpenLayers.Layer",
+    "args":["No background"],
+    "visibility": False,
+    "fixed": True,
+    "group":"background"
+  }, {
+    "source": {"ptype": "gxp_olsource"},
+    "type":"OpenLayers.Layer.OSM",
+    "args":["OpenStreetMap"],
+    "visibility": False,
+    "fixed": True,
+    "group":"background"
+  }, {
+    "source": {"ptype": "gxp_mapquestsource"},
+    "name":"osm",
+    "group":"background",
+    "visibility": False
+  }, {
+    "source": {"ptype": "gxp_mapquestsource"},
+    "name":"naip",
+    "group":"background",
+    "visibility": False
+  }, {
+  "source": {"ptype": "gxp_olsource"},
+    "type":"OpenLayers.Layer.XYZ",
+    "group":"background",
+    "visibility": True,
+    "fixed": True,
+    "args":[ "mapbox",
+       ["https://a.tiles.mapbox.com/v4/ingenieroariel.m9a2h374/${z}/${x}/${y}.png?access_token=pk.eyJ1IjoiaW5nZW5pZXJvYXJpZWwiLCJhIjoibXhDZ3pIMCJ9.qTmPYCbnUKtaNFkvKKysAQ",
+       "https://b.tiles.mapbox.com/v4/ingenieroariel.m9a2h374/${z}/${x}/${y}.png?access_token=pk.eyJ1IjoiaW5nZW5pZXJvYXJpZWwiLCJhIjoibXhDZ3pIMCJ9.qTmPYCbnUKtaNFkvKKysAQ",
+       "https://c.tiles.mapbox.com/v4/ingenieroariel.m9a2h374/${z}/${x}/${y}.png?access_token=pk.eyJ1IjoiaW5nZW5pZXJvYXJpZWwiLCJhIjoibXhDZ3pIMCJ9.qTmPYCbnUKtaNFkvKKysAQ"],
+       {"transitionEffect": "resize","attribution": "osm_attribution"}
+    ]
+}]
+
+#REGISTRATION_OPEN = False
+#ACCOUNT_APPROVAL_REQUIRED = False
+
+#ACCOUNT_EMAIL_CONFIRMATION_EMAIL = False
+#ACCOUNT_EMAIL_CONFIRMATION_REQUIRED = False
+
+# Allowed values for the preview library are 'geoext' and 'leaflet'.
+#LAYER_PREVIEW_LIBRARY = 'geoext'
+
+# Uncomment the following to receive emails whenever there are errors in GeoNode
+# or to be notified of new user requests when ACCOUNT_APPROVAL_REQUIRED has been set.
+#ADMINS = (
+#            ('John', 'john@example.com'), 
+#         )
+
+# Uncomment the following to use a Gmail account as the email backend
+#EMAIL_USE_TLS = True
+#EMAIL_HOST = 'smtp.gmail.com'
+#EMAIL_HOST_USER = 'youremail@gmail.com'
+#EMAIL_HOST_PASSWORD = 'yourpassword'
+#EMAIL_PORT = 587
+
+# For more information on available settings please consult the Django docs at
+# https://docs.djangoproject.com/en/dev/ref/settings
+# Handle by env vars
+#ALLOWED_HOSTS= [ 'localhost', '45.55.191.255', '45.55.174.20',  ]
