@@ -30,6 +30,8 @@ urlpatterns = [
                 url(r'^api/hosts/$', views.api_hosts, name='api_hosts'),
                 url(r'^api/labels/$', views.api_labels, name='api_labels'),
                 url(r'^api/resources/$', views.api_resources, name='api_resources'),
+                url(r'^api/exceptions/$', views.api_exceptions, name='api_exceptions'),
+                url(r'^api/exceptions/(?P<exception_id>[\d\+]+)/$', views.api_exception, name='api_exception'),
                 url(r'^api/metric_data/(?P<metric_name>[\w\.]+)/$', views.api_metric_data, 
                                                                     name='api_metric_data'),
                 # serve raw check data to outside

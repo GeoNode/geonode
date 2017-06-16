@@ -29,6 +29,7 @@ from django.conf import settings
 from jsonfield import JSONField
 
 from django.utils.translation import ugettext_noop as _
+from django.core.urlresolvers import reverse
 
 try:
     from django.contrib.gis.geoip2 import GeoIP2 as GeoIP
@@ -381,7 +382,9 @@ class ExceptionEvent(models.Model):
                                   error_type=error_type,
                                   error_data=stack_trace,
                                   request=request)
-
+    @property
+    def url(self):
+        return reverse('monitoring:api_exception', args=(self.id,))
 
 class MetricLabel(models.Model):
 
@@ -461,9 +464,10 @@ class BuiltIns(object):
     # metrics_count = ('request.count', 'request.method', 'request.
 
     geonode_metrics = ('request', 'request.count', 'request.ip', 'request.ua',
-                       'request.ua.family', 'request.method',
+                       'request.ua.family', 'request.method', 'response.error.count',
                        'request.country', 'request.region', 'request.city',
-                       'response.time', 'response.status', 'response.size',)
+                       'response.time', 'response.status', 'response.size',
+                       'response.error.types',)
     host_metrics = ('load.1m', 'load.5m', 'load.15m',
                     'mem.free', 'mem.usage', 'mem.free',
                     'mem.buffers', 'mem.all',
@@ -471,10 +475,10 @@ class BuiltIns(object):
                     'storage.free', 'storage.total', 'storage.used',  # mountpoint is the label
                     'network.in', 'network.out', 'network.in.rate', 'network.out.rate',)
 
-    counters = ('request.count',  'network.in', 'network.out',)
+    counters = ('request.count',  'network.in', 'network.out', 'response.error.count',)
     rates = ('response.time', 'response.size', 'network.in.rate', 'network.out.rate', 'load.1m', 'load.5m', 'load.15m',)
     values = ('request.ip', 'request.ua', 'request.ua.family', 'request.method',
-              'request.country', 'request.region', 'request.city', 'response.status',)
+              'request.country', 'request.region', 'request.city', 'response.status', 'response.error.types',)
 
 
 def populate():

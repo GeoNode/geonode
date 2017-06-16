@@ -29,7 +29,7 @@ from django.core.urlresolvers import reverse
 
 from geonode.utils import json_response
 from geonode.contrib.monitoring.collector import CollectorAPI
-from geonode.contrib.monitoring.models import Service, Host, Metric, ServiceTypeMetric, MetricLabel, MonitoredResource
+from geonode.contrib.monitoring.models import Service, Host, Metric, ServiceTypeMetric, MetricLabel, MonitoredResource, ExceptionEvent
 from geonode.contrib.monitoring.utils import TypeChecks
 from geonode.contrib.monitoring.service_handlers import exposes
 
@@ -211,6 +211,83 @@ class MetricDataView(View):
         out = capi.get_metrics_for(metric_name, **filters)
         return json_response({'data': out})
 
+class ExceptionsListForm(CheckTypeForm):
+    error_type = forms.CharField(required=False)
+    valid_from = forms.DateTimeField(required=False)
+    valid_to = forms.DateTimeField(required=False)
+    service = forms.CharField(required=False)
+    resource = forms.CharField(required=False)
+
+    def clean_resource(self):
+        return self._check_type('resource')
+
+    def clean_service(self):
+        return self._check_type('service')
+
+class ExceptionsListView(FilteredView):
+    filter_form = ExceptionsListForm
+    fields_map = (('id', 'id',),
+                  ('created', 'created',),
+                  ('url', 'url',),
+                  ('error_type', 'error_type',),)
+
+    output_names = 'exceptions'
+
+    def get_queryset(self, error_type=None, valid_from=None, valid_to=None, service=None, resource=None):
+        q = ExceptionEvent.objects.all().select_related()
+        if error_type:
+            q = q.filter(error_type=error_type)
+        if valid_from:
+            q = q.filter(created__gte=valid_from)
+        if valid_to:
+            q = q.filter(created__lte=valid_to)
+        if service:
+            q = q.filter(service=service)
+        if resource:
+            q = q.filter(request__resources__in=(resource,))
+
+        return q
+    
+
+class ExceptionDataView(View):
+    
+    def get_object(self, exception_id):
+        try:
+            return ExceptionEvent.objects.get(id=exception_id)
+        except ExceptionEvent.DoesNotExist:
+            return
+    
+    def get(self, request, exception_id, *args, **kwargs):
+        e = self.get_object(exception_id)
+        if not e:
+            return json_response(errors={'exception_id': "Object not found"}, status=404)
+        data = {'error_type': e.error_type,
+                'error_data': e.error_data,
+                'created': e.created,
+                'service': {'name': e.service.name,
+                            'type': e.service.service_type.name},
+                'request': {'request': {'created': e.request.created,
+                                        'method': e.request.request_method,
+                                        'path': e.request.request_path,
+                                        'host': e.request.host,
+                                        },
+                            'ows_type': e.request.ows_type,
+                            'resources': [{'name': str(r)} for r in e.request.resources.all()],
+                            'client': {'ip': e.request.client_ip,
+                                       'user_agent': e.request.user_agent,
+                                       'user_agent_family': e.request.user_agent_family,
+                                       'position': {'lat': e.request.client_lat,
+                                                    'lon': e.request.client_lon,
+                                                    'country': e.request.client_country,
+                                                    'city': e.request.client_city}
+                                       },
+                            'response': {'size': e.request.response_size,
+                                         'status': e.request.response_status,
+                                         'time': e.request.response_time,
+                                         'type': e.request.response_type}
+                           }
+               }
+        return json_response(data)
 
 
 class BeaconView(View):
@@ -236,4 +313,6 @@ api_hosts = HostsList.as_view()
 api_labels = LabelsList.as_view()
 api_resources = ResourcesList.as_view()
 api_metric_data = MetricDataView.as_view()
+api_exceptions = ExceptionsListView.as_view()
+api_exception = ExceptionDataView.as_view()
 api_beacon = BeaconView.as_view()

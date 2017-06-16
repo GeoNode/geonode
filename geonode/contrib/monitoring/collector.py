@@ -262,6 +262,30 @@ class CollectorAPI(object):
             requests_batch = requests.filter(created__gte=pstart, created__lt=pend)
             self.process_requests_batch(service, requests_batch, pstart, pend)
 
+
+    def set_error_values(self, requests, valid_from, valid_to, service=None, resource=None):
+        with_errors = requests.filter(exceptions__isnull=False)
+        if not with_errors.exists():
+            return
+
+        labels = ExceptionEvent.objects.filter(request__in=with_errors)\
+                                       .distinct()\
+                                       .values_list('error_type', flat=True)
+
+        defaults = {'valid_from': valid_from,
+                    'valid_to': valid_to,
+                    'resource': resource,
+                    'metric': 'response.errors',
+                    'label': 'count',
+                    'service': service}
+        cnt = with_errors.count()
+        print MetricValue.add(value=cnt, value_num=cnt, value_raw=cnt, **defaults)
+        defaults['metric'] = 'response.errors.types'
+        for label in labels:
+            cnt = with_errors.filter(exceptions__error_type=label).count()
+            defaults['label'] = label
+            print MetricValue.add(value=cnt, value_num=cnt, value_raw=cnt, **defaults)
+
     def process_requests_batch(self, service, requests, valid_from, valid_to):
         """
         Processes requests information into metric values
@@ -291,7 +315,7 @@ class CollectorAPI(object):
         self.set_metric_values('response.size', 're.response_size', **metric_defaults)
         self.set_metric_values('response.status', 're.response_status', **metric_defaults)
         self.set_metric_values('request.method', 're.request_method', **metric_defaults)
-            
+        self.set_error_values(requests, valid_from, valid_to, service=service, resource=None) 
 
         # for each resource we should calculate another set of stats
         for resource, _requests in [(None, requests,)] + resources:
@@ -310,6 +334,7 @@ class CollectorAPI(object):
             self.set_metric_values('response.size', 're.response_size', **metric_defaults)
             self.set_metric_values('response.status', 're.response_status', **metric_defaults)
             self.set_metric_values('request.method', 're.request_method', **metric_defaults)
+            self.set_error_values(_requests, valid_from, valid_to, service=service, resource=resource) 
 
     def get_metrics_for(self, metric_name, valid_from=None, valid_to=None, interval=None, service=None,
                         label=None, resource=None):
