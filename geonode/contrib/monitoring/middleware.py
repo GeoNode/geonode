@@ -37,13 +37,14 @@ class MonitoringMiddleware(object):
     def setup_logging(self):
         self.log = logging.getLogger('{}.catcher'.format(__name__))
         self.log.propagate = False
+        self.log.setLevel(logging.DEBUG)
         self.log.handlers = []
         self.service = self.get_service()
         self.handler = MonitoringHandler(self.service)
         self.handler.setLevel(logging.DEBUG)
         self.filter = MonitoringFilter(self.service, FILTER_URLS)
+        self.handler.addFilter(self.filter)
         self.log.addHandler(self.handler)
-        self.log.addFilter(self.filter)
 
     def get_service(self):
         hname = getattr(settings, 'MONITORING_HOST_NAME', None) or 'localhost'
