@@ -104,6 +104,7 @@ class MetricsFilters(CheckTypeForm):
     service = forms.CharField(required=False)
     label = forms.CharField(required=False)
     resource = forms.CharField(required=False)
+    ows_service = forms.CharField(required=False)
 
     def clean_resource(self):
         return self._check_type('resource')
@@ -114,6 +115,8 @@ class MetricsFilters(CheckTypeForm):
     def clean_label(self):
         return self._check_type('label')
 
+    def clean_ows_service(self):
+        return self._check_type('ows_service')
 
 class LabelsFilterForm(CheckTypeForm):
     metric_name = forms.CharField(required=False)

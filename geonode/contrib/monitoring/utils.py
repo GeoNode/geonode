@@ -256,3 +256,11 @@ class TypeChecks(object):
             except MetricLabel.DoesNotExist:
                 pass
         raise ValueError("Invalid label value: {}".format(val))
+
+    @staticmethod
+    def ows_service_type(val):
+        from geonode.contrib.monitoring.models import OWSService
+        try:
+            return OWSService.objects.get(name=val)
+        except OWSService.DoesNotExist:
+            raise ValueError("OWS Service {} doesn't exist".format(val))

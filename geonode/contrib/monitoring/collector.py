@@ -24,6 +24,7 @@ from decimal import Decimal
 from itertools import chain
 
 from django.conf import settings
+from django.core.exceptions import ObjectDoesNotExist, MultipleObjectsReturned
 from geonode.utils import raw_sql
 from geonode.contrib.monitoring.models import (Metric, MetricValue, ServiceTypeMetric,
                                                MonitoredResource, MetricLabel, RequestEvent,
@@ -204,7 +205,21 @@ class CollectorAPI(object):
             out.append((res, requests.filter(resources=res).distinct(),))
         return out
 
-    def set_metric_values(self, metric_name, column_name, service, valid_from, valid_to, resource=None, distinct=False):
+    def extract_ows_service(self, requests):
+        q = requests.exclude(ows_service__isnull=True).distinct('ows_service').values_list('ows_service', flat=True)
+        try:
+            return q.get()
+        except (ObjectDoesNotExist, MultipleObjectsReturned,):
+            pass
+
+    def extract_ows_services(self, requests):
+        ows_services = requests.exclude(ows_service__isnull=True).distinct('ows_service').values_list('ows_service', flat=True)
+        out = []
+        for ows in ows_services:
+            out.append((ows, requests.filter(ows_service=ows),))
+        return out            
+
+    def set_metric_values(self, metric_name, column_name, service, valid_from, valid_to, resource=None, ows_service=None):
         metric = Metric.get_for(metric_name, service=service)
         if metric.is_rate:
             sel = " 'value' as res, coalesce(avg({}), 0) as cnt".format(column_name)
@@ -235,6 +250,7 @@ class CollectorAPI(object):
                          'valid_from': valid_from,
                          'valid_to': valid_to,
                          'service': service,
+                         'ows_service': ows_service,
                          'resource': resource}
         for row in rows:
             label = row['res']
@@ -263,7 +279,7 @@ class CollectorAPI(object):
             self.process_requests_batch(service, requests_batch, pstart, pend)
 
 
-    def set_error_values(self, requests, valid_from, valid_to, service=None, resource=None):
+    def set_error_values(self, requests, valid_from, valid_to, service=None, resource=None, ows_service=None):
         with_errors = requests.filter(exceptions__isnull=False)
         if not with_errors.exists():
             return
@@ -275,6 +291,7 @@ class CollectorAPI(object):
         defaults = {'valid_from': valid_from,
                     'valid_to': valid_to,
                     'resource': resource,
+                    'ows_service': ows_service,
                     'metric': 'response.errors',
                     'label': 'count',
                     'service': service}
@@ -297,7 +314,9 @@ class CollectorAPI(object):
                            'valid_to': valid_to,
                            'service': service}
         MetricValue.objects.filter(valid_from__gte=valid_from, valid_to__lte=valid_to, service=service).delete()
+
         resources = self.extract_resources(requests)
+        ows_services = self.extract_ows_services(requests)
         count = requests.count()
         print MetricValue.add('request.count', valid_from, valid_to, service, 'Count',
                         value=count,
@@ -320,8 +339,9 @@ class CollectorAPI(object):
         # for each resource we should calculate another set of stats
         for resource, _requests in [(None, requests,)] + resources:
             count = _requests.count()
-
+            ows_service = self.extract_ows_service(_requests)
             metric_defaults['resource'] = resource
+            metric_defaults['ows_service'] = ows_service
             MetricValue.add('request.count', valid_from, valid_to, service, 'Count', value=count, value_num=count,
                             value_raw=count, resource=resource)
             self.set_metric_values('request.ip', 're.client_ip', **metric_defaults)
@@ -336,8 +356,27 @@ class CollectorAPI(object):
             self.set_metric_values('request.method', 're.request_method', **metric_defaults)
             self.set_error_values(_requests, valid_from, valid_to, service=service, resource=resource) 
 
+        metric_defaults.pop('resource', None)
+        for ows, _requests in [(None, requests,)] + ows_services:
+            count = _requests.count()
+
+            metric_defaults['ows_service'] = ows
+            MetricValue.add('request.count', valid_from, valid_to, service, 'Count', value=count, value_num=count,
+                            value_raw=count, ows_service=ows)
+            self.set_metric_values('request.ip', 're.client_ip', **metric_defaults)
+            self.set_metric_values('request.country', 're.client_country', **metric_defaults)
+            self.set_metric_values('request.city', 're.client_city', **metric_defaults)
+            self.set_metric_values('request.region', 're.client_region',  **metric_defaults)
+            self.set_metric_values('request.ua', 're.user_agent', **metric_defaults)
+            self.set_metric_values('request.ua.family', 're.user_agent_family', **metric_defaults)
+            self.set_metric_values('response.time', 're.response_time', **metric_defaults)
+            self.set_metric_values('response.size', 're.response_size', **metric_defaults)
+            self.set_metric_values('response.status', 're.response_status', **metric_defaults)
+            self.set_metric_values('request.method', 're.request_method', **metric_defaults)
+            self.set_error_values(_requests, valid_from, valid_to, service=service, ows_service=ows)
+
     def get_metrics_for(self, metric_name, valid_from=None, valid_to=None, interval=None, service=None,
-                        label=None, resource=None):
+                        label=None, resource=None, ows_service=None):
         """
         Returns metric data for given metric. Returned dataset contains list of periods and values in that periods
         """
@@ -361,6 +400,7 @@ class CollectorAPI(object):
                                           interval=interval,
                                           service=service,
                                           label=label,
+                                          ows_service=ows_service,
                                           resource=resource)
             out['data'].append({'valid_from': pstart, 'valid_to': pend, 'data': pdata})
         return out
@@ -379,7 +419,7 @@ class CollectorAPI(object):
             return column_name
         return '{}({})'.format(f, column_name)
 
-    def get_metrics_data(self, metric_name, valid_from, valid_to, interval, service=None, label=None, resource=None):
+    def get_metrics_data(self, metric_name, valid_from, valid_to, interval, service=None, label=None, resource=None, ows_service=None):
         """
         Returns metric values for metric within given time span
         """
@@ -404,6 +444,9 @@ class CollectorAPI(object):
         if service:
             q_where.append('and mv.service_id = %(service_id)s')
             params['service_id'] = service.id
+        if ows_service:
+            q_where.append(' and mv.ows_service_id = %(ows_service)s ')
+            params['ows_service'] = ows_service.id
         if label:
             q_where.append(' and ml.id = %(label)s')
             params['label'] = label.id

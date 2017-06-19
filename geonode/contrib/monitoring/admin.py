@@ -42,7 +42,7 @@ class MetricAdmin(admin.ModelAdmin):
 @admin.register(RequestEvent)
 class RequestEvent(admin.ModelAdmin):
     list_display = ('host', 'request_method', 'request_path', 'response_status',)
-    list_filter = ('host', 'request_method', 'response_status', 'ows_type',)
+    list_filter = ('host', 'request_method', 'response_status', 'ows_service',)
 
 
 @admin.register(MetricLabel)

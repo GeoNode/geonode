@@ -179,16 +179,32 @@ class ServiceTypeMetric(models.Model):
         return '{} - {}'.format(self.service_type, self.metric)
 
 
-class RequestEvent(models.Model):
-    _methods = 'get post head options put delete'.upper().split(' ')
+class OWSService(models.Model):
     _ows_types = 'tms wms-c wmts wcs wfs wms wps'.upper().split(' ')
-    METHODS = zip(_methods, _methods)
     OWS_OTHER = 'other'
     OWS_TYPES = zip(_ows_types, _ows_types) + [(OWS_OTHER, _("Other"))]
+    name = models.CharField(max_length=16, unique=True, 
+                            choices=OWS_TYPES, 
+                            null=False, 
+                            blank=False)
+    
+    @classmethod
+    def get(cls, service_name=None):
+        if not service_name:
+            return
+        try:
+            return cls.objects.get(name=service_name)
+        except cls.DoesNotExist:
+            return
+
+
+class RequestEvent(models.Model):
+    _methods = 'get post head options put delete'.upper().split(' ')
+    METHODS = zip(_methods, _methods)
     created = models.DateTimeField(db_index=True, null=False)
     received = models.DateTimeField(db_index=True, null=False)
     service = models.ForeignKey(Service)
-    ows_type = models.CharField(max_length=255, choices=OWS_TYPES, default=OWS_OTHER, null=False, blank=False)
+    ows_service = models.ForeignKey(OWSService, blank=True, null=True)
     host = models.CharField(max_length=255, blank=True, default='')
     request_path = models.CharField(max_length=255, blank=False, default='')
 
@@ -277,6 +293,7 @@ class RequestEvent(models.Model):
                 'created': created,
                 'host': request.get_host(),
                 'service': service,
+                'ows_service': None,
                 'request_path': request.get_full_path(),
                 'request_method': request.method,
                 'response_status': response.status_code,
@@ -330,6 +347,7 @@ class RequestEvent(models.Model):
         data = {'created': start_time,
                 'received': received,
                 'host': rd['host'],
+                'ows_service': OWSService.get(rd.get('service')),
                 'service': service,
                 'request_path': rd['path'],
                 'request_method': rd['httpMethod'],
@@ -347,7 +365,7 @@ class RequestEvent(models.Model):
                 'client_region': region,
                 'client_city': city}
         inst = cls.objects.create(**data)
-        resource_names = rd['resources']['string'] if rd.get('service') in cls._ows_types else []
+        resource_names = rd.get('resources', {}).get('string') or []
         if not isinstance(resource_names, (list, tuple,)):
             resource_names = [resource_names]
         resources = cls._get_resources('layer', resource_names)
@@ -393,13 +411,12 @@ class MetricLabel(models.Model):
     def __str__(self):
         return 'Metric Label: {}'.format(self.name)
 
-
 class MetricValue(models.Model):
-
     valid_from = models.DateTimeField(db_index=True, null=False)
     valid_to = models.DateTimeField(db_index=True, null=False)
     service_metric = models.ForeignKey(ServiceTypeMetric)
     service = models.ForeignKey(Service)
+    ows_service = models.ForeignKey(OWSService, null=True, blank=True)
     resource = models.ForeignKey(MonitoredResource, related_name='metric_values')
     label = models.ForeignKey(MetricLabel, related_name='metric_values')
     value = models.CharField(max_length=255, null=False, blank=False)
@@ -408,7 +425,7 @@ class MetricValue(models.Model):
     data = JSONField(null=False, default={})
 
     class Meta:
-        unique_together = (('valid_from', 'valid_to', 'service', 'service_metric', 'resource', 'label',))
+        unique_together = (('valid_from', 'valid_to', 'service', 'service_metric', 'resource', 'label', 'ows_service',))
 
     def __str__(self):
         metric = self.service_metric.metric.name
@@ -420,7 +437,7 @@ class MetricValue(models.Model):
 
     @classmethod
     def add(cls, metric, valid_from, valid_to, service, label,
-            value_raw=None, resource=None, value=None, value_num=None, data=None):
+            value_raw=None, resource=None, value=None, value_num=None, data=None, ows_service=None):
         """
         Create new MetricValue shortcut
         """
@@ -436,6 +453,7 @@ class MetricValue(models.Model):
                                    service=service,
                                    label=label,
                                    resource=resource,
+                                   ows_service=ows_service,
                                    service_metric=service_metric)
             inst.value = value_raw
             inst.value_raw = value_raw
@@ -450,6 +468,7 @@ class MetricValue(models.Model):
                                   service_metric=service_metric,
                                   label=label,
                                   resource=resource,
+                                  ows_service=ows_service,
                                   value=value_raw,
                                   value_raw=value_raw,
                                   value_num=value_num,
@@ -500,3 +519,6 @@ def populate():
     Metric.objects.filter(name__in=BuiltIns.counters).update(type=Metric.TYPE_COUNT)
     Metric.objects.filter(name__in=BuiltIns.rates).update(type=Metric.TYPE_RATE)
     Metric.objects.filter(name__in=BuiltIns.values).update(type=Metric.TYPE_VALUE)
+
+    for otype, otype_name in OWSService.OWS_TYPES:
+        OWSService.objects.get_or_create(name=otype)
