@@ -115,3 +115,5 @@ geonode/man/
 geonode/pip-selfcheck.json
 geonode/shapely/
 geonode/share/
+
+geonode/contrib/monitoring/frontend/node_modules
