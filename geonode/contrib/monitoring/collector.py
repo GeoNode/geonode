@@ -160,7 +160,7 @@ class CollectorAPI(object):
         if not mt:
             raise ValueError("No metric for {}".format(metric_name))
 
-        qparams = {'metricvalue__service_metric__in': mt}
+        qparams = {'metric_values__service_metric__in': mt}
         if resource:
             qparams['metricvalue__resource'] = resource
         return list(MetricLabel.objects.filter(**qparams).distinct().values_list('id', 'name'))
