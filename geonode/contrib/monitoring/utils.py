@@ -52,7 +52,8 @@ class MonitoringFilter(logging.Filter):
                 if fp.startswith(skip_url):
                     return False
             elif isinstance(skip_url, re.RegexObject):
-                return skip_url.match(fp)
+                if skip_url.match(fp):
+                    return False
         return record
 
 
