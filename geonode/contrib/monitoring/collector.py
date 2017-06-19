@@ -385,10 +385,11 @@ class CollectorAPI(object):
 
         q_from = ['from monitoring_metricvalue mv',
                   'join monitoring_servicetypemetric mt on (mv.service_metric_id = mt.id)',
-                  'join monitoring_metric m on (m.id = mt.metric_id)']
+                  'join monitoring_metric m on (m.id = mt.metric_id)',
+                  'join monitoring_metriclabel ml on (mv.label_id = ml.id) ']
         q_where = ['where', 'mv.valid_from >= %(valid_from)s and mv.valid_to <= %(valid_to)s ',
                    'and m.name = %(metric_name)s']
-        q_group = []
+        q_group = ['ml.name']
         params.update({'metric_name': metric_name,
                        'valid_from': valid_from,
                        'valid_to': valid_to})
@@ -397,12 +398,12 @@ class CollectorAPI(object):
         agg_f = self.get_aggregate_function(col, metric_name, service)
         has_agg = agg_f != col
 
-        q_select = ['select {} as val'.format(agg_f)]
+        q_select = ['select ml.name, {} as val'.format(agg_f)]
         if service:
             q_where.append('and mv.service_id = %(service_id)s')
             params['service_id'] = service.id
         if label:
-            q_from.append('join monitoring_metriclabel ml on (mv.label_id = ml.id and ml.id = %(label)s)')
+            q_where.append(' and ml.id = %(label)s')
             params['label'] = label.id
         if resource:
             q_from.append('join monitoring_monitoredresource mr on '
