@@ -1,16 +1,11 @@
-{% extends "site_base.html" %}
-
-{% load i18n %}
-{% block title %} {% trans "User Guide" %} - {{ block.super }} {% endblock %}
-
-{% block body_outer %}
+{% extends "site_base.html" %} {% load i18n %} {% block title %} {% trans "User Guide" %} - {{ block.super }} {% endblock %} {% block body_outer %}
 <div class="page-header">
   <h2>{% trans "User Guide" %}</h2>
 </div>
 <div class="row">
   <div class="col-md-8">
-    <p class="lead">CityData lets you securely store, map and share
-data.</p>
+    <p class="lead">CityData lets you securely store, map and share data.
+    </p>
 
     <p>With CityData it’s easy to upload and store spatial data like shapefiles as well as other non-spatial data and documents. You can describe your data with metadata to aid discovery and use, share it with others and download it.</p>
 
@@ -65,130 +60,122 @@ data.</p>
 
     {% if user.is_authenticated %}
 
-      <h3><a name="groups">Groups</a></h3>
+    <h3><a name="groups">Groups</a></h3>
 
-      <p>Access to layers and other resources can be granted to individuals or Groups.</p>
+    <p>Access to layers and other resources can be granted to individuals or Groups.</p>
 
-      <p>In CityData we use these groups:</p>
+    <p>In CityData we use these groups:</p>
 
-      <ul>
-        <li>‘CF’ for CityFutures</li>
+    <ul>
+      <li>‘CF’ for CityFutures</li>
 
-        <li>‘BE’ for Built Environment</li>
+      <li>‘BE’ for Built Environment</li>
 
-        <li>one group for each project involving spatial data</li>
+      <li>one group for each project involving spatial data</li>
 
-      </ul>
+    </ul>
 
-      <p>Create new groups in CityData for your projects as required and add existing CityData users as group members. Please follow the conventions shown in the existing groups.</p>
+    <p>Create new groups in CityData for your projects as required and add existing CityData users as group members. Please follow the conventions shown in the existing groups.</p>
 
-      <h3><a name="keywords">Keywords</a></h3>
+    <h3><a name="admin">Administrator role</a></h3>
 
-      <p>Layers and other resources can be tagged with keywords. Keywords may be any combination of letters and numbers. Try to avoid punctuation as this makes the keyword harder to remember.</p>
+    <p>The CityData Administrator (username: ‘admin’, email <a href="mailto:citydata@unsw.edu.au">citydata@unsw.edu.au</a>) responds to any technical problems or issues with the site.</p>
 
-      <p>We use a keyword for each project. This should also match the name of the group for that project.</p>
+    <p>S/he also regularly reviews public data for basic quality checks (see this document for guidelines) and may remove public access from any resources that don’t meet these guidelines. In this case, the administrator will of course contact the resource owner to help rectify the problem.</p>
 
-      <p>Additionally, we have the ‘test’ keyword for testing. All data with the ‘test’ keyword should remain hidden from public view.</p>
+    <h3><a name="loading">Loading data</a></h3>
 
-      <h3><a name="admin">Administrator role</a></h3>
+    <p>Sign in to upload spatial data in shapefile, GeoTIFF, CSV or KML formats. KML is not fully supported, please let the <a href="mailto:citydata@unsw.edu.au">site administrator</a> know how you go with this.</p>
 
-      <p>The CityData Administrator (username: ‘admin’, email <a href="mailto:citydata@unsw.edu.au">citydata@unsw.edu.au</a>) responds to any technical problems or issues with the site.</p>
+    <p>You can also upload non-spatial data under the <b>Documents</b> tab. Supported formats include CSV, Word, PDF, PowerPoint, Excel, ZIP archives, images and text.</p>
 
-      <p>S/he also regularly reviews public data for basic quality checks (see this document for guidelines) and may remove public access from any resources that don’t meet these guidelines. In this case, the administrator will of course contact the resource owner to help rectify the problem.</p>
+    <p>Documents may be linked to a layer or map by editing the document metadata (<b>Edit Document &gt;
+        Metadata: Edit</b>). Choose an option under <b>Link to</b> near the bottom of the metadata form.</p>
 
-      <h3><a name="loading">Loading data</a></h3>
+    <h4><a name="permissions">Set permissions</a></h4>
 
-      <p>Sign in to upload spatial data in shapefile, GeoTIFF, CSV or KML formats. KML is not fully supported, please let the <a href="mailto:citydata@unsw.edu.au">site administrator</a> know how you go with this.</p>
-    
-      <p>You can also upload non-spatial data under the ‘Documents’ tab. Supported formats include CSV, Word, PDF, PowerPoint, Excel, ZIP archives, images and text.</p>
+    <p>By default, data you upload is accessible only to you. You will need to change the permissions to allow others to access and use it.</p>
 
-      <p>Documents may be linked to a layer or map by editing the document metadata (Edit Document &gt;
-        Metadata: Edit). Choose an option under ‘Link to’ near the bottom of the metadata form.</p>
+    <p>Access control is quite granular: on each resource, you can grant different groups and users permission to view, download, change metadata, edit data, edit styles and manage (update, delete, change permissions, publish/unpublish).
+    </p>
 
-      <h4><a name="permissions">Set permissions</a></h4>
+    <p>However, permission to view a layer also allows a user to map and query it. There is no separate permission to view the metadata for a layer without also viewing its data (<a href="https://github.com/GeoNode/geonode/issues/3039" target="_blank">GeoNode issue #3039</a>).</p>
 
-      <p>By default, data you upload is accessible only to you. You will need to change the permissions to allow others to access and use it.</p>
+    <p>CityFutures staff should generally make their internal data viewable to the CF group (CityFutures). Other BE staff should share with BE or with their own group within BE.</p>
 
-      <p>Access control is quite granular: on each resource, you can grant different groups and users permission to view, download, change metadata, edit data, edit styles and manage (update, delete, change permissions, publish/unpublish).
-      </p>
+    <p>To publish your data, tick the boxes to allow ‘Anyone’ to both view and download the data:</p>
 
-      <p>However, permission to view a layer also allows a user to map and query it. There is no separate permission to view the metadata for a layer without also viewing its data (<a href="https://github.com/GeoNode/geonode/issues/3039" target="_blank">GeoNode issue #3039</a>).</p>
+    <p><img border=0 width=146 height=58 id="Picture 5" src="/static/cityfutures/img/user_guide/image001.png">&nbsp;<img border=0 width=146 height=58 id="Picture 6" src="/static/cityfutures/img/user_guide/image002.png"></p>
 
-      <p>CityFutures staff should generally make their internal data viewable to the CF group (CityFutures). Other BE staff should share with BE or with their own group within BE.</p>
+    <h5><a name="permissions-multi">Tip: set permissions on multiple layers</a></h5>
 
-      <p>To publish your data, tick the boxes to allow ‘Anyone’ to both view and download the data:</p>
+    <p>From the Layers page, click <img border=0 width=30 height=26 id="Picture 1" src="/static/cityfutures/img/user_guide/image003.jpg"> beside layers to add them to the Shopping Cart which appears at top left under <b>Explore Layers</b>.</p>
 
-      <p><img border=0 width=146 height=58 id="Picture 5" src="/static/cityfutures/img/user_guide/image001.png">&nbsp;<img border=0 width=146 height=58 id="Picture 6" src="/static/cityfutures/img/user_guide/image002.png"></p>
+    <p>Then click <b>Set Permissions</b> under the Shopping Cart to set permissions on the selected layers.</p>
 
-      <h5><a name="permissions-multi">Tip: set permissions on multiple layers</a></h5>
+    <h4><a name="uploading">Uploading a shapefile</a></h4>
 
-      <p>From the Layers page, click <img border=0 width=30 height=26 id="Picture 1" src="/static/cityfutures/img/user_guide/image003.jpg"> beside layers to add them to the Shopping Cart which appears at top left under ‘Explore Layers’.</p>
+    <p>When uploading a shapefile, you <i>must</i> upload at least four files: .dbf, .prj, .shp and .shx. If available, you should also upload the .xml file. Other files such as .sbn, .sbx, .cpg or .lyr are not used.</p>
 
-      <p>Then click ‘Set Permissions’ under the Shopping Cart to set permissions on the selected layers.</p>
+    <p>Here is an explanation of the relevant file types:</p>
 
-      <h4><a name="uploading">Uploading a shapefile</a></h4>
+    <table class='table table-bordered table-condensed'>
+      <thead>
+        <tr>
+          <th>Filename</th>
+          <th>Format</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><i>layer</i>.dbf</td>
+          <td>Dbase</td>
+          <td>Attribute table</td>
+        </tr>
+        <tr>
+          <td><i>layer</i>.prj</td>
+          <td>ASCII</td>
+          <td>Projection (coordinate reference system) details</td>
+        </tr>
+        <tr>
+          <td><i>layer</i>.shp</td>
+          <td>Binary</td>
+          <td>Geometry</td>
+        </tr>
+        <tr>
+          <td><i>layer</i>.shx</td>
+          <td>Binary</td>
+          <td>Spatial index to geometry</td>
+        </tr>
+        <tr>
+          <td><i>layer</i>.xml</td>
+          <td>XML</td>
+          <td>Metadata</td>
+        </tr>
+      </tbody>
+    </table>
 
-      <p>When uploading a shapefile, you <i>must</i> upload at least four files: .dbf, .prj, .shp and .shx. If available, you should also upload the .xml file. Other files such as .sbn, .sbx, .cpg or .lyr are not used.</p>
+    <h4><a name="attributes">Attribute names</a></h4>
 
-      <p>Here is an explanation of the relevant file types:</p>
+    <p>Attribute (column) names in shapefiles must start with a letter and are limited to 10 characters (letter, digits and underscore) only.</p>
 
+    <p><span class="text-danger">Warning:</span> Invalid column names will cause the uploader to hang with the message <b>Processing data, please wait…</b> If this occurs, you must fix the problem and rename your dataset (see <a href="#replacing">Replacing a layer</a>) before uploading again.</p>
+
+    <p>You can use the <b>Refactor fields</b> tool in QGIS to rename your attributes before uploading:</p>
+
+    <p><img border=0 width=293 height=125 id="Picture 3" src="/static/cityfutures/img/user_guide/image004.png"></p>
+
+    <p>After upload, you can use <b>Edit Layer &gt; Metadata &gt; Edit</b> (and scroll to the bottom of the metadata form) to label and describe any attributes that are not self-explanatory:</p>
+
+    <p><img class="img-responsive" border=0 width=459 height=79 id="Picture 4" src="/static/cityfutures/img/user_guide/image005.jpg"></p>
+
+    <h4><a name="metadata">Good metadata</a></h4>
+
+    <p>Metadata should describe a dataset so others can find it and use it with confidence. Not all available fields need to be completed; recommended fields are shown below. Mandatory fields are shown with an asterisk*.</p>
+
+    <div class="table-responsive">
       <table class='table table-bordered table-condensed'>
-    <thead>
-      <tr>
-        <th>Filename</th>
-        <th>Format</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><i>layer</i>.dbf</td>
-        <td>Dbase</td>
-        <td>Attribute table</td>
-      </tr>
-      <tr>
-        <td><i>layer</i>.prj</td>
-        <td>ASCII</td>
-        <td>Projection (coordinate reference system) details</td>
-      </tr>
-      <tr>
-        <td><i>layer</i>.shp</td>
-        <td>Binary</td>
-        <td>Geometry</td>
-      </tr>
-      <tr>
-        <td><i>layer</i>.shx</td>
-        <td>Binary</td>
-        <td>Spatial index to geometry</td>
-      </tr>
-      <tr>
-        <td><i>layer</i>.xml</td>
-        <td>XML</td>
-        <td>Metadata</td>
-      </tr>
-    </tbody>
-  </table>
-
-      <h4><a name="attributes">Attribute names</a></h4>
-
-      <p>Attribute (column) names in shapefiles must start with a letter and are limited to 10 characters (letter, digits and underscore) only.</p>
-
-      <p>Column names starting with a digit will cause the uploader to hang with the message ‘Processing data, please wait’.</p>
-
-      <p>You can use the “Refactor fields” tool in QGIS to rename your attributes before uploading:</p>
-
-      <p><img border=0 width=293 height=125 id="Picture 3" src="/static/cityfutures/img/user_guide/image004.png"></p>
-
-      <p>After upload, you can use ‘Edit Layer &gt; Metadata &gt; Edit’ (and scroll to the bottom of the metadata form) to label and describe any attributes that are not self-explanatory:</p>
-
-      <p><img class="img-responsive" border=0 width=459 height=79 id="Picture 4" src="/static/cityfutures/img/user_guide/image005.jpg"></p>
-
-      <h4><a name="metadata">Good metadata</a></h4>
-
-      <p>Metadata should describe a dataset so others can find it and use it with confidence. Not all available fields need to be completed; recommended fields are shown below. Mandatory fields are shown with an asterisk*.</p>
-    
-      <div class="table-responsive">
-        <table class='table table-bordered table-condensed'>
         <thead>
           <tr>
             <th>Field</th>
@@ -278,7 +265,11 @@ data.</p>
               Keywords*
             </td>
             <td>
-              Use project keywords only (or ‘test’). Type a character to see what’s available.
+              <p>Layers and other resources should be tagged with keywords to help others find them, just as you would add keywords when publishing a research paper.</p>
+              <p>Type a character to see what keywords are available. You can also add your own.</p>
+              <p>Keywords may be codes, acronyms, words or short phrases. Avoid using punctuation as this makes the keyword harder to remember.</p>
+              <p>Use a keyword for each project. This should match the name of the group for that project.</p>
+              <p>Additional keywords can be locally created or chosen from controlled vocabularies. See the <a href="http://guides.ands.org.au/rda-cpg/subject" target="_blank">Research Data Australia Content Providers Guide: Subject</a> for guidance on keywords and controlled vocabularies.</p>
             </td>
           </tr>
           <tr>
@@ -302,75 +293,119 @@ data.</p>
               Attributes
             </td>
             <td>
-              Label and describe any attributes that are not self-explanatory 
+              Label and describe any attributes that are not self-explanatory
             </td>
           </tr>
         </tbody>
       </table>
-      </div>
-    
-      <h4><a name="thumbnail">Setting a thumbnail image</a></h4>
+    </div>
 
-      <p>When you upload a layer, a thumbnail image showing a map of the layer (without any basemap) is created and displayed in the layers list. You can improve this thumbnail by including the basemap, and perhaps choosing a different scale or area to display:</p>
-      
-      <p>Adjust the map on your layer page, then click Edit Layer &gt; Thumbnail: Set</p>
-      
-      <p><span class="text-danger">Note:</span> Your browser caches images, so the thumbnail may not appear to change. Refresh the page with a ‘hard reload’ (Ctrl + Shift + R on Chrome, see <a href="https://www.getfilecloud.com/blog/2015/03/tech-tip-how-to-do-hard-refresh-in-browsers" target="_blank">instructions</a> for other browsers).</p>
+    <h4><a name="thumbnail">Setting a thumbnail image</a></h4>
 
+    <p>When you upload a layer, a thumbnail image showing a map of the layer (without any basemap) is created and displayed in the layers list. You can improve this thumbnail by including the basemap, and perhaps choosing a different scale or area to display:</p>
 
-      <h3><a name="replacing">Replacing a layer</a></h3>
+    <p>Adjust the map on your layer page, then click <b>Edit Layer &gt; Thumbnail: Set</b></p>
 
-      <p><span class="text-danger">Warning:</span> A bug in our version of GeoNode prevents replacing a layer (with Edit Layer &gt; Layer: Replace) or even re-uploading a shapefile that has been previously uploaded and then deleted.</p>
+    <p><span class="text-danger">Notes:</span></p>
+    <ul>
+      <li>Your browser caches images, so the thumbnail may not appear to change. Refresh the page with a ‘hard reload’ (Ctrl + Shift + R on Chrome, see <a href="https://www.getfilecloud.com/blog/2015/03/tech-tip-how-to-do-hard-refresh-in-browsers" target="_blank">instructions</a> for other browsers).</li>
+      <li>Please be patient, as larger datasets may take several minutes to display the first time. The system builds a tiled image cache for new layers, so subsequent rendering is virtually instantaneous.</li>
+    </ul>
 
-      <p>This will be fixed in the next version of GeoNode. In the meantime, please rename your shapefile on your computer before uploading again. You can do this in ArcMap or ArcCatalog, or using the DOS Command Window.</p>
+    <h3><a name="replacing">Replacing a layer</a></h3>
 
-      <p>To rename a group of files from Windows Explorer:</p>
-      <ol>
-        <li>Navigate to folder</li>
-        <li>Shift-Right-Click &gt; Open command window here</li>
-        <li>Type: <span style='font-size:
+    <p><span class="text-danger">Warning:</span> A bug in our version of GeoNode prevents replacing a layer (with <b>Edit Layer &gt; Layer: Replace</b>) or even re-uploading a shapefile that has been previously uploaded and then deleted.</p>
+
+    <p>This will be fixed in the next version of GeoNode. In the meantime, please rename your shapefile on your computer before uploading again. You can do this in ArcMap or ArcCatalog, or using the DOS Command Window.</p>
+
+    <p>To rename a group of files from Windows Explorer:</p>
+    <ol>
+      <li>Navigate to folder</li>
+      <li>Shift-Right-Click &gt; Open command window here</li>
+      <li>Type: <span style='font-size:
     10.0pt;font-family:"Monospac821 BT"'>rename &lt;oldname&gt;.* &lt;newname&gt;.*</span></li>
-        <li>Press Enter key</li>
-      </ol>
-      <h3><a name="more">More help</a></h3>
+      <li>Press Enter key</li>
+    </ol>
 
-      <p>For more help on the GeoNode features provided by CityData, see:
-      </p>
+    <h3><a name="trouble">Troubleshooting</a></h3>
 
-      <ul>
-        <li><a href="https://citydata-test.be.unsw.edu.au/help/">GeoNode Help</a></li>
+    <table class='table table-bordered table-condensed'>
+      <thead>
+        <tr>
+          <th>Problem</th>
+          <th>Possible solution</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Can’t login</td>
+          <td>
+            <p>Your username is not your email address, it is a short name you created specifically for CityData.</p>
+            <p>Your password is one you set yourself on first login.</p>
+            <p>If you can’t remember your username or password, try logging in with any details. This will display a page with links to <b>Forgot your username?</b> and <b>Forgot your password?</b> where you can enter your email address and have your username or a link to reset your password sent to you.</p>
+          </td>
+        </tr>
+        <tr>
+          <td>Data upload hangs with <b>Processing data, please wait…</b></td>
+          <td>
+            <p>The time taken to process data on upload is related to its size and data type. For example, a 64 MB polygon shapefile (SA2 for Australia) took less than 1 minute to process, while a 65 MB CSV file took 8 minutes. A 1.35 GB shapefile (NSW cadastre) took 59 minutes.</p>
+            <p>If you think the upload is taking too long, check that you have used valid attribute names (see <a href="#attributes">Attribute names</a>). If not, fix the problem and rename your shapefile before uploading again.</p>
 
-        <li><a href="http://geonode.org/user_features/" target="_blank">GeoNode User Features</a></li>
-      </ul>
+          </td>
+        </tr>
+        <tr>
+          <td>Data upload terminates with <b>Unexpected exception</b></td>
+          <td>Have you uploaded this dataset previously? If so, you must rename it before uploading again (see <a href="#replacing">Replacing a layer</a>).</td>
+        </tr>
+        <tr>
+          <td>Can’t set thumbnail image</td>
+          <td>After you set a thumbnail image for a layer or other resource, you must first clear your browser cache before your change will become visible in the Layers list (see <a href="#thumbnail">Setting a thumbnail image</a>).</td>
+        </tr>
+      </tbody>
+    </table>
 
-      <p>Or contact the <a href="mailto:citydata@unsw.edu.au">CityData
+    <h3><a name="more">More help</a></h3>
+
+    <p>For more help on the GeoNode features provided by CityData, see:
+    </p>
+
+    <ul>
+      <li><a href="https://citydata-test.be.unsw.edu.au/help/">GeoNode Help</a></li>
+
+      <li><a href="http://geonode.org/user_features/" target="_blank">GeoNode User Features</a></li>
+    </ul>
+
+    <p>If you are experiencing problems, first check Troubleshooting above. If this does not provide a solution, contact the <a href="mailto:citydata@unsw.edu.au">CityData
   administrator</a>.</p>
     {% endif %}
   </div>
   <div class="col-md-4">
     {% if user.is_authenticated %}
-      <div class="panel panel-default">
-        <div class="panel-body"><a href="/static/cityfutures/doc/CityData_User_Guide.pdf" target="_blank"><img src="/static/cityfutures/img/pdf_icon.png" width=24> View and print a PDF version of this user guide</a></div>
+    <div class="panel panel-default">
+      <div class="panel-body">
+        <a href="/static/cityfutures/doc/CityData_User_Guide.pdf" target="_blank"><img src="/static/cityfutures/img/pdf_icon.png" width=24> View and print a PDF version of this user guide</a>
       </div>
+    </div>
     {% endif %}
     <ul class="list-group">
-      <li class="list-group-item"><h5>{% trans "Sections" %}</h5></li>
+      <li class="list-group-item">
+        <h5>{% trans "Sections" %}</h5></li>
       <li class="list-group-item"><a href="#access">Accessing data on CityData</a></li>
       <li class="list-group-item"><a href="#when-to-load">When to load data to CityData</a></li>
       <li class="list-group-item"><a href="#request-account">Request an account</a></li>
       {% if user.is_authenticated %}
-        <li class="list-group-item"><a href="#groups">Groups</a></li>
-        <li class="list-group-item"><a href="#keywords">Keywords</a></li>
-        <li class="list-group-item"><a href="#admin">Administrator role</a></li>
-        <li class="list-group-item"><a href="#loading">Loading data</a></li>
-        <li class="list-group-item"><a href="#permissions">Set permissions</a></li>
-        <li class="list-group-item"><a href="#permissions-multi">Tip: set permissions on multiple layers</a></li>
-        <li class="list-group-item"><a href="#uploading">Uploading a shapefile</a></li>
-        <li class="list-group-item"><a href="#attributes">Attribute names</a></li>
-        <li class="list-group-item"><a href="#metadata">Good metadata</a></li>
-        <li class="list-group-item"><a href="#thumbnail">Setting a thumbnail image</a></li>
-        <li class="list-group-item"><a href="#replacing">Replacing a layer</a></li>
-        <li class="list-group-item"><a href="#more">More help</a></li>
+      <li class="list-group-item"><a href="#groups">Groups</a></li>
+      <li class="list-group-item"><a href="#admin">Administrator role</a></li>
+      <li class="list-group-item"><a href="#loading">Loading data</a></li>
+      <li class="list-group-item"><a href="#permissions">Set permissions</a></li>
+      <li class="list-group-item"><a href="#permissions-multi">Tip: set permissions on multiple layers</a></li>
+      <li class="list-group-item"><a href="#uploading">Uploading a shapefile</a></li>
+      <li class="list-group-item"><a href="#attributes">Attribute names</a></li>
+      <li class="list-group-item"><a href="#metadata">Good metadata</a></li>
+      <li class="list-group-item"><a href="#thumbnail">Setting a thumbnail image</a></li>
+      <li class="list-group-item"><a href="#replacing">Replacing a layer</a></li>
+      <li class="list-group-item"><a href="#trouble">Troubeshooting</a></li>
+      <li class="list-group-item"><a href="#more">More help</a></li>
       {% endif %}
     </ul>
   </div>
