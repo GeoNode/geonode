@@ -18,7 +18,7 @@ OpenLayers.Request.DEFAULT_CONFIG.headers = {
  */
 GeoExplorer.Viewer.prototype.loadConfig = function(config) {
     // remove the 3D Viewer which is broken 
-//    config.viewerTools.splice(10,1);
+    config.viewerTools.splice(10,1);
     
         config.viewerTools.push( {
             ptype: "gxp_getfeedfeatureinfo",
