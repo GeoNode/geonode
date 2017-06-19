@@ -342,6 +342,8 @@ class CollectorAPI(object):
         Returns metric data for given metric. Returned dataset contains list of periods and values in that periods
         """
         interval = interval or timedelta(minutes=1)
+        if not isinstance(interval, timedelta):
+            interval = timedelta(seconds=interval)
         now = datetime.now()
         valid_from = valid_from or (now - interval)
         valid_to = valid_to or now
@@ -398,7 +400,7 @@ class CollectorAPI(object):
         agg_f = self.get_aggregate_function(col, metric_name, service)
         has_agg = agg_f != col
 
-        q_select = ['select ml.name, {} as val'.format(agg_f)]
+        q_select = ['select ml.name as label, {} as val, count(1), min(mv.value_num), max(mv.value_num)'.format(agg_f)]
         if service:
             q_where.append('and mv.service_id = %(service_id)s')
             params['service_id'] = service.id
