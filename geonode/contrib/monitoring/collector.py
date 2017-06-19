@@ -373,7 +373,6 @@ class CollectorAPI(object):
         if not metric:
             raise ValueError("Invalid metric {}".format(metric_name))
         f = metric.get_aggregate_name()
-        print('agg', metric, f)
         if not f:
             return column_name
         return '{}({})'.format(f, column_name)

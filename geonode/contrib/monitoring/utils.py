@@ -254,4 +254,4 @@ class TypeChecks(object):
                 return MetricLabel.objects.get(name=val)
             except MetricLabel.DoesNotExist:
                 pass
-        raise ValuError("Invalid label value: {}".format(val))
+        raise ValueError("Invalid label value: {}".format(val))
