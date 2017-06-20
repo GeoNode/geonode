@@ -620,7 +620,7 @@
               url: '//{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
               layerOptions: {
                 subdomains: ['a', 'b', 'c'],
-                attribution: '&copy; <a href="//www.openstreetmap.org/copyright">OpenStreetMap</a>',
+                attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
                 continuousWorld: true
               }
             }
