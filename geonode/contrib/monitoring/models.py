@@ -334,8 +334,8 @@ class RequestEvent(models.Model):
         if not rd:
             log.warning("No request data payload in %s", request_data)
             return
-        if not rd.get('status') == 'FINISHED':
-            log.warning("request not finished %s", request_data)
+        if not rd.get('status') in ('FINISHED', 'FAILED',):
+            log.warning("request not finished %s", rd.get('status'))
             return
         received = received or datetime.now()
         ua = rd['remoteUserAgent']
@@ -379,6 +379,11 @@ class RequestEvent(models.Model):
         if not isinstance(resource_names, (list, tuple,)):
             resource_names = [resource_names]
         resources = cls._get_resources('layer', resource_names)
+        if rd.get('error'):
+            etype = rd['error']['class']
+            edata = '\n'.join(rd['error']['stackTrace']['trace'])
+            emessage = rd['error']['detailMessage']
+            ExceptionEvent.add_error(service, etype, edata, message=emessage, request=inst)
         if resources:
             inst.resources.add(*resources)
             inst.save()
@@ -390,18 +395,21 @@ class ExceptionEvent(models.Model):
     received = models.DateTimeField(db_index=True, null=False)
     service = models.ForeignKey(Service)
     error_type = models.CharField(max_length=255, null=False, db_index=True)
+    error_message = models.CharField(max_length=255, null=False, default='')
     error_data = models.TextField(null=False, default='')
     request = models.ForeignKey(RequestEvent, related_name='exceptions')
 
     @classmethod
-    def add_error(cls, from_service, error_type, stack_trace, request=None, created=None):
+    def add_error(cls, from_service, error_type, stack_trace, request=None, created=None, message=None):
         received = datetime.now()
         if not isinstance(error_type, types.StringTypes):
             _cls = error_type.__class__
             error_type = '{}.{}'.format(_cls.__module__, _cls.__name__)
-
+        if not message:
+            message = str(error_type)
         if isinstance(stack_trace, (list, tuple,)):
             stack_trace = ''.join(stack_trace)
+
         if not isinstance(created, datetime):
             created = received
         return cls.objects.create(created=created,
@@ -409,6 +417,7 @@ class ExceptionEvent(models.Model):
                                   service=from_service,
                                   error_type=error_type,
                                   error_data=stack_trace,
+                                  error_message=message or '',
                                   request=request)
     @property
     def url(self):
@@ -440,7 +449,7 @@ class MetricValue(models.Model):
     def __str__(self):
         metric = self.service_metric.metric.name
         if self.label:
-            metric = '{} [{}]'.format(metric, self.label.name)
+            metric = '{} [{}]'.format(metric, self.label.name.encode('utf-8'))
         if self.resource and self.resource.type:
             metric = '{} for {}'.format(metric, '{}={}'.format(self.resource.name, self.resource.type))
         return 'Metric Value: {}: {}[{}] (since {} until {})'.format(metric, self.value, self.value_num, self.valid_from, self.valid_to)
