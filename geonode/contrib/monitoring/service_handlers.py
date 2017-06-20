@@ -20,12 +20,12 @@
 
 import os
 import logging
-from datetime import datetime
+from datetime import datetime, timedelta
 
 import requests
 from pydash import services as pydash
 from geonode.contrib.monitoring.utils import GeoServerMonitorClient
-from geonode.contrib.monitoring.models import RequestEvent
+from geonode.contrib.monitoring.models import RequestEvent, ExceptionEvent
 
 log = logging.getLogger(__name__)
 
@@ -154,7 +154,13 @@ class GeoNodeServiceExpose(BaseServiceExpose):
 
     NAME = 'geonode'
     def expose(self, *args, **kwargs):
-        pass
+        data = {}
+        exceptions = []
+        since = datetime.now() - timedelta(minutes=10)
+        for e in ExceptionEvent.objects.filter(created__gte=since, service__service_type__name=self.NAME):
+            exceptions.append(e.expose())
+        data['exceptions'] = exceptions
+        return data
 
 
 class BaseServiceHandler(object):

@@ -883,7 +883,6 @@ def get_layer(request, layername):
         if isinstance(obj, decimal.Decimal):
             return float(obj)
         raise TypeError
-
     logger.debug('Call get layer')
     if request.method == 'GET':
         layer_obj = _resolve_layer(request, layername)

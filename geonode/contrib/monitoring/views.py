@@ -271,38 +271,11 @@ class ExceptionDataView(View):
         e = self.get_object(exception_id)
         if not e:
             return json_response(errors={'exception_id': "Object not found"}, status=404)
-        data = {'error_type': e.error_type,
-                'error_data': e.error_data,
-                'error_message': e.error_message,
-                'created': e.created,
-                'service': {'name': e.service.name,
-                            'type': e.service.service_type.name},
-                'request': {'request': {'created': e.request.created,
-                                        'method': e.request.request_method,
-                                        'path': e.request.request_path,
-                                        'host': e.request.host,
-                                        },
-                            'ows_service': e.request.ows_service,
-                            'resources': [{'name': str(r)} for r in e.request.resources.all()],
-                            'client': {'ip': e.request.client_ip,
-                                       'user_agent': e.request.user_agent,
-                                       'user_agent_family': e.request.user_agent_family,
-                                       'position': {'lat': e.request.client_lat,
-                                                    'lon': e.request.client_lon,
-                                                    'country': e.request.client_country,
-                                                    'city': e.request.client_city}
-                                       },
-                            'response': {'size': e.request.response_size,
-                                         'status': e.request.response_status,
-                                         'time': e.request.response_time,
-                                         'type': e.request.response_type}
-                           }
-               }
+        data = e.expose()
         return json_response(data)
 
 
 class BeaconView(View):
-    
 
     def get(self, request, *args, **kwargs):
         service = kwargs.get('exposed')
