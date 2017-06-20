@@ -28,7 +28,8 @@ services:
       - elasticsearch
       - rabbitmq
       - geoserver
-    command: django-admin.py runserver 0.0.0.0:8000 --settings=geonode.settings
+#    uncomment following line for production setup
+#    command: gunicorn geonode.wsgi --forwarded-allow-ips=* --workers=3 --bind=0.0.0.0 --worker-tmp-dir=/tmp --access-logfile=- --error-logfile=-
     ports:
       - "8000:8000"
     environment:

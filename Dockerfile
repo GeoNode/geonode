@@ -33,11 +33,13 @@ COPY package/docker/ /
 RUN pip install --upgrade pip \
 # python-gdal does not seem to work, let's install manually the version that is
 # compatible with the provided libgdal-dev
-    && pip install GDAL==1.10 --global-option=build_ext --global-option="-I/usr/include/gdal"
+    && pip install GDAL==1.10 --global-option=build_ext --global-option="-I/usr/include/gdal" \
+# install gunicorn for production setup
+    && pip install gunicorn
 
 EXPOSE 8000
 ENTRYPOINT ["/docker-entrypoint.sh"]
-CMD ["python", "manage.py", "runserver", "0.0.0.0:8000"]
+CMD ["django-admin.py", "runserver", "0.0.0.0:8000", "--settings=geonode.settings"]
 
 # Install geonode code and dependencies
 RUN mkdir -p /usr/src/app
