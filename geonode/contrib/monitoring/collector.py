@@ -383,12 +383,16 @@ class CollectorAPI(object):
         """
         Returns metric data for given metric. Returned dataset contains list of periods and values in that periods
         """
+        default_interval = False
         now = datetime.now()
+        if not interval:
+            default_interval = True
+            interval = timedelta(minutes=1)
         valid_from = valid_from or (now - interval)
         valid_to = valid_to or now
-        if not interval and (valid_to - valid_from).total_seconds() > 24*3600:
+        if (not interval or default_interval) and (valid_to - valid_from).total_seconds() > 24*3600:
+            default_interval = True
             interval = timedelta(seconds=3600)
-        interval = interval or timedelta(minutes=1)
         if not isinstance(interval, timedelta):
             interval = timedelta(seconds=interval)
 
