@@ -449,7 +449,10 @@ class MetricValue(models.Model):
     def __str__(self):
         metric = self.service_metric.metric.name
         if self.label:
-            metric = '{} [{}]'.format(metric, self.label.name.encode('utf-8'))
+            l = self.label.name
+            if isinstance(l, unicode):
+                l = l.encode('utf-8')
+            metric = '{} [{}]'.format(metric, l)
         if self.resource and self.resource.type:
             metric = '{} for {}'.format(metric, '{}={}'.format(self.resource.name, self.resource.type))
         return 'Metric Value: {}: {}[{}] (since {} until {})'.format(metric, self.value, self.value_num, self.valid_from, self.valid_to)
