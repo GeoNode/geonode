@@ -266,6 +266,7 @@ class ExceptionDataView(View):
             return json_response(errors={'exception_id': "Object not found"}, status=404)
         data = {'error_type': e.error_type,
                 'error_data': e.error_data,
+                'error_message': e.error_message,
                 'created': e.created,
                 'service': {'name': e.service.name,
                             'type': e.service.service_type.name},
