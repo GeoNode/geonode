@@ -18,6 +18,7 @@
 #
 #########################################################################
 
+from datetime import datetime
 from lxml import etree
 
 from django.core.urlresolvers import reverse
@@ -39,6 +40,8 @@ from geonode.base.populate_test_data import create_models
 from geonode.maps.tests_populate_maplayers import create_maplayers
 from geonode.tests.utils import NotificationsTestsHelper
 from geonode.maps import MapsAppConfig
+from django.contrib.auth.models import Group
+from geonode.base.models import License, Region
 
 
 VIEWER_CONFIG = """
@@ -636,6 +639,77 @@ community."
         fix_baselayers(map_id)
 
         self.assertEquals(map_obj.layer_set.all().count(), n_baselayers + n_locallayers)
+
+    def test_batch_edit(self):
+        Model = Map
+        view = 'map_batch_metadata'
+        resources = Model.objects.all()[:3]
+        ids = ','.join([str(element.pk) for element in resources])
+        # test non-admin access
+        self.client.login(username="bobby", password="bob")
+        response = self.client.get(reverse(view, args=(ids,)))
+        self.assertEquals(response.status_code, 401)
+        # test group change
+        group = Group.objects.first()
+        self.client.login(username='admin', password='admin')
+        response = self.client.post(
+            reverse(view, args=(ids,)),
+            data={'group': group.pk},
+        )
+        self.assertEquals(response.status_code, 302)
+        resources = Model.objects.filter(id__in=[r.pk for r in resources])
+        for resource in resources:
+            self.assertEquals(resource.group, group)
+        # test owner change
+        owner = get_user_model().objects.first()
+        response = self.client.post(
+            reverse(view, args=(ids,)),
+            data={'owner': owner.pk},
+        )
+        self.assertEquals(response.status_code, 302)
+        resources = Model.objects.filter(id__in=[r.pk for r in resources])
+        for resource in resources:
+            self.assertEquals(resource.owner, owner)
+        # test license change
+        license = License.objects.first()
+        response = self.client.post(
+            reverse(view, args=(ids,)),
+            data={'license': license.pk},
+        )
+        self.assertEquals(response.status_code, 302)
+        resources = Model.objects.filter(id__in=[r.pk for r in resources])
+        for resource in resources:
+            self.assertEquals(resource.license, license)
+        # test regions change
+        region = Region.objects.first()
+        response = self.client.post(
+            reverse(view, args=(ids,)),
+            data={'region': region.pk},
+        )
+        self.assertEquals(response.status_code, 302)
+        resources = Model.objects.filter(id__in=[r.pk for r in resources])
+        for resource in resources:
+            self.assertTrue(region in resource.regions.all())
+        # test date change
+        date = datetime.now()
+        response = self.client.post(
+            reverse(view, args=(ids,)),
+            data={'date': date},
+        )
+        self.assertEquals(response.status_code, 302)
+        resources = Model.objects.filter(id__in=[r.pk for r in resources])
+        for resource in resources:
+            self.assertEquals(resource.date, date)
+        # test language change
+        language = 'Non-existing'
+        response = self.client.post(
+            reverse(view, args=(ids,)),
+            data={'language': language},
+        )
+        self.assertEquals(response.status_code, 302)
+        resources = Model.objects.filter(id__in=[r.pk for r in resources])
+        for resource in resources:
+            self.assertEquals(resource.language, language)
 
 
 class MapModerationTestCase(TestCase):

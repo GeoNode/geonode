@@ -44,6 +44,7 @@ from geonode.documents.forms import DocumentForm, DocumentCreateForm, DocumentRe
 from geonode.documents.models import IMGTYPES
 from geonode.utils import build_social_links
 from geonode.groups.models import GroupProfile
+from geonode.base.utils import batch_modify
 
 ALLOWED_DOC_TYPES = settings.ALLOWED_DOCUMENT_TYPES
 
@@ -495,3 +496,8 @@ def document_metadata_detail(request, docid, template='documents/document_metada
         "resource": document,
         'SITEURL': settings.SITEURL[:-1]
     }))
+
+
+@login_required
+def document_batch_metadata(request, ids):
+    return batch_modify(request, ids, 'Document')

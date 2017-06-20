@@ -61,6 +61,7 @@ from geonode.documents.models import get_related_documents
 from geonode.people.forms import ProfileForm
 from geonode.utils import num_encode, num_decode
 from geonode.utils import build_social_links
+from geonode.base.utils import batch_modify
 import urlparse
 
 if 'geonode.geoserver' in settings.INSTALLED_APPS:
@@ -1026,3 +1027,8 @@ def map_metadata_detail(request, mapid, template='maps/map_metadata_detail.html'
         "resource": map_obj,
         'SITEURL': settings.SITEURL[:-1]
     }))
+
+
+@login_required
+def map_batch_metadata(request, ids):
+    return batch_modify(request, ids, 'Map')

@@ -35,6 +35,15 @@ from modeltranslation.admin import TranslationAdmin
 
 from geonode.base.models import (TopicCategory, SpatialRepresentationType, Region, RestrictionCodeType,
                                  ContactRole, Link, Backup, License, HierarchicalKeyword)
+from django.http import HttpResponseRedirect
+
+
+def metadata_batch_edit(modeladmin, request, queryset):
+    ids = ','.join([str(element.pk) for element in queryset])
+    resource = queryset[0].class_name.lower()
+    return HttpResponseRedirect('/{}s/metadata/batch/{}/'.format(resource, ids))
+
+metadata_batch_edit.short_description = 'Metadata batch edit'
 
 
 class MediaTranslationAdmin(TranslationAdmin):
