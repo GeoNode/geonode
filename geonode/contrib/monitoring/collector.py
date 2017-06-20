@@ -295,12 +295,12 @@ class CollectorAPI(object):
                     'valid_to': valid_to,
                     'resource': resource,
                     'ows_service': ows_service,
-                    'metric': 'response.errors',
+                    'metric': 'response.error.count',
                     'label': 'count',
                     'service': service}
         cnt = with_errors.count()
         print MetricValue.add(value=cnt, value_num=cnt, value_raw=cnt, **defaults)
-        defaults['metric'] = 'response.errors.types'
+        defaults['metric'] = 'response.error.types'
         for label in labels:
             cnt = with_errors.filter(exceptions__error_type=label).count()
             defaults['label'] = label
