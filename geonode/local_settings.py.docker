@@ -192,4 +192,4 @@ MAP_BASELAYERS = [{
 # For more information on available settings please consult the Django docs at
 # https://docs.djangoproject.com/en/dev/ref/settings
 # Handle by env vars
-#ALLOWED_HOSTS= [ 'localhost', '45.55.191.255', '45.55.174.20',  ]
+#ALLOWED_HOSTS= [ 'localhost',  ]
