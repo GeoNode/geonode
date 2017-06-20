@@ -29,7 +29,7 @@ from django.core.urlresolvers import reverse
 
 from geonode.utils import json_response
 from geonode.contrib.monitoring.collector import CollectorAPI
-from geonode.contrib.monitoring.models import Service, Host, Metric, ServiceTypeMetric, MetricLabel, MonitoredResource, ExceptionEvent
+from geonode.contrib.monitoring.models import Service, Host, Metric, ServiceTypeMetric, MetricLabel, MonitoredResource, ExceptionEvent, OWSService
 from geonode.contrib.monitoring.utils import TypeChecks
 from geonode.contrib.monitoring.service_handlers import exposes
 
@@ -194,6 +194,13 @@ class LabelsList(FilteredView):
             q = q.filter(metric_values__service_metric__in=sm)
         return q
 
+class OWSServiceList(FilteredView):
+
+    fields_map = (('name', 'name',),)
+    output_names = 'ows_services'
+
+    def get_queryset(self, **kwargs):
+        return OWSService.objects.all()
 
 class MetricDataView(View):
 
@@ -316,6 +323,7 @@ api_services = ServicesList.as_view()
 api_hosts = HostsList.as_view()
 api_labels = LabelsList.as_view()
 api_resources = ResourcesList.as_view()
+api_ows_services = OWSServiceList.as_view()
 api_metric_data = MetricDataView.as_view()
 api_exceptions = ExceptionsListView.as_view()
 api_exception = ExceptionDataView.as_view()
