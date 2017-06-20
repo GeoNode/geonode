@@ -274,7 +274,7 @@ class ExceptionDataView(View):
                                         'path': e.request.request_path,
                                         'host': e.request.host,
                                         },
-                            'ows_type': e.request.ows_type,
+                            'ows_service': e.request.ows_service,
                             'resources': [{'name': str(r)} for r in e.request.resources.all()],
                             'client': {'ip': e.request.client_ip,
                                        'user_agent': e.request.user_agent,
