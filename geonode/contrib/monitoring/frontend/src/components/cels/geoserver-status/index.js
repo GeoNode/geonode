@@ -1,10 +1,10 @@
-import React, { Component } from 'react';
+import React from 'react';
 import AverageCPU from '../../molecules/average-cpu';
 import AverageMemory from '../../molecules/average-memory';
 import styles from './styles';
 
 
-class GeoserverStatus extends Component {
+class GeoserverStatus extends React.Component {
   render() {
     return (
       <div style={styles.content}>

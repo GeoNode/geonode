@@ -1,9 +1,13 @@
-import React, { Component } from 'react';
+import React from 'react';
 import HoverPaper from '../../atoms/hover-paper';
 import styles from './styles';
 
 
-class TotalRequests extends Component {
+class TotalRequests extends React.Component {
+  static propTypes = {
+    requests: React.PropTypes.number.isRequired,
+  }
+
   render() {
     return (
       <HoverPaper style={styles.content}>
@@ -15,11 +19,6 @@ class TotalRequests extends Component {
     );
   }
 }
-
-
-TotalRequests.propTypes = {
-  requests: React.PropTypes.number.isRequired,
-};
 
 
 export default TotalRequests;

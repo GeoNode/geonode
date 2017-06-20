@@ -7,9 +7,9 @@ const localIdentName = '[path]___[name]__[local]___[hash:base64:5]';
 module.exports = {
   entry: ['./src/index'],
   output: {
-    path: path.join(__dirname, 'static'),
+    path: path.join(__dirname, '../static/monitoring'),
     filename: 'bundle.js',
-    publicPath: 'static/',
+    publicPath: '/static/monitoring/',
   },
   resolveLoader: {
     fallback: path.join(__dirname, 'node_modules'),

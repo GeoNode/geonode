@@ -2,7 +2,7 @@ import world from './world.svg';
 
 export default {
   content: {
-    minHeight: '35%',
+    height: '100%',
     backgroundImage: `url(${world})`,
     backgroundSize: '100% 100%',
   },

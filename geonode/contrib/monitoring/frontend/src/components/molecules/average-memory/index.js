@@ -1,9 +1,13 @@
-import React, { Component } from 'react';
+import React from 'react';
 import HoverPaper from '../../atoms/hover-paper';
 import styles from './styles';
 
 
-class AverageMemory extends Component {
+class AverageMemory extends React.Component {
+  static propTypes = {
+    memory: React.PropTypes.number.isRequired,
+  }
+
   render() {
     return (
       <HoverPaper style={styles.content}>
@@ -15,11 +19,6 @@ class AverageMemory extends Component {
     );
   }
 }
-
-
-AverageMemory.propTypes = {
-  memory: React.PropTypes.number.isRequired,
-};
 
 
 export default AverageMemory;

@@ -1,41 +1,23 @@
-import React, { Component } from 'react';
-import PropTypes from 'prop-types';
-import { connect } from 'react-redux';
-import { DragDropContext } from 'react-dnd';
+import React from 'react';
+import { DragDropContext as dndContext } from 'react-dnd';
 import HTML5Backend from 'react-dnd-html5-backend';
-import Home from '../../pages/home';
 import styles from './styles';
 
 
-const mapStateToProps = (/* state */) => ({
-});
-
-
-class Template extends Component {
+class Template extends React.Component {
   render() {
     return (
-      <div>
-        <div style={styles.content}>
-          <Home />
-        </div>
+      <div style={styles.content}>
+        {this.props.children}
       </div>
     );
   }
 }
 
+
 Template.propTypes = {
-  children: PropTypes.node,
-  dispatch: PropTypes.func.isRequired,
+  children: React.PropTypes.node,
 };
 
-Template.contextTypes = {
-  router: PropTypes.object.isRequired,
-  muiTheme: PropTypes.object.isRequired,
-};
 
-Template.defaultProps = {
-};
-
-// eslint-disable-next-line new-cap
-const TemplateDND = DragDropContext(HTML5Backend)(Template);
-export default connect(mapStateToProps)(TemplateDND);
+export default dndContext(HTML5Backend)(Template);
