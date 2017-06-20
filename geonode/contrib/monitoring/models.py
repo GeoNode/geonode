@@ -187,13 +187,23 @@ class OWSService(models.Model):
                             choices=OWS_TYPES, 
                             null=False, 
                             blank=False)
-    
+
+    def __str__(self):
+        return 'OWS Service: {}'.format(self.name)
+
     @classmethod
     def get(cls, service_name=None):
         if not service_name:
             return
         try:
-            return cls.objects.get(name=service_name)
+            q = models.Q(name=service_name)
+            try:
+                s = int(service_name)
+            except (ValueError, TypeError,):
+                s = None
+            if s:
+                q = q|models.Q(id=s)
+            return cls.objects.get(q)
         except cls.DoesNotExist:
             return
 
@@ -206,7 +216,7 @@ class RequestEvent(models.Model):
     service = models.ForeignKey(Service)
     ows_service = models.ForeignKey(OWSService, blank=True, null=True)
     host = models.CharField(max_length=255, blank=True, default='')
-    request_path = models.CharField(max_length=255, blank=False, default='')
+    request_path = models.TextField(blank=False, default='')
 
     # resources is a list of affected resources. it is buld as a pair of type and name:
     #  layer=geonode:sample_layer01
@@ -269,7 +279,7 @@ class RequestEvent(models.Model):
         if not isinstance(created, datetime):
             created = parse_datetime(created)
         _ended = rqmeta.get('finished', datetime.now())
-        duration = (_ended - created).microseconds
+        duration = ((_ended - created).microseconds)/1000.0
 
         ua = request.META['HTTP_USER_AGENT']
         ua_family = cls._get_ua_family(ua)
@@ -349,7 +359,7 @@ class RequestEvent(models.Model):
                 'host': rd['host'],
                 'ows_service': OWSService.get(rd.get('service')),
                 'service': service,
-                'request_path': rd['path'],
+                'request_path': '{}?{}'.format(rd['path'], rd['queryString']) if rd.get('queryString') else rd['path'],
                 'request_method': rd['httpMethod'],
                 'response_status': rd['responseStatus'],
                 'response_size': rl[0] if isinstance(rl, list) else rl,
@@ -365,7 +375,7 @@ class RequestEvent(models.Model):
                 'client_region': region,
                 'client_city': city}
         inst = cls.objects.create(**data)
-        resource_names = rd.get('resources', {}).get('string') or []
+        resource_names = (rd.get('resources') or {}).get('string') or []
         if not isinstance(resource_names, (list, tuple,)):
             resource_names = [resource_names]
         resources = cls._get_resources('layer', resource_names)
@@ -437,7 +447,9 @@ class MetricValue(models.Model):
 
     @classmethod
     def add(cls, metric, valid_from, valid_to, service, label,
-            value_raw=None, resource=None, value=None, value_num=None, data=None, ows_service=None):
+            value_raw=None, resource=None, 
+            value=None, value_num=None, 
+            data=None, ows_service=None):
         """
         Create new MetricValue shortcut
         """
@@ -445,6 +457,9 @@ class MetricValue(models.Model):
         service_metric = ServiceTypeMetric.objects.get(service_type=service.service_type, metric__name=metric)
 
         label, _ = MetricLabel.objects.get_or_create(name=label or 'count')
+        if ows_service:
+            if not isinstance(ows_service, OWSService):
+                ows_service = OWSService.get(ows_service)
         if not resource:
             resource, _ = MonitoredResource.objects.get_or_create(type=MonitoredResource.TYPE_EMPTY, name='')
         try:

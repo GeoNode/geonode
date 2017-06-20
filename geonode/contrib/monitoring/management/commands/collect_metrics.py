@@ -89,13 +89,13 @@ class Command(BaseCommand):
             c.clear_old_data()
 
     def run_check(self, service, collector, since=None, until=None, force_check=None, format=None):
-        print('checking', service.name, 'since', since, 'until', until )
         Handler = get_for_service(service.service_type.name)
 
         last_check = service.last_check
         now = datetime.now()
-        since = since or last_check or now - service.check_interval
+        since = since or last_check or (now - service.check_interval)
         until = until or now
+        print('checking', service.name, 'since', since, 'until', until )
         
         h = Handler(service, force_check=force_check)
         data_in = h.collect(since=since, until=until, format=format)

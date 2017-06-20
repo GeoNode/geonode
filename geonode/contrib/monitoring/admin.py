@@ -41,7 +41,7 @@ class MetricAdmin(admin.ModelAdmin):
 
 @admin.register(RequestEvent)
 class RequestEvent(admin.ModelAdmin):
-    list_display = ('host', 'request_method', 'request_path', 'response_status',)
+    list_display = ('service', 'created', 'request_method', 'request_path', 'response_status', 'ows_service', 'response_size', 'client_country',)
     list_filter = ('host', 'request_method', 'response_status', 'ows_service',)
 
 

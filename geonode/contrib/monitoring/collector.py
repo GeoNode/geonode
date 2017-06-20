@@ -224,6 +224,9 @@ class CollectorAPI(object):
         if metric.is_rate:
             sel = " 'value' as res, coalesce(avg({}), 0) as cnt".format(column_name)
             group_by = ''
+        elif metric.is_count:
+            sel = ' distinct {} as res, sum(count(1)) as cnt '.format(column_name)
+            group_by = 'group by {}'.format(column_name)
 
         elif metric.is_value:
             sel = ' distinct {} as res, count(1) as cnt '.format(column_name)
@@ -234,7 +237,7 @@ class CollectorAPI(object):
         if resource:
             _sql = ('select {} from monitoring_requestevent re '
                     'join monitoring_requestevent_resources mr on (mr.requestevent_id = re.id)'
-                    'where re.service_id = %s and re.created > %s and re.created < %s '
+                    'where re.service_id = %s and re.created >= %s and re.created < %s '
                     'and mr.monitoredresource_id = %s {} order by cnt desc '
                     'limit 100')
             args = (service.id, valid_from, valid_to, resource.id,)
@@ -380,14 +383,15 @@ class CollectorAPI(object):
         """
         Returns metric data for given metric. Returned dataset contains list of periods and values in that periods
         """
-        interval = interval or timedelta(minutes=1)
-        if not isinstance(interval, timedelta):
-            interval = timedelta(seconds=interval)
         now = datetime.now()
         valid_from = valid_from or (now - interval)
         valid_to = valid_to or now
-        if (valid_to - valid_from).total_seconds() > 24*3600:
+        if not interval and (valid_to - valid_from).total_seconds() > 24*3600:
             interval = timedelta(seconds=3600)
+        interval = interval or timedelta(minutes=1)
+        if not isinstance(interval, timedelta):
+            interval = timedelta(seconds=interval)
+
         out = {'metric': metric_name,
                'input_valid_from': valid_from,
                'input_valid_to': valid_to,
