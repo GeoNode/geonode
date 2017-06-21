@@ -46,6 +46,7 @@ urlpatterns = patterns(
     url(r'^(?P<layername>[^/]*)/metadata_detail$', 'layer_metadata_detail', name='layer_metadata_detail'),
     url(r'^(?P<layername>[^/]*)/metadata_upload$', 'layer_metadata_upload', name='layer_metadata_upload'),
     url(r'^(?P<layername>[^/]*)/feature_catalogue$', 'layer_feature_catalogue', name='layer_feature_catalogue'),
+    url(r'^metadata/batch/(?P<ids>[^/]*)/$', 'layer_batch_metadata', name='layer_batch_metadata'),
 
     # url(r'^api/batch_permissions/?$', 'batch_permissions',
     #    name='batch_permssions'),

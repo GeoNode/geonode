@@ -591,6 +591,36 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
                 a.append("("+self.license.url+")")
         return " ".join(a)
 
+    @property
+    def metadata_completeness(self):
+        required_fields = [
+            'abstract',
+            'category',
+            'data_quality_statement',
+            'date',
+            'date_type',
+            'language',
+            'license',
+            'regions',
+            'title']
+        if self.restriction_code_type == 'otherRestrictions':
+            required_fields.append('constraints_other')
+        filled_fields = []
+        for required_field in required_fields:
+            field = getattr(self, required_field, None)
+            if field:
+                if required_field is 'license':
+                    if field.name is 'Not Specified':
+                        continue
+                if required_field is 'regions':
+                    if not field.all():
+                        continue
+                if required_field is 'category':
+                    if not field.identifier:
+                        continue
+                filled_fields.append(field)
+        return '{}%'.format(len(filled_fields) * 100 / len(required_fields))
+
     def keyword_list(self):
         return [kw.name for kw in self.keywords.all()]
 

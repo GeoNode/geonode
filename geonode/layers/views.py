@@ -67,6 +67,7 @@ from geonode.documents.models import get_related_documents
 from geonode.utils import build_social_links
 from geonode.geoserver.helpers import cascading_delete, gs_catalog
 from geonode.geoserver.helpers import ogc_server_settings
+from geonode.base.utils import batch_modify
 
 from geonode.base.models import Thesaurus
 
@@ -921,3 +922,8 @@ def layer_metadata_upload(request, layername, template='layers/layer_metadata_up
         "layer": layer,
         'SITEURL': settings.SITEURL[:-1]
     }))
+
+
+@login_required
+def layer_batch_metadata(request, ids):
+    return batch_modify(request, ids, 'Layer')

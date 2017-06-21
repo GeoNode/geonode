@@ -21,6 +21,7 @@
 from django.contrib import admin
 from geonode.documents.models import Document
 from geonode.base.admin import MediaTranslationAdmin, ResourceBaseAdminForm
+from geonode.base.admin import metadata_batch_edit
 
 
 class DocumentAdminForm(ResourceBaseAdminForm):
@@ -40,6 +41,7 @@ class DocumentAdmin(MediaTranslationAdmin):
     search_fields = ('title', 'abstract', 'purpose',)
     date_hierarchy = 'date'
     form = DocumentAdminForm
+    actions = [metadata_batch_edit]
 
 
 admin.site.register(Document, DocumentAdmin)
