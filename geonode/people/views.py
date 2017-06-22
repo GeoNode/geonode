@@ -102,7 +102,7 @@ def forgot_username(request):
                 email_message = email_subject + " : " + username
                 send_email.delay(email_subject, email_message, settings.DEFAULT_FROM_EMAIL,
                                  [username_form.cleaned_data['email']], fail_silently=False)
-                message = _("Your username has been emailed to you.")
+                message = _("Your username has been emailed to you. If you do not receive it within a few minutes, check your Junk Email folder.")
             else:
                 message = _("No user could be found with that email address.")
 
