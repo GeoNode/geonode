@@ -18,7 +18,6 @@
 #
 #########################################################################
 
-import os
 import logging
 from datetime import datetime, timedelta
 
@@ -28,7 +27,6 @@ from geonode.contrib.monitoring.probes import get_probe
 from geonode.contrib.monitoring.models import RequestEvent, ExceptionEvent
 
 log = logging.getLogger(__name__)
-
 
 
 class BaseServiceExpose(object):
@@ -65,9 +63,8 @@ class HostGeoNodeServiceExpose(BaseServiceExpose):
         uname = probe.get_uname()
         data = {'uptime': uptime,
                 'uname': uname,
-                'network': [],
+                'load': load,
                 'disks': disk_info,
-                'cpu': {'load': load},
                 'network': probe.get_network(),
                 'memory': mem}
         return data
@@ -76,6 +73,7 @@ class HostGeoNodeServiceExpose(BaseServiceExpose):
 class GeoNodeServiceExpose(BaseServiceExpose):
 
     NAME = 'geonode'
+
     def expose(self, *args, **kwargs):
         data = {}
         exceptions = []
@@ -174,7 +172,7 @@ class HostGeoServerService(BaseServiceHandler):
 
 
 class HostGeoNodeService(BaseServiceHandler):
-    
+
     def _collect(self, since, until, *args, **kwargs):
         base_url = self.service.url
         if not base_url:
@@ -189,7 +187,6 @@ class HostGeoNodeService(BaseServiceHandler):
     def handle_collected(self, data, *args, **kwargs):
 
         return data
-        
 
 
 services = dict((c.get_name(), c,) for c in (GeoNodeService, GeoServerService, HostGeoNodeService,))
@@ -198,7 +195,9 @@ services = dict((c.get_name(), c,) for c in (GeoNodeService, GeoServerService, H
 def get_for_service(sname):
     return services[sname]
 
+
 exposes = dict((c.get_name(), c) for c in (GeoNodeServiceExpose, HostGeoNodeServiceExpose,))
+
 
 def exposes_for_service(sname):
     return exposes[sname]
