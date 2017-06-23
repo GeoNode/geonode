@@ -74,11 +74,8 @@ class CollectorAPI(object):
                                    service=service)\
                            .delete()
 
-        for iface in data['data']['network']:
-            ifname = iface['name']
-            for tx_label, tx_value in iface['traffic'].iteritems():
-                if tx_label not in ('in', 'out'):
-                    continue
+        for ifname, ifdata in data['data']['network'].iteritems():
+            for tx_label, tx_value in ifdata['traffic'].items():
                 mdata = {'value': tx_value,
                          'value_raw': tx_value,
                          'value_num': tx_value,
@@ -94,15 +91,15 @@ class CollectorAPI(object):
                     mdata['value_raw'] = rate
                     print MetricValue.add(**mdata)
 
-
-        ldata = data['data']['cpu']['load']
+        ldata = data['data']['load']
         llabel = ['1', '5', '15']
 
         memory_info = data['data']['memory']
         mkeys = [m.name[len('mem.'):] for m in service.get_metrics() if m.name.startswith('mem.')]
         for mkey in mkeys:
-            mdata = memory_info[mkey]
-
+            mdata = memory_info.get(mkey)
+            if not mdata:
+                continue
             mdata = {'value': mdata,
                      'value_raw': mdata,
                      'value_num': mdata,
@@ -124,8 +121,13 @@ class CollectorAPI(object):
                                    service=service)\
                            .delete()
 
-        for df in data['data']['disks']['df']:
-            dev, total, used, free, free_pct, mount = df
+        for df in data['data']['disks']:
+            dev = df['device']
+            total = df['total']
+            used = df['used']
+            free = df['free']
+            free_pct = df['percent']
+            mount = df['mountpoint']
             for metric, val in (('storage.total', total,),
                                 ('storage.used', used,),
                                 ('storage.free', free,),):
@@ -139,22 +141,23 @@ class CollectorAPI(object):
                 mdata.update(mdefaults)
                 print MetricValue.add(**mdata)
 
-        for lidx, l in enumerate(ldata):
-            mdata = {'value': l,
-                     'value_raw': l,
-                     'value_num': l,
-                     'metric': 'load.{}m'.format(llabel[lidx]),
-                     'label': 'Value',
-                     }
+        if ldata:
+            for lidx, l in enumerate(ldata):
+                mdata = {'value': l,
+                         'value_raw': l,
+                         'value_num': l,
+                         'metric': 'load.{}m'.format(llabel[lidx]),
+                         'label': 'Value',
+                         }
 
-            mdata.update(mdefaults)
-            MetricValue.objects.filter(service_metric__metric__name=mdata['metric'],
-                                       valid_from=mdata['valid_from'],
-                                       valid_to=mdata['valid_to'],
-                                       label__name='Value',
-                                       service=service)\
-                               .delete()
-            print MetricValue.add(**mdata)
+                mdata.update(mdefaults)
+                MetricValue.objects.filter(service_metric__metric__name=mdata['metric'],
+                                           valid_from=mdata['valid_from'],
+                                           valid_to=mdata['valid_to'],
+                                           label__name='Value',
+                                           service=service)\
+                                   .delete()
+                print MetricValue.add(**mdata)
 
     def get_labels_for_metric(self, metric_name, resource=None):
         mt = ServiceTypeMetric.objects.filter(metric__name=metric_name)
