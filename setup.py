@@ -140,7 +140,7 @@ setup(name='GeoNode',
         # "WeasyPrint",
         "user-agents",
         "xmljson",
-        'django-pydash-app',
+        'psutil',
         ],
       zip_safe=False,
       dependency_links=[

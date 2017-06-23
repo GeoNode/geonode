@@ -23,74 +23,12 @@ import logging
 from datetime import datetime, timedelta
 
 import requests
-from pydash import services as pydash
 from geonode.contrib.monitoring.utils import GeoServerMonitorClient
+from geonode.contrib.monitoring.probes import get_probe
 from geonode.contrib.monitoring.models import RequestEvent, ExceptionEvent
 
 log = logging.getLogger(__name__)
 
-
-
-
-def get_uptime():
-    """
-    Get uptime
-    """
-    try:
-        with open('/proc/uptime', 'r') as f:
-            data = float(f.readline().split()[0])
-    except Exception as err:
-        data = str(err)
-
-    return data
-
-
-def get_mem():
-    """
-    Get memory usage
-    """
-    try:
-        pipe = os.popen(
-            "free -tm | " + "tail -n 3 | head -n 1 | " + "awk '{print $2,$4,$6,$7}'")
-        data = pipe.read().strip().split()
-        pipe.close()
-        allmem = int(data[0])
-        freemem = int(data[1])
-        buffers = int(data[2])
-        # Memory in buffers + cached is actually available, so we count it
-        # as free. See http://www.linuxatemyram.com/ for details
-        freemem += buffers
-        percent = (100 - ((freemem * 100) / allmem))
-        usage = (allmem - freemem)
-
-        mem_usage = {'all': allmem,
-                     'usage': usage,
-                     'buffers': buffers,
-                     'free': freemem,
-                     'percent': percent}
-        data = mem_usage
-
-    except Exception as err:
-        data = str(err)
-    return data
-
-
-def get_disk():
-    """
-    Get disk usage
-    """
-    try:
-        pipe = os.popen(
-            "df -P | tail -n +2 | awk '{print $1, $2, $3, $4, $5, $6}'")
-        data = pipe.read().strip().split('\n')
-        pipe.close()
-
-        data = [i.split(None, 6) for i in data]
-
-    except Exception as err:
-        data = str(err)
-
-    return data
 
 
 class BaseServiceExpose(object):
@@ -119,34 +57,19 @@ class HostGeoNodeServiceExpose(BaseServiceExpose):
     NAME = 'hostgeonode'
 
     def expose(self, *args, **kwargs):
-        uptime = get_uptime()
-        ips = pydash.get_ipaddress()
-        df = get_disk()
-        io = pydash.get_disk_rw()
-        cpu = pydash.get_cpu_usage()
-        try:
-            load = os.getloadavg()
-        except (AttributeError, OSError,):
-            load = []
-        mem = get_mem()
-
+        probe = get_probe()
+        uptime = probe.get_uptime()
+        disk_info = probe.get_disk()
+        load = probe.get_loadavg()
+        mem = probe.get_mem()
+        uname = probe.get_uname()
         data = {'uptime': uptime,
+                'uname': uname,
                 'network': [],
-                'disks': {'df': df,
-                          'io': io},
-                'cpu': {'usage': cpu,
-                        'load': load},
+                'disks': disk_info,
+                'cpu': {'load': load},
+                'network': probe.get_network(),
                 'memory': mem}
-        for ipidx, ip in enumerate(ips['interface']):
-            # let's make nicer data structure here
-            tx_data = pydash.get_traffic(ip)
-            tx = {'in': tx_data['traffic_in'],
-                  'out': tx_data['traffic_out']}
-
-            data['network'].append({'ip': ips['itfip'][ipidx][2],
-                                    'mac': ips['itfip'][ipidx][1],
-                                    'name': ip,
-                                    'traffic': tx})
         return data
 
 

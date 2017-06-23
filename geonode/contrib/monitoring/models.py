@@ -47,6 +47,9 @@ geoip = GeoIP()
 
 
 class Host(models.Model):
+    """
+    Describes one physical instance
+    """
     name = models.CharField(max_length=255, unique=True, blank=False, null=False)
     ip = models.GenericIPAddressField(null=False, blank=False)
     active = models.BooleanField(null=False, blank=False, default=True)
@@ -56,6 +59,9 @@ class Host(models.Model):
 
 
 class ServiceType(models.Model):
+    """
+    Service Type list
+    """
     TYPE_GEONODE = 'geonode'
     TYPE_GEOSERVER = 'geoserver'
     TYPE_HOST_GN = 'hostgeonode'
@@ -77,6 +83,9 @@ class ServiceType(models.Model):
 
 
 class Service(models.Model):
+    """
+    Service is a entity describing deployed processes. 
+    """
     name = models.CharField(max_length=255, unique=True, blank=False, null=False)
     host = models.ForeignKey(Host, null=False)
     check_interval = models.DurationField(null=False, blank=False, default=timedelta(seconds=60))
