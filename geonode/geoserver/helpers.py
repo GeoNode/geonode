@@ -830,9 +830,10 @@ def set_styles(layer, gs_catalog):
     style_set = []
     gs_layer = gs_catalog.get_layer(layer.name)
     default_style = gs_layer.default_style
-    layer.default_style = save_style(default_style)
-    # FIXME: This should remove styles that are no longer valid
-    style_set.append(layer.default_style)
+    if default_style:
+        layer.default_style = save_style(default_style)
+        # FIXME: This should remove styles that are no longer valid
+        style_set.append(layer.default_style)
 
     alt_styles = gs_layer.styles
 
