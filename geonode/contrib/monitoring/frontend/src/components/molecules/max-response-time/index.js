@@ -1,9 +1,13 @@
-import React, { Component } from 'react';
+import React from 'react';
 import HoverPaper from '../../atoms/hover-paper';
 import styles from './styles';
 
 
-class MaxResponseTime extends Component {
+class MaxResponseTime extends React.Component {
+  static propTypes = {
+    time: React.PropTypes.number.isRequired,
+  }
+
   render() {
     return (
       <HoverPaper style={styles.content}>
@@ -15,11 +19,6 @@ class MaxResponseTime extends Component {
     );
   }
 }
-
-
-MaxResponseTime.propTypes = {
-  time: React.PropTypes.number.isRequired,
-};
 
 
 export default MaxResponseTime;

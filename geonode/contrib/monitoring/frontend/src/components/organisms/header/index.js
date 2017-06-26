@@ -1,19 +1,37 @@
-import React, { Component } from 'react';
+import React from 'react';
 import RaisedButton from 'material-ui/RaisedButton';
 import AutorefreshIcon from 'material-ui/svg-icons/action/autorenew';
+import Back from 'material-ui/svg-icons/image/navigate-before';
 import styles from './styles';
 
 
-class Header extends Component {
+class Header extends React.Component {
+  static contextTypes = {
+    router: React.PropTypes.object.isRequired,
+  }
+
+  constructor(props) {
+    super(props);
+    this.handleBack = () => {
+      this.context.router.goBack();
+    };
+  }
+
   render() {
     return (
       <div style={styles.content}>
         <div style={styles.item}>
+          <RaisedButton
+            style={styles.time}
+            icon={<Back />}
+            onClick={this.handleBack}
+          />
           <span style={styles.interval}>Latest:</span>
           <RaisedButton
             style={styles.time}
             labelStyle={styles.timeLabel}
             label="10 min"
+            disabled
           />
           <RaisedButton
             style={styles.time}
@@ -32,8 +50,8 @@ class Header extends Component {
           />
         </div>
         <div style={styles.item}>
-          from: <span style={styles.timestamp}>05/29/2017 12:05:00</span>
-          to: <span style={styles.timestamp}>05/29/2017 12:15:00</span>
+          from:&nbsp;<span style={styles.timestamp}>05/29/2017 12:05:00</span>&nbsp;
+          to:&nbsp;<span style={styles.timestamp}>05/29/2017 12:15:00</span>
         </div>
         <RaisedButton
           label="Auto Refresh"

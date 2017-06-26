@@ -13,6 +13,7 @@ export default {
   },
 
   interval: {
+    marginLeft: 10,
     marginRight: 10,
   },
 
@@ -37,7 +38,5 @@ export default {
 
   timestamp: {
     fontWeight: 'bold',
-    marginLeft: 5,
-    marginRight: 5,
   },
 };

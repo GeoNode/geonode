@@ -1,10 +1,10 @@
-import React, { Component } from 'react';
+import React from 'react';
 import HoverPaper from '../../atoms/hover-paper';
 import X from 'material-ui/svg-icons/content/clear';
 import styles from './styles';
 
 
-class HealthCheck extends Component {
+class HealthCheck extends React.Component {
   render() {
     const style = {
       ...styles.content,

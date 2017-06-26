@@ -24,12 +24,19 @@ from django.shortcuts import render
 
 from django import forms
 from django.views.generic.base import View
-from django.utils.decorators import method_decorator
 from django.core.urlresolvers import reverse
 
 from geonode.utils import json_response
 from geonode.contrib.monitoring.collector import CollectorAPI
-from geonode.contrib.monitoring.models import Service, Host, Metric, ServiceTypeMetric, MetricLabel, MonitoredResource, ExceptionEvent, OWSService
+from geonode.contrib.monitoring.models import (
+    Service,
+    Host,
+    ServiceTypeMetric,
+    MetricLabel,
+    MonitoredResource,
+    ExceptionEvent,
+    OWSService,
+)
 from geonode.contrib.monitoring.utils import TypeChecks
 from geonode.contrib.monitoring.service_handlers import exposes
 
@@ -39,10 +46,10 @@ capi = CollectorAPI()
 
 
 class MetricsList(View):
-    
+
     def get(self, *args, **kwargs):
         _metrics = capi.get_metric_names()
-        out = [] 
+        out = []
         for srv, mlist in _metrics:
             out.append({'service': srv.name,
                         'metrics': [{'name': m.name, 'type': m.type} for m in mlist]})
@@ -50,7 +57,7 @@ class MetricsList(View):
 
 
 class ServicesList(View):
-    
+
     def get_queryset(self):
         return Service.objects.all().select_related()
 
@@ -58,8 +65,8 @@ class ServicesList(View):
         q = self.get_queryset()
         out = []
         for item in q:
-            out.append({'name': item.name, 
-                        'host': item.host.name, 
+            out.append({'name': item.name,
+                        'host': item.host.name,
                         'check_interval': item.check_interval.total_seconds(),
                         'last_check': item.last_check})
 
@@ -67,7 +74,7 @@ class ServicesList(View):
 
 
 class HostsList(View):
-    
+
     def get_queryset(self):
         return Host.objects.all().select_related()
 
@@ -118,6 +125,7 @@ class MetricsFilters(CheckTypeForm):
     def clean_ows_service(self):
         return self._check_type('ows_service')
 
+
 class LabelsFilterForm(CheckTypeForm):
     metric_name = forms.CharField(required=False)
 
@@ -127,10 +135,9 @@ class LabelsFilterForm(CheckTypeForm):
 
 class ResourcesFilterForm(LabelsFilterForm):
     resource_type = forms.CharField(required=False)
-    
+
     def clean_resource_type(self):
         return self._check_type('resource_type')
-
 
 
 class FilteredView(View):
@@ -139,8 +146,8 @@ class FilteredView(View):
 
     # iterable of pairs (from model field, to key name) to map
     # fields from model to elements of output data
-    fields_map = tuple()    
-  
+    fields_map = tuple()
+
     # key name for output ({output_name: data})
     output_name = None
 
@@ -194,6 +201,7 @@ class LabelsList(FilteredView):
             q = q.filter(metric_values__service_metric__in=sm)
         return q
 
+
 class OWSServiceList(FilteredView):
 
     fields_map = (('name', 'name',),)
@@ -201,6 +209,7 @@ class OWSServiceList(FilteredView):
 
     def get_queryset(self, **kwargs):
         return OWSService.objects.all()
+
 
 class MetricDataView(View):
 
@@ -213,13 +222,14 @@ class MetricDataView(View):
         else:
             print(f.errors)
         return out
-        
+
     def get(self, *args, **kwargs):
-        #def get_metrics_for(self, metric_name, valid_from=None, valid_to=None, interval=None, service=None, label=None, resource=None):
+        # def get_metrics_for(self, metric_name, valid_from=None, valid_to=None, interval=None, service=None, label=None, resource=None):
         filters = self.get_filters(**kwargs)
         metric_name = kwargs['metric_name']
         out = capi.get_metrics_for(metric_name, **filters)
         return json_response({'data': out})
+
 
 class ExceptionsListForm(CheckTypeForm):
     error_type = forms.CharField(required=False)
@@ -233,6 +243,7 @@ class ExceptionsListForm(CheckTypeForm):
 
     def clean_service(self):
         return self._check_type('service')
+
 
 class ExceptionsListView(FilteredView):
     filter_form = ExceptionsListForm
@@ -257,16 +268,16 @@ class ExceptionsListView(FilteredView):
             q = q.filter(request__resources__in=(resource,))
 
         return q
-    
+
 
 class ExceptionDataView(View):
-    
+
     def get_object(self, exception_id):
         try:
             return ExceptionEvent.objects.get(id=exception_id)
         except ExceptionEvent.DoesNotExist:
             return
-    
+
     def get(self, request, exception_id, *args, **kwargs):
         e = self.get_object(exception_id)
         if not e:
@@ -289,6 +300,10 @@ class BeaconView(View):
         out = {'data': ex.expose(),
                'timestamp': datetime.now()}
         return json_response(out)
+
+
+def index(request):
+    return render(request, 'monitoring/index.html')
 
 
 api_metrics = MetricsList.as_view()

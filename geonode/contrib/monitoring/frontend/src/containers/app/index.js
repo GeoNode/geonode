@@ -1,28 +1,26 @@
-import React, { Component } from 'react';
-import PropTypes from 'prop-types';
-import Snackbar from 'material-ui/Snackbar';
+import React from 'react';
+import { connect } from 'react-redux';
+import { Style } from 'radium';
+import Template from '../../templates/default';
+import Home from '../../pages/home';
+import SWPerf from '../../pages/swperf';
+import HWPerf from '../../pages/hwperf';
 import reset from '../../reset.js';
 import fonts from '../../fonts/fonts.js';
-import { connect } from 'react-redux';
 import actions from './actions';
-import { Style } from 'radium';
-
-const mapStateToProps = (state) => ({
-  notifications: state.notifications.notifications,
-  notificationsOpen: state.notifications.open,
-  socketUrl: state.backend.socketUrl,
-});
 
 
-class App extends Component {
-  componentWillMount() {
-    // eslint-disable-next-line no-undef
-    const hostname = window.location.hostname;
-    this.props.setBackendUrl(hostname);
+const mapStateToProps = (/* state */) => ({});
+
+
+@connect(mapStateToProps, actions)
+class App extends React.Component {
+  static propTypes = {
+    children: React.PropTypes.node,
   }
 
-  handleNotificationClose() {
-    this.props.close();
+  static childContextTypes = {
+    socket: React.PropTypes.object,
   }
 
   render() {
@@ -31,31 +29,35 @@ class App extends Component {
         <Style rules={fonts} />
         <Style rules={reset} />
         {this.props.children}
-        <Snackbar
-          open={this.props.notificationsOpen}
-          message={this.props.notifications}
-          autoHideDuration={5000}
-          action="close"
-          onActionTouchTap={this.handleNotificationClose}
-          onRequestClose={this.handleNotificationClose}
-        />
       </div>
     );
   }
 }
 
 
-App.propTypes = {
-  children: PropTypes.node,
-  notifications: PropTypes.node,
-  notificationsOpen: PropTypes.bool,
-  close: PropTypes.func.isRequired,
-  setBackendUrl: PropTypes.func.isRequired,
+export default {
+  component: App,
+  childRoutes: [
+    {
+      path: '/',
+      component: Template,
+      indexRoute: {
+        component: Home,
+      },
+      childRoutes: [
+        {
+          path: 'performance/software',
+          indexRoute: {
+            component: SWPerf,
+          },
+        },
+        {
+          path: 'performance/hardware',
+          indexRoute: {
+            component: HWPerf,
+          },
+        },
+      ],
+    },
+  ],
 };
-
-App.childContextTypes = {
-  socket: PropTypes.object,
-};
-
-
-export default connect(mapStateToProps, actions)(App);

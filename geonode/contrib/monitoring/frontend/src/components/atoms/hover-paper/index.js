@@ -1,8 +1,8 @@
-import React, { Component } from 'react';
+import React from 'react';
 import Paper from 'material-ui/Paper';
 
 
-class HoverPaper extends Component {
+class HoverPaper extends React.Component {
   constructor(props) {
     super(props);
 

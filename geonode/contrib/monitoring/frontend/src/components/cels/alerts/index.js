@@ -1,9 +1,13 @@
-import React, { Component } from 'react';
+import React from 'react';
 import HoverPaper from '../../atoms/hover-paper';
 import styles from './styles';
 
 
-class Alerts extends Component {
+class Alerts extends React.Component {
+  static propTypes = {
+    style: React.PropTypes.object,
+  }
+
   render() {
     const style = {
       ...styles.content,
@@ -17,11 +21,6 @@ class Alerts extends Component {
     );
   }
 }
-
-
-Alerts.propTypes = {
-  style: React.PropTypes.object,
-};
 
 
 export default Alerts;
