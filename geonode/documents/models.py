@@ -50,11 +50,6 @@ class Document(ResourceBase):
     A document is any kind of information that can be attached to a map such as pdf, images, videos, xls...
     """
 
-    # Relation to the resource model
-    content_type = models.ForeignKey(ContentType, blank=True, null=True)
-    object_id = models.PositiveIntegerField(blank=True, null=True)
-    resource = generic.GenericForeignKey('content_type', 'object_id')
-
     doc_file = models.FileField(upload_to='documents',
                                 null=True,
                                 blank=True,
@@ -142,12 +137,31 @@ class Document(ResourceBase):
         pass
 
 
+class DocumentResourceLink(models.Model):
+
+    # relation to the document model
+    document = models.ForeignKey(Document, related_name='links')
+
+    # relation to the resource model
+    content_type = models.ForeignKey(ContentType)
+    object_id = models.PositiveIntegerField()
+    resource = generic.GenericForeignKey('content_type', 'object_id')
+
+
 def get_related_documents(resource):
     if isinstance(resource, Layer) or isinstance(resource, Map):
-        ct = ContentType.objects.get_for_model(resource)
-        return Document.objects.filter(content_type=ct, object_id=resource.pk)
+        content_type = ContentType.objects.get_for_model(resource)
+        return Document.objects.filter(links__content_type=content_type,
+                                       links__object_id=resource.pk)
     else:
         return None
+
+
+def get_related_resources(document):
+    return [
+        link.content_type.get_object_for_this_type(id=link.object_id)
+        for link in document.links.all()
+    ]
 
 
 def pre_save_document(instance, sender, **kwargs):
@@ -178,13 +192,13 @@ def pre_save_document(instance, sender, **kwargs):
     if instance.title == '' or instance.title is None:
         instance.title = instance.doc_file.name
 
-    if instance.resource:
-        instance.csw_wkt_geometry = instance.resource.geographic_bounding_box.split(
-            ';')[-1]
-        instance.bbox_x0 = instance.resource.bbox_x0
-        instance.bbox_x1 = instance.resource.bbox_x1
-        instance.bbox_y0 = instance.resource.bbox_y0
-        instance.bbox_y1 = instance.resource.bbox_y1
+    resources = get_related_resources(instance)
+
+    if resources:
+        instance.bbox_x0 = min([r.bbox_x0 for r in resources])
+        instance.bbox_x1 = max([r.bbox_x1 for r in resources])
+        instance.bbox_y0 = min([r.bbox_y0 for r in resources])
+        instance.bbox_y1 = max([r.bbox_y1 for r in resources])
     else:
         instance.bbox_x0 = -180
         instance.bbox_x1 = 180
@@ -229,10 +243,10 @@ def create_thumbnail(sender, instance, created, **kwargs):
 
 
 def update_documents_extent(sender, **kwargs):
-    model = 'map' if isinstance(sender, Map) else 'layer'
-    ctype = ContentType.objects.get(model=model)
-    for document in Document.objects.filter(content_type=ctype, object_id=sender.id):
-        document.save()
+    documents = get_related_documents(sender)
+    if documents:
+        for document in documents:
+            document.save()
 
 
 def pre_delete_document(instance, sender, **kwargs):
