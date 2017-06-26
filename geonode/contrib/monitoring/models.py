@@ -507,7 +507,10 @@ class MetricValue(models.Model):
         Create new MetricValue shortcut
         """
 
-        service_metric = ServiceTypeMetric.objects.get(service_type=service.service_type, metric__name=metric)
+        if isinstance(metric, Metric):
+            service_metric = ServiceTypeMetric.objects.get(service_type=service.service_type, metric=metric)
+        else:
+            service_metric = ServiceTypeMetric.objects.get(service_type=service.service_type, metric__name=metric)
 
         label, _ = MetricLabel.objects.get_or_create(name=label or 'count')
         if ows_service:
@@ -541,6 +544,98 @@ class MetricValue(models.Model):
                                   value_raw=value_raw,
                                   value_num=value_num,
                                   data=data or {})
+
+    @classmethod
+    def get_for(cls, metric, service=None, valid_on=None):
+        qparams = models.Q()
+        if isinstance(metric, Metric):
+            qparams = qparams & models.Q(service_metric__metric = metric)
+        else:
+            qparams = qparams & models.Q(service_metric__metric__name = metric)
+        if service:
+            if isinstance(service, Service):
+                qparams = qparams & models.Q(service_metric__service_type = service.service_type)
+            elif isinstance(service, ServiceType):
+                qparams = qparams & models.Q(service_metric__service_type = service)
+            else:
+                qparams = qparams & models.Q(service_metric__service_type__name = service)
+
+        if valid_on:
+            qwhen = models.Q(valid_from__lte=valid_on) & models.Q(valid_to__gte=valid_on)
+            qparams = qparams & qwhen
+        q = cls.objects.filter(qparams)
+        return q
+
+
+class NotificationCheck(models.Model):
+    name = models.CharField(max_length=255, null=False, blank=False, unique=True)
+    description = models.CharField(max_length=255, null=False, blank=False)
+    user_threshold = JSONField(default={}, null=False, blank=False, help_text=_("Threshold definition"))
+
+
+class MetricNotificationCheck(models.Model):
+    notification_check = models.ForeignKey(NotificationCheck, related_name="checks")
+    metric = models.ForeignKey(Metric, related_name="checks")
+    service = models.ForeignKey(Service, related_name="checks")
+    min_value = models.DecimalField(max_digits=16, decimal_places=4, null=True, default=None, blank=True)
+    max_value = models.DecimalField(max_digits=16, decimal_places=4, null=True, default=None, blank=True)
+    max_timeout = models.DurationField(null=True, blank=True, help_text=_("Max timeout for given metric before error should be raised"))
+    active = models.BooleanField(default=True, null=False, blank=False)
+
+    def __str__(self):
+        indicator = []
+        if self.min_value is not None:
+            indicator.append("value above {}".format(self.min_value))
+        if self.max_value is not None:
+            indicator.append("value below {}".format(self.max_value))
+        if self.max_timeout is not None:
+            indicator.append("value must be collected within {}".format(self.max_timeout))
+        indicator = ' and '.join(indicator)
+        return "MetricCheck({}@{}: {})".format(self.metric.name, self.service.name, indicator)
+
+    class MetricValueError(ValueError):
+        def __init__(self, metric, check, message):
+            self.metric = metric
+            self.check = check
+            self.message = message
+
+        def __str__(self):
+            return "MetricValueError(metric {} misses {} check: {})".format(self.metric, self.check, self.message)
+
+    def check_value(self, metric, valid_on):
+        """
+        Check specific metric if it's faulty or not.
+        """
+        v = metric.value_num
+        had_check = False
+        if self.min_value is not None:
+            had_check = True
+            if v < self.min_value:
+               raise self.MetricValueError(metric, self, "Value too low")
+        if self.max_value is not None:
+            had_check = True
+            if v > self.max_value:
+                raise self.MetricValueError(metric, self, "Value too high")
+
+        if self.max_timeout is not None:
+            had_check = True
+            if (valid_on - metric.created) > self.max_timeout:
+                raise self.MetricValueError(metric, self, "Value collected too far in the past")
+        if not had_check:
+            raise ValueError("Metric check {} is not checking anything".format(self))
+
+    def check_metric(self, for_timestamp=None):
+        """
+        
+        """
+        if not for_timestamp:
+            for_timestamp = datetime.now()
+        metrics = MetricValue.get_for(metric=self.metric, service=self.service, valid_on=for_timestamp)
+        if not metrics:
+            raise ValueError("Cannot find metric values for {}/{} on {}".format(self.metric, self.service, for_timestamp))
+        for m in metrics:
+            self.check_value(m, for_timestamp)
+        return True
 
 
 class BuiltIns(object):

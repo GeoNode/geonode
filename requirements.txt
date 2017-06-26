@@ -76,3 +76,6 @@ django-treebeard==3.0
 django-geonode-client==0.0.15
 xlrd==1.0.0
 redis==2.10.5
+user-agents
+xmljson
+psutil
