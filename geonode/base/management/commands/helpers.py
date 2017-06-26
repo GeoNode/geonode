@@ -42,6 +42,7 @@ STATIC_ROOT = 'static_root'
 STATICFILES_DIRS = 'static_dirs'
 TEMPLATE_DIRS = 'template_dirs'
 LOCALE_PATHS = 'locale_dirs'
+EXTERNAL_ROOT = 'external'
 
 
 class Config(object):
