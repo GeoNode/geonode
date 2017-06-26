@@ -21,6 +21,7 @@ from datetime import datetime, timedelta
 
 from xml.etree.ElementTree import fromstring
 import xmljson
+from django.conf import settings
 from django.test import TestCase
 from django.contrib.auth import get_user_model
 from django.core.urlresolvers import reverse
@@ -1594,7 +1595,7 @@ class RequestsTestCase(TestCase):
 
         self.host = Host.objects.create(name='localhost', ip='127.0.0.1')
         self.service_type = ServiceType.objects.get(name=ServiceType.TYPE_GEONODE)
-        self.service = Service.objects.create(name='geonode', host=self.host, service_type=self.service_type)
+        self.service = Service.objects.create(name=settings.MONITORING_SERVICE_NAME, host=self.host, service_type=self.service_type)
 
     def test_gs_req(self):
         """
@@ -1706,7 +1707,7 @@ class MonitoringChecksTestCase(TestCase):
         populate()
         self.host = Host.objects.create(name='localhost', ip='127.0.0.1')
         self.service_type = ServiceType.objects.get(name=ServiceType.TYPE_GEONODE)
-        self.service = Service.objects.create(name='geonode', host=self.host, service_type=self.service_type)
+        self.service = Service.objects.create(name=settings.MONITORING_SERVICE_NAME, host=self.host, service_type=self.service_type)
         self.metric = Metric.objects.get(name='request.count')
 
     def test_monitoring_checks(self):
