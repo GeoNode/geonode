@@ -546,7 +546,7 @@ class MetricValue(models.Model):
                                   data=data or {})
 
     @classmethod
-    def get_for(cls, metric, service=None, valid_on=None):
+    def get_for(cls, metric, service=None, valid_on=None, resource=None, label=None, ows_service=None):
         qparams = models.Q()
         if isinstance(metric, Metric):
             qparams = qparams & models.Q(service_metric__metric = metric)
@@ -562,6 +562,23 @@ class MetricValue(models.Model):
         if valid_on:
             qwhen = models.Q(valid_from__lte=valid_on) & models.Q(valid_to__gte=valid_on)
             qparams = qparams & qwhen
+        if label:
+            if isinstance(label, MetricLabel):
+                qparams = qparams & models.Q(label=label)
+            else:
+                qparams = qparams & models.Q(label__name=label)
+        if resource:
+            if isinstance(resource, MonitoredResource):
+                qparams = qparams & models.Q(resource=resource)
+            else:
+                rtype, rname = resource.split('=')
+                qparams = qparams & models.Q(resource__type=rtype, resource__name=rname)
+        if ows_service:
+            if isinstance(ows_service, OWSService):
+                qparams = qparams & models.Q(ows_service=ows_service)
+            else:
+                qparams = qparams & models.Q(ows_service__name=ows_service)
+                
         q = cls.objects.filter(qparams)
         return q
 
@@ -576,6 +593,9 @@ class MetricNotificationCheck(models.Model):
     notification_check = models.ForeignKey(NotificationCheck, related_name="checks")
     metric = models.ForeignKey(Metric, related_name="checks")
     service = models.ForeignKey(Service, related_name="checks")
+    resource = models.ForeignKey(MonitoredResource, null=True, blank=True)
+    label = models.ForeignKey(MetricLabel, null=True, blank=True)
+    ows_service = models.ForeignKey(OWSService, null=True, blank=True)
     min_value = models.DecimalField(max_digits=16, decimal_places=4, null=True, default=None, blank=True)
     max_value = models.DecimalField(max_digits=16, decimal_places=4, null=True, default=None, blank=True)
     max_timeout = models.DurationField(null=True, blank=True, help_text=_("Max timeout for given metric before error should be raised"))

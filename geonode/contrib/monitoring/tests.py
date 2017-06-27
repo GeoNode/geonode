@@ -28,7 +28,8 @@ from django.core.urlresolvers import reverse
 
 from geonode.contrib.monitoring.models import (RequestEvent, Host, Service, ServiceType, 
                                                populate, ExceptionEvent, MetricNotificationCheck,
-                                               MetricValue, NotificationCheck, Metric)
+                                               MetricValue, NotificationCheck, Metric, OWSService,
+                                               MonitoredResource, MetricLabel)
 from geonode.contrib.monitoring.collector import CollectorAPI
 from geonode.contrib.monitoring.utils import generate_periods, align_period_start
 from geonode.base.populate_test_data import create_models
@@ -1719,6 +1720,10 @@ class MonitoringChecksTestCase(TestCase):
         #sanity check
         self.assertTrue(start_aligned < start < end_aligned)
 
+        ows_service = OWSService.objects.get(name='WFS')
+        resource, _= MonitoredResource.objects.get_or_create(type='layer', name='test:test')
+
+        label, _ = MetricLabel.objects.get_or_create(name='discount')
         m = MetricValue.add(self.metric, start_aligned, end_aligned, self.service, label="Count", value_raw=10, value_num=10, value=10)
         nc = NotificationCheck.objects.create(name='check requests', description='check requests')
 
@@ -1749,3 +1754,28 @@ class MonitoringChecksTestCase(TestCase):
                                                     max_timeout=None)
 
         self.assertTrue(mc.check_metric(for_timestamp=start))
+
+        m = MetricValue.add(self.metric, start_aligned, end_aligned, self.service, label="discount", value_raw=10, value_num=10, value=10, ows_service=ows_service)
+        m = MetricValue.add(self.metric, start_aligned, end_aligned, self.service, label="discount", value_raw=10, value_num=10, value=10, resource=resource)
+
+        mc = MetricNotificationCheck.objects.create(notification_check=nc,
+                                                    service=self.service,
+                                                    metric=self.metric,
+                                                    min_value=11,
+                                                    max_value=None,
+                                                    max_timeout=None,
+                                                    label=label)
+        
+        with self.assertRaises(mc.MetricValueError):
+            mc.check_metric(for_timestamp=start)
+
+        mc = MetricNotificationCheck.objects.create(notification_check=nc,
+                                                    service=self.service,
+                                                    metric=self.metric,
+                                                    min_value=1,
+                                                    max_value=10,
+                                                    max_timeout=None,
+                                                    ows_service=ows_service)
+        
+        self.assertTrue(mc.check_metric(for_timestamp=start))
+
