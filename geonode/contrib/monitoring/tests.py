@@ -1710,6 +1710,16 @@ class MonitoringChecksTestCase(TestCase):
         self.service_type = ServiceType.objects.get(name=ServiceType.TYPE_GEONODE)
         self.service = Service.objects.create(name=settings.MONITORING_SERVICE_NAME, host=self.host, service_type=self.service_type)
         self.metric = Metric.objects.get(name='request.count')
+        self.user = 'admin'
+        self.passwd = 'admin'
+        self.u, _ = get_user_model().objects.get_or_create(username=self.user)
+        self.u.is_active = True
+        self.u.email = 'test@email.com'
+        self.u.set_password(self.passwd)
+        self.u.save()
+
+
+
 
     def test_monitoring_checks(self):
         start = datetime.now()
@@ -1726,7 +1736,7 @@ class MonitoringChecksTestCase(TestCase):
 
         label, _ = MetricLabel.objects.get_or_create(name='discount')
         m = MetricValue.add(self.metric, start_aligned, end_aligned, self.service, label="Count", value_raw=10, value_num=10, value=10)
-        nc = NotificationCheck.objects.create(name='check requests', description='check requests')
+        nc = NotificationCheck.objects.create(name='check requests', description='check requests', user=self.u)
 
         mc = MetricNotificationCheck.objects.create(notification_check=nc,
                                                     service=self.service,

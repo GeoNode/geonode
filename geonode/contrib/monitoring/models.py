@@ -584,6 +584,7 @@ class MetricValue(models.Model):
 
 
 class NotificationCheck(models.Model):
+    user = models.ForeignKey(settings.AUTH_USER_MODEL)
     name = models.CharField(max_length=255, null=False, blank=False, unique=True)
     description = models.CharField(max_length=255, null=False, blank=False)
     user_threshold = JSONField(default={}, null=False, blank=False, help_text=_("Threshold definition"))
