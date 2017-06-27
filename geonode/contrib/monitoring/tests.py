@@ -1722,6 +1722,7 @@ class MonitoringChecksTestCase(TestCase):
 
         ows_service = OWSService.objects.get(name='WFS')
         resource, _= MonitoredResource.objects.get_or_create(type='layer', name='test:test')
+        resource2, _= MonitoredResource.objects.get_or_create(type='layer', name='test:test2')
 
         label, _ = MetricLabel.objects.get_or_create(name='discount')
         m = MetricValue.add(self.metric, start_aligned, end_aligned, self.service, label="Count", value_raw=10, value_num=10, value=10)
@@ -1756,7 +1757,6 @@ class MonitoringChecksTestCase(TestCase):
         self.assertTrue(mc.check_metric(for_timestamp=start))
 
         m = MetricValue.add(self.metric, start_aligned, end_aligned, self.service, label="discount", value_raw=10, value_num=10, value=10, ows_service=ows_service)
-        m = MetricValue.add(self.metric, start_aligned, end_aligned, self.service, label="discount", value_raw=10, value_num=10, value=10, resource=resource)
 
         mc = MetricNotificationCheck.objects.create(notification_check=nc,
                                                     service=self.service,
@@ -1769,13 +1769,20 @@ class MonitoringChecksTestCase(TestCase):
         with self.assertRaises(mc.MetricValueError):
             mc.check_metric(for_timestamp=start)
 
+        m = MetricValue.add(self.metric, start_aligned, end_aligned, self.service, label="discount", value_raw=10, value_num=10, value=10, resource=resource)
         mc = MetricNotificationCheck.objects.create(notification_check=nc,
                                                     service=self.service,
                                                     metric=self.metric,
                                                     min_value=1,
                                                     max_value=10,
                                                     max_timeout=None,
-                                                    ows_service=ows_service)
+                                                    resource=resource)
         
         self.assertTrue(mc.check_metric(for_timestamp=start))
 
+        MetricValue.objects.all().delete()
+
+        m = MetricValue.add(self.metric, start_aligned, end_aligned, self.service, label="discount", value_raw=10, value_num=10, value=10, resource=resource2)
+        # this should raise ValueError, because MetricValue won't match
+        with self.assertRaises(ValueError):
+            mc.check_metric(for_timestamp=start)

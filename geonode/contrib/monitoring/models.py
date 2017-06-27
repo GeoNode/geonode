@@ -649,7 +649,9 @@ class MetricNotificationCheck(models.Model):
         """
         if not for_timestamp:
             for_timestamp = datetime.now()
-        metrics = MetricValue.get_for(metric=self.metric, service=self.service, valid_on=for_timestamp)
+        metrics = MetricValue.get_for(metric=self.metric, service=self.service, 
+                                      valid_on=for_timestamp, resource=self.resource, 
+                                      label=self.label, ows_service=self.ows_service)
         if not metrics:
             raise ValueError("Cannot find metric values for {}/{} on {}".format(self.metric, self.service, for_timestamp))
         for m in metrics:
