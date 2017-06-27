@@ -22,6 +22,7 @@ from datetime import datetime, timedelta
 from xml.etree.ElementTree import fromstring
 import json
 import xmljson
+from decimal import Decimal
 from django.conf import settings
 from django.test import TestCase
 from django.contrib.auth import get_user_model
@@ -1864,4 +1865,81 @@ class MonitoringChecksTestCase(TestCase):
         self.assertEqual(nresp.status_code, 404)
         data = json.loads(nresp.content)
         self.assertTrue(len(data['data']) == 0)
+
+
+    def test_notifications_edit_views(self):
+
+        start = datetime.now()
+        start_aligned = align_period_start(start, self.service.check_interval)
+        end_aligned = start_aligned + self.service.check_interval
+
+
+        #sanity check
+        self.assertTrue(start_aligned < start < end_aligned)
+
+        host = Host.objects.all().first()
+        ows_service = OWSService.objects.get(name='WFS')
+        resource, _= MonitoredResource.objects.get_or_create(type='layer', name='test:test')
+
+        label, _ = MetricLabel.objects.get_or_create(name='discount')
+
+        c = self.client
+        c.login(username=self.user, password=self.passwd)
+        notification_url = reverse('monitoring:api_notifications_config', kwargs={'cls_name': 'check'})
+        notification_data = {'name': 'test',
+                             'description': 'more test',
+                             'user_threshold': json.dumps({'some': 'data'})}
+        out = c.post(notification_url, notification_data)
+        self.assertEqual(out.status_code, 200)
+        jout = json.loads(out.content)
+
+        notification_url = reverse('monitoring:api_notifications_config', kwargs={'cls_name': 'check', 'pk': jout['data'][0]['id']})
+        notification_data = {'name': 'testttt',
+                             'description': 'more tesddddt',
+                             'user_threshold': json.dumps({'some': 'datadffdf'})}
+        
+        out = c.post(notification_url, notification_data)
+        self.assertEqual(out.status_code, 200)
+        jout = json.loads(out.content)
+        n = NotificationCheck.objects.get()
+        self.assertTrue(MetricNotificationCheck.objects.all().count() == 0)
+        for fname, fval in jout['data'][0].iteritems():
+            self.assertEqual(getattr(n, fname), fval)
+
+        notification_url = reverse('monitoring:api_notifications_config', kwargs={'cls_name': 'metric_check'})
+        notification_data = {'notification_check': n.id, 
+                             'min_value': 10,
+                             'max_value': 20,
+                             'metric': 'request.count',
+                             'service': self.service.name,
+                             'label': label.name,
+                             'resource': '{}={}'.format(resource.type, resource.name),
+                             'ows_service': ows_service.name}
+
+        out = c.post(notification_url, notification_data)
+        self.assertEqual(out.status_code, 200, out.content)
+        jout = json.loads(out.content)
+
+        self.assertTrue(MetricNotificationCheck.objects.all().count() == 1)
+        notification_data = {'notification_check': n.id, 
+                             'min_value': 20,
+                             'max_value': 50,
+                             'metric': 'request.ua',
+                             'service': self.service.name,
+                             'label': label.name,
+                             'resource': '{}={}'.format(resource.type, resource.name),
+                             'ows_service': ows_service.name}
+
+
+        notification_url = reverse('monitoring:api_notifications_config', kwargs={'cls_name': 'metric_check', 'pk': jout['data'][0]['id']})
+        
+        out = c.post(notification_url, notification_data)
+        self.assertTrue(MetricNotificationCheck.objects.all().count() == 1)
+        self.assertEqual(out.status_code, 200, out.content)
+        jout = json.loads(out.content)
+        m = MetricNotificationCheck.objects.get()
+        jdata = jout['data'][0]
+        self.assertEqual(Decimal(jdata['min_value']), m.min_value)
+
+        
 

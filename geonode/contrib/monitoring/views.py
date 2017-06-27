@@ -34,6 +34,7 @@ from geonode.contrib.monitoring.collector import CollectorAPI
 from geonode.contrib.monitoring.models import (
     Service,
     Host,
+    Metric,
     ServiceTypeMetric,
     MetricLabel,
     MonitoredResource,
@@ -311,9 +312,67 @@ def index(request):
     return render(request, 'monitoring/index.html')
 
 
+class NotificaitonCheckForm(forms.ModelForm):
+    class Meta:
+        model = NotificationCheck
+        fields = ('name', 'description', 'user_threshold',)
+
+class MetricNotificationCheckForm(forms.ModelForm):
+    
+    metric = forms.CharField(required=True)
+    service = forms.CharField(required=True)
+    resource = forms.CharField(required=False)
+    label = forms.CharField(required=False)
+    ows_service = forms.CharField(required=False)
+
+
+    class Meta:
+        model = MetricNotificationCheck
+        fields = ('notification_check', 'min_value', 'max_value', 'max_timeout',)
+
+    def _get_clean_model(self, cls, name):
+        val = self.cleaned_data.get(name)
+        if not self.fields[name].required:
+            if not val:
+                return
+        try:
+           return cls.objects.get(name=val)
+        except cls.DoesNotExist:
+            raise forms.ValidationError("Invalid {}: {}".format(name, val))
+
+    def clean_metric(self):
+        return self._get_clean_model(Metric, 'metric')
+
+    def clean_service(self):
+        return self._get_clean_model(Service, 'service')
+
+    def clean_label(self):
+        return self._get_clean_model(MetricLabel, 'label')
+
+    def clean_ows_service(self):
+        return self._get_clean_model(OWSService, 'ows_service')
+
+    def clean_resource(self):
+        val = self.cleaned_data.get('resource')
+        if not val:
+            return
+        try:
+            vtype, vname = val.split('=')
+        except IndexError:
+            raise forms.ValidationError("Invalid resource name: {}".format(val))
+        try:
+           return MonitoredResource.objects.get(name=vname, type=vtype)
+        except MonitoredResource.DoesNotExist:
+            raise ValidationError("Invalid resource: {}".format(val))
+
+    
+    
 class NotificationsConfig(View):
     models = {'check':  (NotificationCheck, 'id', None,),
-              'metric_check': (MetricNotificationCheck, 'notification_check__id', 'user',)}
+              'metric_check': (MetricNotificationCheck, 'id', 'user',)}
+
+    forms = {'check': NotificaitonCheckForm,
+             'metric_check': MetricNotificationCheckForm}
 
     def get_object(self, user, cls_name, pk=None):
         cls, pk_lookup, user_lookup = self.models.get(cls_name)
@@ -322,8 +381,12 @@ class NotificationsConfig(View):
             qparams.update({pk_lookup: pk})
         if user_lookup:
             qparams.update({user_lookup: user})
-
         return cls.objects.filter(**qparams)
+
+    def get_class(self, cls_name):
+        cls, pk_lookup, user_lookup = self.models.get(cls_name)
+        return cls
+        
 
     def serialize(self, obj):
         fields = obj._meta.fields
@@ -350,6 +413,40 @@ class NotificationsConfig(View):
         out['data'] = data
         return json_response(out)
         
+    @method_decorator(login_required)
+    def post(self, request, *args, **kwargs):
+        out = {'data': [], 'errors': {}}
+
+        objs = self.get_object(request.user, kwargs['cls_name'], kwargs.get('pk'))
+        if kwargs.get('pk') and not objs:
+            out['errors']['pk'] = 'too less results'
+            return json_response(out, status=404)
+            
+        if len(objs)> 1:
+            out['errors']['__all__'] = 'too many results returned'
+            return json_response(out, status=400)
+        obj = None
+        if len(objs):
+            obj = objs[0]
+        form = self.get_form(kwargs['cls_name'], request.POST, instance=obj)
+        if not form.is_valid():
+            out['errors'] = form.errors
+            return json_response(out, status=403)
+        d = form.cleaned_data
+        
+        for _f in form.Meta.model._meta.fields:
+            if _f.name == 'user':
+                d['user'] = request.user
+        if not obj:
+            cls = self.get_class(kwargs['cls_name'])
+            obj = cls.objects.create(**d)
+        else:
+            obj = form.save()
+        out['data'] = [self.serialize(obj)]
+        return json_response(out)
+
+    def get_form(self, cls_name, data, **kwargs):
+        return self.forms[cls_name](data=data, **kwargs)
 
 
 api_metrics = MetricsList.as_view()
