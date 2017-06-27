@@ -85,7 +85,7 @@
             </div>
           </form>
           <ul class="nav navbar-nav navbar-right">
-            {% if not user.is_authenticated and REGISTRATION_OPEN %}
+            {% if not user.is_authenticated and ACCOUNT_OPEN_SIGNUP %}
             <li><a href="{% url "account_signup" %}">{% trans "Register" %}</a></li>
             {% endif %}
             {% if user.is_authenticated %}
