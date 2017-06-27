@@ -1,12 +1,23 @@
-<!doctype html>
-<html lang="en">
-  <head>
-    <title>GeoNode</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-  </head>
-  <body>
+{% extends "geonode_base.html" %}
+{% load i18n %}
+{% load url from future %}
+
+{% block title %} {% trans "Monitoring" %} - {{ block.super }} {% endblock %}
+
+{% block body_class %}monitoring{% endblock %}
+
+{% block extra_script %}
+
+{{ block.super }}
+<script type="text/javascript">
+    
+    $(document).ready(function(){
+        $(document.body).append('<script src="/static/monitoring/bundle.js"'+ '>'+'</s'+'cript>');
+    })
+</script>
+{% endblock %}
+
+{% block body %}
     <div id="root">
     </div>
-  </body>
-  <script src="/static/monitoring/bundle.js"></script>
-</html>
+{% endblock body %}
