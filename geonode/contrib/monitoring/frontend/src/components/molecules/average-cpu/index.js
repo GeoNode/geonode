@@ -1,11 +1,12 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import HoverPaper from '../../atoms/hover-paper';
 import styles from './styles';
 
 
 class AverageCPU extends React.Component {
   static propTypes = {
-    cpu: React.PropTypes.number.isRequired,
+    cpu: PropTypes.number.isRequired,
   }
 
   render() {

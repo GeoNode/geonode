@@ -80,3 +80,4 @@ redis==2.10.5
 user-agents
 xmljson
 psutil
+django-cors-headers==2.1.0

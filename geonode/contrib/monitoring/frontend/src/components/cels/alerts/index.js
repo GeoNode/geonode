@@ -1,11 +1,12 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import HoverPaper from '../../atoms/hover-paper';
 import styles from './styles';
 
 
 class Alerts extends React.Component {
   static propTypes = {
-    style: React.PropTypes.object,
+    style: PropTypes.object,
   }
 
   render() {

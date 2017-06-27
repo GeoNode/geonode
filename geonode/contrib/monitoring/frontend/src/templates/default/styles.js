@@ -1,6 +1,5 @@
 export default {
   content: {
-    width: '100%',
-    height: '100%',
+    width: 'calc(100vw - 10)',
   },
 };

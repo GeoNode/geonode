@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { Style } from 'radium';
 import Template from '../../templates/default';
@@ -16,11 +17,11 @@ const mapStateToProps = (/* state */) => ({});
 @connect(mapStateToProps, actions)
 class App extends React.Component {
   static propTypes = {
-    children: React.PropTypes.node,
+    children: PropTypes.node,
   }
 
   static childContextTypes = {
-    socket: React.PropTypes.object,
+    socket: PropTypes.object,
   }
 
   render() {

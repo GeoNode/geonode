@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import RaisedButton from 'material-ui/RaisedButton';
 import AutorefreshIcon from 'material-ui/svg-icons/action/autorenew';
 import Back from 'material-ui/svg-icons/image/navigate-before';
@@ -7,7 +8,7 @@ import styles from './styles';
 
 class Header extends React.Component {
   static contextTypes = {
-    router: React.PropTypes.object.isRequired,
+    router: PropTypes.object.isRequired,
   }
 
   constructor(props) {

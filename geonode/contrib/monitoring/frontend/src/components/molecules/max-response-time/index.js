@@ -1,11 +1,12 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import HoverPaper from '../../atoms/hover-paper';
 import styles from './styles';
 
 
 class MaxResponseTime extends React.Component {
   static propTypes = {
-    time: React.PropTypes.number.isRequired,
+    time: PropTypes.number.isRequired,
   }
 
   render() {
