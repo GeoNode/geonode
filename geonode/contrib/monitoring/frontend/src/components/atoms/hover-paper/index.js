@@ -1,8 +1,14 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import Paper from 'material-ui/Paper';
 
 
 class HoverPaper extends React.Component {
+  static propTypes = {
+    children: PropTypes.node,
+    style: PropTypes.object,
+  }
+
   constructor(props) {
     super(props);
 
@@ -32,12 +38,6 @@ class HoverPaper extends React.Component {
     );
   }
 }
-
-
-HoverPaper.propTypes = {
-  children: React.PropTypes.node,
-  style: React.PropTypes.object,
-};
 
 
 export default HoverPaper;

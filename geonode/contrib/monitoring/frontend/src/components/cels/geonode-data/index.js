@@ -1,20 +1,88 @@
 import React from 'react';
+import PropTypes from 'prop-types';
+import { connect } from 'react-redux';
 import AverageResponseTime from '../../molecules/average-response-time';
 import MaxResponseTime from '../../molecules/max-response-time';
 import TotalRequests from '../../molecules/total-requests';
 import styles from './styles';
+import actions from './actions';
 
 
+const mapStateToProps = (state) => ({
+  responses: state.geonodeAverageResponse.response,
+});
+
+
+@connect(mapStateToProps, actions)
 class GeonodeData extends React.Component {
+  static propTypes = {
+    get: PropTypes.func.isRequired,
+    reset: PropTypes.func.isRequired,
+    responses: PropTypes.object,
+  }
+
+  static defaultProps = {
+    responses: {
+      data: {
+        data: [],
+      },
+    },
+  }
+
+  constructor(props) {
+    super(props);
+    this.state = {
+      averageResponseTime: 0,
+      maxResponseTime: 0,
+      totalRequests: 0,
+    };
+  }
+
+  componentWillMount() {
+    this.props.get();
+  }
+
+  componentWillReceiveProps(nextProps) {
+    if (nextProps.responses) {
+      let totalRequests = 0;
+      let maxResponseTime = this.state.maxResponseTime;
+      let averageResponseTime = this.state.averageResponseTime;
+      let responsesNumber = 0;
+      nextProps.responses.data.data.forEach((response) => {
+        if (response.data.length > 0) {
+          responsesNumber += 1;
+          response.data.forEach((element) => {
+            totalRequests += element.count;
+            const max = Number(element.max);
+            if (maxResponseTime < max) {
+              maxResponseTime = max;
+            }
+            averageResponseTime += Number(element.val);
+          });
+        }
+      });
+      averageResponseTime = Math.floor(averageResponseTime / responsesNumber);
+      this.setState({
+        averageResponseTime,
+        maxResponseTime,
+        totalRequests,
+      });
+    }
+  }
+
+  componentWillUnmount() {
+    this.props.reset();
+  }
+
   render() {
     return (
       <div style={styles.content}>
         <h5>Geonode Data Overview</h5>
         <div style={styles.geonode}>
-          <AverageResponseTime time={50} />
-          <MaxResponseTime time={500} />
+          <AverageResponseTime time={this.state.averageResponseTime} />
+          <MaxResponseTime time={this.state.maxResponseTime} />
         </div>
-        <TotalRequests requests={7} />
+        <TotalRequests requests={this.state.totalRequests} />
       </div>
     );
   }

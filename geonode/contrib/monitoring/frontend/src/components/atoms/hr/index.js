@@ -1,11 +1,12 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import styles from './styles';
 
 
 class HR extends React.Component {
   static propTypes = {
-    children: React.PropTypes.node,
-    style: React.PropTypes.object,
+    children: PropTypes.node,
+    style: PropTypes.object,
   }
 
   render() {

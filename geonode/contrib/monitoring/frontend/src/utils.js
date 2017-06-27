@@ -1,24 +1,6 @@
 import isomorphicFetch from 'isomorphic-fetch';
 
 
-export function getAuthToken() {
-  // eslint-disable-next-line no-undef
-  return window.localStorage.MaterialUIStarter;
-}
-
-
-export function isLoggedIn() {
-  return Boolean(getAuthToken());
-}
-
-
-export function requireAuth(nextState, replace) {
-  if (!isLoggedIn()) {
-    replace('/login');
-  }
-}
-
-
 export function fetch(args) {
   const {
     url,
@@ -29,14 +11,8 @@ export function fetch(args) {
   const newargs = {
     body: newbody,
     method: method || 'GET',
-    headers: {
-      Accept: 'application/json',
-      Authorization: `JWT ${getAuthToken()}`,
-    },
+    headers: { Accept: 'application/json' },
   };
-  if (!isLoggedIn()) {
-    delete newargs.headers.Authorization;
-  }
   if (method === 'POST' || method === 'PUT' || method === 'PATCH') {
     newargs.headers['Content-Type'] = 'application/json';
   }

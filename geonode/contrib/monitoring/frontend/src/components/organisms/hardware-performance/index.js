@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import RaisedButton from 'material-ui/RaisedButton';
 import ChartIcon from 'material-ui/svg-icons/av/equalizer';
 import HoverPaper from '../../atoms/hover-paper';
@@ -9,7 +10,7 @@ import styles from './styles';
 
 class HardwarePerformance extends React.Component {
   static contextTypes = {
-    router: React.PropTypes.object.isRequired,
+    router: PropTypes.object.isRequired,
   }
 
   constructor(props) {

@@ -1,12 +1,13 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend } from 'recharts';
 import styles from './styles';
 
 
 class ErrorsRate extends React.Component {
   static propTypes = {
-    data: React.PropTypes.array.isRequired,
-    errors: React.PropTypes.number.isRequired,
+    data: PropTypes.array.isRequired,
+    errors: PropTypes.number.isRequired,
   }
 
   render() {

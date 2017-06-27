@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import { Router, hashHistory } from 'react-router';
 import { connect } from 'react-redux';
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
@@ -23,7 +24,7 @@ function Main(props) {
 
 
 Main.propTypes = {
-  theme: React.PropTypes.object,
+  theme: PropTypes.object,
 };
 
 

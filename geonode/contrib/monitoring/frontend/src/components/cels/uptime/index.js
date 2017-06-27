@@ -1,11 +1,12 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import HoverPaper from '../../atoms/hover-paper';
 import styles from './styles';
 
 
 class Uptime extends React.Component {
   static propTypes = {
-    style: React.PropTypes.object,
+    style: PropTypes.object,
   }
 
   render() {
@@ -21,11 +22,6 @@ class Uptime extends React.Component {
     );
   }
 }
-
-
-Uptime.propTypes = {
-  style: React.PropTypes.object,
-};
 
 
 export default Uptime;

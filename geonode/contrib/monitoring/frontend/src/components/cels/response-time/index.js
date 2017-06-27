@@ -1,14 +1,15 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend } from 'recharts';
 import styles from './styles';
 
 
 class ResponseTime extends React.Component {
   static propTypes = {
-    average: React.PropTypes.number.isRequired,
-    data: React.PropTypes.array.isRequired,
-    last: React.PropTypes.number.isRequired,
-    max: React.PropTypes.number.isRequired,
+    average: PropTypes.number.isRequired,
+    data: PropTypes.array.isRequired,
+    last: PropTypes.number.isRequired,
+    max: PropTypes.number.isRequired,
   }
 
   render() {

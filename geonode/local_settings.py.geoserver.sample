@@ -278,6 +278,7 @@ INSTALLED_APPS = (
     'polymorphic',
     'guardian',
     'oauth2_provider',
+    'corsheaders',
 ) + GEONODE_APPS
 
 # default map projection
@@ -424,3 +425,20 @@ LOGGING = {
             "handlers": ["console"], "level": "ERROR", },
         },
     }
+
+FREETEXT_KEYWORDS_READONLY = True
+MIDDLEWARE_CLASSES += (
+    'corsheaders.middleware.CorsMiddleware',
+    'django.middleware.common.CommonMiddleware',
+)
+CORS_ORIGIN_ALLOW_ALL = True
+
+GEOIP_PATH = "/usr/local/share/GeoIP"
+
+MONITORING_ENABLED=True
+# add following lines to your local settings to enable monitoring
+if MONITORING_ENABLED:
+    INSTALLED_APPS += ('geonode.contrib.monitoring',)
+    MIDDLEWARE_CLASSES += ('geonode.contrib.monitoring.middleware.MonitoringMiddleware',)
+    MONITORING_CONFIG = None
+    MONITORING_SERVICE_NAME = 'local-geonode'

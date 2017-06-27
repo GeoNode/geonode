@@ -1,11 +1,12 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import HoverPaper from '../../atoms/hover-paper';
 import styles from './styles';
 
 
 class TotalRequests extends React.Component {
   static propTypes = {
-    requests: React.PropTypes.number.isRequired,
+    requests: PropTypes.number.isRequired,
   }
 
   render() {
