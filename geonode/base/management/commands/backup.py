@@ -26,11 +26,13 @@ import os
 import time
 import shutil
 import requests
+import re
 import helpers
 from helpers import Config
 
 from requests.auth import HTTPBasicAuth
 from optparse import make_option
+from xmltodict import parse as parse_xml
 
 from django.conf import settings
 from django.core.management import call_command
@@ -175,6 +177,81 @@ class Command(BaseCommand):
                 helpers.dump_db(config, ogc_db_name, ogc_db_user, ogc_db_port,
                                 ogc_db_host, ogc_db_passwd, gs_data_folder)
 
+    def dump_geoserver_externals(self, config, settings, target_folder):
+        """Scan layers xml and see if there are external references.
+
+        Find references to data outside data dir and include them in
+        backup. Also, some references may point to specific url, which
+        may not be available later.
+        """
+        external_folder = os.path.join(target_folder, helpers.EXTERNAL_ROOT)
+
+        def copy_external_resource(abspath):
+            external_path = os.path.join(external_folder, abspath[1:])
+            external_dir = os.path.dirname(external_path)
+
+            if not os.path.isdir(external_dir):
+                os.makedirs(external_dir)
+
+            shutil.copy(abspath, external_path)
+
+        def match_filename(key, text, regexp=re.compile("^(.+)$")):
+            if key in ('filename', ):
+                match = regexp.match(text)
+                if match:
+                    relpath = match.group(1)
+                    abspath = relpath if os.path.isabs(relpath) else \
+                        os.path.abspath(
+                            os.path.join(os.path.dirname(path), relpath))
+                    if os.path.exists(abspath):
+                        return abspath
+
+        def match_fileurl(key, text, regexp=re.compile("^file:(.+)$")):
+            if key in ('url', ):
+                match = regexp.match(text)
+                if match:
+                    relpath = match.group(1)
+                    abspath = relpath if os.path.isabs(relpath) else \
+                        os.path.abspath(
+                            os.path.join(config.gs_data_dir, relpath))
+                    if os.path.exists(abspath):
+                        return abspath
+
+        def dump_external_resources_from_xml(path):
+
+            def find_external(tree, key=None):
+                if isinstance(tree, dict):
+                    for key, value in tree.iteritems():
+                        for found in find_external(value, key=key):
+                            yield found
+                elif isinstance(tree, list):
+                    for item in tree:
+                        for found in find_external(item, key=key):
+                            yield found
+                elif isinstance(tree, unicode):
+                    text = tree.encode('utf-8')
+                    for find in (match_fileurl, match_filename):
+                        found = find(key, text)
+                        if found:
+                            yield found
+
+            with open(path) as fd:
+                content = fd.read()
+                tree = parse_xml(content)
+                for found in find_external(tree):
+                    if found.find(config.gs_data_dir) != 0:
+                        copy_external_resource(found)
+
+        def is_xml_file(filename, regexp=re.compile(".*.xml$")):
+            return regexp.match(filename) is not None
+
+        for directory in ('workspaces', 'styles'):
+            source = os.path.join(config.gs_data_dir, directory)
+            for root, dirs, files in os.walk(source):
+                for filename in filter(is_xml_file, files):
+                    path = os.path.join(root, filename)
+                    dump_external_resources_from_xml(path)
+
     def handle(self, **options):
         # ignore_errors = options.get('ignore_errors')
         config = Config(options)
@@ -204,6 +281,8 @@ class Command(BaseCommand):
                 self.create_geoserver_backup(settings, target_folder)
                 self.dump_geoserver_raster_data(config, settings, target_folder)
                 self.dump_geoserver_vector_data(config, settings, target_folder)
+                print("Duming geoserver external resources")
+                self.dump_geoserver_externals(config, settings, target_folder)
             else:
                 print("Skipping geoserver backup")
 

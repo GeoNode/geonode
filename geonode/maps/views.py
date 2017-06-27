@@ -21,6 +21,7 @@
 import math
 import logging
 from guardian.shortcuts import get_perms
+from guardian.utils import get_anonymous_user
 
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import ObjectDoesNotExist
@@ -592,6 +593,12 @@ def new_map_config(request):
             bbox = None
             map_obj = Map(projection=getattr(settings, 'DEFAULT_MAP_CRS',
                           'EPSG:900913'))
+
+            if request.user.is_authenticated():
+                map_obj.owner = request.user
+            else:
+                map_obj.owner = get_anonymous_user()
+
             layers = []
             for layer_name in params.getlist('layer'):
                 try:
