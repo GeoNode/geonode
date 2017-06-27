@@ -312,15 +312,16 @@ def index(request):
 
 
 class NotificationsConfig(View):
-    models = {'check':  (NotificationCheck, 'id', 'user',),
-              'metric_check': (MetricNotificationCheck, 'notification_check__id', 'notification_check__user',)}
+    models = {'check':  (NotificationCheck, 'id', None,),
+              'metric_check': (MetricNotificationCheck, 'notification_check__id', 'user',)}
 
     def get_object(self, user, cls_name, pk=None):
         cls, pk_lookup, user_lookup = self.models.get(cls_name)
+        qparams = {}
         if pk:
-            qparams = {pk_lookup: pk, user_lookup: user}
-        else:
-            qparams = {user_lookup: user}
+            qparams.update({pk_lookup: pk})
+        if user_lookup:
+            qparams.update({user_lookup: user})
 
         return cls.objects.filter(**qparams)
 

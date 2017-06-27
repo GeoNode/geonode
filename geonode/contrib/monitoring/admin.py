@@ -2,7 +2,19 @@ from django.contrib import admin
 
 # Register your models here.
 
-from geonode.contrib.monitoring.models import Host, Service, ServiceType, ServiceTypeMetric, Metric, RequestEvent, ExceptionEvent, MetricLabel, MonitoredResource
+from geonode.contrib.monitoring.models import (
+    Host, 
+    Service, 
+    ServiceType, 
+    ServiceTypeMetric, 
+    Metric, 
+    RequestEvent, 
+    ExceptionEvent, 
+    MetricLabel, 
+    MonitoredResource,
+    NotificationCheck,
+    MetricNotificationCheck,
+    )
 
 
 @admin.register(Host)
@@ -61,3 +73,11 @@ class ExceptionEventAdmin(admin.ModelAdmin):
     list_display = ('created', 'service', 'error_type',)
 
 
+@admin.register(NotificationCheck)
+class NotificationCheckAdmin(admin.ModelAdmin):
+    list_display = ('id', 'name',)
+
+@admin.register(MetricNotificationCheck)
+class MetricNotificationCheckAdmin(admin.ModelAdmin):
+    list_display = ('id', 'user', 'notification_check', 'metric', 'min_value', 'max_value', 'max_timeout',)
+    raw_id_fields= ('user', 'notification_check', 'resource', 'label',)

@@ -1743,9 +1743,10 @@ class MonitoringChecksTestCase(TestCase):
 
         label, _ = MetricLabel.objects.get_or_create(name='discount')
         m = MetricValue.add(self.metric, start_aligned, end_aligned, self.service, label="Count", value_raw=10, value_num=10, value=10)
-        nc = NotificationCheck.objects.create(name='check requests', description='check requests', user=self.u)
+        nc = NotificationCheck.objects.create(name='check requests', description='check requests')
 
         mc = MetricNotificationCheck.objects.create(notification_check=nc,
+                                                    user=self.u,
                                                     service=self.service,
                                                     metric=self.metric,
                                                     min_value=None,
@@ -1755,6 +1756,7 @@ class MonitoringChecksTestCase(TestCase):
             mc.check_metric(for_timestamp=start)
 
         mc = MetricNotificationCheck.objects.create(notification_check=nc,
+                                                    user=self.u,
                                                     service=self.service,
                                                     metric=self.metric,
                                                     min_value=11,
@@ -1765,6 +1767,7 @@ class MonitoringChecksTestCase(TestCase):
             mc.check_metric(for_timestamp=start)
 
         mc = MetricNotificationCheck.objects.create(notification_check=nc,
+                                                    user=self.u,
                                                     service=self.service,
                                                     metric=self.metric,
                                                     min_value=1,
@@ -1776,6 +1779,7 @@ class MonitoringChecksTestCase(TestCase):
         m = MetricValue.add(self.metric, start_aligned, end_aligned, self.service, label="discount", value_raw=10, value_num=10, value=10, ows_service=ows_service)
 
         mc = MetricNotificationCheck.objects.create(notification_check=nc,
+                                                    user=self.u,
                                                     service=self.service,
                                                     metric=self.metric,
                                                     min_value=11,
@@ -1788,6 +1792,7 @@ class MonitoringChecksTestCase(TestCase):
 
         m = MetricValue.add(self.metric, start_aligned, end_aligned, self.service, label="discount", value_raw=10, value_num=10, value=10, resource=resource)
         mc = MetricNotificationCheck.objects.create(notification_check=nc,
+                                                    user=self.u,
                                                     service=self.service,
                                                     metric=self.metric,
                                                     min_value=1,
@@ -1820,9 +1825,10 @@ class MonitoringChecksTestCase(TestCase):
 
         label, _ = MetricLabel.objects.get_or_create(name='discount')
         m = MetricValue.add(self.metric, start_aligned, end_aligned, self.service, label="Count", value_raw=10, value_num=10, value=10)
-        nc = NotificationCheck.objects.create(name='check requests', description='check requests', user=self.u)
+        nc = NotificationCheck.objects.create(name='check requests', description='check requests')
 
         mc = MetricNotificationCheck.objects.create(notification_check=nc,
+                                                    user=self.u,
                                                     service=self.service,
                                                     metric=self.metric,
                                                     min_value=10,
@@ -1847,13 +1853,15 @@ class MonitoringChecksTestCase(TestCase):
         data = json.loads(nresp.content)
         self.assertTrue(data['data'][0]['id'] == mc.id)
 
-
         c.login(username=self.user2, password=self.passwd2)
         nresp = c.get(reverse('monitoring:api_notifications_config', kwargs={'cls_name': 'check'}))
+        self.assertEqual(nresp.status_code, 200)
+        data = json.loads(nresp.content)
+        self.assertTrue(len(data['data']) == 1)
+
+        c.login(username=self.user2, password=self.passwd2)
+        nresp = c.get(reverse('monitoring:api_notifications_config', kwargs={'cls_name': 'metric_check'}))
         self.assertEqual(nresp.status_code, 404)
         data = json.loads(nresp.content)
         self.assertTrue(len(data['data']) == 0)
-
-
-
 

@@ -33,7 +33,6 @@ class Migration(migrations.Migration):
                 ('name', models.CharField(unique=True, max_length=255)),
                 ('description', models.CharField(max_length=255)),
                 ('user_threshold', jsonfield.fields.JSONField(default={}, help_text=b'Threshold definition')),
-                ('user', models.ForeignKey(to=settings.AUTH_USER_MODEL)),
             ],
         ),
         migrations.AddField(
@@ -55,5 +54,10 @@ class Migration(migrations.Migration):
             model_name='metricnotificationcheck',
             name='service',
             field=models.ForeignKey(related_name='checks', to='monitoring.Service'),
+        ),
+        migrations.AddField(
+            model_name='metricnotificationcheck',
+            name='user',
+            field=models.ForeignKey(to=settings.AUTH_USER_MODEL),
         ),
     ]
