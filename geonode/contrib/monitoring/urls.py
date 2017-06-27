@@ -39,4 +39,7 @@ urlpatterns = [
                 # serve raw check data to outside
                 url(r'^api/beacon/$', views.api_beacon, name='api_beacon'),
                 url(r'^api/beacon/(?P<exposed>.*?)/$', views.api_beacon, name='api_beacon_exposed'),
+
+                url(r'^api/notifications/(?P<cls_name>(check|metric_check))/(?:(?P<pk>[\d]+)/)?$', views.api_notifications_config, name='api_notifications_config'),
+
               ]

@@ -25,6 +25,9 @@ from django.shortcuts import render
 from django import forms
 from django.views.generic.base import View
 from django.core.urlresolvers import reverse
+from django.utils.decorators import method_decorator
+from django.contrib.auth.decorators import login_required
+from django.db.models.fields.related import RelatedField
 
 from geonode.utils import json_response
 from geonode.contrib.monitoring.collector import CollectorAPI
@@ -36,6 +39,8 @@ from geonode.contrib.monitoring.models import (
     MonitoredResource,
     ExceptionEvent,
     OWSService,
+    NotificationCheck,
+    MetricNotificationCheck,
 )
 from geonode.contrib.monitoring.utils import TypeChecks
 from geonode.contrib.monitoring.service_handlers import exposes
@@ -192,7 +197,7 @@ class LabelsList(FilteredView):
     filter_form = LabelsFilterForm
     fields_map = (('id', 'id',),
                   ('name', 'name',),)
-    output_names = 'labels'
+    output_name = 'labels'
 
     def get_queryset(self, metric_name):
         q = MetricLabel.objects.all().distinct()
@@ -205,7 +210,7 @@ class LabelsList(FilteredView):
 class OWSServiceList(FilteredView):
 
     fields_map = (('name', 'name',),)
-    output_names = 'ows_services'
+    output_name = 'ows_services'
 
     def get_queryset(self, **kwargs):
         return OWSService.objects.all()
@@ -252,7 +257,7 @@ class ExceptionsListView(FilteredView):
                   ('url', 'url',),
                   ('error_type', 'error_type',),)
 
-    output_names = 'exceptions'
+    output_name = 'exceptions'
 
     def get_queryset(self, error_type=None, valid_from=None, valid_to=None, service=None, resource=None):
         q = ExceptionEvent.objects.all().select_related()
@@ -306,6 +311,46 @@ def index(request):
     return render(request, 'monitoring/index.html')
 
 
+class NotificationsConfig(View):
+    models = {'check':  (NotificationCheck, 'id', 'user',),
+              'metric_check': (MetricNotificationCheck, 'notification_check__id', 'notification_check__user',)}
+
+    def get_object(self, user, cls_name, pk=None):
+        cls, pk_lookup, user_lookup = self.models.get(cls_name)
+        if pk:
+            qparams = {pk_lookup: pk, user_lookup: user}
+        else:
+            qparams = {user_lookup: user}
+
+        return cls.objects.filter(**qparams)
+
+    def serialize(self, obj):
+        fields = obj._meta.fields
+        out = {}
+        for field in fields:
+            fname = field.name
+            val = getattr(obj, fname)
+            if isinstance(field, RelatedField):
+                val = str(val)
+            out[fname] = val
+        return out
+
+    @method_decorator(login_required)
+    def get(self, request, *args, **kwargs):
+        out = {'data': [], 'errors': {}}
+        objs = self.get_object(request.user, kwargs['cls_name'], kwargs.get('pk'))
+        if not objs:
+            return json_response(out, status=404)
+    
+        data = []
+        for obj in objs:
+            data.append(self.serialize(obj))
+
+        out['data'] = data
+        return json_response(out)
+        
+
+
 api_metrics = MetricsList.as_view()
 api_services = ServicesList.as_view()
 api_hosts = HostsList.as_view()
@@ -316,3 +361,5 @@ api_metric_data = MetricDataView.as_view()
 api_exceptions = ExceptionsListView.as_view()
 api_exception = ExceptionDataView.as_view()
 api_beacon = BeaconView.as_view()
+
+api_notifications_config = NotificationsConfig.as_view()

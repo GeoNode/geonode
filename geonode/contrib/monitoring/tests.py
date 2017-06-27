@@ -20,6 +20,7 @@
 from datetime import datetime, timedelta
 
 from xml.etree.ElementTree import fromstring
+import json
 import xmljson
 from django.conf import settings
 from django.test import TestCase
@@ -1673,7 +1674,6 @@ class RequestsTestCase(TestCase):
                                     interval=interval)
 
         self.assertIsNotNone(metrics)
-        print(metrics)
 
 
 class MonitoringUtilsTestCase(TestCase):
@@ -1717,6 +1717,13 @@ class MonitoringChecksTestCase(TestCase):
         self.u.email = 'test@email.com'
         self.u.set_password(self.passwd)
         self.u.save()
+        self.user2 = 'test'
+        self.passwd2 = 'test'
+        self.u2, _ = get_user_model().objects.get_or_create(username=self.user2)
+        self.u2.is_active = True
+        self.u2.email = 'test2@email.com'
+        self.u2.set_password(self.passwd2)
+        self.u2.save()
 
 
 
@@ -1796,3 +1803,57 @@ class MonitoringChecksTestCase(TestCase):
         # this should raise ValueError, because MetricValue won't match
         with self.assertRaises(ValueError):
             mc.check_metric(for_timestamp=start)
+
+    def test_notifications_views(self):
+
+        start = datetime.now()
+        start_aligned = align_period_start(start, self.service.check_interval)
+        end_aligned = start_aligned + self.service.check_interval
+
+
+        #sanity check
+        self.assertTrue(start_aligned < start < end_aligned)
+
+        ows_service = OWSService.objects.get(name='WFS')
+        resource, _= MonitoredResource.objects.get_or_create(type='layer', name='test:test')
+        resource2, _= MonitoredResource.objects.get_or_create(type='layer', name='test:test2')
+
+        label, _ = MetricLabel.objects.get_or_create(name='discount')
+        m = MetricValue.add(self.metric, start_aligned, end_aligned, self.service, label="Count", value_raw=10, value_num=10, value=10)
+        nc = NotificationCheck.objects.create(name='check requests', description='check requests', user=self.u)
+
+        mc = MetricNotificationCheck.objects.create(notification_check=nc,
+                                                    service=self.service,
+                                                    metric=self.metric,
+                                                    min_value=10,
+                                                    max_value=200,
+                                                    resource=resource,
+                                                    max_timeout=None)
+
+        c = self.client
+        c.login(username=self.user, password=self.passwd)
+        nresp = c.get(reverse('monitoring:api_notifications_config', kwargs={'cls_name': 'check'}))
+        self.assertEqual(nresp.status_code, 200)
+        data = json.loads(nresp.content)
+        self.assertTrue(data['data'][0]['id'] == nc.id) 
+        
+        nresp = c.get(reverse('monitoring:api_notifications_config', kwargs={'cls_name': 'check', 'pk': nc.id}))
+        self.assertEqual(nresp.status_code, 200)
+        data = json.loads(nresp.content)
+        self.assertTrue(data['data'][0]['id'] == nc.id) 
+
+        nresp = c.get(reverse('monitoring:api_notifications_config', kwargs={'cls_name': 'metric_check'}))
+        self.assertEqual(nresp.status_code, 200)
+        data = json.loads(nresp.content)
+        self.assertTrue(data['data'][0]['id'] == mc.id)
+
+
+        c.login(username=self.user2, password=self.passwd2)
+        nresp = c.get(reverse('monitoring:api_notifications_config', kwargs={'cls_name': 'check'}))
+        self.assertEqual(nresp.status_code, 404)
+        data = json.loads(nresp.content)
+        self.assertTrue(len(data['data']) == 0)
+
+
+
+

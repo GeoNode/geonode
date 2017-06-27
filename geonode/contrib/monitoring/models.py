@@ -290,7 +290,7 @@ class RequestEvent(models.Model):
         _ended = rqmeta.get('finished', datetime.now())
         duration = ((_ended - created).microseconds)/1000.0
 
-        ua = request.META['HTTP_USER_AGENT']
+        ua = request.META.get('HTTP_USER_AGENT') or ''
         ua_family = cls._get_ua_family(ua)
 
         ip = request.get_host()

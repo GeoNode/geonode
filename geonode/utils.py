@@ -619,7 +619,6 @@ def json_response(body=None, errors=None, redirect_to=None, exception=None,
         body = json.dumps(body, cls=DjangoJSONEncoder)
     return HttpResponse(body, content_type=content_type, status=status)
 
-
 def num_encode(n):
     if n < 0:
         return SIGN_CHARACTER + num_encode(-n)
