@@ -559,7 +559,6 @@ class MetricValue(models.Model):
                 qparams = qparams & models.Q(service_metric__service_type = service)
             else:
                 qparams = qparams & models.Q(service_metric__service_type__name = service)
-
         if valid_on:
             qwhen = models.Q(valid_from__lte=valid_on) & models.Q(valid_to__gte=valid_on)
             qparams = qparams & qwhen
