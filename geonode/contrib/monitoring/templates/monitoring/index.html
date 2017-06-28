@@ -10,14 +10,13 @@
 
 {{ block.super }}
 <script type="text/javascript">
-    
+
     $(document).ready(function(){
         $(document.body).append('<script src="/static/monitoring/bundle.js"'+ '>'+'</s'+'cript>');
     })
 </script>
 {% endblock %}
 
-{% block body %}
-    <div id="root">
-    </div>
-{% endblock body %}
+{% block monitoring %}
+    <div id="monitoring"></div>
+{% endblock %}

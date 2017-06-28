@@ -10,5 +10,5 @@ injectTapEventPlugin();
 
 render(
   <Root />,
-  document.getElementById('root')
+  document.getElementById('monitoring')
 );
