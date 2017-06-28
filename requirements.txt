@@ -48,8 +48,7 @@ pinax-notifications<4.0
 # we can't use django-user-account until upstream merge changes for geonode.
 # this is temporary solution
 https://github.com/cezio/django-user-accounts/archive/252_255_mixed.zip#egg=django-user-accounts-2.0.2
-# temporary solution until it's merged into master
-https://github.com/sebastianlach/geonode-user-messages/archive/feature/unread-user-messages.zip
+geonode_user_messages==0.1.6
 gisdata==0.5.4
 gsconfig==1.0.6
 gsimporter==1.0.0
