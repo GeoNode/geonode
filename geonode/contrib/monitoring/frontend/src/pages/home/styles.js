@@ -1,6 +1,8 @@
 export default {
   root: {
-    padding: 10,
+    marginTop: 30,
+    paddingTop: 20,
+    paddingBottom: 20,
     maxWidth: 1150,
     marginLeft: 'auto',
     marginRight: 'auto',

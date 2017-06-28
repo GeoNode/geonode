@@ -4,7 +4,6 @@ export default {
     justifyContent: 'space-between',
     marginLeft: 20,
     marginRight: 20,
-    marginTop: 10,
   },
 
   item: {
