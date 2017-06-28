@@ -12,11 +12,11 @@ class SUC_ContactAdmin(admin.ModelAdmin):
 
 class ProfileRequestAdmin(admin.ModelAdmin):
     model = ProfileRequest
-    search_fields=('id', 'last_name','organization','status','administrator__username','email')
+    search_fields=('id', 'first_name','last_name','organization','status','administrator__username','email')
 
 class DataRequestAdmin(admin.ModelAdmin):
     model = DataRequest
-    search_fields=('id', 'status','request_letter__title','administrator__username')
+    search_fields=('id', 'status','request_letter__title','profile_request__first_name', 'profile_request__last_name')
 
 class DataRequestProfileAdmin(admin.ModelAdmin):
     model = DataRequestProfile
