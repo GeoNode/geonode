@@ -63,10 +63,10 @@ def get_resourceLayers_count(takes_context=True):
     rl_count = Layer.objects.filter(keywords__name__icontains="phillidar2").count()
     for visit_url in urls_to_visit:
         try:
-            response = urllib2.urlopen(visit_url+'api/total_count')
+            response = urllib2.urlopen(visit_url+'api/total_count', timeout = 1)
             data = json.loads(response.read())
             rl_count += data['total_count']
-        except HTTPError:
+        except:
             rl_count += 0
     return rl_count
 
