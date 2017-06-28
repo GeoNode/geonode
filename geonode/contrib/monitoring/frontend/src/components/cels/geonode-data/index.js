@@ -45,23 +45,21 @@ class GeonodeData extends React.Component {
   componentWillReceiveProps(nextProps) {
     if (nextProps.responses) {
       let totalRequests = 0;
-      let maxResponseTime = this.state.maxResponseTime;
-      let averageResponseTime = this.state.averageResponseTime;
-      let responsesNumber = 0;
+      let maxResponseTime = 0;
+      let totalTimes = 0;
       nextProps.responses.data.data.forEach((response) => {
         if (response.data.length > 0) {
-          responsesNumber += 1;
           response.data.forEach((element) => {
             totalRequests += element.count;
+            totalTimes += element.count * element.val;
             const max = Number(element.max);
             if (maxResponseTime < max) {
               maxResponseTime = max;
             }
-            averageResponseTime += Number(element.val);
           });
         }
       });
-      averageResponseTime = Math.floor(averageResponseTime / responsesNumber);
+      const averageResponseTime = Math.floor(totalTimes / totalRequests);
       this.setState({
         averageResponseTime,
         maxResponseTime,
