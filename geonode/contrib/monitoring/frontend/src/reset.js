@@ -20,7 +20,7 @@ export default {
 	body: {
 		lineHeight: 1,
 		fontFamily: 'Roboto, sans-serif',
-    backgroundColor: '#f2f2f2',
+    backgroundColor: '#333',
 	},
 
 	'ol, ul': {
@@ -46,7 +46,12 @@ export default {
 
 	'input:invalid': {
 		boxShadow: 'none',
-	}
+	},
+
+	'footer': {
+		padding: 20,
+		lineHeight: 1.5,
+	},
 }
 
 /* eslint-enable */

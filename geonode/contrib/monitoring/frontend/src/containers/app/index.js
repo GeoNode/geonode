@@ -9,6 +9,7 @@ import HWPerf from '../../pages/hwperf';
 import reset from '../../reset.js';
 import fonts from '../../fonts/fonts.js';
 import actions from './actions';
+import styles from './styles';
 
 
 const mapStateToProps = (/* state */) => ({});
@@ -26,7 +27,7 @@ class App extends React.Component {
 
   render() {
     return (
-      <div>
+      <div style={styles.root}>
         <Style rules={fonts} />
         <Style rules={reset} />
         {this.props.children}
