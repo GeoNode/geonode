@@ -1,5 +1,6 @@
 import { createAction } from 'redux-actions';
 import { fetch } from '../../../utils';
+import apiUrl from '../../../backend';
 import GEONODE_AVERAGE_RESPONSE from './constants';
 
 
@@ -35,7 +36,6 @@ const fail = createAction(
 
 const get = () =>
   (dispatch) => {
-    const apiUrl = 'http://localhost:8000/monitoring/api';
     dispatch(begin());
     fetch({
       url: `${apiUrl}/metric_data/response.time/?valid_from=2017-06-26`,
