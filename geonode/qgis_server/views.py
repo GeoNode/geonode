@@ -446,7 +446,7 @@ def qml_style(request, layername):
             qml_path = '{path}.qml'.format(path=base_file_path)
 
             response = HttpResponse(
-                open(qml_path), content_type="application/xml")
+                open(qml_path), content_type="application/text")
             # ..and correct content-disposition
             response['Content-Disposition'] = (
                 'attachment; filename={filename}'.format(
@@ -497,7 +497,7 @@ def qml_style(request, layername):
                 f.write(content)
 
             # update QGIS Project files
-            response = create_qgis_project(layer)
+            response = create_qgis_project(layer, overwrite=True)
             if not response.content == 'OK':
                 return HttpResponseServerError()
 
