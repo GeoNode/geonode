@@ -126,6 +126,8 @@ types = [
              auxillary_file_exts=('dbf', 'shx', 'prj')),
     FileType("GeoTIFF", "tif", raster,
              aliases=('tiff', 'geotif', 'geotiff')),
+    FileType("ASCII Text File", "asc", raster,
+             auxillary_file_exts=('prj')),
     # requires geoserver importer extension
     FileType("PNG", "png", raster,
              auxillary_file_exts=('prj')),

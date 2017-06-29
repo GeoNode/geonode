@@ -297,6 +297,13 @@ class LayersTest(TestCase):
         files = dict(base_file=SimpleUploadedFile('foo.GEOTIF', ' '))
         self.assertTrue(LayerUploadForm(dict(), files).is_valid())
 
+    def testASCIIValidation(self):
+        files = dict(base_file=SimpleUploadedFile('foo.asc', ' '))
+        self.assertTrue(LayerUploadForm(dict(), files).is_valid())
+
+        files = dict(base_file=SimpleUploadedFile('foo.ASC', ' '))
+        self.assertTrue(LayerUploadForm(dict(), files).is_valid())
+
     def testZipValidation(self):
         the_zip = zipfile.ZipFile('test_upload.zip', 'w')
         in_memory_file = StringIO.StringIO()
@@ -355,6 +362,9 @@ class LayersTest(TestCase):
         self.assertEquals(layer_type('foo.geotiff'), 'raster')
         self.assertEquals(layer_type('foo.GEOTIFF'), 'raster')
         self.assertEquals(layer_type('foo.gEoTiFf'), 'raster')
+        self.assertEquals(layer_type('foo.asc'), 'raster')
+        self.assertEquals(layer_type('foo.ASC'), 'raster')
+        self.assertEquals(layer_type('foo.AsC'), 'raster')
 
         # basically anything else should produce a GeoNodeException
         self.assertRaises(GeoNodeException, lambda: layer_type('foo.gml'))
