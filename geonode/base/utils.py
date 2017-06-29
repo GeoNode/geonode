@@ -31,7 +31,7 @@ from django.conf import settings
 from geonode.documents.models import ResourceBase
 from django.shortcuts import render_to_response
 from django.template import RequestContext
-from django.http import HttpResponse, HttpResponseRedirect
+from django.http import HttpResponseRedirect
 from django.core.exceptions import PermissionDenied
 from geonode.documents.models import Document
 from geonode.layers.models import Layer
@@ -82,7 +82,11 @@ def batch_modify(request, ids, model):
                 resource.save()
             return HttpResponseRedirect(
                 '/admin/{model}s/{model}/'.format(model=model.lower()))
-        return HttpResponse('Form is invalid')
+        return render_to_response(template, RequestContext(request, {
+            'form': form,
+            'ids': ids,
+            'model': model,
+        }))
     form = BatchEditForm()
     return render_to_response(template, RequestContext(request, {
         'form': form,
