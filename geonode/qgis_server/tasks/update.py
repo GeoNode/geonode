@@ -34,14 +34,31 @@ logger = logging.getLogger(__name__)
 @task(
     name='geonode.qgis_server.tasks.update.create_qgis_server_thumbnail',
     queue='update')
-def create_qgis_server_thumbnail(instance, overwrite=False):
+def create_qgis_server_thumbnail(instance, overwrite=False, bbox=None):
+    """Task to update thumbnails.
+
+    This task will formulate OGC url to generate thumbnail and then pass it
+    to geonode
+
+    :param instance: Resource instance, can be a layer or map
+    :type instance: Layer, Map
+
+    :param overwrite: set True to overwrite
+    :type overwrite: bool
+
+    :param bbox: Bounding box of thumbnail in 4 tuple format
+        [xmin,ymin,xmax,ymax]
+    :type bbox: list(float)
+
+    :return:
+    """
     thumbnail_remote_url = None
     try:
         # to make sure it is executed after the instance saved
         if isinstance(instance, Layer):
-            thumbnail_remote_url = layer_thumbnail_url(instance)
+            thumbnail_remote_url = layer_thumbnail_url(instance, bbox=bbox)
         elif isinstance(instance, Map):
-            thumbnail_remote_url = map_thumbnail_url(instance)
+            thumbnail_remote_url = map_thumbnail_url(instance, bbox=bbox)
         else:
             # instance type does not have associated thumbnail
             return True

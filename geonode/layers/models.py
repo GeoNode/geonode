@@ -576,7 +576,17 @@ def post_delete_layer(instance, sender, **kwargs):
         pass
 
 
+def post_delete_layer_file(instance, sender, **kwargs):
+    """Delete associated file.
+
+    :param instance: LayerFile instance
+    :type instance: LayerFile
+    """
+    instance.file.delete(save=False)
+
+
 signals.pre_save.connect(pre_save_layer, sender=Layer)
 signals.post_save.connect(resourcebase_post_save, sender=Layer)
 signals.pre_delete.connect(pre_delete_layer, sender=Layer)
 signals.post_delete.connect(post_delete_layer, sender=Layer)
+signals.post_delete.connect(post_delete_layer_file, sender=LayerFile)

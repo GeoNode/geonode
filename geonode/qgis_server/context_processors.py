@@ -20,7 +20,9 @@
 
 from django.conf import settings
 from django.core.urlresolvers import reverse
+
 from geonode.geoserver.helpers import ogc_server_settings
+from geonode.qgis_server.forms import QGISLayerStyleUploadForm
 
 
 def qgis_server_urls(request):
@@ -53,4 +55,5 @@ def qgis_server_urls(request):
                         'MOSAIC_ENABLED',
                         False),
     )
+    defaults['style_upload_form'] = QGISLayerStyleUploadForm()
     return defaults

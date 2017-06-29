@@ -70,7 +70,7 @@ class QGISServerLayer(models.Model):
         :rtype: list(str)
         """
         base_path = self.base_layer_path
-        base_name, _ = os.path.splitext(base_path)
+        base_name, __ = os.path.splitext(base_path)
         extensions_list = QGISServerLayer.accepted_format
 
         # QGIS can create a .aux.xml too
@@ -83,6 +83,13 @@ class QGISServerLayer(models.Model):
             if os.path.exists(file_path):
                 found_files.append(file_path)
         return found_files
+
+    @property
+    def qgis_project_path(self):
+        """Returned QGIS Project path related with this layer."""
+        base_path = self.base_layer_path
+        base_name, __ = os.path.splitext(base_path)
+        return base_name + '.qgs'
 
     @property
     def cache_path(self):

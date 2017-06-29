@@ -19,6 +19,9 @@
 #########################################################################
 import logging
 import os
+
+import requests
+import shutil
 from requests import Request
 from urlparse import urljoin
 
@@ -118,11 +121,15 @@ def tile_url(layer_name):
     return url
 
 
-def map_thumbnail_url(instance):
+def map_thumbnail_url(instance, bbox=None):
     """Construct QGIS Server Url to fetch remote map thumbnail.
 
     :param instance: Map object
     :type instance: geonode.maps.models.Map
+
+    :param bbox: Bounding box of thumbnail in 4 tuple format
+        [xmin,ymin,xmax,ymax]
+    :type bbox: list(float)
 
     :return: thumbnail url
     :rtype: str
@@ -137,16 +144,21 @@ def map_thumbnail_url(instance):
         logger.debug(msg)
         return None
 
-    # We get the extent of these layers.
-    bbox = [float(i) for i in instance.bbox_string.split(',')]
+    if not bbox:
+        # We get the extent of these layers.
+        bbox = [float(i) for i in instance.bbox_string.split(',')]
     return thumbnail_url(bbox, layers, qgis_project)
 
 
-def layer_thumbnail_url(instance):
+def layer_thumbnail_url(instance, bbox=None):
     """Construct QGIS Server Url to fetch remote layer thumbnail.
 
     :param instance: Layer object
     :type instance: geonode.layers.models.Layer
+
+    :param bbox: Bounding box of thumbnail in 4 tuple format
+        [xmin,ymin,xmax,ymax]
+    :type bbox: list(float)
 
     :return: Thumbnail URL.
     :rtype: str
@@ -162,12 +174,13 @@ def layer_thumbnail_url(instance):
     qgis_project = basename + '.qgs'
     layers = instance.name
 
-    # We get the extent of the layer.
-    x_min = instance.resourcebase_ptr.bbox_x0
-    x_max = instance.resourcebase_ptr.bbox_x1
-    y_min = instance.resourcebase_ptr.bbox_y0
-    y_max = instance.resourcebase_ptr.bbox_y1
-    bbox = [x_min, y_min, x_max, y_max]
+    if not bbox:
+        # We get the extent of the layer.
+        x_min = instance.resourcebase_ptr.bbox_x0
+        x_max = instance.resourcebase_ptr.bbox_x1
+        y_min = instance.resourcebase_ptr.bbox_y0
+        y_max = instance.resourcebase_ptr.bbox_y1
+        bbox = [x_min, y_min, x_max, y_max]
 
     return thumbnail_url(bbox, layers, qgis_project)
 
@@ -225,3 +238,63 @@ def thumbnail_url(bbox, layers, qgis_project):
     }
     url = Request('GET', qgis_server_url, params=query_string).prepare().url
     return url
+
+
+def create_qgis_project(layer, qgis_layer=None, overwrite=False):
+    """Create a new QGS Project for a given layer.
+
+    :param layer: Layer
+    :type layer: geonode.layers.models.Layer
+
+    :param qgis_layer: QGIS Layer model
+    :type qgis_layer: geonode.qgis_server.models.QGISServerLayer
+
+    :param overwrite: Flag to recreate QGIS Project if necessary
+    :type overwrite: bool
+
+    """
+    qgis_server = settings.QGIS_SERVER_CONFIG['qgis_server_url']
+    if not qgis_layer:
+        qgis_layer = QGISServerLayer.objects.get(layer=layer)
+    basename, _ = os.path.splitext(qgis_layer.base_layer_path)
+
+    overwrite = str(overwrite).lower()
+
+    query_string = {
+        'SERVICE': 'MAPCOMPOSITION',
+        'PROJECT': '%s.qgs' % basename,
+        'FILES': qgis_layer.base_layer_path,
+        'NAMES': layer.name,
+        'OVERWRITE': overwrite,
+    }
+    response = requests.get(qgis_server, params=query_string)
+    return response
+
+
+def delete_orphaned_qgis_server_layers():
+    """Delete orphaned QGIS Server files."""
+    layer_path = settings.QGIS_SERVER_CONFIG['layer_directory']
+    for filename in os.listdir(layer_path):
+        basename, __ = os.path.splitext(filename)
+        fn = os.path.join(layer_path, filename)
+        if QGISServerLayer.objects.filter(
+                base_layer_path__icontains=basename).count() == 0:
+            print 'Removing orphan layer file %s' % fn
+            try:
+                os.remove(fn)
+            except OSError:
+                print 'Could not delete file %s' % fn
+
+
+def delete_orphaned_qgis_server_caches():
+    """Delete orphaned QGIS Server tile caches."""
+    tiles_path = settings.QGIS_SERVER_CONFIG['tiles_directory']
+    for basename in os.listdir(tiles_path):
+        path = os.path.join(tiles_path, basename)
+        if QGISServerLayer.objects.filter(
+                base_layer_path__icontains=basename).count() == 0:
+            print 'Removing orphan layer file %s' % path
+            try:
+                shutil.rmtree(path)
+            except OSError:
+                print 'Could not delete file %s' % path

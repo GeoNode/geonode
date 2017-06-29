@@ -35,7 +35,7 @@ from geonode.base.models import Link
 from geonode.layers.models import Layer
 from geonode.maps.models import Map, MapLayer
 from geonode.qgis_server.gis_tools import set_attributes
-from geonode.qgis_server.helpers import tile_url
+from geonode.qgis_server.helpers import tile_url, create_qgis_project
 from geonode.qgis_server.models import QGISServerLayer
 from geonode.qgis_server.tasks.update import create_qgis_server_thumbnail
 from geonode.utils import check_ogc_backend
@@ -49,9 +49,9 @@ if check_ogc_backend(qgis_server.BACKEND_PACKAGE):
 qgis_map_with_layers = Signal(providing_args=[])
 
 
-def qgis_server_layer_pre_delete(instance, sender, **kwargs):
+def qgis_server_layer_post_delete(instance, sender, **kwargs):
     """Removes the layer from Local Storage."""
-    logger.debug('QGIS Server Layer Pre Delete')
+    logger.debug('QGIS Server Layer Post Delete')
     instance.delete_qgis_layer()
 
 
@@ -209,16 +209,12 @@ def qgis_server_post_save(instance, sender, **kwargs):
             )
         )
 
+    # if layer has overwrite attribute, then it probably comes from
+    # importlayers management command and needs to be overwritten
+    overwrite = getattr(instance, 'overwrite', False)
+
     # Create the QGIS Project
-    qgis_server = settings.QGIS_SERVER_CONFIG['qgis_server_url']
-    basename, _ = os.path.splitext(qgis_layer.base_layer_path)
-    query_string = {
-        'SERVICE': 'MAPCOMPOSITION',
-        'PROJECT': '%s.qgs' % basename,
-        'FILES': qgis_layer.base_layer_path,
-        'NAMES': instance.name
-    }
-    response = requests.get(qgis_server, params=query_string)
+    response = create_qgis_project(instance, qgis_layer, overwrite)
 
     logger.debug('Creating the QGIS Project : %s' % response.url)
     if response.content != 'OK':
@@ -273,7 +269,7 @@ def qgis_server_post_save(instance, sender, **kwargs):
 
     # Create thumbnail
     create_qgis_server_thumbnail.delay(
-        instance, overwrite=True)
+        instance, overwrite=overwrite)
 
     # Attributes
     set_attributes(instance)
@@ -294,6 +290,17 @@ def qgis_server_post_save(instance, sender, **kwargs):
             }
             update_xml(xml_file_path, new_values)
         except (TypeError, AttributeError):
+            pass
+
+    # Remove existing tile caches if overwrite
+    if overwrite:
+        tiles_directory = settings.QGIS_SERVER_CONFIG['tiles_directory']
+        basename, _ = os.path.splitext(qgis_layer.base_layer_path)
+        basename = os.path.basename(basename)
+        tiles_cache_path = os.path.join(tiles_directory, basename)
+        try:
+            shutil.rmtree(tiles_cache_path)
+        except:
             pass
 
 
@@ -385,7 +392,7 @@ if check_ogc_backend(qgis_server.BACKEND_PACKAGE):
         qgis_server_post_save_map,
         dispatch_uid='Map-qgis_server_post_save_map',
         sender=Map)
-    signals.pre_delete.connect(
-        qgis_server_layer_pre_delete,
-        dispatch_uid='QGISServerLayer-qgis_server_layer_pre_delete',
+    signals.post_delete.connect(
+        qgis_server_layer_post_delete,
+        dispatch_uid='QGISServerLayer-qgis_server_layer_post_delete',
         sender=QGISServerLayer)

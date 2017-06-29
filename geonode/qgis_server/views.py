@@ -32,14 +32,19 @@ from django.contrib.gis.gdal import SpatialReference, CoordTransform
 from django.contrib.gis.geos import Point
 from django.core.urlresolvers import reverse
 from django.http import HttpResponse, Http404
+from django.http.response import (
+    HttpResponseBadRequest,
+    HttpResponseServerError)
 from django.shortcuts import get_object_or_404
 from django.template.response import TemplateResponse
 from django.utils.translation import ugettext as _
 
 from geonode.layers.models import Layer
+from geonode.qgis_server.forms import QGISLayerStyleUploadForm
 from geonode.qgis_server.gis_tools import num2deg
-from geonode.qgis_server.helpers import tile_url
+from geonode.qgis_server.helpers import tile_url, create_qgis_project
 from geonode.qgis_server.models import QGISServerLayer
+from geonode.qgis_server.tasks.update import create_qgis_server_thumbnail
 
 logger = logging.getLogger('geonode.qgis_server.views')
 
@@ -337,7 +342,8 @@ def qgis_server_request(request):
 
     # As we have one project per layer, we add the MAP path if the request is
     # specific for one layer.
-    if params.get('LAYERS') or params.get('TYPENAME'):
+    map_param = params.get('MAP')
+    if not map_param and (params.get('LAYERS') or params.get('TYPENAME')):
         # LAYERS is for WMS, TYPENAME for WFS
         layer_name = params.get('LAYERS') or params.get('TYPENAME')
 
@@ -422,3 +428,137 @@ def qgis_server_map_print(request):
         print '--------'
     return HttpResponse(
         json.dumps(temp), content_type="application/json")
+
+
+def qml_style(request, layername):
+    """Update/Retrieve QML style of a given QGIS Layer.
+
+    :param layername: The layer name in Geonode.
+    :type layername: basestring
+    :return:
+    """
+    layer = get_object_or_404(Layer, name=layername)
+    if request.method == 'GET':
+        try:
+
+            base_file_path, __ = layer.get_base_file()
+            base_file_path, __ = os.path.splitext(base_file_path.file.path)
+            qml_path = '{path}.qml'.format(path=base_file_path)
+
+            response = HttpResponse(
+                open(qml_path), content_type="application/xml")
+            # ..and correct content-disposition
+            response['Content-Disposition'] = (
+                'attachment; filename={filename}'.format(
+                    filename=os.path.basename(qml_path)))
+            return response
+        except:
+            return HttpResponseServerError()
+    elif request.method == 'POST':
+
+        # For people who uses API request
+        if not request.user.has_perm(
+                'change_resourcebase', layer.get_self_resource()):
+            return HttpResponse(status=401)
+
+        form = QGISLayerStyleUploadForm(request.POST, request.FILES)
+
+        if not form.is_valid():
+            return TemplateResponse(
+                request,
+                'qgis_server/forms/qml_style.html',
+                {
+                    'resource': layer,
+                    'style_upload_form': form
+                },
+                status=200).render()
+
+        try:
+            uploaded_qml = request.FILES['qml']
+
+            # update qml in uploaded media folder
+            base_file_path, __ = layer.get_base_file()
+            file_name, __ = os.path.splitext(base_file_path.file.path)
+            qml_path = '{file_name}.qml'.format(file_name=file_name)
+
+            content = uploaded_qml.read()
+
+            with open(qml_path, mode='w') as f:
+                f.write(content)
+
+            # update qml in QGIS Layer folder
+            QGIS_layer_directory = settings.QGIS_SERVER_CONFIG['layer_directory']
+            base_file_path = os.path.basename(base_file_path.file.path)
+            file_name, __ = os.path.splitext(base_file_path)
+            qml_path = '{file_name}.qml'.format(file_name=file_name)
+            qml_path = os.path.join(QGIS_layer_directory, qml_path)
+
+            with open(qml_path, mode='w') as f:
+                f.write(content)
+
+            # update QGIS Project files
+            response = create_qgis_project(layer)
+            if not response.content == 'OK':
+                return HttpResponseServerError()
+
+            # Because we update a style, we need to recache
+            QGIS_tiles_directory = settings.QGIS_SERVER_CONFIG['tiles_directory']
+            qgis_layer = get_object_or_404(QGISServerLayer, layer=layer)
+            basename, _ = os.path.splitext(qgis_layer.base_layer_path)
+            basename = os.path.basename(basename)
+
+            layer_tiles_path = os.path.join(QGIS_tiles_directory, basename)
+
+            try:
+                shutil.rmtree(layer_tiles_path)
+            except:
+                pass
+
+            return TemplateResponse(
+                request,
+                'qgis_server/forms/qml_style.html',
+                {
+                    'resource': layer,
+                    'style_upload_form': form,
+                    'success': True
+                },
+                status=200).render()
+
+        except:
+            return HttpResponseServerError()
+
+    return HttpResponseBadRequest()
+
+
+def set_thumbnail(request, layername):
+    """Update thumbnail based on map extent
+
+    :param layername: The layer name in Geonode.
+    :type layername: basestring
+    :return:
+    """
+    if request.method != 'POST':
+        return HttpResponseBadRequest()
+
+    try:
+        layer = get_object_or_404(Layer, name=layername)
+
+        # For people who uses API request
+        if not request.user.has_perm(
+                'change_resourcebase', layer.get_self_resource()):
+            return HttpResponse(status=401)
+
+        # extract bbox
+        bbox_string = request.POST['bbox']
+        # BBox should be in the format: [xmin,ymin,xmax,ymax]
+        bbox = bbox_string.split(',')
+        bbox = [float(s) for s in bbox]
+
+        create_qgis_server_thumbnail.delay(layer, overwrite=True, bbox=bbox)
+        retval = {
+            'success': True
+        }
+        return HttpResponse(
+            json.dumps(retval), content_type="application/json")
+    except:
+        return HttpResponseServerError()

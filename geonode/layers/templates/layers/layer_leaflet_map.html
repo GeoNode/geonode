@@ -1,4 +1,5 @@
 {% load leaflet_tags %}
+{% load i18n %}
 
 {% leaflet_js %}
 {% leaflet_css %}
@@ -228,7 +229,51 @@
             //adjust info
             L.control.navbar().addTo(map);
         }
+
+        {% if OGC_SERVER.default.BACKEND == 'geonode.qgis_server' %}
+            {# expose map object to window #}
+            window.preview_map = map;
+
+            {# Event handler for style editing #}
+            function edit_style_on_submit(event){
+                {# prevent form submit by default #}
+                var data = new FormData();
+                $.each($("#id_qml")[0].files, function(i, file){
+                    data.append('qml', file);
+                });
+                var action = $(this).attr('action');
+                $.ajax({
+                    url: action,
+                    data: data,
+                    cache: false,
+                    contentType: false,
+                    processData: false,
+                    type: 'POST',
+                    success: function(data){
+                        if(data){
+                            $("#qgis-server-style-edit .modal-body").html(data);
+                            $(document).ready(function() {
+                                $("#qgis-server-style-edit-form").on('submit', edit_style_on_submit);
+                            });
+                        }
+                    },
+                    failure: function(data){
+                        alert('{% trans "Failed to change layer style." %}');
+                    }
+                });
+                return false;
+            }
+
+            {# Trigger dialog for Style edit #}
+            $(".style-edit").on('click', function (event) {
+                $("#qgis-server-style-edit").modal('show');
+            });
+
+            {# Attach form submit event #}
+            $("#qgis-server-style-edit-form").on('submit', edit_style_on_submit);
+        {% endif %}
   });
+
   function zoom_to_box(map, bbox) {
           var bounds = [
               [bbox[1], bbox[0]],
@@ -237,4 +282,33 @@
           map.fitBounds(bounds);
       }
 
+
+  {% if OGC_SERVER.default.BACKEND == 'geonode.qgis_server' %}
+
+    function createMapThumbnail() {
+        {# Use map extent #}
+        var map = window.preview_map;
+        var bbox = map.getBounds().toBBoxString();
+        var data = {
+            'bbox': bbox
+        };
+        $.post('{% url "qgis_server:set-thumbnail" layername=resource.name %}', data);
+    }
+  {% endif %}
 </script>
+
+{% if OGC_SERVER.default.BACKEND == 'geonode.qgis_server' %}
+    <div class="modal fade" id="qgis-server-style-edit" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    <h4 class="modal-title">{% trans "Upload QML Style" %}</h4>
+                </div>
+                <div class="modal-body">
+                    {% include "qgis_server/forms/qml_style.html" %}
+                </div>
+            </div>
+        </div>
+    </div>
+{% endif %}

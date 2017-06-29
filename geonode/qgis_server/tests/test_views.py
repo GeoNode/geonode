@@ -19,9 +19,11 @@
 #########################################################################
 
 import StringIO
+import json
 import os
 import urlparse
 import zipfile
+from imghdr import what
 
 import gisdata
 from django.conf import settings
@@ -33,6 +35,7 @@ from django.test import LiveServerTestCase, TestCase
 from geonode import qgis_server
 from geonode.decorators import on_ogc_backend
 from geonode.layers.utils import file_upload
+from geonode.maps.models import Map
 
 
 class DefaultViewsTest(TestCase):
@@ -183,8 +186,7 @@ class ThumbnailGenerationTest(LiveServerTestCase):
         # check that we have remote thumbnail
         remote_thumbnail_link = layer.link_set.get(
             name__icontains='remote thumbnail')
-        self.assertTrue(
-            remote_thumbnail_link.url != settings.MISSING_THUMBNAIL)
+        self.assertTrue(remote_thumbnail_link.url)
 
         # thumbnail won't generate because remote thumbnail uses public
         # address
@@ -205,6 +207,7 @@ class ThumbnailGenerationTest(LiveServerTestCase):
 
         # Check thumbnail created
         self.assertTrue(os.path.exists(thumbnail_path))
+        self.assertEqual(what(thumbnail_path), 'png')
 
         # Check that now we have thumbnail
         self.assertTrue(layer.has_thumbnail())
@@ -219,3 +222,146 @@ class ThumbnailGenerationTest(LiveServerTestCase):
         link_names = ['remote thumbnail', 'thumbnail']
         for link in thumbnail_links:
             self.assertIn(link.name.lower(), link_names)
+
+        # cleanup
+        layer.delete()
+
+    @on_ogc_backend(qgis_server.BACKEND_PACKAGE)
+    def test_map_thumbnail(self):
+        """Creating map will create thumbnail."""
+        filename = os.path.join(
+            gisdata.GOOD_DATA, 'raster/relief_san_andres.tif')
+        layer1 = file_upload(filename)
+
+        filename = os.path.join(
+            gisdata.GOOD_DATA,
+            'vector/san_andres_y_providencia_administrative.shp')
+        layer2 = file_upload(filename)
+        """:type: geonode.layers.models.Layer"""
+
+        # construct json request for new map
+        json_payload = {
+            "sources": {
+                "source_OpenMapSurfer Roads": {
+                    "url": "http://korona.geog.uni-heidelberg.de/tiles"
+                           "/roads/x={x}&y={y}&z={z}"
+                },
+                "source_OpenStreetMap": {
+                    "url": "http://{s}.tile.osm.org/{z}/{x}/{y}.png"
+                },
+                "source_san_andres_y_providencia_administrative": {
+                    "url": "http://geonode.dev/qgis-server/tiles"
+                           "/san_andres_y_providencia_administrative/"
+                           "{z}/{x}/{y}.png"
+                },
+                "source_relief_san_andres": {
+                    "url": "http://geonode.dev/qgis-server/tiles"
+                           "/relief_san_andres/{z}/{x}/{y}.png"
+                }
+            },
+            "about": {
+                "title": "San Andreas",
+                "abstract": "San Andreas sample map"
+            },
+            "map": {
+                "center": [12.91890657418042, -81.298828125],
+                "zoom": 6,
+                "projection": "",
+                "layers": [
+                    {
+                        "name": "OpenMapSurfer_Roads",
+                        "title": "OpenMapSurfer Roads",
+                        "visibility": True,
+                        "url": "http://korona.geog.uni-heidelberg.de/tiles/"
+                               "roads/x={x}&y={y}&z={z}",
+                        "group": "background",
+                        "source": "source_OpenMapSurfer Roads"
+                    },
+                    {
+                        "name": "osm",
+                        "title": "OpenStreetMap",
+                        "visibility": False,
+                        "url": "http://{s}.tile.osm.org/{z}/{x}/{y}.png",
+                        "group": "background",
+                        "source": "source_OpenStreetMap"
+                    },
+                    {
+                        "name": "geonode:"
+                                "san_andres_y_providencia_administrative",
+                        "title": "san_andres_y_providencia_administrative",
+                        "visibility": True,
+                        "url": "http://geonode.dev/qgis-server/tiles"
+                               "/san_andres_y_providencia_administrative/"
+                               "{z}/{x}/{y}.png",
+                        "source": "source_"
+                                  "san_andres_y_providencia_administrative"
+                    },
+                    {
+                        "name": "geonode:relief_san_andres",
+                        "title": "relief_san_andres",
+                        "visibility": True,
+                        "url": "http://geonode.dev/qgis-server/tiles"
+                               "/relief_san_andres/{z}/{x}/{y}.png",
+                        "source": "source_relief_san_andres"
+                    }
+                ]
+            }
+        }
+
+        self.client.login(username='admin', password='admin')
+
+        response = self.client.post(
+            reverse('new_map_json'),
+            json.dumps(json_payload),
+            content_type='application/json')
+
+        self.assertEqual(response.status_code, 200)
+
+        map_id = json.loads(response.content).get('id')
+
+        map = Map.objects.get(id=map_id)
+
+        # check that we have remote thumbnail
+        remote_thumbnail_link = map.link_set.get(
+            name__icontains='remote thumbnail')
+        self.assertTrue(remote_thumbnail_link.url)
+
+        # thumbnail won't generate because remote thumbnail uses public
+        # address
+
+        remote_thumbnail_url = remote_thumbnail_link.url
+
+        # Replace url's basename, we want to access it using django client
+        parse_result = urlparse.urlsplit(remote_thumbnail_url)
+        remote_thumbnail_url = urlparse.urlunsplit(
+            ('', '', parse_result.path, parse_result.query, ''))
+
+        response = self.client.get(remote_thumbnail_url)
+
+        thumbnail_dir = os.path.join(settings.MEDIA_ROOT, 'thumbs')
+        thumbnail_path = os.path.join(thumbnail_dir, 'map-thumb.png')
+
+        map.save_thumbnail(thumbnail_path, response.content)
+
+        # Check thumbnail created
+        self.assertTrue(os.path.exists(thumbnail_path))
+        self.assertEqual(what(thumbnail_path), 'png')
+
+        # Check that now we have thumbnail
+        self.assertTrue(map.has_thumbnail())
+
+        missing_thumbnail_url = staticfiles.static(settings.MISSING_THUMBNAIL)
+
+        self.assertTrue(map.get_thumbnail_url() != missing_thumbnail_url)
+
+        thumbnail_links = map.link_set.filter(name__icontains='thumbnail')
+        self.assertTrue(len(thumbnail_links) > 0)
+
+        link_names = ['remote thumbnail', 'thumbnail']
+        for link in thumbnail_links:
+            self.assertIn(link.name.lower(), link_names)
+
+        # cleanup
+        map.delete()
+        layer1.delete()
+        layer2.delete()

@@ -106,8 +106,6 @@ class CommonModelApi(ModelResource):
         'thumbnail_url',
         'detail_url',
         'rating',
-        'typename',
-        'name'
     ]
 
     def build_filters(self, filters=None):
@@ -579,7 +577,12 @@ class LayerResource(CommonModelApi):
         formatted_objects = []
         for obj in objects:
             # convert the object to a dict using the standard values.
-            formatted_obj = model_to_dict(obj, fields=self.VALUES)
+            # includes other values
+            values = self.VALUES + [
+                'typename',
+                'name'
+            ]
+            formatted_obj = model_to_dict(obj, fields=values)
             # add the geogig link
             formatted_obj['geogig_link'] = obj.geogig_link
             # add Link link

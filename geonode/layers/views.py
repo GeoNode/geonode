@@ -759,7 +759,7 @@ def layer_replace(request, layername, template='layers/layer_replace.html'):
                         try:
                             qgis_layer = QGISServerLayer.objects.get(
                                 layer=layer)
-                            qgis_layer.delete_qgis_layer()
+                            qgis_layer.delete()
                         except QGISServerLayer.DoesNotExist:
                             pass
 
