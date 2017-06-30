@@ -19,9 +19,12 @@
 #########################################################################
 
 import logging
+import shutil
 import socket
 
+import requests
 from celery.task import task
+from requests.exceptions import HTTPError
 
 from geonode.layers.models import Layer
 from geonode.layers.utils import create_thumbnail
@@ -56,15 +59,27 @@ def create_qgis_server_thumbnail(instance, overwrite=False, bbox=None):
     try:
         # to make sure it is executed after the instance saved
         if isinstance(instance, Layer):
-            thumbnail_remote_url = layer_thumbnail_url(instance, bbox=bbox)
+            thumbnail_remote_url = layer_thumbnail_url(
+                instance, bbox=bbox, internal=False)
         elif isinstance(instance, Map):
-            thumbnail_remote_url = map_thumbnail_url(instance, bbox=bbox)
+            thumbnail_remote_url = map_thumbnail_url(
+                instance, bbox=bbox, internal=False)
         else:
             # instance type does not have associated thumbnail
             return True
         if not thumbnail_remote_url:
             return True
         logger.debug('Create thumbnail for %s' % thumbnail_remote_url)
+
+        if overwrite:
+            # if overwrite, then delete existing thumbnail links
+            instance.link_set.filter(
+                resource=instance.get_self_resource(),
+                name="Remote Thumbnail").delete()
+            instance.link_set.filter(
+                resource=instance.get_self_resource(),
+                name="Thumbnail").delete()
+
         create_thumbnail(instance, thumbnail_remote_url, overwrite=overwrite)
         return True
     # if it is socket exception, we should raise it, because there is
@@ -78,3 +93,51 @@ def create_qgis_server_thumbnail(instance, overwrite=False, bbox=None):
     except Exception as e:
         logger.exception(e)
         return False
+
+
+@task(
+    name='geonode.qgis_server.tasks.update.cache_request',
+    queue='update')
+def cache_request(url, cache_file):
+    """Cache a given url request to a file.
+
+    On some rare occasions, QGIS Server url request is taking too long to
+    complete. This could be a problem if user is requesting something like
+    a tile or legend from Web interface and when it takes too long, the
+    connection will reset. This case will make the request never be completed
+    because the request died with user connection.
+
+    For this kind of request, it is better to register the request as celery
+    task. This will make the task to keep running, even if connection is
+    reset.
+
+    :param url: The target url to request
+    :type url: str
+
+    :param cache_file: The target file path to save the cache
+    :type cache_file: str
+
+    :return: True if succeeded
+    :rtype: bool
+    """
+
+    response = requests.get(url, stream=True)
+
+    if not response.status_code == 200:
+        # Failed to fetch request. Abort with error message
+        msg = (
+            'Failed to fetch requested url: {url}\n'
+            'With HTTP status code: {status_code}\n'
+            'Content: {content}')
+        msg = msg.format(
+            url=url,
+            status_code=response.status_code,
+            content=response.content)
+        raise HTTPError(msg)
+
+    with open(cache_file, 'wb') as out_file:
+        shutil.copyfileobj(response.raw, out_file)
+
+    del response
+
+    return True

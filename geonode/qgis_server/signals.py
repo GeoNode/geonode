@@ -22,24 +22,23 @@ from __future__ import absolute_import
 import logging
 import os
 import shutil
-import requests
-from requests.compat import urljoin
 
 from django.conf import settings
 from django.core.urlresolvers import reverse
-from django.db.models import ObjectDoesNotExist, signals
+from django.db.models import signals
 from django.dispatch import Signal
+from requests.compat import urljoin
 
 from geonode import qgis_server
 from geonode.base.models import Link
 from geonode.layers.models import Layer
 from geonode.maps.models import Map, MapLayer
 from geonode.qgis_server.gis_tools import set_attributes
-from geonode.qgis_server.helpers import tile_url, create_qgis_project
-from geonode.qgis_server.models import QGISServerLayer
+from geonode.qgis_server.helpers import tile_url_format, create_qgis_project
+from geonode.qgis_server.models import QGISServerLayer, QGISServerMap
 from geonode.qgis_server.tasks.update import create_qgis_server_thumbnail
-from geonode.utils import check_ogc_backend
 from geonode.qgis_server.xml_utilities import update_xml
+from geonode.utils import check_ogc_backend
 
 logger = logging.getLogger("geonode.qgis_server.signals")
 
@@ -83,6 +82,9 @@ def qgis_server_post_save(instance, sender, **kwargs):
 
     The way keywords are implemented requires the layer to be saved to the
     database before accessing them.
+
+    This hook also creates QGIS Project. Which is essentials for QGIS Server.
+    There are also several Geonode Links generated, like thumbnail and legends
     """
     if not sender == Layer:
         return
@@ -118,8 +120,7 @@ def qgis_server_post_save(instance, sender, **kwargs):
                     )
                 else:
                     # If there is already a file, replace the old one
-                    qgis_layer_base_filename, _ = os.path.splitext(
-                        qgis_layer.base_layer_path)
+                    qgis_layer_base_filename = qgis_layer.qgis_layer_path_prefix
                     shutil.copy2(
                         base_filename + '.' + ext,
                         qgis_layer_base_filename + '.' + ext
@@ -214,7 +215,9 @@ def qgis_server_post_save(instance, sender, **kwargs):
     overwrite = getattr(instance, 'overwrite', False)
 
     # Create the QGIS Project
-    response = create_qgis_project(instance, qgis_layer, overwrite)
+    response = create_qgis_project(
+        instance, qgis_layer.qgis_project_path, overwrite=overwrite,
+        internal=True)
 
     logger.debug('Creating the QGIS Project : %s' % response.url)
     if response.content != 'OK':
@@ -222,7 +225,7 @@ def qgis_server_post_save(instance, sender, **kwargs):
 
     Link.objects.get_or_create(
         resource=instance.resourcebase_ptr,
-        url=tile_url(instance.name),
+        url=tile_url_format(instance.name),
         defaults=dict(
             extension='tiles',
             name="Tiles",
@@ -275,19 +278,33 @@ def qgis_server_post_save(instance, sender, **kwargs):
     set_attributes(instance)
 
     # Update xml file
+
+    # Read metadata from layer that InaSAFE use.
+    # Some are not found: organisation, email, url
+    try:
+        new_values = {
+            'date': instance.date.isoformat(),
+            'abstract': instance.abstract,
+            'title': instance.title,
+            'license': instance.license_verbose,
+        }
+    except (TypeError, AttributeError):
+        new_values = {}
+        pass
+
     # Get the path of the metadata file
     basename, _ = os.path.splitext(qgis_layer.base_layer_path)
     xml_file_path = basename + '.xml'
     if os.path.exists(xml_file_path):
         try:
-            # Read metadata from layer that InaSAFE use.
-            # Some are not found: organisation, email, url
-            new_values = {
-                'date': instance.date.isoformat(),
-                'abstract': instance.abstract,
-                'title': instance.title,
-                'license': instance.license_verbose,
-            }
+            update_xml(xml_file_path, new_values)
+        except (TypeError, AttributeError):
+            pass
+
+    # Also update xml in QGIS Server
+    xml_file_path = qgis_layer.qgis_layer_path_prefix + '.xml'
+    if os.path.exists(xml_file_path):
+        try:
             update_xml(xml_file_path, new_values)
         except (TypeError, AttributeError):
             pass
@@ -300,7 +317,8 @@ def qgis_server_post_save(instance, sender, **kwargs):
         tiles_cache_path = os.path.join(tiles_directory, basename)
         try:
             shutil.rmtree(tiles_cache_path)
-        except:
+        except OSError:
+            # The path doesn't exists yet
             pass
 
 
@@ -315,29 +333,34 @@ def qgis_server_pre_save_maplayer(instance, sender, **kwargs):
 
 
 def qgis_server_post_save_map(instance, sender, **kwargs):
+    """Post Save Map Hook for QGIS Server
+
+    This hook will creates QGIS Project for a given map.
+    This hook also generates thumbnail link.
+    """
     logger.debug('QGIS Server Post Save Map custom')
     map_id = instance.id
     map_layers = MapLayer.objects.filter(map__id=map_id)
+
+    # Geonode map supports local layers and remote layers
+    # Remote layers were provided from other OGC services, so we don't
+    # deal with it at the moment.
     local_layers = [l for l in map_layers if l.local]
 
-    names = []
-    files = []
+    layers = []
     for layer in local_layers:
-        l = Layer.objects.get(typename=layer.name)
-        names.append(l.title)
-
         try:
-            qgis_layer = QGISServerLayer.objects.get(layer=l)
-            files.append(qgis_layer.base_layer_path)
-        except ObjectDoesNotExist:
-            msg = 'No QGIS Server Layer for existing layer %s' % l.title
+            l = Layer.objects.get(typename=layer.name)
+            layers.append(l)
+        except Layer.DoesNotExist:
+            msg = 'No Layer found for typename: {0}'.format(layer.name)
             logger.debug(msg)
 
-    if not files:
-        # The signal is called to early, the map has not layer yet.
+    if not layers:
+        # The signal is called too early, or the map has no layer yet.
         return
 
-    # Set bounding box based on all layers extents.
+    # Set default bounding box based on all layers extents.
     bbox = instance.get_bbox_from_layers(instance.local_layers)
     instance.set_bounds_from_bbox(bbox)
     Map.objects.filter(id=map_id).update(
@@ -349,50 +372,57 @@ def qgis_server_post_save_map(instance, sender, **kwargs):
         center_x=instance.center_x,
         center_y=instance.center_y)
 
+    # Check overwrite flag
+    overwrite = getattr(instance, 'overwrite', False)
+
     # Create the QGIS Project
-    qgis_server = settings.QGIS_SERVER_CONFIG['qgis_server_url']
-    project_path = os.path.join(QGIS_layer_directory, 'map_%s.qgs' % map_id)
-    query_string = {
-        'SERVICE': 'MAPCOMPOSITION',
-        'PROJECT': project_path,
-        'FILES': ';'.join(files),
-        'NAMES': ';'.join(names),
-        'OVERWRITE': 'true',
-    }
-    response = requests.get(qgis_server, params=query_string)
+    qgis_map, created = QGISServerMap.objects.get_or_create(map=instance)
+
+    # if it is newly created qgis_map, we should overwrite if existing files
+    # exists.
+    overwrite = created or overwrite
+    response = create_qgis_project(
+        layer=layers,
+        qgis_project_path=qgis_map.qgis_project_path,
+        overwrite=overwrite,
+        internal=True)
 
     logger.debug('Create project url: {url}'.format(url=response.url))
     logger.debug(
         'Creating the QGIS Project : %s -> %s' % (
-            project_path, response.content))
+            qgis_map.qgis_project_path, response.content))
 
+    # Generate map thumbnail
     create_qgis_server_thumbnail.delay(
         instance, overwrite=True)
 
 
-if check_ogc_backend(qgis_server.BACKEND_PACKAGE):
-    logger.debug('Register signals QGIS Server')
-    signals.pre_save.connect(
-        qgis_server_pre_save,
-        dispatch_uid='Layer-qgis_server_pre_save',
-        sender=Layer)
-    signals.pre_delete.connect(
-        qgis_server_pre_delete,
-        dispatch_uid='Layer-qgis_server_pre_delete',
-        sender=Layer)
-    signals.post_save.connect(
-        qgis_server_post_save,
-        dispatch_uid='Layer-qgis_server_post_save',
-        sender=Layer)
-    signals.pre_save.connect(
-        qgis_server_pre_save_maplayer,
-        dispatch_uid='MapLayer-qgis_server_pre_save_maplayer',
-        sender=MapLayer)
-    signals.post_save.connect(
-        qgis_server_post_save_map,
-        dispatch_uid='Map-qgis_server_post_save_map',
-        sender=Map)
-    signals.post_delete.connect(
-        qgis_server_layer_post_delete,
-        dispatch_uid='QGISServerLayer-qgis_server_layer_post_delete',
-        sender=QGISServerLayer)
+def register_qgis_server_signals():
+    """Helper function to register model signals."""
+    if check_ogc_backend(qgis_server.BACKEND_PACKAGE):
+        # Do it only if qgis_server is being used
+        logger.debug('Register signals QGIS Server')
+        signals.pre_save.connect(
+            qgis_server_pre_save,
+            dispatch_uid='Layer-qgis_server_pre_save',
+            sender=Layer)
+        signals.pre_delete.connect(
+            qgis_server_pre_delete,
+            dispatch_uid='Layer-qgis_server_pre_delete',
+            sender=Layer)
+        signals.post_save.connect(
+            qgis_server_post_save,
+            dispatch_uid='Layer-qgis_server_post_save',
+            sender=Layer)
+        signals.pre_save.connect(
+            qgis_server_pre_save_maplayer,
+            dispatch_uid='MapLayer-qgis_server_pre_save_maplayer',
+            sender=MapLayer)
+        signals.post_save.connect(
+            qgis_server_post_save_map,
+            dispatch_uid='Map-qgis_server_post_save_map',
+            sender=Map)
+        signals.post_delete.connect(
+            qgis_server_layer_post_delete,
+            dispatch_uid='QGISServerLayer-qgis_server_layer_post_delete',
+            sender=QGISServerLayer)

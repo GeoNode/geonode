@@ -27,6 +27,7 @@ from django.db import models
 
 from geonode import qgis_server
 from geonode.layers.models import Layer
+from geonode.maps.models import Map
 from geonode.utils import check_ogc_backend
 
 logger = logging.getLogger("geonode.qgis_server.models")
@@ -85,23 +86,61 @@ class QGISServerLayer(models.Model):
         return found_files
 
     @property
+    def qgis_layer_path_prefix(self):
+        """Returned QGIS layer path prefix.
+
+        Example base path: /usr/src/app/geonode/qgis_layer/jakarta_flood.shp
+
+        Path prefix: /usr/src/app/geonode/qgis_layer/jakarta_flood
+        """
+        prefix, __ = os.path.splitext(self.base_layer_path)
+        return prefix
+
+    @property
+    def qgis_layer_name(self):
+        """Returned QGIS Layer name associated with this layer.
+
+        Example base path: /usr/src/app/geonode/qgis_layer/jakarta_flood.shp
+
+        QGIS Layer name: jakarta_flood
+        """
+        return os.path.basename(self.qgis_layer_path_prefix)
+
+    @property
     def qgis_project_path(self):
-        """Returned QGIS Project path related with this layer."""
-        base_path = self.base_layer_path
-        base_name, __ = os.path.splitext(base_path)
-        return base_name + '.qgs'
+        """Returned QGIS Project path related with this layer.
+
+        Example base path: /usr/src/app/geonode/qgis_layer/jakarta_flood.shp
+
+        QGIS Project path: /usr/src/app/geonode/qgis_layer/jakarta_flood.qgs
+        """
+        return '{prefix}.qgs'.format(prefix=self.qgis_layer_path_prefix)
 
     @property
     def cache_path(self):
         """Returned the location of tile cache for this layer.
 
+        Example base path: /usr/src/app/geonode/qgis_layer/jakarta_flood.shp
+
+        QGIS cache path: /usr/src/app/geonode/qgis_tiles/jakarta_flood
+
         :return: Base path of layer cache
         :rtype: str
         """
-        basename, _ = os.path.splitext(self.base_layer_path)
-        basename = os.path.basename(basename)
-        path = os.path.join(QGIS_TILES_DIRECTORY, basename)
-        return path
+        return os.path.join(QGIS_TILES_DIRECTORY, self.qgis_layer_name)
+
+    @property
+    def qml_path(self):
+        """Returned the location of QML path for this layer (if any).
+
+        Example base path: /usr/src/app/geonode/qgis_layer/jakarta_flood.shp
+
+        QGIS QML path: /usr/src/app/geonode/qgis_tiles/jakarta_flood.qml
+
+        :return: Base path of qml style
+        :rtype: str
+        """
+        return '{prefix}.qml'.format(prefix=self.qgis_layer_path_prefix)
 
     def delete_qgis_layer(self):
         """Delete all files related to this object from disk."""
@@ -120,4 +159,57 @@ class QGISServerLayer(models.Model):
             pass
 
 
-from geonode.qgis_server import signals  # noqa: F402,F401
+class QGISServerMap(models.Model):
+    """Model wrapper for QGIS Server Map."""
+
+    map = models.OneToOneField(
+        Map,
+        primary_key=True,
+        name='map'
+    )
+
+    map_name_format = 'map_{id}'
+
+    @property
+    def qgis_map_name(self):
+        """Returned QGIS Map name associated with this layer.
+
+        based on map_name_format
+        Example QGIS Map name: map_1
+        """
+        return self.map_name_format.format(id=self.map.id)
+
+    @property
+    def qgis_map_path_prefix(self):
+        """Returned QGIS map path prefix.
+
+        based on map_name_format
+        Path prefix: /usr/src/app/geonode/qgis_layer/map_1
+        """
+        return os.path.join(QGIS_LAYER_DIRECTORY, self.qgis_map_name)
+
+    @property
+    def qgis_project_path(self):
+        """Returned QGIS Project path related with this map.
+
+        based on map_name_format
+        QGIS Project path: /usr/src/app/geonode/qgis_layer/map_1.qgs
+        """
+        return '{prefix}.qgs'.format(prefix=self.qgis_map_path_prefix)
+
+    @property
+    def cache_path(self):
+        """Returned the location of tile cache for this layer.
+
+        based on map_name_format
+        QGIS cache path: /usr/src/app/geonode/qgis_tiles/map_1
+
+        :return: Base path of layer cache
+        :rtype: str
+        """
+        return os.path.join(QGIS_TILES_DIRECTORY, self.qgis_map_name)
+
+
+from geonode.qgis_server.signals import \
+    register_qgis_server_signals  # noqa: F402,F401
+register_qgis_server_signals()

@@ -28,8 +28,7 @@ from imghdr import what as image_format
 
 import requests
 from django.conf import settings
-from django.contrib.gis.gdal import SpatialReference, CoordTransform
-from django.contrib.gis.geos import Point
+from django.core.files import File
 from django.core.urlresolvers import reverse
 from django.http import HttpResponse, Http404
 from django.http.response import (
@@ -41,10 +40,16 @@ from django.utils.translation import ugettext as _
 
 from geonode.layers.models import Layer
 from geonode.qgis_server.forms import QGISLayerStyleUploadForm
-from geonode.qgis_server.gis_tools import num2deg
-from geonode.qgis_server.helpers import tile_url, create_qgis_project
+from geonode.qgis_server.helpers import (
+    tile_url_format,
+    create_qgis_project,
+    legend_url,
+    tile_url,
+    qgis_server_endpoint)
 from geonode.qgis_server.models import QGISServerLayer
-from geonode.qgis_server.tasks.update import create_qgis_server_thumbnail
+from geonode.qgis_server.tasks.update import (
+    create_qgis_server_thumbnail,
+    cache_request)
 
 logger = logging.getLogger('geonode.qgis_server.views')
 
@@ -61,13 +66,10 @@ def download_zip(request, layername):
     """
     layer = get_object_or_404(Layer, name=layername)
     qgis_layer = get_object_or_404(QGISServerLayer, layer=layer)
-    basename, _ = os.path.splitext(qgis_layer.base_layer_path)
     # Files (local path) to put in the .zip
-    filenames = []
-    for ext in QGISServerLayer.accepted_format:
-        target_file = basename + '.' + ext
-        if os.path.exists(target_file) and ext != 'qgs':
-            filenames.append(target_file)
+    filenames = qgis_layer.files
+    # Exclude qgis project files, because it contains server specific path
+    filenames = [f for f in filenames if not f.endswith('.qgs')]
 
     # Folder name in ZIP archive which contains the above files
     # E.g [thearchive.zip]/somefiles/file2.txt
@@ -114,39 +116,27 @@ def legend(request, layername, layertitle=False):
     """
     layer = get_object_or_404(Layer, name=layername)
     qgis_layer = get_object_or_404(QGISServerLayer, layer=layer)
-    basename, _ = os.path.splitext(qgis_layer.base_layer_path)
 
     legend_path = QGIS_SERVER_CONFIG['legend_path']
-    legend_filename = legend_path % os.path.basename(basename)
+    legend_filename = legend_path % qgis_layer.qgis_layer_name
 
     if not os.path.exists(legend_filename):
 
         if not os.path.exists(os.path.dirname(legend_filename)):
             os.makedirs(os.path.dirname(legend_filename))
 
-        qgis_server = QGIS_SERVER_CONFIG['qgis_server_url']
-        query_string = {
-            'MAP': basename + '.qgs',
-            'SERVICE': 'WMS',
-            'VERSION': '1.3.0',
-            'REQUEST': 'GetLegendGraphic',
-            'LAYER': layer.name,
-            'LAYERTITLE': str(layertitle).upper(),
-            'FORMAT': 'image/png',
-            'TILED': 'true',
-            'TRANSPARENT': 'true',
-            'LEGEND_OPTIONS': (
-                'fontAntiAliasing:true;fontSize:11;fontName:Arial')
-        }
+        url = legend_url(layer, layertitle, internal=True)
 
-        response = requests.get(qgis_server, params=query_string, stream=True)
-        with open(legend_filename, 'wb') as out_file:
-            shutil.copyfileobj(response.raw, out_file)
-        del response
+        result = cache_request.delay(url, legend_filename)
 
-        if image_format(legend_filename) != 'png':
-            logger.error('%s is not valid PNG.' % legend_filename)
-            os.remove(legend_filename)
+        # Attempt to run task synchronously
+        if not result.get():
+            # If not succeded, provides error message.
+            return HttpResponseServerError('Failed to fetch legend.')
+
+    if image_format(legend_filename) != 'png':
+        logger.error('%s is not valid PNG.' % legend_filename)
+        os.remove(legend_filename)
 
     if not os.path.exists(legend_filename):
         return HttpResponse('The legend could not be found.', status=409)
@@ -158,7 +148,7 @@ def legend(request, layername, layertitle=False):
 def tile_404(request, layername):
     """This view is used when the user try to use the raw tile URL.
 
-    When the URL contains {z}/{x}/{y}.png.
+    When the URL contains {z}/{x}/{y}.png, display this page.
 
     :param layername: The layer name in Geonode.
     :type layername: basestring
@@ -168,7 +158,7 @@ def tile_404(request, layername):
 
     msg = _(
         'You should use a GIS software or a library which support TMS service '
-        'to use this URL : {url}').format(url=tile_url(layername))
+        'to use this URL : {url}').format(url=tile_url_format(layername))
     return TemplateResponse(
         request,
         '404.html',
@@ -184,8 +174,14 @@ def tile(request, layername, z, x, y):
     :param layername: The layer name in Geonode.
     :type layername: basestring
 
-    :param z,x,y: TMS coordinates.
-    :type z,x,y: basestring
+    :param z: TMS coordinate, zoom parameter
+    :type z: int, str
+
+    :param x: TMS coordinate, longitude parameter
+    :type x: int, str
+
+    :param y: TMS coordinate, latitude parameter
+    :type y: int, str
 
     :return: The HTTPResponse with a PNG.
     """
@@ -195,61 +191,28 @@ def tile(request, layername, z, x, y):
 
     layer = get_object_or_404(Layer, name=layername)
     qgis_layer = get_object_or_404(QGISServerLayer, layer=layer)
-    basename, _ = os.path.splitext(qgis_layer.base_layer_path)
 
     tile_path = QGIS_SERVER_CONFIG['tile_path']
-    tile_filename = tile_path % (os.path.basename(basename), z, x, y)
+    tile_filename = tile_path % (qgis_layer.qgis_layer_name, z, x, y)
 
     if not os.path.exists(tile_filename):
 
         if not os.path.exists(os.path.dirname(tile_filename)):
             os.makedirs(os.path.dirname(tile_filename))
 
-        # Call the WMS
-        top, left = num2deg(x, y, z)
-        bottom, right = num2deg(x + 1, y + 1, z)
+        # Use internal url
+        url = tile_url(layer, z, x, y, internal=True)
 
-        transform = CoordTransform(
-            SpatialReference(4326), SpatialReference(3857))
-        top_left_corner = Point(left, top, srid=4326)
-        bottom_right_corner = Point(right, bottom, srid=4326)
-        top_left_corner.transform(transform)
-        bottom_right_corner.transform(transform)
+        result = cache_request.delay(url, tile_filename)
 
-        bottom = bottom_right_corner.y
-        right = bottom_right_corner.x
-        top = top_left_corner.y
-        left = top_left_corner.x
+        # Attempt to run task synchronously
+        if not result.get():
+            # If not succeded, provides error message.
+            return HttpResponseServerError('Failed to fetch tile.')
 
-        bbox = ','.join([str(val) for val in [left, bottom, right, top]])
-
-        qgis_server = QGIS_SERVER_CONFIG['qgis_server_url']
-        query_string = {
-            'SERVICE': 'WMS',
-            'VERSION': '1.3.0',
-            'REQUEST': 'GetMap',
-            'BBOX': bbox,
-            'CRS': 'EPSG:3857',
-            'WIDTH': '256',
-            'HEIGHT': '256',
-            'MAP': basename + '.qgs',
-            'LAYERS': layer.name,
-            'STYLES': 'default',
-            'FORMAT': 'image/png',
-            'TRANSPARENT': 'true',
-            'DPI': '96',
-            'MAP_RESOLUTION': '96',
-            'FORMAT_OPTIONS': 'dpi:96'
-        }
-
-        response = requests.get(qgis_server, params=query_string, stream=True)
-        with open(tile_filename, 'wb') as out_file:
-            shutil.copyfileobj(response.raw, out_file)
-        del response
-
-        if image_format(tile_filename) != 'png':
-            logger.error('%s is not valid PNG.' % tile_filename)
-            os.remove(tile_filename)
+    if image_format(tile_filename) != 'png':
+        logger.error('%s is not valid PNG.' % tile_filename)
+        os.remove(tile_filename)
 
     if not os.path.exists(tile_filename):
         return HttpResponse('The tile could not be found.', status=409)
@@ -268,10 +231,9 @@ def layer_ogc_request(request, layername):
     """
     layer = get_object_or_404(Layer, name=layername)
     qgis_layer = get_object_or_404(QGISServerLayer, layer=layer)
-    basename, _ = os.path.splitext(qgis_layer.base_layer_path)
 
     params = {
-        'MAP': basename + '.qgs',
+        'MAP': qgis_layer.qgis_project_path,
     }
     params.update(request.GET or request.POST)
     response = requests.get(QGIS_SERVER_CONFIG['qgis_server_url'], params)
@@ -301,11 +263,10 @@ def geotiff(request, layername):
     """
     layer = get_object_or_404(Layer, name=layername)
     qgis_layer = get_object_or_404(QGISServerLayer, layer=layer)
-    basename, _ = os.path.splitext(qgis_layer.base_layer_path)
 
     # get geotiff file if exists
     for ext in QGISServerLayer.geotiff_format:
-        target_file = basename + '.' + ext
+        target_file = qgis_layer.qgis_layer_path_prefix + '.' + ext
         if os.path.exists(target_file):
             filename = target_file
             break
@@ -353,8 +314,7 @@ def qgis_server_request(request):
 
         layer = get_object_or_404(Layer, name=layer_name)
         qgis_layer = get_object_or_404(QGISServerLayer, layer=layer)
-        basename, _ = os.path.splitext(qgis_layer.base_layer_path)
-        params['MAP'] = basename + '.qgs'
+        params['MAP'] = qgis_layer.qgis_project_path
 
     # We have some shortcuts here instead of asking QGIS-Server.
     if params.get('SERVICE') == 'WMS':
@@ -364,8 +324,9 @@ def qgis_server_request(request):
             layer = get_object_or_404(Layer, name=params.get('LAYERS'))
             return legend(request, layername=layer.name)
 
-    # if not shortcut, we forward any request to QGIS Server
-    response = requests.get(QGIS_SERVER_CONFIG['qgis_server_url'], params)
+    # if not shortcut, we forward any request to internal QGIS Server
+    qgis_server_url = qgis_server_endpoint(internal=True)
+    response = requests.get(qgis_server_url, params)
     return HttpResponse(
         response.content, content_type=response.headers.get('content-type'))
 
@@ -438,28 +399,31 @@ def qml_style(request, layername):
     :return:
     """
     layer = get_object_or_404(Layer, name=layername)
+
     if request.method == 'GET':
-        try:
+        # Take QML file from QGIS Server directory
+        qgis_layer = get_object_or_404(QGISServerLayer, layer=layer)
+        qml_path = qgis_layer.qml_path
 
-            base_file_path, __ = layer.get_base_file()
-            base_file_path, __ = os.path.splitext(base_file_path.file.path)
-            qml_path = '{path}.qml'.format(path=base_file_path)
+        if not os.path.exists(qml_path):
+            return Http404(
+                'This layer does not have current default QML style.')
 
-            response = HttpResponse(
-                open(qml_path), content_type="application/text")
-            # ..and correct content-disposition
-            response['Content-Disposition'] = (
-                'attachment; filename={filename}'.format(
-                    filename=os.path.basename(qml_path)))
-            return response
-        except:
-            return HttpResponseServerError()
+        response = HttpResponse(
+            open(qml_path), content_type="application/text")
+        # ..and correct content-disposition
+        response['Content-Disposition'] = (
+            'attachment; filename={filename}'.format(
+                filename=os.path.basename(qml_path)))
+        return response
     elif request.method == 'POST':
 
         # For people who uses API request
         if not request.user.has_perm(
                 'change_resourcebase', layer.get_self_resource()):
-            return HttpResponse(status=401)
+            return HttpResponse(
+                'User does not have permission to change QML style.',
+                status=401)
 
         form = QGISLayerStyleUploadForm(request.POST, request.FILES)
 
@@ -477,37 +441,50 @@ def qml_style(request, layername):
             uploaded_qml = request.FILES['qml']
 
             # update qml in uploaded media folder
-            base_file_path, __ = layer.get_base_file()
-            file_name, __ = os.path.splitext(base_file_path.file.path)
-            qml_path = '{file_name}.qml'.format(file_name=file_name)
+            # check upload session, is qml file exists?
+            layerfile_set = layer.upload_session.layerfile_set
+            qml_layer_file, created = layerfile_set.get_or_create(name='qml')
+
+            if created:
+                layer_base_path, __ = layer.get_base_file()
+                layer_prefix, __ = os.path.splitext(layer_base_path)
+                qml_path = '{prefix}.qml'.format(prefix=layer_prefix)
+            else:
+                qml_path = qml_layer_file.file.path
 
             content = uploaded_qml.read()
 
             with open(qml_path, mode='w') as f:
                 f.write(content)
 
-            # update qml in QGIS Layer folder
-            QGIS_layer_directory = settings.QGIS_SERVER_CONFIG['layer_directory']
-            base_file_path = os.path.basename(base_file_path.file.path)
-            file_name, __ = os.path.splitext(base_file_path)
-            qml_path = '{file_name}.qml'.format(file_name=file_name)
-            qml_path = os.path.join(QGIS_layer_directory, qml_path)
+                if created:
+                    qml_layer_file.file = File(f)
+                    qml_layer_file.base = False
+                    qml_layer_file.upload_session = layer.upload_session
+                    qml_layer_file.save()
 
-            with open(qml_path, mode='w') as f:
+            # update qml in QGIS Layer folder
+            qgis_layer = get_object_or_404(QGISServerLayer, layer=layer)
+
+            with open(qgis_layer.qml_path, mode='w') as f:
                 f.write(content)
 
             # update QGIS Project files
-            response = create_qgis_project(layer, overwrite=True)
+            response = create_qgis_project(
+                layer,
+                qgis_layer.qgis_project_path,
+                overwrite=True,
+                internal=True)
             if not response.content == 'OK':
-                return HttpResponseServerError()
+                return HttpResponseServerError(
+                    'Failed to create new QGIS Project.'
+                    'Error: {0}'.format(response.content))
 
             # Because we update a style, we need to recache
-            QGIS_tiles_directory = settings.QGIS_SERVER_CONFIG['tiles_directory']
-            qgis_layer = get_object_or_404(QGISServerLayer, layer=layer)
-            basename, _ = os.path.splitext(qgis_layer.base_layer_path)
-            basename = os.path.basename(basename)
+            qgis_tiles_directory = settings.QGIS_SERVER_CONFIG['tiles_directory']
 
-            layer_tiles_path = os.path.join(QGIS_tiles_directory, basename)
+            layer_tiles_path = os.path.join(
+                qgis_tiles_directory, qgis_layer.qgis_layer_name)
 
             try:
                 shutil.rmtree(layer_tiles_path)
@@ -540,25 +517,25 @@ def set_thumbnail(request, layername):
     if request.method != 'POST':
         return HttpResponseBadRequest()
 
-    try:
-        layer = get_object_or_404(Layer, name=layername)
+    layer = get_object_or_404(Layer, name=layername)
 
-        # For people who uses API request
-        if not request.user.has_perm(
-                'change_resourcebase', layer.get_self_resource()):
-            return HttpResponse(status=401)
-
-        # extract bbox
-        bbox_string = request.POST['bbox']
-        # BBox should be in the format: [xmin,ymin,xmax,ymax]
-        bbox = bbox_string.split(',')
-        bbox = [float(s) for s in bbox]
-
-        create_qgis_server_thumbnail.delay(layer, overwrite=True, bbox=bbox)
-        retval = {
-            'success': True
-        }
+    # For people who uses API request
+    if not request.user.has_perm(
+            'change_resourcebase', layer.get_self_resource()):
         return HttpResponse(
-            json.dumps(retval), content_type="application/json")
-    except:
-        return HttpResponseServerError()
+            'User does not have permission to change thumbnail.',
+            status=401)
+
+    # extract bbox
+    bbox_string = request.POST['bbox']
+    # BBox should be in the format: [xmin,ymin,xmax,ymax]
+    bbox = bbox_string.split(',')
+    bbox = [float(s) for s in bbox]
+
+    # Give thumbnail creation to celery tasks, and exit.
+    create_qgis_server_thumbnail.delay(layer, overwrite=True, bbox=bbox)
+    retval = {
+        'success': True
+    }
+    return HttpResponse(
+        json.dumps(retval), content_type="application/json")

@@ -19,20 +19,22 @@
 #########################################################################
 import logging
 import os
-
-import requests
 import shutil
-from requests import Request
 from urlparse import urljoin
 
+import requests
 from django.conf import settings
+from django.contrib.gis.gdal import CoordTransform, SpatialReference
+from django.contrib.gis.geos import Point
 from django.core.exceptions import ImproperlyConfigured
 from django.core.urlresolvers import reverse
-
-from geonode.qgis_server.models import QGISServerLayer
+from requests import Request
 
 from geonode import qgis_server
 from geonode.geoserver.helpers import OGC_Servers_Handler
+from geonode.layers.models import Layer
+from geonode.qgis_server.gis_tools import num2deg
+from geonode.qgis_server.models import QGISServerLayer, QGISServerMap
 
 logger = logging.getLogger(__file__)
 ogc_server_settings = OGC_Servers_Handler(settings.OGC_SERVER)['default']
@@ -98,8 +100,38 @@ def validate_django_settings():
     return True
 
 
-def tile_url(layer_name):
-    """Construct QGIS Server URL for tiles according to a layer.
+def qgis_server_endpoint(internal=True):
+    """Return QGIS Server endpoint.
+
+    :param internal: Flag to switch between public url and internal url.
+        Public url will be served by Django Geonode (proxified).
+    :type internal: bool
+
+    :return: Base url endpoint
+    :rtype: str
+    """
+    if internal:
+        try:
+            return settings.QGIS_SERVER_CONFIG['qgis_server_url']
+        except AttributeError:
+            logging.error(
+                'QGIS_SERVER_CONFIG option is missing "qgis_server_url" key')
+            raise
+    else:
+        # The generated URL is not a direct URL to QGIS Server,
+        # but it was a proxy from django instead.
+        endpoint_url = reverse('qgis_server:request')
+        site_url = settings.SITEURL
+        qgis_server_url = urljoin(site_url, endpoint_url)
+        return qgis_server_url
+
+
+def tile_url_format(layer_name):
+    """Construct proxied QGIS Server URL format for tiles.
+
+    This url is not an actual request, but rather a format url
+    that can be used by TMS service to generate tile request according
+    to this layer.
 
     :param layer_name: The layer name from the QGIS backend
     :type layer_name: basestring
@@ -121,7 +153,84 @@ def tile_url(layer_name):
     return url
 
 
-def map_thumbnail_url(instance, bbox=None):
+def tile_url(layer, z, x, y, internal=True):
+    """Construct actual tile request to QGIS Server.
+
+    Different than tile_url_format, this method will return url for requesting
+    a tile, with all parameters filled out.
+
+    :param layer: Layer to use
+    :type layer: Layer
+
+    :param z: TMS coordinate, zoom parameter
+    :type z: int, str
+
+    :param x: TMS coordinate, longitude parameter
+    :type x: int, str
+
+    :param y: TMS coordinate, latitude parameter
+    :type y: int, str
+
+    :param internal: Flag to switch between public url and internal url.
+        Public url will be served by Django Geonode (proxified).
+    :type internal: bool
+
+    :return: Tile url
+    :rtype: str
+    """
+    try:
+        qgis_layer = QGISServerLayer.objects.get(layer=layer)
+    except QGISServerLayer.DoesNotExist:
+        msg = 'No QGIS Server Layer for existing layer {0}'.format(
+            layer.name)
+        logger.debug(msg)
+        raise
+
+    x = int(x)
+    y = int(y)
+    z = int(z)
+
+    # Call the WMS
+    top, left = num2deg(x, y, z)
+    bottom, right = num2deg(x + 1, y + 1, z)
+
+    transform = CoordTransform(SpatialReference(4326), SpatialReference(3857))
+    top_left_corner = Point(left, top, srid=4326)
+    bottom_right_corner = Point(right, bottom, srid=4326)
+    top_left_corner.transform(transform)
+    bottom_right_corner.transform(transform)
+
+    bottom = bottom_right_corner.y
+    right = bottom_right_corner.x
+    top = top_left_corner.y
+    left = top_left_corner.x
+
+    bbox = ','.join([str(val) for val in [left, bottom, right, top]])
+
+    query_string = {
+        'SERVICE': 'WMS',
+        'VERSION': '1.3.0',
+        'REQUEST': 'GetMap',
+        'BBOX': bbox,
+        'CRS': 'EPSG:3857',
+        'WIDTH': '256',
+        'HEIGHT': '256',
+        'MAP': qgis_layer.qgis_project_path,
+        'LAYERS': layer.name,
+        'STYLES': 'default',
+        'FORMAT': 'image/png',
+        'TRANSPARENT': 'true',
+        'DPI': '96',
+        'MAP_RESOLUTION': '96',
+        'FORMAT_OPTIONS': 'dpi:96'
+    }
+    qgis_server_url = qgis_server_endpoint(internal)
+    url = Request('GET', qgis_server_url, params=query_string).prepare().url
+
+    return url
+
+
+def map_thumbnail_url(instance, bbox=None, internal=True):
     """Construct QGIS Server Url to fetch remote map thumbnail.
 
     :param instance: Map object
@@ -131,26 +240,34 @@ def map_thumbnail_url(instance, bbox=None):
         [xmin,ymin,xmax,ymax]
     :type bbox: list(float)
 
+    :param internal: Flag to switch between public url and internal url.
+        Public url will be served by Django Geonode (proxified).
+    :type internal: bool
+
     :return: thumbnail url
     :rtype: str
     """
-    map_id = instance.id
-    layers = 'map_%s' % map_id
-    qgis_server_config = settings.QGIS_SERVER_CONFIG
-    qgis_project = os.path.join(
-        qgis_server_config['layer_directory'], '{0}.qgs'.format(layers))
-    if not os.path.exists(qgis_project):
-        msg = 'Map project not found for %s' % qgis_project
+    try:
+        qgis_map = QGISServerMap.objects.get(map=instance)
+    except QGISServerMap.DoesNotExist:
+        msg = 'No QGIS Server Map for existing map {0}'.format(instance.title)
         logger.debug(msg)
-        return None
+        raise
+
+    qgis_project = qgis_map.qgis_project_path
+    if not os.path.exists(qgis_project):
+        msg = 'Map project not found for {0}'.format(qgis_project)
+        logger.debug(msg)
+        raise ValueError(msg)
 
     if not bbox:
         # We get the extent of these layers.
         bbox = [float(i) for i in instance.bbox_string.split(',')]
-    return thumbnail_url(bbox, layers, qgis_project)
+    return thumbnail_url(
+        bbox, qgis_map.qgis_map_name, qgis_project, internal=internal)
 
 
-def layer_thumbnail_url(instance, bbox=None):
+def layer_thumbnail_url(instance, bbox=None, internal=True):
     """Construct QGIS Server Url to fetch remote layer thumbnail.
 
     :param instance: Layer object
@@ -160,18 +277,22 @@ def layer_thumbnail_url(instance, bbox=None):
         [xmin,ymin,xmax,ymax]
     :type bbox: list(float)
 
+    :param internal: Flag to switch between public url and internal url.
+        Public url will be served by Django Geonode (proxified).
+    :type internal: bool
+
     :return: Thumbnail URL.
     :rtype: str
     """
     try:
         qgis_layer = QGISServerLayer.objects.get(layer=instance)
     except QGISServerLayer.DoesNotExist:
-        msg = 'No QGIS Server Layer for existing layer %s' % instance.name
+        msg = 'No QGIS Server Layer for existing layer {0}'.format(
+            instance.name)
         logger.debug(msg)
-        return None
+        raise
 
-    basename, _ = os.path.splitext(qgis_layer.base_layer_path)
-    qgis_project = basename + '.qgs'
+    qgis_project = qgis_layer.qgis_project_path
     layers = instance.name
 
     if not bbox:
@@ -182,10 +303,10 @@ def layer_thumbnail_url(instance, bbox=None):
         y_max = instance.resourcebase_ptr.bbox_y1
         bbox = [x_min, y_min, x_max, y_max]
 
-    return thumbnail_url(bbox, layers, qgis_project)
+    return thumbnail_url(bbox, layers, qgis_project, internal=internal)
 
 
-def thumbnail_url(bbox, layers, qgis_project):
+def thumbnail_url(bbox, layers, qgis_project, internal=True):
     """Internal function to generate the URL for the thumbnail.
 
     :param bbox: The bounding box to use in the format [left,bottom,right,top].
@@ -197,14 +318,13 @@ def thumbnail_url(bbox, layers, qgis_project):
     :param qgis_project: The path to the QGIS project.
     :type qgis_project: basestring
 
+    :param internal: Flag to switch between public url and internal url.
+        Public url will be served by Django Geonode (proxified).
+    :type internal: bool
+
     :return: The WMS URL to fetch the thumbnail.
     :rtype: basestring
     """
-    # The generated URL is not a direct URL to QGIS Server,
-    # but it was a proxy from django instead.
-    endpoint_url = reverse('qgis_server:request')
-    site_url = settings.SITEURL
-    qgis_server_url = urljoin(site_url, endpoint_url)
     x_min, y_min, x_max, y_max = bbox
     # We calculate the margins according to 10 percent.
     percent = 10
@@ -236,38 +356,100 @@ def thumbnail_url(bbox, layers, qgis_project):
         'MAP_RESOLUTION': '96',
         'FORMAT_OPTIONS': 'dpi:96'
     }
+    qgis_server_url = qgis_server_endpoint(internal)
     url = Request('GET', qgis_server_url, params=query_string).prepare().url
     return url
 
 
-def create_qgis_project(layer, qgis_layer=None, overwrite=False):
+def legend_url(layer, layertitle=False, internal=True):
+    """Construct QGIS Server url to fetch legend.
+
+    :param layer: Layer to use
+    :type layer: Layer
+
+    :param layertitle: Layer title flag. Set to True to include layer title
+    :type layertitle: bool
+
+    :param internal: Flag to switch between public url and internal url.
+        Public url will be served by Django Geonode (proxified).
+    :type internal: bool
+
+    :return: QGIS Server request url
+    :rtype: str
+    """
+    try:
+        qgis_layer = QGISServerLayer.objects.get(layer=layer)
+    except QGISServerLayer.DoesNotExist:
+        msg = 'No QGIS Server Layer for existing layer {0}'.format(layer.name)
+        logger.debug(msg)
+        raise
+
+    qgis_project_path = qgis_layer.qgis_project_path
+
+    query_string = {
+        'MAP': qgis_project_path,
+        'SERVICE': 'WMS',
+        'VERSION': '1.3.0',
+        'REQUEST': 'GetLegendGraphic',
+        'LAYER': layer.name,
+        'LAYERTITLE': str(layertitle).lower(),
+        'FORMAT': 'image/png',
+        'TILED': 'true',
+        'TRANSPARENT': 'true',
+        'LEGEND_OPTIONS': (
+            'fontAntiAliasing:true;fontSize:11;fontName:Arial')
+    }
+    qgis_server_url = qgis_server_endpoint(internal)
+    url = Request('GET', qgis_server_url, params=query_string).prepare().url
+    return url
+
+
+def create_qgis_project(
+        layer, qgis_project_path, overwrite=False, internal=True):
     """Create a new QGS Project for a given layer.
 
-    :param layer: Layer
-    :type layer: geonode.layers.models.Layer
+    :param layer: Layer or list of layers
+    :type layer: geonode.layers.models.Layer,
+        list(geonode.layers.models.Layer)
 
-    :param qgis_layer: QGIS Layer model
-    :type qgis_layer: geonode.qgis_server.models.QGISServerLayer
+    :param qgis_project_path: Path to to create qgis project
+    :type qgis_project_path: str
 
     :param overwrite: Flag to recreate QGIS Project if necessary
     :type overwrite: bool
 
+    :param internal: Flag to switch between public url and internal url.
+        Public url will be served by Django Geonode (proxified).
+    :type internal: bool
     """
-    qgis_server = settings.QGIS_SERVER_CONFIG['qgis_server_url']
-    if not qgis_layer:
+    if isinstance(layer, Layer):
         qgis_layer = QGISServerLayer.objects.get(layer=layer)
-    basename, _ = os.path.splitext(qgis_layer.base_layer_path)
+        files = qgis_layer.base_layer_path
+        names = layer.name
+    elif isinstance(layer, list):
+        qgis_layer = []
+        for l in layer:
+            qgis_layer.append(QGISServerLayer.objects.get(layer=l))
+        files = [ql.base_layer_path for ql in qgis_layer]
+        files = ';'.join(files)
+
+        names = [l.name for l in layer]
+        names = ';'.join(names)
+    else:
+        raise ValueError(
+            'Unexpected argument layer: {0}'.format(layer))
 
     overwrite = str(overwrite).lower()
 
     query_string = {
         'SERVICE': 'MAPCOMPOSITION',
-        'PROJECT': '%s.qgs' % basename,
-        'FILES': qgis_layer.base_layer_path,
-        'NAMES': layer.name,
+        'PROJECT': qgis_project_path,
+        'FILES': files,
+        'NAMES': names,
         'OVERWRITE': overwrite,
     }
-    response = requests.get(qgis_server, params=query_string)
+    qgis_server_url = qgis_server_endpoint(internal)
+    response = requests.get(qgis_server_url, params=query_string)
     return response
 
 
