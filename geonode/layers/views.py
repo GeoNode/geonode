@@ -224,6 +224,8 @@ def layer_detail(request, layername, template='layers/layer_detail.html'):
         else llbbox_to_mercator([float(coord) for coord in bbox])
     config["title"] = layer.title
     config["queryable"] = True
+    if layer.default_style:
+        config["styles"] = layer.default_style.name
 
     if layer.storeType == "remoteStore":
         service = layer.service
