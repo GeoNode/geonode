@@ -24,12 +24,11 @@ except ImportError:
 import logging
 import traceback
 import requests
-
-from requests.auth import HTTPBasicAuth
+from urlparse import urlparse, parse_qsl
+from requests.packages.urllib3.util.retry import Retry
+from requests.adapters import HTTPAdapter
 from urllib import urlencode
-
 from django.contrib.auth import get_user_model
-
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.auth import login
 from django.contrib.auth.models import Group, Permission
@@ -41,12 +40,12 @@ try:
     geofence_url = settings.GEOFENCE['url'].strip('/')
 except AttributeError:
     geofence_url = "{}/geofence".format(settings.OGC_SERVER['default']['LOCATION'].strip('/'))
-    
+
 try:
     geofence_username = settings.GEOFENCE['username']
 except AttributeError:
     geofence_username = settings.OGC_SERVER['default']['USER']
-    
+
 try:
     geofence_password = settings.GEOFENCE['password']
 except AttributeError:
@@ -69,6 +68,45 @@ LAYER_ADMIN_PERMISSIONS = [
     'change_layer_data',
     'change_layer_style'
 ]
+
+http_client = requests.session()
+http_client.verify = True
+parsed_url = urlparse(geofence_url)
+retry = Retry(
+    total=4,
+    status=4,
+    backoff_factor=0.9,
+    status_forcelist=[502, 503, 504],
+    method_whitelist=set(['HEAD', 'TRACE', 'GET', 'PUT', 'POST', 'OPTIONS', 'DELETE'])
+)
+
+http_client.mount("{}://".format(parsed_url.scheme), HTTPAdapter(max_retries=retry))
+
+
+def http_request(self, url, data=None, method='get', headers={}, access_token=None):
+    req_method = getattr(http_client, method.lower())
+    resp = None
+
+    if access_token:
+        headers['Authorization'] = "Bearer {}".format(access_token)
+        parsed_url = urlparse(url)
+        params = parse_qsl(parsed_url.query.strip())
+        params.append(('access_token', access_token))
+        params = urlencode(params)
+        url = "{proto}://{address}{path}?{params}".format(proto=parsed_url.scheme, address=parsed_url.netloc,
+                                                          path=parsed_url.path, params=params)
+
+        try:
+            resp = req_method(url, headers=headers, data=data)
+        except:
+            logger.debug(traceback.format_exc())
+    else:
+        try:
+            resp = req_method(url, headers=headers, data=data, auth=(geofence_username, geofence_password))
+        except:
+            logger.debug(traceback.format_exc())
+
+    return resp
 
 
 def get_users_with_perms(obj):
@@ -293,17 +331,17 @@ def set_geofence_user(instance, username, view_perms=False, download_perms=False
 
         if view_perms and download_perms:
             data = "<Rule>{}</Rule>".format(payload)
-            create_geofence_rule(rule = data)
+            create_geofence_rule(rule=data)
         else:
             if view_perms:
                 for service in ['WMS', 'GWC']:
-                  data = "<Rule>{}<service>{}</service></Rule>".format(payload, service)
-                  create_geofence_rule(rule = data)
+                    data = "<Rule>{}<service>{}</service></Rule>".format(payload, service)
+                    create_geofence_rule(rule=data)
 
             if download_perms:
                 for service in ['WCS', 'WFS', 'WPS']:
-                  data = "<Rule>{}<service>{}</service></Rule>".format(payload, service)
-                  create_geofence_rule(rule = data)
+                    data = "<Rule>{}<service>{}</service></Rule>".format(payload, service)
+                    create_geofence_rule(rule=data)
 
 
 def set_geofence_group(instance, groupname, view_perms=False, download_perms=False):
@@ -317,17 +355,17 @@ def set_geofence_group(instance, groupname, view_perms=False, download_perms=Fal
 
         if view_perms and download_perms:
             data = "<Rule>{}</Rule>".format(payload)
-            create_geofence_rule(rule = data)
+            create_geofence_rule(rule=data)
         else:
             if view_perms:
                 for service in ['WMS', 'GWC']:
-                  data = "<Rule>{}<service>{}</service></Rule>".format(payload, service)
-                  create_geofence_rule(rule = data)
+                    data = "<Rule>{}<service>{}</service></Rule>".format(payload, service)
+                    create_geofence_rule(rule=data)
 
             if download_perms:
                 for service in ['WCS', 'WFS', 'WPS']:
-                  data = "<Rule>{}<service>{}</service></Rule>".format(payload, service)
-                  create_geofence_rule(rule = data)
+                    data = "<Rule>{}<service>{}</service></Rule>".format(payload, service)
+                    create_geofence_rule(rule=data)
 
 
 def set_owner_permissions(resource):
@@ -394,11 +432,11 @@ def autologin(sender, **kwargs):
     user.backend = 'django.contrib.auth.backends.ModelBackend'
     # This login function does not need password.
     login(request, user)
-
 # FIXME(Ariel): Replace this signal with the one from django-user-accounts
 # user_activated.connect(autologin)
 
-def create_geofence_rule(rule = None):
+
+def create_geofence_rule(rule=None):
     # Create GeoFence User's specific Access Limits
     """
     curl -X POST -u admin:geoserver -H "Content-Type: text/xml" -d \
@@ -409,74 +447,55 @@ def create_geofence_rule(rule = None):
 
     if rule:
         rules_url = "{}/rest/rules".format(geofence_url)
-        user = geofence_username
-        passwd = geofence_password
         headers = {'Content-type': 'application/xml'}
         geofence_rule = None
 
-        try:
-            resp = requests.post(
-                rules_url,
-                headers=headers,
-                data=rule,
-                auth=(user, passwd)
-            )
-        except:
-            tb = traceback.format_exc()
-            logger.debug(tb)
+        resp = http_request(
+            rules_url,
+            method='post',
+            headers=headers,
+            data=rule
+        )
 
         if resp.status_code in (200, 201):
             rule_id = resp.content
             geofence_rule = get_geofence_rule_by_id(id=rule_id)
             if not geofence_rule:
-                logger.error("GeoFence created rule {}, however rule can't be found in GeoFence's database".format(rule_id))
+                logger.error("GeoFence created rule {}, however rule can not be found in GeoFence".format(rule_id))
         else:
-            msg = "Failed to add GeoServer/GeoFence rule {}".format(rule)
-            logger.error(msg)
+            logger.error("Failed to add GeoFence rule {}".format(rule))
 
         return geofence_rule
 
 
-def get_geofence_rule_by_id(id, output_type = 'xml'):
+def get_geofence_rule_by_id(id, output_type='xml'):
     """
     Get a single GeoFence rule by it's ID, either in json or xml format
     """
 
     rules_url = "{}/rest/rules".format(geofence_url)
-    user = geofence_username
-    passwd = geofence_password
     output_type = output_type.lower().strip('.')
 
     if id:
         id_url = "{}/id/{}.{}".format(rules_url, id, output_type)
-        try:
-            resp = requests.get(
-                id_url,
-                auth=(user, passwd)
-            )
+        resp = http_request(id_url)
 
-            if resp.status_code == 200:
-                if output_type == 'json':
-                    return resp.json()
-                else:
-                    return resp.content
+        if resp.status_code == 200:
+            if output_type == 'json':
+                return resp.json()
             else:
-                logger.warning("Couldn't find rule {} in GeoFence".format(id))
-        except:
-            tb = traceback.format_exc()
-            logger.debug(tb)
-
-        return None
+                return resp.content
+        else:
+            logger.warning("Could not find rule {} in GeoFence".format(id))
+    return None
 
 
-def get_geofence_rules(workspace = None, layer = None, output_type = 'xml'):
+def get_geofence_rules(workspace=None, layer=None, output_type='xml'):
     """
     Get GeoFence rules, either in json or xml format. May provide a workspace/layername filter
     """
 
     rules_url = "{}/rest/rules".format(geofence_url)
-    user = geofence_username
-    passwd = geofence_password
     output_type = output_type.lower().strip('.')
     rules_url = "{}.{}".format(rules_url, output_type)
     params = {}
@@ -489,22 +508,15 @@ def get_geofence_rules(workspace = None, layer = None, output_type = 'xml'):
     encode_params = urlencode(params)
     filter_url = "{}?{}".format(rules_url, encode_params)
 
-    try:
-        resp = requests.get(
-            filter_url,
-            auth=(user, passwd)
-        )
+    resp = http_request(filter_url)
 
-        if resp.status_code == 200:
-            if output_type == 'json':
-                return resp.json()
-            else:
-                return resp.content
+    if resp.status_code == 200:
+        if output_type == 'json':
+            return resp.json()
         else:
-            logger.warning("Couldn't get rule from GeoFence")
-    except:
-        tb = traceback.format_exc()
-        logger.debug(tb)
+            return resp.content
+    else:
+        logger.warning("Could not get rule from GeoFence")
     return None
 
 
@@ -513,22 +525,15 @@ def delete_geofence_rule(id):
     Delete a GeoFence rule by rule ID
     """
     rule_url = "{}/rest/rules/id/{}".format(geofence_url, id)
-    user = geofence_username
-    passwd = geofence_password
     headers = {'Content-type': 'application/json'}
+    resp = http_request(
+        rule_url,
+        method='delete',
+        headers=headers
+    )
 
-    try:
-        resp = requests.delete(
-            rule_url,
-            headers=headers,
-            auth=(user, passwd)
-        )
-
-        if resp.status_code == 200:
-            return True
-        else:
-            logger.warning("Couldn't delete rule from GeoFence {}".format(id))
-    except:
-        tb = traceback.format_exc()
-        logger.debug(tb)
+    if resp.status_code == 200:
+        return True
+    else:
+        logger.warning("Could not delete rule from GeoFence {}".format(id))
     return None
