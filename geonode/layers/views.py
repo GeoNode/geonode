@@ -22,6 +22,8 @@ import os
 import sys
 import logging
 import shutil
+import json
+import base64
 import traceback
 import uuid
 import decimal
@@ -853,15 +855,14 @@ def layer_granule_remove(request, granule_id, layername, template='layers/layer_
     else:
         return HttpResponse("Not allowed", status=403)
 
-import json
-import base64
+
 def layer_thumbnail(request, layername):
     if request.method == 'POST':
         layer_obj = _resolve_layer(request, layername)
 
         try:
-            preview=json.loads(request.body)['preview']
-            if preview == 'react':
+            preview=json.loads(request.body).get('preview',None)
+            if preview and preview == 'react':
                 format,image=json.loads(request.body)['image'].split(';base64,')
                 image=base64.b64decode(image)
             else:
