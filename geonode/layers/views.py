@@ -853,13 +853,19 @@ def layer_granule_remove(request, granule_id, layername, template='layers/layer_
     else:
         return HttpResponse("Not allowed", status=403)
 
-
+import json
+import base64
 def layer_thumbnail(request, layername):
     if request.method == 'POST':
         layer_obj = _resolve_layer(request, layername)
 
         try:
-            image = _render_thumbnail(request.body)
+            preview=json.loads(request.body)['preview']
+            if preview == 'react':
+                format,image=json.loads(request.body)['image'].split(';base64,')
+                image=base64.b64decode(image)
+            else:
+                image = _render_thumbnail(request.body)
 
             if not image:
                 return
