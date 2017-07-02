@@ -398,8 +398,15 @@ def remove_object_permissions(instance):
                 key = 'RuleList'
                 sub_key = 'rule'
 
+            # There are plenty of differences between the standalone and integrated versions of. Try dealing with them.
             if gs_rules_dict[key]:
-                for rule in gs_rules_dict[key][sub_key]:
+                if sub_key in gs_rules_dict[key].keys():
+                    rules = gs_rules_dict[key][sub_key]
+                else:
+                    rules = []
+                if not isinstance(rules, list):
+                    rules = [rules]
+                for rule in rules:
                     if 'layer' in rule.keys() and rule['layer'] == resource.layer.name:
                         if '@id' in rule.keys():
                             delete_geofence_rule(rule['@id'])
