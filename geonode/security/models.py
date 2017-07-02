@@ -35,6 +35,7 @@ from django.contrib.auth.models import Group, Permission
 from django.conf import settings
 from guardian.utils import get_user_obj_perms_model
 from guardian.shortcuts import assign_perm, get_groups_with_perms
+from xmltodict import parse
 
 try:
     geofence_url = settings.GEOFENCE['url'].strip('/')
@@ -51,6 +52,7 @@ try:
 except AttributeError:
     geofence_password = settings.OGC_SERVER['default']['PASSWORD']
 
+internal_geofence = settings.OGC_SERVER['default']['LOCATION'] in geofence_url
 logger = logging.getLogger("geonode.security.models")
 
 
@@ -83,7 +85,7 @@ retry = Retry(
 http_client.mount("{}://".format(parsed_url.scheme), HTTPAdapter(max_retries=retry))
 
 
-def http_request(self, url, data=None, method='get', headers={}, access_token=None):
+def http_request(url, data=None, method='get', headers={}, access_token=None):
     req_method = getattr(http_client, method.lower())
     resp = None
 
@@ -215,7 +217,7 @@ class PermissionLevelMixin(object):
 
         # Give public access to all Geoserver layers
         if set_geofence_permissions:
-            set_geofence_all(self)
+            set_data_public_access(self)
 
         # default permissions for resource owner
         set_owner_permissions(self)
@@ -262,7 +264,7 @@ class PermissionLevelMixin(object):
                 public_access = True
         if public_access:
             # if we allow public access to the layer, why also assign user specific permissions?
-            set_geofence_all(self)
+            set_data_public_access(self)
             # return
 
         # TODO refactor code here
@@ -278,10 +280,10 @@ class PermissionLevelMixin(object):
                         assign_perm(perm, user, self.get_self_resource())
                 # Set the GeoFence Owner Rules
                 has_view_perms = ('view_resourcebase' in perms)
-                has_download_perms = ('download_resourcebase' in perms)
+                has_edit_perms = ('change_layer_data' in perms)
                 if user.username.lower() != 'anonymoususer':
                     # Anonymous access is already given above
-                    set_geofence_user(self, str(user), view_perms=has_view_perms, download_perms=has_download_perms)
+                    set_data_user_acl(self, str(user), view_perms=has_view_perms, edit_perms=has_edit_perms)
 
         if 'groups' in perm_spec:
             for group, perms in perm_spec['groups'].items():
@@ -295,76 +297,98 @@ class PermissionLevelMixin(object):
                         assign_perm(perm, group, self.get_self_resource())
                 # Set the GeoFence Owner Rules
                 has_view_perms = ('view_resourcebase' in perms)
-                has_download_perms = ('download_resourcebase' in perms)
+                has_edit_perms = ('change_layer_data' in perms)
                 if group.name.lower() != 'anonymous':
                     # Anonymous access is already given above
-                    set_geofence_group(self, str(group), view_perms=has_view_perms, download_perms=has_download_perms)
+                    set_data_group_acl(self, str(group), view_perms=has_view_perms, edit_perms=has_edit_perms)
 
         # default permissions for resource owner
         set_owner_permissions(self)
 
 
-def set_geofence_all(instance):
+def set_data_public_access(instance):
     """This will provide unauthenticated access to all services on the layer, which includes WFS-T"""
     resource = instance.get_self_resource()
 
     if hasattr(resource, "layer"):
-        """
-        curl -X POST -u admin:geoserver -H "Content-Type: text/xml" -d \
-        "<Rule><workspace>geonode</workspace><layer>{layer}</layer><access>ALLOW</access></Rule>" \
-        http://<host>:<port>/geoserver/geofence/rest/rules
-        """
+        if internal_geofence:
+            payload = "<Rule><workspace>{}</workspace>".format(resource.layer.workspace)
+            payload += "<layer>{}</layer><access>ALLOW</access></Rule>".format(resource.layer.name)
+        else:
+            payload = "<rule grant='ALLOW'><position value='0' position='offsetFromTop'/>"
+            payload += "<workspace>{}</workspace>".format(resource.layer.workspace)
+            payload += "<layer>{}</layer></rule>".format(resource.layer.name)
 
-        payload = "<Rule><workspace>{}</workspace>".format(resource.layer.workspace)
-        payload += "<layer>{}</layer><access>ALLOW</access></Rule>".format(resource.layer.name)
         create_geofence_rule(payload)
 
 
-def set_geofence_user(instance, username, view_perms=False, download_perms=False):
+def set_data_user_acl(instance, username, view_perms=False, edit_perms=False):
     """assign access permissions to a user account"""
     resource = instance.get_self_resource()
 
     if hasattr(resource, "layer"):
-        payload = "<userName>{}</userName>".format(username)
-        payload += "<workspace>{}</workspace>".format(resource.layer.workspace)
-        payload += "<layer>{}</layer><access>ALLOW</access>".format(resource.layer.name)
+        if internal_geofence:
+            payload = "<Rule><userName>{}</userName>".format(username)
+            payload += "<workspace>{}</workspace>".format(resource.layer.workspace)
+            payload += "<layer>{}</layer><access>ALLOW</access>".format(resource.layer.name)
+            rule_end = "</Rule>"
+        else:
+            payload = "<rule grant='ALLOW'><position value='0' position='offsetFromTop'/>"
+            payload += "<workspace>{}</workspace>".format(resource.layer.workspace)
+            payload += "<layer>{}</layer><username>{}</username>".format(resource.layer.name, username)
+            rule_end = "</rule>"
 
-        if view_perms and download_perms:
-            data = "<Rule>{}</Rule>".format(payload)
+        if view_perms and edit_perms:
+            data = "{}{}".format(payload, rule_end)
             create_geofence_rule(rule=data)
         else:
             if view_perms:
-                for service in ['WMS', 'GWC']:
-                    data = "<Rule>{}<service>{}</service></Rule>".format(payload, service)
+                for service in ['WMS', 'GWC', 'WCS']:
+                    data = "{}<service>{}</service>{}".format(payload, service, rule_end)
                     create_geofence_rule(rule=data)
 
-            if download_perms:
-                for service in ['WCS', 'WFS', 'WPS']:
-                    data = "<Rule>{}<service>{}</service></Rule>".format(payload, service)
+                for type in ['GETCAPABILITIES', 'GETFEATURETYPE', 'DESCRIBEFEATURETYPE', 'GETFEATURE', 'GETGMLOBJECT']:
+                    data = "{}<service>WFS</service><request>{}</request>{}".format(payload, type, rule_end)
+                    create_geofence_rule(rule=data)
+
+            if edit_perms:
+                for service in ['WMS', 'GWC', 'WCS', 'WFS', 'WPS']:
+                    data = "{}<service>{}</service>{}".format(payload, service, rule_end)
                     create_geofence_rule(rule=data)
 
 
-def set_geofence_group(instance, groupname, view_perms=False, download_perms=False):
+def set_data_group_acl(instance, groupname, view_perms=False, edit_perms=False):
     """assign access permissions to owner group"""
     resource = instance.get_self_resource()
 
     if hasattr(resource, "layer"):
-        payload = "<roleName>ROLE_{}</roleName>".format(groupname.upper())
-        payload += "<workspace>{}</workspace>".format(resource.layer.workspace)
-        payload += "<layer>{}</layer><access>ALLOW</access>".format(resource.layer.name)
+        if internal_geofence:
+            payload = "<Rule><roleName>ROLE_{}</roleName>".format(groupname.upper())
+            payload += "<workspace>{}</workspace>".format(resource.layer.workspace)
+            payload += "<layer>{}</layer><access>ALLOW</access>".format(resource.layer.name)
+            rule_end = "</Rule>"
+        else:
+            payload = "<rule grant='ALLOW'><position value='0' position='offsetFromTop'/>"
+            payload += "<workspace>{}</workspace>".format(resource.layer.workspace)
+            payload += "<layer>{}</layer><rolename>ROLE_{}</rolename>".format(resource.layer.name, groupname.upper())
+            rule_end = "</rule>"
 
-        if view_perms and download_perms:
-            data = "<Rule>{}</Rule>".format(payload)
+        if view_perms and edit_perms:
+            data = "{}{}".format(payload, rule_end)
             create_geofence_rule(rule=data)
         else:
             if view_perms:
-                for service in ['WMS', 'GWC']:
-                    data = "<Rule>{}<service>{}</service></Rule>".format(payload, service)
+                for service in ['WMS', 'GWC', 'WCS']:
+                    data = "{}<service>{}</service>{}".format(payload, service, rule_end)
                     create_geofence_rule(rule=data)
 
-            if download_perms:
-                for service in ['WCS', 'WFS', 'WPS']:
-                    data = "<Rule>{}<service>{}</service></Rule>".format(payload, service)
+                for type in ['GETCAPABILITIES', 'GETFEATURETYPE', 'DESCRIBEFEATURETYPE', 'GETFEATURE', 'GETGMLOBJECT']:
+                    data = "{}<service>WFS</service><request>{}</request>{}".format(payload, type, rule_end)
+                    create_geofence_rule(rule=data)
+
+            if edit_perms:
+                for service in ['WMS', 'GWC', 'WCS', 'WFS', 'WPS']:
+                    data = "{}<service>{}</service>{}".format(payload, service, rule_end)
                     create_geofence_rule(rule=data)
 
 
@@ -377,7 +401,7 @@ def set_owner_permissions(resource):
                 assign_perm(perm, resource.owner, resource.layer)
 
         # Set the GeoFence Owner Rule
-        set_geofence_user(resource, str(resource.owner), view_perms=True, download_perms=True)
+        set_data_user_acl(resource, str(resource.owner), view_perms=True, edit_perms=True)
 
         for perm in ADMIN_PERMISSIONS:
             assign_perm(perm, resource.owner, resource.get_self_resource())
@@ -391,11 +415,20 @@ def remove_object_permissions(instance):
     resource = instance.get_self_resource()
 
     if hasattr(resource, "layer"):
-        gs_rules = get_geofence_rules(workspace=resource.layer.workspace, layer=resource.layer.name, output_type='json')
-        if gs_rules and gs_rules['rules']:
-            for r in gs_rules['rules']:
-                if r['layer'] and r['layer'] == resource.layer.name:
-                    delete_geofence_rule(r['id'])
+        gs_rules = get_geofence_rules(workspace=resource.layer.workspace, layer=resource.layer.name)
+        if gs_rules:
+            gs_rules_dict = parse(gs_rules)
+            if internal_geofence:
+                key = 'Rules'
+                sub_key = 'Rule'
+            else:
+                key = 'RuleList'
+                sub_key = 'rule'
+
+            if gs_rules_dict[key]:
+                for rule in gs_rules_dict[key][sub_key]:
+                    if 'layer' in rule.keys() and rule['layer'] == resource.layer.name:
+                        delete_geofence_rule(rule['id'])
 
         try:
             UserObjectPermission.objects.filter(content_type=ContentType.objects.get_for_model(resource.layer),
@@ -477,7 +510,10 @@ def get_geofence_rule_by_id(id, output_type='xml'):
     output_type = output_type.lower().strip('.')
 
     if id:
-        id_url = "{}/id/{}.{}".format(rules_url, id, output_type)
+        if internal_geofence:
+            id_url = "{}/id/{}.{}".format(rules_url, id, output_type)
+        else:
+            id_url = "{}/id/{}".format(rules_url, id)
         resp = http_request(id_url)
 
         if resp.status_code == 200:
@@ -497,7 +533,9 @@ def get_geofence_rules(workspace=None, layer=None, output_type='xml'):
 
     rules_url = "{}/rest/rules".format(geofence_url)
     output_type = output_type.lower().strip('.')
-    rules_url = "{}.{}".format(rules_url, output_type)
+    if internal_geofence:
+        rules_url = "{}.{}".format(rules_url, output_type)
+
     params = {}
 
     if workspace:
