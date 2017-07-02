@@ -283,7 +283,7 @@ class PermissionLevelMixin(object):
                 has_edit_perms = ('change_layer_data' in perms)
                 if user.username.lower() != 'anonymoususer':
                     # Anonymous access is already given above
-                    set_data_user_acl(self, str(user), view_perms=has_view_perms, edit_perms=has_edit_perms)
+                    set_data_acl(self, str(user), view_perms=has_view_perms, edit_perms=has_edit_perms)
 
         if 'groups' in perm_spec:
             for group, perms in perm_spec['groups'].items():
@@ -300,7 +300,7 @@ class PermissionLevelMixin(object):
                 has_edit_perms = ('change_layer_data' in perms)
                 if group.name.lower() != 'anonymous':
                     # Anonymous access is already given above
-                    set_data_group_acl(self, str(group), view_perms=has_view_perms, edit_perms=has_edit_perms)
+                    set_data_acl(self, str(group), view_perms=has_view_perms, edit_perms=has_edit_perms, type='group')
 
         # default permissions for resource owner
         set_owner_permissions(self)
@@ -322,55 +322,28 @@ def set_data_public_access(instance):
         create_geofence_rule(payload)
 
 
-def set_data_user_acl(instance, username, view_perms=False, edit_perms=False):
+def set_data_acl(instance, name, view_perms=False, edit_perms=False, type='user'):
     """assign access permissions to a user account"""
     resource = instance.get_self_resource()
 
     if hasattr(resource, "layer"):
         if internal_geofence:
-            payload = "<Rule><userName>{}</userName>".format(username)
+            if type == 'user':
+                payload = "<Rule><userName>{}</userName>".format(name)
+            elif type == 'group':
+                payload = "<Rule><roleName>ROLE_{}</roleName>".format(name.upper())
             payload += "<workspace>{}</workspace>".format(resource.layer.workspace)
             payload += "<layer>{}</layer><access>ALLOW</access>".format(resource.layer.name)
             rule_end = "</Rule>"
         else:
             payload = "<rule grant='ALLOW'><position value='0' position='offsetFromTop'/>"
             payload += "<workspace>{}</workspace>".format(resource.layer.workspace)
-            payload += "<layer>{}</layer><username>{}</username>".format(resource.layer.name, username)
-            rule_end = "</rule>"
+            payload += "<layer>{}</layer>".format(resource.layer.name)
 
-        if view_perms and edit_perms:
-            data = "{}{}".format(payload, rule_end)
-            create_geofence_rule(rule=data)
-        else:
-            if view_perms:
-                for service in ['WMS', 'GWC', 'WCS']:
-                    data = "{}<service>{}</service>{}".format(payload, service, rule_end)
-                    create_geofence_rule(rule=data)
-
-                for type in ['GETCAPABILITIES', 'GETFEATURETYPE', 'DESCRIBEFEATURETYPE', 'GETFEATURE', 'GETGMLOBJECT']:
-                    data = "{}<service>WFS</service><request>{}</request>{}".format(payload, type, rule_end)
-                    create_geofence_rule(rule=data)
-
-            if edit_perms:
-                for service in ['WMS', 'GWC', 'WCS', 'WFS', 'WPS']:
-                    data = "{}<service>{}</service>{}".format(payload, service, rule_end)
-                    create_geofence_rule(rule=data)
-
-
-def set_data_group_acl(instance, groupname, view_perms=False, edit_perms=False):
-    """assign access permissions to owner group"""
-    resource = instance.get_self_resource()
-
-    if hasattr(resource, "layer"):
-        if internal_geofence:
-            payload = "<Rule><roleName>ROLE_{}</roleName>".format(groupname.upper())
-            payload += "<workspace>{}</workspace>".format(resource.layer.workspace)
-            payload += "<layer>{}</layer><access>ALLOW</access>".format(resource.layer.name)
-            rule_end = "</Rule>"
-        else:
-            payload = "<rule grant='ALLOW'><position value='0' position='offsetFromTop'/>"
-            payload += "<workspace>{}</workspace>".format(resource.layer.workspace)
-            payload += "<layer>{}</layer><rolename>ROLE_{}</rolename>".format(resource.layer.name, groupname.upper())
+            if type == 'user':
+                payload += "<username>{}</username>".format(name)
+            elif type == 'group':
+                payload += "<rolename>ROLE_{}</rolename>".format(name.upper())
             rule_end = "</rule>"
 
         if view_perms and edit_perms:
@@ -401,7 +374,7 @@ def set_owner_permissions(resource):
                 assign_perm(perm, resource.owner, resource.layer)
 
         # Set the GeoFence Owner Rule
-        set_data_user_acl(resource, str(resource.owner), view_perms=True, edit_perms=True)
+        set_data_acl(resource, str(resource.owner), view_perms=True, edit_perms=True)
 
         for perm in ADMIN_PERMISSIONS:
             assign_perm(perm, resource.owner, resource.get_self_resource())
@@ -428,7 +401,10 @@ def remove_object_permissions(instance):
             if gs_rules_dict[key]:
                 for rule in gs_rules_dict[key][sub_key]:
                     if 'layer' in rule.keys() and rule['layer'] == resource.layer.name:
-                        delete_geofence_rule(rule['id'])
+                        if '@id' in rule.keys():
+                            delete_geofence_rule(rule['@id'])
+                        else:
+                            delete_geofence_rule(rule['id'])
 
         try:
             UserObjectPermission.objects.filter(content_type=ContentType.objects.get_for_model(resource.layer),
