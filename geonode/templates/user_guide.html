@@ -39,7 +39,7 @@
       <li>complete a project and want to publish your results.</li>
 
     </ul>
-    <h3><a name="request-account">Request an account</a></h3>
+    <h3><a name="request-account">Requesting an account</a></h3>
 
     <p>To upload data to CityData or access restricted data, you will need an account. This is separately managed from your UNSW account. Email <a href="mailto:citydata@unsw.edu.au">citydata@unsw.edu.au</a> and provide:</p>
 
@@ -57,7 +57,7 @@
     </ol>
 
     <p>Once your account is created you’ll receive an email notification and an SMS with your temporary password.</p>
-    
+
     <p>If you do not receive the email within a few minutes, check your <b>Junk Email</b> folder. If it's there, right-click and select <b>Not Junk</b> before following the link in the email to login and change your password.</p>
 
     {% if user.is_authenticated %}
@@ -79,15 +79,15 @@
 
     <p>Create new groups in CityData for your projects as required and add existing CityData users as group members. Please follow the conventions shown in the existing groups.</p>
 
-    <h3><a name="admin">Administrator role</a></h3>
+    <h3><a name="librarian">CityData Librarian</a></h3>
 
-    <p>The CityData Administrator (username: ‘admin’, email <a href="mailto:citydata@unsw.edu.au">citydata@unsw.edu.au</a>) responds to any technical problems or issues with the site.</p>
+    <p>The CityData Librarian (email <a href="mailto:citydata@unsw.edu.au">citydata@unsw.edu.au</a>) is your first line of support, responding to any technical problems or issues with the site.</p>
 
-    <p>S/he also regularly reviews public data for basic quality checks (see this document for guidelines) and may remove public access from any resources that don’t meet these guidelines. In this case, the administrator will of course contact the resource owner to help rectify the problem.</p>
+    <p>S/he also curates the site content, regularly reviewing public data for basic quality checks as documented in this guide. The Librarian may remove public access from resources that don’t meet these guidelines. In this case, they will of course contact the resource owner to help rectify the problem.</p>
 
     <h3><a name="loading">Loading data</a></h3>
 
-    <p>Sign in to upload spatial data in shapefile, GeoTIFF, CSV or KML formats. KML is not fully supported, please let the <a href="mailto:citydata@unsw.edu.au">site administrator</a> know how you go with this.</p>
+    <p>Sign in to upload spatial data in shapefile, GeoTIFF, CSV or KML formats. KML is not fully supported, please let the <a href="mailto:citydata@unsw.edu.au">CityData Librarian</a> know how you go with this.</p>
 
     <p>You can also upload non-spatial data under the <b>Documents</b> tab. Supported formats include CSV, Word, PDF, PowerPoint, Excel, ZIP archives, images and text.</p>
 
@@ -105,9 +105,7 @@
 
     <p>CityFutures staff should generally make their internal data viewable to the CF group (CityFutures). Other BE staff should share with BE or with their own group within BE.</p>
 
-    <p>To publish your data, tick the boxes to allow ‘Anyone’ to both view and download the data:</p>
-
-    <p><img border=0 width=146 height=58 id="Picture 5" src="/static/cityfutures/img/user_guide/image001.png">&nbsp;<img border=0 width=146 height=58 id="Picture 6" src="/static/cityfutures/img/user_guide/image002.png"></p>
+    <p>See <a href="#publishing">Publishing data</a> for guidance on making your data available publicly.</p>
 
     <h5><a name="permissions-multi">Tip: set permissions on multiple layers</a></h5>
 
@@ -227,7 +225,7 @@
             <td>
               <p>Data created by CityFutures researchers should be licensed as <a href="https://creativecommons.org/licenses/by-nc/4.0/" target="_blank">Creative Commons
       Attribution-NonCommercial 4.0 International</a>.</p>
-              <p>When republishing data from another source, apply the licence used by the original author. If not listed, ask the <a href="mailto:citydata@unsw.edu.au">administrator</a> to add it.</p>
+              <p>When republishing data from another source, apply the licence used by the original author. If not listed, ask the <a href="mailto:citydata@unsw.edu.au?subject=Please%20add%20a%20licence%20to%20CityData">CityData Librarian</a> to add it.</p>
             </td>
           </tr>
           <tr>
@@ -314,6 +312,20 @@
       <li>Please be patient, as larger datasets may take several minutes to display the first time. The system builds a tiled image cache for new layers, so subsequent rendering is virtually instantaneous.</li>
     </ul>
 
+    <h3><a name="docs">Adding related documents</a></h3>
+
+    <p>As well as spatial layers, non-spatial data and other documents can be uploaded to CityData through the Documents tab. To link a document to a layer or map, go to <b>Edit Document</b> > <b>Metadata: Edit</b> and select the related layer/map name in the drop-down under<b> Link to</b>.</p>
+
+    <h3><a name="publishing">Publishing data</a></h3>
+
+    <p>To publish your data, tick the boxes to allow ‘Anyone’ to both view and download the data:</p>
+
+    <p><img border=0 width=146 height=58 id="Picture 5" src="/static/cityfutures/img/user_guide/image001.png">&nbsp;<img border=0 width=146 height=58 id="Picture 6" src="/static/cityfutures/img/user_guide/image002.png"></p>
+
+    <p>Notify the <a href="mailto:citydata@unsw.edu.au?subject=Please%20harvest%20my%20data%20record%20to%20RDA">CityData Librarian</a> so they can harvest your metadata record to <a href="https://researchdata.ands.org.au/" target="_blank">Research Data Australia</a>.</p>
+
+    <p>If you want your data to be citable, <a href="mailto:citydata@unsw.edu.au?subject=Please%20mint%20me%20a%20DOI">ask</a> the Data Librarian for a Digital Object Identifier (DOI).</p>
+
     <h3><a name="replacing">Replacing a layer</a></h3>
 
     <p><span class="text-danger">Warning:</span> A bug in our version of GeoNode prevents replacing a layer (with <b>Edit Layer &gt; Layer: Replace</b>) or even re-uploading a shapefile that has been previously uploaded and then deleted.</p>
@@ -379,7 +391,7 @@
     </ul>
 
     <p>If you are experiencing problems, first check Troubleshooting above. If this does not provide a solution, contact the <a href="mailto:citydata@unsw.edu.au">CityData
-  administrator</a>.</p>
+  Librarian</a>.</p>
     {% endif %}
   </div>
   <div class="col-md-4">
@@ -395,17 +407,19 @@
         <h5>{% trans "Sections" %}</h5></li>
       <li class="list-group-item"><a href="#access">Accessing data on CityData</a></li>
       <li class="list-group-item"><a href="#when-to-load">When to load data to CityData</a></li>
-      <li class="list-group-item"><a href="#request-account">Request an account</a></li>
+      <li class="list-group-item"><a href="#request-account">Requesting an account</a></li>
       {% if user.is_authenticated %}
       <li class="list-group-item"><a href="#groups">Groups</a></li>
-      <li class="list-group-item"><a href="#admin">Administrator role</a></li>
+      <li class="list-group-item"><a href="#librarian">CityData Librarian</a></li>
       <li class="list-group-item"><a href="#loading">Loading data</a></li>
-      <li class="list-group-item"><a href="#permissions">Set permissions</a></li>
+      <li class="list-group-item"><a href="#permissions">Setting permissions</a></li>
       <li class="list-group-item"><a href="#permissions-multi">Tip: set permissions on multiple layers</a></li>
       <li class="list-group-item"><a href="#uploading">Uploading a shapefile</a></li>
       <li class="list-group-item"><a href="#attributes">Attribute names</a></li>
       <li class="list-group-item"><a href="#metadata">Good metadata</a></li>
       <li class="list-group-item"><a href="#thumbnail">Setting a thumbnail image</a></li>
+      <li class="list-group-item"><a href="#docs">Adding related documents</a></li>
+      <li class="list-group-item"><a href="#publishing">Publishing data</a></li>
       <li class="list-group-item"><a href="#replacing">Replacing a layer</a></li>
       <li class="list-group-item"><a href="#trouble">Troubeshooting</a></li>
       <li class="list-group-item"><a href="#more">More help</a></li>
