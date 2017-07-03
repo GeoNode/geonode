@@ -80,7 +80,9 @@ def create_qgis_server_thumbnail(instance, overwrite=False, bbox=None):
                 resource=instance.get_self_resource(),
                 name="Thumbnail").delete()
 
-        create_thumbnail(instance, thumbnail_remote_url, overwrite=overwrite)
+        create_thumbnail(
+            instance, thumbnail_remote_url,
+            overwrite=overwrite, check_bbox=False)
         return True
     # if it is socket exception, we should raise it, because there is
     # something wrong with the url
@@ -120,7 +122,7 @@ def cache_request(url, cache_file):
     :return: True if succeeded
     :rtype: bool
     """
-
+    logger.debug('Requesting url: {url}'.format(url=url))
     response = requests.get(url, stream=True)
 
     if not response.status_code == 200:
