@@ -20,6 +20,7 @@
 
 import math
 import logging
+import urlparse
 from guardian.shortcuts import get_perms
 from guardian.utils import get_anonymous_user
 
@@ -62,8 +63,8 @@ from geonode.documents.models import get_related_documents
 from geonode.people.forms import ProfileForm
 from geonode.utils import num_encode, num_decode
 from geonode.utils import build_social_links
-from geonode.base.utils import batch_modify
-import urlparse
+from geonode.base.views import batch_modify
+
 
 if 'geonode.geoserver' in settings.INSTALLED_APPS:
     # FIXME: The post service providing the map_status object

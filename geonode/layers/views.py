@@ -67,7 +67,7 @@ from geonode.documents.models import get_related_documents
 from geonode.utils import build_social_links
 from geonode.geoserver.helpers import cascading_delete, gs_catalog
 from geonode.geoserver.helpers import ogc_server_settings
-from geonode.base.utils import batch_modify
+from geonode.base.views import batch_modify
 
 from geonode.base.models import Thesaurus
 

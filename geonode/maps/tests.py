@@ -701,7 +701,7 @@ community."
         for resource in resources:
             self.assertEquals(resource.date, date)
         # test language change
-        language = 'Non-existing'
+        language = 'eng'
         response = self.client.post(
             reverse(view, args=(ids,)),
             data={'language': language},
