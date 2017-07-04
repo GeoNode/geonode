@@ -53,6 +53,11 @@ def batch_modify(request, ids, model):
                 new_region = form.cleaned_data['regions']
                 if new_region:
                     resource.regions.add(new_region)
+                keywords = form.cleaned_data['keywords']
+                if keywords:
+                    resource.keywords.clear()
+                    for word in keywords.split(','):
+                        resource.keywords.add(word.strip())
                 resource.save()
             return HttpResponseRedirect(
                 '/admin/{model}s/{model}/'.format(model=model.lower())
