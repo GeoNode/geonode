@@ -166,15 +166,15 @@
 
         L.control.watermark = function(opts) {
           return new L.Control.Watermark(opts);
-        }
+        };
 
         L.control.watermark({ position: 'bottomright' }).addTo(map);
 
         // L.control.measureControl.addTo(map);
         map.addLayer(OpenMapSurfer_Roads);
 
-        {% if resource.bbox_string %}
-            zoom_to_box(map, [{{ resource.bbox_string }}]);
+        {% if layer_bbox %}
+            zoom_to_box(map, [{{ layer_bbox }}]);
         {% endif %}
 
         var tile_layer;

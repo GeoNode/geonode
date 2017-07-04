@@ -23,6 +23,7 @@ import logging
 import os
 import shutil
 
+from osgeo import ogr, osr, gdal
 from django.conf import settings
 from django.core.urlresolvers import reverse
 from django.db.models import signals
@@ -139,6 +140,27 @@ def qgis_server_post_save(instance, sender, **kwargs):
             basename + original_ext  # Already with dot
         )
     qgis_layer.save()
+
+    # Set layer crs
+    try:
+        if is_shapefile:
+            dataset = ogr.Open(geonode_layer_path)
+            layer = dataset.GetLayer()
+            spatial_ref = layer.GetSpatialRef()
+            srid = spatial_ref.GetAuthorityCode(None)
+            if srid:
+                instance.srid = srid
+        else:
+            dataset = gdal.Open(geonode_layer_path)
+            prj = dataset.GetProjection()
+            srs = osr.SpatialReference(wkt=prj)
+            srid = srs.GetAuthorityCode(None)
+            if srid:
+                instance.srid = srid
+    except Exception as e:
+        logger.debug("Can't retrieve projection: {layer}".format(
+            layer=geonode_layer_path))
+        logger.exception(e)
 
     # base url for geonode
     base_url = settings.SITEURL

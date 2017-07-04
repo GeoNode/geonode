@@ -25,6 +25,10 @@ import shutil
 import traceback
 import uuid
 import decimal
+
+import re
+
+from django.contrib.gis.geos import GEOSGeometry
 from requests import Request
 
 from guardian.shortcuts import get_perms
@@ -328,6 +332,14 @@ def layer_detail(request, layername, template='layers/layer_detail.html'):
         settings,
         'DEFAULT_MAP_CRS',
         'EPSG:900913')
+
+    # provide bbox in EPSG:4326 for leaflet
+    if context_dict["preview"] == 'leaflet':
+        srid, wkt = layer.geographic_bounding_box.split(';')
+        srid = re.findall(r'\d+', srid)
+        geom = GEOSGeometry(wkt, srid=int(srid[0]))
+        geom.transform(4326)
+        context_dict["layer_bbox"] = ','.join([str(c) for c in geom.extent])
 
     if layer.storeType == 'dataStore':
         links = layer.link_set.download().filter(

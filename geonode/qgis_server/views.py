@@ -406,7 +406,7 @@ def qml_style(request, layername):
         qml_path = qgis_layer.qml_path
 
         if not os.path.exists(qml_path):
-            return Http404(
+            raise Http404(
                 'This layer does not have current default QML style.')
 
         response = HttpResponse(
@@ -445,23 +445,25 @@ def qml_style(request, layername):
             layerfile_set = layer.upload_session.layerfile_set
             qml_layer_file, created = layerfile_set.get_or_create(name='qml')
 
-            if created:
-                layer_base_path, __ = layer.get_base_file()
-                layer_prefix, __ = os.path.splitext(layer_base_path)
-                qml_path = '{prefix}.qml'.format(prefix=layer_prefix)
-            else:
+            try:
                 qml_path = qml_layer_file.file.path
+                content = uploaded_qml.read()
+                with open(qml_path, mode='w') as f:
+                    f.write(content)
+            except ValueError:
+                layer_base_path, __ = layer.get_base_file()
+                layer_prefix, __ = os.path.splitext(
+                    layer_base_path.file.path)
+                qml_path = '{prefix}.qml'.format(prefix=layer_prefix)
 
-            content = uploaded_qml.read()
+                content = uploaded_qml.read()
 
-            with open(qml_path, mode='w') as f:
-                f.write(content)
-
-                if created:
-                    qml_layer_file.file = File(f)
-                    qml_layer_file.base = False
-                    qml_layer_file.upload_session = layer.upload_session
-                    qml_layer_file.save()
+                qml_layer_file.file = File(
+                    uploaded_qml,
+                    name=os.path.basename(qml_path))
+                qml_layer_file.base = False
+                qml_layer_file.upload_session = layer.upload_session
+                qml_layer_file.save()
 
             # update qml in QGIS Layer folder
             qgis_layer = get_object_or_404(QGISServerLayer, layer=layer)
@@ -501,7 +503,8 @@ def qml_style(request, layername):
                 },
                 status=200).render()
 
-        except:
+        except Exception as e:
+            logger.exception(e)
             return HttpResponseServerError()
 
     return HttpResponseBadRequest()
@@ -528,7 +531,7 @@ def set_thumbnail(request, layername):
 
     # extract bbox
     bbox_string = request.POST['bbox']
-    # BBox should be in the format: [xmin,ymin,xmax,ymax]
+    # BBox should be in the format: [xmin,ymin,xmax,ymax], EPSG:4326
     bbox = bbox_string.split(',')
     bbox = [float(s) for s in bbox]
 

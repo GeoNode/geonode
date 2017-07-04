@@ -27,7 +27,7 @@ import contextlib
 import json
 
 import gisdata
-from django.test import TestCase
+from django.test import TestCase, LiveServerTestCase
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.forms import ValidationError
 from django.contrib.contenttypes.models import ContentType
@@ -850,7 +850,7 @@ class UnpublishedObjectTests(TestCase):
         layer.save()
 
 
-class LayerModerationTestCase(TestCase):
+class LayerModerationTestCase(LiveServerTestCase):
 
     fixtures = ['initial_data.json', 'bobby']
 

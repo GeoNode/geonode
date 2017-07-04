@@ -19,13 +19,15 @@
 #########################################################################
 import logging
 import os
+import re
 import shutil
 from urlparse import urljoin
 
+import math
 import requests
 from django.conf import settings
 from django.contrib.gis.gdal import CoordTransform, SpatialReference
-from django.contrib.gis.geos import Point
+from django.contrib.gis.geos import GEOSGeometry, Point
 from django.core.exceptions import ImproperlyConfigured
 from django.core.urlresolvers import reverse
 from requests import Request
@@ -98,6 +100,26 @@ def validate_django_settings():
             "{package}.".format(package=qgis_server.BACKEND_PACKAGE))
 
     return True
+
+
+def transform_layer_bbox(layer, target_crs):
+    """
+
+    :param layer: Layer to take the bounding box from
+    :type layer: Layer
+
+    :param target_crs: Integer of EPSG crs ID
+    :type target_crs: int
+
+    :return: list converted BBox in target CRS, in the format:
+        [xmin,ymin,xmax,ymax]
+    :rtype: list(int)
+    """
+    srid, wkt = layer.geographic_bounding_box.split(';')
+    srid = re.findall(r'\d+', srid)
+    geom = GEOSGeometry(wkt, srid=int(srid[0]))
+    geom.transform(target_crs)
+    return list(geom.extent)
 
 
 def qgis_server_endpoint(internal=True):
@@ -262,7 +284,8 @@ def map_thumbnail_url(instance, bbox=None, internal=True):
 
     if not bbox:
         # We get the extent of these layers.
-        bbox = [float(i) for i in instance.bbox_string.split(',')]
+        # Reproject, in case of different CRS
+        bbox = transform_layer_bbox(instance, 4326)
     return thumbnail_url(
         bbox, qgis_map.qgis_map_name, qgis_project, internal=internal)
 
@@ -297,11 +320,8 @@ def layer_thumbnail_url(instance, bbox=None, internal=True):
 
     if not bbox:
         # We get the extent of the layer.
-        x_min = instance.resourcebase_ptr.bbox_x0
-        x_max = instance.resourcebase_ptr.bbox_x1
-        y_min = instance.resourcebase_ptr.bbox_y0
-        y_max = instance.resourcebase_ptr.bbox_y1
-        bbox = [x_min, y_min, x_max, y_max]
+        # Reproject, in case of different CRS
+        bbox = transform_layer_bbox(instance, 4326)
 
     return thumbnail_url(bbox, layers, qgis_project, internal=internal)
 
@@ -329,7 +349,9 @@ def thumbnail_url(bbox, layers, qgis_project, internal=True):
     # We calculate the margins according to 10 percent.
     percent = 10
     delta_x = (x_max - x_min) / 100 * percent
+    delta_x = math.fabs(delta_x)
     delta_y = (y_max - y_min) / 100 * percent
+    delta_y = math.fabs(delta_y)
     # We apply the margins to the extent.
     margin = [
         y_min - delta_y,
