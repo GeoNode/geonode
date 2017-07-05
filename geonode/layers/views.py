@@ -29,6 +29,7 @@ import decimal
 import re
 
 from django.contrib.gis.geos import GEOSGeometry
+from django.template.response import TemplateResponse
 from requests import Request
 
 from guardian.shortcuts import get_perms
@@ -374,7 +375,8 @@ def layer_detail(request, layername, template='layers/layer_detail.html'):
     if settings.SOCIAL_ORIGINS:
         context_dict["social_links"] = build_social_links(request, layer)
 
-    return render_to_response(template, RequestContext(request, context_dict))
+    return TemplateResponse(
+        request, template, RequestContext(request, context_dict))
 
 
 def layer_feature_catalogue(request, layername, template='../../catalogue/templates/catalogue/feature_catalogue.xml'):

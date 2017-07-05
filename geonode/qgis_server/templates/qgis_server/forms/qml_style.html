@@ -16,7 +16,9 @@
 <form id="qgis-server-style-edit-form" method="post" action="{% url "qgis_server:update-qml" layername=resource.name %}" enctype="multipart/form-data">
     {% csrf_token %}
     {{ style_upload_form|as_bootstrap }}
-    <a href="{% url "qgis_server:download-qml" layername=resource.name %}" class="btn btn-default">{% trans "Download Current Style" %}</a>
+    {% if use_qml_style %}
+        <a href="{% url "qgis_server:download-qml" layername=resource.name %}" class="btn btn-default">{% trans "Download Current Style" %}</a>
+    {% endif %}
     <button type="submit" class="btn btn-primary">{% trans "Upload" %}</button>
 </form>
 {% endif %}
