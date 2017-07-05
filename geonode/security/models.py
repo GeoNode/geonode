@@ -299,17 +299,13 @@ def set_geofence_all(instance):
             payload = payload + "</layer><access>ALLOW</access></Rule>"
 
             if not rules_already_present:
-                r = requests.post(url + 'geofence/rest/rules',
-                                  headers=headers,
-                                  data=payload,
-                                  auth=HTTPBasicAuth(user, passwd))
-                if (r.status_code != 200):
-                    logger.warning("Could not ADD GeoServer ANONYMOUS Rule for Layer " + str(resource.layer.name))
-
-        payload = "<Rule><workspace>{}</workspace><layer>".format(resource.layer.workspace)
-        payload = payload + resource.layer.name
-        payload = payload + "</layer><access>ALLOW</access></Rule>"
-        create_geofence_rule(payload)
+                payload = "<Rule><workspace>{}</workspace><layer>".format(resource.layer.workspace)
+                payload = payload + resource.layer.name
+                payload = payload + "</layer><access>ALLOW</access></Rule>"
+                create_geofence_rule(payload)
+        except:
+            tb = traceback.format_exc()
+            logger.debug(tb)
 
 
 def set_geofence_user(instance, username, view_perms=False, download_perms=False):
