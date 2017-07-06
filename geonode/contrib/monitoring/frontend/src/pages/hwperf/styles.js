@@ -1,6 +1,8 @@
 export default {
   root: {
-    padding: 10,
+    marginTop: 30,
+    paddingTop: 20,
+    paddingBottom: 20,
     maxWidth: 1150,
     marginLeft: 'auto',
     marginRight: 'auto',
@@ -12,11 +14,10 @@ export default {
     width: '100%',
   },
 
-  hardware: {
+  analytics: {
     display: 'flex',
-    flexDirection: 'column',
     justifyContent: 'space-between',
-    width: '50%',
-    marginLeft: 20,
+    marginTop: 20,
   },
+
 };
