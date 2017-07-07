@@ -85,7 +85,6 @@ urlpatterns = patterns('',
                        (r'^ratings/', include('agon_ratings.urls')),
                        (r'^activity/', include('actstream.urls')),
                        (r'^announcements/', include('announcements.urls')),
-                       (r'^messages/', include('user_messages.urls')),
                        (r'^social/', include('geonode.social.urls')),
                        (r'^security/', include('geonode.security.urls')),
 
