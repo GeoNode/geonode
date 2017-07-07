@@ -7,10 +7,16 @@ import Back from 'material-ui/svg-icons/image/navigate-before';
 import actions from './actions';
 import styles from './styles';
 import { minute, hour, day, week } from './constants';
+import formatDate from './utils';
+
+
+const rightNow = new Date();
 
 
 const mapStateToProps = (state) => ({
+  from: state.interval.from,
   interval: state.interval.interval,
+  to: state.interval.to,
 });
 
 
@@ -23,7 +29,16 @@ class Header extends React.Component {
   static propTypes = {
     interval: PropTypes.number,
     set: PropTypes.func.isRequired,
+    from: PropTypes.string,
+    to: PropTypes.string,
   }
+
+  static defaultProps = {
+    from: formatDate(rightNow),
+    interval: 10 * minute,
+    to: formatDate(new Date(rightNow - 10 * minute * 1000)),
+  }
+
 
   constructor(props) {
     super(props);
@@ -32,19 +47,28 @@ class Header extends React.Component {
     };
 
     this.handleMinute = () => {
-      this.props.set(10 * minute);
+      const now = new Date();
+      const interval = 10 * minute;
+      const fromDate = new Date(now - interval * 1000);
+      this.props.set(now, fromDate, interval);
     };
 
     this.handleHour = () => {
-      this.props.set(hour);
+      const now = new Date();
+      const fromDate = new Date(now - hour);
+      this.props.set(now, fromDate, hour);
     };
 
     this.handleDay = () => {
-      this.props.set(day);
+      const now = new Date();
+      const fromDate = new Date(now - day);
+      this.props.set(now, fromDate, day);
     };
 
     this.handleWeek = () => {
-      this.props.set(week);
+      const now = new Date();
+      const fromDate = new Date(now - week);
+      this.props.set(now, fromDate, week);
     };
   }
 
@@ -88,8 +112,8 @@ class Header extends React.Component {
           />
         </div>
         <div style={styles.item}>
-          from:&nbsp;<span style={styles.timestamp}>05/29/2017 12:05:00</span>&nbsp;
-          to:&nbsp;<span style={styles.timestamp}>05/29/2017 12:15:00</span>
+          from:&nbsp;<span style={styles.timestamp}>{this.props.from}</span>&nbsp;
+          to:&nbsp;<span style={styles.timestamp}>{this.props.to}</span>
         </div>
         <RaisedButton
           label="Auto Refresh"

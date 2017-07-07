@@ -34,12 +34,12 @@ const fail = createAction(
 );
 
 
-const get = () =>
+const get = (from, to, interval) =>
   (dispatch) => {
     dispatch(begin());
-    fetch({
-      url: `${apiUrl}/metric_data/response.time/?valid_from=2017-06-26`,
-    })
+    let url = `${apiUrl}/metric_data/response.time/`;
+    url += `?valid_from=${from}&valid_to=${to}&interval=${interval}`;
+    fetch({ url })
       .then(response => {
         dispatch(success(response));
         return response;

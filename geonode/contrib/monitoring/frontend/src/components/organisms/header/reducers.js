@@ -1,6 +1,7 @@
 import INTERVAL, { minute } from './constants';
 
-export default function applicationDetail(
+
+export default function interval(
   state = { interval: 10 * minute },
   action,
 ) {

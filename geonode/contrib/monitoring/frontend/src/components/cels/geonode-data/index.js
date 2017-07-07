@@ -9,24 +9,22 @@ import actions from './actions';
 
 
 const mapStateToProps = (state) => ({
-  responses: state.geonodeAverageResponse.response,
+  from: state.interval.from,
+  interval: state.interval.interval,
+  response: state.geonodeAverageResponse.response,
+  to: state.interval.to,
 });
 
 
 @connect(mapStateToProps, actions)
 class GeonodeData extends React.Component {
   static propTypes = {
+    from: PropTypes.string,
     get: PropTypes.func.isRequired,
     reset: PropTypes.func.isRequired,
-    responses: PropTypes.object,
-  }
-
-  static defaultProps = {
-    responses: {
-      data: {
-        data: [],
-      },
-    },
+    response: PropTypes.object,
+    to: PropTypes.string,
+    interval: PropTypes.number,
   }
 
   constructor(props) {
@@ -39,32 +37,18 @@ class GeonodeData extends React.Component {
   }
 
   componentWillMount() {
-    this.props.get();
+    if (this.props && this.props.from) {
+      this.props.get(this.props.from, this.props.to, this.props.interval);
+    }
   }
 
   componentWillReceiveProps(nextProps) {
-    if (nextProps.responses) {
-      let totalRequests = 0;
-      let maxResponseTime = 0;
-      let totalTimes = 0;
-      nextProps.responses.data.data.forEach((response) => {
-        if (response.data.length > 0) {
-          response.data.forEach((element) => {
-            totalRequests += element.count;
-            totalTimes += element.count * element.val;
-            const max = Number(element.max);
-            if (maxResponseTime < max) {
-              maxResponseTime = max;
-            }
-          });
-        }
-      });
-      const averageResponseTime = Math.floor(totalTimes / totalRequests);
-      this.setState({
-        averageResponseTime,
-        maxResponseTime,
-        totalRequests,
-      });
+    if (
+      nextProps &&
+      nextProps.from &&
+      nextProps.interval !== this.props.interval
+    ) {
+      this.props.get(nextProps.from, nextProps.to, nextProps.interval);
     }
   }
 
