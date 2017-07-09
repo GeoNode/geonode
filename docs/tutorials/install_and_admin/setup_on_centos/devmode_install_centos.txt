@@ -209,4 +209,6 @@ Finally we are able to start all the components
     .. code-block:: console
 
         paver start_geoserver # start GeoServer
-        python manage.py runserver # start GeoNode
+        python manage.py runserver 0.0.0.0:8000 # start GeoNode
+
+.. warning:: Note that the default IP address, `127.0.0.1`, is not accessible from other machines on your network. In case you are using `forwarded_port` on a `Vagrantfile` please make sure to start `runserver` with the option :option:`0.0.0.0:8000` which allows fundamentally to view your development server from other machines on the network, included your host machine in such a case. See more on :ref:`setup_vagrant_centos`.
