@@ -29,14 +29,14 @@ class Header extends React.Component {
   static propTypes = {
     interval: PropTypes.number,
     set: PropTypes.func.isRequired,
-    from: PropTypes.string,
-    to: PropTypes.string,
+    from: PropTypes.object,
+    to: PropTypes.object,
   }
 
   static defaultProps = {
-    from: formatDate(rightNow),
+    from: rightNow,
     interval: 10 * minute,
-    to: formatDate(new Date(rightNow - 10 * minute * 1000)),
+    to: new Date(rightNow - 10 * minute * 1000),
   }
 
 
@@ -112,8 +112,8 @@ class Header extends React.Component {
           />
         </div>
         <div style={styles.item}>
-          from:&nbsp;<span style={styles.timestamp}>{this.props.from}</span>&nbsp;
-          to:&nbsp;<span style={styles.timestamp}>{this.props.to}</span>
+          from:&nbsp;<span style={styles.timestamp}>{formatDate(this.props.from)}</span>&nbsp;
+          to:&nbsp;<span style={styles.timestamp}>{formatDate(this.props.to)}</span>
         </div>
         <RaisedButton
           label="Auto Refresh"

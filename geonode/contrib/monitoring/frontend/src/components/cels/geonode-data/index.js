@@ -19,11 +19,11 @@ const mapStateToProps = (state) => ({
 @connect(mapStateToProps, actions)
 class GeonodeData extends React.Component {
   static propTypes = {
-    from: PropTypes.string,
+    from: PropTypes.object,
     get: PropTypes.func.isRequired,
     reset: PropTypes.func.isRequired,
     response: PropTypes.object,
-    to: PropTypes.string,
+    to: PropTypes.object,
     interval: PropTypes.number,
   }
 
