@@ -90,6 +90,8 @@ Verify the proper installation on the JDK::
 Installing Tomcat
 =================
 
+.. _geonode_create_user_tomcat:
+
 Tomcat
 ------
 
