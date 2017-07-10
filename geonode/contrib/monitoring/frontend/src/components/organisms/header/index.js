@@ -4,13 +4,10 @@ import { connect } from 'react-redux';
 import RaisedButton from 'material-ui/RaisedButton';
 import AutorefreshIcon from 'material-ui/svg-icons/action/autorenew';
 import Back from 'material-ui/svg-icons/image/navigate-before';
+import { formatHeaderDate } from '../../../utils';
 import actions from './actions';
 import styles from './styles';
 import { minute, hour, day, week } from './constants';
-import formatDate from './utils';
-
-
-const rightNow = new Date();
 
 
 const mapStateToProps = (state) => ({
@@ -32,13 +29,6 @@ class Header extends React.Component {
     from: PropTypes.object,
     to: PropTypes.object,
   }
-
-  static defaultProps = {
-    from: rightNow,
-    interval: 10 * minute,
-    to: new Date(rightNow - 10 * minute * 1000),
-  }
-
 
   constructor(props) {
     super(props);
@@ -112,8 +102,15 @@ class Header extends React.Component {
           />
         </div>
         <div style={styles.item}>
-          from:&nbsp;<span style={styles.timestamp}>{formatDate(this.props.from)}</span>&nbsp;
-          to:&nbsp;<span style={styles.timestamp}>{formatDate(this.props.to)}</span>
+          from:&nbsp;
+          <span style={styles.timestamp}>
+            {formatHeaderDate(this.props.from)}
+          </span>
+          &nbsp;
+          to:&nbsp;
+          <span style={styles.timestamp}>
+            {formatHeaderDate(this.props.to)}
+          </span>
         </div>
         <RaisedButton
           label="Auto Refresh"

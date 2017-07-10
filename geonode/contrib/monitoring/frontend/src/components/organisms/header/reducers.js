@@ -1,8 +1,15 @@
 import INTERVAL, { minute } from './constants';
 
 
+const rightNow = new Date();
+
+
 export default function interval(
-  state = { interval: 10 * minute },
+  state = {
+    from: rightNow,
+    interval: 10 * minute,
+    to: new Date(rightNow - 10 * minute * 1000),
+  },
   action,
 ) {
   switch (action.type) {

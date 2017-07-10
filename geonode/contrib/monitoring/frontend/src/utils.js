@@ -1,7 +1,7 @@
 import isomorphicFetch from 'isomorphic-fetch';
 
 
-export function fetch(args) {
+export const fetch = (args) => {
   const {
     url,
     body,
@@ -26,4 +26,26 @@ export function fetch(args) {
       }
       return json;
     });
-}
+};
+
+
+export const formatApiDate = (date) => {
+  const day = `0${date.getDate()}`.slice(-2);
+  const month = `0${date.getMonth() + 1}`.slice(-2);
+  const year = date.getFullYear();
+  const hour = `0${date.getHours()}`.slice(-2);
+  const minute = `0${date.getMinutes()}`.slice(-2);
+  const second = `0${date.getSeconds()}`.slice(-2);
+  return `${year}-${month}-${day}%20${hour}:${minute}:${second}`;
+};
+
+
+export const formatHeaderDate = (date) => {
+  const day = `0${date.getDate()}`.slice(-2);
+  const month = `0${date.getMonth() + 1}`.slice(-2);
+  const year = date.getFullYear();
+  const hour = `0${date.getHours()}`.slice(-2);
+  const minute = `0${date.getMinutes()}`.slice(-2);
+  const second = `0${date.getSeconds()}`.slice(-2);
+  return `${month}/${day}/${year} ${hour}:${minute}:${second}`;
+};

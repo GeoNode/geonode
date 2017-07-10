@@ -1,6 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
+import CircularProgress from 'material-ui/CircularProgress';
 import AverageResponseTime from '../../molecules/average-response-time';
 import MaxResponseTime from '../../molecules/max-response-time';
 import TotalRequests from '../../molecules/total-requests';
@@ -27,19 +28,8 @@ class GeonodeData extends React.Component {
     interval: PropTypes.number,
   }
 
-  constructor(props) {
-    super(props);
-    this.state = {
-      averageResponseTime: 0,
-      maxResponseTime: 0,
-      totalRequests: 0,
-    };
-  }
-
   componentWillMount() {
-    if (this.props && this.props.from) {
-      this.props.get(this.props.from, this.props.to, this.props.interval);
-    }
+    this.props.get(this.props.from, this.props.to, this.props.interval);
   }
 
   componentWillReceiveProps(nextProps) {
@@ -57,14 +47,31 @@ class GeonodeData extends React.Component {
   }
 
   render() {
+    let averageResponseTime = <CircularProgress size={styles.spinner.size} />;
+    let maxResponseTime = <CircularProgress size={styles.spinner.size} />;
+    let totalRequests = <CircularProgress size={styles.spinner.size} />;
+    if (this.props.response) {
+      averageResponseTime = undefined;
+      maxResponseTime = undefined;
+      totalRequests = undefined;
+      const data = this.props.response.data.data;
+      if (data.length > 0) {
+        if (data[0].data.length > 0) {
+          const metric = data[0].data[0];
+          maxResponseTime = Math.floor(metric.max);
+          averageResponseTime = Math.floor(metric.val);
+          totalRequests = metric.count;
+        }
+      }
+    }
     return (
       <div style={styles.content}>
         <h5>Geonode Data Overview</h5>
         <div style={styles.geonode}>
-          <AverageResponseTime time={this.state.averageResponseTime} />
-          <MaxResponseTime time={this.state.maxResponseTime} />
+          <AverageResponseTime time={averageResponseTime} />
+          <MaxResponseTime time={maxResponseTime} />
         </div>
-        <TotalRequests requests={this.state.totalRequests} />
+        <TotalRequests requests={totalRequests} />
       </div>
     );
   }

@@ -6,15 +6,21 @@ import styles from './styles';
 
 class MaxResponseTime extends React.Component {
   static propTypes = {
-    time: PropTypes.number.isRequired,
+    time: PropTypes.number,
   }
 
   render() {
+    let time = this.props.time;
+    if (time === undefined) {
+      time = 'N/A';
+    } else if (typeof time === 'number') {
+      time += ' ms';
+    }
     return (
       <HoverPaper style={styles.content}>
         <h5>Max Response Time</h5>
         <div style={styles.stat}>
-          <h3>{this.props.time} ms</h3>
+          <h3>{time}</h3>
         </div>
       </HoverPaper>
     );

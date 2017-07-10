@@ -2,7 +2,7 @@ import { createAction } from 'redux-actions';
 import { fetch } from '../../../utils';
 import apiUrl from '../../../backend';
 import GEONODE_AVERAGE_RESPONSE from './constants';
-import formatDate from './utils';
+import { formatApiDate } from '../../../utils';
 
 
 const reset = createAction(
@@ -38,8 +38,8 @@ const fail = createAction(
 const get = (from, to, interval) =>
   (dispatch) => {
     dispatch(begin());
-    const formatedFrom = formatDate(from);
-    const formatedTo = formatDate(to);
+    const formatedFrom = formatApiDate(from);
+    const formatedTo = formatApiDate(to);
     let url = `${apiUrl}/metric_data/response.time/?valid_from=${formatedFrom}`;
     url += `&valid_to=${formatedTo}&interval=${interval}`;
     fetch({ url })
