@@ -161,8 +161,8 @@ variables::
 Now download and copy GeoServer web archive inside the webapps folder. Tomcat will extract the
 war file and run GeoServer::
 
-  curl -LO http://build.geonode.org/geoserver/latest/geoserver-2.9.x-oauth2.war
-  sudo cp geoserver-2.9.x-oauth2.war /var/lib/tomcats/geoserver/webapps/
+  curl -LO http://build.geonode.org/geoserver/latest/geoserver-2.9.x-oauth2.war && mv geoserver-2.9.x-oauth2.war geoserver.war
+  sudo cp geoserver.war /var/lib/tomcats/geoserver/webapps/
 
 And fix the permissions on the files::
 
