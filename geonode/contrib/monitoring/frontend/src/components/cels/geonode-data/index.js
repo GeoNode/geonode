@@ -1,7 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
-import CircularProgress from 'material-ui/CircularProgress';
 import AverageResponseTime from '../../molecules/average-response-time';
 import MaxResponseTime from '../../molecules/max-response-time';
 import TotalRequests from '../../molecules/total-requests';
@@ -47,9 +46,9 @@ class GeonodeData extends React.Component {
   }
 
   render() {
-    let averageResponseTime = <CircularProgress size={styles.spinner.size} />;
-    let maxResponseTime = <CircularProgress size={styles.spinner.size} />;
-    let totalRequests = <CircularProgress size={styles.spinner.size} />;
+    let averageResponseTime = 0;
+    let maxResponseTime = 0;
+    let totalRequests = 0;
     if (this.props.response) {
       averageResponseTime = undefined;
       maxResponseTime = undefined;

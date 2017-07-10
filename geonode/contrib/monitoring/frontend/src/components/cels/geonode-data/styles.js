@@ -7,8 +7,4 @@ export default {
     display: 'flex',
     justifyContent: 'space-between',
   },
-
-  spinner: {
-    size: 25,
-  },
 };
