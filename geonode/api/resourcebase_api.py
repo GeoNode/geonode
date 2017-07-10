@@ -106,6 +106,12 @@ class CommonModelApi(ModelResource):
         'thumbnail_url',
         'detail_url',
         'rating',
+        'scientific_quality',
+        'calculation_method_quality',
+        'hazard_type',
+        'hazard_unit',
+        'hazard_period',
+        'hazard_set',
     ]
 
     def build_filters(self, filters=None):
@@ -646,6 +652,10 @@ class FeaturedResourceBaseResource(CommonModelApi):
 class LayerResource(CommonModelApi):
 
     """Layer API"""
+
+    # copy parent attribute before modifying
+    VALUES = CommonModelApi.VALUES[:]
+    VALUES.append('typename')
 
     class Meta(CommonMetaApi):
         queryset = Layer.objects.distinct().order_by('-date')
