@@ -40,25 +40,25 @@ class Header extends React.Component {
       const now = new Date();
       const interval = 10 * minute;
       const fromDate = new Date(now - interval * 1000);
-      this.props.set(now, fromDate, interval);
+      this.props.set(fromDate, now, interval);
     };
 
     this.handleHour = () => {
       const now = new Date();
-      const fromDate = new Date(now - hour);
-      this.props.set(now, fromDate, hour);
+      const fromDate = new Date(now - hour * 1000);
+      this.props.set(fromDate, now, hour);
     };
 
     this.handleDay = () => {
       const now = new Date();
-      const fromDate = new Date(now - day);
-      this.props.set(now, fromDate, day);
+      const fromDate = new Date(now - day * 1000);
+      this.props.set(fromDate, now, day);
     };
 
     this.handleWeek = () => {
       const now = new Date();
-      const fromDate = new Date(now - week);
-      this.props.set(now, fromDate, week);
+      const fromDate = new Date(now - week * 1000);
+      this.props.set(fromDate, now, week);
     };
   }
 
