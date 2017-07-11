@@ -1,1 +1,2 @@
-export default 'GEONODE_STATUS';
+export const GEONODE_CPU_STATUS = 'GEONODE_CPU_STATUS';
+export const GEONODE_MEM_STATUS = 'GEONODE_MEM_STATUS';

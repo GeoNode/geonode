@@ -1,23 +1,23 @@
 import { createAction } from 'redux-actions';
-import { fetch, formatApiDate } from '../../../utils';
-import apiUrl from '../../../backend';
-import GEONODE_AVERAGE_RESPONSE from './constants';
+import { fetch, formatApiDate } from '../../../../utils';
+import apiUrl from '../../../../backend';
+import { GEONODE_MEM_STATUS } from '../constants';
 
 
 const reset = createAction(
-  GEONODE_AVERAGE_RESPONSE,
+  GEONODE_MEM_STATUS,
   () => ({ status: 'initial' })
 );
 
 
 export const begin = createAction(
-  GEONODE_AVERAGE_RESPONSE,
+  GEONODE_MEM_STATUS,
   () => ({ status: 'pending' })
 );
 
 
 const success = createAction(
-  GEONODE_AVERAGE_RESPONSE,
+  GEONODE_MEM_STATUS,
   response => ({
     response,
     status: 'success',
@@ -26,7 +26,7 @@ const success = createAction(
 
 
 const fail = createAction(
-  GEONODE_AVERAGE_RESPONSE,
+  GEONODE_MEM_STATUS,
   error => ({
     status: 'error',
     error,
@@ -39,7 +39,7 @@ const get = (from, to, interval) =>
     dispatch(begin());
     const formatedFrom = formatApiDate(from);
     const formatedTo = formatApiDate(to);
-    let url = `${apiUrl}/metric_data/response.time/?valid_from=${formatedFrom}`;
+    let url = `${apiUrl}/metric_data/mem.usage/?valid_from=${formatedFrom}`;
     url += `&valid_to=${formatedTo}&interval=${interval}`;
     fetch({ url })
       .then(response => {
