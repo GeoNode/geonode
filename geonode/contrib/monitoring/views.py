@@ -73,6 +73,8 @@ class ServicesList(View):
         for item in q:
             out.append({'name': item.name,
                         'host': item.host.name,
+                        'id': item.id,
+                        'type': item.service_type.name,
                         'check_interval': item.check_interval.total_seconds(),
                         'last_check': item.last_check})
 
