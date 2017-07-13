@@ -28,12 +28,12 @@ Create the user::
 Install GeoNode
 ===============
 
-Install GeoNode sources from official repository::
+As a user `geonode` install GeoNode sources from official repository::
 
     curl -LO "https://github.com/GeoNode/geonode/archive/2.6.1.zip"
     unzip 2.6.1.zip && mv geonode-2.6.1 geonode
 
-Move the sources in `geonode` user home folder::
+Move the sources into home folder::
 
     mv geonode /home/geonode
 
