@@ -49,18 +49,19 @@ and insert into it :download:`this content <resources/geonode.conf>`.
 
 Add `thumbs` and `layers` folders::
 
-    mkdir -p /home/geonode/geonode/geonode/uploaded/thumbs
-    mkdir -p /home/geonode/geonode/geonode/uploaded/layers
+    mkdir -p /opt/apps/geonode/geonode/geonode/static_root
+    mkdir -p /opt/apps/geonode/geonode/geonode/uploaded/thumbs
+    mkdir -p /opt/apps/geonode/geonode/geonode/uploaded/layers
 
 Change permissions on GeoNode files and folders to allow Apache to read and edit them:::
 
-    chmod +x /home/geonode/
-    sudo chown -R geonode /home/geonode/geonode/
-    sudo chown geonode:apache /home/geonode/geonode/geonode/static/
-    sudo chown geonode:apache /home/geonode/geonode/geonode/uploaded/
-    sudo chown geonode:apache /home/geonode/geonode/geonode/static_root/
-    chmod -Rf 777 /home/geonode/geonode/geonode/uploaded/thumbs
-    chmod -Rf 777 /home/geonode/geonode/geonode/uploaded/layers
+    chmod +x /opt/apps/geonode/
+    sudo chown -R geonode /opt/apps/geonode/geonode
+    sudo chown geonode:apache /opt/apps/geonode/geonode/geonode/static/
+    sudo chown geonode:apache /opt/apps/geonode/geonode/geonode/uploaded/
+    sudo chown geonode:apache /opt/apps/geonode/geonode/geonode/static_root/
+    chmod -Rf 777 /opt/apps/geonode/geonode/geonode/uploaded/thumbs
+    chmod -Rf 777 /opt/apps/geonode/geonode/geonode/uploaded/layers
 
 SSL configuration
 -----------------
