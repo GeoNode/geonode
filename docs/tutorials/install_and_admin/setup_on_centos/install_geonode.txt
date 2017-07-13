@@ -18,12 +18,24 @@ Upgrade Python PIP version
 
     sudo pip install --upgrade pip
 
-Create geonode user
-===================
+Create a geonode system user for the application
+================================================
+
+Create the group::
+
+    sudo groupadd --system geonode
 
 Create the user::
 
-    sudo adduser -m geonode
+    sudo useradd --system --gid geonode --shell /bin/bash --home /home/geonode --create-home geonode
+
+Create project home somewhere::
+
+    sudo mkdir -p /opt/apps/geonode
+
+Give the required permissions to the new user `geonode`::
+
+    sudo chown -R geonode:geonode /opt/apps/geonode/
 
 Install GeoNode
 ===============
@@ -33,13 +45,13 @@ As a user `geonode` install GeoNode sources from official repository::
     curl -LO "https://github.com/GeoNode/geonode/archive/2.6.1.zip"
     unzip 2.6.1.zip && mv geonode-2.6.1 geonode
 
-Move the sources into home folder::
+Move the sources into project folder::
 
-    mv geonode /home/geonode
+    mv geonode /opt/apps/geonode/
 
 Navigate to sources folder and install required packages::
 
-    cd /home/geonode/geonode
+    cd /opt/apps/geonode/geonode
     sudo pip install -e .
 
 .. _geonode_install_settings:
@@ -56,7 +68,7 @@ on who is allowed to connect to it.
 
 First navigate to geonode configuration folder::
 
-    cd /home/geonode/geonode/geonode/
+    cd /opt/apps/geonode/geonode/geonode/
 
 Copy the `local_settings.py` sample file called `local_settings.py.sample`::
 
@@ -201,7 +213,7 @@ Initialize GeoNode
 
 As user ``geonode``, initialize the db, by creating the schema tables and populating the initial data:::
 
-    cd /home/geonode/geonode/geonode/
+    cd /opt/apps/geonode/geonode/geonode/
     python manage.py migrate
     python manage.py loaddata geonode/base/fixtures/initial_data.json
 
@@ -259,4 +271,4 @@ Download GeoNode data to be served by Apache. You will be prompted for confirmat
 
 Create `uploaded` folder::
 
-    mkdir -p /home/geonode/geonode/geonode/uploaded/
+    mkdir -p /opt/apps/geonode/geonode/geonode/uploaded/
