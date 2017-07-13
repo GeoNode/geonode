@@ -8,8 +8,10 @@ class ResponseTime extends React.Component {
   static propTypes = {
     average: PropTypes.number.isRequired,
     data: PropTypes.array.isRequired,
+    from: PropTypes.object,
     last: PropTypes.number.isRequired,
     max: PropTypes.number.isRequired,
+    to: PropTypes.object,
   }
 
   render() {
@@ -30,9 +32,7 @@ class ResponseTime extends React.Component {
           <CartesianGrid strokeDasharray="3 3" />
           <Tooltip />
           <Legend />
-          <Line type="monotone" dataKey="pv" stroke="#8884d8" activeDot={{ r: 8 }} />
-          <Line type="monotone" dataKey="uv" stroke="#82ca9d" />
-          <Line type="monotone" dataKey="amt" stroke="#325a5d" />
+          <Line type="monotone" dataKey="time" stroke="#8884d8" activeDot={{ r: 8 }} />
         </LineChart>
       </div>
     );
