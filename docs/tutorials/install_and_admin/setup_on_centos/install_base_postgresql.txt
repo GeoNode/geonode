@@ -11,15 +11,11 @@ Install the package for configuring the PGDG repository::
 
 	sudo yum install http://yum.postgresql.org/9.5/redhat/rhel-7-x86_64/pgdg-centos95-9.5-3.noarch.rpm
 
-EPEL repository will provide GDAL packages::
-
-  sudo yum install http://dl.fedoraproject.org/pub/epel/7/x86_64/e/epel-release-7-9.noarch.rpm
-
 Install PostgreSQL, PostGIS and related libs::
 
   sudo yum update
   sudo yum install -y postgis2_95 postgresql95 postgresql95-server postgresql95-libs postgresql95-contrib \
-  postgresql95-devel gdal gdal-python geos python-pip python-imaging  python-virtualenv python-devel gcc-c++  \
+  postgresql95-devel gdal gdal-python geos python-imaging gcc-c++  \
   python-psycopg2 libxml2 libxml2-devel libxml2-python libxslt libxslt-devel libxslt-python
 
 Initialize the DB::

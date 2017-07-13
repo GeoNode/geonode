@@ -172,6 +172,16 @@ Set the time synchronization as an automatically started daemon::
 Installing base packages
 ========================
 
-Install::
+Install common utility packages::
 
     sudo yum install -y man vim openssh-clients zip unzip wget
+
+Update the system with EPEL latest release::
+
+    sudo yum install -y epel-release
+    sudo yum update -y && sudo reboot
+
+Install pip and necessary dependencies::
+
+    sudo yum install -y python-devel python-setuptools python-pip python-virtualenv
+    sudo pip install --upgrade pip
