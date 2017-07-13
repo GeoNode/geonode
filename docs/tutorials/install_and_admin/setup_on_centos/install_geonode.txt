@@ -113,13 +113,12 @@ and comment the one with empty `ENGINE` variable. Also set the `NAME` variable t
 Then configure GeoServer location:
 Change the value of the `LOCATION` and `PUBLIC_LOCATION` variables as below::
 
-    OGC_SERVER = {
-        'default' : {
-        ...
-        'LOCATION' : 'http://localhost/geoserver/',
-        'PUBLIC_LOCATION' : 'http://localhost/geoserver/',
-        ...
-    }
+    GEOSERVER_LOCATION = os.getenv(
+        'GEOSERVER_LOCATION', 'http://localhost/geoserver/'
+    )
+    GEOSERVER_PUBLIC_LOCATION = os.getenv(
+        'GEOSERVER_PUBLIC_LOCATION', 'http://localhost/geoserver/'
+    )
 
 Finally configure GeoServer datastore:
 Change the value of the `DATASTORE` variable to the dictionary identifier of database for spatial data as below::
@@ -136,11 +135,12 @@ The resulting configuration file should look like this:::
 
     PROJECT_ROOT = os.path.abspath(os.path.dirname(__file__))
 
-    SITEURL = "http://localhost/"
-
     ALLOWED_HOSTS = ['127.0.0.1', 'localhost', '::1']
-    PROXY_ALLOWED_HOSTS = ("127.0.0.1", 'localhost', '::1')
+    PROXY_ALLOWED_HOSTS = ("127.0.0.1", 'localhost', '::1', )
+
     POSTGIS_VERSION = (2, 3, 0)
+
+    SITEURL = "http://localhost/"
 
     DATABASES = {
         'default': {
@@ -161,12 +161,24 @@ The resulting configuration file should look like this:::
         }
     }
 
+    GEOSERVER_LOCATION = os.getenv(
+        'GEOSERVER_LOCATION', 'http://localhost/geoserver/'
+    )
+    GEOSERVER_PUBLIC_LOCATION = os.getenv(
+        'GEOSERVER_PUBLIC_LOCATION', 'http://localhost:8001/geoserver/'
+    )
+
     # OGC (WMS/WFS/WCS) Server Settings
     OGC_SERVER = {
-        'default' : {
-            'BACKEND' : 'geonode.geoserver',
-            'LOCATION' : 'http://localhost/geoserver/',
-            'PUBLIC_LOCATION' : 'http://localhost/geoserver/',
+        'default': {
+            'BACKEND': 'geonode.geoserver',
+            'LOCATION': GEOSERVER_LOCATION,
+            'LOGIN_ENDPOINT': 'j_spring_oauth2_geonode_login',
+            'LOGOUT_ENDPOINT': 'j_spring_oauth2_geonode_logout',
+            # PUBLIC_LOCATION needs to be kept like this because in dev mode
+            # the proxy won't work and the integration tests will fail
+            # the entire block has to be overridden in the local_settings
+            'PUBLIC_LOCATION': GEOSERVER_PUBLIC_LOCATION,
             'USER' : 'admin',
             'PASSWORD' : 'geoserver',
             'MAPFISH_PRINT_ENABLED' : True,
@@ -177,10 +189,22 @@ The resulting configuration file should look like this:::
             'BACKEND_WRITE_ENABLED': True,
             'WPS_ENABLED' : False,
             'LOG_FILE': '%s/geoserver/data/logs/geoserver.log' % os.path.abspath(os.path.join(PROJECT_ROOT, os.pardir)),
-            # Set to name of database in DATABASES dictionary to enable
+            # Set to dictionary identifier of database containing spatial data in DATABASES dictionary to enable
             'DATASTORE': 'datastore', #'datastore',
         }
     }
+
+    # If you want to enable Mosaics use the following configuration
+    #UPLOADER = {
+    ##    'BACKEND': 'geonode.rest',
+    #    'BACKEND': 'geonode.importer',
+    #    'OPTIONS': {
+    #        'TIME_ENABLED': True,
+    #        'MOSAIC_ENABLED': True,
+    #        'GEOGIG_ENABLED': False,
+    #    }
+    #}
+
 
     CATALOGUE = {
         'default': {
