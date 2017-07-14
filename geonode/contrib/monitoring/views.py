@@ -309,7 +309,9 @@ class BeaconView(View):
 
 
 def index(request):
-    return render(request, 'monitoring/index.html')
+    if request.user.is_superuser:
+        return render(request, 'monitoring/index.html')
+    return render(request, 'monitoring/non_superuser.html')
 
 
 class NotificaitonCheckForm(forms.ModelForm):
@@ -318,7 +320,7 @@ class NotificaitonCheckForm(forms.ModelForm):
         fields = ('name', 'description', 'user_threshold',)
 
 class MetricNotificationCheckForm(forms.ModelForm):
-    
+
     metric = forms.CharField(required=True)
     service = forms.CharField(required=True)
     resource = forms.CharField(required=False)
@@ -365,8 +367,8 @@ class MetricNotificationCheckForm(forms.ModelForm):
         except MonitoredResource.DoesNotExist:
             raise ValidationError("Invalid resource: {}".format(val))
 
-    
-    
+
+
 class NotificationsConfig(View):
     models = {'check':  (NotificationCheck, 'id', None,),
               'metric_check': (MetricNotificationCheck, 'id', 'user',)}
@@ -386,7 +388,7 @@ class NotificationsConfig(View):
     def get_class(self, cls_name):
         cls, pk_lookup, user_lookup = self.models.get(cls_name)
         return cls
-        
+
 
     def serialize(self, obj):
         fields = obj._meta.fields
@@ -405,14 +407,14 @@ class NotificationsConfig(View):
         objs = self.get_object(request.user, kwargs['cls_name'], kwargs.get('pk'))
         if not objs:
             return json_response(out, status=404)
-    
+
         data = []
         for obj in objs:
             data.append(self.serialize(obj))
 
         out['data'] = data
         return json_response(out)
-        
+
     @method_decorator(login_required)
     def post(self, request, *args, **kwargs):
         out = {'data': [], 'errors': {}}
@@ -421,7 +423,7 @@ class NotificationsConfig(View):
         if kwargs.get('pk') and not objs:
             out['errors']['pk'] = 'too less results'
             return json_response(out, status=404)
-            
+
         if len(objs)> 1:
             out['errors']['__all__'] = 'too many results returned'
             return json_response(out, status=400)
@@ -433,7 +435,7 @@ class NotificationsConfig(View):
             out['errors'] = form.errors
             return json_response(out, status=403)
         d = form.cleaned_data
-        
+
         for _f in form.Meta.model._meta.fields:
             if _f.name == 'user':
                 d['user'] = request.user
