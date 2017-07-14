@@ -1,5 +1,6 @@
 import { createAction } from 'redux-actions';
-import INTERVAL, { minute } from './constants';
+import INTERVAL from './constants';
+import { minute } from '../../../constants';
 
 
 const reset = createAction(INTERVAL, () => ({ interval: 10 * minute }));

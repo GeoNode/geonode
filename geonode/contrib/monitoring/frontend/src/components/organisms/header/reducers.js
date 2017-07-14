@@ -1,4 +1,5 @@
-import INTERVAL, { minute } from './constants';
+import INTERVAL from './constants';
+import { minute } from '../../../constants';
 
 
 const rightNow = new Date();

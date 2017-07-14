@@ -7,7 +7,7 @@ import Back from 'material-ui/svg-icons/image/navigate-before';
 import { formatHeaderDate } from '../../../utils';
 import actions from './actions';
 import styles from './styles';
-import { minute, hour, day, week } from './constants';
+import { minute, hour, day, week } from '../../../constants';
 
 
 const mapStateToProps = (state) => ({

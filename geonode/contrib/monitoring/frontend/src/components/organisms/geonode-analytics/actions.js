@@ -1,5 +1,5 @@
 import { createAction } from 'redux-actions';
-import { fetch, formatApiDate } from '../../../utils';
+import { fetch, formatApiDate, sequenceInterval } from '../../../utils';
 import apiUrl from '../../../backend';
 import GEONODE_RESPONSE_SEQUENCE from './constants';
 
@@ -35,12 +35,13 @@ const fail = createAction(
 
 
 const get = (from, to) =>
-  (dispatch) => {
+  (dispatch, getState) => {
     dispatch(begin());
     const formatedFrom = formatApiDate(from);
     const formatedTo = formatApiDate(to);
+    const interval = sequenceInterval(getState);
     let url = `${apiUrl}/metric_data/response.time/?valid_from=${formatedFrom}`;
-    url += `&valid_to=${formatedTo}`;
+    url += `&valid_to=${formatedTo}&interval=${interval}`;
     fetch({ url })
       .then(response => {
         dispatch(success(response));
