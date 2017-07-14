@@ -141,6 +141,10 @@
                 {% if 'geonode.geoserver' in INSTALLED_APPS %}
                 <li><a href="{{ GEOSERVER_BASE_URL }}">GeoServer</a></li>
                 {% endif %}
+                {% if user.is_superuser %}
+                <li role="separator" class="divider"></li>
+                <li><a href="{% url "monitoring" %}">{% trans "Monitoring" %}</a></li>
+                {% endif %}
                 <li role="separator" class="divider"></li>
                 <li><a href="{% url "help" %}">{% trans "Help" %}</a></li>
                 <li role="separator" class="divider"></li>
