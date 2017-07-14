@@ -6,9 +6,9 @@ const rightNow = new Date();
 
 export default function interval(
   state = {
-    from: rightNow,
+    from: new Date(rightNow - 10 * minute * 1000),
     interval: 10 * minute,
-    to: new Date(rightNow - 10 * minute * 1000),
+    to: rightNow,
   },
   action,
 ) {
