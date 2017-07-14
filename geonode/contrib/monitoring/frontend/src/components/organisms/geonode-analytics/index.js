@@ -13,7 +13,9 @@ import actions from './actions';
 const mapStateToProps = (state) => ({
   from: state.interval.from,
   to: state.interval.to,
-  data: state.geonodeResponseSequence.response,
+  responses: state.geonodeResponseSequence.response,
+  throughputs: state.geonodeThroughputSequence.throughput,
+  errors: state.geonodeErrorSequence.response,
 });
 
 
@@ -21,31 +23,59 @@ const mapStateToProps = (state) => ({
 class GeonodeAnalytics extends React.Component {
   static propTypes = {
     from: PropTypes.object,
-    get: PropTypes.func.isRequired,
-    reset: PropTypes.func.isRequired,
+    getResponses: PropTypes.func.isRequired,
+    getThroughputs: PropTypes.func.isRequired,
+    getErrors: PropTypes.func.isRequired,
+    resetResponses: PropTypes.func.isRequired,
+    resetThroughputs: PropTypes.func.isRequired,
+    resetErrors: PropTypes.func.isRequired,
     to: PropTypes.object,
-    data: PropTypes.object,
+    responses: PropTypes.object,
+    throughputs: PropTypes.object,
+    errors: PropTypes.object,
     interval: PropTypes.number,
   }
 
   componentWillMount() {
-    this.props.get(this.props.from, this.props.to);
+    this.props.getResponses(this.props.from, this.props.to);
+    this.props.getThroughputs(this.props.from, this.props.to);
+    this.props.getErrors(this.props.from, this.props.to);
   }
 
   componentWillReceiveProps(nextProps) {
     if (nextProps && nextProps.from && nextProps.from !== this.props.from) {
-      this.props.get(nextProps.from, nextProps.to);
+      this.props.getResponses(nextProps.from, nextProps.to);
+      this.props.getThroughputs(nextProps.from, nextProps.to);
+      this.props.getErrors(nextProps.from, nextProps.to);
     }
+  }
+
+  componentWillUnmount() {
+    this.props.resetResponses();
+    this.props.resetThroughputs();
+    this.props.resetErrors();
   }
 
   render() {
     let responseData = [];
     let throughputData = [];
-    let errorsRateData = [];
-    if (this.props.data && this.props.data.data && this.props.data.data.data) {
-      responseData = this.props.data.data.data.map(element => ({
+    let errorRateData = [];
+    if (this.props.responses && this.props.responses.data && this.props.responses.data.data) {
+      responseData = this.props.responses.data.data.map(element => ({
         name: element.valid_from,
         time: element.data.length > 0 ? Math.floor(element.data[0].val) : 0,
+      }));
+    }
+    if (this.props.throughputs && this.props.throughputs.data && this.props.throughputs.data.data) {
+      throughputData = this.props.throughputs.data.data.map(element => ({
+        name: element.valid_from,
+        count: element.data.length > 0 ? Math.floor(element.data[0].val) : 0,
+      }));
+    }
+    if (this.props.errors && this.props.errors.data && this.props.errors.data.data) {
+      errorRateData = this.props.errors.data.data.map(element => ({
+        name: element.valid_from,
+        count: element.data.length > 0 ? Math.floor(element.data[0].val) : 0,
       }));
     }
     return (
@@ -55,7 +85,7 @@ class GeonodeAnalytics extends React.Component {
         <HR />
         <Throughput total={5} data={throughputData} />
         <HR />
-        <ErrorsRate errors={2} data={errorsRateData} />
+        <ErrorsRate errors={2} data={errorRateData} />
       </HoverPaper>
     );
   }

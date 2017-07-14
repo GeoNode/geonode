@@ -26,7 +26,7 @@ class ErrorsRate extends React.Component {
           <CartesianGrid strokeDasharray="3 3" />
           <Tooltip />
           <Legend />
-          <Line type="monotone" dataKey="uv" stroke="#82ca9d" />
+          <Line type="monotone" dataKey="count" stroke="#82ca9d" />
         </LineChart>
       </div>
     );
