@@ -45,12 +45,16 @@ Now we are going to change user access policy for local connections in file :fil
 Scroll down to the bottom of the document. We only need to edit one line. Change::
 
   # "local" is for Unix domain socket connections only
-  local   all             all                                 peer
+  local   all             all                                    peer
+  # IPv4 local connections:
+  host    all             all             127.0.0.1/32           ident
 
 into::
 
   # "local" is for Unix domain socket connections only
-  local   all             all                                 trust
+  local   all             all                                    trust
+  # IPv4 local connections:
+  host    all             all             127.0.0.1/32           md5
 
 .. note::
 
