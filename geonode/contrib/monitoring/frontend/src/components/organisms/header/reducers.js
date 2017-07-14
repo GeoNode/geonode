@@ -2,6 +2,7 @@ import INTERVAL, { minute } from './constants';
 
 
 const rightNow = new Date();
+rightNow.setSeconds(0, 0);
 
 
 export default function interval(

@@ -38,6 +38,7 @@ class Header extends React.Component {
 
     this.handleMinute = () => {
       const now = new Date();
+      now.setSeconds(0, 0);
       const interval = 10 * minute;
       const fromDate = new Date(now - interval * 1000);
       this.props.set(fromDate, now, interval);
@@ -45,18 +46,21 @@ class Header extends React.Component {
 
     this.handleHour = () => {
       const now = new Date();
+      now.setSeconds(0, 0);
       const fromDate = new Date(now - hour * 1000);
       this.props.set(fromDate, now, hour);
     };
 
     this.handleDay = () => {
       const now = new Date();
+      now.setSeconds(0, 0);
       const fromDate = new Date(now - day * 1000);
       this.props.set(fromDate, now, day);
     };
 
     this.handleWeek = () => {
       const now = new Date();
+      now.setSeconds(0, 0);
       const fromDate = new Date(now - week * 1000);
       this.props.set(fromDate, now, week);
     };
