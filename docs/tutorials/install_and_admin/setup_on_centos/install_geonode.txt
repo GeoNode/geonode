@@ -302,4 +302,4 @@ Create `uploaded` folder::
 Isolate GeoNode installation
 ----------------------------
 
-In case you prefer to isolate the GeoNode installation from the rest of your OS the most used strategy is to rely on a virtual environment. You can also install all the dependencies with a totally separated version of the python binary as explained in the section :ref:`_install_venv_httpd`.
+In case you prefer to isolate the GeoNode installation from the rest of your OS the most used strategy is to rely on a virtual environment. You can also install all the dependencies with a totally separated version of the python binary as explained in the section :ref:`install_venv_httpd`.
