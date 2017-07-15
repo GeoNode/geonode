@@ -232,8 +232,10 @@ The resulting configuration file should look like this:::
     # Default preview library
     #LAYER_PREVIEW_LIBRARY = 'geoext'
 
+.. _geonode_install_initialization:
+
 Initialize GeoNode
-^^^^^^^^^^^^^^^^^^
+------------------
 
 As user ``geonode``, initialize the db, by creating the schema tables and populating the initial data:::
 
@@ -296,3 +298,8 @@ Download GeoNode data to be served by Apache. You will be prompted for confirmat
 Create `uploaded` folder::
 
     mkdir -p /opt/apps/geonode/geonode/geonode/uploaded/
+
+Isolate GeoNode installation
+----------------------------
+
+In case you prefer to isolate the GeoNode installation from the rest of your OS the most used strategy is to rely on a virtual environment. You can also install all the dependencies with a totally separated version of the python binary as explained in the section :ref:`_install_venv_httpd`.
