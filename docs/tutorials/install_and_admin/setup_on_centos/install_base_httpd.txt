@@ -4,6 +4,9 @@
 Apache HTTP Server Installation
 ===============================
 
+Install and setup base packages
+===============================
+
 Install Apache::
 
     sudo yum install -y httpd
@@ -11,6 +14,12 @@ Install Apache::
 And additional modules::
 
     sudo yum install -y mod_ssl mod_proxy_html mod_wsgi
+
+.. important:: Please be aware that the WSGI module for Apache shipped by the CentOS repositories is pretty much old and obsolete. It is recommended to separately replace it with the latest binary from the official `mod_wsgi`_ project. Referer to :ref:`_install_venv_httpd_wsgi`. Alternatively you can replace your HTTP web server with the combination of `Nginx`_ and `Gunicorn`_ for publishing GeoServer and the Django application as explained in :ref:`_install_venv_nginx_gunicorn`.
+
+.. _mod_wsgi: http://www.modwsgi.org/
+.. _Nginx: https://nginx.org
+.. _Gunicorn: http://gunicorn.org/
 
 Firewall configuration
 ----------------------
