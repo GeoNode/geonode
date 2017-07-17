@@ -6,17 +6,21 @@ import { geonodeCpuStatus, geonodeMemStatus } from './components/cels/geonode-st
 import { geonodeResponseSequence } from './components/organisms/geonode-analytics/reducers';
 import { geonodeThroughputSequence } from './components/organisms/geonode-analytics/reducers';
 import { geonodeErrorSequence } from './components/organisms/geonode-analytics/reducers';
+import { geonodeCpuSequence } from './components/organisms/geonode-status/reducers';
+import { geonodeMemorySequence } from './components/organisms/geonode-status/reducers';
 import interval from './components/organisms/header/reducers';
 
 
 const reducers = {
   backend,
   geonodeAverageResponse,
+  geonodeCpuSequence,
   geonodeCpuStatus,
+  geonodeErrorSequence,
   geonodeMemStatus,
+  geonodeMemorySequence,
   geonodeResponseSequence,
   geonodeThroughputSequence,
-  geonodeErrorSequence,
   interval,
   notifications,
   theme,
