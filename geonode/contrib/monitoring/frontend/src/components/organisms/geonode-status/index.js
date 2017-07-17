@@ -37,6 +37,7 @@ class GeonodeStatus extends React.Component {
 
   componentWillReceiveProps(nextProps) {
     if (nextProps && nextProps.from && nextProps.from !== this.props.from) {
+      this.props.getCpu(nextProps.from, nextProps.to);
       this.props.getMemory(nextProps.from, nextProps.to);
     }
   }
