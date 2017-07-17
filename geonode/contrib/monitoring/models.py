@@ -482,6 +482,7 @@ class MetricValue(models.Model):
     value = models.CharField(max_length=255, null=False, blank=False)
     value_num = models.DecimalField(max_digits=16, decimal_places=4, null=True, default=None, blank=True)
     value_raw = models.TextField(null=True, default=None, blank=True)
+    samples_count = models.PositiveIntegerField(null=False, default=0, blank=False)
     data = JSONField(null=False, default={})
 
     class Meta:
@@ -502,7 +503,7 @@ class MetricValue(models.Model):
     def add(cls, metric, valid_from, valid_to, service, label,
             value_raw=None, resource=None, 
             value=None, value_num=None, 
-            data=None, ows_service=None):
+            data=None, ows_service=None, samples_count=None):
         """
         Create new MetricValue shortcut
         """
@@ -529,6 +530,7 @@ class MetricValue(models.Model):
             inst.value = value_raw
             inst.value_raw = value_raw
             inst.value_num = value_num
+            inst.samples_count = samples_count or 0
             inst.save()
             return inst
         except cls.DoesNotExist:
@@ -543,6 +545,7 @@ class MetricValue(models.Model):
                                   value=value_raw,
                                   value_raw=value_raw,
                                   value_num=value_num,
+                                  samples_count=samples_count or 0,
                                   data=data or {})
 
     @classmethod

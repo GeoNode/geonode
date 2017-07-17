@@ -69,6 +69,7 @@ class CollectorAPI(object):
         mdefaults = {'valid_from': valid_from,
                      'valid_to': valid_to,
                      'resource': None,
+                     'samples_count': 1,
                      'service': service}
 
         MetricValue.objects.filter(service_metric__metric__name__in=('network.in', 'network.out'),
@@ -254,17 +255,17 @@ class CollectorAPI(object):
     def set_metric_values(self, metric_name, column_name, service, valid_from, valid_to, resource=None, ows_service=None):
         metric = Metric.get_for(metric_name, service=service)
         if metric.is_rate:
-            sel = " 'value' as res, coalesce(avg({}), 0) as cnt".format(column_name)
+            sel = " 'value' as res, coalesce(avg({}), 0) as cnt, count(1) as samples ".format(column_name)
             group_by = ''
         elif metric.is_count:
-            sel = ' distinct {} as res, sum(count(1)) as cnt '.format(column_name)
+            sel = ' distinct {} as res, sum(count(1)) as cnt, count(1) as samples '.format(column_name)
             group_by = 'group by {}'.format(column_name)
 
         elif metric.is_value:
-            sel = ' distinct {} as res, count(1) as cnt '.format(column_name)
+            sel = ' distinct {} as res, count(1) as cnt, count(1) as samples'.format(column_name)
             group_by = 'group by {}'.format(column_name)
         else:
-            sel = ' {} as res, count(1) as cnt '.format(column_name)
+            sel = ' {} as res, count(1) as cnt, count(1) as samples '.format(column_name)
             group_by = 'group by {}'.format(column_name)
         if resource:
             _sql = ('select {} from monitoring_requestevent re '
@@ -290,8 +291,10 @@ class CollectorAPI(object):
         for row in rows:
             label = row['res']
             cnt = row['cnt']
+            samples = row['samples']
             metric_values.update({'value': cnt,
                                   'label': label,
+                                  'samples_count': samples,
                                   'value_raw': cnt,
                                   'value_num': cnt if isinstance(cnt, (int, float, long, Decimal,)) else None})
 
@@ -328,6 +331,7 @@ class CollectorAPI(object):
                     'resource': resource,
                     'ows_service': ows_service,
                     'metric': 'response.error.count',
+                    'samples_count': requests.count(),
                     'label': 'count',
                     'service': service}
         cnt = with_errors.count()
@@ -336,6 +340,7 @@ class CollectorAPI(object):
         for label in labels:
             cnt = with_errors.filter(exceptions__error_type=label).count()
             defaults['label'] = label
+            defaults['samples_count'] = cnt
             print MetricValue.add(value=cnt, value_num=cnt, value_raw=cnt, **defaults)
 
     def process_requests_batch(self, service, requests, valid_from, valid_to):
@@ -357,6 +362,7 @@ class CollectorAPI(object):
                         value=count,
                         value_num=count,
                         value_raw=count,
+                        samples_count=count,
                         resource=None)
         # calculate overall stats
         self.set_metric_values('request.ip', 're.client_ip', **metric_defaults)
@@ -378,7 +384,7 @@ class CollectorAPI(object):
             metric_defaults['resource'] = resource
             metric_defaults['ows_service'] = ows_service
             MetricValue.add('request.count', valid_from, valid_to, service, 'Count', value=count, value_num=count,
-                            value_raw=count, resource=resource)
+                            samples_count=count, value_raw=count, resource=resource)
             self.set_metric_values('request.ip', 're.client_ip', **metric_defaults)
             self.set_metric_values('request.country', 're.client_country', **metric_defaults)
             self.set_metric_values('request.city', 're.client_city', **metric_defaults)
@@ -397,7 +403,7 @@ class CollectorAPI(object):
 
             metric_defaults['ows_service'] = ows
             MetricValue.add('request.count', valid_from, valid_to, service, 'Count', value=count, value_num=count,
-                            value_raw=count, ows_service=ows)
+                            samples_count=count, value_raw=count, ows_service=ows)
             self.set_metric_values('request.ip', 're.client_ip', **metric_defaults)
             self.set_metric_values('request.country', 're.client_country', **metric_defaults)
             self.set_metric_values('request.city', 're.client_city', **metric_defaults)
@@ -482,7 +488,7 @@ class CollectorAPI(object):
         agg_f = self.get_aggregate_function(col, metric_name, service)
         has_agg = agg_f != col
 
-        q_select = ['select ml.name as label, {} as val, count(1), min(mv.value_num), max(mv.value_num)'.format(agg_f)]
+        q_select = ['select ml.name as label, {} as val, count(1) as metric_count, sum(samples_count) as count, min(mv.value_num), max(mv.value_num)'.format(agg_f)]
         if service:
             q_where.append('and mv.service_id = %(service_id)s')
             params['service_id'] = service.id
