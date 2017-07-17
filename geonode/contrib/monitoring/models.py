@@ -145,13 +145,13 @@ class Metric(models.Model):
              (TYPE_VALUE, _("Value"),),
              )
 
-    AGGREGATE_MAP = {TYPE_RATE: 'avg',
-                     TYPE_VALUE: 'max',
-                     TYPE_COUNT: 'sum'}
+    AGGREGATE_MAP = {TYPE_RATE: '(case when sum(samples_count)> 0 then sum(value_num)/sum(samples_count) else 0 end)',
+                     TYPE_VALUE: 'max(value_num)',
+                     TYPE_COUNT: 'sum(value_num)'}
 
     name = models.CharField(max_length=255, db_index=True)
     type = models.CharField(max_length=255, null=False, blank=False, default=TYPE_RATE, choices=TYPES)
-
+    
     def get_aggregate_name(self):
         return self.AGGREGATE_MAP[self.type]
 

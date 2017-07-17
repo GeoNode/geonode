@@ -463,9 +463,7 @@ class CollectorAPI(object):
         if not metric:
             raise ValueError("Invalid metric {}".format(metric_name))
         f = metric.get_aggregate_name()
-        if not f:
-            return column_name
-        return '{}({})'.format(f, column_name)
+        return f or column_name
 
     def get_metrics_data(self, metric_name, valid_from, valid_to, interval, service=None, label=None, resource=None, ows_service=None):
         """
@@ -488,7 +486,7 @@ class CollectorAPI(object):
         agg_f = self.get_aggregate_function(col, metric_name, service)
         has_agg = agg_f != col
 
-        q_select = ['select ml.name as label, {} as val, count(1) as metric_count, sum(samples_count) as count, min(mv.value_num), max(mv.value_num)'.format(agg_f)]
+        q_select = ['select ml.name as label, {} as val, count(1) as metric_count, sum(samples_count) as samples_count, sum(mv.value_num), min(mv.value_num), max(mv.value_num)'.format(agg_f)]
         if service:
             q_where.append('and mv.service_id = %(service_id)s')
             params['service_id'] = service.id
