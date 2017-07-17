@@ -26,6 +26,7 @@ import shutil
 import zipfile
 from imghdr import what as image_format
 
+import re
 import requests
 from django.conf import settings
 from django.core.files import File
@@ -295,15 +296,17 @@ def qgis_server_request(request):
     if params.get('CRS') == 'EPSG:900913':
         params['CRS'] = 'EPSG:3857'
 
+    map_param = params.get('MAP')
+
     # As we have one QGIS project per layer, we don't support GetCapabilities
     # for now without any layer. We know, it's not OGC compliant.
     if params.get('REQUEST') == 'GetCapabilities':
-        if not params.get('LAYERS') or params.get('TYPENAME'):
+        if (not map_param and
+                not (params.get('LAYERS') or params.get('TYPENAME'))):
             return HttpResponse('GetCapabilities is not supported yet.')
 
     # As we have one project per layer, we add the MAP path if the request is
     # specific for one layer.
-    map_param = params.get('MAP')
     if not map_param and (params.get('LAYERS') or params.get('TYPENAME')):
         # LAYERS is for WMS, TYPENAME for WFS
         layer_name = params.get('LAYERS') or params.get('TYPENAME')
@@ -319,16 +322,28 @@ def qgis_server_request(request):
     # We have some shortcuts here instead of asking QGIS-Server.
     if params.get('SERVICE') == 'WMS':
         if params.get('REQUEST') == 'GetLegendGraphic':
-            if not params.get('LAYERS'):
-                raise Http404('LAYERS is not found for a GetLegendGraphic')
-            layer = get_object_or_404(Layer, name=params.get('LAYERS'))
+            layer_name = params.get('LAYER')
+            if not layer_name:
+                raise Http404('LAYER is not found for a GetLegendGraphic')
+            layer = get_object_or_404(Layer, name=layer_name)
             return legend(request, layername=layer.name)
 
     # if not shortcut, we forward any request to internal QGIS Server
     qgis_server_url = qgis_server_endpoint(internal=True)
     response = requests.get(qgis_server_url, params)
+
+    content = response.content
+
+    # if it is GetCapabilities request, we need to replace all reference to
+    # our proxy
+    if params.get('REQUEST') == 'GetCapabilities':
+        qgis_server_base_url = qgis_server_endpoint(internal=True)
+        pattern = '{endpoint}'.format(endpoint=qgis_server_base_url)
+        content = re.sub(
+            pattern, qgis_server_endpoint(internal=False), content)
+
     return HttpResponse(
-        response.content, content_type=response.headers.get('content-type'))
+        content, content_type=response.headers.get('content-type'))
 
 
 def qgis_server_pdf(request):

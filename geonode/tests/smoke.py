@@ -20,10 +20,11 @@
 
 import os
 import math
-import unittest
-from django.conf import settings
 from django.test import TestCase
 from django.core.urlresolvers import reverse
+
+from geonode import geoserver
+from geonode.decorators import on_ogc_backend
 
 from geonode.utils import forward_mercator, inverse_mercator
 
@@ -68,10 +69,7 @@ class GeoNodeSmokeTests(TestCase):
         response = self.client.get(reverse('layer_browse'))
         self.failUnlessEqual(response.status_code, 200)
 
-    # only relevant for Geoserver backend
-    @unittest.skipIf(
-        'geonode.geoserver' not in settings.INSTALLED_APPS,
-        'This test only relevant for Geoserver backend')
+    @on_ogc_backend(geoserver.BACKEND_PACKAGE)
     def test_layer_acls(self):
         'Test if the data/acls endpoint renders.'
         response = self.client.get(reverse('layer_acls'))

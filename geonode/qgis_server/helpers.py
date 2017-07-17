@@ -103,7 +103,7 @@ def validate_django_settings():
 
 
 def transform_layer_bbox(layer, target_crs):
-    """
+    """Transform layer bbox to a different CRS.
 
     :param layer: Layer to take the bounding box from
     :type layer: Layer
@@ -161,17 +161,12 @@ def tile_url_format(layer_name):
     :return: Tile url
     :rtype: basestring
     """
-    # We request a fake tile to get the real URL.
     url = reverse(
         'qgis_server:tile',
         kwargs={
-            'layername': layer_name,
-            'x': 5678,
-            'y': 910,
-            'z': 1234
+            'layername': layer_name
         })
     url = urljoin(settings.SITEURL, url)
-    url = url.replace('1234/5678/910', '{z}/{x}/{y}')
     return url
 
 
@@ -478,6 +473,9 @@ def create_qgis_project(
 def delete_orphaned_qgis_server_layers():
     """Delete orphaned QGIS Server files."""
     layer_path = settings.QGIS_SERVER_CONFIG['layer_directory']
+    if not os.path.exists(layer_path):
+        print '{path} not exists'.format(path=layer_path)
+        return
     for filename in os.listdir(layer_path):
         basename, __ = os.path.splitext(filename)
         fn = os.path.join(layer_path, filename)
@@ -493,6 +491,9 @@ def delete_orphaned_qgis_server_layers():
 def delete_orphaned_qgis_server_caches():
     """Delete orphaned QGIS Server tile caches."""
     tiles_path = settings.QGIS_SERVER_CONFIG['tiles_directory']
+    if not os.path.exists(tiles_path):
+        print '{path} not exists'.format(path=tiles_path)
+        return
     for basename in os.listdir(tiles_path):
         path = os.path.join(tiles_path, basename)
         if QGISServerLayer.objects.filter(

@@ -24,6 +24,7 @@ import os
 import urlparse
 import zipfile
 from imghdr import what
+from lxml import etree
 
 import gisdata
 from django.conf import settings
@@ -76,6 +77,11 @@ class QGISServerViewsTest(LiveServerTestCase):
         filename = os.path.join(gisdata.GOOD_DATA, 'raster/test_grid.tif')
         uploaded = file_upload(filename)
 
+        filename = os.path.join(
+            gisdata.GOOD_DATA,
+            'vector/san_andres_y_providencia_administrative.shp')
+        vector_layer = file_upload(filename)
+
         params = {'layername': uploaded.name}
 
         # Zip
@@ -87,9 +93,8 @@ class QGISServerViewsTest(LiveServerTestCase):
             zipped_file = zipfile.ZipFile(f, 'r')
 
             for one_file in zipped_file.namelist():
-                if one_file.endswith('.qgs'):
-                    # We shoudn't get any QGIS project
-                    assert False
+                # We shoudn't get any QGIS project
+                self.assertFalse(one_file.endswith('.qgs'))
             self.assertIsNone(zipped_file.testzip())
         finally:
             zipped_file.close()
@@ -100,14 +105,16 @@ class QGISServerViewsTest(LiveServerTestCase):
             reverse('qgis_server:legend', kwargs=params))
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.get('Content-Type'), 'image/png')
+        self.assertEqual(what('', h=response.content), 'png')
 
         # Tile
-        coordinates = {'z': '0', 'x': '1', 'y': '0'}
+        coordinates = {'z': '11', 'x': '1576', 'y': '1054'}
         coordinates.update(params)
         response = self.client.get(
             reverse('qgis_server:tile', kwargs=coordinates))
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.get('Content-Type'), 'image/png')
+        self.assertEqual(what('', h=response.content), 'png')
 
         # Tile 404
         response = self.client.get(
@@ -121,6 +128,43 @@ class QGISServerViewsTest(LiveServerTestCase):
             reverse('qgis_server:geotiff', kwargs=params))
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.get('Content-Type'), 'image/tiff')
+        self.assertEqual(what('', h=response.content), 'tiff')
+
+        response = self.client.get(
+            reverse('qgis_server:geotiff', kwargs={
+                'layername': vector_layer.name
+            }))
+        self.assertEqual(response.status_code, 404)
+
+        # QML Styles
+        response = self.client.get(
+            reverse('qgis_server:download-qml', kwargs=params))
+        self.assertEqual(response.status_code, 404)
+        # TODO: Upload qml
+
+        # Set thumbnail from viewed bbox
+        response = self.client.get(
+            reverse('qgis_server:set-thumbnail', kwargs=params))
+        self.assertEqual(response.status_code, 400)
+        data = {
+            'bbox': '-5.54025,96.9406,-5.2820,97.1250'
+        }
+        response = self.client.post(
+            reverse('qgis_server:set-thumbnail', kwargs=params),
+            data=data)
+        # User dont have permission
+        self.assertEqual(response.status_code, 401)
+        # Should log in
+        self.client.login(username='admin', password='admin')
+        response = self.client.post(
+            reverse('qgis_server:set-thumbnail', kwargs=params),
+            data=data)
+        self.assertEqual(response.status_code, 200)
+        retval = json.loads(response.content)
+        expected_retval = {
+            'success': True
+        }
+        self.assertEqual(retval, expected_retval)
 
         # OGC Server specific for THE layer
         query_string = {
@@ -134,6 +178,7 @@ class QGISServerViewsTest(LiveServerTestCase):
             reverse('qgis_server:layer-request', kwargs=params), query_string)
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.get('Content-Type'), 'image/png')
+        self.assertEqual(what('', h=response.content), 'png')
 
         # OGC Server for the Geonode instance
         # GetLegendGraphics is a shortcut when using the main OGC server.
@@ -148,7 +193,50 @@ class QGISServerViewsTest(LiveServerTestCase):
             reverse('qgis_server:request'), query_string)
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.get('Content-Type'), 'image/png')
+        self.assertEqual(what('', h=response.content), 'png')
 
+        # WMS GetCapabilities
+        query_string = {
+            'SERVICE': 'WMS',
+            'VERSION': '1.3.3',
+            'REQUEST': 'GetCapabilities'
+        }
+
+        response = self.client.get(
+            reverse('qgis_server:request'), query_string)
+        self.assertEqual(response.status_code, 200, response.content)
+        self.assertEqual(
+            response.content, 'GetCapabilities is not supported yet.')
+
+        query_string['LAYERS'] = uploaded.name
+
+        response = self.client.get(
+            reverse('qgis_server:request'), query_string)
+        self.assertEqual(response.status_code, 200, response.content)
+        # Check xml content
+        root = etree.fromstring(response.content)
+        layer_xml = root.xpath(
+            'wms:Capability/wms:Layer/wms:Layer/wms:Name',
+            namespaces={'wms': 'http://www.opengis.net/wms'})
+        self.assertEqual(len(layer_xml), 1)
+        self.assertEqual(layer_xml[0].text, uploaded.name)
+        # GetLegendGraphic request returned must be valid
+        layer_xml = root.xpath(
+            'wms:Capability/wms:Layer/'
+            'wms:Layer/wms:Style/wms:LegendURL/wms:OnlineResource',
+            namespaces={
+                'xlink': 'http://www.w3.org/1999/xlink',
+                'wms': 'http://www.opengis.net/wms'
+            })
+        legend_url = layer_xml[0].attrib[
+            '{http://www.w3.org/1999/xlink}href']
+
+        response = self.client.get(legend_url)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.get('Content-Type'), 'image/png')
+        self.assertEqual(what('', h=response.content), 'png')
+
+        # WMS GetMap
         query_string = {
             'SERVICE': 'WMS',
             'VERSION': '1.3.3',
@@ -158,16 +246,18 @@ class QGISServerViewsTest(LiveServerTestCase):
             'HEIGHT': 250,
             'WIDTH': 250,
             'SRS': 'EPSG:4326',
-            'BBOX': '-5.2820,96.9406,-5.54025,97.1250',
+            'BBOX': '-5.54025,96.9406,-5.2820,97.1250',
         }
         response = self.client.get(
             reverse('qgis_server:request'), query_string)
         self.assertEqual(response.status_code, 200, response.content)
         self.assertEqual(
             response.get('Content-Type'), 'image/png', response.content)
+        self.assertEqual(what('', h=response.content), 'png')
 
         # End of the test, we should remove every files related to the test.
         uploaded.delete()
+        vector_layer.delete()
 
 
 class ThumbnailGenerationTest(LiveServerTestCase):
