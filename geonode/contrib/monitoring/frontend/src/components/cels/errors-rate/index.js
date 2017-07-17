@@ -7,14 +7,20 @@ import styles from './styles';
 class ErrorsRate extends React.Component {
   static propTypes = {
     data: PropTypes.array.isRequired,
-    errors: PropTypes.number.isRequired,
   }
 
   render() {
+    let totalCount = 0;
+    if (this.props.data.length > 0) {
+      totalCount = this.props.data.reduce(
+        (previous, current) => (current.count + previous),
+        0,
+      );
+    }
     return (
       <div style={styles.content}>
         <h4>Errors Rate</h4>
-        Total Count: {this.props.errors}
+        Total Count: {totalCount}
         <LineChart
           width={500}
           height={300}
