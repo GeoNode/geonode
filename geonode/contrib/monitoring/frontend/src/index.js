@@ -8,6 +8,9 @@ import injectTapEventPlugin from 'react-tap-event-plugin';
 injectTapEventPlugin();
 
 
+const spinner = document.getElementById('spinner');
+spinner.style.display = 'none';
+
 render(
   <Root />,
   document.getElementById('monitoring')

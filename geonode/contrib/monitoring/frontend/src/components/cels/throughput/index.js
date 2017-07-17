@@ -7,14 +7,20 @@ import styles from './styles';
 class Throughput extends React.Component {
   static propTypes = {
     data: PropTypes.array.isRequired,
-    total: PropTypes.number.isRequired,
   }
 
   render() {
+    let totalCount = 0;
+    if (this.props.data.length > 0) {
+      totalCount = this.props.data.reduce(
+        (previous, current) => (current.count + previous),
+        0,
+      );
+    }
     return (
       <div style={styles.content}>
         <h4>Throughput</h4>
-        Total Count: {this.props.total}
+        Total Count: {totalCount}
         <LineChart
           width={500}
           height={300}
@@ -26,7 +32,12 @@ class Throughput extends React.Component {
           <CartesianGrid strokeDasharray="3 3" />
           <Tooltip />
           <Legend />
-          <Line type="monotone" dataKey="pv" stroke="#8884d8" activeDot={{ r: 8 }} />
+          <Line
+            type="monotone"
+            dataKey="count"
+            stroke="#8884d8"
+            activeDot={{ r: 8 }}
+          />
         </LineChart>
       </div>
     );

@@ -1,4 +1,5 @@
 import isomorphicFetch from 'isomorphic-fetch';
+import { minute, hour, day, week } from './constants';
 
 
 export const fetch = (args) => {
@@ -30,22 +31,38 @@ export const fetch = (args) => {
 
 
 export const formatApiDate = (date) => {
-  const day = `0${date.getDate()}`.slice(-2);
-  const month = `0${date.getMonth() + 1}`.slice(-2);
-  const year = date.getFullYear();
-  const hour = `0${date.getHours()}`.slice(-2);
-  const minute = `0${date.getMinutes()}`.slice(-2);
-  const second = `0${date.getSeconds()}`.slice(-2);
-  return `${year}-${month}-${day}%20${hour}:${minute}:${second}`;
+  const theday = `0${date.getDate()}`.slice(-2);
+  const themonth = `0${date.getMonth() + 1}`.slice(-2);
+  const theyear = date.getFullYear();
+  const thehour = `0${date.getHours()}`.slice(-2);
+  const theminute = `0${date.getMinutes()}`.slice(-2);
+  const thesecond = `0${date.getSeconds()}`.slice(-2);
+  return `${theyear}-${themonth}-${theday}%20${thehour}:${theminute}:${thesecond}`;
 };
 
 
 export const formatHeaderDate = (date) => {
-  const day = `0${date.getDate()}`.slice(-2);
-  const month = `0${date.getMonth() + 1}`.slice(-2);
-  const year = date.getFullYear();
-  const hour = `0${date.getHours()}`.slice(-2);
-  const minute = `0${date.getMinutes()}`.slice(-2);
-  const second = `0${date.getSeconds()}`.slice(-2);
-  return `${month}/${day}/${year} ${hour}:${minute}:${second}`;
+  const theday = `0${date.getDate()}`.slice(-2);
+  const themonth = `0${date.getMonth() + 1}`.slice(-2);
+  const theyear = date.getFullYear();
+  const thehour = `0${date.getHours()}`.slice(-2);
+  const theminute = `0${date.getMinutes()}`.slice(-2);
+  const thesecond = `0${date.getSeconds()}`.slice(-2);
+  return `${themonth}/${theday}/${theyear} ${thehour}:${theminute}:${thesecond}`;
+};
+
+
+export const sequenceInterval = (getState) => {
+  const interval = getState().interval.interval;
+  let seqInterval = interval;
+  if (interval === 10 * minute) {
+    seqInterval = minute;
+  } else if (interval === hour) {
+    seqInterval = 5 * minute;
+  } else if (interval === day) {
+    seqInterval = 2 * hour;
+  } else if (interval === week) {
+    seqInterval = 12 * hour;
+  }
+  return seqInterval;
 };

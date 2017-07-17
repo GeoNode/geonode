@@ -32,10 +32,7 @@ class GeonodeData extends React.Component {
   }
 
   componentWillReceiveProps(nextProps) {
-    if (
-      nextProps &&
-      nextProps.from &&
-      nextProps.interval !== this.props.interval
+    if (nextProps && nextProps.from && nextProps.from !== this.props.from
     ) {
       this.props.get(nextProps.from, nextProps.to, nextProps.interval);
     }

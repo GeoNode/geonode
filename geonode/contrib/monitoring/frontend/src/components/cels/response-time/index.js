@@ -8,15 +8,22 @@ class ResponseTime extends React.Component {
   static propTypes = {
     average: PropTypes.number.isRequired,
     data: PropTypes.array.isRequired,
-    last: PropTypes.number.isRequired,
     max: PropTypes.number.isRequired,
   }
 
   render() {
+    let latestResponse = 0;
+    for (let i = this.props.data.length - 1; i >= 0; --i) {
+      const response = this.props.data[i].time;
+      if (response !== 0) {
+        latestResponse = response;
+        break;
+      }
+    }
     return (
       <div style={styles.content}>
         <h4>Response Time</h4>
-        Last Response Time: {this.props.last} ms<br />
+        Last Response Time: {latestResponse} ms<br />
         Max Response Time: {this.props.max} ms<br />
         Average Response Time: {this.props.average} ms<br />
         <LineChart
@@ -30,9 +37,7 @@ class ResponseTime extends React.Component {
           <CartesianGrid strokeDasharray="3 3" />
           <Tooltip />
           <Legend />
-          <Line type="monotone" dataKey="pv" stroke="#8884d8" activeDot={{ r: 8 }} />
-          <Line type="monotone" dataKey="uv" stroke="#82ca9d" />
-          <Line type="monotone" dataKey="amt" stroke="#325a5d" />
+          <Line type="monotone" dataKey="time" stroke="#8884d8" activeDot={{ r: 8 }} />
         </LineChart>
       </div>
     );
