@@ -8,10 +8,12 @@ import { geonodeThroughputSequence } from './components/organisms/geonode-analyt
 import { geonodeErrorSequence } from './components/organisms/geonode-analytics/reducers';
 import { geonodeCpuSequence } from './components/organisms/geonode-status/reducers';
 import { geonodeMemorySequence } from './components/organisms/geonode-status/reducers';
-import interval from './components/organisms/header/reducers';
+import { interval, autoRefresh } from './components/organisms/header/reducers';
+import uptime from './components/cels/uptime/reducers';
 
 
 const reducers = {
+  autoRefresh,
   backend,
   geonodeAverageResponse,
   geonodeCpuSequence,
@@ -24,6 +26,7 @@ const reducers = {
   interval,
   notifications,
   theme,
+  uptime,
 };
 
 

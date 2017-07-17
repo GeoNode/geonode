@@ -14,6 +14,7 @@ const mapStateToProps = (state) => ({
   from: state.interval.from,
   interval: state.interval.interval,
   to: state.interval.to,
+  autoRefresh: state.autoRefresh.autoRefresh,
 });
 
 
@@ -25,9 +26,11 @@ class Header extends React.Component {
 
   static propTypes = {
     interval: PropTypes.number,
-    set: PropTypes.func.isRequired,
+    setInterval: PropTypes.func.isRequired,
+    setAutoRefresh: PropTypes.func.isRequired,
     from: PropTypes.object,
     to: PropTypes.object,
+    autoRefresh: PropTypes.bool,
   }
 
   constructor(props) {
@@ -41,28 +44,33 @@ class Header extends React.Component {
       now.setSeconds(0, 0);
       const interval = 10 * minute;
       const fromDate = new Date(now - interval * 1000);
-      this.props.set(fromDate, now, interval);
+      this.props.setInterval(fromDate, now, interval);
     };
 
     this.handleHour = () => {
       const now = new Date();
       now.setSeconds(0, 0);
       const fromDate = new Date(now - hour * 1000);
-      this.props.set(fromDate, now, hour);
+      this.props.setInterval(fromDate, now, hour);
     };
 
     this.handleDay = () => {
       const now = new Date();
       now.setSeconds(0, 0);
       const fromDate = new Date(now - day * 1000);
-      this.props.set(fromDate, now, day);
+      this.props.setInterval(fromDate, now, day);
     };
 
     this.handleWeek = () => {
       const now = new Date();
       now.setSeconds(0, 0);
       const fromDate = new Date(now - week * 1000);
-      this.props.set(fromDate, now, week);
+      this.props.setInterval(fromDate, now, week);
+    };
+
+    this.handleAutoRefresh = () => {
+      const autoRefresh = !this.props.autoRefresh;
+      this.props.setAutoRefresh({ autoRefresh });
     };
   }
 
@@ -120,6 +128,7 @@ class Header extends React.Component {
           label="Auto Refresh"
           labelStyle={styles.label}
           icon={<AutorefreshIcon style={styles.icon} />}
+          onClick={this.handleAutoRefresh}
         />
       </div>
     );
