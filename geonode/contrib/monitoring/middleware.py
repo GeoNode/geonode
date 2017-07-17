@@ -82,6 +82,7 @@ class MonitoringMiddleware(object):
     def process_view(self, request, view_func, view_args, view_kwargs):
         m = request.resolver_match
         if request.resolver_match.namespace in ('admin', 'monitoring',):
+            request._monitoring = None
             del request._monitoring
 
     def process_request(self, request):
