@@ -74,6 +74,11 @@ class BaseProbe(object):
                 }
 
     @staticmethod
+    def get_cpu():
+        cpu = psutil.cpu_times()
+        return {'usage': cpu.user + cpu.system}
+
+    @staticmethod
     def get_disk():
         """
         Returns list of drives with capacity and utilization

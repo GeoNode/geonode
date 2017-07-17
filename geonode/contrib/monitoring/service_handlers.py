@@ -57,15 +57,18 @@ class HostGeoNodeServiceExpose(BaseServiceExpose):
     def expose(self, *args, **kwargs):
         probe = get_probe()
         uptime = probe.get_uptime()
-        disk_info = probe.get_disk()
+        disks = probe.get_disk()
         load = probe.get_loadavg()
         mem = probe.get_mem()
         uname = probe.get_uname()
+        cpu = probe.get_cpu()
+        network = probe.get_network()
         data = {'uptime': uptime,
                 'uname': uname,
                 'load': load,
-                'disks': disk_info,
-                'network': probe.get_network(),
+                'cpu': cpu,
+                'disks': disks,
+                'network': network, 
                 'memory': mem}
         return data
 

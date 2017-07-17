@@ -675,14 +675,16 @@ class BuiltIns(object):
     host_metrics = ('load.1m', 'load.5m', 'load.15m',
                     'mem.free', 'mem.usage', 'mem.free',
                     'mem.buffers', 'mem.all',
-                    'uptime', 'cpu.usage',
+                    'uptime', 'cpu.usage', 'cpu.usage.rate',
                     'storage.free', 'storage.total', 'storage.used',  # mountpoint is the label
                     'network.in', 'network.out', 'network.in.rate', 'network.out.rate',)
 
-    counters = ('request.count',  'network.in', 'network.out', 'response.error.count',)
-    rates = ('response.time', 'response.size', 'network.in.rate', 'network.out.rate', 'load.1m', 'load.5m', 'load.15m',)
+    counters = ('request.count',  'network.in', 'network.out', 'response.error.count', 'cpu.usage',)
+    rates = ('response.time', 'response.size', 'network.in.rate', 'network.out.rate', 'load.1m', 'load.5m', 'load.15m', 'cpu.usage.rate',)
     values = ('request.ip', 'request.ua', 'request.ua.family', 'request.method',
               'request.country', 'request.region', 'request.city', 'response.status', 'response.error.types',)
+
+    
 
 
 def populate():

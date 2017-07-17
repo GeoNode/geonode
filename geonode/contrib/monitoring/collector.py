@@ -42,16 +42,19 @@ class CollectorAPI(object):
     def __init__(self):
         pass
 
-    def _calculate_network_rate(self, metric_name, ifname, tx_value, valid_to):
+    def _calculate_rate(self, metric_name, metric_label, current_value, valid_to):
         """
         Find previous network metric value and caclulate rate between them
         """
-        prev = MetricValue.objects.filter(service_metric__metric__name=metric_name, label__name=ifname, valid_to__lt=valid_to).order_by('-valid_to').first()
+        prev = MetricValue.objects.filter(service_metric__metric__name=metric_name, label__name=metric_label, valid_to__lt=valid_to).order_by('-valid_to').first()
         if not prev:
             return
         prev_val = prev.value_num
         interval = valid_to - prev.valid_to
-        rate = float((tx_value - prev_val)) / interval.total_seconds()
+        if not isinstance(current_value, Decimal):
+            current_value = Decimal(current_value)
+            
+        rate = float((current_value - prev_val)) / interval.total_seconds()
         return rate
 
     def process_system_metrics(self, service, data, valid_from, valid_to):
@@ -82,7 +85,7 @@ class CollectorAPI(object):
                          'label': ifname,
                          'metric': 'network.{}'.format(tx_label)}
                 mdata.update(mdefaults)
-                rate = self._calculate_network_rate(mdata['metric'], ifname, tx_value, valid_to)
+                rate = self._calculate_rate(mdata['metric'], ifname, tx_value, valid_to)
                 print MetricValue.add(**mdata)
                 if rate:
                     mdata['metric'] = '{}.rate'.format(mdata['metric'])
@@ -157,6 +160,32 @@ class CollectorAPI(object):
                                            label__name='Value',
                                            service=service)\
                                    .delete()
+                print MetricValue.add(**mdata)
+
+        if data['data'].get('cpu'):
+            l = data['data']['cpu']['usage']
+            mdata = {'value': l,
+                     'value_raw': l,
+                     'value_num': l,
+                     'metric': 'cpu.usage',
+                     'label': 'Seconds',
+                     }
+
+            mdata.update(mdefaults)
+
+            MetricValue.objects.filter(service_metric__metric__name=mdata['metric'],
+                                       valid_from=mdata['valid_from'],
+                                       valid_to=mdata['valid_to'],
+                                       label__name=mdata['label'],
+                                       service=service)\
+                               .delete()
+            print MetricValue.add(**mdata)
+            rate = self._calculate_rate(mdata['metric'], mdata['label'], mdata['value'], mdata['valid_to'])
+            if rate:
+                mdata['metric'] = '{}.rate'.format(mdata['metric'])
+                mdata['value'] = rate
+                mdata['value_num'] = rate
+                mdata['value_raw'] = rate
                 print MetricValue.add(**mdata)
 
     def get_labels_for_metric(self, metric_name, resource=None):
