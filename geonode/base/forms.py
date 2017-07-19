@@ -411,3 +411,4 @@ class BatchEditForm(forms.Form):
         required=False,
         choices=LANGUAGES,
     )
+    keywords = forms.CharField(required=False)
