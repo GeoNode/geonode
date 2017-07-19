@@ -24,7 +24,7 @@ export function interval(
 
 
 export function autoRefresh(
-  state = { state: 'initial' },
+  state = { state: 'initial', autoRefresh: 0 },
   action,
 ) {
   switch (action.type) {

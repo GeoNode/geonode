@@ -5,9 +5,10 @@ import RaisedButton from 'material-ui/RaisedButton';
 import AutorefreshIcon from 'material-ui/svg-icons/action/autorenew';
 import Back from 'material-ui/svg-icons/image/navigate-before';
 import { formatHeaderDate } from '../../../utils';
+import { minute, hour, day, week } from '../../../constants';
 import actions from './actions';
 import styles from './styles';
-import { minute, hour, day, week } from '../../../constants';
+import { AUTO_REFRESH_INTERVAL } from './constants';
 
 
 const mapStateToProps = (state) => ({
@@ -30,7 +31,7 @@ class Header extends React.Component {
     setAutoRefresh: PropTypes.func.isRequired,
     from: PropTypes.object,
     to: PropTypes.object,
-    autoRefresh: PropTypes.bool,
+    autoRefresh: PropTypes.number,
   }
 
   constructor(props) {
@@ -69,12 +70,18 @@ class Header extends React.Component {
     };
 
     this.handleAutoRefresh = () => {
-      const autoRefresh = !this.props.autoRefresh;
-      this.props.setAutoRefresh({ autoRefresh });
+      if (this.props.autoRefresh > 0) {
+        this.props.setAutoRefresh({ autoRefresh: 0 });
+      } else {
+        this.props.setAutoRefresh({ autoRefresh: AUTO_REFRESH_INTERVAL });
+      }
     };
   }
 
   render() {
+    const autoRefreshStyle = this.props.autoRefresh > 0
+                           ? { backgroundColor: '#dde' }
+                           : undefined;
     return (
       <div style={styles.content}>
         <div style={styles.item}>
@@ -129,6 +136,7 @@ class Header extends React.Component {
           labelStyle={styles.label}
           icon={<AutorefreshIcon style={styles.icon} />}
           onClick={this.handleAutoRefresh}
+          buttonStyle={autoRefreshStyle}
         />
       </div>
     );
