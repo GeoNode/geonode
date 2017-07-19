@@ -44,6 +44,7 @@ from modeltranslation.forms import TranslationModelForm
 
 from geonode.base.models import TopicCategory, Region, License
 from geonode.people.models import Profile
+from geonode.base.enumerations import ALL_LANGUAGES
 from django.contrib.auth.models import Group
 from django.contrib.auth import get_user_model
 
@@ -389,6 +390,7 @@ class ValuesListField(forms.Field):
 
 
 class BatchEditForm(forms.Form):
+    LANGUAGES = (('', '--------'),) + ALL_LANGUAGES
     group = forms.ModelChoiceField(
         queryset=Group.objects.all(),
         required=False)
@@ -405,4 +407,8 @@ class BatchEditForm(forms.Form):
         queryset=Region.objects.all(),
         required=False)
     date = forms.DateTimeField(required=False)
-    language = forms.CharField(required=False)
+    language = forms.ChoiceField(
+        required=False,
+        choices=LANGUAGES,
+    )
+    keywords = forms.CharField(required=False)

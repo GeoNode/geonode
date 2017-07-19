@@ -44,7 +44,7 @@ from geonode.documents.forms import DocumentForm, DocumentCreateForm, DocumentRe
 from geonode.documents.models import IMGTYPES
 from geonode.utils import build_social_links
 from geonode.groups.models import GroupProfile
-from geonode.base.utils import batch_modify
+from geonode.base.views import batch_modify
 
 ALLOWED_DOC_TYPES = settings.ALLOWED_DOCUMENT_TYPES
 

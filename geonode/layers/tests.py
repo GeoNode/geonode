@@ -825,7 +825,7 @@ class LayersTest(TestCase):
         for resource in resources:
             self.assertEquals(resource.date, date)
         # test language change
-        language = 'Non-existing'
+        language = 'eng'
         response = self.client.post(
             reverse(view, args=(ids,)),
             data={'language': language},
@@ -834,6 +834,17 @@ class LayersTest(TestCase):
         resources = Model.objects.filter(id__in=[r.pk for r in resources])
         for resource in resources:
             self.assertEquals(resource.language, language)
+        # test keywords change
+        keywords = 'some,thing,new'
+        response = self.client.post(
+            reverse(view, args=(ids,)),
+            data={'keywords': keywords},
+        )
+        self.assertEquals(response.status_code, 302)
+        resources = Model.objects.filter(id__in=[r.pk for r in resources])
+        for resource in resources:
+            for word in resource.keywords.all():
+                self.assertTrue(word.name in keywords.split(','))
 
 
 class UnpublishedObjectTests(TestCase):
