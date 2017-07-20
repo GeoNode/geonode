@@ -53,7 +53,7 @@ class CollectorAPI(object):
         interval = valid_to - prev.valid_to
         if not isinstance(current_value, Decimal):
             current_value = Decimal(current_value)
-            
+
         rate = float((current_value - prev_val)) / interval.total_seconds()
         return rate
 
@@ -189,6 +189,17 @@ class CollectorAPI(object):
                 mdata['value_raw'] = rate
                 print MetricValue.add(**mdata)
 
+            l = data['data']['cpu']['percent']
+            mdata = {'value': l,
+                     'value_raw': l,
+                     'value_num': l,
+                     'metric': 'cpu.usage.percent',
+                     'label': '%',
+                     }
+
+            mdata.update(mdefaults)
+            print MetricValue.add(**mdata)
+
     def get_labels_for_metric(self, metric_name, resource=None):
         mt = ServiceTypeMetric.objects.filter(metric__name=metric_name)
         if not mt:
@@ -250,7 +261,7 @@ class CollectorAPI(object):
         out = []
         for ows in ows_services:
             out.append((ows, requests.filter(ows_service=ows),))
-        return out            
+        return out
 
     def set_metric_values(self, metric_name, column_name, service, valid_from, valid_to, resource=None, ows_service=None):
         metric = Metric.get_for(metric_name, service=service)
@@ -349,7 +360,7 @@ class CollectorAPI(object):
         """
         log.info("Processing batch of %s requests from %s to %s", requests.count(), valid_from, valid_to)
         if not requests.count():
-            return 
+            return
         metric_defaults = {'valid_from': valid_from,
                            'valid_to': valid_to,
                            'service': service}
@@ -375,7 +386,7 @@ class CollectorAPI(object):
         self.set_metric_values('response.size', 're.response_size', **metric_defaults)
         self.set_metric_values('response.status', 're.response_status', **metric_defaults)
         self.set_metric_values('request.method', 're.request_method', **metric_defaults)
-        self.set_error_values(requests, valid_from, valid_to, service=service, resource=None) 
+        self.set_error_values(requests, valid_from, valid_to, service=service, resource=None)
 
         # for each resource we should calculate another set of stats
         for resource, _requests in [(None, requests,)] + resources:
@@ -395,7 +406,7 @@ class CollectorAPI(object):
             self.set_metric_values('response.size', 're.response_size', **metric_defaults)
             self.set_metric_values('response.status', 're.response_status', **metric_defaults)
             self.set_metric_values('request.method', 're.request_method', **metric_defaults)
-            self.set_error_values(_requests, valid_from, valid_to, service=service, resource=resource) 
+            self.set_error_values(_requests, valid_from, valid_to, service=service, resource=resource)
 
         metric_defaults.pop('resource', None)
         for ows, _requests in [(None, requests,)] + ows_services:
