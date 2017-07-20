@@ -171,7 +171,7 @@ class Region(MPTTModel):
 
     @property
     def bbox(self):
-        return [self.bbox_x0, self.bbox_y0, self.bbox_x1, self.bbox_y1, self.srid]
+        return [self.bbox_x0, self.bbox_x1, self.bbox_y0, self.bbox_y1, self.srid]
 
     @property
     def bbox_string(self):
@@ -559,7 +559,7 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
 
     @property
     def bbox(self):
-        return [self.bbox_x0, self.bbox_y0, self.bbox_x1, self.bbox_y1, self.srid]
+        return [self.bbox_x0, self.bbox_x1, self.bbox_y0, self.bbox_y1, self.srid]
 
     @property
     def bbox_string(self):
@@ -705,7 +705,7 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
         """
         self.set_latlon_bounds(bbox)
 
-        minx, miny, maxx, maxy = [float(c) for c in bbox]
+        minx, maxx, miny, maxy = [float(c) for c in bbox]
         x = (minx + maxx) / 2
         y = (miny + maxy) / 2
         (center_x, center_y) = forward_mercator((x, y))
