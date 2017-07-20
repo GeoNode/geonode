@@ -199,9 +199,6 @@ class PermissionLevelMixin(object):
                 else:
                     assign_perm(perm, anonymous_group, self.get_self_resource())
 
-                # Assign GeoFence Layer Access to ALL Users
-                set_geofence_all(self)
-
         # TODO refactor code here
         if 'users' in perm_spec:
             for user, perms in perm_spec['users'].items():
