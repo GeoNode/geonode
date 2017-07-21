@@ -51,6 +51,9 @@ class Command(BaseCommand):
                 perms = get_users_with_perms(layer)
                 for profile in perms.keys():
                     print " - [%s / %s]" % (str(profile), layer.name)
-                    set_geofence_owner(layer, str(profile), view_perms=True, download_perms=True)
+                    geofence_user = str(profile)
+                    if "AnonymousUser" in geofence_user:
+                        geofence_user = None
+                    set_geofence_owner(layer, geofence_user, view_perms=True, download_perms=True)
             except:
                 print "[ERROR] Layer [%s] couldn't be updated" % (layer.name)
