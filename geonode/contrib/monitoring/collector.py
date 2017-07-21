@@ -57,6 +57,21 @@ class CollectorAPI(object):
         rate = float((current_value - prev_val)) / interval.total_seconds()
         return rate
 
+    def _calculate_percent(self, metric_name, metric_label, current_value, valid_to):
+        """
+        Find previous network metric value and caclulate percent
+        """
+        prev = MetricValue.objects.filter(service_metric__metric__name=metric_name, label__name=metric_label, valid_to__lt=valid_to).order_by('-valid_to').first()
+        if not prev:
+            return
+        prev_val = prev.value_num
+        interval = valid_to - prev.valid_to
+        if not isinstance(current_value, Decimal):
+            current_value = Decimal(current_value)
+
+        percent = float((current_value - prev_val) * 100) / interval.total_seconds()
+        return percent
+
     def process_system_metrics(self, service, data, valid_from, valid_to):
         """
         Generates mertic values for system-level measurements
@@ -183,19 +198,22 @@ class CollectorAPI(object):
             print MetricValue.add(**mdata)
             rate = self._calculate_rate(mdata['metric'], mdata['label'], mdata['value'], mdata['valid_to'])
             if rate:
-                mdata['metric'] = '{}.rate'.format(mdata['metric'])
-                mdata['value'] = rate
-                mdata['value_num'] = rate
-                mdata['value_raw'] = rate
-                print MetricValue.add(**mdata)
+                rate_data = mdata.copy()
+                rate_data['metric'] = '{}.rate'.format(mdata['metric'])
+                rate_data['value'] = rate
+                rate_data['value_num'] = rate
+                rate_data['value_raw'] = rate
+                print MetricValue.add(**rate_data)
 
-            l = data['data']['cpu']['percent']
-            mdata = {'value': l,
-                     'value_raw': l,
-                     'value_num': l,
-                     'metric': 'cpu.usage.percent',
-                     'label': '%',
-                     }
+            percent = self._calculate_percent(mdata['metric'], mdata['label'], mdata['value'], mdata['valid_to'])
+            if percent:
+                percent_data = mdata.copy()
+                percent_data['metric'] = '{}.percent'.format(mdata['metric'])
+                percent_data['value'] = percent
+                percent_data['value_num'] = percent
+                percent_data['value_raw'] = percent
+                percent_data['label'] = 'Value'
+                print MetricValue.add(**percent_data)
 
             mdata.update(mdefaults)
             print MetricValue.add(**mdata)
