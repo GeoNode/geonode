@@ -144,14 +144,14 @@ def bbox_to_wkt(x0, x1, y0, y1, srid="4326"):
 
 
 def llbbox_to_mercator(llbbox):
-    minlonlat = forward_mercator([llbbox[0], llbbox[1]])
-    maxlonlat = forward_mercator([llbbox[2], llbbox[3]])
+    minlonlat = forward_mercator([llbbox[0], llbbox[2]])
+    maxlonlat = forward_mercator([llbbox[1], llbbox[3]])
     return [minlonlat[0], minlonlat[1], maxlonlat[0], maxlonlat[1]]
 
 
 def mercator_to_llbbox(bbox):
-    minlonlat = inverse_mercator([bbox[0], bbox[1]])
-    maxlonlat = inverse_mercator([bbox[2], bbox[3]])
+    minlonlat = inverse_mercator([bbox[0], bbox[2]])
+    maxlonlat = inverse_mercator([bbox[1], bbox[3]])
     return [minlonlat[0], minlonlat[1], maxlonlat[0], maxlonlat[1]]
 
 
