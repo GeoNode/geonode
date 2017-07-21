@@ -273,6 +273,7 @@ def map_metadata(request, mapid, template='maps/map_metadata.html'):
         metadata_author_groups = metadata_author.group_list_all()
     return render_to_response(template, RequestContext(request, {
         "config": json.dumps(config),
+        "resource": map_obj,
         "map": map_obj,
         "map_form": map_form,
         "poc_form": poc_form,

@@ -709,7 +709,7 @@ def layer_metadata(
         metadata_author_groups = GroupProfile.objects.all()
     else:
         metadata_author_groups = metadata_author.group_list_all()
-    print(metadata_author_groups)
+
     return render_to_response(template, RequestContext(request, {
         "resource": layer,
         "layer": layer,
@@ -729,7 +729,7 @@ def layer_metadata(
 
 
 @login_required
-def layer_metadata_advanced(request, layername):
+def layer_metadata_advanced(request, layername):s
     return layer_metadata(
         request,
         layername,
