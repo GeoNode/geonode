@@ -729,7 +729,7 @@ def layer_metadata(
 
 
 @login_required
-def layer_metadata_advanced(request, layername):s
+def layer_metadata_advanced(request, layername):
     return layer_metadata(
         request,
         layername,
