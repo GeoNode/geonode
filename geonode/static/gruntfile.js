@@ -139,6 +139,7 @@ module.exports = function(grunt) {
             'underscore/underscore-min.js',
             'qunit/qunit/qunit.js',
             'angular/angular.js',
+            'angular-cookies/angular-cookies.js',
             'angular-leaflet-directive/dist/angular-leaflet-directive.min.js',
             'bootstrap/dist/js/bootstrap.min.js',
             'zeroclipboard/dist/ZeroClipboard.min.js',
@@ -312,6 +313,7 @@ module.exports = function(grunt) {
             'lib/js/jquery.tree-multiselect.min.js',
             'lib/js/jquery.treefilter-min.js',
             'lib/js/angular.js',
+            'lib/js/angular-cookies.js',
             'lib/js/angular-leaflet-directive.min.js',
             'lib/js/ZeroClipboard.min.js'
           ],
