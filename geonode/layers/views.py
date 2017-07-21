@@ -22,7 +22,6 @@ import os
 import sys
 import logging
 import shutil
-import json
 import base64
 import traceback
 import uuid
