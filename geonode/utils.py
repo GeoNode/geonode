@@ -133,6 +133,8 @@ def _split_query(query):
 
 
 def bbox_to_wkt(x0, x1, y0, y1, srid="4326"):
+    if srid and srid.startswith('EPSG:'):
+        srid = srid[5:]
     if None not in [x0, x1, y0, y1]:
         wkt = 'SRID=%s;POLYGON((%s %s,%s %s,%s %s,%s %s,%s %s))' % (
             srid, x0, y0, x0, y1, x1, y1, x1, y0, x0, y0)
