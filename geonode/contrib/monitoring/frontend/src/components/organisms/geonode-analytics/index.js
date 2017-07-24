@@ -11,6 +11,7 @@ import actions from './actions';
 
 
 const mapStateToProps = (state) => ({
+  autoRefresh: state.autoRefresh.autoRefresh,
   errors: state.geonodeErrorSequence.response,
   from: state.interval.from,
   interval: state.interval.interval,
@@ -24,6 +25,7 @@ const mapStateToProps = (state) => ({
 @connect(mapStateToProps, actions)
 class GeonodeAnalytics extends React.Component {
   static propTypes = {
+    autoRefresh: PropTypes.number,
     errors: PropTypes.object,
     from: PropTypes.object,
     getErrors: PropTypes.func.isRequired,
@@ -41,35 +43,58 @@ class GeonodeAnalytics extends React.Component {
     to: PropTypes.object,
   }
 
+  constructor(props) {
+    super(props);
+    this.get = (
+      from = this.props.from,
+      to = this.props.to,
+      interval = this.props.interval,
+    ) => {
+      this.props.getResponses(from, to);
+      this.props.getResponseTimes(from, to, interval);
+      this.props.getThroughputs(from, to);
+      this.props.getErrors(from, to);
+    };
+
+    this.reset = () => {
+      this.props.resetResponses();
+      this.props.resetResponseTimes();
+      this.props.resetThroughputs();
+      this.props.resetErrors();
+    };
+  }
+
   componentWillMount() {
-    this.props.getResponses(this.props.from, this.props.to);
-    this.props.getResponseTimes(
-      this.props.from,
-      this.props.to,
-      this.props.interval,
-    );
-    this.props.getThroughputs(this.props.from, this.props.to);
-    this.props.getErrors(this.props.from, this.props.to);
+    this.get();
+    if (this.props.autoRefresh && this.props.autoRefresh > 0) {
+      this.intervalID = setInterval(this.get, this.props.autoRefresh);
+    }
   }
 
   componentWillReceiveProps(nextProps) {
-    if (nextProps && nextProps.from && nextProps.from !== this.props.from) {
-      this.props.getResponses(nextProps.from, nextProps.to);
-      this.props.getResponseTimes(
-        nextProps.from,
-        nextProps.to,
-        nextProps.interval,
-      );
-      this.props.getThroughputs(nextProps.from, nextProps.to);
-      this.props.getErrors(nextProps.from, nextProps.to);
+    if (nextProps) {
+      if (nextProps.from && nextProps.from !== this.props.from) {
+        this.get(nextProps.from, nextProps.to, nextProps.interval);
+      }
+      if (nextProps.autoRefresh !== undefined) {
+        if (nextProps.autoRefresh !== this.props.autoRefresh) {
+          if (nextProps.autoRefresh > 0) {
+            this.intervalID = setInterval(this.get, nextProps.autoRefresh);
+          } else {
+            clearInterval(this.intervalID);
+            this.intervalID = undefined;
+          }
+        }
+      }
     }
   }
 
   componentWillUnmount() {
-    this.props.resetResponses();
-    this.props.resetResponseTimes();
-    this.props.resetThroughputs();
-    this.props.resetErrors();
+    this.reset();
+    if (this.intervalID) {
+      clearInterval(this.intervalID);
+      this.intervalID = undefined;
+    }
   }
 
   render() {

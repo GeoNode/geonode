@@ -53,9 +53,24 @@ class CollectorAPI(object):
         interval = valid_to - prev.valid_to
         if not isinstance(current_value, Decimal):
             current_value = Decimal(current_value)
-            
+
         rate = float((current_value - prev_val)) / interval.total_seconds()
         return rate
+
+    def _calculate_percent(self, metric_name, metric_label, current_value, valid_to):
+        """
+        Find previous network metric value and caclulate percent
+        """
+        prev = MetricValue.objects.filter(service_metric__metric__name=metric_name, label__name=metric_label, valid_to__lt=valid_to).order_by('-valid_to').first()
+        if not prev:
+            return
+        prev_val = prev.value_num
+        interval = valid_to - prev.valid_to
+        if not isinstance(current_value, Decimal):
+            current_value = Decimal(current_value)
+
+        percent = float((current_value - prev_val) * 100) / interval.total_seconds()
+        return percent
 
     def process_system_metrics(self, service, data, valid_from, valid_to):
         """
@@ -183,11 +198,25 @@ class CollectorAPI(object):
             print MetricValue.add(**mdata)
             rate = self._calculate_rate(mdata['metric'], mdata['label'], mdata['value'], mdata['valid_to'])
             if rate:
-                mdata['metric'] = '{}.rate'.format(mdata['metric'])
-                mdata['value'] = rate
-                mdata['value_num'] = rate
-                mdata['value_raw'] = rate
-                print MetricValue.add(**mdata)
+                rate_data = mdata.copy()
+                rate_data['metric'] = '{}.rate'.format(mdata['metric'])
+                rate_data['value'] = rate
+                rate_data['value_num'] = rate
+                rate_data['value_raw'] = rate
+                print MetricValue.add(**rate_data)
+
+            percent = self._calculate_percent(mdata['metric'], mdata['label'], mdata['value'], mdata['valid_to'])
+            if percent:
+                percent_data = mdata.copy()
+                percent_data['metric'] = '{}.percent'.format(mdata['metric'])
+                percent_data['value'] = percent
+                percent_data['value_num'] = percent
+                percent_data['value_raw'] = percent
+                percent_data['label'] = 'Value'
+                print MetricValue.add(**percent_data)
+
+            mdata.update(mdefaults)
+            print MetricValue.add(**mdata)
 
     def get_labels_for_metric(self, metric_name, resource=None):
         mt = ServiceTypeMetric.objects.filter(metric__name=metric_name)
@@ -250,7 +279,7 @@ class CollectorAPI(object):
         out = []
         for ows in ows_services:
             out.append((ows, requests.filter(ows_service=ows),))
-        return out            
+        return out
 
     def set_metric_values(self, metric_name, column_name, service, valid_from, valid_to, resource=None, ows_service=None):
         metric = Metric.get_for(metric_name, service=service)
@@ -349,7 +378,7 @@ class CollectorAPI(object):
         """
         log.info("Processing batch of %s requests from %s to %s", requests.count(), valid_from, valid_to)
         if not requests.count():
-            return 
+            return
         metric_defaults = {'valid_from': valid_from,
                            'valid_to': valid_to,
                            'service': service}
@@ -375,7 +404,7 @@ class CollectorAPI(object):
         self.set_metric_values('response.size', 're.response_size', **metric_defaults)
         self.set_metric_values('response.status', 're.response_status', **metric_defaults)
         self.set_metric_values('request.method', 're.request_method', **metric_defaults)
-        self.set_error_values(requests, valid_from, valid_to, service=service, resource=None) 
+        self.set_error_values(requests, valid_from, valid_to, service=service, resource=None)
 
         # for each resource we should calculate another set of stats
         for resource, _requests in [(None, requests,)] + resources:
@@ -395,7 +424,7 @@ class CollectorAPI(object):
             self.set_metric_values('response.size', 're.response_size', **metric_defaults)
             self.set_metric_values('response.status', 're.response_status', **metric_defaults)
             self.set_metric_values('request.method', 're.request_method', **metric_defaults)
-            self.set_error_values(_requests, valid_from, valid_to, service=service, resource=resource) 
+            self.set_error_values(_requests, valid_from, valid_to, service=service, resource=resource)
 
         metric_defaults.pop('resource', None)
         for ows, _requests in [(None, requests,)] + ows_services:

@@ -68,7 +68,7 @@ class HostGeoNodeServiceExpose(BaseServiceExpose):
                 'load': load,
                 'cpu': cpu,
                 'disks': disks,
-                'network': network, 
+                'network': network,
                 'memory': mem}
         return data
 

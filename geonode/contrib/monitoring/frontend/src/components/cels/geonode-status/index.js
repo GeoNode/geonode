@@ -13,6 +13,7 @@ const mapStateToProps = (state) => ({
   from: state.interval.from,
   interval: state.interval.interval,
   to: state.interval.to,
+  autoRefresh: state.autoRefresh.autoRefresh,
 });
 
 
@@ -28,27 +29,53 @@ class GeonodeStatus extends React.Component {
     resetCpu: PropTypes.func.isRequired,
     resetMem: PropTypes.func.isRequired,
     to: PropTypes.object,
+    autoRefresh: PropTypes.number,
+  }
+
+  constructor(props) {
+    super(props);
+    this.get = (
+      from = this.props.from,
+      to = this.props.to,
+      interval = this.props.interval,
+    ) => {
+      this.props.getCpu(from, to, interval);
+      this.props.getMem(from, to, interval);
+    };
   }
 
   componentWillMount() {
-    this.props.getCpu(this.props.from, this.props.to, this.props.interval);
-    this.props.getMem(this.props.from, this.props.to, this.props.interval);
+    this.get();
+    if (this.props.autoRefresh && this.props.autoRefresh > 0) {
+      this.intervalID = setInterval(this.get, this.props.autoRefresh);
+    }
   }
 
   componentWillReceiveProps(nextProps) {
-    if (
-      nextProps &&
-      nextProps.from &&
-      nextProps.interval !== this.props.interval
-    ) {
-      this.props.getCpu(nextProps.from, nextProps.to, nextProps.interval);
-      this.props.getMem(nextProps.from, nextProps.to, nextProps.interval);
+    if (nextProps) {
+      if (nextProps.from && nextProps.interval !== this.props.interval) {
+        this.get(nextProps.from, nextProps.to, nextProps.interval);
+      }
+      if (nextProps.autoRefresh !== undefined) {
+        if (nextProps.autoRefresh !== this.props.autoRefresh) {
+          if (nextProps.autoRefresh > 0) {
+            this.intervalID = setInterval(this.get, nextProps.autoRefresh);
+          } else {
+            clearInterval(this.intervalID);
+            this.intervalID = undefined;
+          }
+        }
+      }
     }
   }
 
   componentWillUnmount() {
     this.props.resetCpu();
     this.props.resetMem();
+    if (this.intervalID) {
+      clearInterval(this.intervalID);
+      this.intervalID = undefined;
+    }
   }
 
   render() {

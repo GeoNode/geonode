@@ -76,7 +76,9 @@ class BaseProbe(object):
     @staticmethod
     def get_cpu():
         cpu = psutil.cpu_times()
-        return {'usage': cpu.user + cpu.system}
+        return {
+            'usage': cpu.user + cpu.system,
+        }
 
     @staticmethod
     def get_disk():

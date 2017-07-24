@@ -40,7 +40,7 @@ const get = (from, to) =>
     const formatedFrom = formatApiDate(from);
     const formatedTo = formatApiDate(to);
     const interval = sequenceInterval(getState);
-    let url = `${apiUrl}/metric_data/cpu.usage/?valid_from=${formatedFrom}`;
+    let url = `${apiUrl}/metric_data/cpu.usage.percent/?valid_from=${formatedFrom}`;
     url += `&valid_to=${formatedTo}&interval=${interval}`;
     fetch({ url })
       .then(response => {

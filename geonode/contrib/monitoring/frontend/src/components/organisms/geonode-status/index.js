@@ -10,6 +10,7 @@ import actions from './actions';
 
 
 const mapStateToProps = (state) => ({
+  autoRefresh: state.autoRefresh.autoRefresh,
   cpu: state.geonodeCpuSequence.response,
   from: state.interval.from,
   memory: state.geonodeMemorySequence.response,
@@ -20,6 +21,7 @@ const mapStateToProps = (state) => ({
 @connect(mapStateToProps, actions)
 class GeonodeStatus extends React.Component {
   static propTypes = {
+    autoRefresh: PropTypes.number,
     cpu: PropTypes.object,
     from: PropTypes.object,
     getCpu: PropTypes.func.isRequired,
@@ -30,21 +32,53 @@ class GeonodeStatus extends React.Component {
     to: PropTypes.object,
   }
 
+  constructor(props) {
+    super(props);
+    this.get = (
+      from = this.props.from,
+      to = this.props.to,
+    ) => {
+      this.props.getCpu(from, to);
+      this.props.getMemory(from, to);
+    };
+
+    this.reset = () => {
+      this.props.resetCpu();
+      this.props.resetMemory();
+    };
+  }
+
   componentWillMount() {
-    this.props.getCpu(this.props.from, this.props.to);
-    this.props.getMemory(this.props.from, this.props.to);
+    this.get();
+    if (this.props.autoRefresh && this.props.autoRefresh > 0) {
+      this.intervalID = setInterval(this.get, this.props.autoRefresh);
+    }
   }
 
   componentWillReceiveProps(nextProps) {
-    if (nextProps && nextProps.from && nextProps.from !== this.props.from) {
-      this.props.getCpu(nextProps.from, nextProps.to);
-      this.props.getMemory(nextProps.from, nextProps.to);
+    if (nextProps) {
+      if (nextProps.from && nextProps.from !== this.props.from) {
+        this.get(nextProps.from, nextProps.to);
+      }
+      if (nextProps.autoRefresh !== undefined) {
+        if (nextProps.autoRefresh !== this.props.autoRefresh) {
+          if (nextProps.autoRefresh > 0) {
+            this.intervalID = setInterval(this.get, nextProps.autoRefresh);
+          } else {
+            clearInterval(this.intervalID);
+            this.intervalID = undefined;
+          }
+        }
+      }
     }
   }
 
   componentWillUnmount() {
-    this.props.resetCpu();
-    this.props.resetMemory();
+    this.reset();
+    if (this.intervalID) {
+      clearInterval(this.intervalID);
+      this.intervalID = undefined;
+    }
   }
 
   render() {

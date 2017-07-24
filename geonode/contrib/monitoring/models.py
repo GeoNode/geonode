@@ -26,6 +26,7 @@ from datetime import datetime, timedelta
 
 from django.db import models
 from django.conf import settings
+from django.http import Http404
 from jsonfield import JSONField
 
 from django.utils.translation import ugettext_noop as _
@@ -84,7 +85,7 @@ class ServiceType(models.Model):
 
 class Service(models.Model):
     """
-    Service is a entity describing deployed processes. 
+    Service is a entity describing deployed processes.
     """
     name = models.CharField(max_length=255, unique=True, blank=False, null=False)
     host = models.ForeignKey(Host, null=False)
@@ -151,7 +152,7 @@ class Metric(models.Model):
 
     name = models.CharField(max_length=255, db_index=True)
     type = models.CharField(max_length=255, null=False, blank=False, default=TYPE_RATE, choices=TYPES)
-    
+
     def get_aggregate_name(self):
         return self.AGGREGATE_MAP[self.type]
 
@@ -172,9 +173,13 @@ class Metric(models.Model):
 
     @classmethod
     def get_for(cls, name, service=None):
+        metric = None
         if service:
-            stype = ServiceTypeMetric.objects.get(service_type=service.service_type, metric__name=name)
-            metric = stype.metric
+            try:
+                stype = ServiceTypeMetric.objects.get(service_type=service.service_type, metric__name=name)
+                metric = stype.metric
+            except ServiceTypeMetric.DoesNotExist:
+                raise Http404()
         else:
             metric = Metric.objects.filter(name=name).first()
         return metric
@@ -192,9 +197,9 @@ class OWSService(models.Model):
     _ows_types = 'tms wms-c wmts wcs wfs wms wps'.upper().split(' ')
     OWS_OTHER = 'other'
     OWS_TYPES = zip(_ows_types, _ows_types) + [(OWS_OTHER, _("Other"))]
-    name = models.CharField(max_length=16, unique=True, 
-                            choices=OWS_TYPES, 
-                            null=False, 
+    name = models.CharField(max_length=16, unique=True,
+                            choices=OWS_TYPES,
+                            null=False,
                             blank=False)
 
     def __str__(self):
@@ -505,8 +510,8 @@ class MetricValue(models.Model):
 
     @classmethod
     def add(cls, metric, valid_from, valid_to, service, label,
-            value_raw=None, resource=None, 
-            value=None, value_num=None, 
+            value_raw=None, resource=None,
+            value=None, value_num=None,
             data=None, ows_service=None, samples_count=None):
         """
         Create new MetricValue shortcut
@@ -585,7 +590,7 @@ class MetricValue(models.Model):
                 qparams = qparams & models.Q(ows_service=ows_service)
             else:
                 qparams = qparams & models.Q(ows_service__name=ows_service)
-                
+
         q = cls.objects.filter(qparams)
         return q
 
@@ -653,12 +658,12 @@ class MetricNotificationCheck(models.Model):
 
     def check_metric(self, for_timestamp=None):
         """
-        
+
         """
         if not for_timestamp:
             for_timestamp = datetime.now()
-        metrics = MetricValue.get_for(metric=self.metric, service=self.service, 
-                                      valid_on=for_timestamp, resource=self.resource, 
+        metrics = MetricValue.get_for(metric=self.metric, service=self.service,
+                                      valid_on=for_timestamp, resource=self.resource,
                                       label=self.label, ows_service=self.ows_service)
         if not metrics:
             raise ValueError("Cannot find metric values for {}/{} on {}".format(self.metric, self.service, for_timestamp))
@@ -682,16 +687,17 @@ class BuiltIns(object):
     host_metrics = ('load.1m', 'load.5m', 'load.15m',
                     'mem.free', 'mem.usage', 'mem.free',
                     'mem.buffers', 'mem.all',
-                    'uptime', 'cpu.usage', 'cpu.usage.rate',
+                    'uptime', 'cpu.usage', 'cpu.usage.rate', 'cpu.usage.percent',
                     'storage.free', 'storage.total', 'storage.used',  # mountpoint is the label
                     'network.in', 'network.out', 'network.in.rate', 'network.out.rate',)
 
     counters = ('request.count',  'network.in', 'network.out', 'response.error.count', 'cpu.usage',)
-    rates = ('response.time', 'response.size', 'network.in.rate', 'network.out.rate', 'load.1m', 'load.5m', 'load.15m', 'cpu.usage.rate',)
+    rates = ('response.time', 'response.size', 'network.in.rate', 'network.out.rate', 'load.1m', 'load.5m',
+             'load.15m', 'cpu.usage.rate', 'cpu.usage.percent',)
     values = ('request.ip', 'request.ua', 'request.ua.family', 'request.method',
               'request.country', 'request.region', 'request.city', 'response.status', 'response.error.types',)
 
-    
+
 
 
 def populate():
