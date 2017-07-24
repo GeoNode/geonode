@@ -133,10 +133,17 @@ class GeoServerMonitorClient(object):
         for l in links:
             if l.get('href').startswith(self.base_url):
                 href = self.get_href(l, format)
-                yield self.get_request(href, format=format)
+                data = self.get_request(href, format=format)
+                if data:
+                    yield data
+                else:
+                    print("Skipping payload for {}".format(href))
+
 
     def get_request(self, href, format=format):
         r = requests.get(href)
+        if r.status_code != 200:
+            return
         data = None
         try:
             data = r.json()

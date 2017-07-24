@@ -92,6 +92,7 @@ class BaseServiceHandler(object):
     def __init__(self, service, force_check=False):
         self.service = service
         self.check_since = service.last_check
+        self.now = datetime.now()
         self.force_check = force_check
         self.setup()
 
@@ -108,7 +109,7 @@ class BaseServiceHandler(object):
             return r.created
 
     def collect(self, since=None, until=None, **kwargs):
-        now = datetime.now()
+        now = self.now
 
         if since is None:
             since = self.service.last_check
@@ -118,7 +119,6 @@ class BaseServiceHandler(object):
             if self.service.last_check + self.service.check_interval > now:
                 log.warning("Next check too soon")
                 return
-        self.service.last_check = now
         _collected = self._collect(since, until, **kwargs)
         return self.handle_collected(_collected)
 
@@ -128,6 +128,10 @@ class BaseServiceHandler(object):
     def handle_collected(self):
         raise NotImplemented()
 
+    def mark_as_checked(self):
+        self.service.last_check = self.now
+        self.service.save()
+        
     @classmethod
     def get_name(cls):
         n = cls.__name__

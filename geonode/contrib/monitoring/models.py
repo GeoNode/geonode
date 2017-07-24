@@ -196,10 +196,11 @@ class ServiceTypeMetric(models.Model):
 class OWSService(models.Model):
     _ows_types = 'tms wms-c wmts wcs wfs wms wps'.upper().split(' ')
     OWS_OTHER = 'other'
-    OWS_TYPES = zip(_ows_types, _ows_types) + [(OWS_OTHER, _("Other"))]
-    name = models.CharField(max_length=16, unique=True,
-                            choices=OWS_TYPES,
-                            null=False,
+    OWS_ALL = 'all'
+    OWS_TYPES = zip(_ows_types, _ows_types) + [(OWS_ALL, _("All"))] + [(OWS_OTHER, _("Other"))]
+    name = models.CharField(max_length=16, unique=True, 
+                            choices=OWS_TYPES, 
+                            null=False, 
                             blank=False)
 
     def __str__(self):
@@ -220,6 +221,9 @@ class OWSService(models.Model):
             return cls.objects.get(q)
         except cls.DoesNotExist:
             return
+
+    def is_all(self):
+        return self.name == self.OWS_ALL
 
 
 class RequestEvent(models.Model):
@@ -352,7 +356,7 @@ class RequestEvent(models.Model):
             log.warning("request not finished %s", rd.get('status'))
             return
         received = received or datetime.now()
-        ua = rd['remoteUserAgent']
+        ua = rd.get('remoteUserAgent') or ''
         ua_family = cls._get_ua_family(ua)
         ip = rd['remoteAddr']
         lat = lon = None

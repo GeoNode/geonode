@@ -97,7 +97,10 @@ class Command(BaseCommand):
         until = until or now
         print('checking', service.name, 'since', since, 'until', until )
         
-        h = Handler(service, force_check=force_check)
-        data_in = h.collect(since=since, until=until, format=format)
-        if data_in:
-            return collector.process(service, data_in, since, until)
+        try:
+            h = Handler(service, force_check=force_check)
+            data_in = h.collect(since=since, until=until, format=format)
+            if data_in:
+                return collector.process(service, data_in, since, until)
+        finally:
+            h.mark_as_checked()

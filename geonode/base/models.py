@@ -43,6 +43,7 @@ from django.contrib.contenttypes.models import ContentType
 from django.contrib.auth import get_user_model
 from django.contrib.auth.models import Group
 from django.contrib.auth.signals import user_logged_in, user_logged_out
+from django.contrib.gis.db import models as geomodels
 from django.core.files.storage import default_storage as storage
 from django.core.files.base import ContentFile
 from django.contrib.gis.geos import GEOSGeometry
@@ -165,6 +166,11 @@ class Region(MPTTModel):
     bbox_y0 = models.DecimalField(max_digits=19, decimal_places=10, blank=True, null=True)
     bbox_y1 = models.DecimalField(max_digits=19, decimal_places=10, blank=True, null=True)
     srid = models.CharField(max_length=255, default='EPSG:4326')
+
+    envelope = geomodels.GeometryField(null=True)
+    geom = geomodels.GeometryField(null=True)
+    # geodjango manager, will be obsolete with django 1.9+: 
+    geoobjects = geomodels.GeoManager()
 
     def __unicode__(self):
         return self.name

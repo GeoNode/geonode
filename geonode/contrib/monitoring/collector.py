@@ -25,10 +25,11 @@ from itertools import chain
 
 from django.conf import settings
 from django.core.exceptions import ObjectDoesNotExist, MultipleObjectsReturned
+from django.db import models
 from geonode.utils import raw_sql
 from geonode.contrib.monitoring.models import (Metric, MetricValue, ServiceTypeMetric,
                                                MonitoredResource, MetricLabel, RequestEvent,
-                                               ExceptionEvent)
+                                               ExceptionEvent, OWSService,)
 
 from geonode.contrib.monitoring.utils import generate_periods, align_period_start, align_period_end
 from geonode.utils import parse_datetime
@@ -276,56 +277,66 @@ class CollectorAPI(object):
 
     def extract_ows_services(self, requests):
         ows_services = requests.exclude(ows_service__isnull=True).distinct('ows_service').values_list('ows_service', flat=True)
-        out = []
-        for ows in ows_services:
-            out.append((ows, requests.filter(ows_service=ows),))
-        return out
+        return [OWSService.objects.get(id=ows_id) for ows_id in ows_services]
 
-    def set_metric_values(self, metric_name, column_name, service, valid_from, valid_to, resource=None, ows_service=None):
+    def set_metric_values(self, metric_name, column_name, requests, service, **metric_values):
         metric = Metric.get_for(metric_name, service=service)
+        q = requests
+
+        def _key(v):
+            return v['value']
+
+        # we need list of three items:
+        #  * value - numeric value for given metric
+        #  * label - label value to be used
+        #  * samples count - number of samples for a metric
         if metric.is_rate:
-            sel = " 'value' as res, coalesce(avg({}), 0) as cnt, count(1) as samples ".format(column_name)
-            group_by = ''
+            row = requests.aggregate(value=models.Avg(column_name))
+            row['samples'] = requests.count()
+            row['label'] = 'rate'
+            q = [row]
         elif metric.is_count:
-            sel = ' distinct {} as res, sum(count(1)) as cnt, count(1) as samples '.format(column_name)
-            group_by = 'group by {}'.format(column_name)
+            q = []
+            values = requests.distinct(column_name).values_list(column_name, flat=True)
+            for v in values:
+                row = requests.filter(**{column_name: v})\
+                                 .aggregate(value=models.Sum(column_name),
+                                            samples=models.Count(column_name))
+                row['label'] = v
+                q.append(row)
+
+            q.sort(key=_key)
+            q.reverse()
 
         elif metric.is_value:
-            sel = ' distinct {} as res, count(1) as cnt, count(1) as samples'.format(column_name)
-            group_by = 'group by {}'.format(column_name)
-        else:
-            sel = ' {} as res, count(1) as cnt, count(1) as samples '.format(column_name)
-            group_by = 'group by {}'.format(column_name)
-        if resource:
-            _sql = ('select {} from monitoring_requestevent re '
-                    'join monitoring_requestevent_resources mr on (mr.requestevent_id = re.id)'
-                    'where re.service_id = %s and re.created >= %s and re.created < %s '
-                    'and mr.monitoredresource_id = %s {} order by cnt desc '
-                    'limit 100')
-            args = (service.id, valid_from, valid_to, resource.id,)
-        else:
-            _sql = ('select {} from monitoring_requestevent re '
-                    'where re.service_id = %s and re.created > %s and re.created < %s '
-                    '{} order by cnt desc limit 100')
-            args = (service.id, valid_from, valid_to,)
 
-        sql = _sql.format(sel, group_by)
-        rows = raw_sql(sql, args)
-        metric_values = {'metric': metric_name,
-                         'valid_from': valid_from,
-                         'valid_to': valid_to,
-                         'service': service,
-                         'ows_service': ows_service,
-                         'resource': resource}
+            q = []
+            values = requests.distinct(column_name).values_list(column_name, flat=True)
+            for v in values:
+                row = requests.filter(**{column_name: v})\
+                                 .aggregate(value=models.Count(column_name),
+                                            samples=models.Count(column_name))
+                row['label'] = v
+                q.append(row)
+            q.sort(key=_key)
+            q.reverse()
+
+        else:
+            raise ValueError("Unsupported metric type: {}".format(metric.type))
+
+
+        rows = q[:100]
+        
+        metric_values.update({'metric': metric_name, 'service': service})
         for row in rows:
-            label = row['res']
-            cnt = row['cnt']
+            label = row['label']
+            value = row['value']
             samples = row['samples']
-            metric_values.update({'value': cnt,
+            metric_values.update({'value': value,
                                   'label': label,
                                   'samples_count': samples,
-                                  'value_raw': cnt,
-                                  'value_num': cnt if isinstance(cnt, (int, float, long, Decimal,)) else None})
+                                  'value_raw': value,
+                                  'value_num': value if isinstance(value, (int, float, long, Decimal,)) else None})
 
             print MetricValue.add(**metric_values)
 
@@ -381,11 +392,11 @@ class CollectorAPI(object):
             return
         metric_defaults = {'valid_from': valid_from,
                            'valid_to': valid_to,
+                           'requests': requests,
                            'service': service}
         MetricValue.objects.filter(valid_from__gte=valid_from, valid_to__lte=valid_to, service=service).delete()
 
         resources = self.extract_resources(requests)
-        ows_services = self.extract_ows_services(requests)
         count = requests.count()
         print MetricValue.add('request.count', valid_from, valid_to, service, 'Count',
                         value=count,
@@ -394,56 +405,76 @@ class CollectorAPI(object):
                         samples_count=count,
                         resource=None)
         # calculate overall stats
-        self.set_metric_values('request.ip', 're.client_ip', **metric_defaults)
-        self.set_metric_values('request.country', 're.client_country',  **metric_defaults)
-        self.set_metric_values('request.city', 're.client_city', **metric_defaults)
-        self.set_metric_values('request.region', 're.client_region', **metric_defaults)
-        self.set_metric_values('request.ua', 're.user_agent', **metric_defaults)
-        self.set_metric_values('request.ua.family', 're.user_agent_family', **metric_defaults)
-        self.set_metric_values('response.time', 're.response_time', **metric_defaults)
-        self.set_metric_values('response.size', 're.response_size', **metric_defaults)
-        self.set_metric_values('response.status', 're.response_status', **metric_defaults)
-        self.set_metric_values('request.method', 're.request_method', **metric_defaults)
+        self.set_metric_values('request.ip', 'client_ip', **metric_defaults)
+        self.set_metric_values('request.country', 'client_country',  **metric_defaults)
+        self.set_metric_values('request.city', 'client_city', **metric_defaults)
+        self.set_metric_values('request.region', 'client_region', **metric_defaults)
+        self.set_metric_values('request.ua', 'user_agent', **metric_defaults)
+        self.set_metric_values('request.ua.family', 'user_agent_family', **metric_defaults)
+        self.set_metric_values('response.time', 'response_time', **metric_defaults)
+        self.set_metric_values('response.size', 'response_size', **metric_defaults)
+        self.set_metric_values('response.status', 'response_status', **metric_defaults)
+        self.set_metric_values('request.method', 'request_method', **metric_defaults)
         self.set_error_values(requests, valid_from, valid_to, service=service, resource=None)
 
+        ows_all = OWSService.objects.get(name=OWSService.OWS_ALL)
         # for each resource we should calculate another set of stats
         for resource, _requests in [(None, requests,)] + resources:
             count = _requests.count()
-            ows_service = self.extract_ows_service(_requests)
+            ows_services = self.extract_ows_services(_requests)
             metric_defaults['resource'] = resource
-            metric_defaults['ows_service'] = ows_service
+            metric_defaults['requests'] = _requests
             MetricValue.add('request.count', valid_from, valid_to, service, 'Count', value=count, value_num=count,
                             samples_count=count, value_raw=count, resource=resource)
-            self.set_metric_values('request.ip', 're.client_ip', **metric_defaults)
-            self.set_metric_values('request.country', 're.client_country', **metric_defaults)
-            self.set_metric_values('request.city', 're.client_city', **metric_defaults)
-            self.set_metric_values('request.region', 're.client_region',  **metric_defaults)
-            self.set_metric_values('request.ua', 're.user_agent', **metric_defaults)
-            self.set_metric_values('request.ua.family', 're.user_agent_family', **metric_defaults)
-            self.set_metric_values('response.time', 're.response_time', **metric_defaults)
-            self.set_metric_values('response.size', 're.response_size', **metric_defaults)
-            self.set_metric_values('response.status', 're.response_status', **metric_defaults)
-            self.set_metric_values('request.method', 're.request_method', **metric_defaults)
-            self.set_error_values(_requests, valid_from, valid_to, service=service, resource=resource)
+            self.set_metric_values('request.ip', 'client_ip', **metric_defaults)
+            self.set_metric_values('request.country', 'client_country', **metric_defaults)
+            self.set_metric_values('request.city', 'client_city', **metric_defaults)
+            self.set_metric_values('request.region', 'client_region',  **metric_defaults)
+            self.set_metric_values('request.ua', 'user_agent', **metric_defaults)
+            self.set_metric_values('request.ua.family', 'user_agent_family', **metric_defaults)
+            self.set_metric_values('response.time', 'response_time', **metric_defaults)
+            self.set_metric_values('response.size', 'response_size', **metric_defaults)
+            self.set_metric_values('response.status', 'response_status', **metric_defaults)
+            self.set_metric_values('request.method', 'request_method', **metric_defaults)
+            self.set_error_values(_requests, valid_from, valid_to, service=service, resource=resource) 
+            
+            # ows_services may be subset of all requests in a batch, so we do calculation separately
+            if ows_services:
+                ows_requests = _requests.filter(ows_service__isnull=False)
+                count = ows_requests.count()
+                metric_defaults['requests'] = ows_requests
+                metric_defaults['ows_service'] = ows_all
 
-        metric_defaults.pop('resource', None)
-        for ows, _requests in [(None, requests,)] + ows_services:
-            count = _requests.count()
-
-            metric_defaults['ows_service'] = ows
-            MetricValue.add('request.count', valid_from, valid_to, service, 'Count', value=count, value_num=count,
-                            samples_count=count, value_raw=count, ows_service=ows)
-            self.set_metric_values('request.ip', 're.client_ip', **metric_defaults)
-            self.set_metric_values('request.country', 're.client_country', **metric_defaults)
-            self.set_metric_values('request.city', 're.client_city', **metric_defaults)
-            self.set_metric_values('request.region', 're.client_region',  **metric_defaults)
-            self.set_metric_values('request.ua', 're.user_agent', **metric_defaults)
-            self.set_metric_values('request.ua.family', 're.user_agent_family', **metric_defaults)
-            self.set_metric_values('response.time', 're.response_time', **metric_defaults)
-            self.set_metric_values('response.size', 're.response_size', **metric_defaults)
-            self.set_metric_values('response.status', 're.response_status', **metric_defaults)
-            self.set_metric_values('request.method', 're.request_method', **metric_defaults)
-            self.set_error_values(_requests, valid_from, valid_to, service=service, ows_service=ows)
+                MetricValue.add('request.count', valid_from, valid_to, service, 'Count', value=count, value_num=count,
+                                samples_count=count, value_raw=count, resource=resource)
+                self.set_metric_values('request.ip', 'client_ip', **metric_defaults)
+                self.set_metric_values('request.country', 'client_country', **metric_defaults)
+                self.set_metric_values('request.city', 'client_city', **metric_defaults)
+                self.set_metric_values('request.region', 'client_region',  **metric_defaults)
+                self.set_metric_values('request.ua', 'user_agent', **metric_defaults)
+                self.set_metric_values('request.ua.family', 'user_agent_family', **metric_defaults)
+                self.set_metric_values('response.time', 'response_time', **metric_defaults)
+                self.set_metric_values('response.size', 'response_size', **metric_defaults)
+                self.set_metric_values('response.status', 'response_status', **metric_defaults)
+                self.set_metric_values('request.method', 'request_method', **metric_defaults)
+                for ows_service in ows_services:
+                    ows_requests = _requests.filter(ows_service=ows_service)
+                    count = ows_requests.count()
+                    metric_defaults['ows_service'] = ows_service 
+                    metric_defaults['requests'] = ows_requests
+                    MetricValue.add('request.count', valid_from, valid_to, service, 'Count', value=count, value_num=count,
+                                    samples_count=count, value_raw=count, resource=resource)
+                    self.set_metric_values('request.ip', 'client_ip', **metric_defaults)
+                    self.set_metric_values('request.country', 'client_country', **metric_defaults)
+                    self.set_metric_values('request.city', 'client_city', **metric_defaults)
+                    self.set_metric_values('request.region', 'client_region',  **metric_defaults)
+                    self.set_metric_values('request.ua', 'user_agent', **metric_defaults)
+                    self.set_metric_values('request.ua.family', 'user_agent_family', **metric_defaults)
+                    self.set_metric_values('response.time', 'response_time', **metric_defaults)
+                    self.set_metric_values('response.size', 'response_size', **metric_defaults)
+                    self.set_metric_values('response.status', 'response_status', **metric_defaults)
+                    self.set_metric_values('request.method', 'request_method', **metric_defaults)
+                    self.set_error_values(ows_requests, valid_from, valid_to, service=service, resource=resource, ows_service=ows_service)
 
     def get_metrics_for(self, metric_name, valid_from=None, valid_to=None, interval=None, service=None,
                         label=None, resource=None, ows_service=None):

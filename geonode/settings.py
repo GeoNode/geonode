@@ -90,12 +90,17 @@ SECRET_KEY = os.getenv('SECRET_KEY', _DEFAULT_SECRET_KEY)
 
 DATABASE_URL = os.getenv(
     'DATABASE_URL',
-    'sqlite:///{path}'.format(
+    'spatialite:///{path}'.format(
         path=os.path.join(PROJECT_ROOT, 'development.db')
     )
 )
 
 # Defines settings for development
+
+# since GeoDjango is in use, you should use gis-enabled engine, for example:
+# 'ENGINE': 'django.contrib.gis.db.backends.postgis'
+# see https://docs.djangoproject.com/en/1.8/ref/contrib/gis/db-api/#module-django.contrib.gis.db.backends for
+# detailed list of supported backends and notes.
 DATABASES = {
     'default': dj_database_url.parse(DATABASE_URL, conn_max_age=600)
 }
