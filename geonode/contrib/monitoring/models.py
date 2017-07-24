@@ -432,6 +432,10 @@ class ExceptionEvent(models.Model):
     def url(self):
         return reverse('monitoring:api_exception', args=(self.id,))
 
+    @property
+    def service_data(self):
+        return {'name': self.service.name,
+                'type': self.service.service_type.name}
 
     def expose(self):
         e = self

@@ -243,7 +243,8 @@ class ExceptionsListForm(CheckTypeForm):
     error_type = forms.CharField(required=False)
     valid_from = forms.DateTimeField(required=False)
     valid_to = forms.DateTimeField(required=False)
-    service = forms.CharField(required=False)
+    service_name = forms.CharField(required=False)
+    service_type = forms.CharField(required=False)
     resource = forms.CharField(required=False)
 
     def clean_resource(self):
@@ -258,11 +259,12 @@ class ExceptionsListView(FilteredView):
     fields_map = (('id', 'id',),
                   ('created', 'created',),
                   ('url', 'url',),
+                  ('service_data', 'service',),
                   ('error_type', 'error_type',),)
 
     output_name = 'exceptions'
 
-    def get_queryset(self, error_type=None, valid_from=None, valid_to=None, service=None, resource=None):
+    def get_queryset(self, error_type=None, valid_from=None, valid_to=None, service_name=None, service_type=None, resource=None):
         q = ExceptionEvent.objects.all().select_related()
         if error_type:
             q = q.filter(error_type=error_type)
@@ -270,8 +272,10 @@ class ExceptionsListView(FilteredView):
             q = q.filter(created__gte=valid_from)
         if valid_to:
             q = q.filter(created__lte=valid_to)
-        if service:
-            q = q.filter(service=service)
+        if service_name:
+            q = q.filter(service__name=service_name)
+        if service_type:
+            q = q.filter(service__service_type__name=service_type)
         if resource:
             q = q.filter(request__resources__in=(resource,))
 
