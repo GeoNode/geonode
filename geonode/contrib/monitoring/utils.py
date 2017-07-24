@@ -225,11 +225,15 @@ class TypeChecks(object):
 
     @staticmethod
     def resource_type(val):
-        try:
-            rtype, rname = val.split('=')
-        except (ValueError, IndexError,):
-            raise ValueError("{} is not valid resource description".format(val))
         from geonode.contrib.monitoring.models import MonitoredResource
+        try:
+            val = int(val)
+            return MonitoredResource.objects.get(id=val)
+        except (ValueError, TypeError,):
+            try:
+                rtype, rname = val.split('=')
+            except (ValueError, IndexError,):
+                raise ValueError("{} is not valid resource description".format(val))
         return MonitoredResource.objects.get(type=rtype, name=rname)
 
     @staticmethod

@@ -424,7 +424,7 @@ class CollectorAPI(object):
             ows_services = self.extract_ows_services(_requests)
             metric_defaults['resource'] = resource
             metric_defaults['requests'] = _requests
-            MetricValue.add('request.count', valid_from, valid_to, service, 'Count', value=count, value_num=count,
+            MetricValue.add('request.count', valid_from, valid_to, service, 'count', value=count, value_num=count,
                             samples_count=count, value_raw=count, resource=resource)
             self.set_metric_values('request.ip', 'client_ip', **metric_defaults)
             self.set_metric_values('request.country', 'client_country', **metric_defaults)
@@ -445,8 +445,8 @@ class CollectorAPI(object):
                 metric_defaults['requests'] = ows_requests
                 metric_defaults['ows_service'] = ows_all
 
-                MetricValue.add('request.count', valid_from, valid_to, service, 'Count', value=count, value_num=count,
-                                samples_count=count, value_raw=count, resource=resource)
+                print(MetricValue.add('request.count', valid_from, valid_to, service, 'count', value=count, value_num=count,
+                                      samples_count=count, value_raw=count, resource=resource, ows_service=ows_all))
                 self.set_metric_values('request.ip', 'client_ip', **metric_defaults)
                 self.set_metric_values('request.country', 'client_country', **metric_defaults)
                 self.set_metric_values('request.city', 'client_city', **metric_defaults)
@@ -460,10 +460,10 @@ class CollectorAPI(object):
                 for ows_service in ows_services:
                     ows_requests = _requests.filter(ows_service=ows_service)
                     count = ows_requests.count()
-                    metric_defaults['ows_service'] = ows_service 
+                    metric_defaults['ows_service'] = ows_service
                     metric_defaults['requests'] = ows_requests
-                    MetricValue.add('request.count', valid_from, valid_to, service, 'Count', value=count, value_num=count,
-                                    samples_count=count, value_raw=count, resource=resource)
+                    print(MetricValue.add('request.count', valid_from, valid_to, service, 'count', value=count, value_num=count,
+                                          samples_count=count, value_raw=count, resource=resource, ows_service=ows_service))
                     self.set_metric_values('request.ip', 'client_ip', **metric_defaults)
                     self.set_metric_values('request.country', 'client_country', **metric_defaults)
                     self.set_metric_values('request.city', 'client_city', **metric_defaults)

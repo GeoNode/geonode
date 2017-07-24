@@ -143,6 +143,8 @@ class LabelsFilterForm(CheckTypeForm):
 
 class ResourcesFilterForm(LabelsFilterForm):
     resource_type = forms.CharField(required=False)
+    valid_from = forms.DateTimeField(required=False)
+    valid_to = forms.DateTimeField(required=False)
 
     def clean_resource_type(self):
         return self._check_type('resource_type')
@@ -185,13 +187,18 @@ class ResourcesList(FilteredView):
 
     output_name = 'resources'
 
-    def get_queryset(self, metric_name=None, resource_type=None):
+    def get_queryset(self, metric_name=None, resource_type=None, valid_from=None, valid_to=None):
         q = MonitoredResource.objects.all().distinct()
         if resource_type:
             q = q.filter(type=resource_type)
         if metric_name:
             sm = ServiceTypeMetric.objects.filter(metric__name=metric_name)
             q = q.filter(metric_values__service_metric__in=sm)
+        if valid_from:
+            q = q.filter(metric_values__valid_from__gte=valid_from)
+        if valid_to:
+            q = q.filter(metric_values__valid_to__lte=valid_to)
+            
         return q
 
 

@@ -489,7 +489,7 @@ class MetricValue(models.Model):
     valid_to = models.DateTimeField(db_index=True, null=False)
     service_metric = models.ForeignKey(ServiceTypeMetric)
     service = models.ForeignKey(Service)
-    ows_service = models.ForeignKey(OWSService, null=True, blank=True)
+    ows_service = models.ForeignKey(OWSService, null=True, blank=True, related_name='metric_values')
     resource = models.ForeignKey(MonitoredResource, related_name='metric_values')
     label = models.ForeignKey(MetricLabel, related_name='metric_values')
     value = models.CharField(max_length=255, null=False, blank=False)
