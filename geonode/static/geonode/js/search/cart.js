@@ -95,9 +95,13 @@
           if(Object.keys(geonodeCart).length > 1) {
             Object.keys(geonodeCart).forEach(function(key,index) {
               if(key !== 'csrftoken') {
-                var obj = JSON.parse(geonodeCart[key]);
-                obj['$$hashKey'] = "object:" + index;
-                cartSession.push(obj);
+                try {
+                  var obj = JSON.parse(geonodeCart[key]);
+                  obj['$$hashKey'] = "object:" + index;
+                  cartSession.push(obj);
+                } catch(err) {
+                  console.log("Cart Session Issue: " + err.message);
+                }
               }
             });
           }
