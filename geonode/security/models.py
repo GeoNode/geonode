@@ -311,6 +311,19 @@ def set_data_public_access(instance):
     resource = instance.get_self_resource()
 
     if hasattr(resource, "layer"):
+        rule_exist = False
+        gs_rules = get_geofence_rules(layer=resource.layer.name)
+        for rule in gs_rules:
+            r = dict((k.lower(), v) for k, v in rule.iteritems())
+            if r['workspace'] == resource.layer.workspace:
+                if 'username' not in r and 'rolename' not in r:
+                    if 'access' in r and r['access'].lower() == 'allow':
+                        rule_exist = True
+                        break
+                    if 'grant' in r and r['grant'].lower() == 'allow':
+                        rule_exist = True
+                        break
+
         if internal_geofence:
             payload = "<Rule><workspace>{}</workspace>".format(resource.layer.workspace)
             payload += "<layer>{}</layer><access>ALLOW</access></Rule>".format(resource.layer.name)
@@ -319,7 +332,8 @@ def set_data_public_access(instance):
             payload += "<workspace>{}</workspace>".format(resource.layer.workspace)
             payload += "<layer>{}</layer></rule>".format(resource.layer.name)
 
-        create_geofence_rule(payload)
+        if not rule_exist:
+            create_geofence_rule(payload)
 
 
 def set_data_acl(instance, name, view_perms=False, edit_perms=False, type='user'):
@@ -388,30 +402,13 @@ def remove_object_permissions(instance):
     resource = instance.get_self_resource()
 
     if hasattr(resource, "layer"):
-        gs_rules = get_geofence_rules(workspace=resource.layer.workspace, layer=resource.layer.name)
-        if gs_rules:
-            gs_rules_dict = parse(gs_rules)
-            if internal_geofence:
-                key = 'Rules'
-                sub_key = 'Rule'
-            else:
-                key = 'RuleList'
-                sub_key = 'rule'
-
-            # There are plenty of differences between the standalone and integrated versions of. Try dealing with them.
-            if gs_rules_dict[key]:
-                if sub_key in gs_rules_dict[key].keys():
-                    rules = gs_rules_dict[key][sub_key]
+        rules = get_geofence_rules(workspace=resource.layer.workspace, layer=resource.layer.name)
+        for rule in rules:
+            if 'layer' in rule and rule['layer'] == resource.layer.name:
+                if '@id' in rule:
+                    delete_geofence_rule(rule['@id'])
                 else:
-                    rules = []
-                if not isinstance(rules, list):
-                    rules = [rules]
-                for rule in rules:
-                    if 'layer' in rule.keys() and rule['layer'] == resource.layer.name:
-                        if '@id' in rule.keys():
-                            delete_geofence_rule(rule['@id'])
-                        else:
-                            delete_geofence_rule(rule['id'])
+                    delete_geofence_rule(rule['id'])
 
         try:
             UserObjectPermission.objects.filter(content_type=ContentType.objects.get_for_model(resource.layer),
@@ -535,7 +532,23 @@ def get_geofence_rules(workspace=None, layer=None, output_type='xml'):
         if output_type == 'json':
             return resp.json()
         else:
-            return resp.content
+            rules_dict = parse(resp.content)
+            if internal_geofence:
+                key = 'Rules'
+                sub_key = 'Rule'
+            else:
+                key = 'RuleList'
+                sub_key = 'rule'
+
+            # There are plenty of differences between the standalone and integrated versions of. Try dealing with them.
+            rules = []
+            if rules_dict[key]:
+                if sub_key in rules_dict[key]:
+                    rules = rules_dict[key][sub_key]
+                if not isinstance(rules, list):
+                    rules = [rules]
+
+            return rules
     else:
         logger.warning("Could not get rule from GeoFence")
     return None
