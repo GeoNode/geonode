@@ -27,7 +27,7 @@ django-geoexplorer==4.0.8
 django-guardian==1.4.6
 django-haystack==2.6.0
 django-jsonfield==0.9.16
-django-leaflet==0.13.7
+django-leaflet==0.22.0
 django-modeltranslation==0.12
 django-oauth-toolkit<1.0
 django-mptt==0.8.6
