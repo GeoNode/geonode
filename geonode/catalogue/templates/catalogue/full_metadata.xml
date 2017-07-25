@@ -109,6 +109,9 @@
      <gmd:MD_DataIdentification>
        <gmd:citation>
          <gmd:CI_Citation>
+           <gmd:name>
+             <gco:CharacterString>{{layer.name}}</gco:CharacterString>
+           </gmd:name>
            <gmd:title>
              <gco:CharacterString>{{layer.title}}</gco:CharacterString>
            </gmd:title>

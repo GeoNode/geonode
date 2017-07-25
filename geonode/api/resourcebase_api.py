@@ -151,12 +151,32 @@ class CommonModelApi(ModelResource):
         else:
             filtered = semi_filtered
 
+        if settings.ADMIN_MODERATE_UPLOADS:
+            filtered = self.filter_published(filtered, request)
+
+        if settings.GROUP_PRIVATE_RESOURCES:
+            filtered = self.filter_group(filtered, request)
+
         if extent:
             filtered = self.filter_bbox(filtered, extent)
 
         if keywords:
             filtered = self.filter_h_keywords(filtered, keywords)
 
+        return filtered
+
+    def filter_published(self, queryset, request):
+        is_admin = request.user.is_superuser
+        is_staff = request.user.is_staff
+        if not is_admin and not is_staff:
+            filtered = queryset.exclude(Q(is_published=False))
+        else:
+            filtered = queryset
+        return filtered
+
+    def filter_group(self, queryset, request):
+        groups = request.user.groups.all()
+        filtered = queryset.filter(Q(group__isnull=True) | Q(group__in=groups))
         return filtered
 
     def filter_h_keywords(self, queryset, keywords):
@@ -185,7 +205,6 @@ class CommonModelApi(ModelResource):
         bbox = bbox.split(
             ',')  # TODO: Why is this different when done through haystack?
         bbox = map(str, bbox)  # 2.6 compat - float to decimal conversion
-
         intersects = ~(Q(bbox_x0__gt=bbox[2]) | Q(bbox_x1__lt=bbox[0]) |
                        Q(bbox_y0__gt=bbox[3]) | Q(bbox_y1__lt=bbox[1]))
 
