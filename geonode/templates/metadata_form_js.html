@@ -60,9 +60,9 @@
             */
         })
 
-        $.ajax('/h_keywords_api', {params: params}).success(function(data){
+        $.ajax('/h_keywords_api', {params: params}).then(function(response){
             $('#treeview').treeview({
-                data: data,
+                data: response.data,
                 levels: 1,
                 onNodeSelected: function($event, $data) {
                     //TODO: This seems a horribly inelegant way of doing this in 12 Lines
