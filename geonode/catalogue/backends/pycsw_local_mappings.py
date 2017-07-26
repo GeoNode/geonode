@@ -45,7 +45,7 @@ MD_CORE_MODEL = {
         'pycsw:RevisionDate': 'date',
         'pycsw:CreationDate': 'date',
         'pycsw:PublicationDate': 'date',
-        'pycsw:OrganizationName': 'uuid',
+        'pycsw:OrganizationName': 'group',
         'pycsw:SecurityConstraints': 'securityconstraints',
         'pycsw:ParentIdentifier': 'parentidentifier',
         'pycsw:TopicCategory': 'topiccategory',

@@ -47,7 +47,7 @@ geonode-dialogos==0.7
 pinax-notifications<4.0
 # we can't use django-user-account until upstream merge changes for geonode.
 # this is temporary solution
-https://github.com/cezio/django-user-accounts/archive/252_255_mixed.zip#egg=django-user-accounts-2.0.2
+https://github.com/cezio/django-user-accounts/archive/252_255_mixed.zip#egg=django-user-accounts-2.0.2dev
 geonode_user_messages==0.1.6
 gisdata==0.5.4
 gsconfig==1.0.6
@@ -60,7 +60,9 @@ oauthlib==2.0.1
 pep8==1.6.2
 pillow==3.3.1
 pinax-theme-bootstrap==3.0a11
-pycsw==2.0.2
+# temporary solution until PyCSW Issues are not fixed
+# pycsw==2.0.2
+https://github.com/geosolutions-it/pycsw/archive/ISSUE_540_dev.zip#egg=pycsw-2.0.3dev
 elasticsearch==2.4.0
 pyflakes==1.2.3
 pyproj==1.9.5.1
