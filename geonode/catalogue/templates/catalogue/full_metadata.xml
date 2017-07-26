@@ -1,6 +1,6 @@
 <gmd:MD_Metadata xmlns:gmd="http://www.isotc211.org/2005/gmd" xmlns:gml="http://www.opengis.net/gml" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:gco="http://www.isotc211.org/2005/gco" xsi:schemaLocation="http://www.isotc211.org/2005/gmd http://www.isotc211.org/2005/gmd/gmd.xsd">
    <gmd:fileIdentifier>
-     <gco:CharacterString>{{layer.uuid}}</gco:CharacterString>
+     <gco:CharacterString>{{layer.name}}</gco:CharacterString>
    </gmd:fileIdentifier>
    <gmd:language>
      <gco:CharacterString>{{layer.language}}</gco:CharacterString>
@@ -109,6 +109,9 @@
      <gmd:MD_DataIdentification>
        <gmd:citation>
          <gmd:CI_Citation>
+           <gmd:name>
+             <gco:CharacterString>{{layer.name}}</gco:CharacterString>
+           </gmd:name>
            <gmd:title>
              <gco:CharacterString>{{layer.title}}</gco:CharacterString>
            </gmd:title>
