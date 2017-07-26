@@ -2,8 +2,14 @@
   background:#fff url(fullscreen.png) no-repeat 0 0;
   background-size:26px 52px;
   }
+  .leaflet-touch .leaflet-control-fullscreen a {
+    background-position: 2px 2px;
+    }
   .leaflet-fullscreen-on .leaflet-control-fullscreen a {
     background-position:0 -26px;
+    }
+  .leaflet-touch.leaflet-fullscreen-on .leaflet-control-fullscreen a {
+    background-position: 2px -24px;
     }
 
 /* Do not combine these two rules; IE will break. */
