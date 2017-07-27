@@ -506,7 +506,7 @@
                  <gco:CharacterString>{{link.link_type}}</gco:CharacterString>
                </gmd:protocol>
                <gmd:name>
-                 <gco:CharacterString>{{ layer.title }}</gco:CharacterString>
+                 <gco:CharacterString>{{ layer.typename }}</gco:CharacterString>
                </gmd:name>
                <gmd:description>
                  <gco:CharacterString>{{layer.workspace}} Service - Provides Layer: {{ layer.title }}</gco:CharacterString>
