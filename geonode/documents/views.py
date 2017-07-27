@@ -397,6 +397,7 @@ def document_metadata(
         else:
             metadata_author_groups = metadata_author.group_list_all()
         return render_to_response(template, RequestContext(request, {
+            "resource": document,
             "document": document,
             "document_form": document_form,
             "poc_form": poc_form,

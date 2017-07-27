@@ -1170,6 +1170,7 @@ RISKS = {'DEFAULT_LOCATION': None,
                            'BIN': '/usr/bin/wkhtml2pdf',
                            'ARGS': []}}
 
+# Each uploaded Layer must be approved by an Admin before becoming visible
 ADMIN_MODERATE_UPLOADS = False
 
 # add following lines to your local settings to enable monitoring
@@ -1177,3 +1178,5 @@ if MONITORING_ENABLED:
     INSTALLED_APPS + ('geonode.contrib.monitoring',)
     MIDDLEWARE_CLASSES + ('geonode.contrib.monitoring.middleware.MonitoringMiddleware',)
 
+# If this option is enabled, Resources belonging to a Group won't be visible by others
+GROUP_PRIVATE_RESOURCES = False

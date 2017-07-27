@@ -36,8 +36,15 @@ logger = logging.getLogger("geonode.contrib.metadataxsl")
 def prefix_xsl_line(req, id):
     resource = get_object_or_404(ResourceBase, pk=id)
 
-    catalogue = get_catalogue()
-    record = catalogue.get_record(resource.uuid)
+    # if the layer is in the catalogue, try to get the distribution urls
+    # that cannot be precalculated.
+    try:
+        catalogue = get_catalogue()
+        record = catalogue.get_record(resource.uuid)
+    except Exception, err:
+        msg = 'Could not connect to catalogue to save information for layer "%s"' % str(resource.title)
+        logger.warn(msg, err)
+        raise err
 
     try:
         xml = record.xml

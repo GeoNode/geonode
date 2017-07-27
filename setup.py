@@ -88,7 +88,11 @@ setup(name='GeoNode',
         # geopython dependencies
         "pyproj>=1.9.3",  # python-pyproj (1.9.5)
         "OWSLib>=0.11.0",  # python-owslib (0.10.3) FIXME
-        "pycsw>=2.0.2",  # python-pycsw (1.10.1, 2.0.0 in ppa) FIXME
+        "pycsw==2.0.3dev",
+        # we can't use PyCSW until upstream merge changes for geonode.
+        # this is temporary solution
+        # "git+https://github.com/geosolutions-it/pycsw/archive/ISSUE_540_dev.zip",
+        # "pycsw>=2.0.2",  # python-pycsw (1.10.1, 2.0.0 in ppa) FIXME
         "%s" % shapely_dep,  # python-shapely (1.5.13)
 
 
@@ -106,7 +110,7 @@ setup(name='GeoNode',
         "django-modeltranslation>=0.11",  # python-django-modeltranslation (0.11 Debian)
 
         # GeoNode org maintained apps.
-        "django-geoexplorer>=4.0.8",
+        "django-geoexplorer>=4.0.9",
         "geonode-user-messages==0.1.6",  # (0.1.3 in ppa) FIXME
         "geonode-avatar>=2.1.6",  # (2.1.5 in ppa) FIXME
         "geonode-announcements>=1.0.8",

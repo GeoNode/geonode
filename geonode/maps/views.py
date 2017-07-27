@@ -273,6 +273,7 @@ def map_metadata(request, mapid, template='maps/map_metadata.html'):
         metadata_author_groups = metadata_author.group_list_all()
     return render_to_response(template, RequestContext(request, {
         "config": json.dumps(config),
+        "resource": map_obj,
         "map": map_obj,
         "map_form": map_form,
         "poc_form": poc_form,
@@ -675,7 +676,7 @@ def new_map_config(request):
                 layers.append(maplayer)
 
             if bbox is not None:
-                minx, miny, maxx, maxy = [float(coord) for coord in bbox]
+                minx, maxx, miny, maxy = [float(coord) for coord in bbox]
                 x = (minx + maxx) / 2
                 y = (miny + maxy) / 2
 
