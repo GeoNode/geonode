@@ -21,6 +21,7 @@
 import json
 import os
 import logging
+import xml.etree.ElementTree as ET
 from django.conf import settings
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render_to_response
@@ -65,6 +66,22 @@ def csw_global_dispatch(request):
 
     if access_token:
         env.update({'access_token': access_token})
+        mdict['server']['access_token'] = access_token
+        # mdict['server']['url'] += ("?access_token=%s" % (access_token))
+
+    if settings.GROUP_PRIVATE_RESOURCES:
+        groups_ids = []
+        if request.user:
+            for group in request.user.groups.all():
+                groups_ids.append(group.id)
+
+        if len(groups_ids) > 0:
+            groups = "(" + (", ".join(str(e) for e in groups_ids)) + ")"
+            groups_filter = "(group_id IS NULL OR group_id IN " + groups + ")"
+            mdict['repository']['filter'] += " AND " + groups_filter
+        else:
+            groups_filter = "group_id IS NULL"
+            mdict['repository']['filter'] += " AND " + groups_filter
 
     csw = server.Csw(mdict, env, version='2.0.2')
 
@@ -77,6 +94,42 @@ def csw_global_dispatch(request):
 
     if isinstance(content, list):  # pycsw 2.0+
         content = content[1]
+
+    # import xml.etree
+    # element =  xml.etree.ElementTree.XML(content)
+    # print(element[0][0].tag)
+
+    spaces = {'csw': 'http://www.opengis.net/cat/csw/2.0.2',
+              'dc': 'http://purl.org/dc/elements/1.1/',
+              'dct': 'http://purl.org/dc/terms/',
+              'gmd': 'http://www.isotc211.org/2005/gmd',
+              'gml': 'http://www.opengis.net/gml',
+              'ows': 'http://www.opengis.net/ows',
+              'xs': 'http://www.w3.org/2001/XMLSchema',
+              'xsi': 'http://www.w3.org/2001/XMLSchema-instance',
+              'ogc': 'http://www.opengis.net/ogc',
+              'gco': 'http://www.isotc211.org/2005/gco',
+              'gmi': 'http://www.isotc211.org/2005/gmi'}
+
+    for prefix, uri in spaces.iteritems():
+        ET.register_namespace(prefix, uri)
+
+    if access_token:
+        tree = ET.fromstring(content)
+        for online_resource in tree.findall('*//gmd:CI_OnlineResource', spaces):
+            try:
+                linkage = online_resource.find('gmd:linkage', spaces)
+                for url in linkage.findall('gmd:URL', spaces):
+                    if url.text:
+                        if '?' not in url.text:
+                            url.text += "?"
+                        else:
+                            url.text += "&"
+                        url.text += ("access_token=%s" % (access_token))
+                        url.set('updated', 'yes')
+            except:
+                pass
+        content = ET.tostring(tree, encoding='utf8', method='xml')
 
     return HttpResponse(content, content_type=csw.contenttype)
 

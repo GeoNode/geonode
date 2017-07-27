@@ -166,8 +166,8 @@ class CommonModelApi(ModelResource):
         return filtered
 
     def filter_published(self, queryset, request):
-        is_admin = request.user.is_superuser
-        is_staff = request.user.is_staff
+        is_admin = request.user.is_superuser if request.user else False
+        is_staff = request.user.is_staff if request.user else False
         if not is_admin and not is_staff:
             filtered = queryset.exclude(Q(is_published=False))
         else:
@@ -175,8 +175,11 @@ class CommonModelApi(ModelResource):
         return filtered
 
     def filter_group(self, queryset, request):
-        groups = request.user.groups.all()
-        filtered = queryset.filter(Q(group__isnull=True) | Q(group__in=groups))
+        if request.user:
+            groups = request.user.groups.all()
+            filtered = queryset.filter(Q(group__isnull=True) | Q(group__in=groups))
+        else:
+            filtered = queryset.filter(Q(group__isnull=True))
         return filtered
 
     def filter_h_keywords(self, queryset, keywords):

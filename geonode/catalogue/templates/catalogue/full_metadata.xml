@@ -83,7 +83,7 @@
    </gmd:contact>
    {% endwith %}
 
-    {% with layer.metadata_author as metadata_author %}
+   {% with layer.metadata_author as metadata_author %}
    <gmd:contact>
      <gmd:CI_ResponsibleParty>
        <gmd:individualName {% if not metadata_author.name %}gco:nilReason="missing"{% endif %}>
