@@ -33,7 +33,7 @@ from geonode.security.views import _perms_info_json
 
 from geonode.datarequests.forms import (
     ProfileRequestForm, DataRequestForm, DataRequestShapefileForm)
-    
+
 from geonode.datarequests.models import DataRequestProfile, DataRequest, ProfileRequest, BaseRequest
 
 from geonode.tasks.jurisdiction import place_name_update, jurisdiction_style
@@ -77,7 +77,7 @@ def profile_request_view(request):
                     profile_request_obj.status = "unconfirmed"
                     profile_request_obj.save()
                     profile_request_obj.send_verification_email()
-                
+
                 request.session['profile_request_obj']= profile_request_obj
                 request.session.set_expiry(900)
                 return HttpResponseRedirect(
@@ -98,12 +98,12 @@ def profile_request_view(request):
                     'location': profile_request_obj.location
                 }
                 form = ProfileRequestForm(initial = initial)
-        
+
         return render(
             request,
             'datarequests/registration/profile.html',
             {'form': form}
-        )        
+        )
 
 def data_request_view(request):
     profile_request_obj = request.session.get('profile_request_obj', None)
@@ -125,14 +125,14 @@ def data_request_view(request):
         data_class_objs = []
         pprint(data_classes)
         pprint("len:"+str(len(data_classes)))
-        
-        if len(data_classes) == 1 and ',' in data_classes[0]:
+
+        if len(data_classes) == 1:
             post_data.setlist('data_class_requested',data_classes[0].replace('[','').replace(']','').replace('"','').split(','))
             pprint(post_data.getlist('data_class_requested'))
-        
+
         details_form = DataRequestForm(post_data, request.FILES)
         data_request_obj = None
-        
+
         errormsgs = []
         out = {}
         out['errors'] = {}
@@ -145,7 +145,7 @@ def data_request_view(request):
             out['errors'] =  dict(
                 (k, map(unicode, v))
                 for (k,v) in details_form.errors.iteritems())
-                
+
             pprint(out['errors'])
         else:
             tempdir = None
@@ -222,7 +222,7 @@ def data_request_view(request):
 
                         if permissions is not None and len(permissions.keys()) > 0:
                             saved_layer.set_permissions(permissions)
-                        
+
                         jurisdiction_style.delay(saved_layer)
 
 
@@ -252,7 +252,7 @@ def data_request_view(request):
                 data_request_obj.profile = request.user
                 data_request_obj.save()
                 data_request_obj.set_status("pending")
-            else: 
+            else:
                 request_letter = create_letter_document(details_form.clean()['letter_file'], profile_request = profile_request_obj)
                 data_request_obj.request_letter = request_letter
                 data_request_obj.save()
@@ -283,10 +283,10 @@ def data_request_view(request):
                 out['redirect_to'] = reverse('home')
 
             del request.session['data_request_session']
-            
+
             if 'profile_request_obj' in request.session:
                 del request.session['profile_request_obj']
-                
+
         else:
             status_code = 400
         pprint("sending this out")
@@ -346,8 +346,8 @@ def email_verification_confirm(request):
                 profile_request.send_new_request_notif_to_admins()
                 profile_requests = ProfileRequest.objects.filter(email=email, status="unconfirmed")
                 set_status_for_multiple_requests.delay(profile_requests,"cancelled")
-                
-                    
+
+
         except ObjectDoesNotExist:
             profile_request = None
 
@@ -367,11 +367,11 @@ def email_verification_confirm(request):
 def create_letter_document(request_letter, profile=None, profile_request=None):
     if not profile and not profile_request:
         raise PermissionDenied
-        
+
     details = None
     letter_owner = None
     permissions = None
-    
+
     if profile:
         pprint("profile is not empty")
         details = profile
@@ -382,7 +382,7 @@ def create_letter_document(request_letter, profile=None, profile_request=None):
         details = profile_request
         letter_owner, created = Profile.objects.get_or_create(username='dataRegistrationUploader')
         permissions = {"users":{"dataRegistrationUploader":["view_resourcebase"]}}
-        
+
     requester_name = unidecode(details.first_name+" " +details.last_name)
     letter = Document()
     letter.owner = letter_owner
@@ -391,5 +391,5 @@ def create_letter_document(request_letter, profile=None, profile_request=None):
     letter.is_published = False
     letter.save()
     letter.set_permissions(permissions)
-    
+
     return letter
