@@ -1,7 +1,7 @@
 {% extends "layers/layer_base.html" %}
 {% load i18n %}
 
-{% block title %}{{ layer.typename }} — {{ block.super }}{% endblock %}
+{% block title %}{{ layer.alternate }} — {{ block.super }}{% endblock %}
 
 {% block body_class %}layers{% endblock %}
 
@@ -13,7 +13,7 @@
 <div class="page-header">
   <h2>{% trans "Manage Styles" %}</h2>
 </div>
-<h4>{% blocktrans with layer.typename as layer_title %}
+<h4>{% blocktrans with layer.alternate as layer_title %}
       Manage Available Styles for <a href="/layers/{{ layer_title }}">{{ layer_title }}</a>
     {% endblocktrans %}</h4>
 <form action="{% url "layer_style_manage" layer.service_typename %}" method="POST">

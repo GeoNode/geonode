@@ -75,14 +75,15 @@ def csw_global_dispatch(request):
         # Filter out Layers not accessible to the User
         authorized_ids = []
         if request.user:
-            profiles = Profile.objects.filter(username=request.user.username)
+            profiles = Profile.objects.filter(username=str(request.user))
         else:
             profiles = Profile.objects.filter(username="AnonymousUser")
         if profiles:
             authorized = list(get_objects_for_user(profiles[0], 'base.view_resourcebase').values('id'))
-            layers = Layer.objects.filter(id__in=[d['id'] for d in authorized])
+            layers = ResourceBase.objects.filter(id__in=[d['id'] for d in authorized])
             if layers:
                 authorized_ids = [d['id'] for d in authorized]
+
         if len(authorized_ids) > 0:
             authorized_layers = "(" + (", ".join(str(e) for e in authorized_ids)) + ")"
             authorized_layers_filter = "id IN " + authorized_layers

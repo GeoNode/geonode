@@ -269,9 +269,9 @@ class GeoNodeMapTest(TestCase):
         # Check the keywords are recognized too
 
         # Clean up and completely delete the layers
-        for layer in expected_layers:
-            layer_name = layers[layer]
-            Layer.objects.get(name=layer_name).delete()
+        # for layer in expected_layers:
+        #     layer_name = layers[layer]
+        #     Layer.objects.get(name=layer_name).delete()
 
     def test_extension_not_implemented(self):
         """Verify a GeoNodeException is returned for not compatible extensions
@@ -516,7 +516,7 @@ class GeoNodeMapTest(TestCase):
         styles = layer.styles + [layer.default_style]
 
         # Delete the Layer using cascading_delete()
-        cascading_delete(gs_cat, shp_layer.typename)
+        cascading_delete(gs_cat, shp_layer.alternate)
 
         # Verify that the styles were deleted
         for style in styles:

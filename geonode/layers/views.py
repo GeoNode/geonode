@@ -105,12 +105,12 @@ def log_snippet(log_file):
         return f.read()
 
 
-def _resolve_layer(request, typename, permission='base.view_resourcebase',
+def _resolve_layer(request, alternate, permission='base.view_resourcebase',
                    msg=_PERMISSION_MSG_GENERIC, **kwargs):
     """
     Resolve the layer by the provided typename (which may include service name) and check the optional permission.
     """
-    service_typename = typename.split(":", 1)
+    service_typename = alternate.split(":", 1)
 
     if Service.objects.filter(name=service_typename[0]).exists():
         service = Service.objects.filter(name=service_typename[0])
@@ -118,14 +118,14 @@ def _resolve_layer(request, typename, permission='base.view_resourcebase',
             request,
             Layer,
             {
-                'typename': service_typename[1] if service[0].method != "C" else typename},
+                'alternate': service_typename[1] if service[0].method != "C" else alternate},
             permission=permission,
             permission_msg=msg,
             **kwargs)
     else:
         return resolve_object(request,
                               Layer,
-                              {'typename': typename},
+                              {'alternate': alternate},
                               permission=permission,
                               permission_msg=msg,
                               **kwargs)
@@ -252,13 +252,13 @@ def layer_detail(request, layername, template='layers/layer_detail.html'):
             "url": service.base_url,
             "name": service.name}
         maplayer = GXPLayer(
-            name=layer.typename,
+            name=layer.alternate,
             ows_url=layer.ows_url,
             layer_params=json.dumps(config),
             source_params=json.dumps(source_params))
     else:
         maplayer = GXPLayer(
-            name=layer.typename,
+            name=layer.alternate,
             ows_url=layer.ows_url,
             layer_params=json.dumps(config))
 
@@ -456,13 +456,13 @@ def layer_metadata(
             "url": service.base_url,
             "name": service.name}
         maplayer = GXPLayer(
-            name=layer.typename,
+            name=layer.alternate,
             ows_url=layer.ows_url,
             layer_params=json.dumps(config),
             source_params=json.dumps(source_params))
     else:
         maplayer = GXPLayer(
-            name=layer.typename,
+            name=layer.alternate,
             ows_url=layer.ows_url,
             layer_params=json.dumps(config))
 
@@ -638,7 +638,7 @@ def layer_metadata(
                         layer.service_typename,
                     )))
 
-        message = layer.typename
+        message = layer.alternate
 
         try:
             # Keywords from THESAURI management
@@ -794,7 +794,7 @@ def layer_replace(request, layername, template='layers/layer_replace.html'):
                 else:
                     # delete geoserver's store before upload
                     cat = gs_catalog
-                    cascading_delete(cat, layer.typename)
+                    cascading_delete(cat, layer.alternate)
                     saved_layer = file_upload(
                         base_file,
                         name=layer.name,
@@ -849,7 +849,7 @@ def layer_remove(request, layername, template='layers/layer_remove.html'):
         except Exception as e:
             traceback.print_exc()
             message = '{0}: {1}.'.format(
-                _('Unable to delete layer'), layer.typename)
+                _('Unable to delete layer'), layer.alternate)
 
             if 'referenced by layer group' in getattr(e, 'message', ''):
                 message = _(
@@ -894,7 +894,7 @@ def layer_granule_remove(
         except Exception as e:
             traceback.print_exc()
             message = '{0}: {1}.'.format(
-                _('Unable to delete layer'), layer.typename)
+                _('Unable to delete layer'), layer.alternate)
 
             if 'referenced by layer group' in getattr(e, 'message', ''):
                 message = _(

@@ -8,7 +8,7 @@
 {% load base_tags %}
 {% load guardian_tags %}
 
-{% block title %}{{ resource.title|default:resource.typename }} — {{ block.super }}{% endblock %}
+{% block title %}{{ resource.title|default:resource.alternate }} — {{ block.super }}{% endblock %}
 
 {% block head %}
 
@@ -37,7 +37,7 @@
 
 {% block body_outer %}
 <div class="page-header">
-  <h2 class="page-title">{{ resource.title|default:resource.typename }}</h2>
+  <h2 class="page-title">{{ resource.title|default:resource.alternate }}</h2>
 </div>
 
 <div class="row">
@@ -312,7 +312,7 @@
     {% endif %}
 
     <li class="list-group-item">
-      <a href="{% url "layer_metadata_detail" resource.typename %}">
+      <a href="{% url "layer_metadata_detail" resource.alternate %}">
         <button class="btn btn-primary btn-md btn-block">{% trans "Metadata Detail" %}</button>
       </a>
     </li>

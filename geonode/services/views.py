@@ -635,7 +635,7 @@ def _register_indexed_layers(service, wms=None, verbosity=False):
 
             # Need to check if layer already exists??
             existing_layer = None
-            for layer in Layer.objects.filter(typename=wms_layer.name):
+            for layer in Layer.objects.filter(alternate=wms_layer.name):
                 if layer.service == service:
                     existing_layer = layer
 
@@ -851,12 +851,12 @@ def _register_arcgis_layers(service, arc=None):
         layer_uuid = str(uuid.uuid1())
         bbox = [layer.extent.xmin, layer.extent.ymin,
                 layer.extent.xmax, layer.extent.ymax]
-        typename = layer.id
+        alternate = layer.id
 
         existing_layer = None
         logger.info("Registering layer  %s" % layer.name)
         try:
-            for layer in Layer.objects.filter(typename=typename):
+            for layer in Layer.objects.filter(alternate=alternate):
                 if layer.service == service:
                     existing_layer = layer
         except Layer.DoesNotExist:
@@ -872,7 +872,7 @@ def _register_arcgis_layers(service, arc=None):
             # Need to check if layer already exists??
             logger.info("Importing layer  %s" % layer.name)
             saved_layer = Layer.objects.create(
-                typename=typename,
+                alternate=alternate,
                 name=valid_name,
                 store=service.name,  # ??
                 storeType="remoteStore",
@@ -1128,7 +1128,7 @@ def process_ogp_results(ogp, result_json, owner=None):
             )
 
             layer_uuid = str(uuid.uuid1())
-            saved_layer, created = Layer.objects.get_or_create(typename=typename,
+            saved_layer, created = Layer.objects.get_or_create(alternate=typename,
                                                                defaults=dict(
                                                                    name=doc["Name"],
                                                                    uuid=layer_uuid,
@@ -1147,7 +1147,8 @@ def process_ogp_results(ogp, result_json, owner=None):
                                                                )
             saved_layer.set_default_permissions()
             saved_layer.save()
-            service_layer, created = ServiceLayer.objects.get_or_create(service=service, typename=typename,
+            service_layer, created = ServiceLayer.objects.get_or_create(service=service,
+                                                                        typename=typename,
                                                                         defaults=dict(
                                                                             title=doc[
                                                                                 "LayerDisplayName"]
@@ -1333,6 +1334,6 @@ def create_arcgis_links(instance):
     # Create thumbnails.
     bbox = urllib.pathname2url('%s,%s,%s,%s' % (instance.bbox_x0, instance.bbox_y0, instance.bbox_x1, instance.bbox_y1))
 
-    thumbnail_remote_url = instance.ows_url + 'export?LAYERS=show%3A' + str(instance.typename) + \
+    thumbnail_remote_url = instance.ows_url + 'export?LAYERS=show%3A' + str(instance.alternate) + \
         '&TRANSPARENT=true&FORMAT=png&BBOX=' + bbox + '&SIZE=200%2C150&F=image&BBOXSR=4326&IMAGESR=3857'
     create_thumbnail(instance, thumbnail_remote_url)

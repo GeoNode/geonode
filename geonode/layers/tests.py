@@ -148,14 +148,14 @@ class LayersTest(TestCase):
         # test a raster layer error (400)
         # Get the layer to work with
         layer = Layer.objects.get(pk=3)
-        url = reverse('layer_feature_catalogue', args=(layer.typename,))
+        url = reverse('layer_feature_catalogue', args=(layer.alternate,))
         response = self.client.get(url)
         self.assertEquals(response.status_code, 400)
         self.assertEquals(response['content-type'], 'application/json')
 
         # test a vector layer (200)
         layer = Layer.objects.get(pk=2)
-        url = reverse('layer_feature_catalogue', args=(layer.typename,))
+        url = reverse('layer_feature_catalogue', args=(layer.alternate,))
         response = self.client.get(url)
         self.assertEquals(response.status_code, 200)
         self.assertEquals(response['content-type'], 'application/xml')
@@ -629,7 +629,7 @@ class LayersTest(TestCase):
         layer = Layer.objects.get(pk=3)
         layer.default_style = Style.objects.get(pk=layer.pk)
         layer.save()
-        url = reverse('layer_remove', args=(layer.typename,))
+        url = reverse('layer_remove', args=(layer.alternate,))
         layer_id = layer.id
 
         # Create the rating with the correct content type
@@ -653,7 +653,7 @@ class LayersTest(TestCase):
         """Test layer remove functionality
         """
         layer = Layer.objects.get(pk=1)
-        url = reverse('layer_remove', args=(layer.typename,))
+        url = reverse('layer_remove', args=(layer.alternate,))
         layer.default_style = Style.objects.get(pk=layer.pk)
         layer.save()
 
@@ -696,7 +696,7 @@ class LayersTest(TestCase):
         """
         layer1 = Layer.objects.get(pk=1)
         layer2 = Layer.objects.get(pk=2)
-        url = reverse('layer_remove', args=(layer1.typename,))
+        url = reverse('layer_remove', args=(layer1.alternate,))
 
         layer1.default_style = Style.objects.get(pk=layer1.pk)
         layer1.save()
