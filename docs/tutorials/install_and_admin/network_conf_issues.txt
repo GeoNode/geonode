@@ -1,0 +1,104 @@
+.. _network_configuration_issues:
+
+============================
+Network configuration issues
+============================
+
+In this section you will find instructions how to understand any problem of connectivity when GeoNode is being exposed through a network different either from a local computer or a server.
+
+GeoNode being proxied
+=====================
+
+A similar situations can be encountered in this scenarios:
+
+    - GeoNode behind a proxy server like `HAProxy`_ or `Squid`_.
+    - GeoNode in a Vagrant machine with NAT mode and port forwarding
+
+    .. _HAProxy: http://www.haproxy.org/
+    .. _Squid: http://www.squid-cache.org/
+
+Development mode
+----------------
+
+.. note:: Please note that this section is relevant **only** if your development machine is a Vagrant box and the GeoNode application is being accessed from a browser and an IP address of your host machine, usually your computer.
+
+Assuming the following port forwarding configuration::
+
++------------------------+------------+------------+
+| Component              | Host  port | Guest port |
++========================+============+============+
+| Django                 | 8001       | 8000       |
++------------------------+------------+------------+
+| GeoServer              | 8080       | 8080       |
++------------------------+------------+------------+
+
+.. important:: In such a situation it is mandatory to start your development server on all IPv4 addresses of your guest machine in order to be reachable from the host.
+
+    .. code-block:: console
+
+        python manage.py runserver 0.0.0.0:8000
+
+        or with Paver
+
+    .. code-block:: console
+
+        paver start_django -b 0.0.0.0:8000
+
+
+You have to review and make sure the following configurations are applied in GeoServer for correct communications::
+
+- Configuration of GeoNode REST role service with proper `baseUrl` in the :file:`config.xml` under the directory `$GEOSERVER_DATA_DIR/security/role/geonode\ REST\ role\ service/`
+
+    .. code-block:: xml
+
+        <baseUrl>http://localhost:8000/</baseUrl>
+        <!-- base url of geonode web server -->
+
+- Configuration of GeoServer security for the oauth2 provider in the :file:`config.xml` under the directory `$GEOSERVER_DATA_DIR/security/filter/geonode-oauth2/`
+
+    .. code-block:: xml
+
+        <!-- GeoNode accessTokenUri -->
+        <accessTokenUri>http://localhost:8000/o/token/</accessTokenUri>
+
+        <!-- GeoNode userAuthorizationUri -->
+        <userAuthorizationUri>http://localhost:8001/o/authorize/</userAuthorizationUri>
+
+        <!-- GeoServer Public URL -->
+        <redirectUri>http://localhost:8080/geoserver</redirectUri>
+
+        <!-- GeoNode checkTokenEndpointUrl -->
+        <checkTokenEndpointUrl>http://localhost:8000/api/o/v4/tokeninfo/</checkTokenEndpointUrl>
+
+        <!-- GeoNode logoutUri -->
+        <logoutUri>http://localhost:8001/account/logout/</logoutUri>
+    .. code-block:: xml
+
+        <proxyBaseUrl>http://localhost:80/geoserver</proxyBaseUrl>
+        <!-- proxy base url of geonode web server -->
+
+GeoNode outbound connections
+============================
+
+SELinux
+-------
+
+Security-Enhanced Linux (**SELinux**) is a security mechanism implemented at kernel level. Generally when SELinux is *enabled* communication issues could arise.
+First of all let's see how to have a look at its status with this command::
+
+    .. code-block:: console
+
+        sestatus
+
+The possible values of `SELinux status` can be `enabled` or `disabled` while if it is enabled the `Current mode` can vary between `enforcing` and `permissive`.
+If SELinux is enabled its policies will only allow services access to recognized ports associated with those services. For example if we wanted to allow Django server to listen on tcp port 800 then a new rule has to be added for such purpose. Simply by using the command `semanage` below::
+
+    .. code-block:: console
+
+        sudo semanage port -a -t http_port_t -p tcp 8000
+
+Verify if the rule has been achieved by running::
+
+    .. code-block:: console
+
+        sudo semanage port -l
