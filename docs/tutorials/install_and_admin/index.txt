@@ -24,7 +24,7 @@ At the end of this section you will be able to setup from scratch the whole GeoN
 .. toctree::
     :hidden:
     :maxdepth: 5
-    
+
     quick_install
     linux_admin_intro/index
     running_ansible
@@ -32,6 +32,7 @@ At the end of this section you will be able to setup from scratch the whole GeoN
     vm_running_vagrant
     geonode_install/index
     setup_on_centos/index
+    network_conf_issues
     win_bin_install/win_binary_installer
 
 :ref:`quick_installation`
@@ -50,3 +51,6 @@ At the end of this section you will be able to setup from scratch the whole GeoN
 
 :ref:`win_binary_installer`
     Install GeoNode on Windows through the binary installer.
+:ref:`network_configuration_issues`
+    This section will guide the user through the steps necessary to understand and possibly solve any of the most common configuration issues on communication between Django and GeoServer.
+
