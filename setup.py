@@ -50,7 +50,7 @@ setup(name='GeoNode',
 
         # native dependencies
         "pillow>=3.1.1",  # python-imaging (3.1.2)
-        "lxml>=3.4.4",  # python-lxml (3.5.0)
+        "lxml==3.6.2",  # python-lxml (3.5.0)
         "psycopg2>=2.4.5",  # python-psycopg2 (2.6.1)
         "Django >=1.8.7, < 1.9a0",  # python-django (1.8.7)
 
@@ -88,11 +88,11 @@ setup(name='GeoNode',
         # geopython dependencies
         "pyproj>=1.9.3",  # python-pyproj (1.9.5)
         "OWSLib>=0.11.0",  # python-owslib (0.10.3) FIXME
-        "pycsw==2.0.3dev",
+        # "pycsw==2.0.3dev",
         # we can't use PyCSW until upstream merge changes for geonode.
         # this is temporary solution
         # "git+https://github.com/geosolutions-it/pycsw/archive/ISSUE_540_dev.zip",
-        # "pycsw>=2.0.2",  # python-pycsw (1.10.1, 2.0.0 in ppa) FIXME
+        "pycsw>=2.0.3",  # python-pycsw (1.10.1, 2.0.0 in ppa) FIXME
         "%s" % shapely_dep,  # python-shapely (1.5.13)
 
 

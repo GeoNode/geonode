@@ -9,92 +9,98 @@ Install PostgreSQL
 
 Install the package for configuring the PGDG repository::
 
-   sudo yum install http://yum.postgresql.org/9.4/redhat/rhel-7-x86_64/pgdg-centos94-9.4-1.noarch.rpm
-
-EPEL repository will provide GDAL packages::
-
-   sudo yum install http://mirror.sfo12.us.leaseweb.net/epel/7/x86_64/e/epel-release-7-5.noarch.rpm
+	sudo yum install http://yum.postgresql.org/9.5/redhat/rhel-7-x86_64/pgdg-centos95-9.5-3.noarch.rpm
 
 Install PostgreSQL, PostGIS and related libs::
 
-    sudo yum install -y postgis2_94 postgresql94 postgresql94-server postgresql94-libs postgresql94-contrib \
-    postgresql94-devel gdal gdal-python geos python-pip python-imaging  python-virtualenv python-devel gcc-c++  \
-    python-psycopg2 libxml2 libxml2-devel libxml2-python libxslt libxslt-devel libxslt-python
+  sudo yum update
+  sudo yum install -y postgis2_95 postgresql95 postgresql95-server postgresql95-libs postgresql95-contrib \
+  postgresql95-devel gdal gdal-python geos python-imaging gcc-c++  \
+  python-psycopg2 libxml2 libxml2-devel libxml2-python libxslt libxslt-devel libxslt-python
 
 Initialize the DB::
 
-   /usr/pgsql-9.4/bin/postgresql94-setup initdb
+  sudo /usr/pgsql-9.5/bin/postgresql95-setup initdb
 
 Enable start on boot::
 
-   systemctl enable postgresql-9.4
+  sudo systemctl enable postgresql-9.5
 
 Start the PostgreSQL service manually::
 
-   systemctl start postgresql-9.4
+  sudo systemctl start postgresql-9.5
 
 To restart or reload the instance, you can use the following commands::
 
-   systemctl restart postgresql-9.4
-   systemctl reload postgresql-9.4
-
+  sudo systemctl restart postgresql-9.5
+  sudo systemctl reload postgresql-9.5
 
 Setting PostgreSQL access
 -------------------------
 
-Now we are going to change user access policy for local connections in file pg_hba.conf:::
+Now we are going to change user access policy for local connections in file :file:`pg_hba.conf`::
 
-    sudo vim /var/lib/pgsql/9.4/data/pg_hba.conf
+  sudo vim /var/lib/pgsql/9.5/data/pg_hba.conf
 
 Scroll down to the bottom of the document. We only need to edit one line. Change::
 
-    # "local" is for Unix domain socket connections only
-    local   all             all                                 peer
+  # "local" is for Unix domain socket connections only
+  local   all             all                                    peer
+  # IPv4 local connections:
+  host    all             all             127.0.0.1/32           ident
+
 into::
 
-    # "local" is for Unix domain socket connections only
-    local   all             all                                     trust
+  # "local" is for Unix domain socket connections only
+  local   all             all                                    trust
+  # IPv4 local connections:
+  host    all             all             127.0.0.1/32           md5
 
 .. note::
 
-    If your PostgreSQL database resides on a separate machine, you have to allow
-    remote access to the databases in the pg_hba.conf for the `geonode` user and
-    tell PostgreSQL to accept non local connections in your `postgresql.conf` file
+  If your PostgreSQL database resides on a separate machine, you have to allow
+  remote access to the databases in the `pg_hba.conf` for the `geonode` user and
+  tell PostgreSQL to accept non local connections in your :file:`postgresql.conf` configuration.
 
 Once the configuration file has been edited, restart PostgreSQL to make these changes
 effective::
 
-   systemctl restart postgresql-9.4
+  sudo systemctl restart postgresql-9.5
 
 Create GeoNode Users Databases
 ------------------------------
 Switch to the postgres user::
 
-    su postgres
+  su - postgres
 
-First create the geonode user. GeoNode is going to use this user to access the database:::
+First create the geonode user. GeoNode is going to use this user to access the database::
 
-    createuser -P geonode
+  createuser -P geonode
 
-You will be prompted asked to set a password for the user. Enter geonode as password
+You will be prompted asked to set a password for the user. Enter *geonode* as password
 
 Create geonode database with owner geonode::
 
-    createdb -O geonode geonode
+  createdb -O geonode geonode
 
 And database geonode_data with owner geonode::
 
-    createdb -O geonode geonode_data
+  createdb -O geonode geonode_data
 
-Create PostGIS extension:::
+Create PostGIS extension on the database for spatial data::
 
-    psql -d geonode_data -c 'CREATE EXTENSION postgis;'
+  psql -d geonode_data -c 'CREATE EXTENSION postgis;'
 
 Then adjust permissions::
 
-    psql -d geonode_data -c 'GRANT ALL ON geometry_columns TO PUBLIC;'
-    psql -d geonode_data -c 'GRANT ALL ON spatial_ref_sys TO PUBLIC;'
+  psql -d geonode_data -c 'GRANT ALL ON geometry_columns TO PUBLIC;'
+  psql -d geonode_data -c 'GRANT ALL ON spatial_ref_sys TO PUBLIC;'
+
+We are setting the default encoding to UTF-8, which Django expects::
+
+  psql -d geonode -c 'ALTER ROLE geonode SET client_encoding TO 'utf8';'
+  psql -d geonode_data -c 'ALTER ROLE geonode SET client_encoding TO 'utf8';'
 
 And exit `postgres` user::
 
-    exit
+  exit

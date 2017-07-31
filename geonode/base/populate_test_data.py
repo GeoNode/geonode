@@ -183,14 +183,14 @@ def create_models(type=None):
 
     if not type or type == 'layer':
         for ld, owner, storeType in zip(layer_data, cycle(users), cycle(('coverageStore', 'dataStore'))):
-            title, abstract, name, typename, (bbox_x0, bbox_x1, bbox_y0, bbox_y1), dt, kws, category = ld
+            title, abstract, name, alternate, (bbox_x0, bbox_x1, bbox_y0, bbox_y1), dt, kws, category = ld
             year, month, day = map(int, (dt[:4], dt[4:6], dt[6:]))
             start = datetime(year, month, day)
             end = start + timedelta(days=365)
             l = Layer(title=title,
                       abstract=abstract,
                       name=name,
-                      typename=typename,
+                      alternate=alternate,
                       bbox_x0=bbox_x0,
                       bbox_x1=bbox_x1,
                       bbox_y0=bbox_y0,

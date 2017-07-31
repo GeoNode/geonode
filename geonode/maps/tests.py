@@ -279,11 +279,11 @@ community."
 
     def test_new_map_with_layer(self):
         layer = Layer.objects.all()[0]
-        self.client.get(reverse('new_map') + '?layer=' + layer.typename)
+        self.client.get(reverse('new_map') + '?layer=' + layer.alternate)
 
     def test_new_map_with_empty_bbox_layer(self):
         layer = Layer.objects.all()[0]
-        self.client.get(reverse('new_map') + '?layer=' + layer.typename)
+        self.client.get(reverse('new_map') + '?layer=' + layer.alternate)
 
     def test_ajax_map_permissions(self):
         """Verify that the ajax_layer_permissions view is behaving as expected
@@ -296,7 +296,7 @@ community."
         def url(id):
             return reverse('resource_permissions', args=[id])
 
-        # Test that an invalid layer.typename is handled for properly
+        # Test that an invalid layer.alternate is handled for properly
         response = self.client.post(
             url(invalid_mapid),
             data=json.dumps(self.perm_spec),
@@ -536,7 +536,7 @@ community."
         # Test successful new map creation
         m = Map()
         admin_user = get_user_model().objects.get(username='admin')
-        layer_name = Layer.objects.all()[0].typename
+        layer_name = Layer.objects.all()[0].alternate
         m.create_from_layer_list(admin_user, [layer_name], "title", "abstract")
         map_id = m.id
 

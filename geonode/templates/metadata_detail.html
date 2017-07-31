@@ -25,7 +25,7 @@
     {% if resource.class_name == "Document" %}
     <a href="{% url 'document_detail' docid=resource.id %}" class="btn btn-primary pull-right">{% trans "Return to Document" %}</a>
     {% elif resource.class_name == "Layer" %}
-    <a href="{% url 'layer_detail' layername=resource.typename %}" class="btn btn-primary pull-right">{% trans "Return to Layer" %}</a>
+    <a href="{% url 'layer_detail' layername=resource.alternate %}" class="btn btn-primary pull-right">{% trans "Return to Layer" %}</a>
     {% else %}
     <a href="{% url 'map_detail' mapid=resource.id %}" class="btn btn-primary pull-right">{% trans "Return to Map" %}</a>
     {% endif %}

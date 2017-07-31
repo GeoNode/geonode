@@ -863,7 +863,7 @@ HAYSTACK_SEARCH = strtobool(os.getenv('HAYSTACK_SEARCH', 'False'))
 # Avoid permissions prefiltering
 SKIP_PERMS_FILTER = strtobool(os.getenv('SKIP_PERMS_FILTER', 'False'))
 # Update facet counts from Haystack
-HAYSTACK_FACET_COUNTS = strtobool(os.getenv('HAYSTACK_FACET_COUNTS', 'False'))
+HAYSTACK_FACET_COUNTS = strtobool(os.getenv('HAYSTACK_FACET_COUNTS', 'True'))
 # HAYSTACK_CONNECTIONS = {
 #    'default': {
 #        'ENGINE': 'haystack.backends.elasticsearch_backend.'

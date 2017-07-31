@@ -31,8 +31,8 @@
              <tbody>
              {% for layer in service.layer_set.all %}
              <tr>
-                 <td><input type="checkbox" name="layer_list" id="option_{{layer.typename}}" value="{{ layer.typename }}" checked="false"  /></td>
-                 <td>{{ layer.typename }}</td>
+                 <td><input type="checkbox" name="layer_list" id="option_{{layer.alternate}}" value="{{ layer.alternate }}" checked="false"  /></td>
+                 <td>{{ layer.alternate }}</td>
                  <td>{{ layer.description }}</td>
              </tr>
              {% endfor %}

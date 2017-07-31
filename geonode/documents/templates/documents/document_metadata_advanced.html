@@ -9,7 +9,7 @@
 {{ block.super }}
 {% endblock %}
 
-{% block title %}{{ document.typename }} — {{ block.super }}{% endblock %}
+{% block title %}{{ document.alternate }} — {{ block.super }}{% endblock %}
 
 {% block body_class %}data{% endblock %}
 
@@ -20,7 +20,7 @@
 <div class="page-header">
   <a href="{% url "document_browse" %}" class="btn btn-primary pull-right">{% trans "Explore Documents" %}</a>
   <h2 class="page-title">{% trans "Edit Metadata" %}</h2>
-</div> 
+</div>
 <div class="row">
   <div class="col-md-8">
     <p class="lead">
@@ -73,7 +73,7 @@
               </div>
               <!-- div class="radio col-md-6">
                 <input type="radio" name="category_choice_field" value="{{ choice.0 }}"
-                  {% ifequal category_form.initial choice.0 %} checked="checked" {% endifequal %}> 
+                  {% ifequal category_form.initial choice.0 %} checked="checked" {% endifequal %}>
                   {{ choice.1 }}
                 </input>
               </div -->
@@ -104,5 +104,5 @@
 {% endblock %}
 {% block extra_script %}
 {{ block.super }}
- {% include 'metadata_form_js.html' %} 
+ {% include 'metadata_form_js.html' %}
 {% endblock %}

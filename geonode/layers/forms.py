@@ -54,7 +54,7 @@ class LayerForm(ResourceBaseForm):
             'workspace',
             'store',
             'storeType',
-            'typename',
+            'alternate',
             'default_style',
             'styles',
             'upload_session',

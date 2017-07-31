@@ -184,21 +184,21 @@
                     });
         {%  elif resource.ptype == "gxp_wmscsource"  %}
             tile_layer = L.tileLayer.betterWms('{{ resource.ows_url|safe }}', {
-                layers: '{{ resource.typename }}',
+                layers: '{{ resource.alternate }}',
                 format: 'image/png',
                 transparent: true,
                 'opacity': 0.8
             });
         {%  elif resource.ptype == "gxp_arcrestsource" %}
             tile_layer = L.esri.dynamicMapLayer('{{ resource.ows_url|safe }}', {
-                layers: '{{ resource.typename }}',
+                layers: '{{ resource.alternate }}',
                 format: 'png',
                 transparent: true,
                 'opacity': 0.8
             });
         {% elif resource.ows_url %}
             tile_layer = L.tileLayer.betterWms('{{ resource.ows_url|safe }}', {
-              layers: '{{ resource.typename }}',
+              layers: '{{ resource.alternate }}',
               transparent: true,
               format: 'image/png'
             });

@@ -54,15 +54,15 @@ gsconfig==1.0.6
 gsimporter==1.0.0
 httplib2==0.9.2
 kombu==3.0.35
-lxml==3.6.4
+lxml==3.6.2
 mccabe==0.5.2
 oauthlib==2.0.1
 pep8==1.6.2
 pillow==3.3.1
 pinax-theme-bootstrap==3.0a11
 # temporary solution until PyCSW Issues are not fixed
-# pycsw==2.0.2
-https://github.com/geosolutions-it/pycsw/archive/ISSUE_540_dev.zip#egg=pycsw-2.0.3dev
+pycsw==2.0.3
+# https://github.com/geosolutions-it/pycsw/archive/ISSUE_540_dev.zip#egg=pycsw-2.0.3dev
 elasticsearch==2.4.0
 pyflakes==1.2.3
 pyproj==1.9.5.1

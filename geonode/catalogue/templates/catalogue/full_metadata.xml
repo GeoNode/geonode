@@ -83,7 +83,7 @@
    </gmd:contact>
    {% endwith %}
 
-    {% with layer.metadata_author as metadata_author %}
+   {% with layer.metadata_author as metadata_author %}
    <gmd:contact>
      <gmd:CI_ResponsibleParty>
        <gmd:individualName {% if not metadata_author.name %}gco:nilReason="missing"{% endif %}>
@@ -186,9 +186,9 @@
      <gmd:MD_DataIdentification>
        <gmd:citation>
          <gmd:CI_Citation>
-           {% if layer.typename %}
+           {% if layer.alternate %}
            <gmd:name>
-             <gco:CharacterString>{{layer.typename}}</gco:CharacterString>
+             <gco:CharacterString>{{layer.alternate}}</gco:CharacterString>
            </gmd:name>
            {% endif %}
            <gmd:title>
@@ -506,7 +506,7 @@
                  <gco:CharacterString>{{link.link_type}}</gco:CharacterString>
                </gmd:protocol>
                <gmd:name>
-                 <gco:CharacterString>{{ layer.title }}</gco:CharacterString>
+                 <gco:CharacterString>{{ layer.alternate }}</gco:CharacterString>
                </gmd:name>
                <gmd:description>
                  <gco:CharacterString>{{layer.workspace}} Service - Provides Layer: {{ layer.title }}</gco:CharacterString>
