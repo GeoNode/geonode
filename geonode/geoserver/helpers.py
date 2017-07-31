@@ -443,7 +443,7 @@ def gs_slurp(
         resources = [k for k in resources if k.advertised in ["true", True]]
 
     # filter out layers already registered in geonode
-    layer_names = Layer.objects.all().values_list('typename', flat=True)
+    layer_names = Layer.objects.all().values_list('alternate', flat=True)
     if skip_geonode_registered:
         resources = [k for k in resources
                      if not '%s:%s' % (k.workspace.name, k.name) in layer_names]
@@ -476,7 +476,7 @@ def gs_slurp(
                 "workspace": workspace.name,
                 "store": the_store.name,
                 "storeType": the_store.resource_type,
-                "typename": "%s:%s" % (workspace.name.encode('utf-8'), resource.name.encode('utf-8')),
+                "alternate": "%s:%s" % (workspace.name.encode('utf-8'), resource.name.encode('utf-8')),
                 "title": resource.title or 'No title provided',
                 "abstract": resource.abstract or unicode(_('No abstract provided')).encode('utf-8'),
                 "owner": owner,
@@ -666,7 +666,7 @@ def set_attributes_from_geoserver(layer, overwrite=False):
     server_url = ogc_server_settings.LOCATION if layer.storeType != "remoteStore" else layer.service.base_url
 
     if layer.storeType == "remoteStore" and layer.service.ptype == "gxp_arcrestsource":
-        dft_url = server_url + ("%s?f=json" % layer.typename)
+        dft_url = server_url + ("%s?f=json" % layer.alternate)
         try:
             # The code below will fail if http_client cannot be imported
             body = json.loads(http_client.request(dft_url)[1])
@@ -681,7 +681,7 @@ def set_attributes_from_geoserver(layer, overwrite=False):
                          server_url) + "wfs?" + urllib.urlencode({"service": "wfs",
                                                                   "version": "1.0.0",
                                                                   "request": "DescribeFeatureType",
-                                                                  "typename": layer.typename.encode('utf-8'),
+                                                                  "typename": layer.alternate.encode('utf-8'),
                                                                   })
         try:
             # The code below will fail if http_client cannot be imported  or
@@ -701,8 +701,8 @@ def set_attributes_from_geoserver(layer, overwrite=False):
                 "version": "1.0.0",
                 "request": "GetFeatureInfo",
                 "bbox": ','.join([str(x) for x in layer.bbox]),
-                "LAYERS": layer.typename.encode('utf-8'),
-                "QUERY_LAYERS": layer.typename.encode('utf-8'),
+                "LAYERS": layer.alternate.encode('utf-8'),
+                "QUERY_LAYERS": layer.alternate.encode('utf-8'),
                 "feature_count": 1,
                 "width": 1,
                 "height": 1,
@@ -728,7 +728,7 @@ def set_attributes_from_geoserver(layer, overwrite=False):
             "service": "wcs",
             "version": "1.1.0",
             "request": "DescribeCoverage",
-            "identifiers": layer.typename.encode('utf-8')
+            "identifiers": layer.alternate.encode('utf-8')
         })
         try:
             response, body = http_client.request(dc_url)
@@ -1235,11 +1235,11 @@ def geoserver_upload(
     # Step 10. Create the Django record for the layer
     logger.info('>>> Step 10. Creating Django record for [%s]', name)
     # FIXME: Do this inside the layer object
-    typename = workspace.name + ':' + gs_resource.name
+    alternate = workspace.name + ':' + gs_resource.name
     layer_uuid = str(uuid.uuid1())
     defaults = dict(store=gs_resource.store.name,
                     storeType=gs_resource.store.resource_type,
-                    typename=typename,
+                    alternate=alternate,
                     title=title or gs_resource.title,
                     uuid=layer_uuid,
                     abstract=abstract or gs_resource.abstract or '',
@@ -1561,7 +1561,7 @@ def style_update(request, url):
         if request.method == 'POST':
             style = Style(name=style_name, sld_body=sld_body, sld_url=url)
             style.save()
-            layer = Layer.objects.get(typename=layer_name)
+            layer = Layer.objects.get(alternate=layer_name)
             style.layer_styles.add(layer)
             style.save()
             affected_layers.append(layer)
@@ -1793,7 +1793,7 @@ def create_gs_thumbnail(instance, overwrite=False):
                 local_layers.append(layer.name)
         layers = ",".join(local_layers).encode('utf-8')
     else:
-        layers = instance.typename.encode('utf-8')
+        layers = instance.alternate.encode('utf-8')
 
     params = {
         'layers': layers,

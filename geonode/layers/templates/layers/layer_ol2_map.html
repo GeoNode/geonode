@@ -9,7 +9,7 @@
 </style>
 
 <script type="text/javascript">
-  
+
   document.addEventListener("DOMContentLoaded", function(event) {
 
   	// document.getElementById('preview_map').setAttribute("style", "height:600px");
@@ -29,7 +29,7 @@
     {% endif %}
     source = new OpenLayers.Layer.WMS("{{ resource.title|safe }}",
     	url,
-        {layers: '{{ resource.typename }}', transparent: true},
+        {layers: '{{ resource.alternate }}', transparent: true},
         {isBaseLayer: false}
     );
 
@@ -38,10 +38,10 @@
     var url = '{{ resource.ows_url|safe }}?access_token={{request.session.access_token}}'
     {% else %}
     var url = '{{ resource.ows_url|safe }}'
-    {% endif %}    
+    {% endif %}
     source = new OpenLayers.Layer.ArcGISCache("{{ resource.title|safe }}",
     	url,
-        {layers: '{{ resource.typename }}', transparent: true},
+        {layers: '{{ resource.alternate }}', transparent: true},
         {isBaseLayer: false}
     );
 
@@ -60,9 +60,9 @@
                "http://c.tile.openstreetmap.org/${z}/${x}/${y}.png"]),
           	source
     	];
-    	
+
     	var map = new OpenLayers.Map({
-            div: 'preview_map', 
+            div: 'preview_map',
             projection: new OpenLayers.Projection(crs),
             // controls: [],
             layers: layers,

@@ -647,7 +647,7 @@ def new_map_config(request):
                     else:
                         url = service.base_url
                     maplayer = MapLayer(map=map_obj,
-                                        name=layer.typename,
+                                        name=layer.alternate,
                                         ows_url=layer.ows_url,
                                         layer_params=json.dumps(config),
                                         visibility=True,
@@ -666,7 +666,7 @@ def new_map_config(request):
                         url = layer.ows_url
                     maplayer = MapLayer(
                         map=map_obj,
-                        name=layer.typename,
+                        name=layer.alternate,
                         ows_url=url,
                         # use DjangoJSONEncoder to handle Decimal values
                         layer_params=json.dumps(config, cls=DjangoJSONEncoder),
@@ -770,7 +770,7 @@ def map_download(request, mapid, template='maps/map_download.html'):
             if not lyr.local:
                 remote_layers.append(lyr)
             else:
-                ownable_layer = Layer.objects.get(typename=lyr.name)
+                ownable_layer = Layer.objects.get(alternate=lyr.name)
                 if not request.user.has_perm(
                         'download_resourcebase',
                         obj=ownable_layer.get_self_resource()):
@@ -863,7 +863,7 @@ def map_wms(request, mapid):
 
 def maplayer_attributes(request, layername):
     # Return custom layer attribute labels/order in JSON format
-    layer = Layer.objects.get(typename=layername)
+    layer = Layer.objects.get(alternate=layername)
     return HttpResponse(
         json.dumps(
             layer.attribute_config()),

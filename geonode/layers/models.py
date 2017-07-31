@@ -191,9 +191,9 @@ class Layer(ResourceBase):
     @property
     def service_typename(self):
         if self.is_remote:
-            return "%s:%s" % (self.service.name, self.typename)
+            return "%s:%s" % (self.service.name, self.alternate)
         else:
-            return self.typename
+            return self.alternate
 
     @property
     def attributes(self):
@@ -247,7 +247,7 @@ class Layer(ResourceBase):
         return cfg
 
     def __str__(self):
-        if self.typename is not None:
+        if self.alternate is not None:
             return "%s Layer" % self.service_typename.encode('utf-8')
         elif self.name is not None:
             return "%s Layer" % self.name
@@ -270,7 +270,7 @@ class Layer(ResourceBase):
 
     def maps(self):
         from geonode.maps.models import MapLayer
-        return MapLayer.objects.filter(name=self.typename)
+        return MapLayer.objects.filter(name=self.alternate)
 
     @property
     def class_name(self):
@@ -469,9 +469,9 @@ def pre_save_layer(instance, sender, **kwargs):
     if instance.uuid == '':
         instance.uuid = str(uuid.uuid1())
 
-    if instance.typename is None:
+    if instance.alternate is None:
         # Set a sensible default for the typename
-        instance.typename = 'geonode:%s' % instance.name
+        instance.alternate = 'geonode:%s' % instance.name
 
     base_file, info = instance.get_base_file()
 
@@ -516,18 +516,18 @@ def pre_delete_layer(instance, sender, **kwargs):
         # we need to delete the maplayers here because in the post save layer.service is not available anymore
         # REFACTOR
         from geonode.maps.models import MapLayer
-        if instance.typename:
+        if instance.alternate:
             logger.debug(
                 "Going to delete associated maplayers for [%s]",
-                instance.typename.encode('utf-8'))
+                instance.alternate.encode('utf-8'))
             MapLayer.objects.filter(
-                name=instance.typename,
+                name=instance.alternate,
                 ows_url=instance.ows_url).delete()
         return
 
     logger.debug(
         "Going to delete the styles associated for [%s]",
-        instance.typename.encode('utf-8'))
+        instance.alternate.encode('utf-8'))
     ct = ContentType.objects.get_for_model(instance)
     OverallRating.objects.filter(
         content_type=ct,
@@ -551,18 +551,18 @@ def post_delete_layer(instance, sender, **kwargs):
         return
 
     from geonode.maps.models import MapLayer
-    if instance.typename:
+    if instance.alternate:
         logger.debug(
             "Going to delete associated maplayers for [%s]",
-            instance.typename.encode('utf-8'))
+            instance.alternate.encode('utf-8'))
         MapLayer.objects.filter(
-            name=instance.typename,
+            name=instance.alternate,
             ows_url=instance.ows_url).delete()
 
-    if instance.typename:
+    if instance.alternate:
         logger.debug(
             "Going to delete the default style for [%s]",
-            instance.typename.encode('utf-8'))
+            instance.alternate.encode('utf-8'))
 
     if instance.default_style and Layer.objects.filter(
             default_style__id=instance.default_style.id).count() == 0:

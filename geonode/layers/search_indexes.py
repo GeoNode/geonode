@@ -50,7 +50,7 @@ class LayerIndex(indexes.SearchIndex, indexes.Indexable):
     text = indexes.EdgeNgramField(document=True, use_template=True, stored=False)
     type = indexes.CharField(faceted=True)
     subtype = indexes.CharField(faceted=True)
-    typename = indexes.CharField(model_attr='typename')
+    alternate = indexes.CharField(model_attr='alternate')
     title_sortable = indexes.CharField(indexed=False, stored=False)  # Necessary for sorting
     category = indexes.CharField(
         model_attr="category__identifier",

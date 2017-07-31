@@ -456,6 +456,7 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
                               verbose_name=_("Owner"))
     contacts = models.ManyToManyField(settings.AUTH_USER_MODEL, through='ContactRole')
     title = models.CharField(_('title'), max_length=255, help_text=_('name by which the cited resource is known'))
+    alternate = models.CharField(max_length=128, null=True, blank=True)
     date = models.DateTimeField(_('date'), default=datetime.datetime.now, help_text=date_help_text)
     date_type = models.CharField(_('date type'), max_length=255, choices=VALID_DATE_TYPES, default='publication',
                                  help_text=date_type_help_text)
@@ -556,6 +557,12 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
 
     def __unicode__(self):
         return self.title
+
+    @property
+    def group_name(self):
+        if self.group:
+            return str(self.group)
+        return None
 
     @property
     def bbox(self):

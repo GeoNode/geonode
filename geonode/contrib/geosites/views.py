@@ -135,8 +135,8 @@ def layer_acls(request):
     layer_writable = get_objects_for_user(acl_user, 'change_layer_data',
                                           Layer.objects.filter(id__in=site_resources))
 
-    _read = set(Layer.objects.filter(id__in=resources_readable).values_list('typename', flat=True))
-    _write = set(layer_writable.values_list('typename', flat=True))
+    _read = set(Layer.objects.filter(id__in=resources_readable).values_list('alternate', flat=True))
+    _write = set(layer_writable.values_list('alternate', flat=True))
 
     read_only = _read ^ _write
     read_write = _read & _write

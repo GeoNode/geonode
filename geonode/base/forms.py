@@ -103,20 +103,20 @@ class CategoryChoiceField(forms.ModelChoiceField):
                '<br/><strong>' + obj.gn_description + '</strong></span>'
 
 
-class TreeWidget(forms.TextInput):
+class TreeWidget(TaggitWidget):
         input_type = 'text'
-
-        def __init__(self, attrs=None):
-            super(TreeWidget, self).__init__(attrs)
 
         def render(self, name, values, attrs=None):
             if isinstance(values, basestring):
                 vals = values
-            else:
+            elif values:
                 vals = ','.join([str(i.tag.name) for i in values])
+            else:
+                vals = ""
             output = ["""<input class='form-control' id='id_resource-keywords' name='resource-keywords'
                  value='%s'><br/>""" % (vals)]
             output.append('<div id="treeview" class=""></div>')
+
             return mark_safe(u'\n'.join(output))
 
 
@@ -314,7 +314,7 @@ class ResourceBaseForm(TranslationModelForm):
         label=_("Free-text Keywords"),
         required=False,
         help_text=_("A space or comma-separated list of keywords. Use the widget to select from Hierarchical tree."),
-        widget=TaggitWidget('HierarchicalKeywordAutocomplete'))
+        widget=TreeWidget(autocomplete='HierarchicalKeywordAutocomplete'))
 
     """
     regions = TreeNodeMultipleChoiceField(

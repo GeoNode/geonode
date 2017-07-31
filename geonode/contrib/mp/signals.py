@@ -43,7 +43,7 @@ def layer_post_save(instance, sender, **kwargs):
         tileset = Tileset.objects.create(
             name=instance.title,
             created_by=instance.owner.username,
-            layer_name=instance.typename,
+            layer_name=instance.alternate,
             bbox_x0=instance.bbox_x0,
             bbox_x1=instance.bbox_x1,
             bbox_y0=instance.bbox_y0,

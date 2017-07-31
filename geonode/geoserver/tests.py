@@ -58,7 +58,7 @@ class LayerTests(TestCase):
 
         logged_in = self.client.login(username='bobby', password='bob')
         self.assertEquals(logged_in, True)
-        response = self.client.get(reverse('layer_style_manage', args=(layer.typename,)))
+        response = self.client.get(reverse('layer_style_manage', args=(layer.alternate,)))
         self.assertEqual(response.status_code, 200)
 
     def test_feature_edit_check(self):
@@ -66,7 +66,7 @@ class LayerTests(TestCase):
         """
 
         # Setup some layer names to work with
-        valid_layer_typename = Layer.objects.all()[0].typename
+        valid_layer_typename = Layer.objects.all()[0].alternate
         Layer.objects.all()[0].set_default_permissions()
         invalid_layer_typename = "n0ch@nc3"
 
@@ -150,7 +150,7 @@ class LayerTests(TestCase):
         }
 
         bob = get_user_model().objects.get(username='bobby')
-        layer_ca = Layer.objects.get(typename='geonode:CA')
+        layer_ca = Layer.objects.get(alternate='geonode:CA')
         assign_perm('change_layer_data', bob, layer_ca)
 
         # Test that requesting when supplying the geoserver credentials returns

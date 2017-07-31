@@ -557,7 +557,7 @@ span.grippy::after {
     </div>
 </div>
 <div id="preview" class="tab-pane fade" style="overflow: hidden;">
-    <!-- <iframe id="preview_encoder_iframe" height="100%" width="100%" style="width:0;height:0;border:0;border:none;" src="{% url 'layer_metadata_detail' resource.typename %}"></iframe> -->
+    <!-- <iframe id="preview_encoder_iframe" height="100%" width="100%" style="width:0;height:0;border:0;border:none;" src="{% url 'layer_metadata_detail' resource.alternate %}"></iframe> -->
     {% if metadataxsl %}
         <iframe id="preview_encoder_iframe" frameborder="0" scrolling="no" onload="if(this.contentWindow.document.body) {$('#preview').height(this.contentWindow.document.body.scrollHeight)}" src="/showmetadata/xsl/{{resource.id}}"></iframe>
     {% else %}

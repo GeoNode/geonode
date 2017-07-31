@@ -31,7 +31,7 @@ autocomplete_light.register(
     LayerAutocomplete,
     search_fields=[
         'title',
-        '^typename'],
+        '^alternate'],
     order_by=['title'],
     limit_choices=100,
     autocomplete_js_attributes={

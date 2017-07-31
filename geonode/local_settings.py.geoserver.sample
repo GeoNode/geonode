@@ -362,9 +362,9 @@ CELERYD_LOG_LEVEL = 1
 # Run "python manage.py rebuild_index"
 # HAYSTACK_SEARCH = False
 # Avoid permissions prefiltering
-SKIP_PERMS_FILTER = True
+SKIP_PERMS_FILTER = False
 # Update facet counts from Haystack
-HAYSTACK_FACET_COUNTS = False
+HAYSTACK_FACET_COUNTS = True
 HAYSTACK_CONNECTIONS = {
    'default': {
        'ENGINE': 'haystack.backends.elasticsearch2_backend.Elasticsearch2SearchEngine',
