@@ -919,7 +919,11 @@ def layer_thumbnail(request, layername):
         layer_obj = _resolve_layer(request, layername)
 
         try:
-            preview = json.loads(request.body).get('preview', None)
+            try:
+            	preview = json.loads(request.body).get('preview', None)
+            except:
+                preview = None
+
             if preview and preview == 'react':
                 format, image = json.loads(
                     request.body)['image'].split(';base64,')
