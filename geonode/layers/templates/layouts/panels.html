@@ -196,8 +196,6 @@ span.grippy {
 span.grippy::after {
   content: '.. .. .. ..';
 }
-
-
 </style>
 <button class="btn btn-success metadata-edit-done" id="btn_upd_md_done" type="submit" style="float:right; opacity: 0;" >Done!</button>
 
@@ -289,17 +287,11 @@ span.grippy::after {
                                     </div>
                                 </div>
                                 <div class="col-lg-5">
-                                  <div class="col-lg-12 keywords-container">
-                                    <span><label for="{{ layer_form.keywords|id }}">{{ layer_form.keywords.label }}</label></span>
-                                    <span class="input-group">
-                                        <!--<p class="xxs-font-size">(A space or comma separated list of keywords)</p>-->
+                                    <div class="col-lg-12">
                                         {{ layer_form.keywords }}
-                                        <span class="input-group-addon" id="treeview-toggle"><i class="fa fa-folder"></i></span>
-                                    </span>
-                                    <div id="treeview" class="" style="display: none"></div>
-                                  </div>
+                                    </div>
                                     <div class="col-lg-12 thesauri_keywords">
-                                          {{ tkeywords_form }}
+                                        {{ tkeywords_form }}
                                     </div>
                                     <div class="col-lg-6 col-xs-12">
                                         <span><label for="{{ layer_form.date_type|id }}">{{ layer_form.date_type.label }}</label></span>

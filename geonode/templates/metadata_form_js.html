@@ -531,20 +531,36 @@
 
             {% if freetext_readonly %}
                 $('#id_resource-keywords').tokenfield({
-                    createTokensOnBlur: false,
+                    createTokensOnBlur: true,
                     autocomplete: {
                         source: kws,
                         delay: 100
                     },
                     showAutocompleteOnFocus: true
+                }).on('tokenfield:createtoken', function (event) {
+                    var exists = false;
+                    $.each(kws, function(index, value) {
+                        if (event.attrs.value === value) {
+                            exists = true;
+                        }
+                    });
+                    if(!exists) {
+                        event.preventDefault(); //prevents creation of token
+                    }
+                    
+                    var existingTokens = $(this).tokenfield('getTokens');
+                    $.each(existingTokens, function(index, token) {
+                        if (token.value === event.attrs.value)
+                            event.preventDefault();  //prevents creation of token
+                    });
                 });
-                $('#id_resource-keywords').tokenfield('readonly');
-                $('div.token .close').click(function() {
+                // $('#id_resource-keywords').tokenfield('readonly');
+                /* $('div.token .close').click(function() {
                     const token_close_button = $(this);
                     const token_item = token_close_button.parent();
                     token_item.remove();
                     return false;
-                });
+                }); */
             {% else %}
                 $('#id_resource-keywords').tokenfield({
                     createTokensOnBlur: true,
@@ -553,11 +569,17 @@
                         delay: 100
                     },
                     showAutocompleteOnFocus: true
+                }).on('tokenfield:createtoken', function (event) {
+                    var existingTokens = $(this).tokenfield('getTokens');
+                    $.each(existingTokens, function(index, token) {
+                        if (token.value === event.attrs.value)
+                            event.preventDefault();  //prevents creation of token
+                    });
                 });
             {% endif %}
 
             if (window.location.href.match('/metadata_advanced$')) {
-                if (!select_button_active) {
+                /*if (!select_button_active) {
                     const select_button = $('<button id="id_freetext_keyword_select" class="btn btn-primary">Select</button>');
                     const select_button_parent = $('#id_resource-keywords').parent().parent();
                     select_button_parent.append(select_button);
@@ -565,7 +587,7 @@
                 }
                 $('#id_freetext_keyword_select').click(function() {
                     $('#id_resource-keywords-tokenfield').blur().focus();
-                });
+                });*/
 
                 const resource_group = $('#id_resource-group');
                 resource_group.empty();
@@ -581,10 +603,7 @@
                         );
                     {% endif %}
                 {% endfor %}
-
-
             }
-
 
             $('#treeview').treeview({
                 color: "#428bca",
@@ -597,8 +616,7 @@
                 data: data,
                 levels: 1,
                 onNodeSelected: function($event, $data) {
-                    //TODO: This seems a horribly inelegant way of doing this in 12 Lines
-                    kws = $('#id_resource-keywords').tokenfield('getTokens');
+                    var kws = $('#id_resource-keywords').tokenfield('getTokens');
                     var newToken = $data.text
                     var exists = false
                     for (var i=0; i<kws.length; i++) {
@@ -609,7 +627,7 @@
                     if (!exists) {
                         $('#id_resource-keywords').tokenfield('createToken', $data.text);
                     }
-                    $('#treeview-toggle').click();
+                    // $('#treeview-toggle').click();
                 }
             });
 
