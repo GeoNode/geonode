@@ -404,6 +404,7 @@ def document_metadata(
             "author_form": author_form,
             "category_form": category_form,
             "metadata_author_groups": metadata_author_groups,
+            "GROUP_MANDATORY_RESOURCES": getattr(settings, 'GROUP_MANDATORY_RESOURCES', False),
         }))
 
 
