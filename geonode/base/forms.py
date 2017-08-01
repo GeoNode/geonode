@@ -114,7 +114,10 @@ class TreeWidget(TaggitWidget):
             else:
                 vals = ""
             output = ["""<div class="keywords-container"><span class="input-group">
-                <input class='form-control' id='id_resource-keywords' name='resource-keywords' value='%s'><br/>""" % (vals)]
+                <input class='form-control'
+                       id='id_resource-keywords'
+                       name='resource-keywords'
+                       value='%s'><br/>""" % (vals)]
             output.append('<div id="treeview" class="" style="display: none"></div>')
             output.append('<span class="input-group-addon" id="treeview-toggle"><i class="fa fa-folder"></i></span>')
             output.append('</span></div>')

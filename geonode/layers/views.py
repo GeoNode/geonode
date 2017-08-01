@@ -920,7 +920,7 @@ def layer_thumbnail(request, layername):
 
         try:
             try:
-            	preview = json.loads(request.body).get('preview', None)
+                preview = json.loads(request.body).get('preview', None)
             except:
                 preview = None
 
