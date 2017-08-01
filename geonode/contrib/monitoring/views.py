@@ -58,7 +58,8 @@ class MetricsList(View):
         out = []
         for srv, mlist in _metrics:
             out.append({'service': srv.name,
-                        'metrics': [{'name': m.name, 'type': m.type} for m in mlist]})
+                        'metrics': [{'name': m.name, 'unit': m.unit, 'type': m.type}
+                                    for m in mlist]})
         return json_response({'metrics': out})
 
 
@@ -198,7 +199,7 @@ class ResourcesList(FilteredView):
             q = q.filter(metric_values__valid_from__gte=valid_from)
         if valid_to:
             q = q.filter(metric_values__valid_to__lte=valid_to)
-            
+
         return q
 
 
@@ -239,7 +240,6 @@ class MetricDataView(View):
         return out
 
     def get(self, *args, **kwargs):
-        # def get_metrics_for(self, metric_name, valid_from=None, valid_to=None, interval=None, service=None, label=None, resource=None):
         filters = self.get_filters(**kwargs)
         metric_name = kwargs['metric_name']
         out = capi.get_metrics_for(metric_name, **filters)
@@ -271,7 +271,12 @@ class ExceptionsListView(FilteredView):
 
     output_name = 'exceptions'
 
-    def get_queryset(self, error_type=None, valid_from=None, valid_to=None, service_name=None, service_type=None, resource=None):
+    def get_queryset(self, error_type=None,
+                     valid_from=None,
+                     valid_to=None,
+                     service_name=None,
+                     service_type=None,
+                     resource=None):
         q = ExceptionEvent.objects.all().select_related()
         if error_type:
             q = q.filter(error_type=error_type)
@@ -332,6 +337,7 @@ class NotificaitonCheckForm(forms.ModelForm):
         model = NotificationCheck
         fields = ('name', 'description', 'user_threshold',)
 
+
 class MetricNotificationCheckForm(forms.ModelForm):
 
     metric = forms.CharField(required=True)
@@ -339,7 +345,6 @@ class MetricNotificationCheckForm(forms.ModelForm):
     resource = forms.CharField(required=False)
     label = forms.CharField(required=False)
     ows_service = forms.CharField(required=False)
-
 
     class Meta:
         model = MetricNotificationCheck
@@ -351,7 +356,7 @@ class MetricNotificationCheckForm(forms.ModelForm):
             if not val:
                 return
         try:
-           return cls.objects.get(name=val)
+            return cls.objects.get(name=val)
         except cls.DoesNotExist:
             raise forms.ValidationError("Invalid {}: {}".format(name, val))
 
@@ -376,10 +381,9 @@ class MetricNotificationCheckForm(forms.ModelForm):
         except IndexError:
             raise forms.ValidationError("Invalid resource name: {}".format(val))
         try:
-           return MonitoredResource.objects.get(name=vname, type=vtype)
+            return MonitoredResource.objects.get(name=vname, type=vtype)
         except MonitoredResource.DoesNotExist:
-            raise ValidationError("Invalid resource: {}".format(val))
-
+            raise forms.ValidationError("Invalid resource: {}".format(val))
 
 
 class NotificationsConfig(View):
@@ -401,7 +405,6 @@ class NotificationsConfig(View):
     def get_class(self, cls_name):
         cls, pk_lookup, user_lookup = self.models.get(cls_name)
         return cls
-
 
     def serialize(self, obj):
         fields = obj._meta.fields
@@ -437,7 +440,7 @@ class NotificationsConfig(View):
             out['errors']['pk'] = 'too less results'
             return json_response(out, status=404)
 
-        if len(objs)> 1:
+        if len(objs) > 1:
             out['errors']['__all__'] = 'too many results returned'
             return json_response(out, status=400)
         obj = None

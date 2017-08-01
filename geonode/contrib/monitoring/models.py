@@ -150,8 +150,31 @@ class Metric(models.Model):
                      TYPE_VALUE: 'max(value_num)',
                      TYPE_COUNT: 'sum(value_num)'}
 
+    UNIT_BYTES = 'B'
+    UNIT_MEGABYTES = 'MB'
+    UNIT_GIGABYTES = 'GB'
+    UNIT_BPS = 'B/s'
+    UNIT_MBPS = 'MB/s'
+    UNIT_GBPS = 'GB/s'
+    UNIT_SECONDS = 's'
+    UNIT_COUNT = 'Count'
+    UNIT_RATE = 'Rate'
+    UNIT_PERCENTAGE = '%'
+
+    UNITS = ((UNIT_BYTES, _("Bytes"),),
+             (UNIT_MEGABYTES, _("Megabytes"),),
+             (UNIT_GIGABYTES, _("Gigabytes"),),
+             (UNIT_BPS, _("Bytes per second"),),
+             (UNIT_MBPS, _("Megabytes per second"),),
+             (UNIT_GBPS, _("Gigabytes per second"),),
+             (UNIT_SECONDS, _("Seconds"),),
+             (UNIT_RATE, _("Rate"),),
+             (UNIT_PERCENTAGE, _("Percentage"),),
+             (UNIT_COUNT, _("Count"),))
+
     name = models.CharField(max_length=255, db_index=True)
     type = models.CharField(max_length=255, null=False, blank=False, default=TYPE_RATE, choices=TYPES)
+    unit = models.CharField(max_length=255, null=True, blank=True, choices=UNITS)
 
     def get_aggregate_name(self):
         return self.AGGREGATE_MAP[self.type]
@@ -691,8 +714,7 @@ class BuiltIns(object):
                        'response.time', 'response.status', 'response.size',
                        'response.error.types',)
     host_metrics = ('load.1m', 'load.5m', 'load.15m',
-                    'mem.free', 'mem.usage', 'mem.free',
-                    'mem.buffers', 'mem.all',
+                    'mem.free', 'mem.usage', 'mem.buffers', 'mem.all',
                     'uptime', 'cpu.usage', 'cpu.usage.rate', 'cpu.usage.percent',
                     'storage.free', 'storage.total', 'storage.used',  # mountpoint is the label
                     'network.in', 'network.out', 'network.in.rate', 'network.out.rate',)
@@ -703,7 +725,13 @@ class BuiltIns(object):
     values = ('request.ip', 'request.ua', 'request.ua.family', 'request.method',
               'request.country', 'request.region', 'request.city', 'response.status', 'response.error.types',)
 
-
+    unit_seconds = ('response.time', 'uptime', 'cpu.usage',)
+    unit_bytes = ('response.size', 'network.in', 'network.out', 
+             'storage.free', 'storage.total', 'storage.used',)
+    unit_bps = ('network.in.rate', 'network.out.rate',)
+    unit_megabytes = ('mem.free', 'mem.usage', 'mem.buffers', 'mem.all',)
+    unit_rate = ('cpu.usage.rate', 'load.1m', 'load.5m', 'load.15m',)
+    unit_percentage = ('cpu.usage.percent',)
 
 
 def populate():
@@ -728,3 +756,14 @@ def populate():
 
     for otype, otype_name in OWSService.OWS_TYPES:
         OWSService.objects.get_or_create(name=otype)
+
+    for attr_name in dir(BuiltIns):
+        if not attr_name.startswith('unit_'):
+            continue
+        val = getattr(BuiltIns, attr_name)
+        uname = getattr(Metric, attr_name.upper())
+        for mname in val:
+            m = Metric.objects.get(name=mname)
+            m.unit = uname
+            m.save()
+    Metric.objects.filter(unit__isnull=True).update(unit=Metric.UNIT_COUNT)

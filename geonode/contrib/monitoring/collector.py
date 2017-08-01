@@ -495,12 +495,14 @@ class CollectorAPI(object):
             interval = timedelta(seconds=3600)
         if not isinstance(interval, timedelta):
             interval = timedelta(seconds=interval)
-
-        out = {'metric': metric_name,
+        metric = Metric.objects.get(name=metric_name)
+        out = {'metric': metric.name,
                'input_valid_from': valid_from,
                'input_valid_to': valid_to,
                'interval': interval.total_seconds(),
                'label': label.name if label else None,
+               'type': metric.type,
+               'axis_label': metric.unit,
                'data': []}
         periods = generate_periods(valid_from, interval, valid_to)
         for pstart, pend in periods:
