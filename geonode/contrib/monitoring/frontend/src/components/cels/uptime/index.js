@@ -83,7 +83,7 @@ class Uptime extends React.Component {
       if (data.length > 0) {
         if (data[0].data.length > 0) {
           const metric = data[0].data[0];
-          /* uptime = metric.count;*/
+          uptime = metric.count;
         }
       }
     }

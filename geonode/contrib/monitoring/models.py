@@ -269,6 +269,8 @@ class RequestEvent(models.Model):
     def _get_resources(cls, type_name, resources_list):
         out = []
         for r in resources_list:
+            if r is None:
+                continue
             rinst, _ = MonitoredResource.objects.get_or_create(name=r, type=type_name)
             out.append(rinst)
         return out

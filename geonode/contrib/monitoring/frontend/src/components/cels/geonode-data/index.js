@@ -77,17 +77,27 @@ class GeonodeData extends React.Component {
     let averageResponseTime = 0;
     let maxResponseTime = 0;
     let totalRequests = 0;
+
     if (this.props.response) {
       averageResponseTime = undefined;
       maxResponseTime = undefined;
       totalRequests = undefined;
       const data = this.props.response.data.data;
-      if (data.length > 0) {
-        if (data[0].data.length > 0) {
-          const metric = data[0].data[0];
+      const d1length = data.length;
+      if (d1length > 0) {
+        const d2 = data[d1length - 1];
+        const d2length = d2.data.length;
+
+        console.log('source d1', data, d2);
+        console.log('source lenght', d1length, d2length);
+
+        if (d2length > 0) {
+          const metric = d2.data[d2length - 1];
+          console.log('source', d2);
+          console.log('got metric', metric);
           maxResponseTime = Math.floor(metric.max);
           averageResponseTime = Math.floor(metric.val);
-          totalRequests = metric.count;
+          totalRequests = metric.samples_count;
         }
       }
     }

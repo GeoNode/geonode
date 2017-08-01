@@ -160,6 +160,7 @@ def layer_upload(request, template='upload/layer_upload.html'):
                 name_base, __ = os.path.splitext(
                     form.cleaned_data["base_file"].name)
             name = slugify(name_base.replace(".", "_"))
+            saved_layer = None
             try:
                 # Moved this inside the try/except block because it can raise
                 # exceptions when unicode characters are present.
@@ -219,6 +220,8 @@ def layer_upload(request, template='upload/layer_upload.html'):
             status_code = 200
         else:
             status_code = 400
+        if settings.MONITORING_ENABLED:
+            request.add_resource('layer', saved_layer.altername if saved_layer else name)
         return HttpResponse(
             json.dumps(out),
             content_type='application/json',
@@ -739,6 +742,10 @@ def layer_metadata_advanced(request, layername):
 @login_required
 def layer_change_poc(request, ids, template='layers/layer_change_poc.html'):
     layers = Layer.objects.filter(id__in=ids.split('_'))
+
+    if settings.MONITORING_ENABLED:
+        for l in layers:
+            request.add_resource('layer', l.altername)
     if request.method == 'POST':
         form = PocForm(request.POST)
         if form.is_valid():

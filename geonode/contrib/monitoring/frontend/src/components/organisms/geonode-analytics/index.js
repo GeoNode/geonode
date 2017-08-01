@@ -120,7 +120,7 @@ class GeonodeAnalytics extends React.Component {
     ) {
       responseData = this.props.responses.data.data.map(element => ({
         name: element.valid_from,
-        time: element.data.length > 0 ? Math.floor(element.data[0].val) : 0,
+        time: element.data.length > 0 ? Math.floor(element.data[element.data.length - 1].val) : 0,
       }));
     }
     if (
@@ -130,7 +130,7 @@ class GeonodeAnalytics extends React.Component {
     ) {
       throughputData = this.props.throughputs.data.data.map(element => ({
         name: element.valid_from,
-        count: element.data.length > 0 ? Math.floor(element.data[0].val) : 0,
+        count: element.data.length > 0 ? Math.floor(element.data[element.data.length - 1].val) : 0,
       }));
     }
     if (
@@ -140,7 +140,7 @@ class GeonodeAnalytics extends React.Component {
     ) {
       errorRateData = this.props.errors.data.data.map(element => ({
         name: element.valid_from,
-        count: element.data.length > 0 ? Math.floor(element.data[0].val) : 0,
+        count: element.data.length > 0 ? Math.floor(element.data[element.data.length - 1].val) : 0,
       }));
     }
     return (

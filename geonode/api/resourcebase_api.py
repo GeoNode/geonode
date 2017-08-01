@@ -524,7 +524,6 @@ class CommonModelApi(ModelResource):
         to_be_serialized = self.alter_list_data_to_serialize(
             request,
             to_be_serialized)
-
         return self.create_response(request, to_be_serialized, response_objects=objects)
 
     def format_objects(self, objects):

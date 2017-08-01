@@ -5,7 +5,8 @@
   "main": "server.js",
   "scripts": {
     "start": "webpack-dev-server --inline --hot --host 0.0.0.0 --port 8888 --color",
-    "build": "webpack -p --progress --config webpack.config.prod.js"
+    "build": "webpack -p --progress --config webpack.config.prod.js",
+    "compile": "webpack -d --progress --config webpack.config.js"
   },
   "repository": {
     "type": "git",

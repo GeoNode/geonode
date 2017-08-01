@@ -411,6 +411,10 @@ def map_json(request, mapid, snapshot=None):
             )
 
         map_obj = Map.objects.get(id=mapid)
+
+        if settings.MONITORING_ENABLED:
+            request.add_resource('map', map_obj.alternate)
+
         if not request.user.has_perm('change_resourcebase', map_obj.get_self_resource()):
             return HttpResponse(
                 _PERMISSION_MSG_SAVE,
@@ -546,6 +550,9 @@ def new_map_json(request):
         except ValueError as e:
             return HttpResponse(str(e), status=400)
         else:
+            if settings.MONITORING_ENABLED:
+                request.add_resource('map', map_obj.alternate)
+
             return HttpResponse(
                 json.dumps({'id': map_obj.id}),
                 status=200,
@@ -709,6 +716,8 @@ def new_map_config(request):
                 map_obj.zoom = math.ceil(min(width_zoom, height_zoom))
 
             map_obj.handle_moderated_uploads()
+            if settings.MONITORING_ENABLED:
+                request.add_resource('map', map_obj.alternate)
             config = map_obj.viewer_json(
                 request.user, access_token, *(DEFAULT_BASE_LAYERS + layers))
             config['fromLayer'] = True

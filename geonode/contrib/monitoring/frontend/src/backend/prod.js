@@ -1,1 +1,2 @@
-export default `${window.location.protocol}//${window.location.hostname}/monitoring/api`;
+export default `${window.location.protocol}//${window.location.hostname}` +
+`:${window.location.port}/monitoring/api`;
