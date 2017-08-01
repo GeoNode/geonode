@@ -461,8 +461,8 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
     date_type = models.CharField(_('date type'), max_length=255, choices=VALID_DATE_TYPES, default='publication',
                                  help_text=date_type_help_text)
     edition = models.CharField(_('edition'), max_length=255, blank=True, null=True, help_text=edition_help_text)
-    abstract = models.TextField(_('abstract'), blank=True, help_text=abstract_help_text)
-    purpose = models.TextField(_('purpose'), null=True, blank=True, help_text=purpose_help_text)
+    abstract = models.TextField(_('abstract'), max_length=2000, blank=True, help_text=abstract_help_text)
+    purpose = models.TextField(_('purpose'), max_length=500, null=True, blank=True, help_text=purpose_help_text)
     maintenance_frequency = models.CharField(_('maintenance frequency'), max_length=255, choices=UPDATE_FREQUENCIES,
                                              blank=True, null=True, help_text=maintenance_frequency_help_text)
 
@@ -499,11 +499,12 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
     temporal_extent_end = models.DateTimeField(_('temporal extent end'), blank=True, null=True,
                                                help_text=temporal_extent_end_help_text)
 
-    supplemental_information = models.TextField(_('supplemental information'), default=DEFAULT_SUPPLEMENTAL_INFORMATION,
+    supplemental_information = models.TextField(_('supplemental information'), max_length=2000,
+                                                default=DEFAULT_SUPPLEMENTAL_INFORMATION,
                                                 help_text=_('any other descriptive information about the dataset'))
 
     # Section 8
-    data_quality_statement = models.TextField(_('data quality statement'), blank=True, null=True,
+    data_quality_statement = models.TextField(_('data quality statement'), max_length=2000, blank=True, null=True,
                                               help_text=data_quality_statement_help_text)
 
     group = models.ForeignKey(Group, null=True, blank=True)
