@@ -68,17 +68,11 @@
                                     </div>
                                 </div>
                                 <div class="col-lg-5">
-                                  <div class="col-lg-12 keywords-container">
-                                    <span><label for="{{ document_form.keywords|id }}">{{ document_form.keywords.label }}</label></span>
-                                    <span class="input-group">
-                                    <!--<p class="xxs-font-size">(A space or comma separated list of keywords)</p>-->
-                                    {{ document_form.keywords }}
-                                    <span class="input-group-addon" id="treeview-toggle"><i class="fa fa-folder"></i></span>
-                                  </span>
-                                    <div id="treeview" class="" style="display: none"></div>
-                                  </div>
+                                    <div class="col-lg-12">
+                                        {{ document_form.keywords }}
+                                    </div>
                                     <div class="col-lg-12 thesauri_keywords">
-                                          {{ tkeywords_form }}
+                                        {{ tkeywords_form }}
                                     </div>
                                     <div class="col-lg-6 col-xs-12">
                                         <span><label for="{{ document_form.date_type|id }}">{{ document_form.date_type.label }}</label></span>
