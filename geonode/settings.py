@@ -1163,3 +1163,6 @@ ADMIN_MODERATE_UPLOADS = False
 
 # If this option is enabled, Resources belonging to a Group won't be visible by others
 GROUP_PRIVATE_RESOURCES = False
+
+# If this option is enabled, Groups will become strictly Mandatory on Metadata Wizard
+GROUP_MANDATORY_RESOURCES = False

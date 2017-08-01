@@ -725,6 +725,7 @@ def layer_metadata(
         "metadataxsl": metadataxsl,
         "freetext_readonly": getattr(settings, 'FREETEXT_KEYWORDS_READONLY', False),
         "metadata_author_groups": metadata_author_groups,
+        "GROUP_MANDATORY_RESOURCES": getattr(settings, 'GROUP_MANDATORY_RESOURCES', False),
     }))
 
 
