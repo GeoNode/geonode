@@ -97,7 +97,11 @@ def csw_global_dispatch(request):
             mdict['repository']['filter'] += " AND alternate IS NOT NULL"
 
         # Filter out Layers belonging to specific Groups
-        if settings.GROUP_PRIVATE_RESOURCES:
+        is_admin = False
+        if request.user:
+            is_admin = request.user.is_superuser if request.user else False
+
+        if not is_admin and settings.GROUP_PRIVATE_RESOURCES:
             groups_ids = []
             if request.user:
                 for group in request.user.groups.all():
