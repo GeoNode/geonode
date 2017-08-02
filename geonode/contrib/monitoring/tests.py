@@ -1623,12 +1623,12 @@ class RequestsTestCase(TestCase):
         """
         l = Layer.objects.all().first()
         self.client.login(username=self.user, password=self.passwd)
-        self.client.get(reverse('layer_detail', args=(l.typename,)), **{"HTTP_USER_AGENT": self.ua})
+        self.client.get(reverse('layer_detail', args=(l.alternate,)), **{"HTTP_USER_AGENT": self.ua})
 
         self.assertEqual(RequestEvent.objects.all().count(), 1)
         rq = RequestEvent.objects.get()
         self.assertTrue(rq.response_time > 0)
-        self.assertEqual(list(rq.resources.all().values_list('name', 'type')), [(l.typename, u'layer',)])
+        self.assertEqual(list(rq.resources.all().values_list('name', 'type')), [(l.alternate, u'layer',)])
         self.assertEqual(rq.request_method, 'GET')
 
     def test_gn_error(self):
@@ -1653,7 +1653,7 @@ class RequestsTestCase(TestCase):
         self.client.login(username=self.user, password=self.passwd)
         for idx, l in enumerate(Layer.objects.all()):
             for inum in range(0, idx+1):
-                self.client.get(reverse('layer_detail', args=(l.typename,)), **{"HTTP_USER_AGENT": self.ua})
+                self.client.get(reverse('layer_detail', args=(l.alternate,)), **{"HTTP_USER_AGENT": self.ua})
         requests = RequestEvent.objects.all()
 
         c = CollectorAPI()
