@@ -28,7 +28,7 @@ from tastypie.serializers import Serializer
 from tastypie import fields
 from tastypie.authentication import SessionAuthentication
 from tastypie.resources import ModelResource
-from tastypie.constants import ALL
+from tastypie.constants import ALL, ALL_WITH_RELATIONS
 from tastypie.utils import trailing_slash
 
 from .authorization import GeoNodeAuthorization, DataRequestAuthorization, ProfileRequestAuthorization
@@ -298,6 +298,8 @@ class ProfileResource(TypeFilteredResource):
 
         filtering = {
             'username': ALL,
+            'first_name': ALL,
+            'last_name': ALL,
         }
 
         serializer = CountJSONSerializer()
@@ -454,6 +456,8 @@ class DataRequestResource(ModelResource):
     org_type = fields.CharField()
     organization_other = fields.CharField()
     profile_request_detail_url = fields.CharField()
+    profile_request = fields.ForeignKey(ProfileRequestResource,'profile_request', null=True)
+    profile = fields.ForeignKey(ProfileResource,'profile', null=True)
 
     class Meta:
         authorization = DataRequestAuthorization()
@@ -462,7 +466,9 @@ class DataRequestResource(ModelResource):
         resource_name = 'data_requests'
         allowed_methods = ['get']
         ordering = ['date_submitted', ]
-        filtering = {'first_name': ALL,
+        filtering = {'profile_request': ALL_WITH_RELATIONS,
+                     'profile': ALL_WITH_RELATIONS,
+                     'first_name': ALL,
                      'requester_type': ALL,
                      'status': ALL,
                      'organization': ALL,
@@ -563,21 +569,21 @@ class DataRequestResource(ModelResource):
             return None
 
     def apply_filters(self, request, applicable_filters):
-         base_object_list = super(DataRequestResource, self).apply_filters(request, applicable_filters)
+        base_object_list = super(DataRequestResource, self).apply_filters(request, applicable_filters)
+        query = request.GET.get('title__icontains', None)
+        if query:
+            query = query.split(' ')
+            q = Q()
+            for t in query:
+                q = q | Q(profile__first_name__icontains=t)
+                q = q | Q(profile__last_name__icontains=t)
+                q = q | Q(profile__username__icontains=t)
+                q = q | Q(profile_request__first_name__icontains=t)
+                q = q | Q(profile_request__last_name__icontains=t)
+                q = q | Q(profile_request__username__icontains=t)
+            base_object_list = base_object_list.filter(q).distinct()
 
-         query = request.GET.get('title__icontains', None)
-         if query:
-             query = query.split(' ')
-             q = Q()
-             for t in query:
-                 q = q | Q(first_name__icontains=t)
-                 q = q | Q(middle_name__icontains=t)
-                 q = q | Q(last_name__icontains=t)
-                 q = q | Q(organization__icontains=t)
-                 q = q | Q(username__icontains=t)
-             base_object_list = base_object_list.filter(q).distinct()
-
-         return base_object_list
+        return base_object_list
 
     def prepend_urls(self):
         if settings.HAYSTACK_SEARCH:
