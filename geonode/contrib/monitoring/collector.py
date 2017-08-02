@@ -581,3 +581,8 @@ class CollectorAPI(object):
         ExceptionEvent.objects.filter(created__lte=cutoff).delete()
         RequestEvent.objects.filter(created__lte=cutoff).delete()
         MetricValue.objects.filter(valid_to__lte=cutoff).delete()
+
+
+    def emit_notifications(self, valid_from=None, valid_to=None):
+        pass
+        

@@ -1940,6 +1940,7 @@ class MonitoringChecksTestCase(TestCase):
         m = MetricNotificationCheck.objects.get()
         jdata = jout['data'][0]
         self.assertEqual(Decimal(jdata['min_value']), m.min_value)
-
         
-
+        checks = NotificationCheck.check()
+        self.assertTrue(len(checks)> 0)
+        self.assertTrue(len(checks), NotificationCheck.objects.all().count())

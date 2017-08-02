@@ -31,6 +31,7 @@ from jsonfield import JSONField
 
 from django.utils.translation import ugettext_noop as _
 from django.core.urlresolvers import reverse
+from django.contrib.auth import get_user_model
 
 try:
     from django.contrib.gis.geoip2 import GeoIP2 as GeoIP
@@ -629,9 +630,30 @@ class NotificationCheck(models.Model):
     description = models.CharField(max_length=255, null=False, blank=False)
     user_threshold = JSONField(default={}, null=False, blank=False, help_text=_("Threshold definition"))
 
+    def get_users(self):
+        return get_user_model().objects.filter(monitoring_checks__notification_check=self)
+
+    def check_notifications(self, for_timestamp=None):
+        checks = []
+        for ch in self.checks.all():
+            try:
+                ch.check_metric(for_timestamp=for_timestamp)
+            except MetricNotificationCheck.MetricValueError, err:
+                checks.append(err)
+            # no value available, ignoring
+            except ValueError:
+                pass
+        return checks
+
+    @classmethod
+    def check(cls, for_timestamp=None):
+        checked = []
+        for n in cls.objects.all():
+            checked.append((n, n.check_notifications(for_timestamp=for_timestamp),))
+        return checked
 
 class MetricNotificationCheck(models.Model):
-    user = models.ForeignKey(settings.AUTH_USER_MODEL)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, related_name="monitoring_checks")
     notification_check = models.ForeignKey(NotificationCheck, related_name="checks")
     metric = models.ForeignKey(Metric, related_name="checks")
     service = models.ForeignKey(Service, related_name="checks")
