@@ -20,14 +20,7 @@ RUN echo "deb http://apt.postgresql.org/pub/repos/apt/ jessie-pgdg main" > /etc/
     --no-install-recommends \
  && rm -rf /var/lib/apt/lists/*
 
-#COPY package/docker/wait-for-postgres.sh /usr/bin/wait-for-postgres
-
-#RUN mkdir /docker-entrypoint.d
-#COPY package/docker/docker-entrypoint.sh /docker-entrypoint.sh
 COPY package/docker/ /
-
-# To understand the next section (the need for requirements.txt and setup.py)
-# Please read: https://packaging.python.org/requirements/
 
 # Update pip
 RUN pip install --upgrade pip \
@@ -38,22 +31,25 @@ RUN pip install --upgrade pip \
     && pip install gunicorn
 
 EXPOSE 8000
+
 ENTRYPOINT ["/docker-entrypoint.sh"]
+
 CMD ["django-admin.py", "runserver", "0.0.0.0:8000", "--settings=geonode.settings"]
 
 # Install tools for frontend (node, npm, grunt, bower, ...)
-ADD https://nodejs.org/dist/v6.10.3/node-v6.10.3-linux-x64.tar.xz /usr/local/
+ADD https://nodejs.org/dist/v6.11.2/node-v6.11.2-linux-x64.tar.xz /usr/local/
 RUN cd /usr/local/ \
-  && wget https://nodejs.org/dist/v6.10.3/node-v6.10.3-linux-x64.tar.xz \
-  && tar Jxvf node-v6.10.3-linux-x64.tar.xz \
-  && rm node-v6.10.3-linux-x64.tar.xz \
-  && ln -s node-v6.10.3-linux-x64 node \
+  && wget https://nodejs.org/dist/v6.11.2/node-v6.11.2-linux-x64.tar.xz \
+  && tar Jxvf node-v6.11.2-linux-x64.tar.xz \
+  && rm node-v6.11.2-linux-x64.tar.xz \
+  && ln -s node-v6.11.2-linux-x64 node \
   && cd /usr/local/bin \
-  && ln -s /usr/local/node-v6.10.3-linux-x64/bin/node \
-  && ln -s /usr/local/node-v6.10.3-linux-x64/bin/npm \
+  && ln -s /usr/local/node-v6.11.2-linux-x64/bin/node \
+  && ln -s /usr/local/node-v6.11.2-linux-x64/bin/npm \
   && npm install npm@latest -g \
   && npm install -g bower \
   && npm install -g grunt
+
 ENV PATH=/usr/local/node/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
 
 # Install geonode code and dependencies
@@ -64,14 +60,13 @@ RUN pip install --no-cache-dir -r requirements.txt
 COPY . /usr/src/app/
 RUN pip install --no-cache-dir --no-deps -e /usr/src/app/ \
   && cd /usr/src/app/geonode/static \
+  && npm install \
   && grunt production
 
 # Install geonode configuration
 RUN mkdir -p /mnt/geonode_data/uploaded /mnt/geonode_data/static /mnt/geonode_config \
   && cd /usr/src/app/geonode/ \
   && cp local_settings.py.docker /mnt/geonode_config/local_settings.py \
-  && mv local_settings.py local_settings.py.old \
   && ln -s /mnt/geonode_config/local_settings.py
+
 VOLUME ["/mnt/geonode_config", "/mnt/geonode_data"]
-
-
