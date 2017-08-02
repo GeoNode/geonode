@@ -677,6 +677,7 @@ class MetricNotificationCheck(models.Model):
         return "MetricCheck({}@{}: {})".format(self.metric.name, self.service.name, indicator)
 
     class MetricValueError(ValueError):
+
         def __init__(self, metric, check, message):
             self.metric = metric
             self.check = check

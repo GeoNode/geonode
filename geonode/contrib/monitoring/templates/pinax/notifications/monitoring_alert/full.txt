@@ -1,0 +1,10 @@
+{% load i18n %}
+
+{% trans "Hi," %} {{ recipient.username }}
+
+{% trans "Monitoring on " %}{{ host }}{% trans "detected following problems :" %}
+{% for ndata in alerts %}
+    {{ ndata }}
+{% endfor %}
+
+

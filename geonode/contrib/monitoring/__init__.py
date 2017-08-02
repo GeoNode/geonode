@@ -18,18 +18,33 @@
 #
 #########################################################################
 
-from django.apps import AppConfig
+import logging
 from django.db.models import signals
+from django.utils.translation import ugettext_noop as _
 
+from geonode.notifications_helper import NotificationsAppConfigBase, has_notifications
 from geonode.contrib.monitoring.models import populate
 
-class MonitoringAppConfig(AppConfig):
-    name = 'geonode.contrib.monitoring'
+log = logging.getLogger(__name__)
 
-    def populate(self, *args, **kwargs):
+
+class MonitoringAppConfig(NotificationsAppConfigBase):
+    name = 'geonode.contrib.monitoring'
+    NOTIFICATION_NAME = 'monitoring_alert'
+    NOTIFICATIONS = ((NOTIFICATION_NAME,
+                      _("Monitoring alert"),
+                      _("Alert situation reported by monitoring"),
+                     ),
+                    )
+
+    def run_setup_hooks(self, *args, **kwargs):
+        if not has_notifications:
+            log.warning("Monitoring requires notifications app to be enabled. "
+                        "Otherwise, no notifications will be send")
         populate()
 
     def ready(self):
-        signals.post_migrate.connect(self.populate, sender=self)
+        super(MonitoringAppConfig, self).ready()
+        signals.post_migrate.connect(self.run_setup_hooks, sender=self)
 
 default_app_config = 'geonode.contrib.monitoring.MonitoringAppConfig'

@@ -1,0 +1,4 @@
+
+{% for ndata in alerts %}
+    {{ ndata }}
+{% endfor %}

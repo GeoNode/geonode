@@ -1944,3 +1944,6 @@ class MonitoringChecksTestCase(TestCase):
         checks = NotificationCheck.check()
         self.assertTrue(len(checks)> 0)
         self.assertTrue(len(checks), NotificationCheck.objects.all().count())
+
+        capi = CollectorAPI()
+        capi.emit_notifications(start)

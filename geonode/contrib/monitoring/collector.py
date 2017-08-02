@@ -27,9 +27,10 @@ from django.conf import settings
 from django.core.exceptions import ObjectDoesNotExist, MultipleObjectsReturned
 from django.db import models
 from geonode.utils import raw_sql
+from geonode.contrib.monitoring import MonitoringAppConfig as AppConf
 from geonode.contrib.monitoring.models import (Metric, MetricValue, ServiceTypeMetric,
                                                MonitoredResource, MetricLabel, RequestEvent,
-                                               ExceptionEvent, OWSService,)
+                                               ExceptionEvent, OWSService, NotificationCheck,)
 
 from geonode.contrib.monitoring.utils import generate_periods, align_period_start, align_period_end
 from geonode.utils import parse_datetime
@@ -582,7 +583,19 @@ class CollectorAPI(object):
         RequestEvent.objects.filter(created__lte=cutoff).delete()
         MetricValue.objects.filter(valid_to__lte=cutoff).delete()
 
+    def compose_notifications(self, ndata):
+        return {'alerts': ndata,
+                'host': settings.SITEURL }
 
-    def emit_notifications(self, valid_from=None, valid_to=None):
-        pass
-        
+    def emit_notifications(self, for_timestamp=None):
+        notifications = self.get_notifications(for_timestamp)
+        for n, ndata in notifications:
+            users = n.get_users()
+            content = self.compose_notification(ndata)
+            send_notification(users=users, label=AppConf.NOTIFICATION_NAME, extra_context=content)
+
+    def get_notifications(self, for_timestamp=None):
+        notifications = NotificationCheck.check(for_timestamp=for_timestamp)
+        non_empty = [n for n in notifications if n[1]]
+        return non_empty
+
