@@ -87,14 +87,8 @@ class GeonodeData extends React.Component {
       if (d1length > 0) {
         const d2 = data[d1length - 1];
         const d2length = d2.data.length;
-
-        console.log('source d1', data, d2);
-        console.log('source lenght', d1length, d2length);
-
         if (d2length > 0) {
           const metric = d2.data[d2length - 1];
-          console.log('source', d2);
-          console.log('got metric', metric);
           maxResponseTime = Math.floor(metric.max);
           averageResponseTime = Math.floor(metric.val);
           totalRequests = metric.samples_count;
