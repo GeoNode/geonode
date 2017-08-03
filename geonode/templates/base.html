@@ -99,6 +99,7 @@
                 {% endif %}
               </ul>
             </li>
+        
 	        {% block extra_tab %}
             {% endblock %}
             {% endblock %}
@@ -141,9 +142,9 @@
                 {% if 'geonode.geoserver' in INSTALLED_APPS %}
                 <li><a href="{{ GEOSERVER_BASE_URL }}">GeoServer</a></li>
                 {% endif %}
-                {% if user.is_superuser %}
+                {% if user.is_superuser and USE_MONITORING %}
                 <li role="separator" class="divider"></li>
-                <li><a href="{% url "monitoring" %}">{% trans "Monitoring" %}</a></li>
+                <li><a href="{% url "monitoring:index" %}">{% trans "Monitoring" %}</a></li>
                 {% endif %}
                 <li role="separator" class="divider"></li>
                 <li><a href="{% url "help" %}">{% trans "Help" %}</a></li>

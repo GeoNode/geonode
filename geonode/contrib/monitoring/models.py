@@ -152,10 +152,12 @@ class Metric(models.Model):
                      TYPE_COUNT: 'sum(value_num)'}
 
     UNIT_BYTES = 'B'
+    UNIT_KILOBYTES = 'KB'
     UNIT_MEGABYTES = 'MB'
     UNIT_GIGABYTES = 'GB'
     UNIT_BPS = 'B/s'
     UNIT_MBPS = 'MB/s'
+    UNIT_KBPS = 'KB/s'
     UNIT_GBPS = 'GB/s'
     UNIT_SECONDS = 's'
     UNIT_COUNT = 'Count'
@@ -163,9 +165,11 @@ class Metric(models.Model):
     UNIT_PERCENTAGE = '%'
 
     UNITS = ((UNIT_BYTES, _("Bytes"),),
+             (UNIT_KILOBYTES, _("Kilobytes"),),
              (UNIT_MEGABYTES, _("Megabytes"),),
              (UNIT_GIGABYTES, _("Gigabytes"),),
              (UNIT_BPS, _("Bytes per second"),),
+             (UNIT_KBPS, _("Kilobytes per second"),),
              (UNIT_MBPS, _("Megabytes per second"),),
              (UNIT_GBPS, _("Gigabytes per second"),),
              (UNIT_SECONDS, _("Seconds"),),
@@ -750,9 +754,8 @@ class BuiltIns(object):
 
     unit_seconds = ('response.time', 'uptime', 'cpu.usage',)
     unit_bytes = ('response.size', 'network.in', 'network.out', 
-             'storage.free', 'storage.total', 'storage.used',)
+                  'mem.free', 'mem.usage', 'mem.buffers', 'mem.all',)
     unit_bps = ('network.in.rate', 'network.out.rate',)
-    unit_megabytes = ('mem.free', 'mem.usage', 'mem.buffers', 'mem.all',)
     unit_rate = ('cpu.usage.rate', 'load.1m', 'load.5m', 'load.15m',)
     unit_percentage = ('cpu.usage.percent',)
 
