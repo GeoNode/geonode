@@ -23,8 +23,10 @@ import types
 
 from socket import gethostbyname
 from datetime import datetime, timedelta
+from decimal import Decimal
 
 from django.db import models
+from django import forms
 from django.conf import settings
 from django.http import Http404
 from jsonfield import JSONField
@@ -633,9 +635,11 @@ class NotificationCheck(models.Model):
     name = models.CharField(max_length=255, null=False, blank=False, unique=True)
     description = models.CharField(max_length=255, null=False, blank=False)
     user_threshold = JSONField(default={}, null=False, blank=False, help_text=_("Threshold definition"))
+    metrics = models.ManyToManyField(Metric, through='NotificationMetricDefinition', related_name='+')
 
     def get_users(self):
-        return get_user_model().objects.filter(monitoring_checks__notification_check=self)
+        return get_user_model().objects\
+                               .filter(monitoring_checks__notification_check=self)
 
     def check_notifications(self, for_timestamp=None):
         checks = []
@@ -655,6 +659,130 @@ class NotificationCheck(models.Model):
         for n in cls.objects.all():
             checked.append((n, n.check_notifications(for_timestamp=for_timestamp),))
         return checked
+    
+    @classmethod
+    def get_steps(cls, min_, max_, thresholds):
+        if isinstance(thresholds, (types.IntType, types.LongType, types.FloatType, Decimal,)):
+            if min_ is None or max_ is None:
+                raise ValueError("Cannot use numeric threshold if one of min/max is None")
+            step = (max_ - min_)/thresholds
+            current = min_
+            thresholds = []
+            while current < max_:
+                thresholds.append(current)
+                current += step
+                
+        if isinstance(thresholds, (tuple, types.GeneratorType,)):
+            thresholds = list(thresholds)
+        elif isinstance(thresholds, list) or thresholds is None:
+            pass
+        else:
+            raise TypeError("Unsupported threshold type: %s (%s)".format(thresholds, type(thresholds)))
+        return thresholds
+
+    @classmethod
+    def create(cls, name, description, thresholds):
+        inst, _ = cls.objects.get_or_create(name=name)
+        if not _:
+            raise ValueError("Alert definition already exists")
+        inst.description=description
+        user_thresholds = {}
+        for (metric_name, field_opt, use_service, 
+             use_resource, use_label, use_ows_service, 
+             minimum, maximum, thresholds,) in thresholds:
+
+            # metric_name is a string for metric.name
+            # field opt is NotificationMetricDefinition.FIELD_OPTION* value
+            # use_* are flags to set limitations on scope of alert
+            # minimum, maximum are min/max for allowed values
+            #   if one is None, that means there's no value limit in that direction
+            # thresholds can be :
+            #     * list of values between min and max or
+            #     * one number of steps between min and max
+            #     * None, then user can enter value manually
+            #
+            # example:
+            # notfication: system overload
+            #  ('request.count', 'min_value', True, True, True, True,
+            #    0, None, (100, 200, 500, 1000,)
+
+            metric = Metric.objects.get(name=metric_name)
+            nm = NotificationMetricDefinition.objects.create(notification_check=inst, 
+                                                             metric=metric, 
+                                                             field_option=field_opt)
+            user_thresholds[nm.id] = {'min': minimum, 
+                                      'max': maximum,
+                                      'metric': metric_name,
+                                      'steps': cls.get_steps(minimum, maximum, thresholds)}
+        print(user_thresholds)                                      
+        inst.user_threshold = user_thresholds
+        inst.save()
+        return inst
+
+    def get_user_threshold(self, notification_def):
+
+        return self.user_threshold.get(str(notification_def.id)) or {}
+
+    def get_form(self, *args_, **kwargs_):
+        """
+        Return form to validate metric thresholds input from user.
+        """
+        this = self
+        defs = this.definitions.all()
+        
+        class F(forms.Form):
+            def __init__(self, *args, **kwargs):
+                super(F, self).__init__(*args, **kwargs)
+                fields = self.fields
+                for d in defs:
+                    # def.get_fields() can return several fields,
+                    # especially when we have per-resource monitoring
+                    _fields = d.get_fields(this.get_user_threshold(d))
+                    for field in _fields:
+                        fields[field.name] = field
+
+        return F(*args_, **kwargs_)
+
+
+class NotificationMetricDefinition(models.Model):
+    FIELD_OPTION_MIN_VALUE = 'min_value'
+    FIELD_OPTION_MAX_VALUE = 'max_value'
+    FIELD_OPTION_MAX_TIMEOUT = 'max_timeout'
+    FIELD_OPTION_CHOICES = ((FIELD_OPTION_MIN_VALUE, _("Value must be above"),),
+                            (FIELD_OPTION_MAX_VALUE, _("Value must be below"),),
+                            (FIELD_OPTION_MAX_TIMEOUT, _("Last update must not be older than"),)
+                           )
+
+    notification_check = models.ForeignKey(NotificationCheck, related_name='definitions')
+    metric = models.ForeignKey(Metric, related_name='+')
+    use_service = models.BooleanField(null=False, default=False)
+    use_resource = models.BooleanField(null=False, default=False)
+    use_label = models.BooleanField(null=False, default=False)
+    use_ows_service = models.BooleanField(null=False, default=False)
+    field_option = models.CharField(max_length=32, 
+                                    choices=FIELD_OPTION_CHOICES, 
+                                    null=False, 
+                                    default=FIELD_OPTION_MIN_VALUE)
+
+    def get_fields(self, uthreshold):
+        out = []
+        fid_base = '{}_{}'.format(self.id, self.metric.name)
+        steps = uthreshold.get('steps')
+        min_, max_ = uthreshold.get('min'), uthreshold.get('max')
+
+        if steps:
+            field = forms.ChoiceField(choices=steps)
+        else:
+            field = forms.DecimalField(max_value=max_, 
+                                       min_value=min_,
+                                       max_digits=12,
+                                       decimal_places=2)
+        field.name = fid_base
+        out.append(field)
+        return out
+        
+
+
 
 class MetricNotificationCheck(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, related_name="monitoring_checks")

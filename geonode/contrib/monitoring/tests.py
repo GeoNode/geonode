@@ -1945,5 +1945,36 @@ class MonitoringChecksTestCase(TestCase):
         self.assertTrue(len(checks)> 0)
         self.assertTrue(len(checks), NotificationCheck.objects.all().count())
 
+
+
+    def test_notifications_api(self):
+        
         capi = CollectorAPI()
+        start = datetime.now()
+
+        start_aligned = align_period_start(start, self.service.check_interval)
+        end_aligned = start_aligned + self.service.check_interval
+
+
+        #for (metric_name, field_opt, use_service, 
+        #     use_resource, use_label, use_ows_service, 
+        #     minimum, maximum, thresholds,) in thresholds:
+
+        notifications_config = ('geonode is not working',
+                                'detects when requests are not handled',
+                                (('request.count', 'max_value', False, False,
+                                 False, False, 0, 10, None,),
+                                ('response.time', 'min_value', False, False,
+                                 False, False, 500, None, None,),))
+        nc = NotificationCheck.create(*notifications_config)
+        self.assertTrue(nc.definitions.all().count() == 2)
+
+        for nc in NotificationCheck.objects.all():
+            nc_form = nc.get_form()
+
+            self.assertTrue(nc_form)
+            self.assertTrue(nc_form.fields.keys())
+
+
         capi.emit_notifications(start)
+
