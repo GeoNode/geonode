@@ -595,7 +595,7 @@ class CollectorAPI(object):
             send_notification(users=users, label=AppConf.NOTIFICATION_NAME, extra_context=content)
 
     def get_notifications(self, for_timestamp=None):
-        notifications = NotificationCheck.check(for_timestamp=for_timestamp)
+        notifications = NotificationCheck.check_for(for_timestamp=for_timestamp)
         non_empty = [n for n in notifications if n[1]]
         return non_empty
 

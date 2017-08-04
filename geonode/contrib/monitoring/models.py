@@ -654,7 +654,7 @@ class NotificationCheck(models.Model):
         return checks
 
     @classmethod
-    def check(cls, for_timestamp=None):
+    def check_for(cls, for_timestamp=None):
         checked = []
         for n in cls.objects.all():
             checked.append((n, n.check_notifications(for_timestamp=for_timestamp),))
