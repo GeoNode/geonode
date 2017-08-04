@@ -874,11 +874,14 @@ class BuiltIns(object):
                     'storage.free', 'storage.total', 'storage.used',  # mountpoint is the label
                     'network.in', 'network.out', 'network.in.rate', 'network.out.rate',)
 
-    counters = ('request.count',  'network.in', 'network.out', 'response.error.count', 'cpu.usage',)
     rates = ('response.time', 'response.size', 'network.in.rate', 'network.out.rate', 'load.1m', 'load.5m',
-             'load.15m', 'cpu.usage.rate', 'cpu.usage.percent',)
-    values = ('request.ip', 'request.ua', 'request.ua.family', 'request.method',
-              'request.country', 'request.region', 'request.city', 'response.status', 'response.error.types',)
+             'load.15m', 'cpu.usage.rate', 'cpu.usage.percent', 'cpu.usage',
+             'storage.free', 'storage.total', 'storage.used',)
+    values = tuple()
+    counters = ('request.ip', 'request.ua', 'request.ua.family', 'request.method',
+                'request.count',  'network.in', 'network.out', 'response.error.count',
+                'request.country', 'request.region', 'request.city', 'response.status', 
+                'response.error.types',)
 
     unit_seconds = ('response.time', 'uptime', 'cpu.usage',)
     unit_bytes = ('response.size', 'network.in', 'network.out', 

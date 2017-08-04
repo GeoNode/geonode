@@ -1974,7 +1974,4 @@ class MonitoringChecksTestCase(TestCase):
 
             self.assertTrue(nc_form)
             self.assertTrue(nc_form.fields.keys())
-
-
         capi.emit_notifications(start)
-
