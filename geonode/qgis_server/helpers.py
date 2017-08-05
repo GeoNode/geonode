@@ -21,6 +21,7 @@ import logging
 import os
 import re
 import shutil
+import urllib
 from urlparse import urljoin
 
 import math
@@ -166,6 +167,9 @@ def tile_url_format(layer_name):
         kwargs={
             'layername': layer_name
         })
+    # unquote url
+    # so that {z}/{x}/{y} is not quoted
+    url = urllib.unquote(url)
     url = urljoin(settings.SITEURL, url)
     return url
 
