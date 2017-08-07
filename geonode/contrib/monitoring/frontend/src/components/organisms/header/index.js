@@ -15,7 +15,6 @@ const mapStateToProps = (state) => ({
   from: state.interval.from,
   interval: state.interval.interval,
   to: state.interval.to,
-  autoRefresh: state.autoRefresh.autoRefresh,
 });
 
 
@@ -28,14 +27,25 @@ class Header extends React.Component {
   static propTypes = {
     interval: PropTypes.number,
     setInterval: PropTypes.func.isRequired,
-    setAutoRefresh: PropTypes.func.isRequired,
     from: PropTypes.object,
     to: PropTypes.object,
-    autoRefresh: PropTypes.number,
   }
 
   constructor(props) {
     super(props);
+
+    this.state = {
+      autoRefresh: false,
+    };
+
+    this.get = (interval = this.props.interval) => {
+      const now = new Date();
+      const seconds = Math.floor(now.getSeconds() / 10) * 10;
+      now.setSeconds(seconds, 0);
+      const fromDate = new Date(now - interval * 1000);
+      this.props.setInterval(fromDate, now, interval);
+    };
+
     this.handleBack = () => {
       this.context.router.push('/');
     };
@@ -70,16 +80,37 @@ class Header extends React.Component {
     };
 
     this.handleAutoRefresh = () => {
-      if (this.props.autoRefresh > 0) {
-        this.props.setAutoRefresh({ autoRefresh: 0 });
+      if (this.state.autoRefresh) {
+        clearInterval(this.intervalID);
+        this.intervalID = undefined;
+        this.setState({ autoRefresh: false });
       } else {
-        this.props.setAutoRefresh({ autoRefresh: AUTO_REFRESH_INTERVAL });
+        this.intervalID = setInterval(this.get, AUTO_REFRESH_INTERVAL);
+        this.setState({ autoRefresh: true });
+        this.get();
       }
     };
   }
 
+  componentWillReceiveProps(nextProps) {
+    if (this.intervalID) {
+      if (nextProps.interval !== this.props.interval) {
+        clearInterval(this.intervalID);
+        this.intervalID = setInterval(
+          () => this.get(nextProps.interval),
+          AUTO_REFRESH_INTERVAL,
+        );
+      }
+    }
+  }
+
+  componentWillUnmount() {
+    clearInterval(this.intervalID);
+    this.intervalID = undefined;
+  }
+
   render() {
-    const autoRefreshStyle = this.props.autoRefresh > 0
+    const autoRefreshStyle = this.state.autoRefresh
                            ? { backgroundColor: '#dde' }
                            : undefined;
     return (

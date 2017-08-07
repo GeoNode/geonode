@@ -1,4 +1,4 @@
-import { INTERVAL, AUTO_REFRESH } from './constants';
+import { INTERVAL } from './constants';
 import { minute } from '../../../constants';
 
 
@@ -16,19 +16,6 @@ export function interval(
 ) {
   switch (action.type) {
     case INTERVAL:
-      return action.payload;
-    default:
-      return state;
-  }
-}
-
-
-export function autoRefresh(
-  state = { state: 'initial', autoRefresh: 0 },
-  action,
-) {
-  switch (action.type) {
-    case AUTO_REFRESH:
       return action.payload;
     default:
       return state;

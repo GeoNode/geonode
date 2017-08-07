@@ -9,7 +9,6 @@ import actions from './actions';
 
 
 const mapStateToProps = (state) => ({
-  autoRefresh: state.autoRefresh.autoRefresh,
   from: state.interval.from,
   interval: state.interval.interval,
   response: state.geonodeAverageResponse.response,
@@ -20,7 +19,6 @@ const mapStateToProps = (state) => ({
 @connect(mapStateToProps, actions)
 class GeonodeData extends React.Component {
   static propTypes = {
-    autoRefresh: PropTypes.number,
     from: PropTypes.object,
     get: PropTypes.func.isRequired,
     interval: PropTypes.number,
@@ -42,9 +40,6 @@ class GeonodeData extends React.Component {
 
   componentWillMount() {
     this.get();
-    if (this.props.autoRefresh && this.props.autoRefresh > 0) {
-      this.intervalID = setInterval(this.get, this.props.autoRefresh);
-    }
   }
 
   componentWillReceiveProps(nextProps) {
@@ -52,25 +47,11 @@ class GeonodeData extends React.Component {
       if (nextProps.from && nextProps.from !== this.props.from) {
         this.get(nextProps.from, nextProps.to, nextProps.interval);
       }
-      if (nextProps.autoRefresh !== undefined) {
-        if (nextProps.autoRefresh !== this.props.autoRefresh) {
-          if (nextProps.autoRefresh > 0) {
-            this.intervalID = setInterval(this.get, nextProps.autoRefresh);
-          } else {
-            clearInterval(this.intervalID);
-            this.intervalID = undefined;
-          }
-        }
-      }
     }
   }
 
   componentWillUnmount() {
     this.props.reset();
-    if (this.intervalID) {
-      clearInterval(this.intervalID);
-      this.intervalID = undefined;
-    }
   }
 
   render() {

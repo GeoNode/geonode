@@ -1,5 +1,5 @@
 import { createAction } from 'redux-actions';
-import { INTERVAL, AUTO_REFRESH } from './constants';
+import { INTERVAL } from './constants';
 import { minute } from '../../../constants';
 
 
@@ -12,15 +12,7 @@ const setInterval = createAction(
 );
 
 
-const resetAutoRefresh = createAction(AUTO_REFRESH, () => ({ state: 'initial' }));
-
-
-const setAutoRefresh = createAction(AUTO_REFRESH, (autoRefresh) => (autoRefresh));
-
-
 export default {
-  resetAutoRefresh,
-  resetInterval,
-  setAutoRefresh,
   setInterval,
+  resetInterval,
 };

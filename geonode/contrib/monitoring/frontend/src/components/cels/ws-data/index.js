@@ -43,11 +43,18 @@ class WSData extends React.Component {
   }
 
   componentWillReceiveProps(nextProps) {
-    if (
-      this.props.selected !== nextProps.selected
-      || nextProps.from !== this.props.from
-    ) {
-      this.get();
+    if (nextProps.selected) {
+      if (
+        this.props.selected !== nextProps.selected
+        || nextProps.from !== this.props.from
+      ) {
+        this.get(
+          nextProps.from,
+          nextProps.to,
+          nextProps.interval,
+          nextProps.selected,
+        );
+      }
     }
   }
 
