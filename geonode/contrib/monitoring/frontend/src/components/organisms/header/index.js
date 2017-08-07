@@ -37,7 +37,7 @@ class Header extends React.Component {
   constructor(props) {
     super(props);
     this.handleBack = () => {
-      this.context.router.goBack();
+      this.context.router.push('/');
     };
 
     this.handleMinute = () => {

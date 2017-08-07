@@ -1,7 +1,7 @@
 import { createAction } from 'redux-actions';
-import { fetch, formatApiDate } from '../../../../utils';
-import apiUrl from '../../../../backend';
-import { WS_SERVICE_DATA } from '../constants';
+import { fetch, formatApiDate } from '../../../utils';
+import apiUrl from '../../../backend';
+import WS_SERVICE_DATA from './constants';
 
 
 const reset = createAction(
@@ -39,7 +39,7 @@ const get = (from, to, interval, service) =>
     dispatch(begin());
     const formatedFrom = formatApiDate(from);
     const formatedTo = formatApiDate(to);
-    let url = `${apiUrl}/metric_data/cpu.usage.percent/?valid_from=${formatedFrom}`;
+    let url = `${apiUrl}/metric_data/response.time/?valid_from=${formatedFrom}`;
     url += `&valid_to=${formatedTo}&interval=${interval}&ows_service=${service}`;
     fetch({ url })
       .then(response => {
