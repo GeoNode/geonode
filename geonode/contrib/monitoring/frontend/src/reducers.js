@@ -9,6 +9,7 @@ import { geonodeErrorSequence } from './components/organisms/geonode-analytics/r
 import { geonodeCpuSequence } from './components/organisms/geonode-status/reducers';
 import { geonodeMemorySequence } from './components/organisms/geonode-status/reducers';
 import { interval, autoRefresh } from './components/organisms/header/reducers';
+import { wsService, wsServices } from './components/molecules/ws-service-select/reducers';
 import uptime from './components/cels/uptime/reducers';
 
 
@@ -27,6 +28,8 @@ const reducers = {
   notifications,
   theme,
   uptime,
+  wsService,
+  wsServices,
 };
 
 

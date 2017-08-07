@@ -1,6 +1,7 @@
 import React from 'react';
 import HoverPaper from '../../atoms/hover-paper';
 import HR from '../../atoms/hr';
+import WSServiceSelect from '../../molecules/ws-service-select';
 import ResponseTime from '../../cels/response-time';
 import Throughput from '../../cels/throughput';
 import ErrorsRate from '../../cels/errors-rate';
@@ -23,6 +24,7 @@ class WSAnalytics extends React.Component {
     return (
       <HoverPaper style={styles.content}>
         <h3>W*S Analytics</h3>
+        <WSServiceSelect />
         <ResponseTime average={3} max={11} last={7} data={data} />
         <HR />
         <Throughput total={7} data={data} />
