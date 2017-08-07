@@ -8,8 +8,8 @@ import actions from './actions';
 
 
 const mapStateToProps = (state) => ({
-  cpu: state.geonodeCpuStatus.response,
-  mem: state.geonodeMemStatus.response,
+  cpu: state.geoserverCpuStatus.response,
+  mem: state.geoserverMemStatus.response,
   from: state.interval.from,
   interval: state.interval.interval,
   to: state.interval.to,
