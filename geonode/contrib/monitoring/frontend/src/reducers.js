@@ -3,6 +3,8 @@ import theme from './containers/reducers';
 import { backend, notifications } from './containers/app/reducers';
 import geonodeAverageResponse from './components/cels/geonode-data/reducers';
 import { geonodeCpuStatus, geonodeMemStatus } from './components/cels/geonode-status/reducers';
+import { geoserverCpuStatus } from './components/cels/geoserver-status/reducers';
+import { geoserverMemStatus } from './components/cels/geoserver-status/reducers';
 import { geonodeResponseSequence } from './components/organisms/geonode-analytics/reducers';
 import { geonodeThroughputSequence } from './components/organisms/geonode-analytics/reducers';
 import { geonodeErrorSequence } from './components/organisms/geonode-analytics/reducers';
@@ -24,6 +26,8 @@ const reducers = {
   geonodeMemorySequence,
   geonodeResponseSequence,
   geonodeThroughputSequence,
+  geoserverCpuStatus,
+  geoserverMemStatus,
   interval,
   notifications,
   theme,

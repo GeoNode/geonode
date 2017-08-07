@@ -48,7 +48,7 @@ class GeonodeStatus extends React.Component {
 
   componentWillReceiveProps(nextProps) {
     if (nextProps) {
-      if (nextProps.from && nextProps.interval !== this.props.interval) {
+      if (nextProps.from && nextProps.from !== this.props.from) {
         this.get(nextProps.from, nextProps.to, nextProps.interval);
       }
     }
