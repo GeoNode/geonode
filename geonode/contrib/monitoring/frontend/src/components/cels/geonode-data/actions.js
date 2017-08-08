@@ -40,7 +40,7 @@ const get = (from, to, interval) =>
     const formatedFrom = formatApiDate(from);
     const formatedTo = formatApiDate(to);
     let url = `${apiUrl}/metric_data/response.time/?valid_from=${formatedFrom}`;
-    url += `&valid_to=${formatedTo}&interval=${interval}&service=local-geonode`;
+    url += `&valid_to=${formatedTo}&interval=${interval}`;
     fetch({ url })
       .then(response => {
         dispatch(success(response));
