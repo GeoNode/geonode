@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React from 'react';
 import Header from '../../components/organisms/header';
 import GeonodeAnalytics from '../../components/organisms/geonode-analytics';
 import GeonodeLayersAnalytics from '../../components/organisms/geonode-layers-analytics';
@@ -8,7 +8,7 @@ import MostActiveIPs from '../../components/organisms/most-active-ips';
 import styles from './styles';
 
 
-class SWPerf extends Component {
+class SWPerf extends React.Component {
   render() {
     return (
       <div style={styles.root}>

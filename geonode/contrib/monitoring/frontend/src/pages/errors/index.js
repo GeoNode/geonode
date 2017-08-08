@@ -4,7 +4,7 @@ import ErrorList from '../../components/organisms/error-list';
 import styles from './styles';
 
 
-class SWPerf extends Component {
+class Errors extends Component {
   render() {
     return (
       <div style={styles.root}>
@@ -16,4 +16,4 @@ class SWPerf extends Component {
 }
 
 
-export default SWPerf;
+export default Errors;

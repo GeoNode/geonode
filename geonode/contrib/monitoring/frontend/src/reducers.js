@@ -14,11 +14,13 @@ import { interval } from './components/organisms/header/reducers';
 import { wsService, wsServices } from './components/molecules/ws-service-select/reducers';
 import wsServiceData from './components/cels/ws-data/reducers';
 import errorList from './components/organisms/error-list/reducers';
+import errorDetails from './components/organisms/error-detail/reducers';
 import uptime from './components/cels/uptime/reducers';
 
 
 const reducers = {
   backend,
+  errorDetails,
   errorList,
   geonodeAverageResponse,
   geonodeCpuSequence,

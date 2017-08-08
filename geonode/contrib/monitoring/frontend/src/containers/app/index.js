@@ -7,6 +7,7 @@ import Home from '../../pages/home';
 import SWPerf from '../../pages/swperf';
 import HWPerf from '../../pages/hwperf';
 import Errors from '../../pages/errors';
+import ErrorDetails from '../../pages/error-details';
 import reset from '../../reset.js';
 import fonts from '../../fonts/fonts.js';
 import actions from './actions';
@@ -53,6 +54,12 @@ export default {
           indexRoute: {
             component: Errors,
           },
+          childRoutes: [
+            {
+              path: ':errorId',
+              component: ErrorDetails,
+            },
+          ],
         },
         {
           path: 'performance/software',
