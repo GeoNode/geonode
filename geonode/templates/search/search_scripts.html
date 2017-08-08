@@ -21,7 +21,7 @@
   $("body").attr('ng-controller', 'geonode_search_controller');
   OWNERS_ENDPOINT = '{% url 'api_dispatch_list' api_name='api' resource_name='owners' %}';
   CATEGORIES_ENDPOINT = '{% url 'api_combined' apiname='categories' %}';
-  KEYWORDS_ENDPOINT = '{% url 'api_combined' apiname='keywords' %}';
+  KEYWORDS_ENDPOINT = '{% url 'api_dispatch_list' api_name='api' resource_name='keywords' %}';
   REGIONS_ENDPOINT = '{% url 'api_combined' apiname='regions' %}';
   HAYSTACK_SEARCH = "{{ HAYSTACK_SEARCH }}".toLowerCase() === "true";
   HAYSTACK_FACET_COUNTS = "{{ HAYSTACK_FACET_COUNTS }}".toLowerCase() === "true";

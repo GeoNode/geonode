@@ -35,7 +35,7 @@ def api_combined(request, apiname):
     tostrip = 'limit='+str(request.GET.get('limit'))+'&offset='+str(request.GET.get('offset'))
     apiquery = '?'.join(current_url.split('?')[1:]).replace(tostrip,'').rstrip('&').lstrip('&')
     local_url = urljoin(current_url,'../')
-    urls_to_visit = settings.LIPAD_INSTANCES
+    urls_to_visit = settings.LIPAD_INSTANCES + ['https://lipad.dream.upd.edu.ph/']
     output = {}
     # output = []
     for each_url in urls_to_visit:
@@ -55,8 +55,8 @@ def api_combined(request, apiname):
                             output[each_key][each_meta_key] = int(output[each_key][each_meta_key])+int(data[each_key][each_meta_key])
                 except:##dict has no value then assign's u'meta'
                     output[each_key] = data[each_key]
-        except HTTPError:
-            continue
+        except:
+            pass
     return HttpResponse(json.dumps(output),mimetype='application/json',status=200)
 
 def api_autocomplete(request):
