@@ -327,7 +327,7 @@ class CollectorAPI(object):
 
 
         rows = q[:100]
-        
+
         metric_values.update({'metric': metric_name, 'service': service})
         for row in rows:
             label = row['label']
@@ -437,8 +437,8 @@ class CollectorAPI(object):
             self.set_metric_values('response.size', 'response_size', **metric_defaults)
             self.set_metric_values('response.status', 'response_status', **metric_defaults)
             self.set_metric_values('request.method', 'request_method', **metric_defaults)
-            self.set_error_values(_requests, valid_from, valid_to, service=service, resource=resource) 
-            
+            self.set_error_values(_requests, valid_from, valid_to, service=service, resource=resource)
+
             # ows_services may be subset of all requests in a batch, so we do calculation separately
             if ows_services:
                 ows_requests = _requests.filter(ows_service__isnull=False)
@@ -598,4 +598,3 @@ class CollectorAPI(object):
         notifications = NotificationCheck.check_for(for_timestamp=for_timestamp)
         non_empty = [n for n in notifications if n[1]]
         return non_empty
-

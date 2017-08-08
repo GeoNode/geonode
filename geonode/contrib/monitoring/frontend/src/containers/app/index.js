@@ -6,6 +6,7 @@ import Template from '../../templates/default';
 import Home from '../../pages/home';
 import SWPerf from '../../pages/swperf';
 import HWPerf from '../../pages/hwperf';
+import Errors from '../../pages/errors';
 import reset from '../../reset.js';
 import fonts from '../../fonts/fonts.js';
 import actions from './actions';
@@ -47,6 +48,12 @@ export default {
         component: Home,
       },
       childRoutes: [
+        {
+          path: 'errors',
+          indexRoute: {
+            component: Errors,
+          },
+        },
         {
           path: 'performance/software',
           indexRoute: {

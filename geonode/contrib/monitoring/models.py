@@ -228,9 +228,9 @@ class OWSService(models.Model):
     OWS_OTHER = 'other'
     OWS_ALL = 'all'
     OWS_TYPES = zip(_ows_types, _ows_types) + [(OWS_ALL, _("All"))] + [(OWS_OTHER, _("Other"))]
-    name = models.CharField(max_length=16, unique=True, 
-                            choices=OWS_TYPES, 
-                            null=False, 
+    name = models.CharField(max_length=16, unique=True,
+                            choices=OWS_TYPES,
+                            null=False,
                             blank=False)
 
     def __str__(self):
@@ -659,7 +659,7 @@ class NotificationCheck(models.Model):
         for n in cls.objects.all():
             checked.append((n, n.check_notifications(for_timestamp=for_timestamp),))
         return checked
-    
+
     @classmethod
     def get_steps(cls, min_, max_, thresholds):
         if isinstance(thresholds, (types.IntType, types.LongType, types.FloatType, Decimal,)):
@@ -671,7 +671,7 @@ class NotificationCheck(models.Model):
             while current < max_:
                 thresholds.append(current)
                 current += step
-                
+
         if isinstance(thresholds, (tuple, types.GeneratorType,)):
             thresholds = list(thresholds)
         elif isinstance(thresholds, list) or thresholds is None:
@@ -687,8 +687,8 @@ class NotificationCheck(models.Model):
             raise ValueError("Alert definition already exists")
         inst.description=description
         user_thresholds = {}
-        for (metric_name, field_opt, use_service, 
-             use_resource, use_label, use_ows_service, 
+        for (metric_name, field_opt, use_service,
+             use_resource, use_label, use_ows_service,
              minimum, maximum, thresholds,) in thresholds:
 
             # metric_name is a string for metric.name
@@ -707,14 +707,14 @@ class NotificationCheck(models.Model):
             #    0, None, (100, 200, 500, 1000,)
 
             metric = Metric.objects.get(name=metric_name)
-            nm = NotificationMetricDefinition.objects.create(notification_check=inst, 
-                                                             metric=metric, 
+            nm = NotificationMetricDefinition.objects.create(notification_check=inst,
+                                                             metric=metric,
                                                              field_option=field_opt)
-            user_thresholds[nm.id] = {'min': minimum, 
+            user_thresholds[nm.id] = {'min': minimum,
                                       'max': maximum,
                                       'metric': metric_name,
                                       'steps': cls.get_steps(minimum, maximum, thresholds)}
-        print(user_thresholds)                                      
+        print(user_thresholds)
         inst.user_threshold = user_thresholds
         inst.save()
         return inst
@@ -729,7 +729,7 @@ class NotificationCheck(models.Model):
         """
         this = self
         defs = this.definitions.all()
-        
+
         class F(forms.Form):
             def __init__(self, *args, **kwargs):
                 super(F, self).__init__(*args, **kwargs)
@@ -759,9 +759,9 @@ class NotificationMetricDefinition(models.Model):
     use_resource = models.BooleanField(null=False, default=False)
     use_label = models.BooleanField(null=False, default=False)
     use_ows_service = models.BooleanField(null=False, default=False)
-    field_option = models.CharField(max_length=32, 
-                                    choices=FIELD_OPTION_CHOICES, 
-                                    null=False, 
+    field_option = models.CharField(max_length=32,
+                                    choices=FIELD_OPTION_CHOICES,
+                                    null=False,
                                     default=FIELD_OPTION_MIN_VALUE)
 
     def get_fields(self, uthreshold):
@@ -773,14 +773,14 @@ class NotificationMetricDefinition(models.Model):
         if steps:
             field = forms.ChoiceField(choices=steps)
         else:
-            field = forms.DecimalField(max_value=max_, 
+            field = forms.DecimalField(max_value=max_,
                                        min_value=min_,
                                        max_digits=12,
                                        decimal_places=2)
         field.name = fid_base
         out.append(field)
         return out
-        
+
 
 
 
@@ -880,11 +880,11 @@ class BuiltIns(object):
     values = tuple()
     counters = ('request.ip', 'request.ua', 'request.ua.family', 'request.method',
                 'request.count',  'network.in', 'network.out', 'response.error.count',
-                'request.country', 'request.region', 'request.city', 'response.status', 
+                'request.country', 'request.region', 'request.city', 'response.status',
                 'response.error.types',)
 
     unit_seconds = ('response.time', 'uptime', 'cpu.usage',)
-    unit_bytes = ('response.size', 'network.in', 'network.out', 
+    unit_bytes = ('response.size', 'network.in', 'network.out',
                   'mem.free', 'mem.usage', 'mem.buffers', 'mem.all',)
     unit_bps = ('network.in.rate', 'network.out.rate',)
     unit_rate = ('cpu.usage.rate', 'load.1m', 'load.5m', 'load.15m',)

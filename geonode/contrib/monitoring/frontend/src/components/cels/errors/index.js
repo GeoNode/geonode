@@ -9,6 +9,18 @@ class Errors extends React.Component {
     style: PropTypes.object,
   }
 
+  static contextTypes = {
+    router: PropTypes.object.isRequired,
+  }
+
+  constructor(props) {
+    super(props);
+
+    this.handleClick = () => {
+      this.context.router.push('/errors');
+    };
+  }
+
   render() {
     const style = {
       ...styles.content,
@@ -16,8 +28,10 @@ class Errors extends React.Component {
     };
     return (
       <HoverPaper style={style}>
-        <h3>Errors</h3>
-        <span style={styles.stat}>3 Errors occured</span>
+        <div onClick={this.handleClick} style={styles.clickable}>
+          <h3>Errors</h3>
+          <span style={styles.stat}>3 Errors occured</span>
+        </div>
       </HoverPaper>
     );
   }
