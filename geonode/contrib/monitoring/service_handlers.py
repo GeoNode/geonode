@@ -131,7 +131,7 @@ class BaseServiceHandler(object):
     def mark_as_checked(self):
         self.service.last_check = self.now
         self.service.save()
-        
+
     @classmethod
     def get_name(cls):
         n = cls.__name__
@@ -196,7 +196,13 @@ class HostGeoNodeService(BaseServiceHandler):
         return data
 
 
-services = dict((c.get_name(), c,) for c in (GeoNodeService, GeoServerService, HostGeoNodeService,))
+services = dict(
+    (c.get_name(), c,)
+    for c in (
+            GeoNodeService,
+            GeoServerService,
+            HostGeoNodeService,
+            HostGeoServerService,))
 
 
 def get_for_service(sname):

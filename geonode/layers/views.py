@@ -221,7 +221,7 @@ def layer_upload(request, template='upload/layer_upload.html'):
         else:
             status_code = 400
         if settings.MONITORING_ENABLED:
-            request.add_resource('layer', saved_layer.altername if saved_layer else name)
+            request.add_resource('layer', saved_layer.alternate if saved_layer else name)
         return HttpResponse(
             json.dumps(out),
             content_type='application/json',
@@ -728,6 +728,7 @@ def layer_metadata(
         "metadataxsl": metadataxsl,
         "freetext_readonly": getattr(settings, 'FREETEXT_KEYWORDS_READONLY', False),
         "metadata_author_groups": metadata_author_groups,
+        "GROUP_MANDATORY_RESOURCES": getattr(settings, 'GROUP_MANDATORY_RESOURCES', False),
     }))
 
 
@@ -926,7 +927,11 @@ def layer_thumbnail(request, layername):
         layer_obj = _resolve_layer(request, layername)
 
         try:
-            preview = json.loads(request.body).get('preview', None)
+            try:
+                preview = json.loads(request.body).get('preview', None)
+            except:
+                preview = None
+
             if preview and preview == 'react':
                 format, image = json.loads(
                     request.body)['image'].split(';base64,')
