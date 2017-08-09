@@ -1,6 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
+import { Tabs, Tab } from 'material-ui/Tabs';
 import HoverPaper from '../../atoms/hover-paper';
 import styles from './styles';
 import actions from './actions';
@@ -27,7 +28,9 @@ class ErrorDetail extends React.Component {
 
   render() {
     const errorDetails = this.props.errorDetails;
-    const result = {};
+    const result = {
+      client: {},
+    };
     if (errorDetails) {
       result.date = `Date: ${errorDetails.created}`;
       result.service = `Service: ${errorDetails.service.name}`;
@@ -39,6 +42,12 @@ class ErrorDetail extends React.Component {
         result.url = <span>URL: <a href={url}>{url}</a></span>;
         const response = errorDetails.request.response;
         result.errorCode = `Status code: ${response.status}`;
+        if (errorDetails.request.client) {
+          const client = errorDetails.request.client;
+          result.client.ip = `Clint IP: ${client.ip}`;
+          result.client.userAgent = `Client Browser: ${client.user_agent}`;
+          result.client.userAgentFamily = `Client Browser Family: ${client.user_agent_family}`;
+        }
       }
     }
     return (
@@ -46,12 +55,28 @@ class ErrorDetail extends React.Component {
         <div style={styles.header}>
           <h3 style={styles.title}>Error id: {this.props.errorId}</h3>
         </div>
-        <div>{result.date}</div>
-        <div>{result.service}</div>
-        <div>{result.errorType}</div>
-        <div>{result.errorCode}</div>
-        <div>{result.url}</div>
-        <pre>{result.errorData}</pre>
+
+        <Tabs>
+          <Tab label="Metadata">
+            <div style={styles.tab}>
+              <div>{result.date}</div>
+              <div>{result.service}</div>
+              <div>{result.errorType}</div>
+              <div>{result.errorCode}</div>
+              <div>{result.url}</div>
+            </div>
+          </Tab>
+          <Tab label="Client">
+            <div style={styles.tab}>
+              <div>{result.client.ip}</div>
+              <div>{result.client.userAgent}</div>
+              <div>{result.client.userAgentFamily}</div>
+            </div>
+          </Tab>
+        </Tabs>
+
+        <h3>Log</h3>
+        <pre style={styles.log}>{result.errorData}</pre>
       </HoverPaper>
     );
   }

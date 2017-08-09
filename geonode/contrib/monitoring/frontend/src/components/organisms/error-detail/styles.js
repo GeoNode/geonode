@@ -8,13 +8,18 @@ export default {
   header: {
     display: 'flex',
     justifyContent: 'space-between',
+    marginBottom: 10,
   },
 
   title: {
     display: 'inline',
   },
 
-  icon: {
-    minWidth: 36,
+  tab: {
+    padding: 10,
+  },
+
+  log: {
+    marginTop: 10,
   },
 };
