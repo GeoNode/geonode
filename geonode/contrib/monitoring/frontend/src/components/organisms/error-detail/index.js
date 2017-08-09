@@ -32,7 +32,15 @@ class ErrorDetail extends React.Component {
       client: {},
     };
     if (errorDetails) {
-      result.date = `Date: ${errorDetails.created}`;
+      const date = new Date(errorDetails.created);
+      const year = date.getFullYear();
+      const month = `0${date.getMonth() + 1}`.slice(-2);
+      const day = `0${date.getDate()}`.slice(-2);
+      const hours = `0${date.getHours()}`.slice(-2);
+      const minutes = `0${date.getMinutes()}`.slice(-2);
+      const seconds = `0${date.getSeconds()}`.slice(-2);
+      const formatedDate = `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
+      result.date = `Date: ${formatedDate}`;
       result.service = `Service: ${errorDetails.service.name}`;
       result.errorType = `Type: ${errorDetails.error_type}`;
       result.errorData = errorDetails.error_data;
