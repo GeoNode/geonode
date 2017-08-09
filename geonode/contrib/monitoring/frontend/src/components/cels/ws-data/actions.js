@@ -39,7 +39,6 @@ const get = (from, to, interval, service) =>
     dispatch(begin());
     const formatedFrom = formatApiDate(from);
     const formatedTo = formatApiDate(to);
-    console.log('TODO: implement service in cels/ws-data/actions', service);
     let url = `${apiUrl}/metric_data/response.time/?valid_from=${formatedFrom}`;
     url += `&valid_to=${formatedTo}&interval=${interval}`;
     fetch({ url })
