@@ -13,6 +13,9 @@ import { geonodeMemorySequence } from './components/organisms/geonode-status/red
 import { interval } from './components/organisms/header/reducers';
 import { wsService, wsServices } from './components/molecules/ws-service-select/reducers';
 import wsServiceData from './components/cels/ws-data/reducers';
+import { wsResponseSequence } from './components/organisms/ws-analytics/reducers';
+import { wsThroughputSequence } from './components/organisms/ws-analytics/reducers';
+import { wsErrorSequence } from './components/organisms/ws-analytics/reducers';
 import errorList from './components/organisms/error-list/reducers';
 import errorDetails from './components/organisms/error-detail/reducers';
 import uptime from './components/cels/uptime/reducers';
@@ -36,9 +39,12 @@ const reducers = {
   notifications,
   theme,
   uptime,
+  wsErrorSequence,
+  wsResponseSequence,
   wsService,
   wsServiceData,
   wsServices,
+  wsThroughputSequence,
 };
 
 

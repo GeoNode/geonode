@@ -1,32 +1,32 @@
 import { createAction } from 'redux-actions';
-import { fetch, formatApiDate } from '../../../utils';
-import apiUrl from '../../../backend';
-import WS_SERVICE_DATA from './constants';
+import { fetch, formatApiDate, sequenceInterval } from '../../../../utils';
+import apiUrl from '../../../../backend';
+import { WS_THROUGHPUT_SEQUENCE } from '../constants';
 
 
 const reset = createAction(
-  WS_SERVICE_DATA,
+  WS_THROUGHPUT_SEQUENCE,
   () => ({ status: 'initial' })
 );
 
 
 export const begin = createAction(
-  WS_SERVICE_DATA,
+  WS_THROUGHPUT_SEQUENCE,
   () => ({ status: 'pending' })
 );
 
 
 const success = createAction(
-  WS_SERVICE_DATA,
-  response => ({
-    response,
+  WS_THROUGHPUT_SEQUENCE,
+  throughput => ({
+    throughput,
     status: 'success',
   })
 );
 
 
 const fail = createAction(
-  WS_SERVICE_DATA,
+  WS_THROUGHPUT_SEQUENCE,
   error => ({
     status: 'error',
     error,
@@ -34,18 +34,18 @@ const fail = createAction(
 );
 
 
-const get = (from, to, interval, service) =>
-  (dispatch) => {
+const get = (from, to) =>
+  (dispatch, getState) => {
     dispatch(begin());
     const formatedFrom = formatApiDate(from);
     const formatedTo = formatApiDate(to);
-    console.log('TODO: implement service in cels/ws-data/actions', service);
-    let url = `${apiUrl}/metric_data/response.time/?valid_from=${formatedFrom}`;
+    const interval = sequenceInterval(getState);
+    let url = `${apiUrl}/metric_data/request.count/?valid_from=${formatedFrom}`;
     url += `&valid_to=${formatedTo}&interval=${interval}`;
     fetch({ url })
-      .then(response => {
-        dispatch(success(response));
-        return response;
+      .then(throughput => {
+        dispatch(success(throughput));
+        return throughput;
       })
       .catch(error => {
         dispatch(fail(error.message));

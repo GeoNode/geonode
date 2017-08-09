@@ -5,6 +5,7 @@ import AverageResponseTime from '../../molecules/average-response-time';
 import MaxResponseTime from '../../molecules/max-response-time';
 import TotalRequests from '../../molecules/total-requests';
 import WSServiceSelect from '../../molecules/ws-service-select';
+import { getResponseData } from '../../../utils';
 import styles from './styles';
 import actions from './actions';
 
@@ -62,24 +63,7 @@ class WSData extends React.Component {
     let averageResponseTime = 0;
     let maxResponseTime = 0;
     let totalRequests = 0;
-
-    if (this.props.response) {
-      averageResponseTime = undefined;
-      maxResponseTime = undefined;
-      totalRequests = undefined;
-      const data = this.props.response.data.data;
-      const d1length = data.length;
-      if (d1length > 0) {
-        const d2 = data[d1length - 1];
-        const d2length = d2.data.length;
-        if (d2length > 0) {
-          const metric = d2.data[d2length - 1];
-          maxResponseTime = Math.floor(metric.max);
-          averageResponseTime = Math.floor(metric.val);
-          totalRequests = metric.samples_count;
-        }
-      }
-    }
+    [averageResponseTime, maxResponseTime, totalRequests] = getResponseData(this.props.response);
     return (
       <div style={styles.content}>
         <h5>W*S Data Overview</h5>

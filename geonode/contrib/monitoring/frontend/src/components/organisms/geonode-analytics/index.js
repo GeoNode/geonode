@@ -6,6 +6,7 @@ import HR from '../../atoms/hr';
 import ResponseTime from '../../cels/response-time';
 import Throughput from '../../cels/throughput';
 import ErrorsRate from '../../cels/errors-rate';
+import { getCount, getTime } from '../../../utils';
 import styles from './styles';
 import actions from './actions';
 
@@ -94,36 +95,9 @@ class GeonodeAnalytics extends React.Component {
         }
       }
     }
-    if (
-      this.props.responses
-      && this.props.responses.data
-      && this.props.responses.data.data
-    ) {
-      responseData = this.props.responses.data.data.map(element => ({
-        name: element.valid_from,
-        time: element.data.length > 0 ? Math.floor(element.data[element.data.length - 1].val) : 0,
-      }));
-    }
-    if (
-      this.props.throughputs
-      && this.props.throughputs.data
-      && this.props.throughputs.data.data
-    ) {
-      throughputData = this.props.throughputs.data.data.map(element => ({
-        name: element.valid_from,
-        count: element.data.length > 0 ? Math.floor(element.data[element.data.length - 1].val) : 0,
-      }));
-    }
-    if (
-      this.props.errors
-      && this.props.errors.data
-      && this.props.errors.data.data
-    ) {
-      errorRateData = this.props.errors.data.data.map(element => ({
-        name: element.valid_from,
-        count: element.data.length > 0 ? Math.floor(element.data[element.data.length - 1].val) : 0,
-      }));
-    }
+    responseData = getTime(this.props.responses);
+    throughputData = getCount(this.props.throughputs);
+    errorRateData = getCount(this.props.errors);
     return (
       <HoverPaper style={styles.content}>
         <h3>Geonode Analytics</h3>

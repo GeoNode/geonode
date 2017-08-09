@@ -66,3 +66,59 @@ export const sequenceInterval = (getState) => {
   }
   return seqInterval;
 };
+
+
+export const getResponseData = (response) => {
+  let averageResponseTime;
+  let maxResponseTime;
+  let totalRequests;
+  if (!response || !response.data) {
+    return [averageResponseTime, maxResponseTime, totalRequests];
+  }
+  const rawData = response.data.data;
+  const rawDataLength = rawData.length;
+  if (rawDataLength > 0) {
+    let dataIndex = rawDataLength - 1;
+    let data = rawData[dataIndex];
+    if (!data.data || data.data.length === 0) {
+      if (rawDataLength > 1) {
+        --dataIndex;
+      }
+      data = rawData[dataIndex];
+    }
+    const dataLength = data.data.length;
+    if (dataLength > 0) {
+      const metric = data.data[dataLength - 1];
+      maxResponseTime = Math.floor(metric.max);
+      averageResponseTime = Math.floor(metric.val);
+      totalRequests = metric.samples_count;
+    }
+  }
+  return [averageResponseTime, maxResponseTime, totalRequests];
+};
+
+
+export const getCount = (responses) => {
+  let result = [];
+  if (!responses || !responses.data || !responses.data.data) {
+    return result;
+  }
+  result = responses.data.data.map(element => ({
+    name: element.valid_from,
+    count: element.data.length > 0 ? Math.floor(element.data[element.data.length - 1].val) : 0,
+  }));
+  return result;
+};
+
+
+export const getTime = (responses) => {
+  let result = [];
+  if (!responses || !responses.data || !responses.data.data) {
+    return result;
+  }
+  result = responses.data.data.map(element => ({
+    name: element.valid_from,
+    time: element.data.length > 0 ? Math.floor(element.data[element.data.length - 1].val) : 0,
+  }));
+  return result;
+};
