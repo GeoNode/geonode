@@ -26,15 +26,31 @@ class ErrorDetail extends React.Component {
   }
 
   render() {
-    const errorData = this.props.errorDetails
-                     ? this.props.errorDetails.error_data
-                     : '';
+    const errorDetails = this.props.errorDetails;
+    const result = {};
+    if (errorDetails) {
+      result.date = `Date: ${errorDetails.created}`;
+      result.service = `Service: ${errorDetails.service.name}`;
+      result.errorType = `Type: ${errorDetails.error_type}`;
+      result.errorData = errorDetails.error_data;
+      if (errorDetails.request) {
+        const request = errorDetails.request.request;
+        result.url = `URL: ${request.host}/${request.path}`;
+        const response = errorDetails.request.response;
+        result.errorCode = `Status code: ${response.status}`;
+      }
+    }
     return (
       <HoverPaper style={styles.content}>
         <div style={styles.header}>
-          <h3 style={styles.title}>Error {this.props.errorId}</h3>
+          <h3 style={styles.title}>Error id: {this.props.errorId}</h3>
         </div>
-        {errorData}
+        <div>{result.date}</div>
+        <div>{result.service}</div>
+        <div>{result.errorType}</div>
+        <div>{result.errorCode}</div>
+        <div>{result.url}</div>
+        <pre>{result.errorData}</pre>
       </HoverPaper>
     );
   }
