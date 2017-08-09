@@ -1,6 +1,5 @@
 import React from 'react';
 import { Map, TileLayer, Marker, Popup } from 'react-leaflet';
-import styles from './styles';
 
 
 class WorldMap extends React.Component {

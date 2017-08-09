@@ -2,7 +2,6 @@ const path = require('path');
 const precss = require('precss');
 const autoprefixer = require('autoprefixer');
 
-const localIdentName = '[path]___[name]__[local]___[hash:base64:5]';
 
 module.exports = {
   entry: ['./src/index'],
@@ -28,10 +27,16 @@ module.exports = {
         include: path.join(__dirname, 'src'),
       },
       {
+        test: /\.geojson$/,
+        loaders: ['json'],
+        exclude: /node_modules/,
+        include: path.join(__dirname, 'src'),
+      },
+      {
         test: /\.css$/,
         loaders: [
           'style?sourceMap',
-          `css?sourceMap&modules&importLoaders=1&localIdentName=${localIdentName}`,
+          `css?sourceMap&modules&importLoaders=1`,
           'resolve-url',
           'postcss',
         ],
