@@ -71,7 +71,7 @@ class ErrorList extends React.Component {
           <h3 style={styles.title}>Errors</h3>
         </div>
         <Table onCellClick={this.handleClick}>
-          <TableHeader>
+          <TableHeader displaySelectAll={false}>
             <TableRow>
               <TableHeaderColumn>ID</TableHeaderColumn>
               <TableHeaderColumn>Type</TableHeaderColumn>
