@@ -233,36 +233,7 @@
         {% if OGC_SERVER.default.BACKEND == 'geonode.qgis_server' %}
             {# expose map object to window #}
             window.preview_map = map;
-
-            {# Event handler for style editing #}
-            function edit_style_on_submit(event){
-                {# prevent form submit by default #}
-                var data = new FormData();
-                $.each($("#id_qml")[0].files, function(i, file){
-                    data.append('qml', file);
-                });
-                var action = $(this).attr('action');
-                $.ajax({
-                    url: action,
-                    data: data,
-                    cache: false,
-                    contentType: false,
-                    processData: false,
-                    type: 'POST',
-                    success: function(data){
-                        if(data){
-                            $("#qgis-server-style-edit .modal-body").html(data);
-                            $(document).ready(function() {
-                                $("#qgis-server-style-edit-form").on('submit', edit_style_on_submit);
-                            });
-                        }
-                    },
-                    failure: function(data){
-                        alert('{% trans "Failed to change layer style." %}');
-                    }
-                });
-                return false;
-            }
+            window.tile_layer = tile_layer;
 
             {# Trigger dialog for Style edit #}
             $(".style-edit").on('click', function (event) {
@@ -270,7 +241,28 @@
             });
 
             {# Attach form submit event #}
-            $("#qgis-server-style-edit-form").on('submit', edit_style_on_submit);
+            $("#qgis-server-style-add-form").on('submit', edit_style_on_submit);
+
+            {# Attach handler for style change #}
+            $("input[name='style']").on('change', function(event){
+                var $input = $(this);
+                if($input.prop('checked') == true){
+                    {# Tile url change #}
+                    var url;
+                    {% if resource.get_tiles_url %}
+                        url = '{% url "qgis_server:tile" layername=resource.name style='style_name' %}';
+                        url = url.replace('style_name', $input.attr('id'));
+                        url = decodeURIComponent(url);
+                        tile_layer.setUrl(url);
+                    {% endif %}
+
+                    {# Legend icon change #}
+                    url = '{% url "qgis_server:legend" layername=resource.name style='style_name' %}';
+                    url = url.replace('style_name', $input.attr('id'));
+                    url = decodeURIComponent(url);
+                    $("#legend_icon").attr('src', url);
+                }
+            });
         {% endif %}
   });
 
@@ -294,10 +286,45 @@
         };
         $.post('{% url "qgis_server:set-thumbnail" layername=resource.name %}', data);
     }
+
+    {# Event handler for style editing #}
+    function edit_style_on_submit(event){
+        {# prevent form submit by default #}
+        var data = new FormData();
+        $.each($("#id_qml")[0].files, function(i, file){
+            data.append('qml', file);
+        });
+        data.append('name', $("#id_name").val());
+        data.append('title', $("#id_title").val());
+        var action = $(this).attr('action');
+        $.ajax({
+            url: action,
+            data: data,
+            cache: false,
+            contentType: false,
+            processData: false,
+            type: 'POST',
+            success: function(data){
+                if(data){
+                    $("#qgis-server-style-edit .modal-body").html(data);
+                    $(document).ready(function() {
+                        $("#qgis-server-style-add-form").on('submit', edit_style_on_submit);
+                    });
+                }
+            }
+        });
+        return false;
+    }
   {% endif %}
 </script>
 
 {% if OGC_SERVER.default.BACKEND == 'geonode.qgis_server' %}
+    <style>
+        #qgis-server-style-edit .modal-body{
+            overflow-y: scroll;
+            max-height: 600px;
+        }
+    </style>
     <div class="modal fade" id="qgis-server-style-edit" tabindex="-1" role="dialog" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">

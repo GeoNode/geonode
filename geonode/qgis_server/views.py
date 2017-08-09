@@ -22,15 +22,17 @@ import StringIO
 import json
 import logging
 import os
-import shutil
 import zipfile
 from imghdr import what as image_format
 
 import re
+
+import datetime
 import requests
+import shutil
 from django.conf import settings
-from django.core.files import File
 from django.core.urlresolvers import reverse
+from django.forms.models import model_to_dict
 from django.http import HttpResponse, Http404
 from django.http.response import (
     HttpResponseBadRequest,
@@ -39,14 +41,14 @@ from django.shortcuts import get_object_or_404
 from django.template.response import TemplateResponse
 from django.utils.translation import ugettext as _
 
-from geonode.layers.models import Layer
+from geonode.layers.models import Layer, LayerFile
 from geonode.qgis_server.forms import QGISLayerStyleUploadForm
 from geonode.qgis_server.helpers import (
     tile_url_format,
-    create_qgis_project,
     legend_url,
     tile_url,
-    qgis_server_endpoint)
+    qgis_server_endpoint, style_get_url, style_list, style_add_url,
+    style_remove_url, style_set_default_url)
 from geonode.qgis_server.models import QGISServerLayer
 from geonode.qgis_server.tasks.update import (
     create_qgis_server_thumbnail,
@@ -104,7 +106,7 @@ def download_zip(request, layername):
     return resp
 
 
-def legend(request, layername, layertitle=False):
+def legend(request, layername, layertitle=False, style=None):
     """Get the legend from a layer.
 
     :param layername: The layer name in Geonode.
@@ -113,20 +115,32 @@ def legend(request, layername, layertitle=False):
     :param layertitle: Add the layer title in the legend. Default to False.
     :type layertitle: bool
 
+    :param style: Layer style to choose
+    :type style: str
+
     :return: The HTTPResponse with a PNG.
     """
     layer = get_object_or_404(Layer, name=layername)
     qgis_layer = get_object_or_404(QGISServerLayer, layer=layer)
 
+    # get default style name
+    if not style:
+        # generate style cache
+        if not qgis_layer.default_style:
+            style_list(layer, internal=False)
+            # refresh values
+            qgis_layer.refresh_from_db()
+        style = qgis_layer.default_style.name
+
     legend_path = QGIS_SERVER_CONFIG['legend_path']
-    legend_filename = legend_path % qgis_layer.qgis_layer_name
+    legend_filename = legend_path % (qgis_layer.qgis_layer_name, style)
 
     if not os.path.exists(legend_filename):
 
         if not os.path.exists(os.path.dirname(legend_filename)):
             os.makedirs(os.path.dirname(legend_filename))
 
-        url = legend_url(layer, layertitle, internal=True)
+        url = legend_url(layer, layertitle, style=style, internal=True)
 
         result = cache_request.delay(url, legend_filename)
 
@@ -169,7 +183,7 @@ def tile_404(request, layername):
         status=404).render()
 
 
-def tile(request, layername, z, x, y):
+def tile(request, layername, z, x, y, style=None):
     """Get the tile from a layer.
 
     :param layername: The layer name in Geonode.
@@ -184,6 +198,9 @@ def tile(request, layername, z, x, y):
     :param y: TMS coordinate, latitude parameter
     :type y: int, str
 
+    :param style: Layer style to choose
+    :type style: str
+
     :return: The HTTPResponse with a PNG.
     """
     x = int(x)
@@ -193,8 +210,17 @@ def tile(request, layername, z, x, y):
     layer = get_object_or_404(Layer, name=layername)
     qgis_layer = get_object_or_404(QGISServerLayer, layer=layer)
 
+    # get default style name
+    if not style:
+        # generate style cache
+        if not qgis_layer.default_style:
+            style_list(layer, internal=False)
+            # refresh values
+            qgis_layer.refresh_from_db()
+        style = qgis_layer.default_style.name
+
     tile_path = QGIS_SERVER_CONFIG['tile_path']
-    tile_filename = tile_path % (qgis_layer.qgis_layer_name, z, x, y)
+    tile_filename = tile_path % (qgis_layer.qgis_layer_name, style, z, x, y)
 
     if not os.path.exists(tile_filename):
 
@@ -202,7 +228,7 @@ def tile(request, layername, z, x, y):
             os.makedirs(os.path.dirname(tile_filename))
 
         # Use internal url
-        url = tile_url(layer, z, x, y, internal=True)
+        url = tile_url(layer, z, x, y, style=style, internal=True)
 
         result = cache_request.delay(url, tile_filename)
 
@@ -328,6 +354,15 @@ def qgis_server_request(request):
             layer = get_object_or_404(Layer, name=layer_name)
             return legend(request, layername=layer.name)
 
+    # Validation for STYLEMANAGER service
+    if params.get('SERVICE') == 'STYLEMANAGER':
+        project_param = params.get('PROJECT')
+        layer_name = params.get('LAYER')
+        if not project_param and layer_name:
+            layer = get_object_or_404(Layer, name=layer_name)
+            qgis_layer = get_object_or_404(QGISServerLayer, layer=layer)
+            params['PROJECT'] = qgis_layer.qgis_project_path
+
     # if not shortcut, we forward any request to internal QGIS Server
     qgis_server_url = qgis_server_endpoint(internal=True)
     response = requests.get(qgis_server_url, params)
@@ -406,30 +441,55 @@ def qgis_server_map_print(request):
         json.dumps(temp), content_type="application/json")
 
 
-def qml_style(request, layername):
+def qml_style(request, layername, style_name=None):
     """Update/Retrieve QML style of a given QGIS Layer.
 
     :param layername: The layer name in Geonode.
     :type layername: basestring
-    :return:
+
+    :param style_name: The style name recognized by QGIS Server
+    :type style_name: str
     """
     layer = get_object_or_404(Layer, name=layername)
 
     if request.method == 'GET':
-        # Take QML file from QGIS Server directory
-        qgis_layer = get_object_or_404(QGISServerLayer, layer=layer)
-        qml_path = qgis_layer.qml_path
 
-        if not os.path.exists(qml_path):
-            raise Http404(
-                'This layer does not have current default QML style.')
+        # Request QML from QGIS server
+        if not style_name:
+            # If no style name provided, then it is a List request
+            styles_obj = style_list(layer, internal=False)
+            styles_dict = [model_to_dict(s) for s in styles_obj]
 
-        response = HttpResponse(
-            open(qml_path), content_type="application/text")
-        # ..and correct content-disposition
-        response['Content-Disposition'] = (
-            'attachment; filename={filename}'.format(
-                filename=os.path.basename(qml_path)))
+            # If no style returned by GetCapabilities, this is a bug in QGIS
+            # Attempt to generate default style name
+            if not styles_dict:
+                style_url = style_get_url(layer, 'default')
+                response = requests.get(style_url)
+                if response.status_code == 200:
+                    style_url = style_add_url(layer, 'default')
+                    with open(layer.qgis_layer.qml_path, 'w') as f:
+                        f.write(response.content)
+                    response = requests.get(style_url)
+                    if response.status_code == 200:
+                        styles_obj = style_list(layer, internal=False)
+                        styles_dict = [model_to_dict(s) for s in styles_obj]
+
+            response = HttpResponse(
+                json.dumps(styles_dict), content_type='application/json')
+            return response
+
+        # Return XML file of the style
+        style_url = style_get_url(layer, style_name, internal=False)
+        response = requests.get(style_url)
+        if response.status_code == 200:
+            response = HttpResponse(
+                response.content, content_type='text/xml')
+            response[
+                'Content-Disposition'] = 'attachment; filename=%s.qml' % (
+                style_name, )
+        else:
+            response = HttpResponse(
+                response.content, status=response.status_code)
         return response
     elif request.method == 'POST':
 
@@ -439,6 +499,8 @@ def qml_style(request, layername):
             return HttpResponse(
                 'User does not have permission to change QML style.',
                 status=401)
+
+        # Request about adding new QML style
 
         form = QGISLayerStyleUploadForm(request.POST, request.FILES)
 
@@ -458,55 +520,58 @@ def qml_style(request, layername):
             # update qml in uploaded media folder
             # check upload session, is qml file exists?
             layerfile_set = layer.upload_session.layerfile_set
-            qml_layer_file, created = layerfile_set.get_or_create(name='qml')
-
             try:
-                qml_path = qml_layer_file.file.path
-                content = uploaded_qml.read()
-                with open(qml_path, mode='w') as f:
-                    f.write(content)
-            except ValueError:
-                layer_base_path, __ = layer.get_base_file()
-                layer_prefix, __ = os.path.splitext(
-                    layer_base_path.file.path)
-                qml_path = '{prefix}.qml'.format(prefix=layer_prefix)
-
-                content = uploaded_qml.read()
-
-                qml_layer_file.file = File(
-                    uploaded_qml,
-                    name=os.path.basename(qml_path))
-                qml_layer_file.base = False
-                qml_layer_file.upload_session = layer.upload_session
-                qml_layer_file.save()
+                qml_layer_file = layerfile_set.get(name='qml')
+                # if it is exists, we need to delete it, because it won't be
+                # managed by geonode
+                qml_layer_file.delete()
+            except LayerFile.DoesNotExist:
+                pass
 
             # update qml in QGIS Layer folder
+            content = uploaded_qml.read()
             qgis_layer = get_object_or_404(QGISServerLayer, layer=layer)
 
             with open(qgis_layer.qml_path, mode='w') as f:
                 f.write(content)
 
-            # update QGIS Project files
-            response = create_qgis_project(
-                layer,
-                qgis_layer.qgis_project_path,
-                overwrite=True,
-                internal=True)
-            if not response.content == 'OK':
-                return HttpResponseServerError(
-                    'Failed to create new QGIS Project.'
-                    'Error: {0}'.format(response.content))
+            # construct URL to post new QML
+            style_name = request.POST['name']
+            style_title = request.POST['title']
+            if not style_name:
+                # Assign default name
+                name_format = 'style_%Y%m%d%H%M%S'
+                current_time = datetime.datetime.utcnow()
+                style_name = current_time.strftime(name_format)
 
-            # Because we update a style, we need to recache
-            qgis_tiles_directory = settings.QGIS_SERVER_CONFIG['tiles_directory']
+            # Add new style
+            style_url = style_add_url(layer, style_name)
 
-            layer_tiles_path = os.path.join(
-                qgis_tiles_directory, qgis_layer.qgis_layer_name)
+            response = requests.get(style_url)
 
-            try:
-                shutil.rmtree(layer_tiles_path)
-            except:
-                pass
+            if not (response.status_code == 200 and response.content == 'OK'):
+                style_list(layer, internal=False)
+                return TemplateResponse(
+                    request,
+                    'qgis_server/forms/qml_style.html',
+                    {
+                        'resource': layer,
+                        'style_upload_form': QGISLayerStyleUploadForm(),
+                        'alert': True,
+                        'alert_message': response.content,
+                        'alert_class': 'alert-danger'
+                    },
+                    status=200).render()
+
+            # We succeeded on adding new style
+
+            # Refresh style models
+            style_list(layer, internal=False)
+            qgis_style = layer.qgis_layer.styles.get(name=style_name)
+            qgis_style.title = style_title
+            qgis_style.save()
+
+            alert_message = 'Successfully add style %s' % style_name
 
             return TemplateResponse(
                 request,
@@ -514,15 +579,123 @@ def qml_style(request, layername):
                 {
                     'resource': layer,
                     'style_upload_form': form,
-                    'success': True
+                    'alert': True,
+                    'alert_class': 'alert-success',
+                    'alert_message': alert_message
                 },
                 status=200).render()
 
         except Exception as e:
             logger.exception(e)
             return HttpResponseServerError()
+    elif request.method == 'DELETE':
+        # Request to delete particular QML Style
+
+        if not style_name:
+            # Style name should exists
+            return HttpResponseBadRequest('Style name not provided.')
+
+        # Handle removing tile-style cache
+        try:
+            style = layer.qgis_layer.styles.get(name=style_name)
+            shutil.rmtree(style.style_tile_cache_path)
+        except OSError:
+            pass
+
+        style_url = style_remove_url(layer, style_name)
+
+        response = requests.get(style_url)
+
+        if not (response.status_code == 200 and response.content == 'OK'):
+            alert_message = response.content
+            if 'NAME is NOT an existing style.' in response.content:
+                alert_message = '%s is not an existing style' % style_name
+            style_list(layer, internal=False)
+            return TemplateResponse(
+                request,
+                'qgis_server/forms/qml_style.html',
+                {
+                    'resource': layer,
+                    'style_upload_form': QGISLayerStyleUploadForm(),
+                    'alert': True,
+                    'alert_message': alert_message,
+                    'alert_class': 'alert-danger'
+                },
+                status=200).render()
+
+        # Successfully removed styles
+        # Handle when default style is deleted.
+        # Will be handled by style_list method
+        style_list(layer, internal=False)
+
+        alert_message = 'Successfully deleted style %s' % style_name
+
+        return TemplateResponse(
+            request,
+            'qgis_server/forms/qml_style.html',
+            {
+                'resource': layer,
+                'style_upload_form': QGISLayerStyleUploadForm(),
+                'alert': True,
+                'alert_message': alert_message,
+                'alert_class': 'alert-success'
+            },
+            status=200).render()
 
     return HttpResponseBadRequest()
+
+
+def default_qml_style(request, layername, style_name):
+    """Set default style used by layer.
+
+    :param layername: The layer name in Geonode.
+    :type layername: basestring
+
+    :param style_name: The style name recognized by QGIS Server
+    :type style_name: str
+    """
+    layer = get_object_or_404(Layer, name=layername)
+
+    if request.method == 'GET':
+        # Handle querying default style name request
+        default_style = layer.qgis_layer.default_style
+        retval = {
+            'name': default_style.name,
+            'title': default_style.title,
+            'style_url': default_style.style_url
+        }
+        return HttpResponse(
+            json.dumps(retval), content_type='application/json')
+    elif request.method == 'POST':
+        style_url = style_set_default_url(layer, style_name)
+
+        response = requests.get(style_url)
+
+        if not (response.status_code == 200 and response.content == 'OK'):
+            return HttpResponseServerError(
+                'Failed to change default Style.'
+                'Error: {0}'.format(response.content))
+
+        # Succesfully change default style
+        # Synchronize models
+        style = layer.qgis_layer.styles.get(name=style_name)
+        qgis_layer = layer.qgis_layer
+        qgis_layer.default_style = style
+        qgis_layer.save()
+
+        alert_message = 'Successfully changed default style %s' % style_name
+
+        return TemplateResponse(
+            request,
+            'qgis_server/forms/qml_style.html',
+            {
+                'resource': layer,
+                'style_upload_form': QGISLayerStyleUploadForm(),
+                'alert': True,
+                'alert_message': alert_message,
+                'alert_class': 'alert-success'
+            },
+            status=200).render()
 
 
 def set_thumbnail(request, layername):

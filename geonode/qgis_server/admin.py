@@ -19,7 +19,7 @@
 #########################################################################
 
 from django.contrib import admin
-from geonode.qgis_server.models import QGISServerLayer
+from geonode.qgis_server.models import QGISServerLayer, QGISServerStyle
 
 
 # Register your models here.
@@ -30,4 +30,13 @@ class QGISServerLayerAdmin(admin.ModelAdmin):
     ]
 
 
+class QGISServerStyleAdmin(admin.ModelAdmin):
+    list_display = [
+        'name',
+        'title',
+        'style_url'
+    ]
+
+
 admin.site.register(QGISServerLayer, QGISServerLayerAdmin)
+admin.site.register(QGISServerStyle, QGISServerStyleAdmin)

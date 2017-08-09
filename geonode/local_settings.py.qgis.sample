@@ -98,8 +98,8 @@ QGIS_SERVER_URL = os.environ.get(
     'QGIS_SERVER_URL', 'http://qgis-server/')
 QGIS_SERVER_CONFIG = {
     'tiles_directory': tiles_directory,
-    'tile_path': tiles_directory + '/%s/%d/%d/%d.png',
-    'legend_path': tiles_directory + '/%s/legend.png',
+    'tile_path': tiles_directory + '/%s/%s/%d/%d/%d.png',
+    'legend_path': tiles_directory + '/%s/%s/legend.png',
     'thumbnail_path': tiles_directory + '/%s/thumbnail.png',
     'map_tile_path': os.path.join(
         tiles_directory, '%s', 'map_tiles', '%s', '%s', '%s', '%s.png'),

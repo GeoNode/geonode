@@ -21,6 +21,7 @@ import os
 
 from django import forms
 from django.core.exceptions import ValidationError
+from django.core.validators import RegexValidator
 
 
 def _extension_validator(value):
@@ -31,4 +32,18 @@ def _extension_validator(value):
 
 class QGISLayerStyleUploadForm(forms.Form):
 
-    qml = forms.FileField(label='QML', validators=[_extension_validator])
+    alphanumeric = RegexValidator(
+        r'^[0-9a-zA-Z_]*$',
+        'Only alphanumeric and underscore characters are allowed.')
+
+    name = forms.CharField(
+        label='Name', required=True,
+        help_text='Name identifier for style',
+        validators=[alphanumeric])
+    title = forms.CharField(
+        label='Title', required=True,
+        help_text='Human friendly title for style')
+    qml = forms.FileField(
+        label='QML',
+        help_text='QGIS Style file (QML)',
+        validators=[_extension_validator])

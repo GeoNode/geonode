@@ -485,19 +485,35 @@
       <h4>{% trans "Styles" %}</h4>
        <p>{% trans "The following styles are associated with this layer. Choose a style to view it in the preview map." %}</p>
        <ul class="list-unstyled">
-        {% for style in resource.styles.all %}
-        <li>
-          {% if resource.default_style == style %}
-          <input type="radio" checked name="style" id="{{ style.name }}" value="{{ style.title }}"/>
-          (default style)
-          {% else %}
-          <input type="radio" name="style" id="{{ style.name }}" value="{{ style.title }}"/>
-          {% endif %}
-          <a href="{{ GEOSERVER_BASE_URL }}{{ style.absolute_url }}" >{{ style.sld_title }}</a>
-        </li>
-        {% empty %}
-        <li>{% trans "No styles associated with this layer" %}</li>
-        {% endfor %}
+        {% if OGC_SERVER.default.BACKEND == 'geonode.geoserver' %}
+            {% for style in resource.styles.all %}
+            <li>
+              {% if resource.default_style == style %}
+              <input type="radio" checked name="style" id="{{ style.name }}" value="{{ style.title }}"/>
+              (default style)
+              {% else %}
+              <input type="radio" name="style" id="{{ style.name }}" value="{{ style.title }}"/>
+              {% endif %}
+              <a href="{{ GEOSERVER_BASE_URL }}{{ style.absolute_url }}" >{{ style.sld_title }}</a>
+            </li>
+            {% empty %}
+            <li>{% trans "No styles associated with this layer" %}</li>
+            {% endfor %}
+        {% elif OGC_SERVER.default.BACKEND == 'geonode.qgis_server' %}
+            {% for style in resource.qgis_layer.styles.all %}
+            <li>
+              {% if resource.qgis_layer.default_style == style %}
+              <input type="radio" checked name="style" id="{{ style.name }}" value="{{ style.title }}"/>
+              (default style)
+              {% else %}
+              <input type="radio" name="style" id="{{ style.name }}" value="{{ style.title }}"/>
+              {% endif %}
+              <a href="{{ style.style_url }}" >{{ style.title }}</a>
+            </li>
+            {% empty %}
+            <li>{% trans "No styles associated with this layer" %}</li>
+            {% endfor %}
+        {% endif %}
       </ul>
     </li>
     {% endif %}

@@ -54,7 +54,7 @@ from django.forms.util import ErrorList
 
 from geonode.tasks.deletion import delete_layer
 from geonode.services.models import Service
-from geonode.layers.forms import LayerForm, LayerUploadForm, NewLayerUploadForm, LayerAttributeForm
+from geonode.layers.forms import LayerForm, NewLayerUploadForm, LayerAttributeForm
 from geonode.base.forms import CategoryForm, TKeywordForm
 from geonode.layers.models import Layer, Attribute, UploadSession
 from geonode.base.enumerations import CHARSETS
@@ -751,7 +751,7 @@ def layer_replace(request, layername, template='layers/layer_replace.html'):
                                   RequestContext(request, ctx))
     elif request.method == 'POST':
 
-        form = LayerUploadForm(request.POST, request.FILES)
+        form = NewLayerUploadForm(request.POST, request.FILES)
         tempdir = None
         out = {}
 

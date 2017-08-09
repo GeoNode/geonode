@@ -31,6 +31,8 @@ from django.utils.translation import get_language
 
 from avatar.templatetags.avatar_tags import avatar_url
 from guardian.shortcuts import get_objects_for_user
+from tastypie.authorization import Authorization
+from tastypie.bundle import Bundle
 
 from geonode.base.models import ResourceBase
 from geonode.base.models import TopicCategory
@@ -38,7 +40,7 @@ from geonode.base.models import Region
 from geonode.base.models import HierarchicalKeyword
 from geonode.base.models import ThesaurusKeywordLabel
 
-from geonode.layers.models import Layer
+from geonode.layers.models import Layer, Style, LayerFile
 from geonode.maps.models import Map
 from geonode.documents.models import Document
 from geonode.groups.models import GroupProfile, GroupCategory
@@ -46,10 +48,9 @@ from geonode.groups.models import GroupProfile, GroupCategory
 from django.core.serializers.json import DjangoJSONEncoder
 from tastypie.serializers import Serializer
 from tastypie import fields
-from tastypie.resources import ModelResource
+from tastypie.resources import ModelResource, Resource
 from tastypie.constants import ALL, ALL_WITH_RELATIONS
 from tastypie.utils import trailing_slash
-
 
 FILTER_TYPES = {
     'layer': Layer,
@@ -426,3 +427,148 @@ class OwnersResource(TypeFilteredResource):
             'username': ALL,
         }
         serializer = CountJSONSerializer()
+
+
+class GeoserverStyleResource(ModelResource):
+    """Styles api for Geoserver backend."""
+
+    class Meta:
+        queryset = Style.objects.all()
+        resource_name = 'styles'
+        allowed_methods = ['get', 'post', 'put']
+        ordering = ['layername']
+
+
+class QGISStyleObject(object):
+
+    def __init__(self, style_id=None, name=None, layer=None,
+                 style_file=None, style_type='qml', style_url=None):
+        # File name of QML style file
+        self.name = name
+        # Related layers
+        if layer and len(layer) > 0:
+            self.layer = layer[0]
+        # File object of the style
+        self.file = style_file
+        # LayerFile id of QML style in upload session
+        self.id = style_id
+        # Extension type of this style
+        # Currently only for qml
+        self.type = style_type
+        # Url of downloadable QML Style
+        self.url = style_url
+
+
+class QGISStyleResource(Resource):
+    """Styles api for QGIS Server backend."""
+
+    name = fields.CharField(attribute='name')
+    layer = fields.ForeignKey(
+        'geonode.api.resourcebase_api.LayerResource',
+        attribute='layer')
+    id = fields.IntegerField(attribute='id')
+    type = fields.CharField(attribute='type')
+    url = fields.CharField(attribute='url', null=True)
+    file = fields.FileField(attribute='file')
+
+    class Meta:
+        resource_name = 'styles'
+        detail_uri_name = 'id'
+        object_class = QGISStyleObject
+        authorization = Authorization()
+
+    def _build_style_url(self, layerfile):
+        """Build downloadable url for QML Style.
+
+        :param layerfile: LayerFile object
+        :type layerfile: geonode.layers.models.LayerFile
+
+        :return: url
+        """
+        try:
+            layer = Layer.objects.get(upload_session=layerfile.upload_session)
+            layername = layer.name
+            style_url = reverse(
+                'qgis_server:download-qml',
+                kwargs={'layername': layername})
+        except Layer.DoesNotExist:
+            # There exists a stale layerfile
+            return None
+        return style_url
+
+    def _generate_result(self, layerfiles):
+        results = [
+            QGISStyleObject(
+                layer=lf.upload_session.layer_set.all(),
+                style_id=lf.id,
+                name=lf.file.name,
+                style_file=lf.file,
+                style_url=self._build_style_url(lf)) for lf in layerfiles
+        ]
+        results = [r for r in results if r.url]
+        return results
+
+    def detail_uri_kwargs(self, bundle_or_obj):
+        kwargs = {}
+
+        if isinstance(bundle_or_obj, Bundle):
+            kwargs[self._meta.detail_uri_name] = getattr(
+                bundle_or_obj.obj, self._meta.detail_uri_name)
+        else:
+            kwargs[self._meta.detail_uri_name] = getattr(
+                bundle_or_obj, self._meta.detail_uri_name)
+
+        return kwargs
+
+    def obj_get_list(self, bundle, **kwargs):
+        styles = []
+        if 'layername' in kwargs:
+            layername = kwargs.pop('layername')
+            layer = Layer.objects.get(name=layername)
+            styles = layer.upload_session.layerfile_set.filter(name='qml')
+        if not kwargs.items():
+            styles = LayerFile.objects.filter(name='qml')
+        return self._generate_result(styles)
+
+    def obj_get(self, bundle, **kwargs):
+        styles = []
+        if self._meta.detail_uri_name in kwargs:
+            style_id = kwargs.pop(self._meta.detail_uri_name)
+            styles = LayerFile.objects.filter(id=style_id)
+        results = self._generate_result(styles)
+        return results[0]
+
+    def obj_create(self, bundle, **kwargs):
+        bundle.obj = QGISStyleObject()
+        bundle = self.full_hydrate(bundle)
+        return bundle
+
+    def obj_update(self, bundle, **kwargs):
+        return self.obj_create(bundle, **kwargs)
+
+    def obj_delete_list(self, bundle, **kwargs):
+        bucket = self._bucket()
+
+        for key in bucket.get_keys():
+            obj = bucket.get(key)
+            obj.delete()
+
+    def obj_delete(self, bundle, **kwargs):
+        bucket = self._bucket()
+        obj = bucket.get(kwargs['pk'])
+        obj.delete()
+
+    def deserialize(self, request, data, format=None):
+        if not format:
+            format = request.Meta.get('CONTENT_TYPE', 'application/json')
+        if format == 'application/x-www-form-urlencoded':
+            return request.POST
+        if format.startswith('multipart'):
+            data = request.POST.copy()
+            data.update(request.FILES)
+            return data
+        return super(QGISStyleResource, self).deserialize(
+            request, data, format)
+
+    def rollback(self, bundles):
+        pass

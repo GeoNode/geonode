@@ -564,7 +564,7 @@ class GeoNodeMapTest(TestCase):
         shp_layer = file_upload(shp_file)
 
         # get layer and QGIS Server Layer object
-        qgis_layer = shp_layer.qgisserverlayer
+        qgis_layer = shp_layer.qgis_layer
         base_path = qgis_layer.base_layer_path
         base_name, _ = os.path.splitext(base_path)
 
@@ -665,10 +665,20 @@ class GeoNodeMapTest(TestCase):
         self.assertEquals(response.context['is_featuretype'], True)
 
         # test replace a vector with a raster
+        post_permissions = {
+            'users': {
+                'AnonymousUser': [
+                    'view_resourcebase', 'download_resourcebase']
+            },
+            'groups': {}
+        }
+        post_data = {
+            'base_file': open(
+                raster_file, 'rb'),
+            'permissions': json.dumps(post_permissions)
+        }
         response = self.client.post(
-            vector_replace_url, {
-                'base_file': open(
-                    raster_file, 'rb')})
+            vector_replace_url, post_data)
         # TODO: This should really return a 400 series error with the json dict
         self.assertEquals(response.status_code, 400)
         response_dict = json.loads(response.content)
@@ -689,7 +699,8 @@ class GeoNodeMapTest(TestCase):
             {'base_file': layer_base,
              'dbf_file': layer_dbf,
              'shx_file': layer_shx,
-             'prj_file': layer_prj
+             'prj_file': layer_prj,
+             'permissions': json.dumps(post_permissions)
              })
         self.assertEquals(response.status_code, 200)
         response_dict = json.loads(response.content)
@@ -714,7 +725,8 @@ class GeoNodeMapTest(TestCase):
             {'base_file': layer_base,
              'dbf_file': layer_dbf,
              'shx_file': layer_shx,
-             'prj_file': layer_prj
+             'prj_file': layer_prj,
+             'permissions': json.dumps(post_permissions)
              })
         self.assertEquals(response.status_code, 401)
 

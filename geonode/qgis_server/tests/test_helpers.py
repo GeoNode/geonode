@@ -22,6 +22,9 @@ import urlparse
 import unittest
 from imghdr import what
 
+from geonode.qgis_server.models import QGISServerLayer
+from lxml import etree
+
 import gisdata
 import shutil
 
@@ -35,7 +38,9 @@ from geonode import qgis_server
 from geonode.decorators import on_ogc_backend
 from geonode.layers.utils import file_upload
 from geonode.qgis_server.helpers import validate_django_settings, \
-    transform_layer_bbox, qgis_server_endpoint, tile_url_format, tile_url
+    transform_layer_bbox, qgis_server_endpoint, tile_url_format, tile_url, \
+    style_get_url, style_add_url, style_list, style_set_default_url, \
+    style_remove_url
 
 
 class HelperTest(LiveServerTestCase):
@@ -112,7 +117,7 @@ class HelperTest(LiveServerTestCase):
             'WIDTH': '256',
             'HEIGHT': '256',
             'LAYERS': 'test_grid',
-            'STYLES': 'default',
+            'STYLE': 'default',
             'FORMAT': 'image/png',
             'TRANSPARENT': 'true',
             'DPI': '96',
@@ -131,6 +136,80 @@ class HelperTest(LiveServerTestCase):
         self.assertEqual(response.headers.get('Content-Type'), 'image/png')
         self.assertEqual(what('', h=response.content), 'png')
 
+        uploaded.delete()
+
+    @on_ogc_backend(qgis_server.BACKEND_PACKAGE)
+    def test_style_management_url(self):
+        """Test QGIS Server style management url construction."""
+        filename = os.path.join(gisdata.GOOD_DATA, 'raster/test_grid.tif')
+        uploaded = file_upload(filename)
+
+        # Get default style
+        # There will always be a default style when uploading a layer
+        style_url = style_get_url(uploaded, 'default', internal=True)
+
+        response = requests.get(style_url)
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.headers.get('Content-Type'), 'text/xml')
+
+        # it has to contains qgis tags
+        style_xml = etree.fromstring(response.content)
+        self.assertTrue('qgis' in style_xml.tag)
+
+        # Add new style
+        # change default style slightly
+        self.assertTrue('WhiteToBlack' not in response.content)
+        self.assertTrue('BlackToWhite' in response.content)
+        new_style_xml = etree.fromstring(
+            response.content.replace('BlackToWhite', 'WhiteToBlack'))
+        new_xml_content = etree.tostring(new_style_xml, pretty_print=True)
+
+        # save it to qml file, accessible by qgis server
+        qgis_layer = QGISServerLayer.objects.get(layer=uploaded)
+        with open(qgis_layer.qml_path, mode='w') as f:
+            f.write(new_xml_content)
+
+        style_url = style_add_url(uploaded, 'new_style', internal=True)
+
+        response = requests.get(style_url)
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.content, 'OK')
+
+        # Get style list
+        qml_styles = style_list(uploaded, internal=False)
+        expected_style_names = ['default', 'new_style']
+        actual_style_names = [s.name for s in qml_styles]
+        self.assertEqual(set(expected_style_names), set(actual_style_names))
+
+        # Get new style
+        style_url = style_get_url(uploaded, 'new_style', internal=True)
+
+        response = requests.get(style_url)
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.headers.get('Content-Type'), 'text/xml')
+        self.assertTrue('WhiteToBlack' in response.content)
+
+        # Set default style
+        style_url = style_set_default_url(
+            uploaded, 'new_style', internal=True)
+
+        response = requests.get(style_url)
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.content, 'OK')
+
+        # Remove style
+        style_url = style_remove_url(uploaded, 'new_style', internal=True)
+
+        response = requests.get(style_url)
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.content, 'OK')
+
+        # Cleanup
         uploaded.delete()
 
     @on_ogc_backend(qgis_server.BACKEND_PACKAGE)

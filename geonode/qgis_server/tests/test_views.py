@@ -24,6 +24,8 @@ import os
 import urlparse
 import zipfile
 from imghdr import what
+
+import requests
 from lxml import etree
 
 import gisdata
@@ -37,6 +39,7 @@ from geonode import qgis_server
 from geonode.decorators import on_ogc_backend
 from geonode.layers.utils import file_upload
 from geonode.maps.models import Map
+from geonode.qgis_server.helpers import wms_get_capabilities_url, style_list
 
 
 class DefaultViewsTest(TestCase):
@@ -137,10 +140,25 @@ class QGISServerViewsTest(LiveServerTestCase):
         self.assertEqual(response.status_code, 404)
 
         # QML Styles
+        # Request list of styles
         response = self.client.get(
             reverse('qgis_server:download-qml', kwargs=params))
-        self.assertEqual(response.status_code, 404)
-        # TODO: Upload qml
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.get('Content-Type'), 'application/json')
+        # Should return a default style list
+        actual_result = json.loads(response.content)
+        actual_result = [s['name'] for s in actual_result]
+        expected_result = ['default']
+        self.assertEqual(set(expected_result), set(actual_result))
+
+        # Get single styles
+        response = self.client.get(
+            reverse('qgis_server:download-qml', kwargs={
+                'layername': params['layername'],
+                'style_name': 'default'
+            }))
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.get('Content-Type'), 'text/xml')
 
         # Set thumbnail from viewed bbox
         response = self.client.get(
@@ -169,7 +187,7 @@ class QGISServerViewsTest(LiveServerTestCase):
         # OGC Server specific for THE layer
         query_string = {
             'SERVICE': 'WMS',
-            'VERSION': '1.3.3',
+            'VERSION': '1.3.0',
             'REQUEST': 'GetLegendGraphics',
             'FORMAT': 'image/png',
             'LAYERS': uploaded.name,
@@ -184,7 +202,7 @@ class QGISServerViewsTest(LiveServerTestCase):
         # GetLegendGraphics is a shortcut when using the main OGC server.
         query_string = {
             'SERVICE': 'WMS',
-            'VERSION': '1.3.3',
+            'VERSION': '1.3.0',
             'REQUEST': 'GetLegendGraphics',
             'FORMAT': 'image/png',
             'LAYERS': uploaded.name,
@@ -198,7 +216,7 @@ class QGISServerViewsTest(LiveServerTestCase):
         # WMS GetCapabilities
         query_string = {
             'SERVICE': 'WMS',
-            'VERSION': '1.3.3',
+            'VERSION': '1.3.0',
             'REQUEST': 'GetCapabilities'
         }
 
@@ -212,8 +230,10 @@ class QGISServerViewsTest(LiveServerTestCase):
 
         response = self.client.get(
             reverse('qgis_server:request'), query_string)
-        self.assertEqual(response.status_code, 200, response.content)
+        get_capabilities_content = response.content
+
         # Check xml content
+        self.assertEqual(response.status_code, 200, response.content)
         root = etree.fromstring(response.content)
         layer_xml = root.xpath(
             'wms:Capability/wms:Layer/wms:Layer/wms:Name',
@@ -236,10 +256,16 @@ class QGISServerViewsTest(LiveServerTestCase):
         self.assertEqual(response.get('Content-Type'), 'image/png')
         self.assertEqual(what('', h=response.content), 'png')
 
+        # Check get capabilities using helper returns the same thing
+        response = requests.get(wms_get_capabilities_url(
+            uploaded, internal=False))
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(get_capabilities_content, response.content)
+
         # WMS GetMap
         query_string = {
             'SERVICE': 'WMS',
-            'VERSION': '1.3.3',
+            'VERSION': '1.3.0',
             'REQUEST': 'GetMap',
             'FORMAT': 'image/png',
             'LAYERS': uploaded.name,
@@ -258,6 +284,28 @@ class QGISServerViewsTest(LiveServerTestCase):
         # End of the test, we should remove every files related to the test.
         uploaded.delete()
         vector_layer.delete()
+
+
+class QGISServerStyleManagerTest(LiveServerTestCase):
+
+    def setUp(self):
+        call_command('loaddata', 'people_data', verbosity=0)
+
+    @on_ogc_backend(qgis_server.BACKEND_PACKAGE)
+    def test_list_style(self):
+        """Test querying list of styles from QGIS Server."""
+        filename = os.path.join(gisdata.GOOD_DATA, 'raster/test_grid.tif')
+        layer = file_upload(filename)
+        """:type: geonode.layers.models.Layer"""
+
+        actual_list_style = style_list(layer, internal=False)
+        expected_list_style = ['default']
+
+        # There will be a default style
+        self.assertEqual(
+            set(expected_list_style),
+            set([style.name for style in actual_list_style])
+        )
 
 
 class ThumbnailGenerationTest(LiveServerTestCase):

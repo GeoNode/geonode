@@ -21,9 +21,13 @@
 import logging
 import os
 from shutil import rmtree
+from xml.etree import ElementTree
 
+import requests
 from django.conf import settings
 from django.db import models
+from django.utils.translation import ugettext_lazy as _
+from lxml import etree
 
 from geonode import qgis_server
 from geonode.layers.models import Layer
@@ -54,7 +58,7 @@ class QGISServerLayer(models.Model):
     layer = models.OneToOneField(
         Layer,
         primary_key=True,
-        name='layer'
+        related_name='qgis_layer'
     )
     base_layer_path = models.CharField(
         name='base_layer_path',
@@ -62,6 +66,15 @@ class QGISServerLayer(models.Model):
         help_text='Location of the base layer.',
         max_length=100
     )
+
+    default_style = models.ForeignKey(
+        'QGISServerStyle',
+        related_name='layer_default_style',
+        default=None,
+        null=True)
+    styles = models.ManyToManyField(
+        'QGISServerStyle',
+        related_name='layer_styles')
 
     @property
     def files(self):
@@ -157,6 +170,131 @@ class QGISServerLayer(models.Model):
             rmtree(path)
         except OSError:
             pass
+
+        # Removing orphaned styles
+        for style in QGISServerStyle.objects.filter(layer_styles=None):
+            style.delete()
+
+
+class QGISServerStyle(models.Model):
+    """Model wrapper for QGIS Server styles."""
+
+    name = models.CharField(_('style name'), max_length=255)
+    title = models.CharField(max_length=255, null=True, blank=True)
+    body = models.TextField(_('style xml'), null=True, blank=True)
+    style_url = models.CharField(_('style url'), null=True, max_length=1000)
+    style_legend_url = models.CharField(
+        _('style legend url'), null=True, max_length=1000)
+
+    @classmethod
+    def from_get_capabilities_style_xml(
+            cls, qgis_layer, style_xml, style_url=None, synchronize=True):
+        """Convert to this model from GetCapabilities Style tag.
+
+        :param qgis_layer: Associated QGIS Server Layer
+        :type qgis_layer: QGISServerLayer
+
+        :param style_xml: xml string or object
+        :type style_xml: str | lxml.etree.Element |
+            xml.etree.ElementTree.Element
+
+        :param style_url: style information stored as xml
+        :type style_url: str
+
+        :param synchronize: Flag, if true then synchronize the new value
+        :type synchronize: bool
+
+        :return: QGISServerStyle model and boolean flag created
+        :rtype: QGISServerStyle, bool
+        """
+
+        if isinstance(style_xml, str):
+            style_xml = etree.fromstring(style_xml)
+
+        elif isinstance(style_xml, ElementTree.Element):
+            style_xml = etree.fromstring(
+                ElementTree.tostring(
+                    style_xml, encoding='utf-8', method='xml'))
+
+        namespaces = {
+            'wms': 'http://www.opengis.net/wms',
+            'xlink': 'http://www.w3.org/1999/xlink'
+        }
+
+        filter_dict = {
+            'name': style_xml.xpath(
+                'wms:Name', namespaces=namespaces)[0].text,
+
+            'layer_styles': qgis_layer
+        }
+
+        # if style_body is none, try fetch it from QGIS Server
+        if not style_url:
+            from geonode.qgis_server.helpers import style_get_url
+            style_url = style_get_url(
+                qgis_layer.layer, filter_dict['name'], internal=False)
+
+        response = requests.get(style_url)
+        style_body = etree.tostring(
+            etree.fromstring(response.content), pretty_print=True)
+
+        default_dict = {
+            'title': style_xml.xpath(
+                'wms:Title', namespaces=namespaces)[0].text,
+
+            'style_legend_url': style_xml.xpath(
+                'wms:LegendURL/wms:OnlineResource',
+                namespaces=namespaces)[0].attrib[
+                '{http://www.w3.org/1999/xlink}href'],
+
+            'style_url': style_url,
+
+            'body': style_body
+        }
+
+        # filter_dict['defaults'] = default_dict
+
+        # Can't use get_or_create function for some reason.
+        # So use regular query
+
+        try:
+            style_obj = QGISServerStyle.objects.get(**filter_dict)
+            created = False
+        except QGISServerStyle.DoesNotExist:
+            style_obj = QGISServerStyle(**default_dict)
+            style_obj.name = filter_dict['name']
+            style_obj.save()
+            created = True
+
+        if created or synchronize:
+            # Try to synchronize this model with the given parameters
+            style_obj.name = filter_dict['name']
+
+            style_obj.style_url = default_dict['style_url']
+            style_obj.body = default_dict['body']
+            style_obj.title = default_dict['title']
+            style_obj.style_legend_url = default_dict['style_legend_url']
+            style_obj.save()
+
+            style_obj.layer_styles.add(qgis_layer)
+            style_obj.save()
+
+        return style_obj, created
+
+    @property
+    def style_tile_cache_path(self):
+        """Returned the location of tile cache for this layer style.
+
+        Example base path: /usr/src/app/geonode/qgis_layer/jakarta_flood.shp
+
+        QGIS cache path: /usr/src/app/geonode/qgis_tiles/jakarta_flood/
+            default_style
+
+        :return: Base path of layer cache
+        :rtype: str
+        """
+        return os.path.join(
+            QGIS_TILES_DIRECTORY, self.layer_styles.first().layer.name, self.name)
 
 
 class QGISServerMap(models.Model):

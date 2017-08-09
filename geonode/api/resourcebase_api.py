@@ -608,6 +608,7 @@ class LayerResource(CommonModelApi):
         if settings.RESOURCE_PUBLISHING:
             queryset = queryset.filter(is_published=True)
         resource_name = 'layers'
+        detail_uri_name = 'id'
         excludes = ['csw_anytext', 'metadata_xml']
 
 
