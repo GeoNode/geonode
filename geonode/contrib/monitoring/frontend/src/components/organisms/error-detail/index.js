@@ -35,7 +35,8 @@ class ErrorDetail extends React.Component {
       result.errorData = errorDetails.error_data;
       if (errorDetails.request) {
         const request = errorDetails.request.request;
-        result.url = `URL: ${request.host}/${request.path}`;
+        const url = `${request.path}`;
+        result.url = <span>URL: <a href={url}>{url}</a></span>;
         const response = errorDetails.request.response;
         result.errorCode = `Status code: ${response.status}`;
       }
