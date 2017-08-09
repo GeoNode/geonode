@@ -44,9 +44,9 @@ class ErrorDetail extends React.Component {
         result.errorCode = `Status code: ${response.status}`;
         if (errorDetails.request.client) {
           const client = errorDetails.request.client;
-          result.client.ip = `Clint IP: ${client.ip}`;
-          result.client.userAgent = `Client Browser: ${client.user_agent}`;
-          result.client.userAgentFamily = `Client Browser Family: ${client.user_agent_family}`;
+          result.client.ip = `IP: ${client.ip}`;
+          result.client.userAgent = `Browser: ${client.user_agent}`;
+          result.client.userAgentFamily = `Browser Family: ${client.user_agent_family}`;
         }
       }
     }
