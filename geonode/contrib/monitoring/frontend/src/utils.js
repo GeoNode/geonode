@@ -72,8 +72,8 @@ export const getResponseData = (response) => {
   let averageResponseTime;
   let maxResponseTime;
   let totalRequests;
-  if (!response || !response.data) {
-    return [averageResponseTime, maxResponseTime, totalRequests];
+  if (!response) {
+    return [0, 0, 0];
   }
   const rawData = response.data.data;
   const rawDataLength = rawData.length;
@@ -85,6 +85,9 @@ export const getResponseData = (response) => {
         --dataIndex;
       }
       data = rawData[dataIndex];
+    }
+    if (!data.data || data.data.length === 0) {
+      return [undefined, undefined, undefined];
     }
     const dataLength = data.data.length;
     if (dataLength > 0) {

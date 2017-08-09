@@ -59,8 +59,11 @@ class GeonodeData extends React.Component {
     let averageResponseTime = 0;
     let maxResponseTime = 0;
     let totalRequests = 0;
-    [averageResponseTime, maxResponseTime, totalRequests] = getResponseData(this.props.response);
-
+    [
+      averageResponseTime,
+      maxResponseTime,
+      totalRequests,
+    ] = getResponseData(this.props.response);
     return (
       <div style={styles.content}>
         <h5>Geonode Data Overview</h5>

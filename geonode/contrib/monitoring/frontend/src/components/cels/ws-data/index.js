@@ -22,11 +22,12 @@ const mapStateToProps = (state) => ({
 @connect(mapStateToProps, actions)
 class WSData extends React.Component {
   static propTypes = {
-    get: PropTypes.func.isRequired,
-    selected: PropTypes.string,
     from: PropTypes.object,
+    get: PropTypes.func.isRequired,
     interval: PropTypes.number,
+    reset: PropTypes.func.isRequired,
     response: PropTypes.object,
+    selected: PropTypes.string,
     to: PropTypes.object,
   }
 
@@ -41,6 +42,10 @@ class WSData extends React.Component {
     ) => {
       this.props.get(from, to, interval, selected);
     };
+  }
+
+  componentWillMount() {
+    this.get();
   }
 
   componentWillReceiveProps(nextProps) {
@@ -59,11 +64,19 @@ class WSData extends React.Component {
     }
   }
 
+  componentWillUnmount() {
+    this.props.reset();
+  }
+
   render() {
     let averageResponseTime = 0;
     let maxResponseTime = 0;
     let totalRequests = 0;
-    [averageResponseTime, maxResponseTime, totalRequests] = getResponseData(this.props.response);
+    [
+      averageResponseTime,
+      maxResponseTime,
+      totalRequests,
+    ] = getResponseData(this.props.response);
     return (
       <div style={styles.content}>
         <h5>W*S Data Overview</h5>
