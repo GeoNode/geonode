@@ -67,7 +67,8 @@ class AutomationJob(models.Model):
         ('pending_process', _('Pending Job')),
         ('done_process', _('Processed Job')),
         ('done_ceph', _('Uploaded in Ceph')),
-        ('done', _('Uploaded in LiPAD')),
+        ('done_database', _('Uploaded in LiPAD Database')),
+        ('done_maptiles', _('Done - Uploaded in LiPAD Maptiles')),
 
         # ('done_process', _('Processing Job')),
         # ('pending_ceph', _('Uploading in Ceph')),
