@@ -1048,3 +1048,10 @@ if 'geonode.geoserver' in GEONODE_APPS:
 
 
 
+#: Celerybeat settings
+CELERYBEAT_SCHEDULE = {
+    'context': {
+        'task': 'geonode.tasks.ceph_update.ceph_metadata_update',
+        'schedule': 30,
+    }
+}
