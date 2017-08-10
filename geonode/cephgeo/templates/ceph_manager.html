@@ -15,19 +15,19 @@
     <div class="col-md-3">
         <div class="selections">
             <nav class="filter">
-                <h4><a href="{% url 'cephgeo.views.file_list_geonode' %}" class="toggle toggle-nav"><i class="fa fa-files-o"></i>Datastore Files</a></h4>
-                <h4><a href="{% url 'cephgeo.views.file_list_ceph' %}" class="toggle toggle-nav"><i class="fa fa-cubes"></i>Ceph Data Objects</a></h4>
-                <h4><a href="{% url 'cephgeo.views.data_input' %}" class="toggle toggle-nav"><i class="fa fa-file-code-o"></i>Ceph Data Object Metadata Input</a></h4>
-                <h4><a href="{% url 'cephgeo.views.data_remove' %}" class="toggle toggle-nav"><i class="fa fa-trash-o"></i>Ceph Data Object Deletion</a></h4>
+                <h4><a href="{% url 'geonode.cephgeo.views.file_list_geonode' %}" class="toggle toggle-nav"><i class="fa fa-files-o"></i>Datastore Files</a></h4>
+                <h4><a href="{% url 'geonode.cephgeo.views.file_list_ceph' %}" class="toggle toggle-nav"><i class="fa fa-cubes"></i>Ceph Data Objects</a></h4>
+                <h4><a href="{% url 'geonode.cephgeo.views.data_input' %}" class="toggle toggle-nav"><i class="fa fa-file-code-o"></i>Metadata Input</a></h4>
                 <h4><a data-toggle="modal" data-target="#modal-metadata" href="" class="toggle toggle-nav"><i class="fa fa-file-text-o"></i>Metadata Update</a></h4>
                 <h4><a data-toggle="modal" data-target="#modal-seed" href="" class="toggle toggle-nav"><i class="fa fa-leaf"></i>Seed Layers</a></h4>
                 <h4><a data-toggle="modal" data-target="#modal-default-style" href="" class="toggle toggle-nav"><i class="fa fa-star-o"></i>Set Default Styles</a></h4>
+                 <h4><a href="{% url 'automation:metadata_job' %}" class="toggle toggle-nav"><i class="fa fa-briefcase"></i>Automation</a></h4>
             </nav>
         </div>
     </div>
 
 
-<div class="modal fade" id="modal-metadata" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+<div class="modal fade" id="modal-metadata" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">s
   <div class="modal-dialog">
     <div class="modal-content">
       <div class="modal-header">
@@ -209,23 +209,24 @@
 <!-- <div id="log"></div> -->
 
 {% block extra_script %}
+
 <script type="text/javascript">
 $( "#update-metadata" ).click(function() {
     if ($( "input:checked" ).val() == "fhm"){
         // $( "#log" ).html( $( "input:checked" ).val() + " is checked!" );
-            window.location = "{% url 'cephgeo.views.update_fhm_metadata' %}";
+            window.location = "{% url 'geonode.cephgeo.views.update_fhm_metadata' %}";
     }
     else if ($( "input:checked" ).val() == "resourcelayer"){
-            window.location = "{% url 'cephgeo.views.update_pl2_metadata' %}";
+            window.location = "{% url 'geonode.cephgeo.views.update_pl2_metadata' %}";
     }
     else if ($( "input:checked" ).val() == "sar"){
-            window.location = "{% url 'cephgeo.views.update_sar_metadata' %}";
+            window.location = "{% url 'geonode.cephgeo.views.update_sar_metadata' %}";
     }
     else if ($( "input:checked" ).val() == "floodplain"){
-            window.location = "{% url 'cephgeo.views.update_floodplain_keywords' %}";
+            window.location = "{% url 'geonode.cephgeo.views.update_floodplain_keywords' %}";
     }
     else if ($( "input:checked" ).val() == "lidar-cov"){
-            window.location = "{% url 'cephgeo.views.update_lidar_coverage' %}";
+            window.location = "{% url 'geonode.cephgeo.views.update_lidar_coverage' %}";
     }
 
 });
@@ -234,13 +235,13 @@ $( "#update-metadata" ).click(function() {
 $( "#seed-layers" ).click(function() {
     if ($( "input:checked" ).val() == "fhm"){
         // $( "#log" ).html( $( "input:checked" ).val() + " is checked!" );
-            window.location = "{% url 'cephgeo.views.seed_fhm_layers' %}";
+            window.location = "{% url 'geonode.cephgeo.views.seed_fhm_layers' %}";
     }
     else if ($( "input:checked" ).val() == "resourcelayer"){
-            window.location = "{% url 'cephgeo.views.seed_resource_layers' %}";
+            window.location = "{% url 'geonode.cephgeo.views.seed_resource_layers' %}";
     }
     else if ($( "input:checked" ).val() == "sar"){
-            window.location = "{% url 'cephgeo.views.seed_SAR_DEM' %}";
+            window.location = "{% url 'geonode.cephgeo.views.seed_SAR_DEM' %}";
     }
 
 });
@@ -248,19 +249,19 @@ $( "#seed-layers" ).click(function() {
 <script type="text/javascript">
 $( "#assign-default-style" ).click(function() {
     if ($( "input:checked" ).val() == "fhm"){
-            window.location = "{% url 'cephgeo.views.fhm_default_style' %}";
+            window.location = "{% url 'geonode.cephgeo.views.fhm_default_style' %}";
     }
     else if ($( "input:checked" ).val() == "resourcelayer"){
-            window.location = "{% url 'cephgeo.views.rl_default_style' %}";
+            window.location = "{% url 'geonode.cephgeo.views.rl_default_style' %}";
     }
     else if ($( "input:checked" ).val() == "sar"){
-            window.location = "{% url 'cephgeo.views.sar_default_style' %}";
+            window.location = "{% url 'geonode.cephgeo.views.sar_default_style' %}";
     }
     else if ($( "input:checked" ).val() == "dem-cov"){
-            window.location = "{% url 'cephgeo.views.dem_cov_default_style' %}";
+            window.location = "{% url 'geonode.cephgeo.views.dem_cov_default_style' %}";
     }
      else if ($( "input:checked" ).val() == "jurisdict"){
-            window.location = "{% url 'cephgeo.views.jurisdict_default_style' %}";
+            window.location = "{% url 'geonode.cephgeo.views.jurisdict_default_style' %}";
     }
 });
 </script>

@@ -8,6 +8,7 @@ import psycopg2
 logger = get_task_logger("geonode.tasks.update")
 logger.setLevel(logging.INFO)
 
+
 def assign_tag(mode, records, layer):
     if mode == 'dream':
         _dict = {}
@@ -91,8 +92,7 @@ def tag_layers(mode, delineation, cur, conn, source):
             if mode == 'dream':
                 logger.error('RETURNED MORE THAN 1 FP: %s', records)
             else:
-                logger.error('RETURNED MORE THAN 1 FP-SUC PAIR: ' %
-                             s, records)
+                logger.error('RETURNED MORE THAN 1 FP-SUC PAIR: %s ', records)
         elif len(records) == 1:
             assign_tag(mode, records, layer)
         else:

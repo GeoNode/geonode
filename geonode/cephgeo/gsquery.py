@@ -11,10 +11,10 @@ _logger = logging.getLogger()
 GEOSERVER_URL = settings.OGC_SERVER["default"]["LOCATION"]
 GEOSERVER_USER = settings.OGC_SERVER["default"]["USER"]
 GEOSERVER_PASSWD = settings.OGC_SERVER["default"]["PASSWORD"]
-#GRID_SHAPEFILE = settings.TILED_SHAPEFILE
+# GRID_SHAPEFILE = settings.TILED_SHAPEFILE
 GRID_SHAPEFILE = "geonode:philgrid"
 NAMESPACES = {"gml": "http://www.opengis.net/gml",
-              "geonode": "http://www.geonode.org/",}
+              "geonode": "http://www.geonode.org/", }
 
 # Register namespaces
 for namespace, url in NAMESPACES.items():
@@ -246,11 +246,12 @@ def transacton_update(typeName, search_id, search_value, field_id, field_value):
     else:
         return xml_result
 
+
 def create_nested_gridref_filter(gridref_list):
     ogc_filter = """       <ogc:Filter>
          <Or>"""
     for gridref in gridref_list:
-        ogc_filter +="""
+        ogc_filter += """
            <ogc:PropertyIsEqualTo>
              <ogc:PropertyName>GRIDREF</ogc:PropertyName>
              <ogc:Literal>{0}</ogc:Literal>
@@ -259,6 +260,7 @@ def create_nested_gridref_filter(gridref_list):
          </Or>
        </ogc:Filter>"""
     return ogc_filter
+
 
 def nested_grid_update(gridref_list, field_id, field_value, shapefile_name=GRID_SHAPEFILE, property_name="GRIDREF", ):
     xml_input = """<wfs:Transaction service="WFS" version="1.0.0"

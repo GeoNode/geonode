@@ -24,6 +24,7 @@ from kombu import Queue
 import geonode
 from geonode.celery_app import app  # flake8: noqa
 
+
 #
 # General Django development settings
 #
@@ -244,6 +245,9 @@ GEONODE_APPS = (
 
     # Reports
     'geonode.reports',
+
+    # Implements internal workflows
+    'geonode.automation',
 )
 
 GEONODE_CONTRIB_APPS = (
@@ -932,6 +936,8 @@ CELERY_QUEUES = [
 import djcelery
 djcelery.setup_loader()
 
+CELERYBEAT_SCHEDULER = "djcelery.schedulers.DatabaseScheduler"
+
 #### Custom LiPAD Settings ####
 #TILED_SHAPEFILE = "geonode:cut_phl_001k_grid_utm_z51n"
 # TILED_SHAPEFILE = "geonode:index"
@@ -1039,4 +1045,6 @@ if 'geonode.geoserver' in GEONODE_APPS:
     baselayers = MAP_BASELAYERS
     MAP_BASELAYERS = [LOCAL_GEOSERVER]
     MAP_BASELAYERS.extend(baselayers)
+
+
 
