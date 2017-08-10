@@ -15,7 +15,7 @@ from swiftclient.exceptions import ClientException
 from geonode.automation.models import AutomationJob, CephDataObjectResourceBase
 from geonode.cephgeo.models import LidarCoverageBlock
 from celery.decorators import periodic_task
-import datetime
+from datetime import datetime
 
 logger = get_task_logger("geonode.tasks.ceph_update")
 
@@ -45,6 +45,7 @@ def update_job_status(job):
 
     if job.status == AutomationJob.STATUS_CHOICES.done_ceph:
         job.status = AutomationJob.STATUS_CHOICES.done_database
+        job.status_timestamp = datetime.now()
         job.save()
         logger.info('Updated job status to %s', AutomationJob.STATUS_CHOICES.done_database)
 
@@ -61,7 +62,12 @@ def ceph_metadata_update():
     print '#' * 10
 
     #: Get from AutomationJob Mode
-    job = AutomationJob.objects.get(status=AutomationJob.STATUS_CHOICES.done_ceph)
+    try:
+        job = AutomationJob.objects.filter(status=AutomationJob.STATUS_CHOICES.done_ceph)[:1].get()
+    except AutomationJob.DoesNotExist:
+        logger.error('Nothing to upload in Ceph Data Object Resourcebase.')
+        return
+
     uploaded_objects_list = transform_log_to_list(job.ceph_upload_log)
 
     # Pop first line containing header
