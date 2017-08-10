@@ -1,0 +1,28 @@
+{% extends "ceph_base.html" %}
+{% load bootstrap_tags %}
+{% load crispy_forms_tags %}
+{% load i18n %}
+{% load url from future %}
+
+{% block title %} {% trans "Automation" %} {% endblock %}
+
+
+{% block body_class %}Task input{% endblock %}
+
+{% block body_outer %}
+  <div class="page-header">
+    <h2 class="page-title">{% trans "Automation Input" %}</h2>
+  </div>
+  <!-- <div class="row"> -->
+    <!-- <div class="col-md-6 col-md-offset-1"> -->
+      <!-- <form action="" class="form-horizontal" method="post" enctype="multipart/form-data"> -->
+        {% csrf_token %}
+
+          <!-- <div class="form-controls"> -->
+            {% crispy input_job_form %}
+          <!-- </div> -->
+
+      <!-- </form> -->
+    <!-- </div> -->
+{% endblock body_outer %}
+

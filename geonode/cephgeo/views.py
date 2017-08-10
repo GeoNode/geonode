@@ -65,7 +65,6 @@ def tile_check(request):
 
     return HttpResponse(json.dumps(valid_tiles), status=200)
 
-
 @login_required
 @user_passes_test(lambda u: u.is_superuser)
 def file_list_ceph(request, sort=None):
@@ -210,6 +209,7 @@ def data_input(request):
     if request.method == 'POST':
         # create a form instance and populate it with data from the request:
         # pprint(request.POST)
+        print 'REQUEST POST', request.POST
         form = DataInputForm(request.POST)
         # check whether it's valid:
         if form.is_valid():
@@ -618,3 +618,5 @@ def update_floodplain_keywords(request):
     floodplain_keywords.delay()
     messages.error(request, "Inserting FP/RB SUC keywords on layers")
     return HttpResponseRedirect(reverse('data_management'))
+
+
