@@ -41,12 +41,13 @@ def get_uid_from_filename(filename):
     return block_object
 
 
-def update_job_status(job):
+def update_job_status(job, error):
 
-    if job.status == AutomationJob.STATUS_CHOICES.done_ceph:
-        job.status = AutomationJob.STATUS_CHOICES.done_database
-        job.save()
-        logger.info('Updated job status to %s', AutomationJob.STATUS_CHOICES.done_database)
+    if not error:
+        if job.status == AutomationJob.STATUS_CHOICES.done_ceph:
+            job.status = AutomationJob.STATUS_CHOICES.done_database
+            job.save()
+            logger.info('Updated job status to %s', AutomationJob.STATUS_CHOICES.done_database)
 
 
 @task(name='geonode.tasks.ceph_update.ceph_metadata_update')
@@ -135,7 +136,7 @@ def ceph_metadata_update():
     result_msg = "Succesfully encoded metadata of [{0}] of objects. Inserted [{1}], updated [{2}].".format(
         objects_inserted + objects_updated, objects_inserted, objects_updated)
 
-    update_job_status(job)
+    update_job_status(job, False)
 
     print 'GRIDREF DICT BY DATA CLASS'
     print gridref_dict_by_data_class
