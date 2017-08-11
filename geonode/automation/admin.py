@@ -26,16 +26,16 @@ class CephDataObjectResourceBaseAdmin(admin.ModelAdmin):
     list_display = (
         'id',
         'grid_ref',
+        'block_uid',
         'name',
-        'last_modified',
-        'content_type',
-        'block_uid'
-        'size_in_bytes',
         'file_hash',
         'data_class',
+        'last_modified',
+        'content_type',
+        'size_in_bytes'
     )
     search_fields = ('grid_ref', 'name', 'data_class')
-    list_filter = ('data_class')
+    list_filter = ('data_class', 'content_type')
 
 
 admin.site.register(AutomationJob, AutomationJobAdmin)
