@@ -69,6 +69,7 @@ class AutomationJob(models.Model):
         ('done_ceph', _('Uploaded in Ceph')),
         ('done_database', _('Uploaded in LiPAD Database')),
         ('done_maptiles', _('Done - Uploaded in LiPAD Maptiles')),
+        ('error', _('Error!')),
 
         # ('done_process', _('Processing Job')),
         # ('pending_ceph', _('Uploading in Ceph')),
