@@ -54,16 +54,13 @@ def update_job_status(job, error):
     job.save()
 
 
-@task(name='geonode.tasks.ceph_update.ceph_metadata_update')
+@task(name='geonode.tasks.ceph_update.ceph_metadata_update', queue='update')
 def ceph_metadata_update():
     """
         NOTE: DOES NOT WORK
           Outputs error 'OperationalError: database is locked'
           Need a better way of making celery write into the database
     """
-    print '#' * 10
-    print 'Scheduler'
-    print '#' * 10
 
     #: Get from AutomationJob Mode
     try:
