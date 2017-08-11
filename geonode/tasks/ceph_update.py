@@ -54,7 +54,7 @@ def update_job_status(job, error):
     job.save()
 
 
-@task(name='geonode.tasks.ceph_update.ceph_metadata_update', queue='update')
+@task(name='geonode.tasks.ceph_update.ceph_metadata_update')
 def ceph_metadata_update():
     """
         NOTE: DOES NOT WORK
