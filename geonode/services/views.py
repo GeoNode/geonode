@@ -59,6 +59,7 @@ from geonode.services.forms import CreateServiceForm, ServiceForm
 from geonode.utils import mercator_to_llbbox
 from geonode.layers.utils import create_thumbnail
 from geonode.geoserver.helpers import set_attributes_from_geoserver
+from geonode.geoserver.signals import geoserver_post_save
 from geonode.base.models import Link
 from geonode.base.models import resourcebase_post_save
 from geonode.catalogue.models import catalogue_post_save
@@ -642,6 +643,7 @@ def _register_indexed_layers(service, wms=None, verbosity=False):
             if not existing_layer:
                 signals.post_save.disconnect(resourcebase_post_save, sender=Layer)
                 signals.post_save.disconnect(catalogue_post_save, sender=Layer)
+                signals.post_save.disconnect(geoserver_post_save, sender=Layer)
                 saved_layer = Layer.objects.create(
                     typename=wms_layer.name,
                     name=wms_layer.name,
@@ -674,10 +676,12 @@ def _register_indexed_layers(service, wms=None, verbosity=False):
 
                 resourcebase_post_save(saved_layer, Layer)
                 catalogue_post_save(saved_layer, Layer)
+                geoserver_post_save(saved_layer, Layer)
                 set_attributes_from_geoserver(saved_layer)
 
                 signals.post_save.connect(resourcebase_post_save, sender=Layer)
                 signals.post_save.connect(catalogue_post_save, sender=Layer)
+                signals.post_save.connect(geoserver_post_save, sender=Layer)
             count += 1
         message = "%d Layers Registered" % count
         return_dict = {'status': 'ok', 'msg': message}
