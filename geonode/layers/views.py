@@ -27,6 +27,7 @@ import traceback
 import uuid
 import decimal
 from requests import Request
+from itertools import chain
 
 from guardian.shortcuts import get_perms
 from django.contrib import messages
@@ -708,7 +709,7 @@ def layer_metadata(
     if request.user.is_superuser:
         metadata_author_groups = GroupProfile.objects.all()
     else:
-        metadata_author_groups = metadata_author.group_list_all()
+        metadata_author_groups = chain(metadata_author.group_list_all(), GroupProfile.objects.exclude(access="private"))
 
     return render_to_response(template, RequestContext(request, {
         "resource": layer,
