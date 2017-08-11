@@ -42,9 +42,9 @@
 
     if ($scope.statisticsURL) {
       geoGigService.geogigCommand($scope.statisticsURL).then(
-          function(data) {
-            if (data.response.success) {
-              $scope.stats = data.response.Statistics;
+          function(result) {
+            if (result.data.response.success) {
+              $scope.stats = result.data.response.Statistics;
               $('#geogig-message').hide();
               $('#geogig-stats').show();
             }
@@ -58,11 +58,11 @@
 
     if ($scope.logURL) {
       geoGigService.geogigCommand($scope.logURL).then(
-          function(data) {
-            if (data.response.success) {
+          function(result) {
+            if (result.data.response.success) {
               $('#geogig-message').hide();
               $('#geogig-stats').show();
-              var response = data.response.commit;
+              var response = result.data.response.commit;
               if (!Array.isArray(response)) {
                 $scope.commits = [response];
               } else {
