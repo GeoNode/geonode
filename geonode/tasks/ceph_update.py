@@ -46,8 +46,13 @@ def update_job_status(job, error):
     if not error:
         if job.status == AutomationJob.STATUS_CHOICES.done_ceph:
             job.status = AutomationJob.STATUS_CHOICES.done_database
-            job.save()
             logger.info('Updated job status to %s', AutomationJob.STATUS_CHOICES.done_database)
+    else:
+        job.status = AutomationJob.STATUS_CHOICES.error
+        logger.info('Updated job status to %s', AutomationJob.STATUS_CHOICES.error)
+
+    job.save()
+
 
 
 @task(name='geonode.tasks.ceph_update.ceph_metadata_update')
