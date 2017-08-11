@@ -33,3 +33,8 @@ def mapbox_access_token():
 @register.simple_tag
 def bing_api_key():
     return getattr(settings, "BING_API_KEY", None)
+
+
+@register.simple_tag
+def google_api_key():
+    return getattr(settings, "GOOGLE_API_KEY", None)
