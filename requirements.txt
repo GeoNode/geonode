@@ -23,7 +23,7 @@ django-extensions==1.6.1
 django-floppyforms==1.7.0
 django-forms-bootstrap==3.0.1
 django-friendly-tag-loader==1.2.1
-django-geoexplorer==4.0.9
+django-geoexplorer==4.0.10
 django-guardian==1.4.6
 django-haystack==2.6.0
 django-jsonfield==0.9.16
