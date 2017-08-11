@@ -58,7 +58,7 @@ setup(name='GeoNode',
         "pyyaml>=3.11",
         "beautifulsoup4>=4.2.1",  # python-bs4 (4.4.1)
         "MultipartPostHandler>=0.1.0",  # python-multipartposthandler (0.1.0)
-        "httplib2>=0.9.2",  # python-httplib2 (0.9.1, 0.9.2 in our ppa)
+        "httplib2==0.10.3",  # python-httplib2 (0.9.1, 0.9.2 in our ppa)
         "transifex-client>=0.10",  # transifex-client (0.11.1)
         "Paver>=1.2.4",  # python-paver (1.2.4)
         "nose>=1.3.1",  # python-nose (1.3.7)
