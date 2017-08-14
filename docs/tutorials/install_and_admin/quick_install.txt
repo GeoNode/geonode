@@ -126,6 +126,14 @@ Rebuild libraries through::
     bower update
     grunt production
 
+
+.. warning::
+
+   If you get an error like ``/usr/bin/env: node: No such file or directory`` while running ``bower``, try to execute the following command::
+
+        sudo ln -s /usr/bin/nodejs /usr/bin/node
+
+
 On a production environment, remember to refresh also the "static_root" folder::
 
     python manage.py collectstatic --clear -i site-packages* -i .components* -i node_modules* --noinput

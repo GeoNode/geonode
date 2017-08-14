@@ -19,13 +19,13 @@
 #########################################################################
 
 from django.core.urlresolvers import reverse
-from tastypie.test import ResourceTestCase
+from tastypie.test import ResourceTestCaseMixin
 
 from geonode.base.populate_test_data import create_models, all_public
 from geonode.layers.models import Layer
 
 
-class PermissionsApiTests(ResourceTestCase):
+class PermissionsApiTests(ResourceTestCaseMixin):
 
     fixtures = ['initial_data.json', 'bobby']
 
@@ -122,7 +122,7 @@ class PermissionsApiTests(ResourceTestCase):
         self.assertEquals(len(self.deserialize(resp)['objects']), 8)
 
 
-class SearchApiTests(ResourceTestCase):
+class SearchApiTests(ResourceTestCaseMixin):
 
     """Test the search"""
 

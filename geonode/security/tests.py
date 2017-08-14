@@ -22,7 +22,7 @@ import json
 
 from django.core.urlresolvers import reverse
 from django.test import TestCase
-from tastypie.test import ResourceTestCase
+from tastypie.test import ResourceTestCaseMixin
 from django.contrib.auth import get_user_model
 from guardian.shortcuts import get_anonymous_user, assign_perm, remove_perm
 
@@ -35,7 +35,7 @@ from geonode.layers.populate_layers_data import create_layer_data
 from geonode.groups.models import Group
 
 
-class BulkPermissionsTests(ResourceTestCase):
+class BulkPermissionsTests(ResourceTestCaseMixin):
     fixtures = ['initial_data.json', 'bobby']
 
     def setUp(self):
