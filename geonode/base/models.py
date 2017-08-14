@@ -992,15 +992,6 @@ def resourcebase_post_save(instance, *args, **kwargs):
     Used to fill any additional fields after the save.
     Has to be called by the children
     """
-    if not instance.id:
-        return
-
-    ResourceBase.objects.filter(id=instance.id).update(
-        thumbnail_url=instance.get_thumbnail_url(),
-        detail_url=instance.get_absolute_url(),
-        csw_insert_date=datetime.datetime.now())
-    instance.set_missing_info()
-
     # we need to remove stale links
     for link in instance.link_set.all():
         if link.name == "External Document":
@@ -1009,6 +1000,21 @@ def resourcebase_post_save(instance, *args, **kwargs):
         else:
             if urlsplit(settings.SITEURL).hostname not in link.url:
                 link.delete()
+
+    try:
+        ResourceBase.objects.filter(id=instance.id).update(
+            thumbnail_url=instance.get_thumbnail_url(),
+            detail_url=instance.get_absolute_url(),
+            csw_insert_date=datetime.datetime.now())
+    except:
+        pass
+
+    try:
+        instance.thumbnail_url = instance.get_thumbnail_url()
+        instance.detail_url = instance.get_absolute_url()
+        instance.csw_insert_date = datetime.datetime.now()
+    finally:
+        instance.set_missing_info()
 
     try:
         if instance.regions and instance.regions.all():
