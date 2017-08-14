@@ -34,7 +34,7 @@ const fail = createAction(
 );
 
 
-const get = (from, to, interval, service) =>
+const get = (from, to, interval /* service */) =>
   (dispatch) => {
     dispatch(begin());
     const formatedFrom = formatApiDate(from);

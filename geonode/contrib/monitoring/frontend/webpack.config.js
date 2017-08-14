@@ -10,4 +10,19 @@ config.plugins = [
 config.devtool = 'cheap-module-source-map';
 
 
+config.devServer = {
+  proxy: {
+    '/monitoring/api': {
+      target: 'http://localhost:8000',
+    },
+    '/static': {
+      target: 'http://localhost:8000',
+    },
+    '/lang.js': {
+      target: 'http://localhost:8000',
+    },
+  },
+};
+
+
 module.exports = config;

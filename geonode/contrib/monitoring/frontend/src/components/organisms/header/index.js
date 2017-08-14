@@ -25,10 +25,18 @@ class Header extends React.Component {
   }
 
   static propTypes = {
+    autoRefresh: PropTypes.bool,
+    back: PropTypes.string,
+    disableInterval: PropTypes.bool,
+    from: PropTypes.object,
     interval: PropTypes.number,
     setInterval: PropTypes.func.isRequired,
-    from: PropTypes.object,
     to: PropTypes.object,
+  }
+
+  static defaultProps = {
+    autoRefresh: true,
+    interval: true,
   }
 
   constructor(props) {
@@ -44,10 +52,6 @@ class Header extends React.Component {
       now.setSeconds(seconds, 0);
       const fromDate = new Date(now - interval * 1000);
       this.props.setInterval(fromDate, now, interval);
-    };
-
-    this.handleBack = () => {
-      this.context.router.push('/');
     };
 
     this.handleMinute = () => {
@@ -113,41 +117,43 @@ class Header extends React.Component {
     const autoRefreshStyle = this.state.autoRefresh
                            ? { backgroundColor: '#dde' }
                            : undefined;
+    const props = this.props;
     return (
       <div style={styles.content}>
         <div style={styles.item}>
           <RaisedButton
             style={styles.time}
             icon={<Back />}
-            onClick={this.handleBack}
+            disabled={props.back === undefined}
+            onClick={() => this.context.router.push(this.props.back)}
           />
           <span style={styles.interval}>Latest:</span>
           <RaisedButton
             style={styles.time}
             labelStyle={styles.timeLabel}
             label="10 min"
-            disabled={this.props.interval === 10 * minute}
+            disabled={props.disableInterval || props.interval === 10 * minute}
             onClick={this.handleMinute}
           />
           <RaisedButton
             style={styles.time}
             labelStyle={styles.timeLabel}
             label="1 hour"
-            disabled={this.props.interval === hour}
+            disabled={props.disableInterval || props.interval === hour}
             onClick={this.handleHour}
           />
           <RaisedButton
             style={styles.time}
             labelStyle={styles.timeLabel}
             label="1 day"
-            disabled={this.props.interval === day}
+            disabled={props.disableInterval || props.interval === day}
             onClick={this.handleDay}
           />
           <RaisedButton
             style={styles.time}
             labelStyle={styles.timeLabel}
             label="1 week"
-            disabled={this.props.interval === week}
+            disabled={props.disableInterval || props.interval === week}
             onClick={this.handleWeek}
           />
         </div>
@@ -168,6 +174,7 @@ class Header extends React.Component {
           icon={<AutorefreshIcon style={styles.icon} />}
           onClick={this.handleAutoRefresh}
           buttonStyle={autoRefreshStyle}
+          disabled={!this.props.autoRefresh}
         />
       </div>
     );

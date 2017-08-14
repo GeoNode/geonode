@@ -9,7 +9,7 @@ class HWPerf extends React.Component {
   render() {
     return (
       <div style={styles.root}>
-        <Header />
+        <Header back="/" />
         <div style={styles.analytics}>
           <GeonodeStatus />
           <GeoserverStatus />

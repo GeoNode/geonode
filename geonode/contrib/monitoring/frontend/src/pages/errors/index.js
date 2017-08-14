@@ -8,7 +8,7 @@ class Errors extends Component {
   render() {
     return (
       <div style={styles.root}>
-        <Header />
+        <Header back="/" />
         <ErrorList />
       </div>
     );

@@ -13,7 +13,7 @@ class Error extends React.Component {
   render() {
     return (
       <div style={styles.root}>
-        <Header />
+        <Header disableInterval back="/errors" autoRefresh={false} />
         <ErrorDetails errorId={Number(this.props.params.errorId)} />
       </div>
     );

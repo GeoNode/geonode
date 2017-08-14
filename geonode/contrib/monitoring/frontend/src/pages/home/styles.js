@@ -21,8 +21,4 @@ export default {
     width: '50%',
     marginLeft: 20,
   },
-
-  map: {
-    height: '35%',
-  },
 };

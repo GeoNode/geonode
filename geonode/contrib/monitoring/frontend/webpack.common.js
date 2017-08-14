@@ -36,7 +36,7 @@ module.exports = {
         test: /\.css$/,
         loaders: [
           'style?sourceMap',
-          `css?sourceMap&modules&importLoaders=1`,
+          'css?sourceMap&modules&importLoaders=1',
           'resolve-url',
           'postcss',
         ],

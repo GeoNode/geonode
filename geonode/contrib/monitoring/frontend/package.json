@@ -53,6 +53,7 @@
     "radium": "^0.18.4",
     "react": "^15.6.1",
     "react-css-modules": "^3.7.10",
+    "react-datamaps": "^0.3.0",
     "react-dnd": "^2.4.0",
     "react-dnd-html5-backend": "^2.4.1",
     "react-dom": "^15.6.1",
