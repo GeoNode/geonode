@@ -1,6 +1,7 @@
 import React from 'react';
 import HoverPaper from '../../atoms/hover-paper';
 import HR from '../../atoms/hr';
+import ResponseTable from '../../cels/response-table';
 import styles from './styles';
 
 
@@ -10,13 +11,7 @@ class GeonodeLayerAnalytics extends React.Component {
       <HoverPaper style={styles.content}>
         <h3>Geonode Layers Analytics</h3>
         <HR />
-        <h4>Average Response Time #### ms</h4>
-        <HR />
-        <h4>Max Response Time #### ms</h4>
-        <HR />
-        <h4>Total Requests ####</h4>
-        <HR />
-        <h4>Total Errors ####</h4>
+        <ResponseTable />
         <table style={styles.table}>
           <thead>
             <tr>
