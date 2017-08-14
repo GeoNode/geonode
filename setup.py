@@ -75,7 +75,7 @@ setup(name='GeoNode',
         "django-pagination>=1.0.5,<=1.0.7",  # python-django-pagination (1.0.7)
         "django-extensions>=1.2.5",  # python-django-extensions (1.5.9)
         "django-jsonfield==1.0.1",  # python-django-jsonfield (0.9.15, 1.0.1 in our ppa)
-        "django-jsonfield-compat=0.4.4",
+        "django-jsonfield-compat==0.4.4",
         "django-taggit==0.21.0",  # python-django-taggit (0.18.0)
         "django-mptt==0.8.6",  # django-mptt (0.8.0, 0.8.6 in our ppa)
         "django-treebeard==4.0",  # django-treebeard (4.0)
