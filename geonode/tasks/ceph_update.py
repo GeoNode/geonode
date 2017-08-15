@@ -23,7 +23,11 @@ logger = get_task_logger("geonode.tasks.ceph_update")
 def transform_log_to_list(log):
     log_list = []
     log = log.strip()
-    log_list = log.split('\r\n')
+
+    if '\r\n' in log:
+        log_list = log.split('\r\n')
+    else:
+        log_list = log.split('\n')
 
     # print 'Log List:', log_list
     logger.info('Cleaned log.')
