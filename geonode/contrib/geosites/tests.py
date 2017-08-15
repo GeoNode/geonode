@@ -20,7 +20,7 @@
 
 import json
 
-from tastypie.test import ResourceTestCase
+from tastypie.test import ResourceTestCaseMixin
 from django.test.utils import override_settings
 from django.contrib.sites.models import Site
 from django.core.urlresolvers import reverse
@@ -39,7 +39,7 @@ from .models import SiteResources, SitePeople
 
 @override_settings(SITE_NAME='Slave')
 @override_settings(SITE_ID=2)
-class SiteTests(ResourceTestCase):
+class SiteTests(ResourceTestCaseMixin):
 
     """Tests the sites functionality
     """
