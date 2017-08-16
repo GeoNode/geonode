@@ -7,6 +7,7 @@ class HoverPaper extends React.Component {
   static propTypes = {
     children: PropTypes.node,
     style: PropTypes.object,
+    onClick: PropTypes.func,
   }
 
   constructor(props) {
@@ -32,6 +33,7 @@ class HoverPaper extends React.Component {
         onMouseOver={this.handleMouseOver}
         onMouseOut={this.handleMouseOut}
         zDepth={this.state.zDepth}
+        onClick={this.props.onClick}
       >
         {this.props.children}
       </Paper>
