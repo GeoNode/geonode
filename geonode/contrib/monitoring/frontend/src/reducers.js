@@ -18,6 +18,10 @@ import { wsThroughputSequence } from './components/organisms/ws-analytics/reduce
 import { wsErrorSequence } from './components/organisms/ws-analytics/reducers';
 import errorList from './components/organisms/error-list/reducers';
 import errorDetails from './components/organisms/error-detail/reducers';
+import { geonodeLayerError } from './components/organisms/geonode-layers-analytics/reducers';
+import { geonodeLayerResponse } from './components/organisms/geonode-layers-analytics/reducers';
+import { wsLayerError } from './components/organisms/ws-layers-analytics/reducers';
+import { wsLayerResponse } from './components/organisms/ws-layers-analytics/reducers';
 import uptime from './components/cels/uptime/reducers';
 
 
@@ -29,6 +33,8 @@ const reducers = {
   geonodeCpuSequence,
   geonodeCpuStatus,
   geonodeErrorSequence,
+  geonodeLayerError,
+  geonodeLayerResponse,
   geonodeMemStatus,
   geonodeMemorySequence,
   geonodeResponseSequence,
@@ -40,6 +46,8 @@ const reducers = {
   theme,
   uptime,
   wsErrorSequence,
+  wsLayerError,
+  wsLayerResponse,
   wsResponseSequence,
   wsService,
   wsServiceData,

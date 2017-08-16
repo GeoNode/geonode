@@ -6,10 +6,10 @@ import styles from './styles';
 
 class ResponseTable extends React.Component {
   static propTypes = {
-    average: PropTypes.number.isRequired,
-    errorNumber: PropTypes.number.isRequired,
-    max: PropTypes.number.isRequired,
-    requests: PropTypes.number.isRequired,
+    average: PropTypes.number,
+    errorNumber: PropTypes.number,
+    max: PropTypes.number,
+    requests: PropTypes.number,
   }
 
   render() {

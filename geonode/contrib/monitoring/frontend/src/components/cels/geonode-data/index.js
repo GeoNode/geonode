@@ -1,10 +1,10 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
+import { getResponseData } from '../../../utils';
 import AverageResponseTime from '../../molecules/average-response-time';
 import MaxResponseTime from '../../molecules/max-response-time';
 import TotalRequests from '../../molecules/total-requests';
-import { getResponseData } from '../../../utils';
 import styles from './styles';
 import actions from './actions';
 

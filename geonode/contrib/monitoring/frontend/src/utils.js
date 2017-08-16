@@ -125,3 +125,12 @@ export const getTime = (responses) => {
   }));
   return result;
 };
+
+
+export const getErrorCount = (responses) => {
+  let result = 0;
+  if (!responses || !responses.data || !responses.data.data) {
+    return result;
+  }
+  return result;
+};
