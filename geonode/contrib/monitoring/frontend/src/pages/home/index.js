@@ -18,7 +18,8 @@ class Home extends React.Component {
           <SoftwarePerformance />
           <div style={styles.hardware}>
             <HardwarePerformance />
-            <HoverPaper style={styles.map}>
+            <HoverPaper>
+              <h3 style={styles.mapTitle}>Cvrc</h3>
               <Map />
             </HoverPaper>
           </div>
