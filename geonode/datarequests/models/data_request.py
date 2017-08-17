@@ -40,7 +40,7 @@ class SUCRequestTag (TagBase):
 
 class SUCTaggedRequest (GenericTaggedItemBase):
     tag = models.ForeignKey(SUCRequestTag, related_name='SUC_request_tag')
-    
+
     class Meta:
         app_label = "datarequests"
 
@@ -73,16 +73,16 @@ class DataRequest(BaseRequest, StatusModel):
     jurisdiction_shapefile = models.ForeignKey(Layer, null=True, blank=True)
 
     project_summary = models.TextField(_('Summary of Project/Program'), null=True, blank=True)
-    
+
     data_type = TaggableManager(_('data_types'), blank=True, help_text="Data Type Selected")
-    
+
     data_class_other = models.CharField(
         _('Requester-specified Data Type'),
         null = True,
         blank = True,
         max_length = 50
     )
-    
+
     data_type_requested = models.CharField(
         _('Type of Data Requested'),
         choices=DATA_TYPE_CHOICES,
@@ -126,10 +126,10 @@ class DataRequest(BaseRequest, StatusModel):
 
     #For request letter
     request_letter= models.ForeignKey(Document, null=True, blank=True)
-    
-    suc = TaggableManager(_('SUCs'),blank=True, help_text="SUC jurisdictions within this ROI", 
+
+    suc = TaggableManager(_('SUCs'),blank=True, help_text="SUC jurisdictions within this ROI",
         through=SUCTaggedRequest, related_name="suc_request_tag")
-        
+
     suc_notified = models.BooleanField(null=False,blank=False,default=False)
     suc_notified_date = models.DateTimeField(null=True,blank=True)
     forwarded = models.BooleanField(null=False,blank=False,default=False)
@@ -368,27 +368,27 @@ class DataRequest(BaseRequest, StatusModel):
 
         email_subject = _('[LiPAD] Data Request Status')
         self.send_email(email_subject,text_content,html_content)
-        
+
     def send_suc_notification(self, suc=None):
         if not suc:
             if len(self.suc.names()) > 1:
                 suc = "UPD"
             else:
                 suc = self.suc.names()[0]
-            
+
         suc_contacts = SUC_Contact.objects.filter(institution_abrv=suc).exclude(position="Program Leader")
         suc_pl = SUC_Contact.objects.get(institution_abrv=suc, position="Program Leader")
         organization = ""
         if self.get_organization():
             organization = unidecode(self.get_organization())
-        
+
         data_classes = ""
         for n in self.data_type.names():
             data_classes += str(n)
-        
+
         data_classes += ", "+str(self.data_class_other)
-            
-        
+
+
         text_content = email_utils.DATA_SUC_REQUEST_NOTIFICATION_TEXT.format(
             suc_pl.salutation,
             suc_pl.name,
@@ -400,7 +400,7 @@ class DataRequest(BaseRequest, StatusModel):
             data_classes,
             self.purpose,
         )
-        
+
         html_content = email_utils.DATA_SUC_REQUEST_NOTIFICATION_HTML.format(
             suc_pl.salutation,
             suc_pl.name,
@@ -412,11 +412,11 @@ class DataRequest(BaseRequest, StatusModel):
             data_classes,
             self.purpose,
         )
-        
+
         cc = suc_contacts.values_list('email_address',flat = True)
-        
+
         email_subject = _('[LiPAD] Data Request Forwarding')
-        
+
         msg = EmailMultiAlternatives(
             email_subject,
             text_content,
@@ -424,41 +424,41 @@ class DataRequest(BaseRequest, StatusModel):
             [suc_pl.email_address, ],
             cc = cc
         )
-        
+
         msg.attach_alternative(html_content, "text/html")
         msg.send()
         self.suc_notified =True
         self.suc_notified_date = timezone.now()
         self.save()
-            
-    
+
+
     def send_jurisdiction(self, suc=None):
         if not suc:
             if len(self.suc.names()) == 1:
                 suc = self.suc.names()[0]
             else:
                 suc = "UPD"
-                
+
         suc_contacts = SUC_Contact.objects.filter(institution_abrv=suc).exclude(position="Program Leader")
         suc_pl = SUC_Contact.objects.get(institution_abrv=suc, position="Program Leader")
-        
+
         text_content = email_utils.DATA_SUC_JURISDICTION_TEXT.format(
             suc_pl.salutation,
             suc_pl.name,
             settings.BASEURL+self.jurisdiction_shapefile.get_absolute_url(),
         )
-        
+
         html_content = email_utils.DATA_SUC_JURISDICTION_HTML.format(
             suc_pl.salutation,
             suc_pl.name,
             settings.BASEURL+self.jurisdiction_shapefile.get_absolute_url(),
             settings.BASEURL+self.jurisdiction_shapefile.get_absolute_url(),
         )
-        
+
         cc = suc_contacts.values_list('email_address',flat = True)
-        
+
         email_subject = _('[LiPAD] Data Request Forwarding')
-        
+
         msg = EmailMultiAlternatives(
             email_subject,
             text_content,
@@ -466,41 +466,41 @@ class DataRequest(BaseRequest, StatusModel):
             [suc_pl.email_address, ],
             cc = cc
         )
-        
+
         username = suc_pl.username
-        
+
         if not suc == "UPD":
-            
+
             resource = self.jurisdiction_shapefile
             perms = resource.get_all_level_info()
             #user_level_perms = getattr(perms, "user", {})
             user_perms = getattr(perms["users"],str(username),[])
             if "view_resourcebase" not in user_perms:
                 user_perms.append("view_resourcebase")
-            
+
             if "download_resourcebase" not in user_perms:
                 user_perms.append("download_resourcebase")
-                
+
             perms["users"][suc_pl.username]=user_perms
             resource.set_permissions(perms)
-            
-        
+
+
         msg.attach_alternative(html_content, "text/html")
         msg.send()
-        
+
         self.forwarded = True
         self.forwarded_date = timezone.now()
         self.save()
-        
+
     def notify_user_preforward(self, suc=None):
         if not suc:
             if len(self.suc.names()) == 1:
                 suc = self.suc.names()[0]
             else:
                 suc = "UPD"
-                
+
         suc_contact = SUC_Contact.objects.get(institution_abrv=suc, position="Program Leader")
-        
+
         text_content = email_utils.DATA_USER_PRE_FORWARD_NOTIFICATION_TEXT.format(
             self.get_first_name(),
             self.get_last_name(),
@@ -509,8 +509,8 @@ class DataRequest(BaseRequest, StatusModel):
             suc_contact.salutation,
             suc_contact.name
         )
-        
-        
+
+
         html_content = email_utils.DATA_USER_PRE_FORWARD_NOTIFICATION_HTML.format(
             self.get_first_name(),
             self.get_last_name(),
@@ -519,52 +519,49 @@ class DataRequest(BaseRequest, StatusModel):
             suc_contact.salutation,
             suc_contact.name
         )
-        
+
         email_subject = _('[LiPAD] Data Request Forwarding')
-        
+
         msg = EmailMultiAlternatives(
             email_subject,
             text_content,
             settings.DEFAULT_FROM_EMAIL,
             [self.get_email(), ],
         )
-        
+
         msg.attach_alternative(html_content, "text/html")
         msg.send()
-    
+
     def notify_user_forward(self, suc=None):
         if not suc:
             if len(self.suc.names()) == 1:
                 suc = self.suc.names()[0]
             else:
                 suc = "UPD"
-        
+
         text_content = email_utils.DATA_USER_FORWARD_NOTIFICATION_TEXT.format(
             self.get_first_name(),
             self.get_last_name(),
             suc
         )
-        
-        
+
+
         html_content = email_utils.DATA_USER_FORWARD_NOTIFICATION_HTML.format(
             self.get_first_name(),
             self.get_last_name(),
             suc
         )
-        
+
         email_subject = _('[LiPAD] Data Request Forwarding')
-        
+
         msg = EmailMultiAlternatives(
             email_subject,
             text_content,
             settings.DEFAULT_FROM_EMAIL,
             [self.get_email(), ],
         )
-        
+
         msg.attach_alternative(html_content, "text/html")
         msg.send()
 
 ###utility functions
-
-        
-        
