@@ -90,16 +90,16 @@ def requests_csv(request):
         writer.writerow(header_fields)
 
         objects = ProfileRequest.objects.all().order_by('pk')
-        
+
         profile_request_fields = ['name','email','contact_number', 'organization', 'organization_type','organization_other', 'created','status', 'has_data_request','data_request_status','area_coverage','estimated_data_size']
 
         for o in objects:
             writer.writerow(o.to_values_list(profile_request_fields))
-            
+
         objects = DataRequest.objects.filter(profile_request = None).order_by('pk')
-        
-        data_request_fields = ['name', 'email', 'organization','organization_type','organization_other','created','profile_request_status','has_data_request','status','area_coverage','estimated_data_size']
-        
+
+        data_request_fields = ['name', 'email', 'contact_number', 'organization','organization_type','organization_other','created','profile_request_status','has_data_request','status','area_coverage','estimated_data_size']
+
         for o in objects:
             writer.writerow(o.to_values_list(data_request_fields))
 
@@ -108,31 +108,31 @@ def requests_csv(request):
 class DataRequestProfileList(LoginRequiredMixin, TemplateView):
     template_name = 'datarequests/old_requests_model_list.html'
     raise_exception = True
-    
+
 @login_required
 def old_requests_csv(request):
     if not request.user.is_superuser:
         return HttpResponseRedirect("/forbidden")
-    
+
     response = HttpResponse(content_type='text/csv')
     datetoday = timezone.now()
     writer = csv.writer(response)
     response['Content-Disposition'] = 'attachment; filename="oldrequests-"'+str(datetoday.month)+str(datetoday.day)+str(datetoday.year)+'.csv"'
     header_fields = ['id','name','email','contact_number', 'organization', 'project_summary', 'created','request_status', 'org_type']
     writer.writerow(header_fields)
-    
+
     objects = DataRequestProfile.objects.all().order_by('pk')
-    
+
     for o in objects:
         writer.writerow(o.to_values_list(header_fields))
-    
+
     return response
 
 @login_required
 def old_request_detail(request, pk,template="datarequests/old_request_detail.html"):
     if not request.user.is_superuser:
         return HttpResponseRedirect("/forbidden")
-        
+
     request_profile = get_object_or_404(DataRequestProfile, pk=pk)
 
     if not request.user.is_superuser and not request_profile.profile == request.user:
@@ -215,19 +215,19 @@ def old_request_detail(request, pk,template="datarequests/old_request_detail.htm
 def old_request_migration(request, pk):
     if not request.user.is_superuser:
         return HttpResponseRedirect("/forbidden")
-    
+
     old_request = get_object_or_404(DataRequestProfile, pk=pk)
-    
+
     message = ""
     if old_request.profile_request:
         message += "This request has already been migrated."
         message += "<br/>Profile request: <a href = {}>#{}</a>".format(old_request.profile_request.get_absolute_url(), old_request.profile_request.pk)
         if old_request.data_request:
             message += "<br/>Data request: <a href = {}>{}</a>".format(old_request.data_request.get_absolute_url(), old_request.data_request.pk)
-    
+
     else:
         profile_request = old_request.migrate_request_profile()
-    
+
         if profile_request:
             message += "Migrated profile request can be found here: <a href = {}>{}</a>.".format(profile_request.get_absolute_url(), old_request.profile_request.pk)
             data_request = old_request.migrate_request_data()
@@ -235,7 +235,7 @@ def old_request_migration(request, pk):
                 message += "\nMigrated data request can be found here: <a href = {}>{}</a>.".format(data_request.get_absolute_url(), old_request.data_request.pk)
         else:
             message += "Unable to migrate"
-            
+
     messages.info(request, mark_safe(message))
     return HttpResponseRedirect(reverse('datarequests:old_request_detail', args=[pk]))
 
@@ -243,7 +243,7 @@ def old_request_migration(request, pk):
 def old_request_migration_all(request):
     if not request.user.is_superuser:
         return HttpResponseRedirect("/forbidden")
-        
+
     migrate_all.delay()
     messages.info(request, "Old data request profiles are now being migrated. This may take some time.")
     return HttpResponseRedirect(reverse("datarequests:old_request_model_view"))
@@ -272,4 +272,3 @@ def old_request_facet_count(request):
         status=200,
         mimetype='text/plain'
     )
-
