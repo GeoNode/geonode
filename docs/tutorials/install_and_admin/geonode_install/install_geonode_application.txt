@@ -29,7 +29,7 @@ Packages Installation
 =====================
 
 First we are going to install all the software packages we are going to need
-for the GeoNode setup. Among others `Tomcat 7`, `PostgreSQL`, `PostGIS`,
+for the GeoNode setup. Among others `Tomcat 8`, `PostgreSQL`, `PostGIS`,
 `Apache HTTP server` and `Git`. Run the following command to install all the
 packages::
 
@@ -45,16 +45,16 @@ packages::
         libapache2-mod-wsgi    \
         libgeos-dev            \
         libjpeg-dev            \
-        libpng-dev             \
+        libpng12-dev           \
         libpq-dev              \
         libproj-dev            \
         libxml2-dev            \
-        libxslt-dev            \
-        openjdk-7-jre          \
+        libxslt1-dev           \
+        openjdk-8-jre          \
         patch                  \
         postgresql             \
         postgis                \
-        postgresql-9.3-postgis-scripts \
+        postgresql-9.5-postgis-scripts \
         postgresql-contrib     \
         python                 \
         python-dev             \
@@ -63,10 +63,9 @@ packages::
         python-imaging         \
         python-pastescript     \
         python-psycopg2        \
-        python-support         \
         python-urlgrabber      \
         python-virtualenv      \
-        tomcat7                \
+        tomcat8                \
         unzip                  \
         zip
 
@@ -96,7 +95,7 @@ Let's download GeoNode from the main GeoNode repository on GitHub:
 
 ::
 
-    git clone https://github.com/GeoNode/geonode.git --branch 2.4.x
+    git clone https://github.com/GeoNode/geonode.git --branch 2.6.x
     sudo useradd -m geonode
     sudo mv ~/geonode /home/geonode/
 
