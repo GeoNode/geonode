@@ -27,6 +27,21 @@ module.exports = {
         include: path.join(__dirname, 'src'),
       },
       {
+        test: /\.json$/,
+        loaders: ['json'],
+        exclude: /node_modules/,
+        include: path.join(__dirname, 'src'),
+      },
+      {
+        test: /\.csv$/,
+        loaders: ['csv-loader'],
+        options: {
+          dynamicTyping: true,
+          header: true,
+          skipEmptyLines: true,
+        },
+      },
+      {
         test: /\.geojson$/,
         loaders: ['json'],
         exclude: /node_modules/,
