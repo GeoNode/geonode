@@ -20,14 +20,16 @@
 
 from django.contrib.sitemaps import Sitemap
 from geonode.maps.models import Layer, Map
-
+from guardian.shortcuts import get_objects_for_user
+from django.contrib.auth.models import AnonymousUser
 
 class LayerSitemap(Sitemap):
     changefreq = "never"
     priority = 0.5
 
     def items(self):
-        return Layer.objects.all()
+        permitted = get_objects_for_user(AnonymousUser(), 'base.view_resourcebase')
+        return Layer.objects.filter(id__in=permitted)
 
     def lastmod(self, obj):
         return obj.date
@@ -38,4 +40,5 @@ class MapSitemap(Sitemap):
     priority = 0.5
 
     def items(self):
-        return Map.objects.all()
+        permitted = get_objects_for_user(AnonymousUser(), 'base.view_resourcebase')
+        return Map.objects.filter(id__in=permitted)
