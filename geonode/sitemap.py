@@ -23,6 +23,7 @@ from geonode.maps.models import Layer, Map
 from guardian.shortcuts import get_objects_for_user
 from django.contrib.auth.models import AnonymousUser
 
+
 class LayerSitemap(Sitemap):
     changefreq = "never"
     priority = 0.5
