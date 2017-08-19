@@ -11,6 +11,8 @@ branches:
     - master
     - 2.6.x
 
+dist: precise
+
 install:
   - sudo apt-get -qq -y update
   - sudo apt-get install -y libgdal-dev python-gdal gdal-bin
