@@ -139,6 +139,11 @@ def geoserver_pre_save(instance, sender, **kwargs):
         if getattr(ogc_server_settings, "BACKEND_WRITE_ENABLED", True):
             gs_catalog.save(gs_layer)
 
+    if gs_resource:
+        if gs_resource.keywords:
+            for keyword in gs_resource.keywords:
+                instance.keywords.add(keyword)
+
     """Get information from geoserver.
 
        The attributes retrieved include:
@@ -210,7 +215,10 @@ def geoserver_post_save(instance, sender, **kwargs):
                 gs_catalog.save(gs_resource)
 
     if any(instance.keyword_list()):
-        gs_resource.keywords = instance.keyword_list()
+        keywords = instance.keyword_list()
+        if gs_resource.keywords:
+            keywords = keywords + gs_resource.keywords
+        gs_resource.keywords = list(set(keywords))
         # gs_resource should only be called if
         # ogc_server_settings.BACKEND_WRITE_ENABLED == True
         if getattr(ogc_server_settings, "BACKEND_WRITE_ENABLED", True):
