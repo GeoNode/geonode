@@ -1,22 +1,24 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import * as d3 from 'd3';
-import * as selection from 'd3-selection';
 import * as topojson from 'topojson';
+import ReactFauxDOM from 'react-faux-dom';
 import styles from './styles';
 import cities from './cities.json';
 import world from './world.json';
 
 
 class WorldMap extends React.Component {
-  constructor(props) {
-    super(props);
-
-    this.setRef = (element) => {
-      this.rootElement = element;
-    };
+  static propTypes = {
+    chart: PropTypes.node,
+    connectFauxDOM: PropTypes.func,
   }
 
-  componentDidMount() {
+  static defaultProps = {
+    chart: <div>loading</div>,
+  }
+
+  renderD3() {
     const width = '100%';
     const height = 500;
     const projection = d3.geoMercator()
@@ -24,7 +26,8 @@ class WorldMap extends React.Component {
       .scale(200)
       .rotate([-180, 0]);
 
-    const svg = d3.select(this.rootElement).append('svg')
+    const faux = ReactFauxDOM.createElement('div');
+    const svg = d3.select(faux).append('svg')
       .attr('width', width)
       .attr('height', height);
 
@@ -53,7 +56,8 @@ class WorldMap extends React.Component {
     // zoom and pan
     const zoom = d3.zoom()
       .on('zoom', () => {
-        const transform = `translate(${event.translate.join(',')})scale(${event.scale})`;
+        let transform = `translate(${d3.event.translate.join(',')})`;
+        transform += `scale(${d3.event.scale})`;
         g.attr('transform', transform);
         g.selectAll('circle')
           .attr('d', path.projection(projection));
@@ -61,11 +65,16 @@ class WorldMap extends React.Component {
           .attr('d', path.projection(projection));
       });
     svg.call(zoom);
+    return faux;
   }
 
   render() {
     return (
-      <div style={styles.root} ref={this.setRef} />
+      <div style={styles.root}>
+        <div className="renderedD3">
+          {this.renderD3().toReact()}
+        </div>
+      </div>
     );
   }
 }
