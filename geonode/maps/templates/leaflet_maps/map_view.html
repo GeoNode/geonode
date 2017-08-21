@@ -21,6 +21,7 @@
           href="https://cdn.rawgit.com/elesdoar/leaflet-control-orderlayers/master/dist/css/leaflet.control.orderlayers.min.css"
           type="text/css"/>
     <link rel="stylesheet" href="{% static 'lib/css/L.Control.Pan.css' %}"/>
+    <link rel="stylesheet" href="{% static 'lib/css/easy-button.css' %}"/>
     <link href="{{ STATIC_URL }}geonode/css/map_leaflet.css" rel="stylesheet"/>
     <style type="text/css">
         html, body, #wrap {
@@ -34,6 +35,10 @@
 
         label {
             padding-bottom: 1%;
+        }
+
+        .leaflet-bar.easy-button-container.leaflet-control {
+            margin-left: 35px;
         }
 
     </style>
@@ -127,6 +132,7 @@
     <script src="//cdnjs.cloudflare.com/ajax/libs/Sortable/1.4.2/Sortable.min.js"></script>
     <script src="https://cdn.rawgit.com/elesdoar/leaflet-control-orderlayers/master/dist/leaflet.control.orderlayers.min.js"></script>
     <script src="https://cdn.rawgit.com/elesdoar/leaflet-control-orderlayers/master/dist/leaflet.control.orderlayers.min.js"></script>
+    <script src="{% static 'lib/js/easy-button.js' %}"></script>
 
     <script src="{% static 'lib/js/L.Control.Pan.js' %}"></script>
 
@@ -443,6 +449,19 @@
                     zoom: 11
                 });
             {% endif %}
+
+            L.easyButton({
+                states: [{
+                    stateName: 'zoom-all',
+                    icon: 'fa-globe',
+                    title: 'Zoom to global view',
+                    zIndex: 1,
+                    onClick: function (control) {
+                        zoom_to_box(map, [0, 90, 0, -90]);
+                        map.setZoom(2);
+                    }
+                    }]
+            }).addTo(map);
 
             // Populate radio button for background layer
             populate_background_layer(all_layers_list, all_layers);
