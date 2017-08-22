@@ -257,6 +257,12 @@ class TypeChecks(object):
         return Service.objects.get(name=val)
 
     @staticmethod
+    def service_type_type(val):
+        from geonode.contrib.monitoring.models import ServiceType
+        return ServiceType.objects.get(name=val)
+
+    
+    @staticmethod
     def label_type(val):
         from geonode.contrib.monitoring.models import MetricLabel
         try:

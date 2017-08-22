@@ -97,7 +97,18 @@ class HostsList(View):
 
 
 class CheckTypeForm(forms.Form):
+    """
+    Special form class to validate values from specific db dictionaries
+    (services, resources, ows services etc)
+    """
     def _check_type(self, tname):
+        """
+        Returns tname-specific object instance from db.
+
+        Internally it uses geonode.contrib.monotoring.utils.TypeChecks
+        to resolve field's value to object.
+
+        """
         d = self.cleaned_data
         if not d:
             return
@@ -121,6 +132,7 @@ class MetricsFilters(CheckTypeForm):
     label = forms.CharField(required=False)
     resource = forms.CharField(required=False)
     ows_service = forms.CharField(required=False)
+    service_type = forms.CharField(required=False)
 
     def clean_resource(self):
         return self._check_type('resource')
@@ -134,9 +146,14 @@ class MetricsFilters(CheckTypeForm):
     def clean_ows_service(self):
         return self._check_type('ows_service')
 
+    def clean_service_type(self):
+        return self._check_type('service_type')
+
 
 class LabelsFilterForm(CheckTypeForm):
     metric_name = forms.CharField(required=False)
+    valid_from = forms.DateTimeField(required=False)
+    valid_to = forms.DateTimeField(required=False)
 
     def clean_metric(self):
         return self._check_type('metric_name')
@@ -190,16 +207,18 @@ class ResourcesList(FilteredView):
 
     def get_queryset(self, metric_name=None, resource_type=None, valid_from=None, valid_to=None):
         q = MonitoredResource.objects.all().distinct()
+        qparams = {}
         if resource_type:
-            q = q.filter(type=resource_type)
+            qparams['type'] = resource_type
         if metric_name:
             sm = ServiceTypeMetric.objects.filter(metric__name=metric_name)
-            q = q.filter(metric_values__service_metric__in=sm)
+            qparams['metric_values__service_metric__in'] = sm
         if valid_from:
-            q = q.filter(metric_values__valid_from__gte=valid_from)
+            qparams['metric_values__valid_from__gte'] = valid_from
         if valid_to:
-            q = q.filter(metric_values__valid_to__lte=valid_to)
-
+            qparams['metric_values__valid_to__lte'] = valid_to
+        if qparams:
+            q = q.filter(**qparams)
         return q
 
 
@@ -210,11 +229,18 @@ class LabelsList(FilteredView):
                   ('name', 'name',),)
     output_name = 'labels'
 
-    def get_queryset(self, metric_name):
+    def get_queryset(self, metric_name, valid_from, valid_to):
         q = MetricLabel.objects.all().distinct()
+        qparams = {}
         if metric_name:
             sm = ServiceTypeMetric.objects.filter(metric__name=metric_name)
-            q = q.filter(metric_values__service_metric__in=sm)
+            qparams['metric_values__service_metric__in'] = sm
+        if valid_from:
+            qparams['metric_values__valid_from__gte'] = valid_from
+        if valid_to:
+            qparams['metric_values__valid_to__lte'] = valid_to
+        if qparams:
+            q = q.filter(**qparams)
         return q
 
 
@@ -284,10 +310,16 @@ class ExceptionsListView(FilteredView):
             q = q.filter(created__gte=valid_from)
         if valid_to:
             q = q.filter(created__lte=valid_to)
+        if service_name and service_type:
+            raise ValueError("Cannot use service_name and service_type at the same time")
         if service_name:
             q = q.filter(service__name=service_name)
+        else:
+            q = q.filter(service__isnull=True)
         if service_type:
             q = q.filter(service__service_type__name=service_type)
+        else:
+            q = q.filter(service__service__type__isnull=True)
         if resource:
             q = q.filter(request__resources__in=(resource,))
 

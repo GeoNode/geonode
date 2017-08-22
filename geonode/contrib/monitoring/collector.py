@@ -180,6 +180,23 @@ class CollectorAPI(object):
                                    .delete()
                 print MetricValue.add(**mdata)
 
+        uptime = data['data'].get('uptime')
+        if uptime is not None:
+            mdata = {'value': uptime,
+                     'value_raw': uptime,
+                     'value_num': uptime,
+                     'metric': 'uptime',
+                     'label': 'Seconds'}
+            mdata.update(mdefaults)
+            MetricValue.objects.filter(service_metric__metric__name=mdata['metric'],
+                                       valid_from=mdata['valid_from'],
+                                       valid_to=mdata['valid_to'],
+                                       label__name=mdata['label'],
+                                       service=service)\
+                               .delete()
+            print MetricValue.add(**mdata)
+
+
         if data['data'].get('cpu'):
             l = data['data']['cpu']['usage']
             mdata = {'value': l,
@@ -478,7 +495,7 @@ class CollectorAPI(object):
                     self.set_error_values(ows_requests, valid_from, valid_to, service=service, resource=resource, ows_service=ows_service)
 
     def get_metrics_for(self, metric_name, valid_from=None, valid_to=None, interval=None, service=None,
-                        label=None, resource=None, ows_service=None):
+                        label=None, resource=None, ows_service=None, service_type=None):
         """
         Returns metric data for given metric. Returned dataset contains list of periods and values in that periods
         """
@@ -512,6 +529,7 @@ class CollectorAPI(object):
                                           service=service,
                                           label=label,
                                           ows_service=ows_service,
+                                          service_type=service_type,
                                           resource=resource)
             out['data'].append({'valid_from': pstart, 'valid_to': pend, 'data': pdata})
         return out
@@ -528,7 +546,7 @@ class CollectorAPI(object):
         f = metric.get_aggregate_name()
         return f or column_name
 
-    def get_metrics_data(self, metric_name, valid_from, valid_to, interval, service=None, label=None, resource=None, ows_service=None):
+    def get_metrics_data(self, metric_name, valid_from, valid_to, interval, service=None, label=None, resource=None, ows_service=None, service_type=None):
         """
         Returns metric values for metric within given time span
         """
@@ -550,9 +568,15 @@ class CollectorAPI(object):
         has_agg = agg_f != col
 
         q_select = ['select ml.name as label, {} as val, count(1) as metric_count, sum(samples_count) as samples_count, sum(mv.value_num), min(mv.value_num), max(mv.value_num)'.format(agg_f)]
+        if service and service_type:
+            raise ValueError("Cannot use service and service type in the same query")
         if service:
             q_where.append('and mv.service_id = %(service_id)s')
             params['service_id'] = service.id
+        elif service_type:
+            q_from.append('join monitoring_service ms on '
+                          '(ms.id = mv.service_id and ms.service_type_id = %(service_type_id)s )')
+            params['service_type_id'] = service_type.id
         if ows_service:
             q_where.append(' and mv.ows_service_id = %(ows_service)s ')
             params['ows_service'] = ows_service.id
