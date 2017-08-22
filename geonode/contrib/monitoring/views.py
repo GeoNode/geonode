@@ -18,7 +18,7 @@
 #
 #########################################################################
 
-from datetime import datetime
+from datetime import datetime, timedelta
 
 from django.shortcuts import render
 
@@ -128,11 +128,19 @@ class MetricsFilters(CheckTypeForm):
     valid_from = forms.DateTimeField(required=False)
     valid_to = forms.DateTimeField(required=False)
     interval = forms.IntegerField(min_value=60, required=False)
+    last = forms.IntegerField(min_value=60, required=False)
     service = forms.CharField(required=False)
     label = forms.CharField(required=False)
     resource = forms.CharField(required=False)
     ows_service = forms.CharField(required=False)
     service_type = forms.CharField(required=False)
+
+    def _check_timestamps(self):
+        last = self.cleaned_data.get('last')
+        vf = self.cleaned_data.get('valid_from')
+        vt = self.cleaned_data.get('valid_to')
+        if last and (vf or vt):
+           raise forms.ValidationError('Cannot use last and valid_from/valid_to at the same time') 
 
     def clean_resource(self):
         return self._check_type('resource')
@@ -148,6 +156,17 @@ class MetricsFilters(CheckTypeForm):
 
     def clean_service_type(self):
         return self._check_type('service_type')
+
+    def _check_services(self):
+        s = self.cleaned_data.get('service')
+        st = self.cleaned_data.get('service_type')
+        if st and s:
+            raise forms.ValidationError("Cannot use service and service type at the same time")
+
+    def clean(self):
+        super(MetricsFilters, self).clean()
+        self._check_services()
+        self._check_timestamps()
 
 
 class LabelsFilterForm(CheckTypeForm):
@@ -180,15 +199,18 @@ class FilteredView(View):
     output_name = None
 
     def get_filter_args(self, request):
+        self.errors = None
         if not self.filter_form:
             return {}
         f = self.filter_form(data=request.GET)
-        if f.is_valid():
-            return f.cleaned_data
-        return {}
+        if not f.is_valid():
+            self.errors = f.errors
+        return f.cleaned_data
 
     def get(self, request, *args, **kwargs):
         qargs = self.get_filter_args(request)
+        if self.errors:
+            return json_response({'errors': self.errors}, status=400)
         q = self.get_queryset(**qargs)
         from_fields = [f[0] for f in self.fields_map]
         to_fields = [f[1] for f in self.fields_map]
@@ -257,17 +279,25 @@ class MetricDataView(View):
 
     def get_filters(self, **kwargs):
         out = {}
+        self.errors = None
         f = MetricsFilters(data=self.request.GET)
-
-        if f.is_valid():
-            out.update(f.cleaned_data)
+        if not f.is_valid():
+            self.errors = f.errors
         else:
-            print(f.errors)
+            out.update(f.cleaned_data)
         return out
 
     def get(self, *args, **kwargs):
         filters = self.get_filters(**kwargs)
+        if self.errors:
+            return json_response({'status': 'error', 'success': False, 'errors': self.errors}, status=400)
         metric_name = kwargs['metric_name']
+        last = filters.pop('last', None)
+        if last:
+            td = timedelta(seconds=last)
+            now = datetime.now()
+            filters['valid_from'] = now - td
+            filters['valid_to'] = now
         out = capi.get_metrics_for(metric_name, **filters)
         return json_response({'data': out})
 

@@ -221,7 +221,11 @@ class TypeChecks(object):
     @staticmethod
     def host_type(val):
         from geonode.contrib.monitoring.models import Host
-        return Host.objects.get(name=val)
+        try:
+            return Host.objects.get(name=val)
+        except Host.DoesNotExist:
+            raise ValueError("Host {} does not exist".format(val))
+
 
     @staticmethod
     def resource_type(val):
@@ -254,13 +258,18 @@ class TypeChecks(object):
     @staticmethod
     def service_type(val):
         from geonode.contrib.monitoring.models import Service
-        return Service.objects.get(name=val)
+        try:
+            return Service.objects.get(name=val)
+        except Service.DoesNotExist:
+            raise ValueError("Service {} does not exist".format(val))
 
     @staticmethod
     def service_type_type(val):
         from geonode.contrib.monitoring.models import ServiceType
-        return ServiceType.objects.get(name=val)
-
+        try:
+            return ServiceType.objects.get(name=val)
+        except ServiceType.DoesNotExist:
+            raise ValueError("Service Type {} does not exist".format(val))
     
     @staticmethod
     def label_type(val):
