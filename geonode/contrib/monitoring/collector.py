@@ -358,7 +358,7 @@ class CollectorAPI(object):
             metric_values.update({'value': value or 0,
                                   'label': label,
                                   'samples_count': samples,
-                                  'value_raw': value,
+                                  'value_raw': value or 0,
                                   'value_num': value if isinstance(value, (int, float, long, Decimal,)) else None})
             print MetricValue.add(**metric_values)
 

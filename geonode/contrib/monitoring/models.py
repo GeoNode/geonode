@@ -354,7 +354,7 @@ class RequestEvent(models.Model):
 
             if client_loc:
                 lat, lon = client_loc['latitude'], client_loc['longitude'],
-                country = client_loc['country_code']
+                country = client_loc['country_code3']
                 region = client_loc['region']
                 city = client_loc['city']
         data = {'received': received,
@@ -405,7 +405,7 @@ class RequestEvent(models.Model):
             client_loc = geoip.city(ip)
             if client_loc:
                 lat, lon = client_loc['latitude'], client_loc['longitude'],
-                country = client_loc['country_code']
+                country = client_loc['country_code3']
                 region = client_loc['region']
                 city = client_loc['city']
 
@@ -550,7 +550,7 @@ class MetricValue(models.Model):
             metric = '{} [{}]'.format(metric, l)
         if self.resource and self.resource.type:
             metric = '{} for {}'.format(metric, '{}={}'.format(self.resource.name, self.resource.type))
-        return 'Metric Value: {}: {}[{}] (since {} until {})'.format(metric, self.value, self.value_num, self.valid_from, self.valid_to)
+        return 'Metric Value: {}: [{}] (since {} until {})'.format(metric, self.value, self.valid_from, self.valid_to)
 
     @classmethod
     def add(cls, metric, valid_from, valid_to, service, label,
