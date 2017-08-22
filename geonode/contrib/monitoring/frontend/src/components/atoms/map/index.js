@@ -1,78 +1,38 @@
 import React from 'react';
-import PropTypes from 'prop-types';
-import * as d3 from 'd3';
-import * as topojson from 'topojson';
-import ReactFauxDOM from 'react-faux-dom';
-import styles from './styles';
-import cities from './cities.json';
-import world from './world.json';
+import Datamap from 'datamaps';
 
 
 class WorldMap extends React.Component {
-  static propTypes = {
-    chart: PropTypes.node,
-    connectFauxDOM: PropTypes.func,
-  }
-
-  static defaultProps = {
-    chart: <div>loading</div>,
-  }
-
-  renderD3() {
-    const width = '100%';
-    const height = 500;
-    const projection = d3.geoMercator()
-      .center([0, 5])
-      .scale(200)
-      .rotate([-180, 0]);
-
-    const faux = ReactFauxDOM.createElement('div');
-    const svg = d3.select(faux).append('svg')
-      .attr('width', width)
-      .attr('height', height);
-
-    const path = d3.geoPath().projection(projection);
-
-    const g = svg.append('g');
-
-    // load and display the World
-    g.selectAll('circle')
-      .data(cities)
-      .enter()
-      .append('a')
-        .attr('xlink:href', (d) => `https://www.google.com/search?q=${d.city}`)
-      .append('circle')
-        .attr('cx', (d) => projection([d.lon, d.lat])[0])
-        .attr('cy', (d) => projection([d.lon, d.lat])[1])
-        .attr('r', 5)
-        .style('fill', 'red');
-
-    g.selectAll('path')
-      .data(topojson.feature(world, world.objects.countries).features)
-      .enter()
-      .append('path')
-      .attr('d', path);
-
-    // zoom and pan
-    const zoom = d3.zoom()
-      .on('zoom', () => {
-        let transform = `translate(${d3.event.translate.join(',')})`;
-        transform += `scale(${d3.event.scale})`;
-        g.attr('transform', transform);
-        g.selectAll('circle')
-          .attr('d', path.projection(projection));
-        g.selectAll('path')
-          .attr('d', path.projection(projection));
-      });
-    svg.call(zoom);
-    return faux;
+  componentDidMount() {
+    const basicChoropleth = new Datamap({
+      element: this.d3Element,
+      projection: 'mercator',
+      fills: {
+        defaultFill: '#ABDDA4',
+        '0-100': '#fa0fa0',
+        '100-200': '#fabda0',
+        '200-300': '#3a0fa0',
+      },
+      data: {
+        USA: { fillKey: '0-100' },
+        JPN: { fillKey: '100-200' },
+        ITA: { fillKey: '200-300' },
+        CRI: { fillKey: '0-100' },
+        KOR: { fillKey: '100-200' },
+        DEU: { fillKey: '200-300' },
+      },
+    });
+    basicChoropleth.legend();
   }
 
   render() {
     return (
-      <div style={styles.root}>
-        <div className="renderedD3">
-          {this.renderD3().toReact()}
+      <div>
+        <div
+          style={{ position: 'relative' }}
+          className="renderedD3"
+          ref={(node) => {this.d3Element = node;}}
+        >
         </div>
       </div>
     );

@@ -51,4 +51,8 @@ export default {
     padding: 20,
     lineHeight: 1.5,
   },
+
+  '.datamaps-legend': {
+    position: 'relative',
+  },
 };
