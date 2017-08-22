@@ -1,5 +1,6 @@
 import React from 'react';
 import Datamap from 'datamaps';
+import styles from './styles';
 
 
 class WorldMap extends React.Component {
@@ -27,14 +28,7 @@ class WorldMap extends React.Component {
 
   render() {
     return (
-      <div>
-        <div
-          style={{ position: 'relative' }}
-          className="renderedD3"
-          ref={(node) => {this.d3Element = node;}}
-        >
-        </div>
-      </div>
+      <div style={styles.root} ref={(node) => {this.d3Element = node;}} />
     );
   }
 }
