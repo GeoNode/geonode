@@ -338,7 +338,12 @@ class CollectorAPI(object):
                 q.append(row)
             q.sort(key=_key)
             q.reverse()
-
+        elif metric.is_value_numeric:
+            q = []
+            row = requests.aggregate(value=models.Max(column_name),
+                                     samples=models.Count(column_name))
+            row['label'] = v
+            q.append(row)
         else:
             raise ValueError("Unsupported metric type: {}".format(metric.type))
 
@@ -350,12 +355,11 @@ class CollectorAPI(object):
             label = row['label']
             value = row['value']
             samples = row['samples']
-            metric_values.update({'value': value,
+            metric_values.update({'value': value or 0,
                                   'label': label,
                                   'samples_count': samples,
                                   'value_raw': value,
                                   'value_num': value if isinstance(value, (int, float, long, Decimal,)) else None})
-
             print MetricValue.add(**metric_values)
 
     def process(self, service, data, valid_from, valid_to, *args, **kwargs):
@@ -405,23 +409,33 @@ class CollectorAPI(object):
         """
         Processes requests information into metric values
         """
-        log.info("Processing batch of %s requests from %s to %s", requests.count(), valid_from, valid_to)
         if not requests.count():
             return
+        log.info("Processing batch of %s requests from %s to %s", requests.count(), valid_from, valid_to)
         metric_defaults = {'valid_from': valid_from,
                            'valid_to': valid_to,
                            'requests': requests,
                            'service': service}
         MetricValue.objects.filter(valid_from__gte=valid_from, valid_to__lte=valid_to, service=service).delete()
-
+        requests = requests.filter(service=service)
         resources = self.extract_resources(requests)
         count = requests.count()
+        paths = requests.distinct('request_path').values_list('request_path', flat=True)
         print MetricValue.add('request.count', valid_from, valid_to, service, 'Count',
                         value=count,
                         value_num=count,
                         value_raw=count,
                         samples_count=count,
                         resource=None)
+        for path in paths:
+            count = requests.filter(request_path=path).count()
+            print MetricValue.add('request.path', valid_from, valid_to, service, path,
+                            value=count,
+                            value_num=count,
+                            value_raw=count,
+                            samples_count=count,
+                            resource=None)
+
         # calculate overall stats
         self.set_metric_values('request.ip', 'client_ip', **metric_defaults)
         self.set_metric_values('request.country', 'client_country',  **metric_defaults)
@@ -442,6 +456,7 @@ class CollectorAPI(object):
             ows_services = self.extract_ows_services(_requests)
             metric_defaults['resource'] = resource
             metric_defaults['requests'] = _requests
+
             MetricValue.add('request.count', valid_from, valid_to, service, 'count', value=count, value_num=count,
                             samples_count=count, value_raw=count, resource=resource)
             self.set_metric_values('request.ip', 'client_ip', **metric_defaults)
@@ -477,6 +492,17 @@ class CollectorAPI(object):
                 self.set_metric_values('request.method', 'request_method', **metric_defaults)
                 for ows_service in ows_services:
                     ows_requests = _requests.filter(ows_service=ows_service)
+
+                    paths = ows_requests.distinct('request_path').values_list('request_path', flat=True)
+                    for path in paths:
+                        count = ows_requests.filter(request_path=path).count()
+                        print MetricValue.add('request.path', valid_from, valid_to, service, path,
+                                        value=count,
+                                        value_num=count,
+                                        value_raw=count,
+                                        samples_count=count,
+                                        resource=resource)
+
                     count = ows_requests.count()
                     metric_defaults['ows_service'] = ows_service
                     metric_defaults['requests'] = ows_requests

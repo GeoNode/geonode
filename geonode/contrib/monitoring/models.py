@@ -144,13 +144,17 @@ class Metric(models.Model):
     TYPE_RATE = 'rate'
     TYPE_COUNT = 'count'
     TYPE_VALUE = 'value'
+    TYPE_VALUE_NUMERIC = 'value_numeric'
     TYPES = ((TYPE_RATE, _("Rate"),),
              (TYPE_COUNT, _("Count"),),
              (TYPE_VALUE, _("Value"),),
+             (TYPE_VALUE_NUMERIC, _("Value numeric"),),
+
              )
 
     AGGREGATE_MAP = {TYPE_RATE: '(case when sum(samples_count)> 0 then sum(value_num)/sum(samples_count) else 0 end)',
-                     TYPE_VALUE: 'max(value_num)',
+                     TYPE_VALUE: 'sum(value_num)',
+                     TYPE_VALUE_NUMERIC: 'max(value_num)',
                      TYPE_COUNT: 'sum(value_num)'}
 
     UNIT_BYTES = 'B'
@@ -196,6 +200,10 @@ class Metric(models.Model):
     @property
     def is_count(self):
         return self.type == self.TYPE_COUNT
+    
+    @property
+    def is_value_numeric(self):
+        return self.type == self.TYPE_VALUE_NUMERIC
 
     @property
     def is_value(self):
@@ -572,7 +580,7 @@ class MetricValue(models.Model):
                                    resource=resource,
                                    ows_service=ows_service,
                                    service_metric=service_metric)
-            inst.value = value_raw
+            inst.value = value
             inst.value_raw = value_raw
             inst.value_num = value_num
             inst.samples_count = samples_count or 0
@@ -863,7 +871,7 @@ class BuiltIns(object):
     metrics_rate = ('response.time', 'response.size',)
     # metrics_count = ('request.count', 'request.method', 'request.
 
-    geonode_metrics = ('request', 'request.count', 'request.ip', 'request.ua',
+    geonode_metrics = ('request', 'request.count', 'request.ip', 'request.ua', 'request.path',
                        'request.ua.family', 'request.method', 'response.error.count',
                        'request.country', 'request.region', 'request.city',
                        'response.time', 'response.status', 'response.size',
@@ -877,10 +885,15 @@ class BuiltIns(object):
     rates = ('response.time', 'response.size', 'network.in.rate', 'network.out.rate', 'load.1m', 'load.5m',
              'load.15m', 'cpu.usage.rate', 'cpu.usage.percent', 'cpu.usage',
              'storage.free', 'storage.total', 'storage.used',)
-    values = ('request.ip', 'request.ua', 'request.ua.family',
+
+    values = ('request.ip', 'request.ua', 'request.ua.family', 'request.path',
               'request.method', 'request.country', 'request.region',
               'request.city', 'response.status', 'response.ereror.types',)
+
+    values_numeric = ('storage.total', 'storage.used', 'storage.free', 'mem.free', 'mem.usage',
+                      'mem.buffers', 'mem.all',)
     counters = ('request.count',  'network.in', 'network.out', 'response.error.count',)
+
 
     unit_seconds = ('response.time', 'uptime', 'cpu.usage',)
     unit_bytes = ('response.size', 'network.in', 'network.out',
@@ -909,6 +922,7 @@ def populate():
     Metric.objects.filter(name__in=BuiltIns.counters).update(type=Metric.TYPE_COUNT)
     Metric.objects.filter(name__in=BuiltIns.rates).update(type=Metric.TYPE_RATE)
     Metric.objects.filter(name__in=BuiltIns.values).update(type=Metric.TYPE_VALUE)
+    Metric.objects.filter(name__in=BuiltIns.values_numeric).update(type=Metric.TYPE_VALUE_NUMERIC)
 
     for otype, otype_name in OWSService.OWS_TYPES:
         OWSService.objects.get_or_create(name=otype)
