@@ -22,12 +22,18 @@ class WorldMap extends React.Component {
         '9-10': '#0000cc',
       },
       data: {
-        USA: { fillKey: '4-5' },
-        JPN: { fillKey: '9-10' },
-        ITA: { fillKey: '7-8' },
-        CRI: { fillKey: '0-1' },
-        KOR: { fillKey: '3-4' },
-        DEU: { fillKey: '2-3' },
+        USA: {
+          fillKey: '4-5',
+          val: 5,
+        },
+      },
+      geographyConfig: {
+        popupTemplate: (geography, data) => {
+          let popup = '<div class="hoverinfo"><strong>';
+          popup += `${geography.properties.name}: ${data.val}`;
+          popup += '</strong></div>';
+          return popup;
+        },
       },
     });
     basicChoropleth.legend();
