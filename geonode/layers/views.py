@@ -309,9 +309,9 @@ def layer_detail(request, layername, template='layers/layer_detail.html'):
         'LAYER_PREVIEW_LIBRARY',
         'leaflet')
 
-    pprint('CONTEXT DICTIONARY')
-    pprint(context_dict)
-    pprint('END')
+    #pprint('CONTEXT DICTIONARY')
+    #pprint(context_dict)
+    #pprint('END')
     if request.user.has_perm('download_resourcebase', layer.get_self_resource()):
         if layer.storeType == 'dataStore':
             links = layer.link_set.download().filter(
@@ -325,18 +325,18 @@ def layer_detail(request, layername, template='layers/layer_detail.html'):
         context_dict["social_links"] = build_social_links(request, layer)
 
     if request.method == 'POST':
-        pprint(request.POST)
+        #pprint(request.POST)
         form = AnonDownloaderForm(request.POST)
         out = {}
         if form.is_valid():
-            pprint(form)
+            #pprint(form)
             out['success'] = True
             anondownload = form.save()
             anondownload.anon_layer = Layer.objects.get(
                 typename=layername).typename
             anondownload.save()
         else:
-            pprint(form)
+            #pprint(form)
             errormsgs = []
             for e in form.errors.values():
                 errormsgs.extend([escape(v) for v in e])
@@ -651,7 +651,7 @@ def layer_download(request, layername):
         layername,
         'base.view_resourcebase',
         _PERMISSION_MSG_VIEW)
-    pprint(request.user.is_authenticated)
+    # pprint(request.user.is_authenticated)
     # if request.user.is_authenticated():
     #     action.send(request.user, verb='downloaded', action_object=layer)
     #     DownloadTracker(actor=Profile.objects.get(username=request.user),
@@ -684,7 +684,7 @@ def layer_tracker(request, layername, dl_type):
                             typename=layername).keywords.slugs(),
                         dl_type=dl_type
                         ).save()
-        pprint('Download Tracked')
+        #pprint('Download Tracked')
     return HttpResponse(status=200)
 
 
