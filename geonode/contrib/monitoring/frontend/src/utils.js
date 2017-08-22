@@ -128,7 +128,7 @@ export const getTime = (responses) => {
 
 
 export const getErrorCount = (responses) => {
-  let result = 0;
+  const result = 0;
   if (!responses || !responses.data || !responses.data.data) {
     return result;
   }
