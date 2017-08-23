@@ -4,7 +4,7 @@ import { connect } from 'react-redux';
 import RaisedButton from 'material-ui/RaisedButton';
 import AutorefreshIcon from 'material-ui/svg-icons/action/autorenew';
 import Back from 'material-ui/svg-icons/image/navigate-before';
-/* import { formatHeaderDate } from '../../../utils';*/
+import { formatHeaderDate } from '../../../utils';
 import { minute, hour, day, week } from '../../../constants';
 import actions from './actions';
 import styles from './styles';
@@ -12,7 +12,9 @@ import { AUTO_REFRESH_INTERVAL } from './constants';
 
 
 const mapStateToProps = (state) => ({
+  from: state.interval.from,
   interval: state.interval.interval,
+  to: state.interval.to,
 });
 
 
@@ -26,8 +28,10 @@ class Header extends React.Component {
     autoRefresh: PropTypes.bool,
     back: PropTypes.string,
     disableInterval: PropTypes.bool,
+    from: PropTypes.instanceOf(Date),
+    get: PropTypes.func.isRequired,
     interval: PropTypes.number,
-    setInterval: PropTypes.func.isRequired,
+    to: PropTypes.instanceOf(Date),
   }
 
   static defaultProps = {
@@ -42,24 +46,24 @@ class Header extends React.Component {
     };
 
     this.get = (interval = this.props.interval) => {
-      this.props.setInterval(interval);
+      this.props.get(interval);
     };
 
     this.handleMinute = () => {
       const interval = 10 * minute;
-      this.props.setInterval(interval);
+      this.props.get(interval);
     };
 
     this.handleHour = () => {
-      this.props.setInterval(hour);
+      this.props.get(hour);
     };
 
     this.handleDay = () => {
-      this.props.setInterval(day);
+      this.props.get(day);
     };
 
     this.handleWeek = () => {
-      this.props.setInterval(week);
+      this.props.get(week);
     };
 
     this.handleAutoRefresh = () => {
@@ -73,6 +77,10 @@ class Header extends React.Component {
         this.setState({ autoRefresh: true });
       }
     };
+  }
+
+  componentWillMount() {
+    this.props.get(this.props.interval);
   }
 
   componentWillReceiveProps(nextProps) {
@@ -104,7 +112,7 @@ class Header extends React.Component {
             style={styles.time}
             icon={<Back />}
             disabled={props.back === undefined}
-            onClick={() => this.context.router.push(this.props.back)}
+            onClick={() => this.context.router.push(props.back)}
           />
           <span style={styles.interval}>Latest:</span>
           <RaisedButton
@@ -139,14 +147,12 @@ class Header extends React.Component {
         <div style={styles.item}>
           from:&nbsp;
           <span style={styles.timestamp}>
-            {/* {formatHeaderDate(this.props.from)} */}
-            2017-08-23 12:34:30
+            {formatHeaderDate(props.from)}
           </span>
           &nbsp;
           to:&nbsp;
           <span style={styles.timestamp}>
-            {/* {formatHeaderDate(this.props.to)} */}
-            2017-08-23 12:34:30
+            {formatHeaderDate(props.to)}
           </span>
         </div>
         <RaisedButton
@@ -155,7 +161,7 @@ class Header extends React.Component {
           icon={<AutorefreshIcon style={styles.icon} />}
           onClick={this.handleAutoRefresh}
           buttonStyle={autoRefreshStyle}
-          disabled={!this.props.autoRefresh}
+          disabled={!props.autoRefresh}
         />
       </div>
     );

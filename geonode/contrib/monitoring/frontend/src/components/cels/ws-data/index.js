@@ -15,6 +15,7 @@ const mapStateToProps = (state) => ({
   response: state.wsServiceData.response,
   selected: state.wsService.service,
   timestamp: state.interval.timestamp,
+  status: state.interval.status,
 });
 
 
@@ -45,7 +46,7 @@ class WSData extends React.Component {
   }
 
   componentWillReceiveProps(nextProps) {
-    if (nextProps.selected) {
+    if (nextProps.selected && nextProps.status === 'success') {
       if (
         this.props.selected !== nextProps.selected
         || nextProps.timestamp !== this.props.timestamp

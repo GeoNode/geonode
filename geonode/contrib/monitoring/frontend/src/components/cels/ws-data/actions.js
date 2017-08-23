@@ -34,7 +34,7 @@ const fail = createAction(
 );
 
 
-const get = (interval /* service */) =>
+const get = (interval) =>
   (dispatch) => {
     dispatch(begin());
     const url = `${apiUrl}/metric_data/response.time/?last=${interval}&interval=${interval}`;
