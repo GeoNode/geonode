@@ -1,5 +1,5 @@
 import { createAction } from 'redux-actions';
-import { fetch, formatApiDate } from '../../../utils';
+import { fetch } from '../../../utils';
 import apiUrl from '../../../backend';
 import WS_SERVICE_DATA from './constants';
 
@@ -34,13 +34,10 @@ const fail = createAction(
 );
 
 
-const get = (from, to, interval /* service */) =>
+const get = (interval) =>
   (dispatch) => {
     dispatch(begin());
-    const formatedFrom = formatApiDate(from);
-    const formatedTo = formatApiDate(to);
-    let url = `${apiUrl}/metric_data/response.time/?valid_from=${formatedFrom}`;
-    url += `&valid_to=${formatedTo}&interval=${interval}`;
+    const url = `${apiUrl}/metric_data/response.time/?last=${interval}&interval=${interval}`;
     fetch({ url })
       .then(response => {
         dispatch(success(response));

@@ -10,37 +10,31 @@ import actions from './actions';
 
 
 const mapStateToProps = (state) => ({
-  from: state.interval.from,
+  errorNumber: state.geonodeLayerError.response,
   interval: state.interval.interval,
   response: state.geonodeLayerResponse.response,
-  errorNumber: state.geonodeLayerError.response,
-  to: state.interval.to,
+  timestamp: state.interval.timestamp,
 });
 
 
 @connect(mapStateToProps, actions)
 class WSLayerAnalytics extends React.Component {
   static propTypes = {
-    from: PropTypes.object,
-    getResponses: PropTypes.func.isRequired,
-    resetResponses: PropTypes.func.isRequired,
-    getErrors: PropTypes.func.isRequired,
-    resetErrors: PropTypes.func.isRequired,
-    interval: PropTypes.number,
-    response: PropTypes.object,
     errorNumber: PropTypes.object,
-    to: PropTypes.object,
+    getErrors: PropTypes.func.isRequired,
+    getResponses: PropTypes.func.isRequired,
+    interval: PropTypes.number,
+    resetErrors: PropTypes.func.isRequired,
+    resetResponses: PropTypes.func.isRequired,
+    response: PropTypes.object,
+    timestamp: PropTypes.instanceOf(Date),
   }
 
   constructor(props) {
     super(props);
-    this.get = (
-      from = this.props.from,
-      to = this.props.to,
-      interval = this.props.interval,
-    ) => {
-      this.props.getErrors(from, to, interval);
-      this.props.getResponses(from, to, interval);
+    this.get = (interval = this.props.interval) => {
+      this.props.getErrors(interval);
+      this.props.getResponses(interval);
     };
 
     this.reset = () => {
@@ -55,8 +49,8 @@ class WSLayerAnalytics extends React.Component {
 
   componentWillReceiveProps(nextProps) {
     if (nextProps) {
-      if (nextProps.from && nextProps.from !== this.props.from) {
-        this.get(nextProps.from, nextProps.to, nextProps.interval);
+      if (nextProps.timestamp && nextProps.timestamp !== this.props.timestamp) {
+        this.get(nextProps.interval);
       }
     }
   }

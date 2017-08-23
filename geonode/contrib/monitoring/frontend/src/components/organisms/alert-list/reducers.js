@@ -1,4 +1,4 @@
-import ERROR_LIST from './constants';
+import ALERT_LIST from './constants';
 
 
 export default function errorList(
@@ -6,7 +6,7 @@ export default function errorList(
   action,
 ) {
   switch (action.type) {
-    case ERROR_LIST:
+    case ALERT_LIST:
       return action.payload;
     default:
       return state;

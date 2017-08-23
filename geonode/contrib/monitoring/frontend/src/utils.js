@@ -1,4 +1,6 @@
+import React from 'react';
 import isomorphicFetch from 'isomorphic-fetch';
+import CircularProgress from 'material-ui/CircularProgress';
 import { minute, hour, day, week } from './constants';
 
 
@@ -42,6 +44,9 @@ export const formatApiDate = (date) => {
 
 
 export const formatHeaderDate = (date) => {
+  if (date === undefined) {
+    return <CircularProgress />;
+  }
   const theday = `0${date.getDate()}`.slice(-2);
   const themonth = `0${date.getMonth() + 1}`.slice(-2);
   const theyear = date.getFullYear();
@@ -52,8 +57,7 @@ export const formatHeaderDate = (date) => {
 };
 
 
-export const sequenceInterval = (getState) => {
-  const interval = getState().interval.interval;
+export const sequenceInterval = (interval) => {
   let seqInterval = interval;
   if (interval === 10 * minute) {
     seqInterval = minute;
@@ -133,4 +137,19 @@ export const getErrorCount = (responses) => {
     return result;
   }
   return result;
+};
+
+
+export const formatNow = () => {
+  const rightNow = new Date();
+  rightNow.setSeconds(0, 0);
+  return rightNow;
+};
+
+
+export const isNumber = (n) => {
+  if (!isNaN(parseFloat(n)) && isFinite(n)) {
+    return true;
+  }
+  return false;
 };

@@ -13,12 +13,11 @@ import actions from './actions';
 
 const mapStateToProps = (state) => ({
   errors: state.geonodeErrorSequence.response,
-  from: state.interval.from,
   interval: state.interval.interval,
   responseTimes: state.geonodeAverageResponse.response,
   responses: state.geonodeResponseSequence.response,
   throughputs: state.geonodeThroughputSequence.throughput,
-  to: state.interval.to,
+  timestamp: state.interval.timestamp,
 });
 
 
@@ -26,7 +25,6 @@ const mapStateToProps = (state) => ({
 class GeonodeAnalytics extends React.Component {
   static propTypes = {
     errors: PropTypes.object,
-    from: PropTypes.object,
     getErrors: PropTypes.func.isRequired,
     getResponseTimes: PropTypes.func.isRequired,
     getResponses: PropTypes.func.isRequired,
@@ -39,20 +37,16 @@ class GeonodeAnalytics extends React.Component {
     responseTimes: PropTypes.object,
     responses: PropTypes.object,
     throughputs: PropTypes.object,
-    to: PropTypes.object,
+    timestamp: PropTypes.instanceOf(Date),
   }
 
   constructor(props) {
     super(props);
-    this.get = (
-      from = this.props.from,
-      to = this.props.to,
-      interval = this.props.interval,
-    ) => {
-      this.props.getResponses(from, to);
-      this.props.getResponseTimes(from, to, interval);
-      this.props.getThroughputs(from, to);
-      this.props.getErrors(from, to);
+    this.get = (interval = this.props.interval) => {
+      this.props.getResponses(interval);
+      this.props.getResponseTimes(interval);
+      this.props.getThroughputs(interval);
+      this.props.getErrors(interval);
     };
 
     this.reset = () => {
@@ -69,8 +63,8 @@ class GeonodeAnalytics extends React.Component {
 
   componentWillReceiveProps(nextProps) {
     if (nextProps) {
-      if (nextProps.from && nextProps.from !== this.props.from) {
-        this.get(nextProps.from, nextProps.to, nextProps.interval);
+      if (nextProps.timestamp && nextProps.timestamp !== this.props.timestamp) {
+        this.get(nextProps.interval);
       }
     }
   }

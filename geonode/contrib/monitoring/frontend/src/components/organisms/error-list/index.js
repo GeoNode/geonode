@@ -16,8 +16,8 @@ import actions from './actions';
 
 const mapStateToProps = (state) => ({
   errorList: state.errorList.response,
-  from: state.interval.from,
-  to: state.interval.to,
+  interval: state.interval.interval,
+  timestamp: state.interval.timestamp,
 });
 
 
@@ -29,9 +29,9 @@ class ErrorList extends React.Component {
 
   static propTypes = {
     errorList: PropTypes.object,
-    from: PropTypes.object,
     get: PropTypes.func.isRequired,
-    to: PropTypes.object,
+    interval: PropTypes.number,
+    timestamp: PropTypes.instanceOf(Date),
   }
 
   constructor(props) {
@@ -43,13 +43,13 @@ class ErrorList extends React.Component {
   }
 
   componentWillMount() {
-    this.props.get(this.props.from, this.props.to);
+    this.props.get(this.props.interval);
   }
 
   componentWillReceiveProps(nextProps) {
     if (nextProps && nextProps.from && nextProps.to) {
-      if (this.props.from !== nextProps.from) {
-        this.props.get(nextProps.from, nextProps.to);
+      if (this.props.timestamp !== nextProps.timestamp) {
+        this.props.get(nextProps.interval);
       }
     }
   }

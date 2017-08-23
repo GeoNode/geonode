@@ -1,5 +1,5 @@
 import { createAction } from 'redux-actions';
-import { fetch, formatApiDate } from '../../../../utils';
+import { fetch } from '../../../../utils';
 import apiUrl from '../../../../backend';
 import { GEOSERVER_MEM_STATUS } from '../constants';
 
@@ -34,13 +34,10 @@ const fail = createAction(
 );
 
 
-const get = (from, to, interval) =>
+const get = (interval) =>
   (dispatch) => {
     dispatch(begin());
-    const formatedFrom = formatApiDate(from);
-    const formatedTo = formatApiDate(to);
-    let url = `${apiUrl}/metric_data/mem.usage/?valid_from=${formatedFrom}`;
-    url += `&valid_to=${formatedTo}&interval=${interval}`;
+    const url = `${apiUrl}/metric_data/mem.usage/?last=${interval}&interval=${interval}`;
     fetch({ url })
       .then(response => {
         dispatch(success(response));

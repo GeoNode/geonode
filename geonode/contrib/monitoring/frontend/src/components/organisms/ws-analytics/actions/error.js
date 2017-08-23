@@ -1,5 +1,5 @@
 import { createAction } from 'redux-actions';
-import { fetch, formatApiDate, sequenceInterval } from '../../../../utils';
+import { fetch, sequenceInterval } from '../../../../utils';
 import apiUrl from '../../../../backend';
 import { WS_ERROR_SEQUENCE } from '../constants';
 
@@ -34,14 +34,12 @@ const fail = createAction(
 );
 
 
-const get = (from, to) =>
-  (dispatch, getState) => {
+const get = (argInterval) =>
+  (dispatch) => {
     dispatch(begin());
-    const formatedFrom = formatApiDate(from);
-    const formatedTo = formatApiDate(to);
-    const interval = sequenceInterval(getState);
-    let url = `${apiUrl}/metric_data/response.error.count/?valid_from=${formatedFrom}`;
-    url += `&valid_to=${formatedTo}&interval=${interval}`;
+    const interval = sequenceInterval(argInterval);
+    let url = `${apiUrl}/metric_data/response.error.count/`;
+    url += `?last=${argInterval}&interval=${interval}`;
     fetch({ url })
       .then(response => {
         dispatch(success(response));

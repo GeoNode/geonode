@@ -11,9 +11,9 @@ import actions from './actions';
 
 const mapStateToProps = (state) => ({
   cpu: state.geonodeCpuSequence.response,
-  from: state.interval.from,
   memory: state.geonodeMemorySequence.response,
-  to: state.interval.to,
+  interval: state.interval.interval,
+  timestamp: state.interval.timestamp,
 });
 
 
@@ -21,23 +21,20 @@ const mapStateToProps = (state) => ({
 class GeonodeStatus extends React.Component {
   static propTypes = {
     cpu: PropTypes.object,
-    from: PropTypes.object,
     getCpu: PropTypes.func.isRequired,
     getMemory: PropTypes.func.isRequired,
     memory: PropTypes.object,
     resetCpu: PropTypes.func.isRequired,
     resetMemory: PropTypes.func.isRequired,
-    to: PropTypes.object,
+    timestamp: PropTypes.instanceOf(Date),
+    interval: PropTypes.number,
   }
 
   constructor(props) {
     super(props);
-    this.get = (
-      from = this.props.from,
-      to = this.props.to,
-    ) => {
-      this.props.getCpu(from, to);
-      this.props.getMemory(from, to);
+    this.get = (interval = this.props.interval) => {
+      this.props.getCpu(interval);
+      this.props.getMemory(interval);
     };
 
     this.reset = () => {
@@ -52,8 +49,8 @@ class GeonodeStatus extends React.Component {
 
   componentWillReceiveProps(nextProps) {
     if (nextProps) {
-      if (nextProps.from && nextProps.from !== this.props.from) {
-        this.get(nextProps.from, nextProps.to);
+      if (nextProps.timestamp && nextProps.timestamp !== this.props.timestamp) {
+        this.get(nextProps.interval);
       }
     }
   }

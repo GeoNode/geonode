@@ -10,9 +10,8 @@ import actions from './actions';
 const mapStateToProps = (state) => ({
   cpu: state.geoserverCpuStatus.response,
   mem: state.geoserverMemStatus.response,
-  from: state.interval.from,
   interval: state.interval.interval,
-  to: state.interval.to,
+  timestamp: state.interval.timestamp,
 });
 
 
@@ -20,25 +19,20 @@ const mapStateToProps = (state) => ({
 class GeoserverStatus extends React.Component {
   static propTypes = {
     cpu: PropTypes.object,
-    from: PropTypes.object,
     getCpu: PropTypes.func.isRequired,
     getMem: PropTypes.func.isRequired,
     interval: PropTypes.number,
     mem: PropTypes.object,
     resetCpu: PropTypes.func.isRequired,
     resetMem: PropTypes.func.isRequired,
-    to: PropTypes.object,
+    timestamp: PropTypes.instanceOf(Date),
   }
 
   constructor(props) {
     super(props);
-    this.get = (
-      from = this.props.from,
-      to = this.props.to,
-      interval = this.props.interval,
-    ) => {
-      this.props.getCpu(from, to, interval);
-      this.props.getMem(from, to, interval);
+    this.get = (interval = this.props.interval) => {
+      this.props.getCpu(interval);
+      this.props.getMem(interval);
     };
   }
 
@@ -48,8 +42,8 @@ class GeoserverStatus extends React.Component {
 
   componentWillReceiveProps(nextProps) {
     if (nextProps) {
-      if (nextProps.from && nextProps.from !== this.props.from) {
-        this.get(nextProps.from, nextProps.to, nextProps.interval);
+      if (nextProps.timestamp && nextProps.timestamp !== this.props.timestamp) {
+        this.get(nextProps.interval);
       }
     }
   }
