@@ -1,6 +1,4 @@
-import React from 'react';
 import isomorphicFetch from 'isomorphic-fetch';
-import CircularProgress from 'material-ui/CircularProgress';
 import { minute, hour, day, week } from './constants';
 
 
@@ -45,7 +43,7 @@ export const formatApiDate = (date) => {
 
 export const formatHeaderDate = (date) => {
   if (date === undefined) {
-    return <CircularProgress size={20} />;
+    return false;
   }
   const theday = `0${date.getDate()}`.slice(-2);
   const themonth = `0${date.getMonth() + 1}`.slice(-2);
