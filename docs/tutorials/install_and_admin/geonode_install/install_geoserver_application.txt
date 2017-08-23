@@ -10,21 +10,22 @@ In this section we are going to setup GeoServer for GeoNode. GeoServer will run 
 Setup GeoServer
 ===============
 
-You've already installed `Tomcat 7` in the system in the first section of the training.
+You've already installed `Tomcat 8` in the system in the first section of the training.
 Before you deploy GeoServer stop the running Tomcat instance:::
 
-    sudo service tomcat7 stop
+    sudo service tomcat8 stop
 
 Now copy the downloaded GeoServer archive inside Tomcat's webapps folder::
-
-    sudo cp /home/geonode/geonode/downloaded/geoserver.war /var/lib/tomcat7/webapps/
+    
+    sudo cp /home/geonode/geonode/downloaded/geoserver-2.9.x-oauth2.war /var/lib/tomcat8/webapps/
+    sudo cp /var/lib/tomcat8/webapps/geoserver-2.9.x-oauth2.war /var/lib/tomcat8/webapps/geoserver.war
 
 Test GeoServer
 ===============
 
 Now start Tomcat to deploy GeoServer::
 
-    sudo service tomcat7 start
+    sudo service tomcat8 start
 
 Tomcat will extract GeoServer web archive and start GeoServer. This may take some time
 
@@ -44,15 +45,15 @@ GeoNode authentication integration
 ==================================
 
 All we need to do now is to integrate GeoNode authentication so that GeoNode
-administrator will b able to access and administer GeoServer as well.
+administrator will be able to access and administer GeoServer as well.
 
 Stop GeoServer::
 
-    sudo service tomcat7 stop
+    sudo service tomcat8 stop
 
-And navigate to `/var/lib/tomcat7/webapps/geoserver/WEB-INF/`::
+And navigate to `/var/lib/tomcat8/webapps/geoserver/WEB-INF/`::
 
-    cd /var/lib/tomcat7/webapps/geoserver/WEB-INF/
+    cd /var/lib/tomcat8/webapps/geoserver/WEB-INF/
 
 Edit `web.xml` with a text editor::
 
@@ -97,7 +98,7 @@ The resulting file should look like this:::
     If GeoServer is installed on machine that is separate from the one running GeoNode
     there is one more step to follow. Edit config.xml file as follows:::
 
-        cd /var/lib/tomcat7/webapps/geoserver/data/security/auth/geonodeAuthProvider
+        cd /var/lib/tomcat8/webapps/geoserver/data/security/auth/geonodeAuthProvider
         sudo gedit config.xml
 
     Set the `baseUrl` to GeoNode IP or hostname::
@@ -112,4 +113,4 @@ The resulting file should look like this:::
 
 Restart GeoServer to make the changes effective::
 
-    sudo service tomcat7 start
+    sudo service tomcat8 start
