@@ -6,7 +6,7 @@
 
 {% block head %}
   {% include "geonode/ext_header.html" %}
-{{ block.super }}
+  {{ block.super }}
 {% endblock %}
 
 {% block title %}{{ document.alternate }} — {{ block.super }}{% endblock %}
@@ -50,7 +50,7 @@
         </ul>
       {% endif %}
         <div class="form-actions">
-          <input type="submit" class="btn btn-primary" value="{% trans "Update" %}"/>
+          <input type="submit" id="btn_upd_md_up" class="btn btn-primary" value="{% trans "Update" %}"/>
         </div>
       {% csrf_token %}
       <div class="form-controls">
@@ -94,7 +94,7 @@
                 <button type='button' class="modal-cloose-btn btn btn-primary">Done</button>
               </fieldset>
               <div class="form-actions">
-                <input type="submit" class="btn btn-primary" value="{% trans "Update" %}"/>
+                <input type="submit" id="btn_upd_md_dwn" class="btn btn-primary" value="{% trans "Update" %}"/>
               </div>
           </div>
         </div>
@@ -102,7 +102,19 @@
   </div>
 </div>
 {% endblock %}
+
 {% block extra_script %}
 {{ block.super }}
- {% include 'metadata_form_js.html' %}
-{% endblock %}
+<script type="text/javascript">
+    $("#id_resource-links").select2({
+        placeholder: "Select an option",
+        allowClear: true
+    });
+</script>
+<style>
+  #s2id_id_resource-links {
+    width: '100%';
+    height: 100%;
+  }
+</style>
+{% endblock extra_script %}

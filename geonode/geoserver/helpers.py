@@ -245,7 +245,7 @@ def fixup_style(cat, resource, style):
 def cascading_delete(cat, layer_name):
     resource = None
     try:
-        if layer_name.find(':') != -1:
+        if layer_name.find(':') != -1 and len(layer_name.split(':')) == 2:
             workspace, name = layer_name.split(':')
             ws = cat.get_workspace(workspace)
             try:
@@ -753,7 +753,7 @@ def set_attributes_from_geoserver(layer, overwrite=False):
                         field,
                         ftype):
                     logger.debug("Generating layer attribute statistics")
-                    result = get_attribute_statistics(layer.name, field)
+                    result = get_attribute_statistics(layer.alternate, field)
                 else:
                     result = None
                 attribute_stats[layer.name][field] = result
@@ -1452,7 +1452,7 @@ def wps_execute_layer_attribute_statistics(layer_name, field):
     # return a proper wps:ExecuteResponse
 
     request = render_to_string('layers/wps_execute_gs_aggregate.xml', {
-                               'layer_name': 'geonode:%s' % layer_name,
+                               'layer_name': layer_name,
                                'field': field
                                })
     response = http_post(

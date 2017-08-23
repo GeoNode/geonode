@@ -40,7 +40,7 @@ And switch back to the 'geo' user::
 
 Now we are going to change user access policy for local connections in file `pg_hba.conf`::
 
-    sudo gedit /etc/postgresql/9.3/main/pg_hba.conf
+    sudo gedit /etc/postgresql/9.5/main/pg_hba.conf
 
 Scroll down to the bottom of the document. We only need to edit one line. Change::
 

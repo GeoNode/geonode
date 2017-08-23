@@ -21,6 +21,8 @@
 import math
 import logging
 import urlparse
+from itertools import chain
+
 from guardian.shortcuts import get_perms
 from guardian.utils import get_anonymous_user
 
@@ -270,7 +272,8 @@ def map_metadata(request, mapid, template='maps/map_metadata.html'):
     if request.user.is_superuser:
         metadata_author_groups = GroupProfile.objects.all()
     else:
-        metadata_author_groups = metadata_author.group_list_all()
+        metadata_author_groups = chain(metadata_author.group_list_all(), GroupProfile.objects.exclude(access="private"))
+
     return render_to_response(template, RequestContext(request, {
         "config": json.dumps(config),
         "resource": map_obj,
@@ -283,6 +286,7 @@ def map_metadata(request, mapid, template='maps/map_metadata.html'):
         "preview":  getattr(settings, 'LAYER_PREVIEW_LIBRARY', 'leaflet'),
         "crs":  getattr(settings, 'DEFAULT_MAP_CRS', 'EPSG:900913'),
         "metadata_author_groups": metadata_author_groups,
+        "GROUP_MANDATORY_RESOURCES": getattr(settings, 'GROUP_MANDATORY_RESOURCES', False),
     }))
 
 

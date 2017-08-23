@@ -674,6 +674,8 @@ CATALOGUE = {
         # login credentials (for GeoNetwork)
         # 'USER': 'admin',
         # 'PASSWORD': 'admin',
+
+        # 'ALTERNATES_ONLY': True,
     }
 }
 
@@ -749,6 +751,7 @@ STAMEN_BASEMAPS = os.environ.get('STAMEN_BASEMAPS', False)
 THUNDERFOREST_BASEMAPS = os.environ.get('THUNDERFOREST_BASEMAPS', False)
 MAPBOX_ACCESS_TOKEN = os.environ.get('MAPBOX_ACCESS_TOKEN', None)
 BING_API_KEY = os.environ.get('BING_API_KEY', None)
+GOOGLE_API_KEY = os.environ.get('GOOGLE_API_KEY', None)
 
 # handle timestamps like 2017-05-30 16:04:00.719 UTC
 DATETIME_INPUT_FORMATS = global_settings.DATETIME_INPUT_FORMATS +\
@@ -1181,3 +1184,6 @@ if MONITORING_ENABLED:
 
 # If this option is enabled, Resources belonging to a Group won't be visible by others
 GROUP_PRIVATE_RESOURCES = False
+
+# If this option is enabled, Groups will become strictly Mandatory on Metadata Wizard
+GROUP_MANDATORY_RESOURCES = False

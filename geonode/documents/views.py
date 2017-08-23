@@ -19,6 +19,8 @@
 #########################################################################
 
 import json
+from itertools import chain
+
 from guardian.shortcuts import get_perms
 
 from django.shortcuts import render_to_response, get_object_or_404
@@ -404,7 +406,9 @@ def document_metadata(
         if request.user.is_superuser:
             metadata_author_groups = GroupProfile.objects.all()
         else:
-            metadata_author_groups = metadata_author.group_list_all()
+            metadata_author_groups = chain(
+                metadata_author.group_list_all(), GroupProfile.objects.exclude(access="private"))
+
         return render_to_response(template, RequestContext(request, {
             "resource": document,
             "document": document,
@@ -413,6 +417,7 @@ def document_metadata(
             "author_form": author_form,
             "category_form": category_form,
             "metadata_author_groups": metadata_author_groups,
+            "GROUP_MANDATORY_RESOURCES": getattr(settings, 'GROUP_MANDATORY_RESOURCES', False),
         }))
 
 

@@ -196,8 +196,6 @@ span.grippy {
 span.grippy::after {
   content: '.. .. .. ..';
 }
-
-
 </style>
 <button class="btn btn-success metadata-edit-done" id="btn_upd_md_done" type="submit" style="float:right; opacity: 0;" >Done!</button>
 
@@ -289,17 +287,11 @@ span.grippy::after {
                                     </div>
                                 </div>
                                 <div class="col-lg-5">
-                                  <div class="col-lg-12 keywords-container">
-                                    <span><label for="{{ layer_form.keywords|id }}">{{ layer_form.keywords.label }}</label></span>
-                                    <span class="input-group">
-                                        <!--<p class="xxs-font-size">(A space or comma separated list of keywords)</p>-->
+                                    <div class="col-lg-12">
                                         {{ layer_form.keywords }}
-                                        <span class="input-group-addon" id="treeview-toggle"><i class="fa fa-folder"></i></span>
-                                    </span>
-                                    <div id="treeview" class="" style="display: none"></div>
-                                  </div>
+                                    </div>
                                     <div class="col-lg-12 thesauri_keywords">
-                                          {{ tkeywords_form }}
+                                        {{ tkeywords_form }}
                                     </div>
                                     <div class="col-lg-6 col-xs-12">
                                         <span><label for="{{ layer_form.date_type|id }}">{{ layer_form.date_type.label }}</label></span>
@@ -321,9 +313,7 @@ span.grippy::after {
                                             id="category_form"
                                             class="selectpicker form-control"
                                             >
-                                            <option style="display: none" disabled
-                                            {% if not category_form.initial %} selected="selected" {% endif %}
-                                            hidden value="">Choose one of the following...</option>
+                                            <option {% if not category_form.initial %} selected="selected" {% endif %} value="">---</option>
                                           {% for choice in category_form.category_choice_field.field.choices %}
                                               <option
                                               {% ifequal category_form.initial choice.0 %} selected="selected" {% endifequal %}
@@ -333,7 +323,7 @@ span.grippy::after {
                                           {% endfor %}
                                         </select>
                                     </div>
-                                    <div class="col-lg-12">
+                                    <div id="basicGroupInfo" class="col-lg-12">
                                         <span><label for="id_resource-group" class="control-label required-field">{% trans "Group" %}</label></span>
                                         <select
                                             title="Choose one of the following..."
@@ -343,14 +333,7 @@ span.grippy::after {
                                             id="id_resource-group"
                                             class="selectpicker form-control"
                                             >
-                                            <option
-                                              style="display: none"
-                                              disabled
-                                              hidden
-                                              value=""
-                                              >
-                                                Choose one of the following...
-                                            </option>
+                                            <option {% if not group %} selected="selected" {% endif %} value="">---</option>
                                             {% for group in metadata_author_groups %}
                                             <option
                                                 value="{{ group.group.id }}"

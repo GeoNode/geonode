@@ -223,7 +223,10 @@ class NewLayerUploadForm(LayerUploadForm):
 
 class LayerDescriptionForm(forms.Form):
     title = forms.CharField(300)
-    abstract = forms.CharField(1000, widget=forms.Textarea, required=False)
+    abstract = forms.CharField(2000, widget=forms.Textarea, required=False)
+    supplemental_information = forms.CharField(2000, widget=forms.Textarea, required=False)
+    data_quality_statement = forms.CharField(2000, widget=forms.Textarea, required=False)
+    purpose = forms.CharField(500, required=False)
     keywords = forms.CharField(500, required=False)
 
 

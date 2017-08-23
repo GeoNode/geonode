@@ -50,7 +50,7 @@ CONFIGURATION = {
     },
     'repository': {
         'source': 'geonode',
-        'filter': 'alternate IS NOT NULL AND is_published = %s' % true_value,
+        'filter': 'is_published = %s' % true_value,
         'mappings': os.path.join(os.path.dirname(__file__), 'pycsw_local_mappings.py')
     }
 }
