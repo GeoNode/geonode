@@ -43,7 +43,7 @@ from geonode.contrib.monitoring.models import (
     NotificationCheck,
     MetricNotificationCheck,
 )
-from geonode.contrib.monitoring.utils import TypeChecks
+from geonode.contrib.monitoring.utils import TypeChecks, align_period_start
 from geonode.contrib.monitoring.service_handlers import exposes
 
 # Create your views here.
@@ -96,7 +96,27 @@ class HostsList(View):
         return json_response({'hosts': out})
 
 
-class CheckTypeForm(forms.Form):
+
+class _ValidFromToLastForm(forms.Form):
+    valid_from = forms.DateTimeField(required=False)
+    valid_to = forms.DateTimeField(required=False)
+    interval = forms.IntegerField(min_value=60, required=False)
+    last = forms.IntegerField(min_value=60, required=False)
+    
+    def _check_timestamps(self):
+        last = self.cleaned_data.get('last')
+        vf = self.cleaned_data.get('valid_from')
+        vt = self.cleaned_data.get('valid_to')
+        if last and (vf or vt):
+           raise forms.ValidationError('Cannot use last and valid_from/valid_to at the same time') 
+
+    def clean(self):
+        super(_ValidFromToLastForm, self).clean()
+        self._check_timestamps()
+
+
+
+class CheckTypeForm(_ValidFromToLastForm):
     """
     Special form class to validate values from specific db dictionaries
     (services, resources, ows services etc)
@@ -123,24 +143,12 @@ class CheckTypeForm(forms.Form):
         except (Exception,), err:
             raise forms.ValidationError(err)
 
-
 class MetricsFilters(CheckTypeForm):
-    valid_from = forms.DateTimeField(required=False)
-    valid_to = forms.DateTimeField(required=False)
-    interval = forms.IntegerField(min_value=60, required=False)
-    last = forms.IntegerField(min_value=60, required=False)
     service = forms.CharField(required=False)
     label = forms.CharField(required=False)
     resource = forms.CharField(required=False)
     ows_service = forms.CharField(required=False)
     service_type = forms.CharField(required=False)
-
-    def _check_timestamps(self):
-        last = self.cleaned_data.get('last')
-        vf = self.cleaned_data.get('valid_from')
-        vt = self.cleaned_data.get('valid_to')
-        if last and (vf or vt):
-           raise forms.ValidationError('Cannot use last and valid_from/valid_to at the same time') 
 
     def clean_resource(self):
         return self._check_type('resource')
@@ -166,13 +174,10 @@ class MetricsFilters(CheckTypeForm):
     def clean(self):
         super(MetricsFilters, self).clean()
         self._check_services()
-        self._check_timestamps()
 
 
 class LabelsFilterForm(CheckTypeForm):
     metric_name = forms.CharField(required=False)
-    valid_from = forms.DateTimeField(required=False)
-    valid_to = forms.DateTimeField(required=False)
 
     def clean_metric(self):
         return self._check_type('metric_name')
@@ -180,8 +185,6 @@ class LabelsFilterForm(CheckTypeForm):
 
 class ResourcesFilterForm(LabelsFilterForm):
     resource_type = forms.CharField(required=False)
-    valid_from = forms.DateTimeField(required=False)
-    valid_to = forms.DateTimeField(required=False)
 
     def clean_resource_type(self):
         return self._check_type('resource_type')
@@ -227,7 +230,12 @@ class ResourcesList(FilteredView):
 
     output_name = 'resources'
 
-    def get_queryset(self, metric_name=None, resource_type=None, valid_from=None, valid_to=None):
+    def get_queryset(self, metric_name=None,
+                           resource_type=None,
+                           valid_from=None,
+                           valid_to=None,
+                           last=None,
+                           interval=None):
         q = MonitoredResource.objects.all().distinct()
         qparams = {}
         if resource_type:
@@ -235,6 +243,13 @@ class ResourcesList(FilteredView):
         if metric_name:
             sm = ServiceTypeMetric.objects.filter(metric__name=metric_name)
             qparams['metric_values__service_metric__in'] = sm
+        if last:
+            _from = datetime.now() - timedelta(seconds=last)
+            if interval is None:
+                interval = 60
+            if not isinstance(interval, timedelta):
+                interval = timedelta(seconds=interval)
+            valid_from = align_period_start(_from, interval)
         if valid_from:
             qparams['metric_values__valid_from__gte'] = valid_from
         if valid_to:
@@ -251,12 +266,19 @@ class LabelsList(FilteredView):
                   ('name', 'name',),)
     output_name = 'labels'
 
-    def get_queryset(self, metric_name, valid_from, valid_to):
+    def get_queryset(self, metric_name, valid_from, valid_to, interval=None, last=None):
         q = MetricLabel.objects.all().distinct()
         qparams = {}
         if metric_name:
             sm = ServiceTypeMetric.objects.filter(metric__name=metric_name)
             qparams['metric_values__service_metric__in'] = sm
+        if last:
+            _from = datetime.now() - timedelta(seconds=last)
+            if interval is None:
+                interval = 60
+            if not isinstance(interval, timedelta):
+                interval = timedelta(seconds=interval)
+            valid_from = align_period_start(_from, interval)
         if valid_from:
             qparams['metric_values__valid_from__gte'] = valid_from
         if valid_to:
@@ -304,8 +326,6 @@ class MetricDataView(View):
 
 class ExceptionsListForm(CheckTypeForm):
     error_type = forms.CharField(required=False)
-    valid_from = forms.DateTimeField(required=False)
-    valid_to = forms.DateTimeField(required=False)
     service_name = forms.CharField(required=False)
     service_type = forms.CharField(required=False)
     resource = forms.CharField(required=False)
@@ -330,29 +350,31 @@ class ExceptionsListView(FilteredView):
     def get_queryset(self, error_type=None,
                      valid_from=None,
                      valid_to=None,
+                     interval=None,
+                     last=None,
                      service_name=None,
                      service_type=None,
                      resource=None):
         q = ExceptionEvent.objects.all().select_related()
         if error_type:
             q = q.filter(error_type=error_type)
+        if last:
+            _from = datetime.now() - timedelta(seconds=last)
+            if interval is None:
+                interval = 60
+            if not isinstance(interval, timedelta):
+                interval = timedelta(seconds=interval)
+            valid_from = align_period_start(_from, interval)
         if valid_from:
             q = q.filter(created__gte=valid_from)
         if valid_to:
             q = q.filter(created__lte=valid_to)
-        if service_name and service_type:
-            raise ValueError("Cannot use service_name and service_type at the same time")
         if service_name:
             q = q.filter(service__name=service_name)
-        else:
-            q = q.filter(service__isnull=True)
         if service_type:
             q = q.filter(service__service_type__name=service_type)
-        else:
-            q = q.filter(service__service_type__isnull=True)
         if resource:
             q = q.filter(request__resources__in=(resource,))
-
         return q
 
 
