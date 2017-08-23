@@ -1,6 +1,9 @@
 {% include "geonode/ext_header.html" %}
 {% include "geonode/app_header.html" %}
 {% include "geonode/geo_header.html" %}
+<script type="text/javascript" src="{{ STATIC_URL}}geonode/js/extjs/GeoNode-mixin.js"></script>
+<script type="text/javascript" src="{{ STATIC_URL}}geonode/js/extjs/Geonode-CatalogueApiSearch.js"></script>
+<script type="text/javascript" src="{{ STATIC_URL}}geonode/js/extjs/GeoNode-GeoExplorer.js"></script>
 <script type="text/javascript">
 var app;
 Ext.onReady(function() {
@@ -21,7 +24,7 @@ Ext.onReady(function() {
         printService: "{{GEOSERVER_BASE_URL}}pdf/",
         {% else %}
         printService: "",
-        {% endif %} 
+        {% endif %}
         rest: "/maps/",
 
         // tell the map viewer where and how to be rendered
@@ -30,7 +33,7 @@ Ext.onReady(function() {
             renderTo: "the_map"
         }
     }, {{ config }});
-app = new GeoExplorer.Viewer(config);
+app = new GeoNode.Viewer(config);
 {% endautoescape %}
 });
 </script>

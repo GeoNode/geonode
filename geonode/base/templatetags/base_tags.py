@@ -21,8 +21,10 @@
 from django import template
 
 from agon_ratings.models import Rating
+from django.db.models import Q
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.auth import get_user_model
+from django.contrib.auth.models import Group
 from django.db.models import Count
 
 from guardian.shortcuts import get_objects_for_user
@@ -32,6 +34,7 @@ from geonode.layers.models import Layer
 from geonode.maps.models import Map
 from geonode.documents.models import Document
 from geonode.groups.models import GroupProfile
+from geonode.base.models import HierarchicalKeyword
 
 register = template.Library()
 
@@ -45,7 +48,21 @@ def num_ratings(obj):
 @register.assignment_tag(takes_context=True)
 def facets(context):
     request = context['request']
+    is_admin = False
+    is_staff = False
+    if request.user:
+        is_admin = request.user.is_superuser if request.user else False
+        is_staff = request.user.is_staff if request.user else False
+
     title_filter = request.GET.get('title__icontains', '')
+    extent_filter = request.GET.get('extent', None)
+    keywords_filter = request.GET.getlist('keywords__slug__in', None)
+    category_filter = request.GET.getlist('category__identifier__in', None)
+    regions_filter = request.GET.getlist('regions__name__in', None)
+    owner_filter = request.GET.getlist('owner__username__in', None)
+    date_gte_filter = request.GET.get('date__gte', None)
+    date_lte_filter = request.GET.get('date__lte', None)
+    date_range_filter = request.GET.get('date__range', None)
 
     facet_type = context['facet_type'] if 'facet_type' in context else 'all'
 
@@ -57,8 +74,61 @@ def facets(context):
 
         documents = Document.objects.filter(title__icontains=title_filter)
 
+        if category_filter:
+            documents = documents.filter(category__identifier__in=category_filter)
+
+        if regions_filter:
+            documents = documents.filter(regions__name__in=regions_filter)
+
+        if owner_filter:
+            documents = documents.filter(owner__username__in=owner_filter)
+
+        if date_gte_filter:
+            documents = documents.filter(date__gte=date_gte_filter)
+        if date_lte_filter:
+            documents = documents.filter(date__lte=date_lte_filter)
+        if date_range_filter:
+            documents = documents.filter(date__range=date_range_filter.split(','))
+
+        if settings.ADMIN_MODERATE_UPLOADS:
+            if not is_admin and not is_staff:
+                documents = documents.filter(is_published=True)
+
         if settings.RESOURCE_PUBLISHING:
             documents = documents.filter(is_published=True)
+
+        if settings.GROUP_PRIVATE_RESOURCES:
+            try:
+                anonymous_group = Group.objects.get(name='anonymous')
+            except:
+                anonymous_group = None
+
+            if is_admin:
+                pass
+            elif request.user:
+                groups = request.user.groups.all()
+                if anonymous_group:
+                    documents = documents.filter(
+                        Q(group__isnull=True) | Q(group__in=groups) | Q(group=anonymous_group))
+                else:
+                    documents = documents.filter(Q(group__isnull=True) | Q(group__in=groups))
+            else:
+                if anonymous_group:
+                    documents = documents.filter(Q(group__isnull=True) | Q(group=anonymous_group))
+                else:
+                    documents = documents.filter(Q(group__isnull=True))
+
+        if keywords_filter:
+            treeqs = HierarchicalKeyword.objects.none()
+            for keyword in keywords_filter:
+                try:
+                    kw = HierarchicalKeyword.objects.get(name=keyword)
+                    treeqs = treeqs | HierarchicalKeyword.get_tree(kw)
+                except:
+                    # Ignore keywords not actually used?
+                    pass
+
+            documents = documents.filter(Q(keywords__in=treeqs))
 
         if not settings.SKIP_PERMS_FILTER:
             documents = documents.filter(id__in=authorized)
@@ -72,8 +142,70 @@ def facets(context):
 
         layers = Layer.objects.filter(title__icontains=title_filter)
 
+        if category_filter:
+            layers = layers.filter(category__identifier__in=category_filter)
+
+        if regions_filter:
+            layers = layers.filter(regions__name__in=regions_filter)
+
+        if owner_filter:
+            layers = layers.filter(owner__username__in=owner_filter)
+
+        if date_gte_filter:
+            layers = layers.filter(date__gte=date_gte_filter)
+        if date_lte_filter:
+            layers = layers.filter(date__lte=date_lte_filter)
+        if date_range_filter:
+            layers = layers.filter(date__range=date_range_filter.split(','))
+
+        if settings.ADMIN_MODERATE_UPLOADS:
+            if not is_admin and not is_staff:
+                layers = layers.filter(is_published=True)
+
         if settings.RESOURCE_PUBLISHING:
             layers = layers.filter(is_published=True)
+
+        if settings.GROUP_PRIVATE_RESOURCES:
+            try:
+                anonymous_group = Group.objects.get(name='anonymous')
+            except:
+                anonymous_group = None
+
+            if is_admin:
+                pass
+            elif request.user:
+                groups = request.user.groups.all()
+                if anonymous_group:
+                    layers = layers.filter(
+                        Q(group__isnull=True) | Q(group__in=groups) | Q(group=anonymous_group))
+                else:
+                    layers = layers.filter(Q(group__isnull=True) | Q(group__in=groups))
+            else:
+                if anonymous_group:
+                    layers = layers.filter(Q(group__isnull=True) | Q(group=anonymous_group))
+                else:
+                    layers = layers.filter(Q(group__isnull=True))
+
+        if extent_filter:
+            bbox = extent_filter.split(
+                ',')  # TODO: Why is this different when done through haystack?
+            bbox = map(str, bbox)  # 2.6 compat - float to decimal conversion
+            intersects = ~(Q(bbox_x0__gt=bbox[2]) | Q(bbox_x1__lt=bbox[0]) |
+                           Q(bbox_y0__gt=bbox[3]) | Q(bbox_y1__lt=bbox[1]))
+
+            layers = layers.filter(intersects)
+
+        if keywords_filter:
+            treeqs = HierarchicalKeyword.objects.none()
+            for keyword in keywords_filter:
+                try:
+                    kw = HierarchicalKeyword.objects.get(name=keyword)
+                    treeqs = treeqs | HierarchicalKeyword.get_tree(kw)
+                except:
+                    # Ignore keywords not actually used?
+                    pass
+
+            layers = layers.filter(Q(keywords__in=treeqs))
 
         if not settings.SKIP_PERMS_FILTER:
             layers = layers.filter(id__in=authorized)
@@ -94,6 +226,86 @@ def facets(context):
 
         maps = Map.objects.filter(title__icontains=title_filter)
         documents = Document.objects.filter(title__icontains=title_filter)
+
+        if category_filter:
+            maps = maps.filter(category__identifier__in=category_filter)
+            documents = documents.filter(category__identifier__in=category_filter)
+
+        if regions_filter:
+            maps = maps.filter(regions__name__in=regions_filter)
+            documents = documents.filter(regions__name__in=regions_filter)
+
+        if owner_filter:
+            maps = maps.filter(owner__username__in=owner_filter)
+            documents = documents.filter(owner__username__in=owner_filter)
+
+        if date_gte_filter:
+            maps = maps.filter(date__gte=date_gte_filter)
+            documents = documents.filter(date__gte=date_gte_filter)
+        if date_lte_filter:
+            maps = maps.filter(date__lte=date_lte_filter)
+            documents = documents.filter(date__lte=date_lte_filter)
+        if date_range_filter:
+            maps = maps.filter(date__range=date_range_filter.split(','))
+            documents = documents.filter(date__range=date_range_filter.split(','))
+
+        if settings.ADMIN_MODERATE_UPLOADS:
+            if not is_admin and not is_staff:
+                maps = maps.filter(is_published=True)
+                documents = documents.filter(is_published=True)
+
+        if settings.RESOURCE_PUBLISHING:
+            maps = maps.filter(is_published=True)
+            documents = documents.filter(is_published=True)
+
+        if settings.GROUP_PRIVATE_RESOURCES:
+            try:
+                anonymous_group = Group.objects.get(name='anonymous')
+            except:
+                anonymous_group = None
+
+            if is_admin:
+                pass
+            elif request.user:
+                groups = request.user.groups.all()
+                if anonymous_group:
+                    maps = maps.filter(
+                        Q(group__isnull=True) | Q(group__in=groups) | Q(group=anonymous_group))
+                    documents = documents.filter(
+                        Q(group__isnull=True) | Q(group__in=groups) | Q(group=anonymous_group))
+                else:
+                    maps = maps.filter(Q(group__isnull=True) | Q(group__in=groups))
+                    documents = documents.filter(Q(group__isnull=True) | Q(group__in=groups))
+            else:
+                if anonymous_group:
+                    maps = maps.filter(Q(group__isnull=True) | Q(group=anonymous_group))
+                    documents = documents.filter(Q(group__isnull=True) | Q(group=anonymous_group))
+                else:
+                    maps = maps.filter(Q(group__isnull=True))
+                    documents = documents.filter(Q(group__isnull=True))
+
+        if extent_filter:
+            bbox = extent_filter.split(
+                ',')  # TODO: Why is this different when done through haystack?
+            bbox = map(str, bbox)  # 2.6 compat - float to decimal conversion
+            intersects = ~(Q(bbox_x0__gt=bbox[2]) | Q(bbox_x1__lt=bbox[0]) |
+                           Q(bbox_y0__gt=bbox[3]) | Q(bbox_y1__lt=bbox[1]))
+
+            maps = maps.filter(intersects)
+            documents = documents.filter(intersects)
+
+        if keywords_filter:
+            treeqs = HierarchicalKeyword.objects.none()
+            for keyword in keywords_filter:
+                try:
+                    kw = HierarchicalKeyword.objects.get(name=keyword)
+                    treeqs = treeqs | HierarchicalKeyword.get_tree(kw)
+                except:
+                    # Ignore keywords not actually used?
+                    pass
+
+            maps = maps.filter(Q(keywords__in=treeqs))
+            documents = documents.filter(Q(keywords__in=treeqs))
 
         if not settings.SKIP_PERMS_FILTER:
             maps = maps.filter(id__in=authorized)

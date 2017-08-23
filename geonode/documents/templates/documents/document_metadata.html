@@ -89,5 +89,20 @@
     </form>
   </div>
 </div>
-
 {% endblock body_outer %}
+
+{% block extra_script %}
+{{ block.super }}
+<script type="text/javascript">
+    $("#id_resource-links").select2({
+        placeholder: "Select an option",
+        allowClear: true
+    });
+</script>
+<style>
+  #s2id_id_resource-links {
+    width: '100%';
+    height: 100%;
+  }
+</style>
+{% endblock extra_script %}

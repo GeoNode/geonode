@@ -67,7 +67,6 @@ class DocumentFormMixin(object):
         return [choice[0] for choice in choices]
 
     def save_many2many(self, links_field='links'):
-
         # create and fetch desired links
         instances = []
         for link in self.cleaned_data[links_field]:
@@ -112,7 +111,7 @@ class DocumentForm(ResourceBaseForm, DocumentFormMixin):
 
 class DocumentDescriptionForm(forms.Form):
     title = forms.CharField(300)
-    abstract = forms.CharField(1000, widget=forms.Textarea, required=False)
+    abstract = forms.CharField(2000, widget=forms.Textarea, required=False)
     keywords = forms.CharField(500, required=False)
 
 

@@ -69,7 +69,6 @@
         </div>
         {% endif %}
 
-
         {% csrf_token %}
         <div class="col-md-6 form-controls">
           {{ layer_form|as_bootstrap }}
@@ -141,8 +140,4 @@
       </form>
   </div>
 </div>
-{% endblock %}
-{% block extra_script %}
-{{ block.super }}
- {% include 'metadata_form_js.html' %}
 {% endblock %}
