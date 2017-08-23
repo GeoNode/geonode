@@ -18,6 +18,7 @@
 #
 #########################################################################
 
+from datetime import datetime, timedelta
 from django.core.urlresolvers import reverse
 from tastypie.test import ResourceTestCaseMixin
 
@@ -209,19 +210,29 @@ class SearchApiTests(ResourceTestCaseMixin):
 
         # check we get the correct layers number returnered filtering on the
         # title
-        filter_url = self.list_url + '?date__exact=1985-01-01'
+        step = timedelta(days=60)
+        now = datetime.now()
+        fstring = '%Y-%m-%d'
+
+        def to_date(val):
+            return val.date().strftime(fstring)
+
+        d1 = to_date(now - step)
+        filter_url = self.list_url + '?date__exact={}'.format(d1)
 
         resp = self.api_client.get(filter_url)
         self.assertValidJSONResponse(resp)
         self.assertEquals(len(self.deserialize(resp)['objects']), 1)
 
-        filter_url = self.list_url + '?date__gte=1985-01-01'
+        d3 = to_date(now - (3 * step))
+        filter_url = self.list_url + '?date__gte={}'.format(d3)
 
         resp = self.api_client.get(filter_url)
         self.assertValidJSONResponse(resp)
         self.assertEquals(len(self.deserialize(resp)['objects']), 3)
 
-        filter_url = self.list_url + '?date__range=1950-01-01,1985-01-01'
+        d4 = to_date(now - (4 * step))
+        filter_url = self.list_url + '?date__range={},{}'.format(d4, to_date(now))
 
         resp = self.api_client.get(filter_url)
         self.assertValidJSONResponse(resp)
