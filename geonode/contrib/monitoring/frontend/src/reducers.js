@@ -1,18 +1,28 @@
 import { combineReducers } from 'redux';
 import theme from './containers/reducers';
 import { backend, notifications } from './containers/app/reducers';
+
+// Atoms
+import mapData from './components/atoms/map/reducers';
+
+// Molecules
+import { wsService, wsServices } from './components/molecules/ws-service-select/reducers';
+
+// Cels
+import uptime from './components/cels/uptime/reducers';
 import geonodeAverageResponse from './components/cels/geonode-data/reducers';
+import wsServiceData from './components/cels/ws-data/reducers';
 import { geonodeCpuStatus, geonodeMemStatus } from './components/cels/geonode-status/reducers';
 import { geoserverCpuStatus } from './components/cels/geoserver-status/reducers';
 import { geoserverMemStatus } from './components/cels/geoserver-status/reducers';
+
+// Organisms
 import { geonodeResponseSequence } from './components/organisms/geonode-analytics/reducers';
 import { geonodeThroughputSequence } from './components/organisms/geonode-analytics/reducers';
 import { geonodeErrorSequence } from './components/organisms/geonode-analytics/reducers';
 import { geonodeCpuSequence } from './components/organisms/geonode-status/reducers';
 import { geonodeMemorySequence } from './components/organisms/geonode-status/reducers';
 import { interval } from './components/organisms/header/reducers';
-import { wsService, wsServices } from './components/molecules/ws-service-select/reducers';
-import wsServiceData from './components/cels/ws-data/reducers';
 import { wsResponseSequence } from './components/organisms/ws-analytics/reducers';
 import { wsThroughputSequence } from './components/organisms/ws-analytics/reducers';
 import { wsErrorSequence } from './components/organisms/ws-analytics/reducers';
@@ -22,7 +32,6 @@ import { geonodeLayerError } from './components/organisms/geonode-layers-analyti
 import { geonodeLayerResponse } from './components/organisms/geonode-layers-analytics/reducers';
 import { wsLayerError } from './components/organisms/ws-layers-analytics/reducers';
 import { wsLayerResponse } from './components/organisms/ws-layers-analytics/reducers';
-import uptime from './components/cels/uptime/reducers';
 
 
 const reducers = {
@@ -42,6 +51,7 @@ const reducers = {
   geoserverCpuStatus,
   geoserverMemStatus,
   interval,
+  mapData,
   notifications,
   theme,
   uptime,

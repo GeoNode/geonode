@@ -1,14 +1,34 @@
 import React from 'react';
+import PropTypes from 'prop-types';
+import { connect } from 'react-redux';
 import Datamap from 'datamaps';
 import styles from './styles';
+import actions from './actions';
 
 
+const mapStateToProps = (state) => ({
+  countryData: state.mapData.response,
+  interval: state.interval.interval,
+  timestamp: state.interval.timestamp,
+});
+
+
+@connect(mapStateToProps, actions)
 class WorldMap extends React.Component {
+  static propTypes = {
+    countryData: PropTypes.object,
+    get: PropTypes.func.isRequired,
+    interval: PropTypes.number,
+    reset: PropTypes.func.isRequired,
+    timestamp: PropTypes.instanceOf(Date),
+  }
+
   constructor(props) {
     super(props);
 
-    this.renderMap = () => {
+    this.renderMap = (data) => {
       const basicChoropleth = new Datamap({
+        data,
         element: this.d3Element,
         projection: 'mercator',
         fills: {
@@ -24,16 +44,10 @@ class WorldMap extends React.Component {
           '8-9': '#1111cc',
           '9-10': '#0000cc',
         },
-        data: {
-          USA: {
-            fillKey: '4-5',
-            val: 5,
-          },
-        },
         geographyConfig: {
-          popupTemplate: (geography, data) => {
+          popupTemplate: (geography, popupData) => {
             let popup = '<div class="hoverinfo"><strong>';
-            popup += `${geography.properties.name}: ${data.val}`;
+            popup += `${geography.properties.name}: ${popupData.val}`;
             popup += '</strong></div>';
             return popup;
           },
@@ -41,20 +55,59 @@ class WorldMap extends React.Component {
       });
       basicChoropleth.legend();
     };
+
+    this.get = (interval = this.props.interval) => {
+      this.props.get(interval);
+    };
+
+    this.parseData = (data) => {
+      const result = {};
+      if (!data || !data.data) {
+        return result;
+      }
+      const realData = data.data.data[0];
+      if (realData.data.length === 0) {
+        return result;
+      }
+      realData.data.forEach((country) => {
+        result[country.label] = {
+          fillKey: '9-10',
+          val: country.val,
+        };
+      });
+      return result;
+    };
+  }
+
+  componentWillMount() {
+    this.get();
   }
 
   componentDidMount() {
-    this.renderMap();
+    this.renderMap(this.parseData(this.props.countryData));
+  }
+
+  componentWillReceiveProps(nextProps) {
+    if (nextProps) {
+      if (nextProps.timestamp && nextProps.timestamp !== this.props.timestamp) {
+        this.get(nextProps.interval);
+      }
+    }
   }
 
   componentDidUpdate() {
     while (this.d3Element.hasChildNodes()) {
       this.d3Element.removeChild(this.d3Element.lastChild);
     }
-    this.renderMap();
+    this.renderMap(this.parseData(this.props.countryData));
+  }
+
+  componentWillUnmount() {
+    this.props.reset();
   }
 
   render() {
+    this.parseData(this.props.countryData);
     return (
       <div style={styles.root} ref={(node) => {this.d3Element = node;}} />
     );
