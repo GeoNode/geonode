@@ -1,3 +1,5 @@
+{% load api_basemaps_tags %}
+
 <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}geoexplorer/externals/geoext/resources/css/geoext-all.css" />
 <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}geoexplorer/externals/geoext/resources/css/gxtheme-gray.css">
 <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}geoexplorer/theme/ux/colorpicker/color-picker.ux.css" />
@@ -318,48 +320,58 @@
 <script src="http://localhost:9080/script/@/app/static/externals/gxp/src/script/locale/no.js"></script>
 <script src="http://localhost:9080/script/@/app/static/externals/gxp/src/script/locale/pl.js"></script>
 
+<script src="https://maps.googleapis.com/maps/api/js?key={% google_api_key %}" type="text/javascript"></script>
+
 <script type="text/javascript">
 OpenLayers.ImgPath = "{{ STATIC_URL }}geoexplorer/externals/openlayers/theme/default/img";
 OpenLayers.Request.DEFAULT_CONFIG.headers = {
-    'X-CSRFToken': '{{ csrf_token|escapejs }}'
+  'X-CSRFToken': '{{ csrf_token|escapejs }}'
 };
 
 /**
- *  Add GetFeedFeatureInfo tool to GeoExplorer.Viewer
- */
+*  Add GetFeedFeatureInfo tool to GeoExplorer.Viewer
+*/
 GeoExplorer.Viewer.prototype.loadConfig = function(config) {
-    // remove the 3D Viewer which is broken 
+  // remove the 3D Viewer if no Google API Key is availbale
+  var google_api_key = '{% google_api_key %}';
+  if(google_api_key.length == 0 || 'None' == google_api_key) {
     config.viewerTools.splice(10,1);
+  }
 
-	config.viewerTools.push( {
-		ptype: "gxp_getfeedfeatureinfo",
-		checked: true
-	});
+  config.viewerTools.push( {
+    ptype: "gxp_getfeedfeatureinfo",
+    checked: true
+  });
 
-        /* - TEMPORARLY DISABLED GXPLORER PLAYBACK -
-	config.viewerTools.push({
-		ptype: "gxp_playback",
-		checked: true,
-		outputTarget: "paneltbar"
-	});
-        */
-		
-    // Do not include the layer styler on the map-detail view.
-    {% if not map %}
-        config.viewerTools.splice(5, 0, {
-            id: "styler",
-            ptype: "gxp_styler",
-            checked: true
-        });
-    {% endif %}
+  /* - TEMPORARLY DISABLED GXPLORER PLAYBACK -
+    config.viewerTools.push({
+      ptype: "gxp_playback",
+      checked: true,
+      outputTarget: "paneltbar"
+    });
+  */
 
-    GeoExplorer.Viewer.superclass.loadConfig.call(this, config);
+  // Do not include the layer styler on the map-detail view.
+  {% if not map %}
+  config.viewerTools.splice(5, 0, {
+    id: "styler",
+    ptype: "gxp_styler",
+    checked: true
+  });
+  {% endif %}
+
+  GeoExplorer.Viewer.superclass.loadConfig.call(this, config);
 };
 
 //remove the 3D Viewer from GeoExplorer
 GeoExplorer.Composer.prototype.loadConfig = function(config) {
+  // remove the 3D Viewer if no Google API Key is availbale
+  var google_api_key = '{% google_api_key %}';
+  if(google_api_key.length == 0 || 'None' == google_api_key) {
     config.tools.splice(6,1);
-    GeoExplorer.Composer.superclass.loadConfig.call(this, config);
+  }
+
+  GeoExplorer.Composer.superclass.loadConfig.call(this, config);
 };
 
 </script>

@@ -20,9 +20,9 @@ First navigate to geonode configuration folder::
 
     cd /home/geonode/geonode/geonode/
 
-Copy the `local_settings.py` sample file called `local_settings.py.sample`::
+Copy the `local_settings.py` sample file called `local_settings.py.geoserver.sample`::
 
-    sudo cp local_settings.py.sample local_settings.py
+    sudo cp local_settings.py.geoserver.sample local_settings.py
 
 Then edit the configuration file::
 
@@ -36,7 +36,7 @@ following values::
 
 Add the `POSTGIS_VERSION` variable matching your PostGIS version::
 
-    POSTGIS_VERSION = (2, 1, 2)
+    POSTGIS_VERSION = (2, 2, 1)
 
 This will instruct GeoNode to listen on connections from your local machine.
 
@@ -212,6 +212,10 @@ Now open the main menu and click on `GeoServer`
 
 You will be redirected to GeoServer user interface. You will automatically be
 logged in as administrator in GeoServer.
+
+.. note::
+   If you connect to GeoNode as administrator for the first time , you will need to connect to 
+   GeoServer manually (The default credentials are: user:admin, password:geoserver).
 
 .. image:: img/geoserver_admin.png
    :width: 600px

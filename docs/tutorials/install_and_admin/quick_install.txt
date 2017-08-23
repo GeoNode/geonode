@@ -76,7 +76,7 @@ This option installs geonode in a virtual environment. This option is very usefu
 
     # Install Ubuntu dependencies
     sudo apt-get update
-    sudo apt-get install python-virtualenv python-dev libxml2 libxml2-dev libxslt1-dev zlib1g-dev libjpeg-dev libpq-dev libgdal-dev git default-jdk
+    sudo apt-get install python-virtualenv python-dev libxml2 libxml2-dev libxslt1-dev zlib1g-dev libjpeg-dev libpq-dev gdal libgdal-dev git default-jdk
 
     # Install Java 8 (needed by latest GeoServer 2.9)
     sudo apt-add-repository ppa:webupd8team/java
@@ -125,6 +125,14 @@ Rebuild libraries through::
     bower cache clean
     bower update
     grunt production
+
+
+.. warning::
+
+   If you get an error like ``/usr/bin/env: node: No such file or directory`` while running ``bower``, try to execute the following command::
+
+        sudo ln -s /usr/bin/nodejs /usr/bin/node
+
 
 On a production environment, remember to refresh also the "static_root" folder::
 

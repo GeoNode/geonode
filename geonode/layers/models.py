@@ -177,7 +177,10 @@ class Layer(ResourceBase):
     @property
     def ows_url(self):
         if self.is_remote:
-            return self.service.base_url
+            if self.service and self.service.base_url:
+                return self.service.base_url
+            else:
+                return None
         else:
             return settings.OGC_SERVER['default']['PUBLIC_LOCATION'] + "wms"
 
@@ -471,7 +474,10 @@ def pre_save_layer(instance, sender, **kwargs):
 
     if instance.alternate is None:
         # Set a sensible default for the typename
-        instance.alternate = 'geonode:%s' % instance.name
+        if instance.is_remote:
+            instance.alternate = instance.name
+        else:
+            instance.alternate = 'geonode:%s' % instance.name
 
     base_file, info = instance.get_base_file()
 
