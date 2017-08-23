@@ -26,7 +26,6 @@ from owslib.iso import MD_Metadata
 from pycsw import server
 from geonode.catalogue.backends.generic import CatalogueBackend as GenericCatalogueBackend
 from geonode.catalogue.backends.generic import METADATA_FORMATS
-from shapely.geometry.base import ReadingError
 
 true_value = 'true'
 if 'sqlite' in settings.DATABASES['default']['ENGINE']:
@@ -169,7 +168,7 @@ class CatalogueBackend(GenericCatalogueBackend):
             # https://gist.github.com/ingenieroariel/717bb720a201030e9b3a
             try:
                 response = csw.dispatch()
-            except ReadingError:
+            except Exception:
                 return []
 
         if isinstance(response, list):  # pycsw 2.0+
