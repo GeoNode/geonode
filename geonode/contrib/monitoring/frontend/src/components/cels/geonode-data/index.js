@@ -10,32 +10,26 @@ import actions from './actions';
 
 
 const mapStateToProps = (state) => ({
-  from: state.interval.from,
   interval: state.interval.interval,
   response: state.geonodeAverageResponse.response,
-  to: state.interval.to,
+  timestamp: state.interval.timestamp,
 });
 
 
 @connect(mapStateToProps, actions)
 class GeonodeData extends React.Component {
   static propTypes = {
-    from: PropTypes.object,
     get: PropTypes.func.isRequired,
     interval: PropTypes.number,
     reset: PropTypes.func.isRequired,
     response: PropTypes.object,
-    to: PropTypes.object,
+    timestamp: PropTypes.instanceOf(Date),
   }
 
   constructor(props) {
     super(props);
-    this.get = (
-      from = this.props.from,
-      to = this.props.to,
-      interval = this.props.interval,
-    ) => {
-      this.props.get(from, to, interval);
+    this.get = (interval = this.props.interval) => {
+      this.props.get(interval);
     };
   }
 
@@ -45,8 +39,8 @@ class GeonodeData extends React.Component {
 
   componentWillReceiveProps(nextProps) {
     if (nextProps) {
-      if (nextProps.from && nextProps.from !== this.props.from) {
-        this.get(nextProps.from, nextProps.to, nextProps.interval);
+      if (nextProps.timestamp && nextProps.timestamp !== this.props.timestamp) {
+        this.get(nextProps.interval);
       }
     }
   }

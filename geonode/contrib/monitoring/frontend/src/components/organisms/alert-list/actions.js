@@ -1,23 +1,23 @@
 import { createAction } from 'redux-actions';
-import { fetch, formatApiDate } from '../../../utils';
+import { fetch } from '../../../utils';
 import apiUrl from '../../../backend';
-import ERROR_LIST from './constants';
+import ALERT_LIST from './constants';
 
 
 const reset = createAction(
-  ERROR_LIST,
+  ALERT_LIST,
   () => ({ status: 'initial' })
 );
 
 
 export const begin = createAction(
-  ERROR_LIST,
+  ALERT_LIST,
   () => ({ status: 'pending' })
 );
 
 
 const success = createAction(
-  ERROR_LIST,
+  ALERT_LIST,
   response => ({
     response,
     status: 'success',
@@ -26,7 +26,7 @@ const success = createAction(
 
 
 const fail = createAction(
-  ERROR_LIST,
+  ALERT_LIST,
   error => ({
     status: 'error',
     error,
@@ -34,13 +34,10 @@ const fail = createAction(
 );
 
 
-const get = (from, to) =>
+const get = (interval) =>
   (dispatch) => {
     dispatch(begin());
-    const formatedFrom = formatApiDate(from);
-    const formatedTo = formatApiDate(to);
-    let url = `${apiUrl}/exceptions/?valid_from=${formatedFrom}`;
-    url += `&valid_to=${formatedTo}`;
+    const url = `${apiUrl}/exceptions/?last=${interval}`;
     fetch({ url })
       .then(response => {
         dispatch(success(response));

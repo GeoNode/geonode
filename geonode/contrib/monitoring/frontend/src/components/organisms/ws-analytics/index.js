@@ -14,12 +14,11 @@ import actions from './actions';
 
 const mapStateToProps = (state) => ({
   errors: state.wsErrorSequence.response,
-  from: state.interval.from,
   interval: state.interval.interval,
   responseTimes: state.wsServiceData.response,
   responses: state.wsResponseSequence.response,
   throughputs: state.wsThroughputSequence.throughput,
-  to: state.interval.to,
+  timestamp: state.interval.timestamp,
 });
 
 
@@ -27,7 +26,6 @@ const mapStateToProps = (state) => ({
 class WSAnalytics extends React.Component {
   static propTypes = {
     errors: PropTypes.object,
-    from: PropTypes.object,
     getErrors: PropTypes.func.isRequired,
     getResponseTimes: PropTypes.func.isRequired,
     getResponses: PropTypes.func.isRequired,
@@ -40,20 +38,16 @@ class WSAnalytics extends React.Component {
     responseTimes: PropTypes.object,
     responses: PropTypes.object,
     throughputs: PropTypes.object,
-    to: PropTypes.object,
+    timestamp: PropTypes.instanceOf(Date),
   }
 
   constructor(props) {
     super(props);
-    this.get = (
-      from = this.props.from,
-      to = this.props.to,
-      interval = this.props.interval,
-    ) => {
-      this.props.getResponses(from, to);
-      this.props.getResponseTimes(from, to, interval);
-      this.props.getThroughputs(from, to);
-      this.props.getErrors(from, to);
+    this.get = (interval = this.props.interval) => {
+      this.props.getResponses(interval);
+      this.props.getResponseTimes(interval);
+      this.props.getThroughputs(interval);
+      this.props.getErrors(interval);
     };
 
     this.reset = () => {
@@ -70,8 +64,8 @@ class WSAnalytics extends React.Component {
 
   componentWillReceiveProps(nextProps) {
     if (nextProps) {
-      if (nextProps.from && nextProps.from !== this.props.from) {
-        this.get(nextProps.from, nextProps.to, nextProps.interval);
+      if (nextProps.timestamp && nextProps.timestamp !== this.props.timestamp) {
+        this.get(nextProps.interval);
       }
     }
   }

@@ -10,18 +10,15 @@ import actions from './actions';
 
 
 const mapStateToProps = (state) => ({
-  from: state.interval.from,
   interval: state.interval.interval,
   response: state.geonodeLayerResponse.response,
   errorNumber: state.geonodeLayerError.response,
-  to: state.interval.to,
 });
 
 
 @connect(mapStateToProps, actions)
 class GeonodeLayerAnalytics extends React.Component {
   static propTypes = {
-    from: PropTypes.object,
     getResponses: PropTypes.func.isRequired,
     resetResponses: PropTypes.func.isRequired,
     getErrors: PropTypes.func.isRequired,
@@ -29,18 +26,14 @@ class GeonodeLayerAnalytics extends React.Component {
     interval: PropTypes.number,
     response: PropTypes.object,
     errorNumber: PropTypes.object,
-    to: PropTypes.object,
+    timestamp: PropTypes.instanceOf(Date),
   }
 
   constructor(props) {
     super(props);
-    this.get = (
-      from = this.props.from,
-      to = this.props.to,
-      interval = this.props.interval,
-    ) => {
-      this.props.getErrors(from, to, interval);
-      this.props.getResponses(from, to, interval);
+    this.get = (interval = this.props.interval) => {
+      this.props.getErrors(interval);
+      this.props.getResponses(interval);
     };
 
     this.reset = () => {
@@ -55,8 +48,8 @@ class GeonodeLayerAnalytics extends React.Component {
 
   componentWillReceiveProps(nextProps) {
     if (nextProps) {
-      if (nextProps.from && nextProps.from !== this.props.from) {
-        this.get(nextProps.from, nextProps.to, nextProps.interval);
+      if (nextProps.timestamp && nextProps.timestamp !== this.props.timestamp) {
+        this.get(nextProps.interval);
       }
     }
   }

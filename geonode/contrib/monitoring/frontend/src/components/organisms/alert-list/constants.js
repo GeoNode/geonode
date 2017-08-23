@@ -1,1 +1,1 @@
-export default 'ERROR_LIST';
+export default 'ALERT_LIST';

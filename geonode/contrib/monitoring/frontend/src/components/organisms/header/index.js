@@ -4,7 +4,7 @@ import { connect } from 'react-redux';
 import RaisedButton from 'material-ui/RaisedButton';
 import AutorefreshIcon from 'material-ui/svg-icons/action/autorenew';
 import Back from 'material-ui/svg-icons/image/navigate-before';
-import { formatHeaderDate } from '../../../utils';
+/* import { formatHeaderDate } from '../../../utils';*/
 import { minute, hour, day, week } from '../../../constants';
 import actions from './actions';
 import styles from './styles';
@@ -12,9 +12,7 @@ import { AUTO_REFRESH_INTERVAL } from './constants';
 
 
 const mapStateToProps = (state) => ({
-  from: state.interval.from,
   interval: state.interval.interval,
-  to: state.interval.to,
 });
 
 
@@ -28,15 +26,12 @@ class Header extends React.Component {
     autoRefresh: PropTypes.bool,
     back: PropTypes.string,
     disableInterval: PropTypes.bool,
-    from: PropTypes.object,
     interval: PropTypes.number,
     setInterval: PropTypes.func.isRequired,
-    to: PropTypes.object,
   }
 
   static defaultProps = {
     autoRefresh: true,
-    interval: true,
   }
 
   constructor(props) {
@@ -47,40 +42,24 @@ class Header extends React.Component {
     };
 
     this.get = (interval = this.props.interval) => {
-      const now = new Date();
-      const seconds = Math.floor(now.getSeconds() / 10) * 10;
-      now.setSeconds(seconds, 0);
-      const fromDate = new Date(now - interval * 1000);
-      this.props.setInterval(fromDate, now, interval);
+      this.props.setInterval(interval);
     };
 
     this.handleMinute = () => {
-      const now = new Date();
-      now.setSeconds(0, 0);
       const interval = 10 * minute;
-      const fromDate = new Date(now - interval * 1000);
-      this.props.setInterval(fromDate, now, interval);
+      this.props.setInterval(interval);
     };
 
     this.handleHour = () => {
-      const now = new Date();
-      now.setSeconds(0, 0);
-      const fromDate = new Date(now - hour * 1000);
-      this.props.setInterval(fromDate, now, hour);
+      this.props.setInterval(hour);
     };
 
     this.handleDay = () => {
-      const now = new Date();
-      now.setSeconds(0, 0);
-      const fromDate = new Date(now - day * 1000);
-      this.props.setInterval(fromDate, now, day);
+      this.props.setInterval(day);
     };
 
     this.handleWeek = () => {
-      const now = new Date();
-      now.setSeconds(0, 0);
-      const fromDate = new Date(now - week * 1000);
-      this.props.setInterval(fromDate, now, week);
+      this.props.setInterval(week);
     };
 
     this.handleAutoRefresh = () => {
@@ -90,8 +69,8 @@ class Header extends React.Component {
         this.setState({ autoRefresh: false });
       } else {
         this.intervalID = setInterval(this.get, AUTO_REFRESH_INTERVAL);
-        this.setState({ autoRefresh: true });
         this.get();
+        this.setState({ autoRefresh: true });
       }
     };
   }
@@ -160,12 +139,14 @@ class Header extends React.Component {
         <div style={styles.item}>
           from:&nbsp;
           <span style={styles.timestamp}>
-            {formatHeaderDate(this.props.from)}
+            {/* {formatHeaderDate(this.props.from)} */}
+            2017-08-23 12:34:30
           </span>
           &nbsp;
           to:&nbsp;
           <span style={styles.timestamp}>
-            {formatHeaderDate(this.props.to)}
+            {/* {formatHeaderDate(this.props.to)} */}
+            2017-08-23 12:34:30
           </span>
         </div>
         <RaisedButton

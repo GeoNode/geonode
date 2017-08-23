@@ -11,36 +11,32 @@ import actions from './actions';
 
 
 const mapStateToProps = (state) => ({
-  from: state.interval.from,
   interval: state.interval.interval,
-  selected: state.wsService.service,
-  to: state.interval.to,
   response: state.wsServiceData.response,
+  selected: state.wsService.service,
+  timestamp: state.interval.timestamp,
 });
 
 
 @connect(mapStateToProps, actions)
 class WSData extends React.Component {
   static propTypes = {
-    from: PropTypes.object,
     get: PropTypes.func.isRequired,
     interval: PropTypes.number,
     reset: PropTypes.func.isRequired,
     response: PropTypes.object,
     selected: PropTypes.string,
-    to: PropTypes.object,
+    timestamp: PropTypes.instanceOf(Date),
   }
 
   constructor(props) {
     super(props);
 
     this.get = (
-        from = this.props.from,
-        to = this.props.to,
         interval = this.props.interval,
         selected = this.props.selected,
     ) => {
-      this.props.get(from, to, interval, selected);
+      this.props.get(interval, selected);
     };
   }
 
@@ -52,11 +48,9 @@ class WSData extends React.Component {
     if (nextProps.selected) {
       if (
         this.props.selected !== nextProps.selected
-        || nextProps.from !== this.props.from
+        || nextProps.timestamp !== this.props.timestamp
       ) {
         this.get(
-          nextProps.from,
-          nextProps.to,
           nextProps.interval,
           nextProps.selected,
         );

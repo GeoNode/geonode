@@ -52,8 +52,7 @@ export const formatHeaderDate = (date) => {
 };
 
 
-export const sequenceInterval = (getState) => {
-  const interval = getState().interval.interval;
+export const sequenceInterval = (interval) => {
   let seqInterval = interval;
   if (interval === 10 * minute) {
     seqInterval = minute;
@@ -133,4 +132,19 @@ export const getErrorCount = (responses) => {
     return result;
   }
   return result;
+};
+
+
+export const formatNow = () => {
+  const rightNow = new Date();
+  rightNow.setSeconds(0, 0);
+  return rightNow;
+};
+
+
+export const isNumber = (n) => {
+  if (!isNaN(parseFloat(n)) && isFinite(n)) {
+    return true;
+  }
+  return false;
 };

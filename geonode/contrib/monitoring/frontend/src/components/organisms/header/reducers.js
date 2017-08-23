@@ -1,16 +1,12 @@
+import { formatNow } from '../../../utils';
 import { INTERVAL } from './constants';
 import { minute } from '../../../constants';
 
 
-const rightNow = new Date();
-rightNow.setSeconds(0, 0);
-
-
 export function interval(
   state = {
-    from: new Date(rightNow - 10 * minute * 1000),
     interval: 10 * minute,
-    to: rightNow,
+    timestamp: formatNow(),
   },
   action,
 ) {
