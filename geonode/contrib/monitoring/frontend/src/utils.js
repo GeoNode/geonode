@@ -45,7 +45,7 @@ export const formatApiDate = (date) => {
 
 export const formatHeaderDate = (date) => {
   if (date === undefined) {
-    return <CircularProgress />;
+    return <CircularProgress size={20} />;
   }
   const theday = `0${date.getDate()}`.slice(-2);
   const themonth = `0${date.getMonth() + 1}`.slice(-2);
