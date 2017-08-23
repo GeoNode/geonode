@@ -349,7 +349,7 @@ class ExceptionsListView(FilteredView):
         if service_type:
             q = q.filter(service__service_type__name=service_type)
         else:
-            q = q.filter(service__service__type__isnull=True)
+            q = q.filter(service__service_type__isnull=True)
         if resource:
             q = q.filter(request__resources__in=(resource,))
 
