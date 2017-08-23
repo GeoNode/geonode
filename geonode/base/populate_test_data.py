@@ -100,9 +100,10 @@ def create_fixtures():
             ('some other information goes here',),
             ]
     now = datetime.now()
+    step = timedelta(days=60)
+
     def get_test_date():
         def it():
-            step = timedelta(days=60)
             current = now - step
             while True:
                 yield current
