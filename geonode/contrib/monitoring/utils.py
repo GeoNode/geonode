@@ -198,10 +198,20 @@ def align_period_start(start, interval):
 def generate_periods(since, interval, end=None):
     """
     Generator of periods: tuple of [start, end).
-    since parameter will be aligned to closest interval before since.
+    since parameter will be aligned to closest interval before since.1
     """
+    no_end = end is None
     end = end or datetime.now()
     since_aligned = align_period_start(since, interval)
+
+    full_interval = (end - since).total_seconds()
+    _periods = divmod(full_interval, interval.total_seconds())
+    periods_count = _periods[0]
+    if _periods[1]:
+        periods_count += 1
+    
+    end = since_aligned + timedelta(seconds=(periods_count * interval.total_seconds()))
+
     while since_aligned < end:
         yield (since_aligned, since_aligned + interval,)
         since_aligned = since_aligned + interval
@@ -225,7 +235,6 @@ class TypeChecks(object):
             return Host.objects.get(name=val)
         except Host.DoesNotExist:
             raise ValueError("Host {} does not exist".format(val))
-
 
     @staticmethod
     def resource_type(val):

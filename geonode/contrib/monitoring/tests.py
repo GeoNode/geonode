@@ -1683,8 +1683,8 @@ class MonitoringUtilsTestCase(TestCase):
         """
         Test if we can use time periods
         """
-        start = datetime(year=2017, month=06, day=20, hour=12, minute=22, second=50)
-        start_aligned = datetime(year=2017, month=06, day=20, hour=12, minute=20, second=0)
+        start = datetime(year=2017, month=06, day=20, hour=12, minute=22, second=50) #2017-06-20 12:22:50
+        start_aligned = datetime(year=2017, month=06, day=20, hour=12, minute=20, second=0) #2017-06-20 12:20:00
 
         interval = timedelta(minutes=5)
         # 12:22:50+ 0:05:20 = 12:27:02
@@ -1698,8 +1698,27 @@ class MonitoringUtilsTestCase(TestCase):
         self.assertEqual(start_aligned, aligned)
 
         periods = list(generate_periods(start, interval, end))
-
         self.assertEqual(expected_periods, periods)
+
+
+
+        pnow = datetime.now()
+
+        start_for_one = pnow - interval
+        periods = list(generate_periods(start_for_one, interval, pnow))
+        self.assertEqual(len(periods), 1)
+
+        start_for_two = pnow - (2 * interval)
+        periods = list(generate_periods(start_for_two, interval, pnow))
+        self.assertEqual(len(periods), 2)
+
+        start_for_three = pnow - (3 * interval)
+        periods = list(generate_periods(start_for_three, interval, pnow))
+        self.assertEqual(len(periods), 3)
+        
+        start_for_two_and_half = pnow - timedelta(seconds=(2.5 * interval.total_seconds()))
+        periods = list(generate_periods(start_for_two_and_half, interval, pnow))
+        self.assertEqual(len(periods), 3)
 
 
 class MonitoringChecksTestCase(TestCase):
