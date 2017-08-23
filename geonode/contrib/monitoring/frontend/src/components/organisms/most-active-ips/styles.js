@@ -4,8 +4,4 @@ export default {
     marginTop: 10,
     padding: 10,
   },
-
-  map: {
-    height: 200,
-  },
 };

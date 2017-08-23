@@ -2,6 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import Datamap from 'datamaps';
+import * as d3 from 'd3';
 import styles from './styles';
 import actions from './actions';
 
@@ -30,7 +31,18 @@ class WorldMap extends React.Component {
       const basicChoropleth = new Datamap({
         data,
         element: this.d3Element,
-        projection: 'mercator',
+        width: '100%',
+        height: '200',
+        setProjection: (element) => {
+          const x = element.offsetWidth / 2;
+          const y = element.offsetHeight / 2 + 40;
+          const projection = d3.geoMercator()
+            .scale(50)
+            .translate([x, y]);
+          const path = d3.geoPath()
+            .projection(projection);
+          return { path, projection };
+        },
         fills: {
           defaultFill: '#cccccc',
           '0-1': '#9999cc',
