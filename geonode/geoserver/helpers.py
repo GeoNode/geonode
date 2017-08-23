@@ -1795,12 +1795,19 @@ def create_gs_thumbnail(instance, overwrite=False):
     else:
         layers = instance.alternate.encode('utf-8')
 
+    wms_endpoint = getattr(ogc_server_settings, "WMS_ENDPOINT") or 'wms'
+    wms_version = getattr(ogc_server_settings, "WMS_VERSION") or '1.1.1'
+    wms_format = getattr(ogc_server_settings, "WMS_FORMAT") or 'image/png8'
+
     params = {
+        'service': 'WMS',
+        'version': wms_version,
+        'request': 'GetMap',
         'layers': layers,
-        'format': 'image/png',
+        'format': wms_format,
         'width': 200,
-        'height': 150
-        # 'TIME': '-99999999999-01-01T00:00:00.0Z/99999999999-01-01T00:00:00.0Z'
+        'height': 150,
+        'TIME': '-99999999999-01-01T00:00:00.0Z/99999999999-01-01T00:00:00.0Z'
     }
 
     # Add the bbox param only if the bbox is different to [None, None,
@@ -1815,11 +1822,11 @@ def create_gs_thumbnail(instance, overwrite=False):
     # with the WMS parser.
     p = "&".join("%s=%s" % item for item in params.items())
 
-    thumbnail_remote_url = ogc_server_settings.PUBLIC_LOCATION + \
-        "wms/reflect?" + p
+    import posixpath
 
-    thumbnail_create_url = ogc_server_settings.LOCATION + \
-        "wms/reflect?" + p
+    thumbnail_remote_url = posixpath.join(ogc_server_settings.PUBLIC_LOCATION, wms_endpoint) + "?" + p
+
+    thumbnail_create_url = posixpath.join(ogc_server_settings.LOCATION, wms_endpoint) + "?" + p
 
     create_thumbnail(instance, thumbnail_remote_url, thumbnail_create_url,
                      ogc_client=http_client, overwrite=overwrite, check_bbox=check_bbox)

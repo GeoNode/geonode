@@ -1358,15 +1358,20 @@ def create_wms_links(instance, wms_base_url, overwrite=False):
     """
     layers = instance.alternate.encode('utf-8')
 
+    from geonode.geoserver.helpers import ogc_server_settings
+
+    wms_version = getattr(ogc_server_settings, "WMS_VERSION") or '1.1.1'
+    wms_format = getattr(ogc_server_settings, "WMS_FORMAT") or 'image/png8'
+
     params = {
         'service': 'WMS',
-        'version': '1.1.1',
+        'version': wms_version,
         'request': 'GetMap',
         'layers': layers,
-        'format': 'image/png',
+        'format': wms_format,
         'width': 200,
-        'height': 150
-        # 'TIME': '-99999999999-01-01T00:00:00.0Z/99999999999-01-01T00:00:00.0Z'
+        'height': 150,
+        'TIME': '-99999999999-01-01T00:00:00.0Z/99999999999-01-01T00:00:00.0Z'
     }
 
     # Add the bbox param only if the bbox is different to [None, None,
@@ -1387,9 +1392,10 @@ def create_wms_links(instance, wms_base_url, overwrite=False):
                      overwrite=overwrite, check_bbox=check_bbox)
 
     legend_url = wms_base_url + \
-        '?service=WMS&version=1.1.1&request=GetLegendGraphic&format=image/png&' + \
+        '?service=WMS&version={}&request=GetLegendGraphic&format={}&' + \
         'WIDTH=20&HEIGHT=20&LAYER=' + instance.alternate + \
-        '&legend_options=fontAntiAliasing:true;fontSize:12;forceLabels:on'
+        '&legend_options=fontAntiAliasing:true;fontSize:12;forceLabels:on' \
+        .format(wms_version, wms_format)
 
     Link.objects.get_or_create(resource=instance.resourcebase_ptr,
                                url=legend_url,
