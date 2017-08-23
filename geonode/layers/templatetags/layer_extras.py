@@ -144,8 +144,8 @@ def get_prs92_download_url(link):
         return link
     elif '%2Fpdf' in str(link):  # remove this
         link = image_basemap(link, 4683, 'pdf')
-    # elif 'SHAPE-ZIP' in str(link) or 'kml' in str(link):
-    #     link = link + '&srsName=EPSG:4683'
+    elif 'SHAPE-ZIP' in str(link) or 'kml' in str(link):
+        link = link + '&srsName=EPSG:4683'
     elif '/download/' in str(link):
         link = link.split('/layers/')[0]+'/geoserver/'+link.split('/download/')[1]
     return link
