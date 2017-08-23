@@ -2,6 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import RaisedButton from 'material-ui/RaisedButton';
+import CircularProgress from 'material-ui/CircularProgress';
 import AutorefreshIcon from 'material-ui/svg-icons/action/autorenew';
 import Back from 'material-ui/svg-icons/image/navigate-before';
 import { formatHeaderDate } from '../../../utils';
@@ -105,6 +106,8 @@ class Header extends React.Component {
                            ? { backgroundColor: '#dde' }
                            : undefined;
     const props = this.props;
+    const fromDate = formatHeaderDate(props.from) || <CircularProgress size={20} />;
+    const toDate = formatHeaderDate(props.to) || <CircularProgress size={20} />;
     return (
       <div style={styles.content}>
         <div style={styles.item}>
@@ -147,12 +150,12 @@ class Header extends React.Component {
         <div style={styles.item}>
           from:&nbsp;
           <span style={styles.timestamp}>
-            {formatHeaderDate(props.from)}
+            {fromDate}
           </span>
           &nbsp;
           to:&nbsp;
           <span style={styles.timestamp}>
-            {formatHeaderDate(props.to)}
+            {toDate}
           </span>
         </div>
         <RaisedButton
