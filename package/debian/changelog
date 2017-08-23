@@ -1,3 +1,40 @@
+geonode (2.6.2+thefinal0) trusty; urgency=high
+
+  [ Francesco Bartoli ]
+  * [52b795] Add vagrant for setup centos 7
+  * [abd4bb] Review and align devmode for 2.6 on centos
+  * [bf8134] Fix devmode docs to forwarding port
+  * [6153e8] Add network configuration issues to docs
+  * [115e47] Review and update postgresql docs
+  * [b2a30c] Review and update tomcat installation docs
+  * [a3cf22] Revert deleted rst reference
+  * [1acffb] Fix deploy geoserver default war file name
+  * [288ad7] Review and update geonode docs on centos 7
+  * [491a17] Review and update apache docs on centos 7
+  * [c2d41c] Specify the user
+  * [6fd1d1] Improve deploy with custom project folder
+  * [337bb3] Move python stuff installation together
+  * [131242] Change installation folder out of home
+  * [07691c] Update with latest local_settings
+  * [05adf3] Fix issue with auth which generate ascii encoding error
+  * [89784c] set client encoding aligned with django
+  * [b88b83] Add reference to alternative installations
+  * [cb247f] Add introduction to venv installation
+  * [991d2f] Move version to 2.6
+  * [ae10a8] Fix broken references
+  * [e2c605] Update copyright year
+
+  [ Simone Dalmasso ]
+  * [bc3ead] remove java build dependencies (#3216)
+
+  [ George Petrakis ]
+  * [25605f] Adding django-jsonfield-compat package to setup.py and requirements.txt (#3211)
+
+  [ Simone Dalmasso ]
+  * [6bdb10] make sure sitemap respects at least anonymous permissions, fixes #3190 (#3214)
+
+ -- Simone Dalmasso <simone.dalmasso@gmail.com>  Sat, 19 Aug 2017 21:28:30 +0000
+
 geonode (2.6.1+thefinal0) trusty; urgency=high
 
   [ Angelos Tzotsos ]
