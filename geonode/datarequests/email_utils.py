@@ -56,7 +56,7 @@ PROFILE_APPROVAL_HTML = """
     <p>Dear <strong>{}</strong>,</p>
    <p>Your account registration for LiPAD was approved. You will now be able to log in using the following log-in credentials:</p>
    username: <strong>{}</strong></p>
-   <p>Before you are able to login to LiPAD, visit first https://ssp.dream.upd.edu.ph/?action=sendtoken and follow the instructions to reset a password for your account</p></br>
+   <p>Before you are able to login to LiPAD, follow the instructions in this <a href="https://ssp.dream.upd.edu.ph/?action=sendtoken">link</a> to be able to reset or assign a password for your account</p></br>
    <p>You will be able to edit your account details by logging in and going to the following link:</p>
    {}
    </br>

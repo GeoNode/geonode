@@ -332,24 +332,26 @@ def get_folders_for_user(user, request_name):
 
     for group in groups:
         if group.slug == u'phil-lidar-1-sucs':
-            return ("/mnt/FTP/PL1/{0}/".format(user.username),
+            # return ("/mnt/FTP/PL1/{0}/".format(user.username),
+            return ("/mnt/ftp_pool/FTP/PL1/{0}/".format(user.username),
                     os.path.join(
-                        "/mnt/FTP/PL1/{0}/DL/DAD/lipad_requests".format(user.username), request_name)
+                        # "/mnt/FTP/PL1/{0}/DL/DAD/lipad_requests".format(user.username), request_name)
+                        "/mnt/ftp_pool/FTP/PL1/{0}/DL/DAD/lipad_requests".format(user.username), request_name)
                     )
         elif group.slug == u'phil-lidar-2-sucs':
-            return ("/mnt/FTP/PL2/{0}/".format(user.username),
+            return ("/mnt/ftp_pool/FTP/PL2/{0}/".format(user.username),
                     os.path.join(
-                        "/mnt/FTP/PL2/{0}/DL/DAD/lipad_requests".format(user.username), request_name)
+                        "/mnt/ftp_pool/FTP/PL2/{0}/DL/DAD/lipad_requests".format(user.username), request_name)
                     )
         elif group.slug == u'other-data-requesters':
-            return ("/mnt/FTP/Others/{0}/".format(user.username),
+            return ("/mnt/ftp_pool/FTP/Others/{0}/".format(user.username),
                     os.path.join(
-                        "/mnt/FTP/Others/{0}/DL/DAD/lipad_requests".format(user.username), request_name)
+                        "/mnt/ftp_pool/FTP/Others/{0}/DL/DAD/lipad_requests".format(user.username), request_name)
                     )
         elif group.slug == u'data-requesters':
-            return ("/mnt/FTP/Others/{0}/".format(user.username),
+            return ("/mnt/ftp_pool/FTP/Others/{0}/".format(user.username),
                     os.path.join(
-                        "/mnt/FTP/Others/{0}/DL/DAD/lipad_requests".format(user.username), request_name)
+                        "/mnt/ftp_pool/FTP/Others/{0}/DL/DAD/lipad_requests".format(user.username), request_name)
                     )
 
     raise CephAccessException(
