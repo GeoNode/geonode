@@ -359,6 +359,7 @@ def create_ftp_folder(request, projection=None):
 
     ftp_request.size_in_bytes = total_size_in_bytes
     ftp_request.num_tiles = num_tiles
+    print("FTPRequest total_size_in_bytes "+str(total_size_in_bytes)+" and num_tiles "+str(num_tiles))
     ftp_request.save()
 
     # Mapping of FTP Request to requested objects

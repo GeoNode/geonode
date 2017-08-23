@@ -60,14 +60,14 @@ class FTPStatus(enum.Enum):
         DONE: 'Done',
         PENDING: 'Pending',
         ERROR:   'Error',
-        DUPLICATE: 'Duplicate', 
+        DUPLICATE: 'Duplicate',
         FORWARDED: 'Forwarded'}
 
 class TileDataClass(models.Model):
     short_name = models.CharField(max_length=15)
     full_name = models.CharField(max_length=50)
     description=models.CharField(max_length=300)
-    
+
     def __unicode__(self):
         return "{0}:{1}".format(self.short_name, self.full_name)
 
@@ -91,7 +91,7 @@ class FTPRequest(models.Model):
     date_time = models.DateTimeField(default=datetime.now)
     user = models.ForeignKey(User, null=False, blank=False)
     status = enum.EnumField(FTPStatus, default=FTPStatus.PENDING)
-    size_in_bytes = models.IntegerField()
+    size_in_bytes = models.BigIntegerField()
     num_tiles = models.IntegerField()
 
     def __unicode__(self):
@@ -119,7 +119,7 @@ class UserJurisdiction(models.Model):
 
     def get_user_name(self):
         return self.user.username
-        
+
 class UserTiles(models.Model):
     user = models.ForeignKey(Profile, null=False, blank=False, unique=True)
     gridref_list = models.TextField(null=False, blank=False)
