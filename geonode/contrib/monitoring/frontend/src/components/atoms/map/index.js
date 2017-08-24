@@ -90,34 +90,54 @@ class WorldMap extends React.Component {
       Object.keys(data).forEach((countryName) => {
         if (countryName.length === 3) {
           realCountries[countryName] = data[countryName];
+          realCountries[countryName].val = Number(data[countryName].val);
         }
       });
       const max = Object.keys(realCountries).reduce((currentMax, countryName) => {
-        const val = Number(realCountries[countryName].val);
+        const val = realCountries[countryName].val;
         return val > currentMax ? val : currentMax;
       }, 0);
+      if (max === 0) {
+        return { data, fills };
+      }
       const step = Math.floor(max / 5);
       let color = 7;
-      for (let multiplier = 0; multiplier < 5; ++multiplier) {
-        const low = multiplier * step;
-        const hi = (multiplier + 1) * step;
-        fills[`${low}-${hi}`] = `#${color}${color}c`;
-        --color;
-      }
       const countryData = {};
-      Object.keys(realCountries).forEach((countryName) => {
-        const val = Number(realCountries[countryName].val);
-        const newCountry = JSON.parse(JSON.stringify(realCountries[countryName]));
-        for (let multiplier = 1; multiplier <= 5; ++multiplier) {
-          if (multiplier * step >= val) {
-            const low = (multiplier - 1) * step;
-            const hi = multiplier * step;
-            newCountry.fillKey = `${low}-${hi}`;
-            break;
-          }
+      if (step === 0) {
+        const identifier = `0-${max}`;
+        fills[identifier] = `#${color}${color}c`;
+        Object.keys(realCountries).forEach((countryName) => {
+          const newCountry = JSON.parse(JSON.stringify(realCountries[countryName]));
+          newCountry.fillKey = identifier;
+          countryData[countryName] = newCountry;
+        });
+      } else {
+        for (let multiplier = 0; multiplier < 5; ++multiplier) {
+          const low = multiplier * step;
+          const hi = (multiplier + 1) * step;
+          const identifier = `${low}-${hi}`;
+          fills[identifier] = `#${color}${color}c`;
+          --color;
         }
-        countryData[countryName] = newCountry;
-      });
+        Object.keys(realCountries).forEach((countryName) => {
+          const val = Number(realCountries[countryName].val);
+          const newCountry = JSON.parse(JSON.stringify(realCountries[countryName]));
+          for (let multiplier = 1; multiplier <= 5; ++multiplier) {
+            if (multiplier * step >= val) {
+              const low = (multiplier - 1) * step;
+              const hi = multiplier * step;
+              newCountry.fillKey = `${low}-${hi}`;
+              break;
+            }
+          }
+          if (!newCountry.fillKey) {
+            const low = 4 * step;
+            const hi = 5 * step;
+            newCountry.fillKey = `${low}-${hi}`;
+          }
+          countryData[countryName] = newCountry;
+        });
+      }
       return { data: countryData, fills };
     };
 
