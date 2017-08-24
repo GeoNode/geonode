@@ -96,11 +96,7 @@ class WorldMap extends React.Component {
         const val = Number(realCountries[countryName].val);
         return val > currentMax ? val : currentMax;
       }, 0);
-      const min = Object.keys(realCountries).reduce((currentMin, countryName) => {
-        const val = Number(realCountries[countryName].val);
-        return val < currentMin ? val : currentMin;
-      }, max);
-      const step = Math.floor((min + max) / 5);
+      const step = Math.floor(max / 5);
       let color = 7;
       for (let multiplier = 0; multiplier < 5; ++multiplier) {
         const low = multiplier * step;
