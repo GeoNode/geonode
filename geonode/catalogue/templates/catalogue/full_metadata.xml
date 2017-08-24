@@ -11,7 +11,10 @@
    <gmd:hierarchyLevel>
     <gmd:MD_ScopeCode codeSpace="ISOTC211/19115" codeList="http://www.isotc211.org/2005/resources/Codelist/gmxCodelists.xml#MD_ScopeCode" codeListValue="dataset">dataset</gmd:MD_ScopeCode>
    </gmd:hierarchyLevel>
-   <gmd:contact> {% with layer.poc as poc %}
+
+
+   {% with layer.poc as poc %}
+   <gmd:contact>
      <gmd:CI_ResponsibleParty>
        <gmd:individualName {% if not poc.name %}gco:nilReason="missing"{% endif %}>
          {% if poc.name %} <gco:CharacterString>{{ poc.name }}</gco:CharacterString> {% endif %}
@@ -77,7 +80,80 @@
          <gmd:CI_RoleCode codeSpace="ISOTC211/19115" codeList="http://www.isotc211.org/2005/resources/Codelist/gmxCodelists.xml#CI_RoleCode" codeListValue="pointOfContact">pointOfContact</gmd:CI_RoleCode>
        </gmd:role>
      </gmd:CI_ResponsibleParty>
-   </gmd:contact> {% endwith %}
+   </gmd:contact>
+   {% endwith %}
+
+   {% with layer.metadata_author as metadata_author %}
+   <gmd:contact>
+     <gmd:CI_ResponsibleParty>
+       <gmd:individualName {% if not metadata_author.name %}gco:nilReason="missing"{% endif %}>
+         {% if metadata_author.name %} <gco:CharacterString>{{ metadata_author.name }}</gco:CharacterString> {% endif %}
+       </gmd:individualName>
+       <gmd:organisationName {% if not metadata_author.organization %}gco:nilReason="missing"{% endif %}>
+         {% if metadata_author.organization %} <gco:CharacterString>{{ metadata_author.organization }}</gco:CharacterString> {% endif %}
+       </gmd:organisationName>
+       <gmd:positionName {% if not metadata_author.position %}gco:nilReason="missing"{%endif%}>
+         {% if metadata_author.position %}<gco:CharacterString>{{ metadata_author.position }}</gco:CharacterString> {% endif %}
+       </gmd:positionName>
+       <gmd:contactInfo>
+         <gmd:CI_Contact>
+           <gmd:phone>
+             <gmd:CI_Telephone>
+               <gmd:voice {% if not metadata_author.voice %}gco:nilReason="missing"{% endif %}>
+                 {% if metadata_author.voice %}<gco:CharacterString>{{ metadata_author.voice }}</gco:CharacterString>{% endif %}
+               </gmd:voice>
+               <gmd:facsimile {% if not metadata_author.fax %}gco:nilReason="missing"{% endif %}>
+                 {% if metadata_author.fax %}<gco:CharacterString>{{ metadata_author.fax }}</gco:CharacterString> {%endif %}
+               </gmd:facsimile>
+             </gmd:CI_Telephone>
+           </gmd:phone>
+           <gmd:address>
+             <gmd:CI_Address>
+               <gmd:deliveryPoint {% if not metadata_author.delivery %}gco:nilReason="missing"{% endif %}>
+                 {% if metadata_author.delivery %}<gco:CharacterString>{{ metadata_author.delivery }}</gco:CharacterString>{% endif %}
+               </gmd:deliveryPoint>
+               <gmd:city {% if not metadata_author.city %}gco:nilReason="missing"{% endif %}>
+                 {% if metadata_author.city %}<gco:CharacterString>{{ metadata_author.city }}</gco:CharacterString>{% endif %}
+               </gmd:city>
+               <gmd:administrativeArea {%if not metadata_author.area %}gco:nilReason="missing"{% endif %}>
+                 {% if metadata_author.area %}<gco:CharacterString>{{ metadata_author.area }}</gco:CharacterString>{% endif %}
+               </gmd:administrativeArea>
+               <gmd:postalCode {%if not metadata_author.zipcode %}gco:nilReason="missing"{% endif %}>
+                 {% if metadata_author.zipcode %}<gco:CharacterString>{{ metadata_author.zipcode }}</gco:CharacterString>{% endif %}
+               </gmd:postalCode>
+               <gmd:country {% if not metadata_author.country %}gco:nilReason="missing"{% endif %}>
+                 {% if metadata_author.country %}<gco:CharacterString>{{ metadata_author.country }}</gco:CharacterString>{% endif %}
+               </gmd:country>
+               <gmd:electronicMailAddress {% if not metadata_author.email %}gco:nilReason="missing"{% endif %}>
+                 {% if metadata_author.email %}<gco:CharacterString>{{ metadata_author.email }}</gco:CharacterString>{% endif %}
+               </gmd:electronicMailAddress>
+             </gmd:CI_Address>
+           </gmd:address>
+           {% if metadata_author.user %}
+           <gmd:onlineResource>
+                <gmd:CI_OnlineResource>
+                    <gmd:linkage>
+                        <gmd:URL>{{ SITEURL }}{{ layer.metadata_author.get_absolute_url }}</gmd:URL>
+                    </gmd:linkage>
+                    <gmd:protocol>
+                        <gco:CharacterString>WWW:LINK-1.0-http--link</gco:CharacterString>
+                    </gmd:protocol>
+                    <gmd:description>
+                        <gco:CharacterString>GeoNode profile page</gco:CharacterString>
+                    </gmd:description>
+                </gmd:CI_OnlineResource>
+           </gmd:onlineResource>
+           {% endif %}
+         </gmd:CI_Contact>
+       </gmd:contactInfo>
+       <gmd:role>
+         <gmd:CI_RoleCode codeSpace="ISOTC211/19115" codeList="http://www.isotc211.org/2005/resources/Codelist/gmxCodelists.xml#CI_RoleCode" codeListValue="author">author</gmd:CI_RoleCode>
+       </gmd:role>
+     </gmd:CI_ResponsibleParty>
+   </gmd:contact>
+   {% endwith %}
+
+
    <gmd:dateStamp>
      <gco:DateTime>{{layer.csw_insert_date|date:"Y-m-d\TH:i:s\Z"}}</gco:DateTime>
    </gmd:dateStamp>
@@ -105,10 +181,16 @@
        </gmd:referenceSystemIdentifier>
      </gmd:MD_ReferenceSystem>
    </gmd:referenceSystemInfo>
+
    <gmd:identificationInfo>
      <gmd:MD_DataIdentification>
        <gmd:citation>
          <gmd:CI_Citation>
+           {% if layer.alternate %}
+           <gmd:name>
+             <gco:CharacterString>{{layer.alternate}}</gco:CharacterString>
+           </gmd:name>
+           {% endif %}
            <gmd:title>
              <gco:CharacterString>{{layer.title}}</gco:CharacterString>
            </gmd:title>
@@ -139,6 +221,77 @@
        <gmd:status>
          <gmd:MD_ProgressCode codeSpace="ISOTC211/19115" codeList="http://www.isotc211.org/2005/resources/Codelist/gmxCodelists.xml#MD_ProgressCode" codeListValue="completed">completed</gmd:MD_ProgressCode>
        </gmd:status>
+
+       {% with layer.owner as owner %}
+       <gmd:pointOfContact>
+         <gmd:CI_ResponsibleParty>
+           <gmd:individualName {% if not owner.name %}gco:nilReason="missing"{% endif %}>
+             {% if owner.name %} <gco:CharacterString>{{ owner.name }}</gco:CharacterString> {% endif %}
+           </gmd:individualName>
+           <gmd:organisationName {% if not owner.organization %}gco:nilReason="missing"{% endif %}>
+             {% if owner.organization %} <gco:CharacterString>{{ owner.organization }}</gco:CharacterString> {% endif %}
+           </gmd:organisationName>
+           <gmd:positionName {% if not owner.position %}gco:nilReason="missing"{%endif%}>
+             {% if owner.position %}<gco:CharacterString>{{ owner.position }}</gco:CharacterString> {% endif %}
+           </gmd:positionName>
+           <gmd:contactInfo>
+             <gmd:CI_Contact>
+               <gmd:phone>
+                 <gmd:CI_Telephone>
+                   <gmd:voice {% if not owner.voice %}gco:nilReason="missing"{% endif %}>
+                     {% if owner.voice %}<gco:CharacterString>{{ owner.voice }}</gco:CharacterString>{% endif %}
+                   </gmd:voice>
+                   <gmd:facsimile {% if not owner.fax %}gco:nilReason="missing"{% endif %}>
+                     {% if owner.fax %}<gco:CharacterString>{{ owner.fax }}</gco:CharacterString> {%endif %}
+                   </gmd:facsimile>
+                 </gmd:CI_Telephone>
+               </gmd:phone>
+               <gmd:address>
+                 <gmd:CI_Address>
+                   <gmd:deliveryPoint {% if not owner.delivery %}gco:nilReason="missing"{% endif %}>
+                     {% if owner.delivery %}<gco:CharacterString>{{ owner.delivery }}</gco:CharacterString>{% endif %}
+                   </gmd:deliveryPoint>
+                   <gmd:city {% if not owner.city %}gco:nilReason="missing"{% endif %}>
+                     {% if owner.city %}<gco:CharacterString>{{ owner.city }}</gco:CharacterString>{% endif %}
+                   </gmd:city>
+                   <gmd:administrativeArea {%if not owner.area %}gco:nilReason="missing"{% endif %}>
+                     {% if owner.area %}<gco:CharacterString>{{ owner.area }}</gco:CharacterString>{% endif %}
+                   </gmd:administrativeArea>
+                   <gmd:postalCode {%if not owner.zipcode %}gco:nilReason="missing"{% endif %}>
+                     {% if owner.zipcode %}<gco:CharacterString>{{ owner.zipcode }}</gco:CharacterString>{% endif %}
+                   </gmd:postalCode>
+                   <gmd:country {% if not owner.country %}gco:nilReason="missing"{% endif %}>
+                     {% if owner.country %}<gco:CharacterString>{{ owner.country }}</gco:CharacterString>{% endif %}
+                   </gmd:country>
+                   <gmd:electronicMailAddress {% if not owner.email %}gco:nilReason="missing"{% endif %}>
+                     {% if owner.email %}<gco:CharacterString>{{ owner.email }}</gco:CharacterString>{% endif %}
+                   </gmd:electronicMailAddress>
+                 </gmd:CI_Address>
+               </gmd:address>
+               {% if owner.user %}
+               <gmd:onlineResource>
+                    <gmd:CI_OnlineResource>
+                        <gmd:linkage>
+                            <gmd:URL>{{ SITEURL }}{{ layer.owner.get_absolute_url }}</gmd:URL>
+                        </gmd:linkage>
+                        <gmd:protocol>
+                            <gco:CharacterString>WWW:LINK-1.0-http--link</gco:CharacterString>
+                        </gmd:protocol>
+                        <gmd:description>
+                            <gco:CharacterString>GeoNode profile page</gco:CharacterString>
+                        </gmd:description>
+                    </gmd:CI_OnlineResource>
+               </gmd:onlineResource>
+               {% endif %}
+             </gmd:CI_Contact>
+           </gmd:contactInfo>
+           <gmd:role>
+             <gmd:CI_RoleCode codeSpace="ISOTC211/19115" codeList="http://www.isotc211.org/2005/resources/Codelist/gmxCodelists.xml#CI_RoleCode" codeListValue="originator">originator</gmd:CI_RoleCode>
+           </gmd:role>
+         </gmd:CI_ResponsibleParty>
+       </gmd:pointOfContact>
+       {% endwith %}
+
        {% if layer.maintenance_frequency %}
        <gmd:resourceMaintenance>
          <gmd:MD_MaintenanceInformation>
@@ -290,6 +443,7 @@
        </gmd:supplementalInformation>
      </gmd:MD_DataIdentification>
    </gmd:identificationInfo>
+
    <gmd:contentInfo>
      {% if layer.storeType == 'coverageStore' %}
      <gmd:MD_CoverageDescription>
@@ -352,7 +506,7 @@
                  <gco:CharacterString>{{link.link_type}}</gco:CharacterString>
                </gmd:protocol>
                <gmd:name>
-                 <gco:CharacterString>{{ layer.title }}</gco:CharacterString>
+                 <gco:CharacterString>{{ layer.alternate }}</gco:CharacterString>
                </gmd:name>
                <gmd:description>
                  <gco:CharacterString>{{layer.workspace}} Service - Provides Layer: {{ layer.title }}</gco:CharacterString>

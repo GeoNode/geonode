@@ -46,7 +46,7 @@
       </div>
       {% endif %}
       <div class="form-actions">
-        <input type="submit" class="btn btn-primary" value="{% trans "Update" %}"/>
+        <input type="submit" id="btn_upd_md_up" class="btn btn-primary" value="{% trans "Update" %}"/>
       </div>
       {% csrf_token %}
       <div class="form-controls">
@@ -68,7 +68,7 @@
               </div>
               <!-- div class="radio col-md-6">
                 <input type="radio" name="category_choice_field" value="{{ choice.0 }}"
-                  {% ifequal category_form.initial choice.0 %} checked="checked" {% endifequal %}> 
+                  {% ifequal category_form.initial choice.0 %} checked="checked" {% endifequal %}>
                   {{ choice.1 }}
                 </input>
               </div -->
@@ -90,15 +90,11 @@
               </fieldset>
 
               <div class="form-actions">
-                <input type="submit" class="btn btn-primary" value="{% trans "Update" %}"/>
+                <input type="submit" id="btn_upd_md_dwn" class="btn btn-primary" value="{% trans "Update" %}"/>
               </div>
           </div>
         </div>
       </form>
   </div>
 </div>
-{% endblock %}
-{% block extra_script %}
-{{ block.super }}
- {% include 'metadata_form_js.html' %} 
 {% endblock %}

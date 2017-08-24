@@ -1,6 +1,9 @@
 {% include "geonode/ext_header.html" %}
 {% include "geonode/app_header.html" %}
 {% include "geonode/geo_header_mini.html" %}
+<script type="text/javascript" src="{{ STATIC_URL}}geonode/js/extjs/GeoNode-mixin.js"></script>
+<script type="text/javascript" src="{{ STATIC_URL}}geonode/js/extjs/Geonode-CatalogueApiSearch.js"></script>
+<script type="text/javascript" src="{{ STATIC_URL}}geonode/js/extjs/GeoNode-GeoExplorer.js"></script>
 <script type="text/javascript">
 {% autoescape off %}
         var app;
@@ -23,8 +26,8 @@
                 {% endif %}
                 authorizedRoles: "{{ user.is_authenticated|yesno:"ROLE_ADMINISTRATOR,ROLE_ANONYMOUS" }}",
 
-                /* The URL to a REST map configuration service.  This service 
-                 * provides listing and, with an authenticated user, saving of 
+                /* The URL to a REST map configuration service.  This service
+                 * provides listing and, with an authenticated user, saving of
                  * maps on the server for sharing and editing.
                  */
                 rest: "/maps/",
@@ -46,7 +49,7 @@
 
                         // FIXME(Ariel): Zoom to extent until #1795 is fixed.
                         //map.zoomToExtent(layer.maxExtent, false)
-                        
+
                         var bbox = layer.bbox;
                         if (bbox != undefined)
                         {
@@ -78,33 +81,33 @@
             };
 
             config = Ext.apply(config, {{ viewer|safe }});
-			
+
 			//
 			// Extrapolating the granules times
 			//
 			var is_mosaic = "{{resource.is_mosaic}}" == "True" ? true : false;
 			if(is_mosaic){
 				var resource_name = "{{resource.name}}";
-				
+
 				var granules_features = {% if all_granules %} {{all_granules.features}} {% else %} [] {% endif %};
-				
+
 				var time_list = [];
 				for(var i=0; i<granules_features.length; i++){
 					var feature = granules_features[i];
-					
+
 					if(feature.properties.time){
 						var date = new Date(feature.properties.time);
 						var time = date.toISOString();
-						
+
 						if(time){
 							time_list.push(time);
 						}
 					}
 				}
-				
+
 				//
 				// Setting the time dimension accordingly to the granule time list
-				// 
+				//
 				var layers = config.map.layers;
 				for(var layer in layers){
 					l = layers[layer];
@@ -124,7 +127,7 @@
 					}
 				}
 			}
-            app = new GeoExplorer.Viewer(config);
+            app = new GeoNode.Viewer(config);
 
             for (var key in app.tools) {
                 var tool = app.tools[key];
@@ -138,9 +141,9 @@
                 app.selectedLayer.getLayer().mergeNewParams({
                     "STYLES": elem.id,
                     "_dc": Math.random()
-                }); 
+                });
             });
-            
+
             Ext.get(Ext.DomQuery.select(".style-edit")).on("click", function(evt, elem) {
                 for (var key in app.tools) {
                     var tool = app.tools[key];
@@ -152,9 +155,9 @@
             Ext.Ajax.on('requestcomplete', function(req, cippa, opts){
                 if(opts.method == 'PUT'){
                     $('#legend_icon').attr('src', $('#legend_icon').attr('src')+'&'+Math.random());
-                }   
+                }
             }, this);
         });
-    
+
     {% endautoescape %}
     </script>

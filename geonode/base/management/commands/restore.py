@@ -27,9 +27,11 @@ import os
 import time
 import shutil
 import requests
-import helpers
 import tempfile
+import helpers
+from helpers import Config
 
+from distutils import dir_util
 from requests.auth import HTTPBasicAuth
 from optparse import make_option
 
@@ -44,8 +46,8 @@ class Command(BaseCommand):
 
     help = 'Restore the GeoNode application data'
 
-    option_list = BaseCommand.option_list + (
-        helpers.Config.option,
+    option_list = BaseCommand.option_list + Config.geoserver_option_list + (
+        Config.option,
         make_option(
             '-i',
             '--ignore-errors',
@@ -220,9 +222,14 @@ class Command(BaseCommand):
                 helpers.restore_db(config, ogc_db_name, ogc_db_user, ogc_db_port,
                                    ogc_db_host, ogc_db_passwd, gs_data_folder)
 
+    def restore_geoserver_externals(self, config, settings, target_folder):
+        """Restore external references from XML files"""
+        external_folder = os.path.join(target_folder, helpers.EXTERNAL_ROOT)
+        dir_util.copy_tree(external_folder, '/')
+
     def handle(self, **options):
         # ignore_errors = options.get('ignore_errors')
-        config = helpers.Config(options)
+        config = Config(options)
         force_exec = options.get('force_exec')
         backup_file = options.get('backup_file')
         skip_geoserver = options.get('skip_geoserver')
@@ -260,6 +267,8 @@ class Command(BaseCommand):
                 self.restore_geoserver_backup(settings, target_folder)
                 self.restore_geoserver_raster_data(config, settings, target_folder)
                 self.restore_geoserver_vector_data(config, settings, target_folder)
+                print("Restoring geoserver external resources")
+                self.restore_geoserver_externals(config, settings, target_folder)
             else:
                 print("Skipping geoserver backup restore")
 

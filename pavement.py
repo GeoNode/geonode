@@ -214,6 +214,7 @@ def sync(options):
     """
     Run the migrate and migrate management commands to create and migrate a DB
     """
+    sh("python manage.py makemigrations --noinput")
     sh("python manage.py migrate --noinput")
     sh("python manage.py loaddata sample_admin.json")
     sh("python manage.py loaddata geonode/base/fixtures/default_oauth_apps.json")

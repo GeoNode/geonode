@@ -11,8 +11,9 @@ on a CentOS 7 machine.
    :maxdepth: 2
 
    setup_centos
-   install_geonode
-   install_base_tomcat
-   install_base_httpd
-   install_base_postgresql
+   setup_vagrant_centos
    devmode_install_centos
+   install_base_postgresql
+   install_base_tomcat
+   install_geonode
+   install_base_httpd

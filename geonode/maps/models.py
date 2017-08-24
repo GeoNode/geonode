@@ -107,7 +107,7 @@ class Map(ResourceBase, GXPMapBase):
     @property
     def local_layers(self):
         layer_names = MapLayer.objects.filter(map__id=self.id).values('name')
-        return Layer.objects.filter(typename__in=layer_names) | \
+        return Layer.objects.filter(alternate__in=layer_names) | \
             Layer.objects.filter(name__in=layer_names)
 
     def json(self, layer_filter):
@@ -119,7 +119,7 @@ class Map(ResourceBase, GXPMapBase):
         layers = []
         for map_layer in map_layers:
             if map_layer.local:
-                layer = Layer.objects.get(typename=map_layer.name)
+                layer = Layer.objects.get(alternate=map_layer.name)
                 layers.append(layer)
             else:
                 pass
@@ -143,7 +143,7 @@ class Map(ResourceBase, GXPMapBase):
 
         def layer_json(lyr):
             return {
-                "name": lyr.typename,
+                "name": lyr.alternate,
                 "service": lyr.service_type,
                 "serviceURL": "",
                 "metadataURL": ""
@@ -184,7 +184,7 @@ class Map(ResourceBase, GXPMapBase):
             return conf["sources"][layer["source"]]
 
         layers = [l for l in conf["map"]["layers"]]
-        layer_names = set([l.typename for l in self.local_layers])
+        layer_names = set([l.alternate for l in self.local_layers])
 
         for layer in self.layer_set.all():
             layer.delete()
@@ -199,7 +199,7 @@ class Map(ResourceBase, GXPMapBase):
 
         self.save()
 
-        if layer_names != set([l.typename for l in self.local_layers]):
+        if layer_names != set([l.alternate for l in self.local_layers]):
             map_changed_signal.send_robust(sender=self, what_changed='layers')
 
     def keyword_list(self):
@@ -249,7 +249,7 @@ class Map(ResourceBase, GXPMapBase):
         for layer in layers:
             if not isinstance(layer, Layer):
                 try:
-                    layer = Layer.objects.get(typename=layer)
+                    layer = Layer.objects.get(alternate=layer)
                 except ObjectDoesNotExist:
                     raise Exception(
                         'Could not find layer with name %s' %
@@ -264,7 +264,7 @@ class Map(ResourceBase, GXPMapBase):
                     (user, layer))
             MapLayer.objects.create(
                 map=self,
-                name=layer.typename,
+                name=layer.alternate,
                 ows_url=layer.get_ows_url(),
                 stack_order=index,
                 visibility=True
@@ -343,7 +343,7 @@ class Map(ResourceBase, GXPMapBase):
         lg_styles = []
         for ml in map_layers:
             if ml.local:
-                layer = Layer.objects.get(typename=ml.name)
+                layer = Layer.objects.get(alternate=ml.name)
                 style = ml.styles or getattr(layer.default_style, 'name', '')
                 layers.append(layer)
                 lg_styles.append(style)
@@ -459,13 +459,13 @@ class MapLayer(models.Model, GXPLayerBase):
         cfg = GXPLayerBase.layer_config(self, user=user)
         # if this is a local layer, get the attribute configuration that
         # determines display order & attribute labels
-        if Layer.objects.filter(typename=self.name).exists():
+        if Layer.objects.filter(alternate=self.name).exists():
             try:
                 if self.local:
-                    layer = Layer.objects.get(typename=self.name)
+                    layer = Layer.objects.get(alternate=self.name)
                 else:
                     layer = Layer.objects.get(
-                        typename=self.name,
+                        alternate=self.name,
                         service__base_url=self.ows_url)
                 attribute_cfg = layer.attribute_config()
                 if "getFeatureInfo" in attribute_cfg:
@@ -494,7 +494,7 @@ class MapLayer(models.Model, GXPLayerBase):
     @property
     def layer_title(self):
         if self.local:
-            title = Layer.objects.get(typename=self.name).title
+            title = Layer.objects.get(alternate=self.name).title
         else:
             title = self.name
         return title
@@ -502,7 +502,7 @@ class MapLayer(models.Model, GXPLayerBase):
     @property
     def local_link(self):
         if self.local:
-            layer = Layer.objects.get(typename=self.name)
+            layer = Layer.objects.get(alternate=self.name)
             link = "<a href=\"%s\">%s</a>" % (
                 layer.get_absolute_url(), layer.title)
         else:

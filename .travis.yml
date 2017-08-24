@@ -14,15 +14,17 @@ branches:
 
 install:
   - sudo apt-get -qq -y update
-  - sudo apt-get install -y libgdal1h python-gdal
+  - sudo apt-get install -y libgdal1h python-gdal gdal-bin
   - sudo apt-get install -y python-virtualenv python-imaging python-lxml python-pyproj python-shapely python-nose python-httplib2 python-httplib2 gettext
+  - sudo apt-get install -y python-dev libxml2 libxml2-dev libxslt1-dev zlib1g-dev libjpeg-dev libpq-dev libgdal-dev git default-jdk
   - sudo add-apt-repository -y ppa:webupd8team/java
   - sudo apt-get update
-  - sudo apt-get install -y --force-yes oracle-java8-installer ant maven2 libjai-imageio-core-java --no-install-recommends
+  - sudo apt-get install -y --force-yes oracle-java8-installer ant maven2 --no-install-recommends
   - sudo update-java-alternatives --set java-8-oracle
-  - pip install -r requirements.txt --use-mirrors
-  - pip install -e . --use-mirrors --no-deps
+  - pip install -r requirements.txt
+  - pip install -e .
   - pip install coveralls
+  - pip install pygdal==`gdal-config --version`
 
 before_script:
   - paver setup

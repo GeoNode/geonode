@@ -291,6 +291,7 @@ GEONODE_CONTRIB_APPS = (
     # 'geonode.contrib.nlp',
     # 'geonode.contrib.slack',
     'geonode.contrib.metadataxsl',
+    'geonode.contrib.api_basemaps',
 )
 
 # Uncomment the following line to enable contrib apps
@@ -662,6 +663,8 @@ CATALOGUE = {
         # login credentials (for GeoNetwork)
         # 'USER': 'admin',
         # 'PASSWORD': 'admin',
+
+        # 'ALTERNATES_ONLY': True,
     }
 }
 
@@ -737,6 +740,7 @@ STAMEN_BASEMAPS = os.environ.get('STAMEN_BASEMAPS', False)
 THUNDERFOREST_BASEMAPS = os.environ.get('THUNDERFOREST_BASEMAPS', False)
 MAPBOX_ACCESS_TOKEN = os.environ.get('MAPBOX_ACCESS_TOKEN', None)
 BING_API_KEY = os.environ.get('BING_API_KEY', None)
+GOOGLE_API_KEY = os.environ.get('GOOGLE_API_KEY', None)
 
 MAP_BASELAYERS = [{
     "source": {"ptype": "gxp_olsource"},
@@ -848,7 +852,7 @@ HAYSTACK_SEARCH = strtobool(os.getenv('HAYSTACK_SEARCH', 'False'))
 # Avoid permissions prefiltering
 SKIP_PERMS_FILTER = strtobool(os.getenv('SKIP_PERMS_FILTER', 'False'))
 # Update facet counts from Haystack
-HAYSTACK_FACET_COUNTS = strtobool(os.getenv('HAYSTACK_FACET_COUNTS', 'False'))
+HAYSTACK_FACET_COUNTS = strtobool(os.getenv('HAYSTACK_FACET_COUNTS', 'True'))
 # HAYSTACK_CONNECTIONS = {
 #    'default': {
 #        'ENGINE': 'haystack.backends.elasticsearch_backend.'
@@ -932,10 +936,35 @@ LEAFLET_CONFIG = {
             'js': 'lib/js/Leaflet.fullscreen.min.js',
             'auto-include': True,
         },
+        'leaflet-opacity': {
+            'css': 'lib/css/Control.Opacity.css',
+            'js': 'lib/js/Control.Opacity.js',
+            'auto-include': True,
+        },
+        'leaflet-navbar': {
+            'css': 'lib/css/Leaflet.NavBar.css',
+            'js': 'lib/js/Leaflet.NavBar.js',
+            'auto-include': True,
+        },
+        'leaflet-measure': {
+            'css': 'lib/css/leaflet-measure.css',
+            'js': 'lib/js/leaflet-measure.js',
+            'auto-include': True,
+        },
     },
     'SRID': 3857,
     'RESET_VIEW': False
 }
+
+if not DEBUG_STATIC:
+    # if not DEBUG_STATIC, use minified css and js
+    LEAFLET_CONFIG['PLUGINS'] = {
+        'leaflet-plugins': {
+            'js': 'lib/js/leaflet-plugins.min.js',
+            'css': 'lib/css/leaflet-plugins.min.css',
+            'auto-include': True,
+        }
+    }
 
 # option to enable/disable resource unpublishing for administrators
 RESOURCE_PUBLISHING = False
@@ -1129,4 +1158,11 @@ RISKS = {'DEFAULT_LOCATION': None,
                            'BIN': '/usr/bin/wkhtml2pdf',
                            'ARGS': []}}
 
+# Each uploaded Layer must be approved by an Admin before becoming visible
 ADMIN_MODERATE_UPLOADS = False
+
+# If this option is enabled, Resources belonging to a Group won't be visible by others
+GROUP_PRIVATE_RESOURCES = False
+
+# If this option is enabled, Groups will become strictly Mandatory on Metadata Wizard
+GROUP_MANDATORY_RESOURCES = False

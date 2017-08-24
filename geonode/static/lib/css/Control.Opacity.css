@@ -1,0 +1,47 @@
+.higher_opacity_control {
+	background-image: url("../img/higherOpacity.png");
+	width: 20px;
+    height: 20px;
+    background-position: 50% 50%;
+    background-repeat: no-repeat;
+    display: block;
+    padding: 3px;
+    border-radius: 4px;
+    -webkit-border-radius: 4px;
+    -moz-border-radius: 4px;
+    box-shadow: 0 1px 7px rgba(0, 0, 0, 0.65);
+    cursor: auto;
+    text-align: center;
+    background-color: #ffffff;
+}
+
+.higher_opacity_control:hover {
+	background-color: #f4f4f4;
+}
+
+.lower_opacity_control {
+	background-image: url("../img/lowerOpacity.png");
+	width: 20px;
+    height: 20px;
+    background-position: 50% 50%;
+    background-repeat: no-repeat;
+    display: block;
+    padding: 3px;
+    border-radius: 4px;
+    -webkit-border-radius: 4px;
+    -moz-border-radius: 4px;
+    box-shadow: 0 1px 7px rgba(0, 0, 0, 0.65);
+    cursor: auto;
+    text-align: center;
+    background-color: #ffffff;
+}
+
+.lower_opacity_control:hover {
+	background-color: #f4f4f4;
+}
+
+.opacity_slider_control .ui-slider-range {
+    background-image: none;
+    background-color: #646464;
+    height: 200px;
+}  

@@ -21,8 +21,7 @@ The master site, and all of the individual GeoSites, share a single database. Ob
 
 GeoServer
 =========
-A single GeoServer instance is used to serve data to all of the GeoSites.  To keep data organized each site specifies a default workspace (DEFAULT_WORKSPACE) that GeoServer will use to partition the data depending on which site uploaded the data.   The workspaces themselves don't have any impact on permissions, since data can be added and removed from different sites, however it provides at least some organization of the data based on the initial site.
-
+A single GeoServer instance is used to serve data to all of the GeoSites.  
 Data that is common to all sites can be added to the master site which will appear in the generic 'geonode' workspace.
 
 
@@ -31,7 +30,7 @@ Settings Files and Templates
 
 A key component in managing multiple sites is keeping data organized and using a structured series of settings files so that common settings can be shared and only site specific settings are separated out. It is also best to import the default GeoNode settings from the GeoNode installation.  This prevents the settings from having to be manually upgraded if there is any default change the GeoNode settings.
 
-Settings which are common to all GeoSites, but differ from the default GeoNode, are separated into a master_settings.py file.  Then, each individual site has settings file which imports from the master site and will then only need to specify a small selection that make that site unique, such as:
+Settings which are common to all GeoSites, but differ from the default GeoNode, are separated into a contrib/geosites/settings.py file.  Then, each individual site has settings file which imports from the master site and will then only need to specify a small selection that make that site unique, such as:
 
 * SITE_ID: Each one is unique, the master site should have a SITE_ID of 1.
 * SITENAME
@@ -61,7 +60,7 @@ The TEMPLATE_DIRS, and STATICFILES_DIRS will then include all three directories 
         os.path.join(GEONODE_ROOT, 'static/')
     )
 
-At the end of the settings_global.py the following variables will be set based on site specific settings::
+At the end of the post_settings.py the following variables will be set based on site specific settings::
 
     STATIC_URL = os.path.join(SITEURL,’static/’)
     GEONODE_CLIENT_LOCATION = os.path.join(STATIC_URL,’geonode/’)
@@ -74,7 +73,7 @@ Templates and Static Files
 
 As mentioned above for each website there will be three directories used for template and static files.  The first template file found will be the one used so templates in the SITE_ROOT/templates directory will override those in PROJECT_ROOT/templates, which will override those in GEONODE_ROOT/templates.
 
-Static files work differently because (at least on a production server) they are collected and stored in a single location.  Because of this care must be taken to avoid clobbering of files between sites, so each site directory should contain all static files in a subdirectory with the name of the site (e.g., static/siteA/logo.png )
+Static files work differently because (at least on a production server) they are collected and stored in a single location.  Because of this care must be taken to avoid clobbering of files between sites, so each site directory should contain all static files in a subdirectory with the name of the site (e.g., static_root/siteA/logo.png )
 
 The location of the proper static directory can then be found in the templates syntax such as::
 
@@ -84,6 +83,31 @@ Permissions by Site
 ===================
 By default GeoNode is publicly available. In the case of GeoSites, new data will be publicly available, but only for the site it was added to, and the master site (all data is added to the master site). 
 
+Activate geosites app
+================
+In order to use geonode in Multi-tenancy mode, follow these steps:
+1. check in settings.py if 'geonode.contrib.geosites' in GEONODE_CONTRIB_APPS is rightly uncommented
+2. add in settings.py 'geonode.contrib.geosites' in INSTALLED_APPS
+3. run python manage.py syncdb
+
 Adding New Sites
 ================
-A management command exists to easily create a new site.  This will create all the needed directories, as well as a site specific settings file.  The command may also create a website configuration file.
+To add a new site follow the following steps:
+
+1. copy the directory site_template in your geonode-project folder and give it a name
+2. from geonode administration pannel add 'new site'
+3. create a virtualhost in the webserver related to the new created site. Remember to setup the WSGIDeamonProcess with the name you gave to the folder created at point 1. and the path to the geosites directory. WSGIProcessGroup have to be pointed to the name you choose for the folder you created at point 1. Eventually, WSGIScriptAlias have to be set to the wsgi.py you have in your site folder.
+4. check the configuration files: local_settings.py, pre_settings.py, post_settings.py in /geonode-project as well as local_settings.py and settings.py in your site folder:
+    - in /geonode-project/local_settings.py set the variable SERVE_PATH. It has to point geosites folder.
+    - in the local_setting of the site folder insert the values to the following variables: 
+            * SITE_ID
+            * SITE_NAME
+            * SITE_URL
+5. create static_root directory where you usually let the webserver serve webpages (e.g., /var/www ) and give it grants to be accessed by the user www-data
+6. create an uploaded/layers and uploaded/thumbs folder in your geonode-project folder and give them grants as follow:
+    sudo mkdir -p geonode-project/uploaded/thumbs
+    sudo mkdir -p geonode-project/uploaded/layers
+    sudo chmod -Rf 755 geonode-project/uploaded/thumbs
+    sudo chmod -Rf 755 geonode-project/uploaded/layers
+7. run python manage.py collectstatics - Pay attention on the folder where you are running the command and the folder structure of your geonode/geosites project, in case pass to the path the settings file by using --settings to the python command
+8. you can customize the look and feel of your site working on the css and html file you find in your template site directory. After a change, run again collectstatics command.  

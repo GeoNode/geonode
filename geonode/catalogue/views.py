@@ -21,11 +21,13 @@
 import json
 import os
 import logging
+import xml.etree.ElementTree as ET
 from django.conf import settings
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render_to_response
 from django.views.decorators.csrf import csrf_exempt
 from pycsw import server
+from guardian.shortcuts import get_objects_for_user
 from geonode.catalogue.backends.pycsw_local import CONFIGURATION
 from geonode.base.models import ResourceBase
 from geonode.layers.models import Layer
@@ -66,17 +68,99 @@ def csw_global_dispatch(request):
     if access_token:
         env.update({'access_token': access_token})
 
-    csw = server.Csw(mdict, env, version='2.0.2')
+    # Save original filter before doing anything
+    mdict_filter = mdict['repository']['filter']
 
-    content = csw.dispatch_wsgi()
+    try:
+        # Filter out Layers not accessible to the User
+        authorized_ids = []
+        if request.user:
+            profiles = Profile.objects.filter(username=str(request.user))
+        else:
+            profiles = Profile.objects.filter(username="AnonymousUser")
+        if profiles:
+            authorized = list(get_objects_for_user(profiles[0], 'base.view_resourcebase').values('id'))
+            layers = ResourceBase.objects.filter(id__in=[d['id'] for d in authorized])
+            if layers:
+                authorized_ids = [d['id'] for d in authorized]
 
-    # pycsw 2.0 has an API break:
-    # pycsw < 2.0: content = xml_response
-    # pycsw >= 2.0: content = [http_status_code, content]
-    # deal with the API break
+        if len(authorized_ids) > 0:
+            authorized_layers = "(" + (", ".join(str(e) for e in authorized_ids)) + ")"
+            authorized_layers_filter = "id IN " + authorized_layers
+            mdict['repository']['filter'] += " AND " + authorized_layers_filter
+        else:
+            authorized_layers_filter = "id = -9999"
+            mdict['repository']['filter'] += " AND " + authorized_layers_filter
 
-    if isinstance(content, list):  # pycsw 2.0+
-        content = content[1]
+        # Filter out Documents and Maps
+        if 'ALTERNATES_ONLY' in settings.CATALOGUE['default'] and settings.CATALOGUE['default']['ALTERNATES_ONLY']:
+            mdict['repository']['filter'] += " AND alternate IS NOT NULL"
+
+        # Filter out Layers belonging to specific Groups
+        is_admin = False
+        if request.user:
+            is_admin = request.user.is_superuser if request.user else False
+
+        if not is_admin and settings.GROUP_PRIVATE_RESOURCES:
+            groups_ids = []
+            if request.user:
+                for group in request.user.groups.all():
+                    groups_ids.append(group.id)
+
+            if len(groups_ids) > 0:
+                groups = "(" + (", ".join(str(e) for e in groups_ids)) + ")"
+                groups_filter = "(group_id IS NULL OR group_id IN " + groups + ")"
+                mdict['repository']['filter'] += " AND " + groups_filter
+            else:
+                groups_filter = "group_id IS NULL"
+                mdict['repository']['filter'] += " AND " + groups_filter
+
+        csw = server.Csw(mdict, env, version='2.0.2')
+
+        content = csw.dispatch_wsgi()
+
+        # pycsw 2.0 has an API break:
+        # pycsw < 2.0: content = xml_response
+        # pycsw >= 2.0: content = [http_status_code, content]
+        # deal with the API break
+
+        if isinstance(content, list):  # pycsw 2.0+
+            content = content[1]
+
+        spaces = {'csw': 'http://www.opengis.net/cat/csw/2.0.2',
+                  'dc': 'http://purl.org/dc/elements/1.1/',
+                  'dct': 'http://purl.org/dc/terms/',
+                  'gmd': 'http://www.isotc211.org/2005/gmd',
+                  'gml': 'http://www.opengis.net/gml',
+                  'ows': 'http://www.opengis.net/ows',
+                  'xs': 'http://www.w3.org/2001/XMLSchema',
+                  'xsi': 'http://www.w3.org/2001/XMLSchema-instance',
+                  'ogc': 'http://www.opengis.net/ogc',
+                  'gco': 'http://www.isotc211.org/2005/gco',
+                  'gmi': 'http://www.isotc211.org/2005/gmi'}
+
+        for prefix, uri in spaces.iteritems():
+            ET.register_namespace(prefix, uri)
+
+        if access_token:
+            tree = ET.fromstring(content)
+            for online_resource in tree.findall('*//gmd:CI_OnlineResource', spaces):
+                try:
+                    linkage = online_resource.find('gmd:linkage', spaces)
+                    for url in linkage.findall('gmd:URL', spaces):
+                        if url.text:
+                            if '?' not in url.text:
+                                url.text += "?"
+                            else:
+                                url.text += "&"
+                            url.text += ("access_token=%s" % (access_token))
+                            url.set('updated', 'yes')
+                except:
+                    pass
+            content = ET.tostring(tree, encoding='utf8', method='xml')
+    finally:
+        # Restore original filter before doing anything
+        mdict['repository']['filter'] = mdict_filter
 
     return HttpResponse(content, content_type=csw.contenttype)
 

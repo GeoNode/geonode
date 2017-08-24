@@ -21,6 +21,7 @@
 from django.contrib import admin
 
 from geonode.base.admin import MediaTranslationAdmin, ResourceBaseAdminForm
+from geonode.base.admin import metadata_batch_edit
 from geonode.layers.models import Layer, Attribute, Style
 from geonode.layers.models import LayerFile, UploadSession
 
@@ -39,21 +40,23 @@ class LayerAdminForm(ResourceBaseAdminForm):
 class LayerAdmin(MediaTranslationAdmin):
     list_display = (
         'id',
-        'typename',
+        'alternate',
         'service_type',
         'title',
         'date',
-        'category')
+        'category',
+        'metadata_completeness')
     list_display_links = ('id',)
     list_editable = ('title', 'category')
     list_filter = ('storeType', 'owner', 'category',
                    'restriction_code_type__identifier', 'date', 'date_type')
-    search_fields = ('typename', 'title', 'abstract', 'purpose',)
+    search_fields = ('alternate', 'title', 'abstract', 'purpose',)
     filter_horizontal = ('contacts',)
     date_hierarchy = 'date'
-    readonly_fields = ('uuid', 'typename', 'workspace')
+    readonly_fields = ('uuid', 'alternate', 'workspace')
     inlines = [AttributeInline]
     form = LayerAdminForm
+    actions = [metadata_batch_edit]
 
 
 class AttributeAdmin(admin.ModelAdmin):

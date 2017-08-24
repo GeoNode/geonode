@@ -27,14 +27,13 @@ from django.db.models import signals
 
 from geonode.tasks.email import send_queued_notifications
 
-E = getattr(settings, 'NOTIFICATION_ENABLED', '')
-M = getattr(settings, 'NOTIFICATIONS_MODULE', '')
+E = getattr(settings, 'NOTIFICATION_ENABLED', False)
+M = getattr(settings, 'NOTIFICATIONS_MODULE', None)
 notifications = None
 
-notifications_enabled = E and settings.NOTIFICATION_ENABLED
-has_notifications = M and M in settings.INSTALLED_APPS
+has_notifications = E and M and M in settings.INSTALLED_APPS
 
-if notifications_enabled and has_notifications:
+if has_notifications:
     notifications = import_module(M)
 
 

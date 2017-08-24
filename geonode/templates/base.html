@@ -116,7 +116,7 @@
                 </form>
               </div>
 	        </li>
-            {% if not user.is_authenticated and REGISTRATION_OPEN %}
+            {% if not user.is_authenticated and ACCOUNT_OPEN_SIGNUP %}
             <li><a href="{% url "account_signup" %}">{% trans "Register" %}</a></li>
             {% endif %}
             {% if user.is_authenticated %}
@@ -142,7 +142,7 @@
                 <li><a href="{{ GEOSERVER_BASE_URL }}">GeoServer</a></li>
                 {% endif %}
                 <li role="separator" class="divider"></li>
-                <li><a href="{% url "help" %}">{% trans "Help" %}</li>
+                <li><a href="{% url "help" %}">{% trans "Help" %}</a></li>
                 <li role="separator" class="divider"></li>
                 <li><a href="/account/logout/">Logout</a></li>
                 </ul>

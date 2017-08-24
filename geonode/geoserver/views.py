@@ -416,11 +416,11 @@ def layer_batch_download(request):
 
     if request.method == 'POST':
         layers = request.POST.getlist("layer")
-        layers = Layer.objects.filter(typename__in=list(layers))
+        layers = Layer.objects.filter(alternate__in=list(layers))
 
         def layer_son(layer):
             return {
-                "name": layer.typename,
+                "name": layer.alternate,
                 "service": layer.service_type,
                 "metadataURL": "",
                 "serviceURL": ""
@@ -536,8 +536,8 @@ def layer_acls(request):
     layer_writable = get_objects_for_user(acl_user, 'change_layer_data',
                                           Layer.objects.all())
 
-    _read = set(Layer.objects.filter(id__in=resources_readable).values_list('typename', flat=True))
-    _write = set(layer_writable.values_list('typename', flat=True))
+    _read = set(Layer.objects.filter(id__in=resources_readable).values_list('alternate', flat=True))
+    _write = set(layer_writable.values_list('alternate', flat=True))
 
     read_only = _read ^ _write
     read_write = _read & _write

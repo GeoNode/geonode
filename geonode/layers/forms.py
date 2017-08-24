@@ -54,7 +54,7 @@ class LayerForm(ResourceBaseForm):
             'workspace',
             'store',
             'storeType',
-            'typename',
+            'alternate',
             'default_style',
             'styles',
             'upload_session',
@@ -134,10 +134,11 @@ class LayerUploadForm(forms.Form):
             if cleaned["xml_file"] is not None:
                 xml_file = cleaned["xml_file"].name
 
-        if not cleaned["metadata_upload_form"] and base_ext.lower() not in (".shp", ".tif", ".tiff", ".geotif", ".geotiff"):
+        if not cleaned["metadata_upload_form"] and base_ext.lower() not in (
+                ".shp", ".tif", ".tiff", ".geotif", ".geotiff", ".asc"):
             raise forms.ValidationError(
-                "Only Shapefiles and GeoTiffs are supported. You uploaded a %s file" %
-                base_ext)
+                "Only Shapefiles, GeoTiffs, and ASCIIs are supported. You "
+                "uploaded a %s file" % base_ext)
         elif cleaned["metadata_upload_form"] and base_ext.lower() not in (".xml"):
             raise forms.ValidationError(
                 "Only XML files are supported. You uploaded a %s file" %
@@ -222,7 +223,10 @@ class NewLayerUploadForm(LayerUploadForm):
 
 class LayerDescriptionForm(forms.Form):
     title = forms.CharField(300)
-    abstract = forms.CharField(1000, widget=forms.Textarea, required=False)
+    abstract = forms.CharField(2000, widget=forms.Textarea, required=False)
+    supplemental_information = forms.CharField(2000, widget=forms.Textarea, required=False)
+    data_quality_statement = forms.CharField(2000, widget=forms.Textarea, required=False)
+    purpose = forms.CharField(500, required=False)
     keywords = forms.CharField(500, required=False)
 
 

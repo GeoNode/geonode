@@ -3,21 +3,6 @@
 {% leaflet_js %}
 {% leaflet_css %}
 
-
-<link rel="stylesheet" href="/static/lib/opacity/lib/opacity/Control.Opacity.css" />
-<script src="/static/lib/opacity/lib/opacity/Control.Opacity.js"></script>
-
-<script src="/static/lib/opacity/lib/jquery/jquery-1.9.1.js"></script>
-<script src="/static/lib/opacity/lib/jquery/jquery-ui-1.10.3.custom.min.js"></script>
-<link rel="stylesheet" href="/static/lib/opacity/lib/jquery/jquery-ui-1.10.3.custom.min.css" />
-
-<link rel="stylesheet" href="/static/lib/navbar/Leaflet.NavBar.css" />
-<script src="/static/lib/navbar/Leaflet.NavBar.js"></script>
-
-<link rel="stylesheet" href="/static/lib/measure/leaflet.measure.css" />
-<script src="/static/lib/measure/leaflet.measure.js"></script>
-
-
 <style>
     .leaflet-container { /* all maps */
         height: 400px;
@@ -166,7 +151,8 @@
           onAdd: function(map) {
           var img = L.DomUtil.create('img');
 
-          img.src = '../static/img/logo.png';
+          // Default to Geonode logo
+          img.src = '{{ STATIC_URL }}/geonode/img/logo.png';
           img.style.width = '120px';
 
           return img;
@@ -198,21 +184,21 @@
                     });
         {%  elif resource.ptype == "gxp_wmscsource"  %}
             tile_layer = L.tileLayer.betterWms('{{ resource.ows_url|safe }}', {
-                layers: '{{ resource.typename }}',
+                layers: '{{ resource.alternate }}',
                 format: 'image/png',
                 transparent: true,
                 'opacity': 0.8
             });
         {%  elif resource.ptype == "gxp_arcrestsource" %}
             tile_layer = L.esri.dynamicMapLayer('{{ resource.ows_url|safe }}', {
-                layers: '{{ resource.typename }}',
+                layers: '{{ resource.alternate }}',
                 format: 'png',
                 transparent: true,
                 'opacity': 0.8
             });
         {% elif resource.ows_url %}
             tile_layer = L.tileLayer.betterWms('{{ resource.ows_url|safe }}', {
-              layers: '{{ resource.typename }}',
+              layers: '{{ resource.alternate }}',
               transparent: true,
               format: 'image/png'
             });
@@ -222,7 +208,7 @@
             overlay_layer["{{ resource.title }}"] = tile_layer;
             map.addLayer(tile_layer);
         }
-        layerControl = L.control.layers(
+        var layerControl = L.control.layers(
                 base_maps, overlay_layer
         ).addTo(map);
 
@@ -230,22 +216,18 @@
             L.control.fullscreen().addTo(map);
         }
 
+        if(L.Control.hasOwnProperty('opacitySlider')) {
+            //adjust opacity
+            var opacitySlider = new L.Control.opacitySlider();
+            map.addControl(opacitySlider);
 
-	//ajout opacity
+            opacitySlider.setOpacityLayer(tile_layer);
+        }
 
-	var higherOpacity = new L.Control.higherOpacity();
-	//map.addControl(higherOpacity);
-	var lowerOpacity = new L.Control.lowerOpacity();
-	//map.addControl(lowerOpacity);
-	var opacitySlider = new L.Control.opacitySlider();
-	map.addControl(opacitySlider);
-
-	var opacitySlider = new L.Control.opacitySlider();
-	opacitySlider.setOpacityLayer(tile_layer);
-
-	//ajout info
-
-  L.control.navbar().addTo(map);
+        if(L.control.hasOwnProperty('navbar')){
+            //adjust info
+            L.control.navbar().addTo(map);
+        }
   });
   function zoom_to_box(map, bbox) {
           var bounds = [

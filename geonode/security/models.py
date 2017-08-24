@@ -199,9 +199,6 @@ class PermissionLevelMixin(object):
                 else:
                     assign_perm(perm, anonymous_group, self.get_self_resource())
 
-                # Assign GeoFence Layer Access to ALL Users
-                set_geofence_all(self)
-
         # TODO refactor code here
         if 'users' in perm_spec:
             for user, perms in perm_spec['users'].items():
@@ -216,7 +213,10 @@ class PermissionLevelMixin(object):
                 # Set the GeoFence Owner Rules
                 has_view_perms = ('view_resourcebase' in perms)
                 has_download_perms = ('download_resourcebase' in perms)
-                set_geofence_owner(self, str(user), view_perms=has_view_perms, download_perms=has_download_perms)
+                geofence_user = str(user)
+                if "AnonymousUser" in geofence_user:
+                    geofence_user = None
+                set_geofence_owner(self, geofence_user, view_perms=has_view_perms, download_perms=has_download_perms)
 
         if 'groups' in perm_spec:
             for group, perms in perm_spec['groups'].items():
@@ -235,6 +235,28 @@ class PermissionLevelMixin(object):
 
         # default permissions for resource owner
         set_owner_permissions(self)
+
+
+def set_geofence_invalidate_cache():
+    """invalidate GeoFence Cache Rules"""
+    try:
+        url = settings.OGC_SERVER['default']['LOCATION']
+        user = settings.OGC_SERVER['default']['USER']
+        passwd = settings.OGC_SERVER['default']['PASSWORD']
+        # Check first that the rules does not exist already
+        """
+        curl -X GET -u admin:geoserver \
+              http://<host>:<port>/geoserver/rest/ruleCache/invalidate
+        """
+        r = requests.put(url + 'rest/ruleCache/invalidate',
+                         auth=HTTPBasicAuth(user, passwd))
+
+        if (r.status_code != 200):
+            logger.warning("Could not Invalidate GeoFence Rules.")
+
+    except:
+        tb = traceback.format_exc()
+        logger.debug(tb)
 
 
 def set_geofence_all(instance):
@@ -294,6 +316,8 @@ def set_geofence_all(instance):
         except:
             tb = traceback.format_exc()
             logger.debug(tb)
+        finally:
+            set_geofence_invalidate_cache()
 
 
 def set_geofence_owner(instance, username, view_perms=False, download_perms=False):
@@ -315,9 +339,13 @@ def set_geofence_owner(instance, username, view_perms=False, download_perms=Fals
             <layer>{layer}</layer><access>ALLOW</access></Rule>" \
             http://<host>:<port>/geoserver/geofence/rest/rules
             """
-            payload = "<userName>" + username
-            payload = payload + "</userName><workspace>geonode</workspace><layer>"
-            payload = payload + resource.layer.name + "</layer><access>ALLOW</access>"
+            if username:
+                payload = "<userName>" + username + "</userName>"
+            else:
+                payload = ""
+            payload += "<workspace>geonode</workspace>"
+            payload += "<layer>" + resource.layer.name + "</layer>"
+            payload += "<access>ALLOW</access>"
 
             if view_perms and download_perms:
                 data = "<Rule>" + payload + "</Rule>"
@@ -382,6 +410,8 @@ def set_geofence_owner(instance, username, view_perms=False, download_perms=Fals
         except:
             tb = traceback.format_exc()
             logger.debug(tb)
+        finally:
+            set_geofence_invalidate_cache()
 
 
 def set_geofence_group(instance, groupname, view_perms=False, download_perms=False):
@@ -463,6 +493,8 @@ def set_geofence_group(instance, groupname, view_perms=False, download_perms=Fal
         except:
             tb = traceback.format_exc()
             logger.debug(tb)
+        finally:
+            set_geofence_invalidate_cache()
 
 
 def set_owner_permissions(resource):
@@ -474,7 +506,10 @@ def set_owner_permissions(resource):
                 assign_perm(perm, resource.owner, resource.layer)
 
         # Set the GeoFence Owner Rule
-        set_geofence_owner(resource, str(resource.owner))
+        geofence_user = str(resource.owner)
+        if "AnonymousUser" in geofence_user:
+            geofence_user = None
+        set_geofence_owner(resource, geofence_user)
 
         for perm in ADMIN_PERMISSIONS:
             assign_perm(perm, resource.owner, resource.get_self_resource())

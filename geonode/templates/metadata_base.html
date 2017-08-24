@@ -97,10 +97,11 @@
         .has-error .fstElement {
           border-color: red;
         }
-        #basicDescriptiveInfo .treeview {
+        .treeview {
           max-height: 200px;
           overflow: auto;
           display: block;
+          width: 350px;
         }
         .form-actions {
           text-align: right;
@@ -140,6 +141,23 @@
       </div>
       <div class="modal-body">
         Topic Category is mandatory and cannot be empty!
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" style="width: 100%; height: 100%;" id="group_mandatoryDialog" data-backdrop="static" data-keyboard="false" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content panel-warning">
+      <div class="modal-header panel-heading">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+        <h4 class="modal-title">ERROR</h4>
+      </div>
+      <div class="modal-body">
+        Group is mandatory and cannot be empty!
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>

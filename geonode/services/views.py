@@ -59,6 +59,7 @@ from geonode.services.forms import CreateServiceForm, ServiceForm
 from geonode.utils import mercator_to_llbbox
 from geonode.layers.utils import create_thumbnail
 from geonode.geoserver.helpers import set_attributes_from_geoserver
+from geonode.geoserver.signals import geoserver_post_save
 from geonode.base.models import Link
 from geonode.base.models import resourcebase_post_save
 from geonode.catalogue.models import catalogue_post_save
@@ -635,49 +636,60 @@ def _register_indexed_layers(service, wms=None, verbosity=False):
 
             # Need to check if layer already exists??
             existing_layer = None
-            for layer in Layer.objects.filter(typename=wms_layer.name):
+            for layer in Layer.objects.filter(alternate=wms_layer.name):
                 if layer.service == service:
                     existing_layer = layer
 
             if not existing_layer:
-                signals.post_save.disconnect(resourcebase_post_save, sender=Layer)
-                signals.post_save.disconnect(catalogue_post_save, sender=Layer)
-                saved_layer = Layer.objects.create(
-                    typename=wms_layer.name,
-                    name=wms_layer.name,
-                    store=service.name,  # ??
-                    storeType="remoteStore",
-                    workspace="remoteWorkspace",
-                    title=wms_layer.title or wms_layer.name,
-                    abstract=abstract or _("Not provided"),
-                    uuid=layer_uuid,
-                    owner=None,
-                    srid=srid,
-                    bbox_x0=bbox[0],
-                    bbox_x1=bbox[2],
-                    bbox_y0=bbox[1],
-                    bbox_y1=bbox[3]
-                )
+                try:
+                    signals.post_save.disconnect(resourcebase_post_save, sender=Layer)
+                    signals.post_save.disconnect(catalogue_post_save, sender=Layer)
+                    signals.post_save.disconnect(geoserver_post_save, sender=Layer)
+                    saved_layer = Layer.objects.create(
+                        typename=wms_layer.name,
+                        name=wms_layer.name,
+                        store=service.name,  # ??
+                        storeType="remoteStore",
+                        workspace="remoteWorkspace",
+                        title=wms_layer.title or wms_layer.name,
+                        abstract=abstract or _("Not provided"),
+                        uuid=layer_uuid,
+                        owner=None,
+                        srid=srid,
+                        bbox_x0=bbox[0],
+                        bbox_x1=bbox[2],
+                        bbox_y0=bbox[1],
+                        bbox_y1=bbox[3]
+                    )
 
-                saved_layer.set_default_permissions()
-                saved_layer.keywords.add(*keywords)
+                    saved_layer.set_default_permissions()
+                    saved_layer.keywords.add(*keywords)
 
-                service_layer, created = ServiceLayer.objects.get_or_create(
-                    typename=wms_layer.name,
-                    service=service
-                )
-                service_layer.layer = saved_layer
-                service_layer.title = wms_layer.title
-                service_layer.description = wms_layer.abstract
-                service_layer.styles = wms_layer.styles
-                service_layer.save()
+                    service_layer, created = ServiceLayer.objects.get_or_create(
+                        typename=wms_layer.name,
+                        service=service
+                    )
+                    service_layer.layer = saved_layer
+                    service_layer.title = wms_layer.title
+                    service_layer.description = wms_layer.abstract
+                    service_layer.styles = wms_layer.styles
+                    service_layer.save()
 
-                resourcebase_post_save(saved_layer, Layer)
-                catalogue_post_save(saved_layer, Layer)
-                set_attributes_from_geoserver(saved_layer)
+                    resourcebase_post_save(saved_layer, Layer)
+                    catalogue_post_save(saved_layer, Layer)
+                    geoserver_post_save(saved_layer, Layer)
+                    set_attributes_from_geoserver(saved_layer)
+                    saved_layer.save()
 
-                signals.post_save.connect(resourcebase_post_save, sender=Layer)
-                signals.post_save.connect(catalogue_post_save, sender=Layer)
+                    create_wms_links(saved_layer, wms.url)
+
+                except Exception, e:
+                    logger.error("Error registering %s:%s" %
+                                 (wms_layer.name, str(e)))
+                finally:
+                    signals.post_save.connect(resourcebase_post_save, sender=Layer)
+                    signals.post_save.connect(catalogue_post_save, sender=Layer)
+                    signals.post_save.connect(geoserver_post_save, sender=Layer)
             count += 1
         message = "%d Layers Registered" % count
         return_dict = {'status': 'ok', 'msg': message}
@@ -851,12 +863,12 @@ def _register_arcgis_layers(service, arc=None):
         layer_uuid = str(uuid.uuid1())
         bbox = [layer.extent.xmin, layer.extent.ymin,
                 layer.extent.xmax, layer.extent.ymax]
-        typename = layer.id
+        alternate = layer.id
 
         existing_layer = None
         logger.info("Registering layer  %s" % layer.name)
         try:
-            for layer in Layer.objects.filter(typename=typename):
+            for layer in Layer.objects.filter(alternate=alternate):
                 if layer.service == service:
                     existing_layer = layer
         except Layer.DoesNotExist:
@@ -865,50 +877,51 @@ def _register_arcgis_layers(service, arc=None):
         llbbox = mercator_to_llbbox(bbox)
 
         if existing_layer is None:
+            try:
+                signals.post_save.disconnect(resourcebase_post_save, sender=Layer)
+                signals.post_save.disconnect(catalogue_post_save, sender=Layer)
 
-            signals.post_save.disconnect(resourcebase_post_save, sender=Layer)
-            signals.post_save.disconnect(catalogue_post_save, sender=Layer)
+                # Need to check if layer already exists??
+                logger.info("Importing layer  %s" % layer.name)
+                saved_layer = Layer.objects.create(
+                    alternate=alternate,
+                    name=valid_name,
+                    store=service.name,  # ??
+                    storeType="remoteStore",
+                    workspace="remoteWorkspace",
+                    title=layer.name,
+                    abstract=layer._json_struct[
+                        'description'] or _("Not provided"),
+                    uuid=layer_uuid,
+                    owner=None,
+                    srid="EPSG:%s" % layer.extent.spatialReference.wkid,
+                    bbox_x0=llbbox[0],
+                    bbox_x1=llbbox[2],
+                    bbox_y0=llbbox[1],
+                    bbox_y1=llbbox[3],
+                )
 
-            # Need to check if layer already exists??
-            logger.info("Importing layer  %s" % layer.name)
-            saved_layer = Layer.objects.create(
-                typename=typename,
-                name=valid_name,
-                store=service.name,  # ??
-                storeType="remoteStore",
-                workspace="remoteWorkspace",
-                title=layer.name,
-                abstract=layer._json_struct[
-                    'description'] or _("Not provided"),
-                uuid=layer_uuid,
-                owner=None,
-                srid="EPSG:%s" % layer.extent.spatialReference.wkid,
-                bbox_x0=llbbox[0],
-                bbox_x1=llbbox[2],
-                bbox_y0=llbbox[1],
-                bbox_y1=llbbox[3],
-            )
+                saved_layer.set_default_permissions()
+                saved_layer.save()
 
-            saved_layer.set_default_permissions()
-            saved_layer.save()
+                service_layer, created = ServiceLayer.objects.get_or_create(
+                    service=service,
+                    typename=layer.id
+                )
+                service_layer.layer = saved_layer
+                service_layer.title = layer.name,
+                service_layer.description = saved_layer.abstract,
+                service_layer.styles = None
+                service_layer.save()
 
-            service_layer, created = ServiceLayer.objects.get_or_create(
-                service=service,
-                typename=layer.id
-            )
-            service_layer.layer = saved_layer
-            service_layer.title = layer.name,
-            service_layer.description = saved_layer.abstract,
-            service_layer.styles = None
-            service_layer.save()
+                resourcebase_post_save(saved_layer, Layer)
+                catalogue_post_save(saved_layer, Layer)
 
-            resourcebase_post_save(saved_layer, Layer)
-            catalogue_post_save(saved_layer, Layer)
+                create_arcgis_links(saved_layer)
 
-            signals.post_save.connect(resourcebase_post_save, sender=Layer)
-            signals.post_save.connect(catalogue_post_save, sender=Layer)
-
-            create_arcgis_links(saved_layer)
+            finally:
+                signals.post_save.connect(resourcebase_post_save, sender=Layer)
+                signals.post_save.connect(catalogue_post_save, sender=Layer)
 
         count += 1
     message = "%d Layers Registered" % count
@@ -1128,7 +1141,7 @@ def process_ogp_results(ogp, result_json, owner=None):
             )
 
             layer_uuid = str(uuid.uuid1())
-            saved_layer, created = Layer.objects.get_or_create(typename=typename,
+            saved_layer, created = Layer.objects.get_or_create(alternate=typename,
                                                                defaults=dict(
                                                                    name=doc["Name"],
                                                                    uuid=layer_uuid,
@@ -1147,7 +1160,8 @@ def process_ogp_results(ogp, result_json, owner=None):
                                                                )
             saved_layer.set_default_permissions()
             saved_layer.save()
-            service_layer, created = ServiceLayer.objects.get_or_create(service=service, typename=typename,
+            service_layer, created = ServiceLayer.objects.get_or_create(service=service,
+                                                                        typename=typename,
                                                                         defaults=dict(
                                                                             title=doc[
                                                                                 "LayerDisplayName"]
@@ -1333,6 +1347,75 @@ def create_arcgis_links(instance):
     # Create thumbnails.
     bbox = urllib.pathname2url('%s,%s,%s,%s' % (instance.bbox_x0, instance.bbox_y0, instance.bbox_x1, instance.bbox_y1))
 
-    thumbnail_remote_url = instance.ows_url + 'export?LAYERS=show%3A' + str(instance.typename) + \
+    thumbnail_remote_url = instance.ows_url + 'export?LAYERS=show%3A' + str(instance.alternate) + \
         '&TRANSPARENT=true&FORMAT=png&BBOX=' + bbox + '&SIZE=200%2C150&F=image&BBOXSR=4326&IMAGESR=3857'
     create_thumbnail(instance, thumbnail_remote_url)
+
+
+def create_wms_links(instance, wms_base_url, overwrite=False):
+    """
+    Create a thumbnail with a WMS request.
+    """
+    layers = instance.alternate.encode('utf-8')
+
+    from geonode.geoserver.helpers import ogc_server_settings
+
+    wms_version = getattr(ogc_server_settings, "WMS_VERSION") or '1.1.1'
+    wms_format = getattr(ogc_server_settings, "WMS_FORMAT") or 'image/png8'
+
+    params = {
+        'service': 'WMS',
+        'version': wms_version,
+        'request': 'GetMap',
+        'layers': layers,
+        'format': wms_format,
+        'width': 200,
+        'height': 150,
+        'TIME': '-99999999999-01-01T00:00:00.0Z/99999999999-01-01T00:00:00.0Z'
+    }
+
+    # Add the bbox param only if the bbox is different to [None, None,
+    # None, None]
+    check_bbox = False
+    if None not in instance.bbox:
+        params['bbox'] = instance.bbox_string
+        check_bbox = True
+
+    # Avoid using urllib.urlencode here because it breaks the url.
+    # commas and slashes in values get encoded and then cause trouble
+    # with the WMS parser.
+    p = "&".join("%s=%s" % item for item in params.items())
+
+    thumbnail_remote_url = wms_base_url + "?" + p
+
+    create_thumbnail(instance, thumbnail_remote_url, None,
+                     overwrite=overwrite, check_bbox=check_bbox)
+
+    legend_url = wms_base_url + \
+        '?service=WMS&version={}&request=GetLegendGraphic&format={}&' + \
+        'WIDTH=20&HEIGHT=20&LAYER=' + instance.alternate + \
+        '&legend_options=fontAntiAliasing:true;fontSize:12;forceLabels:on' \
+        .format(wms_version, wms_format)
+
+    Link.objects.get_or_create(resource=instance.resourcebase_ptr,
+                               url=legend_url,
+                               defaults=dict(
+                                   extension='png',
+                                   name='Legend',
+                                   url=legend_url,
+                                   mime='image/png',
+                                   link_type='image',
+                               )
+                               )
+
+    ogc_wms_name = 'OGC WMS: %s Service' % instance.store
+    Link.objects.get_or_create(resource=instance.resourcebase_ptr,
+                               url=wms_base_url,
+                               defaults=dict(
+                                   extension='html',
+                                   name=ogc_wms_name,
+                                   url=wms_base_url,
+                                   mime='text/html',
+                                   link_type='OGC:WMS',
+                               )
+                               )

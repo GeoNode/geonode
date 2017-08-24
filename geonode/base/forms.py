@@ -42,8 +42,11 @@ from django.utils.encoding import (
 from bootstrap3_datetime.widgets import DateTimePicker
 from modeltranslation.forms import TranslationModelForm
 
-from geonode.base.models import TopicCategory, Region
+from geonode.base.models import TopicCategory, Region, License
 from geonode.people.models import Profile
+from geonode.base.enumerations import ALL_LANGUAGES
+from django.contrib.auth.models import Group
+from django.contrib.auth import get_user_model
 
 
 def get_tree_data():
@@ -100,20 +103,25 @@ class CategoryChoiceField(forms.ModelChoiceField):
                '<br/><strong>' + obj.gn_description + '</strong></span>'
 
 
-class TreeWidget(forms.TextInput):
+class TreeWidget(TaggitWidget):
         input_type = 'text'
-
-        def __init__(self, attrs=None):
-            super(TreeWidget, self).__init__(attrs)
 
         def render(self, name, values, attrs=None):
             if isinstance(values, basestring):
                 vals = values
-            else:
+            elif values:
                 vals = ','.join([str(i.tag.name) for i in values])
-            output = ["""<input class='form-control' id='id_resource-keywords' name='resource-keywords'
-                 value='%s'><br/>""" % (vals)]
-            output.append('<div id="treeview" class=""></div>')
+            else:
+                vals = ""
+            output = ["""<div class="keywords-container"><span class="input-group">
+                <input class='form-control'
+                       id='id_resource-keywords'
+                       name='resource-keywords'
+                       value='%s'><br/>""" % (vals)]
+            output.append('<div id="treeview" class="" style="display: none"></div>')
+            output.append('<span class="input-group-addon" id="treeview-toggle"><i class="fa fa-folder"></i></span>')
+            output.append('</span></div>')
+
             return mark_safe(u'\n'.join(output))
 
 
@@ -311,7 +319,7 @@ class ResourceBaseForm(TranslationModelForm):
         label=_("Free-text Keywords"),
         required=False,
         help_text=_("A space or comma-separated list of keywords. Use the widget to select from Hierarchical tree."),
-        widget=TaggitWidget('HierarchicalKeywordAutocomplete'))
+        widget=TreeWidget(autocomplete='HierarchicalKeywordAutocomplete'))
 
     """
     regions = TreeNodeMultipleChoiceField(
@@ -384,3 +392,28 @@ class ValuesListField(forms.Field):
         self.validate(value)
         self.run_validators(value)
         return value
+
+
+class BatchEditForm(forms.Form):
+    LANGUAGES = (('', '--------'),) + ALL_LANGUAGES
+    group = forms.ModelChoiceField(
+        queryset=Group.objects.all(),
+        required=False)
+    owner = forms.ModelChoiceField(
+        queryset=get_user_model().objects.all(),
+        required=False)
+    category = forms.ModelChoiceField(
+        queryset=TopicCategory.objects.all(),
+        required=False)
+    license = forms.ModelChoiceField(
+        queryset=License.objects.all(),
+        required=False)
+    regions = forms.ModelChoiceField(
+        queryset=Region.objects.all(),
+        required=False)
+    date = forms.DateTimeField(required=False)
+    language = forms.ChoiceField(
+        required=False,
+        choices=LANGUAGES,
+    )
+    keywords = forms.CharField(required=False)

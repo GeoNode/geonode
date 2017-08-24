@@ -19,6 +19,8 @@
 #########################################################################
 
 import json
+from itertools import chain
+
 from guardian.shortcuts import get_perms
 
 from django.shortcuts import render_to_response, get_object_or_404
@@ -38,11 +40,13 @@ from geonode.utils import resolve_object
 from geonode.security.views import _perms_info_json
 from geonode.people.forms import ProfileForm
 from geonode.base.forms import CategoryForm
-from geonode.base.models import TopicCategory, ResourceBase
-from geonode.documents.models import Document
+from geonode.base.models import TopicCategory
+from geonode.documents.models import Document, get_related_resources
 from geonode.documents.forms import DocumentForm, DocumentCreateForm, DocumentReplaceForm
 from geonode.documents.models import IMGTYPES
 from geonode.utils import build_social_links
+from geonode.groups.models import GroupProfile
+from geonode.base.views import batch_modify
 
 ALLOWED_DOC_TYPES = settings.ALLOWED_DOCUMENT_TYPES
 
@@ -97,11 +101,7 @@ def document_detail(request, docid):
         )
 
     else:
-        try:
-            related = document.content_type.get_object_for_this_type(
-                id=document.object_id)
-        except:
-            related = ''
+        related = get_related_resources(document)
 
         # Update count for popularity ranking,
         # but do not includes admins or resource owners
@@ -164,10 +164,6 @@ class DocumentUploadView(CreateView):
         """
         self.object = form.save(commit=False)
         self.object.owner = self.request.user
-        resource_id = self.request.POST.get('resource', None)
-        if resource_id:
-            self.object.content_type = ResourceBase.objects.get(id=resource_id).polymorphic_ctype
-            self.object.object_id = resource_id
         # by default, if RESOURCE_PUBLISHING=True then document.is_published
         # must be set to False
         # RESOURCE_PUBLISHING works in similar way as ADMIN_MODERATE_UPLOADS,
@@ -175,6 +171,7 @@ class DocumentUploadView(CreateView):
         is_published = not (settings.RESOURCE_PUBLISHING or settings.ADMIN_MODERATE_UPLOADS)
         self.object.is_published = is_published
         self.object.save()
+        form.save_many2many()
         self.object.set_permissions(form.cleaned_data['permissions'])
 
         abstract = None
@@ -369,6 +366,7 @@ def document_metadata(
                 the_document.poc = new_poc
                 the_document.metadata_author = new_author
                 the_document.keywords.add(*new_keywords)
+                document_form.save_many2many()
                 Document.objects.filter(id=the_document.id).update(category=new_category)
 
                 if getattr(settings, 'SLACK_ENABLED', False):
@@ -395,12 +393,22 @@ def document_metadata(
             author_form = ProfileForm(prefix="author")
             author_form.hidden = True
 
+        metadata_author_groups = []
+        if request.user.is_superuser:
+            metadata_author_groups = GroupProfile.objects.all()
+        else:
+            metadata_author_groups = chain(
+                metadata_author.group_list_all(), GroupProfile.objects.exclude(access="private"))
+
         return render_to_response(template, RequestContext(request, {
+            "resource": document,
             "document": document,
             "document_form": document_form,
             "poc_form": poc_form,
             "author_form": author_form,
             "category_form": category_form,
+            "metadata_author_groups": metadata_author_groups,
+            "GROUP_MANDATORY_RESOURCES": getattr(settings, 'GROUP_MANDATORY_RESOURCES', False),
         }))
 
 
@@ -488,3 +496,8 @@ def document_metadata_detail(request, docid, template='documents/document_metada
         "resource": document,
         'SITEURL': settings.SITEURL[:-1]
     }))
+
+
+@login_required
+def document_batch_metadata(request, ids):
+    return batch_modify(request, ids, 'Document')

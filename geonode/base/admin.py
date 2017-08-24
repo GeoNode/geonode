@@ -33,8 +33,27 @@ from treebeard.forms import movenodeform_factory
 
 from modeltranslation.admin import TranslationAdmin
 
-from geonode.base.models import (TopicCategory, SpatialRepresentationType, Region, RestrictionCodeType,
-                                 ContactRole, Link, Backup, License, HierarchicalKeyword)
+from geonode.base.models import (
+    TopicCategory,
+    SpatialRepresentationType,
+    Region,
+    RestrictionCodeType,
+    ContactRole,
+    Link,
+    Backup,
+    License,
+    HierarchicalKeyword)
+from django.http import HttpResponseRedirect
+
+
+def metadata_batch_edit(modeladmin, request, queryset):
+    ids = ','.join([str(element.pk) for element in queryset])
+    resource = queryset[0].class_name.lower()
+    return HttpResponseRedirect(
+        '/{}s/metadata/batch/{}/'.format(resource, ids))
+
+
+metadata_batch_edit.short_description = 'Metadata batch edit'
 
 
 class MediaTranslationAdmin(TranslationAdmin):
@@ -65,13 +84,18 @@ def run(self, request, queryset):
             for siteObj in queryset:
                 self.message_user(request, "Executed Backup: " + siteObj.name)
                 out = StringIO.StringIO()
-                call_command('backup', force_exec=True, backup_dir=siteObj.base_folder, stdout=out)
+                call_command(
+                    'backup',
+                    force_exec=True,
+                    backup_dir=siteObj.base_folder,
+                    stdout=out)
                 value = out.getvalue()
                 if value:
                     siteObj.location = value
                     siteObj.save()
                 else:
-                    self.message_user(request, siteObj.name + " backup failed!")
+                    self.message_user(
+                        request, siteObj.name + " backup failed!")
         else:
             context = {
                 "objects_name": "Backups",
@@ -80,8 +104,11 @@ def run(self, request, queryset):
                 'cancellable_backups': [siteObj],
                 'action_checkbox_name': helpers.ACTION_CHECKBOX_NAME,
             }
-            return TemplateResponse(request, 'admin/backups/confirm_cancel.html', context,
-                                    current_app=self.admin_site.name)
+            return TemplateResponse(
+                request,
+                'admin/backups/confirm_cancel.html',
+                context,
+                current_app=self.admin_site.name)
 
 
 def restore(self, request, queryset):
@@ -96,9 +123,12 @@ def restore(self, request, queryset):
                 self.message_user(request, "Executed Restore: " + siteObj.name)
                 out = StringIO.StringIO()
                 if siteObj.location:
-                    call_command('restore', force_exec=True, backup_file=str(siteObj.location).strip(), stdout=out)
+                    call_command(
+                        'restore', force_exec=True, backup_file=str(
+                            siteObj.location).strip(), stdout=out)
                 else:
-                    self.message_user(request, siteObj.name + " backup not ready!")
+                    self.message_user(
+                        request, siteObj.name + " backup not ready!")
         else:
             context = {
                 "objects_name": "Restores",
@@ -107,8 +137,11 @@ def restore(self, request, queryset):
                 'cancellable_backups': [siteObj],
                 'action_checkbox_name': helpers.ACTION_CHECKBOX_NAME,
             }
-            return TemplateResponse(request, 'admin/backups/confirm_cancel.html', context,
-                                    current_app=self.admin_site.name)
+            return TemplateResponse(
+                request,
+                'admin/backups/confirm_cancel.html',
+                context,
+                current_app=self.admin_site.name)
 
 
 run.short_description = "Run the Backup"
@@ -133,7 +166,12 @@ class LicenseAdmin(MediaTranslationAdmin):
 class TopicCategoryAdmin(MediaTranslationAdmin):
     model = TopicCategory
     list_display_links = ('identifier',)
-    list_display = ('identifier', 'description', 'gn_description', 'fa_class', 'is_choice')
+    list_display = (
+        'identifier',
+        'description',
+        'gn_description',
+        'fa_class',
+        'is_choice')
     if settings.MODIFY_TOPICCATEGORY is False:
         exclude = ('identifier', 'description',)
 
@@ -227,4 +265,5 @@ class ResourceBaseAdminForm(autocomplete_light.ModelForm):
     # which prevents app startup. Therefore, we defer setting the widget until
     # after that's done.
     keywords = TaggitField(required=False)
-    keywords.widget = TaggitWidget(autocomplete='HierarchicalKeywordAutocomplete')
+    keywords.widget = TaggitWidget(
+        autocomplete='HierarchicalKeywordAutocomplete')
