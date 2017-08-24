@@ -177,7 +177,10 @@ class WorldMap extends React.Component {
 
   render() {
     return (
-      <div style={styles.root} ref={(node) => {this.d3Element = node;}} />
+      <div>
+        <h3>Number of requests</h3>
+        <div style={styles.root} ref={(node) => {this.d3Element = node;}} />
+      </div>
     );
   }
 }
