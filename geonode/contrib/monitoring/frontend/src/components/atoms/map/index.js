@@ -27,34 +27,24 @@ class WorldMap extends React.Component {
   constructor(props) {
     super(props);
 
-    this.renderMap = (data) => {
+    this.renderMap = (
+      { data, fills } = this.parse(this.props.countryData),
+    ) => {
+      while (this.d3Element.hasChildNodes()) {
+        this.d3Element.removeChild(this.d3Element.lastChild);
+      }
       const basicChoropleth = new Datamap({
         data,
+        fills,
         element: this.d3Element,
         width: '100%',
         height: '200',
         setProjection: (element) => {
           const x = element.offsetWidth / 2;
           const y = element.offsetHeight / 2 + 40;
-          const projection = d3.geoMercator()
-            .scale(50)
-            .translate([x, y]);
-          const path = d3.geoPath()
-            .projection(projection);
+          const projection = d3.geoMercator().scale(50).translate([x, y]);
+          const path = d3.geoPath().projection(projection);
           return { path, projection };
-        },
-        fills: {
-          defaultFill: '#cccccc',
-          '0-1': '#9999cc',
-          '1-2': '#8888cc',
-          '2-3': '#7777cc',
-          '3-4': '#6666cc',
-          '4-5': '#5555cc',
-          '5-6': '#4444cc',
-          '6-7': '#3333cc',
-          '7-8': '#2222cc',
-          '8-9': '#1111cc',
-          '9-10': '#0000cc',
         },
         geographyConfig: {
           popupTemplate: (geography, popupData) => {
@@ -72,22 +62,74 @@ class WorldMap extends React.Component {
       this.props.get(interval);
     };
 
-    this.parseData = (data) => {
-      const result = {};
+    this.parseCountries = (data) => {
       if (!data || !data.data) {
-        return result;
+        return undefined;
       }
       const realData = data.data.data[0];
       if (realData.data.length === 0) {
-        return result;
+        return undefined;
       }
+      const result = {};
       realData.data.forEach((country) => {
-        result[country.label] = {
-          fillKey: '9-10',
-          val: country.val,
-        };
+        result[country.label] = { val: country.val };
       });
       return result;
+    };
+
+    this.calculateFills = (data) => {
+      const defaultFill = '#ccc';
+      const fills = {
+        defaultFill,
+        'no data': defaultFill,
+      };
+      if (!data) {
+        return { data, fills };
+      }
+      const realCountries = {};
+      Object.keys(data).forEach((countryName) => {
+        if (countryName.length === 3) {
+          realCountries[countryName] = data[countryName];
+        }
+      });
+      const max = Object.keys(realCountries).reduce((currentMax, countryName) => {
+        const val = Number(realCountries[countryName].val);
+        return val > currentMax ? val : currentMax;
+      }, 0);
+      const min = Object.keys(realCountries).reduce((currentMin, countryName) => {
+        const val = Number(realCountries[countryName].val);
+        return val < currentMin ? val : currentMin;
+      }, max);
+      const step = Math.floor((min + max) / 5);
+      let color = 7;
+      for (let multiplier = 0; multiplier < 5; ++multiplier) {
+        const low = multiplier * step;
+        const hi = (multiplier + 1) * step;
+        fills[`${low}-${hi}`] = `#${color}${color}c`;
+        --color;
+      }
+      const countryData = {};
+      Object.keys(realCountries).forEach((countryName) => {
+        const val = Number(realCountries[countryName].val);
+        const newCountry = JSON.parse(JSON.stringify(realCountries[countryName]));
+        for (let multiplier = 1; multiplier <= 5; ++multiplier) {
+          if (multiplier * step >= val) {
+            const low = (multiplier - 1) * step;
+            const hi = multiplier * step;
+            newCountry.fillKey = `${low}-${hi}`;
+            break;
+          }
+        }
+        countryData[countryName] = newCountry;
+      });
+      return { data: countryData, fills };
+    };
+
+    this.parse = (rawData) => {
+      const { data, fills } = this.calculateFills(
+        this.parseCountries(rawData),
+      );
+      return { data, fills };
     };
   }
 
@@ -96,7 +138,7 @@ class WorldMap extends React.Component {
   }
 
   componentDidMount() {
-    this.renderMap(this.parseData(this.props.countryData));
+    this.renderMap();
   }
 
   componentWillReceiveProps(nextProps) {
@@ -108,10 +150,7 @@ class WorldMap extends React.Component {
   }
 
   componentDidUpdate() {
-    while (this.d3Element.hasChildNodes()) {
-      this.d3Element.removeChild(this.d3Element.lastChild);
-    }
-    this.renderMap(this.parseData(this.props.countryData));
+    this.renderMap();
   }
 
   componentWillUnmount() {
@@ -119,7 +158,6 @@ class WorldMap extends React.Component {
   }
 
   render() {
-    this.parseData(this.props.countryData);
     return (
       <div style={styles.root} ref={(node) => {this.d3Element = node;}} />
     );
