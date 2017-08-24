@@ -887,7 +887,7 @@ def snapshot_config(snapshot, map_obj, user, access_token):
         return None
 
     # Set up the proper layer configuration
-    def snaplayer_config(layer, sources, user, access_token):
+    def snaplayer_config(layer, sources, user):
         cfg = layer.layer_config()
         src_cfg = layer.source_config()
         source = snapsource_lookup(src_cfg, sources)
@@ -922,8 +922,7 @@ def snapshot_config(snapshot, map_obj, user, access_token):
             snaplayer_config(
                 l,
                 sources,
-                user,
-                access_token) for l in maplayers]
+                user) for l in maplayers]
     else:
         config = map_obj.viewer_json(user, access_token)
     return config
