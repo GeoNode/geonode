@@ -1,4 +1,6 @@
+{% load i18n %}
 
+{% trans "Monitoring on " %}{{ host }}{% trans "detected following problems :" %}
 {% for ndata in alerts %}
-    {{ ndata }}
+    {{ ndata.args.0 }}
 {% endfor %}

@@ -27,7 +27,6 @@ from django.views.generic.base import View
 from django.core.urlresolvers import reverse
 from django.utils.decorators import method_decorator
 from django.contrib.auth.decorators import login_required
-from django.db.models.fields.related import RelatedField
 
 from geonode.utils import json_response
 from geonode.contrib.monitoring.collector import CollectorAPI
@@ -43,7 +42,7 @@ from geonode.contrib.monitoring.models import (
     NotificationCheck,
     MetricNotificationCheck,
 )
-from geonode.contrib.monitoring.utils import TypeChecks, align_period_start
+from geonode.contrib.monitoring.utils import TypeChecks, align_period_start, dump
 from geonode.contrib.monitoring.service_handlers import exposes
 
 # Create your views here.
@@ -425,7 +424,7 @@ class NotificaitonCheckForm(forms.ModelForm):
 class MetricNotificationCheckForm(forms.ModelForm):
 
     metric = forms.CharField(required=True)
-    service = forms.CharField(required=True)
+    service = forms.CharField(required=False)
     resource = forms.CharField(required=False)
     label = forms.CharField(required=False)
     ows_service = forms.CharField(required=False)
@@ -470,85 +469,53 @@ class MetricNotificationCheckForm(forms.ModelForm):
             raise forms.ValidationError("Invalid resource: {}".format(val))
 
 
-class NotificationsConfig(View):
-    models = {'check':  (NotificationCheck, 'id', None,),
-              'metric_check': (MetricNotificationCheck, 'id', 'user',)}
+    def clean(self):
+        super(MetricNotificationCheckForm, self).clean()
+        d = self.cleaned_data
 
-    forms = {'check': NotificaitonCheckForm,
-             'metric_check': MetricNotificationCheckForm}
 
-    def get_object(self, user, cls_name, pk=None):
-        cls, pk_lookup, user_lookup = self.models.get(cls_name)
-        qparams = {}
-        if pk:
-            qparams.update({pk_lookup: pk})
-        if user_lookup:
-            qparams.update({user_lookup: user})
-        return cls.objects.filter(**qparams)
+class UserNotificationConfigView(View):
 
-    def get_class(self, cls_name):
-        cls, pk_lookup, user_lookup = self.models.get(cls_name)
-        return cls
+    def get_object(self):
+        pk = self.kwargs['pk']
+        return NotificationCheck.objects.get(pk=pk)
 
-    def serialize(self, obj):
-        fields = obj._meta.fields
-        out = {}
-        for field in fields:
-            fname = field.name
-            val = getattr(obj, fname)
-            if isinstance(field, RelatedField):
-                val = str(val)
-            out[fname] = val
-        return out
 
-    @method_decorator(login_required)
     def get(self, request, *args, **kwargs):
-        out = {'data': [], 'errors': {}}
-        objs = self.get_object(request.user, kwargs['cls_name'], kwargs.get('pk'))
-        if not objs:
-            return json_response(out, status=404)
-
-        data = []
-        for obj in objs:
-            data.append(self.serialize(obj))
-
-        out['data'] = data
-        return json_response(out)
-
-    @method_decorator(login_required)
-    def post(self, request, *args, **kwargs):
-        out = {'data': [], 'errors': {}}
-
-        objs = self.get_object(request.user, kwargs['cls_name'], kwargs.get('pk'))
-        if kwargs.get('pk') and not objs:
-            out['errors']['pk'] = 'too less results'
-            return json_response(out, status=404)
-
-        if len(objs) > 1:
-            out['errors']['__all__'] = 'too many results returned'
-            return json_response(out, status=400)
-        obj = None
-        if len(objs):
-            obj = objs[0]
-        form = self.get_form(kwargs['cls_name'], request.POST, instance=obj)
-        if not form.is_valid():
-            out['errors'] = form.errors
-            return json_response(out, status=403)
-        d = form.cleaned_data
-
-        for _f in form.Meta.model._meta.fields:
-            if _f.name == 'user':
-                d['user'] = request.user
-        if not obj:
-            cls = self.get_class(kwargs['cls_name'])
-            obj = cls.objects.create(**d)
+        out = {'success': False, 'status': 'error', 'data': [], 'errors': {}}
+        status = 500
+        if request.user.is_authenticated():
+            obj = self.get_object()
+            out['success'] = True
+            out['status'] = 'ok'
+            form = obj.get_user_form()
+            fields = [str(r) for r in request.user.notification_checks.filter(check=obj)]
+            out['data'] = {'form': form, 'fields': fields}
         else:
-            obj = form.save()
-        out['data'] = [self.serialize(obj)]
-        return json_response(out)
+            out['errors']['user'] = ['User is not authenticated']
+            status = 401
+        return json_response(out, status=status)
 
-    def get_form(self, cls_name, data, **kwargs):
-        return self.forms[cls_name](data=data, **kwargs)
+
+    def post(self, request, *args, **kwargs):
+        out = {'success': False, 'status': 'error', 'data': [], 'errors': {}}
+        status = 500
+        if request.user.is_authenticated():
+            obj = self.get_object()
+            data = request.POST
+            try:
+                configs = obj.process_user_form(data, user=request.user)
+                out['success'] = True
+                out['status'] = 'ok'
+                out['data'] = [dump(c) for c in configs]
+                status = 200
+            except forms.ValidationError, err:
+                out['errors'] = err.args[0]
+                status = 400
+        else:
+            out['errors']['user'] = ['User is not authenticated']
+            status = 401
+        return json_response(out, status=status)
 
 
 api_metrics = MetricsList.as_view()
@@ -562,4 +529,4 @@ api_exceptions = ExceptionsListView.as_view()
 api_exception = ExceptionDataView.as_view()
 api_beacon = BeaconView.as_view()
 
-api_notifications_config = NotificationsConfig.as_view()
+api_user_notification_config = UserNotificationConfigView.as_view()

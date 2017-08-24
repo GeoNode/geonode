@@ -34,6 +34,8 @@ from xml.etree import ElementTree as etree
 from bs4 import BeautifulSoup as bs
 import requests
 
+from django.db.models.fields.related import RelatedField
+
 from geonode.contrib.monitoring.models import RequestEvent, ExceptionEvent
 
 GS_FORMAT = '%Y-%m-%dT%H:%M:%S'  # 2010-06-20T2:00:00
@@ -299,3 +301,17 @@ class TypeChecks(object):
             return OWSService.objects.get(name=val)
         except OWSService.DoesNotExist:
             raise ValueError("OWS Service {} doesn't exist".format(val))
+
+
+def dump(obj):
+    fields = obj._meta.fields
+    out = {}
+    for field in fields:
+        fname = field.name
+        val = getattr(obj, fname)
+        if isinstance(field, RelatedField):
+            if val is not None:
+                val = {'class': str(val.__class__),
+                       'id': val.pk}
+        out[fname] = val
+    return out

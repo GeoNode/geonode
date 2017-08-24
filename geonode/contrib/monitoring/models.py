@@ -697,7 +697,7 @@ class NotificationCheck(models.Model):
         user_thresholds = {}
         for (metric_name, field_opt, use_service,
              use_resource, use_label, use_ows_service,
-             minimum, maximum, thresholds,) in thresholds:
+             minimum, maximum, thresholds, _description) in thresholds:
 
             # metric_name is a string for metric.name
             # field opt is NotificationMetricDefinition.FIELD_OPTION* value
@@ -717,12 +717,13 @@ class NotificationCheck(models.Model):
             metric = Metric.objects.get(name=metric_name)
             nm = NotificationMetricDefinition.objects.create(notification_check=inst,
                                                              metric=metric,
+                                                             description=_description,
                                                              field_option=field_opt)
             user_thresholds[nm.id] = {'min': minimum,
                                       'max': maximum,
                                       'metric': metric_name,
+                                      'description': _description,
                                       'steps': cls.get_steps(minimum, maximum, thresholds)}
-        print(user_thresholds)
         inst.user_threshold = user_thresholds
         inst.save()
         return inst
@@ -731,7 +732,7 @@ class NotificationCheck(models.Model):
 
         return self.user_threshold.get(str(notification_def.id)) or {}
 
-    def get_form(self, *args_, **kwargs_):
+    def get_user_form(self, *args_, **kwargs_):
         """
         Return form to validate metric thresholds input from user.
         """
@@ -750,6 +751,30 @@ class NotificationCheck(models.Model):
                         fields[field.name] = field
 
         return F(*args_, **kwargs_)
+
+    def process_user_form(self, data, user):
+        """
+        Process form data from user and create Notifica
+        """
+
+        inst = self
+        current_checks = self.checks.filter(user=user)
+        f = self.get_user_form(data=data)
+        if not f.is_valid():
+            raise forms.ValidationError(f.errors)
+        current_checks.delete()
+        out = []
+        for key, val in f.cleaned_data.items():
+
+            _v = key.split('.')
+            fid, mname, field =  _v[0], '.'.join(_v[1:-1]), _v[-1]
+            metric = Metric.objects.get(name=mname)
+            ncheck = MetricNotificationCheck.objects.create(user=user,
+                                                            notification_check=inst,
+                                                            metric=metric,
+                                                            **{field: val})
+            out.append(ncheck)
+        return out
 
 
 class NotificationMetricDefinition(models.Model):
@@ -771,32 +796,35 @@ class NotificationMetricDefinition(models.Model):
                                     choices=FIELD_OPTION_CHOICES,
                                     null=False,
                                     default=FIELD_OPTION_MIN_VALUE)
+    description = models.TextField(null=True)
 
     def get_fields(self, uthreshold):
         out = []
-        fid_base = '{}_{}'.format(self.id, self.metric.name)
+        fid_base = '{}.{}.{}'.format(self.id, self.metric.name, self.field_option)
         steps = uthreshold.get('steps')
         min_, max_ = uthreshold.get('min'), uthreshold.get('max')
 
         if steps:
             field = forms.ChoiceField(choices=steps)
         else:
-            field = forms.DecimalField(max_value=max_,
-                                       min_value=min_,
-                                       max_digits=12,
-                                       decimal_places=2)
+            fargs = {}
+            if max_ is not None:
+                fargs['max_value'] = max_
+            if min_ is not None:
+                fargs['min_value'] = min_
+            field = forms.DecimalField(max_digits=12,
+                                       decimal_places=2,
+                                       **fargs)
         field.name = fid_base
         out.append(field)
         return out
-
-
 
 
 class MetricNotificationCheck(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, related_name="monitoring_checks")
     notification_check = models.ForeignKey(NotificationCheck, related_name="checks")
     metric = models.ForeignKey(Metric, related_name="checks")
-    service = models.ForeignKey(Service, related_name="checks")
+    service = models.ForeignKey(Service, related_name="checks", null=True, blank=True)
     resource = models.ForeignKey(MonitoredResource, null=True, blank=True)
     label = models.ForeignKey(MetricLabel, null=True, blank=True)
     ows_service = models.ForeignKey(OWSService, null=True, blank=True)
@@ -814,7 +842,7 @@ class MetricNotificationCheck(models.Model):
         if self.max_timeout is not None:
             indicator.append("value must be collected within {}".format(self.max_timeout))
         indicator = ' and '.join(indicator)
-        return "MetricCheck({}@{}: {})".format(self.metric.name, self.service.name, indicator)
+        return "MetricCheck({}@{}: {})".format(self.metric.name, self.service.name if self.service else '', indicator)
 
     class MetricValueError(ValueError):
 
@@ -854,11 +882,19 @@ class MetricNotificationCheck(models.Model):
         """
         if not for_timestamp:
             for_timestamp = datetime.now()
-        metrics = MetricValue.get_for(metric=self.metric, service=self.service,
-                                      valid_on=for_timestamp, resource=self.resource,
-                                      label=self.label, ows_service=self.ows_service)
+        qfilter = {}
+        if self.service:
+            qfilter['service'] = self.service
+        if self.resource:
+            qfilter['resource'] = self.resource
+        if self.label:
+            qfilter['label'] = self.label
+        if self.ows_service:
+            qfilter['ows_service'] = self.ows_service
+        metrics = MetricValue.get_for(metric=self.metric, valid_on=for_timestamp, **qfilter)
+
         if not metrics:
-            raise ValueError("Cannot find metric values for {}/{} on {}".format(self.metric, self.service, for_timestamp))
+            raise ValueError("Cannot find metric values for {} on {}".format(self.metric, for_timestamp))
         for m in metrics:
             self.check_value(m, for_timestamp)
         return True

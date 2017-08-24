@@ -1,10 +1,11 @@
 {% load i18n %}
 
-{% trans "Hi," %} {{ recipient.username }}
+<p>{% trans "Hi," %} {{ recipient.username }}</p>
 
-{% trans "Monitoring on " %}{{ host }}{% trans "detected following problems :" %}
+<p>{% trans "Monitoring on " %}{{ host }}{% trans "detected following problems :" %}</p>
+<ul>
 {% for ndata in alerts %}
-    {{ ndata }}
+    <li><p> {{ ndata }}</p></li>
 {% endfor %}
-
+</ul>
 

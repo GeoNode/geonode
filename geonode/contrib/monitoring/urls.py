@@ -40,6 +40,6 @@ urlpatterns = [
                 url(r'^api/beacon/$', views.api_beacon, name='api_beacon'),
                 url(r'^api/beacon/(?P<exposed>.*?)/$', views.api_beacon, name='api_beacon_exposed'),
 
-                url(r'^api/notifications/(?P<cls_name>(check|metric_check))/(?:(?P<pk>[\d]+)/)?$', views.api_notifications_config, name='api_notifications_config'),
+                url(r'^api/notifications/config/(?P<pk>[\d]+)/$', views.api_user_notification_config, name='api_user_notification_config'),
 
               ]

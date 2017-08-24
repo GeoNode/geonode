@@ -17,6 +17,8 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
+from __future__ import print_function
+
 from datetime import datetime, timedelta
 
 from xml.etree.ElementTree import fromstring
@@ -27,6 +29,7 @@ from django.conf import settings
 from django.test import TestCase
 from django.contrib.auth import get_user_model
 from django.core.urlresolvers import reverse
+from django.core import mail
 
 from geonode.contrib.monitoring.models import (RequestEvent, Host, Service, ServiceType, 
                                                populate, ExceptionEvent, MetricNotificationCheck,
@@ -1974,23 +1977,69 @@ class MonitoringChecksTestCase(TestCase):
         start_aligned = align_period_start(start, self.service.check_interval)
         end_aligned = start_aligned + self.service.check_interval
 
-
+        
         #for (metric_name, field_opt, use_service, 
         #     use_resource, use_label, use_ows_service, 
         #     minimum, maximum, thresholds,) in thresholds:
 
         notifications_config = ('geonode is not working',
                                 'detects when requests are not handled',
-                                (('request.count', 'max_value', False, False,
-                                 False, False, 0, 10, None,),
-                                ('response.time', 'min_value', False, False,
-                                 False, False, 500, None, None,),))
+                                (('request.count', 'min_value', False, False,
+                                 False, False, 0, 10, None, 'Number of handled requests is lower than',),
+                                ('response.time', 'max_value', False, False,
+                                 False, False, 500, None, None, 'Response time is higher than',),))
         nc = NotificationCheck.create(*notifications_config)
         self.assertTrue(nc.definitions.all().count() == 2)
+            
+        user = self.u2
+        pwd = self.passwd2
 
+        self.client.login(username=user.username, password=pwd)
+        notifications_config_url = reverse('monitoring:api_user_notification_config', args=(nc.id,))
         for nc in NotificationCheck.objects.all():
-            nc_form = nc.get_form()
-
+            nc_form = nc.get_user_form()
             self.assertTrue(nc_form)
             self.assertTrue(nc_form.fields.keys())
+            vals = [100, 10]
+            data = {}
+            for idx, (fname, field,) in enumerate(nc_form.fields.items()):
+                data[fname] = vals[idx]
+            resp = self.client.post(notifications_config_url, data)
+            self.assertEqual(resp.status_code, 400)
+            
+            vals = [7, 600]
+            data = {}
+            for idx, (fname, field,) in enumerate(nc_form.fields.items()):
+                data[fname] = vals[idx]
+            resp = self.client.post(notifications_config_url, data)
+            self.assertEqual(resp.status_code, 200)
+
+        metric_rq_count = Metric.objects.get(name='request.count')
+        metric_rq_time = Metric.objects.get(name='response.time')
+
+        MetricValue.add(metric_rq_count,
+                        start_aligned,
+                        end_aligned,
+                        self.service,
+                        label="Count",
+                        value_raw=0,
+                        value_num=0,
+                        value=0)
+
+        MetricValue.add(metric_rq_time,
+                        start_aligned,
+                        end_aligned,
+                        self.service,
+                        label="Count",
+                        value_raw=700,
+                        value_num=700,
+                        value=700)
+
+        self.assertEqual(len(mail.outbox), 0)
         capi.emit_notifications(start)
+        self.assertTrue(len(mail.outbox), 1)
+        
+        for m in mail.outbox:
+            print('mail', m.subject)
+            print(m.body)
+        
