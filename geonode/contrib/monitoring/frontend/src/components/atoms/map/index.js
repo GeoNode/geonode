@@ -112,17 +112,20 @@ class WorldMap extends React.Component {
           countryData[countryName] = newCountry;
         });
       } else {
-        for (let multiplier = 0; multiplier < 5; ++multiplier) {
+        for (let multiplier = 0; multiplier < 4; ++multiplier) {
           const low = multiplier * step;
           const hi = (multiplier + 1) * step;
           const identifier = `${low}-${hi}`;
           fills[identifier] = `#${color}${color}c`;
           --color;
         }
+        const highestLow = 4 * step;
+        const identifier = `>${highestLow}`;
+        fills[identifier] = `#${color}${color}c`;
         Object.keys(realCountries).forEach((countryName) => {
           const val = Number(realCountries[countryName].val);
           const newCountry = JSON.parse(JSON.stringify(realCountries[countryName]));
-          for (let multiplier = 1; multiplier <= 5; ++multiplier) {
+          for (let multiplier = 1; multiplier < 5; ++multiplier) {
             if (multiplier * step >= val) {
               const low = (multiplier - 1) * step;
               const hi = multiplier * step;
@@ -132,8 +135,7 @@ class WorldMap extends React.Component {
           }
           if (!newCountry.fillKey) {
             const low = 4 * step;
-            const hi = 5 * step;
-            newCountry.fillKey = `${low}-${hi}`;
+            newCountry.fillKey = `>${low}`;
           }
           countryData[countryName] = newCountry;
         });
