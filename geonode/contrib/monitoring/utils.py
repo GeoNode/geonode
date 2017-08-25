@@ -305,7 +305,10 @@ class TypeChecks(object):
 
 
 def dump(obj, additional_fields=tuple()):
-    fields = obj._meta.fields
+    if hasattr(obj, '_meta'):
+        fields = obj._meta.fields
+    else:
+        fields = []
     out = {}
     for field in fields:
         fname = field.name

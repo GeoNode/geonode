@@ -538,6 +538,22 @@ class NotificationsList(FilteredView):
         return NotificationCheck.objects.all()
 
 
+class StatusCheckView(View):
+
+    def get(self, request, *args, **kwargs):
+        capi = CollectorAPI()
+        checks = capi.get_notifications()
+        data = {'status': 'ok', 'success': True, 'data': []}
+        d = data['data']
+        for nc, ncdata in checks:
+            d.append({'check': dump(nc),
+                      'problems': [dump(n, ('name', 'offending_value', 'threshold_value', 'message',)) for n in ncdata]})
+        return json_response(data)
+
+
+
+
+
 api_metrics = MetricsList.as_view()
 api_services = ServicesList.as_view()
 api_hosts = HostsList.as_view()
@@ -551,3 +567,4 @@ api_beacon = BeaconView.as_view()
 
 api_user_notification_config = UserNotificationConfigView.as_view()
 api_user_notifications = NotificationsList.as_view()
+api_status = StatusCheckView.as_view()

@@ -888,10 +888,13 @@ class MetricNotificationCheck(models.Model):
 
     class MetricValueError(ValueError):
 
-        def __init__(self, metric, check, message):
+        def __init__(self, metric, check, message, offending_value, threshold_value):
             self.metric = metric
             self.check = check
             self.message = message
+            self.name = metric.service_metric.metric.name
+            self.offending_value = offending_value
+            self.threshold_value = threshold_value
 
         def __str__(self):
             return "MetricValueError(metric {} misses {} check: {})".format(self.metric, self.check, self.message)
@@ -901,17 +904,15 @@ class MetricNotificationCheck(models.Model):
         Check specific metric if it's faulty or not.
         """
         v = metric.value_num
-        print('metric', metric,'=', v)
-        print(' check', self.min_value, self.max_value, self.max_timeout)
         had_check = False
         if self.min_value is not None:
             had_check = True
             if v < self.min_value:
-               raise self.MetricValueError(metric, self, "Value too low")
+               raise self.MetricValueError(metric, self, "Value too low", v, self.min_value)
         if self.max_value is not None:
             had_check = True
             if v > self.max_value:
-                raise self.MetricValueError(metric, self, "Value too high")
+                raise self.MetricValueError(metric, self, "Value too high", v, self.max_value)
 
         if self.max_timeout is not None:
             had_check = True
@@ -920,7 +921,7 @@ class MetricNotificationCheck(models.Model):
             # metric may be at the valid_on point in time
             valid_on = datetime.now()
             if (valid_on - metric.valid_to) > self.max_timeout:
-                raise self.MetricValueError(metric, self, "Value collected too far in the past")
+                raise self.MetricValueError(metric, self, "Value collected too far in the past", metric.valid_to, valid_on)
         if not had_check:
             raise ValueError("Metric check {} is not checking anything".format(self))
 
