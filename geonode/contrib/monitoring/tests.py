@@ -2053,6 +2053,3 @@ class MonitoringChecksTestCase(TestCase):
         ndata = json.loads(nresp.content)
         self.assertEqual(set([n['id'] for n in ndata['notifications']]), 
                          set(NotificationCheck.objects.all().values_list('id', flat=True)))
-
-
-        

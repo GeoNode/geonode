@@ -480,7 +480,6 @@ class UserNotificationConfigView(View):
         pk = self.kwargs['pk']
         return NotificationCheck.objects.get(pk=pk)
 
-
     def get(self, request, *args, **kwargs):
         out = {'success': False, 'status': 'error', 'data': [], 'errors': {}}
         status = 500
@@ -489,13 +488,15 @@ class UserNotificationConfigView(View):
             out['success'] = True
             out['status'] = 'ok'
             form = obj.get_user_form()
-            fields = [str(r) for r in request.user.notification_checks.filter(check=obj)]
-            out['data'] = {'form': form, 'fields': fields}
+            fields = [dump(r, ('field_name',)) for r in obj.definitions.all()]
+            out['data'] = {'form': form.as_table(), 
+                           'fields': fields,
+                           'notification': dump(obj)}
+            status = 200
         else:
             out['errors']['user'] = ['User is not authenticated']
             status = 401
         return json_response(out, status=status)
-
 
     def post(self, request, *args, **kwargs):
         out = {'success': False, 'status': 'error', 'data': [], 'errors': {}}

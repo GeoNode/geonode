@@ -26,6 +26,7 @@ import logging
 import xmljson
 import types
 import re
+from itertools import chain
 from urllib import urlencode
 from datetime import datetime, timedelta
 from math import floor, ceil
@@ -303,7 +304,7 @@ class TypeChecks(object):
             raise ValueError("OWS Service {} doesn't exist".format(val))
 
 
-def dump(obj):
+def dump(obj, additional_fields=tuple()):
     fields = obj._meta.fields
     out = {}
     for field in fields:
@@ -311,7 +312,9 @@ def dump(obj):
         val = getattr(obj, fname)
         if isinstance(field, RelatedField):
             if val is not None:
-                val = {'class': str(val.__class__),
+                val = {'class': '{}.{}'.format(val.__class__.__module__, val.__class__.__name__),
                        'id': val.pk}
         out[fname] = val
+    for fname in additional_fields:
+        out[fname] = getattr(obj, fname, None)
     return out

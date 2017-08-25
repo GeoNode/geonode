@@ -31,6 +31,7 @@ from django.template.loader import get_template
 from django.template import Context
 from django.core.mail import EmailMultiAlternatives as EmailMessage
 from django.utils.translation import ugettext_noop as _
+from django.db.models import Max
 
 
 from geonode.utils import raw_sql
@@ -669,7 +670,17 @@ class CollectorAPI(object):
             msg.attach_alternative(body_html, 'text/html')
             msg.send()
 
+    def get_last_usable_timestamp(self):
+        metrics = Metric.objects.filter(notification_checks__isnull=False).distinct()
+        mv = MetricValue.objects.filter(service_metric__metric__in=metrics).aggregate(Max('valid_to'))
+        return mv['valid_to__max']
+
+
     def get_notifications(self, for_timestamp=None):
+        if for_timestamp is None:
+            for_timestamp = self.get_last_usable_timestamp()
         notifications = NotificationCheck.check_for(for_timestamp=for_timestamp)
         non_empty = [n for n in notifications if n[1]]
         return non_empty
+
+

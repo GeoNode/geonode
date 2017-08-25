@@ -17,6 +17,7 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
+from __future__ import print_function
 
 import logging
 import types
@@ -778,6 +779,8 @@ class NotificationCheck(models.Model):
             _v = key.split('.')
             fid, mname, field =  _v[0], '.'.join(_v[1:-1]), _v[-1]
             metric = Metric.objects.get(name=mname)
+            if field == 'max_timeout':
+                val = timedelta(seconds=int(val))
             ncheck = MetricNotificationCheck.objects.create(notification_check=inst,
                                                             metric=metric,
                                                             **{field: val})
@@ -814,7 +817,7 @@ class NotificationMetricDefinition(models.Model):
                            )
 
     notification_check = models.ForeignKey(NotificationCheck, related_name='definitions')
-    metric = models.ForeignKey(Metric, related_name='+')
+    metric = models.ForeignKey(Metric, related_name='notification_checks')
     use_service = models.BooleanField(null=False, default=False)
     use_resource = models.BooleanField(null=False, default=False)
     use_label = models.BooleanField(null=False, default=False)
@@ -825,9 +828,18 @@ class NotificationMetricDefinition(models.Model):
                                     default=FIELD_OPTION_MIN_VALUE)
     description = models.TextField(null=True)
 
+    def is_min_val(self):
+        return self.field_option == self.FIELD_OPTION_MIN_VALUE
+
+    def is_max_val(self):
+        return self.field_option == self.FIELD_OPTION_MAX_VALUE
+
+    def is_max_timeout(self):
+        return self.field_option == self.FIELD_OPTION_MAX_TIMEOUT
+
     def get_fields(self, uthreshold):
         out = []
-        fid_base = '{}.{}.{}'.format(self.id, self.metric.name, self.field_option)
+        fid_base = self.field_name
         steps = uthreshold.get('steps')
         min_, max_ = uthreshold.get('min'), uthreshold.get('max')
 
@@ -846,6 +858,10 @@ class NotificationMetricDefinition(models.Model):
         out.append(field)
         return out
 
+
+    @property
+    def field_name(self):
+        return '{}.{}.{}'.format(self.id, self.metric.name, self.field_option)
 
 class MetricNotificationCheck(models.Model):
     notification_check = models.ForeignKey(NotificationCheck, related_name="checks")
@@ -885,6 +901,8 @@ class MetricNotificationCheck(models.Model):
         Check specific metric if it's faulty or not.
         """
         v = metric.value_num
+        print('metric', metric,'=', v)
+        print(' check', self.min_value, self.max_value, self.max_timeout)
         had_check = False
         if self.min_value is not None:
             had_check = True
@@ -897,7 +915,11 @@ class MetricNotificationCheck(models.Model):
 
         if self.max_timeout is not None:
             had_check = True
-            if (valid_on - metric.created) > self.max_timeout:
+
+            # we have to check for now, because valid_on may be in the past,
+            # metric may be at the valid_on point in time
+            valid_on = datetime.now()
+            if (valid_on - metric.valid_to) > self.max_timeout:
                 raise self.MetricValueError(metric, self, "Value collected too far in the past")
         if not had_check:
             raise ValueError("Metric check {} is not checking anything".format(self))
@@ -918,7 +940,6 @@ class MetricNotificationCheck(models.Model):
         if self.ows_service:
             qfilter['ows_service'] = self.ows_service
         metrics = MetricValue.get_for(metric=self.metric, valid_on=for_timestamp, **qfilter)
-
         if not metrics:
             raise ValueError("Cannot find metric values for {} on {}".format(self.metric, for_timestamp))
         for m in metrics:

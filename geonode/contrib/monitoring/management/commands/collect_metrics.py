@@ -54,6 +54,8 @@ class Command(BaseCommand):
                             help=_("Should data be cleared (default: no)"))
         parser.add_argument('-e', '--halt', default=False, action='store_true', dest='halt_on_errors',
                             help=_("Should stop on first error occured (default: no)"))
+        parser.add_argument('-n', '--emit_notifications', default=False, action='store_true', dest='emit_notifications',
+                            help=_("Should process and send notifications as well (default: no)"))
         parser.add_argument('service', type=TypeChecks.service_type, nargs="?",
                             help=_("Collect data from this service only"))
 
@@ -89,6 +91,9 @@ class Command(BaseCommand):
                     raise
         if options['clear']:
             c.clear_old_data()
+        if options['emit_notifications']:
+            log.info("Processing notifications for %s", options['until'])
+            c.emit_notifications()
 
     def run_check(self, service, collector, since=None, until=None, force_check=None, format=None):
         Handler = get_for_service(service.service_type.name)
