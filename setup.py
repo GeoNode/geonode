@@ -146,6 +146,7 @@ setup(name='GeoNode',
         "user-agents",
         "xmljson",
         'psutil',
+        'django-multi-email-field',
         ],
       zip_safe=False,
       dependency_links=[

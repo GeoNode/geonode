@@ -26,6 +26,13 @@ from itertools import chain
 from django.conf import settings
 from django.core.exceptions import ObjectDoesNotExist, MultipleObjectsReturned
 from django.db import models
+from django.utils.html import strip_tags
+from django.template.loader import get_template
+from django.template import Context
+from django.core.mail import EmailMultiAlternatives as EmailMessage
+from django.utils.translation import ugettext_noop as _
+
+
 from geonode.utils import raw_sql
 from geonode.notifications_helper import send_notification, send_now_notification
 from geonode.contrib.monitoring import MonitoringAppConfig as AppConf
@@ -645,6 +652,22 @@ class CollectorAPI(object):
             users = n.get_users()
             content = self.compose_notifications(ndata, when=for_timestamp)
             send_notification(users=users, label=AppConf.NOTIFICATION_NAME, extra_context=content)
+            emails = n.get_emails()
+            self.send_mails(emails, ndata, for_timestamp)
+
+
+    def send_mails(self, emails, ndata, when=None):
+        base_ctx = self.compose_notifications(ndata, when=when)
+        subject = _("GeoNode Monitoring on {} reports errors").format(base_ctx['host'])
+        for email in emails:
+            ctx = {'recipient': {'username': email}}
+            ctx.update(base_ctx)
+            body_html = get_template('pinax/notifications/monitoring_alert/full.txt').render(Context(ctx))
+            body_plain = strip_tags(body_html)
+
+            msg = EmailMessage(subject, body_plain, to=(email,))
+            msg.attach_alternative(body_html, 'text/html')
+            msg.send()
 
     def get_notifications(self, for_timestamp=None):
         notifications = NotificationCheck.check_for(for_timestamp=for_timestamp)

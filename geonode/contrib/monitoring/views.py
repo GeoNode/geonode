@@ -504,7 +504,7 @@ class UserNotificationConfigView(View):
             obj = self.get_object()
             data = request.POST
             try:
-                configs = obj.process_user_form(data, user=request.user)
+                configs = obj.process_user_form(data)
                 out['success'] = True
                 out['status'] = 'ok'
                 out['data'] = [dump(c) for c in configs]
@@ -516,6 +516,25 @@ class UserNotificationConfigView(View):
             out['errors']['user'] = ['User is not authenticated']
             status = 401
         return json_response(out, status=status)
+
+class NotificationsList(FilteredView):
+    filter_form = None
+    fields_map = (('id', 'id',),
+                  ('url', 'url',),
+                  ('name', 'name',),
+                  ('description', 'description',),
+                 )
+
+    output_name = 'notifications'
+
+    def get_filter_args(self, *args, **kwargs):
+        self.errors = {}
+        if not self.request.user.is_authenticated():
+            self.errors = {'user': ['User is not authenticated']}
+        return {}
+
+    def get_queryset(self, *args, **kwargs):
+        return NotificationCheck.objects.all()
 
 
 api_metrics = MetricsList.as_view()
@@ -530,3 +549,4 @@ api_exception = ExceptionDataView.as_view()
 api_beacon = BeaconView.as_view()
 
 api_user_notification_config = UserNotificationConfigView.as_view()
+api_user_notifications = NotificationsList.as_view()

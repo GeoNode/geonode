@@ -79,5 +79,5 @@ class NotificationCheckAdmin(admin.ModelAdmin):
 
 @admin.register(MetricNotificationCheck)
 class MetricNotificationCheckAdmin(admin.ModelAdmin):
-    list_display = ('id', 'user', 'notification_check', 'metric', 'min_value', 'max_value', 'max_timeout',)
-    raw_id_fields= ('user', 'notification_check', 'resource', 'label',)
+    list_display = ('id', 'notification_check', 'metric', 'min_value', 'max_value', 'max_timeout',)
+    raw_id_fields= ('notification_check', 'resource', 'label',)

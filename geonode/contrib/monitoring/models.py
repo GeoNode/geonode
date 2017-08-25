@@ -41,6 +41,7 @@ except ImportError:
     from django.contrib.gis.geoip import GeoIP
 
 import user_agents
+from multi_email_field.forms import MultiEmailField
 
 from geonode.utils import parse_datetime
 
@@ -645,9 +646,15 @@ class NotificationCheck(models.Model):
     user_threshold = JSONField(default={}, null=False, blank=False, help_text=_("Threshold definition"))
     metrics = models.ManyToManyField(Metric, through='NotificationMetricDefinition', related_name='+')
 
+    @property
+    def url(self):
+        return reverse('monitoring:api_user_notification_config', args=(self.id,))
+
     def get_users(self):
-        return get_user_model().objects\
-                               .filter(monitoring_checks__notification_check=self)
+        return [r.user for r in self.receivers.exclude(user__isnull=True).select_related('user')]
+
+    def get_emails(self):
+        return [r.email for r in self.receivers.exclude(email__isnull=True)]
 
     def check_notifications(self, for_timestamp=None):
         checks = []
@@ -740,6 +747,7 @@ class NotificationCheck(models.Model):
         defs = this.definitions.all()
 
         class F(forms.Form):
+            emails = MultiEmailField(required=True)
             def __init__(self, *args, **kwargs):
                 super(F, self).__init__(*args, **kwargs)
                 fields = self.fields
@@ -752,29 +760,48 @@ class NotificationCheck(models.Model):
 
         return F(*args_, **kwargs_)
 
-    def process_user_form(self, data, user):
+    def process_user_form(self, data):
         """
         Process form data from user and create Notifica
         """
 
         inst = self
-        current_checks = self.checks.filter(user=user)
+        current_checks = self.checks.all()
         f = self.get_user_form(data=data)
         if not f.is_valid():
             raise forms.ValidationError(f.errors)
         current_checks.delete()
         out = []
-        for key, val in f.cleaned_data.items():
-
+        fdata = f.cleaned_data
+        emails = fdata.pop('emails')
+        for key, val in fdata.items():
             _v = key.split('.')
             fid, mname, field =  _v[0], '.'.join(_v[1:-1]), _v[-1]
             metric = Metric.objects.get(name=mname)
-            ncheck = MetricNotificationCheck.objects.create(user=user,
-                                                            notification_check=inst,
+            ncheck = MetricNotificationCheck.objects.create(notification_check=inst,
                                                             metric=metric,
                                                             **{field: val})
             out.append(ncheck)
+        U = get_user_model()
+        self.receivers.all().delete()
+        for email in emails:
+            params = {'notification_check': self}
+            try:
+                params['user'] = U.objects.get(email=email)
+            except U.DoesNotExist:
+                params['email'] = email
+            NotificationReceiver.objects.create(**params)
         return out
+
+class NotificationReceiver(models.Model):
+    notification_check = models.ForeignKey(NotificationCheck, related_name='receivers')
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, null=True, blank=True)
+    email = models.EmailField(null=True, blank=True)
+
+    def save(self, *args, **kwargs):
+        if not (self.user or self.email):
+            raise ValueError("Cannot save empty notification receiver")
+        super(NotificationReceiver, self).save(*args, **kwargs)
 
 
 class NotificationMetricDefinition(models.Model):
@@ -821,7 +848,6 @@ class NotificationMetricDefinition(models.Model):
 
 
 class MetricNotificationCheck(models.Model):
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, related_name="monitoring_checks")
     notification_check = models.ForeignKey(NotificationCheck, related_name="checks")
     metric = models.ForeignKey(Metric, related_name="checks")
     service = models.ForeignKey(Service, related_name="checks", null=True, blank=True)

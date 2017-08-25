@@ -2,7 +2,7 @@
 
 <p>{% trans "Hi," %} {{ recipient.username }}</p>
 
-<p>{% trans "Monitoring on " %}{{ host }}{% trans "detected following problems :" %}</p>
+<p>{% trans "Monitoring on" %} {{ host }} {% trans "has detected following problems :" %}</p>
 <ul>
 {% for ndata in alerts %}
     <li><p> {{ ndata }}</p></li>

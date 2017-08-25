@@ -2001,18 +2001,26 @@ class MonitoringChecksTestCase(TestCase):
             self.assertTrue(nc_form)
             self.assertTrue(nc_form.fields.keys())
             vals = [100, 10]
-            data = {}
-            for idx, (fname, field,) in enumerate(nc_form.fields.items()):
+            data = {'emails': [self.u.email]}
+            idx = 0
+            for fname, field in nc_form.fields.items():
+                if fname == 'emails':
+                    continue
                 data[fname] = vals[idx]
+                idx += 1
             resp = self.client.post(notifications_config_url, data)
             self.assertEqual(resp.status_code, 400)
             
             vals = [7, 600]
-            data = {}
-            for idx, (fname, field,) in enumerate(nc_form.fields.items()):
+            data = {'emails': [self.u2.email, 'testsome@test.com']}
+            idx = 0
+            for fname, field in nc_form.fields.items():
+                if fname == 'emails':
+                    continue
                 data[fname] = vals[idx]
+                idx += 1
             resp = self.client.post(notifications_config_url, data)
-            self.assertEqual(resp.status_code, 200)
+            self.assertEqual(resp.status_code, 200, resp)
 
         metric_rq_count = Metric.objects.get(name='request.count')
         metric_rq_time = Metric.objects.get(name='response.time')
@@ -2038,8 +2046,13 @@ class MonitoringChecksTestCase(TestCase):
         self.assertEqual(len(mail.outbox), 0)
         capi.emit_notifications(start)
         self.assertTrue(len(mail.outbox), 1)
-        
-        for m in mail.outbox:
-            print('mail', m.subject)
-            print(m.body)
+      
+        notifications_url = reverse('monitoring:api_user_notifications')
+        nresp = self.client.get(notifications_url)
+        self.assertEqual(nresp.status_code, 200)
+        ndata = json.loads(nresp.content)
+        self.assertEqual(set([n['id'] for n in ndata['notifications']]), 
+                         set(NotificationCheck.objects.all().values_list('id', flat=True)))
+
+
         
