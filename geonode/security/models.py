@@ -354,7 +354,7 @@ def set_geofence_owner(instance, username, view_perms=False, download_perms=Fals
                                   data=data,
                                   auth=HTTPBasicAuth(user, passwd))
                 if (r.status_code != 200):
-                    msg = "Could not ADD GeoServer User [" + username + "] Rule for Layer "
+                    msg = "Could not ADD GeoServer User [" + str(username) + "] Rule for Layer "
                     msg = msg + str(resource.layer.name)
                     logger.warning(msg)
             else:
@@ -365,7 +365,7 @@ def set_geofence_owner(instance, username, view_perms=False, download_perms=Fals
                                       data=data,
                                       auth=HTTPBasicAuth(user, passwd))
                     if (r.status_code != 200):
-                        msg = "Could not ADD GeoServer User [" + username + "] Rule for Layer "
+                        msg = "Could not ADD GeoServer User [" + str(username) + "] Rule for Layer "
                         msg = msg + str(resource.layer.name)
                         logger.warning(msg)
                     data = "<Rule>" + payload + "<service>GWC</service></Rule>"
@@ -374,7 +374,7 @@ def set_geofence_owner(instance, username, view_perms=False, download_perms=Fals
                                       data=data,
                                       auth=HTTPBasicAuth(user, passwd))
                     if (r.status_code != 200):
-                        msg = "Could not ADD GeoServer User [" + username + "] Rule for Layer "
+                        msg = "Could not ADD GeoServer User [" + str(username) + "] Rule for Layer "
                         msg = msg + str(resource.layer.name)
                         logger.warning(msg)
 
@@ -385,7 +385,7 @@ def set_geofence_owner(instance, username, view_perms=False, download_perms=Fals
                                       data=data,
                                       auth=HTTPBasicAuth(user, passwd))
                     if (r.status_code != 200):
-                        msg = "Could not ADD GeoServer User [" + username + "] Rule for Layer "
+                        msg = "Could not ADD GeoServer User [" + str(username) + "] Rule for Layer "
                         msg = msg + str(resource.layer.name)
                         logger.warning(msg)
                     data = "<Rule>" + payload + "<service>WFS</service></Rule>"
@@ -394,7 +394,7 @@ def set_geofence_owner(instance, username, view_perms=False, download_perms=Fals
                                       data=data,
                                       auth=HTTPBasicAuth(user, passwd))
                     if (r.status_code != 200):
-                        msg = "Could not ADD GeoServer User [" + username + "] Rule for Layer "
+                        msg = "Could not ADD GeoServer User [" + str(username) + "] Rule for Layer "
                         msg = msg + str(resource.layer.name)
                         logger.warning(msg)
                     data = "<Rule>" + payload + "<service>WPS</service></Rule>"
@@ -403,7 +403,7 @@ def set_geofence_owner(instance, username, view_perms=False, download_perms=Fals
                                       data=data,
                                       auth=HTTPBasicAuth(user, passwd))
                     if (r.status_code != 200):
-                        msg = "Could not ADD GeoServer User [" + username + "] Rule for Layer "
+                        msg = "Could not ADD GeoServer User [" + str(username) + "] Rule for Layer "
                         msg = msg + str(resource.layer.name)
                         logger.warning(msg)
 
@@ -418,7 +418,7 @@ def set_geofence_group(instance, groupname, view_perms=False, download_perms=Fal
     """assign access permissions to owner group"""
     resource = instance.get_self_resource()
 
-    if hasattr(resource, "layer"):
+    if groupname and hasattr(resource, "layer"):
         try:
             # Scan GeoFence for the group
             url = settings.OGC_SERVER['default']['LOCATION']
@@ -437,7 +437,7 @@ def set_geofence_group(instance, groupname, view_perms=False, download_perms=Fal
                                   data=data,
                                   auth=HTTPBasicAuth(user, passwd))
                 if (r.status_code != 200):
-                    msg = "Could not ADD GeoServer Group [" + groupname + "] Rule for Layer "
+                    msg = "Could not ADD GeoServer Group [" + str(groupname) + "] Rule for Layer "
                     msg = msg + str(resource.layer.name)
                     logger.warning(msg)
             else:
@@ -448,7 +448,7 @@ def set_geofence_group(instance, groupname, view_perms=False, download_perms=Fal
                                       data=data,
                                       auth=HTTPBasicAuth(user, passwd))
                     if (r.status_code != 200):
-                        msg = "Could not ADD GeoServer Group [" + groupname + "] Rule for Layer "
+                        msg = "Could not ADD GeoServer Group [" + str(groupname) + "] Rule for Layer "
                         msg = msg + str(resource.layer.name)
                         logger.warning(msg)
                     data = "<Rule>" + payload + "<service>GWC</service></Rule>"
@@ -457,7 +457,7 @@ def set_geofence_group(instance, groupname, view_perms=False, download_perms=Fal
                                       data=data,
                                       auth=HTTPBasicAuth(user, passwd))
                     if (r.status_code != 200):
-                        msg = "Could not ADD GeoServer Group [" + groupname + "] Rule for Layer "
+                        msg = "Could not ADD GeoServer Group [" + str(groupname) + "] Rule for Layer "
                         msg = msg + str(resource.layer.name)
                         logger.warning(msg)
 
@@ -468,7 +468,7 @@ def set_geofence_group(instance, groupname, view_perms=False, download_perms=Fal
                                       data=data,
                                       auth=HTTPBasicAuth(user, passwd))
                     if (r.status_code != 200):
-                        msg = "Could not ADD GeoServer Group [" + groupname + "] Rule for Layer "
+                        msg = "Could not ADD GeoServer Group [" + str(groupname) + "] Rule for Layer "
                         msg = msg + str(resource.layer.name)
                         logger.warning(msg)
                     data = "<Rule>" + payload + "<service>WFS</service></Rule>"
@@ -477,7 +477,7 @@ def set_geofence_group(instance, groupname, view_perms=False, download_perms=Fal
                                       data=data,
                                       auth=HTTPBasicAuth(user, passwd))
                     if (r.status_code != 200):
-                        msg = "Could not ADD GeoServer Group [" + groupname + "] Rule for Layer "
+                        msg = "Could not ADD GeoServer Group [" + str(groupname) + "] Rule for Layer "
                         msg = msg + str(resource.layer.name)
                         logger.warning(msg)
                     data = "<Rule>" + payload + "<service>WPS</service></Rule>"
@@ -486,7 +486,7 @@ def set_geofence_group(instance, groupname, view_perms=False, download_perms=Fal
                                       data=data,
                                       auth=HTTPBasicAuth(user, passwd))
                     if (r.status_code != 200):
-                        msg = "Could not ADD GeoServer Group [" + groupname + "] Rule for Layer "
+                        msg = "Could not ADD GeoServer Group [" + str(groupname) + "] Rule for Layer "
                         msg = msg + str(resource.layer.name)
                         logger.warning(msg)
 
