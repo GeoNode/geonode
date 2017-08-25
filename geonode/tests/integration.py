@@ -326,11 +326,11 @@ class GeoNodeMapTest(TestCase):
                          'from uploaded layer XML metadata')
 
         self.assertEqual(len(uploaded.keyword_list(
-        )), 5, 'Expected specific number of keywords from uploaded layer XML metadata')
+        )), 7, 'Expected specific number of keywords from uploaded layer XML metadata')
 
-        self.assertEqual(uploaded.keyword_csv,
-                         u'Airport,Airports,Landing Strips,Runway,Runways',
-                         'Expected CSV of keywords from uploaded layer XML metadata')
+        self.assertTrue(
+             u'Airport,Airports,Landing Strips,Runway,Runways' in uploaded.keyword_csv,
+             'Expected CSV of keywords from uploaded layer XML metadata')
 
         self.assertTrue(
             'Landing Strips' in uploaded.keyword_list(),
@@ -668,7 +668,11 @@ class GeoNodeMapTest(TestCase):
             self.assertEqual(lyr.title, "Test San Andres y Providencia Administrative")
             self.assertEqual(
                 lyr.keyword_list(), [
-                    u'import', u'san andreas', u'test'])
+                    u'features',
+                    u'import',
+                    u'san andreas',
+                    u'test',
+                    u'test_san_andres_y_providencia_administrative'])
             lyr.delete()
 
 
