@@ -1,28 +1,66 @@
 import { createAction } from 'redux-actions';
-import { BACKEND, NOTIFICATIONS } from './constants';
+import { fetch } from '../../utils';
+import apiUrl from '../../backend';
+import SERVICES from './constants';
 
 
-const open = createAction(NOTIFICATIONS, notifications => ({
-  notifications,
-  open: true,
-}));
+const reset = createAction(
+  SERVICES,
+  () => ({ status: 'initial' })
+);
 
 
-const close = createAction(NOTIFICATIONS, () => ({
-  notifications: '',
-  open: false,
-}));
+export const begin = createAction(
+  SERVICES,
+  () => ({ status: 'pending' })
+);
 
 
-const setBackendUrl = createAction(BACKEND, hostname => ({
-  apiUrl: `http://${hostname}:5000/api/v0`,
-}));
+const success = createAction(
+  SERVICES,
+  response => ({
+    ...response,
+    status: 'success',
+  })
+);
 
+
+const fail = createAction(
+  SERVICES,
+  error => ({
+    status: 'error',
+    error,
+  })
+);
+
+
+const get = () =>
+  (dispatch) => {
+    dispatch(begin());
+    const url = `${apiUrl}/services`;
+    fetch({ url })
+      .then(response => {
+        const result = {};
+        response.services.forEach((service) => {
+          if (!result[service.type]) {
+            result[service.type] = [];
+          }
+          result[service.type].push(service);
+        });
+        dispatch(success(result));
+        return response;
+      })
+      .catch(error => {
+        dispatch(fail(error.message));
+      });
+  };
 
 const actions = {
-  open,
-  close,
-  setBackendUrl,
+  reset,
+  begin,
+  success,
+  fail,
+  get,
 };
 
 export default actions;

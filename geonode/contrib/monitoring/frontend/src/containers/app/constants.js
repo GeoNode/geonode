@@ -1,2 +1,1 @@
-export const NOTIFICATIONS = 'NOTIFICATIONS';
-export const BACKEND = 'BACKEND';
+export default 'SERVICES';

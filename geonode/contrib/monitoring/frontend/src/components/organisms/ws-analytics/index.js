@@ -17,6 +17,7 @@ const mapStateToProps = (state) => ({
   interval: state.interval.interval,
   responseTimes: state.wsServiceData.response,
   responses: state.wsResponseSequence.response,
+  selected: state.wsService.service,
   throughputs: state.wsThroughputSequence.throughput,
   timestamp: state.interval.timestamp,
 });
@@ -37,17 +38,21 @@ class WSAnalytics extends React.Component {
     resetThroughputs: PropTypes.func.isRequired,
     responseTimes: PropTypes.object,
     responses: PropTypes.object,
+    selected: PropTypes.string,
     throughputs: PropTypes.object,
     timestamp: PropTypes.instanceOf(Date),
   }
 
   constructor(props) {
     super(props);
-    this.get = (interval = this.props.interval) => {
-      this.props.getResponses(interval);
-      this.props.getResponseTimes(interval);
-      this.props.getThroughputs(interval);
-      this.props.getErrors(interval);
+    this.get = (
+      service = this.props.selected,
+      interval = this.props.interval,
+    ) => {
+      this.props.getResponses(service, interval);
+      this.props.getResponseTimes(service, interval);
+      this.props.getThroughputs(service, interval);
+      this.props.getErrors(service, interval);
     };
 
     this.reset = () => {
@@ -59,13 +64,16 @@ class WSAnalytics extends React.Component {
   }
 
   componentWillMount() {
-    this.get();
+    if (this.props.timestamp && this.props.selected) {
+      this.get();
+    }
   }
 
   componentWillReceiveProps(nextProps) {
-    if (nextProps) {
-      if (nextProps.timestamp && nextProps.timestamp !== this.props.timestamp) {
-        this.get(nextProps.interval);
+    if (nextProps && nextProps.selected && nextProps.timestamp) {
+      if ((nextProps.timestamp !== this.props.timestamp) ||
+          (nextProps.selected !== this.props.selected)) {
+        this.get(nextProps.selected, nextProps.interval);
       }
     }
   }

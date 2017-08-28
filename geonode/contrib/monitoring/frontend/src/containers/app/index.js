@@ -21,10 +21,15 @@ const mapStateToProps = (/* state */) => ({});
 class App extends React.Component {
   static propTypes = {
     children: PropTypes.node,
+    get: PropTypes.func.isRequired,
   }
 
   static childContextTypes = {
     socket: PropTypes.object,
+  }
+
+  componentWillMount() {
+    this.props.get();
   }
 
   render() {
