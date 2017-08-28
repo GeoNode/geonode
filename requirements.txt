@@ -65,7 +65,7 @@ pillow==3.3.1
 pinax-theme-bootstrap==3.0a11
 pycsw==2.0.3
 elasticsearch==2.4.0
-pyflakes==1.2.3
+pyflakes==1.6.0
 pyproj==1.9.5.1
 python-dateutil==2.5.3
 python-mimeparse==1.5.2
