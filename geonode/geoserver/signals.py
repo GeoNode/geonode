@@ -220,8 +220,18 @@ def geoserver_post_save(instance, sender, **kwargs):
                 gs_resource.advertised = instance.is_published
                 gs_catalog.save(gs_resource)
 
+    if not settings.FREETEXT_KEYWORDS_READONLY:
+        if gs_resource.keywords:
+            for keyword in gs_resource.keywords:
+                instance.keywords.add(keyword)
+
     if any(instance.keyword_list()):
-        gs_resource.keywords = instance.keyword_list()
+        keywords = instance.keyword_list()
+        if settings.FREETEXT_KEYWORDS_READONLY:
+            if gs_resource.keywords:
+                keywords += gs_resource.keywords
+        gs_resource.keywords = list(set(keywords))
+
         # gs_resource should only be called if
         # ogc_server_settings.BACKEND_WRITE_ENABLED == True
         if getattr(ogc_server_settings, "BACKEND_WRITE_ENABLED", True):
