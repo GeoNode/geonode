@@ -1,7 +1,7 @@
 Django==1.8.7
 six==1.10.0
 MultipartPostHandler==0.1.0
-https://github.com/geopython/OWSLib/archive/geonode-dev.zip#egg=OWSLib-0.14-dev
+https://github.com/geopython/OWSLib/archive/master.zip#egg=OWSLib-0.14-dev
 # OWSLib==0.14.0
 Paver==1.2.4
 Unidecode==0.4.19
