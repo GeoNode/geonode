@@ -88,11 +88,7 @@ setup(name='GeoNode',
 
         # geopython dependencies
         "pyproj==1.9.5.1",  # python-pyproj (1.9.5)
-        "OWSLib==0.11.0",  # python-owslib (0.10.3) FIXME
-        # "pycsw==2.0.3dev",
-        # we can't use PyCSW until upstream merge changes for geonode.
-        # this is temporary solution
-        # "git+https://github.com/geosolutions-it/pycsw/archive/ISSUE_540_dev.zip",
+        "OWSLib==0.14-dev",  # python-owslib (0.10.3) FIXME
         "pycsw==2.0.3",  # python-pycsw (1.10.1, 2.0.0 in ppa) FIXME
         "%s" % shapely_dep,  # python-shapely (1.5.13)
 
