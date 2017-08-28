@@ -24,7 +24,7 @@ from imghdr import what
 import gisdata
 from django.core.management import call_command
 from django.test import LiveServerTestCase
-from geonode.qgis_server.models import QGISServerLayer
+from geonode.qgis_server.models import QGISServerLayer, QGISServerStyle
 
 from geonode.layers.models import Layer
 
@@ -131,6 +131,46 @@ class TestManagementCommands(LiveServerTestCase):
 
         # Tile caches should be deleted
         self.assertFalse(os.path.exists(qgis_layer.cache_path))
+
+        # Cleanup
+        layer.delete()
+
+    def test_import_qgis_styles(self):
+        """import_qgis_styles management commands should run properly."""
+        filename = os.path.join(
+            gisdata.GOOD_DATA,
+            'vector/san_andres_y_providencia_administrative.shp')
+        call_command('importlayers', filename, overwrite=True)
+
+        # Check layer have default style after importing
+        layer = Layer.objects.get(
+            name='san_andres_y_providencia_administrative')
+
+        qgis_layer = layer.qgis_layer
+        self.assertTrue(qgis_layer.default_style)
+
+        self.assertTrue(QGISServerStyle.objects.count() == 1)
+
+        # Delete styles
+        qgis_layer.default_style.delete()
+
+        self.assertTrue(QGISServerStyle.objects.count() == 0)
+
+        qgis_layer.refresh_from_db()
+
+        self.assertFalse(qgis_layer.default_style)
+
+        # Import styles
+
+        call_command('import_qgis_styles')
+
+        layer.refresh_from_db()
+        qgis_layer = layer.qgis_layer
+        qgis_layer.refresh_from_db()
+
+        self.assertTrue(qgis_layer.default_style)
+
+        self.assertTrue(QGISServerStyle.objects.count() == 1)
 
         # Cleanup
         layer.delete()

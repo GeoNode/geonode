@@ -41,6 +41,9 @@ from django.shortcuts import render_to_response
 from django.conf import settings
 from django.template import RequestContext
 from django.utils.translation import ugettext as _
+
+from geonode import geoserver, qgis_server
+
 try:
     import json
 except ImportError:
@@ -61,7 +64,7 @@ from geonode.base.enumerations import CHARSETS
 from geonode.base.models import TopicCategory
 from geonode.groups.models import GroupProfile
 
-from geonode.utils import default_map_config
+from geonode.utils import default_map_config, check_ogc_backend
 from geonode.utils import GXPLayer
 from geonode.utils import GXPMap
 from geonode.layers.utils import file_upload, is_raster, is_vector
@@ -77,7 +80,7 @@ from geonode.base.models import Thesaurus
 
 if 'geonode.geoserver' in settings.INSTALLED_APPS:
     from geonode.geoserver.helpers import _render_thumbnail
-if 'geonode.qgis_server' in settings.INSTALLED_APPS:
+if check_ogc_backend(qgis_server.BACKEND_PACKAGE):
     from geonode.qgis_server.models import QGISServerLayer
 CONTEXT_LOG_FILE = ogc_server_settings.LOG_FILE
 
@@ -202,6 +205,7 @@ def layer_upload(request, template='upload/layer_upload.html'):
                 out['url'] = reverse(
                     'layer_detail', args=[
                         saved_layer.service_typename])
+                out['ogc_backend'] = settings.OGC_SERVER['default']['BACKEND']
                 upload_session = saved_layer.upload_session
                 upload_session.processed = True
                 upload_session.save()
@@ -765,17 +769,19 @@ def layer_replace(request, layername, template='layers/layer_replace.html'):
                     out['success'] = False
                     out['errors'] = _("You are attempting to replace a raster layer with a vector.")
                 else:
-                    if 'geonode.geoserver' in settings.INSTALLED_APPS:
+                    if check_ogc_backend(geoserver.BACKEND_PACKAGE):
                         # delete geoserver's store before upload
                         cat = gs_catalog
                         cascading_delete(cat, layer.typename)
-                    elif 'geonode.qgis_server' in settings.INSTALLED_APPS:
+                        out['ogc_backend'] = geoserver.BACKEND_PACKAGE
+                    elif check_ogc_backend(qgis_server.BACKEND_PACKAGE):
                         try:
                             qgis_layer = QGISServerLayer.objects.get(
                                 layer=layer)
                             qgis_layer.delete()
                         except QGISServerLayer.DoesNotExist:
                             pass
+                        out['ogc_backend'] = qgis_server.BACKEND_PACKAGE
 
                     saved_layer = file_upload(
                         base_file,

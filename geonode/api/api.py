@@ -27,11 +27,18 @@ from django.core.urlresolvers import reverse
 from django.contrib.contenttypes.models import ContentType
 from django.conf import settings
 from django.db.models import Count
+from django.http.response import HttpResponse
+from django.template.response import TemplateResponse
 from django.utils.translation import get_language
 
 from avatar.templatetags.avatar_tags import avatar_url
+from tastypie import http
+from tastypie.exceptions import BadRequest
+
+from geonode import qgis_server, geoserver
+from geonode.qgis_server.models import QGISServerStyle
 from guardian.shortcuts import get_objects_for_user
-from tastypie.authorization import Authorization
+from tastypie.authorization import DjangoAuthorization
 from tastypie.bundle import Bundle
 
 from geonode.base.models import ResourceBase
@@ -40,7 +47,7 @@ from geonode.base.models import Region
 from geonode.base.models import HierarchicalKeyword
 from geonode.base.models import ThesaurusKeywordLabel
 
-from geonode.layers.models import Layer, Style, LayerFile
+from geonode.layers.models import Layer, Style
 from geonode.maps.models import Map
 from geonode.documents.models import Document
 from geonode.groups.models import GroupProfile, GroupCategory
@@ -48,9 +55,11 @@ from geonode.groups.models import GroupProfile, GroupCategory
 from django.core.serializers.json import DjangoJSONEncoder
 from tastypie.serializers import Serializer
 from tastypie import fields
-from tastypie.resources import ModelResource, Resource
+from tastypie.resources import ModelResource
 from tastypie.constants import ALL, ALL_WITH_RELATIONS
 from tastypie.utils import trailing_slash
+
+from geonode.utils import check_ogc_backend
 
 FILTER_TYPES = {
     'layer': Layer,
@@ -429,146 +438,219 @@ class OwnersResource(TypeFilteredResource):
         serializer = CountJSONSerializer()
 
 
+class QGISStyleResource(ModelResource):
+    """Styles API for QGIS Server backend."""
+
+    body = fields.CharField(attribute='body', use_in='detail')
+    name = fields.CharField(attribute='name')
+    title = fields.CharField(attribute='title')
+    layer = fields.ForeignKey(
+        'geonode.api.resourcebase_api.LayerResource',
+        attribute='layer',
+        null=True)
+    style_url = fields.CharField(attribute='style_url')
+    type = fields.CharField(attribute='type')
+
+    class Meta:
+        queryset = QGISServerStyle.objects.all()
+        resource_name = 'styles'
+        detail_uri_name = 'id'
+        authorization = DjangoAuthorization()
+        filtering = {
+            'id': ALL,
+            'title': ALL,
+            'name': ALL,
+            'layer': ALL_WITH_RELATIONS
+        }
+
+    def populate_object(self, style):
+        """Populate results with necessary fields
+
+        :param style: Style objects
+        :type style: QGISServerStyle
+        :return:
+        """
+        try:
+            qgis_layer = style.layer_styles.first()
+            """:type: geonode.qgis_server.QGISServerLayer"""
+            style.layer = qgis_layer.layer
+            style.type = 'qml'
+        except:
+            pass
+        return style
+
+    def build_filters(self, filters=None):
+        """Apply custom filters for layer."""
+        filters = super(QGISStyleResource, self).build_filters(filters)
+        # Convert layer__ filters into layer_styles__layer__
+        updated_filters = {}
+        for key, value in filters.iteritems():
+            key = key.replace('layer__', 'layer_styles__layer__')
+            updated_filters[key] = value
+        return updated_filters
+
+    def build_bundle(
+            self, obj=None, data=None, request=None, objects_saved=None):
+        """Override build_bundle method to add additional info."""
+
+        if obj is None and self._meta.object_class:
+            obj = self._meta.object_class()
+
+        elif obj:
+            obj = self.populate_object(obj)
+
+        return Bundle(
+            obj=obj,
+            data=data,
+            request=request,
+            objects_saved=objects_saved
+        )
+
+    def post_list(self, request, **kwargs):
+        """Attempt to redirect to QGIS Server Style management.
+
+        A post method should have the following field:
+
+        name: Slug name of style
+        title: Title of style
+        style: the style file uploaded
+
+        Also, should have kwargs:
+
+        layername or layer__name: The layer name associated with the style
+
+        or
+
+        layer__id: The layer id associated with the style
+
+        """
+        from geonode.qgis_server.views import qml_style
+
+        # Extract layer name information
+        POST = request.POST
+        FILES = request.FILES
+        layername = POST.get('layername') or POST.get('layer__name')
+        if not layername:
+            layer_id = POST.get('layer__id')
+            layer = Layer.objects.get(id=layer_id)
+            layername = layer.name
+
+        # move style file
+        FILES['qml'] = FILES['style']
+
+        response = qml_style(request, layername)
+
+        if isinstance(response, TemplateResponse):
+            if response.status_code == 201:
+                obj = QGISServerStyle.objects.get(
+                    layer_styles__layer__name=layername,
+                    name=POST['name'])
+                updated_bundle = self.build_bundle(obj=obj, request=request)
+                location = self.get_resource_uri(updated_bundle)
+
+                if not self._meta.always_return_data:
+                    return http.HttpCreated(location=location)
+                else:
+                    updated_bundle = self.full_dehydrate(updated_bundle)
+                    updated_bundle = self.alter_detail_data_to_serialize(
+                        request, updated_bundle)
+                    return self.create_response(
+                        request, updated_bundle,
+                        response_class=http.HttpCreated,
+                        location=location)
+            else:
+                context = response.context_data
+                # Check form valid
+                style_upload_form = context['style_upload_form']
+                if not style_upload_form.is_valid():
+                    raise BadRequest(style_upload_form.errors.as_text())
+                alert_message = context['alert_message']
+                raise BadRequest(alert_message)
+        elif isinstance(response, HttpResponse):
+            response_class = None
+            if response.status_code == 403:
+                response_class = http.HttpForbidden
+            return self.error_response(
+                request, response.content,
+                response_class=response_class)
+
+
 class GeoserverStyleResource(ModelResource):
-    """Styles api for Geoserver backend."""
+    """Styles API for Geoserver backend."""
+    body = fields.CharField(
+        attribute='sld_body',
+        use_in='detail')
+    name = fields.CharField(attribute='name')
+    title = fields.CharField(attribute='sld_title')
+    # layer_default_style is polymorphic, so it will have many to many
+    # relation
+    layer = fields.ManyToManyField(
+        'geonode.api.resourcebase_api.LayerResource',
+        attribute='layer_default_style',
+        null=True)
+    version = fields.CharField(
+        attribute='sld_version',
+        null=True,
+        blank=True)
+    style_url = fields.CharField(attribute='sld_url')
+    workspace = fields.CharField(attribute='workspace', null=True)
+    type = fields.CharField(attribute='type')
 
     class Meta:
         queryset = Style.objects.all()
         resource_name = 'styles'
-        allowed_methods = ['get', 'post', 'put']
-        ordering = ['layername']
-
-
-class QGISStyleObject(object):
-
-    def __init__(self, style_id=None, name=None, layer=None,
-                 style_file=None, style_type='qml', style_url=None):
-        # File name of QML style file
-        self.name = name
-        # Related layers
-        if layer and len(layer) > 0:
-            self.layer = layer[0]
-        # File object of the style
-        self.file = style_file
-        # LayerFile id of QML style in upload session
-        self.id = style_id
-        # Extension type of this style
-        # Currently only for qml
-        self.type = style_type
-        # Url of downloadable QML Style
-        self.url = style_url
-
-
-class QGISStyleResource(Resource):
-    """Styles api for QGIS Server backend."""
-
-    name = fields.CharField(attribute='name')
-    layer = fields.ForeignKey(
-        'geonode.api.resourcebase_api.LayerResource',
-        attribute='layer')
-    id = fields.IntegerField(attribute='id')
-    type = fields.CharField(attribute='type')
-    url = fields.CharField(attribute='url', null=True)
-    file = fields.FileField(attribute='file')
-
-    class Meta:
-        resource_name = 'styles'
         detail_uri_name = 'id'
-        object_class = QGISStyleObject
-        authorization = Authorization()
+        authorization = DjangoAuthorization()
+        filtering = {
+            'id': ALL,
+            'title': ALL,
+            'name': ALL,
+            'layer': ALL_WITH_RELATIONS
+        }
 
-    def _build_style_url(self, layerfile):
-        """Build downloadable url for QML Style.
+    def build_filters(self, filters=None):
+        """Apply custom filters for layer."""
+        filters = super(GeoserverStyleResource, self).build_filters(filters)
+        # Convert layer__ filters into layer_styles__layer__
+        updated_filters = {}
+        for key, value in filters.iteritems():
+            key = key.replace('layer__', 'layer_default_style__')
+            updated_filters[key] = value
+        return updated_filters
 
-        :param layerfile: LayerFile object
-        :type layerfile: geonode.layers.models.LayerFile
+    def populate_object(self, style):
+        """Populate results with necessary fields
 
-        :return: url
+        :param style: Style objects
+        :type style: Style
+        :return:
         """
-        try:
-            layer = Layer.objects.get(upload_session=layerfile.upload_session)
-            layername = layer.name
-            style_url = reverse(
-                'qgis_server:download-qml',
-                kwargs={'layername': layername})
-        except Layer.DoesNotExist:
-            # There exists a stale layerfile
-            return None
-        return style_url
+        style.type = 'sld'
+        return style
 
-    def _generate_result(self, layerfiles):
-        results = [
-            QGISStyleObject(
-                layer=lf.upload_session.layer_set.all(),
-                style_id=lf.id,
-                name=lf.file.name,
-                style_file=lf.file,
-                style_url=self._build_style_url(lf)) for lf in layerfiles
-        ]
-        results = [r for r in results if r.url]
-        return results
+    def build_bundle(
+            self, obj=None, data=None, request=None, objects_saved=None):
+        """Override build_bundle method to add additional info."""
 
-    def detail_uri_kwargs(self, bundle_or_obj):
-        kwargs = {}
+        if obj is None and self._meta.object_class:
+            obj = self._meta.object_class()
 
-        if isinstance(bundle_or_obj, Bundle):
-            kwargs[self._meta.detail_uri_name] = getattr(
-                bundle_or_obj.obj, self._meta.detail_uri_name)
-        else:
-            kwargs[self._meta.detail_uri_name] = getattr(
-                bundle_or_obj, self._meta.detail_uri_name)
+        elif obj:
+            obj = self.populate_object(obj)
 
-        return kwargs
+        return Bundle(
+            obj=obj,
+            data=data,
+            request=request,
+            objects_saved=objects_saved
+        )
 
-    def obj_get_list(self, bundle, **kwargs):
-        styles = []
-        if 'layername' in kwargs:
-            layername = kwargs.pop('layername')
-            layer = Layer.objects.get(name=layername)
-            styles = layer.upload_session.layerfile_set.filter(name='qml')
-        if not kwargs.items():
-            styles = LayerFile.objects.filter(name='qml')
-        return self._generate_result(styles)
 
-    def obj_get(self, bundle, **kwargs):
-        styles = []
-        if self._meta.detail_uri_name in kwargs:
-            style_id = kwargs.pop(self._meta.detail_uri_name)
-            styles = LayerFile.objects.filter(id=style_id)
-        results = self._generate_result(styles)
-        return results[0]
-
-    def obj_create(self, bundle, **kwargs):
-        bundle.obj = QGISStyleObject()
-        bundle = self.full_hydrate(bundle)
-        return bundle
-
-    def obj_update(self, bundle, **kwargs):
-        return self.obj_create(bundle, **kwargs)
-
-    def obj_delete_list(self, bundle, **kwargs):
-        bucket = self._bucket()
-
-        for key in bucket.get_keys():
-            obj = bucket.get(key)
-            obj.delete()
-
-    def obj_delete(self, bundle, **kwargs):
-        bucket = self._bucket()
-        obj = bucket.get(kwargs['pk'])
-        obj.delete()
-
-    def deserialize(self, request, data, format=None):
-        if not format:
-            format = request.Meta.get('CONTENT_TYPE', 'application/json')
-        if format == 'application/x-www-form-urlencoded':
-            return request.POST
-        if format.startswith('multipart'):
-            data = request.POST.copy()
-            data.update(request.FILES)
-            return data
-        return super(QGISStyleResource, self).deserialize(
-            request, data, format)
-
-    def rollback(self, bundles):
+if check_ogc_backend(qgis_server.BACKEND_PACKAGE):
+    class StyleResource(QGISStyleResource):
+        """Wrapper for Generic Style Resource"""
+        pass
+elif check_ogc_backend(geoserver.BACKEND_PACKAGE):
+    class StyleResource(GeoserverStyleResource):
+        """Wrapper for Generic Style Resource"""
         pass

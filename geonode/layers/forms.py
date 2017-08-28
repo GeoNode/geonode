@@ -25,6 +25,10 @@ import autocomplete_light
 
 from django.conf import settings
 from django import forms
+
+from geonode import geoserver, qgis_server
+from geonode.utils import check_ogc_backend
+
 try:
     import json
 except ImportError:
@@ -193,9 +197,9 @@ class LayerUploadForm(forms.Form):
 
 
 class NewLayerUploadForm(LayerUploadForm):
-    if 'geonode.geoserver' in settings.INSTALLED_APPS:
+    if check_ogc_backend(geoserver.BACKEND_PACKAGE):
         sld_file = forms.FileField(required=False)
-    if 'geonode.qgis_server' in settings.INSTALLED_APPS:
+    if check_ogc_backend(qgis_server.BACKEND_PACKAGE):
         qml_file = forms.FileField(required=False)
     xml_file = forms.FileField(required=False)
 
@@ -213,9 +217,9 @@ class NewLayerUploadForm(LayerUploadForm):
         "xml_file",
     ]
     # Adding style file based on the backend
-    if 'geonode.geoserver' in settings.INSTALLED_APPS:
+    if check_ogc_backend(geoserver.BACKEND_PACKAGE):
         spatial_files.append('sld_file')
-    if 'geonode.qgis_server' in settings.INSTALLED_APPS:
+    if check_ogc_backend(qgis_server.BACKEND_PACKAGE):
         spatial_files.append('qml_file')
 
     spatial_files = tuple(spatial_files)

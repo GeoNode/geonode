@@ -171,7 +171,7 @@ class QGISServerViewsTest(LiveServerTestCase):
             reverse('qgis_server:set-thumbnail', kwargs=params),
             data=data)
         # User dont have permission
-        self.assertEqual(response.status_code, 401)
+        self.assertEqual(response.status_code, 403)
         # Should log in
         self.client.login(username='admin', password='admin')
         response = self.client.post(
@@ -291,6 +291,11 @@ class QGISServerStyleManagerTest(LiveServerTestCase):
     def setUp(self):
         call_command('loaddata', 'people_data', verbosity=0)
 
+    def data_path(self, path):
+        project_root = os.path.abspath(settings.PROJECT_ROOT)
+        return os.path.join(
+            project_root, 'qgis_server/tests/data', path)
+
     @on_ogc_backend(qgis_server.BACKEND_PACKAGE)
     def test_list_style(self):
         """Test querying list of styles from QGIS Server."""
@@ -304,8 +309,95 @@ class QGISServerStyleManagerTest(LiveServerTestCase):
         # There will be a default style
         self.assertEqual(
             set(expected_list_style),
-            set([style.name for style in actual_list_style])
-        )
+            set([style.name for style in actual_list_style]))
+
+        style_list_url = reverse(
+            'qgis_server:download-qml',
+            kwargs={
+                'layername': layer.name
+            })
+        response = self.client.get(style_list_url)
+        self.assertEqual(response.status_code, 200)
+        actual_list_style = json.loads(response.content)
+
+        # There will be a default style
+        self.assertEqual(
+            set(expected_list_style),
+            set([style['name'] for style in actual_list_style]))
+
+        layer.delete()
+
+    @on_ogc_backend(qgis_server.BACKEND_PACKAGE)
+    def test_add_delete_style(self):
+        """Test add new style using qgis_server views."""
+        filename = os.path.join(gisdata.GOOD_DATA, 'raster/test_grid.tif')
+        layer = file_upload(filename)
+        """:type: geonode.layers.models.Layer"""
+
+        self.client.login(username='admin', password='admin')
+
+        qml_path = self.data_path('test_grid.qml')
+        add_style_url = reverse(
+            'qgis_server:upload-qml',
+            kwargs={
+                'layername': layer.name})
+
+        with open(qml_path) as file_handle:
+            form_data = {
+                'name': 'new_style',
+                'title': 'New Style',
+                'qml': file_handle
+            }
+            response = self.client.post(
+                add_style_url,
+                data=form_data)
+
+        self.assertEqual(response.status_code, 201)
+
+        actual_list_style = style_list(layer, internal=False)
+
+        expected_list_style = ['default', 'new_style']
+
+        self.assertEqual(
+            set(expected_list_style),
+            set([style.name for style in actual_list_style]))
+
+        # Test delete request
+        delete_style_url = reverse(
+            'qgis_server:remove-qml',
+            kwargs={
+                'layername': layer.name,
+                'style_name': 'default'})
+
+        response = self.client.delete(delete_style_url)
+        self.assertEqual(response.status_code, 200)
+
+        actual_list_style = style_list(layer, internal=False)
+
+        expected_list_style = ['new_style']
+
+        self.assertEqual(
+            set(expected_list_style),
+            set([style.name for style in actual_list_style]))
+
+        # Check new default
+        default_style_url = reverse(
+            'qgis_server:default-qml',
+            kwargs={
+                'layername': layer.name})
+
+        response = self.client.get(default_style_url)
+
+        self.assertEqual(response.status_code, 200)
+        expected_default_style_retval = {
+            'name': 'new_style',
+        }
+        actual_default_style_retval = json.loads(response.content)
+
+        for key, value in expected_default_style_retval.iteritems():
+            self.assertEqual(actual_default_style_retval[key], value)
+
+        layer.delete()
 
 
 class ThumbnailGenerationTest(LiveServerTestCase):

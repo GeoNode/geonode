@@ -498,7 +498,7 @@ def qml_style(request, layername, style_name=None):
                 'change_resourcebase', layer.get_self_resource()):
             return HttpResponse(
                 'User does not have permission to change QML style.',
-                status=401)
+                status=403)
 
         # Request about adding new QML style
 
@@ -512,7 +512,7 @@ def qml_style(request, layername, style_name=None):
                     'resource': layer,
                     'style_upload_form': form
                 },
-                status=200).render()
+                status=400).render()
 
         try:
             uploaded_qml = request.FILES['qml']
@@ -561,7 +561,7 @@ def qml_style(request, layername, style_name=None):
                         'alert_message': response.content,
                         'alert_class': 'alert-danger'
                     },
-                    status=200).render()
+                    status=response.status_code).render()
 
             # We succeeded on adding new style
 
@@ -583,7 +583,7 @@ def qml_style(request, layername, style_name=None):
                     'alert_class': 'alert-success',
                     'alert_message': alert_message
                 },
-                status=200).render()
+                status=201).render()
 
         except Exception as e:
             logger.exception(e)
@@ -621,7 +621,7 @@ def qml_style(request, layername, style_name=None):
                     'alert_message': alert_message,
                     'alert_class': 'alert-danger'
                 },
-                status=200).render()
+                status=response.status_code).render()
 
         # Successfully removed styles
         # Handle when default style is deleted.
@@ -645,7 +645,7 @@ def qml_style(request, layername, style_name=None):
     return HttpResponseBadRequest()
 
 
-def default_qml_style(request, layername, style_name):
+def default_qml_style(request, layername, style_name=None):
     """Set default style used by layer.
 
     :param layername: The layer name in Geonode.
@@ -667,6 +667,16 @@ def default_qml_style(request, layername, style_name):
         return HttpResponse(
             json.dumps(retval), content_type='application/json')
     elif request.method == 'POST':
+        # For people who uses API request
+        if not request.user.has_perm(
+                'change_resourcebase', layer.get_self_resource()):
+            return HttpResponse(
+                'User does not have permission to change QML style.',
+                status=403)
+
+        if not style_name:
+            return HttpResponseBadRequest()
+
         style_url = style_set_default_url(layer, style_name)
 
         response = requests.get(style_url)
@@ -715,7 +725,7 @@ def set_thumbnail(request, layername):
             'change_resourcebase', layer.get_self_resource()):
         return HttpResponse(
             'User does not have permission to change thumbnail.',
-            status=401)
+            status=403)
 
     # extract bbox
     bbox_string = request.POST['bbox']

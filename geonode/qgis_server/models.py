@@ -27,6 +27,7 @@ import requests
 from django.conf import settings
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
+from geonode.security.models import PermissionLevelMixin
 from lxml import etree
 
 from geonode import qgis_server
@@ -44,7 +45,7 @@ if check_ogc_backend(qgis_server.BACKEND_PACKAGE):
         os.mkdir(QGIS_LAYER_DIRECTORY)
 
 
-class QGISServerLayer(models.Model):
+class QGISServerLayer(models.Model, PermissionLevelMixin):
     """Model for Layer in QGIS Server Backend.
     """
 
@@ -71,7 +72,8 @@ class QGISServerLayer(models.Model):
         'QGISServerStyle',
         related_name='layer_default_style',
         default=None,
-        null=True)
+        null=True,
+        on_delete=models.SET_NULL)
     styles = models.ManyToManyField(
         'QGISServerStyle',
         related_name='layer_styles')
@@ -175,8 +177,16 @@ class QGISServerLayer(models.Model):
         for style in QGISServerStyle.objects.filter(layer_styles=None):
             style.delete()
 
+    def get_self_resource(self):
+        """Get associated resource base."""
+        # Associate this model with resource
+        try:
+            return self.layer.get_self_resource()
+        except:
+            return None
 
-class QGISServerStyle(models.Model):
+
+class QGISServerStyle(models.Model, PermissionLevelMixin):
     """Model wrapper for QGIS Server styles."""
 
     name = models.CharField(_('style name'), max_length=255)
@@ -296,8 +306,18 @@ class QGISServerStyle(models.Model):
         return os.path.join(
             QGIS_TILES_DIRECTORY, self.layer_styles.first().layer.name, self.name)
 
+    def get_self_resource(self):
+        """Get associated resource base."""
+        # Associate this model with resource
+        try:
+            qgis_layer = self.layer_styles.first()
+            """:type: QGISServerLayer"""
+            return qgis_layer.get_self_resource()
+        except:
+            return None
 
-class QGISServerMap(models.Model):
+
+class QGISServerMap(models.Model, PermissionLevelMixin):
     """Model wrapper for QGIS Server Map."""
 
     map = models.OneToOneField(
@@ -346,6 +366,14 @@ class QGISServerMap(models.Model):
         :rtype: str
         """
         return os.path.join(QGIS_TILES_DIRECTORY, self.qgis_map_name)
+
+    def get_self_resource(self):
+        """Get associated resource base."""
+        # Associate this model with resource
+        try:
+            return self.layer.get_self_resource()
+        except:
+            return None
 
 
 from geonode.qgis_server.signals import \

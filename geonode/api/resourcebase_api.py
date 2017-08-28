@@ -22,6 +22,7 @@ import re
 from django.db.models import Q
 from django.http import HttpResponse
 from django.conf import settings
+from tastypie.bundle import Bundle
 
 from tastypie.constants import ALL, ALL_WITH_RELATIONS
 from tastypie.resources import ModelResource
@@ -38,12 +39,13 @@ from django.forms.models import model_to_dict
 
 from tastypie.utils.mime import build_content_type
 
-from geonode import get_version
+from geonode import get_version, qgis_server, geoserver
 from geonode.layers.models import Layer
 from geonode.maps.models import Map
 from geonode.documents.models import Document
 from geonode.base.models import ResourceBase
 from geonode.base.models import HierarchicalKeyword
+from geonode.utils import check_ogc_backend
 
 from .authorization import GeoNodeAuthorization
 
@@ -569,6 +571,30 @@ class FeaturedResourceBaseResource(CommonModelApi):
 class LayerResource(CommonModelApi):
 
     """Layer API"""
+    links = fields.ListField(
+        attribute='links',
+        null=True,
+        default=[])
+    if check_ogc_backend(qgis_server.BACKEND_PACKAGE):
+        default_style = fields.ForeignKey(
+            'geonode.api.api.StyleResource',
+            attribute='qgis_default_style',
+            null=True)
+        styles = fields.ManyToManyField(
+            'geonode.api.api.StyleResource',
+            attribute='qgis_styles',
+            null=True,
+            use_in='detail')
+    elif check_ogc_backend(geoserver.BACKEND_PACKAGE):
+        default_style = fields.ForeignKey(
+            'geonode.api.api.StyleResource',
+            attribute='default_style',
+            null=True)
+        styles = fields.ManyToManyField(
+            'geonode.api.api.StyleResource',
+            attribute='styles',
+            null=True,
+            use_in='detail')
 
     def format_objects(self, objects):
         """
@@ -585,23 +611,79 @@ class LayerResource(CommonModelApi):
             formatted_obj = model_to_dict(obj, fields=values)
             # add the geogig link
             formatted_obj['geogig_link'] = obj.geogig_link
-            # add Link link
-            link_fields = [
-                'extension',
-                'link_type',
-                'name',
-                'mime',
-                'url'
-            ]
-            links = []
-            for l in obj.link_set.all():
-                formatted_link = model_to_dict(l, fields=link_fields)
-                links.append(formatted_link)
 
-            formatted_obj['links'] = links
+            # provide style information
+            bundle = self.build_bundle(obj=obj)
+            formatted_obj['default_style'] = (
+                self.default_style.dehydrate(bundle, for_list=True))
+            # Add resource uri
+            formatted_obj['resource_uri'] = self.get_resource_uri(bundle)
             # put the object on the response stack
             formatted_objects.append(formatted_obj)
         return formatted_objects
+
+    def dehydrate_links(self, bundle):
+        """Dehydrate links field."""
+        obj = bundle.obj
+        link_fields = [
+            'extension',
+            'link_type',
+            'name',
+            'mime',
+            'url'
+        ]
+        dehydrated = []
+        for l in obj.link_set.all():
+            formatted_link = model_to_dict(l, fields=link_fields)
+            dehydrated.append(formatted_link)
+
+        return dehydrated
+
+    def dehydrate(self, bundle):
+        """Override dehydrate phase"""
+
+        # Override Link dehydrate phase
+        bundle.data[self.links.instance_name] = self.dehydrate_links(bundle)
+
+        return bundle
+
+    def populate_object(self, obj):
+        """Populate results with necessary fields
+
+        :param obj: Layer obj
+        :type obj: Layer
+        :return:
+        """
+        if check_ogc_backend(qgis_server.BACKEND_PACKAGE):
+            # Provides custom links for QGIS Server styles info
+            # Default style
+            try:
+                obj.qgis_default_style = obj.qgis_layer.default_style
+            except:
+                pass
+
+            # Styles
+            try:
+                obj.qgis_styles = obj.qgis_layer.styles
+            except:
+                pass
+        return obj
+
+    def build_bundle(
+            self, obj=None, data=None, request=None, objects_saved=None):
+        """Override build_bundle method to add additional info."""
+
+        if obj is None and self._meta.object_class:
+            obj = self._meta.object_class()
+
+        elif obj:
+            obj = self.populate_object(obj)
+
+        return Bundle(
+            obj=obj,
+            data=data,
+            request=request,
+            objects_saved=objects_saved)
 
     class Meta(CommonMetaApi):
         queryset = Layer.objects.distinct().order_by('-date')
@@ -609,7 +691,15 @@ class LayerResource(CommonModelApi):
             queryset = queryset.filter(is_published=True)
         resource_name = 'layers'
         detail_uri_name = 'id'
+        include_resource_uri = True
         excludes = ['csw_anytext', 'metadata_xml']
+        filtering = CommonMetaApi.filtering
+        # Allow filtering using ID
+        filtering.update({
+            'id': ALL,
+            'name': ALL,
+            'typename': ALL,
+        })
 
 
 class MapResource(CommonModelApi):

@@ -20,9 +20,7 @@
 
 from tastypie.api import Api
 
-from geonode import qgis_server
-from geonode.api.api import QGISStyleResource
-from geonode.utils import check_ogc_backend
+from geonode.api.api import StyleResource
 from .api import TagResource, TopicCategoryResource, ProfileResource, \
     GroupResource, RegionResource, OwnersResource, ThesaurusKeywordResource, \
     GroupCategoryResource
@@ -44,6 +42,4 @@ api.register(FeaturedResourceBaseResource())
 api.register(OwnersResource())
 api.register(ThesaurusKeywordResource())
 api.register(GroupCategoryResource())
-
-if check_ogc_backend(qgis_server.BACKEND_PACKAGE):
-    api.register(QGISStyleResource())
+api.register(StyleResource())

@@ -123,24 +123,24 @@ urlpatterns = patterns(
         name='map-print'
     ),
     url(
-        r'^style/(?P<layername>[^/]*)(?:/(?P<style_name>[^/]*))?/edit$',
+        r'^style/default/(?P<layername>[^/]*)(?:/(?P<style_name>[^/]*))?$',
+        default_qml_style,
+        name='default-qml'
+    ),
+    url(
+        r'^style/upload/(?P<layername>[^/]*)(?:/(?P<style_name>[^/]*))?$',
         qml_style,
         name='upload-qml'
     ),
     url(
-        r'^style/(?P<layername>[^/]*)(?:/(?P<style_name>[^/]*))?$',
-        qml_style,
-        name='download-qml'
-    ),
-    url(
-        r'^style/(?P<layername>[^/]*)(?:/(?P<style_name>[^/]*))?$',
+        r'^style/remove/(?P<layername>[^/]*)/(?P<style_name>[^/]*)$',
         qml_style,
         name='remove-qml'
     ),
     url(
-        r'^style/(?P<layername>[^/]*)/(?P<style_name>[^/]*)/default$',
-        default_qml_style,
-        name='default-qml'
+        r'^style/download/(?P<layername>[^/]*)(?:/(?P<style_name>[^/]*))?$',
+        qml_style,
+        name='download-qml'
     ),
     url(
         r'^thumbnail/set/(?P<layername>[^/]*)$',
