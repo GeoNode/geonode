@@ -436,9 +436,31 @@ def test(options):
     """
     Run GeoNode's Unit Test Suite
     """
-    sh("%s manage.py test %s.tests --noinput --liveserver=0.0.0.0:8000" % (
-        options.get('prefix'), '.tests '.join(GEONODE_APPS)))
+    from geonode.settings import INSTALLED_APPS
 
+    success = False
+
+    if 'geonode.geoserver' in INSTALLED_APPS:
+        _reset()
+        # Start GeoServer
+        call_task('start_geoserver')
+        info("GeoNode is now available, running the tests now.")
+
+    try:
+        sh("%s manage.py test %s.tests --noinput --liveserver=0.0.0.0:8000" % (
+            options.get('prefix'), '.tests '.join(GEONODE_APPS)))
+    except BuildFailure as e:
+        info('Tests failed! %s' % str(e))
+    else:
+        success = True
+    finally:
+        if 'geonode.geoserver' in INSTALLED_APPS:
+            # don't use call task here - it won't run since it already has
+            stop()
+
+    _reset()
+    if not success:
+        sys.exit(1)
 
 @task
 def test_javascript(options):

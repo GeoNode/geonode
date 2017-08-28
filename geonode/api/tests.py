@@ -17,6 +17,7 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
+import json
 import os
 from StringIO import StringIO
 
@@ -30,7 +31,8 @@ from geonode.decorators import on_ogc_backend
 from geonode.layers.utils import file_upload
 from tastypie.test import ResourceTestCase
 
-from geonode.base.populate_test_data import create_models, all_public
+from geonode.base.populate_test_data import create_models, all_public, \
+    reconnect_signals, disconnect_signals
 from geonode.layers.models import Layer
 from geonode.utils import check_ogc_backend
 
@@ -247,6 +249,10 @@ class LayersStylesApiInteractionTests(LiveServerTestCase, ResourceTestCase):
     def setUp(self):
         super(LayersStylesApiInteractionTests, self).setUp()
 
+        # Reconnect Geoserver signals
+        if check_ogc_backend(geoserver.BACKEND_PACKAGE):
+            reconnect_signals()
+
         call_command('loaddata', 'people_data', verbosity=0)
 
         self.layer_list_url = reverse(
@@ -266,7 +272,10 @@ class LayersStylesApiInteractionTests(LiveServerTestCase, ResourceTestCase):
     def tearDown(self):
         Layer.objects.all().delete()
 
-    @on_ogc_backend(qgis_server.BACKEND_PACKAGE)
+        # Disconnect Geoserver signals
+        if check_ogc_backend(geoserver.BACKEND_PACKAGE):
+            disconnect_signals()
+
     def test_layer_interaction(self):
         """Layer API interaction check."""
         layer_id = self.layer.id
@@ -318,7 +327,6 @@ class LayersStylesApiInteractionTests(LiveServerTestCase, ResourceTestCase):
 
         self.assertEqual(obj, prev_obj)
 
-    @on_ogc_backend(qgis_server.BACKEND_PACKAGE)
     def test_style_interaction(self):
         """Style API interaction check."""
 
@@ -451,3 +459,48 @@ class LayersStylesApiInteractionTests(LiveServerTestCase, ResourceTestCase):
         objects = self.deserialize(resp)['objects']
 
         self.assertEqual(len(objects), 2)
+
+        # Attempt to set default style
+        resp = self.api_client.get(layer_detail_url)
+        self.assertValidJSONResponse(resp)
+        obj = self.deserialize(resp)
+        # Get style list and get new default style
+        styles = obj['styles']
+        new_default_style = None
+        for s in styles:
+            if not s == obj['default_style']:
+                new_default_style = s
+                break
+        obj['default_style'] = new_default_style
+        # Put the new update
+        patch_data = {
+            'default_style': new_default_style
+        }
+        resp = self.client.patch(
+            layer_detail_url,
+            data=json.dumps(patch_data),
+            content_type='application/json')
+        self.assertEqual(resp.status_code, 200)
+
+        # check new default_style
+        resp = self.api_client.get(layer_detail_url)
+        self.assertValidJSONResponse(resp)
+        obj = self.deserialize(resp)
+        self.assertEqual(obj['default_style'], new_default_style)
+
+        # Attempt to delete style
+        filter_url = style_list_url + '?layer__id=%d&name=%s' % (
+            self.layer.id, data['name'])
+        resp = self.api_client.get(filter_url)
+        self.assertValidJSONResponse(resp)
+        objects = self.deserialize(resp)['objects']
+
+        resource_uri = objects[0]['resource_uri']
+
+        resp = self.client.delete(resource_uri)
+        self.assertEqual(resp.status_code, 204)
+
+        resp = self.api_client.get(filter_url)
+        meta = self.deserialize(resp)['meta']
+
+        self.assertEqual(meta['total_count'], 0)

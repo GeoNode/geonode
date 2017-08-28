@@ -455,6 +455,7 @@ class QGISStyleResource(ModelResource):
         queryset = QGISServerStyle.objects.all()
         resource_name = 'styles'
         detail_uri_name = 'id'
+        allowed_methods = ['get', 'post', 'delete']
         authorization = DjangoAuthorization()
         filtering = {
             'id': ALL,
@@ -574,6 +575,40 @@ class QGISStyleResource(ModelResource):
                 request, response.content,
                 response_class=response_class)
 
+    def delete_detail(self, request, **kwargs):
+        """Attempt to redirect to QGIS Server Style management."""
+        from geonode.qgis_server.views import qml_style
+        style_id = kwargs.get('id')
+
+        qgis_style = QGISServerStyle.objects.get(id=style_id)
+        layername = qgis_style.layer_styles.first().layer.name
+
+        response = qml_style(request, layername, style_name=qgis_style.name)
+
+        if isinstance(response, TemplateResponse):
+            if response.status_code == 200:
+                # style deleted
+                return http.HttpNoContent()
+            else:
+                context = response.context_data
+                # Check form valid
+                style_upload_form = context['style_upload_form']
+                if not style_upload_form.is_valid():
+                    raise BadRequest(style_upload_form.errors.as_text())
+                alert_message = context['alert_message']
+                raise BadRequest(alert_message)
+        elif isinstance(response, HttpResponse):
+            response_class = None
+            if response.status_code == 403:
+                response_class = http.HttpForbidden
+            return self.error_response(
+                request, response.content,
+                response_class=response_class)
+
+    def delete_list(self, request, **kwargs):
+        """Do not allow delete list"""
+        return http.HttpForbidden()
+
 
 class GeoserverStyleResource(ModelResource):
     """Styles API for Geoserver backend."""
@@ -601,6 +636,7 @@ class GeoserverStyleResource(ModelResource):
         resource_name = 'styles'
         detail_uri_name = 'id'
         authorization = DjangoAuthorization()
+        allowed_methods = ['get']
         filtering = {
             'id': ALL,
             'title': ALL,

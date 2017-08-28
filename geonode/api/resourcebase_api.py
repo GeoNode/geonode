@@ -17,11 +17,15 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
-
+import json
 import re
+
+from django.core.urlresolvers import resolve
 from django.db.models import Q
 from django.http import HttpResponse
 from django.conf import settings
+from django.template.response import TemplateResponse
+from tastypie import http
 from tastypie.bundle import Bundle
 
 from tastypie.constants import ALL, ALL_WITH_RELATIONS
@@ -685,6 +689,51 @@ class LayerResource(CommonModelApi):
             request=request,
             objects_saved=objects_saved)
 
+    def patch_detail(self, request, **kwargs):
+        """Allow patch request to update default_style.
+
+        Request body must match this:
+
+        {
+            'default_style': <resource_uri_to_style>
+        }
+
+        """
+        reason = 'Can only patch "default_style" field.'
+        try:
+            body = json.loads(request.body)
+            if 'default_style' not in body:
+                return http.HttpBadRequest(reason=reason)
+            match = resolve(body['default_style'])
+            style_id = match.kwargs['id']
+            api_name = match.kwargs['api_name']
+            resource_name = match.kwargs['resource_name']
+            if not (resource_name == 'styles' and api_name == 'api'):
+                raise Exception()
+
+            from geonode.qgis_server.models import QGISServerStyle
+
+            style = QGISServerStyle.objects.get(id=style_id)
+
+            layer_id = kwargs['id']
+            layer = Layer.objects.get(id=layer_id)
+        except:
+            return http.HttpBadRequest(reason=reason)
+
+        from geonode.qgis_server.views import default_qml_style
+
+        request.method = 'POST'
+        response = default_qml_style(
+            request,
+            layername=layer.name,
+            style_name=style.name)
+
+        if isinstance(response, TemplateResponse):
+            if response.status_code == 200:
+                return HttpResponse(status=200)
+
+        return self.error_response(request, response.content)
+
     class Meta(CommonMetaApi):
         queryset = Layer.objects.distinct().order_by('-date')
         if settings.RESOURCE_PUBLISHING:
@@ -692,6 +741,7 @@ class LayerResource(CommonModelApi):
         resource_name = 'layers'
         detail_uri_name = 'id'
         include_resource_uri = True
+        allowed_methods = ['get', 'patch']
         excludes = ['csw_anytext', 'metadata_xml']
         filtering = CommonMetaApi.filtering
         # Allow filtering using ID
