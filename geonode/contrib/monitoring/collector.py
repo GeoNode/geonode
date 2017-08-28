@@ -650,12 +650,16 @@ class CollectorAPI(object):
     def emit_notifications(self, for_timestamp=None):
         notifications = self.get_notifications(for_timestamp)
         for n, ndata in notifications:
-            users = n.get_users()
-            content = self.compose_notifications(ndata, when=for_timestamp)
-            send_notification(users=users, label=AppConf.NOTIFICATION_NAME, extra_context=content)
-            emails = n.get_emails()
-            self.send_mails(emails, ndata, for_timestamp)
-
+            if not n.can_send():
+                continue
+            try:
+                users = n.get_users()
+                content = self.compose_notifications(ndata, when=for_timestamp)
+                send_notification(users=users, label=AppConf.NOTIFICATION_NAME, extra_context=content)
+                emails = n.get_emails()
+                self.send_mails(emails, ndata, for_timestamp)
+            finally:
+                n.mark_send()
 
     def send_mails(self, emails, ndata, when=None):
         base_ctx = self.compose_notifications(ndata, when=when)
@@ -682,5 +686,3 @@ class CollectorAPI(object):
         notifications = NotificationCheck.check_for(for_timestamp=for_timestamp)
         non_empty = [n for n in notifications if n[1]]
         return non_empty
-
-

@@ -217,7 +217,11 @@ class FilteredView(View):
         from_fields = [f[0] for f in self.fields_map]
         to_fields = [f[1] for f in self.fields_map]
         out = [dict(zip(to_fields, (getattr(item, f) for f in from_fields))) for item in q]
-        return json_response({self.output_name: out})
+        return json_response({self.output_name: out,
+                              'success': True,
+                              'errors': {},
+                              'data': {'key': self.output_name},
+                              'status': 'ok',})
 
 
 class ResourcesList(FilteredView):
@@ -498,6 +502,7 @@ class UserNotificationConfigView(View):
             status = 401
         return json_response(out, status=status)
 
+        
     def post(self, request, *args, **kwargs):
         out = {'success': False, 'status': 'error', 'data': [], 'errors': {}}
         status = 500
@@ -536,6 +541,26 @@ class NotificationsList(FilteredView):
 
     def get_queryset(self, *args, **kwargs):
         return NotificationCheck.objects.all()
+
+    def create(self, request, *args, **kwargs):
+        f = NotificaitonCheckForm(data=request.POST)
+        if f.is_valid():
+            d = f.cleaned_data
+            return NotificationCheck.create(**d)
+        self.errors = f.errors
+    
+    def post(self, request, *args, **kwargs):
+        out = {'success': False, 'status': 'error', 'data': [], 'errors': {}}
+        d = self.create(request, *args, **kwargs)
+        if d is None:
+            out['errors'] = self.errors
+            status = 400
+        else:
+            out['data'] = dump(d)
+            out['success'] = True
+            out['status'] = 'ok'
+            status = 200
+        return json_response(out, status=status)
 
 
 class StatusCheckView(View):

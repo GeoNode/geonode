@@ -14,6 +14,8 @@ from geonode.contrib.monitoring.models import (
     MonitoredResource,
     NotificationCheck,
     MetricNotificationCheck,
+    NotificationMetricDefinition,
+    NotificationReceiver,
     )
 
 
@@ -81,3 +83,14 @@ class NotificationCheckAdmin(admin.ModelAdmin):
 class MetricNotificationCheckAdmin(admin.ModelAdmin):
     list_display = ('id', 'notification_check', 'metric', 'min_value', 'max_value', 'max_timeout',)
     raw_id_fields= ('notification_check', 'resource', 'label',)
+
+@admin.register(NotificationMetricDefinition)
+class NotificationCheckDefinitionAdmin(admin.ModelAdmin):
+    list_display = ('notification_check', 'metric', 'field_option',)
+    raw_id_fields = ('notification_check', 'metric',)
+
+@admin.register(NotificationReceiver)
+class NotificationReceiverAdmin(admin.ModelAdmin):
+    list_display = ('notification_check', 'user', 'email',)
+    raw_id_fields = ('notification_check', 'user',)
+

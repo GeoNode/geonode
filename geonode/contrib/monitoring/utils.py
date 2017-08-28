@@ -315,9 +315,19 @@ def dump(obj, additional_fields=tuple()):
         val = getattr(obj, fname)
         if isinstance(field, RelatedField):
             if val is not None:
+                v = val
                 val = {'class': '{}.{}'.format(val.__class__.__module__, val.__class__.__name__),
                        'id': val.pk}
+                if hasattr(v, 'name'):
+                    val['name'] = v.name
+        if isinstance(val, timedelta):
+            val = {'class': 'datetime.timedelta',
+                   'seconds': val.total_seconds()}
         out[fname] = val
     for fname in additional_fields:
-        out[fname] = getattr(obj, fname, None)
+        val = getattr(obj, fname, None)
+        if isinstance(val, timedelta):
+            val = {'class': 'datetime.timedelta',
+                   'seconds': val.total_seconds()}
+        out[fname] = val
     return out

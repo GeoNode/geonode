@@ -202,7 +202,7 @@ class Metric(models.Model):
     @property
     def is_count(self):
         return self.type == self.TYPE_COUNT
-    
+
     @property
     def is_value_numeric(self):
         return self.type == self.TYPE_VALUE_NUMERIC
@@ -257,7 +257,7 @@ class OWSService(models.Model):
             except (ValueError, TypeError,):
                 s = None
             if s:
-                q = q|models.Q(id=s)
+                q = q | models.Q(id=s)
             return cls.objects.get(q)
         except cls.DoesNotExist:
             return
@@ -479,6 +479,7 @@ class ExceptionEvent(models.Model):
                                   error_data=stack_trace,
                                   error_message=message or '',
                                   request=request)
+
     @property
     def url(self):
         return reverse('monitoring:api_exception', args=(self.id,))
@@ -515,9 +516,10 @@ class ExceptionEvent(models.Model):
                                          'status': e.request.response_status,
                                          'time': e.request.response_time,
                                          'type': e.request.response_type}
-                           }
-               }
+                            }
+                }
         return data
+
 
 class MetricLabel(models.Model):
 
@@ -525,6 +527,7 @@ class MetricLabel(models.Model):
 
     def __str__(self):
         return 'Metric Label: {}'.format(self.name)
+
 
 class MetricValue(models.Model):
     valid_from = models.DateTimeField(db_index=True, null=False)
@@ -607,16 +610,16 @@ class MetricValue(models.Model):
     def get_for(cls, metric, service=None, valid_on=None, resource=None, label=None, ows_service=None):
         qparams = models.Q()
         if isinstance(metric, Metric):
-            qparams = qparams & models.Q(service_metric__metric = metric)
+            qparams = qparams & models.Q(service_metric__metric=metric)
         else:
-            qparams = qparams & models.Q(service_metric__metric__name = metric)
+            qparams = qparams & models.Q(service_metric__metric__name=metric)
         if service:
             if isinstance(service, Service):
-                qparams = qparams & models.Q(service_metric__service_type = service.service_type)
+                qparams = qparams & models.Q(service_metric__service_type=service.service_type)
             elif isinstance(service, ServiceType):
-                qparams = qparams & models.Q(service_metric__service_type = service)
+                qparams = qparams & models.Q(service_metric__service_type=service)
             else:
-                qparams = qparams & models.Q(service_metric__service_type__name = service)
+                qparams = qparams & models.Q(service_metric__service_type__name=service)
         if valid_on:
             qwhen = models.Q(valid_from__lte=valid_on) & models.Q(valid_to__gte=valid_on)
             qparams = qparams & qwhen
@@ -642,10 +645,41 @@ class MetricValue(models.Model):
 
 
 class NotificationCheck(models.Model):
+
+    GRACE_PERIOD_1M = timedelta(seconds=60)
+    GRACE_PERIOD_5M = timedelta(seconds=5*60)
+    GRACE_PERIOD_10M = timedelta(seconds=10*60)
+    GRACE_PERIOD_30M = timedelta(seconds=30*60)
+    GRACE_PERIOD_1H = timedelta(seconds=60*60)
+    GRACE_PERIODS = ((GRACE_PERIOD_1M, _("1 minute"),),
+                     (GRACE_PERIOD_5M, _("5 minutes"),),
+                     (GRACE_PERIOD_10M, _("10 minutes"),),
+                     (GRACE_PERIOD_30M, _("30 minutes"),),
+                     (GRACE_PERIOD_1H, _("1 hour"),),
+                     )
+
     name = models.CharField(max_length=255, null=False, blank=False, unique=True)
     description = models.CharField(max_length=255, null=False, blank=False)
     user_threshold = JSONField(default={}, null=False, blank=False, help_text=_("Threshold definition"))
     metrics = models.ManyToManyField(Metric, through='NotificationMetricDefinition', related_name='+')
+    last_send = models.DateTimeField(null=True, blank=True, help_text=_("Marker of last delivery"))
+    grace_period = models.DurationField(null=False, default=GRACE_PERIOD_10M, choices=GRACE_PERIODS,
+                                        help_text=_("Minimum time between subsequent notifications"))
+
+    def __str__(self):
+        return "Notification Check #{}: {}".format(self.id, self.name)
+
+    def can_send(self):
+        if self.last_send is None:
+            return True
+        now = datetime.now()
+        if self.last_send + self.grace_period > now:
+            return False
+        return True
+
+    def mark_send(self):
+        self.last_send = datetime.now()
+        self.save()
 
     @property
     def url(self):
@@ -697,15 +731,15 @@ class NotificationCheck(models.Model):
         return thresholds
 
     @classmethod
-    def create(cls, name, description, thresholds):
+    def create(cls, name, description, user_threshold):
         inst, _ = cls.objects.get_or_create(name=name)
         if not _:
             raise ValueError("Alert definition already exists")
-        inst.description=description
+        inst.description = description
         user_thresholds = {}
         for (metric_name, field_opt, use_service,
              use_resource, use_label, use_ows_service,
-             minimum, maximum, thresholds, _description) in thresholds:
+             minimum, maximum, thresholds, _description) in user_threshold:
 
             # metric_name is a string for metric.name
             # field opt is NotificationMetricDefinition.FIELD_OPTION* value
@@ -749,6 +783,7 @@ class NotificationCheck(models.Model):
 
         class F(forms.Form):
             emails = MultiEmailField(required=True)
+
             def __init__(self, *args, **kwargs):
                 super(F, self).__init__(*args, **kwargs)
                 fields = self.fields
@@ -777,7 +812,9 @@ class NotificationCheck(models.Model):
         emails = fdata.pop('emails')
         for key, val in fdata.items():
             _v = key.split('.')
-            fid, mname, field =  _v[0], '.'.join(_v[1:-1]), _v[-1]
+            # syntax of field name:
+            # field_id.metric.name.field_name
+            mname, field = '.'.join(_v[1:-1]), _v[-1]
             metric = Metric.objects.get(name=mname)
             if field == 'max_timeout':
                 val = timedelta(seconds=int(val))
@@ -787,14 +824,16 @@ class NotificationCheck(models.Model):
             out.append(ncheck)
         U = get_user_model()
         self.receivers.all().delete()
+
         for email in emails:
             params = {'notification_check': self}
             try:
                 params['user'] = U.objects.get(email=email)
-            except U.DoesNotExist:
+            except U.DoesNotExist, err:
                 params['email'] = email
-            NotificationReceiver.objects.create(**params)
+            r = NotificationReceiver.objects.create(**params)
         return out
+
 
 class NotificationReceiver(models.Model):
     notification_check = models.ForeignKey(NotificationCheck, related_name='receivers')
@@ -814,7 +853,7 @@ class NotificationMetricDefinition(models.Model):
     FIELD_OPTION_CHOICES = ((FIELD_OPTION_MIN_VALUE, _("Value must be above"),),
                             (FIELD_OPTION_MAX_VALUE, _("Value must be below"),),
                             (FIELD_OPTION_MAX_TIMEOUT, _("Last update must not be older than"),)
-                           )
+                            )
 
     notification_check = models.ForeignKey(NotificationCheck, related_name='definitions')
     metric = models.ForeignKey(Metric, related_name='notification_checks')
@@ -858,10 +897,10 @@ class NotificationMetricDefinition(models.Model):
         out.append(field)
         return out
 
-
     @property
     def field_name(self):
         return '{}.{}.{}'.format(self.id, self.metric.name, self.field_option)
+
 
 class MetricNotificationCheck(models.Model):
     notification_check = models.ForeignKey(NotificationCheck, related_name="checks")
@@ -872,7 +911,9 @@ class MetricNotificationCheck(models.Model):
     ows_service = models.ForeignKey(OWSService, null=True, blank=True)
     min_value = models.DecimalField(max_digits=16, decimal_places=4, null=True, default=None, blank=True)
     max_value = models.DecimalField(max_digits=16, decimal_places=4, null=True, default=None, blank=True)
-    max_timeout = models.DurationField(null=True, blank=True, help_text=_("Max timeout for given metric before error should be raised"))
+    max_timeout = models.DurationField(null=True, blank=True,
+                                       help_text=_("Max timeout for given metric before error should be raised")
+                                       )
     active = models.BooleanField(default=True, null=False, blank=False)
 
     def __str__(self):
@@ -908,7 +949,7 @@ class MetricNotificationCheck(models.Model):
         if self.min_value is not None:
             had_check = True
             if v < self.min_value:
-               raise self.MetricValueError(metric, self, "Value too low", v, self.min_value)
+                raise self.MetricValueError(metric, self, "Value too low", v, self.min_value)
         if self.max_value is not None:
             had_check = True
             if v > self.max_value:
@@ -921,7 +962,11 @@ class MetricNotificationCheck(models.Model):
             # metric may be at the valid_on point in time
             valid_on = datetime.now()
             if (valid_on - metric.valid_to) > self.max_timeout:
-                raise self.MetricValueError(metric, self, "Value collected too far in the past", metric.valid_to, valid_on)
+                raise self.MetricValueError(metric, self,
+                                            "Value collected too far in the past",
+                                            metric.valid_to,
+                                            valid_on
+                                            )
         if not had_check:
             raise ValueError("Metric check {} is not checking anything".format(self))
 
@@ -977,7 +1022,6 @@ class BuiltIns(object):
     values_numeric = ('storage.total', 'storage.used', 'storage.free', 'mem.free', 'mem.usage',
                       'mem.buffers', 'mem.all',)
     counters = ('request.count',  'network.in', 'network.out', 'response.error.count',)
-
 
     unit_seconds = ('response.time', 'uptime', 'cpu.usage',)
     unit_bytes = ('response.size', 'network.in', 'network.out',

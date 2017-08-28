@@ -31,10 +31,12 @@ from django.contrib.auth import get_user_model
 from django.core.urlresolvers import reverse
 from django.core import mail
 
-from geonode.contrib.monitoring.models import (RequestEvent, Host, Service, ServiceType, 
+from geonode.contrib.monitoring.models import (RequestEvent, Host, Service, ServiceType,
                                                populate, ExceptionEvent, MetricNotificationCheck,
                                                MetricValue, NotificationCheck, Metric, OWSService,
-                                               MonitoredResource, MetricLabel)
+                                               MonitoredResource, MetricLabel,
+                                               NotificationMetricDefinition,)
+
 from geonode.contrib.monitoring.collector import CollectorAPI
 from geonode.contrib.monitoring.utils import generate_periods, align_period_start
 from geonode.base.populate_test_data import create_models
@@ -1769,7 +1771,6 @@ class MonitoringChecksTestCase(TestCase):
         nc = NotificationCheck.objects.create(name='check requests', description='check requests')
 
         mc = MetricNotificationCheck.objects.create(notification_check=nc,
-                                                    user=self.u,
                                                     service=self.service,
                                                     metric=self.metric,
                                                     min_value=None,
@@ -1779,7 +1780,6 @@ class MonitoringChecksTestCase(TestCase):
             mc.check_metric(for_timestamp=start)
 
         mc = MetricNotificationCheck.objects.create(notification_check=nc,
-                                                    user=self.u,
                                                     service=self.service,
                                                     metric=self.metric,
                                                     min_value=11,
@@ -1790,7 +1790,6 @@ class MonitoringChecksTestCase(TestCase):
             mc.check_metric(for_timestamp=start)
 
         mc = MetricNotificationCheck.objects.create(notification_check=nc,
-                                                    user=self.u,
                                                     service=self.service,
                                                     metric=self.metric,
                                                     min_value=1,
@@ -1802,7 +1801,6 @@ class MonitoringChecksTestCase(TestCase):
         m = MetricValue.add(self.metric, start_aligned, end_aligned, self.service, label="discount", value_raw=10, value_num=10, value=10, ows_service=ows_service)
 
         mc = MetricNotificationCheck.objects.create(notification_check=nc,
-                                                    user=self.u,
                                                     service=self.service,
                                                     metric=self.metric,
                                                     min_value=11,
@@ -1815,7 +1813,6 @@ class MonitoringChecksTestCase(TestCase):
 
         m = MetricValue.add(self.metric, start_aligned, end_aligned, self.service, label="discount", value_raw=10, value_num=10, value=10, resource=resource)
         mc = MetricNotificationCheck.objects.create(notification_check=nc,
-                                                    user=self.u,
                                                     service=self.service,
                                                     metric=self.metric,
                                                     min_value=1,
@@ -1851,7 +1848,6 @@ class MonitoringChecksTestCase(TestCase):
         nc = NotificationCheck.objects.create(name='check requests', description='check requests')
 
         mc = MetricNotificationCheck.objects.create(notification_check=nc,
-                                                    user=self.u,
                                                     service=self.service,
                                                     metric=self.metric,
                                                     min_value=10,
@@ -1861,32 +1857,27 @@ class MonitoringChecksTestCase(TestCase):
 
         c = self.client
         c.login(username=self.user, password=self.passwd)
-        nresp = c.get(reverse('monitoring:api_notifications_config', kwargs={'cls_name': 'check'}))
+        nresp = c.get(reverse('monitoring:api_user_notifications'))
         self.assertEqual(nresp.status_code, 200)
         data = json.loads(nresp.content)
-        self.assertTrue(data['data'][0]['id'] == nc.id) 
+        self.assertTrue(data['notifications'][0]['id'] == nc.id) 
         
-        nresp = c.get(reverse('monitoring:api_notifications_config', kwargs={'cls_name': 'check', 'pk': nc.id}))
+        nresp = c.get(reverse('monitoring:api_user_notification_config', kwargs={'pk': nc.id}))
         self.assertEqual(nresp.status_code, 200)
         data = json.loads(nresp.content)
-        self.assertTrue(data['data'][0]['id'] == nc.id) 
+        self.assertTrue(data['data']['notification']['id'] == nc.id) 
 
-        nresp = c.get(reverse('monitoring:api_notifications_config', kwargs={'cls_name': 'metric_check'}))
+        nresp = c.get(reverse('monitoring:api_user_notifications'))
         self.assertEqual(nresp.status_code, 200)
         data = json.loads(nresp.content)
-        self.assertTrue(data['data'][0]['id'] == mc.id)
-
-        c.login(username=self.user2, password=self.passwd2)
-        nresp = c.get(reverse('monitoring:api_notifications_config', kwargs={'cls_name': 'check'}))
-        self.assertEqual(nresp.status_code, 200)
-        data = json.loads(nresp.content)
-        self.assertTrue(len(data['data']) == 1)
+        dkey = data['data']['key']
+        self.assertTrue(data[dkey][0]['id'] == nc.id) 
 
         c.login(username=self.user2, password=self.passwd2)
-        nresp = c.get(reverse('monitoring:api_notifications_config', kwargs={'cls_name': 'metric_check'}))
-        self.assertEqual(nresp.status_code, 404)
+        nresp = c.get(reverse('monitoring:api_user_notifications'))
+        self.assertEqual(nresp.status_code, 200)
         data = json.loads(nresp.content)
-        self.assertTrue(len(data['data']) == 0)
+        self.assertTrue(len(data[dkey]) == 1)
 
 
     def test_notifications_edit_views(self):
@@ -1907,66 +1898,49 @@ class MonitoringChecksTestCase(TestCase):
 
         c = self.client
         c.login(username=self.user, password=self.passwd)
-        notification_url = reverse('monitoring:api_notifications_config', kwargs={'cls_name': 'check'})
+        notification_url = reverse('monitoring:api_user_notifications')
+        uthreshold = [('request.count', 'min_value', False, False, False, False, 0, 100, None, "Min number of request"),
+                      ('request.count', 'max_value', False, False, False, False, 1000, None, None, "Max number of request"),
+                      ]
         notification_data = {'name': 'test',
                              'description': 'more test',
-                             'user_threshold': json.dumps({'some': 'data'})}
+                             'user_threshold': json.dumps(uthreshold)}
+
         out = c.post(notification_url, notification_data)
         self.assertEqual(out.status_code, 200)
-        jout = json.loads(out.content)
 
-        notification_url = reverse('monitoring:api_notifications_config', kwargs={'cls_name': 'check', 'pk': jout['data'][0]['id']})
+        jout = json.loads(out.content)
+        nid = jout['data']['id']
+        ndef = NotificationMetricDefinition.objects.filter(notification_check__id=nid)
+        self.assertEqual(ndef.count(), 2)
+
+        notification_url = reverse('monitoring:api_user_notification_config', kwargs={'pk': nid})
+        notification = NotificationCheck.objects.get(pk=nid)
         notification_data = {'name': 'testttt',
-                             'description': 'more tesddddt',
-                             'user_threshold': json.dumps({'some': 'datadffdf'})}
-        
+                             'emails': [self.u.email, 'testother@test.com',],
+                             'description': 'more tesddddt'}
+        form = notification.get_user_form()
+        fields = {}
+
+        for field in form.fields.values():
+            if not hasattr(field, 'name'):
+                continue
+            fields[field.name] = field.min_value + 1
+        notification_data.update(fields)
         out = c.post(notification_url, notification_data)
         self.assertEqual(out.status_code, 200)
         jout = json.loads(out.content)
         n = NotificationCheck.objects.get()
-        self.assertTrue(MetricNotificationCheck.objects.all().count() == 0)
-        for fname, fval in jout['data'][0].iteritems():
-            self.assertEqual(getattr(n, fname), fval)
-
-        notification_url = reverse('monitoring:api_notifications_config', kwargs={'cls_name': 'metric_check'})
-        notification_data = {'notification_check': n.id, 
-                             'min_value': 10,
-                             'max_value': 20,
-                             'metric': 'request.count',
-                             'service': self.service.name,
-                             'label': label.name,
-                             'resource': '{}={}'.format(resource.type, resource.name),
-                             'ows_service': ows_service.name}
-
-        out = c.post(notification_url, notification_data)
-        self.assertEqual(out.status_code, 200, out.content)
-        jout = json.loads(out.content)
-
-        self.assertTrue(MetricNotificationCheck.objects.all().count() == 1)
-        notification_data = {'notification_check': n.id, 
-                             'min_value': 20,
-                             'max_value': 50,
-                             'metric': 'request.ua',
-                             'service': self.service.name,
-                             'label': label.name,
-                             'resource': '{}={}'.format(resource.type, resource.name),
-                             'ows_service': ows_service.name}
-
-
-        notification_url = reverse('monitoring:api_notifications_config', kwargs={'cls_name': 'metric_check', 'pk': jout['data'][0]['id']})
         
-        out = c.post(notification_url, notification_data)
-        self.assertTrue(MetricNotificationCheck.objects.all().count() == 1)
-        self.assertEqual(out.status_code, 200, out.content)
-        jout = json.loads(out.content)
-        m = MetricNotificationCheck.objects.get()
-        jdata = jout['data'][0]
-        self.assertEqual(Decimal(jdata['min_value']), m.min_value)
-        
-        checks = NotificationCheck.check_for()
-        self.assertTrue(len(checks)> 0)
-        self.assertTrue(len(checks), NotificationCheck.objects.all().count())
-
+        self.assertEqual(MetricNotificationCheck.objects.all().count(), 2)
+        for nrow in jout['data']:
+            nitem = MetricNotificationCheck.objects.get(id=nrow['id'])
+            for nkey, nval in nrow.items():
+                if not isinstance(nval, dict):
+                    compare_to = getattr(nitem, nkey)
+                    if isinstance(compare_to, Decimal):
+                        nval = Decimal(nval)
+                    self.assertEqual(compare_to, nval)
 
 
     def test_notifications_api(self):
@@ -1995,13 +1969,14 @@ class MonitoringChecksTestCase(TestCase):
         pwd = self.passwd2
 
         self.client.login(username=user.username, password=pwd)
-        notifications_config_url = reverse('monitoring:api_user_notification_config', args=(nc.id,))
         for nc in NotificationCheck.objects.all():
+            notifications_config_url = reverse('monitoring:api_user_notification_config', args=(nc.id,))
             nc_form = nc.get_user_form()
             self.assertTrue(nc_form)
             self.assertTrue(nc_form.fields.keys())
             vals = [100, 10]
-            data = {'emails': [self.u.email]}
+            data = {'emails': [self.u.email, 'testotherr@test.com',]}
+            data['emails'] = '\n'.join(data['emails'])
             idx = 0
             for fname, field in nc_form.fields.items():
                 if fname == 'emails':
@@ -2012,15 +1987,22 @@ class MonitoringChecksTestCase(TestCase):
             self.assertEqual(resp.status_code, 400)
             
             vals = [7, 600]
-            data = {'emails': [self.u2.email, 'testsome@test.com']}
+            data = {'emails': '\n'.join([self.u.email, self.u2.email, 'testsome@test.com'])}
             idx = 0
             for fname, field in nc_form.fields.items():
                 if fname == 'emails':
                     continue
                 data[fname] = vals[idx]
                 idx += 1
+            #data['emails'] = '\n'.join(data['emails'])
             resp = self.client.post(notifications_config_url, data)
+            nc.refresh_from_db()
             self.assertEqual(resp.status_code, 200, resp)
+
+            _emails = data['emails'].split('\n')[-1:]
+            _users = data['emails'].split('\n')[:-1]
+            self.assertEqual(set([u.email for u in nc.get_users()]), set(_users))
+            self.assertEqual(set([email for email in nc.get_emails()]), set(_emails))
 
         metric_rq_count = Metric.objects.get(name='request.count')
         metric_rq_time = Metric.objects.get(name='response.time')
@@ -2042,14 +2024,37 @@ class MonitoringChecksTestCase(TestCase):
                         value_raw=700,
                         value_num=700,
                         value=700)
+        
+        nc = NotificationCheck.objects.get()
+        self.assertTrue(len(nc.get_emails())> 0)
+        self.assertTrue(len(nc.get_users())> 0)
+        self.assertEqual(nc.last_send, None)
+        self.assertTrue(nc.can_send())
 
         self.assertEqual(len(mail.outbox), 0)
         capi.emit_notifications(start)
         self.assertTrue(len(mail.outbox), 1)
-      
+        nc.refresh_from_db()
         notifications_url = reverse('monitoring:api_user_notifications')
         nresp = self.client.get(notifications_url)
         self.assertEqual(nresp.status_code, 200)
         ndata = json.loads(nresp.content)
         self.assertEqual(set([n['id'] for n in ndata['notifications']]), 
                          set(NotificationCheck.objects.all().values_list('id', flat=True)))
+       
+        self.assertTrue(isinstance(nc.last_send, datetime))
+        self.assertFalse(nc.can_send())
+        mail.outbox = []
+        self.assertEqual(len(mail.outbox), 0)
+        capi.emit_notifications(start)
+        self.assertEqual(len(mail.outbox), 0)
+
+        nc.last_send = start - nc.grace_period
+        nc.save()
+
+        self.assertTrue(nc.can_send())
+        mail.outbox = []
+        self.assertEqual(len(mail.outbox), 0)
+        capi.emit_notifications(start)
+        self.assertEqual(len(mail.outbox), nc.receivers.all().count())
+
