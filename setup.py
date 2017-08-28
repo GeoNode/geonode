@@ -26,7 +26,7 @@ on_rtd = os.environ.get('READTHEDOCS', None) == 'True'
 if on_rtd:
     shapely_dep = "Shapely<1.5.13"
 else:
-    shapely_dep = "Shapely>=1.5.13"
+    shapely_dep = "Shapely==1.5.17"
 
 setup(name='GeoNode',
       version=__import__('geonode').get_version(),
