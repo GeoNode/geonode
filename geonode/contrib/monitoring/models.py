@@ -761,7 +761,7 @@ class NotificationCheck(models.Model):
                                                              metric=metric,
                                                              description=_description,
                                                              field_option=field_opt)
-            user_thresholds[nm.id] = {'min': minimum,
+            user_thresholds[nm.field_name] = {'min': minimum,
                                       'max': maximum,
                                       'metric': metric_name,
                                       'description': _description,
@@ -814,7 +814,7 @@ class NotificationCheck(models.Model):
             _v = key.split('.')
             # syntax of field name:
             # field_id.metric.name.field_name
-            mname, field = '.'.join(_v[1:-1]), _v[-1]
+            mname, field = '.'.join(_v[:-1]), _v[-1]
             metric = Metric.objects.get(name=mname)
             if field == 'max_timeout':
                 val = timedelta(seconds=int(val))
@@ -899,7 +899,7 @@ class NotificationMetricDefinition(models.Model):
 
     @property
     def field_name(self):
-        return '{}.{}.{}'.format(self.id, self.metric.name, self.field_option)
+        return '{}.{}'.format(self.metric.name, self.field_option)
 
 
 class MetricNotificationCheck(models.Model):

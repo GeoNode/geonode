@@ -1925,7 +1925,7 @@ class MonitoringChecksTestCase(TestCase):
         for field in form.fields.values():
             if not hasattr(field, 'name'):
                 continue
-            fields[field.name] = field.min_value + 1
+            fields[field.name] = (field.min_value or 0) + 1
         notification_data.update(fields)
         out = c.post(notification_url, notification_data)
         self.assertEqual(out.status_code, 200)
@@ -1974,8 +1974,8 @@ class MonitoringChecksTestCase(TestCase):
             nc_form = nc.get_user_form()
             self.assertTrue(nc_form)
             self.assertTrue(nc_form.fields.keys())
-            vals = [100, 10]
-            data = {'emails': [self.u.email, 'testotherr@test.com',]}
+            vals = [1000000, 100000]
+            data = {'emails': []} #self.u.email, 'testotherr@test.com',]}
             data['emails'] = '\n'.join(data['emails'])
             idx = 0
             for fname, field in nc_form.fields.items():
@@ -1984,6 +1984,7 @@ class MonitoringChecksTestCase(TestCase):
                 data[fname] = vals[idx]
                 idx += 1
             resp = self.client.post(notifications_config_url, data)
+
             self.assertEqual(resp.status_code, 400)
             
             vals = [7, 600]
