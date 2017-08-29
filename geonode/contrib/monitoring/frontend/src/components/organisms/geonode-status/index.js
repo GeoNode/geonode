@@ -28,6 +28,11 @@ class GeonodeStatus extends React.Component {
     resetMemory: PropTypes.func.isRequired,
     timestamp: PropTypes.instanceOf(Date),
     interval: PropTypes.number,
+    half: PropTypes.bool,
+  }
+
+  static defaultProps = {
+    half: true,
   }
 
   constructor(props) {
@@ -82,8 +87,12 @@ class GeonodeStatus extends React.Component {
         MB: element.data.length > 0 ? element.data[0].val / 1024 / 1024 : 0,
       }));
     }
+    console.log(this.props.half);
+    const contentStyle = this.props.half
+                       ? styles.content
+                       : { ...styles.content, width: '100%' };
     return (
-      <HoverPaper style={styles.content}>
+      <HoverPaper style={contentStyle}>
         <h3>Geonode status</h3>
         <CPU cpu={5} data={cpuData} />
         <HR />

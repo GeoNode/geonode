@@ -1,24 +1,13 @@
-import { BACKEND, NOTIFICATIONS } from './constants';
+import SERVICES from './constants';
 
 
-export function notifications(
-  state = { open: false, notifications: '' },
+export function services(
+  state = { open: false, services: '' },
   action
 ) {
   switch (action.type) {
-    case NOTIFICATIONS:
+    case SERVICES:
       return action.payload;
-    default:
-      return state;
-  }
-}
-
-
-export function backend(state = { status: 'initial' }, action) {
-  switch (action.type) {
-    case BACKEND: {
-      return action.payload;
-    }
     default:
       return state;
   }

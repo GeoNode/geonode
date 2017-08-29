@@ -1,6 +1,6 @@
 import { combineReducers } from 'redux';
 import theme from './containers/reducers';
-import { backend, notifications } from './containers/app/reducers';
+import { services } from './containers/app/reducers';
 
 // Atoms
 import mapData from './components/atoms/map/reducers';
@@ -35,7 +35,6 @@ import { wsLayerResponse } from './components/organisms/ws-layers-analytics/redu
 
 
 const reducers = {
-  backend,
   errorDetails,
   errorList,
   geonodeAverageResponse,
@@ -52,7 +51,7 @@ const reducers = {
   geoserverMemStatus,
   interval,
   mapData,
-  notifications,
+  services,
   theme,
   uptime,
   wsErrorSequence,

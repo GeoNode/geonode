@@ -34,15 +34,11 @@ class WSData extends React.Component {
     super(props);
 
     this.get = (
-        interval = this.props.interval,
         selected = this.props.selected,
+        interval = this.props.interval,
     ) => {
-      this.props.get(interval, selected);
+      this.props.get(selected, interval);
     };
-  }
-
-  componentWillMount() {
-    this.get();
   }
 
   componentWillReceiveProps(nextProps) {
@@ -52,8 +48,8 @@ class WSData extends React.Component {
         || nextProps.timestamp !== this.props.timestamp
       ) {
         this.get(
-          nextProps.interval,
           nextProps.selected,
+          nextProps.interval,
         );
       }
     }
