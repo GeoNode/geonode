@@ -650,20 +650,21 @@ class CollectorAPI(object):
     def emit_notifications(self, for_timestamp=None):
         notifications = self.get_notifications(for_timestamp)
         for n, ndata in notifications:
-            if not n.can_send():
+            if not n.can_send:
                 continue
             try:
                 users = n.get_users()
                 content = self.compose_notifications(ndata, when=for_timestamp)
                 send_notification(users=users, label=AppConf.NOTIFICATION_NAME, extra_context=content)
                 emails = n.get_emails()
-                self.send_mails(emails, ndata, for_timestamp)
+                self.send_mails(n, emails, ndata, for_timestamp)
             finally:
                 n.mark_send()
 
-    def send_mails(self, emails, ndata, when=None):
+    def send_mails(self, notification, emails, ndata, when=None):
         base_ctx = self.compose_notifications(ndata, when=when)
-        subject = _("GeoNode Monitoring on {} reports errors").format(base_ctx['host'])
+        subject = _("GeoNode Monitoring on {} reports errors: {}").format(base_ctx['host'], 
+                                                                          notification.notification_subject)
         for email in emails:
             ctx = {'recipient': {'username': email}}
             ctx.update(base_ctx)

@@ -427,7 +427,7 @@ def index(request):
 class NotificaitonCheckForm(forms.ModelForm):
     class Meta:
         model = NotificationCheck
-        fields = ('name', 'description', 'user_threshold',)
+        fields = ('name', 'description', 'severity', 'user_threshold',)
 
 
 class MetricNotificationCheckForm(forms.ModelForm):
@@ -533,6 +533,7 @@ class NotificationsList(FilteredView):
     fields_map = (('id', 'id',),
                   ('url', 'url',),
                   ('name', 'name',),
+                  ('severity', 'severity',),
                   ('description', 'description',),
                  )
 
@@ -569,6 +570,10 @@ class NotificationsList(FilteredView):
 
 
 class StatusCheckView(View):
+    fields = ('name', 'severity', 
+              'offending_value', 
+              'threshold_value', 
+              'message',)
 
     def get(self, request, *args, **kwargs):
         capi = CollectorAPI()
@@ -577,7 +582,7 @@ class StatusCheckView(View):
         d = data['data']
         for nc, ncdata in checks:
             d.append({'check': dump(nc),
-                      'problems': [dump(n, ('name', 'offending_value', 'threshold_value', 'message',)) for n in ncdata]})
+                      'problems': [dump(n, self.fields) for n in ncdata]})
         return json_response(data)
 
 

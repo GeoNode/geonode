@@ -658,6 +658,15 @@ class NotificationCheck(models.Model):
                      (GRACE_PERIOD_1H, _("1 hour"),),
                      )
 
+    SEVERITY_WARNING = 'warning'
+    SEVERITY_ERROR = 'error'
+    SEVERITY_FATAL = 'fatal'
+
+    SEVERITIES = ((SEVERITY_WARNING, _("Warning"),),
+                  (SEVERITY_ERROR, _("Error"),),
+                  (SEVERITY_FATAL, _("Fatal"),),
+                  )
+
     name = models.CharField(max_length=255, null=False, blank=False, unique=True)
     description = models.CharField(max_length=255, null=False, blank=False)
     user_threshold = JSONField(default={}, null=False, blank=False, help_text=_("Threshold definition"))
@@ -665,10 +674,28 @@ class NotificationCheck(models.Model):
     last_send = models.DateTimeField(null=True, blank=True, help_text=_("Marker of last delivery"))
     grace_period = models.DurationField(null=False, default=GRACE_PERIOD_10M, choices=GRACE_PERIODS,
                                         help_text=_("Minimum time between subsequent notifications"))
+    severity = models.CharField(max_length=32, null=False, default=SEVERITY_ERROR, choices=SEVERITIES)
 
     def __str__(self):
         return "Notification Check #{}: {}".format(self.id, self.name)
 
+    @property
+    def notification_subject(self):
+        return _("{}: {}").format(self.severity, self.name)
+
+    @property
+    def is_warning(self):
+        return self.severity == self.SEVERITY_WARNING
+    
+    @property
+    def is_error(self):
+        return self.severity == self.SEVERITY_ERROR
+
+    @property
+    def is_fatal(self):
+        return self.severity == self.SEVERITY_FATAL
+
+    @property
     def can_send(self):
         if self.last_send is None:
             return True
@@ -731,7 +758,7 @@ class NotificationCheck(models.Model):
         return thresholds
 
     @classmethod
-    def create(cls, name, description, user_threshold):
+    def create(cls, name, description, user_threshold, severity=None):
         inst, _ = cls.objects.get_or_create(name=name)
         if not _:
             raise ValueError("Alert definition already exists")
@@ -767,6 +794,8 @@ class NotificationCheck(models.Model):
                                       'description': _description,
                                       'steps': cls.get_steps(minimum, maximum, thresholds)}
         inst.user_threshold = user_thresholds
+        if severity is not None:
+            inst.severity = severity
         inst.save()
         return inst
 
@@ -783,7 +812,7 @@ class NotificationCheck(models.Model):
 
         class F(forms.Form):
             emails = MultiEmailField(required=True)
-
+            severity = forms.ChoiceField(choices=self.SEVERITIES, required=False)
             def __init__(self, *args, **kwargs):
                 super(F, self).__init__(*args, **kwargs)
                 fields = self.fields
@@ -810,6 +839,10 @@ class NotificationCheck(models.Model):
         out = []
         fdata = f.cleaned_data
         emails = fdata.pop('emails')
+        severity = fdata.pop('severity', None)
+        if severity is not None:
+            self.severity = severity
+            self.save()
         for key, val in fdata.items():
             _v = key.split('.')
             # syntax of field name:
@@ -936,9 +969,10 @@ class MetricNotificationCheck(models.Model):
             self.name = metric.service_metric.metric.name
             self.offending_value = offending_value
             self.threshold_value = threshold_value
+            self.severity = check.notification_check.severity
 
         def __str__(self):
-            return "MetricValueError(metric {} misses {} check: {})".format(self.metric, self.check, self.message)
+            return "MetricValueError({}: metric {} misses {} check: {})".format(self.severity, self.metric, self.check, self.message)
 
     def check_value(self, metric, valid_on):
         """

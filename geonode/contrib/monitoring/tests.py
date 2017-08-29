@@ -1903,6 +1903,7 @@ class MonitoringChecksTestCase(TestCase):
                       ]
         notification_data = {'name': 'test',
                              'description': 'more test',
+                             'severity': 'warning',
                              'user_threshold': json.dumps(uthreshold)}
 
         out = c.post(notification_url, notification_data)
@@ -1917,6 +1918,7 @@ class MonitoringChecksTestCase(TestCase):
         notification = NotificationCheck.objects.get(pk=nid)
         notification_data = {'name': 'testttt',
                              'emails': [self.u.email, 'testother@test.com',],
+                             'severity': 'error',
                              'description': 'more tesddddt'}
         form = notification.get_user_form()
         fields = {}
@@ -1930,6 +1932,7 @@ class MonitoringChecksTestCase(TestCase):
         self.assertEqual(out.status_code, 200)
         jout = json.loads(out.content)
         n = NotificationCheck.objects.get()
+        self.assertTrue(n.is_error)
         
         self.assertEqual(MetricNotificationCheck.objects.all().count(), 2)
         for nrow in jout['data']:
@@ -1978,7 +1981,7 @@ class MonitoringChecksTestCase(TestCase):
             data['emails'] = '\n'.join(data['emails'])
             idx = 0
             for fname, field in nc_form.fields.items():
-                if fname == 'emails':
+                if fname in ('emails', 'severity',):
                     continue
                 data[fname] = vals[idx]
                 idx += 1
@@ -1990,7 +1993,7 @@ class MonitoringChecksTestCase(TestCase):
             data = {'emails': '\n'.join([self.u.email, self.u2.email, 'testsome@test.com'])}
             idx = 0
             for fname, field in nc_form.fields.items():
-                if fname == 'emails':
+                if fname in ('emails', 'severity',):
                     continue
                 data[fname] = vals[idx]
                 idx += 1
@@ -2029,7 +2032,7 @@ class MonitoringChecksTestCase(TestCase):
         self.assertTrue(len(nc.get_emails())> 0)
         self.assertTrue(len(nc.get_users())> 0)
         self.assertEqual(nc.last_send, None)
-        self.assertTrue(nc.can_send())
+        self.assertTrue(nc.can_send)
 
         self.assertEqual(len(mail.outbox), 0)
         capi.emit_notifications(start)
@@ -2043,7 +2046,7 @@ class MonitoringChecksTestCase(TestCase):
                          set(NotificationCheck.objects.all().values_list('id', flat=True)))
        
         self.assertTrue(isinstance(nc.last_send, datetime))
-        self.assertFalse(nc.can_send())
+        self.assertFalse(nc.can_send)
         mail.outbox = []
         self.assertEqual(len(mail.outbox), 0)
         capi.emit_notifications(start)
@@ -2052,7 +2055,7 @@ class MonitoringChecksTestCase(TestCase):
         nc.last_send = start - nc.grace_period
         nc.save()
 
-        self.assertTrue(nc.can_send())
+        self.assertTrue(nc.can_send)
         mail.outbox = []
         self.assertEqual(len(mail.outbox), 0)
         capi.emit_notifications(start)
