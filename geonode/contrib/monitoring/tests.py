@@ -1860,7 +1860,7 @@ class MonitoringChecksTestCase(TestCase):
         nresp = c.get(reverse('monitoring:api_user_notifications'))
         self.assertEqual(nresp.status_code, 200)
         data = json.loads(nresp.content)
-        self.assertTrue(data['notifications'][0]['id'] == nc.id) 
+        self.assertTrue(data['data'][0]['id'] == nc.id) 
         
         nresp = c.get(reverse('monitoring:api_user_notification_config', kwargs={'pk': nc.id}))
         self.assertEqual(nresp.status_code, 200)
@@ -1870,14 +1870,13 @@ class MonitoringChecksTestCase(TestCase):
         nresp = c.get(reverse('monitoring:api_user_notifications'))
         self.assertEqual(nresp.status_code, 200)
         data = json.loads(nresp.content)
-        dkey = data['data']['key']
-        self.assertTrue(data[dkey][0]['id'] == nc.id) 
+        self.assertTrue(data['data'][0]['id'] == nc.id) 
 
         c.login(username=self.user2, password=self.passwd2)
         nresp = c.get(reverse('monitoring:api_user_notifications'))
         self.assertEqual(nresp.status_code, 200)
         data = json.loads(nresp.content)
-        self.assertTrue(len(data[dkey]) == 1)
+        self.assertTrue(len(data['data']) == 1)
 
 
     def test_notifications_edit_views(self):
@@ -2040,7 +2039,7 @@ class MonitoringChecksTestCase(TestCase):
         nresp = self.client.get(notifications_url)
         self.assertEqual(nresp.status_code, 200)
         ndata = json.loads(nresp.content)
-        self.assertEqual(set([n['id'] for n in ndata['notifications']]), 
+        self.assertEqual(set([n['id'] for n in ndata['data']]), 
                          set(NotificationCheck.objects.all().values_list('id', flat=True)))
        
         self.assertTrue(isinstance(nc.last_send, datetime))

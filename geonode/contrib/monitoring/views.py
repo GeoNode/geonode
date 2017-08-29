@@ -212,16 +212,21 @@ class FilteredView(View):
     def get(self, request, *args, **kwargs):
         qargs = self.get_filter_args(request)
         if self.errors:
-            return json_response({'errors': self.errors}, status=400)
+            return json_response({'success': False, 
+                                  'status': 'errors', 
+                                  'errors': self.errors}, 
+                                 status=400)
         q = self.get_queryset(**qargs)
         from_fields = [f[0] for f in self.fields_map]
         to_fields = [f[1] for f in self.fields_map]
         out = [dict(zip(to_fields, (getattr(item, f) for f in from_fields))) for item in q]
-        return json_response({self.output_name: out,
-                              'success': True,
-                              'errors': {},
-                              'data': {'key': self.output_name},
-                              'status': 'ok',})
+        data = {self.output_name: out,
+                'success': True,
+                'errors': {},
+                'status': 'ok',}
+        if self.output_name != 'data':
+            data['data'] = {'key': self.output_name}
+        return json_response(data)
 
 
 class ResourcesList(FilteredView):
@@ -531,7 +536,7 @@ class NotificationsList(FilteredView):
                   ('description', 'description',),
                  )
 
-    output_name = 'notifications'
+    output_name = 'data'
 
     def get_filter_args(self, *args, **kwargs):
         self.errors = {}
