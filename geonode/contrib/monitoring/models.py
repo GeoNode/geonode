@@ -640,7 +640,7 @@ class MetricValue(models.Model):
             else:
                 qparams = qparams & models.Q(ows_service__name=ows_service)
 
-        q = cls.objects.filter(qparams)
+        q = cls.objects.filter(qparams).order_by('-valid_to')
         return q
 
 
@@ -1010,7 +1010,7 @@ class MetricNotificationCheck(models.Model):
         """
         if not for_timestamp:
             for_timestamp = datetime.now()
-        qfilter = {}
+        qfilter = {'metric': self.metric}
         if self.service:
             qfilter['service'] = self.service
         if self.resource:
@@ -1019,7 +1019,11 @@ class MetricNotificationCheck(models.Model):
             qfilter['label'] = self.label
         if self.ows_service:
             qfilter['ows_service'] = self.ows_service
-        metrics = MetricValue.get_for(metric=self.metric, valid_on=for_timestamp, **qfilter)
+        if self.max_timeout is None:
+            metrics = MetricValue.get_for(valid_on=for_timestamp, **qfilter)
+        else:
+            metrics = MetricValue.get_for(**qfilter)
+            
         if not metrics:
             raise ValueError("Cannot find metric values for {} on {}".format(self.metric, for_timestamp))
         for m in metrics:
