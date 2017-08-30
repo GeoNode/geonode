@@ -430,7 +430,7 @@ class CommonModelApi(ModelResource):
             if request.user:
                 is_admin = request.user.is_superuser if request.user else False
                 is_staff = request.user.is_staff if request.user else False
-            
+
             # Get the list of objects the user has access to
             filter_set = get_objects_for_user(request.user, 'base.view_resourcebase')
             if settings.ADMIN_MODERATE_UPLOADS:

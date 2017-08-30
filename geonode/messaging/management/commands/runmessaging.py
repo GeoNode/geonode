@@ -23,7 +23,7 @@ import sys
 from optparse import make_option
 
 from django.core.management.base import BaseCommand
-from django.conf import settigns
+from django.conf import settings
 
 logger = logging.getLogger(__package__)
 logger.addHandler(logging.StreamHandler(sys.stdout))
