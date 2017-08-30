@@ -158,6 +158,22 @@ class DocumentUploadView(CreateView):
         context['ALLOWED_DOC_TYPES'] = ALLOWED_DOC_TYPES
         return context
 
+    def form_invalid(self, form):
+        if self.request.REQUEST.get('no__redirect', False):
+            out = {'success': False}
+            out['message'] = ""
+            status_code = 400
+            return HttpResponse(
+                json.dumps(out),
+                content_type='application/json',
+                status=status_code)
+        else:
+            form.name = None
+            form.title = None
+            form.doc_file = None
+            form.doc_url = None
+            return self.render_to_response(self.get_context_data(form=form))
+
     def form_valid(self, form):
         """
         If the form is valid, save the associated model.
@@ -179,6 +195,8 @@ class DocumentUploadView(CreateView):
         regions = []
         keywords = []
         bbox = None
+
+        out = {'success': False}
 
         if getattr(settings, 'EXIF_ENABLED', False):
             try:
@@ -232,12 +250,28 @@ class DocumentUploadView(CreateView):
             except:
                 print "Could not send slack message for new document."
 
-        return HttpResponseRedirect(
-            reverse(
-                'document_metadata',
+        if self.request.REQUEST.get('no__redirect', False):
+            out['success'] = True
+            out['url'] = reverse(
+                'document_detail',
                 args=(
                     self.object.id,
-                )))
+                ))
+            if out['success']:
+                status_code = 200
+            else:
+                status_code = 400
+            return HttpResponse(
+                json.dumps(out),
+                content_type='application/json',
+                status=status_code)
+        else:
+            return HttpResponseRedirect(
+                reverse(
+                    'document_metadata',
+                    args=(
+                        self.object.id,
+                    )))
 
 
 class DocumentUpdateView(UpdateView):

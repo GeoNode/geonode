@@ -17,8 +17,8 @@ Before you deploy GeoServer stop the running Tomcat instance:::
 
 Now copy the downloaded GeoServer archive inside Tomcat's webapps folder::
     
-    sudo cp /home/geonode/geonode/downloaded/geoserver-2.9.x-oauth2.war /var/lib/tomcat8/webapps/
-    sudo cp /var/lib/tomcat8/webapps/geoserver-2.9.x-oauth2.war /var/lib/tomcat8/webapps/geoserver.war
+    sudo cp /home/geonode/geonode/downloaded/geoserver-2.9.x-oauth2.war /home/geonode/geonode/downloaded/geoserver.war
+    sudo mv /home/geonode/geonode/downloaded/geoserver.war /var/lib/tomcat8/webapps/
 
 Test GeoServer
 ===============

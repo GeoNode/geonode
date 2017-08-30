@@ -120,10 +120,13 @@ def get_related_documents(resource):
 
 
 def get_related_resources(document):
-    return [
-        link.content_type.get_object_for_this_type(id=link.object_id)
-        for link in document.links.all()
-    ]
+    if document.links:
+        return [
+            link.content_type.get_object_for_this_type(id=link.object_id)
+            for link in document.links.all()
+        ]
+    else:
+        return []
 
 
 def pre_save_document(instance, sender, **kwargs):

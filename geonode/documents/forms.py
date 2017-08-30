@@ -47,7 +47,7 @@ class DocumentFormMixin(object):
 
     def generate_link_choices(self, resources=None):
 
-        if not resources:
+        if resources is None:
             resources = list(Layer.objects.all())
             resources += list(Map.objects.all())
             resources.sort(key=lambda x: x.title)

@@ -59,7 +59,7 @@ setup(name='GeoNode',
         "beautifulsoup4==4.4.1",  # python-bs4 (4.4.1)
         "MultipartPostHandler==0.1.0",  # python-multipartposthandler (0.1.0)
         "httplib2==0.10.3",  # python-httplib2 (0.9.1, 0.9.2 in our ppa)
-        "transifex-client==0.11.1b0",  # transifex-client (0.11.1)
+        "transifex-client<=0.12.4",  # transifex-client (0.11.1)
         "Paver==1.2.4",  # python-paver (1.2.4)
         "nose==1.3.7",  # python-nose (1.3.7)
         "django-nose==1.4.4",  # python-django-nose (1.4.3)
@@ -67,8 +67,9 @@ setup(name='GeoNode',
         "django-floppyforms==1.7.0",
         "celery>=3.1.18,<4.0a0",  # python-celery (3.1.20)
         "django-celery==3.1.17",  # python-django-celery (3.1.17)
-        "flake8==2.5.4",  # python-flake8 (2.5.4)
-        "pep8==1.7.0",  # python-pep8 (1.7.0)
+        "flake8<=2.5.4",  # python-flake8 (2.5.4)
+        "pyflakes<=1.6.0",
+        "pep8<=1.7.0",  # python-pep8 (1.7.0)
         "boto==2.38.0",  # python-boto (2.38.0)
 
         # Django Apps
@@ -88,11 +89,7 @@ setup(name='GeoNode',
 
         # geopython dependencies
         "pyproj==1.9.5.1",  # python-pyproj (1.9.5)
-        "OWSLib==0.11.0",  # python-owslib (0.10.3) FIXME
-        # "pycsw==2.0.3dev",
-        # we can't use PyCSW until upstream merge changes for geonode.
-        # this is temporary solution
-        # "git+https://github.com/geosolutions-it/pycsw/archive/ISSUE_540_dev.zip",
+        "OWSLib==0.14-dev",  # python-owslib (0.10.3) FIXME
         "pycsw==2.0.3",  # python-pycsw (1.10.1, 2.0.0 in ppa) FIXME
         "%s" % shapely_dep,  # python-shapely (1.5.13)
 
