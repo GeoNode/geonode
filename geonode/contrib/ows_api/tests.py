@@ -36,7 +36,7 @@ class OWSApiTestCase(TestCase):
         # prepare some WMS endpoints
         q = Link.objects.all()
         for l in q[:3]:
-            l.link_type='OGC:WMS'
+            l.link_type = 'OGC:WMS'
             l.save()
 
     def test_ows_api(self):

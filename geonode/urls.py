@@ -153,7 +153,7 @@ if "djmp" in settings.INSTALLED_APPS:
                             )
 
 if 'geonode.contrib.ows_api' in settings.INSTALLED_APPS:
-    urlpatterns += patterns('', 
+    urlpatterns += patterns('',
                             url('^', include('geonode.contrib.ows_api.urls')),
                             )
 
