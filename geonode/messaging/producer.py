@@ -1,6 +1,6 @@
 from __future__ import with_statement
 
-from geonode.settings import BROKER_URL
+from django.conf import settings
 from kombu import BrokerConnection
 from kombu.common import maybe_declare
 from kombu.pools import producers
@@ -8,7 +8,7 @@ from queues import queue_email_events, queue_geoserver_events,\
                    queue_notifications_events, queue_layer_viewers
 
 
-connection = BrokerConnection(BROKER_URL)
+connection = BrokerConnection(settings.BROKER_URL)
 
 
 def send_email_producer(layer_uuid, user_id):

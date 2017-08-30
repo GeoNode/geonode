@@ -174,7 +174,7 @@ class CommonModelApi(ModelResource):
             is_staff = request.user.is_staff if request.user else False
 
         if not is_admin and not is_staff:
-            filtered = queryset.exclude(Q(is_published=False))
+            filtered = queryset.filter(Q(is_published=True))
         else:
             filtered = queryset
         return filtered
