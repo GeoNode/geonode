@@ -1182,3 +1182,17 @@ def do_autoconfigure():
             Service.objects.get(name=shost_name)
         except Service.DoesNotExist:
             Service.objects.create(host=host, service_type=hostgeoserver_type, url=geoserver[1], name=shost_name)
+
+    do_reload()
+
+
+def do_reload():
+    """
+    This will reload uwsgi if it's available
+    """
+    try:
+        import uwsgi
+        uwsgi.reload()
+        return
+    except ImportError:
+        pass
