@@ -46,19 +46,20 @@ def prefix_xsl_line(req, id):
         logger.warn(msg, err)
         raise err
 
-    try:
-        xml = record.xml
-        # generate an XML document (GeoNode's default is ISO)
-        if resource.metadata_uploaded and resource.metadata_uploaded_preserve:
-            md_doc = etree.tostring(etree.fromstring(resource.metadata_xml))
-        else:
-            md_doc = catalogue.catalogue.csw_gen_xml(resource, 'catalogue/full_metadata.xml')
-        xml = md_doc
-    except:
-        logger.error(traceback.format_exc())
-        return HttpResponse(
-            "Resource Metadata not available!"
-        )
+    if record:
+        try:
+            xml = record.xml
+            # generate an XML document (GeoNode's default is ISO)
+            if resource.metadata_uploaded and resource.metadata_uploaded_preserve:
+                md_doc = etree.tostring(etree.fromstring(resource.metadata_xml))
+            else:
+                md_doc = catalogue.catalogue.csw_gen_xml(resource, 'catalogue/full_metadata.xml')
+            xml = md_doc
+        except:
+            logger.error(traceback.format_exc())
+            return HttpResponse("Resource Metadata not available!")
+    else:
+        xml = ''
 
     xsl_path = '{}/static/metadataxsl/metadata.xsl'.format(settings.SITEURL.rstrip('/'))
     xsl_line = '<?xml-stylesheet type="text/xsl" href="{}"?>'.format(xsl_path)

@@ -37,14 +37,14 @@
     var config_layers = config['map']['layers']
     for (layer in config_layers) {
         if (config_layers[layer]['title'] == 'OpenStreetMap') {
-            if (config_layers[layer]['visibility'] == true) {
+            // if (config_layers[layer]['visibility'] == true) {
                 layers.push(
                     new OpenLayers.Layer.OSM("OpenCycleMap",
                       ["http://a.tile.openstreetmap.org/${z}/${x}/${y}.png",
                        "http://b.tile.openstreetmap.org/${z}/${x}/${y}.png",
                        "http://c.tile.openstreetmap.org/${z}/${x}/${y}.png"])
                 );
-            }
+            // }
             break;
         }
     }

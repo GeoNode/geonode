@@ -28,11 +28,11 @@
     var config_layers = config['map']['layers']
     for (layer in config_layers) {
         if (config_layers[layer]['title'] == 'OpenStreetMap') {
-            if (config_layers[layer]['visibility'] == true) {
+            // if (config_layers[layer]['visibility'] == true) {
                 layers.push(new ol.layer.Tile({
                     source: new ol.source.OSM()
                 }));
-            }
+            // }
             break;
         }
     }
