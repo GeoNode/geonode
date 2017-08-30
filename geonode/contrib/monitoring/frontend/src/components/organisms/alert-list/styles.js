@@ -5,6 +5,15 @@ export default {
     marginTop: 20,
   },
 
+  header: {
+    display: 'flex',
+    justifyContent: 'space-between',
+  },
+
+  icon: {
+    minWidth: 36,
+  },
+
   list: {
     padding: 10,
   },

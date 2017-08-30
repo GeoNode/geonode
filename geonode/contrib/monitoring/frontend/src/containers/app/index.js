@@ -2,12 +2,16 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { Style } from 'radium';
+
+// Pages
+import Alerts from '../../pages/alerts';
+import AlertsSettings from '../../pages/alerts-settings';
+import ErrorDetails from '../../pages/error-details';
+import Errors from '../../pages/errors';
+import HWPerf from '../../pages/hardware-performance';
 import Home from '../../pages/home';
 import SWPerf from '../../pages/software-performance';
-import HWPerf from '../../pages/hardware-performance';
-import Errors from '../../pages/errors';
-import ErrorDetails from '../../pages/error-details';
-import Alerts from '../../pages/alerts';
+
 import reset from '../../reset.js';
 import fonts from '../../fonts/fonts.js';
 import actions from './actions';
@@ -64,6 +68,12 @@ export default {
         {
           path: 'alerts',
           indexRoute: { component: Alerts },
+          childRoutes: [
+            {
+              path: 'settings',
+              component: AlertsSettings,
+            },
+          ],
         },
         {
           path: 'performance/software',
