@@ -118,6 +118,57 @@ Additional options::
       -h, --help            show this help message and exit
 
 
+createvectorlayer
+=================
+
+Create an empty PostGIS vector layer in GeoNode.
+
+Usage::
+
+    python manage.py createvectorlayer name [options]
+
+Additional options::
+
+    manage.py createvectorlayer [-h] [--version] [-v {0,1,2,3}]
+                                   [--settings SETTINGS]
+                                   [--pythonpath PYTHONPATH] [--traceback]
+                                   [--no-color] [--user USER]
+                                   [--geometry GEOMETRY]
+                                   [--attributes ATTRIBUTES] [--title TITLE]
+                                   name
+
+    Create an empty PostGIS vector layer in GeoNode.
+
+    positional arguments:
+      name
+
+    optional arguments:
+      -h, --help            show this help message and exit
+      --version             show program's version number and exit
+      -v {0,1,2,3}, --verbosity {0,1,2,3}
+                            Verbosity level; 0=minimal output, 1=normal output,
+                            2=verbose output, 3=very verbose output
+      --settings SETTINGS   The Python path to a settings module, e.g.
+                            "myproject.settings.main". If this isn't provided, the
+                            DJANGO_SETTINGS_MODULE environment variable will be
+                            used.
+      --pythonpath PYTHONPATH
+                            A directory to add to the Python path, e.g.
+                            "/home/djangoprojects/myproject".
+      --traceback           Raise on CommandError exceptions
+      --no-color            Don't colorize the command output.
+      --user USER           Name of the user account which should own the created
+                            layer
+      --geometry GEOMETRY   Geometry type of the layer to be created. Can be
+                            Point, LineString or Polygon. Default is Point
+      --attributes ATTRIBUTES
+                            A json representation of the attributes to create.
+                            Example: { "field_str": "string", "field_int":
+                            "integer", "field_date": "date", "field_float":
+                            "float"}
+      --title TITLE         Title for the layer to be created.
+
+
 fixsitename
 ===========
 

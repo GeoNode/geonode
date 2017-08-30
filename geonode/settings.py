@@ -94,6 +94,8 @@ DATABASE_URL = os.getenv(
     )
 )
 
+#DATABASE_URL = 'postgresql://test_geonode:test_geonode@localhost:5432/geonode'
+
 # Defines settings for development
 DATABASES = {
     'default': dj_database_url.parse(DATABASE_URL, conn_max_age=600)
@@ -291,6 +293,7 @@ GEONODE_CONTRIB_APPS = (
     # 'geonode.contrib.geosites',
     # 'geonode.contrib.nlp',
     # 'geonode.contrib.slack',
+    #'geonode.contrib.createlayer',
     'geonode.contrib.metadataxsl',
     'geonode.contrib.api_basemaps',
 )
