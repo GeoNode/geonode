@@ -1,7 +1,8 @@
 Django==1.8.7
 six==1.10.0
 MultipartPostHandler==0.1.0
-OWSLib==0.11.0
+https://github.com/geopython/OWSLib/archive/master.zip#egg=OWSLib-0.14-dev
+# OWSLib==0.14.0
 Paver==1.2.4
 Unidecode==0.4.19
 amqp==1.4.9
@@ -62,11 +63,9 @@ oauthlib==2.0.2
 pep8==1.7.0
 pillow==3.3.1
 pinax-theme-bootstrap==3.0a11
-# temporary solution until PyCSW Issues are not fixed
 pycsw==2.0.3
-# https://github.com/geosolutions-it/pycsw/archive/ISSUE_540_dev.zip#egg=pycsw-2.0.3dev
 elasticsearch==2.4.0
-pyflakes==1.2.3
+pyflakes==1.6.0
 pyproj==1.9.5.1
 python-dateutil==2.5.3
 python-mimeparse==1.5.2
@@ -74,7 +73,7 @@ pytz==2016.6.1
 pyyaml==3.11
 regex==2016.7.21
 requests==2.11.1
-transifex-client==0.11.1b0
+transifex-client==0.12.3
 xmltodict==0.9.2
 django-treebeard==4.0
 django-geonode-client==0.0.15
