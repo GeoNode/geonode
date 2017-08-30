@@ -43,7 +43,7 @@ from geonode.layers.models import Layer
 from geonode.maps.models import Map
 from geonode.documents.models import Document
 from geonode.groups.models import GroupProfile, GroupCategory
-
+from django.contrib.auth.models import Group
 from django.core.serializers.json import DjangoJSONEncoder
 from tastypie.serializers import Serializer
 from tastypie import fields
@@ -243,7 +243,7 @@ class TopicCategoryResource(TypeFilteredResource):
             if request.user:
                 is_admin = request.user.is_superuser if request.user else False
                 is_staff = request.user.is_staff if request.user else False
-            
+
             # Get the list of objects the user has access to
             if settings.ADMIN_MODERATE_UPLOADS:
                 if not is_admin and not is_staff:
