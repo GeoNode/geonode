@@ -18,7 +18,7 @@
 #
 #########################################################################
 
-from django.conf import settings
+from geonode import settings
 
 MAPBOX_API = {
     'styles': {
