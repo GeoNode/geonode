@@ -122,7 +122,7 @@ def facets(context):
             treeqs = HierarchicalKeyword.objects.none()
             for keyword in keywords_filter:
                 try:
-                    kw = HierarchicalKeyword.objects.get(name=keyword)
+                    kw = HierarchicalKeyword.objects.filter(name__iexact=keyword)
                     treeqs = treeqs | HierarchicalKeyword.get_tree(kw)
                 except:
                     # Ignore keywords not actually used?
@@ -199,7 +199,7 @@ def facets(context):
             treeqs = HierarchicalKeyword.objects.none()
             for keyword in keywords_filter:
                 try:
-                    kw = HierarchicalKeyword.objects.get(name=keyword)
+                    kw = HierarchicalKeyword.objects.filter(name__iexact=keyword)
                     treeqs = treeqs | HierarchicalKeyword.get_tree(kw)
                 except:
                     # Ignore keywords not actually used?
@@ -298,7 +298,7 @@ def facets(context):
             treeqs = HierarchicalKeyword.objects.none()
             for keyword in keywords_filter:
                 try:
-                    kw = HierarchicalKeyword.objects.get(name=keyword)
+                    kw = HierarchicalKeyword.objects.filter(name__iexact=keyword)
                     treeqs = treeqs | HierarchicalKeyword.get_tree(kw)
                 except:
                     # Ignore keywords not actually used?
