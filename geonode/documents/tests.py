@@ -497,7 +497,7 @@ class DocumentNotificationsTestCase(NotificationsTestsHelper):
         self.setup_notifications_for(DocumentsAppConfig.NOTIFICATIONS, self.u)
 
     def testDocumentNotifications(self):
-        with self.settings(NOTIFICATION_QUEUE_ALL=True):
+        with self.settings(PINAX_NOTIFICATIONS_QUEUE_ALL=True):
             self.clear_notifications_queue()
             l = Document.objects.create(title='test notifications', owner=self.u)
             self.assertTrue(self.check_notification_out('document_created', self.u))

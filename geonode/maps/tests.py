@@ -784,7 +784,7 @@ class MapsNotificationsTestCase(NotificationsTestsHelper):
         self.setup_notifications_for(MapsAppConfig.NOTIFICATIONS, self.u)
 
     def testMapsNotifications(self):
-        with self.settings(NOTIFICATION_QUEUE_ALL=True):
+        with self.settings(PINAX_NOTIFICATIONS_QUEUE_ALL=True):
             self.clear_notifications_queue()
             self.client.login(username=self.user, password=self.passwd)
             new_map = reverse('new_map_json')

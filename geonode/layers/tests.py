@@ -1004,7 +1004,7 @@ class LayerNotificationsTestCase(NotificationsTestsHelper):
         self.setup_notifications_for(LayersAppConfig.NOTIFICATIONS, self.u)
 
     def testLayerNotifications(self):
-        with self.settings(NOTIFICATION_QUEUE_ALL=True):
+        with self.settings(PINAX_NOTIFICATIONS_QUEUE_ALL=True):
             self.clear_notifications_queue()
             l = Layer.objects.create(name='test notifications')
             l.name = 'test notifications 2'
