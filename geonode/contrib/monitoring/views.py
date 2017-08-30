@@ -25,8 +25,6 @@ from django.shortcuts import render
 from django import forms
 from django.views.generic.base import View
 from django.core.urlresolvers import reverse
-from django.utils.decorators import method_decorator
-from django.contrib.auth.decorators import login_required
 
 from geonode.utils import json_response
 from geonode.contrib.monitoring.collector import CollectorAPI
@@ -42,6 +40,7 @@ from geonode.contrib.monitoring.models import (
     NotificationCheck,
     MetricNotificationCheck,
 )
+from geonode.contrib.monitoring.models import do_autoconfigure
 from geonode.contrib.monitoring.utils import TypeChecks, align_period_start, dump
 from geonode.contrib.monitoring.service_handlers import exposes
 
@@ -95,24 +94,22 @@ class HostsList(View):
         return json_response({'hosts': out})
 
 
-
 class _ValidFromToLastForm(forms.Form):
     valid_from = forms.DateTimeField(required=False)
     valid_to = forms.DateTimeField(required=False)
     interval = forms.IntegerField(min_value=60, required=False)
     last = forms.IntegerField(min_value=60, required=False)
-    
+
     def _check_timestamps(self):
         last = self.cleaned_data.get('last')
         vf = self.cleaned_data.get('valid_from')
         vt = self.cleaned_data.get('valid_to')
         if last and (vf or vt):
-           raise forms.ValidationError('Cannot use last and valid_from/valid_to at the same time') 
+            raise forms.ValidationError('Cannot use last and valid_from/valid_to at the same time')
 
     def clean(self):
         super(_ValidFromToLastForm, self).clean()
         self._check_timestamps()
-
 
 
 class CheckTypeForm(_ValidFromToLastForm):
@@ -141,6 +138,7 @@ class CheckTypeForm(_ValidFromToLastForm):
             return tcheck(val)
         except (Exception,), err:
             raise forms.ValidationError(err)
+
 
 class MetricsFilters(CheckTypeForm):
     service = forms.CharField(required=False)
@@ -212,9 +210,9 @@ class FilteredView(View):
     def get(self, request, *args, **kwargs):
         qargs = self.get_filter_args(request)
         if self.errors:
-            return json_response({'success': False, 
-                                  'status': 'errors', 
-                                  'errors': self.errors}, 
+            return json_response({'success': False,
+                                  'status': 'errors',
+                                  'errors': self.errors},
                                  status=400)
         q = self.get_queryset(**qargs)
         from_fields = [f[0] for f in self.fields_map]
@@ -223,7 +221,7 @@ class FilteredView(View):
         data = {self.output_name: out,
                 'success': True,
                 'errors': {},
-                'status': 'ok',}
+                'status': 'ok'}
         if self.output_name != 'data':
             data['data'] = {'key': self.output_name}
         return json_response(data)
@@ -239,11 +237,11 @@ class ResourcesList(FilteredView):
     output_name = 'resources'
 
     def get_queryset(self, metric_name=None,
-                           resource_type=None,
-                           valid_from=None,
-                           valid_to=None,
-                           last=None,
-                           interval=None):
+                     resource_type=None,
+                     valid_from=None,
+                     valid_to=None,
+                     last=None,
+                     interval=None):
         q = MonitoredResource.objects.all().distinct()
         qparams = {}
         if resource_type:
@@ -478,11 +476,6 @@ class MetricNotificationCheckForm(forms.ModelForm):
             raise forms.ValidationError("Invalid resource: {}".format(val))
 
 
-    def clean(self):
-        super(MetricNotificationCheckForm, self).clean()
-        d = self.cleaned_data
-
-
 class UserNotificationConfigView(View):
 
     def get_object(self):
@@ -498,7 +491,7 @@ class UserNotificationConfigView(View):
             out['status'] = 'ok'
             form = obj.get_user_form()
             fields = [dump(r, ('field_name',)) for r in obj.definitions.all()]
-            out['data'] = {'form': form.as_table(), 
+            out['data'] = {'form': form.as_table(),
                            'fields': fields,
                            'notification': dump(obj)}
             status = 200
@@ -507,7 +500,6 @@ class UserNotificationConfigView(View):
             status = 401
         return json_response(out, status=status)
 
-        
     def post(self, request, *args, **kwargs):
         out = {'success': False, 'status': 'error', 'data': [], 'errors': {}}
         status = 500
@@ -528,6 +520,7 @@ class UserNotificationConfigView(View):
             status = 401
         return json_response(out, status=status)
 
+
 class NotificationsList(FilteredView):
     filter_form = None
     fields_map = (('id', 'id',),
@@ -535,7 +528,7 @@ class NotificationsList(FilteredView):
                   ('name', 'name',),
                   ('severity', 'severity',),
                   ('description', 'description',),
-                 )
+                  )
 
     output_name = 'data'
 
@@ -554,7 +547,7 @@ class NotificationsList(FilteredView):
             d = f.cleaned_data
             return NotificationCheck.create(**d)
         self.errors = f.errors
-    
+
     def post(self, request, *args, **kwargs):
         out = {'success': False, 'status': 'error', 'data': [], 'errors': {}}
         d = self.create(request, *args, **kwargs)
@@ -570,9 +563,9 @@ class NotificationsList(FilteredView):
 
 
 class StatusCheckView(View):
-    fields = ('name', 'severity', 
-              'offending_value', 
-              'threshold_value', 
+    fields = ('name', 'severity',
+              'offending_value',
+              'threshold_value',
               'message',)
 
     def get(self, request, *args, **kwargs):
@@ -586,7 +579,26 @@ class StatusCheckView(View):
         return json_response(data)
 
 
-
+class AutoconfigureView(View):
+    def post(self, request, *args, **kwargs):
+        if not request.user.is_authenticated():
+            out = {'success': False,
+                   'status': 'error',
+                   'errors': {'user': ['User is not authenticated']}
+                   }
+            return json_response(out, status=401)
+        if not (request.user.is_superuser or request.user.is_staff):
+            out = {'success': False,
+                   'status': 'error',
+                   'errors': {'user': ['User is not permitted']}
+                   }
+            return json_response(out, status=401)
+        do_autoconfigure()
+        out = {'success': True,
+               'status': 'ok',
+               'errors': {}
+               }
+        return json_response(out)
 
 
 api_metrics = MetricsList.as_view()
@@ -603,3 +615,4 @@ api_beacon = BeaconView.as_view()
 api_user_notification_config = UserNotificationConfigView.as_view()
 api_user_notifications = NotificationsList.as_view()
 api_status = StatusCheckView.as_view()
+api_autoconfigure = AutoconfigureView.as_view()

@@ -26,7 +26,6 @@ import logging
 import xmljson
 import types
 import re
-from itertools import chain
 from urllib import urlencode
 from datetime import datetime, timedelta
 from math import floor, ceil
@@ -142,7 +141,6 @@ class GeoServerMonitorClient(object):
                 else:
                     print("Skipping payload for {}".format(href))
 
-
     def get_request(self, href, format=format):
         r = requests.get(href)
         if r.status_code != 200:
@@ -203,7 +201,6 @@ def generate_periods(since, interval, end=None):
     Generator of periods: tuple of [start, end).
     since parameter will be aligned to closest interval before since.1
     """
-    no_end = end is None
     end = end or datetime.now()
     since_aligned = align_period_start(since, interval)
 
@@ -212,7 +209,7 @@ def generate_periods(since, interval, end=None):
     periods_count = _periods[0]
     if _periods[1]:
         periods_count += 1
-    
+
     end = since_aligned + timedelta(seconds=(periods_count * interval.total_seconds()))
 
     while since_aligned < end:
@@ -227,7 +224,7 @@ class TypeChecks(object):
 
     @classmethod
     def audit_format(cls, val):
-        if not val in cls.AUDIT_FORMATS:
+        if val not in cls.AUDIT_FORMATS:
             raise ValueError("Invalid value for audit format: {}".format(val))
         return val
 
@@ -282,13 +279,13 @@ class TypeChecks(object):
             return ServiceType.objects.get(name=val)
         except ServiceType.DoesNotExist:
             raise ValueError("Service Type {} does not exist".format(val))
-    
+
     @staticmethod
     def label_type(val):
         from geonode.contrib.monitoring.models import MetricLabel
         try:
             return MetricLabel.objects.get(id=val)
-        except (ValueError, TypeError, MetricLabel.DoesNotExist,), err:
+        except (ValueError, TypeError, MetricLabel.DoesNotExist,):
             try:
                 return MetricLabel.objects.get(name=val)
             except MetricLabel.DoesNotExist:

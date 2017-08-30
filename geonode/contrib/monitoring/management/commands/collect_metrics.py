@@ -19,7 +19,6 @@
 #########################################################################
 from __future__ import print_function
 import logging
-import argparse
 from datetime import datetime
 
 from django.core.management.base import BaseCommand
@@ -43,9 +42,11 @@ class Command(BaseCommand):
         parser.add_argument('-l', '--list', dest='list_services', action='store_true', default=False,
                             help=_("Show list of services"))
         parser.add_argument('-s', '--since', dest='since', default=None, type=parse_datetime,
-                            help=_("Process data since specific timestamp (YYYY-MM-DD HH:MM:SS format). If not provided, last sync will be used."))
+                            help=_("Process data since specific timestamp (YYYY-MM-DD HH:MM:SS format). "
+                                   "If not provided, last sync will be used."))
         parser.add_argument('-u', '--until', dest='until', default=None, type=parse_datetime,
-                            help=_("Process data until specific timestamp (YYYY-MM-DD HH:MM:SS format). If not provided, now will be used."))
+                            help=_("Process data until specific timestamp (YYYY-MM-DD HH:MM:SS format). "
+                                   "If not provided, now will be used."))
         parser.add_argument('-f', '--force', dest='force_check', action='store_true', default=False,
                             help=_("Force check"))
         parser.add_argument('-t', '--format', default=TypeChecks.AUDIT_TYPE_JSON, type=TypeChecks.audit_format,
@@ -81,10 +82,10 @@ class Command(BaseCommand):
         for s in services:
             try:
                 self.run_check(s, collector=c,
-                                  since=options['since'],
-                                  until=options['until'],
-                                  force_check=options['force_check'],
-                                  format=options['format'])
+                               since=options['since'],
+                               until=options['until'],
+                               force_check=options['force_check'],
+                               format=options['format'])
             except Exception, err:
                 log.error("Cannot collect from %s: %s", s, err, exc_info=err)
                 if options['halt_on_errors']:
@@ -107,7 +108,7 @@ class Command(BaseCommand):
         now = datetime.now()
         since = since or last_check or (now - service.check_interval)
         until = until or now
-        print('checking', service.name, 'since', since, 'until', until )
+        print('checking', service.name, 'since', since, 'until', until)
         data_in = None
         h = Handler(service, force_check=force_check)
         data_in = h.collect(since=since, until=until, format=format)

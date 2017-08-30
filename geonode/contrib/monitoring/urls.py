@@ -35,14 +35,18 @@ urlpatterns = [
                 url(r'^api/ows_services/$', views.api_ows_services, name='api_ows_services'),
                 url(r'^api/exceptions/$', views.api_exceptions, name='api_exceptions'),
                 url(r'^api/exceptions/(?P<exception_id>[\d\+]+)/$', views.api_exception, name='api_exception'),
-                url(r'^api/metric_data/(?P<metric_name>[\w\.]+)/$', views.api_metric_data,
-                                                                    name='api_metric_data'),
+                url(r'^api/metric_data/(?P<metric_name>[\w\.]+)/$',
+                    views.api_metric_data,
+                    name='api_metric_data'),
                 # serve raw check data to outside
                 url(r'^api/beacon/$', views.api_beacon, name='api_beacon'),
                 url(r'^api/beacon/(?P<exposed>.*?)/$', views.api_beacon, name='api_beacon_exposed'),
 
-                url(r'^api/notifications/config/(?P<pk>[\d]+)/$', views.api_user_notification_config, name='api_user_notification_config'),
+                url(r'^api/notifications/config/(?P<pk>[\d]+)/$',
+                    views.api_user_notification_config,
+                    name='api_user_notification_config'),
                 url(r'^api/notifications/$', views.api_user_notifications, name='api_user_notifications'),
+                url(r'^api/autoconfigure/$', views.api_autoconfigure, name='api_autoconfigure'),
 
 
               ]

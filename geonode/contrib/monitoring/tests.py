@@ -36,6 +36,7 @@ from geonode.contrib.monitoring.models import (RequestEvent, Host, Service, Serv
                                                MetricValue, NotificationCheck, Metric, OWSService,
                                                MonitoredResource, MetricLabel,
                                                NotificationMetricDefinition,)
+from geonode.contrib.monitoring.models import do_autoconfigure
 
 from geonode.contrib.monitoring.collector import CollectorAPI
 from geonode.contrib.monitoring.utils import generate_periods, align_period_start
@@ -2060,4 +2061,55 @@ class MonitoringChecksTestCase(TestCase):
         self.assertEqual(len(mail.outbox), 0)
         capi.emit_notifications(start)
         self.assertEqual(len(mail.outbox), nc.receivers.all().count())
+
+
+class AutoConfigTestCase(TestCase):
+    OGC_GS_1 = 'http://localhost/geoserver123/'
+    OGC_GS_2 = 'http://google.com/test/'
+
+    OGC_SERVER = {'default': {'BACKEND': 'nongeoserver'},
+                  'geoserver1': {'BACKEND': 'geonode.geoserver', 'LOCATION': OGC_GS_1},
+                  'external1': {'BACKEND': 'geonode.geoserver', 'LOCATION': OGC_GS_2}
+                  }
+
+    def setUp(self):
+        super(AutoConfigTestCase, self).setUp()
+        self.user = 'admin'
+        self.passwd = 'admin'
+        self.u, _ = get_user_model().objects.get_or_create(username=self.user)
+        self.u.is_active = True
+        self.u.is_superuser = True
+        self.u.email = 'test@email.com'
+        self.u.set_password(self.passwd)
+        self.u.save()
+        self.user2 = 'test'
+        self.passwd2 = 'test'
+        self.u2, _ = get_user_model().objects.get_or_create(username=self.user2)
+        self.u2.is_active = True
+        self.u2.email = 'test2@email.com'
+        self.u2.set_password(self.passwd2)
+        self.u2.save()
+
+
+    def test_autoconfig(self):
+        with self.settings(OGC_SERVER=self.OGC_SERVER, SITEURL=self.OGC_GS_2):
+            do_autoconfigure()
+        h1 = Host.objects.get(name='localhost')
+        h2 = Host.objects.get(name='google.com')
+        s1 = Service.objects.get(name='geoserver1-geoserver')
+        self.assertEqual(s1.host, h1)
+        s2 = Service.objects.get(name='external1-geoserver')
+        self.assertEqual(s2.host, h2)
+    
+        autoconf_url = reverse('monitoring:api_autoconfigure')
+        resp = self.client.post(autoconf_url)
+        self.assertEqual(resp.status_code, 401)
+        self.client.login(username=self.user, password=self.passwd)
+
+        resp = self.client.post(autoconf_url)
+        self.assertEqual(resp.status_code, 200)
+
+
+
+
 

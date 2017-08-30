@@ -21,6 +21,7 @@ from __future__ import print_function
 
 import logging
 import types
+from urlparse import urlparse
 
 from socket import gethostbyname
 from datetime import datetime, timedelta
@@ -686,7 +687,7 @@ class NotificationCheck(models.Model):
     @property
     def is_warning(self):
         return self.severity == self.SEVERITY_WARNING
-    
+
     @property
     def is_error(self):
         return self.severity == self.SEVERITY_ERROR
@@ -789,10 +790,10 @@ class NotificationCheck(models.Model):
                                                              description=_description,
                                                              field_option=field_opt)
             user_thresholds[nm.field_name] = {'min': minimum,
-                                      'max': maximum,
-                                      'metric': metric_name,
-                                      'description': _description,
-                                      'steps': cls.get_steps(minimum, maximum, thresholds)}
+                                              'max': maximum,
+                                              'metric': metric_name,
+                                              'description': _description,
+                                              'steps': cls.get_steps(minimum, maximum, thresholds)}
         inst.user_threshold = user_thresholds
         if severity is not None:
             inst.severity = severity
@@ -813,6 +814,7 @@ class NotificationCheck(models.Model):
         class F(forms.Form):
             emails = MultiEmailField(required=True)
             severity = forms.ChoiceField(choices=self.SEVERITIES, required=False)
+
             def __init__(self, *args, **kwargs):
                 super(F, self).__init__(*args, **kwargs)
                 fields = self.fields
@@ -862,9 +864,9 @@ class NotificationCheck(models.Model):
             params = {'notification_check': self}
             try:
                 params['user'] = U.objects.get(email=email)
-            except U.DoesNotExist, err:
+            except U.DoesNotExist:
                 params['email'] = email
-            r = NotificationReceiver.objects.create(**params)
+            NotificationReceiver.objects.create(**params)
         return out
 
 
@@ -972,7 +974,10 @@ class MetricNotificationCheck(models.Model):
             self.severity = check.notification_check.severity
 
         def __str__(self):
-            return "MetricValueError({}: metric {} misses {} check: {})".format(self.severity, self.metric, self.check, self.message)
+            return "MetricValueError({}: metric {} misses {} check: {})".format(self.severity,
+                                                                                self.metric,
+                                                                                self.check,
+                                                                                self.message)
 
     def check_value(self, metric, valid_on):
         """
@@ -1023,7 +1028,6 @@ class MetricNotificationCheck(models.Model):
             metrics = MetricValue.get_for(valid_on=for_timestamp, **qfilter)
         else:
             metrics = MetricValue.get_for(**qfilter)
-            
         if not metrics:
             raise ValueError("Cannot find metric values for {} on {}".format(self.metric, for_timestamp))
         for m in metrics:
@@ -1103,3 +1107,78 @@ def populate():
             m.unit = uname
             m.save()
     Metric.objects.filter(unit__isnull=True).update(unit=Metric.UNIT_COUNT)
+
+
+def do_autoconfigure():
+    """
+    Create configuration from geonode's settings:
+     * extract all hosts
+     * create geonode instances
+      * create host-geonode instances (favor this instead of geoserver)
+
+     * create geoserver instances
+      * create host-geoserver instances if needed
+    """
+    # get list of services
+    wsite = urlparse(settings.SITEURL)
+    # default host
+    hosts = [(wsite.hostname, gethostbyname(wsite.hostname),)]
+    # default geonode
+    geonode_name = settings.MONITORING_SERVICE_NAME or '{}-geonode'.format(wsite.hostname)
+    geonodes = [(geonode_name, settings.SITEURL, hosts[0])]
+
+    geoservers = []
+    for k, val in settings.OGC_SERVER.items():
+        if val.get('BACKEND') == 'geonode.geoserver':
+            gname = '{}-geoserver'.format(k)
+            gsite = urlparse(val['LOCATION'])
+            ghost = (gsite.hostname, gethostbyname(gsite.hostname),)
+            if ghost not in hosts:
+                hosts.append(ghost)
+            geoservers.append((gname, val['LOCATION'], ghost,))
+
+    hosts_map = {}
+    for host in hosts:
+        try:
+            h = Host.objects.get(name=host[0])
+            if h.ip != host[1]:
+                print("Different ip. got", h.ip, "instead of", host[1])
+        except Host.DoesNotExist:
+            h = Host.objects.create(name=host[0], ip=host[1])
+        hosts_map[h.name] = h
+
+    geonode_type = ServiceType.objects.get(name=ServiceType.TYPE_GEONODE)
+    geoserver_type = ServiceType.objects.get(name=ServiceType.TYPE_GEOSERVER)
+
+    hostgeonode_type = ServiceType.objects.get(name=ServiceType.TYPE_HOST_GN)
+    hostgeoserver_type = ServiceType.objects.get(name=ServiceType.TYPE_HOST_GS)
+
+    for geonode in geonodes:
+        host_name = geonode[2][0]
+        host_ip = geonode[2][1]
+        host = hosts_map.get(host_name) or Host.objects.create(name=host_name, ip=host_ip)
+
+        try:
+            Service.objects.get(name=geonode[0])
+        except Service.DoesNotExist:
+            Service.objects.create(name=geonode[0], url=geonode[1], host=host, service_type=geonode_type)
+
+        shost_name = '{}-hostgeonode'.format(host.name)
+        try:
+            Service.objects.get(name=shost_name)
+        except Service.DoesNotExist:
+            Service.objects.create(host=host, service_type=hostgeonode_type, url=geonode[1], name=shost_name)
+
+    for geoserver in geoservers:
+        host_name = geoserver[2][0]
+        host_ip = geoserver[2][1]
+        host = hosts_map.get(host_name) or Host.objects.create(name=host_name, ip=host_ip)
+        try:
+            Service.objects.get(name=geoserver[0])
+        except Service.DoesNotExist:
+            Service.objects.create(name=geoserver[0], url=geoserver[1], host=host, service_type=geoserver_type)
+        shost_name = '{}-hostgeoserver'.format(host.name)
+        try:
+            Service.objects.get(name=shost_name)
+        except Service.DoesNotExist:
+            Service.objects.create(host=host, service_type=hostgeoserver_type, url=geoserver[1], name=shost_name)
