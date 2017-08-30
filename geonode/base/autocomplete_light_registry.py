@@ -23,6 +23,7 @@ import autocomplete_light
 from guardian.shortcuts import get_objects_for_user
 from django.conf import settings
 from django.db.models import Q
+from django.contrib.auth.models import Group
 
 from models import ResourceBase, Region, HierarchicalKeyword, ThesaurusKeywordLabel
 
@@ -32,10 +33,45 @@ class ResourceBaseAutocomplete(autocomplete_light.AutocompleteModelTemplate):
     model = ResourceBase
 
     def choices_for_request(self):
+        request = self.request
         permitted = get_objects_for_user(
-            self.request.user,
+            request.user,
             'base.view_resourcebase')
         self.choices = self.choices.filter(id__in=permitted)
+
+        is_admin = False
+        is_staff = False
+        if request.user:
+            is_admin = request.user.is_superuser if request.user else False
+            is_staff = request.user.is_staff if request.user else False
+
+        if settings.ADMIN_MODERATE_UPLOADS:
+            if not is_admin and not is_staff:
+                self.choices = self.choices.filter(is_published=True)
+
+        if settings.RESOURCE_PUBLISHING:
+            self.choices = self.choices.filter(is_published=True)
+
+        try:
+            anonymous_group = Group.objects.get(name='anonymous')
+        except:
+            anonymous_group = None
+
+        if settings.GROUP_PRIVATE_RESOURCES:
+            if is_admin:
+                self.choices = self.choices
+            elif request.user:
+                groups = request.user.groups.all()
+                if anonymous_group:
+                    self.choices = self.choices.filter(
+                        Q(group__isnull=True) | Q(group__in=groups) | Q(group=anonymous_group))
+                else:
+                    self.choices = self.choices.filter(Q(group__isnull=True) | Q(group__in=groups))
+            else:
+                if anonymous_group:
+                    self.choices = self.choices.filter(Q(group__isnull=True) | Q(group=anonymous_group))
+                else:
+                    self.choices = self.choices.filter(Q(group__isnull=True))
 
         return super(ResourceBaseAutocomplete, self).choices_for_request()
 
