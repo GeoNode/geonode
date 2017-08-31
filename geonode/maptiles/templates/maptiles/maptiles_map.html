@@ -1,5 +1,9 @@
 {% extends "maptiles/maptiles_base.html" %} {% load i18n %} {% load dialogos_tags %} {% load agon_ratings_tags %} {% load bootstrap_tags %} {% load url from future %} {% load base_tags %} {% load guardian_tags %} {% block title %}Data Tiles Selection — {{ block.super }}{% endblock %} {% block head %}
 <style>
+.olImageLoadError {
+    /* when OL encounters a 404, don't display the pink image */
+    display: none !important;
+} 
 div#site_wide_announcements {
     display: none;
 }
