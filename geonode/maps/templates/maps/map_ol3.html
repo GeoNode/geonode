@@ -1,7 +1,7 @@
 <link rel="stylesheet" href="http://openlayers.org/en/v3.17.1/css/ol.css" type="text/css">
 <script src="http://openlayers.org/en/v3.17.1/build/ol.js" type="text/javascript"></script>
 <script type="text/javascript">
-  
+
   document.addEventListener("DOMContentLoaded", function(event) {
 
   	document.getElementById('the_map').setAttribute("style", "height:600px");
@@ -28,11 +28,11 @@
     var config_layers = config['map']['layers']
     for (layer in config_layers) {
         if (config_layers[layer]['title'] == 'OpenStreetMap') {
-            if (config_layers[layer]['visibility'] == true) {
+            // if (config_layers[layer]['visibility'] == true) {
                 layers.push(new ol.layer.Tile({
                     source: new ol.source.OSM()
                 }));
-            }
+            // }
             break;
         }
     }
@@ -47,7 +47,7 @@
         );
         {% endif %}
     {% endfor %}
-    	
+
 	var map = new ol.Map({
     	layers: layers,
       	target: 'the_map',
@@ -55,7 +55,7 @@
         	center: center,
         	zoom: zoom,
         	projection: settings_crs
-        })	
+        })
 	});
   });
 
