@@ -47,7 +47,7 @@ class ErrorList extends React.Component {
   }
 
   componentWillReceiveProps(nextProps) {
-    if (nextProps && nextProps.from && nextProps.to) {
+    if (nextProps && nextProps.interval) {
       if (this.props.timestamp !== nextProps.timestamp) {
         this.props.get(nextProps.interval);
       }

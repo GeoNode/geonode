@@ -13,13 +13,16 @@ class ResponseTable extends React.Component {
   }
 
   render() {
+    const average = this.props.average ? `${this.props.average} ms` : 'N/A';
+    const max = this.props.max ? `${this.props.max} ms` : 'N/A';
+    const requests = this.props.requests || 0;
     return (
       <div style={styles.content}>
-        <h4>Average Response Time {this.props.average} ms</h4>
+        <h4>Average Response Time {average}</h4>
         <HR />
-        <h4>Max Response Time {this.props.max} ms</h4>
+        <h4>Max Response Time {max}</h4>
         <HR />
-        <h4>Total Requests {this.props.requests}</h4>
+        <h4>Total Requests {requests}</h4>
         <HR />
         <h4>Total Errors {this.props.errorNumber}</h4>
       </div>

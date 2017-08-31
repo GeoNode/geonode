@@ -32,9 +32,10 @@ class GeonodeLayerAnalytics extends React.Component {
 
   constructor(props) {
     super(props);
-    this.get = (interval = this.props.interval) => {
-      this.props.getErrors(interval);
-      this.props.getResponses(interval);
+    this.get = (layer, interval = this.props.interval) => {
+      this.setState({ layer });
+      this.props.getErrors(layer, interval);
+      this.props.getResponses(layer, interval);
     };
 
     this.reset = () => {
@@ -43,14 +44,13 @@ class GeonodeLayerAnalytics extends React.Component {
     };
   }
 
-  componentWillMount() {
-    this.get();
-  }
-
   componentWillReceiveProps(nextProps) {
     if (nextProps) {
-      if (nextProps.timestamp && nextProps.timestamp !== this.props.timestamp) {
-        this.get(nextProps.interval);
+      if (
+        nextProps.timestamp && nextProps.timestamp !== this.props.timestamp
+        && this.state && this.state.layer
+      ) {
+        this.get(this.state.layer, nextProps.interval);
       }
     }
   }
@@ -73,7 +73,7 @@ class GeonodeLayerAnalytics extends React.Component {
       <HoverPaper style={styles.content}>
         <div style={styles.header}>
           <h3>Geonode Layers Analytics</h3>
-          <LayerSelect />
+          <LayerSelect onChange={this.get} />
         </div>
         <HR />
         <ResponseTable

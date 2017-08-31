@@ -34,10 +34,11 @@ const fail = createAction(
 );
 
 
-const get = (interval) =>
+const get = (layer, interval) =>
   (dispatch) => {
     dispatch(begin());
-    const url = `${apiUrl}/metric_data/response.error.count/?last=${interval}&interval=${interval}`;
+    let url = `${apiUrl}/metric_data/response.error.count/?resource=${layer}`;
+    url += `&last=${interval}&interval=${interval}`;
     fetch({ url })
       .then(response => {
         dispatch(success(response));

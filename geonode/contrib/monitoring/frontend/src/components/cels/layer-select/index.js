@@ -25,6 +25,7 @@ class GeonodeData extends React.Component {
     interval: PropTypes.number,
     layers: PropTypes.array,
     reset: PropTypes.func.isRequired,
+    onChange: PropTypes.func,
     response: PropTypes.object,
     timestamp: PropTypes.instanceOf(Date),
   }
@@ -33,6 +34,12 @@ class GeonodeData extends React.Component {
     super(props);
 
     this.state = {};
+
+    this.handleChange = (target, id) => {
+      if (this.props.onChange) {
+        this.props.onChange(id);
+      }
+    };
   }
 
   componentWillMount() {
@@ -43,8 +50,12 @@ class GeonodeData extends React.Component {
 
   componentWillReceiveProps(nextProps) {
     if (nextProps && nextProps.layers && nextProps.layers.length > 0) {
-      const selected = nextProps.layers[0].name;
+      const layer = nextProps.layers[0];
+      const selected = layer.name;
       this.setState({ selected });
+      if (this.props.onChange) {
+        this.props.onChange(layer.id);
+      }
     }
   }
 
@@ -62,7 +73,7 @@ class GeonodeData extends React.Component {
                    />
                  )) : null;
     return (
-      <DropDownMenu value={this.state.selected}>
+      <DropDownMenu value={this.state.selected} onChange={this.handleChange}>
         {layers}
       </DropDownMenu>
     );

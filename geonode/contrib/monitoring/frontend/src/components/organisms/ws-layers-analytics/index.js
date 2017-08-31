@@ -33,7 +33,8 @@ class WSLayerAnalytics extends React.Component {
 
   constructor(props) {
     super(props);
-    this.get = (interval = this.props.interval) => {
+    this.get = (layer, interval = this.props.interval) => {
+      this.setState({ layer });
       this.props.getErrors(interval);
       this.props.getResponses(interval);
     };
@@ -44,14 +45,13 @@ class WSLayerAnalytics extends React.Component {
     };
   }
 
-  componentWillMount() {
-    this.get();
-  }
-
   componentWillReceiveProps(nextProps) {
     if (nextProps) {
-      if (nextProps.timestamp && nextProps.timestamp !== this.props.timestamp) {
-        this.get(nextProps.interval);
+      if (
+        nextProps.timestamp && nextProps.timestamp !== this.props.timestamp
+        && this.state && this.state.layer
+      ) {
+        this.get(this.state.layer, nextProps.interval);
       }
     }
   }
@@ -74,7 +74,7 @@ class WSLayerAnalytics extends React.Component {
       <HoverPaper style={styles.content}>
         <div style={styles.header}>
           <h3>W*S Layers Analytics</h3>
-          <LayerSelect />
+          <LayerSelect onChange={this.get} />
         </div>
         <HR />
         <ResponseTable
