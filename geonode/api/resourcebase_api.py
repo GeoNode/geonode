@@ -213,7 +213,7 @@ class CommonModelApi(ModelResource):
                 kws = HierarchicalKeyword.objects.filter(name__iexact=keyword)
                 for kw in kws:
                     treeqs = treeqs | HierarchicalKeyword.get_tree(kw)
-            except:
+            except ObjectDoesNotExist:
                 # Ignore keywords not actually used?
                 pass
 
