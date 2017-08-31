@@ -34,10 +34,10 @@ const fail = createAction(
 );
 
 
-const get = (interval) =>
+const get = () =>
   (dispatch) => {
     dispatch(begin());
-    const url = `${apiUrl}/metric_data/uptime/?last=${interval}&interval=${interval}`;
+    const url = `${apiUrl}/metric_data/uptime`;
     fetch({ url })
       .then(response => {
         dispatch(success(response));
