@@ -87,7 +87,6 @@ class GeonodeStatus extends React.Component {
         MB: element.data.length > 0 ? element.data[0].val / 1024 / 1024 : 0,
       }));
     }
-    console.log(this.props.half);
     const contentStyle = this.props.half
                        ? styles.content
                        : { ...styles.content, width: '100%' };
