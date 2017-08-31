@@ -485,12 +485,13 @@ class UserNotificationConfigView(View):
     def get(self, request, *args, **kwargs):
         out = {'success': False, 'status': 'error', 'data': [], 'errors': {}}
         status = 500
+        fields = ('field_name', 'min', 'max', 'steps', 'current_value', 'steps_calculated',)
         if request.user.is_authenticated():
             obj = self.get_object()
             out['success'] = True
             out['status'] = 'ok'
             form = obj.get_user_form()
-            fields = [dump(r, ('field_name',)) for r in obj.definitions.all()]
+            fields = [dump(r, fields) for r in obj.definitions.all()]
             out['data'] = {'form': form.as_table(),
                            'fields': fields,
                            'notification': dump(obj)}
@@ -526,6 +527,7 @@ class NotificationsList(FilteredView):
     fields_map = (('id', 'id',),
                   ('url', 'url',),
                   ('name', 'name',),
+                  ('active', 'active',),
                   ('severity', 'severity',),
                   ('description', 'description',),
                   )
@@ -566,16 +568,30 @@ class StatusCheckView(View):
     fields = ('name', 'severity',
               'offending_value',
               'threshold_value',
+              'check_url',
+              'description',
               'message',)
 
     def get(self, request, *args, **kwargs):
         capi = CollectorAPI()
         checks = capi.get_notifications()
-        data = {'status': 'ok', 'success': True, 'data': []}
+        data = {'status': 'ok', 'success': True, 'data': {}}
         d = data['data']
+        d['problems'] = problems = []
+        d['health_level'] = 'ok'
+        _levels = ('fatal', 'error', 'warning',)
+        levels = set([])
+
         for nc, ncdata in checks:
-            d.append({'check': dump(nc),
-                      'problems': [dump(n, self.fields) for n in ncdata]})
+            for ncd in ncdata:
+                levels.add(ncd.severity)
+                problems.append(dump(ncd, self.fields))
+        if levels:
+            for l in _levels:
+                if l in levels:
+                    d['health_level'] = l
+                    break
+
         return json_response(data)
 
 

@@ -669,13 +669,19 @@ class NotificationCheck(models.Model):
                   )
 
     name = models.CharField(max_length=255, null=False, blank=False, unique=True)
-    description = models.CharField(max_length=255, null=False, blank=False)
-    user_threshold = JSONField(default={}, null=False, blank=False, help_text=_("Threshold definition"))
+    description = models.CharField(max_length=255, null=False, blank=False, help_text="Description of the alert")
+    user_threshold = JSONField(default={}, null=False, blank=False,
+                               help_text=_("Expected min/max values for user configuration"))
     metrics = models.ManyToManyField(Metric, through='NotificationMetricDefinition', related_name='+')
     last_send = models.DateTimeField(null=True, blank=True, help_text=_("Marker of last delivery"))
     grace_period = models.DurationField(null=False, default=GRACE_PERIOD_10M, choices=GRACE_PERIODS,
                                         help_text=_("Minimum time between subsequent notifications"))
-    severity = models.CharField(max_length=32, null=False, default=SEVERITY_ERROR, choices=SEVERITIES)
+    severity = models.CharField(max_length=32,
+                                null=False,
+                                default=SEVERITY_ERROR,
+                                choices=SEVERITIES,
+                                help_text=_("How severe would be error from this notification"))
+    active = models.BooleanField(default=True, null=False, blank=False, help_text=_("Is it active"))
 
     def __str__(self):
         return "Notification Check #{}: {}".format(self.id, self.name)
@@ -732,9 +738,14 @@ class NotificationCheck(models.Model):
         return checks
 
     @classmethod
-    def check_for(cls, for_timestamp=None):
+    def check_for(cls, for_timestamp=None, active=None):
         checked = []
-        for n in cls.objects.all():
+        q = {}
+        if active is None:
+            q['active'] = True
+        elif active is not None:
+            q['active'] = active
+        for n in cls.objects.filter(**q):
             checked.append((n, n.check_notifications(for_timestamp=for_timestamp),))
         return checked
 
@@ -785,15 +796,19 @@ class NotificationCheck(models.Model):
             #    0, None, (100, 200, 500, 1000,)
 
             metric = Metric.objects.get(name=metric_name)
+            steps = cls.get_steps(minimum, maximum, thresholds)
             nm = NotificationMetricDefinition.objects.create(notification_check=inst,
                                                              metric=metric,
                                                              description=_description,
+                                                             min_value=minimum,
+                                                             max_value=maximum,
+                                                             steps=len(steps) if steps else None,
                                                              field_option=field_opt)
             user_thresholds[nm.field_name] = {'min': minimum,
                                               'max': maximum,
                                               'metric': metric_name,
                                               'description': _description,
-                                              'steps': cls.get_steps(minimum, maximum, thresholds)}
+                                              'steps': steps}
         inst.user_threshold = user_thresholds
         if severity is not None:
             inst.severity = severity
@@ -802,7 +817,7 @@ class NotificationCheck(models.Model):
 
     def get_user_threshold(self, notification_def):
 
-        return self.user_threshold.get(str(notification_def.id)) or {}
+        return self.user_threshold[notification_def.field_name]
 
     def get_user_form(self, *args_, **kwargs_):
         """
@@ -812,8 +827,9 @@ class NotificationCheck(models.Model):
         defs = this.definitions.all()
 
         class F(forms.Form):
-            emails = MultiEmailField(required=True)
+            emails = MultiEmailField(required=False)
             severity = forms.ChoiceField(choices=self.SEVERITIES, required=False)
+            active = forms.BooleanField(required=False)
 
             def __init__(self, *args, **kwargs):
                 super(F, self).__init__(*args, **kwargs)
@@ -821,7 +837,7 @@ class NotificationCheck(models.Model):
                 for d in defs:
                     # def.get_fields() can return several fields,
                     # especially when we have per-resource monitoring
-                    _fields = d.get_fields(this.get_user_threshold(d))
+                    _fields = d.get_fields()
                     for field in _fields:
                         fields[field.name] = field
 
@@ -841,11 +857,18 @@ class NotificationCheck(models.Model):
         out = []
         fdata = f.cleaned_data
         emails = fdata.pop('emails')
+        active = fdata.pop('active')
         severity = fdata.pop('severity', None)
         if severity is not None:
             self.severity = severity
-            self.save()
+        if active is not None:
+            self.active = active
+        self.save()
+
         for key, val in fdata.items():
+            # do not create notification check if check value is empty
+            if val is None:
+                continue
             _v = key.split('.')
             # syntax of field name:
             # field_id.metric.name.field_name
@@ -853,8 +876,10 @@ class NotificationCheck(models.Model):
             metric = Metric.objects.get(name=mname)
             if field == 'max_timeout':
                 val = timedelta(seconds=int(val))
+            ndef = self.get_definition_for(key)
             ncheck = MetricNotificationCheck.objects.create(notification_check=inst,
                                                             metric=metric,
+                                                            definition=ndef,
                                                             **{field: val})
             out.append(ncheck)
         U = get_user_model()
@@ -868,6 +893,13 @@ class NotificationCheck(models.Model):
                 params['email'] = email
             NotificationReceiver.objects.create(**params)
         return out
+
+    def get_definition_for(self, def_name):
+        _v = def_name.split('.')
+        # syntax of field name:
+        # field_id.metric.name.field_name
+        mname, field = '.'.join(_v[:-1]), _v[-1]
+        return self.definitions.get(metric__name=mname, field_option=field)
 
 
 class NotificationReceiver(models.Model):
@@ -901,6 +933,9 @@ class NotificationMetricDefinition(models.Model):
                                     null=False,
                                     default=FIELD_OPTION_MIN_VALUE)
     description = models.TextField(null=True)
+    min_value = models.DecimalField(max_digits=16, decimal_places=4, null=True, default=None, blank=True)
+    max_value = models.DecimalField(max_digits=16, decimal_places=4, null=True, default=None, blank=True)
+    steps = models.PositiveIntegerField(null=True, blank=True, default=None)
 
     def is_min_val(self):
         return self.field_option == self.FIELD_OPTION_MIN_VALUE
@@ -911,14 +946,30 @@ class NotificationMetricDefinition(models.Model):
     def is_max_timeout(self):
         return self.field_option == self.FIELD_OPTION_MAX_TIMEOUT
 
-    def get_fields(self, uthreshold):
+    @property
+    def steps_calculated(self):
+        min_, max_, steps = self.min_value, self.max_value, self.steps
+        format = '{0:.3g}'
+        if steps is not None and min_ is not None and max_ is not None:
+            return [format.format(v) for v in NotificationCheck.get_steps(min_, max_, steps)]
+
+    @property
+    def current_value(self):
+        try:
+            m = self.metric_checks.first()
+            if not m:
+                return
+            return getattr(m, self.field_option)
+        except MetricNotificationCheck.DoesNotExist:
+            return
+
+    def get_fields(self):
         out = []
         fid_base = self.field_name
-        steps = uthreshold.get('steps')
-        min_, max_ = uthreshold.get('min'), uthreshold.get('max')
+        min_, max_, steps = self.min_value, self.max_value, self.steps_calculated
 
-        if steps:
-            field = forms.ChoiceField(choices=steps)
+        if steps is not None and min_ is not None and max_ is not None:
+            field = forms.ChoiceField(choices=[(v, v,) for v in steps], required=False)
         else:
             fargs = {}
             if max_ is not None:
@@ -927,6 +978,7 @@ class NotificationMetricDefinition(models.Model):
                 fargs['min_value'] = min_
             field = forms.DecimalField(max_digits=12,
                                        decimal_places=2,
+                                       required=False,
                                        **fargs)
         field.name = fid_base
         out.append(field)
@@ -935,6 +987,28 @@ class NotificationMetricDefinition(models.Model):
     @property
     def field_name(self):
         return '{}.{}'.format(self.metric.name, self.field_option)
+
+    def populate_min_max(self):
+        notification = self.notification_check
+        uthreshold = notification.get_user_threshold(self)
+        self.min_value = uthreshold['min']
+        self.max_value = uthreshold['max']
+        self.steps = uthreshold['steps']
+        try:
+            self.metric_check
+        except MetricNotificationCheck.DoesNotExist:
+            try:
+                mcheck = MetricNotificationCheck.objects\
+                                                .filter(notification_check=self.notification_check,
+                                                        metric=self.metric,
+                                                        **{'{}__isnull'.format(self.field_option): False})\
+                                                .get()
+                if mcheck:
+                    self.metric_check = mcheck
+            except MetricNotificationCheck.DoesNotExist:
+                pass
+
+        self.save()
 
 
 class MetricNotificationCheck(models.Model):
@@ -950,6 +1024,7 @@ class MetricNotificationCheck(models.Model):
                                        help_text=_("Max timeout for given metric before error should be raised")
                                        )
     active = models.BooleanField(default=True, null=False, blank=False)
+    definition = models.OneToOneField(NotificationMetricDefinition, null=True, related_name='metric_check')
 
     def __str__(self):
         indicator = []
@@ -962,6 +1037,20 @@ class MetricNotificationCheck(models.Model):
         indicator = ' and '.join(indicator)
         return "MetricCheck({}@{}: {})".format(self.metric.name, self.service.name if self.service else '', indicator)
 
+    @property
+    def field_option(self):
+        field_option = None
+        if self.min_value:
+            field_option = 'min_value'
+        elif self.max_value:
+            field_option = 'max_value'
+        elif self.max_timeout:
+            field_option = 'max_timeout'
+
+        if field_option is None:
+            raise ValueError("Cannot establish field_option value")
+        return field_option
+
     class MetricValueError(ValueError):
 
         def __init__(self, metric, check, message, offending_value, threshold_value):
@@ -972,6 +1061,10 @@ class MetricNotificationCheck(models.Model):
             self.offending_value = offending_value
             self.threshold_value = threshold_value
             self.severity = check.notification_check.severity
+            self.check_url = check.notification_check.url
+            self.description = {'notification_name': check.notification_check.name,
+                                'notification_description': check.notification_check.description,
+                                'check_description': check.definition.description}
 
         def __str__(self):
             return "MetricValueError({}: metric {} misses {} check: {})".format(self.severity,
@@ -988,11 +1081,11 @@ class MetricNotificationCheck(models.Model):
         if self.min_value is not None:
             had_check = True
             if v < self.min_value:
-                raise self.MetricValueError(metric, self, "Value too low", v, self.min_value)
+                raise self.MetricValueError(metric, self, "Value too low (less than {})".format(v), v, self.min_value)
         if self.max_value is not None:
             had_check = True
             if v > self.max_value:
-                raise self.MetricValueError(metric, self, "Value too high", v, self.max_value)
+                raise self.MetricValueError(metric, self, "Value too high (more than {})".format(v), v, self.max_value)
 
         if self.max_timeout is not None:
             had_check = True
@@ -1001,8 +1094,11 @@ class MetricNotificationCheck(models.Model):
             # metric may be at the valid_on point in time
             valid_on = datetime.now()
             if (valid_on - metric.valid_to) > self.max_timeout:
+
+                msg = ("Value collected too far in the past "
+                       "(more than {} seconds ago)").format(self.max_timeout.total_seconds())
                 raise self.MetricValueError(metric, self,
-                                            "Value collected too far in the past",
+                                            msg,
                                             metric.valid_to,
                                             valid_on
                                             )

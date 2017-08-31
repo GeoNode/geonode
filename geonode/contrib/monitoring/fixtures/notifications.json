@@ -1,123 +1,88 @@
 [
    {
+      "model" : "monitoring.notificationcheck",
       "fields" : {
-         "description" : "detects when requests are not handled",
-         "name" : "geonode is not working",
+         "severity" : "error",
+         "active" : true,
          "user_threshold" : {
-            "3" : {
-               "min" : 0,
+            "request.count.min_value" : {
+               "steps" : 3,
                "metric" : "request.count",
+               "max" : 10,
                "description" : "Number of handled requests is lower than",
+               "min" : 0
+            },
+            "response.time.max_value" : {
                "steps" : null,
-               "max" : 10
-            },
-            "5" : {
-               "max" : null,
-               "description" : "Response time is higher than",
                "metric" : "response.time",
-               "min" : 500,
-               "steps" : null
+               "description" : "Response time is higher than",
+               "max" : null,
+               "min" : 500
             },
-            "4" : {
+            "request.count.max_timeout" : {
+               "description" : "No response for at least",
+               "max" : null,
                "min" : 60,
                "metric" : "request.count",
-               "description" : "No response for at least",
-               "steps" : null,
-               "max" : null
+               "steps" : null
             }
-         }
+         },
+         "last_send" : "2017-08-29T17:37:41",
+         "grace_period" : "00:10:00",
+         "description" : "detects when requests are not handled",
+         "name" : "geonode is not working"
       },
-      "model" : "monitoring.notificationcheck",
       "pk" : 2
    },
    {
-      "pk" : 3,
       "model" : "monitoring.notificationmetricdefinition",
       "fields" : {
-         "use_service" : false,
-         "notification_check" : 2,
+         "max_value" : "10.0000",
          "use_ows_service" : false,
          "use_label" : false,
+         "notification_check" : 2,
          "use_resource" : false,
-         "field_option" : "min_value",
          "metric" : 2,
-         "description" : "Number of handled requests is lower than"
-      }
+         "field_option" : "min_value",
+         "use_service" : false,
+         "description" : "Number of handled requests is lower than",
+         "min_value" : "0.0000",
+         "steps" : 3
+      },
+      "pk" : 3
    },
    {
       "pk" : 4,
-      "model" : "monitoring.notificationmetricdefinition",
       "fields" : {
-         "notification_check" : 2,
-         "use_service" : false,
          "use_ows_service" : false,
-         "field_option" : "max_timeout",
-         "use_resource" : false,
-         "use_label" : false,
-         "description" : "No response for at least",
-         "metric" : 2
-      }
-   },
-   {
-      "model" : "monitoring.notificationmetricdefinition",
-      "pk" : 5,
-      "fields" : {
-         "description" : "Response time is higher than",
-         "metric" : 11,
-         "field_option" : "max_value",
-         "use_resource" : false,
-         "use_label" : false,
-         "use_ows_service" : false,
-         "use_service" : false,
-         "notification_check" : 2
-      }
-   },
-   {
-      "pk" : 5,
-      "model" : "monitoring.metricnotificationcheck",
-      "fields" : {
-         "max_timeout" : null,
-         "label" : null,
          "notification_check" : 2,
-         "min_value" : "1.0000",
-         "resource" : null,
-         "active" : true,
-         "ows_service" : null,
-         "service" : null,
+         "use_label" : false,
          "max_value" : null,
-         "metric" : 2
-      }
-   },
-   {
-      "pk" : 6,
-      "model" : "monitoring.metricnotificationcheck",
-      "fields" : {
-         "active" : true,
-         "resource" : null,
-         "min_value" : null,
-         "notification_check" : 2,
-         "label" : null,
-         "max_timeout" : "00:10:00",
-         "ows_service" : null,
+         "steps" : null,
+         "min_value" : "60.0000",
          "metric" : 2,
-         "service" : null,
-         "max_value" : null
-      }
+         "use_resource" : false,
+         "use_service" : false,
+         "description" : "No response for at least",
+         "field_option" : "max_timeout"
+      },
+      "model" : "monitoring.notificationmetricdefinition"
    },
    {
-      "pk" : 7,
-      "model" : "monitoring.metricnotificationcheck",
+      "pk" : 5,
       "fields" : {
-         "label" : null,
-         "max_timeout" : null,
+         "use_resource" : false,
+         "metric" : 11,
+         "use_service" : false,
+         "field_option" : "max_value",
+         "description" : "Response time is higher than",
+         "steps" : null,
+         "min_value" : "500.0000",
+         "max_value" : null,
+         "use_ows_service" : false,
          "notification_check" : 2,
-         "resource" : null,
-         "min_value" : null,
-         "active" : true,
-         "ows_service" : null,
-         "max_value" : "501.0000",
-         "service" : null,
-         "metric" : 11
-      }
+         "use_label" : false
+      },
+      "model" : "monitoring.notificationmetricdefinition"
    }
 ]

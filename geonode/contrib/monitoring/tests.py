@@ -1769,57 +1769,58 @@ class MonitoringChecksTestCase(TestCase):
 
         label, _ = MetricLabel.objects.get_or_create(name='discount')
         m = MetricValue.add(self.metric, start_aligned, end_aligned, self.service, label="Count", value_raw=10, value_num=10, value=10)
-        nc = NotificationCheck.objects.create(name='check requests', description='check requests')
-
+        
+        uthreshold = [(self.metric.name, 'min_value', False, False, False, False, 0, 100, None, "Min number of request"),
+                      (self.metric.name, 'max_value', False, False, False, False, 1000, None, None, "Max number of request"),
+                      ]
+        notification_data = {'name': 'check requests name',
+                             'description': 'check requests description',
+                             'severity': 'warning',
+                             'user_threshold': uthreshold}
+        
+        nc = NotificationCheck.create(**notification_data)
+        
         mc = MetricNotificationCheck.objects.create(notification_check=nc,
                                                     service=self.service,
                                                     metric=self.metric,
                                                     min_value=None,
+                                                    definition=nc.definitions.first(),
                                                     max_value=None,
                                                     max_timeout=None)
         with self.assertRaises(ValueError):
             mc.check_metric(for_timestamp=start)
 
-        mc = MetricNotificationCheck.objects.create(notification_check=nc,
-                                                    service=self.service,
-                                                    metric=self.metric,
-                                                    min_value=11,
-                                                    max_value=None,
-                                                    max_timeout=None)
+        mc.min_value = 11
+        mc.save()
 
         with self.assertRaises(mc.MetricValueError):
             mc.check_metric(for_timestamp=start)
 
-        mc = MetricNotificationCheck.objects.create(notification_check=nc,
-                                                    service=self.service,
-                                                    metric=self.metric,
-                                                    min_value=1,
-                                                    max_value=11,
-                                                    max_timeout=None)
+        mc.min_value = 1
+        mc.max_value = 11
+        mc.save()
 
         self.assertTrue(mc.check_metric(for_timestamp=start))
 
         m = MetricValue.add(self.metric, start_aligned, end_aligned, self.service, label="discount", value_raw=10, value_num=10, value=10, ows_service=ows_service)
 
-        mc = MetricNotificationCheck.objects.create(notification_check=nc,
-                                                    service=self.service,
-                                                    metric=self.metric,
-                                                    min_value=11,
-                                                    max_value=None,
-                                                    max_timeout=None,
-                                                    label=label)
+        mc.min_value = 11
+        mc.max_value = None
+        mc.ows_service=ows_service
+        mc.save()
+
         
         with self.assertRaises(mc.MetricValueError):
             mc.check_metric(for_timestamp=start)
 
         m = MetricValue.add(self.metric, start_aligned, end_aligned, self.service, label="discount", value_raw=10, value_num=10, value=10, resource=resource)
-        mc = MetricNotificationCheck.objects.create(notification_check=nc,
-                                                    service=self.service,
-                                                    metric=self.metric,
-                                                    min_value=1,
-                                                    max_value=10,
-                                                    max_timeout=None,
-                                                    resource=resource)
+        
+        mc.min_value = 1
+        mc.max_value = 10
+        mc.ows_service = None
+        mc.resource = resource
+        mc.save()
+        
         
         self.assertTrue(mc.check_metric(for_timestamp=start))
 
@@ -1927,7 +1928,7 @@ class MonitoringChecksTestCase(TestCase):
         for field in form.fields.values():
             if not hasattr(field, 'name'):
                 continue
-            fields[field.name] = (field.min_value or 0) + 1
+            fields[field.name] = int((field.min_value or 0) + 1)
         notification_data.update(fields)
         out = c.post(notification_url, notification_data)
         self.assertEqual(out.status_code, 200)
@@ -1982,7 +1983,7 @@ class MonitoringChecksTestCase(TestCase):
             data['emails'] = '\n'.join(data['emails'])
             idx = 0
             for fname, field in nc_form.fields.items():
-                if fname in ('emails', 'severity',):
+                if fname in ('emails', 'severity', 'active',):
                     continue
                 data[fname] = vals[idx]
                 idx += 1
@@ -1994,7 +1995,7 @@ class MonitoringChecksTestCase(TestCase):
             data = {'emails': '\n'.join([self.u.email, self.u2.email, 'testsome@test.com'])}
             idx = 0
             for fname, field in nc_form.fields.items():
-                if fname in ('emails', 'severity',):
+                if fname in ('emails', 'severity', 'active',):
                     continue
                 data[fname] = vals[idx]
                 idx += 1
@@ -2036,8 +2037,21 @@ class MonitoringChecksTestCase(TestCase):
         self.assertTrue(nc.can_send)
 
         self.assertEqual(len(mail.outbox), 0)
+
+        # make sure inactive will not trigger anything
+        nc.active = False
+        nc.save()
         capi.emit_notifications(start)
-        self.assertTrue(len(mail.outbox), 1)
+        self.assertEqual(len(mail.outbox), 0)
+
+        nc.active = True
+        nc.save()
+        capi.emit_notifications(start)
+        self.assertTrue(nc.receivers.all().count()>0)
+        self.assertEqual(len(mail.outbox), nc.receivers.all().count())
+
+
+
         nc.refresh_from_db()
         notifications_url = reverse('monitoring:api_user_notifications')
         nresp = self.client.get(notifications_url)

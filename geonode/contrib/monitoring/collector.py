@@ -684,6 +684,6 @@ class CollectorAPI(object):
     def get_notifications(self, for_timestamp=None):
         if for_timestamp is None:
             for_timestamp = self.get_last_usable_timestamp()
-        notifications = NotificationCheck.check_for(for_timestamp=for_timestamp)
+        notifications = NotificationCheck.check_for(for_timestamp=for_timestamp, active=True)
         non_empty = [n for n in notifications if n[1]]
         return non_empty
