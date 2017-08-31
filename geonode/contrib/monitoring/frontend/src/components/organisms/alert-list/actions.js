@@ -37,7 +37,7 @@ const fail = createAction(
 const get = (interval) =>
   (dispatch) => {
     dispatch(begin());
-    const url = `${apiUrl}/exceptions/?last=${interval}`;
+    const url = `${apiUrl}/status/?last=${interval}`;
     fetch({ url })
       .then(response => {
         dispatch(success(response));

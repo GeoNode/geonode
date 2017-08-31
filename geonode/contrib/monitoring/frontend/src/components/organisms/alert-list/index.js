@@ -1,15 +1,32 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import { connect } from 'react-redux';
 import RaisedButton from 'material-ui/RaisedButton';
 import SettingsIcon from 'material-ui/svg-icons/action/settings';
 import HoverPaper from '../../atoms/hover-paper';
 import Alert from '../../cels/alert';
+import actions from './actions';
 import styles from './styles';
 
 
+const mapStateToProps = (state) => ({
+  alerts: state.alertList.response,
+  interval: state.interval.interval,
+  timestamp: state.interval.timestamp,
+});
+
+
+@connect(mapStateToProps, actions)
 class AlertList extends React.Component {
   static contextTypes = {
     router: PropTypes.object.isRequired,
+  }
+
+  static propTypes = {
+    alerts: PropTypes.object,
+    get: PropTypes.func.isRequired,
+    interval: PropTypes.number,
+    timestamp: PropTypes.instanceOf(Date),
   }
 
   constructor(props) {
@@ -18,9 +35,20 @@ class AlertList extends React.Component {
     this.handleClick = () => {
       this.context.router.push('/alerts/settings');
     };
+
+    this.get = (interval = this.props.interval) => {
+      this.props.get(interval);
+    };
+  }
+
+  componentWillMount() {
+    this.get();
   }
 
   render() {
+    const alerts = this.props.alerts && this.props.alerts.data.length > 0
+                 ? this.props.alerts.data[0].problems
+                 : [];
     return (
       <HoverPaper style={styles.content}>
         <div style={styles.header}>
@@ -31,14 +59,16 @@ class AlertList extends React.Component {
             icon={<SettingsIcon />}
           />
         </div>
-        <Alert
-          date="05/29/2017 12:11:01"
-          short="Geonode was not responding"
-        />
-        <Alert
-          date="05/29/2017 12:07:32"
-          short="Geonode served more than 10MB/m"
-        />
+        {
+          alerts.map((alert, index) => (
+            <Alert
+              key={index}
+              short={alert.message}
+              offending={alert.offending_value}
+              threshold={alert.threshold_value}
+            />
+          ))
+        }
       </HoverPaper>
     );
   }
