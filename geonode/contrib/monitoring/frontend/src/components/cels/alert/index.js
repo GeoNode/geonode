@@ -6,8 +6,9 @@ import styles from './styles';
 
 class AlertList extends React.Component {
   static propTypes = {
-    date: PropTypes.string.isRequired,
     short: PropTypes.string.isRequired,
+    offending: PropTypes.string.isRequired,
+    threshold: PropTypes.string.isRequired,
   }
 
   constructor(props) {
@@ -25,17 +26,15 @@ class AlertList extends React.Component {
   render() {
     const detail = this.state.detail
                  ? <div style={styles.shownDetail}>
-                     more detailed text
+                     offending value: {this.props.offending}<br />
+                     threshold: {this.props.threshold}
                    </div>
                  : <div style={styles.hiddenDetail}>
-                     more detailed text
-                   </div>
-                 ;
+                     offending value: {this.props.offending}<br />
+                     threshold: {this.props.threshold}
+                   </div>;
     return (
       <HoverPaper style={styles.content} onClick={this.handleClick}>
-        <div style={styles.date}>
-          {this.props.date}
-        </div>
         <div style={styles.short}>
           {this.props.short}
         </div>

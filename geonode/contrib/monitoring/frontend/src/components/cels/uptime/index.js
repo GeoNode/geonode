@@ -27,25 +27,13 @@ class Uptime extends React.Component {
 
   constructor(props) {
     super(props);
-    this.get = (interval = this.props.interval) => {
-      this.props.get(interval);
+    this.get = () => {
+      this.props.get();
     };
   }
 
   componentWillMount() {
     this.get();
-  }
-
-  componentWillReceiveProps(nextProps) {
-    if (nextProps) {
-      if (nextProps.timestamp && nextProps.timestamp !== this.props.timestamp) {
-        this.get(nextProps.interval);
-      }
-    }
-  }
-
-  componentWillUnmount() {
-    this.props.reset();
   }
 
   render() {
@@ -54,12 +42,12 @@ class Uptime extends React.Component {
       ...this.props.style,
     };
     let uptime = 0;
-    if (this.props.uptime) {
+    if (this.props.uptime && this.props.uptime.data) {
       const data = this.props.uptime.data.data;
       if (data.length > 0) {
         if (data[0].data.length > 0) {
           const metric = data[0].data[0];
-          uptime = metric.count;
+          uptime = Math.floor(Number(metric.val) / 60 / 60 / 24);
         }
       }
     }

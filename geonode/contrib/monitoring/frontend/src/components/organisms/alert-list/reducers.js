@@ -1,7 +1,7 @@
 import ALERT_LIST from './constants';
 
 
-export default function errorList(
+export default function alertList(
   state = { status: 'initial' },
   action,
 ) {

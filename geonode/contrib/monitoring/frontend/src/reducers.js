@@ -28,6 +28,7 @@ import { wsThroughputSequence } from './components/organisms/ws-analytics/reduce
 import { wsErrorSequence } from './components/organisms/ws-analytics/reducers';
 import errorList from './components/organisms/error-list/reducers';
 import errorDetails from './components/organisms/error-detail/reducers';
+import alertList from './components/organisms/alert-list/reducers';
 import { geonodeLayerError } from './components/organisms/geonode-layers-analytics/reducers';
 import { geonodeLayerResponse } from './components/organisms/geonode-layers-analytics/reducers';
 import { wsLayerError } from './components/organisms/ws-layers-analytics/reducers';
@@ -35,6 +36,7 @@ import { wsLayerResponse } from './components/organisms/ws-layers-analytics/redu
 
 
 const reducers = {
+  alertList,
   errorDetails,
   errorList,
   geonodeAverageResponse,
