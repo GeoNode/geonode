@@ -388,7 +388,7 @@ function filterSelectedTiles(tile_filter, single_click, send_notice, epsgproj){
         var added_count = 0;
         feature_out = olGeoJSON.read(response.priv.responseText);
         var tiles = hasDataFiltering(feature_out);
-        if (jurisdiction_geoms.length > 0){
+        //if (jurisdiction_geoms.length > 0){
           for (var i=0;i<tiles.length;i++){
             var corners = {
               "ur_x": tiles[i].data.MAXX, "ur_y": tiles[i].data.MAXY,
@@ -418,7 +418,7 @@ function filterSelectedTiles(tile_filter, single_click, send_notice, epsgproj){
             }
             highlight_layer.refresh();
           }
-        }
+        //}
       }
       display_points("point_display");
       single_click=true;

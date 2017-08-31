@@ -89,25 +89,25 @@ EXTRA_LANG_INFO = {
         'code': 'am',
         'name': 'Amharic',
         'name_local': 'Amharic',
-        },
+    },
     'tl': {
         'bidi': False,
         'code': 'tl',
         'name': 'Tagalog',
         'name_local': 'tagalog',
-        },
+    },
     'ta': {
         'bidi': False,
         'code': 'ta',
         'name': 'Tamil',
         'name_local': u'tamil',
-        },
+    },
     'si': {
         'bidi': False,
         'code': 'si',
         'name': 'Sinhala',
         'name_local': 'sinhala',
-        },
+    },
 }
 
 AUTH_USER_MODEL = 'people.Profile'
@@ -141,15 +141,15 @@ STATIC_URL = "/static/"
 
 # Additional directories which hold static files
 STATICFILES_DIRS = [
-   os.path.join(PROJECT_ROOT, "static"),
+    os.path.join(PROJECT_ROOT, "static"),
 ]
 
 STATICFILES_DIRS = [
-   '/opt/geonode/geonode/media',
-   os.path.join(PROJECT_ROOT, "static"),
-   "/opt/geonode/virtualenv/geonode/local/lib/python2.7/site-packages/django/contrib/admin/static",
-   "/opt/geonode/virtualenv/geonode/local/lib/python2.7/site-packages/autocomplete_light/static",
-   "/opt/geonode/virtualenv/geonode/local/lib/python2.7/site-packages/leaflet/static",
+    '/opt/geonode/geonode/media',
+    os.path.join(PROJECT_ROOT, "static"),
+    "/opt/geonode/virtualenv/geonode/local/lib/python2.7/site-packages/django/contrib/admin/static",
+    "/opt/geonode/virtualenv/geonode/local/lib/python2.7/site-packages/autocomplete_light/static",
+    "/opt/geonode/virtualenv/geonode/local/lib/python2.7/site-packages/leaflet/static",
 ]
 
 
@@ -220,14 +220,14 @@ GEONODE_APPS = (
 
     # 'geonode.contrib.dynamic',
 
-    #CEPH App
+    # CEPH App
     'geonode.cephgeo',
 
     # Maptiles
     # Django app for selecting and highlighting tiles
     'geonode.maptiles',
 
-    #Registration app
+    # Registration app
     #'geonode.registration',
 
     # EULA app
@@ -284,7 +284,7 @@ INSTALLED_APPS = (
 
     # Third party apps
 
-    #Single Sign On
+    # Single Sign On
     #'simple_sso.sso_server',
 
     # Utility
@@ -329,10 +329,10 @@ INSTALLED_APPS = (
     'corsheaders',
     'captcha',
 
-    #CAS client
+    # CAS client
     'django_cas_ng',
 
-    #CAS client
+    # CAS client
     'django_cas_ng',
 ) + GEONODE_APPS
 
@@ -366,12 +366,12 @@ LOGGING = {
             'level': 'ERROR', 'filters': ['require_debug_false'],
             'class': 'django.utils.log.AdminEmailHandler',
         },
-#        'file': {
-#            'level': 'DEBUG',
-#            'class': 'logging.FileHandler',
-#            'filename': '/var/log/geonode.log',
-#            'formatter': 'verbose'
-#        }
+        #        'file': {
+        #            'level': 'DEBUG',
+        #            'class': 'logging.FileHandler',
+        #            'filename': '/var/log/geonode.log',
+        #            'formatter': 'verbose'
+        #        }
     },
     "loggers": {
         "django": {
@@ -384,8 +384,8 @@ LOGGING = {
             "handlers": ["console"], "level": "ERROR", },
         "pycsw": {
             "handlers": ["console"], "level": "ERROR", },
-        },
-    }
+    },
+}
 
 #
 # Customizations to built in Django settings required by GeoNode
@@ -432,17 +432,18 @@ MIDDLEWARE_CLASSES = (
 
 # Replacement of default authentication backend in order to support
 # permissions per object.
-AUTHENTICATION_BACKENDS = (#'django_auth_ldap.backend.LDAPBackend',
-                           #'geonode.security.auth.GranularBackend',
-                           'django.contrib.auth.backends.ModelBackend',
-                           'guardian.backends.ObjectPermissionBackend',
-                           'django_cas_ng.backends.CASBackend',)
+AUTHENTICATION_BACKENDS = (  # 'django_auth_ldap.backend.LDAPBackend',
+    #'geonode.security.auth.GranularBackend',
+    'django.contrib.auth.backends.ModelBackend',
+    'guardian.backends.ObjectPermissionBackend',
+    'django_cas_ng.backends.CASBackend',)
 
 
 ANONYMOUS_USER_ID = -1
 GUARDIAN_GET_INIT_ANONYMOUS_USER = 'geonode.people.models.get_anonymous_user_instance'
 
-# Whether the uplaoded resources should be public and downloadable by default or not
+# Whether the uplaoded resources should be public and downloadable by
+# default or not
 DEFAULT_ANONYMOUS_VIEW_PERMISSION = True
 DEFAULT_ANONYMOUS_DOWNLOAD_PERMISSION = True
 
@@ -500,7 +501,7 @@ LIPAD_SUPPORT_MAIL = 'lipad@dream.upd.edu.ph'
 FTP_SUPPORT_MAIL = 'lipad@dream.upd.edu.ph'
 FTP_AUTOMAIL = 'automailer@dream.upd.edu.ph'
 
-#get data coverage layer name
+# get data coverage layer name
 PHILGRID_NAME = "philgrid_20160301"
 #
 # Test Settings
@@ -677,50 +678,50 @@ MAP_BASELAYERS = [{
     "fixed": True,
     "group": "background"
 },
-# {
-#    "source": {"ptype": "gxp_mapquestsource"},
-#    "name": "osm",
-#    "group": "background",
-#    "visibility": False
-#},
-{
+    # {
+    #    "source": {"ptype": "gxp_mapquestsource"},
+    #    "name": "osm",
+    #    "group": "background",
+    #    "visibility": False
+    #},
+    {
     "source": {"ptype": "gxp_mapquestsource"},
     "name": "naip",
     "group": "background",
     "visibility": False
 },
-{
+    {
     "source": {"ptype": "gxp_mapboxsource"},
 }]
 
 SOCIAL_BUTTONS = True
 
 SOCIAL_ORIGINS = [{
-    "label":"Email",
-    "url":"mailto:?subject={name}&body={url}",
-    "css_class":"email"
+    "label": "Email",
+    "url": "mailto:?subject={name}&body={url}",
+    "css_class": "email"
 }, {
-    "label":"Facebook",
-    "url":"http://www.facebook.com/sharer.php?u={url}",
-    "css_class":"fb"
+    "label": "Facebook",
+    "url": "http://www.facebook.com/sharer.php?u={url}",
+    "css_class": "fb"
 }, {
-    "label":"Twitter",
-    "url":"https://twitter.com/share?url={url}&hashtags={hashtags}",
-    "css_class":"tw"
+    "label": "Twitter",
+    "url": "https://twitter.com/share?url={url}&hashtags={hashtags}",
+    "css_class": "tw"
 }, {
-    "label":"Google +",
-    "url":"https://plus.google.com/share?url={url}",
-    "css_class":"gp"
+    "label": "Google +",
+    "url": "https://plus.google.com/share?url={url}",
+    "css_class": "gp"
 }]
 
-#CKAN Query String Parameters names pulled from
-#https://github.com/ckan/ckan/blob/2052628c4a450078d58fb26bd6dc239f3cc68c3e/ckan/logic/action/create.py#L43
+# CKAN Query String Parameters names pulled from
+# https://github.com/ckan/ckan/blob/2052628c4a450078d58fb26bd6dc239f3cc68c3e/ckan/logic/action/create.py#L43
 CKAN_ORIGINS = [{
-    "label":"Humanitarian Data Exchange (HDX)",
-    "url":"https://data.hdx.rwlabs.org/dataset/new?title={name}&dataset_date={date}&notes={abstract}&caveats={caveats}",
-    "css_class":"hdx"
+    "label": "Humanitarian Data Exchange (HDX)",
+    "url": "https://data.hdx.rwlabs.org/dataset/new?title={name}&dataset_date={date}&notes={abstract}&caveats={caveats}",
+    "css_class": "hdx"
 }]
-#SOCIAL_ORIGINS.extend(CKAN_ORIGINS)
+# SOCIAL_ORIGINS.extend(CKAN_ORIGINS)
 
 # Setting TWITTER_CARD to True will enable Twitter Cards
 # https://dev.twitter.com/cards/getting-started
@@ -928,9 +929,9 @@ CELERY_QUEUES = [
     Queue('email', routing_key='email'),
     Queue('ftp', routing_key='ftp'),
     Queue('mk_folder', routing_key='mk_folder'),
-    Queue('jurisdiction',routing_key='jurisdiction'),
-    Queue('requests',routing_key='requests'),
-    Queue('users',routing_key='users'),
+    Queue('jurisdiction', routing_key='jurisdiction'),
+    Queue('requests', routing_key='requests'),
+    Queue('users', routing_key='users'),
 ]
 
 import djcelery
@@ -944,10 +945,10 @@ CELERYBEAT_SCHEDULER = "djcelery.schedulers.DatabaseScheduler"
 TILED_SHAPEFILE = "geonode:philgrid_20160301"
 TILED_SHAPEFILE_TEST = "geonode:index"
 EULA_URL = '/eula/eula_form/'
-SELECTION_LIMIT=209715200
+SELECTION_LIMIT = 209715200
 
 MUNICIPALITY_SHAPEFILE = 'geonode:phl_adm2_municipalities_utm_z51n'
-#Upload permissions on file
+# Upload permissions on file
 FILE_UPLOAD_PERMISSIONS = 0776
 
 GEOSTORAGE_HOST = ""
@@ -956,7 +957,8 @@ FILE_UPLOAD_TEMP_DIR = "/tmp/geonode"
 # THUMBNAIL_FILE_PERMISSIONS = 0664
 THUMBNAIL_FILE_PERMISSIONS = 0776
 
-PH_BBOX= [116.22307468566594, 4.27103012208686, 127.09228398538997, 21.2510169394873 ]
+PH_BBOX = [116.22307468566594, 4.27103012208686,
+           127.09228398538997, 21.2510169394873]
 
 _TILE_SIZE = 1000
 
@@ -967,12 +969,12 @@ FP_DELINEATION_PL1 = 'fp_252_201613026v2'
 # RB_DELINEATION_DREAM = 'DREAM_RB'
 
 LIPAD_INSTANCES = [
-'https://lipad-fmc.dream.upd.edu.ph/',
-'https://parmap.dream.upd.edu.ph/',
-'https://frexls.dream.upd.edu.ph/',
-'https://remap.dream.upd.edu.ph/',
-'https://coastmap.dream.upd.edu.ph/',
-'https://phd.dream.upd.edu.ph/',
+    'https://lipad-fmc.dream.upd.edu.ph/',
+    'https://parmap.dream.upd.edu.ph/',
+    'https://frexls.dream.upd.edu.ph/',
+    'https://remap.dream.upd.edu.ph/',
+    'https://coastmap.dream.upd.edu.ph/',
+    'https://phd.dream.upd.edu.ph/',
 ]
 
 # geoserver sld names
@@ -986,11 +988,11 @@ CLEAR_SLD = 'clear_sld'
 MAX_FTP_SIZE = 1073741824
 
 CEPH_OGW = {
-    'default' : {
-        'USER' : '<ceph-user>',
-        'KEY' : '<ceph-user-key>',
-        'LOCATION' : 'http://ceph-radosgw.prd.dream.upd.edu.ph',
-        'CONTAINER' : 'test-container',
+    'default': {
+        'USER': '<ceph-user>',
+        'KEY': '<ceph-user-key>',
+        'LOCATION': 'http://ceph-radosgw.prd.dream.upd.edu.ph',
+        'CONTAINER': 'test-container',
     }
 }
 
@@ -1020,16 +1022,16 @@ if LOCKDOWN_GEONODE:
     MIDDLEWARE_CLASSES = MIDDLEWARE_CLASSES + \
         ('geonode.security.middleware.LoginRequiredMiddleware',)
 
-#for windows users check if they didn't set GEOS and GDAL in local_settings.py
-#maybe they set it as a windows environment
+# for windows users check if they didn't set GEOS and GDAL in local_settings.py
+# maybe they set it as a windows environment
 if os.name == 'nt':
     if not "GEOS_LIBRARY_PATH" in locals() or not "GDAL_LIBRARY_PATH" in locals():
         if os.environ.get("GEOS_LIBRARY_PATH", None) \
-            and os.environ.get("GDAL_LIBRARY_PATH", None):
+                and os.environ.get("GDAL_LIBRARY_PATH", None):
             GEOS_LIBRARY_PATH = os.environ.get('GEOS_LIBRARY_PATH')
             GDAL_LIBRARY_PATH = os.environ.get('GDAL_LIBRARY_PATH')
         else:
-            #maybe it will be found regardless if not it will throw 500 error
+            # maybe it will be found regardless if not it will throw 500 error
             from django.contrib.gis.geos import GEOSGeometry
 
 
@@ -1055,3 +1057,11 @@ CELERYBEAT_SCHEDULE = {
         'schedule': 30,
     }
 }
+# CEPHACCESS/FTP Settings
+CEPHACCESS_HOST = 'cephaccess@cephaccess.prd.dream.upd.edu.ph'
+CEPHACCESS_DL_SCRIPT = '/home/cephaccess/cephaccess-ftp-scripts/download.py'
+CEPHACCESS_PYTHON = '/home/cephaccess/.virtualenvs/cephaccess/bin/python2'
+FTP_HOST = 'root@ftp-nas.prd.dream.upd.edu.ph'
+FTP_SCRIPT = '/mnt/misc/scripts/sysad-tools/set-acls/createdir.sh'
+FABRIC_ENV_USER = 'geonode'
+FABRIC_ENV_KEY_FILENAME = '/home/geonode/.ssh/id_rsa'

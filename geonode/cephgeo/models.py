@@ -60,7 +60,7 @@ class FTPStatus(enum.Enum):
         DONE: 'Done',
         PENDING: 'Pending',
         ERROR:   'Error',
-        DUPLICATE: 'Duplicate', 
+        DUPLICATE: 'Duplicate',
         FORWARDED: 'Forwarded'}
 
 
@@ -78,7 +78,7 @@ class FTPRequest(models.Model):
     date_time = models.DateTimeField(default=datetime.now)
     user = models.ForeignKey(User, null=False, blank=False)
     status = enum.EnumField(FTPStatus, default=FTPStatus.PENDING)
-    size_in_bytes = models.IntegerField()
+    size_in_bytes = models.BigIntegerField()
     num_tiles = models.IntegerField()
 
     def __unicode__(self):
@@ -176,13 +176,15 @@ class LidarCoverageBlock(models.Model):
     pl2_suc_ht = _('(DPPC) Phil-LiDAR 2 SUC assigned to this block')
 
     uid = models.IntegerField(primary_key=True, help_text=uid_ht)
-    block_name = models.CharField(max_length=255,unique=True, help_text=block_name_ht)
+    block_name = models.CharField(
+        max_length=255, unique=True, help_text=block_name_ht)
     adjusted_l = models.TextField(blank=True, help_text=adjusted_l_ht)
     sensor = models.TextField(blank=True, help_text=sensor_ht)
     processor = models.TextField(blank=True, help_text=processor_ht)
     flight_num = models.TextField(blank=True, help_text=flight_num_ht)
     mission_na = models.TextField(blank=True, help_text=mission_na_ht)
-    date_flown = models.DateField(blank=True, null=True, help_text=date_flown_ht)
+    date_flown = models.DateField(
+        blank=True, null=True, help_text=date_flown_ht)
     x_shift_m = models.TextField(blank=True, help_text=x_shift_m_ht)
     y_shift_m = models.TextField(blank=True, help_text=y_shift_m_ht)
     z_shift_m = models.TextField(blank=True, help_text=z_shift_m_ht)

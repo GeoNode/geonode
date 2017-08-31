@@ -35,7 +35,7 @@ def api_combined(request, apiname):
     tostrip = 'limit='+str(request.GET.get('limit'))+'&offset='+str(request.GET.get('offset'))
     apiquery = '?'.join(current_url.split('?')[1:]).replace(tostrip,'').rstrip('&').lstrip('&')
     local_url = urljoin(current_url,'../')
-    urls_to_visit = settings.LIPAD_INSTANCES + ['https://lipad.dream.upd.edu.ph/']
+    urls_to_visit = settings.LIPAD_INSTANCES #+ ['https://lipad.dream.upd.edu.ph/']
     output = {}
     # output = []
     for each_url in urls_to_visit:
