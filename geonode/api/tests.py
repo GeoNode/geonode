@@ -306,8 +306,8 @@ class LayersStylesApiInteractionTests(LiveServerTestCase, ResourceTestCase):
         objects = self.deserialize(resp)['objects']
         self.assertEqual(len(objects), 1)
         obj = objects[0]
-        # Should not have links (to save payload from big text)
-        self.assertTrue('links' not in obj)
+        # Should have links
+        self.assertTrue('links' in obj)
         # Should not have styles
         self.assertTrue('styles' not in obj)
         # Should have default_style

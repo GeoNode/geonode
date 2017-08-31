@@ -578,6 +578,7 @@ class LayerResource(CommonModelApi):
     links = fields.ListField(
         attribute='links',
         null=True,
+        use_in='all',
         default=[])
     if check_ogc_backend(qgis_server.BACKEND_PACKAGE):
         default_style = fields.ForeignKey(
@@ -618,8 +619,12 @@ class LayerResource(CommonModelApi):
 
             # provide style information
             bundle = self.build_bundle(obj=obj)
-            formatted_obj['default_style'] = (
-                self.default_style.dehydrate(bundle, for_list=True))
+            formatted_obj['default_style'] = self.default_style.dehydrate(
+                bundle, for_list=True)
+
+            if self.links.use_in == 'all' or self.links.use_in == 'list':
+                formatted_obj['links'] = self.dehydrate_links(
+                    bundle)
             # Add resource uri
             formatted_obj['resource_uri'] = self.get_resource_uri(bundle)
             # put the object on the response stack
@@ -628,6 +633,8 @@ class LayerResource(CommonModelApi):
 
     def dehydrate_links(self, bundle):
         """Dehydrate links field."""
+
+        dehydrated = []
         obj = bundle.obj
         link_fields = [
             'extension',
@@ -636,20 +643,11 @@ class LayerResource(CommonModelApi):
             'mime',
             'url'
         ]
-        dehydrated = []
         for l in obj.link_set.all():
             formatted_link = model_to_dict(l, fields=link_fields)
             dehydrated.append(formatted_link)
 
         return dehydrated
-
-    def dehydrate(self, bundle):
-        """Override dehydrate phase"""
-
-        # Override Link dehydrate phase
-        bundle.data[self.links.instance_name] = self.dehydrate_links(bundle)
-
-        return bundle
 
     def populate_object(self, obj):
         """Populate results with necessary fields
