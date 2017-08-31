@@ -1,32 +1,32 @@
 import { createAction } from 'redux-actions';
-import { fetch } from '../../../../utils';
-import apiUrl from '../../../../backend';
-import { GEONODE_LAYER_RESPONSE } from '../constants';
+import { fetch } from '../../../utils';
+import apiUrl from '../../../backend';
+import LAYER_LIST from './constants';
 
 
 const reset = createAction(
-  GEONODE_LAYER_RESPONSE,
+  LAYER_LIST,
   () => ({ status: 'initial' })
 );
 
 
 export const begin = createAction(
-  GEONODE_LAYER_RESPONSE,
+  LAYER_LIST,
   () => ({ status: 'pending' })
 );
 
 
 const success = createAction(
-  GEONODE_LAYER_RESPONSE,
+  LAYER_LIST,
   response => ({
-    response,
+    response: response.resources,
     status: 'success',
   })
 );
 
 
 const fail = createAction(
-  GEONODE_LAYER_RESPONSE,
+  LAYER_LIST,
   error => ({
     status: 'error',
     error,
@@ -34,11 +34,10 @@ const fail = createAction(
 );
 
 
-const get = (layer, interval) =>
+const get = () =>
   (dispatch) => {
     dispatch(begin());
-    let url = `${apiUrl}/metric_data/response.time/?resource=${layer}`;
-    url += `&last=${interval}&interval=${interval}`;
+    const url = `${apiUrl}/resources/?resource_type=layer`;
     fetch({ url })
       .then(response => {
         dispatch(success(response));

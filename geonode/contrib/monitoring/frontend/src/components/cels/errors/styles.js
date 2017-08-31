@@ -5,9 +5,8 @@ export default {
     alignItems: 'center',
     justifyContent: 'center',
     width: 'calc(50% - 10px)',
-    backgroundColor: '#d12b2b',
-    color: '#fff',
     paddingTop: 10,
+    cursor: 'grabbing',
   },
 
   stat: {

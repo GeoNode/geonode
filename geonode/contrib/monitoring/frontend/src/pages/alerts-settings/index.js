@@ -15,8 +15,8 @@ class AlertsSettings extends Component {
       console.log('organisms/alert-list save button');
     };
 
-    this.handleChange = (one) => {
-      console.log(one.target.value);
+    this.handleChange = (event) => {
+      console.log(event.target.value);
     };
   }
 
@@ -46,7 +46,7 @@ class AlertsSettings extends Component {
             <Checkbox label="GeoNode did not serve any data within 24h" style={styles.checkbox} />
           </div>
           <div>
-            <Checkbox label="GeoNode is not responding" style={styles.checkbox} />
+            <Checkbox label="GeoServer is not responding" style={styles.checkbox} />
           </div>
           <div>
             <Checkbox label="GeoNode is serving more than" style={styles.checkbox} />

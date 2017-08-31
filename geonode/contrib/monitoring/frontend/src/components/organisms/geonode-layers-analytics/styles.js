@@ -9,4 +9,10 @@ export default {
     border: '1px solid #ddd',
     width: '100%',
   },
+
+  header: {
+    display: 'flex',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
 };
