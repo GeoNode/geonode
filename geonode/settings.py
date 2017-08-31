@@ -1026,10 +1026,20 @@ FREETEXT_KEYWORDS_READONLY = False
 
 # notification settings
 NOTIFICATION_ENABLED = False or TEST
-NOTIFICATION_LANGUAGE_MODULE = "account.Account"
+PINAX_NOTIFICATIONS_LANGUAGE_MODEL = "account.Account"
+
+# notifications backends
+_EMAIL_BACKEND = "pinax.notifications.backends.email.EmailBackend"
+PINAX_NOTIFICATIONS_BACKENDS = [
+    ("email", _EMAIL_BACKEND),
+]
 
 # Queue non-blocking notifications.
-NOTIFICATION_QUEUE_ALL = False
+PINAX_NOTIFICATIONS_QUEUE_ALL = False
+PINAX_NOTIFICATIONS_LOCK_WAIT_TIMEOUT = -1
+
+# explicitly define NOTIFICATION_LOCK_LOCATION
+# NOTIFICATION_LOCK_LOCATION = <path>
 
 # pinax.notifications
 # or notification
