@@ -2,12 +2,12 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import HoverPaper from '../../atoms/hover-paper';
-import actions from '../../organisms/error-list/actions';
+import actions from '../../organisms/alert-list/actions';
 import styles from './styles';
 
 
 const mapStateToProps = (state) => ({
-  errorList: state.errorList.response,
+  alertList: state.alertList.response,
   interval: state.interval.interval,
   timestamp: state.interval.timestamp,
 });
@@ -37,6 +37,10 @@ class Alerts extends React.Component {
     this.get = (interval = this.props.interval) => {
       this.props.get(interval);
     };
+  }
+
+  componentWillMount() {
+    this.get();
   }
 
   render() {
