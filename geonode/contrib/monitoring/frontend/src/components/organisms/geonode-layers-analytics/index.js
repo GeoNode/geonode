@@ -5,6 +5,7 @@ import { getResponseData, getErrorCount } from '../../../utils';
 import HoverPaper from '../../atoms/hover-paper';
 import HR from '../../atoms/hr';
 import ResponseTable from '../../cels/response-table';
+import LayerSelect from '../../cels/layer-select';
 import styles from './styles';
 import actions from './actions';
 
@@ -70,7 +71,10 @@ class GeonodeLayerAnalytics extends React.Component {
     const errorNumber = getErrorCount(this.props.errorNumber);
     return (
       <HoverPaper style={styles.content}>
-        <h3>Geonode Layers Analytics</h3>
+        <div style={styles.header}>
+          <h3>Geonode Layers Analytics</h3>
+          <LayerSelect />
+        </div>
         <HR />
         <ResponseTable
           average={average}

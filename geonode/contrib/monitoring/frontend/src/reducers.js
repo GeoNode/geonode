@@ -15,6 +15,7 @@ import wsServiceData from './components/cels/ws-data/reducers';
 import { geonodeCpuStatus, geonodeMemStatus } from './components/cels/geonode-status/reducers';
 import { geoserverCpuStatus } from './components/cels/geoserver-status/reducers';
 import { geoserverMemStatus } from './components/cels/geoserver-status/reducers';
+import layerList from './components/cels/layer-select/reducers';
 
 // Organisms
 import { geonodeResponseSequence } from './components/organisms/geonode-analytics/reducers';
@@ -52,6 +53,7 @@ const reducers = {
   geoserverCpuStatus,
   geoserverMemStatus,
   interval,
+  layerList,
   mapData,
   services,
   theme,
