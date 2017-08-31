@@ -29,7 +29,7 @@
     <dt>{% trans "Abstract" %}</dt>
     <dd itemprop="description">{{ resource.abstract|escape|urlize|linebreaks|safe|truncatechars:500 }}</dd>
     {% endif %}
-    
+
     {% if resource.date %}
     <dt>{% trans resource.date_type|title %} {% trans "Date" %}</dt>
       {% if resource.date_type == 'creation' %}
@@ -57,7 +57,7 @@
       {% endfor %}
     </dd>
     {% endif %}
-          
+
     {% if resource.category %}
     <dt>{% trans "Category" %}</dt>
     <dd><a href="{% url "search" %}?category__identifier__in={{ resource.category.identifier }}">{{ resource.category }}</a> {% if resource.category.description %}<a href="#category-more" data-toggle="collapse" data-target=".category-more"><i class="fa fa-info-circle"></i></a>{% endif %}</dd>
@@ -67,7 +67,7 @@
       </dd>
       {% endif %}
     {% endif %}
-  
+
     {% if resource.regions.all %}
     <dt>{% trans "Regions" %}</dt>
     <dd itemprop="keywords">
@@ -79,7 +79,7 @@
       {% endfor %}
     </dd>
     {% endif %}
-  
+
     {% if resource.owner %}
     <dt>{% trans "Owner" %}</dt>
     <dd><a itemprop="author" href="{{ resource.owner.get_absolute_url }}">{{ resource.owner.username }}</a></dd>
@@ -89,6 +89,12 @@
     <dt>{% trans "Point of Contact" %}</dt>
     <dd><a href="{{ resource.poc.user.get_absolute_url }}">{{ resource.poc.user.username }}</a></dd>
     {% endif %}
+
+    {% if resource.group %}
+    <dt>{% trans "Group" %}</dt>
+    <dd><a href="/groups/group/{{ resource.group.name }}/activity/">{{ resource.group.name }}</a> </dd>
+    {% endif %}
+
   </dl>
 
   <dl class="dl-horizontal">
@@ -121,7 +127,7 @@
     <dt>{% trans "Maintenance Frequency" %}</dt>
     <dd>{{ resource.maintenance_frequency_title }}</dd>
     {% endif %}
-    
+
     {% if resource.restriction_code_type or resource.constraints_other %}
     <dt>{% trans "Restrictions" %}</dt>
     <dd>{% if resource.constraints_other %}
@@ -130,7 +136,7 @@
             {{ resource.restriction_code_type }}
         {% endif %}</dd>
     {% endif %}
-          
+
     {% if resource.edition %}
     <dt>{% trans "Edition" %}</dt>
     <dd>{{ resource.edition}}</dd>
