@@ -18,15 +18,16 @@
 #
 #########################################################################
 
-from geonode.settings import MAP_BASELAYERS, BING_API_KEY
+from geonode import settings
+
 BASEMAP = {
     'source': {
         'ptype': 'gxp_bingsource',
-        'apiKey': BING_API_KEY
+        'apiKey': settings.BING_API_KEY
     },
     'name': 'AerialWithLabels',
     'fixed': True,
     'visibility': False,
     'group': 'background'
 }
-MAP_BASELAYERS.append(BASEMAP)
+settings.MAP_BASELAYERS.append(settings.BASEMAP)

@@ -23,7 +23,7 @@ import sys
 from optparse import make_option
 
 from django.core.management.base import BaseCommand
-from geonode.settings import BROKER_URL
+from django.conf import settings
 
 logger = logging.getLogger(__package__)
 logger.addHandler(logging.StreamHandler(sys.stdout))
@@ -46,7 +46,7 @@ class Command(BaseCommand):
         from kombu import BrokerConnection
         from geonode.messaging.consumer import Consumer
 
-        with BrokerConnection(BROKER_URL) as connection:
+        with BrokerConnection(settings.BROKER_URL) as connection:
             try:
                 logger.info("Consumer starting.")
                 worker = Consumer(connection)

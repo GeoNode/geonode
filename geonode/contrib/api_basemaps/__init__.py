@@ -19,46 +19,39 @@
 #
 #########################################################################
 
-from geonode.settings import (
-    ALT_OSM_BASEMAPS,
-    CARTODB_BASEMAPS,
-    STAMEN_BASEMAPS,
-    THUNDERFOREST_BASEMAPS,
-    MAPBOX_ACCESS_TOKEN,
-    BING_API_KEY,
-)
+from geonode import settings
 
-if ALT_OSM_BASEMAPS:
+if settings.ALT_OSM_BASEMAPS:
     try:
         from osm import *
     except ImportError:
         pass
 
-if CARTODB_BASEMAPS:
+if settings.CARTODB_BASEMAPS:
     try:
         from cartodb import *
     except ImportError:
         pass
 
-if STAMEN_BASEMAPS:
+if settings.STAMEN_BASEMAPS:
     try:
         from stamen import *
     except ImportError:
         pass
 
-if THUNDERFOREST_BASEMAPS:
+if settings.THUNDERFOREST_BASEMAPS:
     try:
         from thunderforest import *
     except ImportError:
         pass
 
-if BING_API_KEY is not None:
+if settings.BING_API_KEY is not None:
     try:
         from bing import *
     except ImportError:
         pass
 
-if MAPBOX_ACCESS_TOKEN is not None:
+if settings.MAPBOX_ACCESS_TOKEN is not None:
     try:
         from mapbox import *
     except ImportError:

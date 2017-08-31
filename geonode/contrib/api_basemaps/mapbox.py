@@ -18,7 +18,8 @@
 #
 #########################################################################
 
-from geonode.settings import MAP_BASELAYERS, MAPBOX_ACCESS_TOKEN
+from geonode import settings
+
 MAPBOX_API = {
     'styles': {
         'streets-v9': {
@@ -62,7 +63,7 @@ MAPBOX_API = {
 
 for k, v in MAPBOX_API['styles'].items():
     URL = ('https://api.mapbox.com/styles/v1/mapbox/%s/tiles/256/${z}/${x}/'
-           '${y}?access_token=%s') % (k, MAPBOX_ACCESS_TOKEN)
+           '${y}?access_token=%s') % (k, settings.MAPBOX_ACCESS_TOKEN)
     if v['enabled']:
         BASEMAP = {
             'source': {
@@ -81,4 +82,4 @@ for k, v in MAPBOX_API['styles'].items():
             'visibility': v['visibility'],
             'group': 'background'
         }
-        MAP_BASELAYERS.append(BASEMAP)
+        settings.MAP_BASELAYERS.append(BASEMAP)

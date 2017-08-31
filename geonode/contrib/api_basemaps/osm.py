@@ -18,7 +18,8 @@
 #
 #########################################################################
 
-from geonode.settings import MAP_BASELAYERS
+from geonode import settings
+
 OSM = {
     'maps': {
         'de': {
@@ -71,4 +72,4 @@ for k, v in OSM['maps'].items():
             'visibility': v['visibility'],
             'group': 'background'
         }
-        MAP_BASELAYERS.append(BASEMAP)
+        settings.MAP_BASELAYERS.append(BASEMAP)

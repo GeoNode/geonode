@@ -174,7 +174,7 @@ class CommonModelApi(ModelResource):
             is_staff = request.user.is_staff if request.user else False
 
         if not is_admin and not is_staff:
-            filtered = queryset.exclude(Q(is_published=False))
+            filtered = queryset.filter(Q(is_published=True))
         else:
             filtered = queryset
         return filtered
@@ -425,10 +425,41 @@ class CommonModelApi(ModelResource):
         sqs = self.build_haystack_filters(request.GET)
 
         if not settings.SKIP_PERMS_FILTER:
+            is_admin = False
+            is_staff = False
+            if request.user:
+                is_admin = request.user.is_superuser if request.user else False
+                is_staff = request.user.is_staff if request.user else False
+
             # Get the list of objects the user has access to
             filter_set = get_objects_for_user(request.user, 'base.view_resourcebase')
+            if settings.ADMIN_MODERATE_UPLOADS:
+                if not is_admin and not is_staff:
+                    filter_set = filter_set.filter(is_published=True)
+
             if settings.RESOURCE_PUBLISHING:
                 filter_set = filter_set.filter(is_published=True)
+
+            try:
+                anonymous_group = Group.objects.get(name='anonymous')
+            except:
+                anonymous_group = None
+
+            if settings.GROUP_PRIVATE_RESOURCES:
+                if is_admin:
+                    filter_set = filter_set
+                elif request.user:
+                    groups = request.user.groups.all()
+                    if anonymous_group:
+                        filter_set = filter_set.filter(
+                            Q(group__isnull=True) | Q(group__in=groups) | Q(group=anonymous_group))
+                    else:
+                        filter_set = filter_set.filter(Q(group__isnull=True) | Q(group__in=groups))
+                else:
+                    if anonymous_group:
+                        filter_set = filter_set.filter(Q(group__isnull=True) | Q(group=anonymous_group))
+                    else:
+                        filter_set = filter_set.filter(Q(group__isnull=True))
 
             filter_set_ids = filter_set.values_list('id')
             # Do the query using the filterset and the query term. Facet the
@@ -488,6 +519,7 @@ class CommonModelApi(ModelResource):
             },
            "objects": map(lambda x: self.get_haystack_api_fields(x), objects),
         }
+
         self.log_throttled_access(request)
         return self.create_response(request, object_list)
 
@@ -552,6 +584,7 @@ class CommonModelApi(ModelResource):
         if response_objects:
             filtered_objects_ids = [item.id for item in response_objects if
                                     request.user.has_perm('view_resourcebase', item.get_self_resource())]
+
         if isinstance(
                 data,
                 dict) and 'objects' in data and not isinstance(

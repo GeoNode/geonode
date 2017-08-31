@@ -26,9 +26,9 @@ from django.contrib.contenttypes.models import ContentType
 from django.contrib.auth import get_user_model
 from django.contrib.auth.models import Group
 from django.db.models import Count
+from django.conf import settings
 
 from guardian.shortcuts import get_objects_for_user
-from geonode import settings
 
 from geonode.layers.models import Layer
 from geonode.maps.models import Map
