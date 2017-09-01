@@ -1729,6 +1729,8 @@ class MonitoringUtilsTestCase(TestCase):
 
 class MonitoringChecksTestCase(TestCase):
 
+    reserved_fields = ('emails', 'severity', 'active', 'grace_period',)
+
     def setUp(self):
         super(MonitoringChecksTestCase, self).setUp()
         populate()
@@ -1983,7 +1985,7 @@ class MonitoringChecksTestCase(TestCase):
             data['emails'] = '\n'.join(data['emails'])
             idx = 0
             for fname, field in nc_form.fields.items():
-                if fname in ('emails', 'severity', 'active',):
+                if fname in self.reserved_fields:
                     continue
                 data[fname] = vals[idx]
                 idx += 1
@@ -1995,7 +1997,7 @@ class MonitoringChecksTestCase(TestCase):
             data = {'emails': '\n'.join([self.u.email, self.u2.email, 'testsome@test.com'])}
             idx = 0
             for fname, field in nc_form.fields.items():
-                if fname in ('emails', 'severity', 'active',):
+                if fname in self.reserved_fields:
                     continue
                 data[fname] = vals[idx]
                 idx += 1

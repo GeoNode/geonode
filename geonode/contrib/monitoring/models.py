@@ -834,8 +834,14 @@ class NotificationCheck(models.Model):
             emails = MultiEmailField(required=False)
             severity = forms.ChoiceField(choices=self.SEVERITIES, required=False)
             active = forms.BooleanField(required=False)
+            grace_period = forms.DurationField(required=False)
 
             def __init__(self, *args, **kwargs):
+                initial = {'emails': list(this.get_emails()) + [u.email for u in this.get_users()],
+                           'severity': this.severity,
+                           'active': this.active,
+                           'grace_period': this.grace_period}
+                kwargs['initial'] = initial
                 super(F, self).__init__(*args, **kwargs)
                 fields = self.fields
                 for d in defs:
@@ -863,10 +869,13 @@ class NotificationCheck(models.Model):
         emails = fdata.pop('emails')
         active = fdata.pop('active')
         severity = fdata.pop('severity', None)
+        grace_period = fdata.pop('grace_period', None)
         if severity is not None:
             self.severity = severity
         if active is not None:
             self.active = active
+        if grace_period is not None:
+            self.grace_period = grace_period
         self.save()
 
         for key, val in fdata.items():
