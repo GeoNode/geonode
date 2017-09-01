@@ -1053,7 +1053,7 @@ class MetricNotificationCheck(models.Model):
 
     class MetricValueError(ValueError):
 
-        def __init__(self, metric, check, message, offending_value, threshold_value):
+        def __init__(self, metric, check, message, offending_value, threshold_value, description):
             self.metric = metric
             self.check = check
             self.message = message
@@ -1062,9 +1062,9 @@ class MetricNotificationCheck(models.Model):
             self.threshold_value = threshold_value
             self.severity = check.notification_check.severity
             self.check_url = check.notification_check.url
-            self.description = {'notification_name': check.notification_check.name,
-                                'notification_description': check.notification_check.description,
-                                'check_description': check.definition.description}
+            self.check_id = check.notification_check.id
+            self.spotted_at = datetime.now()
+            self.description = description
 
         def __str__(self):
             return "MetricValueError({}: metric {} misses {} check: {})".format(self.severity,
@@ -1077,16 +1077,22 @@ class MetricNotificationCheck(models.Model):
         Check specific metric if it's faulty or not.
         """
         v = metric.value_num
+        metric_name = metric.service_metric.metric.name
         had_check = False
         def_msg = self.definition.description
+        description_tmpl = "Metric value for {} should be {} {:0.0f}, got {:0.0f} instead"
         if self.min_value is not None:
             had_check = True
             if v < self.min_value:
-                raise self.MetricValueError(metric, self, "{} {}".format(def_msg, int(v)), v, self.min_value)
+                msg = "{} {}".format(def_msg, int(v))
+                description = description_tmpl.format(metric_name, 'at least', self.min_value, v)
+                raise self.MetricValueError(metric, self, msg, v, self.min_value, description)
         if self.max_value is not None:
             had_check = True
             if v > self.max_value:
-                raise self.MetricValueError(metric, self, "{} {}".format(def_msg, int(v)), v, self.max_value)
+                msg = "{} {}".format(def_msg, int(v))
+                description = description_tmpl.format(metric_name, 'at most', self.min_value, v)
+                raise self.MetricValueError(metric, self, msg, v, self.max_value, description)
 
         if self.max_timeout is not None:
             had_check = True
@@ -1096,11 +1102,17 @@ class MetricNotificationCheck(models.Model):
             valid_on = datetime.now()
             if (valid_on - metric.valid_to) > self.max_timeout:
                 total_seconds = self.max_timeout.total_seconds()
+                actual_seconds = (valid_on - metric.valid_to).total_seconds()
                 msg = "{} {} seconds".format(def_msg, int(total_seconds))
+                description = description_tmpl.format(metric_name, 
+                                                      'recored at most ', 
+                                                      '{} seconds ago'.format(total_seconds),
+                                                      '{} seconds'.format(actual_seconds))
                 raise self.MetricValueError(metric, self,
                                             msg,
                                             metric.valid_to,
-                                            valid_on
+                                            valid_on,
+                                            description
                                             )
         if not had_check:
             raise ValueError("Metric check {} is not checking anything".format(self))

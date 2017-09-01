@@ -569,6 +569,7 @@ class StatusCheckView(View):
               'offending_value',
               'threshold_value',
               'check_url',
+              'check_id',
               'description',
               'message',)
 
