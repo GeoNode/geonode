@@ -1,6 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { Link } from 'react-router';
+/* import { Link } from 'react-router';*/
 import HoverPaper from '../../atoms/hover-paper';
 import styles from './styles';
 
@@ -26,11 +26,12 @@ class AlertList extends React.Component {
     const alert = this.props.alert;
     const alertContent = (
       <div>
-        offending value: {alert.offending_value}<br />
+        value: {alert.offending_value}<br />
         threshold: {alert.threshold_value}<br />
-        config: <Link to={`/alerts/${alert.check_id}`}>link</Link>
       </div>
     );
+    // add it to alertContent when ready
+    // config: <Link to={`/alerts/${alert.check_id}`}>link</Link>
     const detail = this.state.detail
                  ? <div style={styles.shownDetail}>
                      {alertContent}

@@ -17,4 +17,10 @@ export default {
   list: {
     padding: 10,
   },
+
+  spinner: {
+    width: '100%',
+    display: 'flex',
+    justifyContent: 'center',
+  },
 };
