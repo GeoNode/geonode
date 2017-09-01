@@ -20,7 +20,7 @@
 
 import os
 
-__version__ = (2, 6, 1, 'final', 0)
+__version__ = (2, 6, 3, 'final', 0)
 
 
 class GeoNodeException(Exception):
