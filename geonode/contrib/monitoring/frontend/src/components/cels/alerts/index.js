@@ -43,6 +43,14 @@ class Alerts extends React.Component {
     this.get();
   }
 
+  componentWillReceiveProps(nextProps) {
+    if (nextProps) {
+      if (nextProps.timestamp && nextProps.timestamp !== this.props.timestamp) {
+        this.get(nextProps.interval);
+      }
+    }
+  }
+
   render() {
     const alertList = this.props.alertList;
     const alertNumber = alertList && alertList.data
