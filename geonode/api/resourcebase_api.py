@@ -104,6 +104,10 @@ class CommonModelApi(ModelResource):
         'thumbnail_url',
         'detail_url',
         'rating',
+        'bbox_x0',
+        'bbox_x1',
+        'bbox_y0',
+        'bbox_y1'
     ]
 
     def build_filters(self, filters=None):
