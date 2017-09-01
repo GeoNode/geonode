@@ -81,7 +81,12 @@ class GeonodeStatus extends React.Component {
       if (data.length > 0) {
         if (data[0].data.length > 0) {
           const metric = data[0].data[0];
-          cpu = Math.floor(metric.val);
+          const value = Number(metric.val);
+          if (value > 1) {
+            cpu = Math.floor(value);
+          } else {
+            cpu = Number(value.toFixed(2));
+          }
         }
       }
     }
@@ -92,7 +97,12 @@ class GeonodeStatus extends React.Component {
       if (data.length > 0) {
         if (data[0].data.length > 0) {
           const metric = data[0].data[0];
-          mem = Math.floor(metric.val);
+          const value = Number(metric.val);
+          if (value > 1) {
+            mem = Math.floor(value);
+          } else {
+            mem = Number(value.toFixed(2));
+          }
         }
       }
     }
