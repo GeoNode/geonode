@@ -4,6 +4,7 @@ import { connect } from 'react-redux';
 import DropDownMenu from 'material-ui/DropDownMenu';
 import MenuItem from 'material-ui/MenuItem';
 import actions from './actions';
+import styles from './styles';
 
 
 const mapStateToProps = (state) => ({
@@ -35,8 +36,9 @@ class GeonodeData extends React.Component {
 
     this.state = {};
 
-    this.handleChange = (target, id) => {
+    this.handleChange = (target, id, name) => {
       if (this.props.onChange) {
+        this.setState({ selected: name });
         this.props.onChange(id);
       }
     };
@@ -73,7 +75,11 @@ class GeonodeData extends React.Component {
                    />
                  )) : null;
     return (
-      <DropDownMenu value={this.state.selected} onChange={this.handleChange}>
+      <DropDownMenu
+        style={styles.root}
+        value={this.state.selected}
+        onChange={this.handleChange}
+      >
         {layers}
       </DropDownMenu>
     );
