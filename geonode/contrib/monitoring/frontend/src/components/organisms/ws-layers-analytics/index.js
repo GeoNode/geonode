@@ -11,9 +11,9 @@ import actions from './actions';
 
 
 const mapStateToProps = (state) => ({
-  errorNumber: state.geonodeLayerError.response,
+  errorNumber: state.wsLayerError.response,
   interval: state.interval.interval,
-  response: state.geonodeLayerResponse.response,
+  response: state.wsLayerResponse.response,
   timestamp: state.interval.timestamp,
 });
 

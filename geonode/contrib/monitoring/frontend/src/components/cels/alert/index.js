@@ -24,20 +24,14 @@ class AlertList extends React.Component {
 
   render() {
     const alert = this.props.alert;
-    const alertContent = (
-      <div>
-        value: {alert.offending_value}<br />
-        threshold: {alert.threshold_value}<br />
-      </div>
-    );
     // add it to alertContent when ready
     // config: <Link to={`/alerts/${alert.check_id}`}>link</Link>
     const detail = this.state.detail
                  ? <div style={styles.shownDetail}>
-                     {alertContent}
+                     {alert.description}
                    </div>
                  : <div style={styles.hiddenDetail}>
-                     {alertContent}
+                     {alert.description}
                  </div>
     ;
     return (

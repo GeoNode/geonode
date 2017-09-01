@@ -61,10 +61,6 @@ class GeonodeData extends React.Component {
     }
   }
 
-  componentWillUnmount() {
-    this.props.reset();
-  }
-
   render() {
     const layers = this.props.layers
                  ? this.props.layers.map((layer) => (
