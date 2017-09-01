@@ -263,9 +263,13 @@ class OWSService(models.Model):
         except cls.DoesNotExist:
             return
 
+    @property
     def is_all(self):
         return self.name == self.OWS_ALL
 
+    @property
+    def is_other(self):
+        return self.name == self.OWS_OTHER
 
 class RequestEvent(models.Model):
     _methods = 'get post head options put delete'.upper().split(' ')
@@ -1080,18 +1084,34 @@ class MetricNotificationCheck(models.Model):
         metric_name = metric.service_metric.metric.name
         had_check = False
         def_msg = self.definition.description
-        description_tmpl = "Metric value for {} should be {} {:0.0f}, got {:0.0f} instead"
+        msg_prefix = []
+        if self.ows_service:
+            os = self.ows_service
+            if os.is_all or os.is_other:
+                msg_prefix.append("for {} OWS".format(os.name))
+            else:
+                msg_prefix.append("for {} OWS".format(os.name))
+        if self.service:
+            msg_prefix.append("for {} service".format(self.service.name))
+        if self.resource:
+            msg_prefix.append("for {}[{}] resource".format(self.resource.name, self.resource.type))
+
+        msg_prefix = ' '.join(msg_prefix)
+        description_tmpl = ("{} Metric value for {} should be {{}} "
+                            "{{:0.0f}}, got {{:0.0f}} instead").format(msg_prefix, metric_name).strip()
+
+
         if self.min_value is not None:
             had_check = True
             if v < self.min_value:
                 msg = "{} {}".format(def_msg, int(v))
-                description = description_tmpl.format(metric_name, 'at least', self.min_value, v)
+                description = description_tmpl.format('at least', self.min_value, v)
                 raise self.MetricValueError(metric, self, msg, v, self.min_value, description)
         if self.max_value is not None:
             had_check = True
             if v > self.max_value:
                 msg = "{} {}".format(def_msg, int(v))
-                description = description_tmpl.format(metric_name, 'at most', self.min_value, v)
+                description = description_tmpl.format('at most', self.min_value, v)
                 raise self.MetricValueError(metric, self, msg, v, self.max_value, description)
 
         if self.max_timeout is not None:
@@ -1104,8 +1124,7 @@ class MetricNotificationCheck(models.Model):
                 total_seconds = self.max_timeout.total_seconds()
                 actual_seconds = (valid_on - metric.valid_to).total_seconds()
                 msg = "{} {} seconds".format(def_msg, int(total_seconds))
-                description = description_tmpl.format(metric_name, 
-                                                      'recored at most ', 
+                description = description_tmpl.format('recored at most ', 
                                                       '{} seconds ago'.format(total_seconds),
                                                       '{} seconds'.format(actual_seconds))
                 raise self.MetricValueError(metric, self,
