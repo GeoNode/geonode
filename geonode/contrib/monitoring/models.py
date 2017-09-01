@@ -1078,14 +1078,15 @@ class MetricNotificationCheck(models.Model):
         """
         v = metric.value_num
         had_check = False
+        def_msg = self.definition.description
         if self.min_value is not None:
             had_check = True
             if v < self.min_value:
-                raise self.MetricValueError(metric, self, "Value too low (less than {})".format(v), v, self.min_value)
+                raise self.MetricValueError(metric, self, "{} {}".format(def_msg, int(v)), v, self.min_value)
         if self.max_value is not None:
             had_check = True
             if v > self.max_value:
-                raise self.MetricValueError(metric, self, "Value too high (more than {})".format(v), v, self.max_value)
+                raise self.MetricValueError(metric, self, "{} {}".format(def_msg, int(v)), v, self.max_value)
 
         if self.max_timeout is not None:
             had_check = True
@@ -1094,9 +1095,8 @@ class MetricNotificationCheck(models.Model):
             # metric may be at the valid_on point in time
             valid_on = datetime.now()
             if (valid_on - metric.valid_to) > self.max_timeout:
-
-                msg = ("Value collected too far in the past "
-                       "(more than {} seconds ago)").format(self.max_timeout.total_seconds())
+                total_seconds = self.max_timeout.total_seconds()
+                msg = "{} {} seconds".format(def_msg, int(total_seconds))
                 raise self.MetricValueError(metric, self,
                                             msg,
                                             metric.valid_to,
