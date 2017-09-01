@@ -5,7 +5,7 @@
 <p>{% trans "Monitoring on" %} {{ host }} {% trans "has detected following problems :" %}</p>
 <ul>
 {% for ndata in alerts %}
-    <li><p> {{ ndata }}</p></li>
+    <li><p> {{ ndata.message }} <small>{{ ndata.description }}</small></p></li>
 {% endfor %}
 </ul>
 

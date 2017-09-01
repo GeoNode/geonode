@@ -680,7 +680,6 @@ class CollectorAPI(object):
         mv = MetricValue.objects.filter(service_metric__metric__in=metrics).aggregate(Max('valid_to'))
         return mv['valid_to__max']
 
-
     def get_notifications(self, for_timestamp=None):
         if for_timestamp is None:
             for_timestamp = self.get_last_usable_timestamp()

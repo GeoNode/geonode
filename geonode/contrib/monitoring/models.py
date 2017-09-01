@@ -711,7 +711,7 @@ class NotificationCheck(models.Model):
         if self.last_send is None:
             return True
         now = datetime.now()
-        if self.last_send + self.grace_period > now:
+        if (self.last_send + self.grace_period) > now:
             return False
         return True
 

@@ -98,7 +98,6 @@ class Command(BaseCommand):
             interval = s.check_interval
             now = datetime.now()
             notifications_check = now - interval
-
             c.emit_notifications(notifications_check)
 
     def run_check(self, service, collector, since=None, until=None, force_check=None, format=None):
