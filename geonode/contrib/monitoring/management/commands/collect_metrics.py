@@ -51,8 +51,9 @@ class Command(BaseCommand):
                             help=_("Force check"))
         parser.add_argument('-t', '--format', default=TypeChecks.AUDIT_TYPE_JSON, type=TypeChecks.audit_format,
                             help=_("Format of audit log (xml, json)"))
-        parser.add_argument('-c', '--clear', default=False, action='store_true', dest='clear',
-                            help=_("Should data be cleared (default: no)"))
+        parser.add_argument('-k', '--do-not-clear', default=False, action='store_true', dest='do_not_clear',
+                            help=_("Should old data be preserved (default: no, "
+                                   "data older than settings.MONITORING_DATA_TTL will be removed)"))
         parser.add_argument('-e', '--halt', default=False, action='store_true', dest='halt_on_errors',
                             help=_("Should stop on first error occured (default: no)"))
         parser.add_argument('-n', '--emit_notifications', default=False, action='store_true', dest='emit_notifications',
@@ -90,7 +91,8 @@ class Command(BaseCommand):
                 log.error("Cannot collect from %s: %s", s, err, exc_info=err)
                 if options['halt_on_errors']:
                     raise
-        if options['clear']:
+        if not options['do_not_clear']:
+            log.info("Clearing old data")
             c.clear_old_data()
         if options['emit_notifications']:
             log.info("Processing notifications for %s", options['until'])

@@ -941,6 +941,10 @@ class NotificationMetricDefinition(models.Model):
     max_value = models.DecimalField(max_digits=16, decimal_places=4, null=True, default=None, blank=True)
     steps = models.PositiveIntegerField(null=True, blank=True, default=None)
 
+    @property
+    def unit(self):
+        return self.metric.unit
+
     def is_min_val(self):
         return self.field_option == self.FIELD_OPTION_MIN_VALUE
 
