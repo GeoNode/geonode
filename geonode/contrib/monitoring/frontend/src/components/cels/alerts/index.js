@@ -44,8 +44,9 @@ class Alerts extends React.Component {
   }
 
   render() {
-    const alertNumber = this.props.alertList && this.props.alertList.data.length > 0
-                      ? this.props.alertList.data[0].problems.length
+    const alertList = this.props.alertList;
+    const alertNumber = alertList && alertList.data
+                      ? alertList.data.problems.length
                       : 0;
     const extraStyle = alertNumber > 0
                      ? { backgroundColor: '#ffa031', color: '#fff' }

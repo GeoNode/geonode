@@ -12,11 +12,9 @@ class AlertsSettings extends Component {
     super(props);
 
     this.handleClick = () => {
-      console.log('organisms/alert-list save button');
     };
 
-    this.handleChange = (event) => {
-      console.log(event.target.value);
+    this.handleChange = (/* event */) => {
     };
   }
 

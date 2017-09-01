@@ -2,6 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import RaisedButton from 'material-ui/RaisedButton';
+import CircularProgress from 'material-ui/CircularProgress';
 import SettingsIcon from 'material-ui/svg-icons/action/settings';
 import HoverPaper from '../../atoms/hover-paper';
 import Alert from '../../cels/alert';
@@ -12,6 +13,7 @@ import styles from './styles';
 const mapStateToProps = (state) => ({
   alerts: state.alertList.response,
   interval: state.interval.interval,
+  status: state.alertList.status,
   timestamp: state.interval.timestamp,
 });
 
@@ -26,6 +28,7 @@ class AlertList extends React.Component {
     alerts: PropTypes.object,
     get: PropTypes.func.isRequired,
     interval: PropTypes.number,
+    status: PropTypes.string,
     timestamp: PropTypes.instanceOf(Date),
   }
 
@@ -47,9 +50,23 @@ class AlertList extends React.Component {
 
   render() {
     const rawAlerts = this.props.alerts;
-    const alerts = rawAlerts && rawAlerts.data && rawAlerts.data.problems.length > 0
-                 ? rawAlerts.data.problems
-                 : [];
+    let alerts;
+    if (this.props.status === 'pending') {
+      alerts = (
+        <div style={styles.spinner}>
+          <CircularProgress size={80} />
+        </div>
+      );
+    } else {
+      alerts = rawAlerts && rawAlerts.data && rawAlerts.data.problems.length > 0
+             ? rawAlerts.data.problems.map((alert, index) => (
+               <Alert
+                 key={index}
+                 alert={alert}
+               />
+             ))
+             : [];
+    }
     return (
       <HoverPaper style={styles.content}>
         <div style={styles.header}>
@@ -60,16 +77,7 @@ class AlertList extends React.Component {
             icon={<SettingsIcon />}
           />
         </div>
-        {
-          alerts.map((alert, index) => (
-            <Alert
-              key={index}
-              short={alert.message}
-              offending={alert.offending_value}
-              threshold={alert.threshold_value}
-            />
-          ))
-        }
+        {alerts}
       </HoverPaper>
     );
   }
