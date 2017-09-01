@@ -46,8 +46,9 @@ class AlertList extends React.Component {
   }
 
   render() {
-    const alerts = this.props.alerts && this.props.alerts.data.length > 0
-                 ? this.props.alerts.data[0].problems
+    const rawAlerts = this.props.alerts;
+    const alerts = rawAlerts && rawAlerts.data && rawAlerts.data.problems.length > 0
+                 ? rawAlerts.data.problems
                  : [];
     return (
       <HoverPaper style={styles.content}>
