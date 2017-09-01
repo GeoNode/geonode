@@ -86,7 +86,7 @@ class MetricNotificationCheckAdmin(admin.ModelAdmin):
 
 @admin.register(NotificationMetricDefinition)
 class NotificationCheckDefinitionAdmin(admin.ModelAdmin):
-    list_display = ('notification_check', 'metric', 'field_option',)
+    list_display = ('notification_check', 'metric', 'field_option', 'min_value', 'max_value', 'steps',)
     raw_id_fields = ('notification_check', 'metric',)
 
 @admin.register(NotificationReceiver)
