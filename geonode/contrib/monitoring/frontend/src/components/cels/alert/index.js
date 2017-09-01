@@ -1,14 +1,13 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import { Link } from 'react-router';
 import HoverPaper from '../../atoms/hover-paper';
 import styles from './styles';
 
 
 class AlertList extends React.Component {
   static propTypes = {
-    short: PropTypes.string.isRequired,
-    offending: PropTypes.string.isRequired,
-    threshold: PropTypes.string.isRequired,
+    alert: PropTypes.object.isRequired,
   }
 
   constructor(props) {
@@ -24,19 +23,26 @@ class AlertList extends React.Component {
   }
 
   render() {
+    const alert = this.props.alert;
+    const alertContent = (
+      <div>
+        offending value: {alert.offending_value}<br />
+        threshold: {alert.threshold_value}<br />
+        config: <Link to={`/alerts/${alert.check_id}`}>link</Link>
+      </div>
+    );
     const detail = this.state.detail
                  ? <div style={styles.shownDetail}>
-                     offending value: {this.props.offending}<br />
-                     threshold: {this.props.threshold}
+                     {alertContent}
                    </div>
                  : <div style={styles.hiddenDetail}>
-                     offending value: {this.props.offending}<br />
-                     threshold: {this.props.threshold}
-                   </div>;
+                     {alertContent}
+                 </div>
+    ;
     return (
       <HoverPaper style={styles.content} onClick={this.handleClick}>
         <div style={styles.short}>
-          {this.props.short}
+          {alert.message}
         </div>
         {detail}
       </HoverPaper>

@@ -48,7 +48,12 @@ class AlertList extends React.Component {
   render() {
     const rawAlerts = this.props.alerts;
     const alerts = rawAlerts && rawAlerts.data && rawAlerts.data.problems.length > 0
-                 ? rawAlerts.data.problems
+                 ? rawAlerts.data.problems.map((alert, index) => (
+                    <Alert
+                      key={index}
+                      alert={alert}
+                    />
+                 ))
                  : [];
     return (
       <HoverPaper style={styles.content}>
@@ -60,16 +65,7 @@ class AlertList extends React.Component {
             icon={<SettingsIcon />}
           />
         </div>
-        {
-          alerts.map((alert, index) => (
-            <Alert
-              key={index}
-              short={alert.message}
-              offending={alert.offending_value}
-              threshold={alert.threshold_value}
-            />
-          ))
-        }
+        {alerts}
       </HoverPaper>
     );
   }
