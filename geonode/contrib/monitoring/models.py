@@ -1104,13 +1104,13 @@ class MetricNotificationCheck(models.Model):
         if self.min_value is not None:
             had_check = True
             if v < self.min_value:
-                msg = "{} {}".format(def_msg, int(v))
+                msg = "{} {}".format(def_msg, int(self.min_value))
                 description = description_tmpl.format('at least', self.min_value, v)
                 raise self.MetricValueError(metric, self, msg, v, self.min_value, description)
         if self.max_value is not None:
             had_check = True
             if v > self.max_value:
-                msg = "{} {}".format(def_msg, int(v))
+                msg = "{} {}".format(def_msg, int(self.max_value))
                 description = description_tmpl.format('at most', self.min_value, v)
                 raise self.MetricValueError(metric, self, msg, v, self.max_value, description)
 
