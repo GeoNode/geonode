@@ -1,3 +1,19 @@
+geonode (2.6.3+thefinal0) trusty; urgency=high
+
+  [ Andreas Trawoeger ]
+  * [20b7c2] Use href instead of text for keywords_slugs.
+
+  [ Hisham waleed karam ]
+  * [fc75ae] Fix Shapely Version (#3241)
+
+  [ Alessio Fabiani ]
+  * [01b4bd]  - Backport 2.6.x: fixes #3223 : search won't work anymore using hrefs, unless search… (#3260)
+
+  [ Simone Dalmasso ]
+  * [b941d1] add bbox information in the API (#3262)
+
+ -- Simone Dalmasso <simone.dalmasso@gmail.com>  Fri, 01 Sep 2017 13:29:11 +0000
+
 geonode (2.6.2+thefinal0) trusty; urgency=high
 
   [ Francesco Bartoli ]
