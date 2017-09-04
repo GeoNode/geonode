@@ -122,7 +122,7 @@ class BaseServiceHandler(object):
         _collected = self._collect(since, until, **kwargs)
         return self.handle_collected(_collected)
 
-    def _collect(self, since, until):
+    def _collect(self, since, until, *args, **kwargs):
         raise NotImplemented()
 
     def handle_collected(self):
@@ -174,7 +174,10 @@ class GeoServerService(BaseServiceHandler):
 
 class HostGeoServerService(BaseServiceHandler):
 
-    def _collect(self):
+    def _collect(self, *args, **kwargs):
+        pass
+
+    def handle_collected(self, *args, **kwargs):
         pass
 
 

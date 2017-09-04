@@ -83,7 +83,8 @@ class ExceptionEventAdmin(admin.ModelAdmin):
 
 @admin.register(NotificationCheck)
 class NotificationCheckAdmin(admin.ModelAdmin):
-    list_display = ('id', 'name',)
+    list_display = ('name', 'active',)
+    list_filter = ('active',)
 
 @admin.register(MetricNotificationCheck)
 class MetricNotificationCheckAdmin(admin.ModelAdmin):
