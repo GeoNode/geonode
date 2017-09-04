@@ -39,7 +39,7 @@ from paver.easy import BuildFailure
 
 try:
     from geonode.settings import GEONODE_APPS
-except:
+except BaseException:
     # probably trying to run install_win_deps.
     pass
 
@@ -89,11 +89,23 @@ def setup_geoserver(options):
 
     geoserver_dir = path('geoserver')
 
-    geoserver_bin = download_dir / os.path.basename(dev_config['GEOSERVER_URL'])
-    jetty_runner = download_dir / os.path.basename(dev_config['JETTY_RUNNER_URL'])
+    geoserver_bin = download_dir / \
+        os.path.basename(dev_config['GEOSERVER_URL'])
+    jetty_runner = download_dir / \
+        os.path.basename(dev_config['JETTY_RUNNER_URL'])
 
-    grab(options.get('geoserver', dev_config['GEOSERVER_URL']), geoserver_bin, "geoserver binary")
-    grab(options.get('jetty', dev_config['JETTY_RUNNER_URL']), jetty_runner, "jetty runner")
+    grab(
+        options.get(
+            'geoserver',
+            dev_config['GEOSERVER_URL']),
+        geoserver_bin,
+        "geoserver binary")
+    grab(
+        options.get(
+            'jetty',
+            dev_config['JETTY_RUNNER_URL']),
+        jetty_runner,
+        "jetty runner")
 
     if not geoserver_dir.exists():
         geoserver_dir.makedirs()
@@ -117,7 +129,8 @@ def _install_data_dir():
     original_data_dir = path('geoserver/geoserver/data')
     justcopy(original_data_dir, target_data_dir)
 
-    config = path('geoserver/data/security/auth/geonodeAuthProvider/config.xml')
+    config = path(
+        'geoserver/data/security/auth/geonodeAuthProvider/config.xml')
     with open(config) as f:
         xml = f.read()
         m = re.search('baseUrl>([^<]+)', xml)
@@ -178,7 +191,7 @@ def win_install_deps(options):
         grab_winfiles(url, tempfile, package)
         try:
             easy_install.main([tempfile])
-        except Exception, e:
+        except Exception as e:
             failed = True
             print "install failed with error: ", e
         os.remove(tempfile)
@@ -320,7 +333,8 @@ def stop():
     """
     Stop GeoNode
     """
-    # windows needs to stop the geoserver first b/c we can't tell which python is running, so we kill everything
+    # windows needs to stop the geoserver first b/c we can't tell which python
+    # is running, so we kill everything
     stop_geoserver()
     info("Stopping GeoNode ...")
     stop_django()
@@ -360,7 +374,8 @@ def start_geoserver(options):
         sys.exit(1)
 
     download_dir = path('downloaded').abspath()
-    jetty_runner = download_dir / os.path.basename(dev_config['JETTY_RUNNER_URL'])
+    jetty_runner = download_dir / \
+        os.path.basename(dev_config['JETTY_RUNNER_URL'])
     data_dir = path('geoserver/data').abspath()
     web_app = path('geoserver/geoserver').abspath()
     log_file = path('geoserver/jetty.log').abspath()
@@ -372,11 +387,12 @@ def start_geoserver(options):
         javapath = "java"
         loggernullpath = os.devnull
 
-        # checking if our loggernullpath exists and if not, reset it to something manageable
+        # checking if our loggernullpath exists and if not, reset it to
+        # something manageable
         if loggernullpath == "nul":
             try:
                 open("../../downloaded/null.txt", 'w+').close()
-            except IOError, e:
+            except IOError as e:
                 print "Chances are that you have Geoserver currently running.  You \
                         can either stop all servers with paver stop or start only \
                         the django application with paver start_django."
@@ -385,12 +401,13 @@ def start_geoserver(options):
 
         try:
             sh(('java -version'))
-        except:
+        except BaseException:
             print "Java was not found in your path.  Trying some other options: "
             javapath_opt = None
             if os.environ.get('JAVA_HOME', None):
                 print "Using the JAVA_HOME environment variable"
-                javapath_opt = os.path.join(os.path.abspath(os.environ['JAVA_HOME']), "bin", "java.exe")
+                javapath_opt = os.path.join(os.path.abspath(
+                    os.environ['JAVA_HOME']), "bin", "java.exe")
             elif options.get('java_path'):
                 javapath_opt = options.get('java_path')
             else:
@@ -445,7 +462,7 @@ def test_javascript(options):
 @task
 @cmdopts([
     ('name=', 'n', 'Run specific tests.')
-    ])
+])
 def test_integration(options):
     """
     Run GeoNode's Integration test suite against the external apps
@@ -465,8 +482,8 @@ def test_integration(options):
             sh('sleep 30')
             call_task('setup_data')
         sh(('python manage.py test %s'
-           ' --noinput --liveserver=localhost:8000' % name))
-    except BuildFailure, e:
+            ' --noinput --liveserver=localhost:8000' % name))
+    except BuildFailure as e:
         info('Tests failed! %s' % str(e))
     else:
         success = True
@@ -594,13 +611,13 @@ def deb(options):
             sh('debuild -uc -us -A')
         elif key is None and ppa is not None:
                 # A sources package, signed by daemon
-                sh('debuild -S')
+            sh('debuild -S')
         elif key is not None and ppa is None:
-                # A signed installable package
-                sh('debuild -k%s -A' % key)
+            # A signed installable package
+            sh('debuild -k%s -A' % key)
         elif key is not None and ppa is not None:
-                # A signed, source package
-                sh('debuild -k%s -S' % key)
+            # A signed, source package
+            sh('debuild -k%s -S' % key)
 
     if ppa is not None:
         sh('dput ppa:%s geonode_%s_source.changes' % (ppa, simple_version))
@@ -677,7 +694,9 @@ def kill(arg1, arg2):
         running = False
         for line in lines:
             # this kills all java.exe and python including self in windows
-            if ('%s' % arg2 in line) or (os.name == 'nt' and '%s' % arg1 in line):
+            if ('%s' %
+                arg2 in line) or (os.name == 'nt' and '%s' %
+                                  arg1 in line):
                 running = True
 
                 # Get pid
