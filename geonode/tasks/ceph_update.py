@@ -16,6 +16,7 @@ from geonode.automation.models import AutomationJob, CephDataObjectResourceBase
 from geonode.cephgeo.models import LidarCoverageBlock
 from celery.decorators import periodic_task
 from datetime import datetime
+import uuid
 
 logger = get_task_logger("geonode.tasks.ceph_update")
 
@@ -124,7 +125,36 @@ def ceph_metadata_update():
                     file_hash=metadata_list[4],
                     grid_ref=metadata_list[5],
                     block_uid=get_uid_from_filename(
-                    metadata_list[0]))
+                    metadata_list[0]),
+                    uuid=str(uuid.uuid1()),
+                    title=metadata_list[0],
+                    abstract='''
+All LiDAR point cloud data were acquired and processed by the UP Training Center for Applied Geodesy and Photogrammetry (UP-TCAGP), through the DOST-GIA funded Disaster Risk and Exposure Assessment for Mitigation (DREAM) Program.
+
+The LiDAR point cloud data was acquired by an Optech ALTM Gemini and Pegasus LiDAR system. It was pre-processed using POSPac MMS and LMS software. The TerraScan software was used to classify the point cloud into ground, vegetation and building classes. LASTools was used to compress the classified LiDAR point cloud data (.las) in a completely lossless manner to the compressed LAZ format (.laz).
+
+
+Classified LiDAR Point Cloud (LAZ):
+Projection: 	WGS84 UTM Zone 51
+Resolution: 	1 m
+Tile Size:	1km by 1km
+Date of Acquisition: %s
+
+DREAM/PHIL-LiDAR 1 Program
+
+Program Leader: Enrico C. Paringit, Dr.Eng
+Rm. 312-316, National Engineering Center
+Alfred Juinio Hall
+UP Campus, Diliman Quezon City
+Philippines
+
+
+Please refer to the corresponding End-User License Agreement (EULA) for product licensing.
+
+
+
+© All Rights Reserved, 2013''' % metadata_list[1]
+                    )
                 ceph_obj.save()
 
                 objects_inserted += 1
