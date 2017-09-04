@@ -552,12 +552,25 @@ def final_step_view(req, upload_session):
 
     # this response is different then all of the other views in the
     # upload as it does not return a response as a json object
-    return json_response(
-        {'url': saved_layer.get_absolute_url(),
-         'success': True
-         }
-    )
-
+    try:
+        json_response = json_response(
+            {
+             'url': saved_layer.get_absolute_url(),
+             'bbox': saved_layer.bbox_string,
+             'crs': {
+                'type': 'name',
+                'properties': saved_layer.srid
+             },
+             'success': True
+            }
+        )
+    except:
+        json_response = json_response(
+            {'url': saved_layer.get_absolute_url(),
+             'success': True
+            }
+        )
+    return json_response
 
 _steps = {
     'save': save_step_view,
