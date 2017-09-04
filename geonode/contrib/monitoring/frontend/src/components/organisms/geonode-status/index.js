@@ -1,6 +1,8 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
+import SelectField from 'material-ui/SelectField';
+import MenuItem from 'material-ui/MenuItem';
 import HoverPaper from '../../atoms/hover-paper';
 import CPU from '../../cels/cpu';
 import Memory from '../../cels/memory';
@@ -12,6 +14,7 @@ const mapStateToProps = (state) => ({
   cpu: state.geonodeCpuSequence.response,
   memory: state.geonodeMemorySequence.response,
   interval: state.interval.interval,
+  services: state.services.hostgeonode,
   timestamp: state.interval.timestamp,
 });
 
@@ -25,6 +28,7 @@ class GeonodeStatus extends React.Component {
     memory: PropTypes.object,
     resetCpu: PropTypes.func.isRequired,
     resetMemory: PropTypes.func.isRequired,
+    services: PropTypes.array,
     timestamp: PropTypes.instanceOf(Date),
     interval: PropTypes.number,
     half: PropTypes.bool,
@@ -36,9 +40,17 @@ class GeonodeStatus extends React.Component {
 
   constructor(props) {
     super(props);
-    this.get = (interval = this.props.interval) => {
-      this.props.getCpu(interval);
-      this.props.getMemory(interval);
+
+    this.state = {
+      host: '',
+    };
+
+    this.get = (
+      host = this.state.host,
+      interval = this.props.interval,
+    ) => {
+      this.props.getCpu(host, interval);
+      this.props.getMemory(host, interval);
     };
 
     this.reset = () => {
@@ -52,12 +64,21 @@ class GeonodeStatus extends React.Component {
   }
 
   componentWillReceiveProps(nextProps) {
-    if (nextProps) {
-      if (nextProps.timestamp && nextProps.timestamp !== this.props.timestamp) {
-        this.get(nextProps.interval);
+    if (nextProps && nextProps.services && nextProps.timestamp) {
+      let host = nextProps.services[0].name;
+      let firstTime = false;
+      if (this.state.host === '') {
+        firstTime = true;
+        this.setState({ host });
+      } else {
+        host = this.state.host;
+      }
+      if (firstTime || nextProps.timestamp !== this.props.timestamp) {
+        this.get(host, nextProps.interval);
       }
     }
   }
+
 
   componentWillUnmount() {
     this.reset();
@@ -89,9 +110,25 @@ class GeonodeStatus extends React.Component {
     const contentStyle = this.props.half
                        ? styles.content
                        : { ...styles.content, width: '100%' };
+    const hosts = this.props.services
+                ? this.props.services.map((host) =>
+                  <MenuItem
+                    key={host.name}
+                    value={host.name}
+                    primaryText={host.host}
+                  />
+                )
+                : undefined;
     return (
       <HoverPaper style={contentStyle}>
         <h3>GeoNode status</h3>
+        <SelectField
+          floatingLabelText="Host"
+          value={this.state.host}
+          onChange={this.handleChange}
+        >
+          {hosts}
+        </SelectField>
         <div style={styles.stat}>
           <CPU cpu={5} data={cpuData} />
           <Memory memory={5} data={memoryData} />
