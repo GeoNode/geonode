@@ -4,8 +4,6 @@ import GeonodeAnalytics from '../../components/organisms/geonode-analytics';
 import GeonodeLayersAnalytics from '../../components/organisms/geonode-layers-analytics';
 import WSAnalytics from '../../components/organisms/ws-analytics';
 import WSLayersAnalytics from '../../components/organisms/ws-layers-analytics';
-import Map from '../../components/atoms/map';
-import HoverPaper from '../../components/atoms/hover-paper';
 import styles from './styles';
 
 
@@ -20,12 +18,7 @@ class SWPerf extends React.Component {
         </div>
         <div style={styles.analytics}>
           <GeonodeLayersAnalytics />
-          <div style={styles.ws}>
-            <WSLayersAnalytics />
-            <HoverPaper>
-              <Map />
-            </HoverPaper>
-          </div>
+          <WSLayersAnalytics />
         </div>
       </div>
     );
