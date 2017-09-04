@@ -28,7 +28,7 @@ def send_queued_notifications(*args):
     """
     Sends queued notifications.
 
-    settings.NOTIFICATION_QUEUE_ALL needs to be true in order to take advantage of this.
+    settings.PINAX_NOTIFICATIONS_QUEUE_ALL needs to be true in order to take advantage of this.
     """
 
     try:

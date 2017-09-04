@@ -26,9 +26,9 @@ from django.contrib.contenttypes.models import ContentType
 from django.contrib.auth import get_user_model
 from django.contrib.auth.models import Group
 from django.db.models import Count
+from django.conf import settings
 
 from guardian.shortcuts import get_objects_for_user
-from geonode import settings
 
 from geonode.layers.models import Layer
 from geonode.maps.models import Map
@@ -122,8 +122,9 @@ def facets(context):
             treeqs = HierarchicalKeyword.objects.none()
             for keyword in keywords_filter:
                 try:
-                    kw = HierarchicalKeyword.objects.get(name=keyword)
-                    treeqs = treeqs | HierarchicalKeyword.get_tree(kw)
+                    kws = HierarchicalKeyword.objects.filter(name__iexact=keyword)
+                    for kw in kws:
+                        treeqs = treeqs | HierarchicalKeyword.get_tree(kw)
                 except:
                     # Ignore keywords not actually used?
                     pass
@@ -199,8 +200,9 @@ def facets(context):
             treeqs = HierarchicalKeyword.objects.none()
             for keyword in keywords_filter:
                 try:
-                    kw = HierarchicalKeyword.objects.get(name=keyword)
-                    treeqs = treeqs | HierarchicalKeyword.get_tree(kw)
+                    kws = HierarchicalKeyword.objects.filter(name__iexact=keyword)
+                    for kw in kws:
+                        treeqs = treeqs | HierarchicalKeyword.get_tree(kw)
                 except:
                     # Ignore keywords not actually used?
                     pass
@@ -298,8 +300,9 @@ def facets(context):
             treeqs = HierarchicalKeyword.objects.none()
             for keyword in keywords_filter:
                 try:
-                    kw = HierarchicalKeyword.objects.get(name=keyword)
-                    treeqs = treeqs | HierarchicalKeyword.get_tree(kw)
+                    kws = HierarchicalKeyword.objects.filter(name__iexact=keyword)
+                    for kw in kws:
+                        treeqs = treeqs | HierarchicalKeyword.get_tree(kw)
                 except:
                     # Ignore keywords not actually used?
                     pass

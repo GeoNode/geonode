@@ -9,7 +9,7 @@
 </style>
 
 <script type="text/javascript">
-  
+
   document.addEventListener("DOMContentLoaded", function(event) {
 
   	// document.getElementById('preview_map').setAttribute("style", "height:600px");
@@ -28,7 +28,7 @@
     var config = {{ config|safe }};
 
     var model_crs = config['map']['projection'];
-    
+
     if (settings_crs != model_crs) {
         // if the two crs are not the same, user must have switched default crs for project after map was created
         center = new OpenLayers.LonLat(center).transform(new OpenLayers.Projection(model_crs),new OpenLayers.Projection(settings_crs));
@@ -37,20 +37,20 @@
     var config_layers = config['map']['layers']
     for (layer in config_layers) {
         if (config_layers[layer]['title'] == 'OpenStreetMap') {
-            if (config_layers[layer]['visibility'] == true) {
+            // if (config_layers[layer]['visibility'] == true) {
                 layers.push(
                     new OpenLayers.Layer.OSM("OpenCycleMap",
                       ["http://a.tile.openstreetmap.org/${z}/${x}/${y}.png",
                        "http://b.tile.openstreetmap.org/${z}/${x}/${y}.png",
                        "http://c.tile.openstreetmap.org/${z}/${x}/${y}.png"])
                 );
-            }
+            // }
             break;
         }
     }
-    
+
     var source;
-    
+
     {% for layer in layers %}
         {% if layer.ows_url != None %}
             source = new OpenLayers.Layer.WMS("{{ layer.name|safe }}",
@@ -58,13 +58,13 @@
                 {layers: '{{ layer.name }}', transparent: true},
                 {isBaseLayer: false}
             );
-        
+
         layers.push(source);
         {% endif %}
     {% endfor %}
 
     var map = new OpenLayers.Map({
-        div: 'preview_map', 
+        div: 'preview_map',
         projection: new OpenLayers.Projection(settings_crs),
         // controls: [],
         layers: layers,

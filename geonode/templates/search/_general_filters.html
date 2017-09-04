@@ -3,6 +3,16 @@
 <nav class="filter">
   <h4><a href="#" class="toggle toggle-nav"><i class="fa fa-chevron-right"></i>{% trans "Categories" %}</a></h4>
   <ul class="nav closed" id="categories">
+  {% if facet_type == 'layers' %}
+    {% verbatim %}
+      <li ng-repeat="category in categories" ng-if="category.layers_count > 0">
+        <a data-value="{{ category.identifier }}" data-filter="category__identifier__in"
+         ng-click="multiple_choice_listener($event)" class="{{category.active}}"><div class="fa-stack fa-1g"><i class="fa fa-square-o fa-stack-2x"></i><i class="fa {{category.fa_class}} fa-stack-1x"></i></div>{{ category.gn_description | limitTo: 25 }}{{ category.gn_description.length > 25 ? '...' : ''}}
+          <span class="badge pull-right">{{ category.layers_count }}</span>
+        </a>
+      </li>
+    {% endverbatim %}
+  {% else %}
     {% verbatim %}
       <li ng-repeat="category in categories" ng-if="category.count > 0">
         <a data-value="{{ category.identifier }}" data-filter="category__identifier__in"
@@ -11,6 +21,7 @@
         </a>
       </li>
     {% endverbatim %}
+  {% endif %}
   </ul>
 </nav>
 {% endif %}

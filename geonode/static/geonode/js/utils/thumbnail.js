@@ -3,7 +3,7 @@ var createMapThumbnail = function(obj_id) {
     var xmap = ($('.olMapViewport')[0] != undefined ? $('.olMapViewport') : $('#embedded_map'));
 
     if ($('#preview_map')[0] != undefined) {
-        if ($('#preview_map').css('display') != 'none' && 
+        if ($('#preview_map').css('display') != 'none' &&
                 $('.olMapViewport')[0] != undefined) {
             xmap = $('.olMapViewport');
         } else {
@@ -13,7 +13,7 @@ var createMapThumbnail = function(obj_id) {
 
     height = xmap.height();
     width = xmap.width();
-    var map = xmap.clone(); 
+    var map = xmap.clone();
     map.find('*').each(function(i) {
         e = $(this);
         if(e.css('display') === 'none' || (e.attr("class") !== undefined && (e.attr("class").indexOf('olControl') >= 0 || e.attr("class").indexOf('ol-overlaycontainer') >= 0 || e.attr("class").indexOf('x-') >= 0))) {
@@ -26,6 +26,7 @@ var createMapThumbnail = function(obj_id) {
     });
 
     var url = window.location.pathname.replace('/view', '');
+        url = url.replace('/edit', '');
         url = url.replace('/metadata', '');
         url = url.replace('/metadata#', '');
 

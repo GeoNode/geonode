@@ -18,7 +18,8 @@
 #
 #########################################################################
 
-from geonode.settings import MAP_BASELAYERS
+from geonode import settings
+
 STAMEN = {
     'maps': {
         'toner': {
@@ -62,4 +63,4 @@ for k, v in STAMEN['maps'].items():
             'visibility': v['visibility'],
             'group': 'background'
         }
-        MAP_BASELAYERS.append(BASEMAP)
+        settings.MAP_BASELAYERS.append(BASEMAP)

@@ -187,6 +187,7 @@ class Metric(models.Model):
              (UNIT_COUNT, _("Count"),))
 
     name = models.CharField(max_length=255, db_index=True)
+    description = models.CharField(max_length=255, null=True)
     type = models.CharField(max_length=255, null=False, blank=False, default=TYPE_RATE, choices=TYPES)
     unit = models.CharField(max_length=255, null=True, blank=True, choices=UNITS)
 
@@ -952,7 +953,7 @@ class NotificationMetricDefinition(models.Model):
 
     @property
     def unit(self):
-        return self.metric.unit
+        return self.metric.unit if not self.metric.is_count else ''
 
     def is_min_val(self):
         return self.field_option == self.FIELD_OPTION_MIN_VALUE
@@ -971,9 +972,13 @@ class NotificationMetricDefinition(models.Model):
             return [format.format(v) for v in NotificationCheck.get_steps(min_, max_, steps)]
 
     @property
+    def is_enabled(self):
+        return self.current_value is not None
+
+    @property
     def current_value(self):
         try:
-            m = self.metric_checks.first()
+            m = self.metric_check
             if not m:
                 return
             return getattr(m, self.field_option)
@@ -1083,6 +1088,8 @@ class MetricNotificationCheck(models.Model):
             self.spotted_at = datetime.now()
             self.description = description
 
+            self.valid_from, self.valid_to = metric.valid_from, metric.valid_to
+
         def __str__(self):
             return "MetricValueError({}: metric {} misses {} check: {})".format(self.severity,
                                                                                 self.metric,
@@ -1094,7 +1101,9 @@ class MetricNotificationCheck(models.Model):
         Check specific metric if it's faulty or not.
         """
         v = metric.value_num
-        metric_name = metric.service_metric.metric.name
+        m = metric.service_metric.metric
+        metric_name = m.description or m.name
+        unit_name = ' {}'.format(m.unit) if not m.is_count else ''
         had_check = False
         def_msg = self.definition.description
         msg_prefix = []
@@ -1110,20 +1119,20 @@ class MetricNotificationCheck(models.Model):
             msg_prefix.append("for {}[{}] resource".format(self.resource.name, self.resource.type))
 
         msg_prefix = ' '.join(msg_prefix)
-        description_tmpl = ("{} Metric value for {} should be {{}} "
-                            "{{:0.0f}}, got {{:0.0f}} instead").format(msg_prefix, metric_name).strip()
+        description_tmpl = ("{} {} should be {{}} "
+                            "{{:0.0f}}{}, got {{:0.0f}}{} instead").format(msg_prefix, metric_name, unit_name, unit_name).strip()
 
 
         if self.min_value is not None:
             had_check = True
             if v < self.min_value:
-                msg = "{} {}".format(def_msg, int(self.min_value))
+                msg = "{} {} {}".format(def_msg, int(self.min_value), unit_name)
                 description = description_tmpl.format('at least', self.min_value, v)
                 raise self.MetricValueError(metric, self, msg, v, self.min_value, description)
         if self.max_value is not None:
             had_check = True
             if v > self.max_value:
-                msg = "{} {}".format(def_msg, int(self.max_value))
+                msg = "{} {} {}".format(def_msg, int(self.max_value), unit_name)
                 description = description_tmpl.format('at most', self.min_value, v)
                 raise self.MetricValueError(metric, self, msg, v, self.max_value, description)
 
@@ -1212,6 +1221,18 @@ class BuiltIns(object):
     unit_rate = ('cpu.usage.rate', 'load.1m', 'load.5m', 'load.15m',)
     unit_percentage = ('cpu.usage.percent',)
 
+    descriptions = {'request.count': 'Number of requests',
+                    'response.time': 'Time of making a response',
+                    'request.ip': 'IP Address of source of request',
+                    'request.ua': 'User Agent of source of request',
+                    'request.path': 'Request URL',
+                    'network.in.rate': 'Network incoming traffic rate',
+                    'network.out.rate': 'Network outgoing traffic rate',
+                    'network.out.rate': 'Network outgoing traffic rate',
+                    'network.out': 'Network outgoing traffic bytes',
+                    'network.in': 'Network incoming traffic bytes',
+                    }
+
 
 def populate():
     for m in BuiltIns.geonode_metrics + BuiltIns.host_metrics:
@@ -1247,6 +1268,10 @@ def populate():
             m.unit = uname
             m.save()
     Metric.objects.filter(unit__isnull=True).update(unit=Metric.UNIT_COUNT)
+    for m, d in BuiltIns.descriptions.items():
+        metric = Metric.objects.get(name=m)
+        metric.description = d
+        metric.save()
 
 
 def do_autoconfigure():
