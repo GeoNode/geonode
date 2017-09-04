@@ -111,7 +111,7 @@ class GeonodeStatus extends React.Component {
                   <MenuItem
                     key={host.name}
                     value={host.name}
-                    primaryText={host.name}
+                    primaryText={host.host}
                   />
                 )
                 : undefined;

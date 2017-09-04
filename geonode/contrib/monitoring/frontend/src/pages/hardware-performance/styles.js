@@ -15,8 +15,6 @@ export default {
   },
 
   analytics: {
-    display: 'flex',
-    justifyContent: 'space-between',
     marginTop: 20,
   },
 

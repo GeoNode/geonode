@@ -23,6 +23,8 @@ import { geonodeThroughputSequence } from './components/organisms/geonode-analyt
 import { geonodeErrorSequence } from './components/organisms/geonode-analytics/reducers';
 import { geonodeCpuSequence } from './components/organisms/geonode-status/reducers';
 import { geonodeMemorySequence } from './components/organisms/geonode-status/reducers';
+import { geoserverCpuSequence } from './components/organisms/geoserver-status/reducers';
+import { geoserverMemorySequence } from './components/organisms/geoserver-status/reducers';
 import { interval } from './components/organisms/header/reducers';
 import { wsResponseSequence } from './components/organisms/ws-analytics/reducers';
 import { wsThroughputSequence } from './components/organisms/ws-analytics/reducers';
@@ -50,7 +52,9 @@ const reducers = {
   geonodeMemorySequence,
   geonodeResponseSequence,
   geonodeThroughputSequence,
+  geoserverCpuSequence,
   geoserverCpuStatus,
+  geoserverMemorySequence,
   geoserverMemStatus,
   interval,
   layerList,

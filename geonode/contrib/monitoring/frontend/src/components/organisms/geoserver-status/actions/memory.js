@@ -1,23 +1,23 @@
 import { createAction } from 'redux-actions';
 import { fetch, sequenceInterval } from '../../../../utils';
 import apiUrl from '../../../../backend';
-import { GEONODE_CPU_SEQUENCE } from '../constants';
+import { GEOSERVER_MEMORY_SEQUENCE } from '../constants';
 
 
 const reset = createAction(
-  GEONODE_CPU_SEQUENCE,
+  GEOSERVER_MEMORY_SEQUENCE,
   () => ({ status: 'initial' })
 );
 
 
 export const begin = createAction(
-  GEONODE_CPU_SEQUENCE,
+  GEOSERVER_MEMORY_SEQUENCE,
   () => ({ status: 'pending' })
 );
 
 
 const success = createAction(
-  GEONODE_CPU_SEQUENCE,
+  GEOSERVER_MEMORY_SEQUENCE,
   response => ({
     response,
     status: 'success',
@@ -26,7 +26,7 @@ const success = createAction(
 
 
 const fail = createAction(
-  GEONODE_CPU_SEQUENCE,
+  GEOSERVER_MEMORY_SEQUENCE,
   error => ({
     status: 'error',
     error,
@@ -34,12 +34,11 @@ const fail = createAction(
 );
 
 
-const get = (host, argInterval) =>
+const get = (argInterval) =>
   (dispatch) => {
     dispatch(begin());
     const interval = sequenceInterval(argInterval);
-    let url = `${apiUrl}/metric_data/cpu.usage.percent/?last=${argInterval}`;
-    url += `&interval=${interval}&service=${host}`;
+    const url = `${apiUrl}/metric_data/mem.usage/?last=${argInterval}&interval=${interval}`;
     fetch({ url })
       .then(response => {
         dispatch(success(response));
