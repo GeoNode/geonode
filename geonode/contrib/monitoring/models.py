@@ -711,7 +711,7 @@ class NotificationCheck(models.Model):
         if self.last_send is None:
             return True
         now = datetime.now()
-        if self.last_send + self.grace_period > now:
+        if (self.last_send + self.grace_period) > now:
             return False
         return True
 
@@ -834,8 +834,14 @@ class NotificationCheck(models.Model):
             emails = MultiEmailField(required=False)
             severity = forms.ChoiceField(choices=self.SEVERITIES, required=False)
             active = forms.BooleanField(required=False)
+            grace_period = forms.DurationField(required=False)
 
             def __init__(self, *args, **kwargs):
+                initial = {'emails': list(this.get_emails()) + [u.email for u in this.get_users()],
+                           'severity': this.severity,
+                           'active': this.active,
+                           'grace_period': this.grace_period}
+                kwargs['initial'] = initial
                 super(F, self).__init__(*args, **kwargs)
                 fields = self.fields
                 for d in defs:
@@ -863,10 +869,13 @@ class NotificationCheck(models.Model):
         emails = fdata.pop('emails')
         active = fdata.pop('active')
         severity = fdata.pop('severity', None)
+        grace_period = fdata.pop('grace_period', None)
         if severity is not None:
             self.severity = severity
         if active is not None:
             self.active = active
+        if grace_period is not None:
+            self.grace_period = grace_period
         self.save()
 
         for key, val in fdata.items():
@@ -940,6 +949,10 @@ class NotificationMetricDefinition(models.Model):
     min_value = models.DecimalField(max_digits=16, decimal_places=4, null=True, default=None, blank=True)
     max_value = models.DecimalField(max_digits=16, decimal_places=4, null=True, default=None, blank=True)
     steps = models.PositiveIntegerField(null=True, blank=True, default=None)
+
+    @property
+    def unit(self):
+        return self.metric.unit
 
     def is_min_val(self):
         return self.field_option == self.FIELD_OPTION_MIN_VALUE
@@ -1104,13 +1117,13 @@ class MetricNotificationCheck(models.Model):
         if self.min_value is not None:
             had_check = True
             if v < self.min_value:
-                msg = "{} {}".format(def_msg, int(v))
+                msg = "{} {}".format(def_msg, int(self.min_value))
                 description = description_tmpl.format('at least', self.min_value, v)
                 raise self.MetricValueError(metric, self, msg, v, self.min_value, description)
         if self.max_value is not None:
             had_check = True
             if v > self.max_value:
-                msg = "{} {}".format(def_msg, int(v))
+                msg = "{} {}".format(def_msg, int(self.max_value))
                 description = description_tmpl.format('at most', self.min_value, v)
                 raise self.MetricValueError(metric, self, msg, v, self.max_value, description)
 

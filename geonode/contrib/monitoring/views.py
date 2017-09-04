@@ -485,7 +485,7 @@ class UserNotificationConfigView(View):
     def get(self, request, *args, **kwargs):
         out = {'success': False, 'status': 'error', 'data': [], 'errors': {}}
         status = 500
-        fields = ('field_name', 'min', 'max', 'steps', 'current_value', 'steps_calculated',)
+        fields = ('field_name', 'min', 'max', 'steps', 'current_value', 'steps_calculated', 'unit',)
         if request.user.is_authenticated():
             obj = self.get_object()
             out['success'] = True

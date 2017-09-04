@@ -16,12 +16,18 @@ from geonode.contrib.monitoring.models import (
     MetricNotificationCheck,
     NotificationMetricDefinition,
     NotificationReceiver,
+    OWSService,
     )
 
 
 @admin.register(Host)
 class HostAdmin(admin.ModelAdmin):
     list_display = ('name', 'active',)
+
+
+@admin.register(OWSService)
+class OWSServiceAdmin(admin.ModelAdmin):
+    list_display = ('name', )
 
 
 @admin.register(ServiceType)
