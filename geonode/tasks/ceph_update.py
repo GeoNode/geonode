@@ -59,7 +59,7 @@ def update_job_status(job, error):
 
 
 @task(name='geonode.tasks.ceph_update.ceph_metadata_update')
-def ceph_metadata_update():
+def ceph_metadata_update(update_grid=True):
     """
         NOTE: DOES NOT WORK
           Outputs error 'OperationalError: database is locked'
@@ -156,10 +156,10 @@ def ceph_metadata_update():
     #     'E230N1745', 'E232N1745', 'E231N1744', 'E231N1745', 'E230N1745']
     #}
 
-    # if update_grid:
-    #     result_msg += " Starting feature updates for PhilGrid shapefile."
-    #     grid_feature_update.delay(gridref_dict_by_data_class)
-    # print result_msg
+    if update_grid:
+        result_msg += " Starting feature updates for PhilGrid shapefile."
+        grid_feature_update.delay(gridref_dict_by_data_class)
+    print result_msg
 
 
 @task(name='geonode.tasks.ceph_update.ceph_metadata_remove', queue='update')
