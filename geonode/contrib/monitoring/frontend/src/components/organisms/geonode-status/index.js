@@ -2,7 +2,6 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import HoverPaper from '../../atoms/hover-paper';
-import HR from '../../atoms/hr';
 import CPU from '../../cels/cpu';
 import Memory from '../../cels/memory';
 import styles from './styles';
@@ -92,10 +91,11 @@ class GeonodeStatus extends React.Component {
                        : { ...styles.content, width: '100%' };
     return (
       <HoverPaper style={contentStyle}>
-        <h3>Geonode status</h3>
-        <CPU cpu={5} data={cpuData} />
-        <HR />
-        <Memory memory={5} data={memoryData} />
+        <h3>GeoNode status</h3>
+        <div style={styles.stat}>
+          <CPU cpu={5} data={cpuData} />
+          <Memory memory={5} data={memoryData} />
+        </div>
       </HoverPaper>
     );
   }

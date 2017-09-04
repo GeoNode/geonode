@@ -6,7 +6,6 @@ import styles from './styles';
 
 class Memory extends React.Component {
   static propTypes = {
-    memory: PropTypes.number.isRequired,
     data: PropTypes.array.isRequired,
   }
 
@@ -14,7 +13,6 @@ class Memory extends React.Component {
     return (
       <div style={styles.content}>
         <h4>Memory</h4>
-        Memory utilization: {this.props.memory} %<br />
         <LineChart
           width={500}
           height={300}
@@ -26,7 +24,11 @@ class Memory extends React.Component {
           <CartesianGrid strokeDasharray="3 3" />
           <Tooltip />
           <Legend />
-          <Line type="monotone" dataKey="MB" stroke="#8884d8" activeDot={{ r: 8 }} />
+          <Line
+            type="monotone"
+            dataKey="MB"
+            stroke="#8884d8"
+          />
         </LineChart>
       </div>
     );

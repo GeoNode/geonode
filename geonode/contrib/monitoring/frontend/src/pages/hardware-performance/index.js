@@ -23,7 +23,7 @@ class HWPerf extends React.Component {
       <div style={styles.root}>
         <Header back="/" />
         <div style={styles.analytics}>
-          <GeonodeStatus half={this.props.services !== undefined} />
+          <GeonodeStatus />
           {
             this.props.services
             ? <GeoserverStatus />

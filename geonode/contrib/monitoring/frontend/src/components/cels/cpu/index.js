@@ -6,7 +6,6 @@ import styles from './styles';
 
 class CPU extends React.Component {
   static propTypes = {
-    cpu: PropTypes.number.isRequired,
     data: PropTypes.array.isRequired,
   }
 
@@ -14,7 +13,6 @@ class CPU extends React.Component {
     return (
       <div style={styles.content}>
         <h4>CPU</h4>
-        CPU utilization: {this.props.cpu} %<br />
         <LineChart
           width={500}
           height={300}
@@ -26,7 +24,11 @@ class CPU extends React.Component {
           <CartesianGrid strokeDasharray="3 3" />
           <Tooltip />
           <Legend />
-          <Line type="monotone" dataKey="percents" stroke="#8884d8" activeDot={{ r: 8 }} />
+          <Line
+            type="monotone"
+            dataKey="percents"
+            stroke="#8884d8"
+          />
         </LineChart>
       </div>
     );
