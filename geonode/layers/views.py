@@ -201,6 +201,13 @@ def layer_upload(request, template='upload/layer_upload.html'):
                 out['url'] = reverse(
                     'layer_detail', args=[
                         saved_layer.service_typename])
+                if hasattr(saved_layer, 'bbox_string'):
+                    out['bbox'] = saved_layer.bbox_string
+                if hasattr(saved_layer, 'srid'):
+                    out['crs'] = {
+                        'type': 'name',
+                        'properties': saved_layer.srid
+                    }
                 upload_session = saved_layer.upload_session
                 upload_session.processed = True
                 upload_session.save()

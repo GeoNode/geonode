@@ -1,0 +1,7 @@
+# Check formatting with
+
+flake8 --config=setup.cfg
+
+# Auto-fix formatting with
+
+autopep8 --global-config setup.cfg -i -a -a [files [files ...]]

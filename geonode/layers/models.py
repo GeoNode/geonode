@@ -79,14 +79,19 @@ class Style(models.Model):
 
     def absolute_url(self):
         if self.sld_url:
-            if self.sld_url.startswith(settings.OGC_SERVER['default']['LOCATION']):
-                return self.sld_url.split(settings.OGC_SERVER['default']['LOCATION'], 1)[1]
+            if self.sld_url.startswith(
+                    settings.OGC_SERVER['default']['LOCATION']):
+                return self.sld_url.split(
+                    settings.OGC_SERVER['default']['LOCATION'], 1)[1]
             elif self.sld_url.startswith(settings.OGC_SERVER['default']['PUBLIC_LOCATION']):
-                return self.sld_url.split(settings.OGC_SERVER['default']['PUBLIC_LOCATION'], 1)[1]
+                return self.sld_url.split(
+                    settings.OGC_SERVER['default']['PUBLIC_LOCATION'], 1)[1]
 
             return self.sld_url
         else:
-            logger.error("SLD URL is empty for Style %s" % self.name.encode('utf-8'))
+            logger.error(
+                "SLD URL is empty for Style %s" %
+                self.name.encode('utf-8'))
             return None
 
 
@@ -113,7 +118,11 @@ class Layer(ResourceBase):
     is_mosaic = models.BooleanField(default=False)
     has_time = models.BooleanField(default=False)
     has_elevation = models.BooleanField(default=False)
-    time_regex = models.CharField(max_length=128, null=True, blank=True, choices=TIME_REGEX)
+    time_regex = models.CharField(
+        max_length=128,
+        null=True,
+        blank=True,
+        choices=TIME_REGEX)
     elevation_regex = models.CharField(max_length=128, null=True, blank=True)
 
     default_style = models.ForeignKey(
@@ -225,7 +234,8 @@ class Layer(ResourceBase):
         # we need to check, for shapefile, if column names are valid
         list_col = None
         if self.storeType == 'dataStore':
-            valid_shp, wrong_column_name, list_col = check_shp_columnnames(self)
+            valid_shp, wrong_column_name, list_col = check_shp_columnnames(
+                self)
             if wrong_column_name:
                 msg = 'Shapefile has an invalid column name: %s' % wrong_column_name
             else:
@@ -286,7 +296,11 @@ class Layer(ResourceBase):
     @property
     def geogig_link(self):
         if(self.geogig_enabled):
-            return getattr(self.link_set.filter(name__icontains='clone in geogig').first(), 'url', None)
+            return getattr(
+                self.link_set.filter(
+                    name__icontains='clone in geogig').first(),
+                'url',
+                None)
         return None
 
 
@@ -312,8 +326,11 @@ class LayerFile(models.Model):
     upload_session = models.ForeignKey(UploadSession)
     name = models.CharField(max_length=255)
     base = models.BooleanField(default=False)
-    file = models.FileField(upload_to='layers',
-                            storage=FileSystemStorage(base_url=settings.LOCAL_MEDIA_URL),  max_length=255)
+    file = models.FileField(
+        upload_to='layers',
+        storage=FileSystemStorage(
+            base_url=settings.LOCAL_MEDIA_URL),
+        max_length=255)
 
 
 class AttributeManager(models.Manager):
@@ -373,10 +390,8 @@ class Attribute(models.Model):
         _('visible?'),
         help_text=_('specifies if the attribute should be displayed in identify results'),
         default=True)
-    display_order = models.IntegerField(
-        _('display order'),
-        help_text=_('specifies the order in which attribute should be displayed in identify results'),
-        default=1)
+    display_order = models.IntegerField(_('display order'), help_text=_(
+        'specifies the order in which attribute should be displayed in identify results'), default=1)
 
     # statistical derivations
     count = models.IntegerField(
@@ -436,10 +451,8 @@ class Attribute(models.Model):
         null=True,
         blank=True,
         default='NA')
-    last_stats_updated = models.DateTimeField(
-        _('last modified'),
-        default=datetime.now,
-        help_text=_('date when attribute statistics were last updated'))  # passing the method itself, not
+    last_stats_updated = models.DateTimeField(_('last modified'), default=datetime.now, help_text=_(
+        'date when attribute statistics were last updated'))  # passing the method itself, not
 
     objects = AttributeManager()
 
