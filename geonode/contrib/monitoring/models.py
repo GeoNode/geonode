@@ -953,7 +953,7 @@ class NotificationMetricDefinition(models.Model):
 
     @property
     def unit(self):
-        return self.metric.unit
+        return self.metric.unit if not self.metric.is_count else ''
 
     def is_min_val(self):
         return self.field_option == self.FIELD_OPTION_MIN_VALUE
@@ -972,9 +972,13 @@ class NotificationMetricDefinition(models.Model):
             return [format.format(v) for v in NotificationCheck.get_steps(min_, max_, steps)]
 
     @property
+    def is_enabled(self):
+        return self.current_value is not None
+
+    @property
     def current_value(self):
         try:
-            m = self.metric_checks.first()
+            m = self.metric_check
             if not m:
                 return
             return getattr(m, self.field_option)
