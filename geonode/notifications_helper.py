@@ -64,7 +64,7 @@ class NotificationsAppConfigBase(AppConfig):
 def call_celery(func):
     def wrap(*args, **kwargs):
         ret = func(*args, **kwargs)
-        if settings.NOTIFICATION_QUEUE_ALL:
+        if settings.PINAX_NOTIFICATIONS_QUEUE_ALL:
             send_queued_notifications.delay()
         return ret
     return wrap
@@ -87,7 +87,7 @@ def send_notification(*args, **kwargs):
     """
     if has_notifications:
         # queue for further processing if required
-        if settings.NOTIFICATION_QUEUE_ALL:
+        if settings.PINAX_NOTIFICATIONS_QUEUE_ALL:
             return queue_notification(*args, **kwargs)
         return notifications.models.send(*args, **kwargs)
 

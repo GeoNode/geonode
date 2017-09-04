@@ -183,7 +183,7 @@ if has_notifications:
             Return True if user received notification
             """
             # with queued notifications we can detect notification types easier
-            if settings.NOTIFICATION_QUEUE_ALL:
+            if settings.PINAX_NOTIFICATIONS_QUEUE_ALL:
                 self.assertTrue(NoticeQueueBatch.objects.all().count() > 0)
 
                 user.noticesetting_set.get(notice_type__label=notification_name)

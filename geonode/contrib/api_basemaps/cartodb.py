@@ -18,7 +18,8 @@
 #
 #########################################################################
 
-from geonode.settings import MAP_BASELAYERS
+from geonode import settings
+
 CARTODB = {
     'maps': {
         'light_all': {
@@ -56,4 +57,4 @@ for k, v in CARTODB['maps'].items():
             'visibility': v['visibility'],
             'group': 'background'
         }
-        MAP_BASELAYERS.append(BASEMAP)
+        settings.MAP_BASELAYERS.append(BASEMAP)
