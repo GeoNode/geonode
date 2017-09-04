@@ -1,23 +1,12 @@
-import React, { Component } from 'react';
+import React from 'react';
 import RaisedButton from 'material-ui/RaisedButton';
-import TextField from 'material-ui/TextField';
-import Checkbox from 'material-ui/Checkbox';
 import Header from '../../components/organisms/header';
+import AlertSetting from '../../components/organisms/alert-setting';
 import HoverPaper from '../../components/atoms/hover-paper';
 import styles from './styles';
 
 
-class AlertsSettings extends Component {
-  constructor(props) {
-    super(props);
-
-    this.handleClick = () => {
-    };
-
-    this.handleChange = (/* event */) => {
-    };
-  }
-
+class AlertsSettings extends React.Component {
   render() {
     return (
       <div style={styles.root}>
@@ -31,55 +20,8 @@ class AlertsSettings extends Component {
               label="save"
             />
           </div>
-          <TextField
-            floatingLabelText="Who to alert:"
-            floatingLabelFixed
-            hintText="one@example.com, two@example.com, ..."
-            fullWidth
-            autoFocus
-            style={styles.who}
-          />
-          <h4 style={styles.when}>When to alert</h4>
-          <div>
-            <Checkbox label="GeoNode did not serve any data within 24h" style={styles.checkbox} />
-          </div>
-          <div>
-            <Checkbox label="GeoServer is not responding" style={styles.checkbox} />
-          </div>
-          <div>
-            <Checkbox label="GeoNode is serving more than" style={styles.checkbox} />
-            <input
-              style={styles.number}
-              type="number"
-              min={1}
-              max={5}
-              defaultValue={1}
-              onChange={this.handleChange}
-            />
-            MB/m
-          </div>
-          <div>
-            <Checkbox label="GeoNode error response rate at" style={styles.checkbox} />
-            <input
-              style={styles.number}
-              type="number"
-              min={1}
-              max={5}
-              defaultValue={1}
-            />
-            err/m
-          </div>
-          <div>
-            <Checkbox label="GeoServer's error is at least rate at" style={styles.checkbox} />
-            <input
-              style={styles.number}
-              type="number"
-              min={1}
-              max={5}
-              defaultValue={1}
-            />
-            err/m
-          </div>
+          <AlertSetting autoFocus />
+          <AlertSetting />
         </HoverPaper>
       </div>
     );
