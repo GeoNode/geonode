@@ -25,4 +25,4 @@ from geonode.contrib.ows_api.views import ows_endpoints
 
 urlpatterns = [
     url(r'^api/ows_endpoints/', ows_endpoints),
-    ]
+]
