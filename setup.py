@@ -141,7 +141,7 @@ setup(name='GeoNode',
         "factory_boy",
         # "WeasyPrint",
 
-        ],
+      ],
       zip_safe=False,
       dependency_links=[
         'https://github.com/cezio/django-user-accounts/archive/252_255_mixed.zip#egg=django-user-accounts-2.0.2dev'
