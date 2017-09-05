@@ -18,28 +18,34 @@ import { geoserverMemStatus } from './components/cels/geoserver-status/reducers'
 import layerList from './components/cels/layer-select/reducers';
 
 // Organisms
+import alertList from './components/organisms/alert-list/reducers';
+import errorDetails from './components/organisms/error-detail/reducers';
+import errorList from './components/organisms/error-list/reducers';
+import { geonodeCpuSequence } from './components/organisms/geonode-status/reducers';
+import { geonodeErrorSequence } from './components/organisms/geonode-analytics/reducers';
+import { geonodeLayerError } from './components/organisms/geonode-layers-analytics/reducers';
+import { geonodeLayerResponse } from './components/organisms/geonode-layers-analytics/reducers';
+import { geonodeMemorySequence } from './components/organisms/geonode-status/reducers';
 import { geonodeResponseSequence } from './components/organisms/geonode-analytics/reducers';
 import { geonodeThroughputSequence } from './components/organisms/geonode-analytics/reducers';
-import { geonodeErrorSequence } from './components/organisms/geonode-analytics/reducers';
-import { geonodeCpuSequence } from './components/organisms/geonode-status/reducers';
-import { geonodeMemorySequence } from './components/organisms/geonode-status/reducers';
 import { geoserverCpuSequence } from './components/organisms/geoserver-status/reducers';
 import { geoserverMemorySequence } from './components/organisms/geoserver-status/reducers';
 import { interval } from './components/organisms/header/reducers';
-import { wsResponseSequence } from './components/organisms/ws-analytics/reducers';
-import { wsThroughputSequence } from './components/organisms/ws-analytics/reducers';
 import { wsErrorSequence } from './components/organisms/ws-analytics/reducers';
-import errorList from './components/organisms/error-list/reducers';
-import errorDetails from './components/organisms/error-detail/reducers';
-import alertList from './components/organisms/alert-list/reducers';
-import { geonodeLayerError } from './components/organisms/geonode-layers-analytics/reducers';
-import { geonodeLayerResponse } from './components/organisms/geonode-layers-analytics/reducers';
 import { wsLayerError } from './components/organisms/ws-layers-analytics/reducers';
 import { wsLayerResponse } from './components/organisms/ws-layers-analytics/reducers';
+import { wsResponseSequence } from './components/organisms/ws-analytics/reducers';
+import { wsThroughputSequence } from './components/organisms/ws-analytics/reducers';
+
+// Pages
+import alertConfig from './pages/alert-config/reducers';
+import alertSettings from './pages/alerts-settings/reducers';
 
 
 const reducers = {
+  alertConfig,
   alertList,
+  alertSettings,
   errorDetails,
   errorList,
   geonodeAverageResponse,

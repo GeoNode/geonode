@@ -5,7 +5,7 @@ import { Style } from 'radium';
 
 // Pages
 import Alerts from '../../pages/alerts';
-import AlertDetails from '../../pages/alert-details';
+import AlertConfig from '../../pages/alert-config';
 import AlertsSettings from '../../pages/alerts-settings';
 import ErrorDetails from '../../pages/error-details';
 import Errors from '../../pages/errors';
@@ -76,7 +76,7 @@ export default {
             },
             {
               path: ':alertId',
-              component: AlertDetails,
+              component: AlertConfig,
             },
           ],
         },
