@@ -982,11 +982,12 @@ class NotificationMetricDefinition(models.Model):
             if not m:
                 return
             val = getattr(m, self.field_option)
-            if isinstance(val, timedelta,):
-                return val
+            if isinstance(val, timedelta):
+                val_ = val.total_seconds()
             else:
-                return {'class': '{}.{}'.format(val.__class__.__module__, val.__class__.__name__),
-                        'value': val}
+                val_ = val
+            return {'class': '{}.{}'.format(val.__class__.__module__, val.__class__.__name__),
+                    'value': val_}
         except MetricNotificationCheck.DoesNotExist:
             return
 
