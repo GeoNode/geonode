@@ -491,7 +491,7 @@ class UserNotificationConfigView(View):
                   'steps_calculated',
                   'unit',
                   'is_enabled',)
-        if request.user.is_authenticated() or True:
+        if request.user.is_authenticated():
             obj = self.get_object()
             out['success'] = True
             out['status'] = 'ok'
@@ -509,7 +509,7 @@ class UserNotificationConfigView(View):
     def post(self, request, *args, **kwargs):
         out = {'success': False, 'status': 'error', 'data': [], 'errors': {}}
         status = 500
-        if request.user.is_authenticated() or True:
+        if request.user.is_authenticated():
             obj = self.get_object()
             data = request.POST
             try:
@@ -541,7 +541,7 @@ class NotificationsList(FilteredView):
 
     def get_filter_args(self, *args, **kwargs):
         self.errors = {}
-        if not self.request.user.is_authenticated() and False:
+        if not self.request.user.is_authenticated():
             self.errors = {'user': ['User is not authenticated']}
         return {}
 
