@@ -17,12 +17,12 @@ case "$1" in
     rm -rf /usr/share/geonode/patch*
     rm -rf /usr/bin/geonode
     rm -rf /usr/share/geoserver
-    rm /etc/tomcat7/Catalina/localhost/geoserver.xml
+    rm /etc/tomcat8/Catalina/localhost/geoserver.xml
 
     a2ensite 000-default.conf
 
     invoke-rc.d apache2 start
-    invoke-rc.d tomcat7 start
+    invoke-rc.d tomcat8 start
     ;;
 
     upgrade)

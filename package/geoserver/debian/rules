@@ -21,8 +21,8 @@ install:
 	mkdir -p $(CURDIR)/debian/geoserver-geonode/usr/share/geoserver/
 	cp -r $(CURDIR)/target/geoserver/* $(CURDIR)/debian/geoserver-geonode/usr/share/geoserver/.
 	# configure geoserver in tomcat
-	mkdir -p $(CURDIR)/debian/geoserver-geonode/etc/tomcat7/Catalina/localhost
-	echo '<Context path="/geoserver" docBase="/usr/share/geoserver/" />'  >> $(CURDIR)/debian/geoserver-geonode/etc/tomcat7/Catalina/localhost/geoserver.xml
+	mkdir -p $(CURDIR)/debian/geoserver-geonode/etc/tomcat8/Catalina/localhost
+	echo '<Context path="/geoserver" docBase="/usr/share/geoserver/" />'  >> $(CURDIR)/debian/geoserver-geonode/etc/tomcat8/Catalina/localhost/geoserver.xml
 
 binary-indep: install
 

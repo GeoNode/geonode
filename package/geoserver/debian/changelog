@@ -1,3 +1,11 @@
+geoserver-geonode (2.10.0) xenial; urgency=high
+
+  * Updated to GeoServer 10.x
+  * Added backup and restore
+  * Added oauth2 plugin
+
+ -- Alessio Fabiani <alessio.fabiani@geo-solutions.it>  Wed, 06 Sep 2017 12:07:41 +0200
+
 geoserver-geonode (2.9.0) xenial; urgency=high
 
   * Added backup and restore

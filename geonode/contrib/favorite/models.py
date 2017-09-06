@@ -35,7 +35,8 @@ class FavoriteManager(models.Manager):
 
     def _favorite_ct_for_user(self, user, model):
         content_type = ContentType.objects.get_for_model(model)
-        return self.favorites_for_user(user).filter(content_type=content_type).prefetch_related('content_object')
+        return self.favorites_for_user(user).filter(
+            content_type=content_type).prefetch_related('content_object')
 
     def favorite_documents_for_user(self, user):
         return self._favorite_ct_for_user(user, Document)
@@ -56,7 +57,10 @@ class FavoriteManager(models.Manager):
         impl note: can only be 0 or 1, per the class's unique_together.
         """
         content_type = ContentType.objects.get_for_model(type(content_object))
-        result = self.filter(user=user, content_type=content_type, object_id=content_object.pk)
+        result = self.filter(
+            user=user,
+            content_type=content_type,
+            object_id=content_object.pk)
 
         if len(result) > 0:
             return result[0]
@@ -78,7 +82,7 @@ class FavoriteManager(models.Manager):
             user=user,
             content_type=content_type,
             object_id=content_object.pk,
-            )
+        )
         return favorite
 
 
@@ -98,4 +102,5 @@ class Favorite(models.Model):
         unique_together = (('user', 'content_type', 'object_id'),)
 
     def __unicode__(self):
-        return "Favorite: {}, {}, {}".format(self.content_object.title, self.content_type, self.user)
+        return "Favorite: {}, {}, {}".format(
+            self.content_object.title, self.content_type, self.user)
