@@ -366,7 +366,13 @@ INSTALLED_APPS = (
 ) + GEONODE_APPS
 
 MONITORING_ENABLED = False
+
+# how long monitoring data should be stored
 MONITORING_DATA_TTL = timedelta(days=7)
+
+# this will disable csrf check for notification config views,
+# use with caution - for dev purpose only
+MONITORING_DISABLE_CSRF = False
 
 
 LOGGING = {

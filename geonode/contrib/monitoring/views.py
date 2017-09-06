@@ -23,8 +23,10 @@ from datetime import datetime, timedelta
 from django.shortcuts import render
 
 from django import forms
+from django.conf import settings
 from django.views.generic.base import View
 from django.core.urlresolvers import reverse
+from django.views.decorators.csrf import csrf_exempt
 
 from geonode.utils import json_response
 from geonode.contrib.monitoring.collector import CollectorAPI
@@ -525,6 +527,9 @@ class UserNotificationConfigView(View):
             out['errors']['user'] = ['User is not authenticated']
             status = 401
         return json_response(out, status=status)
+
+    if settings.MONITORING_DISABLE_CSRF:
+        post = csrf_exempt(post)
 
 
 class NotificationsList(FilteredView):
