@@ -23,9 +23,6 @@
     "eslint-loader": "^1.7.1",
     "eslint-plugin-react": "^4.3.0",
     "json-loader": "^0.5.7",
-    "redux-devtools": "^3.4.0",
-    "redux-devtools-diff-monitor": "^5.0.5",
-    "redux-devtools-dock-monitor": "^1.1.2",
     "resolve-url-loader": "^1.6.1"
   },
   "dependencies": {
@@ -64,6 +61,7 @@
     "recharts": "^1.0.0-alpha.3",
     "redux": "^3.7.2",
     "redux-actions": "^0.9.1",
+    "redux-devtools-extension": "^2.13.2",
     "redux-thunk": "^1.0.3",
     "style-loader": "^0.13.2",
     "webpack": "^1.15.0",

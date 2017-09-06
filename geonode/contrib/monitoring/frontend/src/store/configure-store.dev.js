@@ -1,15 +1,11 @@
-/* eslint global-require: 0 */
-/* eslint import/no-extraneous-dependencies: 0 */
-
-import { createStore, applyMiddleware, compose } from 'redux';
+import { createStore, applyMiddleware } from 'redux';
+import { composeWithDevTools } from 'redux-devtools-extension';
 import thunk from 'redux-thunk';
 import rootReducer from '../reducers';
-import DevTools from '../containers/dev-tools';
 
 
-const enhancer = compose(
+const enhancer = composeWithDevTools(
   applyMiddleware(thunk),
-  DevTools.instrument(),
 );
 
 

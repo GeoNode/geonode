@@ -1,6 +1,17 @@
-/* eslint global-require: 0 */
-if (process.env.NODE_ENV === 'production') {
-  module.exports = require('./root.prod');
-} else {
-  module.exports = require('./root.dev');
+import React from 'react';
+import { Provider } from 'react-redux';
+import Main from './main';
+import store from '../store';
+
+
+function Root() {
+  return (
+    <Provider store={store}>
+      <div>
+        <Main />
+      </div>
+    </Provider>
+  );
 }
+
+export default Root;
