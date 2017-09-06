@@ -347,6 +347,7 @@
                   {% if preview == 'geoext' %}
                   <a class="btn btn-default btn-block btn-xs style-edit" data-dismiss="modal" href="#">{% trans "Edit" %}</a>
                   {% endif %}
+                  <a class="btn btn-default btn-block btn-xs" href="{% url "layer_sld_upload" resource.service_typename %}">{% trans "Upload" %}</a>
                   <a class="btn btn-default btn-block btn-xs" href="{% url "layer_style_manage" resource.service_typename %}">{% trans "Manage" %}</a>
                 </div>
                 {% endif %}

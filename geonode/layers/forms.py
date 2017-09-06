@@ -87,10 +87,12 @@ class LayerUploadForm(forms.Form):
     shx_file = forms.FileField(required=False)
     prj_file = forms.FileField(required=False)
     xml_file = forms.FileField(required=False)
+    sld_file = forms.FileField(required=False)
 
     charset = forms.CharField(required=False)
     metadata_uploaded_preserve = forms.BooleanField(required=False)
     metadata_upload_form = forms.BooleanField(required=False)
+    style_upload_form = forms.BooleanField(required=False)
 
     spatial_files = (
         "base_file",
@@ -100,7 +102,7 @@ class LayerUploadForm(forms.Form):
 
     def clean(self):
         cleaned = super(LayerUploadForm, self).clean()
-        dbf_file = shx_file = prj_file = xml_file = None
+        dbf_file = shx_file = prj_file = xml_file = sld_file = None
         base_name = base_ext = None
         if zipfile.is_zipfile(cleaned["base_file"]):
             filenames = zipfile.ZipFile(cleaned["base_file"]).namelist()
@@ -120,6 +122,8 @@ class LayerUploadForm(forms.Form):
                     prj_file = filename
                 elif ext.lower() == '.xml':
                     xml_file = filename
+                elif ext.lower() == '.sld':
+                    sld_file = filename
             if base_name is None:
                 raise forms.ValidationError(
                     "Zip files can only contain shapefile.")
@@ -133,8 +137,10 @@ class LayerUploadForm(forms.Form):
                 prj_file = cleaned["prj_file"].name
             if cleaned["xml_file"] is not None:
                 xml_file = cleaned["xml_file"].name
+            if cleaned["sld_file"] is not None:
+                sld_file = cleaned["sld_file"].name
 
-        if not cleaned["metadata_upload_form"] and base_ext.lower() not in (
+        if not cleaned["metadata_upload_form"] and not cleaned["style_upload_form"] and base_ext.lower() not in (
                 ".shp", ".tif", ".tiff", ".geotif", ".geotiff", ".asc"):
             raise forms.ValidationError(
                 "Only Shapefiles, GeoTiffs, and ASCIIs are supported. You "
@@ -142,6 +148,10 @@ class LayerUploadForm(forms.Form):
         elif cleaned["metadata_upload_form"] and base_ext.lower() not in (".xml"):
             raise forms.ValidationError(
                 "Only XML files are supported. You uploaded a %s file" %
+                base_ext)
+        elif cleaned["style_upload_form"] and base_ext.lower() not in (".sld"):
+            raise forms.ValidationError(
+                "Only SLD files are supported. You uploaded a %s file" %
                 base_ext)
 
         if base_ext.lower() == ".shp":
@@ -168,6 +178,13 @@ class LayerUploadForm(forms.Form):
                         # overwrite as file.shp
                         if cleaned.get("xml_file"):
                             cleaned["xml_file"].name = '%s.xml' % base_name
+            if sld_file is not None:
+                if os.path.splitext(sld_file)[0] != base_name:
+                    if sld_file.find('.shp') != -1:
+                        # force rename of file so that file.shp.xml doesn't
+                        # overwrite as file.shp
+                        if cleaned.get("sld_file"):
+                            cleaned["sld_file"].name = '%s.sld' % base_name
 
         return cleaned
 
@@ -210,7 +227,7 @@ class NewLayerUploadForm(LayerUploadForm):
         "dbf_file",
         "shx_file",
         "prj_file",
-        "xml_file",
+        "xml_file"
     ]
     # Adding style file based on the backend
     if 'geonode.geoserver' in settings.INSTALLED_APPS:

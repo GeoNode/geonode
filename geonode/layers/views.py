@@ -26,6 +26,7 @@ import base64
 import traceback
 import uuid
 import decimal
+from lxml import etree
 from requests import Request
 from itertools import chain
 
@@ -68,7 +69,7 @@ from geonode.security.views import _perms_info_json
 from geonode.documents.models import get_related_documents
 from geonode.utils import build_social_links
 from geonode.geoserver.helpers import cascading_delete, gs_catalog
-from geonode.geoserver.helpers import ogc_server_settings
+from geonode.geoserver.helpers import ogc_server_settings, save_style
 from geonode.base.views import batch_modify
 
 from geonode.base.models import Thesaurus
@@ -166,16 +167,60 @@ def layer_upload(request, template='upload/layer_upload.html'):
                 # exceptions when unicode characters are present.
                 # This should be followed up in upstream Django.
                 tempdir, base_file = form.write_files()
-                saved_layer = file_upload(
-                    base_file,
-                    name=name,
-                    user=request.user,
-                    overwrite=False,
-                    charset=form.cleaned_data["charset"],
-                    abstract=form.cleaned_data["abstract"],
-                    title=form.cleaned_data["layer_title"],
-                    metadata_uploaded_preserve=form.cleaned_data["metadata_uploaded_preserve"],
-                    metadata_upload_form=form.cleaned_data["metadata_upload_form"])
+                if not form.cleaned_data["style_upload_form"]:
+                    saved_layer = file_upload(
+                        base_file,
+                        name=name,
+                        user=request.user,
+                        overwrite=False,
+                        charset=form.cleaned_data["charset"],
+                        abstract=form.cleaned_data["abstract"],
+                        title=form.cleaned_data["layer_title"],
+                        metadata_uploaded_preserve=form.cleaned_data[
+                            "metadata_uploaded_preserve"],
+                        metadata_upload_form=form.cleaned_data["metadata_upload_form"])
+                else:
+                    saved_layer = Layer.objects.get(alternate=title)
+                    if not saved_layer:
+                        msg = 'Failed to process.  Could not find matching layer.'
+                        raise Exception(msg)
+                    sld = open(base_file).read()
+
+                    try:
+                        dom = etree.XML(sld)
+                    except Exception:
+                        raise Exception(
+                            "The uploaded SLD file is not valid XML")
+
+                    el = dom.findall(
+                        "{http://www.opengis.net/sld}NamedLayer/{http://www.opengis.net/sld}Name")
+                    if len(el) == 0:
+                        raise Exception(
+                            "Please provide a name, unable to extract one from the SLD.")
+
+                    match = None
+                    styles = list(saved_layer.styles.all()) + [
+                        saved_layer.default_style]
+                    for style in styles:
+                        if style.name == saved_layer.name:
+                            match = style
+                            break
+                    if match is None:
+                        cat = gs_catalog
+                        try:
+                            cat.create_style(saved_layer.name, sld)
+                        except Exception as e:
+                            logger.exception(e)
+                        style = cat.get_style(saved_layer.name)
+                        layer = cat.get_layer(title)
+                        if layer and style:
+                            layer.default_style = style
+                            cat.save(layer)
+                            saved_layer.default_style = save_style(style)
+                    else:
+                        cat = gs_catalog
+                        style = cat.get_style(saved_layer.name)
+                        style.update_body(sld)
             except Exception as e:
                 exception_type, error, tb = sys.exc_info()
                 logger.exception(e)
@@ -540,7 +585,8 @@ def layer_metadata(
                                 tkl_ids = ",".join(
                                     map(str, tkl.values_list('id', flat=True)))
                                 tkeywords_list += "," + \
-                                    tkl_ids if len(tkeywords_list) > 0 else tkl_ids
+                                    tkl_ids if len(
+                                        tkeywords_list) > 0 else tkl_ids
                     except BaseException:
                         tb = traceback.format_exc()
                         logger.error(tb)
@@ -716,7 +762,9 @@ def layer_metadata(
     if request.user.is_superuser:
         metadata_author_groups = GroupProfile.objects.all()
     else:
-        metadata_author_groups = chain(metadata_author.group_list_all(), GroupProfile.objects.exclude(access="private"))
+        metadata_author_groups = chain(
+            metadata_author.group_list_all(),
+            GroupProfile.objects.exclude(access="private"))
 
     return render_to_response(template, RequestContext(request, {
         "resource": layer,
@@ -731,9 +779,13 @@ def layer_metadata(
         "preview": getattr(settings, 'LAYER_PREVIEW_LIBRARY', 'leaflet'),
         "crs": getattr(settings, 'DEFAULT_MAP_CRS', 'EPSG:900913'),
         "metadataxsl": metadataxsl,
-        "freetext_readonly": getattr(settings, 'FREETEXT_KEYWORDS_READONLY', False),
+        "freetext_readonly": getattr(
+            settings,
+            'FREETEXT_KEYWORDS_READONLY',
+            False),
         "metadata_author_groups": metadata_author_groups,
-        "GROUP_MANDATORY_RESOURCES": getattr(settings, 'GROUP_MANDATORY_RESOURCES', False),
+        "GROUP_MANDATORY_RESOURCES":
+            getattr(settings, 'GROUP_MANDATORY_RESOURCES', False),
     }))
 
 
@@ -1010,6 +1062,22 @@ def layer_metadata_upload(
         request,
         layername,
         'view_resourcebase',
+        _PERMISSION_MSG_METADATA)
+    return render_to_response(template, RequestContext(request, {
+        "resource": layer,
+        "layer": layer,
+        'SITEURL': settings.SITEURL[:-1]
+    }))
+
+
+def layer_sld_upload(
+        request,
+        layername,
+        template='layers/layer_style_upload.html'):
+    layer = _resolve_layer(
+        request,
+        layername,
+        'base.change_resourcebase',
         _PERMISSION_MSG_METADATA)
     return render_to_response(template, RequestContext(request, {
         "resource": layer,
