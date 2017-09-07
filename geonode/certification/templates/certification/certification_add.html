@@ -1,0 +1,39 @@
+{% extends "page_layout.html" %}
+{% load i18n %}
+
+{% block title %} {{ title }} - {{ block.super }} {% endblock %}
+
+
+{% block head %}
+{% include "geonode/ext_header.html" %}
+
+{{ block.super }}
+<script type="text/javascript">
+    Ext.onReady(function() {
+        {% autoescape off %}
+        var mapCrumb = "";
+        if ("{{lastmap}}" != "None" && "{{lastmapTitle}}" != "None")
+        {
+            mapCrumb = "<a href=\"/maps/{{lastmap}}/\">{{lastmapTitle}}</a><span>&nbsp;/&nbsp;</span>";
+        }
+
+        var titleTemplate = new Ext.Template(mapCrumb + "<span>{% trans "Certify" %} {{title}}</span>");
+        Ext.DomHelper.overwrite(Ext.get("page-breadcrumb"), titleTemplate.apply());
+
+        {% endautoescape %}
+    });
+</script>
+{% endblock %}
+
+
+{% block main %}
+
+<h3>{% trans "Are you sure you want to certify"  %} <strong>{{title}}</strong>?</h3>
+<form action="{% url certify modeltype modelid %}" method="POST" class="inline">
+    {% csrf_token %}
+    <input type="submit" value="{% trans "Yes, certify"  %}" class="submit_btn"/>
+</form>
+<form action="" method="GET" class="inline">
+    <button type="submit" class="cancel_btn" onclick="javascript: history.go(-1);return false;">{% trans "No, cancel" %}</button>
+</form>
+{% endblock %}

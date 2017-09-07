@@ -125,6 +125,9 @@ class Layer(ResourceBase):
         choices=TIME_REGEX)
     elevation_regex = models.CharField(max_length=128, null=True, blank=True)
 
+    in_gazetteer = models.BooleanField(_('In Gazetteer?'), blank=False, null=False, default=False)
+    gazetteer_project = models.CharField(_("Gazetteer Project"), max_length=128, blank=True, null=True)
+
     default_style = models.ForeignKey(
         Style,
         related_name='layer_default_style',
@@ -303,6 +306,32 @@ class Layer(ResourceBase):
                 None)
         return None
 
+    def queue_gazetteer_update(self):
+        from geonode.queue.models import GazetteerUpdateJob
+        if GazetteerUpdateJob.objects.filter(layer=self.id).exists() == 0:
+            newJob = GazetteerUpdateJob(layer=self)
+            newJob.save()
+
+    def update_gazetteer(self):
+        from geonode.gazetteer.utils import add_to_gazetteer, delete_from_gazetteer
+        if not self.in_gazetteer:
+            delete_from_gazetteer(self.name)
+        else:
+            includedAttributes = []
+            gazetteerAttributes = self.attribute_set.filter(in_gazetteer=True)
+            for attribute in gazetteerAttributes:
+                includedAttributes.append(attribute.attribute)
+
+            startAttribute = self.attribute_set.filter(is_gaz_start_date=True)[0].attribute if self.attribute_set.filter(is_gaz_start_date=True).exists() > 0 else None
+            endAttribute = self.attribute_set.filter(is_gaz_end_date=True)[0].attribute if self.attribute_set.filter(is_gaz_end_date=True).exists() > 0 else None
+
+            add_to_gazetteer(self.name,
+                             includedAttributes,
+                             start_attribute=startAttribute,
+                             end_attribute=endAttribute,
+                             project=self.gazetteer_project,
+                             user=self.owner.username)
+
 
 class UploadSession(models.Model):
 
@@ -454,6 +483,14 @@ class Attribute(models.Model):
     last_stats_updated = models.DateTimeField(_('last modified'), default=datetime.now, help_text=_(
         'date when attribute statistics were last updated'))  # passing the method itself, not
 
+    in_gazetteer = models.BooleanField(_('In Gazetteer?'), default=False)
+    is_gaz_start_date = models.BooleanField(_('Gazetteer Start Date'), default=False)
+    is_gaz_end_date = models.BooleanField(_('Gazetteer End Date'), default=False)
+
+    in_gazetteer = models.BooleanField(_('In Gazetteer?'), default=False)
+    is_gaz_start_date = models.BooleanField(_('Gazetteer Start Date'), default=False)
+    is_gaz_end_date = models.BooleanField(_('Gazetteer End Date'), default=False)
+
     objects = AttributeManager()
 
     def __str__(self):
@@ -559,6 +596,10 @@ def pre_delete_layer(instance, sender, **kwargs):
 
     # Delete object permissions
     remove_object_permissions(instance)
+
+    if settings.USE_GAZETTEER and instance.in_gazetteer:
+        instance.in_gazetteer = False
+        instance.update_gazetteer()
 
 
 def post_delete_layer(instance, sender, **kwargs):
