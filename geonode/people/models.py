@@ -96,6 +96,7 @@ class Profile(AbstractUser):
     keywords = TaggableManager(_('keywords'), blank=True, help_text=_(
         'commonly used word(s) or formalised word(s) or phrase(s) used to describe the subject \
             (space or comma-separated'))
+    is_certifier = models.BooleanField(_('Allowed to certify maps & layers'), blank=False, null=False, default=False)
 
     def get_absolute_url(self):
         return reverse('profile_detail', args=[self.username, ])
