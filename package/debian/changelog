@@ -1,5 +1,14 @@
 geonode (2.7.0+thefinal0) xenial; urgency=high
 
+  * [246734]  - Update to django-geoexplorer 4.0.11 (#3265)
+  * [91cab3]  - Update GeoServer version on Package (#3267)
+  * [ab33a8] 2.7.0alpha0
+  * [3b518c]  - 2.7.0alpa0
+
+ -- Alessio Fabiani <alessio.fabiani@geo-solutions.it>  Thu, 07 Sep 2017 11:15:13 +0200
+
+geonode (2.7.0+thefinal0) xenial; urgency=high
+
   [ afabiani ]
   * [97107b] PR for (#2408) GNIP: GeoNode Metadata Editor Improvements
 
