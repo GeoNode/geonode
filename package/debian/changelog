@@ -4,6 +4,16 @@ geonode (2.7.0+thefinal0) xenial; urgency=high
   * [91cab3]  - Update GeoServer version on Package (#3267)
   * [ab33a8] 2.7.0alpha0
   * [3b518c]  - 2.7.0alpa0
+  * [2c4b39] Updated changelog for version 2.7
+
+ -- Alessio Fabiani <alessio.fabiani@geo-solutions.it>  Thu, 07 Sep 2017 11:37:33 +0200
+
+geonode (2.7.0+thefinal0) xenial; urgency=high
+
+  * [246734]  - Update to django-geoexplorer 4.0.11 (#3265)
+  * [91cab3]  - Update GeoServer version on Package (#3267)
+  * [ab33a8] 2.7.0alpha0
+  * [3b518c]  - 2.7.0alpa0
 
  -- Alessio Fabiani <alessio.fabiani@geo-solutions.it>  Thu, 07 Sep 2017 11:15:13 +0200
 
