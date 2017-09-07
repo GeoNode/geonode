@@ -108,7 +108,7 @@ setup(name='GeoNode',
         "django-modeltranslation>=0.11,<0.12.1",  # python-django-modeltranslation (0.11 Debian)
 
         # GeoNode org maintained apps.
-        "django-geoexplorer==4.0.10",
+        "django-geoexplorer<=4.0.11",
         "geonode-user-messages==0.1.6",  # (0.1.3 in ppa) FIXME
         "geonode-avatar==2.1.6",  # (2.1.5 in ppa) FIXME
         "geonode-announcements==1.0.8",
