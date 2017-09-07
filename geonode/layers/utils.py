@@ -156,7 +156,7 @@ def get_files(filename):
                    'distinct by spelling and not just case.') % filename
             raise GeoNodeException(msg)
 
-    matches = glob.glob(base_name + ".[xX][mM][lL]")
+    matches = glob.glob(glob_name + ".[xX][mM][lL]")
 
     # shapefile XML metadata is sometimes named base_name.shp.xml
     # try looking for filename.xml if base_name.xml does not exist
