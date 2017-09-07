@@ -661,7 +661,7 @@ def versions():
     if stage == 'final':
         stage = 'thefinal'
 
-    if stage == 'alpha' and edition == 0:
+    if stage == 'unstable':
         tail = '%s%s' % (branch, timestamp)
     else:
         tail = '%s%s' % (stage, edition)
