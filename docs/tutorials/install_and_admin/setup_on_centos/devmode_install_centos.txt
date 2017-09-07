@@ -105,7 +105,7 @@ In case, install Java
 Setup a virtual environment
 ===========================
 
-Assuming your username is `geonode`, you need to edit your :file:`.bashrc` file
+Assuming your username is ``geonode``, you need to edit your :file:`.bashrc` file
 
     .. code-block:: console
 
@@ -165,7 +165,7 @@ In case of successful installation, this should return several (50+) lines.
 
 Install GeoServer
 -----------------
-The installation of GeoServer in development mode can be started with this `pavement` command script
+The installation of GeoServer in development mode can be started with this ``pavement`` command script
 
     .. code-block:: console
 
@@ -183,7 +183,7 @@ Run the Django server
 ---------------------
 Before starting the GeoNode server you have to complete the installation with several import pre-running steps. Let's see them in their order.
 
-.. warning:: Please note we have always to be in our virtual environment before running the following commands, while you don't need the `sudo` privileges anymore!
+.. warning:: Please note we have always to be in our virtual environment before running the following commands, while you don't need the ``sudo`` privileges anymore!
 
 Migrate the database
 
@@ -191,7 +191,7 @@ Migrate the database
 
         python manage.py migrate
 
-Create an administrative account as know as `superuser` in Django. Please make sure you will create at least one superuser named `admin` which is required in development mode.
+Create an administrative account as know as ``superuser`` in Django. Please make sure you will create at least one superuser named ``admin`` which is required in development mode.
 
     .. code-block:: console
 
@@ -211,4 +211,4 @@ Finally we are able to start all the components
         paver start_geoserver # start GeoServer
         python manage.py runserver 0.0.0.0:8000 # start GeoNode
 
-.. warning:: Note that the default IP address, `127.0.0.1`, is not accessible from other machines on your network. In case you are using `forwarded_port` on a `Vagrantfile` please make sure to start `runserver` with the option :option:`0.0.0.0:8000` which allows fundamentally to view your development server from other machines on the network, included your host machine in such a case. See more on :ref:`setup_vagrant_centos`.
+.. warning:: Note that the default IP address, ``127.0.0.1``, is not accessible from other machines on your network. In case you are using ``forwarded_port`` on a ``Vagrantfile`` please make sure to start ``runserver`` with the option :option:``0.0.0.0:8000`` which allows fundamentally to view your development server from other machines on the network, included your host machine in such a case. See more on :ref:`setup_vagrant_centos`.
