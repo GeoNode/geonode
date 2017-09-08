@@ -132,7 +132,7 @@ the password::
 You can now disable password based login over SSH
 
 .. warning::
-    Before disabling password authentication make sure you' ve installed your
+    Before disabling password authentication make sure you've installed your
     public key on the server and you are able to login without password
 
 Edit ``/etc/ssh/sshd_config`` as follows::

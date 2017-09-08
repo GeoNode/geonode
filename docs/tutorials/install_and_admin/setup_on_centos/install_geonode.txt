@@ -16,6 +16,8 @@ Make sure all the needed libraries are installed::
 Upgrade Python PIP version
 ==========================
 
+Upgrade ``pip`` utility::
+
     sudo pip install --upgrade pip
 
 Create a geonode system user for the application
@@ -33,17 +35,17 @@ Create project home somewhere::
 
     sudo mkdir -p /opt/apps/geonode
 
-Give the required permissions to the new user `geonode`::
+Give the required permissions to the new user ``geonode``::
 
     sudo chown -R geonode:geonode /opt/apps/geonode/
 
 Install GeoNode
 ===============
 
-As a user `geonode` install GeoNode sources from official repository::
+As a user ``geonode`` install GeoNode sources from official repository::
 
-    curl -LO "https://github.com/GeoNode/geonode/archive/2.6.1.zip"
-    unzip 2.6.1.zip && mv geonode-2.6.1 geonode
+    curl -LO "https://github.com/GeoNode/geonode/archive/2.6.3.zip"
+    unzip 2.6.3.zip && mv geonode-2.6.3 geonode
 
 Move the sources into project folder::
 
@@ -239,7 +241,7 @@ Initialize GeoNode
 
 As user ``geonode``, initialize the db, by creating the schema tables and populating the initial data:::
 
-    cd /opt/apps/geonode/geonode/geonode/
+    cd /opt/apps/geonode/geonode/
     python manage.py migrate
     python manage.py loaddata geonode/base/fixtures/initial_data.json
 
@@ -283,11 +285,11 @@ Restart Tomcat to load new configuration settings::
 
     sudo systemctl restart tomcat@geoserver
 
-Run the command :command:`updatelayers`
+Run the command :command:`updatelayers`::
 
     python manage.py updatelayers
 
-Run the command :command:`updatemaplayerip`
+Run the command :command:`updatemaplayerip`::
 
     python manage.py updatemaplayerip
 
