@@ -854,13 +854,19 @@ class NotificationCheck(models.Model):
 
         return F(*args_, **kwargs_)
 
-    def process_user_form(self, data):
+    def process_user_form(self, data, is_json=False):
         """
         Process form data from user and create Notifica
         """
 
         inst = self
         current_checks = self.checks.all()
+        if is_json:
+            emails = data.pop('emails', None)
+            if emails and isinstance(emails, list):
+                emails = '\n'.join(emails)
+                data['emails'] = emails
+                
         f = self.get_user_form(data=data)
         if not f.is_valid():
             raise forms.ValidationError(f.errors)

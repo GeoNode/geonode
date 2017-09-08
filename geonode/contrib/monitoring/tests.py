@@ -1949,6 +1949,27 @@ class MonitoringChecksTestCase(TestCase):
                     self.assertEqual(compare_to, nval)
 
 
+
+        out = c.post(notification_url, json.dumps(notification_data), content_type='application/json')
+        self.assertEqual(out.status_code, 200)
+        jout = json.loads(out.content)
+        n = NotificationCheck.objects.get()
+        self.assertTrue(n.is_error)
+        
+        self.assertEqual(MetricNotificationCheck.objects.all().count(), 2)
+        for nrow in jout['data']:
+            nitem = MetricNotificationCheck.objects.get(id=nrow['id'])
+            for nkey, nval in nrow.items():
+                if not isinstance(nval, dict):
+                    compare_to = getattr(nitem, nkey)
+                    if isinstance(compare_to, Decimal):
+                        nval = Decimal(nval)
+                    self.assertEqual(compare_to, nval)
+
+
+
+
+
     def test_notifications_api(self):
         
         capi = CollectorAPI()

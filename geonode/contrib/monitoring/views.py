@@ -18,6 +18,7 @@
 #
 #########################################################################
 
+import json
 from datetime import datetime, timedelta
 
 from django.shortcuts import render
@@ -520,9 +521,15 @@ class UserNotificationConfigView(View):
         status = 500
         if request.user.is_authenticated():
             obj = self.get_object()
-            data = request.POST
             try:
-                configs = obj.process_user_form(data)
+                is_json = True
+                data = json.loads(request.body)
+            except (TypeError, ValueError,):
+                is_json = False
+                data = request.POST.copy()
+                
+            try:
+                configs = obj.process_user_form(data, is_json=is_json)
                 out['success'] = True
                 out['status'] = 'ok'
                 out['data'] = [dump(c) for c in configs]
