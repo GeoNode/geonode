@@ -143,11 +143,15 @@ class CheckTypeForm(_ValidFromToLastForm):
 
 
 class MetricsFilters(CheckTypeForm):
+    GROUP_BY_RESOURCE = 'resource'
+    GROUP_BY_CHOICES = ((GROUP_BY_RESOURCE, "By resource",),)
     service = forms.CharField(required=False)
     label = forms.CharField(required=False)
     resource = forms.CharField(required=False)
+    resource_type = forms.ChoiceField(choices=MonitoredResource.TYPES, required=False)
     ows_service = forms.CharField(required=False)
     service_type = forms.CharField(required=False)
+    group_by = forms.ChoiceField(choices=GROUP_BY_CHOICES, required=False)
 
     def clean_resource(self):
         return self._check_type('resource')
@@ -320,7 +324,10 @@ class MetricDataView(View):
     def get(self, *args, **kwargs):
         filters = self.get_filters(**kwargs)
         if self.errors:
-            return json_response({'status': 'error', 'success': False, 'errors': self.errors}, status=400)
+            return json_response({'status': 'error',
+                                  'success': False,
+                                  'errors': self.errors},
+                                  status=400)
         metric_name = kwargs['metric_name']
         last = filters.pop('last', None)
         if last:

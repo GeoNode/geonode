@@ -529,8 +529,17 @@ class CollectorAPI(object):
                     self.set_metric_values('request.method', 'request_method', **metric_defaults)
                     self.set_error_values(ows_requests, valid_from, valid_to, service=service, resource=resource, ows_service=ows_service)
 
-    def get_metrics_for(self, metric_name, valid_from=None, valid_to=None, interval=None, service=None,
-                        label=None, resource=None, ows_service=None, service_type=None):
+    def get_metrics_for(self, metric_name,
+                        valid_from=None,
+                        valid_to=None,
+                        interval=None,
+                        service=None,
+                        label=None,
+                        resource=None,
+                        ows_service=None,
+                        service_type=None,
+                        group_by=None,
+                        resource_type=None):
         """
         Returns metric data for given metric. Returned dataset contains list of periods and values in that periods
         """
@@ -565,7 +574,9 @@ class CollectorAPI(object):
                                           label=label,
                                           ows_service=ows_service,
                                           service_type=service_type,
-                                          resource=resource)
+                                          resource=resource,
+                                          resource_type=resource_type,
+                                          group_by=group_by)
             out['data'].append({'valid_from': pstart, 'valid_to': pend, 'data': pdata})
         return out
 
@@ -581,11 +592,28 @@ class CollectorAPI(object):
         f = metric.get_aggregate_name()
         return f or column_name
 
-    def get_metrics_data(self, metric_name, valid_from, valid_to, interval, service=None, label=None, resource=None, ows_service=None, service_type=None):
+    def get_metrics_data(self, metric_name,
+                         valid_from,
+                         valid_to,
+                         interval,
+                         service=None,
+                         label=None,
+                         resource=None,
+                         resource_type=None,
+                         ows_service=None,
+                         service_type=None,
+                         group_by=None):
         """
         Returns metric values for metric within given time span
         """
         params = {}
+        group_by_map = {'resource': {'select': ['mr.id', 'mr.type', 'mr.name',],
+                                     'from': ['join monitoring_monitoredresource mr on (mv.resource_id = mr.id)'],
+                                     'where' : ['and mv.resource_id is not NULL'],
+                                     'order_by': ['val desc'],
+                                     'grouper': ['resource', 'name', 'type'],
+                                     }
+                       }
 
         q_from = ['from monitoring_metricvalue mv',
                   'join monitoring_servicetypemetric mt on (mv.service_metric_id = mt.id)',
@@ -601,6 +629,7 @@ class CollectorAPI(object):
         col = 'mv.value_num'
         agg_f = self.get_aggregate_function(col, metric_name, service)
         has_agg = agg_f != col
+        q_order_by = ['val desc']
 
         q_select = ['select ml.name as label, {} as val, count(1) as metric_count, sum(samples_count) as samples_count, sum(mv.value_num), min(mv.value_num), max(mv.value_num)'.format(agg_f)]
         if service and service_type:
@@ -624,13 +653,40 @@ class CollectorAPI(object):
             params['resource_id'] = resource.id
         if label and has_agg:
             q_group.extend(['ml.name'])
+        if resource and q_group == 'resource':
+            raise ValueError("Cannot use resource and group by resource at the same time")
         if resource and has_agg:
             q_group.append('mr.name')
+        # group returned columns into a dict
+        # config in grouping map: target_column = {source_column1: val, ...}
+        grouper = None
+        if group_by:
+            group_by_cfg = group_by_map[group_by]
+            g_sel = group_by_cfg['select']
+            q_select.append(', {}'.format(', '.join(g_sel)))
+            q_from.extend(group_by_cfg['from'])
+            q_where.extend(group_by_cfg['where'])
+            q_group.extend(group_by_cfg['select'])
+            grouper = group_by_cfg['grouper']
+            if resource_type:
+                q_where.append(' and mr.type = %(resource_type)s ')
+                params['resource_type'] = resource_type
+
         if q_group:
             q_group = [' group by ', ','.join(q_group)]
+        if q_order_by:
+            q_order_by = 'order by {}'.format(','.join(q_order_by))
 
-        q = ' '.join(chain(q_select, q_from, q_where, q_group))
-        return list(raw_sql(q, params))
+        q = ' '.join(chain(q_select, q_from, q_where, q_group, [q_order_by]))
+        def postproc(row):
+            if grouper:
+                t = {}
+                tcol = grouper[0]
+                for scol in grouper[1:]:
+                    t[scol] = row.pop(scol)
+                row[tcol] = t
+            return row
+        return [postproc(row) for row in raw_sql(q, params)]
 
     def clear_old_data(self):
         threshold = settings.MONITORING_DATA_TTL
