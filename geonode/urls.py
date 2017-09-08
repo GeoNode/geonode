@@ -129,6 +129,11 @@ if "geonode.contrib.metadataxsl" in settings.INSTALLED_APPS:
                             (r'^showmetadata/', include('geonode.contrib.metadataxsl.urls')),
                             )
 
+if "geonode.contrib.createlayer" in settings.INSTALLED_APPS:
+    urlpatterns += patterns('',
+                            (r'^createlayer/', include('geonode.contrib.createlayer.urls')),
+                            )
+
 if 'geonode.geoserver' in settings.INSTALLED_APPS:
     # GeoServer Helper Views
     urlpatterns += patterns('',

@@ -10,8 +10,8 @@ In this section, you will learn how to create a new layer by uploading a local d
 .. toctree::
    :maxdepth: 2
 
-   upload 
+   upload
    info
    share
    more
-
+   create
