@@ -215,6 +215,26 @@ def qgis_server_post_save(instance, sender, **kwargs):
         )
     )
 
+    # QGS link layer workspace
+    ogc_qgs_url = urljoin(
+        base_url,
+        reverse(
+            'qgis_server:download-qgs',
+            kwargs={'layername': instance.name}))
+    logger.debug('qgs_download_url: %s' % ogc_qgs_url)
+    link_name = 'QGS Layer file'
+    link_mime = 'application/xml'
+    Link.objects.update_or_create(
+        resource=instance.resourcebase_ptr,
+        name=link_name,
+        defaults=dict(
+            extension='qgs',
+            mime=link_mime,
+            url=ogc_qgs_url,
+            link_type='data'
+        )
+    )
+
     if instance.is_vector():
         # WFS link layer workspace
         ogc_wfs_url = urljoin(

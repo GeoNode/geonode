@@ -22,6 +22,7 @@ from django.conf.urls import patterns, url
 
 from geonode.qgis_server.views import (
     download_zip,
+    download_qgs,
     tile,
     tile_404,
     legend,
@@ -41,6 +42,11 @@ urlpatterns = patterns(
         r'^download-zip/(?P<layername>[\w]*)$',
         download_zip,
         name='download-zip'
+    ),
+    url(
+        r'^download-qgs/(?P<layername>[\w]*)$',
+        download_qgs,
+        name='download-qgs'
     ),
     url(
         r'^tiles/'

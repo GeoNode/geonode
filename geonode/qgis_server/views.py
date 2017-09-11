@@ -106,6 +106,48 @@ def download_zip(request, layername):
     return resp
 
 
+def download_qgs(request, layername):
+    """Download QGS file for a layer.
+
+    :param layername: The request from frontend.
+    :type layername: HttpRequest
+
+    :param layername: The layer name in Geonode.
+    :type layername: basestring
+
+    :return: QGS file.
+    """
+
+    layer = get_object_or_404(Layer, name=layername)
+    ogc_url = reverse('qgis_server:layer-request',
+                      kwargs={'layername': layername})
+    url = settings.SITEURL + ogc_url.replace("/", "", 1)
+
+    layers = [{
+        'type': 'raster',
+        'display': layername,
+        'driver': 'wms',
+        'crs': 'EPSG:4326',
+        'format': 'image/png',
+        'styles': '',
+        'layers': layer.title,
+        'url': url
+    }]
+
+    json_layers = json.dumps(layers)
+
+    url_server = settings.QGIS_SERVER_URL + \
+        '?SERVICE=PROJECTDEFINITIONS&LAYERS=' + json_layers
+    request = requests.get(url_server)
+    response = HttpResponse(
+        request.content, content_type="application/xml",
+        status=request.status_code)
+    response['Content-Disposition'] = \
+        'attachment; filename=%s' % layer.title + '.qgs'
+
+    return response
+
+
 def legend(request, layername, layertitle=False, style=None):
     """Get the legend from a layer.
 
