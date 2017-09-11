@@ -1,8 +1,10 @@
 Django==1.8.7
 six==1.10.0
 MultipartPostHandler==0.1.0
-https://github.com/geopython/OWSLib/archive/master.zip#egg=OWSLib-0.14-dev
+# we can't use django-user-account until upstream merge changes for geonode.
+# this is temporary solution
 # OWSLib==0.14.0
+git+git://github.com/geopython/OWSLib@master#egg=OWSLib-0.14-dev
 Paver==1.2.4
 Unidecode==0.4.19
 amqp==1.4.9
@@ -50,7 +52,7 @@ geonode-dialogos==0.7
 pinax-notifications<4.0
 # we can't use django-user-account until upstream merge changes for geonode.
 # this is temporary solution
-https://github.com/cezio/django-user-accounts/archive/252_255_mixed.zip#egg=django-user-accounts-2.0.2dev
+git+git://github.com/cezio/django-user-accounts@252_255_mixed
 geonode_user_messages==0.1.6
 gisdata==0.5.4
 gsconfig==1.0.6
