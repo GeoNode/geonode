@@ -13,7 +13,7 @@ export const fetch = (args) => {
     body: newbody,
     method: method || 'GET',
     headers: { Accept: 'application/json' },
-    creadentials: 'same-origin',
+    credentials: 'same-origin',
   };
   if (method === 'POST' || method === 'PUT' || method === 'PATCH') {
     newargs.headers['Content-Type'] = 'application/json';
