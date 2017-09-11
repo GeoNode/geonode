@@ -89,6 +89,8 @@ setup(name='GeoNode',
 
         # geopython dependencies
         "pyproj==1.9.5.1",  # python-pyproj (1.9.5)
+        # we can't use OWSLib 0.14 until upstream merge changes for geonode.
+        # this is temporary solution
         "OWSLib==0.14-dev",  # python-owslib (0.10.3) FIXME
         "pycsw==2.0.3",  # python-pycsw (1.10.1, 2.0.0 in ppa) FIXME
         "%s" % shapely_dep,  # python-shapely (1.5.13)
@@ -117,7 +119,6 @@ setup(name='GeoNode',
         "django-user-accounts==2.0.2dev",
         # we can't use django-user-account until upstream merge changes for geonode.
         # this is temporary solution
-        # "git+https://github.com/cezio/django-user-accounts/archive/252_255_mixed.zip",
         "geonode-arcrest>=10.2",
         "geonode-dialogos>=0.5",
         "gsconfig==1.0.6",  # (1.0.3 in ppa) FIXME
