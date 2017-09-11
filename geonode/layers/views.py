@@ -202,7 +202,7 @@ def layer_upload(request, template='upload/layer_upload.html'):
                     styles = list(saved_layer.styles.all()) + [
                         saved_layer.default_style]
                     for style in styles:
-                        if style.name == saved_layer.name:
+                        if style and style.name == saved_layer.name:
                             match = style
                             break
                     if match is None:
@@ -254,8 +254,9 @@ def layer_upload(request, template='upload/layer_upload.html'):
                         'properties': saved_layer.srid
                     }
                 upload_session = saved_layer.upload_session
-                upload_session.processed = True
-                upload_session.save()
+                if upload_session:
+                    upload_session.processed = True
+                    upload_session.save()
                 permissions = form.cleaned_data["permissions"]
                 if permissions is not None and len(permissions.keys()) > 0:
                     saved_layer.set_permissions(permissions)
