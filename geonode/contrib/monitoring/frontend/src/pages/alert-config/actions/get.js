@@ -1,23 +1,23 @@
 import { createAction } from 'redux-actions';
-import { fetch } from '../../utils';
-import apiUrl from '../../backend';
-import ALERT_CONFIG from './constants';
+import { fetch } from '../../../utils';
+import apiUrl from '../../../backend';
+import { ALERT_CONFIG_GET } from '../constants';
 
 
 const reset = createAction(
-  ALERT_CONFIG,
+  ALERT_CONFIG_GET,
   () => ({ status: 'initial' })
 );
 
 
 export const begin = createAction(
-  ALERT_CONFIG,
+  ALERT_CONFIG_GET,
   () => ({ status: 'pending' })
 );
 
 
 const success = createAction(
-  ALERT_CONFIG,
+  ALERT_CONFIG_GET,
   response => ({
     response,
     status: 'success',
@@ -26,7 +26,7 @@ const success = createAction(
 
 
 const fail = createAction(
-  ALERT_CONFIG,
+  ALERT_CONFIG_GET,
   error => ({
     status: 'error',
     error,
@@ -48,12 +48,11 @@ const get = (id) =>
       });
   };
 
-const actions = {
+
+export default {
   reset,
   begin,
   success,
   fail,
   get,
 };
-
-export default actions;

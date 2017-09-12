@@ -38,12 +38,13 @@ import { wsResponseSequence } from './components/organisms/ws-analytics/reducers
 import { wsThroughputSequence } from './components/organisms/ws-analytics/reducers';
 
 // Pages
-import alertConfig from './pages/alert-config/reducers';
+import { alertConfig, alertConfigSave } from './pages/alert-config/reducers';
 import alertSettings from './pages/alerts-settings/reducers';
 
 
 const reducers = {
   alertConfig,
+  alertConfigSave,
   alertList,
   alertSettings,
   errorDetails,

@@ -2,6 +2,13 @@ import isomorphicFetch from 'isomorphic-fetch';
 import { minute, hour, day, week } from './constants';
 
 
+function getCookie(name) {
+  const value = `; ${document.cookie}`;
+  const parts = value.split(`; ${name}=`);
+  if (parts.length === 2) return parts.pop().split(';').shift();
+  return '';
+}
+
 export const fetch = (args) => {
   const {
     url,
@@ -16,7 +23,9 @@ export const fetch = (args) => {
     credentials: 'same-origin',
   };
   if (method === 'POST' || method === 'PUT' || method === 'PATCH') {
+    const csrftoken = getCookie('csrftoken');
     newargs.headers['Content-Type'] = 'application/json';
+    newargs.headers['X-CSRFToken'] = csrftoken;
   }
   return isomorphicFetch(url, newargs)
     .then(response => {
@@ -151,4 +160,18 @@ export const isNumber = (n) => {
     return true;
   }
   return false;
+};
+
+
+export const stateToData = (data) => {
+  const result = {};
+  Object.keys(data).forEach((fieldName) => {
+    const field = data[fieldName];
+    let value = Number(field.current_value.value);
+    if (!field.is_enabled) {
+      value = '';
+    }
+    result[fieldName] = value;
+  });
+  return result;
 };

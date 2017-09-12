@@ -4,6 +4,7 @@ import { connect } from 'react-redux';
 import TextField from 'material-ui/TextField';
 import Checkbox from 'material-ui/Checkbox';
 import RaisedButton from 'material-ui/RaisedButton';
+import { stateToData } from '../../utils';
 import HoverPaper from '../../components/atoms/hover-paper';
 import Header from '../../components/organisms/header';
 import actions from './actions';
@@ -21,6 +22,7 @@ class AlertConfig extends React.Component {
     alertConfig: PropTypes.object,
     get: PropTypes.func.isRequired,
     params: PropTypes.object,
+    set: PropTypes.func.isRequired,
   }
 
   static defaultProps = {
@@ -39,36 +41,12 @@ class AlertConfig extends React.Component {
   constructor(props) {
     super(props);
 
-    this.state = {
-      checkbox: {},
-      input: {},
-    };
-
-    this.handleCheckboxChange = (event, value, id) => {
-      const checkboxValue = {};
-      checkboxValue[id] = value;
-      const newState = {
-        ...this.state.checkbox,
-        ...checkboxValue,
-      };
-      this.setState({ checkbox: newState, changed: true });
-    };
-
-    this.handleInputChange = (event, id) => {
-      const inputValue = {};
-      inputValue[id] = event.target.value;
-      const newState = {
-        ...this.state.checkbox,
-        ...inputValue,
-      };
-      this.setState({ input: newState, changed: true });
-    };
+    this.state = {};
 
     this.handleSubmit = (event) => {
       event.preventDefault();
-      if (this.state.changed) {
-        console.log('changed');
-      }
+      const data = stateToData(this.state);
+      this.props.set(this.props.params.alertId, data);
     };
   }
 
@@ -78,16 +56,44 @@ class AlertConfig extends React.Component {
 
   componentWillReceiveProps(nextProps) {
     if (nextProps && nextProps.alertConfig) {
-      const fieldStates = { ...this.state };
       nextProps.alertConfig.data.fields.forEach((field) => {
-        fieldStates.checkbox[field.id] = field.is_enabled;
+        const data = {};
+        data[field.field_name] = field;
+        this.setState(data);
       });
-      this.setState({ checkbox: fieldStates.checkbox });
     }
   }
 
   render() {
     const { alertConfig } = this.props;
+    const data = Object.keys(this.state).map((settingName) => {
+      const setting = this.state[settingName];
+      return (
+        <div key={setting.id}>
+          <Checkbox
+            label={setting.description}
+            style={styles.checkbox}
+            checked={setting.is_enabled}
+          />
+          <input
+            style={styles.number}
+            type="number"
+            min={
+              setting.min_value
+              ? Number(setting.min_value)
+              : undefined
+            }
+            max={
+              setting.max_value
+              ? Number(setting.max_value)
+              : undefined
+            }
+            defaultValue={Number(setting.current_value.value)}
+          />
+          {setting.unit}
+        </div>
+      );
+    });
     return (
       <div style={styles.root}>
         <Header back="/alerts/settings" disableInterval autoRefresh={false} />
@@ -115,27 +121,7 @@ class AlertConfig extends React.Component {
               style={styles.who}
             />
             <h4 style={styles.when}>When to alert</h4>
-            {
-            alertConfig.data.fields.map((setting) => (
-            <div key={setting.id}>
-              <Checkbox
-                label={setting.description}
-                style={styles.checkbox}
-                checked={this.state.checkbox[setting.id]}
-                onCheck={(event, value) => this.handleCheckboxChange(event, value, setting.id)}
-              />
-              <input
-                style={styles.number}
-                type="number"
-                min={setting.min_value ? Number(setting.min_value) : undefined}
-                max={setting.max_value ? Number(setting.max_value) : undefined}
-                defaultValue={Number(setting.current_value.value)}
-                onChange={(event) => this.handleInputChange(event, setting.id)}
-              />
-              {setting.unit}
-            </div>
-            ))
-            }
+            {data}
           </form>
         </HoverPaper>
       </div>
