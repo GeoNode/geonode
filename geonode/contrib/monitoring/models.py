@@ -508,7 +508,7 @@ class ExceptionEvent(models.Model):
                                         'path': e.request.request_path,
                                         'host': e.request.host,
                                         },
-                            'ows_service': e.request.ows_service,
+                            'ows_service': e.request.ows_service.name if e.request.ows_service else None,
                             'resources': [{'name': str(r)} for r in e.request.resources.all()],
                             'client': {'ip': e.request.client_ip,
                                        'user_agent': e.request.user_agent,
