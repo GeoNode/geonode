@@ -4,7 +4,7 @@
     "pk": 1001,
     "fields": {
         "skip_authorization": true,
-        "redirect_uris": "http://localhost:8080/geoserver",
+        "redirect_uris": "http://localhost:8080/geoserver\nhttp://localhost/geoserver",
         "name": "GeoServer",
         "authorization_grant_type": "authorization-code",
         "client_type": "confidential",
