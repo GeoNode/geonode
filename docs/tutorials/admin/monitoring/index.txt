@@ -28,13 +28,20 @@ Base concepts and objects
 
  As mentioned above, each Service Type keeps a set of metrics, specific for that type. A metric is a description of measured value, for example: number of requests, response size or time, cpu usage, free memory etc. Each Service Type has it's own metrics set. Metric value may be either value counter (like country of user), numeric counter (like number of requests) or rate (like bytes in/out on network interface).
 
+ Besides metric data, monitoring will also store exception information for exceptions that were captured during request handling. 
+
+ Data are collected periodically (at most every 1 minute), aggregated and stored in aggregated form. User can see data from predefined relative periods (last minute, last 10 minutes, last hour, last day, last week).
+
+ User can enable and configure automated checks, which will be run after each collection/aggregation cycle, and will emit notifications if metric values in that run exceed configured thresholds.
+
+
 Installation
 ~~~~~~~~~~~~
 
  * enable ``MONITORING_ENABLED`` flag
  * ensure that following code is in your settings:
 
-::
+.. code:: python
 
   MONITORING_ENABLED = True
   # add following lines to your local settings to enable monitoring
@@ -152,6 +159,54 @@ Monitoring interface is available for superusers only. It's available in profile
 .. image:: ../../../img/monitoring/homepage-monitoring-link.png
    :alt: monitoring link
 
+Dashboard
+---------
+
+
+.. image:: ../../../img/monitoring/homepage-monitoring-dashboard.png
+   :alt: monitoring dashboard
+
+Main view offers overview of recent situation in GeoNode deployment. With top bar buttons User can select time window from which data will be aggregated and shown.
+
+Below there are four main health indicators:
+
+ * aggregated **Health Check** information. 
+    This element will be:
+
+    * `green` if there is no alerts nor errors
+    * `yellow` if there are alerts
+    * `red` if there are errors
+ 
+ * **Uptime** that shows GeoNode's system uptime.
+ 
+ * **Alerts** shows number of notifications from defined checks. When clicked, Alerts box will show detailed information . See Notifications description for details.
+
+ * **Errors** - shows how many errors were captured during request processing. When clicked, Errors box will show detailed list of captured errors. See Errros description for details.
+
+Software Performance
+~~~~~~~~~~~~~~~~~~~~
+
+Software Performance view shows GeoServer web service statistics, for all requests monitored and detailed, OWS-specific, per service type (WMS, WFS, OCS etc).
+
+Clicking on
+
+.. image:: ../../../img/monitoring/dashboard-sw-performance-charts-button.png
+   :align: center
+
+will show charts with data history and per-layer, per-OWS-service web service statistics.
+
+Hartware Performance
+~~~~~~~~~~~~~~~~~~~~
+
+Hardware performance shows 
+
+
+
+
+
+
+Notifications
+~~~~~~~~~~~~~
 
 Tips & tricks
 =============
