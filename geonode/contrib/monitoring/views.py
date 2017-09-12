@@ -509,6 +509,7 @@ class UserNotificationConfigView(View):
             fields = [dump(r, fields) for r in obj.definitions.all()]
             out['data'] = {'form': form.as_table(),
                            'fields': fields,
+                           'emails': obj.emails,
                            'notification': dump(obj)}
             status = 200
         else:

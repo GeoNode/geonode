@@ -730,6 +730,10 @@ class NotificationCheck(models.Model):
     def get_emails(self):
         return [r.email for r in self.receivers.exclude(email__isnull=True)]
 
+    @property
+    def emails(self):
+        return [u for u in self.get_emails() if u] + [u.email for u in self.get_users() if u.email]
+
     def check_notifications(self, for_timestamp=None):
         checks = []
         for ch in self.checks.all():
