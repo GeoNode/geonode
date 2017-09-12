@@ -40,6 +40,7 @@ You will know how to:
     loading_data_into_geonode/index
     s3_config/index
     backup_restore/index
+    monitoring/index
 
 :ref:`geoserver_geonode_aa`
     GeoNode interacts with GeoServer through an advanced security mechanism based on OAuth2 Protocol and GeoFence. This section is a walk through of the configuration and setup of GeoNode and GeoServer Advanced Security.
@@ -78,3 +79,7 @@ You will know how to:
 
 :ref:`backup_restore_geonode`
     How to perform a full backup / restore of GeoNode and GeoServer catalogs and how to migrate data. Customization backup / restore fixtures and data manglers.
+
+:ref:`geonode_monitoring`
+    How to set up and use internal monitoring application.
+
