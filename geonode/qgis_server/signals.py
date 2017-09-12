@@ -256,6 +256,26 @@ def qgis_server_post_save(instance, sender, **kwargs):
             )
         )
 
+    # QLR link layer workspace
+    ogc_qlr_url = urljoin(
+        base_url,
+        reverse(
+            'qgis_server:download-qlr',
+            kwargs={'layername': instance.name}))
+    logger.debug('qlr_download_url: %s' % ogc_qlr_url)
+    link_name = 'QGIS Layer file'
+    link_mime = 'application/xml'
+    Link.objects.update_or_create(
+        resource=instance.resourcebase_ptr,
+        name=link_name,
+        defaults=dict(
+            extension='qlr',
+            mime=link_mime,
+            url=ogc_qlr_url,
+            link_type='data'
+        )
+    )
+
     # if layer has overwrite attribute, then it probably comes from
     # importlayers management command and needs to be overwritten
     overwrite = getattr(instance, 'overwrite', False)
