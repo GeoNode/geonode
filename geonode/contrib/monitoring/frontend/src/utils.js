@@ -167,9 +167,9 @@ export const stateToData = (data) => {
   const result = {};
   Object.keys(data).forEach((fieldName) => {
     const field = data[fieldName];
-    let value = Number(field.current_value.value);
+    let value = field.current_value ? Number(field.current_value.value) : null;
     if (!field.is_enabled) {
-      value = '';
+      value = null;
     }
     result[fieldName] = value;
   });

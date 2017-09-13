@@ -52,6 +52,9 @@ class AlertConfig extends React.Component {
     this.handleInputChange = (event, name) => {
       const result = {};
       result[name] = { ...this.state[name] };
+      if (!result[name].current_value) {
+        result[name].current_value = {};
+      }
       result[name].current_value.value = event.target.value;
       this.setState({ ...result });
     };
@@ -103,7 +106,9 @@ class AlertConfig extends React.Component {
               ? Number(setting.max_value)
               : undefined
             }
-            defaultValue={Number(setting.current_value.value)}
+            defaultValue={
+              setting.current_value ? Number(setting.current_value.value) : 0
+            }
             onChange={(event) => this.handleInputChange(event, settingName)}
           />
           {setting.unit}
