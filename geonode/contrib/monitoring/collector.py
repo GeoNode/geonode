@@ -611,7 +611,7 @@ class CollectorAPI(object):
                                      'from': ['join monitoring_monitoredresource mr on (mv.resource_id = mr.id)'],
                                      'where' : ['and mv.resource_id is not NULL'],
                                      'order_by': ['val desc'],
-                                     'grouper': ['resource', 'name', 'type'],
+                                     'grouper': ['resource', 'name', 'type', 'id',],
                                      }
                        }
 
