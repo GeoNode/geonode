@@ -10,7 +10,6 @@
 var app;
 {% autoescape off %}
 Ext.onReady(function() {
-
 {% if can_change_permissions %}
        new GeoNode.WorldMapPermissionsEditor({
                 renderTo: "permissions_form",
@@ -40,18 +39,27 @@ Ext.onReady(function() {
 {% block body %}
 <div class="twocol">
   <h3>{{service.title|default:service.name}}</h3>
-  <p><strong>{% trans "Name:" %}</strong> {{service.name}}</p>
-  <p><strong>{% trans "URL:" %}</strong> {{service.base_url}}</p>
-  <p><strong>{% trans "Abstract:" %}</strong> {{service.abstract}}</p>
-  <p><strong>{% trans "Keywords:" %}</strong> {{ service.keywords.all|join:", " }}</p>
-  <p><strong>{% trans "Fees:" %}</strong> {{service.fees}}</p>
-  <p><strong>{% trans "Contact:" %}</strong> <a href="{% url "profile_detail" service.owner.username %}">{{ service.owner }}</a></p>
+    {% if service.classification %}
+    <p><strong>{% trans "Classification:" %}</strong> {{service.classification}}//{{ service.caveat }}</p>
+    {% endif %}
+    <p><strong>{% trans "Name:" %}</strong> {{service.name}}</p>
+    <p><strong>{% trans "URL:" %}</strong> {{service.base_url}}</p>
+    {% if service.category %}
+    <p><strong>{% trans "Category:" %}</strong> {{service.category.gn_description}}</p>
+    {% endif %}
+    {% if service.service_refs %}
+    <p><strong>{% trans "Referenced Services:" %}</strong> {{service.service_refs}}</p>
+    {% endif %}
+    {% if service.keywords.all|length > 0 %}
+    <p><strong>{% trans "Keywords:" %}</strong> {{ service.keywords.all|join:", " }}</p>
+    {% endif %}
+    <p><strong>{% trans "Contact:" %}</strong> <a href="{% url "profile_detail" service.owner.username %}">{{ service.owner }}</a></p>
 
     {% autoescape off %}
     {%  if services %}
         <h3>{% trans "Services" %}</h3>
         <p>{% trans "This CSW server contains the following services" %} </p>
-        <table>
+        <table class="table">
             <tr><th style="width:50%">Title</th><th>Description</th></tr>
             {% for service in services %}
                     <tr>
@@ -64,11 +72,13 @@ Ext.onReady(function() {
     {% if layers %}
     <h3>{% trans "Layers" %}</h3>
     <p>{% trans "This Service contains the following layers" %} </p>
-    <table>
-        <tr><th style="width:50%">Title</th><th>Description</th></tr>
+    <table class="table">
+        <tr><th>#</th><th style="width:50%">Title</th><th>Description</th></tr>
         {% for layer in layers %}
             {% if layer.group != "background" %}
             <tr>
+                {% widthratio 25 1 layers.number as offset %}
+                <th scope="row">{{offset|add:"-25"|add:forloop.counter}}</th>
                 <td><a href='{{ layer.get_absolute_url }}'>{{layer.title}}</a></td>
                 <td>{{layer.abstract}}</td>
             </tr>
@@ -112,6 +122,7 @@ Ext.onReady(function() {
 
         {% if "change_service" in resource_perms %}
             <li class="list-group-item"><a class="btn btn-default btn-md btn-block" href="{% url "edit_service" service.id %}">{% trans "Edit Service Metadata" %}</a></li>
+            <li class="list-group-item"><a class="btn btn-default btn-md btn-block" href="{ url "publish_service" service.id }">{% trans "Publish Service Metadata" %}</a></li>
         {% endif %}
         {% if  "remove_service" or "delete_service" in resource_perms %}
             <li class="list-group-item"><a class="btn btn-default btn-md btn-block" href="{% url "remove_service" service.id %}">{% trans "Remove Service" %}</a></li>

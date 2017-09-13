@@ -85,7 +85,8 @@ class ServiceForm(forms.ModelForm):
 
     class Meta:
         model = Service
-        fields = ('title', 'description', 'abstract', 'keywords', )
+        fields = ('classification', 'caveat', 'title', 'category',
+        'description', 'abstract', 'keywords', 'provenance', 'fees', )
 
 
 class ServiceLayerFormSet(forms.ModelForm):
