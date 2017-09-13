@@ -870,7 +870,7 @@ class NotificationCheck(models.Model):
             if emails and isinstance(emails, list):
                 emails = '\n'.join(emails)
                 data['emails'] = emails
-                
+           
         f = self.get_user_form(data=data)
         if not f.is_valid():
             err = forms.ValidationError(f.errors)
@@ -893,7 +893,7 @@ class NotificationCheck(models.Model):
 
         for key, val in fdata.items():
             # do not create notification check if check value is empty
-            if val is None:
+            if val is None or val == '':
                 continue
             _v = key.split('.')
             # syntax of field name:
