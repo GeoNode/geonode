@@ -4,7 +4,7 @@ import HoverPaper from '../../atoms/hover-paper';
 import styles from './styles';
 
 
-class AlertList extends React.Component {
+class Alert extends React.Component {
   static propTypes = {
     alert: PropTypes.object.isRequired,
   }
@@ -34,6 +34,7 @@ class AlertList extends React.Component {
         <div style={style}>
           {alert.message}
         </div>
+        {alert.spotted_at.replace(/T/, ' ')}
         <div style={visibilityStyle}>
           {alert.description}
         </div>
@@ -43,4 +44,4 @@ class AlertList extends React.Component {
 }
 
 
-export default AlertList;
+export default Alert;
