@@ -163,15 +163,31 @@ export const isNumber = (n) => {
 };
 
 
-export const stateToData = (data) => {
-  const result = {};
+export const stateToFields = (data) => {
+  const result = [];
   Object.keys(data).forEach((fieldName) => {
-    const field = data[fieldName];
-    let value = field.current_value ? Number(field.current_value.value) : null;
-    if (!field.is_enabled) {
-      value = null;
+    if (fieldName !== 'active') {
+      result.push(fieldName);
     }
-    result[fieldName] = value;
+  });
+  return result;
+};
+
+
+export const stateToData = (data) => {
+  const result = {
+    active: data.active,
+  };
+  const fields = stateToFields(data);
+  fields.forEach((fieldName) => {
+    if (fieldName !== 'active') {
+      const field = data[fieldName];
+      let value = field.current_value ? Number(field.current_value.value) : null;
+      if (!field.is_enabled) {
+        value = null;
+      }
+      result[fieldName] = value;
+    }
   });
   return result;
 };

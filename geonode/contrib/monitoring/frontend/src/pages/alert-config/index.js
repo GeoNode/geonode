@@ -4,7 +4,7 @@ import { connect } from 'react-redux';
 import TextField from 'material-ui/TextField';
 import Checkbox from 'material-ui/Checkbox';
 import RaisedButton from 'material-ui/RaisedButton';
-import { stateToData } from '../../utils';
+import { stateToData, stateToFields } from '../../utils';
 import HoverPaper from '../../components/atoms/hover-paper';
 import Header from '../../components/organisms/header';
 import actions from './actions';
@@ -65,6 +65,10 @@ class AlertConfig extends React.Component {
       result[name].is_enabled = value;
       this.setState({ ...result });
     };
+
+    this.handleActiveChange = (event, active) => {
+      this.setState({ active });
+    };
   }
 
   componentWillMount() {
@@ -78,12 +82,13 @@ class AlertConfig extends React.Component {
         data[field.field_name] = field;
         this.setState(data);
       });
+      this.setState({ active: nextProps.alertConfig.data.notification.active });
     }
   }
 
   render() {
     const { alertConfig } = this.props;
-    const data = Object.keys(this.state).map((settingName) => {
+    const data = stateToFields(this.state).map((settingName) => {
       const setting = this.state[settingName];
       return (
         <div key={settingName}>
@@ -126,7 +131,8 @@ class AlertConfig extends React.Component {
                   <h1>{alertConfig.data.notification.name}</h1>
                   <Checkbox
                     style={styles.title.checkbox}
-                    checked={alertConfig.data.notification.active}
+                    checked={this.state.active}
+                    onCheck={this.handleActiveChange}
                   />
                 </div>
                 <h4>{alertConfig.data.notification.description}</h4>
