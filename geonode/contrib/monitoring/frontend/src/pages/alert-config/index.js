@@ -4,6 +4,8 @@ import { connect } from 'react-redux';
 import TextField from 'material-ui/TextField';
 import Checkbox from 'material-ui/Checkbox';
 import RaisedButton from 'material-ui/RaisedButton';
+import DropDownMenu from 'material-ui/DropDownMenu';
+import MenuItem from 'material-ui/MenuItem';
 import { stateToData, stateToFields } from '../../utils';
 import HoverPaper from '../../components/atoms/hover-paper';
 import Header from '../../components/organisms/header';
@@ -29,6 +31,7 @@ class AlertConfig extends React.Component {
     alertConfig: {
       data: {
         fields: [],
+        emails: [],
         notification: {
           active: false,
           description: '',
@@ -75,6 +78,13 @@ class AlertConfig extends React.Component {
     this.handleEmailsChange = (event, value) => {
       this.setState({ emails: value });
     };
+
+    this.handleDropdownChange = (event, key, value, name) => {
+      const result = {};
+      result[name] = this.state[name];
+      result[name].current_value.value = Number(value);
+      this.setState({ ...result });
+    };
   }
 
   componentWillMount() {
@@ -86,6 +96,24 @@ class AlertConfig extends React.Component {
       nextProps.alertConfig.data.fields.forEach((field) => {
         const data = {};
         data[field.field_name] = field;
+        const min = field.min_value
+                  ? Number(field.min_value)
+                  : undefined;
+        const max = field.max_value
+                  ? Number(field.max_value)
+                  : undefined;
+        let defaultValue;
+        if (!data[field.field_name].current_value) {
+          data[field.field_name].current_value = {};
+        }
+        if (data[field.field_name].current_value.value) {
+          defaultValue = Number(data[field.field_name].current_value.value);
+        } else if (min) {
+          defaultValue = min;
+        } else if (max) {
+          defaultValue = max;
+        }
+        data[field.field_name].current_value.value = defaultValue;
         this.setState(data);
       });
       this.setState({ active: nextProps.alertConfig.data.notification.active });
@@ -97,32 +125,55 @@ class AlertConfig extends React.Component {
     const { alertConfig } = this.props;
     const data = stateToFields(this.state).map((settingName) => {
       const setting = this.state[settingName];
+      const min = setting.min_value
+                ? Number(setting.min_value)
+                : undefined;
+      const max = setting.max_value
+                ? Number(setting.max_value)
+                : undefined;
+      let input;
+      if (setting.steps) {
+        const items = setting.steps_calculated.map(
+          (step) => (
+            <MenuItem
+              key={Number(step)}
+              value={Number(step)}
+              primaryText={Number(step)}
+            />
+          )
+        );
+        input = (
+          <DropDownMenu
+            value={setting.current_value.value}
+            onChange={
+              (event, key, value) =>
+                this.handleDropdownChange(event, key, value, settingName)
+            }
+          >
+            {items}
+          </DropDownMenu>
+        );
+      } else {
+        input = (
+          <input
+            style={styles.number}
+            type="number"
+            min={min}
+            max={max}
+            defaultValue={setting.current_value.value}
+            onChange={(event) => this.handleInputChange(event, settingName)}
+          />
+        );
+      }
       return (
-        <div key={settingName}>
+        <div key={settingName} style={styles.checks}>
           <Checkbox
             label={setting.description}
             style={styles.checkbox}
             checked={setting.is_enabled}
             onCheck={(event, value) => this.handleCheckboxChange(event, value, settingName)}
           />
-          <input
-            style={styles.number}
-            type="number"
-            min={
-              setting.min_value
-              ? Number(setting.min_value)
-              : undefined
-            }
-            max={
-              setting.max_value
-              ? Number(setting.max_value)
-              : undefined
-            }
-            defaultValue={
-              setting.current_value ? Number(setting.current_value.value) : 0
-            }
-            onChange={(event) => this.handleInputChange(event, settingName)}
-          />
+          {input}
           {setting.unit}
         </div>
       );

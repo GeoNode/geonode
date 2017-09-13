@@ -5,11 +5,6 @@ export default {
     marginRight: 20,
   },
 
-  table: {
-    border: '1px solid #ddd',
-    width: '100%',
-  },
-
   header: {
     display: 'flex',
     justifyContent: 'space-between',

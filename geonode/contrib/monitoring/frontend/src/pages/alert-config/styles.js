@@ -35,4 +35,10 @@ export default {
   number: {
     marginRight: 10,
   },
+
+  checks: {
+    display: 'flex',
+    alignItems: 'center',
+    height: 45,
+  },
 };
