@@ -4,6 +4,8 @@ import { connect } from 'react-redux';
 import TextField from 'material-ui/TextField';
 import Checkbox from 'material-ui/Checkbox';
 import RaisedButton from 'material-ui/RaisedButton';
+import DropDownMenu from 'material-ui/DropDownMenu';
+import MenuItem from 'material-ui/MenuItem';
 import { stateToData, stateToFields } from '../../utils';
 import HoverPaper from '../../components/atoms/hover-paper';
 import Header from '../../components/organisms/header';
@@ -76,6 +78,13 @@ class AlertConfig extends React.Component {
     this.handleEmailsChange = (event, value) => {
       this.setState({ emails: value });
     };
+
+    this.handleDropdownChange = (event, key, value, name) => {
+      const result = {};
+      result[name] = this.state[name];
+      result[name].current_value.value = Number(value);
+      this.setState({ ...result });
+    };
   }
 
   componentWillMount() {
@@ -122,14 +131,30 @@ class AlertConfig extends React.Component {
       const max = setting.max_value
                 ? Number(setting.max_value)
                 : undefined;
-      return (
-        <div key={settingName}>
-          <Checkbox
-            label={setting.description}
-            style={styles.checkbox}
-            checked={setting.is_enabled}
-            onCheck={(event, value) => this.handleCheckboxChange(event, value, settingName)}
-          />
+      let input;
+      if (setting.steps) {
+        const items = setting.steps_calculated.map(
+          (step) => (
+            <MenuItem
+              key={Number(step)}
+              value={Number(step)}
+              primaryText={Number(step)}
+            />
+          )
+        );
+        input = (
+          <DropDownMenu
+            value={setting.current_value.value}
+            onChange={
+              (event, key, value) =>
+                this.handleDropdownChange(event, key, value, settingName)
+            }
+          >
+            {items}
+          </DropDownMenu>
+        );
+      } else {
+        input = (
           <input
             style={styles.number}
             type="number"
@@ -138,6 +163,17 @@ class AlertConfig extends React.Component {
             defaultValue={setting.current_value.value}
             onChange={(event) => this.handleInputChange(event, settingName)}
           />
+        );
+      }
+      return (
+        <div key={settingName} style={styles.checks}>
+          <Checkbox
+            label={setting.description}
+            style={styles.checkbox}
+            checked={setting.is_enabled}
+            onCheck={(event, value) => this.handleCheckboxChange(event, value, settingName)}
+          />
+          {input}
           {setting.unit}
         </div>
       );
