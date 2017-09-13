@@ -162,13 +162,37 @@ Monitoring interface is available for superusers only. It's available in profile
 Dashboard
 ---------
 
+Main view offers overview of recent situation in GeoNode deployment.
 
-.. image:: ../../../img/monitoring/homepage-monitoring-dashboard.png
+.. image:: ../../../img/monitoring/monitoring-dashboard.png
    :alt: monitoring dashboard
 
-Main view offers overview of recent situation in GeoNode deployment. With top bar buttons User can select time window from which data will be aggregated and shown.
+
+Top bar and indicators
+~~~~~~~~~~~~~~~~~~~~~~
+
+.. figure:: ../../../img/monitoring/dashboard-indicators-ok.png
+   :alt: indicators in ok state
+
+With top bar buttons User can:
+
+ * go back from nested interface elements (charts, alerts, errors)
+ * select time window from which data will be aggregated and shown (last 10 minutes, last 1 hour, last day or last week from now)
+ * see what's currently used time window
+ * enable/disable autorefresh
 
 Below there are four main health indicators:
+
+.. figure:: ../../../img/monitoring/dashboard-indicators-ok.png
+   :alt: indicators in ok state
+
+Normal state of indicators
+
+.. figure:: ../../../img/monitoring/dashboard-indicators-errors.png
+   :alt: indicators in ok state
+
+Indicators in error state
+
 
  * aggregated **Health Check** information. 
     This element will be:
@@ -188,20 +212,33 @@ Software Performance
 
 Software Performance view shows GeoServer web service statistics, for all requests monitored and detailed, OWS-specific, per service type (WMS, WFS, OCS etc).
 
+.. image:: ../../../img/monitoring/dashboard-sw-performance.png
+
 Clicking on
 
 .. image:: ../../../img/monitoring/dashboard-sw-performance-charts-button.png
    :align: center
 
-will show charts with data history and per-layer, per-OWS-service web service statistics.
+will show charts with data history for overall performance and per-OWS performance:
+
+.. image:: ../../../img/monitoring/dashboard-sw-performance-chart.png
+
 
 Hartware Performance
 ~~~~~~~~~~~~~~~~~~~~
 
-Hardware performance shows 
+Hardware performance box shows hardware usage statistics for selected host (monitored with any of hostgeonode or hostgeoserver type Service): % of CPU usage and average memory consumption. User can select from which host data will be presented.
 
+.. image:: ../../../img/monitoring/dashboard-hw-performance.png
 
+Clicking on
 
+.. image:: ../../../img/monitoring/dashboard-hw-performance-charts-button.png
+   :align: center
+
+will show charts with data history for selected host and time period
+
+.. image:: ../../../img/monitoring/dashboard-hw-performance-charts.png
 
 
 
