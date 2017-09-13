@@ -48,6 +48,20 @@ class AlertConfig extends React.Component {
       const data = stateToData(this.state);
       this.props.set(this.props.params.alertId, data);
     };
+
+    this.handleInputChange = (event, name) => {
+      const result = {};
+      result[name] = { ...this.state[name] };
+      result[name].current_value.value = event.target.value;
+      this.setState({ ...result });
+    };
+
+    this.handleCheckboxChange = (event, value, name) => {
+      const result = {};
+      result[name] = { ...this.state[name] };
+      result[name].is_enabled = value;
+      this.setState({ ...result });
+    };
   }
 
   componentWillMount() {
@@ -69,11 +83,12 @@ class AlertConfig extends React.Component {
     const data = Object.keys(this.state).map((settingName) => {
       const setting = this.state[settingName];
       return (
-        <div key={setting.id}>
+        <div key={settingName}>
           <Checkbox
             label={setting.description}
             style={styles.checkbox}
             checked={setting.is_enabled}
+            onCheck={(event, value) => this.handleCheckboxChange(event, value, settingName)}
           />
           <input
             style={styles.number}
@@ -89,6 +104,7 @@ class AlertConfig extends React.Component {
               : undefined
             }
             defaultValue={Number(setting.current_value.value)}
+            onChange={(event) => this.handleInputChange(event, settingName)}
           />
           {setting.unit}
         </div>
