@@ -13,7 +13,7 @@ config.devtool = 'cheap-module-source-map';
 config.devServer = {
   proxy: {
     '/monitoring/api': {
-      target: 'http://localhost:8000',
+      target: 'http://geonode-dev-mon.geo-solutions.it',
     },
     '/static': {
       target: 'http://localhost:8000',
