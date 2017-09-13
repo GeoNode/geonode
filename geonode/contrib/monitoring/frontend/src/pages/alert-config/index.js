@@ -29,6 +29,7 @@ class AlertConfig extends React.Component {
     alertConfig: {
       data: {
         fields: [],
+        emails: [],
         notification: {
           active: false,
           description: '',
@@ -86,6 +87,24 @@ class AlertConfig extends React.Component {
       nextProps.alertConfig.data.fields.forEach((field) => {
         const data = {};
         data[field.field_name] = field;
+        const min = field.min_value
+                  ? Number(field.min_value)
+                  : undefined;
+        const max = field.max_value
+                  ? Number(field.max_value)
+                  : undefined;
+        let defaultValue;
+        if (!data[field.field_name].current_value) {
+          data[field.field_name].current_value = {};
+        }
+        if (data[field.field_name].current_value.value) {
+          defaultValue = Number(data[field.field_name].current_value.value);
+        } else if (min) {
+          defaultValue = min;
+        } else if (max) {
+          defaultValue = max;
+        }
+        data[field.field_name].current_value.value = defaultValue;
         this.setState(data);
       });
       this.setState({ active: nextProps.alertConfig.data.notification.active });
@@ -97,6 +116,12 @@ class AlertConfig extends React.Component {
     const { alertConfig } = this.props;
     const data = stateToFields(this.state).map((settingName) => {
       const setting = this.state[settingName];
+      const min = setting.min_value
+                ? Number(setting.min_value)
+                : undefined;
+      const max = setting.max_value
+                ? Number(setting.max_value)
+                : undefined;
       return (
         <div key={settingName}>
           <Checkbox
@@ -108,19 +133,9 @@ class AlertConfig extends React.Component {
           <input
             style={styles.number}
             type="number"
-            min={
-              setting.min_value
-              ? Number(setting.min_value)
-              : undefined
-            }
-            max={
-              setting.max_value
-              ? Number(setting.max_value)
-              : undefined
-            }
-            defaultValue={
-              setting.current_value ? Number(setting.current_value.value) : 0
-            }
+            min={min}
+            max={max}
+            defaultValue={setting.current_value.value}
             onChange={(event) => this.handleInputChange(event, settingName)}
           />
           {setting.unit}
