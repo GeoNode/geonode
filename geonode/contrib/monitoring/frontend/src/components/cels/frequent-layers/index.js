@@ -61,8 +61,8 @@ class Alert extends React.Component {
         </tr>
     ));
     return (
-      <div>
-        <h5>Most Frequently Accessed Layers</h5>
+      <div style={styles.root}>
+        <h5 style={styles.title}>Most Frequently Accessed Layers</h5>
         <table style={styles.table}>
           <tbody>
             <tr>
