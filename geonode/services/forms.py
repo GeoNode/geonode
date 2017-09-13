@@ -71,7 +71,7 @@ class ServiceForm(forms.ModelForm):
         widget=forms.Select(attrs={'cols': 60, 'class': 'inputText'}))
     title = forms.CharField(label=_('Title'), max_length=255, widget=forms.TextInput(
         attrs={'size': '60', 'class': 'inputText'}))
-	category = forms.ModelChoiceField(
+    category = forms.ModelChoiceField(
         label=_('Category'),
         queryset=TopicCategory.objects.filter(
             is_choice=True) .extra(
