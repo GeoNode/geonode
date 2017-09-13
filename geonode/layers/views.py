@@ -430,8 +430,132 @@ def layer_detail(request, layername, template='layers/layer_detail.html'):
     if settings.SOCIAL_ORIGINS:
         context_dict["social_links"] = build_social_links(request, layer)
 
+
+    #d
+    layers_names = layer.alternate
+    try:
+        if 'geonode' in layers_names:
+            workspace, name = layers_names.split(':', 1)
+        else:
+            #workspace = "arc"
+            workspace = ""
+            name = layers_names
+    except:
+        print "Can not identify workspace type and layername"
+
+    context_dict["layer_name"] = json.dumps(layers_names)
+
+    try:
+        # get type of layer (raster or vector)
+        cat = Catalog(settings.OGC_SERVER['default']['LOCATION'] + "rest", settings.OGC_SERVER['default']['USER'], settings.OGC_SERVER['default']['PASSWORD'])
+        print ("cat", cat)
+        resource = cat.get_resource(name, workspace=workspace)
+
+        print ("layertype", type(resource).__name__)
+        if (type(resource).__name__ == 'Coverage'):
+            context_dict["layer_type"] = "raster"
+        elif (type(resource).__name__ == 'FeatureType'):
+            context_dict["layer_type"] = "vector"
+
+            # get layer's attributes with display_order gt 0
+            attr_to_display = layer.attribute_set.filter(display_order__gt=0)
+
+            layers_attributes = []
+            for values in attr_to_display.values('attribute'):
+                layers_attributes.append(values['attribute'])
+
+            location = "{location}{service}".format(** {
+                'location': settings.OGC_SERVER['default']['LOCATION'],
+                'service': 'wms',
+            })
+
+            # get schema for specific layer
+            from owslib.feature.schema import get_schema
+            username = settings.OGC_SERVER['default']['USER']
+            password = settings.OGC_SERVER['default']['PASSWORD']
+            schema = get_schema(location, name, username=username, password=password)
+
+            # get the name of the column which holds the geometry
+            #geomName = schema.keys()[schema.values().index('Point')] or schema.keys()[schema.values().index('MultiLineString')]
+            #print ("geomName", geomName)
+
+            if 'the_geom' in schema['properties']:
+                schema['properties'].pop('the_geom', None)
+            elif 'geom' in schema['properties']:
+                schema['properties'].pop("geom", None)
+
+            # filter the schema dict based on the values of layers_attributes
+            layer_attributes_schema = []
+            for key in schema['properties'].keys():
+                if key in layers_attributes:
+                    layer_attributes_schema.append(key)
+                else:
+                    schema['properties'].pop(key, None)
+
+            filtered_attributes = list(set(layers_attributes).intersection(layer_attributes_schema))
+            context_dict["schema"] = schema
+            context_dict["filtered_attributes"] = filtered_attributes
+
+    except:
+        print "Possible error with OWSLib. Turning all available properties to string"
+    #d
+
     return render_to_response(template, RequestContext(request, context_dict))
 
+# Loads the data using the OWS lib when the "Do you want to filter it" button is clicked.
+def load_layer_data(request, template='layers/layer_detail.html'):
+
+    import time
+    start_time = time.time()
+    context_dict = {}
+    data_dict = json.loads(request.POST.get('json_data'))
+    layername = data_dict['layer_name']
+    filtered_attributes = data_dict['filtered_attributes']
+    workspace, name = layername.split(':')
+    location = "{location}{service}".format(** {
+        'location': settings.OGC_SERVER['default']['LOCATION'],
+        'service': 'wms',
+    })
+
+    try:
+        username = settings.OGC_SERVER['default']['USER']
+        password = settings.OGC_SERVER['default']['PASSWORD']
+        wfs = WebFeatureService(location, version='1.1.0', username=username, password=password)
+
+        response = wfs.getfeature(typename=name, propertyname=filtered_attributes, outputFormat='application/json')
+
+        x = response.read()
+        x = json.loads(x)
+        features_response = json.dumps(x)
+        decoded = json.loads(features_response)
+        decoded_features = decoded['features']
+
+
+        properties = {}
+        for key in decoded_features[0]['properties']:
+            properties[key] = []
+
+        # loop the dictionary based on the values on the list and add the properties
+        # in the dictionary (if doesn't exist) together with the value
+
+        for i in range(len(decoded_features)):
+
+            for key, value in decoded_features[i]['properties'].iteritems():
+                if value != '' and isinstance(value, (string_types, int, float)):
+                    properties[key].append(value)
+
+        for key in properties:
+            properties[key] = list(set(properties[key]))
+            properties[key].sort()
+
+        context_dict["feature_properties"] = properties
+        print properties
+        print "OWSLib worked as expected"
+
+    except:
+        print "Possible error with OWSLib. Turning all available properties to string"
+    print("--- %s seconds ---" % (time.time() - start_time))
+    return HttpResponse(json.dumps(context_dict), content_type="application/json")
 
 def layer_feature_catalogue(
         request,

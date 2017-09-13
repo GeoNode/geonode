@@ -1,0 +1,89 @@
+{% load leaflet_tags %}
+
+{% leaflet_js %}
+{% leaflet_css %}
+
+ {% leaflet_js  plugins="leaflet-areaselect" %}
+ {% leaflet_css plugins="leaflet-areaselect" %}
+
+{% leaflet_map "preview_map_modal" creatediv=False %}
+<style>
+  .leaflet-container {  /* all maps */
+    height: 250px;
+  }
+
+</style>
+
+<script type="text/javascript">
+    window.addEventListener("map:init", function (e) {
+        var map = e.detail.map;
+        //initialized = false
+        var areaSelect = L.areaSelect({width:200, height:300});
+        areaSelect.addTo(map);
+        var bounds = areaSelect.getBounds();
+        areaSelect.setDimensions({width: 100, height: 100})
+
+        $('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
+            var tab = $(e.target).attr("href");
+            //if (tab == '#map' && !initialized){
+            if (tab == '#map'){
+                map.invalidateSize();
+
+                {% if resource.bbox_string %}
+                zoom_to_box(map, [{{ resource.bbox_string }}]);
+                {% endif %}
+
+                {% if resource.get_tiles_url %}
+                tile_layer = L.tileLayer("{{ resource.get_tiles_url|safe }}",
+                {
+                 'opacity':0.8
+                });
+                {%  elif resource.ptype == "gxp_wmscsource"  %}
+                    tile_layer = L.tileLayer.wms('{{ resource.ows_url|safe }}', {
+                        layers: '{{ resource.typename }}',
+                        format: 'image/png',
+                        transparent: true,
+                        'opacity':0.8
+                    });
+                {%  elif resource.ptype == "gxp_arcrestsource" %}
+                    tile_layer = L.esri.dynamicMapLayer('{{ resource.ows_url|safe }}', {
+                        layers: '{{ resource.typename }}',
+                        format: 'png',
+                        transparent: true,
+                        'opacity':0.8
+                    });
+                {% endif %}
+              
+
+                if (tile_layer != null) {
+
+                    map.addLayer(tile_layer);
+                    tile_layer.setZIndex(99);
+                }
+                //initialized = true;
+            }
+            if (tab == '#map'){
+                areaSelect.on("change", function() { // append bounding box to url
+                    bounds = this.getBounds();
+                    bounding_box = "&bbox=" + bounds['_southWest']['lng'] + "," + bounds['_southWest']['lat'] + "," + bounds['_northEast']['lng'] + "," + bounds['_northEast']['lat'] + "," + "EPSG:4326";
+                    for (var key in all_urls) {
+                        idValue = key;
+                        url_main = all_urls[idValue]
+                        addressValue = url_main + bounding_box
+                        $("#"+idValue).attr("href", addressValue)
+                    }
+
+                });
+            }
+        });
+    });
+
+
+    function zoom_to_box(map, bbox){
+        var bounds = [
+            [bbox[1], bbox[0]],
+            [bbox[3], bbox[2]]
+        ];
+        map.fitBounds(bounds);
+    }
+</script>
