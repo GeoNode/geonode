@@ -104,8 +104,12 @@ export const getResponseData = (response) => {
     const dataLength = data.data.length;
     if (dataLength > 0) {
       const metric = data.data[dataLength - 1];
-      maxResponseTime = Math.floor(metric.max);
-      averageResponseTime = Math.floor(metric.val);
+      maxResponseTime = Number(metric.max) > 1
+                          ? Math.floor(metric.max)
+                          : Number(metric.max.slice(0, 4));
+      averageResponseTime = Number(metric.val) > 1
+                          ? Math.floor(metric.val)
+                          : Number(metric.val.slice(0, 4));
       totalRequests = metric.samples_count;
     }
   }
