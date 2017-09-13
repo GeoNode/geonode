@@ -1,0 +1,6 @@
+User-agent: *
+
+Disallow: /cgi-bin/
+Disallow: /api/
+Disallow: /static/
+Disallow: /uploaded/

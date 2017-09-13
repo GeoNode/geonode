@@ -101,7 +101,7 @@ setup(name='GeoNode',
         # Django Apps
         "awesome-slugify==1.6.5",
         "dj-database-url==0.4.2",
-        "pinax-theme-bootstrap==3.0a11",
+        "pinax-theme-bootstrap<=8.0.1",
         "django-forms-bootstrap==3.1.0",
         "django-friendly-tag-loader==1.2.1",
         "django-activity-stream==0.6.4",
@@ -115,7 +115,7 @@ setup(name='GeoNode',
         "geonode-avatar==2.1.6",  # (2.1.5 in ppa) FIXME
         "geonode-announcements==1.0.8",
         "geonode-agon-ratings==0.3.5",  # (0.3.1 in ppa) FIXME
-        "pinax-notifications<4.0",
+        "pinax-notifications<=4.0.0",
         "django-user-accounts==2.0.2dev",
         # we can't use django-user-account until upstream merge changes for geonode.
         # this is temporary solution

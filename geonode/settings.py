@@ -1028,7 +1028,7 @@ SEARCH_FILTERS = {
 FREETEXT_KEYWORDS_READONLY = False
 
 # notification settings
-NOTIFICATION_ENABLED = False or TEST
+NOTIFICATION_ENABLED = True or TEST
 PINAX_NOTIFICATIONS_LANGUAGE_MODEL = "account.Account"
 
 # notifications backends

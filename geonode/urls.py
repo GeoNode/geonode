@@ -100,6 +100,7 @@ urlpatterns = patterns('',
                        url(r'^jsi18n/$', 'django.views.i18n.javascript_catalog', js_info_dict, name='jscat'),
                        url(r'^sitemap\.xml$', 'django.contrib.sitemaps.views.sitemap', {'sitemaps': sitemaps},
                            name='sitemap'),
+                       url(r'^robots\.txt$', TemplateView.as_view(template_name='robots.txt'), name='robots'),
 
                        (r'^i18n/', include('django.conf.urls.i18n')),
                        (r'^autocomplete/', include('autocomplete_light.urls')),
