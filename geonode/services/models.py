@@ -22,8 +22,9 @@ import logging
 from django.conf import settings
 from django.db import models
 from geoserver.catalog import FailedRequestError, Catalog
+from django.db.models import Q
 
-from geonode.base.models import ResourceBase
+from geonode.base.models import ResourceBase, TopicCategory
 from geonode.services.enumerations import SERVICE_TYPES, SERVICE_METHODS, GXP_PTYPES
 from geonode.layers.models import Layer
 from django.utils.translation import ugettext_lazy as _
@@ -55,6 +56,10 @@ class Service(ResourceBase):
     # with service, version and request etc stripped off
     base_url = models.URLField(unique=True, db_index=True)
     version = models.CharField(max_length=10, null=True, blank=True)
+    classification = models.CharField(max_length=255, null=True, blank=True)
+    caveat = models.CharField(max_length=255, null=True, blank=True)
+    service_refs = models.CharField(max_length=255, null=True, blank=True)
+    provenance = models.CharField(max_length=255, null=True, blank=True)
     # Should force to slug?
     name = models.CharField(max_length=255, unique=True, db_index=True)
     description = models.CharField(max_length=255, null=True, blank=True)
@@ -111,11 +116,19 @@ class ServiceLayer(models.Model):
     layer = models.ForeignKey(Layer, null=True)
     typename = models.CharField(_("Layer Name"), max_length=255)
     title = models.CharField(_("Layer Title"), max_length=512)
+    category = models.ForeignKey(TopicCategory, null=True, blank=True, limit_choices_to=Q(is_choice=True),
+                                 help_text=ResourceBase.category_help_text)
     description = models.TextField(_("Layer Description"), null=True)
+    bbox_x0 = models.DecimalField(max_digits=19, decimal_places=10, blank=True, null=True)
+    bbox_x1 = models.DecimalField(max_digits=19, decimal_places=10, blank=True, null=True)
+    bbox_y0 = models.DecimalField(max_digits=19, decimal_places=10, blank=True, null=True)
+    bbox_y1 = models.DecimalField(max_digits=19, decimal_places=10, blank=True, null=True)
+    srid = models.CharField(max_length=255, default='EPSG:4326')
+    keywords = models.CharField(max_length=400, null=True, blank=True)
     styles = models.TextField(_("Layer Styles"), null=True)
 
     def __unicode__(self):
-        return self.layer.title
+        return self.layer.title if self.layer else self.title
 
 
 class WebServiceHarvestLayersJob(models.Model):
@@ -138,7 +151,8 @@ def post_save_service(instance, sender, created, **kwargs):
 
 def pre_delete_service(instance, sender, **kwargs):
     for layer in [s.layer for s in instance.servicelayer_set.all()]:
-        layer.delete()
+    	if layer:
+        	layer.delete()
     # if instance.method == 'H':
     #     gn = Layer.objects.gn_catalog
     #     gn.control_harvesting_task('stop', [instance.external_id])
