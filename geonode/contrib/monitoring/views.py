@@ -536,7 +536,7 @@ class UserNotificationConfigView(View):
                 out['data'] = [dump(c) for c in configs]
                 status = 200
             except forms.ValidationError, err:
-                out['errors'] = err.args[0]
+                out['errors'] = err.errors
                 status = 400
         else:
             out['errors']['user'] = ['User is not authenticated']

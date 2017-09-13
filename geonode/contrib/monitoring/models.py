@@ -873,7 +873,9 @@ class NotificationCheck(models.Model):
                 
         f = self.get_user_form(data=data)
         if not f.is_valid():
-            raise forms.ValidationError(f.errors)
+            err = forms.ValidationError(f.errors)
+            err.errors = f.errors
+            raise err
         current_checks.delete()
         out = []
         fdata = f.cleaned_data
