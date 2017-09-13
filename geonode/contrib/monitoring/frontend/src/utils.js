@@ -166,7 +166,7 @@ export const isNumber = (n) => {
 export const stateToFields = (data) => {
   const result = [];
   Object.keys(data).forEach((fieldName) => {
-    if (fieldName !== 'active') {
+    if (fieldName !== 'active' && fieldName !== 'emails') {
       result.push(fieldName);
     }
   });
@@ -189,5 +189,6 @@ export const stateToData = (data) => {
       result[fieldName] = value;
     }
   });
+  result.emails = data.emails.split(',').map((rawEmail) => rawEmail.trim());
   return result;
 };

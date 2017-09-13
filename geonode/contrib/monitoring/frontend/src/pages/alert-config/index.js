@@ -41,7 +41,9 @@ class AlertConfig extends React.Component {
   constructor(props) {
     super(props);
 
-    this.state = {};
+    this.state = {
+      emails: '',
+    };
 
     this.handleSubmit = (event) => {
       event.preventDefault();
@@ -69,6 +71,10 @@ class AlertConfig extends React.Component {
     this.handleActiveChange = (event, active) => {
       this.setState({ active });
     };
+
+    this.handleEmailsChange = (event, value) => {
+      this.setState({ emails: value });
+    };
   }
 
   componentWillMount() {
@@ -83,6 +89,7 @@ class AlertConfig extends React.Component {
         this.setState(data);
       });
       this.setState({ active: nextProps.alertConfig.data.notification.active });
+      this.setState({ emails: nextProps.alertConfig.data.emails.join(', ') });
     }
   }
 
@@ -146,6 +153,8 @@ class AlertConfig extends React.Component {
               fullWidth
               autoFocus
               style={styles.who}
+              value={this.state.emails}
+              onChange={this.handleEmailsChange}
             />
             <h4 style={styles.when}>When to alert</h4>
             {data}
