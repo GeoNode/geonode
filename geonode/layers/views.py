@@ -29,6 +29,8 @@ import decimal
 from lxml import etree
 from requests import Request
 from itertools import chain
+from geoserver.catalog import Catalog
+from owslib.wfs import WebFeatureService
 
 from guardian.shortcuts import get_perms
 from django.contrib import messages
@@ -447,11 +449,11 @@ def layer_detail(request, layername, template='layers/layer_detail.html'):
 
     try:
         # get type of layer (raster or vector)
+
         cat = Catalog(settings.OGC_SERVER['default']['LOCATION'] + "rest", settings.OGC_SERVER['default']['USER'], settings.OGC_SERVER['default']['PASSWORD'])
-        print ("cat", cat)
+
         resource = cat.get_resource(name, workspace=workspace)
 
-        print ("layertype", type(resource).__name__)
         if (type(resource).__name__ == 'Coverage'):
             context_dict["layer_type"] = "raster"
         elif (type(resource).__name__ == 'FeatureType'):
@@ -521,9 +523,7 @@ def load_layer_data(request, template='layers/layer_detail.html'):
         username = settings.OGC_SERVER['default']['USER']
         password = settings.OGC_SERVER['default']['PASSWORD']
         wfs = WebFeatureService(location, version='1.1.0', username=username, password=password)
-
         response = wfs.getfeature(typename=name, propertyname=filtered_attributes, outputFormat='application/json')
-
         x = response.read()
         x = json.loads(x)
         features_response = json.dumps(x)
@@ -537,7 +537,7 @@ def load_layer_data(request, template='layers/layer_detail.html'):
 
         # loop the dictionary based on the values on the list and add the properties
         # in the dictionary (if doesn't exist) together with the value
-
+        from six import string_types
         for i in range(len(decoded_features)):
 
             for key, value in decoded_features[i]['properties'].iteritems():
@@ -549,11 +549,11 @@ def load_layer_data(request, template='layers/layer_detail.html'):
             properties[key].sort()
 
         context_dict["feature_properties"] = properties
-        print properties
+
         print "OWSLib worked as expected"
 
     except:
-        print "Possible error with OWSLib. Turning all available properties to string"
+        print "Possible error with OWSLib."
     print("--- %s seconds ---" % (time.time() - start_time))
     return HttpResponse(json.dumps(context_dict), content_type="application/json")
 

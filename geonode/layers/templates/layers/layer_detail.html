@@ -30,7 +30,6 @@
   {% else %}
     {% include "layers/layer_leaflet_map.html" %}
   {% endif %}
-  {% include "layers/layer_leaflet_modal_map.html" %}
 {{ block.super }}
 
 <style>
@@ -329,11 +328,10 @@
                       {% endif %}
                       <ul class="nav nav-tabs" id="tabContent" style="display: none;">
                           <li class="active"><a href="#query_builder" data-toggle="tab">{% trans "Query Builder" %}</a></li>
-                          <li><a href="#map" data-toggle="tab">{% trans "Map Filter" %}</a></li>
                       </ul>
                       </br>
 
-                      <div class="tab-content" style="display:none;">  <!--  added now-->
+                      <div class="tab-content query_builder_tab" style="display:none;">  <!--  added now-->
                         <div id="query_builder" class="tab-pane fade in active">
                           <div class="form-inline" style=" display: inline-table; vertical-align: middle; width: auto;  ">
                             {% trans "Match" %}
@@ -401,11 +399,6 @@
                             <div>
                                 <p id="whole_query"> </p>
                             </div>
-                          </div>
-                        </div>
-                        <div id="map" class="tab-pane fade">
-                          <div id="embedded_map_modal">
-                            <div id="preview_map_modal"></div>
                           </div>
                         </div>
                         <hr style="width: 100%; color: #757575; height: 1px;" />
@@ -757,7 +750,9 @@
         excel_url = $("#excel").attr("href");
         csv_url = $("#csv").attr("href");
         shape_url = $("#zipped-shapefile").attr("href");
-        all_urls = {'kml' : kml_url, 'geojson' : json_url, 'excel' : excel_url, 'csv' : csv_url, 'zipped-shapefile' : shape_url};
+        gml2_url = $("#gml-20").attr("href");
+        gml3_url = $("#gml-311").attr("href");
+        all_urls = {'kml' : kml_url, 'geojson' : json_url, 'excel' : excel_url, 'csv' : csv_url, 'zipped-shapefile' : shape_url, 'gml-20': gml2_url, 'gml-311': gml3_url};
       });
 
       // add class selected when an element from the list is clicked.
@@ -843,27 +838,25 @@
       // on url click append the array values in the existing href
       $(document.body).on("click", ".urls",function(e){
         var tab = $('#tabContent .active > a').attr('href')
-        if(tab == '#query_builder'){
-          logical_operator = $("#and-or li.selected a").attr('id');
-          // get the array, join it, add necessary values and add it in the UI
-          if (typeof query !== 'undefined') {
-            joined_query = query.join(" " + logical_operator + " ");
-            cql_filters = joined_query;
-          } else{
-            cql_filters = '';
-          }
-          complete_cql = '&CQL_FILTER=(' + cql_filters + ')';
-          idValue = $(this).attr("id");
-          if (typeof all_urls !== 'undefined') {
-              url_main = all_urls[idValue]
+        logical_operator = $("#and-or li.selected a").attr('id');
+        // get the array, join it, add necessary values and add it in the UI
+        if (typeof query !== 'undefined') {
+          joined_query = query.join(" " + logical_operator + " ");
+          cql_filters = joined_query;
+        } else{
+          cql_filters = '';
+        }
+        complete_cql = '&CQL_FILTER=(' + cql_filters + ')';
+        idValue = $(this).attr("id");
 
-            if(cql_filters.length >1) {
-              addressValue = url_main + complete_cql
-              $("#"+idValue).attr("href", addressValue)
-            } else{
-              addressValue = url_main
-              $("#"+idValue).attr("href", addressValue)
-            }
+        if (typeof all_urls !== 'undefined') {
+            url_main = all_urls[idValue]
+          if(cql_filters.length >1) {
+            addressValue = url_main + complete_cql
+            $("#"+idValue).attr("href", addressValue)
+          } else{
+            addressValue = url_main
+            $("#"+idValue).attr("href", addressValue)
           }
         }
 
@@ -871,33 +864,8 @@
         // check if url uses download filter functionality
         if (selected_url.includes("CQL")){
           filtered = "query"
-        } else if (selected_url.includes("bbox")){
-          filtered = "bbox"
         } else {
           filtered = "no_filter"
-        }
-        // check if ga() function is defined and save the even in google analytics
-        if (typeof ga !== 'undefined' && $.isFunction(ga)) {
-          event_cat = $(this).attr("id");
-          layer_down = $(".page-header").text();
-          by_user = $(this).attr("username");
-          layer_user_filter = layer_down + "_" + by_user + "_" + filtered
-          ga('send', 'event', event_cat, 'Download', layer_user_filter)
-        }
-
-        // d:if the user is anonymous appear a modal with a URL to a googleform
-        // d: set a time cookie which will expire after 1 day. if the user downloads other layers
-        // and the cookie hasn't expired the modal won't open
-        by_user = $(this).attr("username");
-        if (by_user == "AnonymousUser") {
-          if (document.cookie.indexOf("time_cookie=") == -1) {
-            var now = new Date();
-            var time = now.getTime();
-            var expireTime = time + 24 * 60 * 60 * 1000;
-            now.setTime(expireTime);
-            document.cookie = 'time_cookie=ok;expires='+now.toGMTString()+';path=/';
-            $('#googleForm_modal').modal('toggle');
-          }
         }
       });
 
@@ -944,7 +912,6 @@
                   selected_data_val = jsonString;
                   selected_data_prepare.push(selected_data_val);
                 }
-
                 $(".js-data-array").select2({
                   data: selected_data_prepare,
                   // allow new values by the user
@@ -964,7 +931,7 @@
         } else {
           $("#button-toggle").css({ "background-color": "#a7a3a3", "border-color": "#a7a3a3" });
           $('#tabContent').hide();
-          $('.tab-content').hide();
+          $('.query_builder_tab').hide();
         }
       });
     </script>
