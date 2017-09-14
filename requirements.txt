@@ -1,10 +1,7 @@
 Django==1.8.7
 six==1.10.0
 MultipartPostHandler==0.1.0
-# we can't use django-user-account until upstream merge changes for geonode.
-# this is temporary solution
-# OWSLib==0.14.0
-git+git://github.com/geopython/OWSLib@master#egg=OWSLib-0.14-dev
+OWSLib==0.15.0
 Paver==1.2.4
 Unidecode==0.4.19
 amqp==1.4.9
