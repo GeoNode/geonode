@@ -174,11 +174,24 @@ class GeoServerService(BaseServiceHandler):
 
 class HostGeoServerService(BaseServiceHandler):
 
-    def _collect(self, *args, **kwargs):
-        pass
+    PATH = '/rest/about/monitoring.json'
 
-    def handle_collected(self, *args, **kwargs):
-        pass
+    def _collect(self, *args, **kwargs):
+        base_url = self.service.url
+        if not base_url:
+            raise ValueError("Service {} should have url provided".format(self.service.name))
+
+        url = '{}{}'.format(base_url.rstrip('/'), self.PATH)
+
+        rdata = requests.get(url)
+        if rdata.status_code != 200:
+            raise ValueError("Error response from api: ({}) {}".format(url, rdata))
+        data = rdata.json()['metrics']['metric']
+        return data
+
+    def handle_collected(self, data, *args, **kwargs):
+
+        return data
 
 
 class HostGeoNodeService(BaseServiceHandler):

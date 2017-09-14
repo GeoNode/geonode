@@ -109,6 +109,14 @@ class Service(models.Model):
         return [m.metric for m in self.service_type.metric.all()]
 
     @property
+    def is_hostgeonode(self):
+        return self.service_type.name == ServiceType.TYPE_HOST_GN
+
+    @property
+    def is_hostgeoserver(self):
+        return self.service_type.name == ServiceType.TYPE_HOST_GS
+
+    @property
     def is_system_monitor(self):
         return self.service_type.is_system_monitor
 
@@ -1230,7 +1238,7 @@ class BuiltIns(object):
 
     values_numeric = ('storage.total', 'storage.used', 'storage.free', 'mem.free', 'mem.usage',
                       'mem.buffers', 'mem.all',)
-    counters = ('request.count',  'network.in', 'network.out', 'response.error.count',)
+    counters = ('request.count',  'network.in', 'network.out', 'response.error.count', 'uptime',)
 
     unit_seconds = ('response.time', 'uptime', 'cpu.usage',)
     unit_bytes = ('response.size', 'network.in', 'network.out',

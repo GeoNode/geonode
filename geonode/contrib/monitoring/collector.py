@@ -83,7 +83,59 @@ class CollectorAPI(object):
         percent = float((current_value - prev_val) * 100) / interval.total_seconds()
         return percent
 
-    def process_system_metrics(self, service, data, valid_from, valid_to):
+
+    def process_host_geoserver(self, service, data, valid_from, valid_to):
+        """
+        Generates mertic values for system-level measurements
+        """
+        GS_METRIC_MAP = dict((('SYSTEM_UPTIME', 'uptime',),
+                              ('SYSTEM_AVERAGE_LOAD', 'load.1m',),
+                              ('CPU_LOAD', 'cpu.usage.percent',),
+                              ('MEMORY_USED', 'mem.usage',),
+                              ('MEMORY_TOTAL', 'mem.all',),
+                              ('MEMORY_FREE', 'mem.free',),
+                              #('FILE_SYSTEM_TOTAL_USAGE', 'storage.total',)
+                              ('NETWORK_INTERFACES_SEND', 'network.out',),
+                              ('NETWORK_INTERFACES_RECEIVED', 'network.in',),
+                             ))
+
+        collected_at = datetime.now()
+
+        valid_from = align_period_start(collected_at, service.check_interval)
+        valid_to = align_period_end(collected_at, service.check_interval)
+
+        mdefaults = {'valid_from': valid_from,
+                     'valid_to': valid_to,
+                     'resource': None,
+                     'samples_count': 1,
+                     'service': service}
+
+        metrics = GS_METRIC_MAP.values()        
+
+        MetricValue.objects.filter(service_metric__metric__name__in=metrics,
+                                   valid_from=valid_from,
+                                   valid_to=valid_to,
+                                   service=service)\
+                           .delete()
+
+        for metric_data in data:
+            metric_name = GS_METRIC_MAP.get(metric_data['name'])
+            if metric_name is None:
+                continue
+            value = metric_data['value']
+            if isinstance(value, (str, unicode,)):
+                value = value.replace(',', '.')
+            mdata = {'value': value,
+                     'value_raw': value,
+                     'value_num': value,
+                     'label': None,
+                     'metric': metric_name}
+            mdata.update(mdefaults)
+            #rate = self._calculate_rate(mdata['metric'], ifname, tx_value, valid_to)
+            print MetricValue.add(**mdata)
+            
+
+    def process_host_geonode(self, service, data, valid_from, valid_to):
         """
         Generates mertic values for system-level measurements
         """
@@ -372,8 +424,10 @@ class CollectorAPI(object):
             print MetricValue.add(**metric_values)
 
     def process(self, service, data, valid_from, valid_to, *args, **kwargs):
-        if service.is_system_monitor:
-            return self.process_system_metrics(service, data, valid_from, valid_to, *args, **kwargs)
+        if service.is_hostgeonode:
+            return self.process_host_geonode(service, data, valid_from, valid_to, *args, **kwargs)
+        elif service.is_hostgeoserver:
+            return self.process_host_geoserver(service, data, valid_from, valid_to, *args, **kwargs)
         else:
             return self.process_requests(service, data, valid_from, valid_to, *args, **kwargs)
 
