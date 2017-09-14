@@ -96,3 +96,49 @@ class MapDetailView(DetailView):
 
     def get_object(self):
         return Map.objects.get(id=self.kwargs.get("mapid"))
+
+
+class MapEmbedView(DetailView):
+        model = Map
+        template_name = 'leaflet_maps/map_detail.html'
+        context_object_name = 'map'
+
+        def get_context_data(self, **kwargs):
+            """Prepare context data."""
+
+            mapid = self.kwargs.get('mapid')
+            snapshot = self.kwargs.get('snapshot')
+            request = self.request
+
+            map_obj = _resolve_map(
+                request, mapid, 'base.view_resourcebase', _PERMISSION_MSG_VIEW)
+
+            if 'access_token' in request.session:
+                access_token = request.session['access_token']
+            else:
+                access_token = None
+
+            if snapshot is None:
+                config = map_obj.viewer_json(request.user, access_token)
+            else:
+                config = snapshot_config(snapshot, map_obj, request.user,
+                                         access_token)
+            # list all required layers
+            layers = Layer.objects.all()
+            map_layers = MapLayer.objects.filter(
+                map_id=mapid).order_by('stack_order')
+            context = {
+                'config': json.dumps(config),
+                'create': False,
+                'layers': layers,
+                'resource': map_obj,
+                'map_layers': map_layers,
+                'preview': getattr(
+                    settings,
+                    'LAYER_PREVIEW_LIBRARY',
+                    '')
+            }
+            return context
+
+        def get_object(self):
+            return Map.objects.get(id=self.kwargs.get("mapid"))

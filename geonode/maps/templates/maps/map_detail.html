@@ -209,6 +209,25 @@
           <p>{% trans "Duplicate this map and modify it for your own purposes" %}</p>
           <a href="{% url "new_map" %}?copy={{ resource.id }}" class="btn btn-default btn-md btn-block">{% trans "Create a New Map" %}</a>
         </li>
+        {% if 'geonode.qgis_server' in INSTALLED_APPS %}
+          <li class="list-group-item">
+              <h4>{% trans "Embed this map" %}</h4>
+              <p>{% trans "Embed this map to your own sites" %}</p>
+              <div class="btn-group btn-block">
+                  <button type="button" class="btn btn-default btn-block dropdown-toggle"
+                          data-toggle="dropdown"
+                          aria-haspopup="true" aria-expanded="false">
+                      Embed Map <span class="caret"></span></button>
+                  <ul class="dropdown-menu btn-block">
+                      <li>
+                          <a href="javascript:$('#embed-iframe').modal()">Embed Iframe Link</a></li>
+                      <li>
+                          <a href="#">Embed Widget Link</a></li>
+                  </ul>
+              </div>
+          </li>
+        {% endif %}
+
 
         {% if resource.is_public and "change_resourcebase" in perms_list or resource.layer_group %}
         <li class="list-group-item">
@@ -232,6 +251,30 @@
     </div>
 
   </div>
+
+    <div class="modal fade" id="embed-iframe" tabindex="-1" role="dialog" aria-labelledby="Embed Iframe"
+         aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    <h4 class="modal-title" id="myModalLabel">{% trans "Embed Iframe" %}</h4>
+                </div>
+                <div class="modal-body">
+                    <p>To embed this map, add the following code snippet and customize its properties (scrolling, width,
+                        height) based on your needs to your site:</p>
+                    <p style="font-weight: bold">
+                        &lt;iframe scrolling="yes" src="{{ SITEURL|slice:":-1" }}{% url "map_embed" resource.id %}"
+                        width="480px" height="360px"&gt;&lt;/iframe&gt;
+                    </p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">{% trans "Close" %}</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
 
   {% endblock %}
 
