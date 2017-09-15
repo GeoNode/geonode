@@ -23,6 +23,7 @@ import os
 import re
 import shutil
 import urllib
+import json
 from urlparse import urljoin
 
 import requests
@@ -466,6 +467,98 @@ def legend_url(layer, layertitle=False, style=None, internal=True):
     qgis_server_url = qgis_server_endpoint(internal)
     url = Request('GET', qgis_server_url, params=query_string).prepare().url
     return url
+
+
+def qgs_url(layer, style=None, internal=True):
+    """Construct QGIS Server url to fetch QGS.
+
+    :param layer: Layer to use
+    :type layer: Layer
+
+    :param style: Layer style to choose
+    :type style: str
+
+    :param internal: Flag to switch between public url and internal url.
+        Public url will be served by Django Geonode (proxified).
+    :type internal: bool
+
+    :return: QGIS Server request url for QGS
+    :rtype: str
+    """
+    qgis_server_url = qgis_server_endpoint(internal)
+
+    ogc_url = reverse('qgis_server:layer-request',
+                      kwargs={'layername': layer.name})
+    url = settings.SITEURL + ogc_url.replace("/", "", 1)
+
+    # for now, style always set to ''
+    if not style:
+        style = ''
+    else:
+        style = 'default'
+
+    layers = [{
+        'type': 'raster',
+        'display': layer.name,
+        'driver': 'wms',
+        'crs': 'EPSG:4326',
+        'format': 'image/png',
+        'styles': style,
+        'layers': layer.name,
+        'url': url
+    }]
+
+    json_layers = json.dumps(layers)
+
+    url_server = qgis_server_url + \
+        '?SERVICE=PROJECTDEFINITIONS&LAYERS=' + json_layers
+
+    return url_server
+
+
+def qlr_url(layer, style=None, internal=True):
+    """Construct QGIS Server url to fetch QLR.
+
+    :param layer: Layer to use
+    :type layer: Layer
+
+    :param style: Layer style to choose
+    :type style: str
+
+    :param internal: Flag to switch between public url and internal url.
+        Public url will be served by Django Geonode (proxified).
+    :type internal: bool
+
+    :return: QGIS Server request url for QLR
+    :rtype: str
+    """
+    qgis_server_url = qgis_server_endpoint(internal)
+    ogc_url = reverse('qgis_server:layer-request',
+                      kwargs={'layername': layer.name})
+    url = settings.SITEURL + ogc_url.replace("/", "", 1)
+
+    # for now, style always set to ''
+    if not style:
+        style = ''
+    else:
+        style = 'default'
+
+    layers = [{
+        'type': 'raster',
+        'display': layer.name,
+        'driver': 'wms',
+        'crs': 'EPSG:4326',
+        'format': 'image/png',
+        'styles': style,
+        'layers': layer.name,
+        'url': url
+    }]
+    json_layers = json.dumps(layers)
+
+    url_server = qgis_server_url + \
+        '?SERVICE=LAYERDEFINITIONS&LAYERS=' + json_layers
+
+    return url_server
 
 
 def wms_get_capabilities_url(layer=None, internal=True):

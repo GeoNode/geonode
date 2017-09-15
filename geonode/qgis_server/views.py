@@ -47,6 +47,8 @@ from geonode.qgis_server.helpers import (
     tile_url_format,
     legend_url,
     tile_url,
+    qgs_url,
+    qlr_url,
     qgis_server_endpoint, style_get_url, style_list, style_add_url,
     style_remove_url, style_set_default_url)
 from geonode.qgis_server.models import QGISServerLayer
@@ -117,33 +119,14 @@ def download_qgs(request, layername):
 
     :return: QGS file.
     """
-
     layer = get_object_or_404(Layer, name=layername)
-    ogc_url = reverse('qgis_server:layer-request',
-                      kwargs={'layername': layername})
-    url = settings.SITEURL + ogc_url.replace("/", "", 1)
-
-    layers = [{
-        'type': 'raster',
-        'display': layername,
-        'driver': 'wms',
-        'crs': 'EPSG:4326',
-        'format': 'image/png',
-        'styles': '',
-        'layers': layer.title,
-        'url': url
-    }]
-
-    json_layers = json.dumps(layers)
-
-    url_server = settings.QGIS_SERVER_URL + \
-        '?SERVICE=PROJECTDEFINITIONS&LAYERS=' + json_layers
-    request = requests.get(url_server)
+    url = qgs_url(layer, internal=True)
+    request = requests.get(url)
     response = HttpResponse(
         request.content, content_type="application/xml",
         status=request.status_code)
     response['Content-Disposition'] = \
-        'attachment; filename=%s' % layer.title + '.qgs'
+        'attachment; filename=%s' % layer.name + '.qgs'
 
     return response
 
@@ -793,30 +776,14 @@ def download_qlr(request, layername):
     :return: QLR file.
     """
     layer = get_object_or_404(Layer, name=layername)
-    ogc_url = reverse('qgis_server:layer-request',
-                      kwargs={'layername': layername})
-    url = settings.SITEURL + ogc_url.replace("/", "", 1)
+    url = qlr_url(layer, internal=True)
 
-    layers = [{
-        'type': 'raster',
-        'display': layername,
-        'driver': 'wms',
-        'crs': 'EPSG:4326',
-        'format': 'image/png',
-        'styles': '',
-        'layers': layer.title,
-        'url': url
-    }]
-    json_layers = json.dumps(layers)
-
-    url_server = settings.QGIS_SERVER_URL + \
-        '?SERVICE=LAYERDEFINITIONS&LAYERS=' + json_layers
-    request = requests.get(url_server)
+    request = requests.get(url)
     response = HttpResponse(
                             request.content,
                             content_type="application/xml",
                             status=request.status_code)
     response['Content-Disposition'] = \
-        'attachment; filename=%s' % layer.title + '.qlr'
+        'attachment; filename=%s' % layer.name + '.qlr'
 
     return response
