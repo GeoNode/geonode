@@ -86,7 +86,8 @@ class CommonModelApi(ModelResource):
         null=True,
         full=True)
     owner = fields.ToOneField(OwnersResource, 'owner', full=True)
-    tkeywords = fields.ToManyField(ThesaurusKeywordResource, 'tkeywords', null=True)
+    tkeywords = fields.ToManyField(
+        ThesaurusKeywordResource, 'tkeywords', null=True)
     VALUES = [
         # fields in the db
         'id',
@@ -186,7 +187,7 @@ class CommonModelApi(ModelResource):
 
         try:
             anonymous_group = Group.objects.get(name='anonymous')
-        except:
+        except BaseException:
             anonymous_group = None
 
         if is_admin:
@@ -194,13 +195,15 @@ class CommonModelApi(ModelResource):
         elif request.user:
             groups = request.user.groups.all()
             if anonymous_group:
-                filtered = queryset.filter(
-                    Q(group__isnull=True) | Q(group__in=groups) | Q(group=anonymous_group))
+                filtered = queryset.filter(Q(group__isnull=True) | Q(
+                    group__in=groups) | Q(group=anonymous_group))
             else:
-                filtered = queryset.filter(Q(group__isnull=True) | Q(group__in=groups))
+                filtered = queryset.filter(
+                    Q(group__isnull=True) | Q(group__in=groups))
         else:
             if anonymous_group:
-                filtered = queryset.filter(Q(group__isnull=True) | Q(group=anonymous_group))
+                filtered = queryset.filter(
+                    Q(group__isnull=True) | Q(group=anonymous_group))
             else:
                 filtered = queryset.filter(Q(group__isnull=True))
         return filtered
@@ -432,7 +435,8 @@ class CommonModelApi(ModelResource):
                 is_staff = request.user.is_staff if request.user else False
 
             # Get the list of objects the user has access to
-            filter_set = get_objects_for_user(request.user, 'base.view_resourcebase')
+            filter_set = get_objects_for_user(
+                request.user, 'base.view_resourcebase')
             if settings.ADMIN_MODERATE_UPLOADS:
                 if not is_admin and not is_staff:
                     filter_set = filter_set.filter(is_published=True)
@@ -442,7 +446,7 @@ class CommonModelApi(ModelResource):
 
             try:
                 anonymous_group = Group.objects.get(name='anonymous')
-            except:
+            except BaseException:
                 anonymous_group = None
 
             if settings.GROUP_PRIVATE_RESOURCES:
@@ -451,13 +455,15 @@ class CommonModelApi(ModelResource):
                 elif request.user:
                     groups = request.user.groups.all()
                     if anonymous_group:
-                        filter_set = filter_set.filter(
-                            Q(group__isnull=True) | Q(group__in=groups) | Q(group=anonymous_group))
+                        filter_set = filter_set.filter(Q(group__isnull=True) | Q(
+                            group__in=groups) | Q(group=anonymous_group))
                     else:
-                        filter_set = filter_set.filter(Q(group__isnull=True) | Q(group__in=groups))
+                        filter_set = filter_set.filter(
+                            Q(group__isnull=True) | Q(group__in=groups))
                 else:
                     if anonymous_group:
-                        filter_set = filter_set.filter(Q(group__isnull=True) | Q(group=anonymous_group))
+                        filter_set = filter_set.filter(
+                            Q(group__isnull=True) | Q(group=anonymous_group))
                     else:
                         filter_set = filter_set.filter(Q(group__isnull=True))
 
@@ -465,8 +471,8 @@ class CommonModelApi(ModelResource):
             # Do the query using the filterset and the query term. Facet the
             # results
             if len(filter_set) > 0:
-                sqs = sqs.filter(id__in=filter_set_ids).facet('type').facet('subtype').facet('owner')\
-                    .facet('keywords').facet('regions').facet('category')
+                sqs = sqs.filter(id__in=filter_set_ids).facet('type').facet('subtype').facet(
+                    'owner') .facet('keywords').facet('regions').facet('category')
             else:
                 sqs = None
         else:
@@ -509,7 +515,7 @@ class CommonModelApi(ModelResource):
             objects = []
 
         object_list = {
-           "meta": {
+            "meta": {
                 "limit": settings.API_LIMIT_PER_PAGE,
                 "next": next_page,
                 "offset": int(getattr(request.GET, 'offset', 0)),
@@ -517,15 +523,16 @@ class CommonModelApi(ModelResource):
                 "total_count": total_count,
                 "facets": facets,
             },
-           "objects": map(lambda x: self.get_haystack_api_fields(x), objects),
+            "objects": map(lambda x: self.get_haystack_api_fields(x), objects),
         }
 
         self.log_throttled_access(request)
         return self.create_response(request, object_list)
 
     def get_haystack_api_fields(self, haystack_object):
-        object_fields = dict((k, v) for k, v in haystack_object.get_stored_fields().items()
-                             if not re.search('_exact$|_sortable$', k))
+        object_fields = dict(
+            (k, v) for k, v in haystack_object.get_stored_fields().items() if not re.search(
+                '_exact$|_sortable$', k))
         return object_fields
 
     def get_list(self, request, **kwargs):
@@ -557,7 +564,9 @@ class CommonModelApi(ModelResource):
         to_be_serialized = self.alter_list_data_to_serialize(
             request,
             to_be_serialized)
-        return self.create_response(request, to_be_serialized, response_objects=objects)
+
+        return self.create_response(
+            request, to_be_serialized, response_objects=objects)
 
     def format_objects(self, objects):
         """
@@ -578,11 +587,13 @@ class CommonModelApi(ModelResource):
         Mostly a useful shortcut/hook.
         """
 
-        # If an user does not have at least view permissions, he won't be able to see the resource at all.
+        # If an user does not have at least view permissions, he won't be able
+        # to see the resource at all.
         filtered_objects_ids = None
         if response_objects:
-            filtered_objects_ids = [item.id for item in response_objects if
-                                    request.user.has_perm('view_resourcebase', item.get_self_resource())]
+            filtered_objects_ids = [
+                item.id for item in response_objects if request.user.has_perm(
+                    'view_resourcebase', item.get_self_resource())]
 
         if isinstance(
                 data,
@@ -590,8 +601,10 @@ class CommonModelApi(ModelResource):
                 data['objects'],
                 list):
             if filtered_objects_ids:
-                data['objects'] = [x for x in list(self.format_objects(data['objects']))
-                                   if x['id'] in filtered_objects_ids]
+                data['objects'] = [
+                    x for x in list(
+                        self.format_objects(
+                            data['objects'])) if x['id'] in filtered_objects_ids]
             else:
                 data['objects'] = list(self.format_objects(data['objects']))
 
@@ -608,7 +621,7 @@ class CommonModelApi(ModelResource):
             return [
                 url(r"^(?P<resource_name>%s)/search%s$" % (
                     self._meta.resource_name, trailing_slash()
-                    ),
+                ),
                     self.wrap_view('get_search'), name="api_get_search"),
             ]
         else:

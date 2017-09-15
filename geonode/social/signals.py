@@ -84,7 +84,11 @@ def activity_post_modify_object(sender, instance, created=None, **kwargs):
                                                updated_verb=_('updated'),
                                                ))
 
-    action_settings['map'].update(object_name=getattr(instance, 'title', None),)
+    try:
+        action_settings['map'].update(object_name=getattr(instance, 'title', None),)
+    except Exception as e:
+        logger.exception(e)
+
     action_settings['comment'].update(actor=getattr(instance, 'author', None),
                                       created_verb=_("added a comment"),
                                       target=getattr(instance, 'content_object', None),

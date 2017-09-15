@@ -23,13 +23,13 @@ Alternatively you can start a new specific version of a CentOS server from an IS
 
 .. _Packer: http://www.packer.io/
 
-As an example for achieving this goal you might follow the instructions on `this`_ GitHub repository. Fork it and simply let's do:
+As an example for achieving this goal you might follow the instructions on `this`_ GitHub repository. Fork it and simply let's do::
 
     packer build --only=virtualbox-iso centos7.json
 
 .. _this: https://github.com/geerlingguy/packer-centos-7
 
-The build artifact `virtualbox-centos7.box` will be in the directory `builds` and can be mounted as alternative Virtual Box image in the Vagrantfile.
+The build artifact ``virtualbox-centos7.box`` will be in the directory ``builds`` and can be mounted as alternative Virtual Box image in the Vagrantfile.
 
 If you, at any time, modify the configuration you can bring your changes by running::
 
@@ -48,14 +48,12 @@ Please note that in development mode this configuration can be a little bit diff
     config.vm.network "forwarded_port", guest: 8000, host: 8001 # GeoNode port
     config.vm.network "forwarded_port", guest: 8080, host: 8080 # GeoServer port
 
-You can even choose to mapping on `80` but be carefully you need administrative privileges on your host machine. So it is recommended to begin with a port higher like in the previous example.
+You can even choose to mapping on ``80`` but be carefully you need administrative privileges on your host machine. So it is recommended to begin with a port higher like in the previous example.
 
 Launch your CentOS box
 ======================
 
-After editing the Vagrant configurations you should end up with a ``Vagrantfile`` like :download:`this basic sample <resource/Vagrantfile>`.
-From the same directory then run this command and launch your box:
+After editing the Vagrant configurations you should end up with a ``Vagrantfile`` like :download:`this basic sample <resources/Vagrantfile>`.
+From the same directory then run this command and launch your box::
 
     vagrant up
-
-

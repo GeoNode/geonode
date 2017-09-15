@@ -139,7 +139,7 @@ sed -i "s|localhost:8000|localhost|g" "$GEOSERVER_DATA_DIR/security/role/geonode
 
 # Restart apache server
 $APACHE_SERVICE restart
-service tomcat7 restart
+service tomcat8 restart
 
 # Run updatelayers
 geonode updatelayers

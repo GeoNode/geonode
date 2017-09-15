@@ -147,5 +147,10 @@ define(['./FileType'], function (FileType) {
             format: 'metadata',
             main: 'xml'
         });
+    file_types['SLD'] = new FileType({
+            name: gettext('Style Layer Descriptor'),
+            format: 'metadata',
+            main: 'sld'
+        });
     return file_types;
 });

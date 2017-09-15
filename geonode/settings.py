@@ -96,6 +96,8 @@ DATABASE_URL = os.getenv(
     )
 )
 
+#DATABASE_URL = 'postgresql://test_geonode:test_geonode@localhost:5432/geonode'
+
 # Defines settings for development
 
 # since GeoDjango is in use, you should use gis-enabled engine, for example:
@@ -298,6 +300,7 @@ GEONODE_CONTRIB_APPS = (
     # 'geonode.contrib.geosites',
     # 'geonode.contrib.nlp',
     # 'geonode.contrib.slack',
+    #'geonode.contrib.createlayer',
     'geonode.contrib.metadataxsl',
     'geonode.contrib.api_basemaps',
 )
@@ -1046,7 +1049,7 @@ SEARCH_FILTERS = {
 FREETEXT_KEYWORDS_READONLY = False
 
 # notification settings
-NOTIFICATION_ENABLED = False or TEST
+NOTIFICATION_ENABLED = True or TEST
 PINAX_NOTIFICATIONS_LANGUAGE_MODEL = "account.Account"
 
 # notifications backends
