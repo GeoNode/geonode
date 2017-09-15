@@ -253,7 +253,8 @@ def cascading_delete(cat, layer_name):
             except FailedRequestError:
                 if ogc_server_settings.DATASTORE:
                     try:
-                        store = get_store(cat, ogc_server_settings.DATASTORE, workspace=ws)
+                        layer = Layer.objects.get(alternate=layer_name)
+                        store = get_store(cat, layer.store, workspace=ws)
                     except FailedRequestError:
                         logger.debug(
                             'the store was not found in geoserver')
@@ -314,7 +315,7 @@ def cascading_delete(cat, layer_name):
 
         if store.resource_type == 'dataStore' and 'dbtype' in store.connection_parameters and \
                 store.connection_parameters['dbtype'] == 'postgis':
-            delete_from_postgis(resource_name)
+            delete_from_postgis(resource_name, store)
         elif store.type and store.type.lower() == 'geogig':
             # Prevent the entire store from being removed when the store is a
             # GeoGig repository.
@@ -339,42 +340,38 @@ def cascading_delete(cat, layer_name):
                     logger.debug(e)
 
 
-def delete_from_postgis(resource_name):
+def delete_from_postgis(layer_name, store):
     """
     Delete a table from PostGIS (because Geoserver won't do it yet);
     to be used after deleting a layer from the system.
     """
     import psycopg2
+
+    # we will assume that store/database may change (when using shard for example)
+    # but user and password are the ones from settings (DATASTORE_URL)
     db = ogc_server_settings.datastore_db
+    db_name = store.connection_parameters['database']
+    user = db['USER']
+    password = db['PASSWORD']
+    host = store.connection_parameters['host']
+    port = store.connection_parameters['port']
     conn = None
-    port = str(db['PORT'])
     try:
-        conn = psycopg2.connect(
-            "dbname='" +
-            db['NAME'] +
-            "' user='" +
-            db['USER'] +
-            "'  password='" +
-            db['PASSWORD'] +
-            "' port=" +
-            port +
-            " host='" +
-            db['HOST'] +
-            "'")
+        conn = psycopg2.connect(dbname=db_name, user=user, host=host, port=port, password=password)
         cur = conn.cursor()
-        cur.execute("SELECT DropGeometryTable ('%s')" % resource_name)
+        cur.execute("SELECT DropGeometryTable ('%s')" % layer_name)
         conn.commit()
     except Exception as e:
         logger.error(
             "Error deleting PostGIS table %s:%s",
-            resource_name,
+            layer_name,
             str(e))
     finally:
         try:
             if conn:
                 conn.close()
         except Exception as e:
-            logger.error("Error closing PostGIS conn %s:%s", resource_name, str(e))
+            logger.error("Error closing PostGIS conn %s:%s", layer_name, str(e))
 
 
 def gs_slurp(
@@ -959,7 +956,8 @@ def _create_db_featurestore(name, data, overwrite=False, charset="UTF-8", worksp
     (and delete the PostGIS table for it).
     """
     cat = gs_catalog
-    dsname = ogc_server_settings.DATASTORE
+    db = ogc_server_settings.datastore_db
+    dsname = db['NAME']
 
     ds_exists = False
     try:
@@ -1000,7 +998,7 @@ def _create_db_featurestore(name, data, overwrite=False, charset="UTF-8", worksp
         msg = _("An exception occurred loading data to PostGIS")
         msg += "- %s" % (sys.exc_info()[1])
         try:
-            delete_from_postgis(name)
+            delete_from_postgis(name, ds)
         except Exception:
             msg += _(" Additionally an error occured during database cleanup")
             msg += "- %s" % (sys.exc_info()[1])
@@ -1279,7 +1277,12 @@ class OGC_Server(object):
         Returns the server's datastore dict or None.
         """
         if self.DATASTORE and settings.DATABASES.get(self.DATASTORE, None):
-            return settings.DATABASES.get(self.DATASTORE, dict())
+            datastore_dict = settings.DATABASES.get(self.DATASTORE, dict())
+            if hasattr(settings, 'SHARD_STRATEGY'):
+                if settings.SHARD_STRATEGY:
+                    from geonode.contrib.datastore_shards.utils import get_shard_database_name
+                    datastore_dict['NAME'] = get_shard_database_name()
+            return datastore_dict
         else:
             return dict()
 
