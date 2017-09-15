@@ -23,8 +23,10 @@ import taggit
 from geonode.services.models import Service, ServiceLayer
 from geonode.services.enumerations import SERVICE_TYPES
 from django.utils.translation import ugettext_lazy as _
-from geonode.base.models import TopicCategory
+from geonode.base.models import TopicCategory, License
+from geonode.base.enumerations import UPDATE_FREQUENCIES
 from django.conf import settings
+
 
 def get_classifications():
         return [(x, str(x)) for x in getattr(settings, 'CLASSIFICATION_LEVELS', [])]
@@ -43,6 +45,7 @@ def get_provenances():
         provenance_choices = [(x, str(x)) for x in getattr(settings, 'REGISTRY_PROVENANCE_CHOICES', [])]
 
         return provenance_choices + default
+
 
 class CreateServiceForm(forms.Form):
     # name = forms.CharField(label=_("Service Name"), max_length=512,
@@ -79,6 +82,12 @@ class ServiceForm(forms.ModelForm):
     abstract = forms.CharField(
         label=_("Abstract"), widget=forms.Textarea(attrs={'cols': 60}))
     keywords = taggit.forms.TagField(required=False)
+    license = forms.ModelChoiceField(
+        label=_('License'),
+        queryset=License.objects.filter())
+    maintenance_frequency = forms.ChoiceField(
+        label=_("Maintenance Frequency"), choices=UPDATE_FREQUENCIES,
+        widget=forms.Select(attrs={'cols': 60, 'class': 'inputText'}))
     fees = forms.CharField(label=_('Fees'), max_length=1000, widget=forms.TextInput(
         attrs={'size': '60', 'class': 'inputText'}))
 
@@ -86,7 +95,7 @@ class ServiceForm(forms.ModelForm):
     class Meta:
         model = Service
         fields = ('classification', 'caveat', 'title', 'category',
-        'description', 'abstract', 'keywords', 'provenance', 'fees', )
+        'description', 'abstract', 'keywords', 'license', 'maintenance_frequency', 'provenance', 'fees', )
 
 
 class ServiceLayerFormSet(forms.ModelForm):

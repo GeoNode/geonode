@@ -661,9 +661,16 @@ def _register_indexed_layers(service, wms=None, verbosity=False):
                     service=service
                 )
                 #service_layer.layer = saved_layer
+                service_layer.uuid = layer_uuid
                 service_layer.title = wms_layer.title
                 service_layer.description = wms_layer.abstract
                 #service_layer.styles = wms_layer.styles
+                service_layer.bbox_x0 = bbox[0]
+                service_layer.bbox_x1 = bbox[2]
+                service_layer.bbox_y0 = bbox[1]
+                service_layer.bbox_y1 = bbox[3]
+                service_layer.srid = srid
+                service_layer.keywords = ','.join(wms_layer.keywords)
                 service_layer.save()
 
                 #resourcebase_post_save(saved_layer, Layer)
@@ -843,6 +850,7 @@ def _register_arcgis_layers(service, arc=None):
         valid_name = slugify(layer.name)
         count = 0
         layer_uuid = str(uuid.uuid1())
+        srs = layer.extent.spatialReference.wkid
         bbox = [layer.extent.xmin, layer.extent.ymin,
                 layer.extent.xmax, layer.extent.ymax]
         typename = layer.id
@@ -888,12 +896,15 @@ def _register_arcgis_layers(service, arc=None):
 
             service_layer, created = ServiceLayer.objects.get_or_create(
                 service=service,
-                typename=layer.id
+                typename=typename
             )
+
             #service_layer.layer = saved_layer
+            service_layer.uuid = layer_uuid
             service_layer.title = layer.name
             service_layer.description = layer._json_struct['description'] or _("Not provided")
             service_layer.styles = None
+            service_layer.srid = "EPSG:%s" % str(srs),
             service_layer.save()
 
             #resourcebase_post_save(saved_layer, Layer)

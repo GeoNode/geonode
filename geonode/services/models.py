@@ -112,6 +112,7 @@ class ServiceProfileRole(models.Model):
 
 
 class ServiceLayer(models.Model):
+    uuid = models.CharField(max_length=36)
     service = models.ForeignKey(Service)
     layer = models.ForeignKey(Layer, null=True)
     typename = models.CharField(_("Layer Name"), max_length=255)
