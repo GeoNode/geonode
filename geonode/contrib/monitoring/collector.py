@@ -17,8 +17,8 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
-
 import logging
+import re
 from datetime import datetime, timedelta
 from decimal import Decimal
 from itertools import chain
@@ -35,7 +35,7 @@ from django.db.models import Max
 
 
 from geonode.utils import raw_sql
-from geonode.notifications_helper import send_notification, send_now_notification
+from geonode.notifications_helper import send_notification
 from geonode.contrib.monitoring import MonitoringAppConfig as AppConf
 from geonode.contrib.monitoring.models import (Metric, MetricValue, ServiceTypeMetric,
                                                MonitoredResource, MetricLabel, RequestEvent,
@@ -57,7 +57,10 @@ class CollectorAPI(object):
         """
         Find previous network metric value and caclulate rate between them
         """
-        prev = MetricValue.objects.filter(service_metric__metric__name=metric_name, label__name=metric_label, valid_to__lt=valid_to).order_by('-valid_to').first()
+        prev = MetricValue.objects.filter(service_metric__metric__name=metric_name,
+                                          label__name=metric_label,
+                                          valid_to__lt=valid_to)\
+                                  .order_by('-valid_to').first()
         if not prev:
             return
         prev_val = prev.value_num
@@ -72,7 +75,10 @@ class CollectorAPI(object):
         """
         Find previous network metric value and caclulate percent
         """
-        prev = MetricValue.objects.filter(service_metric__metric__name=metric_name, label__name=metric_label, valid_to__lt=valid_to).order_by('-valid_to').first()
+        prev = MetricValue.objects.filter(service_metric__metric__name=metric_name,
+                                          label__name=metric_label,
+                                          valid_to__lt=valid_to)\
+                                  .order_by('-valid_to').first()
         if not prev:
             return
         prev_val = prev.value_num
@@ -83,21 +89,49 @@ class CollectorAPI(object):
         percent = float((current_value - prev_val) * 100) / interval.total_seconds()
         return percent
 
-
     def process_host_geoserver(self, service, data, valid_from, valid_to):
         """
         Generates mertic values for system-level measurements
         """
-        GS_METRIC_MAP = dict((('SYSTEM_UPTIME', 'uptime',),
-                              ('SYSTEM_AVERAGE_LOAD', 'load.1m',),
-                              ('CPU_LOAD', 'cpu.usage.percent',),
-                              ('MEMORY_USED', 'mem.usage',),
-                              ('MEMORY_TOTAL', 'mem.all',),
-                              ('MEMORY_FREE', 'mem.free',),
-                              #('FILE_SYSTEM_TOTAL_USAGE', 'storage.total',)
-                              ('NETWORK_INTERFACES_SEND', 'network.out',),
-                              ('NETWORK_INTERFACES_RECEIVED', 'network.in',),
-                             ))
+        desc_re = re.compile(r'\[(\w+)\]')
+
+        def get_iface_name(row):
+            desc = row['description']
+            m = desc_re.search(desc)
+            if m is None:
+                return
+            return m.groups()[0]
+
+        def get_network_rate(row, value, metric_defaults, metric_name, valid_to):
+            iface_label = get_iface_name(row)
+            if not iface_label:
+                print('no label', metric_name, row.get('description'))
+                return
+            rate = self._calculate_rate(metric_name, iface_label, value, valid_to)
+            if rate is None:
+                print('no rate for', metric_name)
+                return
+            mdata = {'value': rate,
+                     'value_raw': rate,
+                     'value_num': rate,
+                     'label': iface_label,
+                     'metric': '{}.rate'.format(metric_name)}
+            mdata.update(metric_defaults)
+            print MetricValue.add(**mdata)
+
+        # gs metric -> monitoring metric name, label function, postproc function
+        GS_METRIC_MAP = dict((('SYSTEM_UPTIME', ('uptime', None, None,),),
+                              ('SYSTEM_AVERAGE_LOAD', ('load.1m', None, None,),),
+                              ('CPU_LOAD', ('cpu.usage.percent', None, None,),),
+                              ('MEMORY_USED', ('mem.usage', None, None,),),
+                              ('MEMORY_TOTAL', ('mem.all', None, None,),),
+                              ('MEMORY_FREE', ('mem.free', None, None,),),
+                              ('NETWORK_INTERFACE_SEND', ('network.out', get_iface_name, get_network_rate),),
+                              ('NETWORK_INTERFACE_RECEIVED', ('network.in', get_iface_name, get_network_rate),),
+                              ('NETWORK_INTERFACES_SEND', ('network.out', None, get_network_rate),),
+                              ('NETWORK_INTERFACES_RECEIVED', ('network.in', None, get_network_rate),),
+                              )
+                             )
 
         collected_at = datetime.now()
 
@@ -110,7 +144,7 @@ class CollectorAPI(object):
                      'samples_count': 1,
                      'service': service}
 
-        metrics = GS_METRIC_MAP.values()        
+        metrics = [m[0] for m in GS_METRIC_MAP.values()]
 
         MetricValue.objects.filter(service_metric__metric__name__in=metrics,
                                    valid_from=valid_from,
@@ -119,7 +153,10 @@ class CollectorAPI(object):
                            .delete()
 
         for metric_data in data:
-            metric_name = GS_METRIC_MAP.get(metric_data['name'])
+            map_data = GS_METRIC_MAP.get(metric_data['name'])
+            if not map_data:
+                continue
+            metric_name, label_function, processing_function = map_data
             if metric_name is None:
                 continue
             value = metric_data['value']
@@ -128,12 +165,13 @@ class CollectorAPI(object):
             mdata = {'value': value,
                      'value_raw': value,
                      'value_num': value,
-                     'label': None,
+                     'label': label_function(metric_data) if callable(label_function) else None,
                      'metric': metric_name}
             mdata.update(mdefaults)
-            #rate = self._calculate_rate(mdata['metric'], ifname, tx_value, valid_to)
             print MetricValue.add(**mdata)
-            
+
+            if callable(processing_function):
+                processing_function(metric_data, value, mdefaults, metric_name, valid_to)
 
     def process_host_geonode(self, service, data, valid_from, valid_to):
         """
@@ -204,11 +242,11 @@ class CollectorAPI(object):
                            .delete()
 
         for df in data['data']['disks']:
-            dev = df['device']
+            # dev = df['device']
             total = df['total']
             used = df['used']
             free = df['free']
-            free_pct = df['percent']
+            # free_pct = df['percent']
             mount = df['mountpoint']
             for metric, val in (('storage.total', total,),
                                 ('storage.used', used,),
@@ -256,7 +294,6 @@ class CollectorAPI(object):
                                        service=service)\
                                .delete()
             print MetricValue.add(**mdata)
-
 
         if data['data'].get('cpu'):
             l = data['data']['cpu']['usage']
@@ -355,7 +392,9 @@ class CollectorAPI(object):
             pass
 
     def extract_ows_services(self, requests):
-        ows_services = requests.exclude(ows_service__isnull=True).distinct('ows_service').values_list('ows_service', flat=True)
+        ows_services = requests.exclude(ows_service__isnull=True)\
+                               .distinct('ows_service')\
+                               .values_list('ows_service', flat=True)
         return [OWSService.objects.get(id=ows_id) for ows_id in ows_services]
 
     def set_metric_values(self, metric_name, column_name, requests, service, **metric_values):
@@ -407,10 +446,7 @@ class CollectorAPI(object):
             q.append(row)
         else:
             raise ValueError("Unsupported metric type: {}".format(metric.type))
-
-
         rows = q[:100]
-
         metric_values.update({'metric': metric_name, 'service': service})
         for row in rows:
             label = row['label']
@@ -440,7 +476,6 @@ class CollectorAPI(object):
         for pstart, pend in periods:
             requests_batch = requests.filter(created__gte=pstart, created__lt=pend)
             self.process_requests_batch(service, requests_batch, pstart, pend)
-
 
     def set_error_values(self, requests, valid_from, valid_to, service=None, resource=None, ows_service=None):
         with_errors = requests.filter(exceptions__isnull=False)
@@ -485,19 +520,19 @@ class CollectorAPI(object):
         count = requests.count()
         paths = requests.distinct('request_path').values_list('request_path', flat=True)
         print MetricValue.add('request.count', valid_from, valid_to, service, 'Count',
-                        value=count,
-                        value_num=count,
-                        value_raw=count,
-                        samples_count=count,
-                        resource=None)
+                              value=count,
+                              value_num=count,
+                              value_raw=count,
+                              samples_count=count,
+                              resource=None)
         for path in paths:
             count = requests.filter(request_path=path).count()
             print MetricValue.add('request.path', valid_from, valid_to, service, path,
-                            value=count,
-                            value_num=count,
-                            value_raw=count,
-                            samples_count=count,
-                            resource=None)
+                                  value=count,
+                                  value_num=count,
+                                  value_raw=count,
+                                  samples_count=count,
+                                  resource=None)
 
         # calculate overall stats
         self.set_metric_values('request.ip', 'client_ip', **metric_defaults)
@@ -541,8 +576,13 @@ class CollectorAPI(object):
                 metric_defaults['requests'] = ows_requests
                 metric_defaults['ows_service'] = ows_all
 
-                print(MetricValue.add('request.count', valid_from, valid_to, service, 'count', value=count, value_num=count,
-                                      samples_count=count, value_raw=count, resource=resource, ows_service=ows_all))
+                print(MetricValue.add('request.count', valid_from,
+                                      valid_to, service, 'count',
+                                      value=count, value_num=count,
+                                      samples_count=count,
+                                      value_raw=count,
+                                      resource=resource,
+                                      ows_service=ows_all))
                 self.set_metric_values('request.ip', 'client_ip', **metric_defaults)
                 self.set_metric_values('request.country', 'client_country', **metric_defaults)
                 self.set_metric_values('request.city', 'client_city', **metric_defaults)
@@ -560,17 +600,22 @@ class CollectorAPI(object):
                     for path in paths:
                         count = ows_requests.filter(request_path=path).count()
                         print MetricValue.add('request.path', valid_from, valid_to, service, path,
-                                        value=count,
-                                        value_num=count,
-                                        value_raw=count,
-                                        samples_count=count,
-                                        resource=resource)
+                                              value=count,
+                                              value_num=count,
+                                              value_raw=count,
+                                              samples_count=count,
+                                              resource=resource)
 
                     count = ows_requests.count()
                     metric_defaults['ows_service'] = ows_service
                     metric_defaults['requests'] = ows_requests
-                    print(MetricValue.add('request.count', valid_from, valid_to, service, 'count', value=count, value_num=count,
-                                          samples_count=count, value_raw=count, resource=resource, ows_service=ows_service))
+                    print(MetricValue.add('request.count', valid_from, valid_to, service, 'count',
+                                          value=count,
+                                          value_num=count,
+                                          samples_count=count,
+                                          value_raw=count,
+                                          resource=resource,
+                                          ows_service=ows_service))
                     self.set_metric_values('request.ip', 'client_ip', **metric_defaults)
                     self.set_metric_values('request.country', 'client_country', **metric_defaults)
                     self.set_metric_values('request.city', 'client_city', **metric_defaults)
@@ -581,7 +626,10 @@ class CollectorAPI(object):
                     self.set_metric_values('response.size', 'response_size', **metric_defaults)
                     self.set_metric_values('response.status', 'response_status', **metric_defaults)
                     self.set_metric_values('request.method', 'request_method', **metric_defaults)
-                    self.set_error_values(ows_requests, valid_from, valid_to, service=service, resource=resource, ows_service=ows_service)
+                    self.set_error_values(ows_requests, valid_from, valid_to,
+                                          service=service,
+                                          resource=resource,
+                                          ows_service=ows_service)
 
     def get_metrics_for(self, metric_name,
                         valid_from=None,
@@ -661,13 +709,13 @@ class CollectorAPI(object):
         Returns metric values for metric within given time span
         """
         params = {}
-        group_by_map = {'resource': {'select': ['mr.id', 'mr.type', 'mr.name',],
+        group_by_map = {'resource': {'select': ['mr.id', 'mr.type', 'mr.name', ],
                                      'from': ['join monitoring_monitoredresource mr on (mv.resource_id = mr.id)'],
-                                     'where' : ['and mv.resource_id is not NULL'],
+                                     'where': ['and mv.resource_id is not NULL'],
                                      'order_by': ['val desc'],
-                                     'grouper': ['resource', 'name', 'type', 'id',],
+                                     'grouper': ['resource', 'name', 'type', 'id', ],
                                      }
-                       }
+                        }
 
         q_from = ['from monitoring_metricvalue mv',
                   'join monitoring_servicetypemetric mt on (mv.service_metric_id = mt.id)',
@@ -685,7 +733,9 @@ class CollectorAPI(object):
         has_agg = agg_f != col
         q_order_by = ['val desc']
 
-        q_select = ['select ml.name as label, {} as val, count(1) as metric_count, sum(samples_count) as samples_count, sum(mv.value_num), min(mv.value_num), max(mv.value_num)'.format(agg_f)]
+        q_select = [('select ml.name as label, {} as val, '
+                     'count(1) as metric_count, sum(samples_count) as samples_count, '
+                     'sum(mv.value_num), min(mv.value_num), max(mv.value_num)').format(agg_f)]
         if service and service_type:
             raise ValueError("Cannot use service and service type in the same query")
         if service:
@@ -732,6 +782,7 @@ class CollectorAPI(object):
             q_order_by = 'order by {}'.format(','.join(q_order_by))
 
         q = ' '.join(chain(q_select, q_from, q_where, q_group, [q_order_by]))
+
         def postproc(row):
             if grouper:
                 t = {}
@@ -755,7 +806,7 @@ class CollectorAPI(object):
     def compose_notifications(self, ndata, when=None):
         return {'alerts': ndata,
                 'when': when or datetime.now(),
-                'host': settings.SITEURL }
+                'host': settings.SITEURL}
 
     def emit_notifications(self, for_timestamp=None):
         notifications = self.get_notifications(for_timestamp)
@@ -773,7 +824,7 @@ class CollectorAPI(object):
 
     def send_mails(self, notification, emails, ndata, when=None):
         base_ctx = self.compose_notifications(ndata, when=when)
-        subject = _("GeoNode Monitoring on {} reports errors: {}").format(base_ctx['host'], 
+        subject = _("GeoNode Monitoring on {} reports errors: {}").format(base_ctx['host'],
                                                                           notification.notification_subject)
         for email in emails:
             ctx = {'recipient': {'username': email}}
