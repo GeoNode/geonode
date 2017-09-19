@@ -318,8 +318,8 @@
                     <div class="tab-pane" id="download_tab2">
                       <!-- d:  -->
                       </br>
-                      {% if layer_type == "vector" or layer_type == None and resource.storeType == "remoteStore"  %}
-                        <button type="button" id = "button-toggle" class="btn btn-primary btn-circle" data-toggle="button" placeholder="" data-toggle="tooltip" title="Click to filter the layer">
+                      {% if layer_type == "vector" %}
+                        <button type="button" id = "button-toggle" class="btn btn-primary btn-circle" data-toggle="button" data-toggle="tooltip" title="Click to filter the layer">
                           {% trans "Do you want to filter it?" %}
                         </button>
                         <img src="{% static 'lib/css/geonode_icon.png' %}" class="gear pull-right loading_msg" witdth="30" height="30" style="margin-right:10px; display:none"/>
@@ -335,7 +335,7 @@
                         <div id="query_builder" class="tab-pane fade in active">
                           <div class="form-inline" style=" display: inline-table; vertical-align: middle; width: auto;  ">
                             {% trans "Match" %}
-                            <div class="input-group" style=" display: inline-table; vertical-align: middle; width: auto;  ">
+                            <div class="input-group" tabindex="-1" style=" display: inline-table; vertical-align: middle; width: auto;  ">
                               <div class="input-group-btn" id="drop_operator_list">
                                <div class="btn-group btn-group-xs">
                                   <div class="dropdown">
@@ -720,7 +720,6 @@
       $(".dropdown-menu-attributes li a").click(function(){
         $("#modal-button-attributes:first-child").text($(this).text());
         $("#modal-button-attributes:first-child").val($(this).text());
-
       });
 
       $(".dropdown-menu-operators li a").click(function(){
@@ -745,14 +744,13 @@
       // on first click create an array & save initial URLs
       $("#button-toggle").one( "click", function() {
         query=[];
-        kml_url = $("#kml").attr("href");
         json_url = $("#geojson").attr("href");
         excel_url = $("#excel").attr("href");
         csv_url = $("#csv").attr("href");
         shape_url = $("#zipped-shapefile").attr("href");
         gml2_url = $("#gml-20").attr("href");
         gml3_url = $("#gml-311").attr("href");
-        all_urls = {'kml' : kml_url, 'geojson' : json_url, 'excel' : excel_url, 'csv' : csv_url, 'zipped-shapefile' : shape_url, 'gml-20': gml2_url, 'gml-311': gml3_url};
+        all_urls = {'geojson' : json_url, 'excel' : excel_url, 'csv' : csv_url, 'zipped-shapefile' : shape_url, 'gml-20': gml2_url, 'gml-311': gml3_url};
       });
 
       // add class selected when an element from the list is clicked.
@@ -803,7 +801,6 @@
               }
               $( "#query-filter-tools" ).after( "<p id='wrong-data-type'> You entered a string. Not a number.</p>" );
               $('#wrong-data-type').css({ "color": "#bd362f", "font-style": "italic"  });
-
             } else {
               $( "p" ).remove( "#wrong-data-type" );
               // check of single_value_input; string or number
@@ -819,7 +816,6 @@
               input_id = attribute_list + single_value_input;
 
               $("#added_rules").append( '<div class="input-group user-input-filters"><div class="input-group-btn" id="erase_query"><a href="#"  class="btn btn-primary btn-mg" data-toggle="modal" data-target="#myModal" title="" ><span class="glyphicon glyphicon-minus"></span></a></div><input type="text" class="form-control" id="' + input_id + '" placeholder="" data-toggle="tooltip" title="" value="' + input + '"readonly></br></div>');
-
               // push data to array
               if (input != ''){
                   query.push(input);

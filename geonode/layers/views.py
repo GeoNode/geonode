@@ -439,7 +439,6 @@ def layer_detail(request, layername, template='layers/layer_detail.html'):
         if 'geonode' in layers_names:
             workspace, name = layers_names.split(':', 1)
         else:
-            #workspace = "arc"
             workspace = ""
             name = layers_names
     except:
@@ -449,9 +448,7 @@ def layer_detail(request, layername, template='layers/layer_detail.html'):
 
     try:
         # get type of layer (raster or vector)
-
         cat = Catalog(settings.OGC_SERVER['default']['LOCATION'] + "rest", settings.OGC_SERVER['default']['USER'], settings.OGC_SERVER['default']['PASSWORD'])
-
         resource = cat.get_resource(name, workspace=workspace)
 
         if (type(resource).__name__ == 'Coverage'):
@@ -478,9 +475,6 @@ def layer_detail(request, layername, template='layers/layer_detail.html'):
             schema = get_schema(location, name, username=username, password=password)
 
             # get the name of the column which holds the geometry
-            #geomName = schema.keys()[schema.values().index('Point')] or schema.keys()[schema.values().index('MultiLineString')]
-            #print ("geomName", geomName)
-
             if 'the_geom' in schema['properties']:
                 schema['properties'].pop('the_geom', None)
             elif 'geom' in schema['properties']:
@@ -506,9 +500,6 @@ def layer_detail(request, layername, template='layers/layer_detail.html'):
 
 # Loads the data using the OWS lib when the "Do you want to filter it" button is clicked.
 def load_layer_data(request, template='layers/layer_detail.html'):
-
-    import time
-    start_time = time.time()
     context_dict = {}
     data_dict = json.loads(request.POST.get('json_data'))
     layername = data_dict['layer_name']
@@ -549,12 +540,8 @@ def load_layer_data(request, template='layers/layer_detail.html'):
             properties[key].sort()
 
         context_dict["feature_properties"] = properties
-
-        print "OWSLib worked as expected"
-
     except:
         print "Possible error with OWSLib."
-    print("--- %s seconds ---" % (time.time() - start_time))
     return HttpResponse(json.dumps(context_dict), content_type="application/json")
 
 def layer_feature_catalogue(
