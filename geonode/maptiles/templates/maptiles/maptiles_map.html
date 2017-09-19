@@ -3,7 +3,7 @@
 .olImageLoadError {
     /* when OL encounters a 404, don't display the pink image */
     display: none !important;
-} 
+}
 div#site_wide_announcements {
     display: none;
 }
@@ -143,7 +143,9 @@ div.side-navi-tab p {
                         {% endif %} {% endfor %}
                     </ul>
                     <input type="text" id="georef_area" name="georef_area" style="display:none" />
-                    <input type="submit" id="georef_submit" name="georef_submit" value="Submit" class="btn btn-default" />
+                      {% if jurisdiction_yes %} {% else %} <div onclick="alert('Request New Data with an Area of Interest Shapefile to be able to use the Data Tiles feature.\nFor any inquiries, email us at lipad@dream.upd.edu.ph')" /> {% endif %}
+                    <input type="submit" id="georef_submit" name="georef_submit" value="Submit" class="btn btn-default"
+                      {% if jurisdiction_yes %} /> {% else %} style="opacity:0.65" disabled/> </div>{% endif %}
                 </form>
             </div>
         </div>
