@@ -116,11 +116,11 @@ def catalogue_pre_save(instance, sender, **kwargs):
     if record is None:
         return
 
-
-if 'geonode.catalogue' in settings.INSTALLED_APPS:
-    signals.pre_save.connect(catalogue_pre_save, sender=Layer)
-    signals.post_save.connect(catalogue_post_save, sender=Layer)
-    signals.pre_delete.connect(catalogue_pre_delete, sender=Layer)
-    signals.pre_save.connect(catalogue_pre_save, sender=Document)
-    signals.post_save.connect(catalogue_post_save, sender=Document)
-    signals.pre_delete.connect(catalogue_pre_delete, sender=Document)
+# as of 09/20/2017 will cause errors when trying to add records to registry
+# if 'geonode.catalogue' in settings.INSTALLED_APPS:
+    # signals.pre_save.connect(catalogue_pre_save, sender=Layer)
+    # signals.post_save.connect(catalogue_post_save, sender=Layer)
+    # signals.pre_delete.connect(catalogue_pre_delete, sender=Layer)
+    # signals.pre_save.connect(catalogue_pre_save, sender=Document)
+    # signals.post_save.connect(catalogue_post_save, sender=Document)
+    # signals.pre_delete.connect(catalogue_pre_delete, sender=Document)
