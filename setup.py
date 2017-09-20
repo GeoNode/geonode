@@ -68,6 +68,7 @@ setup(name='GeoNode',
         "flake8>=2.3.0",  # python-flake8 (2.5.4)
         "pep8>=1.6.2",  # python-pep8 (1.7.0)
         "boto>=2.38.0",  # python-boto (2.38.0)
+        "six==1.10.0", # https://github.com/benjaminp/six/issues/210
 
         # Django Apps
         "django-pagination >=1.0.5, <=1.0.7",  # python-django-pagination (1.0.7)
