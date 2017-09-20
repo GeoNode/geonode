@@ -115,3 +115,6 @@ geonode/man/
 geonode/pip-selfcheck.json
 geonode/shapely/
 geonode/share/
+
+# celery files
+celerybeat-schedule.*
