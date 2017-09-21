@@ -294,6 +294,7 @@ GEONODE_CONTRIB_APPS = (
     # 'geonode.contrib.nlp',
     # 'geonode.contrib.slack',
     # 'geonode.contrib.createlayer',
+    # 'geonode.contrib.datastore_shards',
     'geonode.contrib.metadataxsl',
     'geonode.contrib.api_basemaps',
 )

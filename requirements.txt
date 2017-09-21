@@ -59,6 +59,7 @@ httplib2==0.10.3
 kombu==3.0.35
 lxml==3.6.2
 mccabe==0.5.2
+mock==2.0.0
 oauthlib==2.0.2
 pep8==1.7.0
 pillow==3.3.1
