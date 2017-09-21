@@ -33,6 +33,8 @@ from django.template.response import TemplateResponse
 from geonode import get_version
 from geonode.base.templatetags.base_tags import facets
 from geonode.groups.models import GroupProfile
+from django.contrib.auth import logout
+
 
 
 class AjaxLoginForm(forms.Form):
@@ -146,3 +148,15 @@ def h_keywords(request):
     from geonode.base.models import HierarchicalKeyword as hk
     keywords = json.dumps(hk.dump_bulk_tree())
     return HttpResponse(content=keywords)
+
+
+def account_logout(request):
+    logout(request)
+    response = HttpResponseRedirect(
+        reverse('home'))
+
+    for cookie in request.COOKIES:
+        name = str(cookie)
+        if name != 'csrftoken':
+            response.delete_cookie(name)
+    return response
