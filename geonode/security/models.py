@@ -267,134 +267,123 @@ def get_geofence_rules_count():
 
 def set_geofence_invalidate_cache():
     """invalidate GeoFence Cache Rules"""
-    try:
-        url = settings.OGC_SERVER['default']['LOCATION']
-        user = settings.OGC_SERVER['default']['USER']
-        passwd = settings.OGC_SERVER['default']['PASSWORD']
-        # Check first that the rules does not exist already
-        """
-        curl -X GET -u admin:geoserver \
-              http://<host>:<port>/geoserver/rest/ruleCache/invalidate
-        """
-        r = requests.put(url + 'rest/ruleCache/invalidate',
-                         auth=HTTPBasicAuth(user, passwd))
-
-        if (r.status_code < 200 or r.status_code > 201):
-            logger.warning("Could not Invalidate GeoFence Rules.")
-    except Exception as e:
-        tb = traceback.format_exc()
-        logger.debug(tb)
-        raise e
-
-
-def set_geofence_all(instance):
-    """assign access permissions to all users"""
-    resource = instance.get_self_resource()
-
-    if hasattr(resource, "layer"):
+    if settings.OGC_SERVER['default']['GEOFENCE_SECURITY_ENABLED']:
         try:
             url = settings.OGC_SERVER['default']['LOCATION']
             user = settings.OGC_SERVER['default']['USER']
             passwd = settings.OGC_SERVER['default']['PASSWORD']
             # Check first that the rules does not exist already
             """
-            curl -X GET -u admin:geoserver -H "Content-Type: application/json" \
-                  http://<host>:<port>/geoserver/geofence/rest/rules.json?layer=<layer_name>
+            curl -X GET -u admin:geoserver \
+                  http://<host>:<port>/geoserver/rest/ruleCache/invalidate
             """
-            headers = {'Content-type': 'application/json'}
-            r = requests.get(url + 'geofence/rest/rules.json?layer=' + resource.layer.name,
-                             headers=headers,
+            r = requests.put(url + 'rest/ruleCache/invalidate',
                              auth=HTTPBasicAuth(user, passwd))
 
-            rules_already_present = False
             if (r.status_code < 200 or r.status_code > 201):
-                logger.warning("Could not GET GeoServer Rules for Layer " + str(resource.layer.name))
-            else:
-                try:
-                    rules_objs = json.loads(r.text)
-                    rules_count = rules_objs['count']
-                    rules = rules_objs['rules']
-                    if rules_count > 1:
-                        for rule in rules:
-                            if rule['userName'] is None and rule['access'] == 'ALLOW':
-                                rules_already_present = True
-                except Exception as e:
-                    logger.debug("Response [{}] : {}".format(r.status_code, r.text))
-                    raise e
-
-            # Create GeoFence Rules for ANONYMOUS to the Layer
-            """
-            curl -X POST -u admin:geoserver -H "Content-Type: text/xml" -d \
-            "<Rule><workspace>geonode</workspace><layer>{layer}</layer><access>ALLOW</access></Rule>" \
-            http://<host>:<port>/geoserver/geofence/rest/rules
-            """
-            rules_count = get_geofence_rules_count()
-            headers = {'Content-type': 'application/xml'}
-            payload = "<Rule><priority>" + str(rules_count - 1) + "</priority><workspace>geonode</workspace><layer>"
-            payload += resource.layer.name
-            payload += "</layer><access>ALLOW</access></Rule>"
-
-            if not rules_already_present:
-                r = requests.post(url + 'geofence/rest/rules',
-                                  headers=headers,
-                                  data=payload,
-                                  auth=HTTPBasicAuth(user, passwd))
-                if (r.status_code < 200 or r.status_code > 201):
-                    msg = "Could not ADD GeoServer ANONYMOUS Rule for Layer " + str(resource.layer.name)
-                    e = Exception(msg)
-                    logger.debug("Response [{}] : {}".format(r.status_code, r.text))
-                    raise e
+                logger.warning("Could not Invalidate GeoFence Rules.")
         except Exception as e:
             tb = traceback.format_exc()
             logger.debug(tb)
             raise e
-        finally:
-            set_geofence_invalidate_cache()
+
+
+def set_geofence_all(instance):
+    """assign access permissions to all users"""
+    if settings.OGC_SERVER['default']['GEOFENCE_SECURITY_ENABLED']:
+        resource = instance.get_self_resource()
+
+        if hasattr(resource, "layer"):
+            try:
+                url = settings.OGC_SERVER['default']['LOCATION']
+                user = settings.OGC_SERVER['default']['USER']
+                passwd = settings.OGC_SERVER['default']['PASSWORD']
+                # Check first that the rules does not exist already
+                """
+                curl -X GET -u admin:geoserver -H "Content-Type: application/json" \
+                      http://<host>:<port>/geoserver/geofence/rest/rules.json?layer=<layer_name>
+                """
+                headers = {'Content-type': 'application/json'}
+                r = requests.get(url + 'geofence/rest/rules.json?layer=' + resource.layer.name,
+                                 headers=headers,
+                                 auth=HTTPBasicAuth(user, passwd))
+
+                rules_already_present = False
+                if (r.status_code < 200 or r.status_code > 201):
+                    logger.warning("Could not GET GeoServer Rules for Layer " + str(resource.layer.name))
+                else:
+                    try:
+                        rules_objs = json.loads(r.text)
+                        rules_count = rules_objs['count']
+                        rules = rules_objs['rules']
+                        if rules_count > 1:
+                            for rule in rules:
+                                if rule['userName'] is None and rule['access'] == 'ALLOW':
+                                    rules_already_present = True
+                    except Exception as e:
+                        logger.debug("Response [{}] : {}".format(r.status_code, r.text))
+                        raise e
+
+                # Create GeoFence Rules for ANONYMOUS to the Layer
+                """
+                curl -X POST -u admin:geoserver -H "Content-Type: text/xml" -d \
+                "<Rule><workspace>geonode</workspace><layer>{layer}</layer><access>ALLOW</access></Rule>" \
+                http://<host>:<port>/geoserver/geofence/rest/rules
+                """
+                rules_count = get_geofence_rules_count()
+                headers = {'Content-type': 'application/xml'}
+                payload = "<Rule><priority>" + str(rules_count - 1) + "</priority><workspace>geonode</workspace><layer>"
+                payload += resource.layer.name
+                payload += "</layer><access>ALLOW</access></Rule>"
+
+                if not rules_already_present:
+                    r = requests.post(url + 'geofence/rest/rules',
+                                      headers=headers,
+                                      data=payload,
+                                      auth=HTTPBasicAuth(user, passwd))
+                    if (r.status_code < 200 or r.status_code > 201):
+                        msg = "Could not ADD GeoServer ANONYMOUS Rule for Layer " + str(resource.layer.name)
+                        e = Exception(msg)
+                        logger.debug("Response [{}] : {}".format(r.status_code, r.text))
+                        raise e
+            except Exception as e:
+                tb = traceback.format_exc()
+                logger.debug(tb)
+                raise e
+            finally:
+                set_geofence_invalidate_cache()
 
 
 def set_geofence_owner(instance, username, view_perms=False, download_perms=False):
     """assign access permissions to owner user"""
-    resource = instance.get_self_resource()
+    if settings.OGC_SERVER['default']['GEOFENCE_SECURITY_ENABLED']:
+        resource = instance.get_self_resource()
 
-    if hasattr(resource, "layer"):
-        try:
-            # Scan GeoFence for the user
-            url = settings.OGC_SERVER['default']['LOCATION']
-            user = settings.OGC_SERVER['default']['USER']
-            passwd = settings.OGC_SERVER['default']['PASSWORD']
-            headers = {'Content-type': 'application/xml'}
+        if hasattr(resource, "layer"):
+            try:
+                # Scan GeoFence for the user
+                url = settings.OGC_SERVER['default']['LOCATION']
+                user = settings.OGC_SERVER['default']['USER']
+                passwd = settings.OGC_SERVER['default']['PASSWORD']
+                headers = {'Content-type': 'application/xml'}
 
-            # Create GeoFence User's specific Access Limits
-            """
-            curl -X POST -u admin:geoserver -H "Content-Type: text/xml" -d \
-            "<Rule><userName>{user}</userName><workspace>geonode</workspace> \
-            <layer>{layer}</layer><access>ALLOW</access></Rule>" \
-            http://<host>:<port>/geoserver/geofence/rest/rules
-            """
-            rules_count = get_geofence_rules_count()
-            payload = "<priority>" + str(rules_count - 1) + "</priority>"
-            if username:
-                payload += "<userName>" + username + "</userName>"
-            payload += "<workspace>geonode</workspace>"
-            payload += "<layer>" + resource.layer.name + "</layer>"
-            payload += "<access>ALLOW</access>"
+                # Create GeoFence User's specific Access Limits
+                """
+                curl -X POST -u admin:geoserver -H "Content-Type: text/xml" -d \
+                "<Rule><userName>{user}</userName><workspace>geonode</workspace> \
+                <layer>{layer}</layer><access>ALLOW</access></Rule>" \
+                http://<host>:<port>/geoserver/geofence/rest/rules
+                """
+                rules_count = get_geofence_rules_count()
+                payload = "<priority>" + str(rules_count - 1) + "</priority>"
+                if username:
+                    payload += "<userName>" + username + "</userName>"
+                payload += "<workspace>geonode</workspace>"
+                payload += "<layer>" + resource.layer.name + "</layer>"
+                payload += "<access>ALLOW</access>"
 
-            if view_perms and download_perms:
-                data = "<Rule>" + payload + "</Rule>"
-                logger.debug(data)
-                r = requests.post(url + 'geofence/rest/rules',
-                                  headers=headers,
-                                  data=data,
-                                  auth=HTTPBasicAuth(user, passwd))
-                if (r.status_code < 200 or r.status_code > 201):
-                    msg = "Could not ADD GeoServer User [" + str(username) + "] Rule for Layer "
-                    msg = msg + str(resource.layer.name)
-                    e = Exception(msg)
-                    logger.debug("Response [{}] : {}".format(r.status_code, r.text))
-                    raise e
-            else:
-                if view_perms:
-                    data = "<Rule>" + payload + "<service>WMS</service></Rule>"
+                if view_perms and download_perms:
+                    data = "<Rule>" + payload + "</Rule>"
                     logger.debug(data)
                     r = requests.post(url + 'geofence/rest/rules',
                                       headers=headers,
@@ -406,97 +395,99 @@ def set_geofence_owner(instance, username, view_perms=False, download_perms=Fals
                         e = Exception(msg)
                         logger.debug("Response [{}] : {}".format(r.status_code, r.text))
                         raise e
-                    data = "<Rule>" + payload + "<service>GWC</service></Rule>"
-                    logger.debug(data)
-                    r = requests.post(url + 'geofence/rest/rules',
-                                      headers=headers,
-                                      data=data,
-                                      auth=HTTPBasicAuth(user, passwd))
-                    if (r.status_code < 200 or r.status_code > 201):
-                        msg = "Could not ADD GeoServer User [" + str(username) + "] Rule for Layer "
-                        msg = msg + str(resource.layer.name)
-                        e = Exception(msg)
-                        logger.debug("Response [{}] : {}".format(r.status_code, r.text))
-                        raise e
+                else:
+                    if view_perms:
+                        data = "<Rule>" + payload + "<service>WMS</service></Rule>"
+                        logger.debug(data)
+                        r = requests.post(url + 'geofence/rest/rules',
+                                          headers=headers,
+                                          data=data,
+                                          auth=HTTPBasicAuth(user, passwd))
+                        if (r.status_code < 200 or r.status_code > 201):
+                            msg = "Could not ADD GeoServer User [" + str(username) + "] Rule for Layer "
+                            msg = msg + str(resource.layer.name)
+                            e = Exception(msg)
+                            logger.debug("Response [{}] : {}".format(r.status_code, r.text))
+                            raise e
+                        data = "<Rule>" + payload + "<service>GWC</service></Rule>"
+                        logger.debug(data)
+                        r = requests.post(url + 'geofence/rest/rules',
+                                          headers=headers,
+                                          data=data,
+                                          auth=HTTPBasicAuth(user, passwd))
+                        if (r.status_code < 200 or r.status_code > 201):
+                            msg = "Could not ADD GeoServer User [" + str(username) + "] Rule for Layer "
+                            msg = msg + str(resource.layer.name)
+                            e = Exception(msg)
+                            logger.debug("Response [{}] : {}".format(r.status_code, r.text))
+                            raise e
 
-                if download_perms:
-                    data = "<Rule>" + payload + "<service>WCS</service></Rule>"
-                    logger.debug(data)
-                    r = requests.post(url + 'geofence/rest/rules',
-                                      headers=headers,
-                                      data=data,
-                                      auth=HTTPBasicAuth(user, passwd))
-                    if (r.status_code < 200 or r.status_code > 201):
-                        msg = "Could not ADD GeoServer User [" + str(username) + "] Rule for Layer "
-                        msg = msg + str(resource.layer.name)
-                        e = Exception(msg)
-                        logger.debug("Response [{}] : {}".format(r.status_code, r.text))
-                        raise e
-                    data = "<Rule>" + payload + "<service>WFS</service></Rule>"
-                    logger.debug(data)
-                    r = requests.post(url + 'geofence/rest/rules',
-                                      headers=headers,
-                                      data=data,
-                                      auth=HTTPBasicAuth(user, passwd))
-                    if (r.status_code < 200 or r.status_code > 201):
-                        msg = "Could not ADD GeoServer User [" + str(username) + "] Rule for Layer "
-                        msg = msg + str(resource.layer.name)
-                        e = Exception(msg)
-                        logger.debug("Response [{}] : {}".format(r.status_code, r.text))
-                        raise e
-                    data = "<Rule>" + payload + "<service>WPS</service></Rule>"
-                    logger.debug(data)
-                    r = requests.post(url + 'geofence/rest/rules',
-                                      headers=headers,
-                                      data=data,
-                                      auth=HTTPBasicAuth(user, passwd))
-                    if (r.status_code < 200 or r.status_code > 201):
-                        msg = "Could not ADD GeoServer User [" + str(username) + "] Rule for Layer "
-                        msg = msg + str(resource.layer.name)
-                        e = Exception(msg)
-                        logger.debug("Response [{}] : {}".format(r.status_code, r.text))
-                        raise e
-        except Exception as e:
-            tb = traceback.format_exc()
-            logger.debug(tb)
-            raise e
-        finally:
-            set_geofence_invalidate_cache()
+                    if download_perms:
+                        data = "<Rule>" + payload + "<service>WCS</service></Rule>"
+                        logger.debug(data)
+                        r = requests.post(url + 'geofence/rest/rules',
+                                          headers=headers,
+                                          data=data,
+                                          auth=HTTPBasicAuth(user, passwd))
+                        if (r.status_code < 200 or r.status_code > 201):
+                            msg = "Could not ADD GeoServer User [" + str(username) + "] Rule for Layer "
+                            msg = msg + str(resource.layer.name)
+                            e = Exception(msg)
+                            logger.debug("Response [{}] : {}".format(r.status_code, r.text))
+                            raise e
+                        data = "<Rule>" + payload + "<service>WFS</service></Rule>"
+                        logger.debug(data)
+                        r = requests.post(url + 'geofence/rest/rules',
+                                          headers=headers,
+                                          data=data,
+                                          auth=HTTPBasicAuth(user, passwd))
+                        if (r.status_code < 200 or r.status_code > 201):
+                            msg = "Could not ADD GeoServer User [" + str(username) + "] Rule for Layer "
+                            msg = msg + str(resource.layer.name)
+                            e = Exception(msg)
+                            logger.debug("Response [{}] : {}".format(r.status_code, r.text))
+                            raise e
+                        data = "<Rule>" + payload + "<service>WPS</service></Rule>"
+                        logger.debug(data)
+                        r = requests.post(url + 'geofence/rest/rules',
+                                          headers=headers,
+                                          data=data,
+                                          auth=HTTPBasicAuth(user, passwd))
+                        if (r.status_code < 200 or r.status_code > 201):
+                            msg = "Could not ADD GeoServer User [" + str(username) + "] Rule for Layer "
+                            msg = msg + str(resource.layer.name)
+                            e = Exception(msg)
+                            logger.debug("Response [{}] : {}".format(r.status_code, r.text))
+                            raise e
+            except Exception as e:
+                tb = traceback.format_exc()
+                logger.debug(tb)
+                raise e
+            finally:
+                set_geofence_invalidate_cache()
 
 
 def set_geofence_group(instance, groupname, view_perms=False, download_perms=False):
     """assign access permissions to owner group"""
-    resource = instance.get_self_resource()
+    if settings.OGC_SERVER['default']['GEOFENCE_SECURITY_ENABLED']:
+        resource = instance.get_self_resource()
 
-    if groupname and hasattr(resource, "layer"):
-        try:
-            # Scan GeoFence for the group
-            url = settings.OGC_SERVER['default']['LOCATION']
-            user = settings.OGC_SERVER['default']['USER']
-            passwd = settings.OGC_SERVER['default']['PASSWORD']
-            headers = {'Content-type': 'application/xml'}
+        if groupname and hasattr(resource, "layer"):
+            try:
+                # Scan GeoFence for the group
+                url = settings.OGC_SERVER['default']['LOCATION']
+                user = settings.OGC_SERVER['default']['USER']
+                passwd = settings.OGC_SERVER['default']['PASSWORD']
+                headers = {'Content-type': 'application/xml'}
 
-            rules_count = get_geofence_rules_count()
-            payload = "<priority>" + str(rules_count - 1) + "</priority>"
-            payload += "<roleName>ROLE_" + groupname.upper() + "</roleName>"
-            payload += "<workspace>geonode</workspace><layer>"
-            payload += resource.layer.name + "</layer><access>ALLOW</access>"
+                rules_count = get_geofence_rules_count()
+                payload = "<priority>" + str(rules_count - 1) + "</priority>"
+                payload += "<roleName>ROLE_" + groupname.upper() + "</roleName>"
+                payload += "<workspace>geonode</workspace><layer>"
+                payload += resource.layer.name + "</layer><access>ALLOW</access>"
 
-            if view_perms and download_perms:
-                data = "<Rule>" + payload + "</Rule>"
-                r = requests.post(url + 'geofence/rest/rules',
-                                  headers=headers,
-                                  data=data,
-                                  auth=HTTPBasicAuth(user, passwd))
-                if (r.status_code < 200 or r.status_code > 201):
-                    msg = "Could not ADD GeoServer Group [" + str(groupname) + "] Rule for Layer "
-                    msg = msg + str(resource.layer.name)
-                    e = Exception(msg)
-                    logger.debug("Response [{}] : {}".format(r.status_code, r.text))
-                    raise e
-            else:
-                if view_perms:
-                    data = "<Rule>" + payload + "<service>WMS</service></Rule>"
+                if view_perms and download_perms:
+                    data = "<Rule>" + payload + "</Rule>"
                     r = requests.post(url + 'geofence/rest/rules',
                                       headers=headers,
                                       data=data,
@@ -507,58 +498,71 @@ def set_geofence_group(instance, groupname, view_perms=False, download_perms=Fal
                         e = Exception(msg)
                         logger.debug("Response [{}] : {}".format(r.status_code, r.text))
                         raise e
-                    data = "<Rule>" + payload + "<service>GWC</service></Rule>"
-                    r = requests.post(url + 'geofence/rest/rules',
-                                      headers=headers,
-                                      data=data,
-                                      auth=HTTPBasicAuth(user, passwd))
-                    if (r.status_code < 200 or r.status_code > 201):
-                        msg = "Could not ADD GeoServer Group [" + str(groupname) + "] Rule for Layer "
-                        msg = msg + str(resource.layer.name)
-                        e = Exception(msg)
-                        logger.debug("Response [{}] : {}".format(r.status_code, r.text))
-                        raise e
+                else:
+                    if view_perms:
+                        data = "<Rule>" + payload + "<service>WMS</service></Rule>"
+                        r = requests.post(url + 'geofence/rest/rules',
+                                          headers=headers,
+                                          data=data,
+                                          auth=HTTPBasicAuth(user, passwd))
+                        if (r.status_code < 200 or r.status_code > 201):
+                            msg = "Could not ADD GeoServer Group [" + str(groupname) + "] Rule for Layer "
+                            msg = msg + str(resource.layer.name)
+                            e = Exception(msg)
+                            logger.debug("Response [{}] : {}".format(r.status_code, r.text))
+                            raise e
+                        data = "<Rule>" + payload + "<service>GWC</service></Rule>"
+                        r = requests.post(url + 'geofence/rest/rules',
+                                          headers=headers,
+                                          data=data,
+                                          auth=HTTPBasicAuth(user, passwd))
+                        if (r.status_code < 200 or r.status_code > 201):
+                            msg = "Could not ADD GeoServer Group [" + str(groupname) + "] Rule for Layer "
+                            msg = msg + str(resource.layer.name)
+                            e = Exception(msg)
+                            logger.debug("Response [{}] : {}".format(r.status_code, r.text))
+                            raise e
 
-                if download_perms:
-                    data = "<Rule>" + payload + "<service>WCS</service></Rule>"
-                    r = requests.post(url + 'geofence/rest/rules',
-                                      headers=headers,
-                                      data=data,
-                                      auth=HTTPBasicAuth(user, passwd))
-                    if (r.status_code < 200 or r.status_code > 201):
-                        msg = "Could not ADD GeoServer Group [" + str(groupname) + "] Rule for Layer "
-                        msg = msg + str(resource.layer.name)
-                        e = Exception(msg)
-                        logger.debug("Response [{}] : {}".format(r.status_code, r.text))
-                        raise e
-                    data = "<Rule>" + payload + "<service>WFS</service></Rule>"
-                    r = requests.post(url + 'geofence/rest/rules',
-                                      headers=headers,
-                                      data=data,
-                                      auth=HTTPBasicAuth(user, passwd))
-                    if (r.status_code < 200 or r.status_code > 201):
-                        msg = "Could not ADD GeoServer Group [" + str(groupname) + "] Rule for Layer "
-                        msg = msg + str(resource.layer.name)
-                        e = Exception(msg)
-                        logger.debug("Response [{}] : {}".format(r.status_code, r.text))
-                        raise e
-                    data = "<Rule>" + payload + "<service>WPS</service></Rule>"
-                    r = requests.post(url + 'geofence/rest/rules',
-                                      headers=headers,
-                                      data=data,
-                                      auth=HTTPBasicAuth(user, passwd))
-                    if (r.status_code < 200 or r.status_code > 201):
-                        msg = "Could not ADD GeoServer Group [" + str(groupname) + "] Rule for Layer "
-                        msg = msg + str(resource.layer.name)
-                        e = Exception(msg)
-                        logger.debug("Response [{}] : {}".format(r.status_code, r.text))
-                        raise e
-        except Exception as e:
-            tb = traceback.format_exc()
-            logger.debug(tb)
-            raise e
-        finally:
-            set_geofence_invalidate_cache()
+                    if download_perms:
+                        data = "<Rule>" + payload + "<service>WCS</service></Rule>"
+                        r = requests.post(url + 'geofence/rest/rules',
+                                          headers=headers,
+                                          data=data,
+                                          auth=HTTPBasicAuth(user, passwd))
+                        if (r.status_code < 200 or r.status_code > 201):
+                            msg = "Could not ADD GeoServer Group [" + str(groupname) + "] Rule for Layer "
+                            msg = msg + str(resource.layer.name)
+                            e = Exception(msg)
+                            logger.debug("Response [{}] : {}".format(r.status_code, r.text))
+                            raise e
+                        data = "<Rule>" + payload + "<service>WFS</service></Rule>"
+                        r = requests.post(url + 'geofence/rest/rules',
+                                          headers=headers,
+                                          data=data,
+                                          auth=HTTPBasicAuth(user, passwd))
+                        if (r.status_code < 200 or r.status_code > 201):
+                            msg = "Could not ADD GeoServer Group [" + str(groupname) + "] Rule for Layer "
+                            msg = msg + str(resource.layer.name)
+                            e = Exception(msg)
+                            logger.debug("Response [{}] : {}".format(r.status_code, r.text))
+                            raise e
+                        data = "<Rule>" + payload + "<service>WPS</service></Rule>"
+                        r = requests.post(url + 'geofence/rest/rules',
+                                          headers=headers,
+                                          data=data,
+                                          auth=HTTPBasicAuth(user, passwd))
+                        if (r.status_code < 200 or r.status_code > 201):
+                            msg = "Could not ADD GeoServer Group [" + str(groupname) + "] Rule for Layer "
+                            msg = msg + str(resource.layer.name)
+                            e = Exception(msg)
+                            logger.debug("Response [{}] : {}".format(r.status_code, r.text))
+                            raise e
+            except Exception as e:
+                tb = traceback.format_exc()
+                logger.debug(tb)
+                raise e
+            finally:
+                set_geofence_invalidate_cache()
 
 
 def set_owner_permissions(resource):
@@ -588,39 +592,40 @@ def remove_object_permissions(instance):
 
     if hasattr(resource, "layer"):
         try:
-            # Scan GeoFence Rules associated to the Layer
-            """
-            curl -u admin:geoserver
-            http://<host>:<port>/geoserver/geofence/rest/rules.json?workspace=geonode&layer={layer}
-            """
-            url = settings.OGC_SERVER['default']['LOCATION']
-            user = settings.OGC_SERVER['default']['USER']
-            passwd = settings.OGC_SERVER['default']['PASSWORD']
-            headers = {'Content-type': 'application/json'}
+            if settings.OGC_SERVER['default']['GEOFENCE_SECURITY_ENABLED']:
+                # Scan GeoFence Rules associated to the Layer
+                """
+                curl -u admin:geoserver
+                http://<host>:<port>/geoserver/geofence/rest/rules.json?workspace=geonode&layer={layer}
+                """
+                url = settings.OGC_SERVER['default']['LOCATION']
+                user = settings.OGC_SERVER['default']['USER']
+                passwd = settings.OGC_SERVER['default']['PASSWORD']
+                headers = {'Content-type': 'application/json'}
 
-            r = requests.get(url + 'geofence/rest/rules.json?workspace=geonode&layer=' + resource.layer.name,
-                             headers=headers,
-                             auth=HTTPBasicAuth(user, passwd))
-            if (r.status_code >= 200):
-                gs_rules = r.json()
-                r_ids = []
-                if gs_rules and gs_rules['rules']:
-                    for r in gs_rules['rules']:
-                        if r['layer'] and r['layer'] == resource.layer.name:
-                            r_ids.append(r['id'])
+                r = requests.get(url + 'geofence/rest/rules.json?workspace=geonode&layer=' + resource.layer.name,
+                                 headers=headers,
+                                 auth=HTTPBasicAuth(user, passwd))
+                if (r.status_code >= 200):
+                    gs_rules = r.json()
+                    r_ids = []
+                    if gs_rules and gs_rules['rules']:
+                        for r in gs_rules['rules']:
+                            if r['layer'] and r['layer'] == resource.layer.name:
+                                r_ids.append(r['id'])
 
-                # Delete GeoFence Rules associated to the Layer
-                # curl -X DELETE -u admin:geoserver http://<host>:<port>/geoserver/geofence/rest/rules/id/{r_id}
-                for i, r_id in enumerate(r_ids):
-                    r = requests.delete(url + 'geofence/rest/rules/id/' + str(r_id),
-                                        headers=headers,
-                                        auth=HTTPBasicAuth(user, passwd))
-                    if (r.status_code < 200 or r.status_code > 201):
-                        msg = "Could not DELETE GeoServer Rule for Layer "
-                        msg = msg + str(resource.layer.name)
-                        e = Exception(msg)
-                        logger.debug("Response [{}] : {}".format(r.status_code, r.text))
-                        raise e
+                    # Delete GeoFence Rules associated to the Layer
+                    # curl -X DELETE -u admin:geoserver http://<host>:<port>/geoserver/geofence/rest/rules/id/{r_id}
+                    for i, r_id in enumerate(r_ids):
+                        r = requests.delete(url + 'geofence/rest/rules/id/' + str(r_id),
+                                            headers=headers,
+                                            auth=HTTPBasicAuth(user, passwd))
+                        if (r.status_code < 200 or r.status_code > 201):
+                            msg = "Could not DELETE GeoServer Rule for Layer "
+                            msg = msg + str(resource.layer.name)
+                            e = Exception(msg)
+                            logger.debug("Response [{}] : {}".format(r.status_code, r.text))
+                            raise e
             UserObjectPermission.objects.filter(content_type=ContentType.objects.get_for_model(resource.layer),
                                                 object_pk=instance.id).delete()
             GroupObjectPermission.objects.filter(content_type=ContentType.objects.get_for_model(resource.layer),
