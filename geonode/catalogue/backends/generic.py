@@ -100,7 +100,7 @@ class Catalogue(CatalogueServiceWeb):
 
     def get_by_uuid(self, uuid):
         try:
-            self.getrecordbyid([uuid], outputschema=namespaces["gmd"])
+            self.getrecordbyid([uuid])#, outputschema=namespaces["gmd"])
         except:
             return None
 

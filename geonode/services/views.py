@@ -536,6 +536,7 @@ def _register_indexed_service(type, url, name, username, password, verbosity=Fal
 
         service = Service.objects.create(base_url=url,
                                          type=type,
+                                         uuid=str(uuid.uuid1()),
                                          method='I',
                                          name=name,
                                          version=wms.identification.version,
@@ -942,6 +943,7 @@ def _process_arcgis_service(arcserver, name, owner=None, parent=None):
     name = _get_valid_name(arcserver.mapName or arc_url) if not name else name
     service = Service.objects.create(base_url=arc_url, name=name,
                                      type='REST',
+                                     uuid=str(uuid.uuid1()),
                                      method='I',
                                      title=arcserver.mapName,
                                      abstract=arcserver.serviceDescription,

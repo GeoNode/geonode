@@ -94,6 +94,7 @@ class ServiceForm(forms.ModelForm):
 
     class Meta:
         model = Service
+        labels = {'description': _('Short Name'),}
         fields = ('classification', 'caveat', 'title', 'category',
         'description', 'abstract', 'keywords', 'license', 'maintenance_frequency', 'provenance', 'fees', )
 
