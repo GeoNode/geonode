@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #########################################################################
 #
-# Copyright (C) 2016 OSGeo
+# Copyright (C) 2017 OSGeo
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -19,6 +19,7 @@
 #########################################################################
 
 from django.core.management.base import BaseCommand
+from django.conf import settings
 
 from geonode.messaging.queues import queue_email_events, queue_geoserver_events, \
                    queue_notifications_events, queue_all_events, \
@@ -30,6 +31,7 @@ class Command(BaseCommand):
     help = 'Start the MQ consumer to perform non blocking tasks'
 
     def handle(self, **options):
+
         queue_geoserver_events.purge()
         queue_notifications_events.purge()
         queue_email_events.purge()

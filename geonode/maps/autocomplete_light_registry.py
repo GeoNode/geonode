@@ -18,15 +18,16 @@
 #
 #########################################################################
 
-import autocomplete_light
+from autocomplete_light.registry import register
+from autocomplete_light.autocomplete.shortcuts import AutocompleteModelTemplate
 from models import Map
 
 
-class MapAutocomplete(autocomplete_light.AutocompleteModelTemplate):
+class MapAutocomplete(AutocompleteModelTemplate):
     choice_template = 'autocomplete_response.html'
 
 
-autocomplete_light.register(
+register(
     Map,
     MapAutocomplete,
     search_fields=['title'],

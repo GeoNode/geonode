@@ -18,5 +18,4 @@
 #
 #########################################################################
 
-
 default_app_config = "geonode.social.apps.SocialConfig"
