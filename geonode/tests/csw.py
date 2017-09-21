@@ -156,21 +156,22 @@ class GeoNodeCSWTest(TestCase):
             'Expected a specific abstract in ISO model')
 
         # test BBOX properties in Dublin Core
+        from decimal import Decimal
         self.assertEqual(
-            record.identification.bbox.minx,
-            '-81.8593555',
+            Decimal(record.identification.bbox.minx),
+            Decimal('-81.8593555'),
             'Expected a specific minx coordinate value in ISO model')
         self.assertEqual(
-            record.identification.bbox.miny,
-            '12.1665322',
+            Decimal(record.identification.bbox.miny),
+            Decimal('12.1665322'),
             'Expected a specific minx coordinate value in ISO model')
         self.assertEqual(
-            record.identification.bbox.maxx,
-            '-81.356409',
+            Decimal(record.identification.bbox.maxx),
+            Decimal('-81.356409'),
             'Expected a specific maxx coordinate value in ISO model')
         self.assertEqual(
-            record.identification.bbox.maxy,
-            '13.396306',
+            Decimal(record.identification.bbox.maxy),
+            Decimal('13.396306'),
             'Expected a specific maxy coordinate value in ISO model')
 
         # test for correct link articulation

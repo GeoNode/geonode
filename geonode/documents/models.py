@@ -28,9 +28,9 @@ from django.db.models import signals
 from django.conf import settings
 from django.contrib.contenttypes.models import ContentType
 from django.core.urlresolvers import reverse
-from django.contrib.contenttypes import generic
+from django.contrib.contenttypes import fields
 from django.contrib.staticfiles import finders
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import ugettext as _
 
 from geonode.layers.models import Layer
 from geonode.base.models import ResourceBase, resourcebase_post_save, Link
@@ -107,7 +107,7 @@ class DocumentResourceLink(models.Model):
     # relation to the resource model
     content_type = models.ForeignKey(ContentType)
     object_id = models.PositiveIntegerField()
-    resource = generic.GenericForeignKey('content_type', 'object_id')
+    resource = fields.GenericForeignKey('content_type', 'object_id')
 
 
 def get_related_documents(resource):

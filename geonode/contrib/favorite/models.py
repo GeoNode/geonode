@@ -21,7 +21,7 @@
 from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.contrib.contenttypes.models import ContentType
-from django.contrib.contenttypes import generic
+from django.contrib.contenttypes import fields
 from django.db import models
 
 from geonode.documents.models import Document
@@ -90,7 +90,7 @@ class Favorite(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL)
     content_type = models.ForeignKey(ContentType)
     object_id = models.PositiveIntegerField()
-    content_object = generic.GenericForeignKey('content_type', 'object_id')
+    content_object = fields.GenericForeignKey('content_type', 'object_id')
 
     created_on = models.DateTimeField(auto_now_add=True)
 

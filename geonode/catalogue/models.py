@@ -46,61 +46,69 @@ def catalogue_post_save(instance, sender, **kwargs):
     # change publish state to be able to update
     # properties (#2332)
     is_published = instance.is_published
-    if not is_published:
-        resources = ResourceBase.objects.filter(id=instance.resourcebase_ptr.id)
-        resources.update(is_published=True)
-
-    try:
-        catalogue = get_catalogue()
-        catalogue.create_record(instance)
-        record = catalogue.get_record(instance.uuid)
-    except EnvironmentError, err:
-        msg = 'Could not connect to catalogue to save information for layer "%s"' % instance.name
-        if err.reason.errno == errno.ECONNREFUSED:
-            LOGGER.warn(msg, err)
-            return
-        else:
-            raise err
-
-    msg = ('Metadata record for %s does not exist,'
-           ' check the catalogue signals.' % instance.title)
-    assert record is not None, msg
-
-    msg = ('Metadata record for %s should contain links.' % instance.title)
-    assert hasattr(record, 'links'), msg
-
-    # Create the different metadata links with the available formats
-    for mime, name, metadata_url in record.links['metadata']:
-        Link.objects.get_or_create(resource=instance.resourcebase_ptr,
-                                   url=metadata_url,
-                                   defaults=dict(name=name,
-                                                 extension='xml',
-                                                 mime=mime,
-                                                 link_type='metadata')
-                                   )
-
-    # generate an XML document (GeoNode's default is ISO)
-    if instance.metadata_uploaded and instance.metadata_uploaded_preserve:
-        md_doc = etree.tostring(etree.fromstring(instance.metadata_xml))
-    else:
-        md_doc = catalogue.catalogue.csw_gen_xml(instance, 'catalogue/full_metadata.xml')
-
-    csw_anytext = catalogue.catalogue.csw_gen_anytext(md_doc)
-
-    csw_wkt_geometry = instance.geographic_bounding_box.split(';')[-1]
-
     resources = ResourceBase.objects.filter(id=instance.resourcebase_ptr.id)
 
-    resources.update(metadata_xml=md_doc)
-    resources.update(csw_wkt_geometry=csw_wkt_geometry)
-    resources.update(csw_anytext=csw_anytext)
+    # Trmporarly enable the Resources
+    if not is_published:
+        resources.update(is_published=True)
 
-    if not is_published:  # revert temporarily changed publishing state
-        resources.update(is_published=is_published)
+    # Update the Catalog
+    try:
+        try:
+            catalogue = get_catalogue()
+            catalogue.create_record(instance)
+            record = catalogue.get_record(instance.uuid)
+        except EnvironmentError, err:
+            msg = 'Could not connect to catalogue to save information for layer "%s"' % instance.name
+            if err.reason.errno == errno.ECONNREFUSED:
+                LOGGER.warn(msg, err)
+                return
+            else:
+                raise err
+
+        msg = ('Metadata record for %s does not exist,'
+               ' check the catalogue signals.' % instance.title)
+        assert record is not None, msg
+
+        msg = ('Metadata record for %s should contain links.' % instance.title)
+        assert hasattr(record, 'links'), msg
+
+        # Create the different metadata links with the available formats
+        for mime, name, metadata_url in record.links['metadata']:
+            Link.objects.get_or_create(resource=instance.resourcebase_ptr,
+                                       url=metadata_url,
+                                       defaults=dict(name=name,
+                                                     extension='xml',
+                                                     mime=mime,
+                                                     link_type='metadata')
+                                       )
+
+        # generate an XML document (GeoNode's default is ISO)
+        if instance.metadata_uploaded and instance.metadata_uploaded_preserve:
+            md_doc = etree.tostring(etree.fromstring(instance.metadata_xml))
+        else:
+            md_doc = catalogue.catalogue.csw_gen_xml(instance, 'catalogue/full_metadata.xml')
+
+        csw_anytext = catalogue.catalogue.csw_gen_anytext(md_doc)
+
+        csw_wkt_geometry = instance.geographic_bounding_box.split(';')[-1]
+
+        resources = ResourceBase.objects.filter(id=instance.resourcebase_ptr.id)
+
+        resources.update(metadata_xml=md_doc)
+        resources.update(csw_wkt_geometry=csw_wkt_geometry)
+        resources.update(csw_anytext=csw_anytext)
+    finally:
+        # Revert temporarily changed publishing state
+        if not is_published:
+            resources.update(is_published=is_published)
 
 
 def catalogue_pre_save(instance, sender, **kwargs):
     """Send information to catalogue"""
+    return
+
+    # no idea why this was removed in notifications branch
     record = None
 
     # if the layer is in the catalogue, try to get the distribution urls

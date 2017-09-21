@@ -22,7 +22,7 @@ import taggit
 
 from django import forms
 from django.contrib.auth.forms import UserCreationForm, UserChangeForm
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import ugettext as _
 
 from geonode.people.models import Profile
 from geonode.base.models import ContactRole

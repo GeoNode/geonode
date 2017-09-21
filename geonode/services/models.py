@@ -26,7 +26,7 @@ from geoserver.catalog import FailedRequestError, Catalog
 from geonode.base.models import ResourceBase
 from geonode.services.enumerations import SERVICE_TYPES, SERVICE_METHODS, GXP_PTYPES
 from geonode.layers.models import Layer
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import ugettext as _
 from django.db.models import signals
 from geonode.people.enumerations import ROLE_VALUES
 from geonode.security.models import remove_object_permissions

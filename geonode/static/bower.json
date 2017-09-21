@@ -38,5 +38,8 @@
     "bootstrap-select": "1.12.1",
     "bootstrap-multiselect": "https://github.com/davidstutz/bootstrap-multiselect",
     "fastselect": "https://github.com/dbrekalo/fastselect.git"
+  },
+  "resolutions": {
+    "angular": "1.4.0"
   }
 }

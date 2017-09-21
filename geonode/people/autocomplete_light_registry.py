@@ -18,11 +18,12 @@
 #
 #########################################################################
 
-import autocomplete_light
+from autocomplete_light.registry import register
+from autocomplete_light.autocomplete.shortcuts import AutocompleteModelTemplate
 from .models import Profile
 
 
-class ProfileAutocomplete(autocomplete_light.AutocompleteModelTemplate):
+class ProfileAutocomplete(AutocompleteModelTemplate):
     choice_template = 'autocomplete_response.html'
 
     def choices_for_request(self):
@@ -30,7 +31,7 @@ class ProfileAutocomplete(autocomplete_light.AutocompleteModelTemplate):
         return super(ProfileAutocomplete, self).choices_for_request()
 
 
-autocomplete_light.register(
+register(
     Profile,
     ProfileAutocomplete,
     search_fields=['first_name', 'last_name', 'email', 'username'],
