@@ -511,6 +511,11 @@ def _register_cascaded_layers(service, owner=None):
     else:
         return HttpResponse('Invalid Service Type', status=400)
 
+def limit_text(text):
+    if text and len(text) > 400:
+        return text[:390]
+    else:
+        return text
 
 def _register_indexed_service(type, url, name, username, password, verbosity=False, wms=None, owner=None, parent=None):
     """
@@ -664,14 +669,14 @@ def _register_indexed_layers(service, wms=None, verbosity=False):
                 #service_layer.layer = saved_layer
                 service_layer.uuid = layer_uuid
                 service_layer.title = wms_layer.title
-                service_layer.description = wms_layer.abstract
+                service_layer.description = abstract
                 #service_layer.styles = wms_layer.styles
                 service_layer.bbox_x0 = bbox[0]
                 service_layer.bbox_x1 = bbox[2]
                 service_layer.bbox_y0 = bbox[1]
                 service_layer.bbox_y1 = bbox[3]
                 service_layer.srid = srid
-                service_layer.keywords = ','.join(wms_layer.keywords)
+                service_layer.keywords = limit_text(','.join(wms_layer.keywords))
                 service_layer.save()
 
                 #resourcebase_post_save(saved_layer, Layer)
