@@ -153,20 +153,20 @@ def data_request_detail(request, pk, template='datarequests/data_detail.html'):
     context_dict["request_reject_form"]= DataRequestRejectForm(instance=data_request)
 
     return render_to_response(template, RequestContext(request, context_dict))
-    
+
 @login_required
 def data_request_edit(request, pk, template ='datarequests/data_detail_edit.html'):
     data_request = get_object_or_404(DataRequest, pk=pk)
     if not request.user.is_superuser:
         return HttpResponseRedirect('/forbidden')
-    
-    if request.method == 'GET': 
+
+    if request.method == 'GET':
         context_dict={"data_request":data_request}
         initial_data = model_to_dict(data_request)
         if not DataRequestEditForm.INTENDED_USE_CHOICES.__contains__(initial_data['purpose']):
-            initial_data['purpose_other'] = initial_data['purpose'] 
+            initial_data['purpose_other'] = initial_data['purpose']
             initial_data['purpose'] = 'other'
-            
+
         context_dict["form"] = DataRequestEditForm(initial = initial_data)
         return render(request, template, context_dict)
     else:
@@ -325,7 +325,7 @@ def data_request_tag_suc_all(request):
             messages.info(request,"The requests are currently being tagged")
         else:
             messages.info(request,"No request has a shapefile")
-        
+
         return HttpResponseRedirect(reverse('datarequests:data_request_browse'))
     else:
         return  HttpResponseRedirect('/forbidden/')
@@ -338,11 +338,11 @@ def data_request_tag_suc(request,pk):
             messages.info(request,"This request is currently being tagged")
         else:
             messages.info(request,"This request does not have a shapefile")
-        
+
         return HttpResponseRedirect(dr.get_absolute_url())
     else:
         return  HttpResponseRedirect('/forbidden/')
-        
+
 def data_request_notify_suc(request,pk):
     if request.user.is_superuser and request.method=='POST':
         dr = get_object_or_404(DataRequest, pk=pk)
@@ -355,7 +355,7 @@ def data_request_notify_suc(request,pk):
         return HttpResponseRedirect(dr.get_absolute_url())
     else:
         return HttpResponseRedirect('/forbidden/')
-        
+
 def data_request_notify_requester(request,pk):
     if request.user.is_superuser and request.method=='POST':
         dr = get_object_or_404(DataRequest, pk=pk)
@@ -364,7 +364,7 @@ def data_request_notify_requester(request,pk):
         return HttpResponseRedirect(dr.get_absolute_url())
     else:
         return HttpResponseRedirect('/forbidden/')
-        
+
 def data_request_forward_request(request,pk):
     if request.user.is_superuser and request.method=='POST':
         dr = get_object_or_404(DataRequest, pk=pk)
@@ -373,7 +373,7 @@ def data_request_forward_request(request,pk):
         return HttpResponseRedirect(dr.get_absolute_url())
     else:
         return HttpResponseRedirect('/forbidden/')
-            
+
 
 def data_request_reverse_geocode_all(request):
     if request.user.is_superuser:
@@ -405,6 +405,18 @@ def data_request_assign_gridrefs(request):
 
     else:
         return HttpResponseRedirect('/forbidden/')
+
+def data_request_assign_gridrefs_user(request, pk):
+    if request.user.is_superuser and request.method=='POST':
+        dr = get_object_or_404(DataRequest, pk=pk)
+        if dr.jurisdiction_shapefile:
+            assign_grid_refs.delay(dr.profile)
+            messages.info(request,"This request is currently being assigned grid refs")
+        else:
+            messages.info(request,"This request does not have a shapefile")
+        return HttpResponseRedirect(dr.get_absolute_url())
+    else:
+        return  HttpResponseRedirect('/forbidden/')
 
 def data_request_facet_count(request):
     #if not request.user.is_superuser:

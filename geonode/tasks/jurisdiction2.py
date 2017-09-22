@@ -23,6 +23,7 @@ from geonode.datarequests.models import DataRequestProfile
 from geonode.datarequests.utils import  get_place_name, get_area_coverage
 
 from django.core.mail import send_mail
+import time
 
 @task(name='geonode.tasks.jurisdiction2.compute_size_update', queue='jurisdiction')
 def compute_size_update(requests_query_list, area_compute = True, data_size = True, save=True):
@@ -38,7 +39,7 @@ def compute_size_update(requests_query_list, area_compute = True, data_size = Tr
                 r.area_coverage = get_area_coverage(geometries)
             if data_size:
                 r.juris_data_size = get_juris_data_size(dissolve_shp(geometries))
-                
+
             if save:
                 message += settings.SITEURL + str(r.get_absolute_url().replace('//','/')) + "\n"
                 r.save()
@@ -48,7 +49,7 @@ def compute_size_update(requests_query_list, area_compute = True, data_size = Tr
 
 def tile_floor(x):
     return int(math.floor(x / float(settings._TILE_SIZE)) * settings._TILE_SIZE)
-    
+
 def tile_ceiling(x):
     return int(math.ceil(x / float(settings._TILE_SIZE)) * settings._TILE_SIZE)
 
@@ -74,30 +75,30 @@ def get_juris_tiles(juris_shp, user=None):
     #    pprint("user: " + user.username + " bounds: "+str((min_x, min_y, max_x, max_y)))
     tile_list = []
     count = 0
-    
+
     pprint("xrange y:"+str(list(xrange(min_y+settings._TILE_SIZE, max_y+settings._TILE_SIZE, settings._TILE_SIZE))))
     pprint("xrange x:"+str(list(xrange(min_x, max_x, settings._TILE_SIZE))))
-    
+
     for tile_y in xrange(min_y+settings._TILE_SIZE, max_y+settings._TILE_SIZE, settings._TILE_SIZE):
         for tile_x in xrange(min_x, max_x, settings._TILE_SIZE):
             tile_ulp = (tile_x, tile_y)
-            pprint("tile_ulp:"+str(tile_ulp))
+            # pprint("tile_ulp:"+str(tile_ulp))
             tile_dlp = (tile_x, tile_y - settings._TILE_SIZE)
             tile_drp = (tile_x + settings._TILE_SIZE, tile_y - settings._TILE_SIZE)
             tile_urp = (tile_x + settings._TILE_SIZE, tile_y)
             tile = Polygon([tile_ulp, tile_dlp, tile_drp, tile_urp])
-            
-            
+
+
             if not tile.intersection(juris_shp).is_empty:
                 gridref = 'E{0}N{1}'.format(int(tile_x / settings._TILE_SIZE), int(tile_y / settings._TILE_SIZE))
-                
+
                 ceph_qs = CephDataObject.objects.filter(grid_ref = gridref)
                 pprint("gridref:"+str(gridref)+" query_length:"+str(len(ceph_qs)))
                 if ceph_qs.count() > 0:
                     tile_list.append(tile)
                 #if len(tile_list) >= 1000:
                 #    return tile_list
-                
+
     return tile_list
 
 def get_juris_data_size(geometry):
@@ -108,11 +109,11 @@ def get_juris_data_size(geometry):
     elif geometry.geom_type == "MultiPolygon":
         for g in geometry.geoms:
             tile_list.extend(get_juris_tiles(g))
-    
+
     pprint("Number of tiles: "+str(len(tile_list)))
-    
+
     total_data_size = 0
-    
+
     for tile in tile_list:
         (minx, miny, maxx, maxy) = tile.bounds
         gridref = "E{0}N{1}".format(int(minx / settings._TILE_SIZE), int(maxy / settings._TILE_SIZE))
@@ -121,7 +122,7 @@ def get_juris_data_size(geometry):
         for georef_query_objects in georef_query:
             total_size += georef_query_objects.size_in_bytes
         total_data_size += total_size
-        
+
     return total_data_size
 
 def assign_grid_ref_util(user):
@@ -129,7 +130,7 @@ def assign_grid_ref_util(user):
     shapefile_name = UserJurisdiction.objects.get(user=user).jurisdiction_shapefile.name
     geometry = dissolve_shp(get_geometries_ogr(shapefile_name))
     gridref_list = []
-    
+
     if geometry:
         tiles = []
         if geometry.geom_type=='MultiPolygon':
@@ -138,7 +139,7 @@ def assign_grid_ref_util(user):
                 tiles.extend(get_juris_tiles(g, user))
         else:
             tiles = get_juris_tiles(geometry, user)
-        
+
         pprint("Done with tiling")
         if len(tiles) < 1:
             pprint("No tiles for {0}".format(user.username))
@@ -146,27 +147,27 @@ def assign_grid_ref_util(user):
             for tile in tiles:
                 (minx, miny, maxx, maxy) = tile.bounds
                 gridref = '"E{0}N{1}"'.format(int(minx / settings._TILE_SIZE), int(maxy / settings._TILE_SIZE))
-                
+
                 gridref_list.append(gridref)
                 #if len(gridref_list) >= 1000:
                 #    break
-            
+
             if len(gridref_list)==1:
                 pprint("gridref:"+gridref_list[0])
                 pprint("Problematic shapefile for user {0} with shapefile {1}".format(user.username, shapefile_name ))
             gridref_jquery = json.dumps(gridref_list)
-        
+
             try:
                 tile_list_obj = UserTiles.objects.get(user=user)
                 tile_list_obj.gridref_list = gridref_jquery
                 tile_list_obj.save()
             except ObjectDoesNotExist as e:
                 tile_list_obj = UserTiles(user=user, gridref_list=gridref_jquery)
-                tile_list_obj.save() 
+                tile_list_obj.save()
     else:
         pprint("Missing shapefile for {0}".format(user.username))
 
-@task(name='geonode.tasks.jurisdiction2.assign_grid_refs', queue='jurisdiction')    
+@task(name='geonode.tasks.jurisdiction2.assign_grid_refs', queue='jurisdiction')
 def assign_grid_refs(user):
     assign_grid_ref_util(user)
 
@@ -185,22 +186,27 @@ def get_geometries_ogr(juris_shp_name, dest_epsg=32651): #returns layer
 
     if not data:
         return []
-        
+
     #reprojection section
-    src_epsg =  get_epsg(juris_shp_name)
-    
+    try:
+        src_epsg =  get_epsg(juris_shp_name)
+    except socket.error:
+        pprint('Socket error, raised. sleeping for 30seconds')
+        time.sleep(30)
+        src_epsg =  get_epsg(juris_shp_name)
+
     if src_epsg == 0:
         return []
-    
+
     src_sref = osr.SpatialReference()
     src_sref.ImportFromEPSG(src_epsg)
-    
+
     dest_sref = osr.SpatialReference()
     dest_sref.ImportFromEPSG(dest_epsg)
     c_transform = osr.CoordinateTransformation(src_sref, dest_sref)
-    
+
     geometry_list = []
-    
+
     for i in range(data.GetFeatureCount()):
         f = data.GetNextFeature()
         geom = f.GetGeometryRef()
@@ -209,14 +215,14 @@ def get_geometries_ogr(juris_shp_name, dest_epsg=32651): #returns layer
         geomWkb = loads(geom.ExportToWkb())
         if not geomWkb.is_valid:
             geomWkb = geomWkb.convex_hull
-        
+
         geometry_list.append(geomWkb)
-            
+
     source = None
     data = None
-    
+
     return geometry_list
-        
+
 def dissolve_shp(geometries):
     #take geometry, returns geometry
     pprint("dissolving geometries ")
@@ -226,35 +232,35 @@ def dissolve_shp(geometries):
     dissolved_geoms = cascaded_union(geometries)
     pprint("succesfully dissolved")
     return dissolved_geoms
-    
+
 def get_epsg(shp_name):
     cat = Catalog(settings.OGC_SERVER['default']['LOCATION'] + 'rest',
         username=settings.OGC_SERVER['default']['USER'],
         password=settings.OGC_SERVER['default']['PASSWORD'])
-    
+
     l = cat.get_layer(shp_name)
     if not l:
         return 0
     src_proj = l.resource.projection
     src_epsg =  int(src_proj.split(':')[1])
-    
+
     return src_epsg
 
 def reproject(geom, src_epsg, dest_epsg=32651):
     if src_epsg == 0:
         return None
-        
+
     if src_epsg == dest_epsg:
         return geom
-    
+
     src_sref = osr.SpatialReference()
     src_sref.ImportFromEPSG(src_epsg)
-    
+
     dest_sref = osr.SpatialReference()
     dest_sref.ImportFromEPSG(dest_epsg=32651)
-    
+
     c_transform = osr.CoordinateTransformation(src_sref, dest_sref)
-    
+
     return geom.Transform(c_transform)
 
 def email_on_error(recipient, message, subject):
