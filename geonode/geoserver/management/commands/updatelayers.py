@@ -97,7 +97,10 @@ class Command(BaseCommand):
         workspace = options.get('workspace')
         filter = options.get('filter')
         store = options.get('store')
-        permissions = ast.literal_eval(options.get('permissions'))
+        if not options.get('permissions'):
+            permissions = None
+        else:
+            permissions = ast.literal_eval(options.get('permissions'))
 
         if verbosity > 0:
             console = sys.stdout
