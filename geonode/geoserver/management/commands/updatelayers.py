@@ -83,7 +83,7 @@ class Command(BaseCommand):
             '-p',
             '--permissions',
             dest="permissions",
-            default="None",
+            default=None,
             help="Permissions to apply to each layer"))
 
     def handle(self, **options):
