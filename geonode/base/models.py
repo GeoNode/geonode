@@ -382,8 +382,11 @@ class _HierarchicalTagManager(_TaggableManager):
             tag_objs.add(HierarchicalKeyword.add_root(name=new_tag))
 
         for tag in tag_objs:
-            self.through.objects.get_or_create(
-                tag=tag, **self._lookup_kwargs())
+            try:
+                self.through.objects.get_or_create(
+                    tag=tag, **self._lookup_kwargs())
+            except Exception as e:
+                logger.exception(e)
 
 
 class Thesaurus(models.Model):
