@@ -318,9 +318,19 @@
             $("#_permissions_feedbacks").find('.modal-title').text(title);
             $("#_permissions_feedbacks").find('.modal-body').text(body);
             $("#_permissions_feedbacks").modal("show");
-          }
+          }, /* - END success - */
+          cache: false
         }
-      );
+      ).fail(function (jqXHR, textStatus, error) {
+            // Handle error here
+            $("#modal_perms").modal("hide");
+            message = JSON.parse(jqXHR.responseText);
+            body = message.message;
+            title = "Error";
+            $("#_permissions_feedbacks").find('.modal-title').text(title);
+            $("#_permissions_feedbacks").find('.modal-body').text(body);
+            $("#_permissions_feedbacks").modal("show");
+      });
       return false;
     };
 
