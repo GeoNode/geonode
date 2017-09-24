@@ -16,7 +16,7 @@ Set the correct GeoServer Proxy URL value
 
 Navigate to ``http://localhost/geoserver``, log in and click on the ``Global`` link in the Settings section.
 
-.. note:: The Geoserver default username is **admin** with **geoserver** as the password. Change this ASAP.
+.. note:: The Geoserver default username is **admin** with **geoserver** as the password. Change this ASAP and update ``local_settings.py``.
 
 .. image:: img/geoserver_global_settings.png
 
