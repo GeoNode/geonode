@@ -534,7 +534,10 @@ Default: ``'admin@example.com'``
 This email address is added to the bottom of the password reset page in case users have trouble unlocking-locking their account.
 
 
-.. _pinax_notifications:
+.. _pinax-notifications:
+
+User notifications settings
+===========================
 
 .. note:: `PINAX_*` settings are relevant if you have `pinax.notifications` app added to `INSTALLED_APPS`.
 

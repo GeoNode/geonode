@@ -414,4 +414,4 @@ If no custom handler for 500 errors is set up in urls.py, Django will call djang
 `pinax.notifications`
 ---------------------
 
-This application enables users to receive notifications from specific events within GeoNode. For user-specific configuration, see :ref:`notifications`. For settings, see :ref:`pinax_notifications`.
+This application enables users to receive notifications from specific events within GeoNode. For user-specific configuration, see :ref:`notifications`. For settings, see :ref:`pinax-notifications`.
