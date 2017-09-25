@@ -959,11 +959,6 @@ LEAFLET_CONFIG = {
             'js': 'lib/js/leaflet-measure.js',
             'auto-include': True,
         },
-        'leaflet-areaselect': {
-            'css': 'lib/css/leaflet-areaselect.css',
-            'js': 'lib/js/leaflet-areaselect.js',
-            'auto-include': True,
-        },
     },
     'SRID': 3857,
     'RESET_VIEW': False

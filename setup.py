@@ -118,7 +118,6 @@ setup(name='GeoNode',
         "django-user-accounts==2.0.2dev",
         # we can't use django-user-account until upstream merge changes for geonode.
         # this is temporary solution
-        # "git+https://github.com/cezio/django-user-accounts/archive/252_255_mixed.zip",
         "geonode-arcrest>=10.2",
         "geonode-dialogos>=0.5",
         "gsconfig==1.0.6",  # (1.0.3 in ppa) FIXME
