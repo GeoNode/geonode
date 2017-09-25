@@ -677,7 +677,7 @@ class GeoNodeMapTest(TestCase):
                     raster_layer.delete()
                 if new_vector_layer:
                     new_vector_layer.delete()
-            except Exception as e:
+            except:
                 tb = traceback.format_exc()
                 print(tb)
 
