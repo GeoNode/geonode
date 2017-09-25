@@ -26,5 +26,5 @@ from kombu import BrokerConnection
 
 # run in-memory if broker is not available
 # see producer code for synchronous queue
-url = settings.ASYNC_NOTIFICATIONS_BROKER_URL or 'memory://'
+url = settings.ASYNC_SIGNALS_BROKER_URL or 'memory://'
 connection = BrokerConnection(url)

@@ -1065,10 +1065,10 @@ if NOTIFICATION_ENABLED:
 # broker url is for celery worker
 BROKER_URL = os.getenv('BROKER_URL', "django://")
 
-# async notifications can be the same as broker url
+# async signals can be the same as broker url
 # but they should have separate setting anyway
 # use amqp:// for local rabbitmq server
-ASYNC_NOTIFICATIONS_BROKER_URL = 'memory://'
+ASYNC_SIGNALS_BROKER_URL = 'memory://'
 
 CELERY_ALWAYS_EAGER = True
 CELERY_EAGER_PROPAGATES_EXCEPTIONS = True

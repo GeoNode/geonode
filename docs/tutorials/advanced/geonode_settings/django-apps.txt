@@ -72,6 +72,8 @@ categories
   Manages uploaded files that can be related to maps.  Documents can be any type of file that is included in the
   ALLOWED_DOCUMENTS_TYPES setting.
 
+.. _settings_entries:
+
 ``settings.py`` Entries
 -----------------------
 
@@ -314,6 +316,19 @@ DEFAULT_MAP_ZOOM
   The zoom-level to use in newly created maps.  This works like the OpenLayers
   zoom level setting; 0 is at the world extent and each additional level cuts
   the viewport in half in each direction.
+
+ASYNC_SIGNALS_BROKER_URL
+  Default: ```memory://``
+
+  Sets broker url for async signals handling. Asynchronous signals are part of
+  scalable architecture of GeoNode. 
+
+  Internally, this will be parsed and used by `kombu` library. Default is `memory` 
+  transport, meaning all signals send with this method will be handled in-process,
+  synchronously. When using `memory://` you do not need to set up external AMQP broker.
+
+  See :ref:`async_signals` for details.
+
 
 ``geonode.proxy`` - Assist JavaScript applications in accessing remote servers
 ==============================================================================
