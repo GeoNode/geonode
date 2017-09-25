@@ -18,7 +18,7 @@
 #
 #########################################################################
 
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import ugettext as _
 
 LINK_TYPES = ['original', 'data', 'image', 'metadata', 'html',
               'OGC:WMS', 'OGC:WFS', 'OGC:WCS']
