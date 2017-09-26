@@ -75,8 +75,8 @@ from geonode.utils import build_social_links
 from geonode.geoserver.helpers import cascading_delete, gs_catalog
 from geonode.geoserver.helpers import ogc_server_settings, save_style
 from geonode.base.views import batch_modify
-
 from geonode.base.models import Thesaurus
+from geonode.maps.models import Map
 
 if 'geonode.geoserver' in settings.INSTALLED_APPS:
     from geonode.geoserver.helpers import _render_thumbnail
@@ -432,6 +432,7 @@ def layer_detail(request, layername, template='layers/layer_detail.html'):
     if settings.SOCIAL_ORIGINS:
         context_dict["social_links"] = build_social_links(request, layer)
 
+
     layers_names = layer.alternate
     try:
         if 'geonode' in layers_names:
@@ -492,6 +493,11 @@ def layer_detail(request, layername, template='layers/layer_detail.html'):
 
     except:
         print "Possible error with OWSLib. Turning all available properties to string"
+
+    # maps owned by user needed to fill the "add to existing map section" in template
+    if request.user.is_authenticated():
+        context_dict["maps"] = Map.objects.filter(owner=request.user)
+
 
     return render_to_response(template, RequestContext(request, context_dict))
 
