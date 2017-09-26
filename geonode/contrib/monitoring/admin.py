@@ -16,8 +16,7 @@ from geonode.contrib.monitoring.models import (
     MetricNotificationCheck,
     NotificationMetricDefinition,
     NotificationReceiver,
-    OWSService,
-    )
+    OWSService,)
 
 
 @admin.register(Host)
@@ -47,6 +46,7 @@ class ServiceAdmin(admin.ModelAdmin):
 
     list_select_related = True
 
+
 @admin.register(ServiceTypeMetric)
 class ServiceTypeMetricAdmin(admin.ModelAdmin):
     list_display = ('service_type', 'metric',)
@@ -55,13 +55,15 @@ class ServiceTypeMetricAdmin(admin.ModelAdmin):
 
 @admin.register(Metric)
 class MetricAdmin(admin.ModelAdmin):
-    list_display = ('name','type',)
+    list_display = ('name', 'type',)
     list_filter = ('type',)
 
 
 @admin.register(RequestEvent)
 class RequestEvent(admin.ModelAdmin):
-    list_display = ('service', 'created', 'request_method', 'request_path', 'response_status', 'ows_service', 'response_size', 'client_country',)
+    list_display = ('service', 'created', 'request_method', 'request_path',
+                    'response_status', 'ows_service', 'response_size',
+                    'client_country',)
     list_filter = ('host', 'request_method', 'response_status', 'ows_service',)
 
 
@@ -86,18 +88,20 @@ class NotificationCheckAdmin(admin.ModelAdmin):
     list_display = ('name', 'active',)
     list_filter = ('active',)
 
+
 @admin.register(MetricNotificationCheck)
 class MetricNotificationCheckAdmin(admin.ModelAdmin):
     list_display = ('id', 'notification_check', 'metric', 'min_value', 'max_value', 'max_timeout',)
-    raw_id_fields= ('notification_check', 'resource', 'label',)
+    raw_id_fields = ('notification_check', 'resource', 'label',)
+
 
 @admin.register(NotificationMetricDefinition)
 class NotificationCheckDefinitionAdmin(admin.ModelAdmin):
     list_display = ('notification_check', 'metric', 'field_option', 'min_value', 'max_value', 'steps',)
     raw_id_fields = ('notification_check', 'metric',)
 
+
 @admin.register(NotificationReceiver)
 class NotificationReceiverAdmin(admin.ModelAdmin):
     list_display = ('notification_check', 'user', 'email',)
     raw_id_fields = ('notification_check', 'user',)
-

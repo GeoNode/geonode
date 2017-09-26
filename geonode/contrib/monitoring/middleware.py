@@ -29,6 +29,7 @@ from django.http import HttpResponse
 
 FILTER_URLS = (settings.MEDIA_URL, settings.STATIC_URL, '/admin/jsi18n/',)
 
+
 class MonitoringMiddleware(object):
 
     def __init__(self):
@@ -78,10 +79,10 @@ class MonitoringMiddleware(object):
         if self.service:
             response = HttpResponse('')
             self.log.info('request', exc_info=exception, extra={'request': request, 'response': response})
-      
+
     def process_view(self, request, view_func, view_args, view_kwargs):
         m = request.resolver_match
-        if request.resolver_match.namespace in ('admin', 'monitoring',):
+        if m.namespace in ('admin', 'monitoring',):
             request._monitoring = None
             del request._monitoring
 
@@ -110,9 +111,6 @@ class MonitoringMiddleware(object):
         m = getattr(request, '_monitoring', None)
         if m is None:
             return
-        
         now = datetime.now()
         m['finished'] = now
         self.register_exception(request, exception)
-
-        

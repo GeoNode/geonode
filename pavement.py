@@ -309,6 +309,8 @@ def start():
     """
     Start GeoNode (Django, GeoServer & Client)
     """
+    call_task('start_messaging')
+
     info("GeoNode is now available.")
 
 
@@ -318,6 +320,7 @@ def stop_django():
     Stop the GeoNode Django application
     """
     kill('python', 'runserver')
+    kill('python', 'runmessaging')
 
 
 @task
@@ -351,6 +354,14 @@ def start_django():
     bind = options.get('bind', '')
     foreground = '' if options.get('foreground', False) else '&'
     sh('python manage.py runserver %s %s' % (bind, foreground))
+
+def start_messaging():
+    """
+    Start the GeoNode messaging server
+    """
+    foreground = '' if options.get('foreground', False) else '&'
+    sh('python manage.py runmessaging %s' % foreground)
+
 
 
 @cmdopts([

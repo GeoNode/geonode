@@ -31,13 +31,12 @@ from geonode import get_version
 from geonode.celery_app import app  # flake8: noqa
 from distutils.util import strtobool
 from django.conf import global_settings
-import djcelery
 import dj_database_url
-
 
 #
 # General Django development settings
 #
+import django
 
 # GeoNode Version
 VERSION = get_version()
@@ -288,6 +287,7 @@ GEONODE_APPS = (
     'geonode.geoserver',
     'geonode.upload',
     'geonode.tasks',
+    'geonode.messaging',
 
 )
 
@@ -339,14 +339,14 @@ INSTALLED_APPS = (
     'geoexplorer',
     'leaflet',
     'django_extensions',
-    #'geonode-client',
+    # 'geonode-client',
     # 'haystack',
     'autocomplete_light',
     'mptt',
     # 'modeltranslation',
     # 'djkombu',
-    'djcelery',
-    'kombu.transport.django',
+    # 'djcelery',
+    # 'kombu.transport.django',
 
     'storages',
     'floppyforms',
@@ -359,7 +359,9 @@ INSTALLED_APPS = (
     'account',
     'avatar',
     'dialogos',
+    # 'pinax.comments',
     'agon_ratings',
+    # 'pinax.ratings',
     'announcements',
     'actstream',
     'user_messages',
@@ -399,7 +401,7 @@ LOGGING = {
     'handlers': {
         'null': {
             'level': 'ERROR',
-            'class': 'django.utils.log.NullHandler',
+            'class': 'logging.NullHandler',
         },
         'console': {
             'level': 'ERROR',
@@ -577,8 +579,8 @@ THEME_ACCOUNT_CONTACT_EMAIL = os.getenv(
 # some problematic 3rd party apps
 TEST_RUNNER = 'django_nose.NoseTestSuiteRunner'
 
-
 TEST = 'test' in sys.argv
+INTEGRATION = 'geonode.tests.integration' in sys.argv
 # Arguments for the test runner
 NOSE_ARGS = [
     '--nocapture',
@@ -624,6 +626,8 @@ OGC_SERVER_DEFAULT_PASSWORD = os.getenv(
     'GEOSERVER_ADMIN_PASSWORD', 'geoserver'
 )
 
+GEOFENCE_SECURITY_ENABLED = False if TEST and not INTEGRATION else True
+
 # OGC (WMS/WFS/WCS) Server Settings
 # OGC (WMS/WFS/WCS) Server Settings
 OGC_SERVER = {
@@ -641,6 +645,7 @@ OGC_SERVER = {
         'MAPFISH_PRINT_ENABLED': True,
         'PRINT_NG_ENABLED': True,
         'GEONODE_SECURITY_ENABLED': True,
+        'GEOFENCE_SECURITY_ENABLED': GEOFENCE_SECURITY_ENABLED,
         'GEOGIG_ENABLED': False,
         'WMST_ENABLED': False,
         'BACKEND_WRITE_ENABLED': True,
@@ -1076,7 +1081,15 @@ USER_MESSAGES_ALLOW_MULTIPLE_RECIPIENTS = False
 if NOTIFICATION_ENABLED:
     INSTALLED_APPS += (NOTIFICATIONS_MODULE, )
 
+
+# broker url is for celery worker
 BROKER_URL = os.getenv('BROKER_URL', "django://")
+
+# async signals can be the same as broker url
+# but they should have separate setting anyway
+# use amqp:// for local rabbitmq server
+ASYNC_SIGNALS_BROKER_URL = 'memory://'
+
 CELERY_ALWAYS_EAGER = True
 CELERY_EAGER_PROPAGATES_EXCEPTIONS = True
 CELERY_IGNORE_RESULT = True
@@ -1131,7 +1144,7 @@ if S3_MEDIA_ENABLED:
     MEDIA_URL = "https://%s/%s/" % (AWS_S3_BUCKET_DOMAIN, MEDIAFILES_LOCATION)
 
 
-djcelery.setup_loader()
+# djcelery.setup_loader()
 
 # There are 3 ways to override GeoNode settings:
 # 1. Using environment variables, if your changes to GeoNode are minimal.

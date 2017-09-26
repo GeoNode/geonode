@@ -47,4 +47,5 @@ class MonitoringAppConfig(NotificationsAppConfigBase):
         super(MonitoringAppConfig, self).ready()
         signals.post_migrate.connect(self.run_setup_hooks, sender=self)
 
+
 default_app_config = 'geonode.contrib.monitoring.MonitoringAppConfig'

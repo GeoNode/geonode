@@ -72,6 +72,8 @@ categories
   Manages uploaded files that can be related to maps.  Documents can be any type of file that is included in the
   ALLOWED_DOCUMENTS_TYPES setting.
 
+.. _settings_entries:
+
 ``settings.py`` Entries
 -----------------------
 
@@ -315,6 +317,19 @@ DEFAULT_MAP_ZOOM
   zoom level setting; 0 is at the world extent and each additional level cuts
   the viewport in half in each direction.
 
+ASYNC_SIGNALS_BROKER_URL
+  Default: ```memory://``
+
+  Sets broker url for async signals handling. Asynchronous signals are part of
+  scalable architecture of GeoNode. 
+
+  Internally, this will be parsed and used by `kombu` library. Default is `memory` 
+  transport, meaning all signals send with this method will be handled in-process,
+  synchronously. When using `memory://` you do not need to set up external AMQP broker.
+
+  See :ref:`async_signals` for details.
+
+
 ``geonode.proxy`` - Assist JavaScript applications in accessing remote servers
 ==============================================================================
 
@@ -391,3 +406,12 @@ GeoNode customizes some of Django's default error templates.
 --------
 
 If no custom handler for 500 errors is set up in urls.py, Django will call django.views.defaults.server_error which expects a 500.html file in the root of the templates directory. In GeoNode, we have put a template that does not inherit from anything as 500.html and because most of Django's machinery is down when an INTERNAL ERROR (500 code) is encountered the use of template tags should be avoided.
+
+
+3rd party apps
+==============
+
+`pinax.notifications`
+---------------------
+
+This application enables users to receive notifications from specific events within GeoNode. For user-specific configuration, see :ref:`notifications`. For settings, see :ref:`pinax-notifications`.

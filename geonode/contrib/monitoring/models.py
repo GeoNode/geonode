@@ -280,6 +280,7 @@ class OWSService(models.Model):
     def is_other(self):
         return self.name == self.OWS_OTHER
 
+
 class RequestEvent(models.Model):
     _methods = 'get post head options put delete'.upper().split(' ')
     METHODS = zip(_methods, _methods)
@@ -346,7 +347,7 @@ class RequestEvent(models.Model):
         return str(user_agents.parse(ua))
 
     @classmethod
-    def from_geonode(cls, service,  request, response):
+    def from_geonode(cls, service, request, response):
         received = datetime.now()
         rqmeta = getattr(request, '_monitoring', {})
         created = rqmeta.get('started', received)
@@ -878,7 +879,7 @@ class NotificationCheck(models.Model):
             if emails and isinstance(emails, list):
                 emails = '\n'.join(emails)
                 data['emails'] = emails
-           
+
         f = self.get_user_form(data=data)
         if not f.is_valid():
             err = forms.ValidationError(f.errors)
@@ -1146,8 +1147,11 @@ class MetricNotificationCheck(models.Model):
 
         msg_prefix = ' '.join(msg_prefix)
         description_tmpl = ("{} {} should be {{}} "
-                            "{{:0.0f}}{}, got {{:0.0f}}{} instead").format(msg_prefix, metric_name, unit_name, unit_name).strip()
-
+                            "{{:0.0f}}{}, got {{:0.0f}}{} instead").format(msg_prefix,
+                                                                           metric_name,
+                                                                           unit_name,
+                                                                           unit_name)\
+                                                                   .strip()
 
         if self.min_value is not None:
             had_check = True
@@ -1172,7 +1176,7 @@ class MetricNotificationCheck(models.Model):
                 total_seconds = self.max_timeout.total_seconds()
                 actual_seconds = (valid_on - metric.valid_to).total_seconds()
                 msg = "{} {} seconds".format(def_msg, int(total_seconds))
-                description = description_tmpl.format('recored at most ', 
+                description = description_tmpl.format('recored at most ',
                                                       '{} seconds ago'.format(total_seconds),
                                                       '{} seconds'.format(actual_seconds))
                 raise self.MetricValueError(metric, self,
@@ -1238,7 +1242,7 @@ class BuiltIns(object):
 
     values_numeric = ('storage.total', 'storage.used', 'storage.free', 'mem.free', 'mem.usage',
                       'mem.buffers', 'mem.all',)
-    counters = ('request.count',  'network.in', 'network.out', 'response.error.count', 'uptime',)
+    counters = ('request.count', 'network.in', 'network.out', 'response.error.count', 'uptime',)
 
     unit_seconds = ('response.time', 'uptime', 'cpu.usage',)
     unit_bytes = ('response.size', 'network.in', 'network.out',

@@ -70,7 +70,7 @@ class BaseProbe(object):
         return {'all': m(vm.total),
                 'usage': m(vm.used),
                 'free': m(vm.free),
-                'percent': (vm.used/(vm.total *100.0))
+                'percent': (vm.used/(vm.total * 100.0))
                 }
 
     @staticmethod
