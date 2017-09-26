@@ -285,6 +285,11 @@ community."
         layer = Layer.objects.all()[0]
         self.client.get(reverse('new_map') + '?layer=' + layer.alternate)
 
+    def test_add_layer_to_existing_map(self):
+        layer = Layer.objects.all()[0]
+        map_obj = Map.objects.get(id=1)
+        self.client.get(reverse('add_layer') + '?layer_name=%s&map_id=%s' % (layer.alternate, map_obj.id))
+
     def test_ajax_map_permissions(self):
         """Verify that the ajax_layer_permissions view is behaving as expected
         """
