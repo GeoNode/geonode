@@ -49,6 +49,7 @@ class GeoserverStatus extends React.Component {
 
     this.handleChange = (event, target, host) => {
       this.setState({ host });
+      this.get();
     };
   }
 
