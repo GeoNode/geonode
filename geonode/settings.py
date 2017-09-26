@@ -1216,6 +1216,7 @@ if MONITORING_ENABLED:
     INSTALLED_APPS + ('geonode.contrib.monitoring',)
     MIDDLEWARE_CLASSES + ('geonode.contrib.monitoring.middleware.MonitoringMiddleware',)
 
+GEOIP_PATH = os.path.join(PROJECT_ROOT, 'GeoIPCities.dat')
 # If this option is enabled, Resources belonging to a Group won't be visible by others
 GROUP_PRIVATE_RESOURCES = False
 
@@ -1226,4 +1227,6 @@ GROUP_MANDATORY_RESOURCES = False
 MAP_CLIENT_USE_CROSS_ORIGIN_CREDENTIALS = strtobool(os.getenv(
     'MAP_CLIENT_USE_CROSS_ORIGIN_CREDENTIALS',
     'False'
-))
+)
+
+)

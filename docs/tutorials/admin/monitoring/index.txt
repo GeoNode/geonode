@@ -9,6 +9,8 @@ GeoNode Monitoring
 Internal Monitoring Application (geonode.contrib.monitoring)
 ------------------------------------------------------------
 
+.. note:: This application requires MaxMind's GeoIP database file.
+
 Base concepts and objects
 ~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -54,6 +56,7 @@ Installation
       NOTIFICATION_ENABLED = True
 
 * run ``manage.py migrate monitoring`` to apply db schema changes and insert initial data
+* run ``manage.py updategeoip`` to fetch MaxMind's GeoIP database file. It will be written to path specified by `GEOIP_PATH` setting.
 * add ``manage.py collect_metrics`` call to crontab.
 
 Configuration
