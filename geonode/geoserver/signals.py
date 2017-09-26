@@ -72,9 +72,12 @@ def geoserver_pre_save(*args, **kwargs):
 
 def geoserver_post_save(instance, sender, **kwargs):
     from geonode.messaging import producer
-    instance_dict = model_to_dict(instance)
-    payload = json_serializer_producer(instance_dict)
-    producer.geoserver_upload_layer(payload)
+    # this is attached to various models, (ResourceBase, Document)
+    # so we should select what will be handled here
+    if isinstance(instance, Layer):
+        instance_dict = model_to_dict(instance)
+        payload = json_serializer_producer(instance_dict)
+        producer.geoserver_upload_layer(payload)
 
 
 def geoserver_post_save_local(layer_id, *args, **kwargs):
