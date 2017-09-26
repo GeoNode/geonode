@@ -29,6 +29,7 @@ import decimal
 from lxml import etree
 from requests import Request
 from itertools import chain
+from six import string_types
 from geoserver.catalog import Catalog
 from owslib.wfs import WebFeatureService
 
@@ -431,8 +432,6 @@ def layer_detail(request, layername, template='layers/layer_detail.html'):
     if settings.SOCIAL_ORIGINS:
         context_dict["social_links"] = build_social_links(request, layer)
 
-
-    #d
     layers_names = layer.alternate
     try:
         if 'geonode' in layers_names:
@@ -493,7 +492,6 @@ def layer_detail(request, layername, template='layers/layer_detail.html'):
 
     except:
         print "Possible error with OWSLib. Turning all available properties to string"
-    #d
 
     return render_to_response(template, RequestContext(request, context_dict))
 
@@ -527,7 +525,6 @@ def load_layer_data(request, template='layers/layer_detail.html'):
 
         # loop the dictionary based on the values on the list and add the properties
         # in the dictionary (if doesn't exist) together with the value
-        from six import string_types
         for i in range(len(decoded_features)):
 
             for key, value in decoded_features[i]['properties'].iteritems():
