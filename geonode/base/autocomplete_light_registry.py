@@ -18,7 +18,8 @@
 #
 #########################################################################
 
-import autocomplete_light
+from autocomplete_light.registry import register
+from autocomplete_light.autocomplete.shortcuts import AutocompleteModelBase, AutocompleteModelTemplate
 
 from guardian.shortcuts import get_objects_for_user
 from django.conf import settings
@@ -28,7 +29,7 @@ from django.contrib.auth.models import Group
 from models import ResourceBase, Region, HierarchicalKeyword, ThesaurusKeywordLabel
 
 
-class ResourceBaseAutocomplete(autocomplete_light.AutocompleteModelTemplate):
+class ResourceBaseAutocomplete(AutocompleteModelTemplate):
     choice_template = 'autocomplete_response.html'
     model = ResourceBase
 
@@ -76,23 +77,23 @@ class ResourceBaseAutocomplete(autocomplete_light.AutocompleteModelTemplate):
         return super(ResourceBaseAutocomplete, self).choices_for_request()
 
 
-autocomplete_light.register(Region,
-                            search_fields=['name'],
-                            autocomplete_js_attributes={'placeholder': 'Region/Country ..', },)
+register(Region,
+         search_fields=['name'],
+         autocomplete_js_attributes={'placeholder': 'Region/Country ..', },)
 
-autocomplete_light.register(ResourceBaseAutocomplete,
-                            search_fields=['title'],
-                            order_by=['title'],
-                            limit_choices=100,
-                            autocomplete_js_attributes={'placeholder': 'Resource name..', },)
+register(ResourceBaseAutocomplete,
+         search_fields=['title'],
+         order_by=['title'],
+         limit_choices=100,
+         autocomplete_js_attributes={'placeholder': 'Resource name..', },)
 
-autocomplete_light.register(HierarchicalKeyword,
-                            search_fields=['name', 'slug'],
-                            autocomplete_js_attributes={'placeholder':
-                                                        'A space or comma-separated list of keywords', },)
+register(HierarchicalKeyword,
+         search_fields=['name', 'slug'],
+         autocomplete_js_attributes={'placeholder':
+                                     'A space or comma-separated list of keywords', },)
 
 
-class ThesaurusKeywordLabelAutocomplete(autocomplete_light.AutocompleteModelBase):
+class ThesaurusKeywordLabelAutocomplete(AutocompleteModelBase):
 
     search_fields = ['label']
 
@@ -113,7 +114,7 @@ if hasattr(settings, 'THESAURI'):
 
         # print('Registering thesaurus autocomplete for {}: {}'.format(tname, ac_name))
 
-        autocomplete_light.register(
+        register(
             ThesaurusKeywordLabelAutocomplete,
             name=ac_name,
             choices=ThesaurusKeywordLabel.objects.filter(Q(keyword__thesaurus__identifier=tname))

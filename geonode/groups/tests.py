@@ -142,7 +142,7 @@ class SmokeTest(TestCase):
 
         perms_info = _perms_info_json(layer)
         # Ensure foo is in the perms_info output
-        self.assertDictEqual(json.loads(perms_info)['groups'], {'bar': ['view_resourcebase']})
+        self.assertItemsEqual(json.loads(perms_info)['groups'], {'bar': ['view_resourcebase']})
 
     def test_resource_permissions(self):
         """
@@ -176,7 +176,7 @@ class SmokeTest(TestCase):
             if settings.DEFAULT_ANONYMOUS_VIEW_PERMISSION:
                 expected_permissions.setdefault(u'anonymous', []).append(u'view_resourcebase')
 
-            self.assertDictEqual(permissions.get('groups'), expected_permissions)
+            self.assertItemsEqual(permissions.get('groups'), expected_permissions)
 
             permissions = {
                 'groups': {
@@ -206,7 +206,7 @@ class SmokeTest(TestCase):
                 permissions = json.loads(permissions)
 
             # Make sure the bar group now has write permissions
-            self.assertDictEqual(permissions['groups'], {'bar': ['change_resourcebase']})
+            self.assertItemsEqual(permissions['groups'], {'bar': ['change_resourcebase']})
 
             # Remove group permissions
             permissions = {"users": {"admin": ['change_resourcebase']}}
@@ -230,7 +230,7 @@ class SmokeTest(TestCase):
                 permissions = json.loads(permissions)
 
             # Assert the bar group no longer has permissions
-            self.assertDictEqual(permissions['groups'], {})
+            self.assertItemsEqual(permissions['groups'], {})
 
     def test_create_new_group(self):
         """

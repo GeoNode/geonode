@@ -391,3 +391,12 @@ GeoNode customizes some of Django's default error templates.
 --------
 
 If no custom handler for 500 errors is set up in urls.py, Django will call django.views.defaults.server_error which expects a 500.html file in the root of the templates directory. In GeoNode, we have put a template that does not inherit from anything as 500.html and because most of Django's machinery is down when an INTERNAL ERROR (500 code) is encountered the use of template tags should be avoided.
+
+
+3rd party apps
+==============
+
+`pinax.notifications`
+---------------------
+
+This application enables users to receive notifications from specific events within GeoNode. For user-specific configuration, see :ref:`notifications`. For settings, see :ref:`pinax-notifications`.

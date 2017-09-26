@@ -175,8 +175,8 @@
               <tbody>
                 {% for attribute in resource.attributes %}
                   <tr>
-                    <td {% if attribute.attribute_label and attribute.attribute_label != attribute.attribute %}title="{{ attribute.attribute }}"{% endif %}>{{ attribute }}</td>
-                    <td>{{ attribute.attribute_label|default:"" }}</td>
+                    <td {% if attribute.attribute_label and attribute.attribute_label != attribute.attribute %}title="{{ attribute.attribute }}"{% endif %}>{{ attribute.attribute }}</td>
+                    <td {% if attribute.attribute_label and attribute.attribute_label != attribute.attribute %}title="{{ attribute.attribute }}"{% endif %}>{{ attribute.attribute_label|default:"" }}</td>
                     <td>{{ attribute.description|default:"" }}</td>
                     {% if wps_enabled %}
                       {% if attribute.unique_values == "NA" %}

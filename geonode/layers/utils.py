@@ -44,6 +44,7 @@ from django.db.models import Q
 # Geonode functionality
 from geonode import GeoNodeException
 from geonode.people.utils import get_valid_user
+from geonode.base.models import ResourceBase
 from geonode.layers.models import Layer, UploadSession
 from geonode.base.models import Link, SpatialRepresentationType, TopicCategory, Region, License
 from geonode.layers.models import shp_exts, csv_exts, vec_exts, cov_exts
@@ -227,7 +228,6 @@ def get_valid_name(layer_name):
     """
     Create a brand new name
     """
-
     name = _clean_string(layer_name)
     proposed_name = name
     count = 1
@@ -249,7 +249,7 @@ def get_valid_layer_name(layer, overwrite):
     if isinstance(layer, Layer):
         layer_name = layer.name
     elif isinstance(layer, basestring):
-        layer_name = layer
+        layer_name = str(layer)
     else:
         msg = ('You must pass either a filename or a GeoNode layer object')
         raise GeoNodeException(msg)
@@ -537,9 +537,14 @@ def file_upload(filename, name=None, user=None, title=None, abstract=None,
         if layer.upload_session:
             layer.upload_session.layerfile_set.all().delete()
         layer.upload_session = upload_session
+
         # Pass the parameter overwrite to tell whether the
         # geoserver_post_save_signal should upload the new file or not
         layer.overwrite = overwrite
+
+        # Blank out the store if overwrite is true.
+        # geoserver_post_save_signal should upload the new file if needed
+        layer.store = ''
         layer.save()
 
     # Assign the keywords (needs to be done after saving)
@@ -555,30 +560,31 @@ def file_upload(filename, name=None, user=None, title=None, abstract=None,
             layer.regions.clear()
             layer.regions.add(*regions_resolved)
 
-    saveAgain = False
-
+    to_update = {}
     if title is not None:
-        layer.title = title
-        saveAgain = True
+        to_update['title'] = title
 
     if abstract is not None:
-        layer.abstract = abstract
-        saveAgain = True
+        to_update['abstract'] = abstract
 
     if date is not None:
-        layer.date = datetime.strptime(date, '%Y-%m-%d %H:%M:%S')
-        saveAgain = True
+        to_update['date'] = datetime.strptime(date, '%Y-%m-%d %H:%M:%S')
 
     if license is not None:
-        layer.license = license
-        saveAgain = True
+        to_update['license'] = license
 
     if category is not None:
-        layer.category = category
-        saveAgain = True
+        to_update['category'] = category
 
-    if saveAgain:
-        layer.save()
+    # Update ResourceBase
+    if not to_update:
+        pass
+    else:
+        ResourceBase.objects.filter(id=layer.resourcebase_ptr.id).update(**to_update)
+        Layer.objects.filter(id=layer.id).update(**to_update)
+
+        # Refresh from DB
+        layer.refresh_from_db()
 
     return layer
 
@@ -785,6 +791,7 @@ def create_thumbnail(instance, thumbnail_remote_url, thumbnail_create_url=None,
             )
             Layer.objects.filter(id=instance.id) \
                 .update(thumbnail_url=thumbnail_remote_url)
+
             # Download thumbnail and save it locally.
             resp, image = ogc_client.request(thumbnail_create_url)
             if 'ServiceException' in image or \

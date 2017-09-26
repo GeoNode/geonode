@@ -22,7 +22,7 @@ from django import forms
 import taggit
 from geonode.services.models import Service, ServiceLayer
 from geonode.services.enumerations import SERVICE_TYPES
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import ugettext as _
 
 
 class CreateServiceForm(forms.Form):

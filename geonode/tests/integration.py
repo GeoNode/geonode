@@ -25,6 +25,7 @@ import urllib2
 # import base64
 import time
 import logging
+import traceback
 import gisdata
 
 from django.conf import settings
@@ -432,6 +433,10 @@ class GeoNodeMapTest(TestCase):
             gisdata.VECTOR_DATA,
             'san_andres_y_providencia_poi.shp')
         shp_layer = file_upload(shp_file, overwrite=True)
+
+        # we need some time to have the service up and running
+        time.sleep(20)
+
         ws = gs_cat.get_workspace(shp_layer.workspace)
         shp_store = gs_cat.get_store(shp_layer.store, ws)
         shp_store_name = shp_store.name
@@ -464,6 +469,10 @@ class GeoNodeMapTest(TestCase):
             gisdata.VECTOR_DATA,
             'san_andres_y_providencia_poi.shp')
         shp_layer = file_upload(shp_file)
+
+        # we need some time to have the service up and running
+        time.sleep(20)
+
         shp_layer_id = shp_layer.pk
         ws = gs_cat.get_workspace(shp_layer.workspace)
         shp_store = gs_cat.get_store(shp_layer.store, ws)
@@ -578,77 +587,99 @@ class GeoNodeMapTest(TestCase):
         raster_file = os.path.join(gisdata.RASTER_DATA, 'test_grid.tif')
         raster_layer = file_upload(raster_file, overwrite=True)
 
-        self.client.login(username='admin', password='admin')
+        # we need some time to have the service up and running
+        time.sleep(20)
+        new_vector_layer = None
+        try:
+            self.client.login(username='admin', password='admin')
 
-        # test the program can determine the original layer in raster type
-        raster_replace_url = reverse(
-            'layer_replace', args=[
-                raster_layer.service_typename])
-        response = self.client.get(raster_replace_url)
-        self.assertEquals(response.status_code, 200)
-        self.assertEquals(response.context['is_featuretype'], False)
+            # test the program can determine the original layer in raster type
+            raster_replace_url = reverse(
+                'layer_replace', args=[
+                    raster_layer.service_typename])
+            response = self.client.get(raster_replace_url)
+            self.assertEquals(response.status_code, 200)
+            self.assertEquals(response.context['is_featuretype'], False)
 
-        # test the program can determine the original layer in vector type
-        vector_replace_url = reverse(
-            'layer_replace', args=[
-                vector_layer.service_typename])
-        response = self.client.get(vector_replace_url)
-        self.assertEquals(response.status_code, 200)
-        self.assertEquals(response.context['is_featuretype'], True)
+            # test the program can determine the original layer in vector type
+            vector_replace_url = reverse(
+                'layer_replace', args=[
+                    vector_layer.service_typename])
+            response = self.client.get(vector_replace_url)
+            self.assertEquals(response.status_code, 200)
+            self.assertEquals(response.context['is_featuretype'], True)
 
-        # test replace a vector with a raster
-        response = self.client.post(
-            vector_replace_url, {
-                'base_file': open(
-                    raster_file, 'rb')})
-        # TODO: This should really return a 400 series error with the json dict
-        self.assertEquals(response.status_code, 400)
-        response_dict = json.loads(response.content)
-        self.assertEquals(response_dict['success'], False)
+            # test replace a vector with a raster
+            response = self.client.post(
+                vector_replace_url, {
+                    'base_file': open(
+                        raster_file, 'rb')})
+            # TODO: This should really return a 400 series error with the json dict
+            self.assertEquals(response.status_code, 400)
+            response_dict = json.loads(response.content)
+            self.assertEquals(response_dict['success'], False)
 
-        # test replace a vector with a different vector
-        new_vector_file = os.path.join(
-            gisdata.VECTOR_DATA,
-            'san_andres_y_providencia_poi.shp')
-        layer_path, __ = os.path.splitext(new_vector_file)
-        layer_base = open(layer_path + '.shp', 'rb')
-        layer_dbf = open(layer_path + '.dbf', 'rb')
-        layer_shx = open(layer_path + '.shx', 'rb')
-        layer_prj = open(layer_path + '.prj', 'rb')
+            # test replace a vector with a different vector
+            new_vector_file = os.path.join(
+                gisdata.VECTOR_DATA,
+                'san_andres_y_providencia_coastline.shp')
+            layer_path, __ = os.path.splitext(new_vector_file)
+            layer_base = open(layer_path + '.shp', 'rb')
+            layer_dbf = open(layer_path + '.dbf', 'rb')
+            layer_shx = open(layer_path + '.shx', 'rb')
+            layer_prj = open(layer_path + '.prj', 'rb')
 
-        response = self.client.post(
-            vector_replace_url,
-            {'base_file': layer_base,
-             'dbf_file': layer_dbf,
-             'shx_file': layer_shx,
-             'prj_file': layer_prj
-             })
-        self.assertEquals(response.status_code, 200)
-        response_dict = json.loads(response.content)
-        self.assertEquals(response_dict['success'], True)
+            response = self.client.post(
+                vector_replace_url,
+                {'base_file': layer_base,
+                 'dbf_file': layer_dbf,
+                 'shx_file': layer_shx,
+                 'prj_file': layer_prj,
+                 'charset': 'UTF-8'
+                 })
+            response_dict = json.loads(response.content)
 
-        # Get a Layer object for the newly created layer.
-        new_vector_layer = Layer.objects.get(pk=vector_layer.pk)
-        # FIXME(Ariel): Check the typename does not change.
+            if not response_dict['success'] and 'unknown encoding' in response_dict['errors']:
+                print(response_dict['errors'])
+                pass
+            else:
+                self.assertEquals(response.status_code, 200)
+                self.assertEquals(response_dict['success'], True)
 
-        # Test the replaced layer is indeed different from the original layer
-        self.assertNotEqual(vector_layer.bbox_x0, new_vector_layer.bbox_x0)
-        self.assertNotEqual(vector_layer.bbox_x1, new_vector_layer.bbox_x1)
-        self.assertNotEqual(vector_layer.bbox_y0, new_vector_layer.bbox_y0)
-        self.assertNotEqual(vector_layer.bbox_y1, new_vector_layer.bbox_y1)
+                # Get a Layer object for the newly created layer.
+                new_vector_layer = Layer.objects.get(pk=vector_layer.pk)
+                # FIXME(Ariel): Check the typename does not change.
 
-        # test an invalid user without layer replace permission
-        self.client.logout()
-        self.client.login(username='norman', password='norman')
+                # Test the replaced layer is indeed different from the original layer
+                self.assertNotEqual(vector_layer.bbox_x0, new_vector_layer.bbox_x0)
+                self.assertNotEqual(vector_layer.bbox_x1, new_vector_layer.bbox_x1)
+                self.assertNotEqual(vector_layer.bbox_y0, new_vector_layer.bbox_y0)
+                self.assertNotEqual(vector_layer.bbox_y1, new_vector_layer.bbox_y1)
 
-        response = self.client.post(
-            vector_replace_url,
-            {'base_file': layer_base,
-             'dbf_file': layer_dbf,
-             'shx_file': layer_shx,
-             'prj_file': layer_prj
-             })
-        self.assertEquals(response.status_code, 401)
+                # test an invalid user without layer replace permission
+                self.client.logout()
+                self.client.login(username='norman', password='norman')
+
+                response = self.client.post(
+                    vector_replace_url,
+                    {'base_file': layer_base,
+                     'dbf_file': layer_dbf,
+                     'shx_file': layer_shx,
+                     'prj_file': layer_prj
+                     })
+                self.assertEquals(response.status_code, 401)
+        finally:
+            # Clean up and completely delete the layer
+            try:
+                if vector_layer:
+                    vector_layer.delete()
+                if raster_layer:
+                    raster_layer.delete()
+                if new_vector_layer:
+                    new_vector_layer.delete()
+            except:
+                tb = traceback.format_exc()
+                print(tb)
 
     def test_importlayer_mgmt_command(self):
             """Test layer import management command
@@ -663,17 +694,20 @@ class GeoNodeMapTest(TestCase):
                          verbosity=1)
 
             lyr = Layer.objects.get(title='Test San Andres y Providencia Administrative')
-            self.assertIsNotNone(lyr)
-            self.assertEqual(lyr.name, "test_san_andres_y_providencia_administrative")
-            self.assertEqual(lyr.title, "Test San Andres y Providencia Administrative")
-            self.assertEqual(
-                lyr.keyword_list(), [
-                    u'features',
-                    u'import',
-                    u'san andreas',
-                    u'test',
-                    u'test_san_andres_y_providencia_administrative'])
-            lyr.delete()
+            try:
+                self.assertIsNotNone(lyr)
+                self.assertEqual(lyr.name, "test_san_andres_y_providencia_administrative")
+                self.assertEqual(lyr.title, "Test San Andres y Providencia Administrative")
+                self.assertEqual(
+                    lyr.keyword_list(), [
+                        u'features',
+                        u'import',
+                        u'san andreas',
+                        u'test',
+                        u'test_san_andres_y_providencia_administrative'])
+            finally:
+                # Clean up and completely delete the layer
+                lyr.delete()
 
 
 class GeoNodePermissionsTest(TestCase):
@@ -802,7 +836,6 @@ xsi:schemaLocation="http://www.opengis.net/sld http://schemas.opengis.net/sld/1.
     def test_unpublished(self):
         """Test permissions on an unpublished layer
         """
-
         thefile = os.path.join(
             gisdata.VECTOR_DATA,
             'san_andres_y_providencia_poi.shp')
@@ -813,56 +846,55 @@ xsi:schemaLocation="http://www.opengis.net/sld http://schemas.opengis.net/sld/1.
         # we need some time to have the service up and running
         time.sleep(20)
 
-        # request getCapabilities: layer must be there as it is published and
-        # advertised: we need to check if in response there is
-        # <Name>geonode:san_andres_y_providencia_water</Name>
-        url = 'http://localhost:8080/geoserver/ows?' \
-            'service=wms&version=1.3.0&request=GetCapabilities'
-        str_to_check = '<Name>geonode:san_andres_y_providencia_poi</Name>'
-        request = urllib2.Request(url)
-        response = urllib2.urlopen(request)
-        self.assertTrue(any(str_to_check in s for s in response.readlines()))
+        try:
+            # request getCapabilities: layer must be there as it is published and
+            # advertised: we need to check if in response there is
+            # <Name>geonode:san_andres_y_providencia_water</Name>
+            url = 'http://localhost:8080/geoserver/ows?' \
+                'service=wms&version=1.3.0&request=GetCapabilities'
+            str_to_check = '<Name>geonode:san_andres_y_providencia_poi</Name>'
+            request = urllib2.Request(url)
+            response = urllib2.urlopen(request)
+            self.assertTrue(any(str_to_check in s for s in response.readlines()))
 
-        # by default the uploaded layer is
-        self.assertTrue(layer.is_published, True)
-
-        # Clean up and completely delete the layer
-        layer.delete()
+            # by default the uploaded layer is
+            self.assertTrue(layer.is_published, True)
+        finally:
+            # Clean up and completely delete the layer
+            layer.delete()
 
         # with settings disabled
         with self.settings(RESOURCE_PUBLISHING=True):
-
-            thefile = os.path.join(
-                gisdata.VECTOR_DATA,
-                'san_andres_y_providencia_administrative.shp')
-            layer = file_upload(thefile, overwrite=True)
+            layer = file_upload(thefile)
             layer.set_default_permissions()
             check_layer(layer)
 
             # we need some time to have the service up and running
             time.sleep(20)
 
-            str_to_check = '<Name>san_andres_y_providencia_administrative</Name>'
+            try:
+                # by default the uploaded layer must be unpublished
+                self.assertEqual(layer.is_published, False)
 
-            # by default the uploaded layer must be unpublished
-            self.assertEqual(layer.is_published, False)
+                # check the layer is not in GetCapabilities
+                request = urllib2.Request(url)
+                response = urllib2.urlopen(request)
+                self.assertFalse(any(str_to_check in s for s in response.readlines()))
 
-            # check the layer is not in GetCapabilities
-            request = urllib2.Request(url)
-            response = urllib2.urlopen(request)
-            self.assertFalse(any(str_to_check in s for s in response.readlines()))
+                # now test with published layer
+                layer = Layer.objects.get(pk=layer.pk)
+                layer.is_published = True
+                layer.save()
 
-            # now test with published layer
-            resource = layer.get_self_resource()
-            resource.is_published = True
-            resource.save()
+                # we need some time to have the service up and running
+                time.sleep(20)
 
-            request = urllib2.Request(url)
-            response = urllib2.urlopen(request)
-            self.assertTrue(any(str_to_check in s for s in response.readlines()))
-
-            # Clean up and completely delete the layer
-            layer.delete()
+                request = urllib2.Request(url)
+                response = urllib2.urlopen(request)
+                self.assertTrue(any(str_to_check in s for s in response.readlines()))
+            finally:
+                # Clean up and completely delete the layer
+                layer.delete()
 
 
 class GeoNodeThumbnailTest(TestCase):
@@ -879,9 +911,6 @@ class GeoNodeThumbnailTest(TestCase):
     def test_layer_thumbnail(self):
         """Test the layer save method generates a thumbnail link
         """
-
-        self.client.login(username='norman', password='norman')
-
         # TODO: Would be nice to ensure the name is available before
         # running the test...
         norman = get_user_model().objects.get(username="norman")
@@ -893,16 +922,18 @@ class GeoNodeThumbnailTest(TestCase):
             user=norman,
             overwrite=True,
         )
+        try:
+            self.client.login(username='norman', password='norman')
 
-        thumbnail_url = saved_layer.get_thumbnail_url()
-
-        assert thumbnail_url != staticfiles.static(settings.MISSING_THUMBNAIL)
+            thumbnail_url = saved_layer.get_thumbnail_url()
+            self.assertNotEqual(thumbnail_url, staticfiles.static(settings.MISSING_THUMBNAIL))
+        finally:
+            # Cleanup
+            saved_layer.delete()
 
     def test_map_thumbnail(self):
         """Test the map save method generates a thumbnail link
         """
-        self.client.login(username='norman', password='norman')
-
         # TODO: Would be nice to ensure the name is available before
         # running the test...
         norman = get_user_model().objects.get(username="norman")
@@ -914,14 +945,20 @@ class GeoNodeThumbnailTest(TestCase):
             user=norman,
             overwrite=True,
         )
-        saved_layer.set_default_permissions()
-        map_obj = Map(owner=norman, zoom=0,
-                      center_x=0, center_y=0)
-        map_obj.create_from_layer_list(norman, [saved_layer], 'title', '')
+        try:
+            self.client.login(username='norman', password='norman')
 
-        thumbnail_url = map_obj.get_thumbnail_url()
+            saved_layer.set_default_permissions()
+            map_obj = Map(owner=norman, zoom=0,
+                          center_x=0, center_y=0)
+            map_obj.create_from_layer_list(norman, [saved_layer], 'title', '')
 
-        assert thumbnail_url != staticfiles.static(settings.MISSING_THUMBNAIL)
+            thumbnail_url = map_obj.get_thumbnail_url()
+
+            self.assertNotEqual(thumbnail_url, staticfiles.static(settings.MISSING_THUMBNAIL))
+        finally:
+            # Cleanup
+            saved_layer.delete()
 
 
 class GeoNodeMapPrintTest(TestCase):

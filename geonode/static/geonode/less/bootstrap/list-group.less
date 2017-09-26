@@ -26,6 +26,10 @@
   margin-bottom: -1px;
   background-color: @list-group-bg;
   border: 1px solid @list-group-border;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  word-wrap: break-word;
 
   // Round the first and last items
   &:first-child {
@@ -34,6 +38,14 @@
   &:last-child {
     margin-bottom: 0;
     .border-bottom-radius(@list-group-border-radius);
+  }
+
+  // Hover state
+  &:hover,
+  &:focus {
+    overflow: visible; 
+    white-space: normal;
+    width: auto;
   }
 }
 

@@ -762,7 +762,11 @@ def set_attributes_from_geoserver(layer, overwrite=False):
 
 def set_styles(layer, gs_catalog):
     style_set = []
+
     gs_layer = gs_catalog.get_layer(layer.name)
+    if not gs_layer:
+        gs_layer = gs_catalog.get_layer(layer.alternate)
+
     if gs_layer.default_style:
         default_style = gs_layer.default_style
     else:
@@ -1823,13 +1827,11 @@ def create_gs_thumbnail(instance, overwrite=False):
     # Avoid using urllib.urlencode here because it breaks the url.
     # commas and slashes in values get encoded and then cause trouble
     # with the WMS parser.
-    p = "&".join("%s=%s" % item for item in params.items())
+    _p = "&".join("%s=%s" % item for item in params.items())
 
     import posixpath
-
-    thumbnail_remote_url = posixpath.join(ogc_server_settings.PUBLIC_LOCATION, wms_endpoint) + "?" + p
-
-    thumbnail_create_url = posixpath.join(ogc_server_settings.LOCATION, wms_endpoint) + "?" + p
+    thumbnail_remote_url = posixpath.join(ogc_server_settings.PUBLIC_LOCATION, wms_endpoint) + "?" + _p
+    thumbnail_create_url = posixpath.join(ogc_server_settings.LOCATION, wms_endpoint) + "?" + _p
 
     create_thumbnail(instance, thumbnail_remote_url, thumbnail_create_url,
                      ogc_client=http_client, overwrite=overwrite, check_bbox=check_bbox)

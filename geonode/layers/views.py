@@ -35,6 +35,7 @@ from owslib.wfs import WebFeatureService
 from guardian.shortcuts import get_perms
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth import get_user_model
 from django.core.urlresolvers import reverse
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render_to_response
@@ -50,7 +51,7 @@ from django.template.defaultfilters import slugify
 from django.forms.models import inlineformset_factory
 from django.db import transaction
 from django.db.models import F
-from django.forms.util import ErrorList
+from django.forms.utils import ErrorList
 
 from geonode.tasks.deletion import delete_layer
 from geonode.services.models import Service
@@ -320,9 +321,7 @@ def layer_detail(request, layername, template='layers/layer_detail.html'):
 
     # Update count for popularity ranking,
     # but do not includes admins or resource owners
-    if request.user != layer.owner and not request.user.is_superuser:
-        Layer.objects.filter(
-            id=layer.id).update(popular_count=F('popular_count') + 1)
+    layer.view_count_up(request.user)
 
     # center/zoom don't matter; the viewer will center on the layer bounds
     map_obj = GXPMap(
@@ -561,7 +560,7 @@ def layer_feature_catalogue(
 
     attributes = []
 
-    for attrset in layer.attribute_set.all():
+    for attrset in layer.attribute_set.order_by('display_order'):
         attr = {
             'name': attrset.attribute,
             'type': attrset.attribute_type
@@ -980,8 +979,10 @@ def layer_replace(request, layername, template='layers/layer_replace.html'):
                         'layer_detail', args=[
                             saved_layer.service_typename])
             except Exception as e:
+                logger.exception(e)
+                tb = traceback.format_exc()
                 out['success'] = False
-                out['errors'] = str(e)
+                out['errors'] = str(tb)
             finally:
                 if tempdir is not None:
                     shutil.rmtree(tempdir)
@@ -1201,3 +1202,9 @@ def layer_sld_upload(
 @login_required
 def layer_batch_metadata(request, ids):
     return batch_modify(request, ids, 'Layer')
+
+
+def layer_view_counter(layer_id, viewer):
+    l = Layer.objects.get(id=layer_id)
+    u = get_user_model().objects.get(username=viewer)
+    l.view_count_up(u, do_local=True)
