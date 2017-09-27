@@ -96,6 +96,10 @@ DATABASE_URL = os.getenv(
     )
 )
 
+# adjust to your deployment
+#SPATIALITE_LIBRARY_PATH='/usr/lib/mod_spatialite.so'
+SPATIALITE_LIBRARY_PATH='/usr/lib/x86_64-linux-gnu/libspatialite.so.7'
+
 #DATABASE_URL = 'postgresql://test_geonode:test_geonode@localhost:5432/geonode'
 
 # Defines settings for development
@@ -1154,10 +1158,6 @@ if S3_MEDIA_ENABLED:
 # 2. Creating a downstream project, if you are doing a lot of customization.
 # 3. Override settings in a local_settings.py file, legacy.
 # Load more settings from a file called local_settings.py if it exists
-try:
-    from local_settings import *  # noqa
-except ImportError:
-    pass
 
 
 # Load additonal basemaps, see geonode/contrib/api_basemap/README.md
