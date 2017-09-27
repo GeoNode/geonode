@@ -34,8 +34,6 @@ from queues import queue_email_events, queue_geoserver_events,\
                    queue_geoserver, queue_layer_viewers
 
 logger = logging.getLogger(__package__)
-logger.addHandler(logging.StreamHandler(sys.stdout))
-logger.setLevel(logging.DEBUG)
 
 
 class Consumer(ConsumerMixin):
