@@ -461,6 +461,22 @@
       <p>{% trans "Click the button below to generate a new map based on this layer." %}</p>
         <a href="{% url "new_map" %}?layer={{resource.service_typename}}" class="btn btn-primary btn-block">{% trans "Create a Map" %}</a>
     </li>
+    {% if maps %}
+        <li class="list-group-item">
+            <h4>{% trans "Add the layer to an existing map" %}</h4>
+            <form action="{% url "add_layer" %}" method="GET">
+                {% csrf_token %}
+                <select name="map_id">
+                {% for map in maps %}
+                    <option value="{{ map.id }}">{{ map.title|truncatechars:40 }}</option>
+                {% endfor %}
+                </select>
+                <p>{% trans "Click the button below to add the layer to the selected map." %}</p>
+                <input type="hidden" name="layer_name" value="{{ resource.alternate }}">
+                <input type="submit" class="btn btn-primary btn-block" value="{% trans "Add to Map" %}">
+            </form>
+        </li>
+    {% endif %}
 
     {% if documents.count > 0 %}
     <li class="list-group-item">
