@@ -19,7 +19,6 @@
 #########################################################################
 
 import logging
-import sys
 
 from geonode.geoserver.signals import geoserver_post_save_local
 from geonode.security.views import send_email_consumer, send_email_owner_on_view

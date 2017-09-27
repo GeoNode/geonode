@@ -262,7 +262,7 @@ class DocumentUploadView(CreateView):
                         "document_new", self.object))
             except BaseException:
                 print "Could not send slack message for new document."
-        
+
         if settings.MONITORING_ENABLED:
             self.request.add_resource('document', self.object.alternate)
 

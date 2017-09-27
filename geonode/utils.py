@@ -40,7 +40,7 @@ from django.core.exceptions import PermissionDenied
 from django.http import Http404
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404
-# use lazy gettext because some translated strings are used before 
+# use lazy gettext because some translated strings are used before
 # i18n infra is up
 from django.utils.translation import ugettext_lazy as _
 from django.db import models, connection, transaction
@@ -629,6 +629,7 @@ def json_response(body=None, errors=None, redirect_to=None, exception=None,
     if not isinstance(body, basestring):
         body = json.dumps(body, cls=DjangoJSONEncoder)
     return HttpResponse(body, content_type=content_type, status=status)
+
 
 def num_encode(n):
     if n < 0:

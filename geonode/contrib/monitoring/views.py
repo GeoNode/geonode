@@ -328,7 +328,7 @@ class MetricDataView(View):
             return json_response({'status': 'error',
                                   'success': False,
                                   'errors': self.errors},
-                                  status=400)
+                                 status=400)
         metric_name = kwargs['metric_name']
         last = filters.pop('last', None)
         if last:
@@ -528,7 +528,7 @@ class UserNotificationConfigView(View):
             except (TypeError, ValueError,):
                 is_json = False
                 data = request.POST.copy()
-                
+
             try:
                 configs = obj.process_user_form(data, is_json=is_json)
                 out['success'] = True
