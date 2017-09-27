@@ -203,11 +203,6 @@ class Region(MPTTModel):
         null=True)
     srid = models.CharField(max_length=255, default='EPSG:4326')
 
-    envelope = geomodels.GeometryField(null=True)
-    geom = geomodels.GeometryField(null=True)
-    # geodjango manager, will be obsolete with django 1.9+: 
-    geoobjects = geomodels.GeoManager()
-
     def __unicode__(self):
         return self.name
 
