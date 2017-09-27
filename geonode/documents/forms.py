@@ -21,10 +21,10 @@
 import json
 import os
 import re
-import autocomplete_light
+from autocomplete_light.registry import autodiscover
 
 from django import forms
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import ugettext as _
 from django.contrib.contenttypes.models import ContentType
 from django.conf import settings
 from django.forms import HiddenInput, TextInput
@@ -38,7 +38,7 @@ from geonode.documents.models import (
 from geonode.maps.models import Map
 from geonode.layers.models import Layer
 
-autocomplete_light.autodiscover() # flake8: noqa
+autodiscover() # flake8: noqa
 
 from geonode.base.forms import ResourceBaseForm
 

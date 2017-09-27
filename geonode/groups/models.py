@@ -26,7 +26,7 @@ from django.core.urlresolvers import reverse
 from django.contrib.auth.models import Group
 from django.contrib.auth import get_user_model
 from django.db import models, IntegrityError
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import ugettext as _
 from django.utils.text import slugify
 from django.db.models import signals
 from django.contrib.sites.models import Site

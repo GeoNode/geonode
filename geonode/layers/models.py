@@ -27,7 +27,7 @@ from django.db import models
 from django.db.models import signals
 from django.contrib.contenttypes.models import ContentType
 from django.conf import settings
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import ugettext as _
 from django.core.urlresolvers import reverse
 from django.core.files.storage import FileSystemStorage
 
@@ -212,7 +212,7 @@ class Layer(ResourceBase):
 
     @property
     def attributes(self):
-        return self.attribute_set.exclude(attribute='the_geom')
+        return self.attribute_set.exclude(attribute='the_geom').order_by('display_order')
 
     def get_base_file(self):
         """Get the shp or geotiff file for this layer.
@@ -331,6 +331,25 @@ class Layer(ResourceBase):
                              end_attribute=endAttribute,
                              project=self.gazetteer_project,
                              user=self.owner.username)
+
+    def view_count_up(self, user, do_local=False):
+        """ increase view counter, if user is not owner and not super
+
+        @param user which views layer
+        @type User model
+
+        @param do_local - do local counter update even if pubsub is enabled
+        @type bool
+        """
+        if user == self.owner or user.is_superuser:
+            return
+        if not do_local:
+            from geonode.messaging import producer
+            producer.viewing_layer(str(user), str(self.owner), self.id)
+
+        else:
+            Layer.objects.filter(id=self.id)\
+                         .update(popular_count=models.F('popular_count') + 1)
 
 
 class UploadSession(models.Model):

@@ -1,0 +1,1 @@
+{% autoescape off %}{% load i18n %}{% blocktrans %}{{ notice }}{% endblocktrans %}{% endautoescape %}

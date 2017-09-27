@@ -19,6 +19,7 @@
 #########################################################################
 
 from django.views.generic import View
+from django.conf import settings
 
 from geonode.base.enumerations import LINK_TYPES as _LT
 from geonode.base.models import Link
@@ -34,8 +35,14 @@ class OWSListView(View):
         out = {'success': True}
         data = []
         out['data'] = data
+        # per-layer links
         for link in Link.objects.filter(link_type__in=LINK_TYPES).distinct('url'):
             data.append({'url': link.url, 'type': link.link_type})
+        # catalogue from configuration
+        for catname, catconf in settings.CATALOGUE.items():
+            data.append({'url': catconf['URL'], 'type': 'OGC:CSW'})
+        # main site url
+        data.append({'url': settings.SITEURL, 'type': 'WWW:LINK'})
         return json_response(out)
 
 

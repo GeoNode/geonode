@@ -31,10 +31,10 @@ import geonode.proxy.urls
 from geonode.api.urls import api
 from geonode.api.views import verify_token, roles, users, admin_role
 
-import autocomplete_light
+from autocomplete_light.registry import autodiscover
 
 # Setup Django Admin
-autocomplete_light.autodiscover()
+autodiscover()
 
 admin.autodiscover()
 
@@ -81,6 +81,7 @@ urlpatterns = patterns('',
                        (r"^account/", include("account.urls")),
                        (r'^people/', include('geonode.people.urls')),
                        (r'^avatar/', include('avatar.urls')),
+                       # (r'^comments/', include('dialogos.urls')),
                        (r'^comments/', include('dialogos.urls')),
                        (r'^ratings/', include('agon_ratings.urls')),
                        (r'^activity/', include('actstream.urls')),
@@ -100,6 +101,7 @@ urlpatterns = patterns('',
                        url(r'^jsi18n/$', 'django.views.i18n.javascript_catalog', js_info_dict, name='jscat'),
                        url(r'^sitemap\.xml$', 'django.contrib.sitemaps.views.sitemap', {'sitemaps': sitemaps},
                            name='sitemap'),
+                       url(r'^robots\.txt$', TemplateView.as_view(template_name='robots.txt'), name='robots'),
 
                        (r'^i18n/', include('django.conf.urls.i18n')),
                        (r'^autocomplete/', include('autocomplete_light.urls')),

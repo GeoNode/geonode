@@ -18,11 +18,10 @@
 #
 #########################################################################
 
-import autocomplete_light
-
 from fields import MultiThesauriField
 from widgets import MultiThesauriWidget
 
+from autocomplete_light.widgets import ChoiceWidget
 from autocomplete_light.contrib.taggit_field import TaggitField, TaggitWidget
 
 from django import forms
@@ -305,7 +304,7 @@ class ResourceBaseForm(TranslationModelForm):
         required=False,
         queryset=Profile.objects.exclude(
             username='AnonymousUser'),
-        widget=autocomplete_light.ChoiceWidget('ProfileAutocomplete'))
+        widget=ChoiceWidget('ProfileAutocomplete'))
 
     _date_widget_options = {
         "icon_attrs": {"class": "fa fa-calendar"},
@@ -346,7 +345,7 @@ class ResourceBaseForm(TranslationModelForm):
         required=False,
         queryset=Profile.objects.exclude(
             username='AnonymousUser'),
-        widget=autocomplete_light.ChoiceWidget('ProfileAutocomplete'))
+        widget=ChoiceWidget('ProfileAutocomplete'))
 
     metadata_author = forms.ModelChoiceField(
         empty_label=_("Person outside GeoNode (fill form)"),
@@ -354,7 +353,7 @@ class ResourceBaseForm(TranslationModelForm):
         required=False,
         queryset=Profile.objects.exclude(
             username='AnonymousUser'),
-        widget=autocomplete_light.ChoiceWidget('ProfileAutocomplete'))
+        widget=ChoiceWidget('ProfileAutocomplete'))
 
     keywords = TaggitField(
         label=_("Free-text Keywords"),

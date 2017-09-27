@@ -24,8 +24,9 @@ from django.conf import settings
 from django.core.management import call_command
 from django.template.response import TemplateResponse
 
-import autocomplete_light
 import StringIO
+from autocomplete_light.forms import ModelForm
+from autocomplete_light.forms import modelform_factory
 from autocomplete_light.contrib.taggit_field import TaggitField, TaggitWidget
 
 from treebeard.admin import TreeAdmin
@@ -66,7 +67,7 @@ class MediaTranslationAdmin(TranslationAdmin):
         }
 
 
-class BackupAdminForm(autocomplete_light.ModelForm):
+class BackupAdminForm(ModelForm):
 
     class Meta:
         model = Backup
@@ -231,7 +232,7 @@ class ContactRoleAdmin(admin.ModelAdmin):
     list_display_links = ('id',)
     list_display = ('id', 'contact', 'resource', 'role')
     list_editable = ('contact', 'resource', 'role')
-    form = autocomplete_light.modelform_factory(ContactRole, fields='__all__')
+    form = modelform_factory(ContactRole, fields='__all__')
 
 
 class LinkAdmin(admin.ModelAdmin):
@@ -240,7 +241,7 @@ class LinkAdmin(admin.ModelAdmin):
     list_display = ('id', 'resource', 'extension', 'link_type', 'name', 'mime')
     list_filter = ('resource', 'extension', 'link_type', 'mime')
     search_fields = ('name', 'resource__title',)
-    form = autocomplete_light.modelform_factory(Link, fields='__all__')
+    form = modelform_factory(Link, fields='__all__')
 
 
 class HierarchicalKeywordAdmin(TreeAdmin):
@@ -258,7 +259,7 @@ admin.site.register(License, LicenseAdmin)
 admin.site.register(HierarchicalKeyword, HierarchicalKeywordAdmin)
 
 
-class ResourceBaseAdminForm(autocomplete_light.ModelForm):
+class ResourceBaseAdminForm(ModelForm):
     # We need to specify autocomplete='TagAutocomplete' or admin views like
     # /admin/maps/map/2/ raise exceptions during form rendering.
     # But if we specify it up front, TaggitField.__init__ throws an exception

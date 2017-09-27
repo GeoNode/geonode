@@ -33,6 +33,7 @@ from itertools import chain
 from guardian.shortcuts import get_perms
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth import get_user_model
 from django.core.urlresolvers import reverse
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render_to_response
@@ -48,7 +49,7 @@ from django.template.defaultfilters import slugify
 from django.forms.models import inlineformset_factory
 from django.db import transaction
 from django.db.models import F
-from django.forms.util import ErrorList
+from django.forms.utils import ErrorList
 
 from geonode.tasks.deletion import delete_layer
 from geonode.services.models import Service
@@ -71,8 +72,8 @@ from geonode.utils import build_social_links
 from geonode.geoserver.helpers import cascading_delete, gs_catalog
 from geonode.geoserver.helpers import ogc_server_settings, save_style
 from geonode.base.views import batch_modify
-
 from geonode.base.models import Thesaurus
+from geonode.maps.models import Map
 
 if 'geonode.geoserver' in settings.INSTALLED_APPS:
     from geonode.geoserver.helpers import _render_thumbnail
@@ -202,7 +203,7 @@ def layer_upload(request, template='upload/layer_upload.html'):
                     styles = list(saved_layer.styles.all()) + [
                         saved_layer.default_style]
                     for style in styles:
-                        if style.name == saved_layer.name:
+                        if style and style.name == saved_layer.name:
                             match = style
                             break
                     if match is None:
@@ -254,8 +255,9 @@ def layer_upload(request, template='upload/layer_upload.html'):
                         'properties': saved_layer.srid
                     }
                 upload_session = saved_layer.upload_session
-                upload_session.processed = True
-                upload_session.save()
+                if upload_session:
+                    upload_session.processed = True
+                    upload_session.save()
                 permissions = form.cleaned_data["permissions"]
                 if permissions is not None and len(permissions.keys()) > 0:
                     saved_layer.set_permissions(permissions)
@@ -317,9 +319,7 @@ def layer_detail(request, layername, template='layers/layer_detail.html'):
 
     # Update count for popularity ranking,
     # but do not includes admins or resource owners
-    if request.user != layer.owner and not request.user.is_superuser:
-        Layer.objects.filter(
-            id=layer.id).update(popular_count=F('popular_count') + 1)
+    layer.view_count_up(request.user)
 
     # center/zoom don't matter; the viewer will center on the layer bounds
     map_obj = GXPMap(
@@ -429,6 +429,10 @@ def layer_detail(request, layername, template='layers/layer_detail.html'):
     if settings.SOCIAL_ORIGINS:
         context_dict["social_links"] = build_social_links(request, layer)
 
+    # maps owned by user needed to fill the "add to existing map section" in template
+    if request.user.is_authenticated():
+        context_dict["maps"] = Map.objects.filter(owner=request.user)
+
     return render_to_response(template, RequestContext(request, context_dict))
 
 
@@ -449,7 +453,7 @@ def layer_feature_catalogue(
 
     attributes = []
 
-    for attrset in layer.attribute_set.all():
+    for attrset in layer.attribute_set.order_by('display_order'):
         attr = {
             'name': attrset.attribute,
             'type': attrset.attribute_type
@@ -868,8 +872,10 @@ def layer_replace(request, layername, template='layers/layer_replace.html'):
                         'layer_detail', args=[
                             saved_layer.service_typename])
             except Exception as e:
+                logger.exception(e)
+                tb = traceback.format_exc()
                 out['success'] = False
-                out['errors'] = str(e)
+                out['errors'] = str(tb)
             finally:
                 if tempdir is not None:
                     shutil.rmtree(tempdir)
@@ -1089,3 +1095,9 @@ def layer_sld_upload(
 @login_required
 def layer_batch_metadata(request, ids):
     return batch_modify(request, ids, 'Layer')
+
+
+def layer_view_counter(layer_id, viewer):
+    l = Layer.objects.get(id=layer_id)
+    u = get_user_model().objects.get(username=viewer)
+    l.view_count_up(u, do_local=True)

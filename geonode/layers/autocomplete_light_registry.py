@@ -18,15 +18,16 @@
 #
 #########################################################################
 
-import autocomplete_light
+from autocomplete_light.registry import register
+from autocomplete_light.autocomplete.shortcuts import AutocompleteModelTemplate
 from models import Layer
 
 
-class LayerAutocomplete(autocomplete_light.AutocompleteModelTemplate):
+class LayerAutocomplete(AutocompleteModelTemplate):
     choice_template = 'autocomplete_response.html'
 
 
-autocomplete_light.register(
+register(
     Layer,
     LayerAutocomplete,
     search_fields=[

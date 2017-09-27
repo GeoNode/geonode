@@ -30,6 +30,16 @@ services:
     env_file:
       - ./scripts/docker/env/production/django.env
 
+  consumers:
+    image: geonode/django
+    links:
+      - rabbitmq
+      - postgres
+      - elasticsearch
+    command: python manage.py runmessaging
+    env_file:
+      - ./scripts/docker/env/production/django.env
+
   geoserver:
     image: geonode/geoserver:alias
     links:
