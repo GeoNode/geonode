@@ -98,7 +98,7 @@ DATABASE_URL = os.getenv(
 
 # adjust to your deployment
 #SPATIALITE_LIBRARY_PATH='/usr/lib/mod_spatialite.so'
-SPATIALITE_LIBRARY_PATH='/usr/lib/x86_64-linux-gnu/libspatialite.so.7'
+SPATIALITE_LIBRARY_PATH='/usr/lib/x86_64-linux-gnu/libspatialite.so.5'
 
 #DATABASE_URL = 'postgresql://test_geonode:test_geonode@localhost:5432/geonode'
 
