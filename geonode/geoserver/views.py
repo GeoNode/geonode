@@ -141,8 +141,11 @@ def layer_style_upload(request, layername):
     el = dom.findall(
         "{http://www.opengis.net/sld}NamedLayer/{http://www.opengis.net/sld}Name")
     if len(el) == 0 and not data.get('name'):
-        return respond(
-            errors="Please provide a name, unable to extract one from the SLD.")
+        el = dom.findall(
+            "{http://www.opengis.net/sld}UserLayer/{http://www.opengis.net/sld}Name")
+        if len(el) == 0 and not data.get('name'):
+            return respond(
+                errors="Please provide a name, unable to extract one from the SLD.")
     name = data.get('name') or el[0].text
     if data['update']:
         match = None
