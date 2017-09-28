@@ -1,7 +1,7 @@
 ---
 GEOSERVER_URL: "http://build.geonode.org/geoserver/latest/geoserver-2.10.x.war"
 DATA_DIR_URL: "http://build.geonode.org/geoserver/latest/data-2.10.x.zip"
-JETTY_RUNNER_URL: "http://repo2.maven.org/maven2/org/mortbay/jetty/jetty-runner/8.1.8.v20121106/jetty-runner-8.1.8.v20121106.jar"
+JETTY_RUNNER_URL: "http://repo2.maven.org/maven2/org/eclipse/jetty/jetty-runner/9.4.7.v20170914/jetty-runner-9.4.7.v20170914.jar"
 WINDOWS:
   py2exe: "http://downloads.sourceforge.net/project/py2exe/py2exe/0.6.9/py2exe-0.6.9.win32-py2.7.exe"
   nose: "https://s3.amazonaws.com/geonodedeps/nose-1.3.3.win32-py2.7.exe"
