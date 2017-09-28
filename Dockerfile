@@ -61,11 +61,13 @@ COPY . /usr/src/app/
 RUN pip install --no-cache-dir --no-deps -e /usr/src/app/ \
   && cd /usr/src/app/geonode/static \
   && npm install \
+  && bower --allow-root install \
   && grunt production
 
 # Install geonode configuration
 RUN mkdir -p /mnt/geonode_data/uploaded /mnt/geonode_data/static /mnt/geonode_config \
   && cd /usr/src/app/geonode/ \
+  && mv local_settings.py local_settings.py_dist || true \
   && cp local_settings.py.docker /mnt/geonode_config/local_settings.py \
   && ln -s /mnt/geonode_config/local_settings.py
 
