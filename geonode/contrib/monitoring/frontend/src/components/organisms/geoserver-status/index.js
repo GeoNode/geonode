@@ -3,6 +3,8 @@ import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import HoverPaper from '../../atoms/hover-paper';
 import CPU from '../../cels/cpu';
+import SelectField from 'material-ui/SelectField';
+import MenuItem from 'material-ui/MenuItem';
 import Memory from '../../cels/memory';
 import styles from './styles';
 import actions from './actions';
@@ -12,6 +14,7 @@ const mapStateToProps = (state) => ({
   cpu: state.geoserverCpuSequence.response,
   memory: state.geoserverMemorySequence.response,
   interval: state.interval.interval,
+  services: state.services.hostgeoserver,
   timestamp: state.interval.timestamp,
 });
 
@@ -23,6 +26,7 @@ class GeoserverStatus extends React.Component {
     getCpu: PropTypes.func.isRequired,
     getMemory: PropTypes.func.isRequired,
     memory: PropTypes.object,
+    services: PropTypes.array,
     resetCpu: PropTypes.func.isRequired,
     resetMemory: PropTypes.func.isRequired,
     timestamp: PropTypes.instanceOf(Date),
@@ -36,9 +40,17 @@ class GeoserverStatus extends React.Component {
 
   constructor(props) {
     super(props);
-    this.get = (interval = this.props.interval) => {
-      this.props.getCpu(interval);
-      this.props.getMemory(interval);
+
+    this.state = {
+      host: '',
+    };
+
+    this.get = (
+      host = this.state.host,
+      interval = this.props.interval,
+    ) => {
+      this.props.getCpu(host, interval);
+      this.props.getMemory(host, interval);
     };
 
     this.reset = () => {
@@ -48,13 +60,22 @@ class GeoserverStatus extends React.Component {
   }
 
   componentWillMount() {
-    this.get();
+    // this.get();
+
   }
 
   componentWillReceiveProps(nextProps) {
-    if (nextProps) {
-      if (nextProps.timestamp && nextProps.timestamp !== this.props.timestamp) {
-        this.get(nextProps.interval);
+    if (nextProps && nextProps.services && nextProps.timestamp) {
+      let host = nextProps.services[0].name;
+      let firstTime = false;
+      if (this.state.host === '') {
+        firstTime = true;
+        this.setState({ host });
+      } else {
+        host = this.state.host;
+      }
+      if (firstTime || nextProps.timestamp !== this.props.timestamp) {
+        this.get(host, nextProps.interval);
       }
     }
   }
@@ -89,9 +110,25 @@ class GeoserverStatus extends React.Component {
     const contentStyle = this.props.half
                        ? styles.content
                        : { ...styles.content, width: '100%' };
+    const hosts = this.props.services
+                ? this.props.services.map((host) =>
+                  <MenuItem
+                    key={host.name}
+                    value={host.name}
+                    primaryText={ `${host.name} [${host.host}]`}
+                  />
+                )
+                : undefined;
     return (
       <HoverPaper style={contentStyle}>
         <h3>GeoServer status</h3>
+        <SelectField
+          floatingLabelText="Host"
+          value={this.state.host}
+          onChange={this.handleChange}
+        >
+          {hosts}
+        </SelectField>
         <div style={styles.stat}>
           <CPU cpu={5} data={cpuData} />
           <Memory memory={5} data={memoryData} />

@@ -34,11 +34,12 @@ const fail = createAction(
 );
 
 
-const get = (argInterval) =>
+const get = (host, argInterval) =>
   (dispatch) => {
     dispatch(begin());
     const interval = sequenceInterval(argInterval);
-    const url = `${apiUrl}/metric_data/cpu.usage.percent/?last=${argInterval}&interval=${interval}`;
+    let url = `${apiUrl}/metric_data/cpu.usage.percent/?last=${argInterval}&interval=${interval}`;
+    url += `&service=${host}`;
     fetch({ url })
       .then(response => {
         dispatch(success(response));

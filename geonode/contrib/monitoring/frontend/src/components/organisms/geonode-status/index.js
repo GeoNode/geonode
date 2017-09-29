@@ -60,7 +60,7 @@ class GeonodeStatus extends React.Component {
   }
 
   componentWillMount() {
-    this.get();
+    // this.get();
   }
 
   componentWillReceiveProps(nextProps) {
@@ -115,7 +115,7 @@ class GeonodeStatus extends React.Component {
                   <MenuItem
                     key={host.name}
                     value={host.name}
-                    primaryText={host.host}
+                    primaryText={ `${host.name} [${host.host}]`}
                   />
                 )
                 : undefined;
