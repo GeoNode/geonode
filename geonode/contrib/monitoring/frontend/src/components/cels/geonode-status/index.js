@@ -49,6 +49,7 @@ class GeonodeStatus extends React.Component {
 
     this.handleChange = (event, target, host) => {
       this.setState({ host });
+      this.get();
     };
   }
 
@@ -111,7 +112,7 @@ class GeonodeStatus extends React.Component {
                   <MenuItem
                     key={host.name}
                     value={host.name}
-                    primaryText={host.host}
+                    primaryText={ `${host.name} [${host.host}]` }
                   />
                 )
                 : undefined;

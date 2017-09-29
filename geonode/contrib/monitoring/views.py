@@ -67,7 +67,7 @@ class MetricsList(View):
 class ServicesList(View):
 
     def get_queryset(self):
-        return Service.objects.all().select_related()
+        return Service.objects.filter(active=True).select_related()
 
     def get(self, *args, **kwargs):
         q = self.get_queryset()
@@ -86,7 +86,7 @@ class ServicesList(View):
 class HostsList(View):
 
     def get_queryset(self):
-        return Host.objects.all().select_related()
+        return Host.objects.filter(active=True).select_related()
 
     def get(self, *args, **kwargs):
         q = self.get_queryset()

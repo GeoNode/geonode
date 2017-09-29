@@ -102,7 +102,7 @@ class GeoserverStatus extends React.Component {
                   <MenuItem
                     key={host.name}
                     value={host.name}
-                    primaryText={host.name}
+                    primaryText={ `${host.name} [${host.host}]` }
                   />
                 )
                 : undefined;
