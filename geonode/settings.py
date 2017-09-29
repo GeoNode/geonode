@@ -49,7 +49,6 @@ PROJECT_ROOT = os.path.abspath(os.path.dirname(__file__))
 # present pretty error pages.
 DEBUG = strtobool(os.getenv('DEBUG', 'True'))
 
-DEBUG = True
 # Set to True to load non-minified versions of (static) client dependencies
 # Requires to set-up Node and tools that are required for static development
 # otherwise it will raise errors for the missing non-minified dependencies
@@ -1154,6 +1153,10 @@ if S3_MEDIA_ENABLED:
 # 2. Creating a downstream project, if you are doing a lot of customization.
 # 3. Override settings in a local_settings.py file, legacy.
 # Load more settings from a file called local_settings.py if it exists
+try:
+    from geonode.local_settings import *
+except ImportError:
+    pass
 
 
 # Load additonal basemaps, see geonode/contrib/api_basemap/README.md
@@ -1226,6 +1229,4 @@ GROUP_MANDATORY_RESOURCES = False
 MAP_CLIENT_USE_CROSS_ORIGIN_CREDENTIALS = strtobool(os.getenv(
     'MAP_CLIENT_USE_CROSS_ORIGIN_CREDENTIALS',
     'False'
-)
-
-)
+))
