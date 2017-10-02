@@ -30,7 +30,7 @@ from geonode import __file__ as geonode_path
 from geonode import get_version
 from geonode.celery_app import app  # flake8: noqa
 from distutils.util import strtobool
-from django.conf import global_settings
+from django.conf.global_settings import DATETIME_INPUT_FORMATS
 import dj_database_url
 
 #
@@ -772,7 +772,7 @@ BING_API_KEY = os.environ.get('BING_API_KEY', None)
 GOOGLE_API_KEY = os.environ.get('GOOGLE_API_KEY', None)
 
 # handle timestamps like 2017-05-30 16:04:00.719 UTC
-DATETIME_INPUT_FORMATS = global_settings.DATETIME_INPUT_FORMATS +\
+DATETIME_INPUT_FORMATS = DATETIME_INPUT_FORMATS +\
     ('%Y-%m-%d %H:%M:%S.%f %Z', '%Y-%m-%dT%H:%M:%S.%f', '%Y-%m-%dT%H:%M:%S%Z')
 
 MAP_BASELAYERS = [{
