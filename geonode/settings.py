@@ -416,8 +416,6 @@ LOGGING = {
     "loggers": {
         "django": {
             "handlers": ["console"], "level": "ERROR", },
-        "django.db.backends": {
-            "handlers": ["console"], "level": "DEBUG", },
         "geonode": {
             "handlers": ["console"], "level": "ERROR", },
         "gsconfig.catalog": {
