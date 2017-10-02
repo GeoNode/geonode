@@ -30,8 +30,8 @@ from lxml import etree
 from requests import Request
 from itertools import chain
 from six import string_types
-from geoserver.catalog import Catalog
 from owslib.wfs import WebFeatureService
+from owslib.feature.schema import get_schema
 
 from guardian.shortcuts import get_perms
 from django.contrib import messages
@@ -446,33 +446,24 @@ def layer_detail(request, layername, template='layers/layer_detail.html'):
     context_dict["layer_name"] = json.dumps(layers_names)
 
     try:
+        print("test1")
         # get type of layer (raster or vector)
-        cat = Catalog(settings.OGC_SERVER['default']['LOCATION'] + "rest", settings.OGC_SERVER['default']['USER'], settings.OGC_SERVER['default']['PASSWORD'])
-        resource = cat.get_resource(name, workspace=workspace)
-
-        if (type(resource).__name__ == 'Coverage'):
+        if layer.storeType == 'coverageStore':
             context_dict["layer_type"] = "raster"
-        elif (type(resource).__name__ == 'FeatureType'):
+        elif layer.storeType == 'dataStore':
             context_dict["layer_type"] = "vector"
 
-            # get layer's attributes with display_order gt 0
-            attr_to_display = layer.attribute_set.filter(display_order__gt=0)
 
-            layers_attributes = []
-            for values in attr_to_display.values('attribute'):
-                layers_attributes.append(values['attribute'])
-
+            print("test2")
             location = "{location}{service}".format(** {
                 'location': settings.OGC_SERVER['default']['LOCATION'],
                 'service': 'wms',
             })
-
             # get schema for specific layer
-            from owslib.feature.schema import get_schema
             username = settings.OGC_SERVER['default']['USER']
             password = settings.OGC_SERVER['default']['PASSWORD']
             schema = get_schema(location, name, username=username, password=password)
-
+            print("test3")
             # get the name of the column which holds the geometry
             if 'the_geom' in schema['properties']:
                 schema['properties'].pop('the_geom', None)
@@ -482,12 +473,9 @@ def layer_detail(request, layername, template='layers/layer_detail.html'):
             # filter the schema dict based on the values of layers_attributes
             layer_attributes_schema = []
             for key in schema['properties'].keys():
-                if key in layers_attributes:
                     layer_attributes_schema.append(key)
-                else:
-                    schema['properties'].pop(key, None)
-
-            filtered_attributes = list(set(layers_attributes).intersection(layer_attributes_schema))
+            print("test4")
+            filtered_attributes = layer_attributes_schema
             context_dict["schema"] = schema
             context_dict["filtered_attributes"] = filtered_attributes
 
