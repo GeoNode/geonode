@@ -13,4 +13,5 @@ CEPH_URL = 'https://cephclient.lan.dream.upd.edu.ph'
 #CEPH_URL = "http://cephclient.phil-lidar1.tld"
 
 ##### DEFAULT STORAGE CONTAINER
-DEFAULT_CONTAINER = 'geo-container'
+DEFAULT_CONTAINER = 'test-container'
+# DEFAULT_CONTAINER = 'geo-container'

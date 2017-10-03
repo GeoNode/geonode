@@ -25,18 +25,21 @@ def send_request(query, method="GET", data=None):
 
     # Construct request
     _logger.debug("URL: %s", GEOSERVER_URL + query)
+    print 'URL (GEOSERVER_URL + query):', GEOSERVER_URL + query
+
     start_time = datetime.now()
     _logger.debug("start_time = %s", start_time)
 
     # Check method
     if method == "POST":
+        print 'Method:', method
 
         # Open request
         r = requests.post(GEOSERVER_URL + query,
                           auth=(GEOSERVER_USER, GEOSERVER_PASSWD),
                           data=data,
                           headers={'content-type': 'application/xml'})
-
+        print 'r request: ', r
     elif method == "GET":
 
         # Open request
@@ -50,7 +53,8 @@ def send_request(query, method="GET", data=None):
     # Check HTTP return status
     if r.status_code == 200:
 
-        # Return content on successful status
+        # Return content on successful status]
+        print 'r.text:', r.text
         return r.text
 
     else:
@@ -263,6 +267,9 @@ def create_nested_gridref_filter(gridref_list):
 
 
 def nested_grid_update(gridref_list, field_id, field_value, shapefile_name=GRID_SHAPEFILE, property_name="GRIDREF", ):
+    nested_gridref_filter = create_nested_gridref_filter(gridref_list)
+    print 'nested_gridref_filter:', nested_gridref_filter
+
     xml_input = """<wfs:Transaction service="WFS" version="1.0.0"
   xmlns:ogc="http://www.opengis.net/ogc"
   xmlns:wfs="http://www.opengis.net/wfs">
@@ -273,11 +280,15 @@ def nested_grid_update(gridref_list, field_id, field_value, shapefile_name=GRID_
     </wfs:Property>
 {3}
   </wfs:Update>
-</wfs:Transaction>""".format(   shapefile_name,
-                                field_id,
-                                field_value,
-                                create_nested_gridref_filter(gridref_list))
+</wfs:Transaction>""".format(shapefile_name,
+                             field_id,
+                             field_value,
+                             nested_gridref_filter)
+
+    print 'xml_input: ', xml_input
     xml_result = send_request("ows", "POST", xml_input)
+
+    print 'xml_result:', xml_result
 
     if "SUCCESS" in xml_result:
         return True

@@ -4,6 +4,8 @@ import re
 from changuito.proxy import CartProxy
 from geonode.cephgeo.models import CephDataObject, DataClassification, MissionGridRef, SucToLayer, FTPRequestToObjectIndex, RIDF
 from geonode.datarequests.models import DataRequestProfile
+from geonode.automation.models import CephDataObjectResourceBase
+
 
 from osgeo import ogr
 import shapely
@@ -109,22 +111,39 @@ def ceph_object_ids_by_data_class(ceph_obj_list):
 
 def get_cart_datasize(request):
     cart = CartProxy(request)
+    print '-' * 40
+    # print 'cart.cart:', cart.cart
+    # print 'cart.cart.id:', cart.cart.id
+    # print 'len(cart):', len(cart)
+    # print dir(cart)
+
     total_size = 0
     for item in cart:
-        obj = CephDataObject.objects.get(id=int(item.object_id))
-        total_size += obj.size_in_bytes
+        # print 'item:', item
+        # print dir(item)
+        print 'item.object_id:', item.object_id
+        try:
+            # obj = CephDataObject.objects.get(id=int(item.object_id))
+            obj = CephDataObjectResourceBase.objects.get(id=int(item.object_id))
+        except CephDataObjectResourceBase.DoesNotExist:
+            print 'Item does not exist!'
+            cart.remove_item(item.id)
+        else:
+            print 'obj:', obj
+            total_size += obj.size_in_bytes
 
+    print 'total_size:', total_size
     return total_size
 
 def get_data_class_from_filename(filename):
-        data_classification = DataClassification.labels[DataClassification.UNKNOWN]
+    data_classification = DataClassification.labels[DataClassification.UNKNOWN]
 
-        for x in DataClassification.filename_suffixes:
-            filename_patterns=x.split(".")
-            if filename_patterns[0] in filename.lower() and filename_patterns[1] in filename.lower():
-                data_classification = DataClassification.filename_suffixes[x]
+    for x in DataClassification.filename_suffixes:
+        filename_patterns = x.split(".")
+        if filename_patterns[0] in filename.lower() and filename_patterns[1] in filename.lower():
+            data_classification = DataClassification.filename_suffixes[x]
 
-        return data_classification
+    return data_classification
 
 def tile_floor(x):
     return int(math.floor(x / float(_TILE_SIZE)) * _TILE_SIZE)
@@ -232,6 +251,8 @@ def get_ftp_details(ftp_request):
         if len(drs)>0:
             dr = drs[0]
     except ObjectDoesNotExist:
+        print '*' * 40
+        print 'get_ftp_details ObjectDoesNotExist'
         dr = None
 
     ftp_details = {}

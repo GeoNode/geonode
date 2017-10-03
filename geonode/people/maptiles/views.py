@@ -103,34 +103,35 @@ def process_georefs(request):
             #Get georef list
             georef_area = request.POST['georef_area']
             georef_list = filter(None, georef_area.split(","))
-            
+
             #Get the requested dataclasses
             data_classes = list()
             for data_class in DataClassification.labels.values():
                 if request.POST.get(slugify(data_class.decode('cp1252'))):
                     data_classes.append(data_class)
-            
+
             #Construct filter for excluding unselected data classes
             dataclass_filter = DataClassification.labels.keys()
             for dataclass, label in DataClassification.labels.iteritems():
                 if label in data_classes:
                     dataclass_filter.remove(dataclass)
-            
-            #Initialize variables for counting empty and duplicates 
+
+            #Initialize variables for counting empty and duplicates
             count = 0
             empty_georefs = 0
             duplicates = []
-            
+
             for georef in georef_list:      # Process each georef in list
-                
-                #Build filter query to exclude unselected data classes 
+
+                #Build filter query to exclude unselected data classes
                 filter_query = Q(name__startswith=georef)
                 for filtered_class in dataclass_filter:
                     filter_query = filter_query & ~Q(data_class=filtered_class)
-                
-                #Execute query 
-                objects = CephDataObject.objects.filter(filter_query)
-                
+
+                #Execute query
+                # objects = CephDataObject.objects.filter(filter_query)
+                objects = CephDataObjectResourceBase.objects.filter(filter_query)
+
                 #Count duplicates and empty references
                 count += len(objects)
                 if len(objects) > 0:

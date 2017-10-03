@@ -19,6 +19,8 @@ import geonode.settings as settings
 from geonode.geoserver.helpers import ogc_server_settings
 from geoserver.catalog import Catalog
 from geonode.cephgeo.models import CephDataObject, UserJurisdiction, UserTiles
+from geonode.automation.models import CephDataObjectResourceBase
+
 from geonode.datarequests.models import DataRequestProfile
 from geonode.datarequests.utils import  get_place_name, get_area_coverage
 
@@ -86,18 +88,19 @@ def get_juris_tiles(juris_shp, user=None):
             tile_drp = (tile_x + settings._TILE_SIZE, tile_y - settings._TILE_SIZE)
             tile_urp = (tile_x + settings._TILE_SIZE, tile_y)
             tile = Polygon([tile_ulp, tile_dlp, tile_drp, tile_urp])
-            
-            
+
+
             if not tile.intersection(juris_shp).is_empty:
                 gridref = 'E{0}N{1}'.format(int(tile_x / settings._TILE_SIZE), int(tile_y / settings._TILE_SIZE))
-                
-                ceph_qs = CephDataObject.objects.filter(grid_ref = gridref)
+
+                # ceph_qs = CephDataObject.objects.filter(grid_ref = gridref)
+                ceph_qs = CephDataObjectResourceBase.objects.filter(grid_ref = gridref)
                 pprint("gridref:"+str(gridref)+" query_length:"+str(len(ceph_qs)))
                 if ceph_qs.count() > 0:
                     tile_list.append(tile)
                 #if len(tile_list) >= 1000:
                 #    return tile_list
-                
+
     return tile_list
 
 def get_juris_data_size(geometry):
@@ -108,20 +111,21 @@ def get_juris_data_size(geometry):
     elif geometry.geom_type == "MultiPolygon":
         for g in geometry.geoms:
             tile_list.extend(get_juris_tiles(g))
-    
+
     pprint("Number of tiles: "+str(len(tile_list)))
-    
+
     total_data_size = 0
-    
+
     for tile in tile_list:
         (minx, miny, maxx, maxy) = tile.bounds
         gridref = "E{0}N{1}".format(int(minx / settings._TILE_SIZE), int(maxy / settings._TILE_SIZE))
-        georef_query = CephDataObject.objects.filter(name__startswith=gridref)
+        georef_query = CephDataObjectResourceBase.objects.filter(name__startswith=gridref)
+        # georef_query = CephDataObject.objects.filter(name__startswith=gridref)
         total_size = 0
         for georef_query_objects in georef_query:
             total_size += georef_query_objects.size_in_bytes
         total_data_size += total_size
-        
+
     return total_data_size
 
 def assign_grid_ref_util(user):

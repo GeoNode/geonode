@@ -18,7 +18,7 @@ from geonode.people.models import Profile
 from geonode.documents.models import Document
 from geonode.layers.models import Layer
 from geonode.cephgeo.models import UserJurisdiction, UserTiles, TileDataClass
-
+from geonode.automation.models import CephDataObjectResourceBase
 import geocoder
 
 UNALLOWED_USERNAME_CHARACTERS='"[]:;|=+*?<>/\,.'
@@ -178,7 +178,8 @@ def get_juris_data_size(juris_shp_name):
 
             if not tile.intersection(juris_shp).is_empty:
                 gridref = "E{0}N{1}".format(tile_x / _TILE_SIZE, tile_y / _TILE_SIZE,)
-                georef_query = CephDataObject.objects.filter(name__startswith=gridref)
+                # georef_query = CephDataObject.objects.filter(name__startswith=gridref)
+                georef_query = CephDataObjectResourceBase.objects.filter(name__startswith=gridref)
                 total_size = 0
                 for georef_query_objects in georef_query:
                     total_size += georef_query_objects.size_in_bytes

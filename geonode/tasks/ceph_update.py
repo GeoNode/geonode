@@ -1,3 +1,5 @@
+# coding: utf-8
+
 import os
 from pprint import pprint
 import celery
@@ -17,6 +19,7 @@ from geonode.cephgeo.models import LidarCoverageBlock
 from celery.decorators import periodic_task
 from datetime import datetime
 import uuid
+from django.utils.encoding import smart_str
 
 logger = get_task_logger("geonode.tasks.ceph_update")
 
@@ -52,6 +55,9 @@ def update_job_status(job, error):
         if job.status == AutomationJob.STATUS_CHOICES.done_ceph:
             job.status = AutomationJob.STATUS_CHOICES.done_database
             logger.info('Updated job status to %s', AutomationJob.STATUS_CHOICES.done_database)
+        elif job.status == AutomationJob.STATUS_CHOICES.done_database:
+            job.status = AutomationJob.STATUS_CHOICES.done_maptiles
+            logger.info('Updated job status to %s', AutomationJob.STATUS_CHOICES.done_maptiles)
     else:
         job.status = AutomationJob.STATUS_CHOICES.error
         logger.info('Updated job status to %s', AutomationJob.STATUS_CHOICES.error)
@@ -74,7 +80,8 @@ def ceph_metadata_update(update_grid=True):
         logger.error('Nothing to upload in Ceph Data Object Resourcebase.')
         return
 
-    uploaded_objects_list = transform_log_to_list(job.ceph_upload_log)
+    # uploaded_objects_list = transform_log_to_list(job.ceph_upload_log)
+    uploaded_objects_list = smart_str(job.ceph_upload_log).splitlines()
 
     # Pop first line containing header
     uploaded_objects_list.pop(0)
@@ -188,8 +195,10 @@ Please refer to the corresponding End-User License Agreement (EULA) for product 
 
     if update_grid:
         result_msg += " Starting feature updates for PhilGrid shapefile."
-        grid_feature_update.delay(gridref_dict_by_data_class)
-    print result_msg
+        grid_feature_update.delay(gridref_dict_by_data_class, job)
+    print '*' * 40
+    print 'result_msg: ', result_msg
+    # print result_msg
 
 
 @task(name='geonode.tasks.ceph_update.ceph_metadata_remove', queue='update')
@@ -225,7 +234,8 @@ def ceph_metadata_remove(uploaded_objects_list, update_grid=True, delete_from_ce
             ceph_obj = None
             try:
                 # Retrieve object
-                ceph_obj = CephDataObject.objects.get(name=metadata_list[0])
+                ceph_obj = CephDataObjectResourceBase.objects.get(name=metadata_list[0])
+                # ceph_obj = CephDataObject.objects.get(name=metadata_list[0])
 
                 # Add object to list for grid removal
                 if DataClassification.gs_feature_labels[ceph_obj.data_class] in gridref_dict_by_data_class:
@@ -257,22 +267,24 @@ def ceph_metadata_remove(uploaded_objects_list, update_grid=True, delete_from_ce
 
 
 @task(name='geonode.tasks.ceph_update.grid_feature_update', queue='update')
-def grid_feature_update(gridref_dict_by_data_class, field_value=1):
+def grid_feature_update(gridref_dict_by_data_class, job, field_value=1):
     """
         :param gridref_dict_by_data_class: contains mapping of [feature_attr] to [grid_ref_list]
         :param field_value: [1] or [0]
         Update the grid shapefile feature attribute specified by [feature_attr] on gridrefs in [gridref_list]
     """
     x = 1
+    error_occurred = False
     for feature_attr, grid_ref_list in gridref_dict_by_data_class.iteritems():
         logger.info("Updating feature attribute [{0}]".format(feature_attr))
-        print 'INDEX NESTED GRID UPDATE', x
-        nested_grid_update(grid_ref_list, feature_attr, field_value)
+        print 'INDEX NESTED GRID UPDATE:', x
+        philgrid_update_result = nested_grid_update(grid_ref_list, feature_attr, field_value)
 
-        logger.info("Finished task for feature [{0}]".format(feature_attr))
+        if not philgrid_update_result:
+            error_occurred = True
+            print 'ERROR'
+            print 'philgrid_update_result:', philgrid_update_result
+        else:
+            logger.info("Finished task for feature [{0}]".format(feature_attr))
 
-
-# @task
-# def setup_periodic_tasks(sender, **kwargs):
-
-#     sender.add_periodic_task(60.0, ceph_metadata_update(), name='Automation Model Update')
+    update_job_status(job, error_occurred)

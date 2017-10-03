@@ -34,7 +34,7 @@ class CephDataObjectResourceBaseAdmin(admin.ModelAdmin):
         'content_type',
         'size_in_bytes'
     )
-    search_fields = ('grid_ref', 'name', 'data_class')
+    search_fields = ('grid_ref', 'name', 'data_class', 'block_uid__block_name')
     list_filter = ('data_class', 'content_type')
 
 
