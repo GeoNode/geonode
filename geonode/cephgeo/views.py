@@ -41,6 +41,8 @@ from geonode.base.enumerations import CHARSETS
 from django.conf import settings
 from geonode.layers.models import Layer
 
+from geonode.automation.models import CephDataObjectResourceBase
+
 # Create your views here.
 
 
@@ -54,6 +56,7 @@ def tile_check(request):
     try:
         json_tiles = UserTiles.objects.get(user=user)
     except ObjectDoesNotExist as e:
+        print 'tile_check ObjectDoesNotExist'
         return HttpResponse(status=404)
 
     georefs = map(str, request.POST.get('georefs', ''))
@@ -117,14 +120,14 @@ def file_list_geonode(request, sort=None, grid_ref=None):
 
     # No Grid Ref
     if grid_ref is None:
-        object_list = CephDataObject.objects.all()
+        object_list = CephDataObjectResourceBase.objects.all()
 
     else:
         # 1 Grid Ref or Grid Ref Range
         if utils.is_valid_grid_ref(grid_ref):
             # Query files with same grid reference
-            #object_list = CephDataObject.objects.filter(name__startswith=grid_ref)
-            object_list = CephDataObject.objects.filter(grid_ref=grid_ref)
+            #object_list = CephDataObjectResourceBase.objects.filter(name__startswith=grid_ref)
+            object_list = CephDataObjectResourceBase.objects.filter(grid_ref=grid_ref)
 
         else:
             return HttpResponse(status=404)
@@ -171,13 +174,13 @@ def file_list_json(request, sort=None, grid_ref=None):
 
     # No Grid Ref
     if grid_ref is None:
-        object_list = CephDataObject.objects.all()
+        object_list = CephDataObjectResourceBase.objects.all()
 
     else:
         # 1 Grid Ref or Grid Ref Range
         if utils.is_valid_grid_ref(grid_ref):
             # Query files with same grid reference
-            object_list = CephDataObject.objects.filter(
+            object_list = CephDataObjectResourceBase.objects.filter(
                 name__startswith=grid_ref)
         else:
             return HttpResponse(status=404)
@@ -221,7 +224,12 @@ def data_input(request):
                 form.cleaned_data['data']).splitlines()
             update_grid = form.cleaned_data['update_grid']
 
-            ceph_metadata_update.delay(uploaded_objects_list, update_grid)
+            print '*' * 40
+            print 'uploaded_objects_list:', uploaded_objects_list
+            print 'update_grid:', update_grid
+            print '*' * 40
+
+            # ceph_metadata_update.delay(uploaded_objects_list, update_grid)
 
             ctx = {
                 'charsets': CHARSETS,
@@ -282,6 +290,9 @@ def error(request):
 
 @login_required
 def get_cart(request):
+    print 'process_georefs::request.user:', request.user
+    cart_id = request.session.get('CART-ID')
+    print 'process_georefs::cart_id:', cart_id
     return render_to_response('cart.html',
                               dict(cart=CartProxy(request), cartsize=get_cart_datasize(
                                   request), projections=SRS.labels.values()),
@@ -293,13 +304,15 @@ def get_cart_json(request):
     cart = CartProxy(request)
     #~ json_cart = dict()
     #~ for item in cart:
-    #~ json_cart[str(item.object_id)] = serializers.serialize('json', CephDataObject.objects.get(id=int(item.pk)))
+    #~ json_cart[str(item.object_id)] = serializers.serialize('json', CephDataObjectResourceBase.objects.get(id=int(item.pk)))
     #~ return HttpResponse(json.dumps(json_cart), content_type="application/json")
 
     # TODO: debug serialization for CephDataObjects
 
-    obj_name_dict = [CephDataObject.objects.get(
+    obj_name_dict = [CephDataObjectResourceBase.objects.get(
+    # obj_name_dict = [CephDataObjectResourceBase.objects.get(
         id=int(item.object_id)).name for item in cart]
+    print 'obj_name_dict:', obj_name_dict
     return HttpResponse(json.dumps(obj_name_dict), content_type="application/json")
 
 
@@ -307,7 +320,7 @@ def get_cart_json(request):
 def get_obj_ids_json(request):
     cart = CartProxy(request)
     json_cart = dict()
-    ceph_objs = CephDataObject.objects.all()
+    ceph_objs = CephDataObjectResourceBase.objects.all()
     ceph_objs_by_data_class = utils.ceph_object_ids_by_data_class(ceph_objs)
     # pprint(ceph_objs_by_data_class)
     return HttpResponse(json.dumps(ceph_objs_by_data_class), content_type="application/json")
@@ -329,7 +342,7 @@ def create_ftp_folder(request, projection=None):
     except ObjectDoesNotExist:
         pass
     cart = CartProxy(request)
-    #[CephDataObject.objects.get(id=int(item.object_id)).name for item in cart]
+    #[CephDataObjectResourceBase.objects.get(id=int(item.object_id)).name for item in cart]
 
     # Get specified projection
     srs_epsg = None
@@ -342,7 +355,8 @@ def create_ftp_folder(request, projection=None):
     total_size_in_bytes = 0
     num_tiles = 0
     for item in cart:
-        obj = CephDataObject.objects.get(id=int(item.object_id))
+        # obj = CephDataObjectResourceBase.objects.get(id=int(item.object_id))
+        obj = CephDataObjectResourceBase.objects.get(id=int(item.object_id))
         total_size_in_bytes += obj.size_in_bytes
         num_tiles += 1
         if DataClassification.labels[obj.data_class] in obj_name_dict:
@@ -365,7 +379,8 @@ def create_ftp_folder(request, projection=None):
     # Mapping of FTP Request to requested objects
     ftp_objs = []
     for item in cart:
-        obj = CephDataObject.objects.get(id=int(item.object_id))
+        # obj = CephDataObjectResourceBase.objects.get(id=int(item.object_id))
+        obj = CephDataObjectResourceBase.objects.get(id=int(item.object_id))
         ftp_objs.append(obj)
         ftp_obj_idx = FTPRequestToObjectIndex(ftprequest=ftp_request,
                                               cephobject=obj)

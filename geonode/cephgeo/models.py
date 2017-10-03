@@ -227,7 +227,9 @@ class CephDataObject(models.Model):
 
 
 class FTPRequestToObjectIndex(models.Model):
+    from geonode.automation.models import CephDataObjectResourceBase
     # FTPRequest
     ftprequest = models.ForeignKey(FTPRequest, null=False, blank=False)
     # CephObject
-    cephobject = models.ForeignKey(CephDataObject, null=False, blank=False)
+    cephobject = models.ForeignKey(CephDataObjectResourceBase, null=False, blank=False)
+    # cephobject = models.ForeignKey(CephDataObject, null=False, blank=False)

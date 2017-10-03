@@ -101,11 +101,13 @@ $(document).ready(function(){
            }
            $.post('/maptiles/validate/',
                 {"georefs" : georef_string, "dataclasses": data_classes}).done(function(result){
-                   if (result.response)
+                   console.log('Response:' + result.response)
+                   if (result.response){
+
                         self.submit();
                         /*$.post('/maptiles/addtocart/',  {   "georef_area" : document.getElementById("georef_area").getAttribute("value"),
                                                             "dataclasses" : data_classes});*/
-                   else {
+                   } else {
                         /*alert("The total file size of this request is "+formatBytes(result.total_size, 2)+
                                 " . You also have a total of "+formatBytes(result.cart_size, 2)+
                                 " in the data cart and FTP requests with a total of "+formatBytes(result.recent_requests_size, 2)+
