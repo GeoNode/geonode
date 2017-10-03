@@ -1,0 +1,44 @@
+﻿<div class="property-grid-overlay">
+    <table style="width: 100%;">
+        <thead>
+            <tr class="header-row">
+                <th style="text-align: left"><font color="#FFF"> &nbsp Name</font></th>
+                <th style="text-align: center"><font color="#FFF">Value</font></th>
+            </tr>
+        </thead>
+    </table>
+    <div class="property-grid-container" style="max-height: 260px; overflow: auto">
+        <table class="propertyGridTable" cellspacing="0">
+            <tbody>
+                <tr ng-repeat="property in properties" class="propertyGrid-row" ng-show="canDisplayRow(property)">
+                    <td class="propertyGridColumn propertyGridPropertyNameColumn">
+                        {{property.name}}
+                        <span ng-if="showUnit(property)">({{property.unit}})</span>
+                    </td>
+                    <td class="propertyGridColumn propertyGridPropertyValueColumn">
+                        <div class="property-value-div" href-watcher="property.value">
+                        </div>
+                    </td>
+                </tr>
+                <tr ng-if="properties.length == 0" class="propertyGrid-row">
+                    <td class="propertyGridColumn propertyGridPropertyValueColumn" colspan="2" style="text-align: center; padding: 10px">
+                        <div class="alert">No attribute available</div>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    <div ng-controller="imagePreviewController">
+        <div ng-if="getImages().length == undefined" class="alert" style="margin: 0 10px; text-align: center">
+            <span><i class="fa fa-spinner fa-spin"></i></span>
+        </div>
+        <div ng-if="getImages().length != undefined || getImages().length > 0">
+            <carousel ng-if="!isLargeImageViewOn" interval="-1" style="cursor: pointer;">
+                <slide ng-repeat="image in getImages()" active="image.active">
+                    <img ng-src="{{image.url}}" style="margin: auto; min-height: 100px; max-height: 140px;" ng-click="showLargeImage()" />
+                    <h6 class="carousel-title">{{$index+1}}/{{getImages().length}}</h6>
+                </slide>
+            </carousel>
+        </div>
+    </div>
+</div>

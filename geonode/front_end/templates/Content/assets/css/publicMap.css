@@ -1,0 +1,9 @@
+﻿.map_canvas {
+    width: 100vw;
+    height: 100vh;
+}
+
+body {
+    padding: 0;
+    margin: 0;
+}

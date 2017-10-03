@@ -1,0 +1,103 @@
+﻿.propertygrid-wrapper th, .propertygrid-wrapper td {
+    font-weight: normal;
+    font-size: 13px;
+}
+
+.propertyGridTable {
+    /*border: 1px solid #99BBE8;*/
+    width: 99%;
+}
+
+    .propertyGridTable td {
+        height: 27px;
+    }
+
+    .propertyGridTable .propertyGrid-row:not(.selected-row):hover /*td:not(.emptyTD)*/ {
+        background-color: #EAF2FF;
+    }
+
+td.propertyGridColumn {
+    border-bottom: dotted #CCCCCC;
+    border-width: 1px;
+    white-space: nowrap;
+}
+
+    td.propertyGridColumn.propertyGridPropertyNameColumn {
+        border-right: dotted #CCCCCC;
+        border-width: 1px;
+        padding: 2px 7px 3px;
+        white-space: nowrap;
+    }
+
+    td.propertyGridColumn.propertyGridPropertyValueColumn {
+        /* height: 95%;*/
+        width: 75%;
+        padding: 2px;
+        /*height: 30px;*/
+    }
+
+.propertyGrid-row .property-value-div, .propertyGrid-row .propertyGridValueField {
+    /*height: 16px;*/
+    border-width: 1px;
+    padding: 1px;
+    margin: 1px;
+    width: 92%;
+    margin-top: 1px;
+}
+
+.propertyGrid-row .property-value-div {
+    border: 1px solid transparent;
+}
+
+.propertyGridColumn {
+    text-align: left;
+    padding: 0px;
+}
+
+.propertyGrid-row.selected-row .propertyGridValueField {
+    display: block;
+}
+
+.propertyGrid-row.selected-row {
+    background-color: #EAF2FF;
+}
+
+    .propertyGrid-row.selected-row .emptyTD {
+        background-color: #06B7FB;
+    }
+
+.date-picker-test {
+    width: 98%;
+    padding-left: 3px;
+    border: none;
+    readOnly: true;
+}
+
+.header-row {
+    background-color: gray;
+    height: 23px;
+}
+
+.error {
+    color: red;
+}
+
+.gps-body .property-grid-container {
+    height: 200px;
+    overflow: auto;
+    padding-right: 18px;
+    width: 100%;
+}
+
+.propertygrid-wrapper .layer-buttons button {
+    margin-top: 2px;
+    padding: 0;
+    width: 26px;
+    height: 26px;
+}
+
+
+.propertygrid-wrapper .layer-buttons .attribute-locker {
+    margin-top: 4px;
+    height: 22px;  
+}

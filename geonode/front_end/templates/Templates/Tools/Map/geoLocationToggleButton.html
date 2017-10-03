@@ -1,0 +1,21 @@
+﻿<div>
+    <button class="control-button icon icon32 icon-start-tracking" ng-class="{'buttonActive': isTracking()}"
+        ng-attr-title="{{isTracking() && 'Stop Tracking' || 'Start Tracking'}}"
+        ng-click="toggleTracking()">
+        <span>{{isTracking()?"Stop": "Start"}}<br />
+            Tracking</span>
+    </button>
+
+    <div ng-click="showTrackingOptions = !showTrackingOptions" style="cursor: pointer; background-color: #484848; color: #fff; bottom:0; height: 11px; position: absolute; text-align: center; width: 56px; font-size: 10px; line-height: 8px;">
+        <i class="fa fa-chevron-down"></i>
+    </div>
+
+    <div ng-show="showTrackingOptions" style="background-color: #515151; bottom: -26.5px; padding: 0 5px; position: absolute; border: 1px solid #000; border-top: none; color: #fff">
+        <div ng-show="showTrackingOptions" ng-click="showTrackingOptions = !showTrackingOptions">
+            <label style="font-size: 12px;">
+                <input type="checkbox" ng-model="autoCenterEnabled" ng-change="toogleAutoCenterEnabled()">
+                Auto center to current location
+            </label>
+        </div>
+    </div>
+</div>

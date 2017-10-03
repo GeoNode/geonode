@@ -1,0 +1,59 @@
+﻿<div class="fixed-table-container">
+    <div class="header-background titleBar"></div>
+    <div class="fixed-table-container-inner">
+        <table class="attribute-definition-table table-striped" id="attribute-definition-crud-table">
+            <thead>
+                <tr>
+                    <th class="first"><div class="th-inner">Attribute Name</div></th>
+                    <th class="first" style="width: 250px;"><div class="th-inner">Alias</div></th>
+                    <th class="type">
+                        <div class="th-inner">Type</div>
+                    </th>
+                    <th style="width: 50px;">
+                        <div class="th-inner">Publish</div>
+                    </th>
+                    <th class="delete" ng-if="!isReadonly" style="width:50px;"><div class="th-inner">&nbsp;</div></th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr ng-repeat="item in attributeDefs" ng-if="item.Status != status.deleted">
+                    <td ng-click="enableEditing(item, 'isAttributeNameEditing')" crudtable-celltype="data" class="name" style="border-radius: 0;">
+                        <span ng-if="!item.isAttributeNameEditing">{{item.AttributeName}}</span>
+                        <span ng-if="item.isAttributeNameEditing">
+                            <input type="text" class="crudtable-editor" ng-model="item.AttributeName"
+                                   ng-change="validateAttributeName(item)" focus-me="item.isAttributeNameEditing"
+                                   ng-blur="removeEditable(item,'isAttributeNameEditing')" />
+                        </span>
+                    </td>
+                    <td ng-click="enableEditing(item, 'isNameEditing')" crudtable-celltype="data" class="name" style="border-radius: 0;"
+                        ng-class="{'crudtable-error':!item.isValid, 'validation-summary-errors': !item.isValid, 'readonly-field':isReadonly}">
+                        <span ng-if="!item.isNameEditing">{{item.Name}}</span>
+                        <span ng-if="item.isNameEditing">
+                            <input type="text" class="crudtable-editor" ng-model="item.Name"
+                                   ng-change="validateField(item)" focus-me="item.isNameEditing"
+                                   ng-blur="removeEditable(item,'isNameEditing')" />
+                        </span>
+                    </td>
+                    <td ng-click="enableEditing($index)" crudtable-celltype="data" class="type" ng-class="{'readonly-field':isReadonly}">
+                        {{getViewLabel(item.Type)}}
+                        <span ng-if="isNumericType(item.Type)">
+                            ({{item.Precision}}, {{item.Scale}})
+                        </span>
+                        <span ng-if="isTextType(item.Type)">
+                            ({{item.Length}})
+                        </span>
+                    </td>
+                    <td style="text-align: center;">
+                        <input type="checkbox" ng-model="item.IsPublished" ng-change="setEdited(item);setDirty()" />
+                    </td>
+                    <td crudtable-celltype="delete" class="delete" ng-if="!isReadonly" style="text-align: center"><span ng-click="remove($index)" class="delete" style="width: 50px;"></span></td>
+                </tr>
+            </tbody>
+            <tfoot ng-if="attributeDefs.length==0">
+                <tr>
+                    <td colspan="5" style="text-align: center; font-style: italic; color: lightgray;">No attribute available</td>
+                </tr>
+            </tfoot>
+        </table>
+    </div>
+</div>

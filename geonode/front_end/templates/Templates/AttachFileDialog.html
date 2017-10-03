@@ -1,0 +1,58 @@
+﻿<div class="mini-dialog">
+    <i class="fa fa-times modal-close-icon" ng-click="closeModal()"></i>
+    <div class="modal-header">
+        <h3>
+            Attach File
+        </h3>
+    </div>
+    <form method="POST" id="uploadData-form" enctype="multipart/form-data" ng-submit="submitForm()" onsubmit="return false;" ng-disabled="filesInvalid || AllFileNames.length == 0 || uploading">
+        <div class="modal-body">
+            <div style="color: red;" ng-show="showServerValidationError">
+                Server validation failed
+            </div>
+            <h4 ng-show="uploader.queue.length > 0" style="margin-left: 20px;">Chosen File/s:</h4>
+            <div style="max-height: 280px; overflow-y: auto;">
+                <div ng-show="uploader.queue.length == 0" class="alert" style="text-align: center; margin-top: 30px; padding: 15px;">No file chosen</div>
+                <ul class="imageList">
+                    <li ng-repeat="item in uploader.queue">
+                        <div class="file-remove-button-container">
+                            <button ng-disabled="item.isUploading" type="button" class="btn btn-danger btn-xs"
+                                    style="padding: 1px 6px;" ng-click="item.remove()" title="remove this file">
+                                <span class="fa fa-trash-o" style="margin-right: 0"></span>
+                            </button>
+                        </div>
+                        <div class="file-name-container">
+                            <span ng-attr-title="{{item.file.name}}">{{item.file.name | truncate:30}}</span>
+                        </div>
+                        <div class="upload-file-progressbar-container">
+                            <div class="ng-progressbar">
+                                <div class="text">
+                                    {{item.progress + '%'}} of {{item.file.size | byteFilter}}
+                                </div>
+                                <div class="progress-length" ng-style="{ 'width': item.progress + '%' }">
+                                </div>
+                            </div>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+            <div style="margin: 10px 0 0 20px;" class="fileUpload btn btn-primary">
+                <i class="fa fa-fw fa-file-o"></i><span>Choose File/s</span>
+                <input type="file" class="upload" nv-file-select uploader="uploader" multiple="multiple" />
+                <!--accept=".jpg,.png,.jpeg"-->
+            </div>
+        </div>
+
+        <div class="modal-footer">
+            <button type="button" class="btn btn-success btn-sm" ng-click="uploader.uploadAll()" ng-disabled="!uploader.getNotUploadedItems().length">
+                <i class="fa fa-upload fa-fw"></i>Upload All
+            </button>
+            <button type="button" class="btn btn-warning btn-sm" ng-click="cancelAll()" ng-disabled="!uploader.isUploading">
+                <i class="fa fa-ban fa-fw"></i>Cancel
+            </button>
+            <button type="button" class="btn btn-danger btn-sm" ng-click="uploader.clearQueue()" ng-disabled="!uploader.queue.length || uploader.isUploading">
+                <i class="fa fa-trash-o fa-fw"></i>Remove All
+            </button>
+        </div>
+    </form>
+</div>

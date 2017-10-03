@@ -1,0 +1,49 @@
+﻿<table class="print-map-title">
+    <tr>
+        <td>
+           
+            Show Background                     
+        </td>
+        <td>
+           <input type="checkbox" ng-model="options.showBackground" ng-change="options.onShowBackgroundToggle()" />  
+        </td>
+    </tr>
+    <tr>
+        <td class="field-label">Text                            
+        </td>
+        <td>
+            <input type="text" ng-attr-id="{{options.textFieldId}}" ng-model="options.displayText" />
+        </td>
+    </tr>
+    <tr>
+        <td class="field-label">Alignment                           
+        </td>
+        <td>
+            <select class="input-small" ng-model="options.alignment" ng-options="alignment as alignment for alignment in alignments">
+            </select>
+        </td>
+    </tr>
+    <tr>
+        <td class="field-label">Font Size                         
+        </td>
+        <td>
+            <input class="input-small" type="number" min="8" max="35" step="1" ng-model="options.fontSize" />
+        </td>
+    </tr>
+    <tr>
+        <td class="field-label">Color                            
+        </td>
+        <td class="style-editor color">
+            <input type="text" ng-model="options.color" color-code-validator />
+            <button type="button" ng-model="options.color" ng-style="{'background-color': options.color}" colorpicker class="colorpicker-btn"></button>
+        </td>
+    </tr>
+    <tr>
+        <td class="field-label">Background                            
+        </td>
+        <td class="style-editor color">
+            <input type="text" ng-model="options.backgroundColor" color-code-validator />
+            <button type="button" ng-model="options.backgroundColor" ng-style="{'background-color': options.backgroundColor}" colorpicker class="colorpicker-btn"></button>
+        </td>
+    </tr>
+</table>

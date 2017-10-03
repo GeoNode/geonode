@@ -1,0 +1,8 @@
+﻿<button ng-click="toggleMapEditable()" class="control-button icon icon32 icon-start-editing"
+        id="start-editing" ng-class="{'buttonActive': isEditing()}" ng-attr-title="{{isEditing() && 'End Editing' || 'Start Editing'}}"
+        ng-disabled="!enabled">
+    <span>
+        {{isEditing()?"End":"Start"}}<br />
+        Editing
+    </span>
+</button>

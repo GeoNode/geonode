@@ -1,0 +1,273 @@
+﻿.color-holder
+{
+    display: inline-block;
+    height: 25px;
+    width: 60px;
+    border: 1px solid black;
+    line-height: 25px;
+    text-align: center;
+}
+
+.colorpicker-btn:hover
+{
+    background-color: gainsboro;
+}
+
+.colorpicker-btn
+{
+    display: inline-block;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
+    height: 25px;
+    width: 25px;
+    border: 1px solid;
+    border-color: gray;
+    border-radius: 4px;
+}
+
+#uploadData-form
+{
+    margin-bottom: 0;
+}
+
+.ng-progressbar
+{
+    display: block;
+    position: relative;
+    height: 20px;
+    text-align: left;
+    padding: 0;
+    background-color: #BBB;
+}
+
+    .ng-progressbar, .ng-progressbar .progress-length
+    {
+        border: 1px solid rgba(0, 0, 0, 0.1);
+        border-radius: 2px 2px 2px 2px;
+        font-size: 95%;
+    }
+
+        .ng-progressbar .text
+        {
+            color: white;
+            position: absolute;
+            left: 0;
+            top: 0;
+            right: 0;
+            height: 20px;
+            line-height: 20px;
+            text-align: center;
+        }
+
+        .ng-progressbar .progress-length
+        {
+            box-sizing: border-box;
+            -moz-box-sizing: border-box;
+            -webkit-box-sizing: border-box;
+            height: 100%;
+            padding: 0;
+            margin: 0;
+            border: none;
+            background-color: #4D90FE;
+        }
+
+.share-data .modal-body
+{
+    overflow: visible;
+    min-height: 100px;
+}
+
+.share-data .user-search-box input
+{
+    width: 209px;
+    margin-bottom: 0;
+}
+
+.search-result
+{
+    width: 224px;
+    max-height: 130px;
+    overflow: auto;
+    border: 1px solid #CCCCCC;
+    margin: 0;
+    padding: 0;
+    list-style-type: none;
+    list-style-position: inside;
+    background-color: #edf6ff;
+}
+
+.share-data ul.search-result
+{
+    position: absolute;
+    z-index: 2;
+}
+
+ul.search-result li
+{
+    padding: 5px;
+}
+
+    ul.search-result li:hover
+    {
+        background-color: #09C;
+        color: #FFF;
+        cursor: pointer;
+    }
+
+.shared-users
+{
+    margin-top: 20px;
+    width: 224px;
+    padding: 0;
+}
+
+    .shared-users ul
+    {
+        border: 1px solid #CCCCCC;
+        background-color: #edf6ff;
+        list-style-type: none;
+        list-style-position: inside;
+        margin: 0;
+    }
+
+        .shared-users ul li
+        {
+            padding: 6px;
+        }
+
+            .shared-users ul li:hover
+            {
+                background-color: #d9ecff;
+                color: #000;
+                cursor: pointer;
+            }
+
+.share-data button.submit
+{
+    border: 1px solid #999;
+    background-color: #333;
+    color: #FFF;
+    padding: 10px;
+    line-height: 10px;
+    cursor: pointer;
+}
+
+.share-data button.close
+{
+    border: 1px solid #999;
+    background-color: #333;
+    color: #FFF;
+    padding: 1px;
+    line-height: 10px;
+    cursor: pointer;
+    float: right;
+}
+
+.modal-header
+{
+    padding: 5px 15px !important;
+    background-color: #4c4c4c;
+    color: #cfcfcf;
+    border-radius: 0;
+    border-bottom: 1px solid #082123;
+}
+
+    .modal-header h3
+    {
+        font-size: 19px;
+        font-weight: normal;
+    }
+
+.modal-footer
+{
+    border-radius: 0;
+}
+
+.modal
+{
+    border-radius: 0;
+}
+
+.nav-tabs
+{
+    background-color: #3f3f3f;
+    padding: 8px 15px 0;
+    margin: -15px -15px 15px -15px;
+    border-bottom: 5px solid #57959a;
+    border-top: 1px solid #575757;
+}
+
+    .nav-tabs > li > a
+    {
+        color: #57959a;
+        background-color: #272727;
+        border-radius: 0;
+    }
+
+    .nav-tabs > .active > a, .nav-tabs > .active > a:hover, .nav-tabs > .active > a:focus
+    {
+        background-color: #57959a;
+        color: #fff;
+        border: 1px solid #579599;
+        position: relative;
+    }
+
+.nav > li > a:hover, .nav > li > a:focus
+{
+    background-color: #45777b;
+    color: #fff;
+    border: 1px solid #44767a;
+}
+
+.ui-widget-overlay
+{
+    opacity: 0.8;
+    background: none;
+    background-color: #000;
+}
+
+.tabbable li
+{
+    cursor: pointer;
+    margin-bottom: 0;
+}
+
+.csv-editor-modal
+{
+    width: 90%;
+    left: 25%;
+}
+
+.selected-down-arrow
+{
+    width: 9px;
+    height: 5px;
+    background-image: url(../images/selectedDownArrow.png);
+    background-repeat: no-repeat;
+    position: absolute;
+    left: 45%;
+    bottom: -11px;
+    display: block;
+}
+
+.file-remove-button-container
+{
+    width: 6%;
+    float: left;
+    margin-left: 4%;
+}
+
+.file-name-container
+{
+    width: 35%;
+    float: left;
+    margin-right: 3%;
+}
+
+.upload-file-progressbar-container
+{
+    width: 50%;
+    float: left;
+    padding-top: 6px;
+}

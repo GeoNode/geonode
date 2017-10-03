@@ -1,0 +1,29 @@
+﻿<!--<i style="cursor: pointer;" class="fa fa-fw  fa-caret-down" ng-click="isHidden=!isHidden" ng-class="{'fa-caret-right':isHidden, 'fa-caret-down':!isHidden}"></i>-->
+<h4>Table Preview</h4>
+<div style="width: 100%; overflow-x: auto;" ng-if="!isHidden">
+    <table class="table table-condensed table-bordered">
+        <thead class="titleBar">
+            <tr>
+                <td style="font-weight: bold; white-space: nowrap"
+                    ng-repeat="header in headers" ng-attr-title="{{header.name}}">
+                    <span ng-class="{'table-cell-disabled':!header.includeColumn}">{{header.name | truncate:20}}
+                    </span>
+                </td>
+            </tr>
+        </thead>
+        <tbody>
+            <tr ng-repeat="row in rows | limitTo:3">
+                <td ng-repeat="cellValue in row track by $index" ng-attr-title="{{cellValue}}" style="white-space: nowrap;">
+                    <span ng-class="{'table-cell-disabled':!headers[$index].includeColumn}">{{cellValue | truncate:20}}
+                    </span>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+<style>
+    .table-cell-disabled
+    {
+        opacity: 0.3;
+    }
+</style>

@@ -1,0 +1,12 @@
+﻿<div class="base-map-switcher">
+    <button ng-show="!expanded" class="on-map-button pull-right" ng-click="expanded=true"><i class="fa fa-chevron-circle-left"></i></button>
+    <button ng-show="expanded" class="on-map-button pull-right" ng-click="expanded=false"><i class="fa fa-chevron-circle-right"></i></button>
+
+    <div ng-show="expanded" class="layers-list">
+        <h4>Base Layer</h4>
+        <label ng-repeat="baseMap in baseMaps">
+            <input type="radio" name="baseMapSwitcher" ng-model="model.selectedBaseMap" ng-value="baseMap" ng-change="changed()" />
+            {{baseMap.title}}
+        </label>
+    </div>
+</div>

@@ -1,0 +1,142 @@
+﻿<div class="mini-dialog">
+    <i class="fa fa-times modal-close-icon" ng-click="cancel()"></i>
+    <div class="modal-header">
+        <h3>{{nodeData.layer.name}} Properties</h3>
+    </div>
+    <form ng-submit="save()" style="margin: 0" novalidate>
+        <div class="modal-body" style="max-height: initial;">
+            <tabset>
+                <tab active='tabs[0].active'>
+                    <tab-heading>
+                        General
+                        <span ng-if="tabs[0].active" class="selected-down-arrow"></span>
+                    </tab-heading>
+                    <div class="general-properties">
+                        <div class="row">
+                            <div class="span2" style="text-align: right;font-weight: bold">
+                                Name :
+                            </div>
+                            <div class="span2">
+                                <input draft-only type='text' ng-model='nodeData.layer.name' maxlength="100" validatefilename focus-me="true" />
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="span2" style="text-align: right;font-weight: bold">
+                                Type :
+                            </div>
+                            <div class="span2">
+                                {{nodeData.layer.shapeType}}
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="span2" style="text-align: right;font-weight: bold">
+                                Data Source :
+                            </div>
+                            <div class="span2">
+                                <span>{{nodeData.layer.dataSourceName || "N/A"}}</span>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="span2" style="text-align: right; font-weight: bold">
+                                Linear Unit :
+                            </div>
+                            <div class="span2">
+                                <span>{{nodeData.layer.linearUnit || "None"}}</span>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="span2" style="text-align: right; font-weight: bold">
+                                Minimum Zoom Level :
+                            </div>
+                            <div class="span2">
+                                <input type="number" ng-model="nodeData.layer.zoomlevel"
+                                       class="form-control input-mini" min="0" max="21" fixed-number-range 
+                                       ng-init="nodeData.layer.zoomlevel = nodeData.layer.zoomlevel == undefined ? 0: nodeData.layer.zoomlevel" />
+                            </div>
+                        </div>
+                    </div>
+                </tab>
+                <tab active='tabs[1].active'>
+                    <tab-heading>
+                        Display style
+                        <span ng-if="tabs[1].active" class="selected-down-arrow"></span>
+                    </tab-heading>
+                    <layer-style-editor layer-style='nodeData.layer.style' feature-type="nodeData.layer.shapeType"></layer-style-editor>
+                </tab>
+
+                <tab active='tabs[2].active'>
+                    <tab-heading>
+                        Fields
+                        <span ng-if="tabs[2].active" class="selected-down-arrow"></span>
+                    </tab-heading>
+                    <div class="attribute-definition-table-wrapper">
+                        <div style="margin-left: 10px;" ng-if="!isReadonly">
+                            <div style="font-size: 21px;">Attribute definition naming guidelines:</div>
+                            <div ng-class="{'error':propertiesData.rule1Violated}">&emsp; - Attributes may not start with a digit and can be named using letters, numbers, and underscores</div>
+                            <div ng-class="{'error':propertiesData.rule3Violated}">&emsp; - Name must be unique</div>
+                            <div ng-class="{'error':propertiesData.rule4Violated}">&emsp; - At most one spatial attribute of a type can exist</div>
+                        </div>
+                        <div ng-if="!isReadonly" class="add-field-form">
+                            <input ng-change="validateAddingFieldName()"
+                                   ng-class="{'ng-invalid':!addFieldModel.nameValid}"
+                                   type="text" ng-model="addFieldModel.AttributeName" placeholder="Attribute Name" />
+                            <input type="text" class="form-control input-sm" ng-model="addFieldModel.Name"
+                                   placeholder="Attribute Alias" />
+                            <select ng-change="validateAddingFieldType()"
+                                    ng-class="{'ng-invalid':!addFieldModel.typeValid}" ng-model="addFieldModel.Type" ng-options="type.type as type.viewLabel for type in types">
+                                <option value="">-- type --</option>
+                            </select>
+                            <input ng-change="validateAddingFieldPrecision()" ng-class="{'ng-invalid':!addFieldModel.precisionValid}" type="number" ng-show="isNumericType(addFieldModel.Type)" ng-model="addFieldModel.Precision" placeholder="precision" />
+                            <input ng-change="validateAddingFieldScale()" ng-class="{'ng-invalid':!addFieldModel.scaleValid}" type="number" ng-show="isNumericType(addFieldModel.Type)" ng-model="addFieldModel.Scale" placeholder="scale" />
+                            <input ng-change="validateAddingFieldLength()" ng-class="{'ng-invalid':!addFieldModel.lengthValid}" type="number" ng-show="isTextType(addFieldModel.Type)" ng-model="addFieldModel.Length" placeholder="length" />
+
+                            <button ng-click="add()" type="button" class="btn btn-success" ng-disabled="!addingFieldIsValid()">
+                                <i class="fa fa-plus fa-fw btn-sm"></i>Add
+                            </button>
+                        </div>
+                        <attribute-definition-table>
+                        </attribute-definition-table>
+                    </div>
+                </tab>
+                <tab active="tabs[3].active">
+                    <tab-heading>
+                        Classifier
+                        <span ng-if="tabs[3].active" class="selected-down-arrow"></span>
+                    </tab-heading>
+                    <classifier-definitions settings-data="settingsData" input-data="inputData" classifier-binder="classifierBinder" default-style="nodeData.layer.style['default']" feature-type="nodeData.layer.shapeType">
+                    </classifier-definitions>
+                </tab>
+                <tab active="tabs[4].active">
+                    <tab-heading>
+                        Labeling
+                        <span ng-if="tabs[4].active" class="selected-down-arrow"></span>
+                    </tab-heading>
+                    <labeling-editor attribute-defs="nodeData.layer.attributeDefinitions" label-config="nodeData.layer.style.labelConfig" feature-type="nodeData.layer.shapeType">
+                    </labeling-editor>
+                </tab>
+            </tabset>
+        </div>
+        <div class="modal-footer">
+            <input draft-only class="btn btn-info" type="submit" value="Save" ng-disabled="nodeData.invalidField() || !nodeData.layer.name" />
+            <button draft-only class="btn btn-inverse" ng-click="cancel()">
+                Cancel
+            </button>
+        </div>
+    </form>
+</div>
+
+<style type="text/css">
+    .gridStyle {
+        border: 1px solid rgb(212,212,212);
+        width: auto;
+        height: 240px;
+        text-align: center;
+    }
+
+    .attribute-definition-grid-style {
+        border-top: 1px solid rgb(212,212,212);
+        width: auto;
+        height: 220px;
+        text-align: left;
+    }
+</style>
