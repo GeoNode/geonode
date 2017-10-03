@@ -1,0 +1,15 @@
+﻿<h4>Legend</h4>
+<span ng-repeat="value in legend.values" ng-style="{'display': legend.position == 'top' || legend.position == 'bottom' ? 'inline-block':'block'}">
+    <span ng-if="value.IsVisible">
+        <span>
+            <style-preview-small feature-type="value.getFeatureType()" style-hash="value.getDefaultStyle()"></style-preview-small>
+        </span>
+        <span style="word-break: break-all;"><b>{{value.getName()}}</b></span>
+        <span ng-repeat="class in value.getClassifierDefinitions().selected" style="display: inline-block;" ng-if="value.isClassVisible(class)">
+            <span>
+                <style-preview-small feature-type="value.getFeatureType()" style-hash="class.style"></style-preview-small>
+            </span>
+            <span style="word-break: break-all;">{{class.alias | identifyBlank}}: {{class.count}}</span>
+        </span>
+    </span>
+</span>

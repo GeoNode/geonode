@@ -1,0 +1,30 @@
+﻿<div ng-show="show">
+    <div>
+        <button class="control-button icon icon32 icon-plot-point"
+            title="Plot Point At Current Location" ng-click="capture()">
+        </button>
+    </div>
+
+    <button ng-show="showPauseRecording()" class="control-button icon icon32"
+        title="Pause Recording" ng-click="pauseRecording()">
+        <i class="fa fa-pause"></i>
+    </button>
+
+    <div>
+        <button ng-show="!settings.isRecording" class="control-button icon icon32 icon-auto-capture"
+            title="Start Recording" ng-click="startRecording()">
+        </button>
+
+        <button class="control-button icon icon32"
+            title="Stop Recording" ng-click="stopRecording()">
+            <i class="fa fa-stop"></i>
+        </button>
+
+        <button class="fa fa-chevron-right" ng-click="showRecordingOptions=!showRecordingOptions" style="position: absolute; right: -10px; bottom: 0; right: -16px; width: 15px; background-color: #484848; color: #fff; border: none; font-size: 10px">
+        </button>
+        <div ng-show="showRecordingOptions" style="background-color: #fff; position: absolute; bottom: -1px; left: 51px; width: 245px; height: 34px; border: 1px solid #c9c9c9; padding-left: 5px">
+            Auto capture interval (second)
+            <input type="number" style="width: 50px; margin-top: 2px;" ng-model="settings.recordingInterval" ng-change="recordingIntervalChanged()" />
+        </div>
+    </div>
+</div>

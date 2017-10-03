@@ -1,0 +1,22 @@
+﻿<table class="table table-striped subscription-list">
+    <thead>
+        <tr>
+            <th>Plan</th>
+            <th>Purchased On</th>
+            <th>Used During</th>
+            <th class="text-center">Price</th>
+            <th>Status</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr ng-repeat="subscription in subscriptions" ng-class="{active:isRunning(subscription)}">
+            <td>{{subscription.SchemeName}}</td>
+            <td>{{formatDate(subscription.PurchasedOn)}}</td>
+            <td>{{getDurationText(subscription)}}
+                                &nbsp;<span class="label label-success" ng-if="isRunning(subscription)">Active</span>
+            </td>
+            <td class="text-center">{{priceText(subscription)}}</td>
+            <td>{{statusText(subscription)}}</td>
+        </tr>
+    </tbody>
+</table>

@@ -1,0 +1,146 @@
+/*
+    Carousel.css
+*/
+
+body {
+    color: #5a5a5a;
+}
+
+.navbar-wrapper .container {
+    padding-left: 0;
+    padding-right: 0;
+}
+
+.navbar-wrapper .navbar {
+    padding-left: 15px;
+    padding-right: 15px;
+}
+.carousel-control {
+    left: 10px;
+}
+.carousel-control.right {
+
+    right: 10px;
+}
+
+.carousel {
+    height: auto;
+}
+
+.carousel-caption {
+    z-index: 10;
+    text-align: left;
+    top: 0;
+    position: static;
+    padding-top: 28px;
+}
+
+.carousel .item {
+    height: auto;
+    background: url(../images/carouselBackRep.jpg);
+    background-repeat: repeat-x;
+}
+
+.carousel-inner > .item > img {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    min-width: 100%;
+    height: auto;
+}
+
+.carousel-inner {
+    background-color: #d1cab0;
+    height: 379px;
+}
+
+.marketing .col-lg-4 {
+    text-align: center;
+    padding: 20px 0;
+    position: relative;
+    height: 250px;
+}
+
+.marketing h2 {
+    font-weight: normal;
+    color: #2c3e50;
+}
+
+.marketing .col-lg-4 p {
+    margin-left: 10px;
+    margin-right: 10px;
+}
+
+.featurette-divider {
+    margin: 80px 0;
+}
+
+.featurette-heading {
+    font-weight: 300;
+    line-height: 1;
+    letter-spacing: -1px;
+}
+.marketing i {
+    color: #22252a;
+}
+.carousel-caption h1 {
+    font-size: 37px;
+    color: #3f3f3f;
+    font-weight: bold;
+    text-shadow: none;
+    margin-bottom: 20px;
+    margin-top: 55px;
+}
+
+@media (min-width: 768px) {
+
+    .marketing {
+        padding-left: 0;
+        padding-right: 0;
+    }
+
+    .navbar-wrapper {
+        margin-top: 20px;
+    }
+
+        .navbar-wrapper .container {
+            padding-left: 15px;
+            padding-right: 15px;
+        }
+
+        .navbar-wrapper .navbar {
+            padding-left: 0;
+            padding-right: 0;
+        }
+
+        .navbar-wrapper .navbar {
+            border-radius: 4px;
+        }
+
+    .carousel-caption p {
+        color: #665c40;
+        font-size: 25px;
+        line-height: normal;
+        margin-bottom: 20px;
+        text-shadow: none;
+    }
+
+    .featurette-heading {
+        font-size: 50px;
+    }
+}
+
+.carousel-control {
+    width: 0;
+    top: -35px;
+}
+
+.carousel-indicators {
+    bottom: 0;
+}
+
+@media (min-width: 992px) {
+    .featurette-heading {
+        margin-top: 120px;
+    }
+}

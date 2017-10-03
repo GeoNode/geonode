@@ -1,0 +1,14 @@
+﻿<div class="current-file-list">
+    <ul>
+        <li data-ng-repeat="file in currentlyViewingFiles | filter:searchFilter.queryText"
+            data-ng-class="{'public': file.IsPublic, 'file-selected':file == selectedFile, 'Project':true, 'disabled-file':file.IsLocked}"
+            data-ng-click="action.click(file)" ng-dblclick="action.doubleClick()" ng-attr-title="{{file.Name}}">
+            <div class="file-icon">
+            </div>
+            <span class="name" data-ng-hide="editing && selectedFile == file">{{file.Name}}</span>
+            <input type="text" maxlength="100" data-ng-show="editing && selectedFile == file" data-ng-model="file.Name" validatefilename
+                focus-me="editing && selectedFile.Name == file.Name" data-ng-blur="stopEditing(file)" data-ng-keypress="saveIfEnterPressed($event, file)" />
+            <span class="published" ng-if="file.IsPublic"></span>
+        </li>
+    </ul>
+</div>

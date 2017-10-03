@@ -1,0 +1,42 @@
+﻿.toggler-closed
+{
+    background-position: center;
+    background-repeat: no-repeat;
+    background-color: #06B7FB;
+}
+
+.toggler-west-closed
+{
+    background-image: url("../images/right-arrow-blue.png");
+}
+
+.toggler-west-closed:hover
+{
+    background-image: url("../images/right-arrow-blue-hover.png");
+}
+
+.toggler-east-closed
+{
+    background-image: url("../images/left-arrow-blue.png");
+}
+
+.toggler-east-closed:hover
+{
+    background-image: url("../images/left-arrow-blue-hover.png");
+}
+
+.resizer.resizer-east.resizer-closed.resizer-east-closed.ui-draggable-disabled
+{
+    background-color: #06B7FB;
+}
+
+.ui-layout-pane.ui-layout-east,.ui-layout-pane.ui-layout-west {
+    border-top: 1px solid #bbbbbb;
+}
+
+/*body .ui-layout-pane
+{
+    padding-left: 1px;
+}*/
+
+

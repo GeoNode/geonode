@@ -1,0 +1,214 @@
+﻿/** ********************************************************** **/
+/** ====== stylesheet for elements displayed on the map ====== **/
+/** ********************************************************** **/
+
+/*======= OL override =======*/
+
+.surfgis .ol-zoom button {
+    width: 25px;
+}
+
+.surfgis .ol-zoom.ol-unselectable.ol-control {
+    height: 69px;
+}
+
+.surfgis .ol-zoom-out {
+    bottom: 2px;
+    position: absolute;
+}
+
+.surfgis .ol-attribution ul li:first-child {
+    display: none;
+}
+
+.surfgis .ol-mouse-position {
+    /* Extends .on-map-text*/
+    background-color: #ffffff;
+    background-color: rgba(256, 256, 256, .5);
+    color: rgb(68, 68, 68);
+    padding-left: 1px;
+    padding-right: 1px;
+    font-size: 12px;
+    top: 0;
+    right: 0;
+    padding-left: 2px;
+    padding-right: 2px;
+}
+
+/*===== OL override end =====*/
+
+.surfgis .on-map-text {
+    background-color: white;
+    color: rgb(68, 68, 68);
+    opacity: .7;
+    padding-left: 1px;
+    padding-right: 1px;
+    font-size: 12px;
+}
+
+.surfgis .on-map-button {
+    /* raugh copy of .ol-control button */
+    background-color: #7b98bc;
+    background-color: rgba(0,60,136,.5);
+    border: none;
+    border-radius: 2px;
+    text-align: center;
+    color: #fff;
+    margin: 1px;
+    padding: 0;
+    display: block;
+    height: 25px;
+    width: 25px;
+}
+
+    .surfgis .on-map-button:hover {
+        background-color: #4c6079;
+        background-color: rgba(0,60,136,.7);
+    }
+
+.surfgis .zoom-level-display {
+    position: absolute;
+    z-index: 2;
+    top: 34px;
+    left: 10px;
+    background-color: #9cb6d8;
+    width: 25px;
+    text-align: center;
+    color: #fff;
+    font-size: 15px;
+}
+
+.surfgis .base-map-switcher {
+    position: absolute;
+    z-index: 2;
+    top: 25px;
+    right: 0;
+    background-color: #ffffff;
+    opacity: .8;
+    border-top-left-radius: 6px;
+    border-bottom-left-radius: 6px;
+    border: #eeeeee solid 1px;
+}
+
+    .surfgis .base-map-switcher .layers-list {
+        padding-left: 10px;
+        padding-right: 10px;
+    }
+
+    .surfgis .base-map-switcher label {
+        cursor: pointer;
+    }
+
+    .surfgis .base-map-switcher button {
+        width: 25px;
+    }
+
+    .surfgis .base-map-switcher.legends {
+        right: auto;
+        left: 0;
+        top: 110px;
+        border-top-left-radius: 0;
+        border-bottom-left-radius: 0;
+        border-top-right-radius: 6px;
+        border-bottom-right-radius: 6px;
+    }
+
+
+/*===== Popup =====*/
+
+.surf-popup {
+    position: absolute;
+    background-color: white;
+    -webkit-filter: drop-shadow(0 1px 4px rgba(0,0,0,0.2));
+    filter: drop-shadow(0 1px 4px rgba(0,0,0,0.2));
+    padding: 15px;
+    border-radius: 10px;
+    border: 1px solid #cccccc;
+    bottom: 12px;
+    left: -50px;
+    width: 180px;
+}
+
+    .surf-popup:after, .surf-popup:before {
+        top: 100%;
+        border: solid transparent;
+        content: " ";
+        height: 0;
+        width: 0;
+        position: absolute;
+        pointer-events: none;
+    }
+
+    .surf-popup:after {
+        border-top-color: white;
+        border-width: 10px;
+        left: 48px;
+        margin-left: -10px;
+    }
+
+    .surf-popup:before {
+        border-top-color: #cccccc;
+        border-width: 11px;
+        left: 48px;
+        margin-left: -11px;
+    }
+
+.surf-popup-closer {
+    text-decoration: none;
+    position: absolute;
+    top: 2px;
+    right: 8px;
+}
+
+    .surf-popup-closer:after {
+        content: "✖";
+    }
+
+.property-grid-overlay {
+    position: absolute;
+    background-color: white;
+    -webkit-filter: drop-shadow(0 1px 4px rgba(0,0,0,0.2));
+    filter: drop-shadow(0 1px 4px rgba(0,0,0,0.2));
+    padding: 10px;
+    border-radius: 10px;
+    border: 1px solid #cccccc;
+    bottom: 12px;
+    left: -50px;
+    width: 260px;
+    z-index: 100;
+}
+
+    .property-grid-overlay:after, .property-grid-overlay:before {
+        top: 100%;
+        border: solid transparent;
+        content: " ";
+        height: 0;
+        width: 0;
+        position: absolute;
+        pointer-events: none;
+    }
+
+    .property-grid-overlay:after {
+        border-top-color: white;
+        border-width: 10px;
+        left: 48px;
+        margin-left: -10px;
+    }
+
+    .property-grid-overlay:before {
+        border-top-color: #cccccc;
+        border-width: 11px;
+        left: 48px;
+        margin-left: -11px;
+    }
+
+.property-grid-overlay-closer {
+    text-decoration: none;
+    position: absolute;
+    top: 2px;
+    right: 8px;
+}
+
+    .property-grid-overlay-closer:after {
+        content: "✖";
+    }

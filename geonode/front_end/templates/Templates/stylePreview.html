@@ -1,0 +1,120 @@
+﻿<div class="style-preview" ng-style="{width:previewSize.width, height:previewSize.height, 'line-height': previewSize.height + 'px'}">
+    <svg width="32" height="32" ng-if="styleHash.textGraphicName == 'circledText'">
+        <circle cx="16" cy="16" r="15" ng-attr-style="fill: {{styleHash.fillColor}};
+                  stroke: {{styleHash.strokeColor}}; stroke-width: {{styleHash.strokeWidth}};" />
+        <text x="50%" y="50%" ng-attr-fill="{{styleHash.textFillColor}}" font-size="14" font-weight="bold"
+              alignment-baseline="middle" text-anchor="middle">{{styleHash.text}}</text>
+    </svg>
+    <svg width="28" height="28" ng-if="styleHash.textGraphicName == 'squaredText'">
+        <rect x="0" y="0" width="28" height="28" ng-attr-style="fill: {{styleHash.fillColor}};
+                  stroke: {{styleHash.strokeColor}}; stroke-width: {{styleHash.strokeWidth}};" />
+        <text x="50%" y="50%" ng-attr-fill="{{styleHash.textFillColor}}" font-size="14" font-weight="bold" 
+              alignment-baseline="middle" text-anchor="middle">{{styleHash.text}}</text>
+    </svg>
+    <svg height="30" width="40" ng-if="styleHash.textGraphicName == 'triangledText'">
+        <polygon points="20,0 0,30 40,30" ng-attr-style="fill: {{styleHash.fillColor}};
+                  stroke: {{styleHash.strokeColor}}; stroke-width: {{styleHash.strokeWidth}};" />
+        <text x="50%" y="50%" ng-attr-fill="{{styleHash.textFillColor}}" font-size="14" font-weight="bold"
+              alignment-baseline="middle" text-anchor="middle">{{styleHash.text}}</text>
+    </svg>
+    <svg width="32" height="32" ng-if="styleHash.textGraphicName == 'circledGraphic'">
+        <circle cx="16" cy="16" r="15" ng-attr-style="fill: {{styleHash.fillColor}};
+                  stroke: {{styleHash.strokeColor}}; stroke-width: {{styleHash.strokeWidth}};"/>
+        <text x="10" y="21" class="fa" ng-attr-fill="{{styleHash.textFillColor}}"  font-weight="normal" font-size="14"  ng-attr-fill="{{styleHash.textFillColor}}">
+            {{styleHash.text}}     
+        </text>
+    </svg>
+    <svg width="28" height="28" ng-if="styleHash.textGraphicName == 'squaredGraphic'">
+
+        <rect x="0" y="0" width="28" height="28" ng-attr-style="fill: {{styleHash.fillColor}};
+                  stroke: {{styleHash.strokeColor}}; stroke-width: {{styleHash.strokeWidth}};"/>
+        <text x="6" y="20" class="fa" ng-attr-fill="{{styleHash.textFillColor}}"  font-weight="normal" font-size="14"  ng-attr-fill="{{styleHash.textFillColor}}">
+            {{styleHash.text}}
+        </text>
+    </svg>
+    <svg height="30" width="40" ng-if="styleHash.textGraphicName == 'triangledGraphic'">
+        <polygon points="20,0 0,30 40,30" ng-attr-style="fill: {{styleHash.fillColor}};
+                  stroke: {{styleHash.strokeColor}}; stroke-width: {{styleHash.strokeWidth}};"/>
+        <text x="12" y="24" class="fa" ng-attr-fill="{{styleHash.textFillColor}}"  font-weight="normal" font-size="14"  ng-attr-fill="{{styleHash.textFillColor}}">
+            {{styleHash.text}}
+        </text>
+    </svg>
+
+  
+    <img ng-if="isPoint && styleHash.externalGraphic" ng-attr-src="{{styleHash.externalGraphic}}" alt=""
+         ng-attr-width="{{diameter}}" />
+    <svg ng-if="!(isPoint && (styleHash.externalGraphic || styleHash.textGraphicName))" ng-attr-width="{{previewSize.width}}" ng-attr-height="{{previewSize.height}}" ng-attr-viewPort="0 0 {{prevWidth}} {{prevHeight}}" version="1.1" xmlns="http://www.w3.org/2000/svg"
+         stroke-linecap="round"
+         pointer-events="visiblePainted"
+         stroke-linejoin="round"
+         cursor="pointer"
+         ng-attr-fill="{{getFill(styleHash)}}"
+         ng-attr-stroke="{{styleHash.strokeColor}}"
+         ng-attr-stroke-width="{{styleHash.strokeWidth}}"
+         ng-attr-fill-opacity="{{styleHash.fillOpacity}}"
+         ng-attr-stroke-dasharray="{{getDashArray()}}">
+
+        <defs>
+            <pattern ng-attr-id="shape://vertline{{uniqueId}}"
+                     ng-attr-x="{{styleHash.pixelDensity}}" ng-attr-y="{{styleHash.pixelDensity}}"
+                     ng-attr-width="{{styleHash.pixelDensity}}" ng-attr-height="{{styleHash.pixelDensity}}"
+                     patternUnits="userSpaceOnUse">
+                <line x2="0" y2="100%" x1="0" y1="0" ng-attr-style="stroke:{{styleHash.fillColor}}; stroke-width:3" />
+            </pattern>
+
+            <pattern ng-attr-id="shape://horline{{uniqueId}}"
+                     ng-attr-x="{{styleHash.pixelDensity}}" ng-attr-y="{{styleHash.pixelDensity}}"
+                     ng-attr-width="{{styleHash.pixelDensity}}" ng-attr-height="{{styleHash.pixelDensity}}"
+                     patternUnits="userSpaceOnUse">
+                <line x1="0" y1="0" x2="100%" y2="0" ng-attr-style="stroke:{{styleHash.fillColor}}; stroke-width:3" />
+            </pattern>
+
+            <pattern ng-attr-id="shape://backslash{{uniqueId}}"
+                     ng-attr-x="{{styleHash.pixelDensity}}" ng-attr-y="{{styleHash.pixelDensity}}"
+                     ng-attr-width="{{styleHash.pixelDensity}}" ng-attr-height="{{styleHash.pixelDensity}}"
+                     patternUnits="userSpaceOnUse">
+                <line x1="0" y1="0" x2="100%" y2="100%" ng-attr-style="stroke:{{styleHash.fillColor}};" />
+            </pattern>
+
+            <pattern ng-attr-id="shape://plus{{uniqueId}}"
+                     ng-attr-x="{{styleHash.pixelDensity}}" ng-attr-y="{{styleHash.pixelDensity}}"
+                     ng-attr-width="{{styleHash.pixelDensity}}" ng-attr-height="{{styleHash.pixelDensity}}"
+                     patternUnits="userSpaceOnUse">
+                <line x2="0" y2="100%" x1="0" y1="0" ng-attr-style="stroke:{{styleHash.fillColor}}; stroke-width:3" />
+                <line x1="0" y1="0" x2="100%" y2="0" ng-attr-style="stroke:{{styleHash.fillColor}}; stroke-width:3" />
+            </pattern>
+
+            <pattern ng-attr-id="shape://dot{{uniqueId}}"
+                     ng-attr-x="{{styleHash.pixelDensity}}" ng-attr-y="{{styleHash.pixelDensity}}"
+                     ng-attr-width="{{styleHash.pixelDensity}}" ng-attr-height="{{styleHash.pixelDensity}}"
+                     patternUnits="userSpaceOnUse">
+                <circle cx="1" cy="1" r="0.2" ng-attr-style="stroke:{{styleHash.fillColor}}; stroke-width:1;fill:{{styleHash.fillColor}}" />
+            </pattern>
+        </defs>
+
+        <circle ng-if="isPoint && styleHash.graphicName == 'circle'"
+                ng-attr-r="{{r}}"
+                ng-attr-cx="{{cx}}"
+                ng-attr-cy="{{cy}}">
+        </circle>
+        <polygon ng-if="isPoint && styleHash.graphicName == 'square'"
+                 ng-attr-points="{{left}},{{top}} {{right}},{{top}} {{right}},{{bottom}} {{left}},{{bottom}}">
+        </polygon>
+
+        <polygon ng-if="isPoint && styleHash.graphicName == 'x'"
+                 ng-attr-points="{{left}},{{top}} {{left|plus:halfR}},{{top}} {{cx}},{{cy-thirdR}} {{right-halfR}},{{top}} {{right}},{{top}} {{cx|plus:thirdR}},{{cy}} {{right}},{{bottom}} {{right-halfR}},{{bottom}} {{cx}},{{cy|plus:thirdR}} {{left|plus:halfR}},{{bottom}} {{left}},{{bottom}} {{cx-thirdR}},{{cy}}">
+        </polygon>
+        <polygon ng-if="isPoint && styleHash.graphicName == 'cross'"
+                 ng-attr-points="{{cx-fifthR}},{{top}} {{cx|plus:fifthR}},{{top}} {{cx|plus:fifthR}},{{cy-fifthR}} {{right}},{{cy-fifthR}} {{right}},{{cy|plus:fifthR}} {{cx|plus:fifthR}},{{cy|plus:fifthR}} {{cx|plus:fifthR}},{{bottom}} {{cx-fifthR}},{{bottom}} {{cx-fifthR}},{{cy|plus:fifthR}} {{left}},{{cy|plus:fifthR}} {{left}},{{cy-fifthR}} {{cx-fifthR}},{{cy-fifthR}}">
+        </polygon>
+        <polygon ng-if="isPoint && styleHash.graphicName == 'triangle'"
+                 ng-attr-points="{{left}},{{bottom}} {{right}},{{bottom}} {{cx}},{{top}}">
+        </polygon>
+
+        <path ng-if="isPolyline" ng-attr-d="M2,{{previewSize.height*.2}} L{{previewSize.width*.3}},2 L{{previewSize.width*.6}},{{previewSize.height-2}} L{{previewSize.width*.8}},{{previewSize.height*.2}} L{{previewSize.width-2}},{{previewSize.height*.24}}"
+              fill="none">
+        </path>
+        <path ng-if="isPolygon" ng-attr-d="M2,{{previewSize.height*.4}} L{{previewSize.width*.4}},2 L{{previewSize.width-2}},{{previewSize.height*.3}} L{{previewSize.width*.8}},{{previewSize.height-2}} L{{previewSize.width*.6}},{{previewSize.height*.6}} Z">
+        </path>
+    </svg>
+</div>

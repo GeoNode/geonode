@@ -1,0 +1,15 @@
+﻿<span class="header" ng-show="selectedFile.Name">Properties for : {{selectedFile.Name}}</span>
+<ul>
+    <li>
+        <div>File Size : {{selectedFile.FileSize | byteFilter}}</div>
+    </li>
+    <li>
+        <div>Created On : {{selectedFile.CreatedOn | date:'medium'}}</div>
+    </li>
+    <li>
+        <div>Last Updated On : {{selectedFile.LastUpdatedOn | date:'medium'}}</div>
+    </li>
+    <li ng-if="!selectedFile.IsCsv">
+        <div>EPSG Code : {{selectedFile.EpsgCode}}</div>
+    </li>
+</ul>

@@ -1,0 +1,20 @@
+﻿<div class="mini-dialog">
+    <i class="fa fa-times modal-close-icon" ng-click="$dismiss()"></i>
+    <div class="modal-header">
+        <h3>{{mapService.getMapInfo().Title}}</h3>
+    </div>
+    <div class="modal-body">
+        <label ng-if="mapService.getMapInfo().IsAuthorNamePublic">Author: {{mapService.getMapInfo().AuthorName}}</label>
+
+        <div>
+            <label>Description</label>
+            {{mapService.getMapInfo().Description}}
+        </div>
+    </div>
+    <div class="modal-footer">
+        <button class="btn btn-success" ng-click="$dismiss()">
+            <i class="fa fa-fw fa-close"></i>Close
+        </button>
+    </div>
+</div>
+

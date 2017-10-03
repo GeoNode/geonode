@@ -1,0 +1,13 @@
+﻿<div class="visulization-legend-container" ng-if="canRenderLegend()">
+    <button ng-click="showLegend = !showLegend" class="btn btn-primary fa donot-print" ng-class="{'fa-plus-square-o':!showLegend,'fa-minus-square-o':showLegend}"></button>
+
+    <table ng-if="showLegend">
+        <tr ng-repeat="class in activeLayerTool.getActiveLayer().VisualizationSettings.classes track by $index">
+            <td ng-if="$first">{{class.rangeMin.toFixed(2)}}&nbsp;&le;&nbsp;{{getSelectedAttributeName()}}&nbsp;&le;&nbsp;{{class.rangeMax.toFixed(2)}}</td>
+            <td ng-if="!$first">{{class.rangeMin.toFixed(2)}}&nbsp;&lt;&nbsp;{{getSelectedAttributeName()}}&nbsp;&le;&nbsp;{{class.rangeMax.toFixed(2)}}</td>
+            <td>
+                <style-preview-small feature-type="activeLayerTool.getActiveLayer().getFeatureType()" style-hash="class.style"></style-preview-small>
+            </td>
+        </tr>
+    </table>
+</div>

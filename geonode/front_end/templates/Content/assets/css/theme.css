@@ -1,0 +1,78 @@
+﻿@font-face {
+    font-family: "RobotoRegular";
+    src: url('../fonts/Roboto_Condensed/RobotoCondensed-Regular.ttf') format("truetype");
+}
+
+@font-face {
+    font-family: "RobotoBold";
+    src: url('../fonts/Roboto_Condensed/RobotoCondensed-Bold.ttf') format("truetype");
+}
+
+.application-font
+{
+    font-family: RobotoRegular, "Trebuchet MS", Verdana, Helvetica, Sans-Serif !important;
+}
+
+.application-font-bold
+{
+    font-family: RobotoRegular, "Trebuchet MS", Verdana, Helvetica, Sans-Serif !important;
+}
+
+.all-children-application-font * {
+    font-family: RobotoRegular, "Trebuchet MS", Verdana, Helvetica, Sans-Serif;
+}
+
+.font-13 {
+    font-size: 13px !important; 
+}
+
+.fg-accent
+{
+    color: #11aff7;
+}
+
+.bg-accent
+{
+    background-color: #11aff7;
+}
+
+.layout-content {
+    background-color: #e2e6ea;
+}
+
+.layout-content .top, .layout-content .content-middle {
+    border-radius: 2px;
+    background-color: #FFFFFF;
+    border-style: solid;
+    border-color: #cccccc;
+    border-width: 1px;
+}
+
+.layout-content .content.top
+{
+    border-top: solid 3px #11aff7;
+}
+
+.layout-content .bottom
+{
+    background-repeat: no-repeat;
+    background-position: center;
+}
+
+.layout-content .info a
+{
+    text-decoration: none;
+    text-transform: uppercase;
+    color: #FFFFFF;
+    background-color: #008CC2;
+}
+
+.content.closed 
+{
+    background-color: #06B7FB;
+}
+
+
+.readonly-field {
+    cursor: not-allowed !important;
+}

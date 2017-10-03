@@ -1,0 +1,118 @@
+﻿<div class="style-column">
+    <div class="style-group" ng-if="isPoint">
+        <div class="style-editor dropdown">
+            <button class="btn btn-default dropdown-toggle">
+                <img ng-if="styleHash.externalGraphic" ng-src="{{styleHash.externalGraphic}}" ng-attr-alt="{{styleHash.externalGraphic}}" />
+                <i ng-if="styleHash.graphicName" ng-class="graphicIconClass[styleHash.graphicName]"></i>
+                <img ng-if="styleHash.textGraphicName" ng-src="{{textGraphicIconClasses[styleHash.textGraphicName]}}" ng-attr-alt="{{textGraphicIconClasses[styleHash.textGraphicName]}}"/>
+                <i class="fa fa-caret-down"></i>
+            </button>
+            <ul class="dropdown-menu dropdown-grid">
+                <li ng-model="model.pointType" btn-radio="url" ng-repeat="url in pointGraphics">
+                    <a><img ng-src="{{url}}" alt="{{url}}" /></a>
+                </li>
+                <li ng-model="model.pointType" btn-radio="graphicName" ng-repeat="graphicName in pointGraphicNames">
+                    <a><i ng-class="graphicIconClass[graphicName]"></i></a>
+                </li>
+                <li ng-model="model.pointType" btn-radio="textGraphicName" ng-repeat="textGraphicName in pointTextGraphicNames">
+                    <a><img ng-src="{{textGraphicIconClasses[textGraphicName]}}" alt="{{textGraphicIconClasses[textGraphicName]}}" /></a>
+                </li>
+            </ul>
+        </div>
+
+        <div class="style-editor range">
+            <input ng-disabled="styleHash.textGraphicName" type="text" ng-model="styleHash.pointRadius" min="0" max="100" fixed-number-range />
+            <span>0</span><input ng-disabled="styleHash.textGraphicName" type='range' min="0" max="100" step="1" ng-model='styleHash.pointRadius' /><span>100</span>
+        </div>
+
+        <div class="style-editor color">
+            <input style="width: 20px;" ng-disabled="!styleHash.textGraphicName"  ng-hide="styleHash.textFontAwesome"  allow-single-character type="text" ng-model="styleHash.text"/>
+
+            <select  ng-show="styleHash.textFontAwesome" class="form-control fa" id="sel1" style="width: 50px;"  data-ng-model="styleHash.text">
+                <option class="fa">&#xf001</option>
+                <option class="fa">&#xf002</option>
+                <option class="fa">&#xf003</option>
+                <option class="fa">&#xf004</option>
+                <option class="fa">&#xf005</option>
+                <option class="fa">&#xf006</option>
+                <option class="fa">&#xf007</option>
+                <option class="fa">&#xf008</option>
+                <option class="fa">&#xf009</option>
+                <option class="fa">&#xf010</option>
+                <option class="fa">&#xf011</option>
+                <option class="fa">&#xf012</option>
+                <option class="fa">&#xf013</option>
+                <option class="fa">&#xf014</option>
+                <option class="fa">&#xf015</option>
+                <option class="fa">&#xf016</option>
+                <option class="fa">&#xf017</option>
+                <option class="fa">&#xf018</option>
+                <option class="fa">&#xf019</option>
+                <option class="fa">&#xf020</option>
+                <option class="fa">&#xf021</option>
+                <option class="fa">&#xf022</option>
+                <option class="fa">&#xf023</option>
+                <option class="fa">&#xf024</option>
+                <option class="fa">&#xf025</option>
+                <option class="fa">&#xf026</option>
+                <option class="fa">&#xf027</option>
+                <option class="fa">&#xf028</option>
+                <option class="fa">&#xf029</option>
+                <option class="fa">&#xf030</option>
+            </select>
+            <!--<input style="width: 20px;" ng-disabled="!styleHash.textGraphicName"  allow-single-character type="text" ng-model="styleHash.text" />-->
+            <input ng-disabled="!styleHash.textGraphicName" type="text" ng-model="styleHash.textFillColor" color-code-validator />
+            <button ng-disabled="!styleHash.textGraphicName" type="button" ng-style="{'background-color': styleHash.textFillColor}" ng-disabled="styleHash.externalGraphic"
+                    colorpicker class="colorpicker-btn" draft-only ng-model="styleHash.textFillColor"></button>
+        </div>
+    </div>
+
+    <div class="style-group whiteRow" ng-if="!isPolyline">
+        <div ng-if="isPolygon" class="style-editor color">
+            <select style="width: 150px;" ng-model="styleHash.fillPattern" ng-options="pattern.value as pattern.name for pattern in fillPatterns"></select>
+            <input style="width: 50px;" ng-if="styleHash.fillPattern" type="number" ng-model="styleHash.pixelDensity" min="1" max="100" fixed-number-range
+                   ng-init="styleHash.pixelDensity = styleHash.pixelDensity == undefined ? 6 : styleHash.pixelDensity" title="space between" />
+            <sub ng-if="styleHash.fillPattern">px</sub>
+        </div>
+        <div class="style-editor color">
+            <input type="text" ng-model="styleHash.fillColor" color-code-validator />
+            <button type="button" ng-style="{'background-color': styleHash.fillColor}" ng-disabled="styleHash.externalGraphic" colorpicker class="colorpicker-btn" draft-only ng-model="styleHash.fillColor"></button>
+        </div>
+        <div class="style-editor range">
+            <input type="text" ng-model="model.transparency" fixed-number-range min="0" max="100" ng-change="transparencyChanged()" />
+            <span>0 </span>
+            <input type='range' min="0" max="100" step="1" ng-model='model.transparency' ng-change="transparencyChanged()" /><span>100</span>
+        </div>
+    </div>
+
+    <div class="style-group darkRow">
+        <div class="style-editor color">
+            <input type="text" ng-model="styleHash.strokeColor" color-code-validator />
+            <button type="button" ng-style="{'background-color': styleHash.strokeColor}" ng-disabled="styleHash.externalGraphic" colorpicker class="colorpicker-btn" draft-only ng-model="styleHash.strokeColor"></button>
+        </div>
+        <div class="style-editor range">
+            <input ng-disabled="styleHash.externalGraphic" type="text" ng-model="styleHash.strokeWidth" min="0" max="100" fixed-number-range />
+            <span>0</span><input ng-disabled="styleHash.externalGraphic" type='range' min="0" max="100" step="1" ng-model='styleHash.strokeWidth' /><span>100</span>
+        </div>
+        <div class="style-editor dropdown">
+            <button type="button" ng-disabled="styleHash.externalGraphic" class="btn btn-default dropdown-toggle">
+                {{strokeDashstyles.dashTypeText[styleHash.strokeDashstyle]}}<i class="fa fa-caret-down fa-fw"></i>
+            </button>
+            <ul class="dropdown-menu dropdown-up">
+                <li ng-model="styleHash.strokeDashstyle" btn-radio="dashType" ng-repeat="dashType in strokeDashstyles.allDasheTypes">
+                    <a>{{strokeDashstyles.dashTypeText[dashType]}}</a>
+                </li>
+            </ul>
+            <span>
+                <input ng-if="styleHash.strokeDashstyle == 'dash'" type="number" min="1" ng-model="styleHash.dashWidth" class="form-control"
+                       style="width: 56px;" placeholder="length" title="length"
+                       ng-init="styleHash.dashWidth = styleHash.dashWidth == undefined ? 12 : styleHash.dashWidth" />
+                <input ng-if="styleHash.strokeDashstyle == 'dash' || styleHash.strokeDashstyle == 'dot'"
+                       type="number" min="1" ng-model="styleHash.dashSpace" class="form-control"
+                       style="width: 56px;" placeholder="space" title="space between"
+                       ng-init="styleHash.dashSpace = styleHash.dashSpace == undefined ? 12 : styleHash.dashSpace" />
+                <sub ng-if="styleHash.strokeDashstyle == 'dash' || styleHash.strokeDashstyle == 'dot'">px</sub>
+            </span>
+        </div>
+    </div>
+</div>

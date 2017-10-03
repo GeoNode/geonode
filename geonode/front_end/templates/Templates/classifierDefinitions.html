@@ -1,0 +1,187 @@
+﻿<div style="max-height: 650px;">
+
+    <div ng-if="!isEnvironmentProd" class="row">
+        <div class="span2">
+            <label>
+                <input draft-only type="radio" ng-model="flags.isRange" value="false" ng-change="radioSelectionChanged()" style="margin-top: 0" />
+                By Unique
+            </label>
+        </div>
+        <div class="span3">
+            <label>
+                <input draft-only type="radio" ng-model="flags.isRange" value="true" ng-change="radioSelectionChanged()" style="margin-top: 0" />
+                By Range
+            </label>
+        </div>
+    </div>
+
+    <hr style="margin: 10px 0 5px;" />
+
+    <div id="second-section">
+
+        <div class="row" style="margin-bottom: 10px;">
+
+            <div class="span2">
+                <label style="font-weight: bold">Select Attribute</label>
+
+                <select ng-disabled="isEnvironmentProd" draft-only ng-model="flags.field" style="width: 150px;" class="form-control" ng-change="dropdownSelectionChanged()" ng-options="i.id as i.name for i in NeededAttributes">
+                    <option value="">-- No Item Selected --</option>
+                </select>
+            </div>
+
+            <div class="span4" draft-only>
+                <label style="font-weight: bold">Color Ramp</label>
+                <sti-plt-pkr ng-model="flags.chosenPalette" sti-pkr-options="paletteItems"></sti-plt-pkr>
+            </div>
+            <div class="span2">
+                <div ng-if="isUnique()" style="padding: 3px; margin-top: 25px;">
+                    <button type="button" class="btn btn-danger" ng-disabled="chosenValuesForGrid.length == 0"
+                            style="padding: 2px 6px;" ng-click="removeAll()">
+                        <i class="fa fa-minus-circle"></i>&nbsp;Remove All
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <div class="row" ng-show="isRange()">
+            <div class="span3">
+                <label style="font-weight: bold; display: inline;">Divisions :</label>
+                <input type="number" class="form-control" style="width: 40px;" min="1" max="100" ng-model="flags.division" ng-change="divisionChanged()" />
+            </div>
+            <div class="span3">
+                <i class="fa fa-spinner fa-spin" style="text-align: center; width: 100%; margin-top: 35px;" ng-show="isLoading()"></i>
+            </div>
+        </div>
+
+        <div style="overflow: hidden; width: 918px;">
+
+            <div class="classification-style-editor-container" ng-if="selectedClass && !classificationEditor.hide" ng-class="{'style-editor-shown':!classificationEditor.hide}">
+
+                <i class="fa fa-times-circle" aria-hidden="true" ng-click="classificationEditor.hide = true" style="position: absolute; right: 7px; top: 5px; font-size: 17px; cursor: pointer;"></i>
+
+                <table>
+                    <tr class="preview-row">
+                        <td></td>
+                        <td>
+                            <style-preview feature-type="featureType" style-hash="selectedClass.style"></style-preview>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <style-label feature-type="featureType"></style-label>
+                        </td>
+                        <td>
+                            <style-editor feature-type="featureType" style-hash="selectedClass.style"></style-editor>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+
+            <div id="ListOfValues" class="list-of-values" ng-if="isRange() || isUnique()" ng-class="{'classification-table-hidden-line':!classificationEditor.hide && featureType=='polyline', 'classification-table-hidden-polygon':!classificationEditor.hide && featureType=='polygon', 'classification-table-hidden-point':!classificationEditor.hide && featureType=='point'  }">
+                <div class="row">
+                    <div ng-attr-class="{{isUnique() ? 'span7':'span9'}}">
+                        <div class="fixed-table-container">
+                            <div class="header-background titleBar"></div>
+                            <div class="fixed-table-container-inner">
+                                <table cellspacing="0" class="table-striped">
+                                    <thead>
+                                        <tr>
+                                            <th title="click for reverse colors" class="first" style="width: 70px; margin-top: 5px; cursor: pointer" ng-click='reverseColorSet()'>
+                                                <div class="th-inner">
+                                                    <i class='fa fa-fw fa-exchange fa-rotate-90' style='margin-right: 2px; font-size: 17px; color: #14b4f8;'></i>Color
+                                                </div>
+                                            </th>
+                                            <th style="width: 120px;">
+                                                <div class="th-inner" style="padding-left: 67px;">Alias</div>
+                                            </th>
+                                            <th style="width: 150px;" ng-if="isUnique()">
+                                                <div class="th-inner" style="padding-left: 67px;">Value</div>
+                                            </th>
+                                            <th style="width: 150px;" ng-if="isRange()">
+                                                <div class="th-inner" style="padding-left: 79px;">Min</div>
+                                            </th>
+                                            <th style="width: 150px;" ng-if="isRange()">
+                                                <div class="th-inner" style="padding-left: 79px;">Max</div>
+                                            </th>
+                                            <th style="width: 60px;">
+                                                <div class="th-inner" style="padding-left: 19px;">Count</div>
+                                            </th>
+                                            <th style="width: 60px;">
+                                                <div class="th-inner" style="padding-left: 19px;">Group</div>
+                                            </th>
+                                            <th style="width: 30px;" ng-if="isUnique()">
+                                                <div class="th-inner"></div>
+                                            </th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr ng-class="{'active': selectedClass == class}" ng-repeat="class in chosenValuesForGrid" >
+                                            <td style="width: 70px; text-align: center; padding: 0;" ng-click="selectClass(class)">
+                                                <style-preview feature-type="featureType" style-hash="class.style" preview-size="{width:50, height: 40}"></style-preview>
+                                            </td>
+                                            <td style="width: 120px; text-align: center; padding: 0;">
+                                                <input type="text" ng-model="class.alias" class="form-control input-small" ng-init="fillInitialAlias(class)" />
+                                            </td>
+                                            <td ng-if="isUnique()" style="width: 150px; text-align: center; word-break: break-all;">{{class.value | identifyBlank}}</td>
+                                            <td ng-if="isRange()" style="width: 150px; text-align: center;">{{class.rangeMin}} <span ng-if="$index != 0">+</span></td>
+                                            <td ng-if="isRange()" style="width: 150px; text-align: center;">
+                                                <input type="number" style="padding: 2px; width: 130px; height: 20px; line-height: 18px; margin: 3px 0 0 3px;"
+                                                       ng-model="class.rangeMax" ng-input="class.rangeMax" fixed-number-range-for-classifier
+                                                       ng-focus="saveEditingValue(class.rangeMax)" ng-attr-min="{{class.rangeMin}}"
+                                                       ng-attr-max="{{flags.maximum}}" ng-blur="rangeLimitChanged(class)" />
+                                            </td>
+                                            <td style="width: 60px; text-align: center;">{{class.count}}</td>
+                                            <td style="width: 120px; text-align: center; padding: 0;">
+                                                <input type="text" ng-model="class.groupName" class="form-control input-small" />
+                                            </td>
+                                            <td ng-if="isUnique()" style="width: 30px; text-align: center;"><i class="fa fa-times-circle" ng-click="removeToList($index)" style="color: #df524e; cursor: pointer; margin-top: 8px;" title="Remove"></i></td>
+                                        </tr>
+                                    </tbody>
+                                    <tfoot ng-if="chosenValuesForGrid.length == 0">
+                                        <tr style="height: 176px;">
+                                            <td colspan="6" style="text-align: center; padding: 20px; font-style: italic; color: lightgray">
+                                                <div class="alert">No classifier available</div>
+                                            </td>
+                                        </tr>
+                                    </tfoot>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="span1" style="font-size: 20px; margin-top: 10%;">
+                        <i class="fa fa-arrow-circle-up" style="cursor: pointer;" ng-click="moveUp()"></i>
+                        <i class="fa fa-arrow-circle-down" style="cursor: pointer;" ng-click="moveDown()"></i>
+                    </div>
+                    <div class="span2" ng-if="isUnique()">
+                        <div class="panel panel-default" style="margin-bottom: 0">
+                            <div class="panel-heading" style="padding: 3px 6px;">
+                                <h3 class="panel-title" style="font-size: 14px; line-height: 24px; font-family: RobotoRegular, Trebuchet MS, Verdana, Helvetica, Sans-Serif;">
+                                    <input checkbox-all="flags.PropertyData-checked" style="margin-top: 0;" ng-disabled="flags.PropertyData.length == 0" />
+                                    Select All
+                                </h3>
+                            </div>
+                            <div class="panel-body" style="padding: 5px; min-height: 163px;">
+                                <ul class="nav-stacked" style="margin-bottom: 0; max-height: 165px; min-height: 165px; overflow-y: auto; margin-left: 0">
+                                    <div ng-if="flags.PropertyData.length == 0" class="alert" ng-show="!isLoading()">No item</div>
+                                    <li ng-repeat="item in flags.PropertyData" class="list-group-item active" ng-show="!isLoading()" style="white-space: nowrap;">
+                                        <input type="checkbox" ng-attr-name="{{item.value}}" ng-model="item.checked" ng-change="selectionModeChanged(item)" style="margin-top: 0;" />
+                                        {{item.value | identifyBlank}}
+                                    </li>
+                                    <div>
+                                        <i class="fa fa-spinner fa-spin" style="text-align: center; width: 100%; margin-top: 10px;" ng-show="isLoading()"></i>
+                                    </div>
+                                </ul>
+                            </div>
+
+                            <div class="panel-footer" style="padding: 3px;">
+                                <button type="button" class="btn btn-success" style="padding: 2px 6px;" ng-click="addSelectionsToGrid()" ng-disabled="!areInputsChecked()"><i class="fa fa-plus-circle fa-fw"></i>ADD</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+</div>

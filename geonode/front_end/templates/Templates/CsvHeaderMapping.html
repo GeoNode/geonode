@@ -1,0 +1,19 @@
+﻿<div class="mini-dialog">
+    <i class="fa fa-times modal-close-icon" ng-click="closeModal()"></i>
+    <div class="modal-header">
+        <h3>File import wizard</h3>
+    </div>
+    <div class="modal-body">
+        <csv-importer importer="csvFileImporter">
+           <div ng-if="validation.message" class="alert alert-error">{{validation.message}}</div>
+        </csv-importer>
+    </div>
+    <div class="modal-footer">
+        <button ng-disabled="validation.message || csvFileImporter.fieldsInvalid() " type="button" class="btn btn-success btn-sm" ng-click="done()">
+            <i class="fa fa-check fa-fw"></i>Done
+        </button>
+        <button type="button" class="btn btn-warning btn-sm" ng-click="closeModal()">
+            <i class="fa fa-ban fa-fw"></i>Cancel
+        </button>
+    </div>
+</div>

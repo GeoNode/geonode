@@ -1,0 +1,126 @@
+﻿<table class="table table-condensed table-bordered">
+    <thead class="titleBar">
+
+        <tr>
+            <td style="width: 52px;">Name in File</td>
+            <td style="width: 85px;">Attribute Name</td>
+            <td style="width: 51px;">Map Field</td>
+        </tr>
+
+    </thead>
+
+</table>
+<div class="importTableScrollable">
+
+    <table class="table table-condensed table-bordered">
+
+        <tr ng-repeat="csvHeader in csvHeaders">
+            <td style="width: 200px;" ng-class="{'italic-text':!csvHeader.name}">{{csvHeader.name | showBlank}}</td>
+            <td style="width: 250px;">
+                <div class="btn-group">
+                    <input type="text" ng-model="csvHeader.mappedName"
+                        ng-change="validate(csvHeader)" ng-class="{'input-invalid':csvHeader.isInvalid}" />
+                    <a class="btn dropdown-toggle" data-toggle="dropdown" href="#" ng-if="importer.requiredHeaders">
+                        <span class="caret"></span>
+                    </a>
+                    <ul class="dropdown-menu" ng-if="importer.requiredHeaders">
+                        <li ng-repeat="header in importer.requiredHeaders" ng-mouseenter="header.isFocused=true" ng-mouseleave="header.isFocused=false"
+                            ng-click="csvHeader.mappedName = header.name;validate(csvHeader)" ng-class="{'header-focused':header.isFocused}">{{header.name}}
+                        </li>
+                    </ul>
+                </div>
+            </td>
+            <td style="width: 50px;">
+                <input type="checkbox" ng-model="csvHeader.includeColumn" ng-init="csvHeader.includeColumn=true" />
+            </td>
+        </tr>
+    </table>
+</div>
+
+<div ng-transclude></div>
+
+
+<div style="float: right;">
+    <input type="checkbox" ng-model="useFirstRowAsHeader" ng-change="loadHeaders()" style="margin: 0" />
+    Use first column as header
+</div>
+
+
+<div ng-if="importer.showPreview" csv-preview headers="csvHeaders" rows="csvRows"></div>
+
+<style>
+    .importTableScrollable
+    {
+        max-height: 200px;
+        overflow-y: scroll;
+        margin-bottom: 20px;
+    }
+
+        .importTableScrollable input
+        {
+            width: 120px;
+            padding: 2px 40px 2px 10px;
+            margin-bottom: 0;
+        }
+
+    .btn.dropdown-toggle
+    {
+        position: absolute;
+        right: 0;
+        padding: 2px 10px;
+    }
+
+    .header-focused
+    {
+        background-color: blue;
+        color: white;
+        font-weight: bold;
+    }
+
+    .italic-text
+    {
+        font-style: italic;
+    }
+
+    .dropdown-menu li
+    {
+        padding: 2px 6px;
+        cursor: pointer;
+    }
+
+    .input-invalid
+    {
+        background-color: #f2dede !important;
+    }
+
+    .table-bordered
+    {
+        border-radius: 0;
+    }
+
+    .table
+    {
+        background-color: #f8f8f8;
+        margin-bottom: 0;
+    }
+
+    .table-bordered thead td
+    {
+        border-left: 1px solid #000;
+    }
+
+    .table-bordered thead:first-child tr:first-child > th:first-child, .table-bordered tbody:first-child tr:first-child > td:first-child, .table-bordered tbody:first-child tr:first-child > th:first-child
+    {
+        border-radius: 0;
+    }
+
+    .header-focused
+    {
+        background-color: #4b4b4b;
+    }
+
+    .table tr:hover
+    {
+        background: none;
+    }
+</style>

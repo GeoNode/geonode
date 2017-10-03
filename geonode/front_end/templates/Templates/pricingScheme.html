@@ -1,0 +1,17 @@
+﻿<table style="width: 100%;">
+    <tr>
+        <td ng-repeat="scheme in pricingSchemes" class="titlePrice">{{scheme.Name}}
+        </td>
+    </tr>
+    <tr>
+        <td ng-repeat="scheme in pricingSchemes" class="upgradePrice">
+            <price-display pricing-data="scheme"></price-display>
+            <!--<span class="plan-actualprice">${{scheme.ActualPrice}}</span> ${{scheme.DiscountedPrice}}-->
+        </td>
+    </tr>
+    <tr>
+        <td ng-repeat="scheme in pricingSchemes" class="chooseButtonContainer">
+            <button ng-click="choosePlan(scheme.SchemeId)" class="chooseButton" ng-class="{'disable':!canChooseScheme(scheme.SchemeId)}" ng-disabled="!canChooseScheme(scheme.SchemeId)">CHOOSE</button>
+        </td>
+    </tr>
+</table>
