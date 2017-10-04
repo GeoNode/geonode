@@ -743,8 +743,6 @@
         logical_operator_dropdown = $("#and-or_list li.selected a").attr('id');
         attribute_data_type = $("#attribute_list li.selected a").attr('data-type');
         attribute_data_schema = $("#attribute_list li.selected a").attr('data-schema');
-        single_value_input = ($('#single_value').select2('data').text).trim();
-
         if(attribute_list == null || operator_list == null || single_value_input == "" ||  logical_operator_dropdown == null){
           if($("#missing-values").length == 0) {
             $( "#query-filter-tools" ).after( "<p id='missing-values'> Select all values from menus.</p>" );
@@ -754,6 +752,7 @@
               $( "p" ).remove( "#missing-values" );
             }
             // validation that user enters a string for a string attribute or a number for a number attribute
+            single_value_input = ($('#single_value').select2('data').text).trim();
             if (attribute_data_schema == 'yes' && attribute_data_type == 'string' && !isNaN(single_value_input) ){
               if($("#wrong-data-type").length !== 0) {
                 $('#wrong-data-type').empty();
