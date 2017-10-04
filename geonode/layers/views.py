@@ -431,14 +431,11 @@ def layer_detail(request, layername, template='layers/layer_detail.html'):
 
     if settings.SOCIAL_ORIGINS:
         context_dict["social_links"] = build_social_links(request, layer)
-
-
     layers_names = layer.alternate
     try:
         if 'geonode' in layers_names:
             workspace, name = layers_names.split(':', 1)
         else:
-            workspace = ""
             name = layers_names
     except:
         print "Can not identify workspace type and layername"
@@ -482,9 +479,8 @@ def layer_detail(request, layername, template='layers/layer_detail.html'):
     # maps owned by user needed to fill the "add to existing map section" in template
     if request.user.is_authenticated():
         context_dict["maps"] = Map.objects.filter(owner=request.user)
-
-
     return render_to_response(template, RequestContext(request, context_dict))
+
 
 # Loads the data using the OWS lib when the "Do you want to filter it" button is clicked.
 def load_layer_data(request, template='layers/layer_detail.html'):
@@ -508,8 +504,6 @@ def load_layer_data(request, template='layers/layer_detail.html'):
         features_response = json.dumps(x)
         decoded = json.loads(features_response)
         decoded_features = decoded['features']
-
-
         properties = {}
         for key in decoded_features[0]['properties']:
             properties[key] = []
@@ -530,6 +524,7 @@ def load_layer_data(request, template='layers/layer_detail.html'):
     except:
         print "Possible error with OWSLib."
     return HttpResponse(json.dumps(context_dict), content_type="application/json")
+
 
 def layer_feature_catalogue(
         request,
