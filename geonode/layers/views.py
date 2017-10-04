@@ -446,15 +446,12 @@ def layer_detail(request, layername, template='layers/layer_detail.html'):
     context_dict["layer_name"] = json.dumps(layers_names)
 
     try:
-        print("test1")
         # get type of layer (raster or vector)
         if layer.storeType == 'coverageStore':
             context_dict["layer_type"] = "raster"
         elif layer.storeType == 'dataStore':
             context_dict["layer_type"] = "vector"
 
-
-            print("test2")
             location = "{location}{service}".format(** {
                 'location': settings.OGC_SERVER['default']['LOCATION'],
                 'service': 'wms',
@@ -463,7 +460,7 @@ def layer_detail(request, layername, template='layers/layer_detail.html'):
             username = settings.OGC_SERVER['default']['USER']
             password = settings.OGC_SERVER['default']['PASSWORD']
             schema = get_schema(location, name, username=username, password=password)
-            print("test3")
+
             # get the name of the column which holds the geometry
             if 'the_geom' in schema['properties']:
                 schema['properties'].pop('the_geom', None)
@@ -474,7 +471,7 @@ def layer_detail(request, layername, template='layers/layer_detail.html'):
             layer_attributes_schema = []
             for key in schema['properties'].keys():
                     layer_attributes_schema.append(key)
-            print("test4")
+
             filtered_attributes = layer_attributes_schema
             context_dict["schema"] = schema
             context_dict["filtered_attributes"] = filtered_attributes
