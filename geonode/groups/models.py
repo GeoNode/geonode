@@ -51,10 +51,19 @@ class GroupProfile(models.Model):
                         'such as a mailing list, shared email, or exchange group.')
 
     group = models.OneToOneField(Group)
-    title = models.CharField(_('Title'), max_length=50)
+    title = models.CharField(_('Title'), max_length=200)
     slug = models.SlugField(unique=True)
     logo = models.ImageField(_('Logo'), upload_to="people_group", blank=True)
     description = models.TextField(_('Description'))
+
+    #@jahangir
+    favorite = models.BooleanField(_("Favorite"), default=False,
+                                   help_text=_('Should this organization be in favorite list ?'))
+    docked = models.BooleanField(_("Docked"), default=False,
+                                   help_text=_('Should this organization be docked in home page?'))
+
+    #end
+
     email = models.EmailField(
         _('Email'),
         null=True,
@@ -71,6 +80,10 @@ class GroupProfile(models.Model):
         choices=GROUP_CHOICES,
         help_text=access_help_text)
     last_modified = models.DateTimeField(auto_now=True)
+
+    #@jahangir
+    date = models.DateTimeField(auto_now=True)
+    #end
 
     def save(self, *args, **kwargs):
         group, created = Group.objects.get_or_create(name=self.slug)
@@ -132,7 +145,7 @@ class GroupProfile(models.Model):
             id__in=self.member_queryset().filter(
                 role='manager').values_list(
                 "user",
-                flat=True))
+                flat=True)).filter(is_active=True)
 
     def user_is_member(self, user):
         if not user.is_authenticated():
@@ -153,16 +166,34 @@ class GroupProfile(models.Model):
     def can_invite(self, user):
         if not user.is_authenticated():
             return False
+
+
+        #@jahangir091
+        if user.is_superuser:
+            return True
+	#end
+
+
         return self.user_is_role(user, "manager")
 
     def join(self, user, **kwargs):
         if user == user.get_anonymous():
             raise ValueError("The invited user cannot be anonymous")
+
+	#@jahangir091
+        role = kwargs['role']
+	#end
+
         member, created = GroupMember.objects.get_or_create(group=self, user=user, defaults=kwargs)
-        if created:
-            user.groups.add(self.group)
+
+	#jahangir091
+        if member:
+            member.role = role
+            member.save()
         else:
-            raise ValueError("The invited user \"{0}\" is already a member".format(user.username))
+            user.groups.add(self.group)
+	#end
+
 
     def invite(self, user, from_user, role="member", send=True):
         params = dict(role=role, from_user=from_user)
@@ -257,7 +288,12 @@ class GroupInvitation(models.Model):
         subject = render_to_string("groups/email/invite_user_subject.txt", ctx)
         message = render_to_string("groups/email/invite_user.txt", ctx)
         # TODO Send a notification rather than a mail
-        send_mail(subject, message, settings.DEFAULT_FROM_EMAIL, [self.email])
+
+	#@jahangir091
+        from_mail = from_user.email
+        send_mail(subject, message, from_mail, [self.email])
+	#end
+
 
     def accept(self, user):
         if not user.is_authenticated() or user == user.get_anonymous():
@@ -288,3 +324,42 @@ def group_pre_delete(instance, sender, **kwargs):
 
 
 signals.pre_delete.connect(group_pre_delete, sender=Group)
+
+
+#@jahangir091
+class QuestionAnswer(models.Model):
+    """
+    This model is for question and answer in organization details page.
+    """
+    group = models.ForeignKey(GroupProfile, blank=True, null=True)
+    question = models.TextField()
+    questioner = models.ForeignKey('people.Profile', blank=True, null=True, related_name='questioner')
+    answer = models.TextField()
+    respondent = models.ForeignKey('people.Profile', blank=True, null=True, related_name='respondent')
+    answered = models.BooleanField(default=False)
+    date_created = models.DateTimeField(auto_now_add=True)
+    date_updated = models.DateTimeField(auto_now=True)
+
+
+class UserInvitationModel(models.Model):
+    """
+    This model keeps track of user invitations to groups
+    """
+    group = models.ForeignKey(GroupProfile)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL)
+    state = models.CharField(
+        max_length=10,
+        choices=(
+            ("pending", _("Pending")),
+            ("free", _("Free")),
+            ("connected", _("Connected")),
+
+        ),
+        default='free',
+    )
+    date_created = models.DateTimeField(auto_now_add=True)
+    date_updated = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        unique_together = [("group", "user", "state")]
+    #end
