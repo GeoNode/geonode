@@ -382,6 +382,7 @@ def map_embed(
 
 # MAPS VIEWER #
 
+
 @require_http_methods(["GET", ])
 def add_layer(request):
     """
@@ -397,24 +398,15 @@ def add_layer(request):
         'base.view_resourcebase',
         _PERMISSION_MSG_VIEW)
 
-    config = add_layers_to_map_config(request, map_obj, (layer_name, ))
-
-    return render_to_response('maps/map_edit.html', RequestContext(request, {
-        'mapId': map_id,
-        'config': json.dumps(config),
-        'map': map_obj,
-        'preview': getattr(
-            settings,
-            'LAYER_PREVIEW_LIBRARY',
-            '')
-    }))
+    return map_view(request, str(map_obj.id), layer_name=layer_name)
 
 
-def map_view(request, mapid, snapshot=None, template='maps/map_view.html'):
+def map_view(request, mapid, snapshot=None, layer_name=None, template='maps/map_view.html'):
     """
     The view that returns the map composer opened to
     the map with the given map ID.
     """
+
     map_obj = _resolve_map(
         request,
         mapid,
@@ -430,6 +422,9 @@ def map_view(request, mapid, snapshot=None, template='maps/map_view.html'):
         config = map_obj.viewer_json(request.user, access_token)
     else:
         config = snapshot_config(snapshot, map_obj, request.user, access_token)
+
+    if layer_name:
+        config = add_layers_to_map_config(request, map_obj, (layer_name, ), False)
 
     return render_to_response(template, RequestContext(request, {
         'config': json.dumps(config),
@@ -685,7 +680,7 @@ def new_map_config(request):
     return json.dumps(config)
 
 
-def add_layers_to_map_config(request, map_obj, layer_names):
+def add_layers_to_map_config(request, map_obj, layer_names, add_base_layers=True):
     DEFAULT_MAP_CONFIG, DEFAULT_BASE_LAYERS = default_map_config(request)
     if 'access_token' in request.session:
         access_token = request.session['access_token']
@@ -809,8 +804,14 @@ def add_layers_to_map_config(request, map_obj, layer_names):
         map_obj.zoom = math.ceil(min(width_zoom, height_zoom))
 
     map_obj.handle_moderated_uploads()
+
+    if add_base_layers:
+        layers_to_add = DEFAULT_BASE_LAYERS + layers
+    else:
+        layers_to_add = layers
     config = map_obj.viewer_json(
-        request.user, access_token, *(DEFAULT_BASE_LAYERS + layers))
+        request.user, access_token, *layers_to_add)
+
     config['fromLayer'] = True
 
     return config
