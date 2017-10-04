@@ -237,6 +237,31 @@ class PermissionLevelMixin(object):
         set_owner_permissions(self)
 
 
+#@jahangir091
+    def set_managers_permissions(self, manager=None):
+        """
+        assign all admin permissions to all the managers of the group for this layer
+        """
+
+        if manager:
+            for perm in LAYER_ADMIN_PERMISSIONS:
+                assign_perm(perm, manager, self.layer)
+
+            for perm in ADMIN_PERMISSIONS:
+                assign_perm(perm, manager, self.get_self_resource())
+        else:
+            managers = [member.user for member in self.group.groupmember_set.filter(role="manager")]
+            if self.polymorphic_ctype.name == 'layer':
+                for perm in LAYER_ADMIN_PERMISSIONS:
+                    for manager in managers:
+                        assign_perm(perm, manager, self.layer)
+            for perm in ADMIN_PERMISSIONS:
+                for manager in managers:
+                    assign_perm(perm, manager, self.get_self_resource())
+#end
+
+
+
 def set_geofence_all(instance):
     """assign access permissions to all users"""
     resource = instance.get_self_resource()
