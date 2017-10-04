@@ -136,6 +136,11 @@ def resource_urls(request):
         MAP_CLIENT_USE_CROSS_ORIGIN_CREDENTIALS=getattr(
             settings, 'MAP_CLIENT_USE_CROSS_ORIGIN_CREDENTIALS', False
         ),
+        SHOW_PROFILE_EMAIL=getattr(
+            settings,
+            "SHOW_PROFILE_EMAIL",
+            False
+        ),
     )
     defaults['message_create_url'] = 'message_create' if not settings.USER_MESSAGES_ALLOW_MULTIPLE_RECIPIENTS\
         else 'message_create_multiple'

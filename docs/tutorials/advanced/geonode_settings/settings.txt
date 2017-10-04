@@ -397,6 +397,12 @@ Default::
 
 A list of dictionaries that is used to generate the social links displayed in the Share tab.  For each origin, the name and URL format parameters are replaced by the actual values of the ResourceBase object (layer, map, document).
 
+SHOW_PROFILE_EMAIL
+------------------
+Default: ``False``
+
+A boolean which specifies wether to display the email in user's profile.
+
 CKAN_ORIGINS
 --------------
 Default::
