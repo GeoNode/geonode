@@ -173,7 +173,7 @@ def pre_save_document(instance, sender, **kwargs):
     instance.csw_type = 'document'
 
     if instance.abstract == '' or instance.abstract is None:
-        instance.abstract = 'No abstract provided'
+        instance.abstract = 'Document abstract is very important! You are requested to update it now.'
 
     if instance.title == '' or instance.title is None:
         instance.title = instance.doc_file.name
@@ -237,6 +237,47 @@ def update_documents_extent(sender, **kwargs):
 
 def pre_delete_document(instance, sender, **kwargs):
     remove_object_permissions(instance.get_self_resource())
+
+
+class DocumentSubmissionActivity(models.Model):
+    """
+    This model includes document submission activity
+    """
+
+    document = models.ForeignKey('documents.Document', related_name='document_submission')
+    group = models.ForeignKey('groups.GroupProfile')
+    iteration = models.IntegerField(default=0)
+    is_audited = models.BooleanField(default=False)
+    is_active = models.BooleanField(default=True)
+    date_created = models.DateTimeField(auto_now_add=True)
+    date_updated = models.DateTimeField(auto_now=True)
+
+
+    class Meta:
+        unique_together = (('document', 'group', 'iteration'),)
+
+    def __str__(self):
+        return self.document.name
+
+
+class DocumentAuditActivity(models.Model):
+    """
+    This model is for stacking document audit activity
+    """
+
+    document_submission_activity = models.ForeignKey(DocumentSubmissionActivity)
+    result = models.CharField(max_length=15, choices=[
+        ("APPROVED", _("Approved")),
+        ("DECLINED", _("Declined")),
+        ("CANCELED", _("Canceled"))
+    ])
+    auditor = models.ForeignKey('people.Profile')
+    comment_subject = models.CharField(max_length=300,
+                                       help_text=_('Comment type to approve or deny layer submission '))
+    comment_body = models.TextField(help_text=_('Comments when auditor denied or approved layer submission'),
+                               blank=True, null=True)
+    date_created = models.DateTimeField(auto_now_add=True)
+    date_updated = models.DateTimeField(auto_now=True)
 
 
 signals.pre_save.connect(pre_save_document, sender=Document)
