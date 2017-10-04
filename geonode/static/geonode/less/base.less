@@ -1099,3 +1099,80 @@ footer {
 .table-user-profile-attribute  {
   font-weight: bold;
 }
+
+/* Download Layer Filtering Modal
+----------------------- */
+.gear {
+	-webkit-animation: rotation 6s infinite linear;
+	-moz-animation: rotation 6s infinite linear;
+	-o-animation: rotation 6s infinite linear;
+	animation: rotation 6s infinite linear;
+}
+@-webkit-keyframes "rotation" {
+	from {
+		-webkit-transform: rotate(0deg);
+	}
+	to {
+		-webkit-transform: rotate(359deg);
+	}
+}
+@-moz-keyframes "rotation" {
+	from {
+		-moz-transform: rotate(0deg);
+	}
+	to {
+		-moz-transform: rotate(359deg);
+	}
+}
+@-o-keyframes "rotation" {
+	from {
+		-o-transform: rotate(0deg);
+	}
+	to {
+		-o-transform: rotate(359deg);
+	}
+}
+@keyframes "rotation" {
+	from {
+		transform: rotate(0deg);
+	}
+	to {
+		transform: rotate(359deg);
+	}
+}
+form-inline {
+	display: inline-table;
+	vertical-align: middle;
+	width: auto;
+}
+.text_area {
+	visibility: hidden;
+}
+.dropdown-menu-attribute {
+	height: auto;
+	max-height: 200px;
+	overflow-x: hidden;
+}
+.dropdown-menu-operator {
+	height: auto;
+	max-height: 200px;
+	overflow-x: hidden;
+}
+.dropdown-menu-and-or {
+	height: auto;
+	max-height: 200px;
+	overflow-x: hidden;
+}
+#wrong-data-type {
+	color: @red-dark;
+	font-style: italic;
+}
+#hr_filter_layer {
+	width: 100%;
+	color: @gray46;
+	height: 1px;
+}
+#missing-values {
+	color: @red-dark;
+	font-style: italic;
+}
