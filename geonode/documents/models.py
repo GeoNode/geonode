@@ -239,6 +239,9 @@ def pre_delete_document(instance, sender, **kwargs):
     remove_object_permissions(instance.get_self_resource())
 
 
+
+
+#@jahangir
 class DocumentSubmissionActivity(models.Model):
     """
     This model includes document submission activity
@@ -286,3 +289,4 @@ signals.post_save.connect(post_save_document, sender=Document)
 signals.post_save.connect(resourcebase_post_save, sender=Document)
 signals.pre_delete.connect(pre_delete_document, sender=Document)
 map_changed_signal.connect(update_documents_extent)
+#end
