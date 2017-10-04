@@ -450,7 +450,7 @@ def pre_save_layer(instance, sender, **kwargs):
         instance.bbox_y1 = instance.resourcebase_ptr.bbox_y1
 
     if instance.abstract == '' or instance.abstract is None:
-        instance.abstract = unicode(_('No abstract provided'))
+        instance.abstract = unicode(_('Layer abstract is very important! You are requested to update it now.'))
     if instance.title == '' or instance.title is None:
         instance.title = instance.name
 
@@ -566,6 +566,48 @@ def post_delete_layer(instance, sender, **kwargs):
                 lf.file.delete()
     except UploadSession.DoesNotExist:
         pass
+
+
+#@jahangir
+class LayerSubmissionActivity(models.Model):
+    """
+    This model includes layer submission activityi
+    """
+
+    layer = models.ForeignKey('layers.Layer', related_name='layer_submission')
+    group = models.ForeignKey('groups.GroupProfile')
+    iteration = models.IntegerField(default=0)
+    is_audited = models.BooleanField(default=False)
+    is_active = models.BooleanField(default=True)
+    date_created = models.DateTimeField(auto_now_add=True)
+    date_updated = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        unique_together = (('layer', 'group', 'iteration'),)
+
+    def __str__(self):
+        return self.layer.name
+
+
+class LayerAuditActivity(models.Model):
+    """
+    This model is for stacking layer audit activity
+    """
+
+    layer_submission_activity = models.ForeignKey(LayerSubmissionActivity)
+    result = models.CharField(max_length=15, choices=[
+        ("APPROVED", _("Approved")),
+        ("DECLEINED", _("Decleined")),
+        ("CANCELED", _("Canceled"))
+    ])
+    auditor = models.ForeignKey('people.Profile')
+    comment_subject = models.CharField(max_length=300,
+                                       help_text=_('Comment type to approve or deny layer submission '))
+    comment_body = models.TextField(help_text=_('Comments when auditor denied or approved layer submission'),
+                               blank=True, null=True)
+    date_created = models.DateTimeField(auto_now_add=True)
+    date_updated = models.DateTimeField(auto_now=True)
+#end
 
 
 signals.pre_save.connect(pre_save_layer, sender=Layer)
