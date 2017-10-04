@@ -62,6 +62,11 @@ from treebeard.mp_tree import MP_Node
 
 from geonode.people.enumerations import ROLE_VALUES
 
+#@jahangir
+from geonode.people.models import Profile
+from geonode.groups.models import GroupProfile
+#end
+
 from oauthlib.common import generate_token
 from oauth2_provider.models import AccessToken, get_application_model
 
@@ -110,9 +115,9 @@ class TopicCategory(models.Model):
     <CodeListDictionary gml:id="MD_MD_TopicCategoryCode">
     """
     identifier = models.CharField(max_length=255, default='location')
-    description = models.TextField(default='')
+    description = models.TextField(default='', verbose_name=_('Field description'))
     gn_description = models.TextField('GeoNode description', default='', null=True)
-    is_choice = models.BooleanField(default=True)
+    is_choice = models.BooleanField(default=True, verbose_name=_('Is active'))
     fa_class = models.CharField(max_length=64, default='fa-times')
 
     def __unicode__(self):
@@ -432,12 +437,12 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
     owner = models.ForeignKey(settings.AUTH_USER_MODEL, blank=True, null=True, related_name='owned_resource',
                               verbose_name=_("Owner"))
     contacts = models.ManyToManyField(settings.AUTH_USER_MODEL, through='ContactRole')
-    title = models.CharField(_('title'), max_length=255, help_text=_('name by which the cited resource is known'))
+    title = models.CharField( max_length=255, help_text=_('name by which the cited resource is known'), verbose_name=_('* Title'))
     date = models.DateTimeField(_('date'), default=datetime.datetime.now, help_text=date_help_text)
     date_type = models.CharField(_('date type'), max_length=255, choices=VALID_DATE_TYPES, default='publication',
                                  help_text=date_type_help_text)
     edition = models.CharField(_('edition'), max_length=255, blank=True, null=True, help_text=edition_help_text)
-    abstract = models.TextField(_('abstract'), blank=True, help_text=abstract_help_text)
+    abstract = models.TextField(_('abstract'), blank=True, help_text=abstract_help_text, default='Abstract is very important! You are requested to update it now.')
     purpose = models.TextField(_('purpose'), null=True, blank=True, help_text=purpose_help_text)
     maintenance_frequency = models.CharField(_('maintenance frequency'), max_length=255, choices=UPDATE_FREQUENCIES,
                                              blank=True, null=True, help_text=maintenance_frequency_help_text)
@@ -468,6 +473,9 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
                                                     limit_choices_to=Q(is_choice=True),
                                                     verbose_name=_("spatial representation type"),
                                                     help_text=spatial_representation_type_help_text)
+    # @jahangir
+    resource_type = models.CharField(max_length=50, help_text=_('type of resource layer, map or document'), default='')
+    #end
 
     # Section 5
     temporal_extent_start = models.DateTimeField(_('temporal extent start'), blank=True, null=True,
@@ -528,6 +536,25 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
     thumbnail_url = models.TextField(null=True, blank=True)
     detail_url = models.CharField(max_length=255, null=True, blank=True)
     rating = models.IntegerField(default=0, null=True, blank=True)
+    
+
+    #@jahangir
+    group = models.ForeignKey('groups.GroupProfile', blank=True, null=True)
+    last_auditor = models.ForeignKey('people.Profile', related_name='a_last_auditor', blank=True, null=True)
+    current_iteration = models.IntegerField(default=0)
+    status = models.CharField(max_length=10, choices=[
+        ("DRAFT", _("Draft")),
+        ("PENDING", _("Pending")),
+        ("ACTIVE", _("Active")),
+        ("INACTIVE", _("Inactive")),
+        ("DENIED", _("Denied")),
+        ("DELETED", _("Deleted")),
+        ("CANCELED", _("Canceled"))],
+        default="DRAFT")
+    date_created = models.DateTimeField(auto_now_add=True)
+    date_updated = models.DateTimeField(auto_now=True)
+    #end
+
 
     def __unicode__(self):
         return self.title
@@ -928,7 +955,8 @@ def resourcebase_post_save(instance, *args, **kwargs):
     ResourceBase.objects.filter(id=instance.id).update(
         thumbnail_url=instance.get_thumbnail_url(),
         detail_url=instance.get_absolute_url(),
-        csw_insert_date=datetime.datetime.now())
+        csw_insert_date=datetime.datetime.now(),
+        resource_type=instance.polymorphic_ctype.name)
     instance.set_missing_info()
 
     # we need to remove stale links
@@ -1068,3 +1096,47 @@ def do_logout(sender, user, request, **kwargs):
 
 user_logged_in.connect(do_login)
 user_logged_out.connect(do_logout)
+
+
+#@jahangir
+class FavoriteResource(models.Model):
+    """
+    This model keeps information for favorite layers, maps, groups, documents
+    """
+
+    user = models.ForeignKey(Profile)
+    group = models.ForeignKey(GroupProfile, null=True, blank=True)
+    resource = models.ForeignKey(ResourceBase, null=True, blank=True)
+    active = models.BooleanField(default=True)
+    date_created = models.DateTimeField(auto_now_add=True)
+    date_updated = models.DateTimeField(auto_now=True)
+
+
+
+class DockedResource(models.Model):
+    """
+    This model keeps information for docked layers, maps, groups, documents
+    """
+
+    user = models.ForeignKey(Profile)
+    group = models.ForeignKey(GroupProfile, null=True, blank=True)
+    resource = models.ForeignKey(ResourceBase, null=True, blank=True)
+    active = models.BooleanField(default=True)
+    date_created = models.DateTimeField(auto_now_add=True)
+    date_updated = models.DateTimeField(auto_now=True)
+
+
+class KeywordIgnoreListModel(models.Model):
+    """
+    This model keeps keyword ignore list
+    when keywords are generating from resource title
+    """
+    key = models.CharField(null=True, blank=True, max_length=100)
+    is_active = models.BooleanField(default=True)
+    date_created = models.DateTimeField(auto_now_add=True)
+    date_updated = models.DateTimeField(auto_now=True)
+
+    def __unicode__(self):
+        return u"{0}".format(self.key)
+
+#end
