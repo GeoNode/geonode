@@ -17,6 +17,9 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
+#@jahangir091
+import datetime
+#end
 
 from django.db import models
 from django.utils.translation import ugettext as _
@@ -25,6 +28,16 @@ from django.contrib.auth.models import AbstractUser, UserManager
 from django.db.models import signals
 from django.conf import settings
 
+#@jahangir091
+from django.shortcuts import get_object_or_404
+from django.contrib.auth import get_user_model
+from django.core import validators
+from django.core.exceptions import PermissionDenied
+from django.http import HttpResponseRedirect, Http404
+from geonode.settings import REMOVE_ANONYMOUS_USER
+#end
+
+
 from taggit.managers import TaggableManager
 
 from geonode.base.enumerations import COUNTRIES
@@ -32,10 +45,21 @@ from geonode.groups.models import GroupProfile
 
 from account.models import EmailAddress
 
+#@jahangir091
+from user_messages.models import UserThread
+#end
+
+
 from .utils import format_address
 
 if 'notification' in settings.INSTALLED_APPS:
     from notification import models as notification
+
+
+#@jahangir091
+def get_anonymous_user():
+    return get_user_model().objects.get(username = 'AnonymousUser')
+#end
 
 
 class ProfileUserManager(UserManager):
@@ -97,7 +121,9 @@ class Profile(AbstractUser):
     keywords = TaggableManager(_('keywords'), blank=True, help_text=_(
         'commonly used word(s) or formalised word(s) or phrase(s) used to describe the subject \
             (space or comma-separated'))
-
+    #@jahangir091
+    last_notification_view = models.DateTimeField(default=datetime.datetime.now)
+    #end
     def get_absolute_url(self):
         return reverse('profile_detail', args=[self.username, ])
 
@@ -115,6 +141,29 @@ class Profile(AbstractUser):
 
     def group_list_all(self):
         return GroupProfile.objects.filter(groupmember__user=self)
+
+    #@jahangir091
+    def group_list_with_default_check(self):
+        group_list = GroupProfile.objects.filter(groupmember__user=self)
+        default_group = GroupProfile.objects.get(slug='default')
+        if len(group_list) > 1 and default_group in group_list:
+            return group_list.exclude(slug='default')
+        else:
+            return group_list
+
+    @property
+    def is_manager_of_any_group(self):
+        return GroupProfile.objects.filter(groupmember__user=self, groupmember__role="manager").exists()
+
+    @property
+    def is_member_of_any_group(self):
+        return GroupProfile.objects.filter(groupmember__user=self, groupmember__role="member").exists()
+
+    @property
+    def message_unread(self):
+        return UserThread.objects.filter(user=self, unread=True).count()
+    #end
+
 
     def keyword_list(self):
         """
@@ -138,6 +187,13 @@ class Profile(AbstractUser):
         return format_address(self.delivery, self.zipcode, self.city, self.area, self.country)
 
 
+    #@jahangir091
+    @property
+    def notification_count(self):
+        return self.notifications.filter(read=False, deleted=False, created__gt=self.last_notification_view).count()
+    #end
+
+
 def get_anonymous_user_instance(Profile):
     return Profile(pk=-1, username='AnonymousUser')
 
@@ -159,6 +215,20 @@ def profile_post_save(instance, sender, **kwargs):
             EmailAddress.objects.filter(user=instance, primary=True).update(email=instance.email)
 
 
+    #@jahangir091
+    default_group, created_group = GroupProfile.objects.get_or_create(slug='default')
+    if not default_group.title:
+        default_group.title = 'default organization'
+        default_group.save()
+    if instance != get_anonymous_user():
+        if instance.is_superuser:
+            default_group.join(instance, role='manager')
+        else:
+            default_group.join(instance, role='member')
+    #end
+
+
+
 def email_post_save(instance, sender, **kw):
     if instance.primary:
         Profile.objects.filter(id=instance.user.pk).update(email=instance.email)
@@ -173,6 +243,20 @@ def profile_pre_save(instance, sender, **kw):
         notification.send([instance, ], "account_active")
 
 
+#@jahangir091
+def profile_pre_delete(instance, sender, **kw):
+    if instance == get_anonymous_user() and REMOVE_ANONYMOUS_USER == False:
+        # raise PermissionDenied
+        raise Http404('Please dont try to delete "Anonymous User". This may break the system.')
+#end
+
+
+
 signals.pre_save.connect(profile_pre_save, sender=Profile)
 signals.post_save.connect(profile_post_save, sender=Profile)
 signals.post_save.connect(email_post_save, sender=EmailAddress)
+
+
+#@jahangir091
+signals.pre_delete.connect(profile_pre_delete, sender=Profile)
+#end
