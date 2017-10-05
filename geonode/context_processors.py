@@ -76,6 +76,10 @@ def resource_urls(request):
             settings,
             'OPENGRAPH_ENABLED',
             False),
+        ADMIN_MODERATE_UPLOADS=getattr(
+            settings,
+            'ADMIN_MODERATE_UPLOADS',
+            False),
         HAYSTACK_SEARCH=getattr(
             settings,
             'HAYSTACK_SEARCH',

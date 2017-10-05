@@ -24,6 +24,7 @@
       {% endif %}
 
       <link href="{{ STATIC_URL }}geonode/css/ext-compatibility.css?v={{ VERSION }}" rel="stylesheet" />
+      <link href="{{ STATIC_URL }}geonode/css/ux-all.css?v={{ VERSION }}" rel="stylesheet" />
       <link href="{{ STATIC_URL }}geonode/css/base.css?v={{ VERSION }}" rel="stylesheet" />
       <style type="text/css">[ng\:cloak],[ng-cloak],[data-ng-cloak],[x-ng-cloak],.ng-cloak,.x-ng-cloak,.ng-hide:not(.ng-hide-animate){display:none !important;}</style>
 
@@ -142,7 +143,7 @@
                 <li role="separator" class="divider"></li>
                 <li><a href="{% url "admin:index" %}">Admin</a></li>
                 {% if 'geonode.geoserver' in INSTALLED_APPS %}
-                <li><a href="{{ GEOSERVER_BASE_URL }}">GeoServer</a></li>
+                <li><a href="{{ GEOSERVER_BASE_URL }}index.html">GeoServer</a></li>
                 {% endif %}
                 <li role="separator" class="divider"></li>
                 <li><a href="{% url "help" %}">{% trans "Help" %}</a></li>

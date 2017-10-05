@@ -41,7 +41,7 @@ var createMapThumbnail = function(obj_id) {
         type: "POST",
         url: url,
         data: body,
-        async: false,
+        async: true,
         cache: false,
         success: function(data, status, jqXHR) {
             try {
@@ -53,7 +53,24 @@ var createMapThumbnail = function(obj_id) {
             } finally {
                 return true;
             }
-        }
+        },
+        error: function(jqXHR, textStatus){
+            if(textStatus === 'timeout')
+            {
+                 alert('Failed from timeout: Could not create Thumbnail');
+                 //do something. Try again perhaps?
+            }
+            try {
+                $("#_thumbnail_feedbacks").find('.modal-title').text(status);
+                $("#_thumbnail_feedbacks").find('.modal-body').text(data);
+                $("#_thumbnail_feedbacks").modal("show");
+            } catch(err) {
+                console.log(err);
+            } finally {
+                return true;
+            }
+        },
+        timeout: 30000 // sets timeout to 30 seconds
     });
     return true;
 };
