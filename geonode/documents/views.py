@@ -450,6 +450,10 @@ def document_metadata(
                 GroupProfile.objects.exclude(
                     access="private"))
 
+        if settings.ADMIN_MODERATE_UPLOADS:
+            if not request.user.is_superuser and not request.user.is_staff:
+                document_form.fields['is_published'].widget.attrs.update({'disabled': 'true'})
+
         return render_to_response(template, RequestContext(request, {
             "resource": document,
             "document": document,

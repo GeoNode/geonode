@@ -310,7 +310,7 @@ class ResourceBaseForm(TranslationModelForm):
         "icon_attrs": {"class": "fa fa-calendar"},
         "attrs": {"class": "form-control input-sm"},
         # "format": "%Y-%m-%d %I:%M %p",
-        "format": "%Y-%m-%d",
+        "format": "%Y-%m-%d %H:%M %p",
         # Options for the datetimepickers are not set here on purpose.
         # They are set in the metadata_form_js.html template because
         # bootstrap-datetimepicker uses jquery for its initialization
@@ -321,21 +321,21 @@ class ResourceBaseForm(TranslationModelForm):
     date = forms.DateTimeField(
         label=_("Date"),
         localize=True,
-        input_formats=['%Y-%m-%d'],
+        input_formats=['%Y-%m-%d %H:%M'],
         widget=DateTimePicker(**_date_widget_options)
     )
     temporal_extent_start = forms.DateTimeField(
         label=_("temporal extent start"),
         required=False,
         localize=True,
-        input_formats=['%Y-%m-%d'],
+        input_formats=['%Y-%m-%d %H:%M'],
         widget=DateTimePicker(**_date_widget_options)
     )
     temporal_extent_end = forms.DateTimeField(
         label=_("temporal extent end"),
         required=False,
         localize=True,
-        input_formats=['%Y-%m-%d'],
+        input_formats=['%Y-%m-%d %H:%M'],
         widget=DateTimePicker(**_date_widget_options)
     )
 

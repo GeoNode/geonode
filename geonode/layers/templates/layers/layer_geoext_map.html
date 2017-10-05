@@ -45,6 +45,13 @@
 
                 listeners: {
                     "ready": function() {
+                        app.mapPanel.map.getMaxExtent = function() {
+                            return new OpenLayers.Bounds(-80150033.36,-80150033.36,80150033.36,80150033.36);
+                        }
+                        app.mapPanel.map.getMaxResolution = function() {
+                            return 626172.135625;
+                        }
+
                         var map = app.mapPanel.map;
                         var layer = app.map.layers.slice(-1)[0];
 

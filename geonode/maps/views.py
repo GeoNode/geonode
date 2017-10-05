@@ -286,6 +286,10 @@ def map_metadata(request, mapid, template='maps/map_metadata.html'):
             GroupProfile.objects.exclude(
                 access="private"))
 
+    if settings.ADMIN_MODERATE_UPLOADS:
+        if not request.user.is_superuser and not request.user.is_staff:
+            map_form.fields['is_published'].widget.attrs.update({'disabled': 'true'})
+
     return render_to_response(template, RequestContext(request, {
         "config": json.dumps(config),
         "resource": map_obj,
@@ -695,6 +699,10 @@ def add_layers_to_map_config(request, map_obj, layer_names, add_base_layers=True
             layer = _resolve_layer(request, layer_name)
         except ObjectDoesNotExist:
             # bad layer, skip
+            continue
+
+        if not layer.is_published:
+            # invisible layer, skip inclusion
             continue
 
         if not request.user.has_perm(
