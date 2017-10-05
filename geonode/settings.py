@@ -1223,6 +1223,9 @@ GROUP_PRIVATE_RESOURCES = False
 # If this option is enabled, Groups will become strictly Mandatory on Metadata Wizard
 GROUP_MANDATORY_RESOURCES = False
 
+# A boolean which specifies wether to display the email in user's profile
+SHOW_PROFILE_EMAIL = False
+
 # Enables cross origin requests for geonode-client
 MAP_CLIENT_USE_CROSS_ORIGIN_CREDENTIALS = strtobool(os.getenv(
     'MAP_CLIENT_USE_CROSS_ORIGIN_CREDENTIALS',

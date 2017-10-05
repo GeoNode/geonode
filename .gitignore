@@ -11,6 +11,7 @@ dist
 geonode/development.db
 /geoserver/
 downloaded
+package-lock.json
 
 docs/i18n/pot/
 
