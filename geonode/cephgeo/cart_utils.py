@@ -30,7 +30,10 @@ def add_to_cart(request, ceph_obj_id, quantity=1):
     # product = CephDataObject.objects.get(id=ceph_obj_id)
     print '*' * 10
     print 'add_to_cart'
-    product = CephDataObjectResourceBase.objects.get(id=ceph_obj_id)
+    try:
+        product = CephDataObjectResourceBase.objects.get(id=ceph_obj_id)
+    except CephDataObjectResourceBase.DoesNotExist:
+        product = CephDataObject.objects.get(id=ceph_obj_id)
     print 'product:', product
     cart = CartProxy(request)
     cart.add(product, compute_price(product.data_class), quantity)
@@ -38,8 +41,10 @@ def add_to_cart(request, ceph_obj_id, quantity=1):
 
 def add_to_cart_unique(cart, ceph_obj_id):
     print 'add_to_cart_unique'
-    # product = CephDataObject.objects.get(id=ceph_obj_id)
-    product = CephDataObjectResourceBase.objects.get(id=ceph_obj_id)
+    try:
+        product = CephDataObjectResourceBase.objects.get(id=ceph_obj_id)
+    except CephDataObjectResourceBase.DoesNotExist:
+        product = CephDataObject.objects.get(id=ceph_obj_id)
     # cart = CartProxy(request)
     print 'B: cart.cart:', cart.cart
 

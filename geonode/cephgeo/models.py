@@ -231,5 +231,7 @@ class FTPRequestToObjectIndex(models.Model):
     # FTPRequest
     ftprequest = models.ForeignKey(FTPRequest, null=False, blank=False)
     # CephObject
-    cephobject = models.ForeignKey(CephDataObjectResourceBase, null=False, blank=False)
-    # cephobject = models.ForeignKey(CephDataObject, null=False, blank=False)
+    try:
+        cephobject = models.ForeignKey(CephDataObjectResourceBase, null=False, blank=False)
+    except CephDataObjectResourceBase.DoesNotExist:
+        cephobject = models.ForeignKey(CephDataObject, null=False, blank=False)
