@@ -308,10 +308,12 @@ def get_cart_json(request):
     #~ return HttpResponse(json.dumps(json_cart), content_type="application/json")
 
     # TODO: debug serialization for CephDataObjects
-
-    obj_name_dict = [CephDataObjectResourceBase.objects.get(
-    # obj_name_dict = [CephDataObjectResourceBase.objects.get(
-        id=int(item.object_id)).name for item in cart]
+    obj_name_dict = []
+    for item in cart:
+        try:
+            obj_name_dict.append(CephDataObjectResourceBase.objects.get(id=int(item.object_id)).name)
+        except CephDataObjectResourceBase.DoesNotExist:
+            obj_name_dict.append(CephDataObject.objects.get(id=int(item.object_id)).name)
     print 'obj_name_dict:', obj_name_dict
     return HttpResponse(json.dumps(obj_name_dict), content_type="application/json")
 
@@ -356,7 +358,10 @@ def create_ftp_folder(request, projection=None):
     num_tiles = 0
     for item in cart:
         # obj = CephDataObjectResourceBase.objects.get(id=int(item.object_id))
-        obj = CephDataObjectResourceBase.objects.get(id=int(item.object_id))
+        try:
+            obj = CephDataObjectResourceBase.objects.get(id=int(item.object_id))
+        except CephDataObjectResourceBase.DoesNotExist:
+            obj = CephDataObject.objects.get(id=int(item.object_id))
         total_size_in_bytes += obj.size_in_bytes
         num_tiles += 1
         if DataClassification.labels[obj.data_class] in obj_name_dict:
@@ -380,7 +385,10 @@ def create_ftp_folder(request, projection=None):
     ftp_objs = []
     for item in cart:
         # obj = CephDataObjectResourceBase.objects.get(id=int(item.object_id))
-        obj = CephDataObjectResourceBase.objects.get(id=int(item.object_id))
+        try:
+            obj = CephDataObjectResourceBase.objects.get(id=int(item.object_id))
+        except CephDataObjectResourceBase.DoesNotExist:
+            obj = CephDataObject.objects.get(id=int(item.object_id))
         ftp_objs.append(obj)
         ftp_obj_idx = FTPRequestToObjectIndex(ftprequest=ftp_request,
                                               cephobject=obj)
@@ -634,5 +642,3 @@ def update_floodplain_keywords(request):
     floodplain_keywords.delay()
     messages.error(request, "Inserting FP/RB SUC keywords on layers")
     return HttpResponseRedirect(reverse('data_management'))
-
-

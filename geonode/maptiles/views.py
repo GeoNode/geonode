@@ -41,6 +41,8 @@ from django.utils.text import slugify
 from geonode.maptiles.models import SRS
 from httplib import HTTPResponse
 
+from geonode.automation.models import CephDataObjectResourceBase
+
 
 _PERMISSION_VIEW = _("You are not permitted to view this layer")
 _PERMISSION_GENERIC = _('You do not have permissions for this layer.')
@@ -110,7 +112,7 @@ def tiled_view(request, overlay=settings.TILED_SHAPEFILE, template="maptiles/map
         context_dict["laz"] = None
         context_dict["dsm"] = None
         context_dict["philgrid_sld"] = None
-        
+
     context_dict["geoserver_url"] = settings.OGC_SERVER['default']['PUBLIC_LOCATION']
     jurisdiction_object = None
 
@@ -242,8 +244,9 @@ def process_georefs(request):
                     filter_query = filter_query & ~Q(data_class=filtered_class)
 
                 # Execute query
-                # objects = CephDataObject.objects.filter(filter_query)
                 objects = CephDataObjectResourceBase.objects.filter(filter_query)
+                if len(objects) <= 0:
+                    objects = CephDataObject.objects.filter(filter_query)
                 pprint("objects found for georef:" + georef)
 
                 # Count duplicates and empty references
@@ -335,7 +338,8 @@ def georefs_validation(request):
         for georef in georefs_list:
             print 'georef:', georef
             objects = CephDataObjectResourceBase.objects.filter(name__startswith=georef)
-            # objects = CephDataObject.objects.filter(name__startswith=georef)
+            if len(objects) <= 0:
+                objects = CephDataObject.objects.filter(name__startswith=georef)
             for o in objects:
                 print 'o in objects:', o
                 total_size += o.size_in_bytes
@@ -415,9 +419,9 @@ def georefs_datasize(request):
         for eachgeoref_clicked in georefs_clicked_list:
             # pprint(eachgeoref_clicked)
             # clicked_objects = CephDataObject.objects.filter(
-            clicked_objects = CephDataObjectResourceBase.objects.filter(
-
-                name__startswith=eachgeoref_clicked)
+            clicked_objects = CephDataObjectResourceBase.objects.filter(name__startswith=eachgeoref_clicked)
+            if len(clicked_objects) <= 0:
+                clicked_objects = CephDataObject.objects.filter(name__startswith=eachgeoref_clicked)
             for o in clicked_objects:
                 total_data_size_clicked += o.size_in_bytes
                 # pprint(o.size_in_bytes)
