@@ -1,0 +1,164 @@
+{% extends 'site_base.html' %}
+{% load i18n %}
+
+{% block title %}{% trans "Admin Workspace" %}{% endblock %}
+
+{% comment %}
+{% block subnav %}
+<li><a href="{% url "actstream_object_feed" content_type_id=ctype.pk  object_id=actor.pk %}">RSS</a></li>
+<li><a href="{% url "actstream_object_feed_atom" content_type_id=ctype.pk  object_id=actor.pk %}">ATOM</a></li>
+{% endblock %}
+{% endcomment %}
+
+{% block body_outer %}
+    <div class="gd-content">
+        <div class="gd-content-heading">
+            <div class="title small-content">
+                {% trans "Admin Workspace" %}
+            </div>
+            <div class="hr"></div>
+        </div>
+        <div class="gd-content-body gd-history transparent top-bottom-margin-20px">
+            <div class="row">
+              <div class="col-md-12">
+                  <ul class="nav nav-pills">
+                    <li role="presentation" ><a href="{% url "admin-workspace-layer" %}">{% trans "Layers" %}</a></li>
+                    <li role="presentation"><a href="{% url "admin-workspace-map" %}"> {% trans "Maps" %}</a></li>
+                    <li role="presentation"><a href="{% url "admin-workspace-document" %}">{% trans "Documents" %}</a></li>
+                    <li role="presentation" class="active"><a href="{% url "admin-workspace-user-list" %}" >{% trans "User List" %}</a></li>
+                    <li role="presentation"><a href="{% url "create-user" %}" >{% trans "Create User" %}</a></li>
+                  </ul>
+                  <br>
+                <!--<ul class="nav nav-tabs">-->
+                  <!--<li class="active"><a href="#user-approval-request" data-toggle="tab">{% trans "User approval request" %}</a></li>-->
+                  <!--<li><a href="#approved" data-toggle="tab">{% trans "Approved" %}</a></li>-->
+                  <!--<li><a href="#user-drafts" data-toggle="tab">{% trans "User Drafts" %}</a></li>-->
+                  <!--<li><a href="#denied-maps" data-toggle="tab">{% trans "Denied Maps" %}</a></li>-->
+                <!--</ul>-->
+
+              <!--{% for key, value in user_list.items %}-->
+                <!--{{key}}.123 <br>-->
+                    <!--{% for user in value %}-->
+<!--{#                        <li> {{ user }}</li>#}-->
+                        <!--{% for i, j in user.items %}-->
+                            <!--<li> -&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;{{ i }} {{ j }}<br></li>-->
+                            <!--{% endfor %}-->
+                        <!--<br><br><br>-->
+                        <!--{% endfor %}-->
+
+              <!--{% endfor %}-->
+<!--{#                {{ user_list }}#}-->
+                    <div class="gd-content-body transparent">
+                        {% for key, value in user_list.items %}
+                          <div class="gd-content-heading">
+                              <div class="row" style="padding:20px 0px;">
+                                  <div class="col-md-6">
+                                      <div class="" style="font-size:20px;font-weight:bold;">
+                                           {{key.title}}
+                                      </div>
+                                  </div>
+                              </div>
+                              <div class="hr"></div>
+                          </div>
+                          <div class="block-separator"></div>
+                          <div class="row">
+                              {% for user in value %}
+                                <article>
+                                    <div class="col-xs-12 col-sm-6 col-md-4 col-lg-3" >
+                                        <div class="grid-container">
+                                            <div class="top-content text-center">
+                                                <div class="avater">
+                                                    <a href="{{ user.profile_detail_url }}?content=layers">
+                                                        <div class="avater-img">
+                                                          <div class="avater-img-mid">
+                                                            <div class="text-center">
+                                                              <img height="100" class="img-circle" src="{{ user.avatar_100 }}" alt="Profile Image"/>
+                                                            </div>
+                                                          </div>
+                                                        </div>
+                                                        <div class="txt" style="min-height: 60px;">
+                                                           {% if user.first_name %}
+                                                                {{ user.first_name }}  {{ user.last_name }}
+                                                                {% else %}
+                                                                {{ user.username }}
+                                                            {% endif %}
+                                                        </div>
+                                                    </a>
+                                                </div>
+                                                <div class="details pro-org" title="{{user.organization}}">
+                                                    {% if user.organization %}
+                                                        <div>
+                                                            {{ user.organization }}
+                                                        </div>
+                                                        {% else %}
+                                                        <div>
+                                                            No Organization info
+                                                        </div>
+                                                    {% endif %}
+                                                </div>
+                                            </div>
+                                            <div class="bottom-content">
+                                                <div class="row">
+                                                    <div class="profile-items text-center">
+                                                        <ul class="list-inline">
+                                                            <li>
+                                                                <a href="{{ user.profile_detail_url }}?content=layers" >
+                                                                    <span class="fa-layers-group fa-stack fa-rotate-90" style="font-size:12px;">
+                                                                        <i class="fa fa-stop fa-layers fa-stack-1x" style="left: 0;"></i>
+                                                                        <i class="fa fa-stop fa-layers fa-stack-1x" style="left: -.15em;color:#fff;"></i>
+                                                                        <i class="fa fa-stop fa-layers fa-stack-1x" style="left: -.3em;"></i>
+                                                                        <i class="fa fa-stop fa-layers fa-stack-1x" style="left: -.45em;color:#fff;"></i>
+                                                                        <i class="fa fa-stop fa-layers fa-stack-1x" style="left: -.6em;"></i>
+                                                                    </span>
+                                                                    {{ user.layers_count }}
+                                                                </a>
+                                                            </li>
+                                                            <li>
+                                                                <a href="{{ user.profile_detail_url }}?content=documents">
+                                                                    <i class="fa fa-file-text-o"></i>
+                                                                    {{ user.documents_count }}
+                                                                </a>
+                                                            </li>
+                                                            <li>
+                                                                <a href="{{ user.profile_detail_url }}?content=maps">
+                                                                    <i class="fa fa-map-marker"></i>
+                                                                    {{ user.maps_count }}
+                                                                </a>
+                                                            </li>
+                                                            <li>
+                                                                <form style="display: inline;" method="POST" action="{% url "remove-group-member" key.slug user.username %}">
+                                                                {% csrf_token %}
+                                                                <button class="btn btn-danger btn-gd-remove btn-xs" type="submit" >
+                                                                    Remove
+                                                                </button>
+                                                                </form>
+                                                            </li>
+                                                        </ul>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </article>
+                              {% endfor %}
+                          </div>
+                        {% endfor %}
+                    </div>
+              </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block extra_script %}
+{{ block.super }}
+<script>
+$(function () {
+    $("#follow_button, #unfollow_button").click(function () {
+        $.post($(this).attr("href"), {});
+        $(this).parent().find("#follow_button, #unfollow_button").toggle();
+        return false
+    });
+});
+</script>
+{% endblock %}

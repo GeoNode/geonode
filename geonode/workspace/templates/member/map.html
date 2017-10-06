@@ -1,0 +1,502 @@
+{% extends 'site_base.html' %}
+{% load i18n %}
+
+{% block title %}{% trans "Member Workspace" %}{% endblock %}
+
+{% comment %}
+{% block subnav %}
+<li><a href="{% url "actstream_object_feed" content_type_id=ctype.pk  object_id=actor.pk %}">RSS</a></li>
+<li><a href="{% url "actstream_object_feed_atom" content_type_id=ctype.pk  object_id=actor.pk %}">ATOM</a></li>
+{% endblock %}
+{% endcomment %}
+
+{% block body_outer %}
+    <div class="gd-content">
+        <div class="gd-content-heading">
+            <div class="title small-content">
+                {% trans "Member Workspace" %}
+            </div>
+            <div class="hr"></div>
+        </div>
+        <div class="gd-content-body gd-history transparent top-bottom-margin-20px">
+            <div class="row">
+              <div class="col-md-12">
+                  <ul class="nav nav-pills">
+                    <li role="presentation" ><a href="{% url "member-workspace-layer" %}">{% trans "Layers" %}</a></li>
+                    <li role="presentation" class="active"><a href="{% url "member-workspace-map" %}"> {% trans "Maps" %}</a></li>
+                    <li role="presentation"><a href="{% url "member-workspace-document" %}">{% trans "Documents" %}</a></li>
+                  </ul>
+                  <br>
+                <ul class="nav nav-tabs">
+                  <li class="active"><a href="#draft" data-toggle="tab">{% trans "Draft" %}</a></li>
+                  <li><a href="#pending" id="pending_list_maps" data-toggle="tab">{% trans "Pending" %}</a></li>
+                  <li><a href="#denied" id="denied_list_maps" data-toggle="tab">{% trans "Denied" %}</a></li>
+                  <li ><a href="#active" id="active_list_maprs" data-toggle="tab">{% trans "Active" %}</a></li>
+                </ul>
+                <div class="tab-content">
+                  <article id="draft" class="tab-pane active">
+                    <ul class="no-style-list">
+                        <table class="table table-hover" style="background:#ffffff;">
+                            <thead>
+                                <tr>
+                                    <th>No.</th>
+                                    <th>Map Title</th>
+                                    <th>Organization</th>
+                                    <th>Map Creation Date</th>
+                                </tr>
+                            </thead>
+                            <!--{% for draft in draft_list %}-->
+                                <tbody id="showallMemberDraftmaps">
+                                    <!--<tr>-->
+                                        <!--<td>{{ forloop.counter}}</td>-->
+                                        <!--<td><a href="{{ draft.detail_url }}">{{ draft.title }}</a></td>-->
+                                        <!--<td>{{ draft.group }}</td>-->
+                                        <!--<td>{{ draft.date_created }}</td>-->
+                                        <!--<td><a href="{{ draft.detail_url }}?user_role=member" class="btn btn-gd-primary"> {% trans "Continue for Approval" %}</a></td>-->
+                                        <!--<td>-->
+                                            <!--<button type="button" class="btn btn-gd-primary" onclick="mapLayer({{ draft.id }})" style="color:#fff;">{% trans "Delete Map" %}</button> <br>-->
+                                        <!--</td>-->
+                                    <!--</tr>-->
+                                </tbody>
+                            <!--{% empty %}-->
+                                <!--<p>{% trans "No drafts yet" %}</p>-->
+                            <!--{% endfor %}-->
+                        </table>
+                        <div id="showallMemberDraftmapspag">
+
+                        </div>
+                    </ul>
+                  </article>
+                  <article id="pending" class="tab-pane">
+                    <ul class="no-style-list">
+                        <table class="table table-hover" style="background:#ffffff;">
+                            <thead>
+                                <tr>
+                                    <th>Serial No</th>
+                                    <th>Map Title</th>
+                                    <th>Organization</th>
+                                    <th>Request Date</th>
+                                </tr>
+                            </thead>
+                            <!--{% for pending in pending_list %}-->
+                                <tbody id="allMemberDraftmaps_pen">
+                                    <!--<tr>-->
+                                        <!--<td>{{ forloop.counter}}</td>-->
+                                        <!--<td>{{ pending.title }}</td>-->
+                                        <!--<td>{{ pending.group }}</td>-->
+                                        <!--<td>{{ pending.date_updated }}</td>-->
+                                    <!--</tr>-->
+                                </tbody>
+                            <!--{% empty %}-->
+                                <!--<p>{% trans "No pendings yet" %}</p>-->
+                            <!--{% endfor %}-->
+                        </table>
+                        <div id="showallMemberDraftmapspag_panding">
+
+                        </div>
+                    </ul>
+                  </article>
+                  <article id="denied" class="tab-pane">
+                    <ul class="no-style-list">
+                        <table class="table table-hover" style="background:#ffffff;">
+                            <thead>
+                                <tr>
+                                    <th>Serial No</th>
+                                    <th>Map Title</th>
+                                    <th>Organization</th>
+                                    <th>Who Denied</th>
+                                    <th>Denied Date</th>
+                                </tr>
+                            </thead>
+                            <!--{% for denied in denied_list %}-->
+                                <tbody id="allMemberDraftmaps_denied">
+                                    <!--<tr>-->
+                                        <!--<td>{{ forloop.counter}}</td>-->
+                                        <!--<td><a href="{{ denied.detail_url }}">{{ denied.title }}</a></td>-->
+                                        <!--<td>{{ denied.group }}</td>-->
+                                        <!--<td>{{ denied.last_auditor }}</td>-->
+                                        <!--<td>{{ denied.date_updated }}</td>-->
+                                        <!--<td><a href="{{ denied.detail_url }}?user_role=member" class="btn btn-gd-primary"> {% trans "Edit and Push Again" %}</a></td>-->
+                                    <!--</tr>-->
+                                </tbody>
+                            <!--{% empty %}-->
+                                <!--<p>{% trans "No denied maps yet" %}</p>-->
+                            <!--{% endfor %}-->
+                        </table>
+                        <div id="showallMemberDraftmapspag_denied">
+
+                        </div>
+                    </ul>
+                  </article>
+                  <article id="active" class="tab-pane ">
+                    <ul class="no-style-list">
+                        <table class="table table-hover" style="background:#ffffff;">
+                            <thead>
+                                <tr>
+                                    <th>Serial No</th>
+                                    <th>Map Title</th>
+                                    <th>Organization</th>
+                                    <th>Activator</th>
+                                    <th>Activation Date</th>
+                                    <th>Map Edit</th>
+                                </tr>
+                            </thead>
+                            <!--{% for active in active_list %}-->
+                                <tbody id="allMemberDraftmaps_active">
+                                    <!--<tr>-->
+                                        <!--<td>{{ forloop.counter}}</td>-->
+                                        <!--<td>{{ active.title }}</td>-->
+                                        <!--<td>{{ active.group }}</td>-->
+                                        <!--<td>{{ active.last_auditor }}</td>-->
+                                        <!--<td>{{ active.date_updated }}</td>-->
+                                        <!--<td><a href="{{ active.detail_url }}" class="btn btn-gd-primary"> {% trans "Edit" %}</a></td>-->
+                                    <!--</tr>-->
+                                </tbody>
+                            <!--{% empty %}-->
+                                <!--<p>{% trans "No active maps yet" %}</p>-->
+                            <!--{% endfor %}-->
+                        </table>
+                        <div id="showallMemberDraftmapspag_active">
+
+                        </div>
+                    </ul>
+                  </article>
+                </div>
+              </div>
+            </div>
+        </div>
+    </div>
+{% include "map_templates/_delete_map.html" %}
+{% endblock %}
+
+{% block extra_script %}
+{{ block.super }}
+<script>
+function mapLayer(id){
+        //console.log(id);
+        var sleID = parseInt(id);
+        $("#testid").html(id);
+        $('#_delete_map').modal('show');
+        $('#Map_Del').attr('action', '../../maps/'+ sleID +'/delete');
+    }
+
+$(function () {
+    $("#follow_button, #unfollow_button").click(function () {
+        $.post($(this).attr("href"), {});
+        $(this).parent().find("#follow_button, #unfollow_button").toggle();
+        return false
+    });
+});
+</script>
+<script type="text/javascript" language="JavaScript">
+        function showMemberDraftMap(targeturl){
+            var limit = 25;
+            if(targeturl== undefined){
+                var url = "{% url 'api_dispatch_list' api_name='api' resource_name='workspace_map_api' %}?limit="+ limit +"&resource_state=draft_list&user_type=member";
+            }
+            else{
+                var url = targeturl;
+            }
+            //var url = "{% url 'api_dispatch_list' api_name='api' resource_name='group_activity' %}?limit="+ Plimit +"&group={{ object.slug }}";
+                $.ajax({
+                    cache: true,
+                    type: 'GET',
+                    url: url,
+                    data: {},
+                    dataType: "json",
+                    success: function(jsondata) {
+                        console.log("success");
+                        //console.log(JSON.stringify(jsondata));
+                    var data = eval(jsondata.objects);
+                    var meta = eval(jsondata.meta);
+                    var t_count = meta.total_count;
+                    var t_limit = meta.limit;
+                    var t_offset = meta.offset;
+                    var t_next = meta.next;
+                    var t_previous = meta.previous;
+                        //alert(t_offset);
+                    var output='';
+                    var outputpag='';
+                  var offset = meta.offset;
+                  $.each(data, function(i, item) {
+                    offset = offset + 1;
+                    output+='<tr>';
+                    output+='<td>'+ offset +'</td>';
+                    output+='<td><a href='+ item.detail_url +'>'+ item.title+'</a></td>';
+                    output+='<td>'+ item.group +'</td>';
+                    output+='<td>'+ item.date_created +'</td>';
+                    output+='<td><a href="'+ item.detail_url +'?user_role=member" class="btn btn-gd-primary"> {% trans "Continue for Approval" %}</a></td>';
+                    output+='<td>';
+                    output+='<button type="button" class="btn btn-gd-primary" onclick="mapLayer('+ item.id +')" style="color:#fff;">{% trans "Delete Map" %}</button> <br>';
+                    output+='</td>';
+                    output+='</tr>';
+                  });
+                  outputpag+='<div>';
+                  outputpag+='<nav>';
+                  outputpag+='<ul class="pagination pull-left">';
+                  var nexturl = meta.next;
+                  //alert(t_count);
+                  var previousurl = meta.previous;
+                  if(previousurl){
+                  outputpag+='<li><a href="javascript:;" id="previousMemberDraftMaps"><strong><i class="fa fa-angle-left"> <span>Previous</span></i></strong></a></li>';
+                  }
+                  if(nexturl){
+                  outputpag+='<li><a href="javascript:;" id="nextMemberDraftMaps"><strong><span>Next</span> <i class="fa fa-angle-right"></i></strong></a></li>';
+                    }
+                  outputpag+='</ul>';
+                  outputpag+='</nav>';
+                  outputpag+='</div>';
+                   $("#showallMemberDraftmaps").html(output);
+                   $("#showallMemberDraftmapspag").html(outputpag);
+                   $("#nextMemberDraftMaps").click(function(){
+                        showMemberDraftMap(nexturl)
+                   });
+                   $("#previousMemberDraftMaps").click(function(){
+                        showMemberDraftMap(previousurl)
+                   });
+                    },
+                    error: function(xhr, ajaxOptions, thrownError) {
+                        console.log("error");
+                    }
+                });
+        }
+
+        $(document).ready(function(){
+            showMemberDraftMap();
+        });
+ </script>
+<script type="text/javascript" language="JavaScript">
+        function showLimitDatamaps_pending(targeturl){
+            var limit = 25;
+            if(targeturl== undefined){
+                var url = "{% url 'api_dispatch_list' api_name='api' resource_name='workspace_map_api' %}?limit="+ limit +"&resource_state=pending_list&user_type=member";
+            }
+            else{
+                var url = targeturl;
+            }
+            //var url = "{% url 'api_dispatch_list' api_name='api' resource_name='group_activity' %}?limit="+ Plimit +"&group={{ object.slug }}";
+                $.ajax({
+                    cache: true,
+                    type: 'GET',
+                    url: url,
+                    data: {},
+                    dataType: "json",
+                    success: function(jsondata) {
+                        console.log("success");
+                        console.log(JSON.stringify(jsondata));
+                    var data = eval(jsondata.objects);
+                    var meta = eval(jsondata.meta);
+                    var t_count = meta.total_count;
+                    var t_limit = meta.limit;
+                    var t_offset = meta.offset;
+                    var t_next = meta.next;
+                    var t_previous = meta.previous;
+                        //alert(t_offset);
+                    var output='';
+                    var outputpag='';
+                    var i =1;
+                  var offset = meta.offset;
+                  $.each(data, function(i, item) {
+                  //alert(item.date_created)
+                    offset = offset + 1;
+                    output+='<tr>';
+                    output+='<td>'+ offset +'</td>';
+                    output+='<td><a href="'+ item.detail_url +'">'+ item.title+'</a></td>';
+                    output+='<td>'+ item.group +'</td>';
+                    output+='<td>'+ item.date_updated +'</td>';
+                    output+='</tr>';
+                  });
+                  outputpag+='<div>';
+                  outputpag+='<nav>';
+                  outputpag+='<ul class="pagination pull-left">';
+                  var nexturl = meta.next;
+                  //alert(t_count);
+                  var previousurl = meta.previous;
+                  if(previousurl){
+                  outputpag+='<li><a href="javascript:;" id="previousMemberDraftmaps_pen"><strong><i class="fa fa-angle-left"> <span>Previous</span></i></strong></a></li>';
+                  }
+                  if(nexturl){
+                  outputpag+='<li><a href="javascript:;" id="nextMemberDraftmaps_pen"><strong><span>Next</span> <i class="fa fa-angle-right"></i></strong></a></li>';
+                    }
+                  outputpag+='</ul>';
+                  outputpag+='</nav>';
+                  outputpag+='</div>';
+                   $("#allMemberDraftmaps_pen").html(output);
+                   $("#showallMemberDraftmapspag_panding").html(outputpag);
+                   $("#nextMemberDraftmaps_pen").click(function(){
+                        showLimitDatamaps_pending(nexturl)
+                   });
+                   $("#previousMemberDraftmaps_pen").click(function(){
+                        showLimitDatamaps_pending(previousurl)
+                   });
+                    },
+                    error: function(xhr, ajaxOptions, thrownError) {
+                        console.log("error");
+                    }
+                });
+        }
+
+        $(document).ready(function(){
+            $("#pending_list_maps").click(function(){
+                showLimitDatamaps_pending();
+                });
+         });
+ </script>
+<script type="text/javascript" language="JavaScript">
+        function showLimitDatamaps_denied(targeturl){
+            var limit = 25;
+            if(targeturl== undefined){
+                var url = "{% url 'api_dispatch_list' api_name='api' resource_name='workspace_map_api' %}?limit="+ limit +"&resource_state=denied_list&user_type=member";
+            }
+            else{
+                var url = targeturl;
+            }
+            //var url = "{% url 'api_dispatch_list' api_name='api' resource_name='group_activity' %}?limit="+ Plimit +"&group={{ object.slug }}";
+                $.ajax({
+                    cache: true,
+                    type: 'GET',
+                    url: url,
+                    data: {},
+                    dataType: "json",
+                    success: function(jsondata) {
+                        console.log("success");
+                        console.log(JSON.stringify(jsondata));
+                    var data = eval(jsondata.objects);
+                    var meta = eval(jsondata.meta);
+                    var t_count = meta.total_count;
+                    var t_limit = meta.limit;
+                    var t_offset = meta.offset;
+                    var t_next = meta.next;
+                    var t_previous = meta.previous;
+                        //alert(t_offset);
+                    var output='';
+                    var outputpag='';
+                    var i =1;
+                  var offset = meta.offset;
+                  $.each(data, function(i, item) {
+                    offset = offset + 1;
+                    output+='<tr>';
+                    output+='<td>'+ offset +'</td>';
+                    output+='<td><a href="'+ item.detail_url +'">'+ item.title+'</a></td>';
+                    output+='<td>'+ item.group +'</td>';
+                    output+='<td>'+ item.last_auditor +'</td>';
+                    output+='<td>'+ item.date_updated +'</td>';
+                    output+='<td><a href="'+ item.detail_url +'?user_role=member" class="btn btn-gd-primary"> {% trans "Edit and Push Again" %}</a></td>';
+                    output+='</tr>';
+                  });
+                  outputpag+='<div>';
+                  outputpag+='<nav>';
+                  outputpag+='<ul class="pagination pull-left">';
+                  var nexturl = meta.next;
+                  //alert(t_count);
+                  var previousurl = meta.previous;
+                  if(previousurl){
+                  outputpag+='<li><a href="javascript:;" id="previousMemberDraftmaps_denied"><strong><i class="fa fa-angle-left"> <span>Previous</span></i></strong></a></li>';
+                  }
+                  if(nexturl){
+                  outputpag+='<li><a href="javascript:;" id="nextMemberDraftmaps_denied"><strong><span>Next</span> <i class="fa fa-angle-right"></i></strong></a></li>';
+                    }
+                  outputpag+='</ul>';
+                  outputpag+='</nav>';
+                  outputpag+='</div>';
+                   $("#allMemberDraftmaps_denied").html(output);
+                   $("#showallMemberDraftmapspag_denied").html(outputpag);
+                   $("#nextMemberDraftmaps_denied").click(function(){
+                        showLimitDatamaps_denied(nexturl)
+                   });
+                   $("#previousMemberDraftmaps_denied").click(function(){
+                        showLimitDatamaps_denied(previousurl)
+                   });
+                    },
+                    error: function(xhr, ajaxOptions, thrownError) {
+                        console.log("error");
+                    }
+                });
+        }
+
+        $(document).ready(function(){
+            $("#denied_list_maps").click(function(){
+                showLimitDatamaps_denied();
+                });
+         });
+ </script>
+
+<script type="text/javascript" language="JavaScript">
+        function showLimitDatamaps_active(targeturl){
+            var limit = 25;
+            if(targeturl== undefined){
+                var url = "{% url 'api_dispatch_list' api_name='api' resource_name='workspace_map_api' %}?limit="+ limit +"&resource_state=active_list&user_type=member";
+            }
+            else{
+                var url = targeturl;
+            }
+            //var url = "{% url 'api_dispatch_list' api_name='api' resource_name='group_activity' %}?limit="+ Plimit +"&group={{ object.slug }}";
+                $.ajax({
+                    cache: true,
+                    type: 'GET',
+                    url: url,
+                    data: {},
+                    dataType: "json",
+                    success: function(jsondata) {
+                        console.log("success");
+                        console.log(JSON.stringify(jsondata));
+                    var data = eval(jsondata.objects);
+                    var meta = eval(jsondata.meta);
+                    var t_count = meta.total_count;
+                    var t_limit = meta.limit;
+                    var t_offset = meta.offset;
+                    var t_next = meta.next;
+                    var t_previous = meta.previous;
+                        //alert(t_offset);
+                    var output='';
+                    var outputpag='';
+                    var i =1;
+                  var offset = meta.offset;
+                  $.each(data, function(i, item) {
+                    offset = offset + 1;
+                    output+='<tr>';
+                    output+='<td>'+ offset +'</td>';
+                    output+='<td><a href="'+ draft.detail_url +'">'+ item.title+'</a></td>';
+                    output+='<td>'+ item.group +'</td>';
+                    output+='<td>'+ item.last_auditor +'</td>';
+                    output+='<td>'+ item.date_updated +'</td>';
+                    output+='<td><a href="'+ item.detail_url +'?user_role=member" class="btn btn-gd-primary"> {% trans "Edit" %}</a></td>';
+                    output+='</tr>';
+                  });
+                  outputpag+='<div>';
+                  outputpag+='<nav>';
+                  outputpag+='<ul class="pagination pull-left">';
+                  var nexturl = meta.next;
+                  //alert(t_count);
+                  var previousurl = meta.previous;
+                  if(previousurl){
+                  outputpag+='<li><a href="javascript:;" id="previousMemberDraftmaps_active"><strong><i class="fa fa-angle-left"> <span>Previous</span></i></strong></a></li>';
+                  }
+                  if(nexturl){
+                  outputpag+='<li><a href="javascript:;" id="nextMemberDraftmaps_active"><strong><span>Next</span> <i class="fa fa-angle-right"></i></strong></a></li>';
+                    }
+                  outputpag+='</ul>';
+                  outputpag+='</nav>';
+                  outputpag+='</div>';
+                   $("#allMemberDraftmaps_active").html(output);
+                   $("#showallMemberDraftmapspag_active").html(outputpag);
+                   $("#nextMemberDraftmaps_active").click(function(){
+                        showLimitDatamaps_active(nexturl)
+                   });
+                   $("#previousMemberDraftmaps_active").click(function(){
+                        showLimitDatamaps_active(previousurl)
+                   });
+                    },
+                    error: function(xhr, ajaxOptions, thrownError) {
+                        console.log("error");
+                    }
+                });
+        }
+
+        $(document).ready(function(){
+            $("#active_list_maprs").click(function(){
+                showLimitDatamaps_active();
+                });
+         });
+ </script>
+{% endblock %}
