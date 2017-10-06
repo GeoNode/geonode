@@ -76,6 +76,8 @@ urlpatterns = patterns('',
 
                        # News views
                        (r'^news/', include('geonode.news.urls')),
+                       # dashboard views
+                       (r'^dashboard/', include('geonode.dashboard.urls')),
                        #end
 
 

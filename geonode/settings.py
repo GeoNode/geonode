@@ -278,6 +278,8 @@ GEONODE_APPS = (
 
     #@jahangir091
     'geonode.news',
+    'geonode.dashboard',
+    #end
 
 )
 
