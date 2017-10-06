@@ -190,11 +190,10 @@
         "pk": 16, 
         "model": "base.topiccategory", 
         "fields": {
-            "description": "means and aids for conveying persons and/or goods. Examples: roads, airports/airstrips, shipping routes, tunnels, nautical charts, vehicle or vessel location, aeronautical charts, railways", 
-            "gn_description": "Transportation", 
-            "is_choice": true, 
-            "fa_class": "fa-truck",
-            "identifier": "transportation"
+            "description": "transport and communication (roads, highway etc),means and aids for conveying persons and/or goods. Examples: roads, airports/airstrips, shipping routes, tunnels, nautical charts, vehicle or vessel location, aeronautical charts, railways",
+            "gn_description": "transport and communication",
+            "is_choice": true,
+            "identifier": "transportcommunication"
         }
     }, 
     {
@@ -206,6 +205,205 @@
             "is_choice": true, 
             "fa_class": "fa-phone",
             "identifier": "utilitiesCommunication"
+        }
+    },
+	{
+        "pk": 20,
+        "model": "base.topiccategory",
+        "fields": {
+            "description": "disaster",
+            "gn_description": "disaster",
+            "is_choice": true,
+            "identifier": "disaster"
+        }
+    },
+    {
+        "pk": 21,
+        "model": "base.topiccategory",
+        "fields": {
+            "description": "agriculture",
+            "gn_description": "agriculture",
+            "is_choice": true,
+            "identifier": "agriculture"
+        }
+    },
+    {
+        "pk": 22,
+        "model": "base.topiccategory",
+        "fields": {
+            "description": "water bodies",
+            "gn_description": "water bodies",
+            "is_choice": true,
+            "identifier": "waterbodies"
+        }
+    },
+    {
+        "pk": 23,
+        "model": "base.topiccategory",
+        "fields": {
+            "description": "marine & coastal",
+            "gn_description": "marine & coastal",
+            "is_choice": true,
+            "identifier": "marineCoastal"
+        }
+    },
+    {
+        "pk": 24,
+        "model": "base.topiccategory",
+        "fields": {
+            "description": "development and facilities (utilities...)",
+            "gn_description": "development and facilities",
+            "is_choice": true,
+            "identifier": "developmentfacilities"
+        }
+    },
+    {
+        "pk": 25,
+        "model": "base.topiccategory",
+        "fields": {
+            "description": "urban",
+            "gn_description": "urban",
+            "is_choice": true,
+            "identifier": "urban"
+        }
+    },
+    {
+        "pk": 26,
+        "model": "base.topiccategory",
+        "fields": {
+            "description": "infrastructure",
+            "gn_description": "infrastructure",
+            "is_choice": true,
+            "identifier": "infrastructure"
+        }
+    },
+    {
+        "pk": 27,
+        "model": "base.topiccategory",
+        "fields": {
+            "description": "education",
+            "gn_description": "education",
+            "is_choice": true,
+            "identifier": "education"
+        }
+    },
+	{
+        "pk": 28,
+        "model": "base.topiccategory",
+        "fields": {
+            "description": "Education",
+            "gn_description": "Education",
+            "is_choice": true,
+            "identifier": "Education"
+        }
+    },
+    {
+        "pk": 29,
+        "model": "base.topiccategory",
+        "fields": {
+            "description": "demography",
+            "gn_description": "demography",
+            "is_choice": true,
+            "identifier": "demography"
+        }
+    },
+    {
+        "pk": 30,
+        "model": "base.topiccategory",
+        "fields": {
+            "description": "commercial",
+            "gn_description": "commercial",
+            "is_choice": true,
+            "identifier": "commercial"
+        }
+    },
+    {
+        "pk": 31,
+        "model": "base.topiccategory",
+        "fields": {
+            "description": "commercial",
+            "gn_description": "commercial",
+            "is_choice": true,
+            "identifier": "commercial"
+        }
+    },
+    {
+        "pk": 32,
+        "model": "base.topiccategory",
+        "fields": {
+            "description": "recreational",
+            "gn_description": "recreational",
+            "is_choice": true,
+            "identifier": "recreational"
+        }
+    },
+    {
+        "pk": 33,
+        "model": "base.topiccategory",
+        "fields": {
+            "description": "conservation area",
+            "gn_description": "conservation area",
+            "is_choice": true,
+            "identifier": "conservationarea"
+        }
+    },
+    {
+        "pk": 34,
+        "model": "base.topiccategory",
+        "fields": {
+            "description": "forest",
+            "gn_description": "forest",
+            "is_choice": true,
+            "identifier": "forest"
+        }
+    },
+    {
+        "pk": 35,
+        "model": "base.topiccategory",
+        "fields": {
+            "description": "climate and atmosphere",
+            "gn_description": "climate and atmosphere",
+            "is_choice": true,
+            "identifier": "climateatmosphere"
+        }
+    },
+	{
+        "pk": 36,
+        "model": "base.topiccategory",
+        "fields": {
+            "description": "physiographic (mountain, terrain, depression etc.)",
+            "gn_description": "physiographic",
+            "is_choice": true,
+            "identifier": "physiographic"
+        }
+    },
+    {     "pk": 37,
+        "model": "base.topiccategory",
+        "fields": {
+            "description": "geology",
+            "gn_description": "geology",
+            "is_choice": true,
+            "identifier": "geology"
+        }
+    },
+    {
+        "pk": 38,
+        "model": "base.topiccategory",
+        "fields": {
+            "description": "engineering",
+            "gn_description": "engineering",
+            "is_choice": true,
+            "identifier": "engineering"
+        }
+    },
+    {
+        "pk": 39,
+        "model": "base.topiccategory",
+        "fields": {
+            "description": "administrative",
+            "gn_description": "administrative",
+            "is_choice": true,
+            "identifier": "administrative"
         }
     },
     {
