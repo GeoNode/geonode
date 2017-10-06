@@ -172,6 +172,15 @@ MODELTRANSLATION_DEFAULT_LANGUAGE = 'en'
 
 MODELTRANSLATION_FALLBACK_LANGUAGES = ('en',)
 
+
+
+
+#@jahangir091
+# settings for notification update time interval
+NOTIFY_UPDATE_TIME_INTERVAL = 100
+#end
+
+
 # Absolute path to the directory that holds media.
 # Example: "/home/media/media.lawrence.com/"
 MEDIA_ROOT = os.getenv('MEDIA_ROOT', os.path.join(PROJECT_ROOT, "uploaded"))
@@ -340,6 +349,14 @@ INSTALLED_APPS = (
     'tastypie',
     'polymorphic',
     'guardian',
+
+
+    #@jahangir091
+    # user notification app
+    'notify',
+    #end
+
+
     'oauth2_provider',
 
 ) + GEONODE_APPS

@@ -56,6 +56,10 @@ urlpatterns = patterns('',
                        url(r'^developer/$', TemplateView.as_view(template_name='developer.html'), name='developer'),
                        url(r'^about/$', TemplateView.as_view(template_name='about.html'), name='about'),
 
+                       #@jahangir091
+                       #django-notify app url
+                       url(r'^notifications/', include('notify.urls', 'notifications')),
+
                        # Layer views
                        (r'^layers/', include('geonode.layers.urls')),
 

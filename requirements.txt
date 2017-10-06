@@ -72,3 +72,8 @@ transifex-client==0.10
 xmltodict==0.9.2
 django-treebeard==3.0
 django-geonode-client==0.0.15
+
+#@jahangir091
+# django notification app
+django-notify-x==0.1.6
+#end
