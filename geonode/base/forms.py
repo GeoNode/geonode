@@ -28,9 +28,11 @@ from django.utils.translation import ugettext as _
 from mptt.forms import TreeNodeMultipleChoiceField
 from bootstrap3_datetime.widgets import DateTimePicker
 from modeltranslation.forms import TranslationModelForm
+from taggit.models import Tag
 
 from geonode.base.models import TopicCategory, Region
 from geonode.people.models import Profile
+from geonode.groups.models import GroupProfile
 
 
 class CategoryChoiceField(forms.ModelChoiceField):
@@ -189,5 +191,49 @@ class ResourceBaseForm(TranslationModelForm):
             'thumbnail',
             'charset',
             'rating',
-            'detail_url'
+            'detail_url',
+            'group'
             )
+
+
+#@jahangir091
+def comment_subjects(comment_type):
+    if comment_type == 'approve':
+        subjects_file = open("geonode/approve_comment_subjects.txt", "r")
+    elif comment_type == 'deny':
+        subjects_file = open("geonode/deny_comment_subjects.txt", "r")
+
+    approve_comment_subjects = [line.rstrip('\n') for line in subjects_file]
+    iter_list = []
+    for subject in approve_comment_subjects:
+        subject_tuple = (subject, subject)
+        iter_list.append(subject_tuple)
+    return iter_list
+
+
+class ResourceApproveForm(forms.Form):
+    comment_subject = forms.ChoiceField( choices=comment_subjects('approve'))
+    comment = forms.CharField(max_length=500,  widget=forms.Textarea, required=False)
+    view_permission = forms.BooleanField(label="Anyone can view this layer", required=False)
+    download_permission = forms.BooleanField(label="Anyone can download this layer", required=False)
+
+
+class ResourceDenyForm(forms.Form):
+    comment_subject = forms.ChoiceField(required=True, choices=comment_subjects('deny'))
+    comment = forms.CharField(max_length=500, required=True, widget=forms.Textarea)
+
+
+class TopicCategoryForm(forms.ModelForm):
+
+    class Meta:
+        model = TopicCategory
+        fields = ['identifier', 'description', 'gn_description', 'is_choice']
+
+
+class TagForm(forms.ModelForm):
+
+    class Meta:
+        model = Tag
+        fields = ['name']
+
+#end
