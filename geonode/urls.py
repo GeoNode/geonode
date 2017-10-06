@@ -27,6 +27,7 @@ from django.views.generic import TemplateView
 from django.contrib import admin
 
 import geonode.proxy.urls
+from geonode.cms.views import IndexClass
 
 from geonode.api.urls import api
 from geonode.api.views import verify_token, roles, users, admin_role
@@ -65,6 +66,14 @@ urlpatterns = patterns('',
 
                        # Map views
                        (r'^maps/', include('geonode.maps.urls')),
+
+
+                       #@jahangir091
+                       # cms
+                       (r'^cms/', include('geonode.cms.urls')),
+                       #end
+
+
 
                        # Catalogue views
                        (r'^catalogue/', include('geonode.catalogue.urls')),

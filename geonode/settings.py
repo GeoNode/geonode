@@ -264,6 +264,7 @@ GEONODE_APPS = (
     'geonode.api',
     'geonode.groups',
     'geonode.services',
+    'geonode.cms',
 
     # QGIS Server Apps
     # 'geonode_qgis_server',
