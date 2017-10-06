@@ -21,6 +21,16 @@
 import json
 import time
 
+
+#@jahangir091
+import os
+import sys
+import logging
+import traceback
+import shutil
+import datetime
+#end
+
 from django.conf.urls import url
 from django.contrib.auth import get_user_model
 from django.core.urlresolvers import reverse
@@ -29,8 +39,30 @@ from django.conf import settings
 from django.db.models import Count
 from django.utils.translation import get_language
 
+#@jahangir091
+from django.http import HttpResponse
+from django.utils.html import escape
+from django.shortcuts import get_object_or_404
+from django.utils import timezone
+#end
+
 from avatar.templatetags.avatar_tags import avatar_url
 from guardian.shortcuts import get_objects_for_user
+
+#@jahangir091
+from slugify import slugify
+from user_messages.models import UserThread
+from taggit.models import Tag
+from django.core.serializers.json import DjangoJSONEncoder
+from tastypie.serializers import Serializer
+from tastypie import fields
+from tastypie.resources import ModelResource
+from tastypie.constants import ALL, ALL_WITH_RELATIONS
+from tastypie.utils import trailing_slash
+from guardian.models import UserObjectPermission
+from notify.models import Notification
+from user_messages.models import Message
+#end
 
 from geonode.base.models import ResourceBase
 from geonode.base.models import TopicCategory
@@ -43,12 +75,34 @@ from geonode.maps.models import Map
 from geonode.documents.models import Document
 from geonode.groups.models import GroupProfile
 
-from django.core.serializers.json import DjangoJSONEncoder
-from tastypie.serializers import Serializer
-from tastypie import fields
-from tastypie.resources import ModelResource
-from tastypie.constants import ALL
-from tastypie.utils import trailing_slash
+
+#@jahangir091
+from geonode.groups.model import GroupMember
+from geonode.layers.forms import NewLayerUploadForm
+from geonode.layers.utils import file_upload
+from geonode.layers.models import UploadSession
+from geonode.people.models import Profile
+from geonode.settings import MEDIA_ROOT
+from geonode.maps.models import WmsServer
+from geonode.security.views import _perms_info, _perms_info_json
+from .authorization import GeoNodeAuthorization
+from geonode.base.models import FavoriteResource, DockedResource
+
+
+CONTEXT_LOG_FILE = None
+
+if 'geonode.geoserver' in settings.INSTALLED_APPS:
+    from geonode.geoserver.helpers import _render_thumbnail
+    from geonode.geoserver.helpers import ogc_server_settings
+    CONTEXT_LOG_FILE = ogc_server_settings.LOG_FILE
+
+
+def log_snippet(log_file):
+    if not os.path.isfile(log_file):
+        return "No log file at %s" % log_file
+
+logger = logging.getLogger("geonode.layers.views")
+#end
 
 
 FILTER_TYPES = {
@@ -267,6 +321,9 @@ class GroupResource(ModelResource):
         resource_name = 'groups'
         allowed_methods = ['get']
         filtering = {
+            'name': ALL,
+            'docked': ALL,
+            'favorite': ALL,
             'title': ALL
         }
         ordering = ['title', 'last_modified']
@@ -369,6 +426,17 @@ class ProfileResource(TypeFilteredResource):
 
         return super(ProfileResource, self).serialize(request, data, format, options)
 
+
+#@jahangir091
+    def get_object_list(self, request):
+        if request.user.is_superuser:
+            return super(ProfileResource, self).get_object_list(request).exclude(is_staff=True)
+        else:
+            return super(ProfileResource, self).get_object_list(request).filter(is_active=True).exclude(is_staff=True)
+#end
+
+
+
     class Meta:
         queryset = get_user_model().objects.exclude(username='AnonymousUser')
         resource_name = 'profiles'
@@ -378,6 +446,7 @@ class ProfileResource(TypeFilteredResource):
                     'is_active', 'last_login']
 
         filtering = {
+            'id': ALL,
             'username': ALL,
         }
         serializer = CountJSONSerializer()
@@ -405,3 +474,467 @@ class OwnersResource(TypeFilteredResource):
             'username': ALL,
         }
         serializer = CountJSONSerializer()
+
+
+
+#@jahangir091
+class UserOrganizationList(TypeFilteredResource):
+
+    group = fields.ForeignKey(GroupResource, 'group', full=True)
+    user = fields.ForeignKey(ProfileResource, 'user')
+    class Meta:
+        queryset = GroupMember.objects.all()
+        resource_name = 'user-organization-list'
+        filtering = {
+            'user': ALL_WITH_RELATIONS
+        }
+
+
+class LayerUpload(TypeFilteredResource):
+
+    class Meta:
+        resource_name = 'layerupload'
+        allowed_methods = ['post']
+
+    def dispatch(self, request_type, request, **kwargs):
+        if request.method == 'POST':
+            username = request.GET.get('username') or request.POST.get('username')
+            password = request.GET.get('password') or request.POST.get('password')
+            out = {'success': False}
+            try:
+                user = Profile.objects.get(username=username)
+            except Profile.DoesNotExist:
+                out['errors'] = 'The username and/or password you specified are not correct.'
+                return HttpResponse(json.dumps(out), content_type='application/json', status=404)
+
+            if user.check_password(password):
+                request.user = user
+            else:
+                out['errors'] = 'The username and/or password you specified are not correct.'
+                return HttpResponse(json.dumps(out), content_type='application/json', status=404)
+            form = NewLayerUploadForm(request.POST, request.FILES)
+            tempdir = None
+            errormsgs = []
+            if form.is_valid():
+                title = form.cleaned_data["layer_title"]
+                category = form.cleaned_data["category"]
+                organization_id = form.cleaned_data["organization"]
+                try:
+                    group = GroupProfile.objects.get(id=organization_id)
+                except GroupProfile.DoesNotExist:
+                    out['errors'] = 'Organization does not exists'
+                    return HttpResponse(json.dumps(out), content_type='application/json', status=404)
+                else:
+                    if not group in group.groups_for_user(request.user):
+                        out['errors'] = 'Organization access denied'
+                        return HttpResponse(json.dumps(out), content_type='application/json', status=404)
+                # Replace dots in filename - GeoServer REST API upload bug
+                # and avoid any other invalid characters.
+                # Use the title if possible, otherwise default to the filename
+                if title is not None and len(title) > 0:
+                    name_base = title
+                    keywords = title.split()
+                else:
+                    name_base, __ = os.path.splitext(
+                        form.cleaned_data["base_file"].name)
+                name = slugify(name_base.replace(".", "_"))
+                try:
+                    # Moved this inside the try/except block because it can raise
+                    # exceptions when unicode characters are present.
+                    # This should be followed up in upstream Django.
+                    tempdir, base_file = form.write_files()
+                    saved_layer = file_upload(
+                        base_file,
+                        name=name,
+                        user=request.user,
+                        category=category,
+                        group=group,
+                        keywords=keywords,
+                        status='ACTIVE',
+                        overwrite=False,
+                        charset=form.cleaned_data["charset"],
+                        abstract=form.cleaned_data["abstract"],
+                        title=form.cleaned_data["layer_title"],
+                        metadata_uploaded_preserve=form.cleaned_data["metadata_uploaded_preserve"]
+                    )
+                except Exception as e:
+                    exception_type, error, tb = sys.exc_info()
+                    logger.exception(e)
+                    out['success'] = False
+                    out['errors'] = str(error)
+                    # Assign the error message to the latest UploadSession from that user.
+                    latest_uploads = UploadSession.objects.filter(user=request.user).order_by('-date')
+                    if latest_uploads.count() > 0:
+                        upload_session = latest_uploads[0]
+                        upload_session.error = str(error)
+                        upload_session.traceback = traceback.format_exc(tb)
+                        upload_session.context = log_snippet(CONTEXT_LOG_FILE)
+                        upload_session.save()
+                        out['traceback'] = upload_session.traceback
+                        out['context'] = upload_session.context
+                        out['upload_session'] = upload_session.id
+                else:
+                    out['success'] = True
+                    if hasattr(saved_layer, 'info'):
+                        out['info'] = saved_layer.info
+                    out['url'] = reverse(
+                        'layer_detail', args=[
+                            saved_layer.service_typename])
+                    upload_session = saved_layer.upload_session
+                    upload_session.processed = True
+                    upload_session.save()
+                    permissions = form.cleaned_data["permissions"]
+                    if permissions is not None and len(permissions.keys()) > 0:
+                        saved_layer.set_permissions(permissions)
+                finally:
+                    if tempdir is not None:
+                        shutil.rmtree(tempdir)
+            else:
+                for e in form.errors.values():
+                    errormsgs.extend([escape(v) for v in e])
+                out['errors'] = form.errors
+                out['errormsgs'] = errormsgs
+            if out['success']:
+                status_code = 200
+            else:
+                status_code = 400
+            return HttpResponse(json.dumps(out), content_type='application/json', status=status_code)
+
+
+class MakeFeatured(TypeFilteredResource):
+
+    class Meta:
+        resource_name = 'make-featured'
+        allowed_methods = ['post']
+
+    def dispatch(self, request_type, request, **kwargs):
+        if request.method == 'POST':
+            out = {'success': False}
+            user = request.user
+            if user.is_authenticated() and user.is_manager_of_any_group:
+                status = json.loads(request.body).get('status')
+                resource_id = json.loads(request.body).get('resource_id')
+
+                try:
+                    layer = Layer.objects.get(pk=resource_id)
+                    resource = ResourceBase.objects.get(pk=resource_id)
+                except ResourceBase.DoesNotExist:
+                    status_code = 404
+                    out['errors'] = 'Layer does not exist'
+                else:
+                    if layer.group in user.group_list_all():
+                        resource.featured = status
+                        if status == True:
+                            permissions = _perms_info_json(layer)
+                            perm_dict = json.loads(permissions)
+                            try:
+                                if 'download_resourcebase' in perm_dict['users']['AnonymousUser']:
+                                    perm_dict['users']['AnonymousUser'].remove('download_resourcebase')
+                            except:
+                                pass
+
+                            try:
+                                if 'download_resourcebase' in perm_dict['groups']['anonymous']:
+                                    perm_dict['groups']['anonymous'].remove('download_resourcebase')
+                            except:
+                                pass
+
+                            layer.set_permissions(perm_dict)
+
+
+                        resource.save()
+                        out['success'] = 'True'
+                        status_code = 200
+                    else:
+                        out['error'] = 'Access denied'
+                        out['success'] = False
+                        status_code = 400
+            else:
+                out['error'] = 'Access denied'
+                out['success'] = False
+                status_code = 400
+            return HttpResponse(json.dumps(out), content_type='application/json', status=status_code)
+
+
+
+class MesseagesUnread(TypeFilteredResource):
+
+    class Meta:
+        resource_name = 'message-unread'
+        queryset = UserThread.objects.filter(unread=True)
+        allowed_methods = ['get']
+
+    def get_object_list(self, request):
+            return super(MesseagesUnread, self).get_object_list(request).filter(user=request.user)
+
+
+class UndockResources(TypeFilteredResource):
+
+    class Meta:
+        resource_name = 'undockit'
+        allowed_methods = ['post']
+
+    def dispatch(self, request_type, request, **kwargs):
+        if request.method == 'POST':
+            out = {'success': False}
+            user = request.user
+            if user.is_authenticated():
+                resource_id = json.loads(request.body).get('resource_id')
+                group_id = json.loads(request.body).get('group_id')
+                if resource_id:
+                    try:
+                        resource = ResourceBase.objects.get(pk=resource_id)
+                    except ResourceBase.DoesNotExist:
+                        status_code = 404
+                        out['errors'] = 'resource does not exist'
+                    else:
+                        docked = DockedResource.objects.get(user=user, resource=resource)
+                        docked.active = False
+                        docked.save()
+                        out['success'] = 'True'
+                        status_code = 200
+
+                elif group_id:
+                    try:
+                        group = GroupProfile.objects.get(pk=group_id)
+                    except ResourceBase.DoesNotExist:
+                        status_code = 404
+                        out['errors'] = 'group does not exist'
+                    else:
+                        docked = DockedResource.objects.get(user=user, group=group)
+                        docked.active = False
+                        docked.save()
+                        out['success'] = 'True'
+                        status_code = 200
+            else:
+                out['error'] = 'Access denied'
+                out['success'] = False
+                status_code = 400
+            return HttpResponse(json.dumps(out), content_type='application/json', status=status_code)
+
+
+class FavoriteUnfavoriteResources(TypeFilteredResource):
+
+    class Meta:
+        resource_name = 'makefavorite'
+
+    def dispatch(self, request_type, request, **kwargs):
+        if request.method == 'POST':
+            out = {'success': False}
+            user = request.user
+            if user.is_authenticated():
+                status = json.loads(request.body).get('status')
+                resource_id = json.loads(request.body).get('resource_id')
+                group_id = json.loads(request.body).get('group_id')
+
+                if resource_id:
+                    try:
+                        resource = ResourceBase.objects.get(pk=resource_id)
+                    except ResourceBase.DoesNotExist:
+                        status_code = 404
+                        out['errors'] = 'resource does not exist'
+                    else:
+                        favorite, created = FavoriteResource.objects.get_or_create(user=user, resource=resource)
+                        docked, created = DockedResource.objects.get_or_create(user=user, resource=resource)
+                        favorite.active = status
+                        docked.active = status
+                        favorite.save()
+                        docked.save()
+                        out['success'] = 'True'
+                        status_code = 200
+
+                elif group_id:
+                    try:
+                        group = GroupProfile.objects.get(pk=group_id)
+                    except ResourceBase.DoesNotExist:
+                        status_code = 404
+                        out['errors'] = 'group does not exist'
+                    else:
+                        favorite, created = FavoriteResource.objects.get_or_create(user=user, group=group)
+                        docked, created = DockedResource.objects.get_or_create(user=user, group=group)
+                        favorite.active = status
+                        docked.active = status
+                        favorite.save()
+                        docked.save()
+                        out['success'] = 'True'
+                        status_code = 200
+            else:
+                out['error'] = 'Access denied'
+                out['success'] = False
+                status_code = 400
+            return HttpResponse(json.dumps(out), content_type='application/json', status=status_code)
+
+
+class OsmOgrInfo(TypeFilteredResource):
+
+    class Meta:
+        resource_name = 'ogrinfo'
+        allowed_methods = ['post']
+
+    def dispatch(self, request_type, request, **kwargs):
+        if request.method == 'POST':
+            out = {'success': False}
+            user = request.user
+            if user.is_authenticated():
+                try:
+                    file = request.FILES["base_file"]
+                except:
+                    out['errors'] = 'No file has been choosen as base_file'
+                    return HttpResponse(json.dumps(out), content_type='application/json', status=404)
+                else:
+                    filename = file.name
+                    extension = os.path.splitext(filename)[1]
+                    if extension.lower() != '.osm':
+                        out['errors'] = 'Please upload a valid .osm file'
+                        return HttpResponse(json.dumps(out), content_type='application/json', status=404)
+
+                    file_location = os.path.join(MEDIA_ROOT, "osm_temp")
+                    temporary_file = open('%s/%s' % (file_location, filename), 'w+')
+                    temporary_file.write(file.read())
+                    temporary_file.close()
+                    file_path = temporary_file.name
+                    from plumbum.cmd import ogrinfo
+                    output_string = ogrinfo(file_path)
+                    point_layer = '(Point)'
+                    line_layer = '(Line String)'
+                    multi_line_layer = '(Multi Line String)'
+                    multipolygon_layer = '(Geometry Collection)'
+                    if point_layer in output_string:
+                        out['points'] = 'points'
+                    if line_layer in output_string:
+                        out['lines'] = 'lines'
+                    if multi_line_layer in output_string:
+                        out['multilinestrings'] = 'multilinestrings'
+                    if multipolygon_layer in output_string:
+                        out['multipolygons'] = 'multipolygons'
+                    out['success'] = True
+
+                    os.remove(file_path)
+                    return HttpResponse(json.dumps(out), content_type='application/json', status=200)
+
+
+
+class LayerSourceServer(TypeFilteredResource):
+    """
+    api for retrieving server info for layer source
+    """
+
+    class Meta:
+        resource_name = 'layersource'
+        allowed_methods = ['get']
+        queryset = WmsServer.objects.all()
+
+
+class MetaFavorite:
+    authorization = GeoNodeAuthorization()
+    allowed_methods = ['get']
+    ordering = ['date', 'title', 'popular_count']
+    fields =  [
+            'id',
+            'uuid',
+            'title',
+            'date',
+            'abstract',
+            'csw_wkt_geometry',
+            'csw_type',
+            'owner__username',
+            'share_count',
+            'popular_count',
+            'srid',
+            'category__gn_description',
+            'supplemental_information',
+            'thumbnail_url',
+            'detail_url',
+            'rating',
+            'featured',
+            'resource_type',
+            
+        ]
+
+
+class LayersWithFavoriteAndDoocked(TypeFilteredResource):
+    class Meta(MetaFavorite):
+        queryset = Layer.objects.filter(favoriteresource__active=True, status='ACTIVE').order_by('-date')
+        if settings.RESOURCE_PUBLISHING:
+            queryset = queryset.filter(is_published=True)
+        resource_name = 'favoritelayers'
+        allowed_methods = ['get']
+
+    def get_object_list(self, request):
+        return super(LayersWithFavoriteAndDoocked, self).get_object_list(request).filter(favoriteresource__user=request.user, dockedresource__active=True).distinct()
+
+
+
+
+class MapsWithFavoriteAndDoocked(TypeFilteredResource):
+    class Meta(MetaFavorite):
+        queryset = Map.objects.filter(favoriteresource__active=True, status='ACTIVE').order_by('-date')
+        if settings.RESOURCE_PUBLISHING:
+            queryset = queryset.filter(is_published=True)
+
+        resource_name = 'favoritemaps'
+        allowed_methods = ['get']
+
+    def get_object_list(self, request):
+        return super(MapsWithFavoriteAndDoocked, self).get_object_list(request).filter(favoriteresource__user=request.user, dockedresource__active=True).distinct()
+
+
+class GroupsWithFavoriteAndDoocked(TypeFilteredResource):
+
+    detail_url = fields.CharField()
+    def dehydrate_detail_url(self, bundle):
+        return reverse('group_detail', args=[bundle.obj.slug])
+    class Meta:
+        queryset = GroupProfile.objects.filter(favoriteresource__active=True)
+        if settings.RESOURCE_PUBLISHING:
+            queryset = queryset.filter(is_published=True)
+
+        resource_name = 'favoritegroups'
+        allowed_methods = ['get']
+
+    def get_object_list(self, request):
+        return super(GroupsWithFavoriteAndDoocked, self).get_object_list(request).filter(favoriteresource__user=request.user, dockedresource__active=True).distinct()
+
+
+class DocumentsWithFavoriteAndDoocked(TypeFilteredResource):
+    class Meta(MetaFavorite):
+        queryset = Document.objects.filter(favoriteresource__active=True, status='ACTIVE').order_by('-date')
+        if settings.RESOURCE_PUBLISHING:
+            queryset = queryset.filter(is_published=True)
+
+        resource_name = 'favoritedocuments'
+        allowed_methods = ['get']
+
+    def get_object_list(self, request):
+        return super(DocumentsWithFavoriteAndDoocked, self).get_object_list(request).filter(favoriteresource__user=request.user, dockedresource__active=True).distinct()
+
+
+class UserNotifications(TypeFilteredResource):
+    class Meta:
+        queryset = Notification.objects.filter(read=False, deleted=False)
+        resource_name = 'admin_notifications'
+
+    def get_object_list(self, request):
+        timestamp = request.GET.get('timestamp')
+        if timestamp:
+            date = datetime.datetime.fromtimestamp(float(timestamp))
+            return super(UserNotifications, self).get_object_list(request).filter(recipient=request.user, created__gt = date.date())
+        else:
+            return super(UserNotifications, self).get_object_list(request).filter(recipient=request.user, created__gte=datetime.datetime.now()-datetime.timedelta(days=7))
+
+
+class ViewNotificationTimeSaving(TypeFilteredResource):
+
+    class Meta:
+        queryset = Notification.objects.filter(read=False, deleted=False)
+        resource_name = 'view-notification'
+        allowed_methods = ['get']
+
+    def get_object_list(self, request):
+
+        user = request.user
+        user.last_notification_view = timezone.now()
+        user.save()
+        return super(ViewNotificationTimeSaving, self).get_object_list(request).filter(recipient=user, created__gt = user.last_notification_view)
+
+#end
