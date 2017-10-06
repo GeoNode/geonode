@@ -36,6 +36,8 @@ from modeltranslation.admin import TranslationAdmin
 from geonode.base.models import (TopicCategory, SpatialRepresentationType, Region, RestrictionCodeType,
                                  ContactRole, Link, Backup, License, HierarchicalKeyword)
 
+from models import KeywordIgnoreListModel
+
 
 class MediaTranslationAdmin(TranslationAdmin):
     class Media:
@@ -228,3 +230,6 @@ class ResourceBaseAdminForm(autocomplete_light.ModelForm):
     # after that's done.
     keywords = TaggitField(required=False)
     keywords.widget = TaggitWidget(autocomplete='HierarchicalKeywordAutocomplete')
+
+#@jahangir091
+admin.site.register(KeywordIgnoreListModel)
