@@ -235,7 +235,7 @@ def fixup_style(cat, resource, style):
             else:
                 sld = style.read()
             logger.info("Creating style [%s]", name)
-            style = cat.create_style(name, sld, raw=True)
+            style = cat.create_style(name, sld, overwrite=True, raw=True)
             lyr.default_style = cat.get_style(name)
             logger.info("Saving changes to %s", lyr)
             cat.save(lyr)
@@ -1203,7 +1203,9 @@ def geoserver_upload(
     style = None
     if sld is not None:
         try:
-            cat.create_style(name, sld, raw=True)
+            style = cat.get_style(name)
+            overwrite = style or False
+            cat.create_style(name, sld, overwrite=overwrite, raw=True)
         except geoserver.catalog.ConflictingDataError as e:
             msg = ('There was already a style named %s in GeoServer, '
                    'try to use: "%s"' % (name + "_layer", str(e)))
@@ -1218,9 +1220,14 @@ def geoserver_upload(
         if style is None:
             try:
                 style = cat.get_style(name)
+                overwrite = style or False
+                cat.create_style(name, sld, overwrite=overwrite, raw=True)
             except:
                 try:
-                    cat.create_style(name + '_layer', sld, raw=True)
+                    style = cat.get_style(name + '_layer')
+                    overwrite = style or False
+                    cat.create_style(name + '_layer', sld, overwrite=overwrite, raw=True)
+                    style = cat.get_style(name + '_layer')
                 except geoserver.catalog.ConflictingDataError as e:
                     msg = ('There was already a style named %s in GeoServer, '
                            'cannot overwrite: "%s"' % (name, str(e)))
