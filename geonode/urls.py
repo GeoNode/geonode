@@ -60,6 +60,8 @@ urlpatterns = patterns('',
                        #@jahangir091
                        #django-notify app url
                        url(r'^notifications/', include('notify.urls', 'notifications')),
+                       url(r'^add_news/$', TemplateView.as_view(template_name='news/add_news.html'), name='add_news'),
+                       #end
 
                        # Layer views
                        (r'^layers/', include('geonode.layers.urls')),
@@ -71,6 +73,9 @@ urlpatterns = patterns('',
                        #@jahangir091
                        # cms
                        (r'^cms/', include('geonode.cms.urls')),
+
+                       # News views
+                       (r'^news/', include('geonode.news.urls')),
                        #end
 
 

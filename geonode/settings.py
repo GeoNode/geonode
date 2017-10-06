@@ -276,6 +276,9 @@ GEONODE_APPS = (
     'geonode.upload',
     'geonode.tasks',
 
+    #@jahangir091
+    'geonode.news',
+
 )
 
 GEONODE_CONTRIB_APPS = (
