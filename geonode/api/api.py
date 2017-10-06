@@ -77,7 +77,7 @@ from geonode.groups.models import GroupProfile
 
 
 #@jahangir091
-from geonode.groups.model import GroupMember
+from geonode.groups.models import GroupMember
 from geonode.layers.forms import NewLayerUploadForm
 from geonode.layers.utils import file_upload
 from geonode.layers.models import UploadSession
