@@ -1,0 +1,107 @@
+{% extends "site_base.html" %}
+
+{% load i18n %}
+
+{% block head_title %}{% trans "Log in" %}{% endblock %}
+
+{% block body_outer %}
+    <div class="gd-content">
+    <div class="gd-content-heading">
+        <div class="row">
+          <div class="col-md-6">
+              <div class="title small-content ">
+                  {% trans "Trending" %}
+                  <button class="btn btn-default btn-link">
+                        <i class="fa fa-long-arrow-right" aria-hidden="true"></i>
+                  </button>
+              </div>
+          </div>
+          <div class="col-md-6">
+              <div class="small-content text-right">
+              </div>
+          </div>
+      </div>
+      <div class="hr"></div>
+    </div>
+    <div class="gd-content-body transparent top-bottom-margin-20px">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="gd-content-body full-pad-40px">
+                    <div class="row">
+                        <div class="col-md-9">
+                            {% for news in object_list %}
+                            <div id="gd-latestnews-left">
+                                <div class="row">
+                                    <div class="col-md-4">
+                                        <div class="news-title">
+                                            <a href="{% url "news-list" %}">
+                                                <img src="/uploaded/sohan_CUidfSy.jpg" alt="Data" width="250" height="320">
+                                            </a>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-8">
+                                        <div class="contents_news">
+                                            <div class="title">
+                                                {{ news.title }}
+                                            </div>
+                                            <div class="anchor-link">
+                                                <div class="row">
+                                                    <div class="col-md-6">
+                                                        <a href="javascript:;">
+                                                            <!--Aug. 20, 2016, 3:36 a.m.-->
+                                                        </a>
+                                                    </div>
+                                                    <div class="col-md-6 gd-txt-right">
+
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="details">
+                                                <p>
+                                                <!--Test There are many variations of passages of Lorem Ipsum available,-->
+                                                <!--but the majority have suffered alteration in some form, by injected humour,-->
+                                                <!--or randomised words which don't look even slightly believable.-->
+                                                <!--If you are going to use a passage of Lorem Ipsum, you need to be sure-->
+                                                <!--there isn't anything embarrassing hidden in the middle of text. All the-->
+                                                <!--Lorem Ipsum generators on the Internet tend to repeat predefined chunks as-->
+                                                <!--necessary, making this the first true generator on the Internet. It uses...-->
+                                                </p>
+                                            </div>
+                                            <span>
+                                                <a href="">
+                                                         Continue Reading <i class="fa fa-long-arrow-right" aria-hidden="true"></i>
+
+                                                </a>
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <hr />
+                            </div>
+                            {% endfor %}
+                        </div>
+                        <div class="col-md-3" style="border-left: 1px solid #eee;">
+                            <div id="gd-latestnews-tweets" >
+                                <h4>{% trans "Recent Posts" %}</h4>
+                                <hr />
+                                <div class="gd-latestnews-tweets-scroll resent-activetiy gd-history" id="gd-latestnews-tweets-scroll">
+                                    <div class="tab-content activity-style-list">
+                                        <article class="tab-pane active">
+                                            {% for action in action_list %}
+
+                                            {% empty %}
+                                                <p>{% trans "No actions yet" %}</p>
+                                            {% endfor %}
+                                        </article>
+                                    </div>
+                                    <a class="view-all-activity" href="{% url "recent-activity" %}">View all Activity</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

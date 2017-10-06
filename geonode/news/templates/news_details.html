@@ -1,0 +1,62 @@
+{% extends "site_base.html" %}
+
+{% load i18n %}
+
+{% block head_title %}{% trans "Log in" %}{% endblock %}
+
+{% block body_outer %}
+    <div class="gd-content-body-news">
+        <div class="changepass-news" id="changepass">
+            <div class="contents_news">
+                <div class="title">
+                    {{ news.title }}
+                </div>
+                <div class="anchor-link">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <a href="javascript:;">
+                                {{ news.publish_date }}
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="details">
+                    {% if news.image %}
+                    <p>
+                        <img src="/uploaded/{{ news.image }}" class="img-responsive" />
+                    </p><br />
+                    {% endif %}
+                    <p>{{ news.description|slice:"0:1000" }}</p>
+                    <p>{{ news.description|slice:"1001:2000" }}</p>
+                    <p>{{ news.description|slice:"2001:3000" }}</p>
+                    <p>{{ news.description|slice:"3001:4000" }}</p>
+                    <p>{{ news.description|slice:"4001:5000" }}</p>
+                    <p>{{ news.description|slice:"5001:6000" }}</p>
+                    <p>{{ news.description|slice:"6001:7000" }}</p>
+                    <p>{{ news.description|slice:"7001:8000" }}</p>
+                    <p>{{ news.description|slice:"8001:9000" }}</p>
+                    <p>{{ news.description|slice:"9001:10000" }}</p>
+                    <p>{{ news.description|slice:"10000:11000" }}</p>
+                    <p>{{ news.description|slice:"11001:12000" }}</p>
+                    <p>{{ news.description|slice:"12001:13000" }}</p>
+                    <p>{{ news.description|slice:"13001:14000" }}</p>
+                    <p>{{ news.description|slice:"14001:15000" }}</p>
+                    <p>{{ news.description|slice:"15001:16000" }}</p>
+                    <p>{{ news.description|slice:"16001:17000" }}</p>
+                    <p>{{ news.description|slice:"17001:18000" }}</p>
+                    <p>{{ news.description|slice:"18001:19000" }}</p>
+                    <p>{{ news.description|slice:"19001:20000" }}</p>
+                    <!--{{ news.description|length }}-->
+                    <!--{% if news.description|length %}-->
+                        <!--<p>-->
+                        <!--{{ news.description|truncatechars:100 }}-->
+                        <!--</p>-->
+                    <!--{% else %}-->
+                        <!--{{ news.description }}-->
+                    <!--{% endif %}-->
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

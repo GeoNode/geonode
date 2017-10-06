@@ -1,0 +1,82 @@
+{% extends "site_base.html" %}
+{% load bootstrap_tags %}
+
+{% load i18n %}
+{% load base_tags %}
+{% block title %} {% trans "Add News" %} - {{ block.super }} {% endblock %}
+
+{% block body_outer %}
+<div class="gd-content">
+    <div class="gd-content-heading">
+        <div class="row">
+          <div class="col-md-6">
+              <div class="title small-content">
+                  {% trans "Add News" %}
+              </div>
+          </div>
+          <div class="col-md-6">
+              <div class="small-content text-right">
+              </div>
+          </div>
+      </div>
+      <div class="hr"></div>
+    </div>
+    <div class="gd-content-body transparent top-bottom-margin-20px">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="gd-content-body full-pad-40px">
+                  <!--<form id=""  method="post" enctype="multipart/form-data" action="">-->
+                      <!--{% csrf_token %}-->
+                    <!--<div class="row">-->
+                        <!--<div class="col-md-12">-->
+                            <!--{{ form|as_bootstrap }}-->
+                        <!--</div>-->
+                    <!--</div>-->
+                      <!--<div class='input-group date' id='datetimepicker'>-->
+                            <!--<input data-date-format="YYYY-MM-DD HH:MM:SS" type="text"-->
+                                   <!--class="datepicker form-control" placeholder="{% trans 'yyyy-mm-dd' %}"-->
+                                   <!--/>-->
+                            <!--<span class="input-group-addon">-->
+                                <!--<span class=" glyphicon glyphicon-calendar"></span>-->
+                            <!--</span>-->
+                      <!--</div>-->
+                    <!--<div class="block-separator"></div>-->
+                      <!--{% if news.id %}-->
+                        <!--<button type="submit" id="" class="btn btn-gd-primary">Update News</button>-->
+                      <!--{% else %}-->
+                        <!--<button type="submit" id="" class="btn btn-gd-primary">Add News</button>-->
+                      <!--{% endif %}-->
+                  <!--</form>-->
+                <form id=""  method="post" enctype="multipart/form-data" action="">
+                    {% csrf_token %}
+                {% for field in form %}
+                <div class="fieldWrapper">
+                {{ field.errors }}
+                {{ field.label_tag }}
+                    <div class="block-separator"></div>
+                {% if field.html_name == 'publish_date' %}
+                    <input data-date-format="YYYY-MM-DD HH:MM:SS" type="text" name="publish_date"
+                       class="datepicker form-control" style="width:170px;" placeholder="{% trans 'yyyy-mm-dd' %}"
+                       />
+                {% else %}
+                    {{ field }}
+                {% endif %}
+                </div>
+                    <div class="block-separator"></div>
+                {% endfor %}
+                    <div class="block-separator"></div>
+                    {% if news.id %}
+                        <button type="submit" id="" class="btn btn-gd-primary">Update News</button>
+                      {% else %}
+                        <button type="submit" id="" class="btn btn-gd-primary">Add News</button>
+                    {% endif %}
+                </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+{% block extra_script %}
+<script src="{{ STATIC_URL }}geonode/js/search/explore.js?v={{ VERSION }}"></script>
+{% endblock extra_script %}

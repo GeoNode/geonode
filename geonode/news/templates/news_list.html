@@ -1,0 +1,194 @@
+{% extends "site_base.html" %}
+
+{% load i18n %}
+
+{% block head_title %}{% trans "Log in" %}{% endblock %}
+
+{% block body_outer %}
+<div class="gd-content">
+    <div class="gd-content-heading">
+        <div class="row">
+          <!--<div class="col-md-12">-->
+              <!--<div class="title small-content ">-->
+                  <!--{% trans "Trending" %}-->
+                  <!--<button class="btn btn-default btn-link">-->
+                        <!--<i class="fa fa-long-arrow-right" aria-hidden="true"></i>-->
+                      <!--&lt;!&ndash;<marquee>aaaaaaaaaaaaaaaaaaaaaaaa</marquee>&ndash;&gt;-->
+                  <!--</button>-->
+              <!--</div>-->
+          <!--</div>-->
+          <!--<div class="col-md-6">-->
+              <!--<div class="small-content text-right">-->
+              <!--</div>-->
+          <!--</div>-->
+      </div>
+      <div class="hr"></div>
+    </div>
+    <div class="gd-content-body transparent top-bottom-margin-20px">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="gd-content-body full-pad-40px1">
+                    <div class="gd-content-body-news1">
+                        <div class="row" style="background:#fff;">
+                            <div class="block-separator"></div>
+                            <div class="block-separator"></div>
+                            <div class="col-md-9">
+                                {% for news in object_list %}
+                                <!--<div class="changepass-news" id="changepass">-->
+                                    <!--<div class="contents_news">-->
+                                        <!--<div class="title">-->
+                                            <!--<div class="row">-->
+                                                <!--<div class="col-md-11">-->
+                                                    <!--{{ news.title }}-->
+                                                    <!--{% if user.is_superuser %}-->
+                                                        <!--<span style="padding-left:15px;">-->
+                                                            <!--<a href="{% url "news-update" news.id %}" title="Edit News"><i class="fa fa-pencil-square-o" aria-hidden="true"></i></a>-->
+                                                        <!--</span>-->
+                                                    <!--{% endif %}-->
+                                                <!--</div>-->
+                                                <!--<div class="col-md-1 text-right">-->
+                                                    <!--{% if user.is_superuser %}-->
+                                                        <!--<span>-->
+                                                            <!--<a href="{% url "news-delete" news.id %}" class="" title="Delete News"><i class="fa fa-times fa-stack-1x" aria-hidden="true"></i></a>-->
+                                                        <!--</span>-->
+                                                    <!--{% endif %}-->
+                                                <!--</div>-->
+                                            <!--</div>-->
+                                        <!--</div>-->
+                                        <!--<div class="anchor-link">-->
+                                            <!--<div class="row">-->
+                                                <!--<div class="col-md-6">-->
+                                                    <!--<a href="javascript:;">-->
+                                                        <!--{{ news.date_created }}-->
+                                                    <!--</a>-->
+                                                <!--</div>-->
+                                                <!--<div class="col-md-6 gd-txt-right">-->
+
+                                                <!--</div>-->
+                                            <!--</div>-->
+                                        <!--</div>-->
+                                        <!--&lt;!&ndash;<div>&ndash;&gt;-->
+                                            <!--&lt;!&ndash;&lt;!&ndash;<img src="{{ STATIC_URL }}geonode/images/news-img/news3.png"/>&ndash;&gt;&ndash;&gt;-->
+                                        <!--&lt;!&ndash;</div>&ndash;&gt;-->
+                                        <!--&lt;!&ndash;<div class="block-separator"></div>&ndash;&gt;-->
+                                        <!--<div class="details">-->
+                                            <!--{% if news.image %}-->
+                                            <!--<p>-->
+                                                <!--<img src="/uploaded/{{ news.image }}"  style="max-width:400px;max-height:500px;"/>-->
+                                            <!--</p>-->
+                                            <!--{% endif %}-->
+                                            <!--{% if news.description|length >= 500 %}-->
+                                                <!--{{ news.description|truncatechars:500 }}-->
+                                                <!--<div class="gd-txt-right">-->
+                                                    <!--<span><a href="{% url "news-details" news.id %}">-->
+                                                             <!--Read more-->
+                                                    <!--</a></span>-->
+                                                <!--</div>-->
+                                            <!--{% else %}-->
+                                                <!--{{ news.description }}-->
+                                            <!--{% endif %}-->
+                                        <!--</div>-->
+                                    <!--</div>-->
+                                <!--</div>-->
+                                <div id="gd-latestnews-left">
+                                    <div class="row">
+                                        <div class="col-md-4">
+                                            <div class="news-title">
+                                                {% if news.image %}
+                                                <p>
+                                                    <img src="/uploaded/{{ news.image }}" class="img-responsive" style="" />
+                                                </p>
+                                                {% endif %}
+                                            </div>
+                                        </div>
+                                        <div class="col-md-7">
+                                            <div class="contents_news">
+                                                <div class="title">
+                                                    {{ news.title }}
+                                                    {% if user.is_superuser %}
+                                                        <span style="padding-left:15px;">
+                                                            <a href="{% url "news-update" news.id %}" title="Edit News"><i class="fa fa-pencil-square-o" aria-hidden="true"></i></a>
+                                                        </span>
+                                                    {% endif %}
+                                                </div>
+                                                <div class="anchor-link">
+                                                    <div class="row">
+                                                        <div class="col-md-6">
+                                                            <a href="javascript:;">
+                                                                <!--Aug. 20, 2016, 3:36 a.m.-->
+                                                                {{ news.publish_date }}
+                                                            </a>
+                                                        </div>
+                                                        <div class="col-md-6 gd-txt-right">
+
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="details">
+                                                    <p>
+                                                    {% if news.description|length >= 500 %}
+                                                    {{ news.description|truncatechars:500 }}
+                                                    {% else %}
+                                                        {{ news.description }}
+                                                    {% endif %}
+                                                    </p>
+                                                </div>
+                                                <span>
+                                                    <a href="{% url "news-details" news.id %}">
+                                                         Continue Reading <i class="fa fa-long-arrow-right" aria-hidden="true"></i>
+                                                    </a>
+                                                </span>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-1 text-right">
+                                            {% if user.is_superuser %}
+                                                <span>
+                                                    <a href="{% url "news-delete" news.id %}" class="" title="Delete News"><i class="fa fa-times fa-stack-1x" aria-hidden="true"></i></a>
+                                                </span>
+                                            {% endif %}
+                                        </div>
+                                        </div>
+                                    <hr />
+                                </div>
+                                {% endfor %}
+                            </div>
+                            <div class="col-md-3" style="border-left: 1px solid #eee;">
+                                <div id="gd-latestnews-tweets" >
+                                    <h4>{% trans "Recent Posts" %}</h4>
+                                    <hr />
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <div id="gd-latestnews-left-recentpost">
+                                                <div id="accordion" >
+                                                    {% for news in latest_news_list %}
+                                                    <div class="accordion-section">
+                                                        <div class="accordion-section-heading" role="tab" id="headingOne">
+                                                                <div class="title">{{ news.title }}</div>
+                                                                <div class="sub-title">{{ news.publish_date }}</div>
+                                                        </div>
+                                                        <div id="collapseOne"  class="accordion-section-description collapse in">
+                                                            {% if news.description|length >= 100 %}
+                                                                {{ news.description|truncatechars:100 }}
+                                                                &nbsp;&nbsp;
+                                                                <span> <a href="{% url "news-details" news.id %}"> More </a></span>
+                                                            {% else %}
+                                                                {{ news.description }}
+                                                            {% endif %}
+                                                        </div>
+                                                    </div>
+                                                    <div class="block-separator"></div>
+                                                    {% endfor %}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

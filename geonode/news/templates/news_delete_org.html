@@ -1,0 +1,28 @@
+{% load i18n %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+
+    <div class="box border red">
+        <div class="box-title">
+            <h4><i class="fa fa-bars"></i>{% trans 'Delete page' %} {{ object }}?</h4>
+
+            <div class="tools hidden-xs">
+            </div>
+        </div>
+        <div class="box-body big">
+
+            <form class="form-horizontal" role="form" method="POST" action="">
+                {% csrf_token %}
+                {% blocktrans %}WARNING! Are you sure you want to delete page {{ object }} from the database? This cannot be
+                undone!{% endblocktrans %}<br>
+                <button class="btn btn-danger" type="submit" value="Delete banner">{% trans 'Delete!' %}</button>
+            </form>
+        </div>
+    </div>
+</body>
+</html>
