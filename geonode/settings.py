@@ -355,6 +355,7 @@ INSTALLED_APPS = (
     #@jahangir091
     # user notification app
     'notify',
+    'suit',
     #end
 
 
