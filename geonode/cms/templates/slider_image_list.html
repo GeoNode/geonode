@@ -1,0 +1,92 @@
+{% extends "site_base.html" %}
+
+{% load i18n %}
+
+{% block head_title %}{% trans "Log in" %}{% endblock %}
+
+{% block body_outer %}
+    <div class="gd-content-body-news">
+        {% for news in object_list %}
+        <div class="changepass-news" id="changepass">
+            <div class="contents_news">
+                <div class="title">
+                    <div class="row">
+                        <div class="col-md-11">
+                            {{ news.title }}
+                            {% if user.is_superuser %}
+                                <span style="padding-left:15px;">
+                                    <a href="{% url "news-update" news.id %}" title="Edit News"><i class="fa fa-pencil-square-o" aria-hidden="true"></i></a>
+                                </span>
+                            {% endif %}
+                        </div>
+                        <div class="col-md-1 text-right">
+                            {% if user.is_superuser %}
+                                <span>
+                                    <a href="{% url "news-delete" news.id %}" class="" title="Delete News"><i class="fa fa-times fa-stack-1x" aria-hidden="true"></i></a>
+                                </span>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+                <div class="anchor-link">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <a href="javascript:;">
+                                {{ news.date_created }}
+                            </a>
+                        </div>
+                        <div class="col-md-6 gd-txt-right">
+
+                        </div>
+                    </div>
+                </div>
+                <!--<div>-->
+                    <!--&lt;!&ndash;<img src="{{ STATIC_URL }}geonode/images/news-img/news3.png"/>&ndash;&gt;-->
+                <!--</div>-->
+                <!--<div class="block-separator"></div>-->
+                <div class="details">
+                    {% if news.image %}
+                    <p>
+                        <img src="/uploaded/{{ news.image }}"  style="max-width:400px;max-height:500px;"/>
+                    </p>
+                    {% endif %}
+                    {% if news.description|length >= 500 %}
+                        {{ news.description|truncatechars:500 }}
+                        <div class="gd-txt-right">
+                            <span><a href="{% url "news-details" news.id %}">
+                                     Read more
+                            </a></span>
+                        </div>
+                    {% else %}
+                        {{ news.description }}
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+            <div class="block-separator"></div>
+        {% endfor %}
+
+
+        <!--<div class="text-center">-->
+            <!--<nav>-->
+                <!--<ul class="pagination">-->
+                    <!--<li>-->
+                        <!--<a href="#" aria-label="Previous">-->
+                            <!--<span aria-hidden="true">&laquo;</span>-->
+                        <!--</a>-->
+                    <!--</li>-->
+                    <!--<li><a href="#">1</a></li>-->
+                    <!--<li><a href="#">2</a></li>-->
+                    <!--<li><a href="#">3</a></li>-->
+                    <!--<li><a href="#">4</a></li>-->
+                    <!--<li><a href="#">5</a></li>-->
+                    <!--<li>-->
+                        <!--<a href="#" aria-label="Next">-->
+                            <!--<span aria-hidden="true">&raquo;</span>-->
+                        <!--</a>-->
+                    <!--</li>-->
+                <!--</ul>-->
+            <!--</nav>-->
+        <!--</div>-->
+    </div>
+{% endblock %}

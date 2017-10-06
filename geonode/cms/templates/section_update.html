@@ -1,0 +1,104 @@
+{% extends "site_base.html" %}
+{% load bootstrap_tags %}
+{% load base_tags %}
+
+{% load i18n %}
+{% block title %} {% trans "Update Section" %} - {{ block.super }} {% endblock %}
+
+
+
+{% block body_outer %}
+<div class="gd-content">
+    <div class="gd-content-heading">
+        <div class="row">
+          <div class="col-md-12">
+              <div class="title small-content">
+                  {{ section.slug |replace_dashes }} UPDATE
+              </div>
+          </div>
+          <!--<div class="col-md-6">-->
+              <!--<div class="small-content text-right">-->
+
+              <!--</div>-->
+          <!--</div>-->
+      </div>
+      <div class="hr"></div>
+      <div class="block-separator"></div>
+      <div class="row">
+          {% if section.slug == 'slider-section' or section.slug == 'our-partners-section' %}
+              {% for image in images %}
+              <div class="col-md-3">
+                        <span class="fa-stack fa-lg" >
+                            <a href="{% url "slider-image-delete" image.id section.id %}" title="Delete" id=""><i class="fa fa-times fa-stack-1x"></i></a>
+                        </span>
+                      <a href="{% url "slider-image-update" image.id section.id %}" title="Edit">
+                      <img src="/uploaded/{{image.image}}"  class="img-responsive "/>
+                      </a>
+              </div>
+              {% endfor %}
+          {% else %}
+            {% if base_section.image1 %}
+              <div class="col-md-3">
+                      <img src="/uploaded/{{base_section.image1}}" class="img-responsive" />
+              </div>
+            {% endif %}
+            {% if base_section.image2 %}
+              <div class="col-md-3">
+                      <img src="/uploaded/{{base_section.image2}}" class="img-responsive" />
+              </div>
+            {% endif %}
+            {% if base_section.image3 %}
+              <div class="col-md-3">
+                      <img src="/uploaded/{{base_section.image3}}" class="img-responsive" />
+              </div>
+            {% endif %}
+            {% if base_section.image4 %}
+              <div class="col-md-3">
+                      <img src="/uploaded/{{base_section.image4}}" class="img-responsive"/>
+              </div>
+            {% endif %}
+          <div class="block-separator"></div>
+            {% if base_section.image5 %}
+              <div class="col-md-3">
+                      <img src="/uploaded/{{base_section.image5}}" class="img-responsive" />
+              </div>
+            {% endif %}
+          {% endif %}
+      </div>
+      <div class="row">
+          <div class="col-md-6">
+          </div>
+          <div class="col-md-6">
+              <div class="small-content text-right">
+                  {% if section.slug == 'slider-section' or section.slug == 'our-partners-section' %}
+                    <a class="btn btn-gd-primary pull-right icon-btn-color" style="font-size:12px;" href="{% url "slider-image-create" section.id %}">
+                        Add Image
+                    </a>
+                  {% endif %}
+              </div>
+          </div>
+      </div>
+      <div class="block-separator"></div>
+      <div class="hr"></div>
+    </div>
+    <div class="gd-content-body transparent top-bottom-margin-20px">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="gd-content-body full-pad-40px">
+                  <form id=""  method="post" enctype="multipart/form-data" action="">
+                      {% csrf_token %}
+                    <div class="row">
+                        <div class="col-md-12">
+                            {{ form|as_bootstrap }}
+                        </div>
+                    </div>
+                    <div class="block-separator"></div>
+                        <button type="submit" id="" class="btn btn-gd-primary">Update</button>
+                  </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+

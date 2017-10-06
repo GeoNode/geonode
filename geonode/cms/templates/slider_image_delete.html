@@ -1,0 +1,46 @@
+{% extends "site_base.html" %}
+{% load bootstrap_tags %}
+
+{% load i18n %}
+{% block title %} {% trans "News Delete" %} - {{ block.super }} {% endblock %}
+
+{% block body_outer %}
+    <div class="gd-content">
+        <div class="gd-content-heading">
+            <div class="row">
+              <div class="col-md-6">
+                  <div class="title small-content">
+                      {% trans "News Delete" %}
+                  </div>
+              </div>
+              <div class="col-md-6">
+                  <div class="small-content text-right">
+                      <a href="{% url "news-create" %}" class="btn btn-gd-primary pull-right icon-btn-color" style="font-size:12px;">
+                            {% trans "Add News" %} <i class="fa fa-map-marker" aria-hidden="true"></i>
+                      </a>
+                  </div>
+              </div>
+            </div>
+            <div class="hr"></div>
+        </div>
+        <div class="gd-content-body transparent top-bottom-margin-20px">
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="gd-content-body1 full-pad-40px1">
+                      <form class="form-horizontal" role="form" method="POST" action="">
+                            {% csrf_token %}
+                            {% blocktrans %}WARNING! Are you sure you want to delete page {{ object }} from the database? This cannot be
+                            undone!{% endblocktrans %}
+                          <div class="block-separator"></div>
+                          <div class="block-separator"></div>
+                            <a href="{% url "news-list" %}" class="btn btn-default" value="">{% trans 'Cancel' %}</a>
+                            <button class="btn btn-danger" type="submit" value="Delete banner">{% trans 'Delete!' %}</button>
+                       </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+{% endblock %}
