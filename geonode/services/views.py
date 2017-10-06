@@ -554,7 +554,7 @@ def _register_indexed_service(type, url, name, username, password, verbosity=Fal
 
         service.keywords = ','.join(wms.identification.keywords)
         service.save()
-        #service.set_default_permissions()
+        service.set_default_permissions()
 
         available_resources = []
         for layer in list(wms.contents):
@@ -1258,7 +1258,7 @@ def remove_service(request, service_id):
     """
     service_obj = get_object_or_404(Service, pk=service_id)
 
-    if not request.user.has_perm('maps.delete_service', obj=service_obj):
+    if not request.user.has_perm('services.delete_service', obj=service_obj):
         return HttpResponse(loader.render_to_string('401.html',
                                                     RequestContext(request, {
                                                         'error_message':
