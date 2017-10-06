@@ -130,3 +130,12 @@ def get_context_resourcetype(context):
         if "/{0}/".format(resource_type) in c_path:
             return resource_type
     return 'error'
+
+
+
+#@jahangir091
+@register.filter
+def replace_dashes(string):
+    string = string.replace('-', ' ')
+    return string.upper()
+#end
