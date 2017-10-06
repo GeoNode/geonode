@@ -21,9 +21,17 @@
 from tastypie.api import Api
 
 from .api import TagResource, TopicCategoryResource, ProfileResource, \
-    GroupResource, RegionResource, OwnersResource, ThesaurusKeywordResource
+    GroupResource, RegionResource, OwnersResource, UserOrganizationList, LayerUpload, MakeFeatured, MesseagesUnread, \
+        UndockResources, FavoriteUnfavoriteResources, OsmOgrInfo, LayerSourceServer, LayersWithFavoriteAndDoocked, \
+    MapsWithFavoriteAndDoocked, GroupsWithFavoriteAndDoocked, DocumentsWithFavoriteAndDoocked, UserNotifications, \
+    ViewNotificationTimeSaving, ThesaurusKeywordResource
+
 from .resourcebase_api import LayerResource, MapResource, DocumentResource, \
-    ResourceBaseResource, FeaturedResourceBaseResource
+    ResourceBaseResource, FeaturedResourceBaseResource, LayerResourceWithFavorite, MapResourceWithFavorite, \
+    DocumentResourceWithFavorite, GroupsResourceWithFavorite, GroupActivity, WorkSpaceLayerApi, WorkSpaceDocumentApi, \
+    WorkSpaceMapApi
+
+
 
 api = Api(api_name='api')
 
@@ -39,3 +47,42 @@ api.register(GroupResource())
 api.register(FeaturedResourceBaseResource())
 api.register(OwnersResource())
 api.register(ThesaurusKeywordResource())
+
+
+
+#@jahangir091
+# new apis
+api.register(UserOrganizationList())  # method=get. example: api/user-organization-list/?user__id=7
+api.register(LayerUpload())
+api.register(MakeFeatured())
+api.register(MesseagesUnread()) # api for unread messages for an user
+api.register(UndockResources())
+api.register(FavoriteUnfavoriteResources())
+api.register(OsmOgrInfo())
+api.register(LayerSourceServer())
+api.register(LayersWithFavoriteAndDoocked())
+api.register(MapsWithFavoriteAndDoocked())
+api.register(GroupsWithFavoriteAndDoocked())
+api.register(DocumentsWithFavoriteAndDoocked())
+api.register(LayerResourceWithFavorite())
+api.register(MapResourceWithFavorite())
+api.register(DocumentResourceWithFavorite())
+api.register(GroupsResourceWithFavorite())
+api.register(GroupActivity())
+
+api.register(UserNotifications())
+
+api.register(ViewNotificationTimeSaving())
+
+
+
+
+
+# admin and member workspace apis
+# for retrrieving layers, maps and documents
+
+#Layers for member workspace
+api.register(WorkSpaceLayerApi())
+api.register(WorkSpaceMapApi())
+api.register(WorkSpaceDocumentApi())
+#end
