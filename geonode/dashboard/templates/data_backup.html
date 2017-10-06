@@ -1,0 +1,33 @@
+{% extends "site_base.html" %}
+
+{% load url from future %}
+{% load i18n %}
+{% load bootstrap_tags %}
+
+{% block head_title %}{% trans "Data backup" %}{% endblock %}
+
+{% block body_outer %}
+<div class="gd-content">
+    <div class="gd-content-heading">
+        <div class="title small-content">
+            {% trans "User and password for machine where geoserver is running" %}
+        </div>
+        <div class="hr"></div>
+    </div>
+    <div class="gd-content-body top-bottom-margin-20px full-pad-30px">
+      <div class="row">
+        <div class="col-md-8">
+             <form  role="form" method="POST" action="{% url "data-folder-backup" %}" autocapitalize="off" {% if form.is_multipart %} enctype="multipart/form-data"{% endif %}>
+                  {% csrf_token %}
+                  {{ form|as_bootstrap }}
+                  {% if redirect_field_value %}
+                  <input type="hidden" name="{{ redirect_field_name }}" value="{{ redirect_field_value }}"/>
+                  {% endif %}
+
+                  <button type="submit" class="btn btn-gd-primary">{% trans "Download Data-Folder" %}</button>
+              </form>
+        </div>
+      </div>
+    </div>
+</div>
+{% endblock %}
