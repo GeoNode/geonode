@@ -34,15 +34,31 @@ from django.views.generic.edit import UpdateView, CreateView
 from django.db.models import F
 from django.forms.util import ErrorList
 
+
+#@jahangir091
+from django.views.generic import ListView
+from django.contrib import messages
+
+from notify.signals import notify
+#end
+
+
 from geonode.utils import resolve_object
 from geonode.security.views import _perms_info_json
 from geonode.people.forms import ProfileForm
-from geonode.base.forms import CategoryForm
+from geonode.base.forms import CategoryForm, ResourceDenyForm, ResourceApproveForm
 from geonode.base.models import TopicCategory, ResourceBase
 from geonode.documents.models import Document
 from geonode.documents.forms import DocumentForm, DocumentCreateForm, DocumentReplaceForm
 from geonode.documents.models import IMGTYPES
 from geonode.utils import build_social_links
+
+
+#@jahangir091
+from geonode.documents.models import DocumentSubmissionActivity, DocumentAuditActivity
+from geonode.groups.models import GroupProfile
+#end
+
 
 ALLOWED_DOC_TYPES = settings.ALLOWED_DOCUMENT_TYPES
 
@@ -67,6 +83,15 @@ def document_detail(request, docid):
     """
     The view that show details of each document
     """
+    
+    #@jahangir091
+    try:
+        user_role = request.GET['user_role']
+    except:
+        user_role=None
+    #end
+
+
     document = None
     try:
         document = _resolve_document(
@@ -110,6 +135,12 @@ def document_detail(request, docid):
 
         metadata = document.link_set.metadata().filter(
             name__in=settings.DOWNLOAD_FORMATS_METADATA)
+        
+        #@jahangir091
+        approve_form = ResourceApproveForm()
+        deny_form = ResourceDenyForm()
+        #@jahangir091
+
 
         context_dict = {
             'perms_list': get_perms(request.user, document.get_self_resource()),
@@ -117,7 +148,14 @@ def document_detail(request, docid):
             'resource': document,
             'metadata': metadata,
             'imgtypes': IMGTYPES,
-            'related': related}
+            'related': related,
+            "user_role": user_role,
+            "status": document.status,
+            "approve_form": approve_form,
+            "deny_form": deny_form,
+            "denied_comments": DocumentAuditActivity.objects.filter(document_submission_activity__document=document),
+
+        }
 
         if settings.SOCIAL_ORIGINS:
             context_dict["social_links"] = build_social_links(request, document)
@@ -150,12 +188,17 @@ def document_download(request, docid):
 
 
 class DocumentUploadView(CreateView):
+    import pdb;
+    pdb.set_trace();
     template_name = 'documents/document_upload.html'
     form_class = DocumentCreateForm
+
 
     def get_context_data(self, **kwargs):
         context = super(DocumentUploadView, self).get_context_data(**kwargs)
         context['ALLOWED_DOC_TYPES'] = ALLOWED_DOC_TYPES
+        context['ogranizations'] = GroupProfile.objects.filter(groupmember__user=self.request.user)
+        context['categories'] = TopicCategory.objects.all()
         return context
 
     def form_valid(self, form):
@@ -165,6 +208,24 @@ class DocumentUploadView(CreateView):
         self.object = form.save(commit=False)
         self.object.owner = self.request.user
         resource_id = self.request.POST.get('resource', None)
+        
+
+        #@jahangir091
+        group_id = self.request.POST.get('org-id', None)
+        category_id = self.request.POST.get('category-id', None)
+        try:
+            group = GroupProfile.objects.get(pk=group_id)
+        except GroupProfile.DoesNotExist:
+            raise Http404('Selected organization does not exists')
+        try:
+            category = TopicCategory.objects.get(gn_description=category_id)
+        except TopicCategory.DoesNotExist:
+            raise Http404('Selected category does not exists')
+        self.object.group = group
+        self.object.category = category
+        #end
+
+
         if resource_id:
             self.object.content_type = ResourceBase.objects.get(id=resource_id).polymorphic_ctype
             self.object.object_id = resource_id
@@ -451,6 +512,15 @@ def document_remove(request, docid, template='documents/document_remove.html'):
 
                 document.delete()
 
+                #@jahangir091
+                # notify document owner that someone have deleted the document
+                if request.user != document.owner:
+                    recipient = document.owner
+                    notify.send(request.user, recipient=recipient, actor=request.user,
+                    target=document, verb='deleted your document')
+                #end
+
+
                 try:
                     from geonode.contrib.slack.utils import send_slack_messages
                     send_slack_messages(slack_message)
@@ -459,16 +529,30 @@ def document_remove(request, docid, template='documents/document_remove.html'):
             else:
                 document.delete()
 
+                #@jahangir091
+                # notify document owner that someone have deleted the document
+                if request.user != document.owner:
+                    recipient = document.owner
+                    notify.send(request.user, recipient=recipient, actor=request.user,
+                    target=document, verb='deleted your document')
+                #end
+
+
             return HttpResponseRedirect(reverse("document_browse"))
         else:
             return HttpResponse("Not allowed", status=403)
 
     except PermissionDenied:
         return HttpResponse(
-            'You are not allowed to delete this document',
-            content_type="text/plain",
-            status=401
-        )
+            loader.render_to_string(
+                '401.html', RequestContext(
+                    request, {
+                        'error_message': _("You are not allowed to delete this document.")})), status=401)
+        # return HttpResponse(
+        #     'You are not allowed to delete this document',
+        #     content_type="text/plain",
+        #     status=401
+        # )
 
 
 def document_metadata_detail(request, docid, template='documents/document_metadata_detail.html'):
@@ -481,3 +565,192 @@ def document_metadata_detail(request, docid, template='documents/document_metada
         "resource": document,
         'SITEURL': settings.SITEURL[:-1]
     }))
+
+
+
+#@jahangir091
+
+@login_required
+def document_publish(request, document_pk):
+    if request.method == 'POST':
+        try:
+            document = Document.objects.get(id=document_pk)
+        except Document.DoesNotExist:
+            raise Http404("Document does not exist")
+        else:
+            if request.user != document.owner:
+                return HttpResponse(
+                    loader.render_to_string(
+                        '401.html', RequestContext(
+                        request, {
+                        'error_message': _("you are not allowed to publish this document.")})), status=403)
+                # return HttpResponse('you are not allowed to publish this document')
+            group = document.group
+            document.status = 'PENDING'
+            document.current_iteration += 1
+            document.save()
+            document_submission_activity = DocumentSubmissionActivity(document=document, group=group, iteration=document.current_iteration)
+            document_submission_activity.save()
+            # notify organization admins about the new published document
+            managers = list( group.get_managers())
+            notify.send(request.user, recipient_list = managers, actor=request.user,
+                        verb='pushed a new document for approval', target=document)
+            # set all the permissions for all the managers of the group for this documentt
+            document.set_managers_permissions()
+
+            messages.info(request, 'Pushed document succesfully for approval')
+            return HttpResponseRedirect(reverse('member-workspace-document'))
+    else:
+        return HttpResponseRedirect(reverse('member-workspace-document'))
+
+
+@login_required
+def document_approve(request, document_pk):
+    if request.method == 'POST':
+        form = ResourceApproveForm(request.POST)
+        if form.is_valid():
+            try:
+                document = Document.objects.get(id=document_pk)
+            except Document.DoesNotExist:
+                raise Http404("requested document does not exists")
+            else:
+                group = document.group
+                if request.user not in group.get_managers():
+                    return HttpResponse(
+                        loader.render_to_string(
+                            '401.html', RequestContext(
+                            request, {
+                            'error_message': _("you are not allowed to approve this document.")})), status=401)
+                    # return HttpResponse("you are not allowed to approve this document")
+                document_submission_activity = DocumentSubmissionActivity.objects.get(document=document, group=group, iteration=document.current_iteration)
+                document_audit_activity = DocumentAuditActivity(document_submission_activity=document_submission_activity)
+                comment_body = request.POST.get('comment')
+                comment_subject = request.POST.get('comment_subject')
+                document.status = 'ACTIVE'
+                document.last_auditor = request.user
+                document.save()
+
+                permissions = _perms_info_json(document)
+                perm_dict = json.loads(permissions)
+                if request.POST.get('view_permission'):
+                    if not 'AnonymousUser' in perm_dict['users']:
+                        perm_dict['users']['AnonymousUser'] = []
+                        perm_dict['users']['AnonymousUser'].append('view_resourcebase')
+                    else:
+                        if not 'view_resourcebase' in perm_dict['users']['AnonymousUser']:
+                            perm_dict['users']['AnonymousUser'].append('view_resourcebase')
+
+                if request.POST.get('download_permission'):
+                    if not 'AnonymousUser' in perm_dict['users']:
+                        perm_dict['users']['AnonymousUser'] = []
+                        perm_dict['users']['AnonymousUser'].append('download_resourcebase')
+                    else:
+                        if not 'download_resourcebase' in perm_dict['users']['AnonymousUser']:
+                            perm_dict['users']['AnonymousUser'].append('download_resourcebase')
+                document.set_permissions(perm_dict)
+
+
+                # notify document owner that someone have deleted the document
+                if request.user != document.owner:
+                    recipient = document.owner
+                    notify.send(request.user, recipient=recipient, actor=request.user,
+                    target=document, verb='deleted your document')
+
+                document_submission_activity.is_audited = True
+                document_submission_activity.save()
+
+                document_audit_activity.comment_subject = comment_subject
+                document_audit_activity.comment_body = comment_body
+                document_audit_activity.result = 'APPROVED'
+                document_audit_activity.auditor = request.user
+                document_audit_activity.save()
+
+            messages.info(request, 'Approved document succesfully')
+            return HttpResponseRedirect(reverse('admin-workspace-document'))
+        else:
+            messages.info(request, 'Please write an approve comment and try again')
+            return HttpResponseRedirect(reverse('admin-workspace-document'))
+    else:
+        return HttpResponseRedirect(reverse('admin-workspace-document'))
+
+
+@login_required
+def document_deny(request, document_pk):
+    if request.method == 'POST':
+        form = ResourceDenyForm(request.POST)
+        if form.is_valid():
+            try:
+                document = Document.objects.get(id=document_pk)
+            except Document.DoesNotExist:
+                raise Http404("requested document does not exists")
+            else:
+                group = document.group
+                if request.user not in group.get_managers():
+                    return HttpResponse(
+                        loader.render_to_string(
+                            '401.html', RequestContext(
+                            request, {
+                            'error_message': _("you are not allowed to deny this document.")})), status=401)
+                    # return HttpResponse("you are not allowed to deny this document")
+                document_submission_activity = DocumentSubmissionActivity.objects.get(document=document, group=group, iteration=document.current_iteration)
+                document_audit_activity= DocumentAuditActivity(document_submission_activity=document_submission_activity)
+                comment_body = request.POST.get('comment')
+                comment_subject = request.POST.get('comment_subject')
+                document.status = 'DENIED'
+                document.last_auditor = request.user
+                document.save()
+
+                # notify document owner that someone have deleted the document
+                if request.user != document.owner:
+                    recipient = document.owner
+                    notify.send(request.user, recipient=recipient, actor=request.user,
+                    target=document, verb='deleted your document')
+
+                document_submission_activity.is_audited = True
+                document_submission_activity.save()
+
+                document_audit_activity.comment_subject = comment_subject
+                document_audit_activity.comment_body = comment_body
+                document_audit_activity.result = 'DECLINED'
+                document_audit_activity.auditor = request.user
+                document_audit_activity.save()
+
+            messages.info(request, 'Denied document successfully')
+            return HttpResponseRedirect(reverse('admin-workspace-document'))
+        else:
+            messages.info(request, 'Please write a deny comment and try again')
+            return HttpResponseRedirect(reverse('admin-workspace-document'))
+
+    else:
+        return HttpResponseRedirect(reverse('admin-workspace-document'))
+
+
+@login_required
+def document_delete(request, document_pk):
+    if request.method == 'POST':
+        try:
+            document = Document.objects.get(id=document_pk)
+        except Document.DoesNotExist:
+            raise Http404("requested document does not exists")
+        else:
+            if document.status == 'DRAFT' and ( request.user == document.owner or request.user in document.group.get_managers()):
+                document.status = "DELETED"
+                document.save()
+            else:
+                return HttpResponse(
+                        loader.render_to_string(
+                            '401.html', RequestContext(
+                            request, {
+                            'error_message': _("You have no acces to delete the document.")})), status=401)
+                # messages.info(request, 'You have no acces to delete the document')
+
+        messages.info(request, 'Deleted the document successfully')
+        if request.user == document.owner:
+            return HttpResponseRedirect(reverse('member-workspace-document'))
+        else:
+            return HttpResponseRedirect(reverse('admin-workspace-document'))
+
+    else:
+        return HttpResponseRedirect(reverse('member-workspace-document'))
+
+#end

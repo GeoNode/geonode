@@ -33,6 +33,7 @@ from modeltranslation.forms import TranslationModelForm
 from geonode.documents.models import Document
 from geonode.maps.models import Map
 from geonode.layers.models import Layer
+from geonode.groups.models import GroupProfile
 
 autocomplete_light.autodiscover() # flake8: noqa
 
@@ -85,7 +86,10 @@ class DocumentForm(ResourceBaseForm):
             'doc_file',
             'extension',
             'doc_type',
-            'doc_url')
+            'doc_url',
+            'status',
+            # 'group',
+            'last_auditor')
 
 
 class DocumentDescriptionForm(forms.Form):

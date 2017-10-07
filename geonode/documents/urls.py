@@ -41,4 +41,14 @@ urlpatterns = patterns('geonode.documents.views',
                        url(r'^(?P<docid>[^/]*)/metadata_detail$', 'document_metadata_detail',
                            name='document_metadata_detail'),
                        url(r'^(?P<docid>\d+)/metadata$', 'document_metadata', name='document_metadata'),
+
+
+	#@jahangir091
+                       # urls for publishing documents through workspace
+                       url(r'^(?P<document_pk>[0-9]+)/delete$', 'document_delete', name='document-delete'),
+                       url(r'^(?P<document_pk>[0-9]+)/publish$', 'document_publish', name='document-publish'),
+                       url(r'^(?P<document_pk>[0-9]+)/approve$', 'document_approve', name='document-approve'),
+                       url(r'^(?P<document_pk>[0-9]+)/deny$', 'document_deny', name='document-deny'),
+	#end
+
                        )
