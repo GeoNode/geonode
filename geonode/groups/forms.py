@@ -26,6 +26,8 @@ from django.utils.translation import ugettext_lazy as _
 from django.contrib.auth import get_user_model
 
 from geonode.groups.models import GroupProfile
+from geonode.people.models import Profile
+from geonode.groups.models import QuestionAnswer
 
 
 class GroupForm(forms.ModelForm):
@@ -35,6 +37,12 @@ class GroupForm(forms.ModelForm):
         help_text=_("a short version of the name consisting only of letters, numbers, underscores and hyphens."),
         widget=forms.HiddenInput,
         required=False)
+
+    admin = forms.ModelChoiceField(queryset=Profile.objects.all().filter(is_active=True),
+        help_text=_('select an admin for this organization'),
+        label=_('Organization Admin'),
+
+    )
 
     def clean_slug(self):
         if GroupProfile.objects.filter(
@@ -54,6 +62,9 @@ class GroupForm(forms.ModelForm):
         cleaned_data = self.cleaned_data
 
         name = cleaned_data.get("title")
+        if not name:
+            return
+
         slug = slugify(name)
 
         cleaned_data["slug"] = slug
@@ -62,7 +73,7 @@ class GroupForm(forms.ModelForm):
 
     class Meta:
         model = GroupProfile
-        exclude = ['group']
+        exclude = ['group', 'favorite', 'docked']
 
 
 class GroupUpdateForm(forms.ModelForm):
@@ -79,7 +90,7 @@ class GroupUpdateForm(forms.ModelForm):
 
     class Meta:
         model = GroupProfile
-        exclude = ['group']
+        exclude = ['group', 'favorite', 'docked']
 
 
 class GroupMemberForm(forms.Form):
@@ -160,3 +171,30 @@ class GroupInviteForm(forms.Form):
             raise forms.ValidationError(message)
 
         return invitees
+
+
+#@jahangir091
+class QuestionForm(forms.ModelForm):
+    """
+    This form is for question and answer
+    """
+    class Meta:
+        model = QuestionAnswer
+        fields = ['question',]
+        widgets = {
+            'question': forms.Textarea(attrs={'placeholder': 'Ask a question'}),
+        }
+
+
+
+class AnsewerForm(forms.ModelForm):
+    """
+    This form is for answering question
+    """
+    class Meta:
+        model = QuestionAnswer
+        fields = ['answer',]
+        widgets = {
+            'answer': forms.Textarea(attrs={'placeholder': 'Answer this question'}),
+        }
+#end
