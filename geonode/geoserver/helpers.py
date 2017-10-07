@@ -128,6 +128,7 @@ _polygon_template = """
 <PolygonSymbolizer>
   <Fill>
     <CssParameter name="fill">%(bg)s</CssParameter>
+    <CssParameter name="fill-opacity">0.50</CssParameter>
   </Fill>
   <Stroke>
     <CssParameter name="stroke">%(fg)s</CssParameter>
