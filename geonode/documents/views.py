@@ -188,8 +188,6 @@ def document_download(request, docid):
 
 
 class DocumentUploadView(CreateView):
-    import pdb;
-    pdb.set_trace();
     template_name = 'documents/document_upload.html'
     form_class = DocumentCreateForm
 
