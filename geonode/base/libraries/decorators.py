@@ -6,7 +6,7 @@ from geonode import settings
 
 def superuser_check(user):
     if not user.is_superuser:
-        raise Http404
+        raise Http404("Sorry, you are not super user")
     return user.is_superuser
 
 def manager_or_member(user):
@@ -15,7 +15,7 @@ def manager_or_member(user):
     elif user.is_member_of_any_group:
         return user.is_member_of_any_group
     else:
-        raise Http404
+        raise Http404("Only organization members or admins can upload layers")
 
 def organization_admin_required(view_func, redirect_field_name=REDIRECT_FIELD_NAME, login_url=settings.LOGIN_URL):
     """
