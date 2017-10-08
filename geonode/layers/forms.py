@@ -22,6 +22,8 @@ import os
 import tempfile
 import zipfile
 import autocomplete_light
+import requests
+import shapefile
 
 from django.conf import settings
 from django import forms
@@ -35,6 +37,7 @@ from geonode.layers.models import Layer, Attribute
 autocomplete_light.autodiscover() # flake8: noqa
 
 from geonode.base.forms import ResourceBaseForm
+from geonode.settings import MEDIA_ROOT
 
 
 class JSONField(forms.CharField):
@@ -59,7 +62,11 @@ class LayerForm(ResourceBaseForm):
             'default_style',
             'styles',
             'upload_session',
-            )
+            'service',
+            'status',
+            # 'group',
+            'last_auditor'
+        )
 
 
 class LayerUploadForm(forms.Form):
@@ -114,10 +121,12 @@ class LayerUploadForm(forms.Form):
             if cleaned["xml_file"] is not None:
                 xml_file = cleaned["xml_file"].name
 
-        if base_ext.lower() not in (".shp", ".tif", ".tiff", ".geotif", ".geotiff"):
+        if base_ext.lower() not in (".shp", ".osm", ".tif", ".tiff", ".geotif", ".geotiff", ".csv"):
             raise forms.ValidationError(
                 "Only Shapefiles and GeoTiffs are supported. You uploaded a %s file" %
                 base_ext)
+        if base_ext.lower() == ".csv" and self.cleaned_data['the_geom'] != "geom" and self.cleaned_data['the_geom'] != '':
+            raise forms.ValidationError("The field name of your .csv file which contains multilinestring coordinates should be 'geom' ")
         if base_ext.lower() == ".shp":
             if dbf_file is None or shx_file is None:
                 raise forms.ValidationError(
@@ -149,8 +158,102 @@ class LayerUploadForm(forms.Form):
 
         absolute_base_file = None
         tempdir = tempfile.mkdtemp()
+        file = self.cleaned_data['base_file']
 
-        if zipfile.is_zipfile(self.cleaned_data['base_file']):
+	#@jahangir091
+        filename = file.name
+        extension = os.path.splitext(filename)[1]
+        if extension.lower() == '.osm':
+            osm_layer_type = self.cleaned_data['osm_layer_type']
+            tempdir_osm = tempfile.mkdtemp()  # temporary directory for uploading .osm file
+            temporary_file = open('%s/%s' % (tempdir_osm, filename), 'a+')
+
+            for chnk in file.chunks():
+                temporary_file.write(chnk)
+            temporary_file.close()
+            file_path = temporary_file.name
+            from geonode.layers.utils import ogrinfo
+            response = ogrinfo(file_path)
+            if osm_layer_type in response:
+
+                from plumbum.cmd import ogr2ogr
+                ogr2ogr[tempdir, file_path, osm_layer_type]()
+                files = os.listdir(tempdir)
+                for item in files:
+                    if item.endswith('.shp'):
+                        absolute_base_file = os.path.join(tempdir, item)
+            else:
+                raise forms.ValidationError('You are trying to upload {0} layer but the .osm file you provided contains'
+                                            '{1}'.format(osm_layer_type, response))
+
+        elif extension.lower() == '.csv':
+            the_geom = self.cleaned_data['the_geom']
+            longitude = self.cleaned_data['longitude'] #longitude
+            lattitude = self.cleaned_data['lattitude'] #latitude
+            tempdir_csv = tempfile.mkdtemp()  # temporary directory for uploading .csv file
+            temporary_file = open('%s/%s' % (tempdir_csv, filename), 'a+')
+            for chnk in file.chunks():
+                temporary_file.write(chnk)
+            temporary_file.close()
+            file_path = temporary_file.name
+
+            temp_vrt_path = os.path.join(tempdir_csv, "tempvrt.vrt")
+            temp_vrt_file = open(temp_vrt_path, 'wt')
+            vrt_string = """  <OGRVRTDataSource>
+                    <OGRVRTLayer name="222ogr_vrt_layer_name222">
+                    <SrcDataSource>000path_to_the_imported_csv_file000</SrcDataSource>
+                    <GeometryType>wkbUnknown</GeometryType>
+                    <GeometryField encoding="WKT" field="111the_field_name_geom_for_csv111"/>
+                    </OGRVRTLayer>
+                    </OGRVRTDataSource> """
+
+            vrt_string_point = """
+                <OGRVRTDataSource>
+                    <OGRVRTLayer name="222ogr_vrt_layer_name222">
+                        <SrcDataSource>000path_to_the_imported_csv_file000</SrcDataSource>
+			            <SrcLayer>222ogr_vrt_layer_name222</SrcLayer>
+                        <GeometryType>wkbPoint</GeometryType>
+		                <LayerSRS>WGS84</LayerSRS>
+                        <GeometryField encoding="PointFromColumns" x="333y_for_longitude_values333" y="111x_for_lattitude_values111"/>
+                    </OGRVRTLayer>
+                </OGRVRTDataSource>"""
+
+            layer_name, ext = os.path.splitext(filename)
+
+            if longitude and lattitude:
+                vrt_string_point = vrt_string_point.replace("222ogr_vrt_layer_name222", layer_name)
+                vrt_string_point = vrt_string_point.replace("000path_to_the_imported_csv_file000", file_path)
+                vrt_string_point = vrt_string_point.replace("111x_for_lattitude_values111", lattitude)
+                vrt_string_point = vrt_string_point.replace("333y_for_longitude_values333", longitude)
+                temp_vrt_file.write(vrt_string_point)
+            elif the_geom:
+                vrt_string = vrt_string.replace("222ogr_vrt_layer_name222", layer_name)
+                vrt_string = vrt_string.replace("000path_to_the_imported_csv_file000", file_path)
+                vrt_string = vrt_string.replace("111the_field_name_geom_for_csv111", the_geom)
+                temp_vrt_file.write(vrt_string)
+
+            temp_vrt_file.close()
+            ogr2ogr_string = 'ogr2ogr -overwrite -f "ESRI Shapefile" '
+            ogr2ogr_string = ogr2ogr_string+'"'+tempdir+'"'+' '+'"'+temp_vrt_path+'"'
+
+            os.system(ogr2ogr_string)
+
+            files = os.listdir(tempdir)
+            for item in files:
+                if item.endswith('.shp'):
+                    shape_file = shapefile.Reader(os.path.join(tempdir, item))
+                    shapes = shape_file.shapes()
+                    names = [name for name in dir(shapes[1]) if not name.startswith('__')]
+                    if not 'bbox' in names and the_geom:
+                        raise forms.ValidationError('The "geom" field of your .csv file does not contains valid multistring points '
+                                                    'or your uploaded file does not contains valid layer')
+                    else:
+                        absolute_base_file = os.path.join(tempdir, item)
+
+
+        elif zipfile.is_zipfile(self.cleaned_data['base_file']):
+	#end
+
             absolute_base_file = unzip_file(self.cleaned_data['base_file'], '.shp', tempdir=tempdir)
 
         else:
@@ -174,9 +277,20 @@ class NewLayerUploadForm(LayerUploadForm):
     xml_file = forms.FileField(required=False)
 
     abstract = forms.CharField(required=False)
-    layer_title = forms.CharField(required=False)
+    layer_title = forms.CharField(required=True)
     permissions = JSONField()
     charset = forms.CharField(required=False)
+
+    #@jahangir091
+    category = forms.CharField(required=True)
+    organization = forms.CharField(required=True)
+    admin_upload = forms.BooleanField(required=False)
+    the_geom = forms.CharField(required=False)
+    longitude = forms.CharField(required=False)
+    lattitude = forms.CharField(required=False)
+    osm_layer_type = forms.CharField(required=False)
+    #end
+
     metadata_uploaded_preserve = forms.BooleanField(required=False)
 
     spatial_files = [
