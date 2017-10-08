@@ -77,4 +77,6 @@ django-geonode-client==0.0.15
 # django notification app
 django-notify-x==0.1.6
 django-suit==0.2.21
+Shapely==1.5.13
+pyshp==1.2.3
 #end
