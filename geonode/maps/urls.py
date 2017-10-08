@@ -23,6 +23,7 @@ from django.conf import settings
 from django.views.generic import TemplateView
 
 from geonode.maps.qgis_server_views import MapCreateView, MapDetailView
+from geonode.maps.views import WmsServerList, WmsServerCreate, WmsServerUpdate, WmsServerDelete
 
 js_info_dict = {
     'packages': ('geonode.maps',),
@@ -44,6 +45,7 @@ urlpatterns = patterns(
     url(r'^$',
         TemplateView.as_view(template_name='maps/map_list.html'),
         name='maps_browse'),
+    url(r'^bccviewmap$', TemplateView.as_view(template_name='maps/bccviewmap.html'), name='bccviewmap'),
     url(r'^new$', new_map_view, name="new_map"),
     url(r'^new/data$', 'new_map_json', name='new_map_json'),
     url(r'^checkurl/?$', 'ajax_url_lookup'),
@@ -77,4 +79,21 @@ urlpatterns = patterns(
         'maplayer_attributes',
         name='maplayer_attributes'),
     # url(r'^change-poc/(?P<ids>\w+)$', 'change_poc', name='maps_change_poc'),
+
+
+    #@jahangjir091
+    # urls for publishing maps through workspace
+    url(r'^(?P<map_pk>[0-9]+)/delete$', 'map_delete', name='map-delete'),
+    url(r'^(?P<map_pk>[0-9]+)/publish$', 'map_publish', name='map-publish'),
+    url(r'^(?P<map_pk>[0-9]+)/approve$', 'map_approve', name='map-approve'),
+    url(r'^(?P<map_pk>[0-9]+)/deny$', 'map_deny', name='map-deny'),
+
+    # crud for layer source server
+    url(r'^wms/serverlist$', WmsServerList.as_view(), name='wms-server-list'),
+    url(r'^wms/server/create$', WmsServerCreate.as_view(), name='wms-server-create'),
+    url(r'^wms/server/(?P<server_pk>[0-9]+)$', WmsServerUpdate.as_view(), name='wms-server-update'),
+    url(r'^wms/server/(?P<server_pk>[0-9]+)/delete$', WmsServerDelete.as_view(), name='wms-server-delete'),
+
+#end
+
 )

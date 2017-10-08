@@ -21,6 +21,7 @@
 import math
 import logging
 from guardian.shortcuts import get_perms
+import requests as req
 
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import ObjectDoesNotExist
@@ -31,6 +32,7 @@ from django.shortcuts import render_to_response, get_object_or_404
 from django.conf import settings
 from django.template import RequestContext
 from django.utils.translation import ugettext as _
+from django.template import RequestContext, loader
 try:
     # Django >= 1.7
     import json
@@ -40,6 +42,12 @@ except ImportError:
 from django.utils.html import strip_tags
 from django.db.models import F
 from django.views.decorators.clickjacking import xframe_options_exempt
+from django.contrib import messages
+from django.views.generic.list import ListView
+from django.views.generic.edit import CreateView, UpdateView, DeleteView
+
+from notify.signals import notify
+from pyproj import Proj, transform
 
 from geonode.layers.models import Layer
 from geonode.maps.models import Map, MapLayer, MapSnapshot
@@ -52,7 +60,7 @@ from geonode.utils import resolve_object
 from geonode.utils import layer_from_viewer_config
 from geonode.maps.forms import MapForm
 from geonode.security.views import _perms_info_json
-from geonode.base.forms import CategoryForm
+from geonode.base.forms import CategoryForm, ResourceApproveForm, ResourceDenyForm
 from geonode.base.models import TopicCategory
 from geonode.tasks.deletion import delete_map
 
@@ -61,6 +69,11 @@ from geonode.people.forms import ProfileForm
 from geonode.utils import num_encode, num_decode
 from geonode.utils import build_social_links
 import urlparse
+
+from geonode.maps.models import MapSubmissionActivity, MapAuditActivity
+from geonode.groups.models import GroupProfile
+from geonode.maps.models import WmsServer
+from geonode.maps.forms import WmsServerForm
 
 if 'geonode.geoserver' in settings.INSTALLED_APPS:
     # FIXME: The post service providing the map_status object
@@ -108,6 +121,11 @@ def map_detail(request, mapid, snapshot=None, template='maps/map_detail.html'):
     The view that show details of each map
     '''
 
+    try:
+        user_role = request.GET['user_role']
+    except:
+        user_role=None
+
     map_obj = _resolve_map(request, mapid, 'base.view_resourcebase', _PERMISSION_MSG_VIEW)
 
     # Update count for popularity ranking,
@@ -125,8 +143,14 @@ def map_detail(request, mapid, snapshot=None, template='maps/map_detail.html'):
     else:
         config = snapshot_config(snapshot, map_obj, request.user, access_token)
 
+    # check if any cql_filter is sent from the user
+    # filter_map method returns config after adding filter
+    if request.GET.get('layers'):
+        config = filter_map(request, config)
     config = json.dumps(config)
     layers = MapLayer.objects.filter(map=map_obj.id)
+    approve_form = ResourceApproveForm()
+    deny_form = ResourceDenyForm()
 
     context_dict = {
         'config': config,
@@ -135,6 +159,12 @@ def map_detail(request, mapid, snapshot=None, template='maps/map_detail.html'):
         'perms_list': get_perms(request.user, map_obj.get_self_resource()),
         'permissions_json': _perms_info_json(map_obj),
         "documents": get_related_documents(map_obj),
+        "user_role": user_role,
+        "status": map_obj.status,
+        "approve_form": approve_form,
+        "deny_form": deny_form,
+        "denied_comments": MapAuditActivity.objects.filter(map_submission_activity__map=map_obj),
+
     }
 
     context_dict["preview"] = getattr(
@@ -285,6 +315,11 @@ def map_remove(request, mapid, template='maps/map_remove.html'):
                 print "Could not build slack message for delete map."
 
             delete_map.delay(object_id=map_obj.id)
+            # notify map owner that someone have deleted the map
+            if request.user != map_obj.owner:
+                recipient = map_obj.owner
+                notify.send(request.user, recipient=recipient, actor=request.user,
+                target=map_obj, verb='deleted your map')
 
             try:
                 from geonode.contrib.slack.utils import send_slack_messages
@@ -294,6 +329,11 @@ def map_remove(request, mapid, template='maps/map_remove.html'):
 
         else:
             delete_map.delay(object_id=map_obj.id)
+            # notify map owner that someone have deleted the map
+            if request.user != map_obj.owner:
+                recipient = map_obj.owner
+                notify.send(request.user, recipient=recipient, actor=request.user,
+                target=map_obj, verb='deleted your map')
 
         return HttpResponseRedirect(reverse("maps_browse"))
 
@@ -495,11 +535,27 @@ def new_map_json(request):
                 content_type="text/plain",
                 status=401
             )
+        data = json.loads(request.body)
+        title = data['about']['title']
+        category_id = int(data['about']['category'])
+        organization_id = int(data['about']['organization'])
+        group = GroupProfile.objects.get(id=organization_id)
+
 
         map_obj = Map(owner=request.user, zoom=0,
-                      center_x=0, center_y=0)
+                      center_x=0, center_y=0,
+                      category=TopicCategory.objects.get(id=category_id), group=group, title=title)
         map_obj.save()
         map_obj.set_default_permissions()
+
+        permissions = _perms_info_json(map_obj)
+        perm_dict = json.loads(permissions)
+        if 'download_resourcebase' in perm_dict['groups']['anonymous']:
+            perm_dict['groups']['anonymous'].remove('download_resourcebase')
+        if 'view_resourcebase' in perm_dict['groups']['anonymous']:
+            perm_dict['groups']['anonymous'].remove('view_resourcebase')
+        #
+        map_obj.set_permissions(perm_dict)
 
         # If the body has been read already, use an empty string.
         # See https://github.com/django/django/commit/58d555caf527d6f1bdfeab14527484e4cca68648
@@ -511,6 +567,13 @@ def new_map_json(request):
 
         try:
             map_obj.update_from_viewer(body)
+
+            # notify layer owners that this layer is used to create this map
+            layers = map_obj.layers
+            layer_owners = [layer.owner for layer in map_obj.local_layers]
+            notify.send(request.user, recipient_list=layer_owners, actor=request.user,
+                verb='created map using your layer', target=map_obj)
+
             MapSnapshot.objects.create(
                 config=clean_config(body),
                 map=map_obj,
@@ -1000,3 +1063,286 @@ def map_metadata_detail(request, mapid, template='maps/map_metadata_detail.html'
         "resource": map_obj,
         'SITEURL': settings.SITEURL[:-1]
     }))
+
+
+
+#@jahangir091
+@login_required
+def map_publish(request, map_pk):
+    if request.method == 'POST':
+        try:
+            map = Map.objects.get(id=map_pk)
+        except Map.DoesNotExist:
+            return Http404("Map does not exist")
+        else:
+            if request.user != map.owner:
+                return HttpResponse(
+                        loader.render_to_string(
+                            '401.html', RequestContext(
+                            request, {
+                            'error_message': _("You are not allowed to publish this map.")})), status=401)
+                # return HttpResponse('you are not allowed to publish this map')
+            group = map.group
+            map.status = 'PENDING'
+            map.current_iteration += 1
+            map.save()
+
+            # notify organization admins about the new published map
+            managers = list( group.get_managers())
+            notify.send(request.user, recipient_list = managers, actor=request.user,
+                        verb='pushed a new map for approval', target=map)
+
+            map_submission_activity = MapSubmissionActivity(map=map, group=group, iteration=map.current_iteration)
+            map_submission_activity.save()
+
+            # set all the permissions for all the managers of the group for this map
+            map.set_managers_permissions()
+
+            messages.info(request, 'Pushed map succesfully')
+            return HttpResponseRedirect(reverse('member-workspace-map'))
+    else:
+        return HttpResponseRedirect(reverse('member-workspace-map'))
+
+
+@login_required
+def map_approve(request, map_pk):
+    if request.method == 'POST':
+        form = ResourceApproveForm(request.POST)
+        if form.is_valid():
+            try:
+                map = Map.objects.get(id=map_pk)
+            except Map.DoesNotExist:
+                return Http404("requested map does not exists")
+            else:
+                group = map.group
+                if request.user not in group.get_managers():
+                    if request.user != map.owner:
+                        return HttpResponse(
+                        loader.render_to_string(
+                            '401.html', RequestContext(
+                            request, {
+                            'error_message': _("You are not allowed to approve this map.")})), status=401)
+                    # return HttpResponse("you are not allowed to approve this map")
+                map_submission_activity = MapSubmissionActivity.objects.get(map=map, group=group, iteration=map.current_iteration)
+                map_audit_activity = MapAuditActivity(map_submission_activity=map_submission_activity)
+                comment_body = request.POST.get('comment')
+                comment_subject = request.POST.get('comment_subject')
+                map.status = 'ACTIVE'
+                map.last_auditor = request.user
+                map.save()
+
+                permissions = _perms_info_json(map)
+                perm_dict = json.loads(permissions)
+                if request.POST.get('view_permission'):
+                    if not 'AnonymousUser' in perm_dict['users']:
+                        perm_dict['users']['AnonymousUser'] = []
+                        perm_dict['users']['AnonymousUser'].append('view_resourcebase')
+                    else:
+                        if not 'view_resourcebase' in perm_dict['users']['AnonymousUser']:
+                            perm_dict['users']['AnonymousUser'].append('view_resourcebase')
+
+                if request.POST.get('download_permission'):
+                    if not 'AnonymousUser' in perm_dict['users']:
+                        perm_dict['users']['AnonymousUser'] = []
+                        perm_dict['users']['AnonymousUser'].append('download_resourcebase')
+                    else:
+                        if not 'download_resourcebase' in perm_dict['users']['AnonymousUser']:
+                            perm_dict['users']['AnonymousUser'].append('download_resourcebase')
+
+                map.set_permissions(perm_dict)
+
+
+
+                # notify map owner that someone have approved the map
+                if request.user != map.owner:
+                    recipient = map.owner
+                    notify.send(request.user, recipient=recipient, actor=request.user,
+                    target=map, verb='approved your map')
+
+                map_submission_activity.is_audited = True
+                map_submission_activity.save()
+
+                map_audit_activity.comment_subject = comment_subject
+                map_audit_activity.comment_body = comment_body
+                map_audit_activity.result = 'APPROVED'
+                map_audit_activity.auditor = request.user
+                map_audit_activity.save()
+
+            messages.info(request, 'Approved map succesfully')
+            return HttpResponseRedirect(reverse('admin-workspace-map'))
+        else:
+            messages.info(request, 'Please write an approve comment and try again')
+            return HttpResponseRedirect(reverse('admin-workspace-map'))
+    else:
+        return HttpResponseRedirect(reverse('admin-workspace-map'))
+
+
+@login_required
+def map_deny(request, map_pk):
+    if request.method == 'POST':
+        form = ResourceDenyForm(request.POST)
+        if form.is_valid():
+            try:
+                map = Map.objects.get(id=map_pk)
+            except:
+                return Http404("requested map does not exists")
+            else:
+                group = map.group
+                if request.user not in group.get_managers():
+                    return HttpResponse(
+                        loader.render_to_string(
+                            '401.html', RequestContext(
+                            request, {
+                            'error_message': _("You are not allowed to deny this map.")})), status=401)
+                    # return HttpResponse("you are not allowed to deny this map")
+                map_submission_activity = MapSubmissionActivity.objects.get(map=map, group=group, iteration=map.current_iteration)
+                map_audit_activity= MapAuditActivity(map_submission_activity=map_submission_activity)
+                comment_body = request.POST.get('comment')
+                comment_subject = request.POST.get('comment_subject')
+                map.status = 'DENIED'
+                map.last_auditor = request.user
+                map.save()
+
+                # notify map owner that someone have denied the map
+                if request.user != map.owner:
+                    recipient = map.owner
+                    notify.send(request.user, recipient=recipient, actor=request.user,
+                    target=map, verb='denied your map')
+
+                map_submission_activity.is_audited = True
+                map_submission_activity.save()
+
+                map_audit_activity.comment_subject = comment_subject
+                map_audit_activity.comment_body = comment_body
+                map_audit_activity.result = 'DECLINED'
+                map_audit_activity.auditor = request.user
+                map_audit_activity.save()
+
+            messages.info(request, 'Denied map successfully')
+            return HttpResponseRedirect(reverse('admin-workspace-map'))
+        else:
+            messages.info(request, 'Please write an deny comment and try again')
+            return HttpResponseRedirect(reverse('admin-workspace-map'))
+    else:
+        return HttpResponseRedirect(reverse('admin-workspace-map'))
+
+
+@login_required
+def map_delete(request, map_pk):
+    if request.method == 'POST':
+        try:
+            map = Map.objects.get(id=map_pk)
+        except:
+            return Http404("requested map does not exists")
+        else:
+            if map.status == 'DRAFT' and ( request.user == map.owner or request.user in map.group.get_managers()):
+                map.status = "DELETED"
+                map.save()
+            else:
+                return HttpResponse(
+                        loader.render_to_string(
+                            '401.html', RequestContext(
+                            request, {
+                            'error_message': _("You have no acces to delete the map.")})), status=401)
+                # messages.info(request, 'You have no acces to delete the map')
+
+        messages.info(request, 'Deleted map successfully')
+        if request.user == map.owner:
+            return HttpResponseRedirect(reverse('member-workspace-map'))
+        else:
+            return HttpResponseRedirect(reverse('admin-workspace-map'))
+
+    else:
+        return HttpResponseRedirect(reverse('member-workspace-map'))
+
+
+class WmsServerList(ListView):
+
+    template_name = 'wms_server/wms_server_list.html'
+    model = WmsServer
+
+    def get_queryset(self):
+        return WmsServer.objects.all()
+
+
+class WmsServerCreate(CreateView):
+
+    template_name = 'wms_server/wms_server_create.html'
+    model = WmsServer
+    form_class = WmsServerForm
+
+    def get_success_url(self):
+        return reverse('wms-server-list')
+
+
+class WmsServerUpdate(UpdateView):
+    template_name = 'wms_server/wms_server_create.html'
+    model = WmsServer
+    form_class = WmsServerForm
+
+    def get_object(self):
+        return WmsServer.objects.get(pk=self.kwargs['server_pk'])
+
+    def get_success_url(self):
+        return reverse('wms-server-list')
+
+
+class WmsServerDelete(DeleteView):
+    template_name = 'wms_server/wms_server_delete.html'
+    model = WmsServer
+
+    def get_success_url(self):
+        return reverse('wms-server-list')
+
+    def get_object(self):
+        return WmsServer.objects.get(pk=self.kwargs['server_pk'])
+
+
+def filter_map(request, config):
+    layers = request.GET['layers']
+    layers = json.loads(layers)['layers']
+    if layers:
+        for layer in layers:
+            if layer['name'] == config['map']['layers'][layer['index']]['name']:
+                config['map']['layers'][layer['index']]['cql_filter'] = layer['cql_filter']
+                bbox = layer['bbox']
+                # lat = bbox[0]
+                # lon = bbox[3]
+                # inProj = Proj(init='epsg:4326')
+                # outProj = Proj(init='epsg:3857')
+                #
+                # center_lon, center_lat = transform(inProj, outProj, lon, lat)
+                zoom, center_x, center_y = set_bounds_from_bbox(bbox)
+                config['map']['center'] = [center_x, center_y]
+                config['map']['zoom']= zoom
+
+
+    return config
+
+
+
+def set_bounds_from_bbox(bbox):
+        """
+        Calculate zoom level and center coordinates in mercator.
+        """
+        minx, miny, maxx, maxy = [float(c) for c in bbox]
+        x = (minx + maxx) / 2
+        y = (miny + maxy) / 2
+        (center_x, center_y) = forward_mercator((y, x))
+
+        xdiff = maxx - minx
+        ydiff = maxy - miny
+
+        zoom = 0
+
+        if xdiff > 0 and ydiff > 0:
+            width_zoom = math.log(360 / xdiff, 2)
+            height_zoom = math.log(360 / ydiff, 2)
+            zoom = math.ceil(min(width_zoom, height_zoom))
+
+        zoom = zoom
+        center_x = center_x
+        center_y = center_y
+        return zoom, center_x, center_y
+
+#end
