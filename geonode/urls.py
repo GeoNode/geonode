@@ -51,8 +51,13 @@ sitemaps = {
 
 urlpatterns = patterns('',
 
+                       # Social authentication
+                       #url('', include('social.apps.django_app.urls', namespace='social')),
+
                        # Static pages
-                       url(r'^/?$', TemplateView.as_view(template_name='index.html'), name='home'),
+                       url(r'^categories_key_words/?$', TemplateView.as_view(template_name='categories_key_words.html'),name='categories_key_words'),
+                       # url(r'^/?$', TemplateView.as_view(template_name='index.html'), name='home'),
+                       url(r'^/?$', IndexClass.as_view(), name='home'),
                        url(r'^help/$', TemplateView.as_view(template_name='help.html'), name='help'),
                        url(r'^developer/$', TemplateView.as_view(template_name='developer.html'), name='developer'),
                        url(r'^about/$', TemplateView.as_view(template_name='about.html'), name='about'),
@@ -100,6 +105,11 @@ urlpatterns = patterns('',
 
                        # Search views
                        url(r'^search/$', TemplateView.as_view(template_name='search/search.html'), name='search'),
+                       url(r'^searchuser/$', TemplateView.as_view(template_name='search/searchuser.html'), name='searchuser'),
+                       url(r'^searchorg/$', TemplateView.as_view(template_name='search/searchorg.html'), name='searchorg'),
+
+                       # user notification url
+                       url(r'^notifications/', include('notify.urls', 'notifications')),
 
                        # Social views
                        (r"^account/", include("account.urls")),
@@ -118,8 +128,16 @@ urlpatterns = patterns('',
                        url(r'^account/ajax_lookup$', 'geonode.views.ajax_lookup', name='account_ajax_lookup'),
 
                        # Meta
+                       url(r'^topiccategory/create$', 'geonode.views.topiccategory_create', name='topiccategory-create'),
+                       url(r'^topiccategory/list$', 'geonode.views.topiccategory_list', name='topiccategory-list'),
+                       url(r'^topiccategory/delete$', 'geonode.views.topiccategory_delete', name='topiccategory-delete'),
                        url(r'^lang\.js$', TemplateView.as_view(template_name='lang.js', content_type='text/javascript'),
                            name='lang'),
+
+                       #keywords
+                       url(r'^keyword/create$', 'geonode.views.keyword_create', name='keyword-create'),
+                       url(r'^keyword/list$', 'geonode.views.keyword_list', name='keyword-list'),
+                       url(r'^keyword/delete$', 'geonode.views.keyword_delete', name='keyword-delete'),
 
                        url(r'^jsi18n/$', 'django.views.i18n.javascript_catalog', js_info_dict, name='jscat'),
                        url(r'^sitemap\.xml$', 'django.contrib.sitemaps.views.sitemap', {'sitemaps': sitemaps},
