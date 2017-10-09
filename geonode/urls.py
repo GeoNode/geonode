@@ -64,6 +64,8 @@ urlpatterns = patterns('',
 
                        #@jahangir091
                        #django-notify app url
+                       url(r'^notifications/$',
+                       TemplateView.as_view(template_name='notification/notifications_detail_page.html'), name='notifications_all'),
                        url(r'^notifications/', include('notify.urls', 'notifications')),
                        url(r'^add_news/$', TemplateView.as_view(template_name='news/add_news.html'), name='add_news'),
                        #end
