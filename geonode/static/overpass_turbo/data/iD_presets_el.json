@@ -1,0 +1,1684 @@
+{
+  "address": {
+    "name": "Διεύθυνση",
+    "terms": "Διεύθυνση, Αριθμός σπιτιού, Οδός"
+  },
+  "aerialway/cable_car": {
+    "name": "Τελεφερίκ"
+  },
+  "aerialway/chair_lift": {
+    "name": "Αναβατήρας",
+    "terms": "Συρόμενος αναβατήρας"
+  },
+  "aeroway": {
+    "name": "Αεροδιάδρομος"
+  },
+  "aeroway/aerodrome": {
+    "name": "Αεροδρόμιο",
+    "terms": "Αεροπλάνο, Αερολιμένας, Αεροδρόμιο"
+  },
+  "aeroway/apron": {
+    "name": "Χώρος ελιγμών",
+    "terms": "Χώρος ελιγμών, Χώρος φόρτωσης, Χώρος στάθμευσης"
+  },
+  "aeroway/gate": {
+    "name": "Πύλη Αεροδρομίου",
+    "terms": "Πύλη αεροδρομίου, Πύλη επιβίβασης"
+  },
+  "aeroway/hangar": {
+    "name": "Υπόστεγο Αεροσκαφών",
+    "terms": "Υπόστεγο αεροσκαφών"
+  },
+  "aeroway/helipad": {
+    "name": "Ελικοδρόμιο",
+    "terms": "Ελικοδρόμιο"
+  },
+  "aeroway/runway": {
+    "name": "Διάδρομος",
+    "terms": "Διάδρομος, Πίστα, Λωρίδα προσγείωσης"
+  },
+  "aeroway/taxiway": {
+    "name": "Τροχιόδρομος",
+    "terms": "Τροχιόδρομος"
+  },
+  "aeroway/terminal": {
+    "name": "Τερματικός σταθμός Αεροδρομίου",
+    "terms": "Τερματικός σταθμός αεροδρομίου"
+  },
+  "amenity": {
+    "name": "Υποδομή",
+    "terms": "Παροχές, Ευκολίες"
+  },
+  "amenity/arts_centre": {
+    "name": "Κέντρο Καλών Τεχνών",
+    "terms": "κέντρο τεχνών, σχολή καλών τεχνών, καλές τέχνες, Αρχιτεκτονική, Γλυπτική, Ζωγραφική, Ποίηση, Μουσική, Θέατρο, Όπερα, Χορός, Παντομίμα, Κινηματογράφος, Φωτογραφία, Κόμικς"
+  },
+  "amenity/atm": {
+    "name": "ATM",
+    "terms": "ATM, Μηχάνημα ανάληψης μετρητών"
+  },
+  "amenity/bank": {
+    "name": "Τράπεζα",
+    "terms": "Τράπεζα"
+  },
+  "amenity/bar": {
+    "name": "Μπαρ",
+    "terms": "Μπαρ, διασκέδαση, ποτά, μπύρα, μπίρα"
+  },
+  "amenity/bbq": {
+    "name": "Ψησταριά",
+    "terms": "Μπάρμπεκιου, γκριλ"
+  },
+  "amenity/bench": {
+    "name": "Παγκάκι",
+    "terms": "Παγκάκι"
+  },
+  "amenity/bicycle_parking": {
+    "name": "Χώρος Στάθμευσης Ποδηλάτων",
+    "terms": "Πάρκινγκ ποδηλάτων, μπάρες, κάγκελα για ποδήλατα, θέσεις στάθμευσης ποδηλάτων"
+  },
+  "amenity/bicycle_rental": {
+    "name": "Ενοικίαση Ποδηλάτων",
+    "terms": "Ενοικίαση ποδηλάτων"
+  },
+  "amenity/biergarten": {
+    "name": "Κήπος Μπυραρίας",
+    "terms": "Υπαίθρια μπιραρία"
+  },
+  "amenity/boat_rental": {
+    "name": "Ενοικίαση Σκαφών"
+  },
+  "amenity/bureau_de_change": {
+    "name": "Ανταλλακτήριο Συναλλάγματος"
+  },
+  "amenity/bus_station": {
+    "name": "Σταθμός Λεωφορείων"
+  },
+  "amenity/cafe": {
+    "name": "Καφετέρια",
+    "terms": "Καφετέρια, Καφενείο, Μπιστρό, Καφέ"
+  },
+  "amenity/car_rental": {
+    "name": "Ενοικίαση Αυτοκινήτων",
+    "terms": "Ενοικίαση αυτοκινήτων"
+  },
+  "amenity/car_sharing": {
+    "name": "Συνεπιβατισμός",
+    "terms": "Διαμοιρασμός αυτοκινήτων, συνεπιβατισμός, συνοδήγηση"
+  },
+  "amenity/car_wash": {
+    "name": "Πλυντήριο Αυτοκινήτων",
+    "terms": "Πλυντήριο αυτοκινήτων, πλύσιμο αυτοκινήτων"
+  },
+  "amenity/casino": {
+    "name": "Καζίνο"
+  },
+  "amenity/charging_station": {
+    "name": "Σταθμός Φόρτισης"
+  },
+  "amenity/cinema": {
+    "name": "Κινηματογράφος",
+    "terms": "Κινηματογράφος, Σινεμά"
+  },
+  "amenity/clinic": {
+    "name": "Κλινική"
+  },
+  "amenity/clock": {
+    "name": "Ρολόι",
+    "terms": "ωρολόγιο"
+  },
+  "amenity/college": {
+    "name": "Χώρος Κολλεγίου"
+  },
+  "amenity/compressed_air": {
+    "name": "Πεπιεσμένος Αέρας"
+  },
+  "amenity/courthouse": {
+    "name": "Δικαστήριο",
+    "terms": "Δικαστικό Μέγαρο, Δικαστήριο, Εφετείο, Πταισματοδικείο, Κακουργοδικείο"
+  },
+  "amenity/dentist": {
+    "name": "Οδοντιατρείο",
+    "terms": "οδοντίατρος, οδοντογιατρός"
+  },
+  "amenity/drinking_water": {
+    "name": "Πόσιμο Νερό",
+    "terms": "Πόσιμο νερό, Βρύση, Ψύκτης, Ψύκτης Νερού, Πηγή, Κρήνη"
+  },
+  "amenity/embassy": {
+    "name": "Πρεσβεία",
+    "terms": "Πρεσβεία, Προξενείο"
+  },
+  "amenity/fast_food": {
+    "name": "Ταχυφαγείο",
+    "terms": "Γρήγορο φαγητό, Πρόχειρο φαγητό, Φαστφουντάδικο"
+  },
+  "amenity/fire_station": {
+    "name": "Πυροσβεστική",
+    "terms": "Πυροσβεστικός σταθμός, Πυροσβεστική, 199"
+  },
+  "amenity/fountain": {
+    "name": "Σιντριβάνι",
+    "terms": "Συντριβάνι, Κρήνη"
+  },
+  "amenity/fuel": {
+    "name": "Βενζινάδικο",
+    "terms": "Σταθμός καυσίμων, Βενζινάδικο, Πρατήριο καυσίμων"
+  },
+  "amenity/grave_yard": {
+    "name": "Κοιμητήριο",
+    "terms": "Νεκροταφείο"
+  },
+  "amenity/hospital": {
+    "name": "Χώρος Νοσοκομείου"
+  },
+  "amenity/kindergarten": {
+    "name": "Χώρος Νηπιαγωγείου/Παιδικού σταθμού",
+    "terms": "Νηπιαγωγείο, Βρεφονηπιακός σταθμός, Παιδικός σταθμός"
+  },
+  "amenity/library": {
+    "name": "Βιβλιοθήκη",
+    "terms": "Βιβλιοθήκη"
+  },
+  "amenity/marketplace": {
+    "name": "Αγορά",
+    "terms": "Αγορά, Λαϊκή, λαική, παζάρι"
+  },
+  "amenity/motorcycle_parking": {
+    "name": "Στάθμευση μοτοσυκλετών",
+    "terms": "Χώρος στάθμευσης μοτοσικλετών, πάρκινγκ μοτοσυκλετών, Χώρος στάθμευσης μηχανών, πάρκινγκ μηχανών"
+  },
+  "amenity/nightclub": {
+    "name": "Νυχτερινό Κέντρο",
+    "terms": "πίστα, μπουζούκια, κέντρο διασκέδασης, ξενυχτάδικο"
+  },
+  "amenity/parking": {
+    "name": "Στάθμευση Αυτοκινήτων",
+    "terms": "Πάρκινγκ Αυτοκινήτων, Γκαράζ Αυτοκινήτων, πάρκινκ αυτοκινήτων, χώρος στάθμευσης αυτοκινήτων"
+  },
+  "amenity/parking_entrance": {
+    "name": "Είσοδος/έξοδος χώρου στάθμευσης",
+    "terms": "Είσοδος/έξοδος γκαράζ, Είσοδος/έξοδος πάρκινγκ"
+  },
+  "amenity/parking_space": {
+    "name": "Θέση στάθμευσης"
+  },
+  "amenity/pharmacy": {
+    "name": "Φαρμακείο",
+    "terms": "Φαρμακείο, φαρμακοποιός"
+  },
+  "amenity/place_of_worship": {
+    "name": "Χώρος Λατρείας",
+    "terms": "Τόπος λατρείας, Ναός, ιερός ναός, μοναστήρι, ιερά μονή, προσκύνημα, οίκος προσευχής"
+  },
+  "amenity/place_of_worship/buddhist": {
+    "name": "Βουδιστικός Ναός",
+    "terms": "Βουδιστικός ναός"
+  },
+  "amenity/place_of_worship/christian": {
+    "name": "Εκκλησία",
+    "terms": "Εκκλησία, ξωκλήσι, εκκλησάκι, ναός, ιερός ναός"
+  },
+  "amenity/place_of_worship/jewish": {
+    "name": "Συναγωγή",
+    "terms": "Συναγωγή"
+  },
+  "amenity/place_of_worship/muslim": {
+    "name": "Τζαμί",
+    "terms": "Τζαμί"
+  },
+  "amenity/police": {
+    "name": "Αστυνομία",
+    "terms": "Αστυνομία, Αστυνομικό τμήμα, τροχαία, ΕΛ.ΑΣ."
+  },
+  "amenity/post_box": {
+    "name": "Γραμματοκιβώτιο",
+    "terms": "Ταχυδρομικό κουτί, Γραμματοκιβώτιο"
+  },
+  "amenity/post_office": {
+    "name": "Ταχυδρομείο",
+    "terms": "Ταχυδρομείο"
+  },
+  "amenity/prison": {
+    "name": "Χώρος φυλακής",
+    "terms": "Σωφρονιστικό ίδρυμα"
+  },
+  "amenity/pub": {
+    "name": "Παμπ",
+    "terms": "Παμπ"
+  },
+  "amenity/public_bookcase": {
+    "name": "Δημόσια ανταλλακτική βιβλιοθήκη",
+    "terms": "Δημόσια βιβλιοθήκη"
+  },
+  "amenity/recycling": {
+    "name": "Ανακύκλωση"
+  },
+  "amenity/register_office": {
+    "name": "Ληξιαρχείο"
+  },
+  "amenity/restaurant": {
+    "name": "Εστιατόριο",
+    "terms": "Εστιατόριο, Ταβέρνα, Μεζεδοπωλείο, Μαγειρείο, Οινομαγειρείο, ρεστοράν, κουτούκι, πιτσαρία, σουβλατζίδικο, φαγάδικο, φαγητό"
+  },
+  "amenity/school": {
+    "name": "Χώρος Σχολείου",
+    "terms": "δημοτικό, γυμνάσιο, λύκειο"
+  },
+  "amenity/shelter": {
+    "name": "Στέγαστρο"
+  },
+  "amenity/social_facility": {
+    "name": "Κοινωνική Μονάδα"
+  },
+  "amenity/social_facility/group_home": {
+    "name": "Γηροκομείο",
+    "terms": "Κέντρο Απασχόλησης Ηλικιωμένων, ΚΑΠΗ"
+  },
+  "amenity/social_facility/homeless_shelter": {
+    "name": "Καταφύγιο Αστέγων"
+  },
+  "amenity/studio": {
+    "name": "Στούντιο"
+  },
+  "amenity/swimming_pool": {
+    "name": "Πισίνα",
+    "terms": "Πισίνα, Δεξαμενή κολύμβησης, κολυμβητήριο"
+  },
+  "amenity/taxi": {
+    "name": "Πιάτσα Ταξί",
+    "terms": "Ταξιτζήδες, Πιάτσα ταξί"
+  },
+  "amenity/telephone": {
+    "name": "Τηλέφωνο",
+    "terms": "Τηλέφωνο, Τηλεφωνικός θάλαμος, καρτοτηλέφωνο"
+  },
+  "amenity/theatre": {
+    "name": "Θέατρο",
+    "terms": "Θέατρο"
+  },
+  "amenity/toilets": {
+    "name": "Τουαλέτες",
+    "terms": "Τουαλέτες"
+  },
+  "amenity/townhall": {
+    "name": "Δημαρχείο",
+    "terms": "Δημαρχείο, δήμος, κοινότητα, κυβέρνηση"
+  },
+  "amenity/university": {
+    "name": "Χώρος Πανεπιστημίου",
+    "terms": "Πανεπιστημιούπολη, Πανεπιστήμιο, campus, ΤΕΙ, ΑΤΕΙ"
+  },
+  "amenity/vending_machine/cigarettes": {
+    "name": "Αυτόματος πωλητής τσιγάρων"
+  },
+  "amenity/vending_machine/condoms": {
+    "name": "Αυτόματος πωλητής προφυλακτικών"
+  },
+  "amenity/vending_machine/drinks": {
+    "name": "Αυτόματος πωλητής ποτών",
+    "terms": "οινοπνευματώδη, αναψυκτικά"
+  },
+  "amenity/vending_machine/news_papers": {
+    "name": "Αυτόματος πωλητής εφημερίδων",
+    "terms": "Αυτόματος πωλητής τύπου, περιοδικά"
+  },
+  "amenity/vending_machine/parking_tickets": {
+    "name": "Αυτόματος πωλητής εισιτηρίων στάθμευσης"
+  },
+  "amenity/vending_machine/public_transport_tickets": {
+    "name": "Αυτόματος πωλητής εισιτηρίων ΜΜΜ",
+    "terms": "Εισιτήρια λεωφορείου, εισιτήρια μετρό, εισιτήρια τραμ, εισιτήρια τρόλεϊ"
+  },
+  "amenity/vending_machine/vending_machine": {
+    "name": "Αυτόματος πωλητής",
+    "terms": "Μηχάνημα αυτόματης πώλησης"
+  },
+  "amenity/veterinary": {
+    "name": "Κτηνιατρείο"
+  },
+  "amenity/waste_basket": {
+    "name": "Κάδος Απορριμμάτων",
+    "terms": "Κάλαθος αχρήστων, Καλάθι σκουπιδιών"
+  },
+  "area": {
+    "name": "Περιοχή",
+    "terms": "Περιοχή"
+  },
+  "area/highway": {
+    "name": "Επιφάνεια Δρόμου"
+  },
+  "barrier": {
+    "name": "Εμπόδιο",
+    "terms": "Φράχτης, Εμπόδιο"
+  },
+  "barrier/bollard": {
+    "name": "Στύλος",
+    "terms": "Κολόνα, Στύλος, Στύλοι"
+  },
+  "barrier/cattle_grid": {
+    "name": "Συρματόπλεγμα"
+  },
+  "barrier/city_wall": {
+    "name": "Τείχη Πόλης",
+    "terms": "Τείχος Πόλης"
+  },
+  "barrier/cycle_barrier": {
+    "name": "Κυκλικός Φράκτης",
+    "terms": "Εμπόδιο ποδηλάτων, Εμπόδιο που αποτρέπει τη διάβαση μηχανοκίνητων πχ σε γέφυρες"
+  },
+  "barrier/entrance": {
+    "name": "Είσοδος",
+    "terms": "Είσοδος, πόρτα"
+  },
+  "barrier/fence": {
+    "name": "Φράκτης",
+    "terms": "Φράκτης"
+  },
+  "barrier/gate": {
+    "name": "Πύλη",
+    "terms": "Πύλη, πόρτα"
+  },
+  "barrier/hedge": {
+    "name": "Περίφραξη",
+    "terms": "Φράκτης από θάμνους, μπορντούρα"
+  },
+  "barrier/lift_gate": {
+    "name": "Ανυψούμενη Πύλη",
+    "terms": "Μπάρα, Αναρτούμενη πύλη"
+  },
+  "barrier/retaining_wall": {
+    "name": "Τοίχος Αντιστήριξης"
+  },
+  "barrier/stile": {
+    "name": "Στύλος",
+    "terms": "Στύλος, Κολόνα"
+  },
+  "barrier/toll_booth": {
+    "name": "Διόδια",
+    "terms": "Διόδια, Σταθμός διοδίων"
+  },
+  "barrier/wall": {
+    "name": "Τοίχος",
+    "terms": "Τοίχος, Μάντρα"
+  },
+  "boundary/administrative": {
+    "name": "Διοικητικό Όριο",
+    "terms": "Διοικητικό Όριο, Σύνορο"
+  },
+  "building": {
+    "name": "Κτίριο",
+    "terms": "Κτήριο, κτίσμα"
+  },
+  "building/apartments": {
+    "name": "Διαμερίσματα"
+  },
+  "building/barn": {
+    "name": "Αποθήκη αγροκτήματος",
+    "terms": "Σιταποθήκη, Αχυρώνας"
+  },
+  "building/college": {
+    "name": "Κτίριο Κολλεγίου"
+  },
+  "building/commercial": {
+    "name": "Εμπορικό Κτίριο",
+    "terms": "Εμπορικό Κτήριο, Επαγγελματικό κτήριο"
+  },
+  "building/construction": {
+    "name": "Κτίριο Υπό Κατασκευή",
+    "terms": "Κτήριο Υπό Κατασκευή, οικοδομή"
+  },
+  "building/dormitory": {
+    "name": "Φοιτητική Εστία",
+    "terms": "Κοιτώνας"
+  },
+  "building/entrance": {
+    "name": "Είσοδος/Έξοδος"
+  },
+  "building/garage": {
+    "name": "Εργαστήριο",
+    "terms": "Γκαράζ"
+  },
+  "building/greenhouse": {
+    "name": "Θερμοκήπιο"
+  },
+  "building/hospital": {
+    "name": "Κτίριο Νοσοκομείου",
+    "terms": "Κτήριο Νοσοκομείου"
+  },
+  "building/hotel": {
+    "name": "Κτίριο Ξενοδοχείου",
+    "terms": "Κτήριο Ξενοδοχείου"
+  },
+  "building/house": {
+    "name": "Σπίτι",
+    "terms": "Κατοικία, Σπίτι, Οικία, οίκος"
+  },
+  "building/hut": {
+    "name": "Καλύβα",
+    "terms": "Καλύβα, Παράγκα"
+  },
+  "building/industrial": {
+    "name": "Βιομηχανικό Κτίριο",
+    "terms": "Βιομηχανικό κτήριο"
+  },
+  "building/kindergarten": {
+    "name": "Κτίριο Νηπιαγωγείου/Παιδικού σταθμού"
+  },
+  "building/public": {
+    "name": "Δημόσιο Κτίριο",
+    "terms": "Δημόσιο Κτήριο"
+  },
+  "building/residential": {
+    "name": "Κτίριο Κατοικιών",
+    "terms": "Κτήριο κατοικιών, Αστικό κτήριο"
+  },
+  "building/roof": {
+    "name": "Στέγη"
+  },
+  "building/school": {
+    "name": "Κτίριο Σχολείου",
+    "terms": "Κτήριο Σχολείου"
+  },
+  "building/terrace": {
+    "name": "Ενωμένα Ομοιόμορφα Σπίτια"
+  },
+  "building/train_station": {
+    "name": "Σταθμός Τρένου",
+    "terms": "Κτίριο σιδηροδρομικού σταθμού, κτίριο σταθμού τρένων"
+  },
+  "building/university": {
+    "name": "Κτίριο Πανεπιστημίου",
+    "terms": "Κτήριο Πανεπιστημίου"
+  },
+  "building/warehouse": {
+    "name": "Αποθήκη"
+  },
+  "craft/basket_maker": {
+    "name": "Καλαθάς"
+  },
+  "craft/beekeeper": {
+    "name": "Μελισοκόμος",
+    "terms": "Μελισσοκομία"
+  },
+  "craft/blacksmith": {
+    "name": "Σιδηρουργός"
+  },
+  "craft/boatbuilder": {
+    "name": "Ναυπηγός"
+  },
+  "craft/bookbinder": {
+    "name": "Βιβλιοδέτης"
+  },
+  "craft/brewery": {
+    "name": "Ζυθοποιείο",
+    "terms": "ζυθοποιός, ζυθοποιία"
+  },
+  "craft/carpenter": {
+    "name": "Ξυλουργείο",
+    "terms": "μαραγκός, ξυλουργός"
+  },
+  "craft/clockmaker": {
+    "name": "Ωρολογοποιός",
+    "terms": "ρολογάς"
+  },
+  "craft/confectionery": {
+    "name": "Ζαχαροπλαστείο"
+  },
+  "craft/dressmaker": {
+    "name": "Ενδυματολόγος",
+    "terms": "μοδίστρα, μόδιστρος, ράφτης, ράπτης, σχεδιάστρια μόδας, σχεδιαστής μόδας, μοντελίστ, ενδυματοποιός, ρούχα, φορέματα"
+  },
+  "craft/electrician": {
+    "name": "Ηλεκτρολόγος",
+    "terms": "ηλεκτροτεχνίτης"
+  },
+  "craft/gardener": {
+    "name": "Κηπουρός"
+  },
+  "craft/glaziery": {
+    "name": "Υαλουργία",
+    "terms": "Υαλουργός, τζαμάς, τζάμια, βιτρό, γυάλινα αντικείμενα, παράθυρα, υαλογραφία"
+  },
+  "craft/locksmith": {
+    "name": "Κλειδαράς"
+  },
+  "craft/metal_construction": {
+    "name": "Μεταλλικές Κατασκευές",
+    "terms": "Σιδηροκατασκευές, ατσάλινες κατασκευές, χαλύβδινες κατασκευές, αλουμινοκατασκευές"
+  },
+  "craft/optician": {
+    "name": "Οπτικός",
+    "terms": "οφθαλμίατρος,οφθαλμολόγος"
+  },
+  "craft/painter": {
+    "name": "Ελαιοχρωματιστής",
+    "terms": "μπογιατζής, βαφιάς, σοβατζής"
+  },
+  "craft/photographer": {
+    "name": "Φωτογράφος"
+  },
+  "craft/photographic_laboratory": {
+    "name": "Φωτογραφικό Εργαστήριο"
+  },
+  "craft/plumber": {
+    "name": "Υδραυλικός"
+  },
+  "craft/sawmill": {
+    "name": "Πριονιστήριο"
+  },
+  "craft/scaffolder": {
+    "name": "Κατασκευαστής σκαλωσιών"
+  },
+  "craft/sculpter": {
+    "name": "Γλύπτης"
+  },
+  "craft/shoemaker": {
+    "name": "Τσαγκάρης",
+    "terms": "παπουτσής,υποδηματοποιός"
+  },
+  "craft/tailor": {
+    "name": "Ραφτική",
+    "terms": "ράφτης, ράπτης"
+  },
+  "craft/tinsmith": {
+    "name": "Λευκοσιδηρουργός"
+  },
+  "craft/watchmaker": {
+    "name": "Ωρολογοποιός",
+    "terms": "ωρολογοποιός, ρολογάς"
+  },
+  "craft/window_construction": {
+    "name": "Κατάστημα κουφωμάτων",
+    "terms": "πόρτες αλουμινίου, πόρτες ασφαλείας, παράθυρα αλουμινίου, τζάμια"
+  },
+  "craft/winery": {
+    "name": "Οινοποιείο"
+  },
+  "embankment": {
+    "name": "Ανάχωμα"
+  },
+  "emergency/ambulance_station": {
+    "name": "Σταθμός Ασθενοφόρων",
+    "terms": "Σταθμός ασθενοφόρων"
+  },
+  "emergency/fire_hydrant": {
+    "name": "Πυροσβεστικός Κρουνός",
+    "terms": "Πυροσβεστικός κρουνός, υδροληψία, υδροστόμιο"
+  },
+  "emergency/phone": {
+    "name": "Τηλέφωνο Ανάγκης",
+    "terms": "Τηλέφωνο επειγόντων, Τηλέφωνο ανάγκης, 112"
+  },
+  "entrance": {
+    "name": "Είσοδος/Έξοδος"
+  },
+  "footway/crossing": {
+    "name": "Διάβαση"
+  },
+  "footway/crosswalk": {
+    "name": "Διαγραμμισμένη Διάβαση Πεζών"
+  },
+  "footway/sidewalk": {
+    "name": "Πεζοδρόμιο",
+    "terms": "πεζοδρόμιο"
+  },
+  "ford": {
+    "name": "Κοιτόστρωση"
+  },
+  "highway": {
+    "name": "Αυτοκινητόδρομος",
+    "terms": "Οδική αρτηρία, Αυτοκινητόδρομος"
+  },
+  "highway/bridleway": {
+    "name": "Μονοπάτι Αλόγων",
+    "terms": "Μονοπάτι για άλογα"
+  },
+  "highway/bus_stop": {
+    "name": "Στάση Λεωφορείων",
+    "terms": "Στάση λεοφωρίου"
+  },
+  "highway/crossing": {
+    "name": "Διάβαση"
+  },
+  "highway/crosswalk": {
+    "name": "Διαγραμμισμένη Διάβαση Πεζών"
+  },
+  "highway/cycleway": {
+    "name": "Ποδηλατόδρομος",
+    "terms": "Διαδρομή ποδηλάτων, Δρόμος ποδηλάτων, ποδηλατολωρίδα"
+  },
+  "highway/footway": {
+    "name": "Μονοπάτι",
+    "terms": "Μονοπάτι, Διαδρομή πεζού, πεζοδρόμιο, πεζόδρομος, βόλτα"
+  },
+  "highway/living_street": {
+    "name": "Δρόμος ήπιας κυκλοφορίας",
+    "terms": "Δρόμος χαμηλής κυκλοφορίας, Δρόμος χαμηλής ταχύτητας"
+  },
+  "highway/mini_roundabout": {
+    "name": "Μικρός Κυκλικός Κόμβος",
+    "terms": "Μικρός κυκλικός κόμβος"
+  },
+  "highway/motorway": {
+    "name": "Αυτοκινητόδρομος",
+    "terms": "Αυτοκινητόδρομος"
+  },
+  "highway/motorway_junction": {
+    "name": "Διασταύρωση Αυτοκινητόδρομου / Έξοδος"
+  },
+  "highway/motorway_link": {
+    "name": "Σύνδεση Αυτοκινητόδρομου",
+    "terms": "Σύνδεσμος Αυτοκινητόδρομου "
+  },
+  "highway/path": {
+    "name": "Μονοπάτι",
+    "terms": "Διαδρομή, μονοπάτι"
+  },
+  "highway/pedestrian": {
+    "name": "Πεζόδρομος",
+    "terms": "Πεζόδρομος"
+  },
+  "highway/primary": {
+    "name": "Πρωτεύων Δρόμος",
+    "terms": "Κύρια Οδός"
+  },
+  "highway/primary_link": {
+    "name": "Σύνδεση Πρωτεύοντος",
+    "terms": "Σύνδεσμος κύριας οδού"
+  },
+  "highway/residential": {
+    "name": "Οικιστική Οδός",
+    "terms": "Αστική οδός, Τοπική οδός, Οδός εντός αστικού ιστού"
+  },
+  "highway/road": {
+    "name": "Άγνωστος Δρόμος",
+    "terms": "Άγνωστη οδός"
+  },
+  "highway/secondary": {
+    "name": "Δευτερεύων Δρόμος",
+    "terms": "Δευτερεύουσα Οδός"
+  },
+  "highway/secondary_link": {
+    "name": "Σύνδεση Δευτερεύοντος",
+    "terms": "Σύνδεσμος δευτερεύουσας οδού"
+  },
+  "highway/service": {
+    "name": "Δρόμος εξυπηρέτησης",
+    "terms": "Δρόμος εξυπηρέτησης, Βοηθητικός δρόμος, βοηθητική οδός"
+  },
+  "highway/service/alley": {
+    "name": "Δρομάκι",
+    "terms": "Δρομάκι, Στενό, στενάκι, σοκάκι"
+  },
+  "highway/service/emergency_access": {
+    "name": "Πρόσβαση Εκτάκτου Ανάγκης"
+  },
+  "highway/service/parking_aisle": {
+    "name": "Διάδρομος Στάθμευσης",
+    "terms": "Λωρίδα χώρου στάθμευσης"
+  },
+  "highway/steps": {
+    "name": "Σκαλοπάτια",
+    "terms": "Σκαλιά, Σκαλοπάτια, σκάλα, σκάλες"
+  },
+  "highway/stop": {
+    "name": "Σήμα Στοπ"
+  },
+  "highway/tertiary": {
+    "name": "Τριτεύων Δρόμος"
+  },
+  "highway/tertiary_link": {
+    "name": "Σύνδεση Τριτεύοντος",
+    "terms": "Σύνδεσμος τριτεύουσας οδού"
+  },
+  "highway/traffic_signals": {
+    "name": "Φανάρια",
+    "terms": "Φανάρια κυκλοφορίας, φωτεινός σηματοδότης"
+  },
+  "highway/trunk": {
+    "name": "Λεωφόρος"
+  },
+  "highway/trunk_link": {
+    "name": "Σύνδεση λεωφόρου"
+  },
+  "highway/unclassified": {
+    "name": "Αταξινόμητος Δρόμος",
+    "terms": "αταξινόμητη οδός, άγνωστη κατηγορία δρόμου, δρόμος χωρίς κατηγορία"
+  },
+  "historic": {
+    "name": "Ιστορική τοποθεσία",
+    "terms": "Ιστορικός χώρος"
+  },
+  "historic/archaeological_site": {
+    "name": "Αρχαιολογικός Χώρος",
+    "terms": "Αρχαιολογικός χώρος"
+  },
+  "historic/boundary_stone": {
+    "name": "Βράχος Ορόσημο"
+  },
+  "historic/castle": {
+    "name": "Κάστρο",
+    "terms": "Κάστρο, Φρούριο"
+  },
+  "historic/memorial": {
+    "name": "Μνημείο",
+    "terms": "Μνημείο, ανάθημα, αναθηματική στήλη, προτομή, ανδριάντας, άγαλμα"
+  },
+  "historic/monument": {
+    "name": "Μνημείο",
+    "terms": "Ηρώο, Μνημείο, μαυσωλείο, ιστορικό κτίσμα"
+  },
+  "historic/ruins": {
+    "name": "Ερείπια",
+    "terms": "Χαλάσματα, Ερείπια"
+  },
+  "historic/wayside_shrine": {
+    "name": "Εικονοστάσιο",
+    "terms": "Εικονοστάσιο, Εικόνισμα"
+  },
+  "landuse/basin": {
+    "name": "Κανάλι Αποστράγγισης",
+    "terms": "Λεκανοπέδιο"
+  },
+  "landuse/cemetery": {
+    "name": "Κοιμητήριο",
+    "terms": "Νεκροταφείο"
+  },
+  "landuse/commercial": {
+    "name": "Εμπορική Περιοχή"
+  },
+  "landuse/construction": {
+    "name": "Κατασκευές",
+    "terms": "Κατασκευές"
+  },
+  "landuse/farmyard": {
+    "name": "Αγροτεμάχιο"
+  },
+  "landuse/forest": {
+    "name": "Δάσος",
+    "terms": "Δάσος, δασική έκταση"
+  },
+  "landuse/grass": {
+    "name": "Γρασίδι",
+    "terms": "Γρασίδι, Χορτάρι, γκαζόν"
+  },
+  "landuse/industrial": {
+    "name": "Βιομηχανική Περιοχή",
+    "terms": "Βιομηχανική Ζώνη, ΒΙ.ΠΕ."
+  },
+  "landuse/meadow": {
+    "name": "Λιβάδι",
+    "terms": "Λιβάδι"
+  },
+  "landuse/military": {
+    "name": "Στρατιωτική περιοχή",
+    "terms": "Περιοχή στρατού, στρατόπεδο"
+  },
+  "landuse/orchard": {
+    "name": "Περιβόλι",
+    "terms": "Οπωρώνας, Περιβόλι"
+  },
+  "landuse/quarry": {
+    "name": "Λατομείο",
+    "terms": "Λατομείο, Νταμάρι"
+  },
+  "landuse/vineyard": {
+    "name": "Αμπελώνας",
+    "terms": "Αμπέλι, Αμπελώνας"
+  },
+  "leisure": {
+    "name": "Αναψυχή"
+  },
+  "leisure/common": {
+    "name": "Κοινό"
+  },
+  "leisure/dog_park": {
+    "name": "Πάρκο Σκύλων",
+    "terms": "Πάρκο σκύλων"
+  },
+  "leisure/garden": {
+    "name": "Κήπος",
+    "terms": "Κήπος"
+  },
+  "leisure/golf_course": {
+    "name": "Γήπεδο Γκολφ",
+    "terms": "Γήπεδο γκολφ"
+  },
+  "leisure/ice_rink": {
+    "name": "Παγοδρόμιο"
+  },
+  "leisure/marina": {
+    "name": "Μαρίνα",
+    "terms": "Μαρίνα"
+  },
+  "leisure/nature_reserve": {
+    "name": "Προστατευόμενος Βιότοπος"
+  },
+  "leisure/park": {
+    "name": "Πάρκο",
+    "terms": "Πάρκο, πλατεία, εσπλανάδα, πράσινο, κήπος, δάσος, χώρος αναψυχής"
+  },
+  "leisure/picnic_table": {
+    "name": "Τραπέζι Πικ Νικ",
+    "terms": "Τραπέζι Πικνίκ, πάγκος πικνίκ"
+  },
+  "leisure/pitch": {
+    "name": "Γήπεδο",
+    "terms": "Γήπεδο"
+  },
+  "leisure/pitch/american_football": {
+    "name": "Γήπεδο Αμερικάνικου Ποδοσφαίρου"
+  },
+  "leisure/pitch/baseball": {
+    "name": "Γήπεδο Μπέιζμπολ"
+  },
+  "leisure/pitch/basketball": {
+    "name": "Γήπεδο Μπάσκετ",
+    "terms": "Γήπεδο μπάσκετ, Γήπεδο καλαθοσφαίρισης"
+  },
+  "leisure/pitch/soccer": {
+    "name": "Γήπεδο Ποδοσφαίρου",
+    "terms": "Γήπεδο ποδοσφαίρου"
+  },
+  "leisure/pitch/tennis": {
+    "name": "Γήπεδο Τέννις",
+    "terms": "Γήπεδο τένις, Γήπεδο αντισφαίρισης"
+  },
+  "leisure/pitch/volleyball": {
+    "name": "Γήπεδο Βόλεϊ",
+    "terms": "Γήπεδο Βόλεϋ Γήπεδο Πετοσφαίρισης"
+  },
+  "leisure/playground": {
+    "name": "Παιδική Χαρά",
+    "terms": "Παιδότοπος, Παιδική χαρά, κούνιες"
+  },
+  "leisure/slipway": {
+    "name": "Γλίστρα",
+    "terms": "Γλίστρα, Νεωλκείο"
+  },
+  "leisure/sports_centre": {
+    "name": "Αθλητικό κέντρο / Γυμναστήριο",
+    "terms": "Αθλητικό κέντρο, Γυμναστήριο"
+  },
+  "leisure/stadium": {
+    "name": "Στάδιο",
+    "terms": "Στάδιο"
+  },
+  "leisure/swimming_pool": {
+    "name": "Πισίνα",
+    "terms": "Πισίνα, Δεξαμενή κολύμβησης, κολυμβητήριο"
+  },
+  "line": {
+    "name": "Γραμμή",
+    "terms": "Γραμμή"
+  },
+  "man_made": {
+    "name": "Ανθρώπινες Κατασκευές",
+    "terms": "Ανθρώπινη κατασκευή"
+  },
+  "man_made/breakwater": {
+    "name": "Κυματοθραύστης",
+    "terms": "Κυματοθραύστης"
+  },
+  "man_made/embankment": {
+    "name": "Ανάχωμα"
+  },
+  "man_made/lighthouse": {
+    "name": "Φάρος",
+    "terms": "Φάρος"
+  },
+  "man_made/observation": {
+    "name": "Πύργος παρατήρησης",
+    "terms": "Παρατηρητήριο"
+  },
+  "man_made/petroleum_well": {
+    "name": "Πετρελαιοπηγή",
+    "terms": "Πηγή πετρελαίου"
+  },
+  "man_made/pier": {
+    "name": "Αποβάθρα",
+    "terms": "Αποβάθρα, Προβλήτα, Προκυμαία"
+  },
+  "man_made/pipeline": {
+    "name": "Σωλήνωση",
+    "terms": "Αγωγός, σωλήνας"
+  },
+  "man_made/storage_tank": {
+    "name": "Δεξαμενή Αποθήκευσης"
+  },
+  "man_made/survey_point": {
+    "name": "Σημείο Επισκόπησης",
+    "terms": "Σημείο παρακολούθησης, Σημείο επισκόπησης, Σημείο έρευνας, παρατηρητήριο"
+  },
+  "man_made/tower": {
+    "name": "Πύργος",
+    "terms": "Πύργος"
+  },
+  "man_made/wastewater_plant": {
+    "name": "Βιολογικός Καθαρισμός",
+    "terms": "Εγκατάσταση Επεξεργασίας Λυμάτων"
+  },
+  "man_made/water_tower": {
+    "name": "Δεξαμενή Νερού",
+    "terms": "Πύργος νερού, Δεξαμενή, Πύργος Υδατοδεξαμενής"
+  },
+  "man_made/water_well": {
+    "name": "Πηγάδι"
+  },
+  "man_made/water_works": {
+    "name": "Υδραυλικά Έργα",
+    "terms": "Υδραυλικά έργα"
+  },
+  "natural": {
+    "name": "Φυσικό",
+    "terms": "Φύση, Φυσικό"
+  },
+  "natural/bay": {
+    "name": "Κόλπος",
+    "terms": "Κόλπος, Όρμος"
+  },
+  "natural/beach": {
+    "name": "Παραλία",
+    "terms": "Παραλία, ακτή"
+  },
+  "natural/cave_entrance": {
+    "name": "Είσοδος Σπηλαίου",
+    "terms": "Είσοδος Σπηλιάς, Σπηλιά, Σπήλαιο"
+  },
+  "natural/cliff": {
+    "name": "Γκρεμός",
+    "terms": "Γκρεμός"
+  },
+  "natural/coastline": {
+    "name": "Ακτογραμμή",
+    "terms": "Ακτογραμμή"
+  },
+  "natural/glacier": {
+    "name": "Παγετώνας",
+    "terms": "Παγετώνας"
+  },
+  "natural/grassland": {
+    "name": "Χορτολιβαδική Έκταση",
+    "terms": "Τόπος με γρασίδι, Λιβάδι"
+  },
+  "natural/heath": {
+    "name": "Θαμνότοπος",
+    "terms": "Λόγγος, Χέρσο, Ακαλλιέργητο"
+  },
+  "natural/peak": {
+    "name": "Κορυφή",
+    "terms": "Κορφή"
+  },
+  "natural/saddle": {
+    "name": "Διάσελο",
+    "terms": "Αυχένας"
+  },
+  "natural/scree": {
+    "name": "Σάρα",
+    "terms": "Πλευρικά Κορήματα, Κολλούβιο"
+  },
+  "natural/scrub": {
+    "name": "Θαμνότοπος"
+  },
+  "natural/spring": {
+    "name": "Πηγή",
+    "terms": "Πηγή"
+  },
+  "natural/tree": {
+    "name": "Δέντρο",
+    "terms": "Δέντρο"
+  },
+  "natural/tree_row": {
+    "name": "Δεντροστοιχία"
+  },
+  "natural/volcano": {
+    "name": "Ηφαίστειο"
+  },
+  "natural/water": {
+    "name": "Νερό",
+    "terms": "Νερό"
+  },
+  "natural/water/lake": {
+    "name": "Λίμνη",
+    "terms": "Λίμνη"
+  },
+  "natural/water/pond": {
+    "name": "Λιμνούλα",
+    "terms": "Λιμνούλα, Νερόλακκος"
+  },
+  "natural/water/reservoir": {
+    "name": "Ταμιευτήρας",
+    "terms": "Δεξαμενή, Ταμιευτήρας"
+  },
+  "natural/wetland": {
+    "name": "Έλος",
+    "terms": "Υγρότοπος"
+  },
+  "natural/wood": {
+    "name": "Δάσος"
+  },
+  "office": {
+    "name": "Γραφείο",
+    "terms": "Γραφείο"
+  },
+  "office/accountant": {
+    "name": "Λογιστής",
+    "terms": "Λογιστική, φορολογικό γραφείο, φοροτεχνικό γραφείο, λογιστικό γραφείο"
+  },
+  "office/administrative": {
+    "name": "Διοικητικό γραφείο",
+    "terms": "Γραφείο διοίκησης"
+  },
+  "office/architect": {
+    "name": "Αρχιτέκτονας",
+    "terms": "Πολιτικός μηχανικός"
+  },
+  "office/company": {
+    "name": "Εταιρικό Γραφείο",
+    "terms": "Γραφείο Εταιρείας"
+  },
+  "office/educational_institution": {
+    "name": "Εκπαιδευτικό Ίδρυμα"
+  },
+  "office/employment_agency": {
+    "name": "Γραφείο Ευρέσεως Εργασίας",
+    "terms": "Γραφείο Εύρεσης Εργασίας"
+  },
+  "office/estate_agent": {
+    "name": "Κτηματομεσιτικό Γραφείο",
+    "terms": "μεσιτικό γραφείο, μεσίτης"
+  },
+  "office/government": {
+    "name": "Κυβερνητικό Γραφείο",
+    "terms": "Γραφείο κυβέρνησης, πολιτικό γραφείο"
+  },
+  "office/insurance": {
+    "name": "Ασφαλιστικό Γραφείο",
+    "terms": "ασφαλιστικό πρακτορείο, ασφαλιστής, ασφάλειες"
+  },
+  "office/lawyer": {
+    "name": "Δικηγορικό Γραφείο",
+    "terms": "νομικό γραφείο"
+  },
+  "office/newspaper": {
+    "name": "Εφημερίδα"
+  },
+  "office/ngo": {
+    "name": "Γραφείο ΜΚΟ"
+  },
+  "office/physician": {
+    "name": "Ιατρός"
+  },
+  "office/political_party": {
+    "name": "Πολιτικό Κόμμα",
+    "terms": "πολιτικό γραφείο, γραφείο κόμματος"
+  },
+  "office/therapist": {
+    "name": "Θεραπευτής"
+  },
+  "office/travel_agent": {
+    "name": "Ταξιδιωτικό Γραφείο"
+  },
+  "place": {
+    "name": "Τόπος",
+    "terms": "Τόπος, μέρος, χώρος"
+  },
+  "place/city": {
+    "name": "Πόλη",
+    "terms": "Πόλη"
+  },
+  "place/hamlet": {
+    "name": "Χωριουδάκι",
+    "terms": "Χωριουδάκι, Οικισμός"
+  },
+  "place/island": {
+    "name": "Νησί",
+    "terms": "Νησί"
+  },
+  "place/isolated_dwelling": {
+    "name": "Απομονωμένες Κατοικίες"
+  },
+  "place/locality": {
+    "name": "Τοποθεσία",
+    "terms": "Τοποθεσία, Τοπωνύμιο, Περιοχή"
+  },
+  "place/neighbourhood": {
+    "name": "Γειτονιά"
+  },
+  "place/town": {
+    "name": "Κωμόπολη",
+    "terms": "Κωμόπολη"
+  },
+  "place/village": {
+    "name": "Χωριό",
+    "terms": "Χωριό"
+  },
+  "point": {
+    "name": "Σημείο",
+    "terms": "Σημείο"
+  },
+  "power": {
+    "name": "Ενέργεια"
+  },
+  "power/generator": {
+    "name": "Γεννήτρια Ρεύματος"
+  },
+  "power/line": {
+    "name": "Καλώδιο Ρεύματος",
+    "terms": "Καλώδια ρεύματος"
+  },
+  "power/pole": {
+    "name": "Κολόνα Ρεύματος"
+  },
+  "power/sub_station": {
+    "name": "Υποσταθμός ",
+    "terms": "Υποσταθμός"
+  },
+  "power/substation": {
+    "name": "Υποσταθμός"
+  },
+  "power/tower": {
+    "name": "Κολόνα Υψηλής Τάσης",
+    "terms": "Πυλώνας Υψηλής Τάσης"
+  },
+  "power/transformer": {
+    "name": "Μετασχηματιστής",
+    "terms": "Μετασχηματιστής"
+  },
+  "public_transport/stop_position": {
+    "name": "Σημείο Στάσης"
+  },
+  "railway": {
+    "name": "Σιδηροδρομικός Διάδρομος",
+    "terms": "Σιδηρόδρομος"
+  },
+  "railway/abandoned": {
+    "name": "Εγκαταλελειμμένη Σιδηροδρομική Γραμμή",
+    "terms": "Εγκαταλελειμμένος σιδηρόδρομος"
+  },
+  "railway/disused": {
+    "name": "Σιδηροτροχιά εκτός Χρήσης"
+  },
+  "railway/level_crossing": {
+    "name": "Σιδηροδρομική Διάβαση"
+  },
+  "railway/narrow_gauge": {
+    "name": "Σιδηροτροχιά Στενού Εύρους"
+  },
+  "railway/platform": {
+    "name": "Σιδηροδρομική Αποβάθρα",
+    "terms": "Σιδηροδρομική αποβάθρα"
+  },
+  "railway/rail": {
+    "name": "Σιδηροδρομική Γραμμή",
+    "terms": "Σιδηροτροχιά, Ράγα"
+  },
+  "railway/station": {
+    "name": "Σιδηροδρομικός Σταθμός",
+    "terms": "Σιδηροδρομικός σταθμός"
+  },
+  "railway/subway": {
+    "name": "Μετρό",
+    "terms": "Μετρό, Υπόγειος Σιδηρόδρομος"
+  },
+  "railway/subway_entrance": {
+    "name": "Είσοδος Μετρό",
+    "terms": "Είσοδος Μετρό, Είσοδος υπόγειου σιδηρόδρομου"
+  },
+  "railway/tram": {
+    "name": "Τραμ",
+    "terms": "Τραμ"
+  },
+  "relation": {
+    "name": "Σχέση",
+    "terms": "Σχέση, Συσχέτιση"
+  },
+  "route/ferry": {
+    "name": "Διαδρομή Πορθμείου",
+    "terms": "Δρομολόγιο Πορθμείου"
+  },
+  "shop": {
+    "name": "Κατάστημα",
+    "terms": "Κατάστημα, μαγαζί"
+  },
+  "shop/alcohol": {
+    "name": "Κάβα Ποτών",
+    "terms": "Κατάστημα ποτών, Κάβα"
+  },
+  "shop/antiques": {
+    "name": "Παλαιοπωλείο",
+    "terms": "αντικερί, παλιατζίδικο, αντίκες"
+  },
+  "shop/baby_goods": {
+    "name": "Κατάστημα Βρεφικών Ειδών"
+  },
+  "shop/bakery": {
+    "name": "Αρτοποιείο",
+    "terms": "Αρτοποιείο, Φούρνος"
+  },
+  "shop/beauty": {
+    "name": "Κατάστημα Ομορφιάς"
+  },
+  "shop/bed": {
+    "name": "Κατάστημα κρεβατιών/στρωμάτων",
+    "terms": "κατάστημα στρωμάτων/κρεβατιών, κατάστημα κρεββατιών"
+  },
+  "shop/beverages": {
+    "name": "Αναψυκτήριο"
+  },
+  "shop/bicycle": {
+    "name": "Κατάστημα Ποδηλάτων",
+    "terms": "Ποδηλατάδικο, Κατάστημα ποδηλάτων"
+  },
+  "shop/bookmaker": {
+    "name": "Πρακτορείο στοιχημάτων",
+    "terms": "ΟΠΑΠ, ιππόδρομος, προπο, προπατζίδικο, προποτζίδικο"
+  },
+  "shop/books": {
+    "name": "Βιβλιοπωλείο",
+    "terms": "Παλαιοβιβλιοπωλείο"
+  },
+  "shop/boutique": {
+    "name": "Μπουτίκ",
+    "terms": "Μπουτίκ"
+  },
+  "shop/butcher": {
+    "name": "Κρεοπωλείο",
+    "terms": "Κρεοπωλείο, Χασάπικο"
+  },
+  "shop/car": {
+    "name": "Εμπορία Αυτοκινήτων"
+  },
+  "shop/car_parts": {
+    "name": "Ανταλλακτικά Αυτοκινήτων",
+    "terms": "Ανταλλακτικά αυτοκινήτων"
+  },
+  "shop/car_repair": {
+    "name": "Συνεργείο Αυτοκινήτων",
+    "terms": "Συνεργείο αυτοκινήτων, ηλεκτρολογείο αυτοκινήτων"
+  },
+  "shop/carpet": {
+    "name": "Κατάστημα χαλιών",
+    "terms": "κατάστημα χαλιών, κατάστημα με μοκέτες, φλοκάτες, κιλίμια"
+  },
+  "shop/cheese": {
+    "name": "Τυροπωλείο",
+    "terms": "Τυροκομείο, φέτα, κασέρι, τυριά, γραβιέρα"
+  },
+  "shop/chemist": {
+    "name": "Χημείο",
+    "terms": "Χημείο, Χημικός"
+  },
+  "shop/clothes": {
+    "name": "Κατάστημα Ένδυσης",
+    "terms": "Κατάστημα ενδυμάτων, κατάστημα ρούχων"
+  },
+  "shop/coffee": {
+    "name": "Καφεκοπτείο",
+    "terms": "καφεκοπτείο"
+  },
+  "shop/computer": {
+    "name": "Κατάστημα Υπολογιστών",
+    "terms": "Κατάστημα ηλεκτρονικών υπολογιστών"
+  },
+  "shop/convenience": {
+    "name": "Παντοπωλείο",
+    "terms": "Ψιλικατζίδικο, Παντοπωλείο, μίνι μάρκετ"
+  },
+  "shop/dairy": {
+    "name": "Γαλακτοπωλείο",
+    "terms": "τυριά, γιαούρτια, γάλατα, κρέμες"
+  },
+  "shop/deli": {
+    "name": "Ντελικατέσεν",
+    "terms": "Εκλεκτά τρόφιμα, Μεζεδοπωλείο, Ντελικατέσεν"
+  },
+  "shop/department_store": {
+    "name": "Πολυκατάστημα",
+    "terms": "Πολυκατάστημα"
+  },
+  "shop/doityourself": {
+    "name": "Κατάστημα ιδιοκατασκευών",
+    "terms": "Φτιάξτο μόνος σου, Κατάστημα Ιδιοκατασκευών"
+  },
+  "shop/dry_cleaning": {
+    "name": "Στεγνοκαθαριστήριο"
+  },
+  "shop/electronics": {
+    "name": "Κατάστημα Ηλεκτρονικών",
+    "terms": "Κατάστημα ηλεκτρονικών"
+  },
+  "shop/erotic": {
+    "name": "Μαγαζί ερωτικών ειδών",
+    "terms": "Sex shop, σεξ σοπ, ερωτικά βοηθήματα"
+  },
+  "shop/fishmonger": {
+    "name": "Ψαράδικο",
+    "terms": "Ιχθυοπωλείο, Ψαράδικο"
+  },
+  "shop/florist": {
+    "name": "Ανθοπωλείο",
+    "terms": "Ανθοπωλείο"
+  },
+  "shop/furniture": {
+    "name": "Κατάστημα Επίπλων"
+  },
+  "shop/garden_centre": {
+    "terms": "Φυτώριο"
+  },
+  "shop/gift": {
+    "name": "Κατάστημα Δώρων",
+    "terms": "Κατάστημα δώρων"
+  },
+  "shop/greengrocer": {
+    "name": "Οπωροπωλείο",
+    "terms": "Οπωροπώλης, Μανάβης, μανάβικο, φρούτα, λαχανικά"
+  },
+  "shop/hairdresser": {
+    "name": "Κομμωτήριο",
+    "terms": "Κωμωτήριο, νύχια, μανικιούρ, πεντικιούρ"
+  },
+  "shop/hardware": {
+    "name": "Χρωματοπωλείο",
+    "terms": "Κατάστημα τεχνικού εξοπλισμού, Σιδηροπωλείο, υδραυλικά, χρώματα, σιδηρικά"
+  },
+  "shop/hearing_aids": {
+    "name": "Κατάστημα ακουστικών βαρηκοΐας",
+    "terms": "κατάστημα ακουστικών βοηθημάτων"
+  },
+  "shop/hifi": {
+    "name": "Κατάστημα Hifi"
+  },
+  "shop/jewelry": {
+    "name": "Κοσμηματοπωλείο",
+    "terms": "Χρυσοχοείο, Κοσμηματοπώλης, Κοσμηματοπωλείο"
+  },
+  "shop/laundry": {
+    "name": "Καθαριστήριο",
+    "terms": "Πλυντήριο"
+  },
+  "shop/locksmith": {
+    "name": "Κλειδαράς"
+  },
+  "shop/lottery": {
+    "name": "Κατάστημα λαχείων",
+    "terms": "εθνικό λαχείο, κρατικό λαχείο, λαχνοί"
+  },
+  "shop/mall": {
+    "name": "Εμπορικό Κέντρο",
+    "terms": "Εμπορικό κέντρο, mall"
+  },
+  "shop/mobile_phone": {
+    "name": "Κατάστημα Κινητής Τηλεφωνίας",
+    "terms": "Κατάστημα κινητών τηλεφώνων"
+  },
+  "shop/motorcycle": {
+    "name": "Εμπόριο Μοτοσυκλετών",
+    "terms": "Αντιπροσωπεία Μοτοσυκλετών"
+  },
+  "shop/music": {
+    "name": "Κατάστημα Μουσικής",
+    "terms": "Κατάστημα μουσικής, Δισκοπωλείο"
+  },
+  "shop/musical_instrument": {
+    "name": "Κατάστημα μουσικών οργάνων",
+    "terms": "Κατάστημα μουσικών οργάνων"
+  },
+  "shop/optician": {
+    "name": "Οπτικός",
+    "terms": "Οπτικός"
+  },
+  "shop/organic": {
+    "name": "Κατάστημα βιολογικών προϊόντων"
+  },
+  "shop/pet": {
+    "name": "Κατάστημα Κατοικίδιων",
+    "terms": "Κατάστημα κατοικιδίων, πετ σοπ"
+  },
+  "shop/photo": {
+    "name": "Φωτογραφείο",
+    "terms": "φωτογράφος"
+  },
+  "shop/seafood": {
+    "name": "Κατάστημα Θαλασσινών",
+    "terms": "θαλασσινά, ψάρια, ψαράδικο, ιχθυοπωλείο"
+  },
+  "shop/shoes": {
+    "name": "Κατάστημα Υπόδησης",
+    "terms": "Κατάστημα υποδημάτων, κατάστημα παπουτσιών"
+  },
+  "shop/sports": {
+    "name": "Κατάστημα Αθλητικών Ειδών",
+    "terms": "Κατάστημα αθλητικών ειδών"
+  },
+  "shop/stationery": {
+    "name": "Κατάστημα Γραφικής Ύλης",
+    "terms": "Κατάστημα χαρτικών, κατάστημα γραφικής ύλης, βιβλιοπωλείο, βιβλιοχαρτοπωλείο"
+  },
+  "shop/supermarket": {
+    "name": "Supermarket",
+    "terms": "Σούπερ μάρκετ, Υπεραγορά"
+  },
+  "shop/tailor": {
+    "name": "Ράφτης"
+  },
+  "shop/tattoo": {
+    "name": "Στούντιο Τατουάζ",
+    "terms": "Τατουατζίδικο"
+  },
+  "shop/tea": {
+    "name": "Τεϊοπωλείο",
+    "terms": "τσάι, τειοπωλείο, τεϊοποτείο, χαμομήλι, ροφήματα"
+  },
+  "shop/toys": {
+    "name": "Κατάστημα Παιχνιδιών",
+    "terms": "Κατάστημα παιχνιδιών"
+  },
+  "shop/travel_agency": {
+    "name": "Ταξιδιωτικό Γραφείο",
+    "terms": "Ταξιδιωτικό πρακτορείο, Γραφείο ταξιδίων"
+  },
+  "shop/tyres": {
+    "name": "Βουλκανιζατέρ",
+    "terms": "Βουλκανιζατέρ, Κατάστημα ελαστικών, λάστιχα, ζάντες"
+  },
+  "shop/variety_store": {
+    "name": "Κατάστημα 1 ευρώ",
+    "terms": "1 €, όλα ένα ευρώ"
+  },
+  "shop/video": {
+    "name": "Βιντεοκλάμπ",
+    "terms": "Βιντεοκλάμπ, DVD, ταινίες, βιντεοκασέτες"
+  },
+  "shop/video_games": {
+    "name": "Μαγαζί Βιντεοπαιχνιδιών"
+  },
+  "shop/window_blind": {
+    "name": "Κατάστημα σκιάστρων παραθύρου",
+    "terms": "Κατάστημα σκιάστρων παραθύρου, κατάστημα ρολών παραθύρου, γρίλιες"
+  },
+  "tourism": {
+    "name": "Τουρισμός",
+    "terms": "Τουρισμός"
+  },
+  "tourism/alpine_hut": {
+    "terms": "Αλπική καλύβα, Αλπικό καταφύγιο"
+  },
+  "tourism/artwork": {
+    "name": "Έργο τέχνης",
+    "terms": "Έργο τέχνης"
+  },
+  "tourism/attraction": {
+    "name": "Τ",
+    "terms": "Τουριστικό Αξιοθέατο"
+  },
+  "tourism/camp_site": {
+    "name": "Χώρος Κατασκήνωσης",
+    "terms": "Χώρος κατασκήνωσης, Κάμπινγκ"
+  },
+  "tourism/caravan_site": {
+    "name": "Πάρκο τροχόσπιτων",
+    "terms": "Πάρκο τροχόσπιτων"
+  },
+  "tourism/chalet": {
+    "name": "Σαλέ",
+    "terms": "Σαλέ, Αλπική έπαυλη"
+  },
+  "tourism/guest_house": {
+    "name": "Ξενώνας",
+    "terms": "Ξενώνας"
+  },
+  "tourism/hostel": {
+    "name": "Ξενώνας"
+  },
+  "tourism/hotel": {
+    "name": "Ξενοδοχείο",
+    "terms": "Ξενοδοχείο"
+  },
+  "tourism/information": {
+    "name": "Πληροφορίες",
+    "terms": "Πληροφορίες"
+  },
+  "tourism/motel": {
+    "name": "Μοτέλ",
+    "terms": "Πανδοχείο, Χάνι"
+  },
+  "tourism/museum": {
+    "name": "Μουσείο",
+    "terms": "Μουσείο"
+  },
+  "tourism/picnic_site": {
+    "name": "Χώρος Πικ νικ",
+    "terms": "Χώρος εκδρομής, Χώρος Πικνίκ"
+  },
+  "tourism/theme_park": {
+    "name": "Πάρκο Ψυχαγωγίας",
+    "terms": "Θεματικό πάρκο, Λούνα παρκ"
+  },
+  "tourism/viewpoint": {
+    "name": "Σημείο θέασης",
+    "terms": "Σημείο θέασης"
+  },
+  "tourism/zoo": {
+    "name": "Ζωολογικός Κήπος",
+    "terms": "Ζωολογικός κήπος"
+  },
+  "traffic_calming/bump": {
+    "name": "Σαμαράκι",
+    "terms": "Μειωτής Ταχύτητας"
+  },
+  "type/boundary": {
+    "name": "Όριο",
+    "terms": "Όριο, Σύνορο"
+  },
+  "type/boundary/administrative": {
+    "name": "Διοικητικό Όριο",
+    "terms": "Διοικητικό όριο, Σύνορο"
+  },
+  "type/multipolygon": {
+    "name": "Πολύ-Πολύγωνο",
+    "terms": "Πολύγωνο, Πολύ-πολύγωνο"
+  },
+  "type/restriction": {
+    "name": "Απαγόρευση",
+    "terms": "Περιορισμός"
+  },
+  "type/restriction/no_left_turn": {
+    "name": "Όχι Αριστερή Στροφή"
+  },
+  "type/restriction/no_right_turn": {
+    "name": "Όχι Δεξιά Στροφή"
+  },
+  "type/restriction/no_straight_on": {
+    "name": "Όχι Ευθεία"
+  },
+  "type/restriction/no_u_turn": {
+    "name": "Όχι Αναστροφή"
+  },
+  "type/restriction/only_left_turn": {
+    "name": "Μόνο Αριστερή Στροφή"
+  },
+  "type/restriction/only_right_turn": {
+    "name": "Μόνο Δεξιά Στροφή"
+  },
+  "type/restriction/only_straight_on": {
+    "name": "Όχι Στροφές"
+  },
+  "type/route": {
+    "name": "Δρομολόγιο",
+    "terms": "Δρομολόγιο, Διαδρομή"
+  },
+  "type/route/bicycle": {
+    "name": "Διαδρομή Ποδηλάτου",
+    "terms": "Διαδρομή ποδηλάτου, Ποδηλατόδρομος"
+  },
+  "type/route/bus": {
+    "name": "Διαδρομή Λεωφορείων",
+    "terms": "Διαδρομή λεοφωρείου"
+  },
+  "type/route/detour": {
+    "name": "Διαδρομή Παράκαμψης"
+  },
+  "type/route/ferry": {
+    "name": "Διαδρομή Πορθμείου",
+    "terms": "Διαδρομή πορθμείου, Δρομολόγιο πορθμείου"
+  },
+  "type/route/foot": {
+    "name": "Διαδρομή Πεζού"
+  },
+  "type/route/pipeline": {
+    "name": "Διαδρομή Σωλήνωσης"
+  },
+  "type/route/road": {
+    "terms": "Οδική διαδρομή, Οδικό δρομολόγιο"
+  },
+  "type/route/train": {
+    "name": "Γραμμή Τραίνων"
+  },
+  "type/route/tram": {
+    "name": "Διαδρομή Τραμ"
+  },
+  "vertex": {
+    "name": "Άλλο",
+    "terms": "Άλλο"
+  },
+  "waterway": {
+    "name": "Διαδρομή νερού",
+    "terms": "Υδατοδιαδρομή, Διαδρομή νερού"
+  },
+  "waterway/canal": {
+    "name": "Κανάλι",
+    "terms": "Κανάλι"
+  },
+  "waterway/dam": {
+    "name": "Φράγμα",
+    "terms": "Φράγμα"
+  },
+  "waterway/ditch": {
+    "name": "Χαντάκι",
+    "terms": "Χαντάκι, Τάφρος"
+  },
+  "waterway/drain": {
+    "name": "Οχετός"
+  },
+  "waterway/fuel": {
+    "name": "Πρατήριο Καυσίμων Λιμένα"
+  },
+  "waterway/river": {
+    "name": "Ποταμός",
+    "terms": "Ποτάμι"
+  },
+  "waterway/riverbank": {
+    "name": "Όχθη Ποταμιού",
+    "terms": "Όχθη ποταμιού"
+  },
+  "waterway/stream": {
+    "name": "Ρέμα",
+    "terms": "Ρέμα"
+  },
+  "waterway/weir": {
+    "name": "Υδατοφράκτης",
+    "terms": "Υδατοφράκτης"
+  }
+}

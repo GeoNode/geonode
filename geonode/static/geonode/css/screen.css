@@ -1,0 +1,71 @@
+@charset "UTF-8";
+@import "reset.css";
+
+
+/* CSS Document */
+
+
+/*
+	----------------------------
+	HTML SELECTORS
+	____________________________
+*/
+
+
+body { background: #333; font:14px/21px Helvetica, Arial, sans-serif; color: #333; margin: 0; padding: 0; }
+a { color: #ccc; text-decoration: underline; }
+a:hover { color: #fb2b2b; }
+h1, h2 { font-size: 26px; line-height: 28px; font-weight: normal; letter-spacing: -1px; color: #fff; }
+h3 { font-size: 18px; font-weight: normal; margin: 8px 0; }
+h4 { font-size: 14px; font-weight: normal; margin: 0; }
+h5 { font-size: 12px; font-weight: normal; margin: 0; }
+ul { margin-left: 20px; }
+ol { margin-left: 36px; }
+
+
+/*
+	----------------------------
+	LAYOUT
+	____________________________
+*/
+
+
+#wrapper { width: 960px; margin: 0 auto; padding: 48px 0 72px; }
+#main { width: 640px; float: left; }
+#main > p, #main > div { margin-left: 7px; }
+#sidebar { width: 280px; float: right; }
+#sidebar ol { margin: 12px 0 12px 22px; }
+/*
+	----------------------------
+	PAGE/SECTION SPECIFIC
+	____________________________
+*/
+
+
+#video-controls { width: 333px; }
+#video-controls a { color: #ddd; text-decoration: underline; }
+
+
+/*
+	----------------------------
+	UTILITY CLASSES
+	____________________________
+*/
+
+
+.black-15 { background: url(../media/black-15-trans.png); color: #fff; padding: 4px 12px; margin: 24px 0; }
+.black-35 { background: url(../media/black-35-trans.png); color: #fff; padding: 4px 12px; margin: 24px 0; }
+.black-50 { background: url(../media/black-50-trans.png); color: #fff; padding: 4px 12px; margin: 24px 0; }
+.black-65 { background: url(../media/black-65-trans.png); color: #fff; padding: 4px 12px; margin: 24px 0; }
+.black-85 { background: url(../media/black-85-trans.png); color: #fff; padding: 4px 12px; margin: 24px 0; }
+
+
+.clearfix:before,
+.clearfix:after {
+    content: " "; /* 1 */
+    display: table; /* 2 */
+}
+
+.clearfix:after {
+    clear: both;
+}

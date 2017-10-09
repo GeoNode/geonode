@@ -5,6 +5,8 @@
     .controller('CartList', function($scope, cart){
       $scope.cart = cart;
       $scope.layers_params = '';
+      $scope.IS_LAYERS_PAGE_FOR_CART = IS_LAYERS_PAGE_FOR_CART;
+      $scope.IS_AUTHENTICATED_USER_FOR_CART = IS_AUTHENTICATED_USER_FOR_CART;
   
       $scope.newMap = function(){
         var items = cart.getCart().items;
@@ -13,7 +15,7 @@
           params += 'layer=' + items[i].detail_url.split('/')[2] +'&';
         }
         window.location = '/maps/new?' + params;
-      }
+      };
 
       $scope.bulk_perms_submit = function(){
         var items = cart.getCart().items;
@@ -91,6 +93,26 @@
         }
       }
 
+      this.clearAllCart = function(){
+        var cart = this.getCart();
+        cart.items = [];
+      }
+
+      this.detailsToggle = function(){
+        //console.log("clicked");
+        $(".gd-cart-dropdown-menu").slideToggle("slow");
+
+        if($("#toggleIconOfcart.fa-chevron-down").length > 0){
+          //console.log("down");
+          $("#toggleIconOfcart").removeClass('fa-chevron-down');
+          $("#toggleIconOfcart").addClass("fa-chevron-up");
+        } else if($("#toggleIconOfcart.fa-chevron-up").length > 0){
+          //console.log("up");
+          $("#toggleIconOfcart").removeClass('fa-chevron-up');
+          $("#toggleIconOfcart").addClass("fa-chevron-down");
+        }
+      }
+
       this.toggleItem = function(item){
         if(this.getItemById(item.id) === null){
           this.addItem(item);
@@ -115,6 +137,13 @@
           return 'fa-cart-plus';
         }else{
           return 'fa-remove'
+        }
+      }
+      this.isActive = function(id){
+        if(this.getItemById(id) === null){
+          return false;
+        }else{
+          return true;
         }
       }
     })

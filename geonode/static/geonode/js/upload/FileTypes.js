@@ -19,6 +19,11 @@ define(['./FileType'], function (FileType) {
             format: 'raster',
             main: 'tiff'
         });
+      file_types['OSM'] = new FileType({
+            name: gettext('OSM XML'),
+            format: 'xml',
+            main: 'osm'
+        });
     // requires geonode.importer
     file_types['CSV'] = new FileType({
             name: gettext('Comma Separated Value'),

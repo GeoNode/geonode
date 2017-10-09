@@ -30,7 +30,7 @@ REMOVE_ANONYMOUS_USER = False
 DATABASES = {
     'default': {
          'ENGINE': 'django.db.backends.postgresql_psycopg2',
-         'NAME': 'geodash_dev',
+         'NAME': 'geodash_dev1',
          'USER': 'geodash_dev',
          'PASSWORD': 'geodash_dev',
      },
@@ -38,7 +38,7 @@ DATABASES = {
     'datastore' : {
         'ENGINE': 'django.contrib.gis.db.backends.postgis',
         #'ENGINE': '', # Empty ENGINE name disables
-        'NAME': 'geodash_dev-imports',
+        'NAME': 'geodash_dev1-imports',
         'USER' : 'geodash_dev',
         'PASSWORD' : 'geodash_dev',
         'HOST' : 'localhost',

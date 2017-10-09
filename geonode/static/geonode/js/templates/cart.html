@@ -1,9 +1,45 @@
-<div class="panel panel-default" id="composerCart">
-  <div class="panel-heading">Cart</div>
-  <div class="panel-body">
-    <p ng-show="!cart.getCart().items.length">Add resources through the "Add to cart" buttons.</p>
-  </div>
-  <ul class="list-group">
-    <li class="list-group-item" ng-repeat="resource in cart.getCart().items">{{ resource.title | limitTo: 25}}{{ resource.title.length > 25 ? '...' : '' }}<button class="btn btn-default btn-xs pull-right" ng-click="cart.removeItem(resource)"><i class="fa fa-remove fa-lg"></i></button></li>
+<form id="gd-cart">
+  <ul class="nav navbar-right" >
+    <li class="dropdown">
+      <a href="#" class="dropdown-toggle btn btn-gd-primary gd-cart-selection-menu"
+        data-toggle="dropdown" role="button" ng-click="cart.detailsToggle()"
+        aria-haspopup="true" aria-expanded="false" id="dLabel">
+
+        Selected Items &nbsp;
+          <span id="total-items" class="badge" ng-bind="cart.getCart().items.length">0 </span>
+          <span class="notshow">
+            <i class="fa fa-chevron-up" id="toggleIconOfcart"></i>
+          </span>
+      </a>
+      <ul class="dropdown-menu gd-cart-dropdown-menu" aria-labelledby="dLabel" ng-show="cart.getCart().items.length > 0" style="">
+        <li title="{{ resource.title }}" ng-repeat="resource in cart.getCart().items" class="gd-cart-dropdown-menu-show">
+            <a href="javascript:;">
+                {{ resource.title | limitTo: 25}}
+                {{ resource.title.length > 25 ? '...' : '' }}
+                <span class="text-right">
+                    <i ng-click="cart.removeItem(resource)" class="fa fa-times"></i>
+                </span>
+            </a>
+        </li>
+        <li role="separator" class="divider"></li>
+        <li ng-show="IS_AUTHENTICATED_USER_FOR_CART">
+            <a href="javascript:;" ng-disabled="!cart.getCart().items.length" class="text-center"
+                    data-toggle="modal" data-target="#_bulk_permissions" style="text-align: center justify;">
+                Set Permissions
+            </a>
+        </li>
+        <li ng-show="IS_LAYERS_PAGE_FOR_CART" >
+            <a href="javascript:;" ng-disabled="!cart.getCart().items.length"
+                ng-click="newMap()" style="text-align: center justify;background:#41a3f7;">
+                Create a map
+            </a>
+        </li>
+        <li ng-show="cart.getCart().items.length > 0">
+            <a href="javascript:;" ng-click="cart.clearAllCart()" style="text-align: center justify;">
+                Cancel All
+            </a>
+        </li>
+      </ul>
+    </li>
   </ul>
-</div>
+</form>

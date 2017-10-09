@@ -1,0 +1,64 @@
+<html>
+<head>
+  <meta charset="utf-8" />
+  <title>Mocha Tests</title>
+  <link rel="stylesheet" href="mocha.css" />
+</head>
+<body>
+  <div id="mocha"></div>
+
+  <script src="mocha.js"></script>
+  <script src="chai.js"></script>
+  <script src="sinon.js"></script>
+  <script src="sinon-chai.js"></script>
+  <script src="happen.js"></script>
+
+  <!-- include source files here ... -->
+  <script src="../libs/jquery/jquery-1.11.1.js"></script>
+  <script src="../libs/lodash/lodash-2.4.1.js"></script>
+  <script src="../libs/CodeMirror/lib/codemirror.js"></script>
+  <script src="../libs/CodeMirror/mode/javascript/javascript.js"></script>
+  <script src="../libs/CodeMirror/mode/xml/xml.js"></script>
+  <script src="../libs/CodeMirror/mode/clike/clike.js"></script>
+  <script src="../libs/CodeMirror/lib/util/multiplex.js"></script>
+  <script src="../libs/CodeMirror/lib/util/closetag.js"></script>
+  <script src="../libs/leaflet/leaflet-src.js"></script>
+  <script src="../libs/locationfilter/src/locationfilter.js"></script>
+  <script src="../libs/misc.js"></script>
+  <script src="../js/OSM4Leaflet.js"></script>
+  <script src="../libs/jqueryui/jquery-ui.js"></script>
+  <script src="../js/configs.js"></script>
+  <script src="../js/settings.js"></script>
+  <script src="../js/urlParameters.js"></script>
+  <script src="../js/nominatim.js"></script>
+  <script src="../js/ffs.js"></script>
+  <script src="../js/ffs/parser.js"></script>
+  <script src="../js/ffs/free.js"></script>
+  <script src="../js/query.js"></script>
+  <script src="../js/autorepair.js"></script>
+  <script src="../js/overpass.js"></script>
+  <script src="../js/ide.js"></script>
+  <script src="../libs/html2canvas/html2canvas.patched.js"></script>
+  <script src="../libs/html2canvas/jquery.plugin.html2canvas.js"></script>
+  <script src="../libs/canvg/rgbcolor.js"></script>
+  <script src="../libs/canvg/canvg.js"></script>
+
+
+  <script>
+    mocha.setup('bdd');
+    var expect = chai.expect;
+  </script>
+
+  <!-- include spec files here... -->
+  <script src="test.query.js"></script>
+  <script src="test.autorepair.recurse.js"></script>
+  <script src="test.autorepair.josm.js"></script>
+  <script src="test.permalink.js"></script>
+  <script src="test.urlParameters.js"></script>
+  <script src="test.ffs.js"></script>
+
+  <script>
+    (window.mochaPhantomJS || window.mocha).run();
+  </script>
+</body>
+</html>

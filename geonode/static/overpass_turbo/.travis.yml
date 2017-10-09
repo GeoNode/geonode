@@ -1,0 +1,7 @@
+before_script:
+  - "npm install mocha-phantomjs"
+script: mocha-phantomjs tests/index.html
+branches:
+  except:
+    - modularize
+sudo: false

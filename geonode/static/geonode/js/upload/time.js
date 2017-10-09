@@ -11,7 +11,7 @@ requirejs.config({
     }
 });
 
-define(['upload/upload','upload/common', 'upload/LayerInfo'], function (upload, common, LayerInfo) {
+define(['upload/upload','upload/common'], function (upload, common) {
     'use strict';
 
     var doTime = function (event) {
@@ -38,14 +38,9 @@ define(['upload/upload','upload/common', 'upload/LayerInfo'], function (upload, 
             });
         };
 
-      var params = common.parseQueryString(document.location.search);
-      var url = '/upload/time'
-      if ('id' in params){
-        url = updateUrl(url, 'id', params.id);
-      }
         $.ajax({
            type: "POST",
-           url: url,
+           url: '/upload/time',
            data: form.serialize(), // serializes the form's elements.
            success: function(data)
            {

@@ -1,0 +1,14 @@
+{
+  "name": "overpass-turbo",
+  "description": "A web based data mining tool for OpenStreetMap using Overpass API",
+  "homepage": "http://overpass-turbo.eu/",
+  "repository": "git+https://github.com/tyrasd/overpass-turbo.git",
+  "license": "MIT",
+  "devDependencies": {
+    "csso": "^1.3.11",
+    "pegjs": "^0.8.0",
+    "uglify-js": "^2.4.24",
+    "request": "^2.67.0",
+    "mocha-phantomjs": "^4.0.2"
+  }
+}

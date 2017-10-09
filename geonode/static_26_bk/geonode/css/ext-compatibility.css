@@ -1,0 +1,50 @@
+/* Fixes for compatibility issues between extjs and bootstrap */
+
+img {
+  max-width: none;
+}
+
+.x-panel table, .x-window table {
+  margin: 0;
+  padding: 0;
+  border-top: none;
+  margin-bottom: 0px;
+  margin-top: 0px;
+  width: auto;
+}
+
+.x-panel td, .x-panel th, .x-window td, .x-window th{
+  border-top: none;
+  margin: 0; 
+  padding: 0;
+}
+
+.x-panel-body {
+  border: none;
+  list-style:none;
+}
+.x-panel-body ul{
+list-style:none;
+}
+
+.x-grid3-hd-inner{
+height:20px;
+font-size: 14px;
+}
+.x-grid3-cell-inner{
+height:20px;
+font-size: 14px;
+padding-top:5px;
+}
+.hero-unit h1{
+font-size:40px
+}
+
+.x-panel * {
+    -moz-box-sizing: content-box;    /* firefox */
+    -ms-box-sizing: content-box;     /* ie */
+    -webkit-box-sizing: content-box; /* webkit */
+    -khtml-box-sizing: content-box;  /* konqueror */
+    box-sizing: content-box;         /* css3 */
+}
+

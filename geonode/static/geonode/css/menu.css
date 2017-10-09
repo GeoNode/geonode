@@ -1,0 +1,360 @@
+/*
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+*/
+/*
+    http://callmenick.com/post/slide-and-push-menus-with-css3-transitions
+    Created on : Apr 3, 2016, 6:20:39 PM
+    Author     : Nazmul
+    http://callmenick.com/post/slide-and-push-menus-with-css3-transitions
+*/
+
+/* -----------------------------------------------------------------------------
+
+  SLIDE AND PUSH MENUS COMPONENT
+
+----------------------------------------------------------------------------- */
+/**
+ * Menu overview.
+ */
+.c-menu {
+    position: fixed;
+    /*z-index: 200;*/
+    z-index: 9999;
+    /*background-color: #67b5d1;*/
+    background-color: #61646a;
+    -webkit-transition: -webkit-transform 0.3s;
+    transition: transform 0.3s;
+}
+
+.c-menu__items {
+    list-style: none;
+    margin: 0;
+    padding: 10px 0 0;
+}
+
+/**
+ * Left and right menus
+ *
+ * Slide and push menus coming in from the left and right inherit a lot of
+ * common styles. We'll start each of them off by doing up the common styles
+ * for each version, followed by individual styles.
+ *
+ * The various versions are governed by modifier classes.
+ */
+/**
+ * Common modifiers for left/right menus.
+ */
+.c-menu--slide-left,
+.c-menu--slide-right,
+.c-menu--push-left,
+.c-menu--push-right {
+    width: 100%;
+    height: 100%;
+    overflow-y: scroll;
+}
+@media all and (min-width: 320px) {
+    .c-menu--slide-left,
+    .c-menu--slide-right,
+    .c-menu--push-left,
+    .c-menu--push-right {
+        width: 300px;
+    }
+}
+
+.c-menu--slide-left .c-menu__item,
+.c-menu--slide-right .c-menu__item,
+.c-menu--push-left .c-menu__item,
+.c-menu--push-right .c-menu__item {
+    display: block;
+    /*text-align: center;*/
+    /*border-top: solid 1px #b5dbe9;*/
+    /*border-bottom: solid 1px #3184a1;*/
+}
+.c-menu--slide-left .c-menu__item:hover,
+.c-menu--slide-right .c-menu__item:hover,
+.c-menu--slide-right .c-menu__item.active,
+.c-menu--push-left .c-menu__item:hover,
+.c-menu--push-right .c-menu__item:hover{
+    background-color: #3896e2;
+}
+.c-menu--slide-left .c-menu__item:first-child,
+.c-menu--slide-right .c-menu__item:first-child,
+.c-menu--push-left .c-menu__item:first-child,
+.c-menu--push-right .c-menu__item:first-child {
+    border-top: none;
+}
+.c-menu--slide-left .c-menu__item:last-child,
+.c-menu--slide-right .c-menu__item:last-child,
+.c-menu--push-left .c-menu__item:last-child,
+.c-menu--push-right .c-menu__item:last-child {
+    border-bottom: none;
+}
+
+.c-menu--slide-left .c-menu__link,
+.c-menu--slide-right .c-menu__link,
+.c-menu--push-left .c-menu__link,
+.c-menu--push-right .c-menu__link {
+    display: block;
+    padding: 12px 24px;
+    color: #fff;
+}
+
+.c-menu--slide-left .c-menu__link .fa,
+.c-menu--slide-right .c-menu__link .fa,
+.c-menu--push-left .c-menu__link .fa,
+.c-menu--push-right .c-menu__link .fa{
+    margin-left: 10px;
+    margin-right: 20px;
+    font-size: 18px;
+    color: #FFFFFF;
+}
+
+.c-menu--slide-left .c-menu__close,
+.c-menu--slide-right .c-menu__close,
+.c-menu--push-left .c-menu__close,
+.c-menu--push-right .c-menu__close {
+    display: block;
+    padding: 12px 24px;
+    width: 100%;
+}
+
+/**
+ * Slide/Push Menu Left.
+ */
+.c-menu--slide-left,
+.c-menu--push-left {
+    top: 0;
+    left: 0;
+    -webkit-transform: translateX(-100%);
+    -ms-transform: translateX(-100%);
+    transform: translateX(-100%);
+}
+@media all and (min-width: 320px) {
+    .c-menu--slide-left,
+    .c-menu--push-left {
+        -webkit-transform: translateX(-300px);
+        -ms-transform: translateX(-300px);
+        transform: translateX(-300px);
+    }
+}
+
+.c-menu--slide-left.is-active,
+.c-menu--push-left.is-active {
+    -webkit-transform: translateX(0);
+    -ms-transform: translateX(0);
+    transform: translateX(0);
+}
+
+/**
+ * Slide/Push Menu Right.
+ */
+.c-menu--slide-right,
+.c-menu--push-right {
+    top: 0;
+    right: 0;
+    -webkit-transform: translateX(100%);
+    -ms-transform: translateX(100%);
+    transform: translateX(100%);
+}
+@media all and (min-width: 320px) {
+    .c-menu--slide-right,
+    .c-menu--push-right {
+        -webkit-transform: translateX(300px);
+        -ms-transform: translateX(300px);
+        transform: translateX(300px);
+    }
+}
+
+.c-menu--slide-right.is-active,
+.c-menu--push-right.is-active {
+    -webkit-transform: translateX(0);
+    -ms-transform: translateX(0);
+    transform: translateX(0);
+}
+
+/**
+ * Top and bottom menus
+ *
+ * Slide and push menus coming in from the top and bottom inherit a lot of
+ * common styles. We'll start each of them off by doing up the common styles
+ * for each version, followed by individual styles.
+ *
+ * The various versions are governed by modifier classes.
+
+/**
+ * Common modifiers for top/bottom menus
+ */
+.c-menu--slide-top,
+.c-menu--slide-bottom,
+.c-menu--push-top,
+.c-menu--push-bottom {
+    vertical-align: middle;
+    width: 100%;
+    height: 60px;
+    text-align: center;
+    overflow-x: scroll;
+}
+
+.c-menu--slide-top .c-menu__items,
+.c-menu--slide-bottom .c-menu__items,
+.c-menu--push-top .c-menu__items,
+.c-menu--push-bottom .c-menu__items {
+    display: inline-block;
+    text-align: center;
+}
+
+.c-menu--slide-top .c-menu__item,
+.c-menu--slide-bottom .c-menu__item,
+.c-menu--push-top .c-menu__item,
+.c-menu--push-bottom .c-menu__item {
+    display: inline-block;
+    line-height: 60px;
+}
+
+.c-menu--slide-top .c-menu__link,
+.c-menu--slide-bottom .c-menu__link,
+.c-menu--push-top .c-menu__link,
+.c-menu--push-bottom .c-menu__link {
+    display: block;
+    padding: 0 4px;
+    color: #fff;
+}
+
+.c-menu--slide-top .c-menu__close,
+.c-menu--slide-bottom .c-menu__close,
+.c-menu--push-top .c-menu__close,
+.c-menu--push-bottom .c-menu__close {
+    display: inline-block;
+    margin-right: 12px;
+    padding: 0 24px;
+    height: 60px;
+    line-height: 60px;
+}
+
+/**
+ * Slide/Push Menu Top.
+ */
+.c-menu--slide-top,
+.c-menu--push-top {
+    top: 0;
+    left: 0;
+    -webkit-transform: translateY(-60px);
+    -ms-transform: translateY(-60px);
+    transform: translateY(-60px);
+}
+
+.c-menu--slide-top.is-active,
+.c-menu--push-top.is-active {
+    -webkit-transform: translateY(0);
+    -ms-transform: translateY(0);
+    transform: translateY(0);
+}
+
+/**
+ * Slide/Push Menu Bottom.
+ */
+.c-menu--slide-bottom,
+.c-menu--push-bottom {
+    bottom: 0;
+    left: 0;
+    -webkit-transform: translateY(60px);
+    -ms-transform: translateY(60px);
+    transform: translateY(60px);
+}
+
+.c-menu--slide-bottom.is-active,
+.c-menu--push-bottom.is-active {
+    -webkit-transform: translateY(0);
+    -ms-transform: translateY(0);
+    transform: translateY(0);
+}
+
+/**
+ * Wrapper states.
+ *
+ * Various wrapper states occur depending on if a menu is pushing into view, in
+ * which case, the wrapper has to be pushed by the respective distance.
+ */
+.o-wrapper.has-push-left {
+    -webkit-transform: translateX(100%);
+    -ms-transform: translateX(100%);
+    transform: translateX(100%);
+}
+@media all and (min-width: 320px) {
+    .o-wrapper.has-push-left {
+        -webkit-transform: translateX(300px);
+        -ms-transform: translateX(300px);
+        transform: translateX(300px);
+    }
+}
+
+.o-wrapper.has-push-right {
+    -webkit-transform: translateX(-100%);
+    -ms-transform: translateX(-100%);
+    transform: translateX(-100%);
+}
+@media all and (min-width: 320px) {
+    .o-wrapper.has-push-right {
+        -webkit-transform: translateX(-300px);
+        -ms-transform: translateX(-300px);
+        transform: translateX(-300px);
+    }
+}
+
+.o-wrapper.has-push-top {
+    -webkit-transform: translateY(60px);
+    -ms-transform: translateY(60px);
+    transform: translateY(60px);
+}
+
+.o-wrapper.has-push-bottom {
+    -webkit-transform: translateY(-60px);
+    -ms-transform: translateY(-60px);
+    transform: translateY(-60px);
+}
+
+/**
+ * Body states.
+ *
+ * When a menu is active, we want to hide the overflows on the body to prevent
+ * awkward document scrolling.
+ */
+body.has-active-menu {
+    overflow: hidden;
+}
+
+/**
+ * Close button resets.
+ */
+.c-menu__close {
+    color: #fff;
+    /*background-color: #3184a1;*/
+    background-color: #5a5d63;
+    font-size: 14px;
+    border: none;
+    box-shadow: none;
+    border-radius: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    text-align: right;
+    /*cursor: pointer;*/
+}
+
+.c-menu__close:focus {
+    outline: none;
+}
+.c-menu__close .c-menu_gd_close {
+    color: #FFFFFF;
+    cursor: pointer;
+    padding: 0 10px;
+}
+.c-menu__close .c-menu_gd_close:hover {
+    text-decoration: none;
+}
+.c-menu__item .c-menu__link img {
+    margin-left: 10px;
+    margin-right: 20px;
+}

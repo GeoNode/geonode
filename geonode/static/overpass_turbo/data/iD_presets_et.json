@@ -1,0 +1,881 @@
+{
+  "address": {
+    "name": "Aadress"
+  },
+  "aeroway/aerodrome": {
+    "name": "Lennujaam"
+  },
+  "aeroway/hangar": {
+    "name": "Angaar"
+  },
+  "aeroway/helipad": {
+    "name": "Kopteriväljak"
+  },
+  "aeroway/runway": {
+    "name": "Lennurada"
+  },
+  "aeroway/taxiway": {
+    "name": "Ruleerimistee"
+  },
+  "aeroway/terminal": {
+    "name": "Lennujaama terminal"
+  },
+  "amenity/atm": {
+    "name": "Pangaautomaat"
+  },
+  "amenity/bank": {
+    "name": "Pank"
+  },
+  "amenity/bar": {
+    "name": "Baar"
+  },
+  "amenity/bench": {
+    "name": "Pink"
+  },
+  "amenity/bicycle_parking": {
+    "name": "Rattaparkla"
+  },
+  "amenity/bicycle_rental": {
+    "name": "Rattarent"
+  },
+  "amenity/boat_rental": {
+    "name": "Paadi laenutus"
+  },
+  "amenity/bureau_de_change": {
+    "name": "Valuutavahetus"
+  },
+  "amenity/bus_station": {
+    "name": "Bussijaam"
+  },
+  "amenity/cafe": {
+    "name": "Kohvik"
+  },
+  "amenity/car_rental": {
+    "name": "Autorent"
+  },
+  "amenity/car_wash": {
+    "name": "Autopesula"
+  },
+  "amenity/casino": {
+    "name": "Kasiino"
+  },
+  "amenity/charging_station": {
+    "name": "Laadimisjaam"
+  },
+  "amenity/childcare": {
+    "name": "Lastehoid"
+  },
+  "amenity/cinema": {
+    "name": "Kino"
+  },
+  "amenity/clinic": {
+    "name": "Kliinik"
+  },
+  "amenity/compressed_air": {
+    "name": "Suruõhk"
+  },
+  "amenity/courthouse": {
+    "name": "Kohtumaja"
+  },
+  "amenity/dentist": {
+    "name": "Hambaarst"
+  },
+  "amenity/drinking_water": {
+    "name": "Joogivesi"
+  },
+  "amenity/embassy": {
+    "name": "Saatkond"
+  },
+  "amenity/fast_food": {
+    "name": "Kiirtoitlustus"
+  },
+  "amenity/fire_station": {
+    "name": "Tuletõrjedepoo"
+  },
+  "amenity/fountain": {
+    "name": "Purskkaev"
+  },
+  "amenity/fuel": {
+    "name": "Bensiinijaam"
+  },
+  "amenity/grave_yard": {
+    "name": "Surnuaed"
+  },
+  "amenity/library": {
+    "name": "Raamatukogu"
+  },
+  "amenity/marketplace": {
+    "name": "Turg"
+  },
+  "amenity/nightclub": {
+    "name": "Ööklubi"
+  },
+  "amenity/parking": {
+    "name": "Autoparkla"
+  },
+  "amenity/pharmacy": {
+    "name": "Apteek"
+  },
+  "amenity/place_of_worship/christian": {
+    "name": "Kirik"
+  },
+  "amenity/place_of_worship/jewish": {
+    "name": "Sünagoog"
+  },
+  "amenity/place_of_worship/muslim": {
+    "name": "Mošee"
+  },
+  "amenity/police": {
+    "name": "Politsei"
+  },
+  "amenity/post_box": {
+    "name": "Kirjakast"
+  },
+  "amenity/post_office": {
+    "name": "Postkontor"
+  },
+  "amenity/pub": {
+    "name": "Kõrts",
+    "terms": "Pubi"
+  },
+  "amenity/register_office": {
+    "name": "Perekonnaseisu osakond",
+    "terms": "Perekonnaseisuamet"
+  },
+  "amenity/restaurant": {
+    "name": "Restoran"
+  },
+  "amenity/shelter": {
+    "name": "Varjualune"
+  },
+  "amenity/swimming_pool": {
+    "name": "Ujumisbassein"
+  },
+  "amenity/telephone": {
+    "name": "Telefon"
+  },
+  "amenity/theatre": {
+    "name": "Teater"
+  },
+  "amenity/toilets": {
+    "name": "Tualett"
+  },
+  "amenity/townhall": {
+    "name": "Linnahall"
+  },
+  "amenity/waste_basket": {
+    "name": "Prügikast"
+  },
+  "area": {
+    "name": "Ala"
+  },
+  "barrier": {
+    "name": "Barjäär"
+  },
+  "barrier/cattle_grid": {
+    "name": "Karjatara"
+  },
+  "barrier/city_wall": {
+    "name": "Linnamüür"
+  },
+  "barrier/fence": {
+    "name": "Aed"
+  },
+  "barrier/gate": {
+    "name": "Värav"
+  },
+  "barrier/hedge": {
+    "name": "Hekk"
+  },
+  "barrier/wall": {
+    "name": "Vall"
+  },
+  "building": {
+    "name": "Hoone"
+  },
+  "building/apartments": {
+    "name": "Korterid"
+  },
+  "building/commercial": {
+    "name": "Ärihoone"
+  },
+  "building/construction": {
+    "name": "Ehitusjärgus hoone"
+  },
+  "building/dormitory": {
+    "name": "Ühiselamu"
+  },
+  "building/entrance": {
+    "name": "Sissepääs"
+  },
+  "building/garage": {
+    "name": "Garaaz"
+  },
+  "building/garages": {
+    "name": "Garaazid"
+  },
+  "building/greenhouse": {
+    "name": "Kasvuhoone"
+  },
+  "building/hospital": {
+    "name": "Haigla"
+  },
+  "building/hotel": {
+    "name": "Hotell"
+  },
+  "building/house": {
+    "name": "Maja"
+  },
+  "building/hut": {
+    "name": "Onn"
+  },
+  "building/industrial": {
+    "name": "Tööstushoone"
+  },
+  "building/kindergarten": {
+    "name": "Lasteaed"
+  },
+  "building/public": {
+    "name": "Avalik hoone"
+  },
+  "building/residential": {
+    "name": "Elamu"
+  },
+  "building/roof": {
+    "name": "Katus"
+  },
+  "building/school": {
+    "name": "Koolihoone"
+  },
+  "building/shed": {
+    "name": "Kuur"
+  },
+  "building/stable": {
+    "name": "Tall",
+    "terms": "Hobusetall"
+  },
+  "building/train_station": {
+    "name": "Raudteejaam"
+  },
+  "building/university": {
+    "name": "Ülikool"
+  },
+  "building/warehouse": {
+    "name": "Ladu"
+  },
+  "craft/basket_maker": {
+    "name": "Korvimeister"
+  },
+  "craft/beekeeper": {
+    "name": "Mesinik"
+  },
+  "craft/blacksmith": {
+    "name": "Sepikoda"
+  },
+  "craft/boatbuilder": {
+    "name": "Paadiehitaja"
+  },
+  "craft/bookbinder": {
+    "name": "Raamatuköitja"
+  },
+  "craft/brewery": {
+    "name": "Pruulikoda"
+  },
+  "craft/carpenter": {
+    "name": "Puusepp"
+  },
+  "craft/clockmaker": {
+    "name": "Kellassepp"
+  },
+  "craft/confectionery": {
+    "name": "Kondiiter",
+    "terms": "Maiustused"
+  },
+  "craft/dressmaker": {
+    "name": "Rätsep"
+  },
+  "craft/electrician": {
+    "name": "Elektrik"
+  },
+  "craft/handicraft": {
+    "name": "Käsitöö"
+  },
+  "craft/jeweler": {
+    "name": "Kullassepp"
+  },
+  "craft/key_cutter": {
+    "name": "Võtmemeister",
+    "terms": "Võtmeabi, Võtmete valmistamine"
+  },
+  "craft/locksmith": {
+    "name": "Lukuabi"
+  },
+  "emergency/phone": {
+    "name": "Hädaabi telefon"
+  },
+  "footway/crossing": {
+    "name": "Ülekäik"
+  },
+  "footway/crosswalk": {
+    "name": "Jalakäijate ülekäik"
+  },
+  "footway/sidewalk": {
+    "name": "Kõnnitee"
+  },
+  "ford": {
+    "name": "Koolmekoht",
+    "terms": "Koole"
+  },
+  "highway": {
+    "name": "Tee"
+  },
+  "highway/bridleway": {
+    "name": "Ratsutamise rada"
+  },
+  "highway/bus_stop": {
+    "name": "Bussipeatus"
+  },
+  "highway/crossing": {
+    "name": "Ülekäigurada"
+  },
+  "highway/crosswalk": {
+    "name": "Jalakäijate ülekäik"
+  },
+  "highway/cycleway": {
+    "name": "Rattatee"
+  },
+  "highway/footway": {
+    "name": "Kõnnitee"
+  },
+  "highway/living_street": {
+    "name": "Majadevaheline tänav",
+    "terms": "Õueala tänav"
+  },
+  "highway/mini_roundabout": {
+    "name": "Mini-ringtee"
+  },
+  "highway/motorway": {
+    "name": "Kiirtee"
+  },
+  "highway/path": {
+    "name": "Rada"
+  },
+  "highway/pedestrian": {
+    "name": "Jalakäijate tänav"
+  },
+  "highway/primary": {
+    "name": "Põhimaantee"
+  },
+  "highway/residential": {
+    "name": "Elamupiikonna tänav"
+  },
+  "highway/rest_area": {
+    "name": "Puhkeala"
+  },
+  "highway/road": {
+    "name": "Teadmata tee"
+  },
+  "highway/secondary": {
+    "name": "Tugimaantee"
+  },
+  "highway/secondary_link": {
+    "name": "Tugimaantee"
+  },
+  "highway/service": {
+    "name": "Juurdepääsutee",
+    "terms": "Service Road, Teenindustee, Juurdesõidutee"
+  },
+  "highway/steps": {
+    "name": "Trepp"
+  },
+  "highway/street_lamp": {
+    "name": "Tänavavalgusti"
+  },
+  "highway/tertiary": {
+    "name": "Kohalik maantee"
+  },
+  "highway/traffic_signals": {
+    "name": "Valgusfoorid"
+  },
+  "highway/trunk": {
+    "name": "E-tähistusega põhimaantee",
+    "terms": "Trunk Road"
+  },
+  "highway/turning_circle": {
+    "name": "Ümberpööramiskoht"
+  },
+  "historic": {
+    "name": "Ajalooline koht"
+  },
+  "historic/archaeological_site": {
+    "name": "Arheoloogiline koht"
+  },
+  "historic/boundary_stone": {
+    "name": "Piirikivi"
+  },
+  "historic/castle": {
+    "name": "Loss"
+  },
+  "historic/memorial": {
+    "name": "Memoriaal"
+  },
+  "historic/monument": {
+    "name": "Monument"
+  },
+  "historic/ruins": {
+    "name": "Varemed"
+  },
+  "junction": {
+    "name": "Ristmik"
+  },
+  "landuse": {
+    "name": "Maakasutus"
+  },
+  "landuse/cemetery": {
+    "name": "Surnuaed"
+  },
+  "landuse/commercial": {
+    "name": "Kommertsala"
+  },
+  "landuse/construction": {
+    "name": "Ehitus"
+  },
+  "landuse/forest": {
+    "name": "Metsamaa"
+  },
+  "landuse/grass": {
+    "name": "Muru"
+  },
+  "landuse/landfill": {
+    "name": "Prügila",
+    "terms": "Prügimägi"
+  },
+  "landuse/meadow": {
+    "name": "Niit"
+  },
+  "landuse/orchard": {
+    "name": "Viljapuuaed"
+  },
+  "landuse/quarry": {
+    "name": "Karjäär"
+  },
+  "landuse/vineyard": {
+    "name": "Viinapuuaed"
+  },
+  "leisure/dog_park": {
+    "name": "Koerapark"
+  },
+  "leisure/firepit": {
+    "name": "Lõkkease",
+    "terms": "Lõkkekoht"
+  },
+  "leisure/garden": {
+    "name": "Aed"
+  },
+  "leisure/golf_course": {
+    "name": "Golfiväljak"
+  },
+  "leisure/ice_rink": {
+    "name": "Uisuväljak"
+  },
+  "leisure/marina": {
+    "name": "Jahisadam"
+  },
+  "leisure/park": {
+    "name": "Park"
+  },
+  "leisure/picnic_table": {
+    "name": "Piknikulaud"
+  },
+  "leisure/pitch": {
+    "name": "Spordiväljak"
+  },
+  "leisure/pitch/baseball": {
+    "name": "Pesapalliväljak"
+  },
+  "leisure/pitch/basketball": {
+    "name": "Korvpalliväljak"
+  },
+  "leisure/pitch/skateboard": {
+    "name": "Rulapark",
+    "terms": "Skate park"
+  },
+  "leisure/pitch/soccer": {
+    "name": "Jalgpalliväljak"
+  },
+  "leisure/pitch/tennis": {
+    "name": "Tenniseväljak"
+  },
+  "leisure/pitch/volleyball": {
+    "name": "Võrkpalliväljak"
+  },
+  "leisure/playground": {
+    "name": "Mänguväljak"
+  },
+  "leisure/stadium": {
+    "name": "Staadion"
+  },
+  "leisure/swimming_pool": {
+    "name": "Ujumisbassein"
+  },
+  "line": {
+    "name": "Joon"
+  },
+  "man_made": {
+    "name": "Inimtehtud",
+    "terms": "Tehislik, Tehis"
+  },
+  "man_made/cutline": {
+    "name": "Siht"
+  },
+  "man_made/embankment": {
+    "name": "Tamm",
+    "terms": "Muldkeha"
+  },
+  "man_made/flagpole": {
+    "name": "Lipumast"
+  },
+  "man_made/lighthouse": {
+    "name": "Tuletorn"
+  },
+  "man_made/mast": {
+    "name": "Raadiomast"
+  },
+  "man_made/observation": {
+    "name": "Vaatlustorn"
+  },
+  "man_made/pier": {
+    "name": "Kai"
+  },
+  "man_made/pipeline": {
+    "name": "Torujuhe"
+  },
+  "man_made/silo": {
+    "name": "Silo",
+    "terms": "Silo hoidla, Silo mahuti"
+  },
+  "man_made/tower": {
+    "name": "Torn"
+  },
+  "man_made/wastewater_plant": {
+    "name": "Reoveepuhastusjaam"
+  },
+  "man_made/water_tower": {
+    "name": "Veetorn"
+  },
+  "man_made/water_well": {
+    "name": "Veekaev",
+    "terms": "Kaev"
+  },
+  "military/airfield": {
+    "name": "Lennuväli",
+    "terms": "Lennuväljak"
+  },
+  "military/bunker": {
+    "name": "Varjend",
+    "terms": "Punker"
+  },
+  "natural": {
+    "name": "Looduslik"
+  },
+  "natural/bay": {
+    "name": "Laht"
+  },
+  "natural/beach": {
+    "name": "Rand"
+  },
+  "natural/cave_entrance": {
+    "name": "Koopa sissepääs",
+    "terms": "Koobas"
+  },
+  "natural/cliff": {
+    "name": "Kalju",
+    "terms": "Kuristik"
+  },
+  "natural/coastline": {
+    "name": "Rannajoon",
+    "terms": "Rand"
+  },
+  "natural/glacier": {
+    "name": "Liustik"
+  },
+  "natural/grassland": {
+    "name": "Rohumaa"
+  },
+  "natural/heath": {
+    "name": "Nõmm"
+  },
+  "natural/peak": {
+    "name": "Mäetipp"
+  },
+  "natural/scrub": {
+    "name": "Võsa"
+  },
+  "natural/spring": {
+    "name": "Allikas"
+  },
+  "natural/tree": {
+    "name": "Puu"
+  },
+  "natural/volcano": {
+    "name": "Vulkaan"
+  },
+  "natural/water": {
+    "name": "Vesi"
+  },
+  "natural/water/lake": {
+    "name": "Järv"
+  },
+  "natural/water/pond": {
+    "name": "Tiik"
+  },
+  "natural/water/reservoir": {
+    "name": "Reservuaar"
+  },
+  "natural/wetland": {
+    "name": "Märgala"
+  },
+  "natural/wood": {
+    "name": "Mets"
+  },
+  "office/government": {
+    "name": "Valitsuse kontor"
+  },
+  "piste": {
+    "name": "Suusarada"
+  },
+  "place/city": {
+    "name": "Linn"
+  },
+  "place/island": {
+    "name": "Saar"
+  },
+  "place/town": {
+    "name": "Linn"
+  },
+  "place/village": {
+    "name": "Küla"
+  },
+  "point": {
+    "name": "Punkt"
+  },
+  "power": {
+    "name": "Elekter"
+  },
+  "power/line": {
+    "name": "Elektriliin"
+  },
+  "power/pole": {
+    "name": "Elektripost"
+  },
+  "power/sub_station": {
+    "name": "Alajaam"
+  },
+  "power/transformer": {
+    "name": "Trafo"
+  },
+  "public_transport/platform": {
+    "name": "Platvorm"
+  },
+  "railway": {
+    "name": "Raudtee"
+  },
+  "railway/abandoned": {
+    "name": "Mahajäetud raudtee"
+  },
+  "railway/disused": {
+    "name": "Kasutusest väljasolev raudtee"
+  },
+  "railway/level_crossing": {
+    "name": "Raudteeülesõit"
+  },
+  "railway/monorail": {
+    "name": "Monorelss"
+  },
+  "railway/narrow_gauge": {
+    "name": "Kitsarööpaline raudtee"
+  },
+  "railway/platform": {
+    "name": "Raudteeplatvorm"
+  },
+  "railway/rail": {
+    "name": "Raudtee"
+  },
+  "railway/station": {
+    "name": "Raudteejaam"
+  },
+  "railway/subway": {
+    "name": "Metroo"
+  },
+  "railway/subway_entrance": {
+    "name": "Metroo sissepääs"
+  },
+  "railway/tram": {
+    "name": "Tramm"
+  },
+  "relation": {
+    "name": "Relatsioon"
+  },
+  "roundabout": {
+    "name": "Ringtee"
+  },
+  "route/ferry": {
+    "name": "Praamitee"
+  },
+  "shop": {
+    "name": "Pood"
+  },
+  "shop/alcohol": {
+    "name": "Alkoholipood"
+  },
+  "shop/bakery": {
+    "name": "Pagariäri"
+  },
+  "shop/beauty": {
+    "name": "Ilusalong"
+  },
+  "shop/bicycle": {
+    "name": "Rattapood"
+  },
+  "shop/books": {
+    "name": "Raamatupood"
+  },
+  "shop/butcher": {
+    "name": "Lihapood"
+  },
+  "shop/car": {
+    "name": "Autopood"
+  },
+  "shop/car_parts": {
+    "name": "Autoosade pood"
+  },
+  "shop/car_repair": {
+    "name": "Autoparandus"
+  },
+  "shop/clothes": {
+    "name": "Riidepood"
+  },
+  "shop/computer": {
+    "name": "Arvutipood"
+  },
+  "shop/confectionery": {
+    "name": "Kommipood"
+  },
+  "shop/electronics": {
+    "name": "Elektroonikapood"
+  },
+  "shop/florist": {
+    "name": "Lillepood"
+  },
+  "shop/furniture": {
+    "name": "Mööblipood"
+  },
+  "shop/gift": {
+    "name": "Kingipood"
+  },
+  "shop/hairdresser": {
+    "name": "Juuksurisalong"
+  },
+  "shop/laundry": {
+    "name": "Pesumaja"
+  },
+  "shop/mobile_phone": {
+    "name": "Mobiilipood"
+  },
+  "shop/motorcycle": {
+    "name": "Mootorrattapood"
+  },
+  "shop/music": {
+    "name": "Muusikapood"
+  },
+  "shop/optician": {
+    "name": "Prillipood"
+  },
+  "shop/pet": {
+    "name": "Lemmikloomapood"
+  },
+  "shop/shoes": {
+    "name": "Kingapood"
+  },
+  "shop/sports": {
+    "name": "Sporditarvete pood"
+  },
+  "shop/supermarket": {
+    "name": "Supermarket"
+  },
+  "shop/toys": {
+    "name": "Mänguasjapood"
+  },
+  "shop/travel_agency": {
+    "name": "Reisiagentuur"
+  },
+  "shop/tyres": {
+    "name": "Rehvipood"
+  },
+  "shop/video": {
+    "name": "Videolaenutus"
+  },
+  "tourism": {
+    "name": "Turism"
+  },
+  "tourism/alpine_hut": {
+    "name": "Alpimaja"
+  },
+  "tourism/artwork": {
+    "name": "Kunstiteos"
+  },
+  "tourism/attraction": {
+    "name": "Turismiatraktsioon"
+  },
+  "tourism/caravan_site": {
+    "name": "Karavanipark"
+  },
+  "tourism/guest_house": {
+    "name": "Külalistemaja"
+  },
+  "tourism/hostel": {
+    "name": "Hostel"
+  },
+  "tourism/hotel": {
+    "name": "Hotell"
+  },
+  "tourism/motel": {
+    "name": "Motell"
+  },
+  "tourism/museum": {
+    "name": "Muuseum"
+  },
+  "tourism/picnic_site": {
+    "name": "Piknikukoht"
+  },
+  "tourism/theme_park": {
+    "name": "Teemapark"
+  },
+  "tourism/zoo": {
+    "name": "Loomaaed"
+  },
+  "type/boundary/administrative": {
+    "name": "Administratiivpiir"
+  },
+  "waterway/canal": {
+    "name": "Kanal"
+  },
+  "waterway/dam": {
+    "name": "Tamm"
+  },
+  "waterway/ditch": {
+    "name": "Kraav"
+  },
+  "waterway/river": {
+    "name": "Jõgi"
+  },
+  "waterway/riverbank": {
+    "name": "Jõekallas"
+  },
+  "waterway/stream": {
+    "name": "Oja"
+  },
+  "waterway/weir": {
+    "name": "Pais"
+  }
+}

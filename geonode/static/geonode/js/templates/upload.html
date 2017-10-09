@@ -12,23 +12,25 @@
 <script type='text/html' id='layerTemplate'>
   <div class='file-element' id='<%= selector %>-element'>
     <div class='row'>
-      <div class='span6'><h3><%= name %></h3></div>
-      <div class='span2'><h3><%= type %><h3></div>
+      <div class='col-md-6'><label class="control-label"><%= name %></label></div>
+      <div class='col-md-6'><label class="control-label"><%= type %></label></div>
     </div>
     <% if (format !== 'raster') { %>
-    <div id='<%= name %>-vector-options' class='row span8'>
-        <% if (time) { %>
-            <div class="checkbox">
-                <input type='checkbox' id='<%= name %>-time' name='<%= name %>-time'/><label for="<%= name %>-time">&nbsp;Configure Time</label>
-            </div>
-        <% } %>
-        <% if (geogig) { %>
-            <div class="checkbox">
-                <input type='checkbox' id='<%= name %>:geogig_toggle' name='<%= name %>:geogig_toggle'/><label for="<%= name %>:geogig_toggle">&nbsp;Import to Geogig</label>
-            </div>
-            <div id="<%= name %>:geogig_store" name='<%= name %>:geogig_store' style="width: 225px; visibility:hidden;padding:5px"></div>
-        <% } %>
+    <div class='row'>
+        <div id='<%= name %>-vector-options' class='col-md-8'>
+            <% if (time) { %>
+                <div class="checkbox">
+                    <input type='checkbox' id='<%= name %>-time' name='<%= name %>-time'/><label for="<%= name %>-time">&nbsp;Configure Time</label>
+                </div>
+            <% } %>
+            <% if (geogig) { %>
+                <div class="checkbox">
+                    <input type='checkbox' id='<%= name %>:geogig_toggle' name='<%= name %>:geogig_toggle'/><label for="<%= name %>:geogig_toggle">&nbsp;Import to Geogig</label>
+                </div>
+                <div id="<%= name %>:geogig_store" name='<%= name %>:geogig_store' style="width: 225px; visibility:hidden;padding:5px"></div>
+            <% } %>
 
+        </div>
     </div>
     <% } %>
     <% if (format == 'raster') { %>
@@ -111,11 +113,13 @@
         <% } %>
     </div>
     <% } %>
-    <hr />
-    <div id="<%= name %>-files" class="row span8">
-      <ul class='files'></ul>
-      <ul class='errors'></ul>
-      <div id='status'></div>
+    <hr style="margin: 0px;" />
+    <div class="row">
+        <div id="<%= name %>-files" class="col-md-8">
+          <ul class='files'></ul>
+          <ul class='errors'></ul>
+          <div id='status'></div>
+        </div>
     </div>
   </div>
 </script>
@@ -125,6 +129,7 @@
   <div class='alert <%= alertLevel %>'>
     <p><%= message %></p>
   </div>
+  </div>
 </script>
 
 
@@ -132,7 +137,7 @@
 
   <div class='alert alert-success'>
     <p>Your layer has been upload successfully</p>
-    a href="/data/geonode:<%= name %>" class='btn'>Layer page</a>
+    <a href="/data/geonode:<%= name %>" class='btn'>Layer page</a>
   </div>
 
 </script>

@@ -1,0 +1,550 @@
+.container-fluid {
+    padding-right: 0;
+    padding-left: 0;
+    margin-right: auto;
+    margin-left: auto;
+}
+#gd-slider{
+min-height:500px;
+background:url('../images/bd.png');
+width:100%;
+
+}
+.carousel-inner {
+    min-height:500px;
+    overflow: hidden;
+    position: relative;
+    width: 100%;
+}
+
+.gd-slider-title{
+    margin-top:-45%;
+    padding-right:15%;
+    text-align:right;
+    font-size:36px;
+    color:#fff;
+    font-weight:bold;
+}
+.gd-slider-msg{
+    margin:opx auto ;
+    padding-left:60%;
+    text-align:left;
+    font-size:28px;
+    color:#fff;
+}
+#gd-stastic{
+
+    color:#FFF;
+    width:100%;
+    background:url('../images/gd-statis.png');
+    padding: 0px 100px;
+}
+.gd-stastic-control{
+    margin:0px 120px;
+}
+#gd-stastic .navbar-nav {
+    padding-top:20px;
+    padding-bottom:20px;
+    margin-left:20px;
+    font-size: 18px;
+}
+#gd-stastic .navbar-nav > li > a{
+    color:#fff;
+    font-size:16px;
+    padding: 0px 15px;
+    border-right:0px solid #74b6eb;
+    min-height:40px;
+}
+
+#static-seperator{
+    border-right:1px solid #74b6eb;
+    min-height:35px;
+
+}
+#gd-stastic .navbar-nav > li:last-child > a{
+    border-right:none;
+}
+#gd-stastic .navbar-nav > li > a:hover{
+    color: #fff;
+    text-decoration: none;
+    background:#3896e2;
+}
+
+/*--- how it  works start--*/
+#gd-featured-maps{
+    background:#35424f;
+}
+
+#gd-howitworks{
+    color:#fff;
+    font-size:px;
+    margin-top:10px;
+    margin-bottom:30px;
+    background:#;
+ }
+
+ #gd-howitworks h2{
+    color:#6e6b6b;
+    text-transform: uppercase;
+    font-size:20px;
+ }
+  #gd-howitworks h3{
+    color:#7c7c7c;
+    font-size:16px;
+    font-weight:bold;
+ }
+  #gd-howitworks h4{
+    color:#7c7c7c;
+    font-size:16px;
+    font-weight:bold;
+ }
+ #gd-howitworks h5{
+    color:#7c7c7c;
+    font-size:13px;
+ }
+ #gd-howitworks-map{
+    color:#fff;
+    font-size:px;
+    margin-top:10px;
+    margin-bottom:30px;
+    background:#;
+ }
+
+ #gd-howitworks-map h2{
+    color:#fff;
+    text-transform: uppercase;
+    font-size:20px;
+ }
+  #gd-howitworks-map h3{
+    color:#fff;
+    font-size:16px;
+    font-weight:bold;
+ }
+  #gd-howitworks-map h4{
+    color:#7c7c7c;
+    font-size:16px;
+    font-weight:bold;
+ }
+ #gd-howitworks-map h5{
+    color:#c9cdd0;
+    font-size:13px;
+ }
+ .gd-signup{
+   margin-top:20px;
+
+ }
+ .gd-signup img{
+ border:none;
+ width:100px;
+ }
+
+/*--- how it  works end--*/
+
+/*search start*/
+
+#search {
+    float: right;
+    margin-top: 9px;
+    width: 250px;
+    marign-left:300px;
+}
+
+.search {
+    padding: 5px 0px;
+    width: 280px;
+    height: 30px;
+    position: relative;
+    left: 350px;
+    float: left;
+    line-height: 22px;
+}
+
+.search input {
+        position: absolute;
+        width: 0px;
+        float: Left;
+        margin-left: 210px;
+        -webkit-transition: all 0.7s ease-in-out;
+        -moz-transition: all 0.7s ease-in-out;
+        -o-transition: all 0.7s ease-in-out;
+        transition: all 0.7s ease-in-out;
+        height: 30px;
+        line-height: 18px;
+        padding: 0 2px 0 2px;
+        border-radius:1px;
+    }
+.search:hover input, .search input:focus {
+            width: 200px;
+            margin-left: 0px;
+        }
+.search span{
+    color:#fff;
+    width:50px;
+}
+.btn {
+    height: 30px;
+    position: absolute;
+    right: 0;
+    top: 5px;
+    border-radius:5px;
+    background:#184757;
+}
+
+
+
+/*search end */
+
+
+/*---Geo dash featured start---*/
+.gd-featurdmain{
+    margin:30px 0px;
+}
+.gd-featured{
+  height:auto;
+  background:#fff;
+  border-radius:10px;
+
+}
+ .gd-featured img{
+ border:none;
+ width:100px
+ }
+ .gd-featured span{
+    color:#00aeef;
+    font-size:10px;
+
+ }
+  .gd-featured h5{
+    color:#00aeef;
+    text-align:left;
+    padding:0px 20px;
+    font-size:13px;
+
+ }
+ .gd-featured-statis{
+  padding:10px 20px 10px 20px;
+  font-size:12px;
+  color:#8f8f8f;
+ }
+ .gd-featured-statis span a{
+  font-size:8px;
+  color:#8f8f8f;
+ }
+/*--- Geo dash featured end --*/
+
+/*---Geo dash Latest News start---*/
+
+#gd-latestnews{
+  height:auto;
+  background:url('../images/updatenews.png');
+  padding-bottom:30px;
+  margin-top:-100px;
+}
+ #gd-latestnews h2{
+    color:#fff;
+    text-transform: uppercase;
+    font-size:20px;
+ }
+ .gd-latestnews-main{
+ border:none;
+ margin:20px 0px;
+ }
+ #gd-latestnews-title{
+    background:#fff;
+    padding:20px 20px;
+    text-align:left;
+
+ }
+  #gd-latestnews-title h4{
+    color:#6db2ea;
+    text-align:left;
+    padding-right:20px;
+}
+#gd-latestnews-title h4 i{
+    color:#6db2ea;
+    padding-right:10px;
+   }
+#gd-latestnews-title span{
+    color:#5a5d63;
+    font-size:10px;
+   }
+ #gd-latestnews-title h5{
+    color:#5a5d63;
+    padding-right:15px;
+    text-transform: uppercase;
+    text-align:left;
+   }
+  .gd-latestnews12-msg{
+    color:#5a5d63;
+    font-size:14px;
+  }
+   #gd-latestnews-title h3{
+    color:#60abe8;
+    text-align:left;
+    font-size:15px;
+   }
+   #gd-latestnews-title h3 i{
+    color:#60abe8;
+    text-align:left;
+    font-size:15px;
+    padding-left:50px;
+   }
+
+ #gd-latestnews-left{
+    background:#5ea9dd;
+    padding:20px 20px;
+    text-align:left;
+
+ }
+ #gd-latestnews-left h4{
+    color:#fff;
+    text-align:left;
+     font-size:13px;
+ }
+ #gd-latestnews-left h4 i{
+    color:#fff;
+    padding-right:15px;
+   }
+   #gd-latestnews-left h5{
+    color:#fff;
+    padding-right:15px;
+    font-size:14px;
+
+   }
+  #gd-latestnews-left span{
+    color:#c7e1f3;
+    font-size:10px;
+
+   }
+
+/*--- Geo dash Latest News end --*/
+/*--- Geo dash Feature Highlight start --*/
+
+#gd-featurehighlight{
+  background:#f5f5f5;
+  padding-bottom:30px;
+  min-height:500px;
+}
+ #gd-featurehighlight h2{
+    color:#62626;
+    text-transform: uppercase;
+    font-size:20px;
+ }
+ .gd-featurehighlight-main{
+ border:none;
+ margin:20px 0px; ;
+ }
+#gd-featurehighlight-title{
+    padding:20px 20px;
+    text-align:left;
+ }
+#gd-featurehighlight-title h5{
+    color:#212121;
+    text-transform: uppercase;
+    text-align:left;
+    font-size:16px;
+   }
+#gd-featurehighlight-title h4{
+    color:#101010;
+    text-align:left;
+    font-size:13px;
+   }
+ #gd-featurehighlight-left{
+
+
+ }
+#gd-featurehighlight-left img{
+   border:none;
+   overflow:hidden;
+   margin-left: -119px;
+
+   }
+
+/*--- Geo dash Feature Highlight end --*/
+
+/*--- Geo dash Interoperabity start --*/
+
+#gd-interprobability{
+  background:url('../images/new-maps.png');
+  padding-bottom:0px;
+  min-height:500px;
+}
+.gd-interprobability-main{
+ border:none;
+ margin-left:0px;
+ }
+#gd-interprobability-left{
+    padding:0px 15px 0px 15px;
+    text-align:center;
+    background: #293b49;
+    height:500px;
+ }
+#gd-interprobability-left h2{
+    color:#fff;
+    text-transform: uppercase;
+    text-align:center;
+    font-size:20px;
+    margin:auto;
+    padding-top:25px;
+    padding-bottom:25px;
+   }
+#gd-interprobability-left p{
+    color:#f1f2f3;
+    text-align: justify;
+    font-size:13px;
+   }
+  #gd-interprobability-title{
+
+  }
+  #gd-interprobability-title img{
+    border:none;
+ }
+
+
+/*--- Geo dash Interoperabity end --*/
+
+/*--- Geo dash makepretty start --*/
+
+#gd-makepretty{
+  background:#3799bc;
+  padding-top:30px;
+  padding-bottom:30px;
+  min-height:500px;
+}
+.gd-makepretty-main{
+ border:none;
+ margin-top:0px;
+ margin-left:0px;
+ }
+#gd-makepretty-left{
+    padding:0px 0px 20px 0px;;
+    text-align:left;
+ }
+#gd-makepretty-left h5{
+    color:#fff;
+    text-align:left;
+    font-size:16px;
+    margin:auto;
+   }
+#gd-makepretty-left h4{
+    color:#fff;
+    text-align:right;
+    font-size:13px;
+   }
+  #gd-makepretty-title{
+  max-width:452px;
+  margin:auto;
+  }
+  #gd-makepretty-title p{
+    color:#fcfcfc;
+    text-align: justify;
+    font-size:13px;
+  }
+  #gd-makepretty-title img{
+    max-width:452px;
+    border:none;
+    align:right;
+ }
+ .gd-makepretty-main h2{
+    color:#fff;
+    text-transform: uppercase;
+    font-size:20px;
+ }
+ .gd-makepretty-main h5{
+    color:#badbe7;
+    font-size:16px;
+    padding-bottom:20px;
+ }
+
+/*--- Geo dash makepretty end --*/
+/*--- Geo dash view maps start --*/
+
+#gd-viewmaps{
+  background:#1d334b;
+  min-height:500px;
+}
+
+.gd-viewmaps-main{
+ border:none;
+ margin-top:0px;
+ margin-left:0px;
+ }
+#gd-viewmaps-left{
+    padding:0px 0px 0px 0px;
+    text-align:left;
+ }
+#gd-viewmaps-left p{
+    color:#c3c9cf;
+    text-align: justify;
+    font-size:13px;
+   }
+#gd-viewmaps-left h4{
+    color:#fff;
+    text-align:right;
+    font-size:13px;
+   }
+  #gd-viewmaps-title{
+
+  }
+  #gd-viewmaps-title img{
+    border:none;
+    margin-left:-200px;
+    margin-top:100px;
+ }
+ #gd-viewmaps-left h2{
+    color:#fff;
+    text-transform: uppercase;
+    font-size:20px;
+    text-align:center;
+    padding-top:25px;
+    padding-bottom:25px;
+ }
+
+
+/*--- Geo dash view maps end --*/
+/*--- Geo dash share maps start --*/
+
+#gd-sharemap{
+  background:url('../images/skybg.png') no-repeat;
+  padding-top:30px;
+  padding-bottom:30px;
+  min-height:500px;
+}
+ #gd-sharemap-title h2{
+    color:#fff;
+    text-transform: uppercase;
+    font-size:20px;
+   margin-top:270px;
+ }
+ #gd-sharemap-title h4{
+    color:#fff;
+    text-align:left;
+    font-size:13px;
+    margin-top:50px;
+   }
+ #gd-sharemap-title-bottom h2{
+    color:#898887;
+    text-transform: uppercase;
+    font-size:25px;
+    margin-top:380px;
+    text-align:right;
+ }
+ .sponsor-logo{
+    text-align:right;
+ }
+ .sponsor-logo img{
+    text-align:right;
+    border:none;
+    width:80px;
+    margin-left:20px;
+ }
+ .sponsor-wb-logo img{
+
+ }
+ #gd-sponsors-title{
+    padding-bottom:20px;
+ }
+ #gd-sponsors-title img{
+    padding-right:10px;
+ }
+/*--- Geo dash share maps end --*/

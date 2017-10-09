@@ -4,9 +4,9 @@
 
 define(function (require, exports) {
 
-        var _      = require('underscore'),
-        fileTypes  = require('upload/FileTypes'),
-        path       = require('upload/path'),
+    var _        = require('underscore'),
+        fileTypes = require('upload/FileTypes'),
+        path     = require('upload/path'),
         common     = require('upload/common'),
         LayerInfo;
 
@@ -18,7 +18,6 @@ define(function (require, exports) {
      */
     LayerInfo = function (options) {
 
-        this.id       = null;
         this.name     = null;
         this.files    = null;
 
@@ -39,19 +38,19 @@ define(function (require, exports) {
         this.polling = false;
     };
 
-    /** Function to safely select a filename
+    /** Function to safely select a filename 
      *
-     *  @params name
-     *  @returns string
+     *  @params name 
+     *  @returns string 
      */
     LayerInfo.safeSelector = function (name) {
         return name.replace(/\[|\]|\(|\)|./g, '_');
     };
 
-    /** Function to return the success template
+    /** Function to return the success template  
      *
      *  @params {options}
-     *  @returns
+     *  @returns 
      */
     LayerInfo.prototype.successTemplate = function (options) {
         var template = _.template($('#successTemplate').html());
@@ -74,7 +73,7 @@ define(function (require, exports) {
         return res;
     };
 
-    /** Function to check the type of a Layer
+    /** Function to check the type of a Layer 
      *
      *  @params {options}
      *  @returns {string}
@@ -150,13 +149,7 @@ define(function (require, exports) {
      *  @returns {FromData}
      */
     LayerInfo.prototype.prepareFormData = function (form_data) {
-        var i, ext, file, perm, geogig, geogig_store, time, mosaic;
-
-		var base_ext  = this.main.name.split('.').pop();
-		var base_name = this.main.name.slice(0, -(base_ext.length+1));
-
-        var base_ext  = this.main.name.split('.').pop();
-        var base_name = this.main.name.slice(0, -(base_ext.length+1));
+        var i, ext, file, perm, geogig, geogig_store, time;
 
         var base_ext  = this.main.name.split('.').pop();
         var base_name = this.main.name.slice(0, -(base_ext.length+1));
@@ -173,9 +166,9 @@ define(function (require, exports) {
         }
 
         if (geogig_enabled) {
-            geogig_store = $('#' + base_name + '\\:geogig_store').val();
-            geogig = $('#' + base_name + '\\:geogig_toggle').is(':checked') && geogig_store.length != 0;
+            geogig = $('#' + base_name + '\\:geogig_toggle').is(':checked');
             if (geogig) {
+                geogig_store = $('#' + base_name + '\\:geogig_store').val();
                 form_data.append('geogig_store', geogig_store);
             } else {
                 form_data.append('geogig_store', "");
@@ -185,74 +178,6 @@ define(function (require, exports) {
         if (time_enabled) {
             time = $('#' + base_name + '-time').is(':checked');
             form_data.append('time', time);
-        }
-        if (mosaic_enabled) {
-            mosaic = $('#' + base_name + '-mosaic').is(':checked');
-			var is_time_valid = $('#' + base_name + '-timedim').is(':checked') && !$('#' + base_name + '-timedim-value-valid').is(':visible');
-
-			if (mosaic /*&& is_time_valid*/) {
-				form_data.append('mosaic', mosaic);
-
-				var append_to_mosaic_opts = $('#' + base_name + '-mosaic-granule').is(':checked');
-				var append_to_mosaic_name = $('#' + base_name + '-mosaic-granule-format-select').val();
-
-				//console.log("append_to_mosaic_opts:" + append_to_mosaic_opts + " / append_to_mosaic_name:" + append_to_mosaic_name);
-
-                if (is_time_valid) {
-                    var time_regex = $('#' + base_name + '-timedim-format-select').val();
-                    var time_value = $('#' + base_name + '-timedim-value').val();
-
-                    //console.log("time_regex:" + time_regex + " / time_value:" + time_value);
-
-                    var time_presentation_opts = $('#' + base_name + '-timedim-presentation').is(':checked');
-                    var time_presentation = "LIST";
-                    var time_presentation_res = 0;
-                    var time_presentation_default_value = "";
-                    var time_presentation_reference_value = "";
-                    if (time_presentation_opts) {
-                        time_presentation = $('#' + base_name + '-timedim-presentation-format-select').val();
-
-                        if (time_presentation === 'DISCRETE_INTERVAL') {
-                            // Years
-                            time_presentation_res += parseInt( $('#' + base_name + '-timedim-presentation-years').val() ) * 31536000000;
-                            // Months
-                            time_presentation_res += parseInt( $('#' + base_name + '-timedim-presentation-months').val() ) * 2628000000;
-                            // Weeks
-                            time_presentation_res += parseInt( $('#' + base_name + '-timedim-presentation-weeks').val() ) * 604800000;
-                            // Days
-                            time_presentation_res += parseInt( $('#' + base_name + '-timedim-presentation-days').val() ) * 86400000;
-                            // Hours
-                            time_presentation_res += parseInt( $('#' + base_name + '-timedim-presentation-hours').val() ) * 3600000;
-                            // Minutes
-                            time_presentation_res += parseInt( $('#' + base_name + '-timedim-presentation-minutes').val() ) * 60000;
-                            // Seconds
-                            time_presentation_res += parseInt( $('#' + base_name + '-timedim-presentation-seconds').val() ) * 1000;
-                        }
-
-                        time_presentation_default_value = $('#' + base_name + '-timedim-defaultvalue-format-select').val();
-
-                        if (time_presentation_default_value == 'NEAREST' || time_presentation_default_value == 'FIXED') {
-                            time_presentation_reference_value = $('#' + base_name + '-timedim-defaultvalue-ref-value').val();
-                        }
-                    }
-
-                    //console.log("time_presentation:" + time_presentation + " / time_presentation_res:" + time_presentation_res);
-
-                    form_data.append('mosaic_time_regex', time_regex);
-                    form_data.append('mosaic_time_value', time_value);
-
-                    form_data.append('time_presentation', time_presentation);
-                    form_data.append('time_presentation_res', time_presentation_res);
-
-                    form_data.append('time_presentation_default_value', time_presentation_default_value);
-                    form_data.append('time_presentation_reference_value', time_presentation_reference_value);
-                }
-
-				form_data.append('append_to_mosaic_opts', append_to_mosaic_opts);
-				if (append_to_mosaic_opts) {
-					form_data.append('append_to_mosaic_name', append_to_mosaic_name);
-				}
-			}
         }
 
         form_data.append('base_file', this.main);
@@ -267,8 +192,33 @@ define(function (require, exports) {
         }
 
         form_data.append('charset', $('#charset').val());
+        form_data.append('layer_title', $('#id-layer-upload-title').val());
+
+        // new field added
+        form_data.append('category', $('#id-select-category').val());
+        form_data.append('organization', $('#id-select-organization').val());
+        // osm or csv file/layer uploaded
+        var fileType = $("#fileType").val();
+        if(fileType == "osm"){
+            form_data.append('osm_layer_type', $('#osmLayerType').val());
+        } else if(fileType == "csv"){
+            var thegeoSelected = ($('#thegeo:checked').length > 0);
+            form_data.append('csv_layer_type', thegeoSelected ? 'the_geom' : 'latlon');
+            if(thegeoSelected){
+                form_data.append('the_geom', $("#csvGeomColumnName").val()); // csvGeomColumnName csvLongitudeColumnName csvLattitudeColumnName
+            } else {
+                form_data.append('longitude', $("#csvLongitudeColumnName").val());
+                form_data.append('lattitude', $("#csvLattitudeColumnName").val());
+            }
+        }
+        form_data.append('layer_type', fileType);
+
         if ($('#id_metadata_uploaded_preserve').prop('checked')) {
              form_data.append('metadata_uploaded_preserve', true);
+        }
+        var capacityValue = $('#upload-and-publish-trigger').val();
+        if(capacityValue == true || capacityValue == 'true'){
+            form_data.append('admin_upload', true);
         }
         return form_data;
     };
@@ -279,7 +229,10 @@ define(function (require, exports) {
      *  @returns {string}
      */
     LayerInfo.prototype.logStatus = function (options) {
-        options.element = this.element.find('#status');
+        if(this.element != null){
+            options.element = this.element.find('#status');
+
+        }
         common.logStatus(options);
     };
 
@@ -316,11 +269,7 @@ define(function (require, exports) {
                 self.markError(resp.errors, status);
             },
             success: function (resp, status) {
-                if(resp.url && resp.input_required){
-                    window.location = resp.url;
-                }else {
-                    window.location = resp.redirect_to;
-                }
+                window.location = resp.redirect_to;
             },
         });
         return false;
@@ -328,9 +277,9 @@ define(function (require, exports) {
 
     LayerInfo.prototype.displayUploadedLayerLinks = function(resp) {
         var self = this;
-        var a = '<a href="' + resp.url + '" class="btn btn-success">' + gettext('Layer Info') + '</a>';
-        var b = '<a href="' + resp.url + '/metadata" class="btn btn-warning">' + gettext('Edit Metadata') + '</a>';
-        var c = '<a href="' + resp.url.replace(/^\/layers/, '/gs') + '/style/manage" class="btn btn-warning">' + gettext('Manage Styles') + '</a>';
+        var a = '<a href="' + resp.url + '" class="btn btn-success btn-gd">' + gettext('Layer Info') + '</a>';
+        var b = '<a href="' + resp.url + '/metadata" class="btn btn-warning btn-gd">' + gettext('Edit Metadata') + '</a>';
+        var c = '<a href="' + resp.url.replace(/^\/layers/, '/gs') + '/style/manage" class="btn btn-warning btn-gd">' + gettext('Manage Styles') + '</a>';
         var msg_col = "";
         if (resp.info){
             var msg_template = gettext('The column %1 was renamed to %2 <br/>');
@@ -339,7 +288,7 @@ define(function (require, exports) {
             }
         }
         self.logStatus({
-            msg: '<p>' + gettext('Your layer was successfully uploaded') + '<br/>' + msg_col + '<br/>' + a + '&nbsp;&nbsp;&nbsp;' + b + '&nbsp;&nbsp;&nbsp;' + c + '</p>',
+            msg: '<p>' + gettext('Your layer has been uploaded successfully') + '<br/>' + msg_col + '<br/>' + a + '&nbsp;&nbsp;&nbsp;' + b + '&nbsp;&nbsp;&nbsp;' + c + '</p>',
             level: 'alert-success',
             empty: 'true'
         });
@@ -348,7 +297,7 @@ define(function (require, exports) {
     LayerInfo.prototype.startPolling = function() {
         var self = this;
         if (self.polling) {
-            $.ajax({ url: updateUrl("/upload/progress", 'id', self.id), type: 'GET', success: function(data){
+            $.ajax({ url: "/upload/progress", type: 'GET', success: function(data){
                 // TODO: Not sure we need to do anything here?
                 //console.log('polling');
             }, dataType: "json", complete: setTimeout(function() {self.startPolling()}, 3000), timeout: 30000 });
@@ -362,7 +311,7 @@ define(function (require, exports) {
      */
     LayerInfo.prototype.doFinal = function (resp) {
         var self = this;
-        if (resp.hasOwnProperty('redirect_to') && resp.redirect_to.indexOf('/upload/final') > -1) {
+        if (resp.redirect_to === '/upload/final') {
             common.make_request({
                 url: resp.redirect_to,
                 async: true,
@@ -397,7 +346,7 @@ define(function (require, exports) {
                 }
             });
         } else if (resp.status === "incomplete") {
-            var id = common.parseQueryString(resp.url).id;
+            var id = resp.url.split('=')[1]
             var element = 'next_step_' + id
             var a = '<a id="' + element + '" class="btn">Continue</a>';
             self.logStatus({
@@ -441,21 +390,20 @@ define(function (require, exports) {
         });
         if (resp.success === true && resp.status === 'incomplete') {
             common.make_request({
-                url: updateUrl(resp.redirect_to, 'force_ajax', 'true'),
+                url: resp.redirect_to + '?force_ajax=true',
                 async: true,
                 failure: function (resp, status) {
                     self.polling = false;
                     self.markError(resp.errors, status);
                 },
                 success: function (resp, status) {
-                    self.id = resp.id;
                     if (resp.status === 'incomplete') {
                         if (resp.input_required === true) {
                             self.doFinal(resp);
                         } else {
                             self.doStep(resp);
                         }
-                    } else if (resp.redirect_to.indexOf('/upload/final') > -1) {
+                    } else if (resp.redirect_to === '/upload/final') {
                         self.doFinal(resp);
                     } else {
                         window.location = resp.url;
@@ -464,7 +412,7 @@ define(function (require, exports) {
             });
         } else if (resp.success === true && typeof resp.url != 'undefined') {
             self.doFinal(resp);
-        } else if (resp.success === true && resp.redirect_to.indexOf('/upload/final') > -1) {
+        } else if (resp.success === true && resp.redirect_to === '/upload/final') {
             self.doFinal(resp);
         }
     };
@@ -517,7 +465,6 @@ define(function (require, exports) {
                     level: 'alert-success',
                     empty: 'true'
                 });
-                self.id = resp.id;
                 self.doStep(resp);
             }
         });
@@ -559,8 +506,7 @@ define(function (require, exports) {
                 type: this.type.name,
                 format: this.type.format,
                 geogig: geogig_enabled,
-                time: time_enabled,
-				mosaic: mosaic_enabled
+                time: time_enabled
             });
         file_queue.append(li);
         this.errors = this.collectErrors();
@@ -699,7 +645,6 @@ define(function (require, exports) {
             }
             a.data('layer', self.name);
             a.data('file',  file.name);
-            a.attr('class', 'remove-file');
             a.appendTo(p);
             a.on('click', function (event) {
                 var target = $(event.target),
@@ -707,14 +652,10 @@ define(function (require, exports) {
                     layer_name = target.data('layer'),
                     file_name  = target.data('file');
                 self.removeFile(file_name);
-                if (self.files.length == 0) {
-                    delete layers[self.name];
-                }
                 if (file_ext === 'xml') {
                     $('#metadata_uploaded_preserve_check').hide();
                 }
-                self.errors = self.collectErrors();
-                self.displayErrors();
+                self.displayRefresh();
             });
         });
     };
@@ -870,16 +811,6 @@ define(function (require, exports) {
 
     return LayerInfo;
 });
-
-function updateUrl(url, key, value){
-    if (key == null || value == null){
-    	return url;
-    }
-
-    var pair = key.concat('=').concat(value);
-
-    return (url.lastIndexOf('?') > -1)? url.concat('&').concat(pair): url.concat('?').concat(pair);
-}
 
 function format(str, arr) {
   return str.replace(/%(\d+)/g, function(_,m) {

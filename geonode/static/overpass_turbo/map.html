@@ -1,0 +1,43 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+  <meta http-equiv="content-type" content="text/html; charset=utf-8" lang="en"></meta>
+  <meta name="viewport" content="width=device-width" />
+  <link rel="icon" href="turbo.png" type="image/png" />
+  <title>overpass turbo - map</title>
+  <!--jQuery-->
+  <script src="//code.jquery.com/jquery-1.11.1.js"></script>
+  <!--lodash-->
+  <script src="//cdnjs.cloudflare.com/ajax/libs/lodash.js/2.4.1/lodash.js"></script>
+  <!--leaflet-->
+  <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.5/leaflet.css" />
+  <script src="//cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.5/leaflet.js"></script>
+  <!--leaflet extensions-->
+  <script src="js/GeoJsonNoVanish.js"></script>
+  <script src="js/OSM4Leaflet.js"></script>
+  <script src="libs/mapbbcode/PopupIcon.js"></script>
+  <!--jsmapcss-->
+  <script src="js/jsmapcss/styleparser.js"></script>
+  <script src="js/jsmapcss/Condition.js"></script>
+  <script src="js/jsmapcss/Rule.js"></script>
+  <script src="js/jsmapcss/RuleChain.js"></script>
+  <script src="js/jsmapcss/Style.js"></script>
+  <script src="js/jsmapcss/StyleChooser.js"></script>
+  <script src="js/jsmapcss/StyleList.js"></script>
+  <script src="js/jsmapcss/RuleSet.js"></script>
+  <!--osmtogeojson-->
+  <script src="libs/osmtogeojson/osmtogeojson.js"></script>
+  <!--own scripts and styles-->
+  <script src="js/query.js"></script>
+  <script src="js/configs.js"></script>
+  <script src="js/overpass.js"></script>
+  <link rel="stylesheet" href="css/map.css" />
+  <script src="js/map.js"></script>
+</head>
+<body>
+  <!--map-->
+  <div id="map"></div>
+  <!--wait spinner-->
+  <div class="modal"></div>
+</body>
+</html>

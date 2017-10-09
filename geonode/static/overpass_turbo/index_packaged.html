@@ -1,0 +1,276 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+  <meta http-equiv="content-type" content="text/html; charset=utf-8" lang="en" />
+  <meta name="viewport" content="width=device-width" />
+  <title>overpass turbo</title>
+  <link rel="icon" href="turbo.png" type="image/png" />
+  <!--jQuery-->
+  <!--lodash-->
+  <!--CodeMirror-->
+  <!--leaflet-->
+  <!--leaflet extensions-->
+  <!--jQuery UI-->
+  <!--own scripts & styles-->
+  <link rel="stylesheet" type="text/css" href="turbo.min.css" />
+  <link rel="stylesheet" type="text/css" media="(max-width: 700px)" href="css/compact.css"/>
+  <script src="turbo.min.js"></script>
+</head>
+<body class="loading">
+
+<!--layout-->
+  <div id="navs">
+    <div class="nav">
+      <div class="buttons">
+        <div class="group">
+          <a class="t button" accesskey="1" onclick="ide.onRunClick();"      title="" data-t="[title]nav.run_tt;nav.run"          >Run</a>
+          <a class="t button" accesskey="2" onclick="ide.onShareClick();"    title="" data-t="[title]nav.share_tt;nav.share"      >Share</a>
+          <a class="t button" accesskey="3" onclick="ide.onExportClick();"   title="" data-t="[title]nav.export_tt;nav.export"    >Export</a>
+        </div>
+        <div class="group">
+          <a class="t button" accesskey="4" onclick="ide.onFfsClick();"      title="" data-t="[title]nav.wizard_tt;nav.wizard"    >Wizard</a>
+        </div>
+        <div class="group">
+          <a class="t button" accesskey="5" onclick="ide.onSaveClick();"     title="" data-t="[title]nav.save_tt;nav.save"        >Save</a>
+          <a class="t button" accesskey="6" onclick="ide.onLoadClick();"     title="" data-t="[title]nav.load_tt;nav.load"        >Load</a>
+        </div>
+        <div class="group">
+          <a class="t button" accesskey="9" onclick="ide.onSettingsClick();" title="" data-t="[title]nav.settings_tt;nav.settings">Settings</a>
+          <a class="t button" accesskey="0" onclick="ide.onHelpClick();"     title="" data-t="[title]nav.help_tt;nav.help"        >Help</a>
+        </div>
+      </div>
+      <div class="title"><a href="index.html" class="disabled">overpass turbo <img src="turbo.png" style="opacity:0.35; margin-left:2px;" alt="" /></a></div>
+      <div class="tabs">
+        <a class="t button Map active" title="" data-t="[title]tabs.map_tt;tabs.map"  >Map</a>
+        <a class="t button Data"       title="" data-t="[title]tabs.data_tt;tabs.data">Data</a>
+      </div>
+    </div>
+  </div>
+
+  <div id="editor">
+    <!--CodeMirror goes here-->
+    <textarea></textarea>
+  </div>
+  <div id="dataviewer">
+    <div id="map"></div>
+    <div id="data"></div>
+  </div>
+
+  <!--wait spinner-->
+  <div class="modal"><div class="wait-info"><h4>overpass turbo loading...</h4><ul class="plain"></ul></div></div>
+
+  <!--some dialogs-->
+  <!--help-->
+  <div id="help-dialog" title="" class="t dialog" data-t="[title]help.title">
+    <h3><a class="t" data-t="help.section.introduction"></a></h3>
+    <div>
+      <p class="t" data-t="[html]help.intro.0"></p>
+      <p>
+        <span class="t" data-t="[html]help.intro.1"></span>
+        <span class="t" data-t="[html]help.intro.1b"></span>
+      </p>
+      <p class="t" data-t="[html]help.intro.2"></p>
+    </div>
+    <h3><a class="t" data-t="help.section.queries"></a></h3>
+    <div>
+      <p class="t" data-t="[html]help.queries.expl"></p>
+      <p class="t" data-t="help.intro.shortcuts"></p>
+      <ul>
+        <li><i>{{bbox}}</i> - <span class="t" data-t="help.intro.shortcuts.bbox"></span></li>
+        <li><i>{{center}}</i> - <span class="t" data-t="help.intro.shortcuts.center"></span></li>
+        <li><i>{{date:…}}</i> - <span class="t" data-t="help.intro.shortcuts.date"></span></li>
+        <li><i>{{style:…}}</i> - <span class="t" data-t="[html]help.intro.shortcuts.style"></span></li>
+        <li class="t" data-t="[html]help.intro.shortcuts.custom"></li>
+      </ul>
+      <p class="t" data-t="[html]help.intro.shortcuts.more"></p>
+    </div>
+    <h3><a class="t" data-t="help.section.ide"></a></h3>
+    <div>
+      <h4 class="t" data-t="help.ide.share.title"></h4>
+      <p class="t" data-t="[html]help.ide.share.expl"></p>
+      <h4 class="t" data-t="help.ide.save_load.title"></h4>
+      <p class="t" data-t="[html]help.ide.save_load.expl"></p>
+      <h4 class="t" data-t="help.ide.keyboard.title"></h4>
+      <ul>
+        <li><i>Ctrl+Enter</i> - <span class="t" data-t="help.ide.keyboard.run"></span></li>
+        <li><i>Ctrl+I</i> - <span class="t" data-t="help.ide.keyboard.wizard"></span></li>
+        <li><i>Ctrl+O / Ctrl+S</i> - <span class="t" data-t="help.ide.keyboard.load_save"></span></li>
+        <li><i>Ctrl+H</i> - <span class="t" data-t="help.ide.keyboard.help"></span></li>
+      </ul>
+    </div>
+    <h3><a class="t" data-t="help.section.key"></a></h3>
+    <div>
+      <img src="map-key.png" alt="" class="t" data-t="[alt]help.key.example" />
+      <p class="t" data-t="help.key.description"></p>
+    </div>
+    <h3><a class="t" data-t="help.section.export"></a></h3>
+    <div>
+      <p class="t" data-t="[html]help.export"></p>
+      <h4 class="t" data-t="help.export.map.title"></h4>
+      <p class="t" data-t="help.export.map.expl"></p>
+      <h4 class="t" data-t="help.export.query_data.title"></h4>
+      <p class="t" data-t="help.export.query_data.expl"></p>
+    </div>
+    <h3><a class="t" data-t="help.section.about"></a></h3>
+    <div>
+      <a href="http://overpass-api.de"><img style="float:right;" src="//wiki.openstreetmap.org/w/images/b/b3/Powered_by_Overpass_API.png" alt="powered by Overpass API" /></a>
+      <p class="t" data-t="[html]help.about.maintained"></p>
+      <h4 class="t" data-t="help.about.feedback.title"></h4>
+      <p class="t" data-t="[html]help.about.feedback"></p>
+      <h4 class="t" data-t="help.about.source.title"></h4>
+      <p class="t" data-t="[html]help.about.source"></p>
+    </div>
+    <h3><a class="t" data-t="help.section.attribution"></a></h3>
+    <div>
+      <h4 class="t" data-t="help.attr.data_sources"></h4>
+      <ul class="plain">
+        <li class="t" data-t="[html]help.attr.data"></li>
+        <li><span class="t" data-t="help.attr.mining"></span> <a href="http://overpass-api.de/">Overpass API</a></li>
+        <li class="t" data-t="[html]help.attr.tiles"></li>
+        <li><span class="t" data-t="help.attr.search"></span> <a href="http://wiki.openstreetmap.org/wiki/Nominatim">Nominatim</a></li>
+      </ul>
+      <h4 class="t" data-t="help.attr.software"></h4>
+      <ul class="plain">
+        <li><span class="t" data-t="help.attr.leaflet"></span> <a href="http://leaflet.cloudmade.com">Leaflet</a></li>
+        <li><span class="t" data-t="help.attr.codemirror"></span> <a href="http://codemirror.net/">CodeMirror</a></li>
+        <li><span class="t" data-t="help.attr.other_libs"></span> <a href="https://github.com/tyrasd/osmtogeojson">osmtogeojson</a>, <a href="https://github.com/tyrasd/togpx">togpx</a>, <a href="https://github.com/mapbox/tokml">tokml</a>, <a href="http://lodash.com">lodash</a>, <a href="http://jquery.com/">jQuery</a>, <a href="http://jqueryui.com/">jQuery UI</a>, <a href="http://html2canvas.hertzen.com/">html2canvas</a>, <a href="http://code.google.com/p/canvg/">canvg</a>, <a href="https://github.com/kajic/leaflet-locationfilter">leaflet-locationfilter</a>, <a href="http://mapbox.com/maki/">maki</a>, <a href="http://www.sjjb.co.uk/mapicons/">SJJB map icons</a>, <a href="https://github.com/nebulon42/osmic/">Osmic</a>, <a href="https://github.com/eligrey/FileSaver.js">FileSaver.js</a>, <a href="https://github.com/MapBBCode/mapbbcode">MapBBCode</a>, <a href="http://momentjs.com/">Moment.js</a></li>
+      </ul>
+    </div>
+  </div>
+  <!--settings-->
+  <div title="" id="settings-dialog" class="t dialog" data-t="[title]settings.title">
+    <h3><a class="t" data-t="settings.section.general"></a></h3>
+    <div>
+      <p><label><span class="t" data-t="settings.ui_lang"></span>:</label> <input type="text" name="ui_language" value="" style="width:60px;"/></p>
+      <p><label><span class="t" data-t="settings.server"></span>:</label> <input type="text" name="server" value="" style="width:270px;"/></p>
+      <p><label><input type="checkbox" name="force_simple_cors_request"/>&nbsp;<span class="t" data-t="settings.force_simple_cors"></span> <small>(<span class="t" data-t="[html]settings.force_simple_cors_expl"></span>)</small></label></p>
+      <p><label><input type="checkbox" name="no_autorepair"/>&nbsp;<span class="t" data-t="settings.disable_autorepair"></span></label></p>
+    </div>
+    <h3><a class="t" data-t="settings.section.editor"></a></h3>
+    <div>
+      <p><label><input type="checkbox" name="use_rich_editor"/>&nbsp;<span class="t" data-t="settings.enable_rich_editor"></span> <small>(<span class="t" data-t="settings.enable_rich_editor_expl"></span>)</small>.</label></p>
+      <p><label><span class="t" data-t="settings.editor_width"></span>:</label> <small>(<span class="t" data-t="settings.editor_width_expl"></span>)</small> <input type="text" name="editor_width" value="" style="width:80px;"/></p>
+    </div>
+    <h3><a class="t" data-t="settings.section.map"></a></h3>
+    <div>
+      <p><label><span class="t" data-t="settings.tile_server"></span>:</label> <input type="text" name="tile_server" value="" style="width:240px;"/></p>
+      <p><label><span class="t" data-t="settings.tile_opacity"></span>:</label> <input type="text" name="background_opacity" value="" style="width:30px;"/> <small>(<span class="t" data-t="settings.tile_opacity_expl"></span>)</small></p>
+      <p><label><input type="checkbox" name="enable_crosshairs"/>&nbsp;<span class="t" data-t="settings.show_crosshairs"></span></label></p>
+      <p><label><input type="checkbox" name="disable_poiomatic"/>&nbsp;<span class="t" data-t="settings.disable_poiomatic"></span></label></p>
+      <p><label><input type="checkbox" name="show_data_stats"/>&nbsp;<span class="t" data-t="settings.show_data_stats"></span></label></p>
+    </div>
+    <h3><a class="t" data-t="settings.section.sharing"></a></h3>
+    <div>
+      <p><label><input type="checkbox" name="share_include_pos"/>&nbsp;<span class="t" data-t="settings.include_map_state"></span></label></p>
+      <p><label><span class="t" data-t="settings.compression"></span>: <input type="text" name="share_compression" value="" style="width:40px;"/></label></p>
+    </div>
+    <h3><a class="t" data-t="settings.section.export"></a></h3>
+    <div>
+      <p><label><input type="checkbox" name="export_image_scale"/>&nbsp;<span class="t" data-t="settings.export_image_scale"></span></label></p>
+      <p><label><input type="checkbox" name="export_image_attribution"/>&nbsp;<span class="t" data-t="settings.export_image_attr"></span></label></p>
+    </div>
+  </div>
+  <!--save-->
+  <div title="" id="save-dialog" class="t dialog" data-t="[title]save.title">
+    <p class="t" data-t="save.enter_name"></p>
+    <p><input name="save" type="text" /></p>
+  </div>
+  <!--load-->
+  <div title="" id="load-dialog" class="t dialog" data-t="[title]load.title">
+    <h4 class="t" data-t="load.saved_queries"></h4>
+    <div>
+      <ul class="plain saved_query"></ul>
+    </div>
+    <h4 class="t" data-t="load.examples"></h4>
+    <div>
+      <ul class="plain example"></ul>
+    </div>
+  </div>
+  <!--export-->
+  <div title="" id="export-dialog" class="t dialog" data-t="[title]export.title">
+    <h4 class="t" data-t="export.section.data"></h4>
+    <div>
+    <p class="t" data-t="[html]export.as_geoJSON"></p>
+    <p class="t" data-t="[html]export.as_GPX"></p>
+    <p class="t" data-t="[html]export.as_KML"></p>
+    <p class="t" data-t="[html]export.raw"></p>
+    <p class="t" data-t="[html]export.raw_interpreter"></p>
+    <p><span class="t" data-t="export.editors"></span> <a id="export-editors-josm" href="">JOSM</a>, <a id="export-editors-level0" href="" target="_blank" class="external">Level0</a></p>
+    <p class="t" data-t="[html]export.save_geoJSON_gist"></p>
+    </div>
+    <h4 class="t" data-t="export.section.map"></h4>
+    <div>
+    <p class="t" data-t="[html]export.as_png"></p>
+    <p class="t" data-t="[html]export.as_interactive_map"></p>
+    <p><span class="t" data-t="[html]export.current_map_view"></span> <small>(<span class="t" data-t="export.map_view_expl"></span>)</small></p>
+    </div>
+    <h4 class="t" data-t="export.section.query"></h4>
+    <div>
+    <p class="t" data-t="[html]export.as_text"></p>
+    <p class="t" data-t="[html]export.to_xml"></p>
+    <p class="t" data-t="[html]export.to_ql"></p>
+    </div>
+  </div>
+  <div title="" id="export-geojson-dialog" class="t dialog" data-t="[title]export.geoJSON.title">
+    <p class="t" data-t="export.geoJSON.expl"></p>
+    <textarea style="width:100%" rows="16" readonly></textarea>
+  </div>
+  <div title="" id="export-gpx-dialog" class="t dialog" data-t="[title]export.GPX.title">
+    <p class="t" data-t="export.GPX.expl"></p>
+    <textarea style="width:100%" rows="16" readonly></textarea>
+  </div>
+  <div title="" id="export-kml-dialog" class="t dialog" data-t="[title]export.KML.title">
+    <p class="t" data-t="export.KML.expl"></p>
+    <textarea style="width:100%" rows="16" readonly></textarea>
+  </div>
+  <div title="" id="export-raw-dialog" class="t dialog" data-t="[title]export.raw.title">
+    <p class="t" data-t="export.raw.expl"></p>
+    <textarea style="width:100%" rows="16" readonly></textarea>
+  </div>
+  <!--share-->
+  <div title="" id="share-dialog" class="t dialog" data-t="[title]share.title">
+    <h3 class="t" data-t="share.header"></h3>
+    <p class="t" data-t="[html]share.copy_this_link"></p>
+    <p><input type="text" style="width:100%" readonly id="share_link_textarea"/></p>
+    <span id="share_link_warning"></span>
+    <h3 class="t" data-t="share.options"></h3>
+    <p><label><input type="checkbox" name="include_coords" onchange="ide.updateShareLink();"/>&nbsp;<span class="t" data-t="share.incl_map_state"></span></label></p>
+    <p><label><input type="checkbox" name="run_immediately" onchange="ide.updateShareLink();"/>&nbsp;<span class="t" data-t="share.run_immediately"></span></label></p>
+  </div>
+  <!--free form search / wizard-->
+  <div title="" id="ffs-dialog" class="t dialog" data-t="[title]ffs.title">
+    <p><input type="text" autofocus="autofocus" placeholder="" value="" id="ffs-input" class="t" data-t="[placeholder]ffs.placeholder"/></p>
+    <div id="ffs-dialog-parse-error" style="display:none;">
+      <span class="t warning severe" data-t="ffs.parse_error"></span><br/>
+      <small><span class="t" data-t="[html]ffs.parse_error_expl"></span></small>
+    </div>
+    <div id="ffs-dialog-typo" style="display:none;">
+      <span class="t warning" data-t="ffs.typo"></span>&nbsp;
+      <a href="" id="ffs-dialog-typo-correction"></a>
+    </div>
+    <p>
+      <span class="t" data-t="[html]ffs.expl"></span>
+      <ul>
+        <li>Drinking Water</li>
+        <li>highway=* and type:way</li>
+        <li>tourism=museum in Vienna</li>
+      </ul>
+      </ul>
+    </p>
+  </div>
+  <!--unsupported browser warning-->
+  <div title="Your browser is not supported :(" id="warning-unsupported-browser" class="t dialog" data-t="[title]warning.browser.title">
+    <p class="t" data-t="[html]warning.browser.expl.1">The browser you are currently using, is (most likely) not capable of running (significant parts of) this Application. <small>It must support <a href="http://en.wikipedia.org/wiki/Web_storage#localStorage">Web Storage API</a> and <a href="http://en.wikipedia.org/wiki/Cross-origin_resource_sharing">cross origin resource sharing (CORS)</a>.</small></p>
+    <p class="t" data-t="[html]warning.browser.expl.2">Note that you may have to enable cookies and/or "local Data" for this site on some browsers (such as Firefox and Chrome).</p>
+    <p class="t" data-t="[html]warning.browser.expl.3">Please upgrade to a more up-to-date version of your browser or switch to a more capable one! Recent versions of <a href="http://www.opera.com">Opera</a>, <a href="http://www.google.com/intl/de/chrome/browser/">Chrome</a> and <a href="http://www.mozilla.org/de/firefox/">Firefox</a> have been tested to work. Alternatively, you can still use the <a href="http://overpass-api.de/query_form.html">Overpass_API query form</a>.</p>
+  </div>
+  <noscript>
+    <div style="display:block;position:relative;width:30%;max-width:800px;min-width:300px;margin:auto;z-index:9999;margin-top:2em;padding:1em 1.5em 1em 1.5em;background-color:orange;">Please enable JavaScript to use overpass turbo.</div>
+  </noscript>
+
+  <script>
+    // initialize ide on document ready
+    $(document).ready(ide.init);
+  </script>
+</body>
+</html>

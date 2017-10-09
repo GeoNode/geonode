@@ -6,6 +6,7 @@ requirejs.config({
         'underscore': { exports: '_'}
     },
     paths: {
+        'geo-dash': '../../geonode/js/geo-dash',
         'upload': '../../geonode/js/upload',
         'templates': '../../geonode/js/templates',
         'progress': 'jquery.ajax-progress'

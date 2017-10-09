@@ -1,0 +1,138 @@
+<script type='text/html' id='errorTemplate'>
+  <li class='alert alert-error'>
+    <button class='close' data-dismiss='alert'>&times;</button>
+    <strong><%= title %></strong><p><%= message %></p>
+  </li>
+</script>
+
+<script type='text/html' id='infoTemplate'>
+  <div class='alert <%= level %>'><p><%= message %></p></div>
+</script>
+
+<script type='text/html' id='layerTemplate'>
+  <div class='file-element' id='<%= selector %>-element'>
+    <div class='row'>
+      <div class='span6'><h3><%= name %></h3></div>
+      <div class='span2'><h3><%= type %><h3></div>
+    </div>
+    <% if (format !== 'raster') { %>
+    <div id='<%= name %>-vector-options' class='row span8'>
+        <% if (time) { %>
+            <div class="checkbox">
+                <input type='checkbox' id='<%= name %>-time' name='<%= name %>-time'/><label for="<%= name %>-time">&nbsp;Configure Time</label>
+            </div>
+        <% } %>
+        <% if (geogig) { %>
+            <div class="checkbox">
+                <input type='checkbox' id='<%= name %>:geogig_toggle' name='<%= name %>:geogig_toggle'/><label for="<%= name %>:geogig_toggle">&nbsp;Import to Geogig</label>
+            </div>
+            <div id="<%= name %>:geogig_store" name='<%= name %>:geogig_store' style="width: 225px; visibility:hidden;padding:5px"></div>
+        <% } %>
+
+    </div>
+    <% } %>
+    <% if (format == 'raster') { %>
+    <div id='<%= name %>-raster-options' class='row span8'>
+        <% if (mosaic) { %>
+            <div class="checkbox">
+                <input type='checkbox' id='<%= name %>-mosaic' name='<%= name %>-mosaic'/><label for="<%= name %>-mosaic">&nbsp;Configure as a Mosaic</label>
+                <div id='<%= name %>-mosaic-options' class='row span8' style='display:none'>
+                  <div class="checkbox">
+                      <input type='checkbox' id='<%= name %>-mosaic-granule' name='<%= name %>-mosaic-granule'/><label for="<%= name %>-mosaic-granule">&nbsp;Is a Granule of an existing Mosaic</label>
+                  </div>
+                  <div class="checkbox" id='<%= name %>-mosaic-granule-format-options' style='display:none'>
+                      <select id='<%= name %>-mosaic-granule-format-select' name='<%= name %>-mosaic-granule-format-select'>
+                      </select><label for='<%= name %>-mosaic-granule-format-select'>&nbsp;Available Mosaics</label>
+                  </div>
+                  <div class="checkbox">
+                      <input type='checkbox' id='<%= name %>-timedim' name='<%= name %>-timedim'/><label for="<%= name %>-timedim">&nbsp;Has TIME Dimension</label>
+                  </div>
+                  <div id='<%= name %>-mosaic-timedim-options' class='row span8' style='display:none'>
+                      <div class="checkbox">
+                          <select id='<%= name %>-timedim-format-select' name='<%= name %>-timedim-format-select'>
+                              <option selected="true" value="[0-9]{8}">YYYYMMDD</option>
+                              <option value="[0-9]{8}T[0-9]{6}">YYYYMMDD'T'hhmmss</option>
+                              <option value="[0-9]{8}T[0-9]{6}Z">YYYYMMDD'T'hhmmss'Z'</option>
+                          </select><label for='<%= name %>-timedim-format-select'>&nbsp;Date/Time Format</label>
+                      </div>
+                      <div class="checkbox">
+                        <input type='text' id='<%= name %>-timedim-value' name='<%= name %>-timedim-value'/><label for="<%= name %>-timedim-value">&nbsp;Date/Time Vlaue</label> <em><strong><font color="red"><span id='<%= name %>-timedim-value-valid' name='<%= name %>-timedim-value-valid'>*</span></font></strong></em>
+                      </div>
+                      <div class="checkbox">
+                        <input type='checkbox' id='<%= name %>-timedim-presentation' name='<%= name %>-timedim-presentation'/><label for="<%= name %>-timedim-presentation">&nbsp;Advanced TIME Presentation Options</label>
+                      </div>
+                      <div id='<%= name %>-mosaic-timedim-presentation-options' class='row span8' style='display:none'>
+                            <div class="checkbox">
+                              <select id='<%= name %>-timedim-presentation-format-select' name='<%= name %>-timedim-presentation-format-select'>
+                                  <option value="LIST" selected="true">List</option>
+                                  <option value="DISCRETE_INTERVAL">Interval and Resolution</option>
+                                  <option value="CONTINUOUS_INTERVAL">Continuous Interval</option>
+                              </select><label for='<%= name %>-timedim-presentation-format-select'>&nbsp;Presentation</label>
+                              <div class="checkbox" id='<%= name %>-mosaic-timedim-presentation-res-options' class='row span7' style='display:none'>
+                                <table>
+                                 <tr>
+                                    <td><label for="<%= name %>-timedim-presentation-years">&nbsp;Years</label></td>
+                                    <td><label for="<%= name %>-timedim-presentation-months">&nbsp;Months</label></td>
+                                    <td><label for="<%= name %>-timedim-presentation-weeks">&nbsp;Weeks</label></td>
+                                    <td><label for="<%= name %>-timedim-presentation-days">&nbsp;Days</label></td>
+                                    <td><label for="<%= name %>-timedim-presentation-hours">&nbsp;Hours</label></td>
+                                    <td><label for="<%= name %>-timedim-presentation-minutes">&nbsp;Minutes</label></td>
+                                    <td><label for="<%= name %>-timedim-presentation-seconds">&nbsp;Seconds</label></td>
+                                 </tr>
+                                 <tr>
+                                    <td><input type='text' id='<%= name %>-timedim-presentation-years' style='width:80px'   onkeypress='return event.charCode >= 48 && event.charCode <= 57' value='0'/></td>
+                                    <td><input type='text' id='<%= name %>-timedim-presentation-months' style='width:80px'  onkeypress='return event.charCode >= 48 && event.charCode <= 57' value='0'/></td>
+                                    <td><input type='text' id='<%= name %>-timedim-presentation-weeks' style='width:80px'   onkeypress='return event.charCode >= 48 && event.charCode <= 57' value='0'/></td>
+                                    <td><input type='text' id='<%= name %>-timedim-presentation-days' style='width:80px'    onkeypress='return event.charCode >= 48 && event.charCode <= 57' value='0'/></td>
+                                    <td><input type='text' id='<%= name %>-timedim-presentation-hours' style='width:80px'   onkeypress='return event.charCode >= 48 && event.charCode <= 57' value='0'/></td>
+                                    <td><input type='text' id='<%= name %>-timedim-presentation-minutes' style='width:80px' onkeypress='return event.charCode >= 48 && event.charCode <= 57' value='0'/></td>
+                                    <td><input type='text' id='<%= name %>-timedim-presentation-seconds' style='width:80px' onkeypress='return event.charCode >= 48 && event.charCode <= 57' value='0'/></td>
+                                 </tr>
+                                </table>
+                              </div>
+                            </div>
+                            <div class="checkbox">
+                              <select id='<%= name %>-timedim-defaultvalue-format-select' name='<%= name %>-timedim-defaultvalue-format-select'>
+                                  <option value="" selected="true">Use the built-in method to select the value</option>
+                                  <option value="MINIMUM">Use the smallest domain value</option>
+                                  <option value="MAXIMUM">Use the biggest domain value</option>
+                                  <option value="NEAREST">Use the domain value nearest to the reference value</option>
+                                  <option value="FIXED">Use the the reference value</option>
+                              </select><label for='<%= name %>-timedim-defaultvalue-format-select'>&nbsp;Default Value</label>
+                              <div class="checkbox" id='<%= name %>-mosaic-timedim-defaultvalue-res-options' class='row span7' style='display:none'>
+                                <input type='text' id='<%= name %>-timedim-defaultvalue-ref-value' name='<%= name %>-timedim-defaultvalue-ref-value' style='width:300px' value=''/><label for="<%= name %>-timedim-defaultvalue-ref-value">&nbsp;Reference Value</label> <em><strong><font color="red"><span id='<%= name %>-timedim-defaultvalue-ref-value-valid' name='<%= name %>-timedim-defaultvalue-ref-value-valid'>&nbsp;* reference time value must be an ISO 8601 DateTime</span></font></strong></em>
+                                <br/><em><font color="light-gray"><span>e.g.: YYYY-MM-DDThh:mm:ss+00:02</span></font></em>
+                              </div>
+                          </div>
+                      </div>
+                  </div>
+                </div>
+            </div>
+        <% } %>
+    </div>
+    <% } %>
+    <hr />
+    <div id="<%= name %>-files" class="row span8">
+      <ul class='files'></ul>
+      <ul class='errors'></ul>
+      <div id='status'></div>
+    </div>
+  </div>
+</script>
+
+
+<script type='text/html' id='progressTemplate'>
+  <div class='alert <%= alertLevel %>'>
+    <p><%= message %></p>
+  </div>
+</script>
+
+
+<script type='text/html' id='successTemplate'>
+
+  <div class='alert alert-success'>
+    <p>Your layer has been upload successfully</p>
+    a href="/data/geonode:<%= name %>" class='btn'>Layer page</a>
+  </div>
+
+</script>

@@ -8,11 +8,12 @@ var layers = {};
 var geogig_stores = {};
 
 define(['underscore',
+        'geo-dash/papaparse.min',
         'upload/LayerInfo',
         'upload/FileTypes',
         'upload/path',
         'upload/common',
-        'text!templates/upload.html'], function (_, LayerInfo, fileTypes, path, common, uploadTemplate) {
+        'text!templates/upload.html'], function (_, Papa, LayerInfo, fileTypes, path, common, uploadTemplate) {
 
     var templates = {},
         findFileType,
@@ -30,7 +31,14 @@ define(['underscore',
         doSuccessfulUpload,
         attach_events,
         checkFiles,
-        checkGeogig
+        processLayer,
+        getExtension,
+        isCsv,
+        isOsm,
+        readCsvHeader,
+        makeDropdownOptions,
+        csvRows = [],
+        sendOsmFile,
         fileTypes = fileTypes;
 
     $('body').append(uploadTemplate);
@@ -189,29 +197,6 @@ define(['underscore',
         return matched;
     }
 
-    /** Function to check that a geogig repo has been named, or that
-     *  "Import to Geogig" is not checked.
-     *
-     *  @params
-     *  @returns {boolean}
-     */
-    checkGeogig = function() {
-        if(geogig_enabled) {
-            var files = layers[Object.keys(layers)[0]]['files'];
-            for (var i = 0; i<files.length; i++){
-                var base_name = files[i].name.split('.')[0];
-                var geogig_store = $('#' + base_name + '\\:geogig_store').val();
-                var geogig = $('#' + base_name + '\\:geogig_toggle').is(':checked');
-                if (geogig) {
-                    if (geogig_store.length == 0) {
-                        return false;
-                    }
-                }
-            }
-        }
-        return true;
-    }
-
     doDelete = function(event) {
         var target = event.target || event.srcElement;
         var id = target.id.split("-")[1];
@@ -300,11 +285,11 @@ define(['underscore',
      */
     doUploads = function () {
         if ($.isEmptyObject(layers)) {
-            common.logError('Please provide some files');
+            common.logError('Please provide layer files');
             return false;
         }
 
-        var checked = checkFiles() && checkGeogig();
+        var checked = checkFiles();
         if ($.isEmptyObject(layers) || !checked) {
             alert(gettext('You are trying to upload an incomplete set of files or not all mandatory options have been validated.\n\nPlease check for errors in the form!'));
         } else {
@@ -368,18 +353,16 @@ define(['underscore',
         dropZone.addEventListener('drop', function (e) {
             e.preventDefault();
             var files = e.dataTransfer.files;
+            processLayer(files);
             runUpload(files);
         });
 
         $(options.form).change(function (event) {
+            //console.log(event.target.files);
             // this is a mess
+            var files = event.target.files;
+            processLayer(files);
             buildFileInfo(_.groupBy(file_input.files, path.getName));
-            displayFiles(file_queue);
-            // Reset the file upload form so the user can reupload the same file
-            $('#file-uploader').get(0).reset();
-        });
-        // Detect click on "Remove" link and update the file_queue
-        $(options.file_queue).on('click', '.remove-file', function () {
             displayFiles(file_queue);
         });
         $(options.clear_button).on('click', doClearState);
@@ -389,6 +372,130 @@ define(['underscore',
         if (geogig_enabled) {
             init_geogig_stores();
         }
+    };
+
+    processLayer = function (files) {
+        var isThatOsm = false;
+        var isThatCsv = false;
+        var file = null;
+        for(var i=0; i<files.length; i++){
+            //var isThatOsm = isOsm(getExtension(files[i].name));
+            var isThatCsv = isCsv(getExtension(files[i].name));
+            if(isThatOsm || isThatCsv){
+                file = files[i];
+                break;
+            }
+        }
+        /*if(isThatOsm){
+            $("#osmLayerSection").show();
+            //$("#permissionListAndSubmitSection").hide();
+            //sendOsmFile(files);
+        } else {
+            $("#osmLayerSection").hide();
+        }*/
+        if(isThatCsv){
+            readCsvHeader(file);
+        }
+    };
+
+    getExtension = function (filename) {
+        var parts = filename.split('.');
+        return parts[parts.length - 1];
+    };
+
+    isCsv = function (filename) {
+        var ext = getExtension(filename);
+        switch (ext.toLowerCase()) {
+            case 'csv':
+                //etc
+                return true;
+        }
+        return false;
+    };
+
+    isOsm = function (filename) {
+        var ext = getExtension(filename);
+        switch (ext.toLowerCase()) {
+            case 'osm':
+                //etc
+                return true;
+        }
+        return false;
+    };
+
+    makeDropdownOptions = function(csvRows){
+        //<option selected='selected' value="point">Point layer</option>
+        //<option value="line">Line layer</option>
+        //<option value="multi_line">Multi line layer</option>
+        //<option value="multipolygon">Multipolygon layer</option>
+        var csvHeaders = csvRows[0];
+        var options = '';
+        for(var i=0; i<csvHeaders.length; i++){
+            if(i==0){
+                options += '<option selected="selected" value="'+csvHeaders[i]+'">'+csvHeaders[i]+'</option>';
+            } else {
+                options += '<option value="'+csvHeaders[i]+'">'+csvHeaders[i]+'</option>';
+            }
+        }
+        $("#csvLattitudeColumnName, #csvLongitudeColumnName, #csvGeomColumnName").html(options);
+    };
+
+    readCsvHeader = function (file) {
+        csvRows = [];
+        Papa.parse(file, {
+            //delimiter: ",",
+            //newline: "\n",
+            header: false,
+            //dynamicTyping: false,
+            //worker: false,
+            preview: 2,
+            step: function(results) {
+                if(results.data != undefined && results.data[0] != undefined ){
+                    csvRows.push(results.data[0]);
+                }
+                //console.log("Row:", results.data);
+                if(csvRows.length >= 2){
+                    makeDropdownOptions(csvRows);
+                }
+            }
+        });
+    };
+
+    sendOsmFile = function (file) {
+        var form_data = new FormData();
+        var prog = "";
+
+        var ext = getExtension(file.name);
+        form_data.append(ext + '_file', file);
+
+        $.ajaxQueue({
+            url: form_target,
+            async: true,
+            type: "POST",
+            data: form_data,
+            processData: false,
+            contentType: false,
+            //xhr: function() {
+            //    var req = $.ajaxSettings.xhr();
+            //    if (req) {
+            //        req.upload.addEventListener('progress', function(evt) {
+            //            if(evt.lengthComputable) {
+            //                var pct = (evt.loaded / evt.total) * 100;
+            //                $('#prog > .progress-bar').css('width', pct.toPrecision(3) + '%');
+            //            }
+            //        }, false);
+            //    }
+            //    return req;
+            //},
+            beforeSend: function () {
+            },
+            error: function (jqXHR) {
+                console.log(jqXHR);
+            },
+            success: function (resp, status) {
+                console.log(resp, status);
+            }
+        });
     };
 
     // public api
