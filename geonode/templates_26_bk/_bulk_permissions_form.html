@@ -1,0 +1,25 @@
+{% load i18n %}
+
+<div class="modal fade" id="_bulk_permissions" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+  <form id="permission_form" accept-charset="UTF-8" method="post">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+          <h4 class="modal-title" id="myModalLabel">{% trans "Set permissions on selected resources" %}</h4>
+        </div>
+        <div class="modal-body">
+          {% include "_permissions.html" %}
+        </div>
+        <div class="alert hidden" id="bulk_perms_message">
+          <p class="message">}</p>
+          <p class="extra_content"></p>
+        </div>
+        <div class="modal-footer">
+          <button class="btn btn-default" data-dismiss="modal">{% trans "Close" %}</button>
+          <button class="btn btn-primary" ng-click="bulk_perms_submit()" id="bulk_perms_submit">{% trans "Apply Changes" %}</button>
+        </div>
+      </div>
+    </div>
+  </form>
+</div>

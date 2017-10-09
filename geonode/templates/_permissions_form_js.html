@@ -128,7 +128,7 @@
                     }
                   }
                 }
-              }          
+              }
             }
             
             // If "anyone" is checked then don't show all the users in the view perms field
@@ -302,17 +302,6 @@
           data: JSON.stringify(permissions),
           success: function(data) {
             $("#modal_perms").modal("hide");
-            message = JSON.parse(data);
-            title = "";
-            body = message.message;
-            if (message.success) {
-                title = "OK";
-            } else {
-                title = "Warning";
-            }
-            $("#_permissions_feedbacks").find('.modal-title').text(title);
-            $("#_permissions_feedbacks").find('.modal-body').text(body);
-            $("#_permissions_feedbacks").modal("show");
           }
         }
       );

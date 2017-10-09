@@ -5,6 +5,7 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta content="text/html; charset=ISO-8859-1" http-equiv="content-type">
     <title>{% block title %}{{ SITE_NAME }}{% endblock %}</title>
     {% block head %}
       {% if DEBUG_STATIC %}
@@ -13,12 +14,22 @@
       <link href="{{ STATIC_URL }}lib/css/bootstrap.min.css?v={{ VERSION }}" rel="stylesheet"/>
       <link href="{{ STATIC_URL }}lib/css/jquery-ui.css?v={{ VERSION }}" rel="stylesheet"/>
       <link href="{{ STATIC_URL }}lib/css/bootstrap-datetimepicker.css?v={{ VERSION }}" rel="stylesheet"/>
-      <link href="{{ STATIC_URL }}lib/css/bootstrap-tokenfield.css?v={{ VERSION }}" rel="stylesheet"/>
       {% else %}
-      <link href="{{ STATIC_URL }}lib/css/assets.min.css?v={{ VERSION }}" rel="stylesheet"/>
+      <link href="{{ STATIC_URL }}lib/css/main.4df7c95f.css?v={{ VERSION }}" rel="stylesheet"/>
+      <link href="{{ STATIC_URL }}lib/css/bootstrap.min.css?v={{ VERSION }}" rel="stylesheet"/>
+      <link href="{{ STATIC_URL }}lib/css/font-awesome.min.css?v={{ VERSION }}" rel="stylesheet"/>
+      <link href="{{ STATIC_URL }}lib/css/bootstrap-datetimepicker.css?v={{ VERSION }}" rel="stylesheet"/>
+      <!--<link href="{{ STATIC_URL }}lib/css/bootstrap-select.min.css?v={{ VERSION }}" rel="stylesheet"/>-->
       {% endif %}
       <link href="{{ STATIC_URL }}geonode/css/ext-compatibility.css?v={{ VERSION }}" rel="stylesheet" />
-      <link href="{{ STATIC_URL }}geonode/css/base.css?v={{ VERSION }}" rel="stylesheet" />
+      <link href="{{ STATIC_URL }}geonode/css/gd-asset.css?v={{ VERSION }}" rel="stylesheet" />
+      <link href="{{ STATIC_URL }}geonode/css/select2.css?v={{ VERSION }}" rel="stylesheet" />
+      <link href="{{ STATIC_URL }}geonode/css/menu.css?v={{ VERSION }}" rel="stylesheet" />
+      <link href="{{ STATIC_URL }}geonode/css/style.css?v={{ VERSION }}" rel="stylesheet" />
+      <link href="{{ STATIC_URL }}geonode/css/fixed-style.css?v={{ VERSION }}" rel="stylesheet" />
+      <link href="{{ STATIC_URL }}geonode/css/jquery.mCustomScrollbar.css?v={{ VERSION }}" rel="stylesheet" />
+
+
       <style type="text/css">[ng\:cloak],[ng-cloak],[data-ng-cloak],[x-ng-cloak],.ng-cloak,.x-ng-cloak,.ng-hide:not(.ng-hide-animate){display:none !important;}</style>
       {% block extra_head %}
       {% endblock %}
@@ -33,122 +44,314 @@
         }
       </style>
     <![endif]-->
-    <link rel="search" type="application/opensearchdescription+xml" href="/catalogue/opensearch" title="GeoNode Search"/>
+    <!--<link rel="search" type="application/opensearchdescription+xml" href="/catalogue/opensearch" title="GeoNode Search"/>-->
+      <script type="text/javascript">
+        String.prototype.replaceAll = function(search, replacement) {
+            var target = this;
+            return target.split(search).join(replacement);
+        };
+        var GEODASH_USER_ID = 0;
+        var JS_STATIC_URL = '{{ STATIC_URL }}';
+        var IS_LAYERS_PAGE_FOR_CART = false;
+        var IS_AUTHENTICATED_USER_FOR_CART = false;
+        {% if user.is_authenticated %}
+            IS_AUTHENTICATED_USER_FOR_CART = true;
+            GEODASH_USER_ID = {{ user.id }};
+        {% endif %}
+      </script>
+	  <script type="text/javascript"> //<![CDATA[ 
+		var tlJsHost = ((window.location.protocol == "https:") ? "https://secure.comodo.com/" : "http://www.trustlogo.com/");
+		document.write(unescape("%3Cscript src='" + tlJsHost + "trustlogo/javascript/trustlogo.js' type='text/javascript'%3E%3C/script%3E"));
+		//]]>
+	  </script>
   </head>
 
   <body class="{% block body_class %}{% endblock %}">
-    <!-- Navbar -->
     {% block header %}
-	<nav class="navbar navbar-inverse navbar-fixed-top" role="navigation">
-	  <div class="container">
-        <div class="navbar-header">
-	      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
-	        <i class="fa fa-navicon fa-lg"></i>
-	      </button>
-	      <a class="navbar-brand" href="{% url "home" %}">GeoNode</a>
-	    </div>
-	    <div id="navbar" class="navbar-collapse collapse">
-	      <ul class="nav navbar-nav toolbar">
-	        {% block tabs %}
-	        <li id="nav_layers">
-              <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">{% trans "Data" %}<i class="fa fa-angle-down fa-lg"></i></a>
-              <ul class="dropdown-menu">
-                <li><a href="{% url "layer_browse" %}">{% trans "Layers" %}</a></li>
-                <li><a href="{% url "document_browse" %}">{% trans "Documents" %}</a></li>
-                {% if user.is_authenticated %}
-                <li><a href="{% url "services" %}">{% trans "Remote Services" %}</a></li>
-                <li role="separator" class="divider"></li>
-                <li><a href="{% url "layer_upload" %}">Upload Layer</a></li>
-                <li><a href="{% url "document_upload" %}">Upload Document</a></li>
-                <li><a href="{% url "register_service" %}">{% trans "Add Remote Service" %}</a></li>
-                {% endif %}
-              </ul>
-            </li>
-	        <li id="nav_maps">
-              {% if user.is_authenticated %}
-              <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">{% trans "Maps" %}<i class="fa fa-angle-down fa-lg"></i></a>
-              <ul class="dropdown-menu">
-                <li><a href="{% url "maps_browse" %}">{% trans "Explore Maps" %}</a></li>
-                <li> <a href="{% url "new_map" %}">{% trans "Create Map" %}</a></li>
-              </ul>
-              {% else %}
-              <a href="{% url "maps_browse" %}">{% trans "Maps" %}</a>
-              {% endif %}
-            </li>
-            <li>
-	          <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">{% trans "About" %}<i class="fa fa-angle-down fa-lg"></i></a>
-              <ul class="dropdown-menu">
-                <li><a href="{% url "profile_browse" %}">{% trans "People" %}</a></li>
-                <li><a href="{% url "group_list" %}">{% trans "Groups" %}</a></li>
-                {% if perms.announcements.can_manage %}
-                <li><a href="{% url "announcements_list" %}">{% trans "Announcements" %}</a></li>
-                {% endif %}
-                {% if user.is_superuser %}
-                <li role="separator" class="divider"></li>
-                <li><a href="/admin/people/profile/add/">{% trans "Add User" %}</a></li>
-                <li><a href="{% url "account_invite_user" %}">{% trans "Invite User" %}</a></li>
-                <li><a href="{% url "group_create" %}">{% trans "Create Group" %}</a></li>
-                {% endif %}
-              </ul>
-            </li>
-	        {% block extra_tab %}
-            {% endblock %}
-            {% endblock %}
-          </ul>
-	      <ul class="nav navbar-nav navbar-right">
-            <li>
-              <div class="search">
-                <form id="search" action="{% url "search" %}" >
-                  <span class="fa fa-search"></span>
-                  {% if HAYSTACK_SEARCH %}
-                  <input id="search_input" type="text" placeholder="Search" name="q">
-                  {% else %}
-                  <input id="search_input" type="text" placeholder="Search" name="title__icontains">
-                  {% endif %}
-                </form>
-              </div>
-	        </li>
-            {% if not user.is_authenticated and REGISTRATION_OPEN %}
-            <li><a href="{% url "account_signup" %}">{% trans "Register" %}</a></li>
-            {% endif %}
-            {% if user.is_authenticated %}
-            <li><a href="#" class="dropdown-toggle avatar" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">{% avatar user 42 %} {{ user.username }}<i class="fa fa-angle-down fa-lg"></i></a>
-              <ul class="dropdown-menu">
-                <li><a href="{{ user.get_absolute_url }}">{% trans "Profile" %}</a></li>
-                <li><a href="{% url "recent-activity" %}">{% trans "Recent Activity" %}</a></li>
-                <li><a href="{% url "messages_inbox" %}">{% trans "Inbox" %}</a></li>
-                <li role="separator" class="divider"></li>
-                <li><a href="{% url "admin:index" %}">Admin</a></li>
-                <li><a href="{{ GEOSERVER_BASE_URL }}">GeoServer</a></li>
-                <li role="separator" class="divider"></li>
-                <li><a href="{% url "help" %}">{% trans "Help" %}</li>
-                <li role="separator" class="divider"></li>
-                <li><a href="/account/logout/">Logout</a></li>
-                </ul>
-              </li>
-		      {% else %}
-		      <li><a href="#" data-toggle="modal" data-target="#SigninModal" role="button" >{% trans "Sign in" %} </a></li>
-              {% endif %}
-            </ul>
-          </div> <!--/.nav-collapse -->
-        </div>
-      </nav>
-      {% endblock header %}
-      <!-- End of Navbar -->
+    <section id="gd-header" class="navsticky" >
+        <!-- <nav class="navbar navbar-default"> -->
+        <nav class="navbar navbar-default navbar-fixed-top">
+            <div class="container">
+                <div class="navbar-header">
+                    <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#gd-navbar-collapse" aria-expanded="false">
+                        <span class="sr-only">Toggle navigation</span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </button>
+                    <a class="navbar-brand" href="{% url "home" %}">
+                        <div class="logo">
+                            <img src="{{ STATIC_URL }}geonode/images/logo.png" />
+                            <div class="gd-title-geodash">GeoDASH</div>
+                        </div>
+                    </a>
+                </div>
+                <div class="collapse navbar-collapse" id="gd-navbar-collapse">
+                    <ul class="nav navbar-nav gd-menu">
+                        {% block tabs %}
+                        <li class="dropdown">
+                            <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button"
+                               aria-haspopup="true" aria-expanded="false">{% trans "Layers" %}<span class="caret"></span></a>
+                            <!--<a href="#">explore<span class="sr-only">(current)</span></a> -->
+                            <ul class="dropdown-menu">
+                                <li id="nav_layers">
+                                  <a href="{% url "layer_browse" %}">{% trans "Explore Layers" %}</a>
+                                </li>
+                                {% if not user.is_authenticated %}
+                                    <li id="nav_maps">
+                                      <a  onclick="layerpopup('SigninModal');" style="cursor:pointer;">{% trans "Upload Layers" %}</a>
+                                    </li>
+                                {% endif %}
+                                {% if user.is_authenticated %}
+                                    <li id="nav_maps">
+                                      <a href="{% url "layer_upload"  %}">{% trans "Upload Layers" %}</a>
+                                    </li>
+                                {% endif %}
+                                <!--<li id="nav_layers">-->
+                                  <!--<a href="{% url "overpass_turbo" %}">{% trans "OSM Layer Wizard" %}</a>-->
+                                <!--</li>-->
+                            </ul>
+                        </li>
+                        <li class="dropdown">
+                            <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button"
+                               aria-haspopup="true" aria-expanded="false">{% trans "Maps" %}<span class="caret"></span></a>
+                            <!--<a href="#">explore<span class="sr-only">(current)</span></a> -->
+                            <ul class="dropdown-menu">
+                                <li id="nav_layers">
+                                  <a href="{% url "maps_browse" %}">{% trans "Explore Maps" %}</a>
+                                </li>
+{#                                {% if user.is_authenticated %}#}
+                                <li id="nav_maps">
+                                  <a href="{% url "new_map" %}">{% trans "Create a New Map" %}</a>
+                                </li>
+{#                                {% endif %}#}
+                            </ul>
+                        </li>
+                        <li class="dropdown">
+                            <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button"
+                               aria-haspopup="true" aria-expanded="false">{% trans "Documents" %}<span class="caret"></span></a>
+                            <!--<a href="#">explore<span class="sr-only">(current)</span></a> -->
+                            <ul class="dropdown-menu">
+                                <li id="nav_layers">
+                                  <a href="{% url "document_browse" %}" >{% trans "Explore Documents" %}</a>
+                                </li>
+                                {% if not user.is_authenticated %}
+                                <li id="nav_maps">
+                                  <a onclick="documentpopup('SigninModal');" style="cursor:pointer;">{% trans "Upload Documents" %}</a>
+                                </li>
+                                {% endif %}
+                                {% if user.is_authenticated %}
+                                <li id="nav_maps">
+                                  <a href="{% url "document_upload" %}">{% trans "Upload Documents" %}</a>
+                                </li>
+                                {% endif %}
+                            </ul>
+                        </li>
+                        {% block extra_tab %}
+                        {% endblock %}
+                        <li class="dropdown">
+                            <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button"
+                               aria-haspopup="true" aria-expanded="false">{% trans "Organizations" %}<span class="caret"></span></a>
+                            <!--<a href="#">explore<span class="sr-only">(current)</span></a> -->
+                            <ul class="dropdown-menu">
+                                <li id="nav_maps">
+                                  <a href="{% url "group_list" %}">{% trans "Explore Organizations" %}</a>
+                                </li>
+                                {% if user.is_authenticated %}
+                                <li id="nav_layers">
+                                  <a href="{% url "profile_browse" %}">{% trans "Explore Users" %}</a>
+                                </li>
+                                {% endif %}
+                            </ul>
+                        </li>
+                        <li><a href="{% url "news-list" %}">{% trans "NEWS" %}</a></li>
+                        {% if user.is_authenticated %}
+                        <li class="notification">
+                            <a class="usi" href="{% url "_dashboard" %}" title="Dashboard">
+                                <button class="btn btn-default btn-link" >
+                                    <img src="{{ STATIC_URL }}geonode/images/user-separator-icon.png" style="margin-top:-15px;" title="Dashboard"  />
+                                </button>
+                            </a>
+                        </li>
+                        {% endif %}
+                        <!--<li><a href="{% url "_dashboard" %}">{% trans "Dashboard" %}</a></li>-->
+                        {% endblock %}
+                    </ul>
+                    <ul class="nav navbar-nav navbar-right">
+                        <!--<li class="dropdown" style="margin-top:5px;">-->
+                            <!--<select name="" id="drop_sec" class="user_dropdown" onchange="drop_sec(this);">-->
+                                <!--<option value="Default" selected="selected" id="drop_defsult">Default</option>-->
+                                <!--<option value="Organization" id="drop_org">Organization</option>-->
+                                <!--<option value="User" id="drop_user">User</option>-->
+                            <!--</select>-->
+                        <!--</li>-->
+                        <li class="nav-search-index brow_widt" id="search_lay_map_doc" style=""> <!-- nav-search-index -->
+                            <form class="top-site-search" id="search" action="{% url "search" %}" >
+                                <div class="input-group">
+                                    {% if HAYSTACK_SEARCH %}
+                                        <input id="search_input"  type="text" placeholder="" name="q" style="color:#5a5d63;">
+                                    {% else %}
+                                        <input id="search_input"  type="text" placeholder="Search layer/map/doc" style="color:#5a5d63;" name="title__icontains">
+                                    {% endif %}
+                                    <span style="padding-left:20px;">
+                                        <!--<select name="" class="user_dropdown" id="user_dropdown_onch" onchange="drop_sec(this);">-->
+                                            <!--<option value="Default" id="layermapdocsearch" selected="selected">Layer/Map/Document</option>-->
+                                            <!--<option value="Organization" id="organizationsearch" >Organization</option>-->
+                                            <!--<option value="User" id="userssearch">User</option>-->
+                                        <!--</select><div class="caret" id="show_d_p" style="cursor:pointer;"></div>-->
+                                        <!--<div class="dropdown">-->
+                                            <!--<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button"-->
+                                               <!--aria-haspopup="true" aria-expanded="false">{% trans "Orga" %}<span class="caret"></span></a>-->
+                                            <!--&lt;!&ndash;<a href="#">explore<span class="sr-only">(current)</span></a> &ndash;&gt;-->
+                                            <!--<ul class="dropdown-menu">-->
+                                                <!--<li id="nav_maps">-->
+                                                  <!--<a href="{% url "group_list" %}">{% trans "Explore Organizations" %}</a>-->
+                                                <!--</li>-->
+                                                <!--{% if user.is_authenticated %}-->
+                                                <!--<li id="nav_layers">-->
+                                                  <!--<a href="{% url "profile_browse" %}">{% trans "Explore Users" %}</a>-->
+                                                <!--</li>-->
+                                                <!--{% endif %}-->
+                                            <!--</ul>-->
+                                        <!--</div>-->
+                                        <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button"
+                                               aria-haspopup="true" aria-expanded="false">{% trans "" %} <span class="caret"></span>
+                                        </a>
+                                            <ul class="dropdown-menu" >
+                                                <li id="layermapdocsearch">
+                                                  <a href="javascript:;" id="layermapdocsearchval" data-isadmin="Default">{% trans "Layer/Map/Document" %}</a>
+                                                </li>
+                                                <li id="organizationsearch">
+                                                  <a href="javascript:;" id="organizationsearchval" data-isadmin="Organization" value="Organization">{% trans "Organization" %}</a>
+                                                </li>
+                                                <li id="userssearch">
+                                                  <a href="javascript:;" id="userssearchval" data-isadmin="User" value="User">{% trans "User" %}</a>
+                                                </li>
+                                            </ul>
+                                    </span>
+                                    <span class="input-group-btn">
+                                      <button class="btn btn-gd-primary" type="submit">
+                                          <i class="fa fa-search"></i>
+                                      </button>
+                                    </span>
+                                </div>
+                                <!-- <button class="btn btn-default btn-link">
+                                    <a href="#" >
+                                        <span class="glyphicon glyphicon-search"></span>
+                                    </a>
+                                </button> -->
+                            </form>
+                        </li>
+                        <!-- <li class="advanced-search" id="advanced-search-menu" style="display: none;">
+                            <a href="javascript:;" id="advanced-search-control">
+                                Advanced
+                            </a>
+                        </li> -->
+                        {% if not user.is_authenticated %}
+                        <li class="nav-search-index">
+                            <a href="#" data-toggle="modal" data-target="#SigninModal" role="button">sign in</a>
+                        </li>
+                        {% endif %}
+                        {% if not user.is_authenticated and REGISTRATION_OPEN %}
+                        <li class="normal-fon">
+                            <a href="#" data-toggle="modal" data-target="#SignupModal" role="button" href="{% url "account_signup" %}">
+{#                                {% trans "Register" %}#}
+                                Register
+                            </a>
+                        </li>
+                        {% endif %}
+                        {% if user.is_authenticated %}
 
+                        <li class="notification">
+                            <a href="{% url "message-inbox-extend" %}" >
+                                <button class="btn btn-default btn-link">
+                                    <i class="fa fa-envelope"></i>
+                                </button>
+                                <span class="badge badge-notifymsg">{% if user.message_unread %}{{ request.user.message_unread }}{% endif %}</span>
+                            </a>
+                        </li>
+                        <li class="notification" id="show-notification">
+                            <a href="javascript:;" id="a_href">
+                                <button class="btn btn-default btn-link unreadfalse">
+                                    <i class="fa fa-bell" ></i>
+                                </button>
+                                <span class="badge badge-notify" id="rload">{% if user.notification_count %}{{ request.user.notification_count }}{% endif %}</span>
+                            </a>
+                        </li>
+                        <div id="show-notification-msg" class="show-notification-msg" style="display:none;">
+                            <div class="notifications" style="height:250px;overflow:auto;">
+                                <ul class="text-center">
+                                    {% load notification_tags %}
+                                    {% include_notify_js_variables %}
+                                    {% user_notifications %}
+                                </ul>
+                            </div>
+                            <div style="padding:10px 0px 0px 20px;z-index:100">
+                                <a class="btn btn-gd-primary icon-btn-color" href="{% url "notifications_all" %}" target="_self">
+                                        Show All Notifications
+                                </a>
+                            </div>
+                        </div>
+                        <!--<li class="notification">-->
+                            <!--<a class="usi" href="{% url "_dashboard" %}" >-->
+                                <!--<button class="btn btn-default btn-link" >-->
+                                    <!--<img src="{{ STATIC_URL }}geonode/images/user-separator-icon.png" title="Dashboard"  />-->
+                                <!--</button>-->
+                            <!--</a>-->
+                            <!--<div class="gd-username">{{ user.username }}</div>-->
+                        <!--</li>-->
+                        <li class="profile_picture">
+                            <a href="javascript:;" title="{{ user.username }}">
+                                <div id="c-button--slide-right" class="c-button profile_pic">
+                                    {% avatar user 50 %}
+                                </div>
+                            </a>
+                        </li>
+                        {% endif %}
+                        <li style="margin-top:6px;">
+                            <!-- <div class="btn-group" role="group">
+                                <a href="javascript:;" title="English" class="btn btn-default">
+                                    <img width="20" src="{{ STATIC_URL }}geonode/images/flag/us.png" />
+                                </a>
+                                <a href="javascript:;" title="English" class="btn btn-default">
+                                    <img width="20" src="{{ STATIC_URL }}geonode/images/flag/bn.png" />
+                                </a>
+                            </div> -->
+                           <span>
+
+                               <a id="lang-selection" href="javascript:;" title="{% trans "LANGUAGE" %}">
+                                   {% trans "LANGUAGE" %}
+                               </a>
+                           </span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+    </section>
+    {% endblock header %}
     <div class="alert alert-danger alert-dismissible" role="alert" id="ieflag" style="display:none">
       <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
       <h1>You are using an outdated browser that is not supported by GeoNode.</h1>
       <p>Please use a <strong>modern browser</strong> like Mozilla Firefox, Google Chrome or Safari.</p>
     </div>
 
-  <div id="wrap">
+    <section id="gd-advanced-search" style="display:none;">
+        <div class="container-fluid">
+            {% if request.path == '/layers/' or request.path == '/maps/' or request.path == '/documents/' or request.path == '/search/'%}
+                {% include "search/_advanced_search_content.html" %}
+            {% endif %}
+        </div>
+    </section>
+
+    <section id="gd-wrapper">
     {% block middle %}
     <div class="container">
       {% include "_status_message.html" %}
-      {% include "_announcements.html" %}
+      <!--{% include "_announcements.html" %}-->
       {% include "_messages.html" %}
       {% block body_outer %}
+      {% block body_header %}{% endblock %}
       <div class="row">
         <div class="col-md-8">
         {% block body %}{% endblock %}
@@ -160,106 +363,505 @@
       {% endblock %}
     </div>
     {% endblock middle %}
-  </div>
+    </section>
 
-  {% block footer %}
-  <footer>
-    <div class="container">
-      <div class="row">
-        <div class="col-md-2">
-          <ul class="list-unstyled">
-            <li>Data</li>
-            <li><a href="{% url "layer_browse" %}">{% trans "Layers" %}</a></li>
-            <li><a href="{% url "document_browse" %}">{% trans "Documents" %}</a></li>
-            {% if user.is_authenticated %}
-            <li><a href="{% url "services" %}">{% trans "Remote Services" %}</a></li>
-            <li><a href="{% url "layer_upload" %}">Upload Layer</a></li>
-            <li><a href="{% url "document_upload" %}">Upload Document</a></li>
-            <li><a href="{% url "register_service" %}">{% trans "Add Remote Service" %}</a></li>
-            {% endif %}
-          </ul>
-        </div>
-        <div class="col-md-2">
-          <ul class="list-unstyled">
-            <li>Maps</li>
-            <li><a href="{% url "maps_browse" %}">{% trans "Explore Maps" %}</a></li>
-            {% if user.is_authenticated %}
-            <li> <a href="{% url "new_map" %}">{% trans "Create Map" %}</a></li>
-            {% endif %}
-          </ul>
-        </div>
-		<div class="col-md-2">
-          <ul class="list-unstyled">
-            <li>About</li>
-            <li><a href="{% url "profile_browse" %}">{% trans "People" %}</a></li>
-            <li><a href="{% url "group_list" %}">{% trans "Groups" %}</a></li>
-            {% if perms.announcements.can_manage %}
-            <li><a href="{% url "announcements_list" %}">{% trans "Announcements" %}</a></li>
-            {% endif %}
-            {% if user.is_superuser %}
-            <li><a href="/admin/people/profile/add/">{% trans "Add User" %}</a></li>
-            <li><a href="{% url "account_invite_user" %}">{% trans "Invite User" %}</a></li>
-            <li><a href="{% url "group_create" %}">{% trans "Create Group" %}</a></li>
-            {% endif %}
-          </ul>
-        </div>
-        <div class="col-md-6 text-right">
-          <ul class="list-unstyled">
-            <li>{% trans "Powered by" %} <a href="http://geonode.org">{% trans "GeoNode" %}</a> <em>{% trans "version" %} {{ VERSION }}</em></li>
-            <li><a href="{% url "developer" %}">{% trans "Developers" %}</a> | <a href="{% url "about" %}">{% trans "About" %}</a><li>
-          </ul>
-          <label class="hidden">{% trans "Language" %}</label>
-          {% if csrf_token != "NOTPROVIDED" %}
-          {% get_current_language as LANGUAGE %}
-          <form class="form-inline" action="/i18n/setlang/" method="post">
-          {% csrf_token %}
-            <select class="col-md-6 pull-right" name="language" onchange="javascript:form.submit()">
-              {% for lang in LANGUAGES %}
-              <option value="{{ lang.0 }}" {% ifequal LANGUAGE_CODE lang.0 %} selected="selected"{% endifequal %}>
-                {{ lang.1 }}
-              </option>
-              {% endfor %}
-            </select>
-          </form>
-          {% endif %}
+    {% block footer %}
+    <footer id="gd-footer">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-7">
+                    <!-- <button type="button" class="navbar-toggle collapsed" data-toggle="collapse"
+                            data-target="#gd-footer-navbar-collapse" aria-expanded="false">
+                        <span class="sr-only">Toggle navigation</span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </button> -->
+                    <!--<div class="collapse navbar-collapse" id="gd-footer-navbar-collapse">-->
+                    <ul class="nav navbar-nav">
+                        <li><a href="{% url "footer-section-view" 'terms-and-condition' %}">{% trans "Terms and Condition" %}</a></li>
+                        <li><a href="{% url "footer-section-view" 'privacy-policy' %}">{% trans "Privacy Policy" %}</a></li>
+                        <li><a href="{% url "footer-section-view" 'terms-of-use' %}">{% trans "Terms of use" %}</a></li>
+                        <li><a href="https://geodash.gov.bd/wiki/index.php?title=Main_Page">{% trans "GeoDASH Wiki" %}</a></li>
+                        <li>
+                            <div class="tooltip_use" style="cursor:pointer;">Useful Resource
+                              <span class="tooltiptext_use">
+                                  <ul>
+                                      <li><a href="https://overpass-turbo.eu/" target="_blank">Overpass Turbo</a></li>
+                                      <li><a href="https://github.com/GeoNode/geonode" target="_blank">Github</a></li>
+                                      <li><a href="https://openlayers.org/" target="_blank">OpenLayers</a></li>
+                                      <li><a href="http://www.qgis.org/en/site/" target="_blank">QGIS</a></li>
+                                      <li><a href="http://leafletjs.com/" target="_blank">Leaflet</a></li>
+                                      <li><a href="http://demo.f4map.com/#camera.theta=0.9" target="_blank">F4 Map</a></li>
+                                      <li><a href="https://www.facebook.com/groups/GeoDASH/" target="_blank">GeoDASH BD FB Group</a></li>
+                                      <li><a href="https://www.openstreetmap.org" target="_blank">OpenStreetMap</a></li>
+                                  </ul>
+                              </span>
+                            </div>
+                        </li>
+                        <!--<li><a href="#">{% trans "Admin Android APP" %}</a></li>-->
+                    </ul>
+                    <!--</div>-->
+                </div>
+                <div class="col-md-2">
+					<div class="footer-admin-app">
+                                Admin APP
+                            <a href="https://play.google.com/store/apps/details?id=com.sdslbd.geodash" target="_blank">
+                                <img src="{{ STATIC_URL }}geonode/images/googleplay.png" class="img-responsive" style=""/>
+                            </a>
+					</div>
+				</div>
+				<div class="col-md-1">
+					<div style="margin-top:15px;" class="ssl-certify-logo">
+							<script language="JavaScript" type="text/javascript">
+							TrustLogo("https://geodash.gov.bd/static/geonode/images/comodo_secure_seal_113x59_transp.png", "CL1", "none");
+							</script>
+							<a  href="https://ssl.comodo.com" id="comodoTL">Comodo SSL</a>
+					</div>
+				</div>
+                <div class="col-md-2">
+                    <div class="gd-footer-language" >
+                        <label class="hidden">{% trans "Language" %}</label>
+                        {% if csrf_token != "NOTPROVIDED" %}
+                        {% get_current_language as LANGUAGE %}
+                        <form id="set-language-of-site" class="form-inline" action="/i18n/setlang/" method="post">
+                        {% csrf_token %}
+                          <select id="langOfSite" class="col-md-6 pull-right" name="language" onchange="javascript:form.submit()">
+                            {% for lang in LANGUAGES %}
+                            <option value="{{ lang.0 }}" {% ifequal LANGUAGE_CODE lang.0 %} selected="selected"{% endifequal %}>
+                              {% trans lang.1 %}
+                            </option>
+                            {% endfor %}
+                          </select>
+                        </form>
+                        {% endif %}
+                    </div>
+                    <!-- <ul class="nav navbar-nav navbar-right">
+                        <li>
+                            <select class="selectpicker" data-width="auto">
+                                <option>English</option>
+                                <option>Bangla</option>
+                                <option>Bangla</option>
+                                <option>Bangla</option>
+                            </select>
+                        </li>
+                    </ul> -->
+                </div>
+            </div>
         </div>
       </div>
-    </div>
-  </footer>
-  {% endblock footer %}
+    </footer>
+    {% endblock footer %}
 
 
     <!-- Modal must stay outside the navbar -->
-    {% if not user.is_authenticated %}
-    <div class="modal fade" id="SigninModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-      <div class="modal-dialog modal-sm">
-        <div class="modal-content">
-          <div class="modal-header">
-            <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
-            <h4 class="modal-title" id="myModalLabel">{% trans "Sign in" %}</h4>
-          </div>
-          <form class="form-signin" role="form" action="{% url "account_login" %}?next={{ request.path }}" method="post">
-            <div class="modal-body">
-              {% csrf_token %}
-              <div class="form-group">
-                <label for="id_username" class="sr-only">{% trans "Username" %}:</label>
-                <input id="id_username" class="form-control" name="username" placeholder="{% trans "Username" %}" type="text" />
+    <section id="gd-announcements-model">
+        <div class="container">
+            <div class="modal fade" id="GDAnnouncementsModel"  tabindex="-1" role="dialog" aria-labelledby="GDAnnouncementsModel">
+              <div class="modal-dialog" role="document" >
+                <div class="modal-content" style="min-height: 200px;">
+                    <div class="modal-header">
+                      <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                      <div style="text-align:center;">
+                        <h4 class="modal-title" id="exampleModalLabel"></h4>
+                        <span>{% trans "Announcement(s)" %}</span>
+                      </div>
+                  </div>
+                  {% include "_announcements.html" %}
+                </div>
               </div>
-              <div class="form-group">
-                <label for="id_password" class="sr-only">{% trans "Password" %}:</label>
-                <input id="id_password" class="form-control" name="password" placeholder="{% trans "Password" %}" type="password" />
-              </div>
-              <label class="checkbox">
-                <input type="checkbox" /> {% trans "Remember Me" %}
-              </label>
             </div>
-            <div class="modal-footer">
-              <button type="submit" class="btn btn-primary btn-block">{% trans "Sign in" %}</button>
+        </div>
+    </section>
+    {% if not user.is_authenticated %}
+    <section id="gd-model">
+        <div class="container">
+            <div style="">
+                <div class="modal fade" id="SigninModal"  tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel">
+                  <div class="modal-dialog" role="document" >
+                    <div class="modal-content" >
+                      <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                          <div style="text-align:center;">
+                          <h4 class="modal-title" id="exampleModalLabel"></h4>
+                          <span>{% trans "Sign in to your account" %}</span>
+                          </div>
+                      </div>
+                      <form class="form-signin" id ="uploadsignlayer" role="form" action="{% url "account_login" %}?next={{ 'layer_browse' }}" method="post">
+                        {% csrf_token %}
+                          {% if redirect_field_value %}
+                          <input type="hidden" name="{{ redirect_field_name }}" value="{{ redirect_field_value }}"/>
+                          {% endif %}
+                          <div class="modal-body">
+                              <div class="form-group">
+                                <input id="id_username" class="form-control" name="username" placeholder="{% trans "Username" %}" type="text" />
+                              </div>
+                              <div class="form-group">
+                                <input id="id_password" class="form-control" name="password" placeholder="{% trans "Password" %}" type="password" />
+                              </div>
+                                <div class="row">
+                                    <div class="col-md-6"><input type="checkbox" name="" id="" value="" class="chkinput" /> <span>{% trans "Remember Me" %} </span></div>
+                                    <div class="col-md-6 gd-txt-right"><a href="{% url "account_password_reset" %}">{% trans "Forgot your password?" %}</a></div>
+                                </div>
+                                <div class="block-separator"></div>
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <button type="submit" class="btn btn-gd-gray-signin btn-lg col-md-12 col-sm-12 col-xs-12">
+                                            {% trans "Sign in" %}
+                                        </button>
+                                    </div>
+                                </div>
+                                <div class="block-separator"></div>
+                                <div class="row">
+                                    <div class="col-md-5"></div>
+                                    <div class="col-md-2"><span style=""> or </span> </div>
+                                    <div class="col-md-5"></div>
+                                </div>
+                                <div class="block-separator"></div>
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <a href="{% url 'social:begin' 'facebook' %}?next={{ request.path }}" class="btn btn-gd-gray-facebook btn-lg col-md-12 col-sm-12 col-xs-12">
+                                            <div class="row">
+                                                <div class="col-md-2">
+                                                    <i class="fa fa-facebook fbicon" aria-hidden="true" style=""></i>
+                                                </div>
+                                                <div class="col-md-8 text-center">
+                                                    <span class="fbsign">{% trans "Sign in with Facebook" %}</span>
+                                                </div>
+                                            </div>
+                                        </a>
+                                    </div>
+                                </div>
+                                <div class="block-separator"></div>
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <a href="{% url 'social:begin' 'google-oauth2' %}?next={{ request.path }}" class="btn btn-gd-gray-gplus btn-lg col-md-12 col-sm-12 col-xs-12">
+                                            <div class="row">
+                                                <div class="col-md-2">
+                                                    <i class="fa fa-google-plus golicon" aria-hidden="true" style=""></i>
+                                                </div>
+                                                <div class="col-md-8 text-center">
+                                                    <span class="fbsign">{% trans "Sign in with Google+" %}</span>
+                                                </div>
+                                            </div>
+                                        </a>
+                                    </div>
+                                </div>
+                                <div class="block-separator"></div>
+                                <div class="row">
+                                    <div class="col-md-12 text-center">
+                                        <span>
+                                            Don't have an account?<a href="#" data-target="#SignupModal" role="button" data-toggle="modal" data-dismiss="modal">{% trans " Register" %}</a>
+                                        </span>
+                                    </div>
+                                </div>
+                          </div>
+                      </form>
+                    </div>
+                  </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    {% endif %}
+    {% if not user.is_authenticated and REGISTRATION_OPEN %}
+    <section id="gd-model">
+        <div class="container">
+            <div style="">
+                <div class="modal fade" id="SignupModal"  tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel">
+                  <div class="modal-dialog" role="document" >
+                    <div class="modal-content" >
+                      <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                          <div style="text-align:center;">
+                          <h4 class="modal-title" id="exampleModalLabel"></h4>
+                          <span>Create a new account and get started</span>
+                          </div>
+                      </div>
+                        {% if REGISTRATION_OPEN %}
+                      <form id="signup_form" role="form" action="{% url "account_signup" %}" method="post" autocapitalize="off" class="form-horizontal-remove"{% if form.is_multipart %} enctype="multipart/form-data"{% endif %}>
+                        {% csrf_token %}
+                          <div class="modal-body">
+                              <div class="form-group">
+                                <input id="username" name="username" type="text" class="form-control" placeholder="{% trans "Username" %}" >
+                              </div>
+                              <div class="form-group">
+                                <input id="password" name="password" type="password" class="form-control" placeholder="{% trans "Password" %}" >
+                              </div>
+                                <div class="form-group">
+                                <input id="password_confirm" name="password_confirm" type="password" class="form-control" placeholder="{% trans "Confirm Password" %}" >
+                              </div>
+                                <div class="form-group">
+                                <input id="email" name="email" type="text" class="form-control" placeholder="{% trans "Email" %}" >
+                              </div>
+                                <div class="block-separator"></div>
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <button type="submit" class="btn btn-gd-gray-signin btn-lg col-md-12 col-sm-12 col-xs-12">
+                                            {% trans "Register" %}
+                                        </button>
+                                    </div>
+                                </div>
+                                {% else %}
+                                  <div>{% trans "Sorry, registrations are not open at this time." %}</div>
+                                  {% endif %}
+                                <div class="block-separator"></div>
+                                <div class="row">
+                                    <div class="col-md-5"></div>
+                                    <div class="col-md-2"><span style=""> or </span> </div>
+                                    <div class="col-md-5"></div>
+                                </div>
+                                <div class="block-separator"></div>
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <a href="{% url 'social:begin' 'facebook' %}?next={{ request.path }}" class="btn btn-gd-gray-facebook btn-lg col-md-12 col-sm-12 col-xs-12">
+                                            <div class="row">
+                                                <div class="col-md-2">
+                                                    <i class="fa fa-facebook fbicon" aria-hidden="true" style=""></i>
+                                                </div>
+                                                <div class="col-md-8 text-center">
+                                                    <span class="fbsign">{% trans "Register with Facebook" %}</span>
+                                                </div>
+                                            </div>
+                                        </a>
+                                    </div>
+                                </div>
+                                <div class="block-separator"></div>
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <a href="{% url 'social:begin' 'google-oauth2' %}?next={{ request.path }}" class="btn btn-gd-gray-gplus btn-lg col-md-12 col-sm-12 col-xs-12">
+                                            <div class="row">
+                                                <div class="col-md-2">
+                                                    <i class="fa fa-google-plus golicon" aria-hidden="true" style=""></i>
+                                                </div>
+                                                <div class="col-md-8 text-center">
+                                                    <span class="fbsign">{% trans "Register with Google+" %}</span>
+                                                </div>
+                                            </div>
+                                        </a>
+                                    </div>
+                                </div>
+                                <div class="block-separator"></div>
+                                <div class="row">
+                                    <div class="col-md-12 text-center">
+                                        <span>
+                                            Already have an account?
+                                        </span>
+                                    </div>
+                                </div>
+                                <div class="block-separator"></div>
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <span class="btn btn-gd-gray-alsignin btn-lg col-md-12 col-sm-12 col-xs-12">
+                                            <a href="#" data-target="#SigninModal" role="button" data-toggle="modal" data-dismiss="modal" style="color:#f7f7f7;font-weight:normal;">{% trans " Sign in" %}</a>
+                                        </span>
+                                    </div>
+                                </div>
+                          </div>
+                       </form>
+                    </div>
+                  </div>
+                </div>
             </div>
           </form>
         </div>
-      </div>
-    </div>
+    </section>
+    {% else %}
+    <nav id="c-menu--slide-right" class="c-menu c-menu--slide-right">
+        <div class="c-menu__close">
+            <button class="btn-link c-menu_gd_close">X</button>
+        </div>
+        <div class="user-details">
+            <article>
+                <div class="grid-container">
+                    <div class="top-content text-center">
+                        <div class="avater">
+                            <a href="javascript:;">
+                                <div class="img">
+                                    {% avatar user 75 %}
+                                    <!--<img height="100" src="{{ STATIC_URL }}geonode/images/profile_pic.png" alt="profile_pic">-->
+                                </div>
+                                <div class="txt">{{ user.username }}</div>
+                            </a>
+                        </div>
+                        <!--<div class="designation">-->
+                            <!--{{ user.position | default:_('Not provided.') }}-->
+                        <!--</div>-->
+                    </div>
+                </div>
+            </article>
+        </div>
+        <ul class="c-menu__items">
+            <li class="c-menu__item">
+                <a href="{% url "layer_upload"  %}" class="c-menu__link">
+                    <i class="fa fa-cloud-upload"></i>
+                    <span style="text-align:left;color:#fff;margin-left:-8px;">{% trans "Upload Layers" %}</span>
+                </a>
+            </li>
+            <li class="c-menu__item">
+                <a href="{{ user.get_absolute_url }}" class="c-menu__link">
+                    <i class="fa fa-user" aria-hidden="true"></i>
+                    <span style="text-align:left;color:#fff;margin-left:-3px;">{% trans "Profile" %}</span>
+                </a>
+            </li>
+            {% if request.user.is_superuser %}
+            <li class="c-menu__item">
+                <a href="{% url "keyword-list" %}" class="c-menu__link">
+                    <i class="fa fa-tasks"></i>
+                    <span style="text-align:left;color:#fff;margin-left:-8px;">{% trans "Keyword List" %}</span>
+                </a>
+            </li>
+            {% endif %}
+            {% if request.user.is_superuser %}
+            <li class="c-menu__item">
+                <a href="{% url "section-list-table" %}" class="c-menu__link">
+                    <i class="fa fa-tasks"></i>
+                    <span style="text-align:left;color:#fff;margin-left:-8px;">{% trans "Manage Section" %}</span>
+                </a>
+            </li>
+            {% endif %}
+            {% if request.user.is_superuser %}
+            <li class="c-menu__item">
+                <a href="{% url "topiccategory-list" %}" class="c-menu__link">
+                    <i class="fa fa-map-marker"></i> {% trans "Manage Category" %}
+                </a>
+            </li>
+            {% endif %}
+            {% if request.user.is_superuser %}
+            <li class="c-menu__item">
+                <a href="{% url "wms-server-list" %}" class="c-menu__link">
+                    <i class="fa fa-tasks"></i>
+                    <span style="text-align:left;color:#fff;margin-left:-7px;">{% trans "Add Server" %}</span>
+                </a>
+            </li>
+            {% endif %}
+            {% if request.user.is_superuser %}
+            <li class="c-menu__item">
+                <a href="{% url "news-create" %}" class="c-menu__link">
+                    <i class="fa fa-file-text-o"></i>
+                    <span style="text-align:left;color:#fff;margin-left:-6px;">{% trans "Add News" %}</span>
+                </a>
+            </li>
+            {% endif %}
+            {% if request.user.is_authenticated %}
+            {% if request.user.is_member_of_any_group or  request.user.is_manager_of_any_group or request.user.is_superuser %}
+            <li class="c-menu__item">
+                <a href="{% url "member-workspace-layer" %}" class="c-menu__link">
+                    <i class="fa fa-building-o"></i>
+                    <span style="text-align:left;color:#fff;margin-left:-8px;">{% trans "Member-Workspace" %}</span>
+                </a>
+            </li>
+            {% endif %}
+            {% endif %}
+
+            {% if request.user.is_authenticated and request.user.is_manager_of_any_group %}
+            <li class="c-menu__item">
+                <a href="{% url "admin-workspace-layer" %}" class="c-menu__link">
+                    <i class="fa fa-building-o"></i>
+                    <span style="text-align:left;color:#fff;margin-left:-8px;">{% trans "Admin-Workspace" %}</span>
+                </a>
+            </li>
+            {% endif %}
+            {% if request.user.is_superuser or request.user.is_manager_of_any_group %}
+              <li class="c-menu__item">
+                  <a href="{% url "create-user" %}" class="c-menu__link">
+                    <i class="fa fa-fire"></i>
+                    <span style="text-align:left;color:#fff;margin-left:-8px;">{% trans "Create User" %}</span>
+                  </a>
+              </li>
+            {% endif %}
+            <li class="c-menu__item">
+                <a href="{% url "recent-activity" %}" class="c-menu__link">
+                    <img src="{{ STATIC_URL }}geonode/images/user-icon/recent-activity.png" alt="Recent Activity">
+                    <span style="text-align:left;color:#fff;margin-left:-10px;">{% trans "Recent Activity" %}</span>
+                </a>
+            </li>
+            {% if perms.announcements.can_manage %}
+            <li class="c-menu__item">
+                <a href="{% url "announcements_list" %}" class="c-menu__link">
+                    <img src="{{ STATIC_URL }}geonode/images/user-icon/announcements.png" alt="Announcements">
+                    <span style="text-align:left;color:#fff;margin-left:-10px;">{% trans "Announcements" %}</span>
+                </a>
+            </li>
+            {% endif %}
+            {% if user.is_superuser %}
+            <li class="c-menu__item">
+                <a href="{% url "services" %}" class="c-menu__link">
+                    <img src="{{ STATIC_URL }}geonode/images/user-icon/remote-services.png" alt="Remote Services">
+                    <span style="text-align:left;color:#fff;margin-left:-10px;">{% trans "Remote Services" %}</span>
+                </a>
+            </li>
+            <li class="c-menu__item">
+                <a href="{{ GEOSERVER_BASE_URL }}" class="c-menu__link">
+                    <img src="{{ STATIC_URL }}geonode/images/user-icon/geo-server.png" alt="GeoServer">
+                    <span style="text-align:left;color:#fff;margin-left:-10px;">{% trans "GeoServer" %}</span>
+                </a>
+            </li>
+            {% endif %}
+            {% if user.is_manager_of_any_group %}
+            <li class="c-menu__item">
+                <a href="{% url "invite_user" %}" class="c-menu__link">
+                    <img src="{{ STATIC_URL }}geonode/images/user-icon/invite-user.png" alt="Invite User">
+                    <span style="text-align:left;color:#fff;margin-left:-14px;">{% trans "Invite User" %}</span>
+                </a>
+            </li>
+            {% endif %}
+            {% if user.is_staff %}
+            <li class="c-menu__item">
+                <a href="{% url "admin:index" %}" class="c-menu__link">
+                    <i class="fa fa-cog"></i>
+                    {% trans "Admin" %}
+                </a>
+            </li>
+		    {% endif %}
+            {% block extra_user_menu %}
+            {% endblock %}
+
+            {% if request.user.is_superuser %}
+            <li class="c-menu__item">
+                <a href="{% url "metadata-backup" %}" class="c-menu__link">
+                    <img src="{{ STATIC_URL }}geonode/images/user-icon/help.png" alt="Help">
+                    <span style="text-align:left;color:#fff;margin-left:-10px;">{% trans "Metadata Backup" %}</span>
+                </a>
+            </li>
+            <li class="c-menu__item">
+                <a href="{% url "data-backup" %}" class="c-menu__link">
+                    <img src="{{ STATIC_URL }}geonode/images/user-icon/help.png" alt="Help">
+                    <span style="text-align:left;color:#fff;margin-left:-10px;">{% trans "Data Backup" %}</span>
+                </a>
+            </li>
+            <li class="c-menu__item">
+                <a href="{% url "uploaded-folder-backup" %}" class="c-menu__link">
+                    <img src="{{ STATIC_URL }}geonode/images/user-icon/help.png" alt="Help">
+                    <span style="text-align:left;color:#fff;margin-left:-10px;">{% trans "Media Backup" %}</span>
+                </a>
+            </li>
+            <li class="c-menu__item">
+                <a href="{% url "data-folder-backup" %}" class="c-menu__link">
+                    <img src="{{ STATIC_URL }}geonode/images/user-icon/help.png" alt="Help">
+                    <span style="text-align:left;color:#fff;margin-left:-10px;">{% trans "Geoserver Data Backup" %}</span>
+                </a>
+            </li>
+            {% endif %}
+            <li class="c-menu__item">
+                <a href="{% url "help" %}" class="c-menu__link">
+                    <img src="{{ STATIC_URL }}geonode/images/user-icon/help.png" alt="Help">
+                    <span style="text-align:left;color:#fff;margin-left:-10px;">{% trans "Help" %}</span>
+                </a>
+            </li>
+            <li class="c-menu__item active">
+                <form action="{% url "account_logout" %}" id="logout_form" method="post">
+                  {% csrf_token %}
+                  <a class="c-menu__link" href="javascript:{}"
+                     onclick="document.getElementById('logout_form').submit();">
+                      <img src="{{ STATIC_URL }}geonode/images/user-icon/logout.png" alt="Logout">
+                      <span style="text-align:left;color:#fff;margin-left:-10px;">{% trans "Log out" %}</span>
+                  </a>
+                </form>
+            </li>
+        </ul>
+    </nav><!-- /c-menu slide-right -->
+    <div id="c-mask" class="c-mask"></div><!-- /c-mask -->
     {% endif %}
     <!-- End of Modal -->
 
@@ -278,15 +880,23 @@
     <script src="{{ STATIC_URL }}lib/js/select2.js?v={{ VERSION }}"></script>
     <script src="{{ STATIC_URL }}lib/js/waypoints.js?v={{ VERSION }}"></script>
     {% else %}
+    <script src="{{ STATIC_URL }}lib/js/vendor.023a2951.js?v={{ VERSION }}"></script>
+    <script src="{{ STATIC_URL }}lib/js/main.4edf9947.js?v={{ VERSION }}"></script>
     <script src="{{ STATIC_URL }}lib/js/assets.min.js?v={{ VERSION }}"></script>
     {% endif %}
     <script src="{{ STATIC_URL }}geonode/js/utils/utils.js?v={{ VERSION }}"></script>
     <script src="{{ STATIC_URL }}geonode/js/base/base.js?v={{ VERSION }}"></script>
+    <script src="{{ STATIC_URL }}geonode/js/geo-dash/menu.js?v={{ VERSION }}"></script>
+    <script src="{{ STATIC_URL }}geonode/js/geo-dash/basic.js?v={{ VERSION }}"></script>
+    <script src="{{ STATIC_URL }}notify/notifyX.js?v={{ VERSION }}"></script>
     {% include 'autocomplete_light/static.html' %}
     <script type="text/javascript" src="{% url 'django.views.i18n.javascript_catalog' %}"></script>
+
+
     {% block extra_script %}{% endblock extra_script %}
+
     <script type="text/javascript">
-        var autocomplete = $('#search_input').yourlabsAutocomplete({
+        var autocomplete = autocomplete = $('#search_input').yourlabsAutocomplete({
             url: '{% url "autocomplete_light_autocomplete" "ResourceBaseAutocomplete" %}',
             choiceSelector: 'span',
             hideAfter: 200,
@@ -295,12 +905,98 @@
             appendAutocomplete: $('#search_input'),
             autoHilightFirst: false
         });
+
         $('#search_input').bind('selectChoice', function(e, choice, autocomplete) {
             if(choice[0].children[0] == undefined) {
                 $('#search_input').val($(choice[0]).text());
                 $('#search').submit();
             }
         });
+
+        function reInityourlabsAutocomplete(URL){
+            $('#search_input').yourlabsAutocomplete('destroy');
+            autocomplete = $('#search_input').yourlabsAutocomplete({
+                url: URL,
+                choiceSelector: 'span',
+                hideAfter: 200,
+                minimumCharacters: 1,
+                placeholder: '{% trans 'Type your search here ...' %}',
+                appendAutocomplete: $('#search_input'),
+                autoHilightFirst: false
+            });
+            $('#search_input').bind('selectChoice', function(e, choice, autocomplete) {
+                if(choice[0].children[0] == undefined) {
+                    $('#search_input').val($(choice[0]).text());
+                    $('#search').submit();
+                }
+            });
+        }
+
+        $("#layermapdocsearch").click(function () {
+                var capacityValue = $('#layermapdocsearchval').data('isadmin');
+                if(capacityValue == 'Default'){
+                    url = '{% url "autocomplete_light_autocomplete" "ResourceBaseAutocomplete" %}';
+                    $('#search_input').attr('placeholder','Search layer/map/doc');
+                    $('#search').attr('action', '/search/');
+                }
+                reInityourlabsAutocomplete(url)
+                //alert(capacityValue);
+         });
+         $("#organizationsearch").click(function () {
+                //var orgnization_select_data = layermapdocsearch.attr("data-isadmin");
+                var capacityValue = $('#organizationsearchval').data('isadmin');
+                if(capacityValue == 'Organization'){
+                    url = '{% url "autocomplete_light_autocomplete" "GroupProfileAutocomplete" %}';
+                    $('#search_input').attr('placeholder','Search organizations');
+                    $('#search').attr('action', '/searchorg/');
+                }
+                reInityourlabsAutocomplete(url)
+                //alert(capacityValue);
+         });
+         $("#userssearch").click(function () {
+                var capacityValue = $('#userssearchval').data('isadmin');
+                if(capacityValue == 'User'){
+                    url = '{% url "autocomplete_light_autocomplete" "ProfileAutocomplete" %}';
+                    $('#search_input').attr('placeholder','Search users');
+                    $('#search_input').attr('name', 'username__icontains');
+                    $('#search').attr('action', '/searchuser/');
+                }
+                reInityourlabsAutocomplete(url)
+                //alert(capacityValue);
+         });
+        $(document).ready(function (){
+            $("#lang-selection").click(function(){
+                var lang = $("#set-language-of-site #langOfSite").val();
+                if(lang == 'bn'){
+                    $("#set-language-of-site #langOfSite").val("en");
+                } else if(lang == "en"){
+                    $("#set-language-of-site #langOfSite").val("bn");
+                }
+                $("#set-language-of-site").submit();
+            });
+        });
+        $(document).ready(function (){
+            $("#show-notification").click(function(){
+                var url = '{% url 'api_dispatch_list' api_name='api' resource_name='view-notification' %}';
+                $.ajax({
+                    cache: false,
+                    type: 'GET',
+                    url: url,
+                    data: {},
+                    dataType: "json",
+                    success: function(jsondata) {
+                        console.log("success");
+                        //console.log(JSON.stringify(jsondata));
+                        $("#show-notification").load(location.href+" #show-notification>*","");
+
+                    },
+                    error: function(xhr, ajaxOptions, thrownError) {
+                        console.log("error");
+                    }
+                 });
+            });
+        });
+
     </script>
     <script>
         // Workaround to fix the autocomplete box positions
@@ -309,7 +1005,7 @@
                 return $(this).css('overflow') === 'hidden';
             }).first().css('overflow', 'visible');
             if(this.input.attr('name') !== 'resource-keywords'){
-              this.box.insertAfter(this.input).css({top: 28, left: 0});
+              this.box.insertAfter(this.input).css({top: 0, left: 0});
             }else{
               var pos = $.extend({}, this.input.position(), {
                 height: this.input.outerHeight()
@@ -318,7 +1014,29 @@
             }
         };
     </script>
+    <script>
+        function layerpopup(){
+            $('#SigninModal').modal('show');
+            $('#uploadsignlayer').attr('action', '/account/login/?next=/layers/upload');
+        }
+        function documentpopup(){
+            $('#SigninModal').modal('show');
+            $('#uploadsignlayer').attr('action', '/account/login/?next=/documents/upload/');
+        }
+    </script>
+  <!--<script src="https://code.jquery.com/jquery-1.12.4.js"></script>-->
+  <!--<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>-->
+    <!--<script>-->
+      <!--$( function() {-->
+        <!--$( "#number" )-->
+          <!--.selectmenu()-->
+          <!--.selectmenu( "menuWidget" )-->
+            <!--.addClass( "overflow" );-->
+      <!--} );-->
+   <!--</script>-->
+
     <script type="text/javascript" src="{% url "lang" %}"></script>
 
   </body>
 </html>
+

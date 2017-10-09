@@ -1,0 +1,62 @@
+{% load i18n %}
+<div class="row" ng-controller="CartList">
+  <div class="col-md-3">
+    <resource-cart></resource-cart>
+    <div class="row">
+      <div class="col-xs-12">
+        {% block bulk_perms_button %}
+        <div class="btn-group btn-group-justified" role="group" aria-label="tools">
+          {% if request.user.is_authenticated %}
+          <div class="btn-group" role="group">
+            <button type="button" class="btn btn-default" ng-disabled="!cart.getCart().items.length" data-toggle="modal" data-target="#_bulk_permissions">{% trans "Set permissions" %}</button>
+          </div>
+          {% endif %}
+          {% if facet_type == 'layers' %}
+          <div class="btn-group" role="group">
+            <button type="button" class="btn btn-default" ng-disabled="!cart.getCart().items.length" ng-click="newMap()">{% trans "Create a Map" %}</button>
+          </div>
+          {% endif %}
+        </div>
+        {% endblock %}
+    
+        <div class="selections">
+            {% trans "Filters" %}
+            <a href="." id="clear-search" class="pull-right">{% trans "Clear" %}</a>
+        </div>
+            {% if SEARCH_FILTERS.TEXT_ENABLED %}
+              {% include "search/_text_filter.html" %}
+            {% endif  %}
+        <div id="slide-pane">
+            {% if SEARCH_FILTERS.H_KEYWORDS_ENABLED %}
+              {% include "search/_h_keywords_filter.html" %}
+            {% endif %}
+            {% if SEARCH_FILTERS.T_KEYWORDS_ENABLED %}
+              {% include "search/_t_keywords_filter.html" %}
+            {% endif %}
+            {% if SEARCH_FILTERS.TYPE_ENABLED and include_type_filter == 'true' %}
+              {% include "search/_type_filters.html" %}
+            {% endif %}
+            {% include "search/_general_filters.html" %}
+            {% if SEARCH_FILTERS.REGION_ENABLED %}
+              {% include "search/_region_filter.html" %}
+            {% endif %}
+            {% if SEARCH_FILTERS.EXTENT_ENABLED %}
+              {% include "search/_extent_filter.html" %}
+            {% endif %}
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-9">
+    <div class="col-md-2">
+      <span>Total: </span>
+      <span ng-bind="total_counts"></span>
+    </div>
+    {% include "search/_sort_filters.html" %}
+    <div class="col-md-12 grid-spacer">
+    {% include 'base/_resourcebase_snippet.html' %}
+    {% include 'search/_pagination.html' %}
+    </div>
+  </div>
+  {% include "_bulk_permissions_form.html" %}
+</div>

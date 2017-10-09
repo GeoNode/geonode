@@ -1,0 +1,6 @@
+{% load i18n account_tags %}{% blocktrans with site_name=current_site.name %}A user on {{ site_name }} has created an account using this email address.
+
+To confirm this email address, go to {{ activate_url }}
+
+If you did not sign up for this site, you can ignore this message.
+{% endblocktrans %}

@@ -1,0 +1,36 @@
+{% extends "site_base.html" %}
+{% load i18n avatar_tags %}
+{% load bootstrap_tags %}
+
+{% block body %}
+    <h4 class="page-header"><a href="{% url "profile_edit" user.username %}">{% trans "Back to edit your profile information" %}</a></h4>
+    <h5>{% trans "Your current avatar: " %}</h5>
+    {% avatar user %}
+    {% if not avatars %}
+        <p>{% trans "You haven't uploaded an avatar yet. Please upload one now." %}</p>
+    {% else %}
+        <form method="POST" action="{% url 'avatar_change' %}">
+            <ul>
+                {{ primary_avatar_form.as_ul }}
+            </ul>
+            <p>{% csrf_token %}<input type="submit" class="btn btn-primary" value="{% trans "Choose new Default" %}" /></p>
+        </form>
+    {% endif %}
+    <form enctype="multipart/form-data" method="POST" action="{% url 'avatar_add' %}">
+        {{ upload_avatar_form.as_p }}
+        <p>{% csrf_token %}<input id="avatar-file" type="submit" class="btn btn-primary" style="visibility: hidden" value="{% trans "Upload New Image" %}" /></p>
+    </form>
+    <a class="btn btn-primary btn-danger" href="{% url 'avatar_delete' %}" id="delete_avatar" style="visibility: hidden">{% trans "Delete Your Avatar" %}</a>
+{% endblock %}
+
+{% block extra_script %}
+{{ block.super }}
+<script type="text/javascript">
+    $('#id_avatar').change(function() {
+        $('#avatar-file').css('visibility', 'visible');
+    });
+    {% if avatars %}
+    $('#delete_avatar').css('visibility', 'visible');
+    {% endif %}
+</script>
+{% endblock %}

@@ -1,0 +1,43 @@
+{% load i18n %}
+{% if SEARCH_FILTERS.CATEGORIES_ENABLED %}
+<nav class="filter">
+  <h4><a href="#" class="toggle toggle-nav"><i class="fa fa-chevron-right"></i>{% trans "Categories" %}</a></h4>
+  <ul class="nav closed" id="categories">
+    {% verbatim %}
+      <li ng-repeat="category in categories" ng-if="category.count > 0">
+        <a data-value="{{ category.identifier }}" data-filter="category__identifier__in"
+         ng-click="multiple_choice_listener($event)" class="{{category.active}}"><div class="fa-stack fa-1g"><i class="fa fa-square-o fa-stack-2x"></i><i class="fa {{category.fa_class}} fa-stack-1x"></i></div>{{ category.gn_description | limitTo: 25 }}{{ category.gn_description.length > 25 ? '...' : ''}}
+          <span class="badge pull-right">{{ category.count }}</span>
+        </a>
+      </li>
+    {% endverbatim %}
+  </ul>
+</nav>
+{% endif %}
+{% if SEARCH_FILTERS.OWNERS_ENABLED %}
+<nav class="filter">
+  <h4><a href="#" class="toggle toggle-nav"><i class="fa fa-chevron-right"></i> {% trans "Owners" %}</a></h4>
+  <ul class="nav closed" id="owners">
+    {% verbatim %}
+    <li ng-repeat="owner in owners" ng-if="owner.count > 0">
+      <a data-value="{{ owner.username }}" data-filter="owner__username__in" ng-click="multiple_choice_listener($event)" class="{{owner.active}}">{{ owner.username }}
+        <span class="badge pull-right">{{ owner.count }}</span>
+      </a>
+    </li>
+    {% endverbatim %}
+  </ul>
+</nav>
+{% endif %}
+{% if SEARCH_FILTERS.DATE_ENABLED %}
+<nav class="filter">
+  <h4><a href="#" class="toggle toggle-nav"><i class="fa fa-chevron-right"></i>{% trans "Date" %}</a></h4>
+  <ul class="nav closed" id="date_start">
+    <label>{% trans "Date begins after:" %}</label>
+    <li><input value="yyyy-mm-dd" data-date-format="YYYY-MM-DD" type="text" class="datepicker" placeholder="{% trans 'yyyy-mm-dd' %}" ng-model="date_query.date__gte" /></li>
+  </ul>
+  <ul class="nav closed" id="date_end">
+    <label>{% trans "Date ends before:" %}</label>
+    <li><input value="yyyy-mm-dd" data-date-format="YYYY-MM-DD" type="text" class="datepicker" placeholder="{% trans 'yyyy-mm-dd' %}" ng-model="date_query.date__lte" /></li>
+  </ul>
+</nav>
+{% endif %}

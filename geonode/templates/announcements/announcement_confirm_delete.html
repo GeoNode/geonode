@@ -7,19 +7,37 @@
 {% block body_class %}announcements{% endblock %}
 
 {% block body %}
-    <h1>{% trans "Delete Announcement?" %}</h1>
-    {% url "announcements_delete" pk=announcement.pk as post_url %}
-    <p class="lead">
-        {% trans "Are you sure you want to delete this announcement?" %}
-    </p>
-    <p><b>{{ announcement.title }}</b></p>
-    <p><em>{{ announcement.content }}</em></p>
-
-    <form action="{{ post_url }}" method="POST" class="form form-horizontal">
-        {% csrf_token %}
-        <div class="form-actions">
-            <a href="{% url "announcements_list" %}" class="btn btn-default">{% trans "Cancel" %}</a>
-            <button type="submit" class="btn btn-danger">{% trans "Delete" %}</button>
+<div class="gd-content">
+    <div class="gd-content-heading">
+        <div class="row">
+            <div class="col-md-8">
+                <div class="title small-content">
+                    {% trans "Delete Announcement?" %}
+                </div>
+            </div>
         </div>
-    </form>
+        <div class="hr"></div>
+    </div>
+    <div class="gd-content-body full-pad-40px top-bottom-margin-20px">
+      <div class="row">
+        <div class="col-md-12">
+          {% url "announcements_delete" pk=announcement.pk as post_url %}
+          <div class="lead">
+              <b>{% trans "Are you sure you want to delete this announcement?" %}</b>
+          </div>
+          <div><b>{{ announcement.title }}</b></div>
+          <div class="block-separator"></div>
+          <div><em>{{ announcement.content }}</em></div>
+          <div class="block-separator"></div>
+          <form action="{{ post_url }}" method="POST" class="form form-horizontal">
+            {% csrf_token %}
+            <div class="form-actions">
+                <a href="{% url "announcements_list" %}" class="btn btn-gd-gray btn-lg">{% trans "Cancel" %}</a>
+                <button type="submit" class="btn btn-danger btn-gd-remove btn-lg">{% trans "Delete" %}</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+</div>
 {% endblock %}

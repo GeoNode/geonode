@@ -1,0 +1,31 @@
+{% extends "site_base.html" %}
+
+{% load i18n avatar_tags relationship_tags %}
+
+{% block body %}
+
+<div class="twocol">
+    <div id="confirmation" style="display: none;">
+    </div>
+    <ul id="relationship_list" style="list-style-type: none;">
+    {% for user in relationship_list %}
+        <div style="height: 90px;" class="user_info" id="user_info_{{ user.id }}">
+        <div style="float: left">{% avatar user 70 %}</div>
+        <li style="margin-left: 75px;"><p>{{ user.username }} - 
+        {% if status.name == "Following" %}
+            <a href="{{ user|remove_relationship_url:"following"}}" id="{{ user.id }}" class="btn btn-primary" type="button">{% trans "Unfollow" %}</a>
+        {% endif %}
+
+        {% if status.name == "Blocking" %}
+            <a href="{{ user|remove_relationship_url:"blocking"}}" id="{{ user.id }}" class="btn btn-primary" type="button">{% trans "Unblock" %}</a>
+        {% endif %}
+
+        </p></li>
+        </div>
+        {% empty %}
+            <li>{% blocktrans %}You're not {{ status_slug }} anyone!{% endblocktrans %}</li>
+    {% endfor %}
+    </ul>
+</div>
+
+{% endblock %}

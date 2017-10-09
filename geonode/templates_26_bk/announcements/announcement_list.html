@@ -1,0 +1,48 @@
+{% extends "site_base.html" %}
+{% load pagination_tags %}
+{% load staticfiles %}
+{% load url from future %}
+{% load i18n %}
+{% block title %} {% trans "Announcements" %} - {{ block.super }} {% endblock %}
+
+{% block body_class %}announcements{% endblock %}
+
+{% block body_outer %}
+<div class="page-header">
+  <a href="{% url "announcements_create" %}" class="btn btn-primary pull-right">{% trans "New Announcement" %}</a>
+  <h2>{% trans "Announcements" %}</h2>
+</div>
+
+<div class="row" id="contain-slider">
+  <div class="tab-content col-md-12 paginate paginate-auto" id="search-content">
+    <table class="table table-striped">
+      <thead>
+        <th>{% trans "Title" %}</th>
+        <th>{% trans "Level" %}</th>
+        <th>{% trans "Announcement" %}</th>
+        <th>{% trans "Published From" %}</th>
+      </thead>
+      {% for announcement in announcement_list %}
+      <tr>
+        <td>
+          <a href="{% url "announcements_update" pk=announcement.pk %}">{{ announcement.title|truncatewords:50  }}</a>
+        </td>
+        <td>
+          {{ announcement.level_label }}
+        </td>
+        <td>
+          {{ announcement.content|truncatewords:8 }}
+        </td>
+        <td>
+          {% if announcement.publish_start or announcement.publish_end %}
+          {% blocktrans with publish_start=announcement.publish_start|date:"F j, Y" publish_end=announcement.publish_end|date:"F j, Y"|default:"(no end date)" %}
+          Published from <b>{{ publish_start }}</b> to <b>{{ publish_end }}</b>.
+          {% endblocktrans %}
+          {% endif %}
+        </td>
+      </tr>
+      {% endfor %}
+    </table>
+  </div>
+</div>
+{% endblock %}

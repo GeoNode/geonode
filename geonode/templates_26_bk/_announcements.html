@@ -1,0 +1,17 @@
+{% load i18n announcements_tags %}
+
+{% announcements as site_wide_announcements %}
+{% if site_wide_announcements %}
+<div id="site_wide_announcements">
+    {% for announcement in site_wide_announcements %}
+    <div class="alert alert-block announcement {{ announcement.level_css  }}">
+        {% if announcement.dismissal_type > 1 %}
+        <a type="button" class="close" data-dismiss="alert" data-dismiss-url="{% url "announcements_dismiss" announcement.pk %}" href="#">×</a>
+        {% endif %}
+        <h4><a href="{{ announcement.get_absolute_url }}">{{ announcement }}</a></h4>
+        <p><small><em>{{ announcement.creation_date }}</em></small></p>
+        <div>{{ announcement.content }}</div>
+    </div>
+    {% endfor %}
+</div>
+{% endif %}

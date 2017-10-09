@@ -1,0 +1,15 @@
+{% extends "site_base.html" %}
+{% load i18n %}
+
+{% block title %}{% if not add %}{% trans "No longer" %} {% endif %}{{ status.verb|capfirst }} {{ to_user.username }}?{% endblock %}
+
+{% block body %}
+  <p>{% if not add %}{% trans "No longer" %} {% endif %}{{ status.verb|capfirst }} {{ to_user.username }}?</p>
+  <form method="post" action="">{% csrf_token %}
+    {{ form.as_table }}
+    <tr>
+      <th></th>
+      <td><input type="submit" value="{% trans "Confirm" %}" class="btn btn-primary" type="button" /></td>
+    </tr>
+  </form>
+{% endblock %}

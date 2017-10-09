@@ -1,0 +1,359 @@
+<link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}geoexplorer/externals/geoext/resources/css/geoext-all.css" />
+<link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}geoexplorer/externals/geoext/resources/css/gxtheme-gray.css">
+<link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}geoexplorer/theme/ux/colorpicker/color-picker.ux.css" />
+<link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}geoexplorer/externals/printpreview/resources/css/printpreview.css" />
+<link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}geoexplorer/externals/openlayers/theme/default/style.css" />
+<link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}geoexplorer/externals/gxp/src/theme/all.css" />
+<link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}geoexplorer/theme/app/geoexplorer.css " />
+<!--[if IE]><link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}geoexplorer/theme/app/ie.css"/><![endif]-->
+<script src="http://localhost:9080/script/@/app/static/externals/openlayers/lib/OpenLayers/SingleFile.js"></script>
+<script src="http://localhost:9080/script/@/app/static/externals/openlayers/lib/OpenLayers/BaseTypes/Class.js"></script>
+<script src="http://localhost:9080/script/@/app/static/externals/openlayers/lib/OpenLayers/BaseTypes.js"></script>
+<script src="http://localhost:9080/script/@/app/static/externals/openlayers/lib/OpenLayers/BaseTypes/Bounds.js"></script>
+<script src="http://localhost:9080/script/@/app/static/externals/openlayers/lib/OpenLayers/BaseTypes/Element.js"></script>
+<script src="http://localhost:9080/script/@/app/static/externals/openlayers/lib/OpenLayers/BaseTypes/LonLat.js"></script>
+<script src="http://localhost:9080/script/@/app/static/externals/openlayers/lib/OpenLayers/BaseTypes/Pixel.js"></script>
+<script src="http://localhost:9080/script/@/app/static/externals/openlayers/lib/OpenLayers/BaseTypes/Size.js"></script>
+<script src="http://localhost:9080/script/@/app/static/externals/openlayers/lib/OpenLayers/Console.js"></script>
+<script src="http://localhost:9080/script/@/app/static/externals/openlayers/lib/OpenLayers/Lang.js"></script>
+<script src="http://localhost:9080/script/@/app/static/externals/openlayers/lib/OpenLayers/Util.js"></script>
+<script src="http://localhost:9080/script/@/app/static/externals/openlayers/lib/OpenLayers/Util/vendorPrefix.js"></script>
+<script src="http://localhost:9080/script/@/app/static/externals/openlayers/lib/OpenLayers/Events.js"></script>
+<script src="http://localhost:9080/script/@/app/static/externals/openlayers/lib/OpenLayers/Animation.js"></script>
+<script src="http://localhost:9080/script/@/app/static/externals/openlayers/lib/OpenLayers/Tween.js"></script>
+<script src="http://localhost:9080/script/@/app/static/externals/openlayers/lib/OpenLayers/Projection.js"></script>
+<script src="http://localhost:9080/script/@/app/static/externals/openlayers/lib/OpenLayers/Map.js"></script>
+<script src="http://localhost:9080/script/@/app/static/externals/openlayers/lib/OpenLayers/Feature.js"></script>
+<script src="http://localhost:9080/script/@/app/static/externals/openlayers/lib/OpenLayers/Feature/Vector.js"></script>
+<script src="http://localhost:9080/script/@/app/static/externals/openlayers/lib/OpenLayers/Style.js"></script>
+<script src="http://localhost:9080/script/@/app/static/externals/openlayers/lib/OpenLayers/Rule.js"></script>
+<script src="http://localhost:9080/script/@/app/static/externals/openlayers/lib/OpenLayers/Symbolizer.js"></script>
+<script src="http://localhost:9080/script/@/app/static/externals/openlayers/lib/OpenLayers/Symbolizer/Point.js"></script>
+<script src="http://localhost:9080/script/@/app/static/externals/openlayers/lib/OpenLayers/Symbolizer/Line.js"></script>
+<script src="http://localhost:9080/script/@/app/static/externals/openlayers/lib/OpenLayers/Symbolizer/Polygon.js"></script>
+<script src="http://localhost:9080/script/@/app/static/externals/openlayers/lib/OpenLayers/Symbolizer/Text.js"></script>
+<script src="http://localhost:9080/script/@/app/static/externals/openlayers/lib/OpenLayers/Symbolizer/Raster.js"></script>
+<script src="http://localhost:9080/script/@/app/static/externals/openlayers/lib/OpenLayers/Style2.js"></script>
+<script src="http://localhost:9080/script/@/app/static/externals/openlayers/lib/OpenLayers/Format.js"></script>
+<script src="http://localhost:9080/script/@/app/static/externals/openlayers/lib/OpenLayers/Format/XML.js"></script>
+<script src="http://localhost:9080/script/@/app/static/externals/openlayers/lib/OpenLayers/Geometry.js"></script>
+<script src="http://localhost:9080/script/@/app/static/externals/openlayers/lib/OpenLayers/Geometry/Point.js"></script>
+<script src="http://localhost:9080/script/@/app/static/externals/openlayers/lib/OpenLayers/Geometry/Collection.js"></script>
+<script src="http://localhost:9080/script/@/app/static/externals/openlayers/lib/OpenLayers/Geometry/MultiPoint.js"></script>
+<script src="http://localhost:9080/script/@/app/static/externals/openlayers/lib/OpenLayers/Geometry/Curve.js"></script>
+<script src="http://localhost:9080/script/@/app/static/externals/openlayers/lib/OpenLayers/Geometry/LineString.js"></script>
+<script src="http://localhost:9080/script/@/app/static/externals/openlayers/lib/OpenLayers/Geometry/MultiLineString.js"></script>
+<script src="http://localhost:9080/script/@/app/static/externals/openlayers/lib/OpenLayers/Geometry/LinearRing.js"></script>
+<script src="http://localhost:9080/script/@/app/static/externals/openlayers/lib/OpenLayers/Geometry/Polygon.js"></script>
+<script src="http://localhost:9080/script/@/app/static/externals/openlayers/lib/OpenLayers/Geometry/MultiPolygon.js"></script>
+<script src="http://localhost:9080/script/@/app/static/externals/openlayers/lib/OpenLayers/Format/GML.js"></script>
+<script src="http://localhost:9080/script/@/app/static/externals/openlayers/lib/OpenLayers/Format/GML/Base.js"></script>
+<script src="http://localhost:9080/script/@/app/static/externals/openlayers/lib/OpenLayers/Format/GML/v2.js"></script>
+<script src="http://localhost:9080/script/@/app/static/externals/openlayers/lib/OpenLayers/Format/GML/v3.js"></script>
+<script src="http://localhost:9080/script/@/app/static/externals/openlayers/lib/OpenLayers/Format/OGCExceptionReport.js"></script>
+<script src="http://localhost:9080/script/@/app/static/externals/openlayers/lib/OpenLayers/Format/XML/VersionedOGC.js"></script>
+<script src="http://localhost:9080/script/@/app/static/externals/openlayers/lib/OpenLayers/Format/WMSDescribeLayer.js"></script>
+<script src="http://localhost:9080/script/@/app/static/externals/openlayers/lib/OpenLayers/Format/WMSDescribeLayer/v1_1.js"></script>
+<script src="http://localhost:9080/script/@/app/static/externals/openlayers/lib/OpenLayers/Format/WFSDescribeFeatureType.js"></script>
+<script src="http://localhost:9080/script/@/app/static/externals/openlayers/lib/OpenLayers/Filter.js"></script>
+<script src="http://localhost:9080/script/@/app/static/externals/openlayers/lib/OpenLayers/Filter/FeatureId.js"></script>
+<script src="http://localhost:9080/script/@/app/static/externals/openlayers/lib/OpenLayers/Filter/Logical.js"></script>
+<script src="http://localhost:9080/script/@/app/static/externals/openlayers/lib/OpenLayers/Filter/Comparison.js"></script>
+<script src="http://localhost:9080/script/@/app/static/externals/openlayers/lib/OpenLayers/Filter/Spatial.js"></script>
+<script src="http://localhost:9080/script/@/app/static/externals/openlayers/lib/OpenLayers/Format/SLD.js"></script>
+<script src="http://localhost:9080/script/@/app/static/externals/openlayers/lib/OpenLayers/Format/Filter.js"></script>
+<script src="http://localhost:9080/script/@/app/static/externals/openlayers/lib/OpenLayers/Filter/Function.js"></script>
+<script src="http://localhost:9080/script/@/app/static/externals/openlayers/lib/OpenLayers/BaseTypes/Date.js"></script>
+<script src="http://localhost:9080/script/@/app/static/externals/openlayers/lib/OpenLayers/Format/Filter/v1.js"></script>
+<script src="http://localhost:9080/script/@/app/static/externals/openlayers/lib/OpenLayers/Format/Filter/v1_0_0.js"></script>
+<script src="http://localhost:9080/script/@/app/static/externals/openlayers/lib/OpenLayers/Format/SLD/v1.js"></script>
+<script src="http://localhost:9080/script/@/app/static/externals/openlayers/lib/OpenLayers/Format/SLD/v1_0_0.js"></script>
+<script src="http://localhost:9080/script/@/app/static/externals/openlayers/lib/OpenLayers/Protocol.js"></script>
+<script src="http://localhost:9080/script/@/app/static/externals/openlayers/lib/OpenLayers/Request.js"></script>
+<script src="http://localhost:9080/script/@/app/static/externals/openlayers/lib/OpenLayers/Request/XMLHttpRequest.js"></script>
+<script src="http://localhost:9080/script/@/app/static/externals/openlayers/lib/OpenLayers/Protocol/HTTP.js"></script>
+<script src="http://localhost:9080/script/@/app/static/externals/openlayers/lib/OpenLayers/Protocol/WFS.js"></script>
+<script src="http://localhost:9080/script/@/app/static/externals/openlayers/lib/OpenLayers/Protocol/WFS/v1.js"></script>
+<script src="http://localhost:9080/script/@/app/static/externals/openlayers/lib/OpenLayers/Format/WFST.js"></script>
+<script src="http://localhost:9080/script/@/app/static/externals/openlayers/lib/OpenLayers/Format/WFST/v1.js"></script>
+<script src="http://localhost:9080/script/@/app/static/externals/openlayers/lib/OpenLayers/Format/Filter/v1_1_0.js"></script>
+<script src="http://localhost:9080/script/@/app/static/externals/openlayers/lib/OpenLayers/Format/OWSCommon.js"></script>
+<script src="http://localhost:9080/script/@/app/static/externals/openlayers/lib/OpenLayers/Format/OWSCommon/v1.js"></script>
+<script src="http://localhost:9080/script/@/app/static/externals/openlayers/lib/OpenLayers/Format/OWSCommon/v1_0_0.js"></script>
+<script src="http://localhost:9080/script/@/app/static/externals/openlayers/lib/OpenLayers/Format/WFST/v1_1_0.js"></script>
+<script src="http://localhost:9080/script/@/app/static/externals/openlayers/lib/OpenLayers/Protocol/WFS/v1_1_0.js"></script>
+<script src="http://localhost:9080/script/@/app/static/externals/openlayers/lib/OpenLayers/Control.js"></script>
+<script src="http://localhost:9080/script/@/app/static/externals/openlayers/lib/OpenLayers/Control/MousePosition.js"></script>
+<script src="http://localhost:9080/script/@/app/static/externals/geoext/lib/GeoExt/data/LayerRecord.js"></script>
+<script src="http://localhost:9080/script/@/app/static/externals/geoext/lib/GeoExt/data/AttributeStore.js"></script>
+<script src="http://localhost:9080/script/@/app/static/externals/geoext/lib/GeoExt/data/AttributeReader.js"></script>
+<script src="http://localhost:9080/script/@/app/static/externals/geoext/lib/GeoExt/data/ProtocolProxy.js"></script>
+<script src="http://localhost:9080/script/@/app/static/externals/geoext/lib/GeoExt/data/FeatureStore.js"></script>
+<script src="http://localhost:9080/script/@/app/static/externals/geoext/lib/GeoExt/data/FeatureReader.js"></script>
+<script src="http://localhost:9080/script/@/app/static/externals/geoext/lib/GeoExt/data/FeatureRecord.js"></script>
+<script src="http://localhost:9080/script/@/app/static/externals/geoext/lib/GeoExt/plugins/PrintPageField.js"></script>
+<script src="http://localhost:9080/script/@/app/static/externals/geoext/lib/GeoExt/plugins/PrintProviderField.js"></script>
+<script src="http://localhost:9080/script/@/app/static/externals/geoext/lib/GeoExt/widgets/Action.js"></script>
+<script src="http://localhost:9080/script/@/app/static/externals/geoext/lib/GeoExt/widgets/tree/LayerContainer.js"></script>
+<script src="http://localhost:9080/script/@/app/static/externals/geoext/lib/GeoExt/widgets/tree/LayerLoader.js"></script>
+<script src="http://localhost:9080/script/@/app/static/externals/openlayers/lib/OpenLayers/Layer.js"></script>
+<script src="http://localhost:9080/script/@/app/static/externals/geoext/lib/GeoExt/widgets/tree/LayerNode.js"></script>
+<script src="http://localhost:9080/script/@/app/static/externals/geoext/lib/GeoExt/widgets/tree/BaseLayerContainer.js"></script>
+<script src="http://localhost:9080/script/@/app/static/externals/geoext/lib/GeoExt/widgets/tree/OverlayLayerContainer.js"></script>
+<script src="http://localhost:9080/script/@/app/static/externals/geoext/lib/GeoExt/widgets/tree/TreeNodeUIEventMixin.js"></script>
+<script src="http://localhost:9080/script/@/app/static/externals/geoext/lib/GeoExt/widgets/Popup.js"></script>
+<script src="http://localhost:9080/script/@/app/static/externals/geoext/lib/GeoExt/widgets/MapPanel.js"></script>
+<script src="http://localhost:9080/script/@/app/static/externals/geoext/lib/GeoExt/data/LayerStore.js"></script>
+<script src="http://localhost:9080/script/@/app/static/externals/geoext/lib/GeoExt/data/LayerReader.js"></script>
+<script src="http://localhost:9080/script/@/app/static/externals/geoext/lib/GeoExt/data/ScaleStore.js"></script>
+<script src="http://localhost:9080/script/@/app/static/externals/geoext/lib/GeoExt/widgets/form.js"></script>
+<script src="http://localhost:9080/script/@/app/static/externals/geoext/lib/GeoExt/widgets/LegendPanel.js"></script>
+<script src="http://localhost:9080/script/@/app/static/externals/geoext/lib/GeoExt/widgets/LayerLegend.js"></script>
+<script src="http://localhost:9080/script/@/app/static/externals/geoext/lib/GeoExt/widgets/LegendImage.js"></script>
+<script src="http://localhost:9080/script/@/app/static/externals/geoext/lib/GeoExt/widgets/PrintMapPanel.js"></script>
+<script src="http://localhost:9080/script/@/app/static/externals/openlayers/lib/OpenLayers/Format/JSON.js"></script>
+<script src="http://localhost:9080/script/@/app/static/externals/openlayers/lib/OpenLayers/Format/GeoJSON.js"></script>
+<script src="http://localhost:9080/script/@/app/static/externals/geoext/lib/GeoExt/data/PrintProvider.js"></script>
+<script src="http://localhost:9080/script/@/app/static/externals/geoext/lib/GeoExt/data/PrintPage.js"></script>
+<script src="http://localhost:9080/script/@/app/static/externals/openlayers/lib/OpenLayers/Layer/HTTPRequest.js"></script>
+<script src="http://localhost:9080/script/@/app/static/externals/openlayers/lib/OpenLayers/Tile.js"></script>
+<script src="http://localhost:9080/script/@/app/static/externals/openlayers/lib/OpenLayers/Tile/Image.js"></script>
+<script src="http://localhost:9080/script/@/app/static/externals/openlayers/lib/OpenLayers/Layer/Grid.js"></script>
+<script src="http://localhost:9080/script/@/app/static/externals/openlayers/lib/OpenLayers/Layer/WMS.js"></script>
+<script src="http://localhost:9080/script/@/app/static/externals/geoext/lib/GeoExt/widgets/WMSLegend.js"></script>
+<script src="http://localhost:9080/script/@/app/static/externals/openlayers/lib/OpenLayers/Renderer.js"></script>
+<script src="http://localhost:9080/script/@/app/static/externals/openlayers/lib/OpenLayers/StyleMap.js"></script>
+<script src="http://localhost:9080/script/@/app/static/externals/openlayers/lib/OpenLayers/Layer/Vector.js"></script>
+<script src="http://localhost:9080/script/@/app/static/externals/geoext/lib/GeoExt/widgets/VectorLegend.js"></script>
+<script src="http://localhost:9080/script/@/app/static/externals/geoext/lib/GeoExt/widgets/FeatureRenderer.js"></script>
+<script src="http://localhost:9080/script/@/app/static/externals/geoext/lib/overrides/override-ext-ajax.js"></script>
+<script src="http://localhost:9080/script/@/app/static/externals/gxp/src/script/overrides/textfield.js"></script>
+<script src="http://localhost:9080/script/@/app/static/externals/gxp/src/script/util.js"></script>
+<script src="http://localhost:9080/script/@/app/static/externals/gxp/src/script/menu/LayerMenu.js"></script>
+<script src="http://localhost:9080/script/@/app/static/externals/gxp/src/script/widgets/CrumbPanel.js"></script>
+<script src="http://localhost:9080/script/@/app/static/externals/gxp/src/script/widgets/LayerUploadPanel.js"></script>
+<script src="http://localhost:9080/script/@/app/static/externals/openlayers/lib/OpenLayers/Format/WKT.js"></script>
+<script src="http://localhost:9080/script/@/app/static/externals/openlayers/lib/OpenLayers/Format/CQL.js"></script>
+<script src="http://localhost:9080/script/@/app/static/externals/gxp/src/script/widgets/FilterBuilder.js"></script>
+<script src="http://localhost:9080/script/@/app/static/externals/gxp/src/script/widgets/WMSLayerPanel.js"></script>
+<script src="http://localhost:9080/script/@/app/static/externals/gxp/src/script/widgets/form/FilterField.js"></script>
+<script src="http://localhost:9080/script/@/app/static/externals/gxp/src/script/widgets/form/ComparisonComboBox.js"></script>
+<script src="http://localhost:9080/script/@/app/static/externals/geoext/lib/GeoExt/widgets/LayerOpacitySlider.js"></script>
+<script src="http://localhost:9080/script/@/app/static/externals/geoext/lib/GeoExt/widgets/tips/SliderTip.js"></script>
+<script src="http://localhost:9080/script/@/app/static/externals/geoext/lib/GeoExt/widgets/tips/LayerOpacitySliderTip.js"></script>
+<script src="http://localhost:9080/script/@/app/static/externals/gxp/src/script/widgets/GoogleEarthPanel.js"></script>
+<script src="http://localhost:9080/script/@/app/static/externals/openlayers/lib/OpenLayers/Control/Attribution.js"></script>
+<script src="http://localhost:9080/script/@/app/static/externals/openlayers/lib/OpenLayers/Events/buttonclick.js"></script>
+<script src="http://localhost:9080/script/@/app/static/externals/openlayers/lib/OpenLayers/Control/Panel.js"></script>
+<script src="http://localhost:9080/script/@/app/static/externals/openlayers/lib/OpenLayers/Control/Button.js"></script>
+<script src="http://localhost:9080/script/@/app/static/externals/openlayers/lib/OpenLayers/Control/ZoomIn.js"></script>
+<script src="http://localhost:9080/script/@/app/static/externals/openlayers/lib/OpenLayers/Control/ZoomOut.js"></script>
+<script src="http://localhost:9080/script/@/app/static/externals/openlayers/lib/OpenLayers/Control/ZoomToMaxExtent.js"></script>
+<script src="http://localhost:9080/script/@/app/static/externals/openlayers/lib/OpenLayers/Control/ZoomPanel.js"></script>
+<script src="http://localhost:9080/script/@/app/static/externals/openlayers/lib/OpenLayers/Handler.js"></script>
+<script src="http://localhost:9080/script/@/app/static/externals/openlayers/lib/OpenLayers/Handler/Drag.js"></script>
+<script src="http://localhost:9080/script/@/app/static/externals/openlayers/lib/OpenLayers/Handler/Box.js"></script>
+<script src="http://localhost:9080/script/@/app/static/externals/openlayers/lib/OpenLayers/Control/ZoomBox.js"></script>
+<script src="http://localhost:9080/script/@/app/static/externals/openlayers/lib/OpenLayers/Control/DragPan.js"></script>
+<script src="http://localhost:9080/script/@/app/static/externals/openlayers/lib/OpenLayers/Handler/MouseWheel.js"></script>
+<script src="http://localhost:9080/script/@/app/static/externals/openlayers/lib/OpenLayers/Handler/Click.js"></script>
+<script src="http://localhost:9080/script/@/app/static/externals/openlayers/lib/OpenLayers/Control/Navigation.js"></script>
+<script src="http://localhost:9080/script/@/app/static/externals/openlayers/lib/OpenLayers/Kinetic.js"></script>
+<script src="http://localhost:9080/script/@/app/static/externals/openlayers/lib/OpenLayers/Control/Pan.js"></script>
+<script src="http://localhost:9080/script/@/app/static/externals/openlayers/lib/OpenLayers/Control/PanPanel.js"></script>
+<script src="http://localhost:9080/script/@/app/static/externals/geoext/lib/GeoExt/widgets/ZoomSlider.js"></script>
+<script src="http://localhost:9080/script/@/app/static/externals/geoext/lib/GeoExt/widgets/tips/ZoomSliderTip.js"></script>
+<script src="http://localhost:9080/script/@/app/static/externals/gxp/src/script/widgets/Viewer.js"></script>
+<script src="http://localhost:9080/script/@/app/static/externals/gxp/src/script/widgets/EmbedMapDialog.js"></script>
+<script src="http://localhost:9080/script/@/app/static/externals/gxp/src/script/widgets/RulePanel.js"></script>
+<script src="http://localhost:9080/script/@/app/static/externals/gxp/src/script/widgets/StylePropertiesDialog.js"></script>
+<script src="http://localhost:9080/script/@/app/static/externals/openlayers/lib/OpenLayers/Renderer/Elements.js"></script>
+<script src="http://localhost:9080/script/@/app/static/externals/openlayers/lib/OpenLayers/Renderer/SVG.js"></script>
+<script src="http://localhost:9080/script/@/app/static/externals/openlayers/lib/OpenLayers/Renderer/VML.js"></script>
+<script src="http://localhost:9080/script/@/app/static/externals/openlayers/lib/OpenLayers/Renderer/Canvas.js"></script>
+<script src="http://localhost:9080/script/@/app/static/externals/openlayers/lib/OpenLayers/Format/SLD/v1_0_0_GeoServer.js"></script>
+<script src="http://localhost:9080/script/@/app/static/externals/gxp/src/script/widgets/WMSStylesDialog.js"></script>
+<script src="http://localhost:9080/script/@/app/static/externals/gxp/src/script/widgets/ScaleLimitPanel.js"></script>
+<script src="http://localhost:9080/script/@/app/static/externals/gxp/src/script/widgets/tips/SliderTip.js"></script>
+<script src="http://localhost:9080/script/@/app/static/externals/gxp/src/script/plugins/FormFieldHelp.js"></script>
+<script src="http://localhost:9080/script/@/app/static/externals/gxp/src/script/widgets/TextSymbolizer.js"></script>
+<script src="http://localhost:9080/script/@/app/static/externals/gxp/src/script/widgets/FillSymbolizer.js"></script>
+<script src="http://localhost:9080/script/@/app/static/externals/gxp/src/script/widgets/form/ColorField.js"></script>
+<script src="http://localhost:9080/script/@/app/static/externals/gxp/src/script/widgets/form/FontComboBox.js"></script>
+<script src="http://localhost:9080/script/@/app/static/externals/gxp/src/script/widgets/PolygonSymbolizer.js"></script>
+<script src="http://localhost:9080/script/@/app/static/externals/gxp/src/script/widgets/StrokeSymbolizer.js"></script>
+<script src="http://localhost:9080/script/@/app/static/externals/gxp/src/script/widgets/LineSymbolizer.js"></script>
+<script src="http://localhost:9080/script/@/app/static/externals/gxp/src/script/widgets/PointSymbolizer.js"></script>
+<script src="http://localhost:9080/script/@/app/static/externals/openlayers/lib/OpenLayers/Control/ScaleLine.js"></script>
+<script src="http://localhost:9080/script/@/app/static/externals/gxp/src/script/widgets/ScaleOverlay.js"></script>
+<script src="http://localhost:9080/script/@/app/static/externals/gxp/src/script/widgets/ClassificationPanel.js"></script>
+<script src="http://localhost:9080/script/@/app/static/externals/gxp/src/script/spinner/SpinnerField.js"></script>
+<script src="http://localhost:9080/script/@/app/static/externals/gxp/src/script/spinner/Spinner.js"></script>
+<script src="http://localhost:9080/script/@/app/static/externals/gxp/src/script/plugins/Tool.js"></script>
+<script src="http://localhost:9080/script/@/app/static/externals/gxp/src/script/data/WFSProtocolProxy.js"></script>
+<script src="http://localhost:9080/script/@/app/static/externals/gxp/src/script/data/WFSFeatureStore.js"></script>
+<script src="http://localhost:9080/script/@/app/static/externals/gxp/src/script/plugins/FeatureManager.js"></script>
+<script src="http://localhost:9080/script/@/app/static/externals/openlayers/lib/OpenLayers/Handler/Feature.js"></script>
+<script src="http://localhost:9080/script/@/app/static/externals/openlayers/lib/OpenLayers/Layer/Vector/RootContainer.js"></script>
+<script src="http://localhost:9080/script/@/app/static/externals/openlayers/lib/OpenLayers/Control/SelectFeature.js"></script>
+<script src="http://localhost:9080/script/@/app/static/externals/openlayers/lib/OpenLayers/Format/WMSGetFeatureInfo.js"></script>
+<script src="http://localhost:9080/script/@/app/static/externals/gxp/src/script/plugins/ClickableFeatures.js"></script>
+<script src="http://localhost:9080/script/@/app/static/externals/gxp/src/script/plugins/SchemaAnnotations.js"></script>
+<script src="http://localhost:9080/script/@/app/static/externals/gxp/src/script/plugins/FeatureEditorGrid.js"></script>
+<script src="http://localhost:9080/script/@/app/static/externals/openlayers/lib/OpenLayers/Handler/Keyboard.js"></script>
+<script src="http://localhost:9080/script/@/app/static/externals/openlayers/lib/OpenLayers/Control/ModifyFeature.js"></script>
+<script src="http://localhost:9080/script/@/app/static/externals/gxp/src/script/widgets/FeatureEditPopup.js"></script>
+<script src="http://localhost:9080/script/@/app/static/externals/openlayers/lib/OpenLayers/Control/DrawFeature.js"></script>
+<script src="http://localhost:9080/script/@/app/static/externals/openlayers/lib/OpenLayers/Handler/Point.js"></script>
+<script src="http://localhost:9080/script/@/app/static/externals/openlayers/lib/OpenLayers/Handler/Path.js"></script>
+<script src="http://localhost:9080/script/@/app/static/externals/openlayers/lib/OpenLayers/Handler/Polygon.js"></script>
+<script src="http://localhost:9080/script/@/app/static/externals/gxp/src/script/plugins/FeatureEditor.js"></script>
+<script src="http://localhost:9080/script/@/app/static/externals/geoext/lib/GeoExt/widgets/grid/FeatureSelectionModel.js"></script>
+<script src="http://localhost:9080/script/@/app/static/externals/gxp/src/script/widgets/grid/FeatureGrid.js"></script>
+<script src="http://localhost:9080/script/@/app/static/externals/gxp/src/script/plugins/FeatureGrid.js"></script>
+<script src="http://localhost:9080/script/@/app/static/externals/gxp/src/script/plugins/StyleWriter.js"></script>
+<script src="http://localhost:9080/script/@/app/static/externals/gxp/src/script/plugins/GeoServerStyleWriter.js"></script>
+<script src="http://localhost:9080/script/@/app/static/externals/gxp/src/script/plugins/LayerSource.js"></script>
+<script src="http://localhost:9080/script/@/app/static/externals/openlayers/lib/OpenLayers/Layer/XYZ.js"></script>
+<script src="http://localhost:9080/script/@/app/static/externals/openlayers/lib/OpenLayers/Layer/Bing.js"></script>
+<script src="http://localhost:9080/script/@/app/static/externals/gxp/src/script/plugins/BingSource.js"></script>
+<script src="http://localhost:9080/script/@/app/static/externals/openlayers/lib/OpenLayers/Layer/SphericalMercator.js"></script>
+<script src="http://localhost:9080/script/@/app/static/externals/openlayers/lib/OpenLayers/Layer/EventPane.js"></script>
+<script src="http://localhost:9080/script/@/app/static/externals/openlayers/lib/OpenLayers/Layer/FixedZoomLevels.js"></script>
+<script src="http://localhost:9080/script/@/app/static/externals/openlayers/lib/OpenLayers/Layer/Google.js"></script>
+<script src="http://localhost:9080/script/@/app/static/externals/openlayers/lib/OpenLayers/Layer/Google/v3.js"></script>
+<script src="http://localhost:9080/script/@/app/static/externals/gxp/src/script/plugins/GoogleSource.js"></script>
+<script src="http://localhost:9080/script/@/app/static/externals/gxp/src/script/plugins/OLSource.js"></script>
+<script src="http://localhost:9080/script/@/app/static/externals/openlayers/lib/OpenLayers/Layer/OSM.js"></script>
+<script src="http://localhost:9080/script/@/app/static/externals/gxp/src/script/plugins/OSMSource.js"></script>
+<script src="http://localhost:9080/script/@/app/static/externals/openlayers/lib/OpenLayers/Layer/TMS.js"></script>
+<script src="http://localhost:9080/script/@/app/static/externals/gxp/src/script/plugins/MapBoxSource.js"></script>
+<script src="http://localhost:9080/script/@/app/static/externals/gxp/src/script/plugins/MapQuestSource.js"></script>
+<script src="http://localhost:9080/script/@/app/static/externals/openlayers/lib/OpenLayers/Format/WMSCapabilities.js"></script>
+<script src="http://localhost:9080/script/@/app/static/externals/openlayers/lib/OpenLayers/Format/WMSCapabilities/v1.js"></script>
+<script src="http://localhost:9080/script/@/app/static/externals/openlayers/lib/OpenLayers/Format/WMSCapabilities/v1_1.js"></script>
+<script src="http://localhost:9080/script/@/app/static/externals/openlayers/lib/OpenLayers/Format/WMSCapabilities/v1_1_0.js"></script>
+<script src="http://localhost:9080/script/@/app/static/externals/openlayers/lib/OpenLayers/Format/WMSCapabilities/v1_1_1.js"></script>
+<script src="http://localhost:9080/script/@/app/static/externals/openlayers/lib/OpenLayers/Format/WMSCapabilities/v1_3.js"></script>
+<script src="http://localhost:9080/script/@/app/static/externals/openlayers/lib/OpenLayers/Format/WMSCapabilities/v1_3_0.js"></script>
+<script src="http://localhost:9080/script/@/app/static/externals/geoext/lib/GeoExt/data/WMSCapabilitiesReader.js"></script>
+<script src="http://localhost:9080/script/@/app/static/externals/geoext/lib/GeoExt/data/WMSCapabilitiesStore.js"></script>
+<script src="http://localhost:9080/script/@/app/static/externals/geoext/lib/GeoExt/data/WMSDescribeLayerStore.js"></script>
+<script src="http://localhost:9080/script/@/app/static/externals/gxp/src/script/plugins/WMSSource.js"></script>
+<script src="http://localhost:9080/script/@/app/static/externals/gxp/src/script/plugins/CatalogueSource.js"></script>
+<script src="http://localhost:9080/script/@/app/static/externals/openlayers/lib/OpenLayers/Format/CSWGetRecords.js"></script>
+<script src="http://localhost:9080/script/@/app/static/externals/openlayers/lib/OpenLayers/Format/CSWGetRecords/v2_0_2.js"></script>
+<script src="http://localhost:9080/script/@/app/static/externals/geoext/lib/GeoExt/data/CSWRecordsReader.js"></script>
+<script src="http://localhost:9080/script/@/app/static/externals/openlayers/lib/OpenLayers/Protocol/CSW.js"></script>
+<script src="http://localhost:9080/script/@/app/static/externals/openlayers/lib/OpenLayers/Protocol/CSW/v2_0_2.js"></script>
+<script src="http://localhost:9080/script/@/app/static/externals/gxp/src/script/plugins/CSWCatalogueSource.js"></script>
+<script src="http://localhost:9080/script/@/app/static/externals/gxp/src/script/plugins/QueryForm.js"></script>
+<script src="http://localhost:9080/script/@/app/static/externals/geoext/lib/GeoExt/data/WMSDescribeLayerReader.js"></script>
+<script src="http://localhost:9080/script/@/app/static/externals/openlayers/lib/OpenLayers/Format/WMSCapabilities/v1_1_1_WMSC.js"></script>
+<script src="http://localhost:9080/script/@/app/static/externals/gxp/src/script/plugins/WMSCSource.js"></script>
+<script src="http://localhost:9080/script/@/app/static/externals/gxp/src/script/plugins/ZoomToExtent.js"></script>
+<script src="http://localhost:9080/script/@/app/static/externals/openlayers/lib/OpenLayers/Control/NavigationHistory.js"></script>
+<script src="http://localhost:9080/script/@/app/static/externals/gxp/src/script/plugins/NavigationHistory.js"></script>
+<script src="http://localhost:9080/script/@/app/static/externals/gxp/src/script/plugins/Zoom.js"></script>
+<script src="http://localhost:9080/script/@/app/static/externals/openlayers/lib/OpenLayers/Control/Measure.js"></script>
+<script src="http://localhost:9080/script/@/app/static/externals/gxp/src/script/plugins/Measure.js"></script>
+<script src="http://localhost:9080/script/@/app/static/externals/openlayers/lib/OpenLayers/Handler/Hover.js"></script>
+<script src="http://localhost:9080/script/@/app/static/externals/openlayers/lib/OpenLayers/Control/WMSGetFeatureInfo.js"></script>
+<script src="http://localhost:9080/script/@/app/static/externals/gxp/src/script/plugins/WMSGetFeatureInfo.js"></script>
+<script src="http://localhost:9080/script/@/app/static/externals/gxp/src/script/plugins/Navigation.js"></script>
+<script src="http://localhost:9080/script/@/app/static/externals/gxp/src/script/plugins/LayerTree.js"></script>
+<script src="http://localhost:9080/script/@/app/static/externals/geoext/lib/GeoExt/plugins/TreeNodeComponent.js"></script>
+<script src="http://localhost:9080/script/@/app/static/externals/gxp/src/script/plugins/LayerManager.js"></script>
+<script src="http://localhost:9080/script/@/app/static/externals/gxp/src/script/widgets/NewSourceDialog.js"></script>
+<script src="http://localhost:9080/script/@/app/static/externals/gxp/src/script/plugins/FeedGetFeatureInfo.js"></script>
+<script src="http://localhost:9080/script/@/app/static/externals/openlayers/lib/OpenLayers/Format/GeoRSS.js"></script>
+<script src="http://localhost:9080/script/@/app/static/externals/openlayers/lib/OpenLayers/Format/QueryStringFilter.js"></script>
+<script src="http://localhost:9080/script/@/app/static/externals/openlayers/lib/OpenLayers/Strategy.js"></script>
+<script src="http://localhost:9080/script/@/app/static/externals/openlayers/lib/OpenLayers/Strategy/BBOX.js"></script>
+<script src="http://localhost:9080/script/@/app/static/externals/openlayers/lib/OpenLayers/Strategy/Fixed.js"></script>
+<script src="http://localhost:9080/script/@/app/static/externals/gxp/src/script/plugins/FeedSource.js"></script>
+<script src="http://localhost:9080/script/@/app/static/externals/gxp/src/script/plugins/PicasaFeedSource.js"></script>
+<script src="http://localhost:9080/script/@/app/static/externals/gxp/src/script/plugins/YouTubeFeedSource.js"></script>
+<script src="http://localhost:9080/script/@/app/static/externals/gxp/src/script/widgets/FeedSourceDialog.js"></script>
+<script src="http://localhost:9080/script/@/app/static/externals/gxp/src/script/plugins/GeoNodeCatalogueSource.js"></script>
+<script src="http://localhost:9080/script/@/app/static/externals/gxp/src/script/widgets/form/CSWFilterField.js"></script>
+<script src="http://localhost:9080/script/@/app/static/externals/gxp/src/script/widgets/CatalogueSearchPanel.js"></script>
+<script src="http://localhost:9080/script/@/app/static/externals/openlayers/lib/OpenLayers/Format/TMSCapabilities.js"></script>
+<script src="http://localhost:9080/script/@/app/static/externals/gxp/src/script/plugins/TMSSource.js"></script>
+<script src="http://localhost:9080/script/@/app/static/externals/openlayers/lib/OpenLayers/Layer/ArcGIS93Rest.js"></script>
+<script src="http://localhost:9080/script/@/app/static/externals/gxp/src/script/plugins/ArcRestSource.js"></script>
+<script src="http://localhost:9080/script/@/app/static/externals/gxp/src/script/plugins/AddLayers.js"></script>
+<script src="http://localhost:9080/script/@/app/static/externals/gxp/src/script/plugins/RemoveLayer.js"></script>
+<script src="http://localhost:9080/script/@/app/static/externals/gxp/src/script/plugins/LayerProperties.js"></script>
+<script src="http://localhost:9080/script/@/app/static/externals/gxp/src/script/plugins/ZoomToLayerExtent.js"></script>
+<script src="http://localhost:9080/script/@/app/static/externals/gxp/src/script/plugins/ZoomToSelectedFeatures.js"></script>
+<script src="http://localhost:9080/script/@/app/static/externals/gxp/src/script/plugins/Legend.js"></script>
+<script src="http://localhost:9080/script/@/app/static/externals/gxp/src/script/plugins/Print.js"></script>
+<script src="http://localhost:9080/script/@/app/static/externals/gxp/src/script/plugins/WMSRasterStylesDialog.js"></script>
+<script src="http://localhost:9080/script/@/app/static/externals/gxp/src/script/plugins/Styler.js"></script>
+<script src="http://localhost:9080/script/@/app/static/externals/gxp/src/script/plugins/GoogleEarth.js"></script>
+<script src="http://localhost:9080/script/@/app/static/script/ux/FileUploadField.js"></script>
+<script src="http://localhost:9080/script/@/app/static/script/ux/RowExpander.js"></script>
+<script src="http://localhost:9080/script/@/app/static/script/ux/colorpicker/color-picker.ux.js"></script>
+<script src="http://localhost:9080/script/@/app/static/script/ux/colorpicker/ColorManager.js"></script>
+<script src="http://localhost:9080/script/@/app/static/externals/printpreview/lib/GeoExt.ux/PrintPreview.js"></script>
+<script src="http://localhost:9080/script/@/app/static/script/app/GeoExplorer.js"></script>
+<script src="http://localhost:9080/script/@/app/static/script/app/GeoExplorer/Composer.js"></script>
+<script src="http://localhost:9080/script/@/app/static/script/app/GeoExplorer/Viewer.js"></script>
+<script src="http://localhost:9080/script/@/app/static/externals/geoext/lib/GeoExt/Lang.js"></script>
+<script src="http://localhost:9080/script/@/app/static/script/app/locale/app/ca.js"></script>
+<script src="http://localhost:9080/script/@/app/static/script/app/locale/app/de.js"></script>
+<script src="http://localhost:9080/script/@/app/static/script/app/locale/app/en.js"></script>
+<script src="http://localhost:9080/script/@/app/static/script/app/locale/app/es.js"></script>
+<script src="http://localhost:9080/script/@/app/static/script/app/locale/app/fr.js"></script>
+<script src="http://localhost:9080/script/@/app/static/script/app/locale/app/no.js"></script>
+<script src="http://localhost:9080/script/@/app/static/externals/gxp/src/script/locale/ca.js"></script>
+<script src="http://localhost:9080/script/@/app/static/externals/gxp/src/script/locale/de.js"></script>
+<script src="http://localhost:9080/script/@/app/static/externals/gxp/src/script/locale/el.js"></script>
+<script src="http://localhost:9080/script/@/app/static/externals/gxp/src/script/locale/en.js"></script>
+<script src="http://localhost:9080/script/@/app/static/externals/gxp/src/script/locale/es.js"></script>
+<script src="http://localhost:9080/script/@/app/static/externals/gxp/src/script/locale/fr.js"></script>
+<script src="http://localhost:9080/script/@/app/static/externals/gxp/src/script/locale/id.js"></script>
+<script src="http://localhost:9080/script/@/app/static/externals/gxp/src/script/locale/nl.js"></script>
+<script src="http://localhost:9080/script/@/app/static/externals/gxp/src/script/locale/no.js"></script>
+<script src="http://localhost:9080/script/@/app/static/externals/gxp/src/script/locale/pl.js"></script>
+
+<script type="text/javascript">
+OpenLayers.ImgPath = "{{ STATIC_URL }}geoexplorer/externals/openlayers/theme/default/img";
+OpenLayers.Request.DEFAULT_CONFIG.headers = {
+    'X-CSRFToken': '{{ csrf_token|escapejs }}'
+};
+
+/**
+ *  Add GetFeedFeatureInfo tool to GeoExplorer.Viewer
+ */
+GeoExplorer.Viewer.prototype.loadConfig = function(config) {
+    // remove the 3D Viewer which is broken 
+    config.viewerTools.splice(10,1);
+
+   	config.viewerTools.push( {
+		ptype: "gxp_getfeedfeatureinfo",
+		checked: true
+	});
+
+        /* - TEMPORARLY DISABLED GXPLORER PLAYBACK -
+	config.viewerTools.push({
+		ptype: "gxp_playback",
+		checked: true,
+		outputTarget: "paneltbar"
+	});
+        */
+		
+    // Do not include the layer styler on the map-detail view.
+    {% if not map %}
+        config.viewerTools.splice(5, 0, {
+            id: "styler",
+            ptype: "gxp_styler",
+            checked: true
+        });
+    {% endif %}
+
+    GeoExplorer.Viewer.superclass.loadConfig.call(this, config);
+};
+
+</script>

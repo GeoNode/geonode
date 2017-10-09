@@ -3,17 +3,29 @@
 {% load bootstrap_tags %}
 
 {% block body %}
-
-<div class="page-header">
-  <h2>{% trans "Invite User" %}</h2>
-</div>
-  
-<form action="" class="form-horizontal" method="post">
-  {% csrf_token %}
-  {{ form|as_bootstrap }}
-  <div class="form-actions">
-    <input type="submit" value="{% trans "Invite User" %}" class="btn btn-primary"/>
+<div class="gd-content">
+  <div class="gd-content-heading">
+      <div class="row">
+          <div class="col-md-8">
+              <div class="title small-content">
+                  {% trans "Invite User" %}
+              </div>
+          </div>
+      </div>
+      <div class="hr"></div>
   </div>
-</form>
-  
+  <div class="gd-content-body full-pad-40px top-bottom-margin-20px">
+      <div class="row">
+          <div class="col-md-12">
+              <form action="" class="" method="post">
+                {% csrf_token %}
+                {{ form|as_bootstrap }}
+                <div class="form-actions form-group">
+                  <input type="submit" value="{% trans " Invite User" %}" class="btn btn-gd-primary btn-lg col-md-3 col-sm-6 col-xs-12"/>
+                </div>
+              </form>
+          </div>
+      </div>
+  </div>
+</div>
 {% endblock %}

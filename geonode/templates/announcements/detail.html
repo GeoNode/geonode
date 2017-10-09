@@ -4,14 +4,29 @@
 {% block title %} {% blocktrans %}Announcements : {{ announcement }}{% endblocktrans %} {{ block.super }} {% endblock %}
 
 {% block body %}
-<div class="page-header">
-  <h2>{{ announcement.title }} ({{ announcement.level_label }})</h2>
-</div>
-<p>{{ announcement.creation_date }}</p>
-<div class="col-md-10">
-  <blockquote>
-    <p>{{ announcement.content }}</p>
-    <small>{{ announcement.creator }}</small>
-  </blockquote>
+<div class="gd-content">
+    <div class="gd-content-heading">
+        <div class="row">
+            <div class="col-md-8">
+                <div class="title small-content">
+                    {{ announcement.title }} ({{ announcement.level_label }})
+                </div>
+            </div>
+        </div>
+        <div class="hr"></div>
+    </div>
+    <div class="gd-content-body full-pad-40px top-bottom-margin-20px">
+      <div class="row">
+        <div class="col-md-12">
+          <div class="lead">
+              {{ announcement.creation_date }}
+          </div>
+          <blockquote>
+            <div>{{ announcement.content }}</div>
+            <small>{{ announcement.creator }}</small>
+          </blockquote>
+        </div>
+      </div>
+    </div>
 </div>
 {% endblock %}

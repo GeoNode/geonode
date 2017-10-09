@@ -1,0 +1,19 @@
+<!-- OpenLayers resources -->
+<link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}sdk/src/openlayers/theme/default/style.css?v={{ VERSION }}">
+<!-- GeoExt resources -->
+<link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}sdk/src/geoext/resources/css/popup.css?v={{ VERSION }}">
+<link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}sdk/src/geoext/resources/css/layerlegend.css?v={{ VERSION }}">
+<link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}sdk/src/geoext/resources/css/gxtheme-gray.css?v={{ VERSION }}">
+<!-- gxp resources -->
+<link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}sdk/src/gxp/theme/all.css?v={{ VERSION }}">
+<!-- GeoNode mixin -->
+<script type="text/javascript" src="{{ STATIC_URL}}geonode/js/maps/GeoNode-mixin.js?v={{ VERSION }}"></script>
+<!-- app resources -->
+<link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}sdk/theme/app/style.css?v={{ VERSION }}">
+<script type="text/javascript" src="{{ STATIC_URL }}sdk/lib/app.js?v={{ VERSION }}"></script>
+<script type="text/javascript">
+OpenLayers.ImgPath = "{{ STATIC_URL }}sdk/externals/openlayers/img/";
+OpenLayers.Request.DEFAULT_CONFIG.headers = {
+    'X-CSRFToken': '{{ csrf_token|escapejs }}'
+};
+</script>

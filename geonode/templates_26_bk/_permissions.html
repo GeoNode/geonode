@@ -1,0 +1,173 @@
+{% load i18n %}
+<div class="panel-group" id="permissions-body">
+  <!-- view layer -->
+  <div class="panel panel-default">
+    <div class="panel-heading">
+      <h4 class="panel-title">
+        <a data-toggle="collapse" data-parent="#accordion" href="#collapse1">
+          {% trans "Who can view it?" %}
+        </a>
+      </h4>
+    </div>
+    <div id="collapse1" class="panel-collapse collapse in">
+      <div class="controls">
+        <div class="radio">
+          <label>
+            <input type="checkbox" name="view_anonymous" id="perms_view_anyone" value="AnonymousUser" {% if DEFAULT_ANONYMOUS_VIEW_PERMISSION %}checked{% endif %}>
+            {% trans "Anyone" %}
+          </label>
+        </div>
+        <div class="radio">
+          <label>
+            {% trans "The following users:" %}
+            <input class="user-select" type="text" name="view_resourcebase" id="view_resourcebase_users" />
+          </label>
+        </div>
+        <div class="radio">
+          <label>
+            {% trans "The following groups:" %}
+            <input class="group-select" type="text" name="view_resourcebase" id="view_resourcebase_groups" />
+          </label>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- download layer -->
+  <div class="panel panel-default">
+    <div class="panel-heading">
+      <h4 class="panel-title">
+        <a data-toggle="collapse" data-parent="#accordion" href="#collapse2">
+          {% trans "Who can download it?" %}
+        </a>
+      </h4>
+    </div>
+    <div id="collapse2" class="panel-collapse collapse">
+      <div class="controls">
+        <div class="radio">
+          <label>
+            <input type="checkbox" name="download_anonymous" id="perms_download_resourcebase_anyone" value="AnonymousUser" {% if DEFAULT_ANONYMOUS_DOWNLOAD_PERMISSION %}checked{% endif %}>
+            {% trans "Anyone" %}
+          </label>
+        </div>
+        <div class="radio">
+          <label>
+            {% trans "The following users:" %}
+            <input class="user-select" type="text" name="download_resourcebase" id="download_resourcebase_users" />
+          </label>
+        </div>
+        <div class="radio">
+          <label>
+            {% trans "The following groups:" %}
+            <input class="group-select" type="text" name="download_resourcebase" id="download_resourcebase_groups" /> 
+          </label>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- change metadata -->
+  <div class="panel panel-default">
+    <div class="panel-heading">
+      <h4 class="panel-title">
+        <a data-toggle="collapse" data-parent="#accordion" href="#collapse3">
+          {% trans "Who can change metadata for it?" %}
+        </a>
+      </h4>
+    </div>
+    <div id="collapse3" class="panel-collapse collapse">
+      <div class="controls">
+        <div class="radio">
+          <label>
+            {% trans "The following users:" %}
+            <input class="user-select" type="text" name="change_resourcebase_metadata" id="change_resourcebase_metadata_users" />
+          </label>
+        </div>
+        <div class="radio">
+          <label>
+            {% trans "The following groups:" %}
+            <input class="group-select" type="text" name="change_resourcebase_metadata" id="change_resourcebase_metadata_groups" /> 
+          </label>
+        </div>
+      </div>
+    </div>
+  </div>
+  {% if is_layer %}
+  <!-- change layer data -->
+  <div class="panel panel-default">
+    <div class="panel-heading">
+      <h4 class="panel-title">
+        <a data-toggle="collapse" data-parent="#accordion" href="#collapse4">
+          {% trans "Who can edit data for this layer?" %}
+        </a>
+      </h4>
+    </div>
+    <div id="collapse4" class="panel-collapse collapse">
+      <div class="controls">
+        <div class="radio">
+          <label>
+            {% trans "The following users:" %}
+            <input class="user-select" type="text" name="change_layer_data" id="change_layer_data_users" />
+          </label>
+        </div>
+        <div class="radio">
+          <label>
+            {% trans "The following groups:" %}
+            <input class="group-select" type="text" name="change_layer_data" id="change_layer_data_groups" /> 
+          </label>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- change layer style -->
+  <div class="panel panel-default">
+    <div class="panel-heading">
+      <h4 class="panel-title">
+        <a data-toggle="collapse" data-parent="#accordion" href="#collapse5">
+          {% trans "Who can edit styles for this layer?" %}
+        </a>
+      </h4>
+    </div>
+    <div id="collapse5" class="panel-collapse collapse">
+      <div class="controls">
+        <div class="radio">
+          <label>
+            {% trans "The following users:" %}
+            <input class="user-select" type="text" name="change_layer_style" id="change_layer_style_users" />
+          </label>
+        </div>
+        <div class="radio">
+          <label>
+            {% trans "The following groups:" %}
+            <input class="group-select" type="text" name="change_layer_style" id="change_layer_style_groups" /> 
+          </label>
+        </div>
+      </div>
+    </div>
+  </div>
+  {% endif %}
+  <!-- manage layer -->
+  <div class="panel panel-default">
+    <div class="panel-heading">
+      <h4 class="panel-title">
+        <a data-toggle="collapse" data-parent="#accordion" href="#collapse6">
+          {% trans "Who can manage it? (update, delete, change permissions, publish/unpublish it)" %}
+        </a>
+      </h4>
+    </div>
+    <div id="collapse6" class="panel-collapse collapse">
+      <div class="controls">
+        <div class="radio">
+          <label>
+            {% trans "The following users:" %}
+            <input class="user-select" type="text" name="manage_resourcebase" id="manage_resourcebase_users" />
+          </label>
+        </div>
+        <div class="radio">
+          <label>
+            {% trans "The following groups:" %}
+            <input class="group-select" type="text" name="manage_resourcebase" id="manage_resourcebase_groups" /> 
+          </label>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,12 @@
+{% extends "admin/base.html" %}
+
+{% block title %}{{ title }} | {{ site_title|default:_('GeoNode site admin') }}{% endblock %}
+
+{% block branding %}
+<h1 id="site-name"><a href="{% url 'admin:index' %}">{{ site_header|default:_('GeoNode administration') }}</a></h1>
+{% endblock %}
+
+{% block extrahead %}
+    <script src="{{ STATIC_URL }}lib/js/assets.min.js"></script>
+    {% include 'autocomplete_light/static.html' %}
+{% endblock %}

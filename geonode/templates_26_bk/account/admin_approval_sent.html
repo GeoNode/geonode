@@ -1,0 +1,16 @@
+{% extends "site_base.html" %}
+
+{% load url from future %}
+{% load i18n %}
+
+{% block head_title %}{% trans "Account Pending Approval" %}{% endblock %}
+
+{% block body %}
+
+<div class="page-header">
+  <h2>{% trans "Account Pending Approval" %}</h2>
+</div>
+
+    <p>{% blocktrans %}We have sent the administrators a notice to approve your account associated with <b>{{ email }}</b>. If the account is approved, you will receive a confirmation notice.{% endblocktrans %}</p>
+    <p><a href="{{ success_url }}">Go back</a></p>
+{% endblock %}

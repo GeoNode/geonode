@@ -2,35 +2,45 @@
 {% load i18n avatar_tags %}
 {% load bootstrap_tags %}
 
+{% block body_header %}
+<div class="gd-content">
+    <div class="gd-content-heading">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="title with-icon-content">
+                    <a href="{% url "profile_edit" user.username %}">
+                        {% trans "Back to edit your profile information" %}
+                    </a>
+                </div>
+            </div>
+        </div>
+        <div class="hr"></div>
+    </div>
+</div>
+{% endblock %}
 {% block body %}
-    <h4 class="page-header"><a href="{% url "profile_edit" user.username %}">{% trans "Back to edit your profile information" %}</a></h4>
-    <h5>{% trans "Your current avatar: " %}</h5>
-    {% avatar user %}
-    {% if not avatars %}
-        <p>{% trans "You haven't uploaded an avatar yet. Please upload one now." %}</p>
-    {% else %}
+<div class="gd-content">
+    <div class="gd-content-body full-pad-40px top-bottom-margin-20px">
+        <h5>{% trans "Your current avatar: " %}</h5>
+        {% avatar user %}
+        {% if not avatars %}
+        <div class="help-block">{% trans "You haven't uploaded an avatar yet. Please upload one now." %}</div>
+        {% else %}
         <form method="POST" action="{% url 'avatar_change' %}">
-            <ul>
+            <ul class="">
                 {{ primary_avatar_form.as_ul }}
             </ul>
-            <p>{% csrf_token %}<input type="submit" class="btn btn-primary" value="{% trans "Choose new Default" %}" /></p>
+            <p>{% csrf_token %}<input type="submit" class="btn btn-gd-primary" value="{% trans " Choose new Default" %}" />
+            </p>
         </form>
-    {% endif %}
-    <form enctype="multipart/form-data" method="POST" action="{% url 'avatar_add' %}">
-        {{ upload_avatar_form.as_p }}
-        <p>{% csrf_token %}<input id="avatar-file" type="submit" class="btn btn-primary" style="visibility: hidden" value="{% trans "Upload New Image" %}" /></p>
-    </form>
-    <a class="btn btn-primary btn-danger" href="{% url 'avatar_delete' %}" id="delete_avatar" style="visibility: hidden">{% trans "Delete Your Avatar" %}</a>
-{% endblock %}
+        {% endif %}
+        <form enctype="multipart/form-data" method="POST" action="{% url 'avatar_add' %}">
+            {{ upload_avatar_form.as_p }}
+            <p>{% csrf_token %}<input type="submit" class="btn btn-gd-primary" value="{% trans " Upload New Image" %}" />
+            </p>
+        </form>
+        <a class="btn btn-primary btn-danger btn-gd-remove" href="{% url 'avatar_delete' %}">{% trans "Delete Your Avatar" %}</a>
+    </div>
+</div>
 
-{% block extra_script %}
-{{ block.super }}
-<script type="text/javascript">
-    $('#id_avatar').change(function() {
-        $('#avatar-file').css('visibility', 'visible');
-    });
-    {% if avatars %}
-    $('#delete_avatar').css('visibility', 'visible');
-    {% endif %}
-</script>
 {% endblock %}

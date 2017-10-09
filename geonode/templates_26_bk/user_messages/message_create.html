@@ -1,0 +1,23 @@
+{% extends "site_base.html" %}
+
+{% load i18n %}
+{% load bootstrap_tags %}
+
+{% block title %}{% trans "Create Message" %} — {{ block.super }}{% endblock %}
+
+{% block body %}
+<h3>{% trans "Create Message" %}</h3>
+<form method="post" action="{% url "message_create" %}">
+  {% csrf_token %}
+  <table width=100%>
+    {{ form|as_bootstrap }}
+  </table>
+  <div class="form-actions">
+    <input type="submit" value="{% trans "Send message" %}"  class="btn btn-primary" type="button"/>
+  </div>
+</form>
+{% endblock %}
+
+{% block sidebar %}
+<a href="{% url "messages_inbox" %}" class="btn btn-primary" type="button">{% trans "Back to Inbox" %}</a>
+{% endblock %}

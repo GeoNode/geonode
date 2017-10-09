@@ -1,0 +1,7 @@
+{{ object.content }}
+{{ object.get_full_name }}
+{{ object.username }}
+{{ object.name }}
+{{ object.organization }}
+{{ object.profile}}
+{{ object.position }}

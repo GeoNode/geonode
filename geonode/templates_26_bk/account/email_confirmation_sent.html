@@ -1,0 +1,16 @@
+{% extends "site_base.html" %}
+
+{% load url from future %}
+{% load i18n %}
+
+{% block head_title %}{% trans "Confirm your email address" %}{% endblock %}
+
+{% block body %}
+
+<div class="page-header">
+  <h2>{% trans "Confirm your email address" %}</h2>
+</div>
+
+<p>{% blocktrans %}We have sent you an email to <b>{{ email }}</b> for verification. Follow the link provided to finalize the signup process.{% endblocktrans %}</p>
+<p><a href="{{ success_url }}">Go back</a></p>
+{% endblock %}

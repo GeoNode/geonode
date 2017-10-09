@@ -1,30 +1,91 @@
 {% extends "site_base.html" %}
 {% load i18n %}
 
-{% block body %}
-    <div id="description"> 
-      <h3> 
-        {% if error_title %}
-          {{ error_title }}
-        {% else %}
-          {% trans "Not Permitted" %}
-        {% endif %}
-      </h3>
+{% block middle %}
+    <!--<div id="description"> -->
+      <!--<h3> -->
+        <!--{% if error_title %}-->
+          <!--{{ error_title }}-->
+        <!--{% else %}-->
+          <!--{% trans "Not Permitted" %}-->
+        <!--{% endif %}-->
+      <!--</h3>-->
+    <!--</div>-->
+    <!--<p>-->
+    <!--{% if error_message %}-->
+      <!--{{ error_message }}-->
+    <!--{% else %}-->
+      <!--{% blocktrans %}-->
+          <!--You are not allowed to perform this operation.  -->
+      <!--{% endblocktrans %}-->
+    <!--{% endif %}-->
+    <!--</p>-->
+    <!--<p>-->
+    <!--{% if not request.user.is_anonymous %}-->
+    <!--{% blocktrans %}Please verify that you are logged in as the correct user.{%endblocktrans%}-->
+    <!--{% else %}-->
+    <!--{% blocktrans %}Please login or register and retry.{% endblocktrans %}-->
+    <!--{% endif %}-->
+    <!--</p>-->
+    <div class="container">
+        <div class="gd-content">
+            <div class="gd-content-heading">
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="title small-content">
+                            <!--{% trans "GeoNode Help" %}-->
+                        </div>
+                    </div>
+                </div>
+                <!--<div class="hr"></div>-->
+            </div>
+            <div class="block-separator"></div>
+            <div class="block-separator"></div>
+            <div class="gd-content">
+                <div class="row">
+                    <!--<div class="col-md-3">-->
+                        <!--<img src="{{ STATIC_URL }}geonode/images/user-icon/remote-services.png" >-->
+                    <!--</div>-->
+                    <div class="col-md-12">
+                        <div id="help-content" class="gd-content-body text-center">
+                            <div class="block-separator"></div>
+                            <p class="lead" style="font-size:48px;">
+
+                                    {% if error_title %}
+                                      {{ error_title }}
+                                    {% else %}
+                                      <span class="not-permi">{% trans "Not Permitted" %}</span>
+                                    {% endif %}
+                            </p>
+                            <div class="block-separator"></div>
+                            <p class="lead" style="font-size:38px;color:#5bc0de;">
+                                {% trans "Error" %} <span style="font-size:70px;color:#5bc0de;" class="not-found-error">401</span>
+                            </p>
+                            <div class="block-separator"></div>
+                            <div class="block-separator"></div>
+                            <p>
+                                {% if error_message %}
+                                  {{ error_message }}
+                                {% else %}
+                                  {% blocktrans %}
+                                      You are not allowed to perform this operation.
+                                  {% endblocktrans %}
+                                {% endif %}
+                                {% if not request.user.is_anonymous %}
+                                {% blocktrans %}Please verify that you are logged in as the correct user.{%endblocktrans%}
+                                {% else %}
+                                {% blocktrans %}Please login or register and retry.{% endblocktrans %}
+                                {% endif %}
+                            </p>
+                            <div class="block-separator"></div>
+                            <p>
+                                <a href="{% url "home" %}" class="btn btn-large btn-info" >Take Me Home</a>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="block-separator"></div>
     </div>
-    <p>
-    {% if error_message %}
-      {{ error_message }}
-    {% else %}
-      {% blocktrans %}
-          You are not allowed to perform this operation.  
-      {% endblocktrans %}
-    {% endif %}
-    </p>
-    <p>
-    {% if not request.user.is_anonymous %}
-    {% blocktrans %}Please verify that you are logged in as the correct user.{%endblocktrans%}
-    {% else %}
-    {% blocktrans %}Please login or register and retry.{% endblocktrans %}
-    {% endif %}
-    </p>
 {% endblock %}

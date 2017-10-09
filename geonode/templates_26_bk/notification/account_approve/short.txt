@@ -1,0 +1,3 @@
+{% load i18n %}
+
+{% trans "A user has requested access to the site" %}

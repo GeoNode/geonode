@@ -1,0 +1,61 @@
+{% load base_tags %}
+{% if DEBUG_STATIC %}
+
+<script src="{{ STATIC_URL }}lib/js/angular.js?v={{ VERSION }}"></script>
+<script src="{{ STATIC_URL }}lib/js/angular-leaflet-directive.min.js?v={{ VERSION }}"></script>
+<script src="{{ STATIC_URL }}lib/js/bootstrap-treeview.min.js?v={{ VERSION }}"></script>
+{% endif %}
+
+{% if include_spatial == 'true' %}
+<style>
+  .filter-map-container {  /* filter map */
+    height: 300px;
+  }
+</style>
+
+{% include 'search/_spatial_tags.html' %}
+
+{% endif %}
+<script src="{{ STATIC_URL }}geonode/js/search/explore.js?v={{ VERSION }}"></script>
+<script src="{{ STATIC_URL }}geonode/js/search/search.js?v={{ VERSION }}"></script>
+<script src="{{ STATIC_URL }}geonode/js/search/cart.js"></script>
+<script type="text/javascript">
+  $("body").attr('ng-controller', 'geonode_search_controller');
+  CATEGORIES_ENDPOINT = '{% url 'api_dispatch_list' api_name='api' resource_name='categories' %}';
+  KEYWORDS_ENDPOINT = '{% url 'api_dispatch_list' api_name='api' resource_name='keywords' %}';
+  H_KEYWORDS_ENDPOINT = '{% url 'h_keywords_api' %}';
+  T_KEYWORDS_ENDPOINT = '{% url 'api_dispatch_list' api_name='api' resource_name='thesaurus/keywords' %}';
+  REGIONS_ENDPOINT = '{% url 'api_dispatch_list' api_name='api' resource_name='regions' %}';
+  OWNERS_ENDPOINT = '{% url 'api_dispatch_list' api_name='api' resource_name='owners' %}';
+  HAYSTACK_SEARCH = "{{ HAYSTACK_SEARCH }}".toLowerCase() === "true";
+  HAYSTACK_FACET_COUNTS = "{{ HAYSTACK_FACET_COUNTS }}".toLowerCase() === "true";
+  CLIENT_RESULTS_LIMIT = {{ CLIENT_RESULTS_LIMIT }};
+  {% get_context_resourcetype as pathc %}
+        {% if pathc == "layers" %}
+                AUTOCOMPLETE_URL_RESOURCEBASE = '{% url "autocomplete_light_autocomplete" "LayerAutocomplete" %}';
+        {% elif pathc == "maps" %}
+                AUTOCOMPLETE_URL_RESOURCEBASE = '{% url "autocomplete_light_autocomplete" "MapAutocomplete" %}';
+        {% elif pathc == "documents" %}
+                AUTOCOMPLETE_URL_RESOURCEBASE = '{% url "autocomplete_light_autocomplete" "DocumentAutocomplete" %}';
+        {% elif pathc == "search" %}
+                AUTOCOMPLETE_URL_RESOURCEBASE = '{% url "autocomplete_light_autocomplete" "ResourceBaseAutocomplete" %}';
+        {% elif pathc == "people" %}
+                AUTOCOMPLETE_URL_RESOURCEBASE = '{% url "autocomplete_light_autocomplete" "ProfileAutocomplete" %}';
+        {% elif pathc == "groups" %}
+                AUTOCOMPLETE_URL_RESOURCEBASE = '{% url "autocomplete_light_autocomplete" "GroupProfileAutocomplete" %}';
+        {% else %}
+                AUTOCOMPLETE_URL_RESOURCEBASE = '{% url "autocomplete_light_autocomplete" "ResourceBaseAutocomplete" %}';
+        {% endif %}
+  AUTOCOMPLETE_URL_REGION = '{% url "autocomplete_light_autocomplete" "RegionAutocomplete" %}';
+
+  var module = angular.module('search', ['geonode_main_search', 'cart']);
+  module.constant('Configs', {
+    url: SEARCH_URL
+  });
+
+  var deps = ['search'];
+  {% if include_spatial == 'true' %}
+  deps.push('leaflet-directive');
+  {% endif %}
+  angular.bootstrap(document, deps);
+</script>

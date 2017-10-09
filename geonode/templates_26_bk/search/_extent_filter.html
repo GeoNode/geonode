@@ -1,0 +1,10 @@
+{% load i18n %}
+<nav class="filter">
+  <h4><a href="#" id="_extent_filter" class="toggle toggle-nav"><i class="fa fa-chevron-right"></i>{% trans "Extent" %}</a></h4>
+  <fieldset class="nav closed">
+    <div class="control-group leaflet_map">
+      <leaflet class="filter-map-container" center="map_center" defaults="defaults" layers="layers" id="filter-map">
+      </leaflet>
+    </div>
+  </fieldset>
+</nav>

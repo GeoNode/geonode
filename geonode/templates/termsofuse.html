@@ -1,0 +1,61 @@
+{% extends "site_base.html" %}
+
+{% load i18n %}
+{% block title %} {% trans "User Guide" %} - {{ block.super }} {% endblock %}
+
+{% block body_outer %}
+<div class="gd-content">
+    <div class="gd-content-heading">
+        <div class="row">
+            <div class="col-md-6">
+                <div class="title small-content">
+                    {% trans "TERMS OF USE" %}
+                </div>
+            </div>
+        </div>
+        <div class="hr"></div>
+    </div>
+    <div class="gd-content">
+        <div class="row">
+            <div class="col-md-12">
+                <div id="help-content" class="gd-content-body">
+                    <p>
+                        In using and interacting with the GeoDASH  Platform, Users agree that they will use the Platform only as it is intended, and Users agree to not engage in activity that harms the Platform/service provider/data provider/ other users, or others.  For example, Users agree that they shall not:
+                    </p>
+                    {% blocktrans %}
+                        <ul class="termsuseandcondition">
+                            <li>Violate any applicable law or encourage or provide instructions to another to do so.
+                            </li>
+                            <li>Defame, abuse, harass, stalk, threaten, or otherwise violate the legal rights (such as
+                                rights of privacy and publicity) of others.
+                            </li>
+                            <li>Post any infringing, obscene, indecent, or unlawful material or information.</li>
+                            <li>Misrepresent their identity.</li>
+                            <li>Collect or store personal information about anyone.</li>
+                            <li>Send “spam” email messages to anyone.</li>
+                            <li>Upload or attach files that contain viruses, corrupted files, or any other similar
+                                software or programs that may damage the operation of another’s computer.
+                            </li>
+                            <li>Delete any author attributions, legal notices, or proprietary designations or labels in
+                                any file that is uploaded.
+                            </li>
+                            <li>Falsify the origin or source of software or other material contained in data or a file
+                                that is uploaded.
+                            </li>
+                            <li>Advertise or offer to sell any goods or services, or conduct or forward surveys,
+                                contests, or chain letters on the Platform.
+                            </li>
+                            <li>Violate or infringe upon any intellectual property rights, rights of publicity or
+                                privacy or any other rights of the World Bank or of any other person.
+                            </li>
+                            <li>Download or extract any file posted by another User that they know, or reasonably should
+                                know, cannot be legally distributed in such manner.
+                            </li>
+                        </ul>
+                    {% endblocktrans %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

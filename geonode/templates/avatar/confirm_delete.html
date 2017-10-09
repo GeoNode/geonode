@@ -1,12 +1,29 @@
 {% extends "site_base.html" %}
 {% load i18n avatar_tags %}
 
+{% block body_header %}
+<div class="gd-content">
+    <div class="gd-content-heading">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="title with-icon-content">
+                    <a href="{% url "profile_edit" user.username %}">
+                        {% trans "Back to edit your profile information" %}
+                    </a>
+                </div>
+            </div>
+        </div>
+        <div class="hr"></div>
+    </div>
+</div>
+{% endblock %}
 {% block body %}
-    <a href="{% url "profile_edit" user.username %}">{% trans "Back to edit your profile information" %}</a>
-    <p>{% trans "Please select the avatars that you would like to delete." %}</p>
+<div class="gd-content">
+    <div class="gd-content-body full-pad-40px top-bottom-margin-20px">
+    <div>{% trans "Please select the avatars that you would like to delete." %}</div>
     {% if not avatars %}
         {% url 'avatar_change' as avatar_change_url %}
-        <p>{% blocktrans %}You have no avatars to delete. Please <a href="{{ avatar_change_url }}">upload one</a> now.{% endblocktrans %}</p>
+        <div>{% blocktrans %}You have no avatars to delete. Please <a href="{{ avatar_change_url }}">upload one</a> now.{% endblocktrans %}</div>
     {% else %}
         <form method="POST" action="{% url 'avatar_delete' %}">
             <ul>
@@ -15,4 +32,6 @@
             <p>{% csrf_token %}<input type="submit" class="btn btn-primary" value="{% trans "Delete These" %}" /></p>
         </form>
     {% endif %}
+    </div>
+</div>
 {% endblock %}

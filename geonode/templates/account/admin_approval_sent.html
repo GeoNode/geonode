@@ -6,11 +6,33 @@
 {% block head_title %}{% trans "Account Pending Approval" %}{% endblock %}
 
 {% block body %}
-
-<div class="page-header">
-  <h2>{% trans "Account Pending Approval" %}</h2>
+<div class="gd-content">
+    <div class="gd-content-heading">
+        <div class="row">
+            <div class="col-md-8">
+                <div class="title small-content">
+                    {% trans "Account Pending Approval" %}
+                </div>
+            </div>
+        </div>
+        <div class="hr"></div>
+    </div>
+    <div class="gd-content-body full-pad-40px top-bottom-margin-20px">
+      <div class="row">
+        <div class="col-md-10">
+            <div>
+                {% blocktrans %}
+                We have sent the administrators a notice to approve your account associated with <b>{{ email }}</b>.
+                If the account is approved, you will receive a confirmation notice.
+                {% endblocktrans %}
+            </div>
+            <div>
+                <a href="{{ success_url }}">
+                    Go back
+                </a>
+            </div>
+        </div>
+      </div>
+    </div>
 </div>
-
-    <p>{% blocktrans %}We have sent the administrators a notice to approve your account associated with <b>{{ email }}</b>. If the account is approved, you will receive a confirmation notice.{% endblocktrans %}</p>
-    <p><a href="{{ success_url }}">Go back</a></p>
 {% endblock %}

@@ -1,0 +1,38 @@
+{% extends "site_base.html" %}
+{% load bootstrap_tags %}
+
+{% load i18n %}
+{% block title %} {% trans "User Guide" %} - {{ block.super }} {% endblock %}
+
+{% block body_outer %}
+<div class="block-separator"></div>
+    <div class="gd-content">
+        <div class="gd-content">
+            <div class="row">
+                <div class="col-md-12">
+                    <div id="help-content" class="gd-content-body">
+                        <form id=""  method="post" enctype="multipart/form-data" action="">
+                              {% csrf_token %}
+                            <div class="row">
+                                <div class="col-md-12">
+                                    {{ form|as_bootstrap }}
+                                </div>
+                            </div>
+                            <div class="block-separator"></div>
+                                <button type="submit" id="" class="btn btn-gd-primary">Update</button>
+                        </form>
+                        <!--<textarea name="area2" style="width: 100%;">-->
+	<!--Some Initial Content was in this textarea-->
+<!--</textarea>-->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+{% block extra_script %}
+    <script src="{{ STATIC_URL }}geonode/js/geo-dash/nicEdit.js"></script>
+    <script type="text/javascript">
+        bkLib.onDomLoaded(function() { nicEditors.allTextAreas() });
+    </script>
+{% endblock extra_script %}

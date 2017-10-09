@@ -1,0 +1,107 @@
+{% extends "site_base.html" %}
+
+{% load i18n %}
+{% block title %} {% trans "User Guide" %} - {{ block.super }} {% endblock %}
+
+{% block body_outer %}
+    <div class="gd-content">
+        <div class="gd-content-heading">
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="title small-content" style="text-transform: uppercase;">
+                        {{ object_list.title }}
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="title small-content text-right">
+                        {% if user.is_superuser %}
+                            <span style="padding-left:15px;">
+                                <a href="{% url "footer-section-update" object_list.slug %}" title="{{object_list.slug}}"><i class="fa fa-pencil-square-o" aria-hidden="true"></i></a>
+                            </span>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            <div class="hr"></div>
+        </div>
+        <div class="gd-content">
+            <div class="row">
+                <div class="col-md-12">
+                    <div id="help-content" class="gd-content-body">
+                        {% autoescape off %}
+                            {{ object_list.description }}
+                        {% endautoescape %}
+                        <!--<p>-->
+                            <!--Bangladesh Computer Council (BCC) is a statutory body under the Ministry of Posts,-->
+                            <!--Telecommunications and Information Technology, Government of Bangladesh (GOB). It was-->
+                            <!--established by Act No IX of 1990 passed by the Parliament. The main activities are (not-->
+                            <!--limited to) encouraging and providing support for ICT related activities, formulating-->
+                            <!--national ICT strategy and policy, creating standards and specifications of ICT tools for-->
+                            <!--government organizations according to their necessity, working for human resource-->
+                            <!--development in ICT sector. It has also established National Data Center for hosting all the-->
+                            <!--government websites, e-mail services and web applications. It is the only TIER – 3 certified-->
+                            <!--Government Data Center in Bangladesh. In the near future, it will act as the only Gateway to-->
+                            <!--access internet services for all of the government organizations. BCC is continuing ICT-->
+                            <!--infrastructure development of government through several development projects/programs to-->
+                            <!--facilitate access to government services from root level. In this vision, BCC has organized-->
+                            <!--workshops, seminars, training on subjects related to ICT and has established throughout the-->
+                            <!--country UISC.-->
+                        <!--</p>-->
+                        <!--<p>-->
+                            <!--Bangladesh Computer Council (BCC) and content providers maintain this GeoDASH website (the-->
+                            <!--“Platform”) as part of their efforts to provide broad hosting and technical public service-->
+                            <!--to data producer and information for development. We encourage Users to use the information-->
+                            <!--and data it contains, as well as communication tools designed to facilitate this use among-->
+                            <!--the stakeholders/data producers. Unless explicitly stated otherwise, the Platform, its data,-->
+                            <!--communication tools, and any new tools made available that alter or improve the use of the-->
+                            <!--Platform or the data shall be subject to this Agreement (“Terms and Conditions or ICT and-->
+                            <!--Data sharing law of Government of Bangladesh ”).-->
+                        <!--</p>-->
+                        <!--<p>-->
+                            <!--By using the Platform, Users acknowledge that they have read, understood, and agree to be-->
+                            <!--bound by the data producers’ Terms and Conditions (if applicable) , as well as the general-->
+                            <!--terms and conditions of the GoB, which can be found here:-->
+                            <!--<a target="_blank" href="http://bdlaws.minlaw.gov.bd/index.php?page=html&language=english">-->
+                                <!--http://bdlaws.minlaw.gov.bd/index.php?page=html&language=english-->
+                            <!--</a>-->
+                        <!--</p>-->
+                        <!--<p>-->
+                            <!--These Terms and Conditions may be amended by the GoB or Bangladesh Government from time to-->
+                            <!--time at its sole discretion. As new data continues to be added to the Platform, and terms-->
+                            <!--and conditions for use of that data may change according to the data provider, Users should-->
+                            <!--check back here for the latest Terms and Conditions before using the Platform or accessing-->
+                            <!--or using any data.-->
+                        <!--</p>-->
+                        <!--<br>-->
+                        <!--<br>-->
+                        <!--<p><b>Platform Description</b></p>-->
+                        <!--<br>-->
+                        <!--<p>-->
+                            <!--At its core, GeoDASH is based on open source components GeoServer, GeoNetwork, Django, and-->
+                            <!--GeoExt. These provide a platform for sophisticated web browser spatial visualization and-->
+                            <!--analysis. Atop this stack, the project has built a map composer and viewer, tools for-->
+                            <!--analysis, and reporting tools. GeoDASH also supports facilities for styling data as well as-->
+                            <!--collaborative features like ratings, comments, and tagging for data, maps, and styles.-->
+                            <!--GeoDASH is built on four key tenets: Collaboration, Distribution, Cartography and Data-->
+                            <!--Collection. To promote collaboration, GeoDASH is designed on Web 2.0 principles to:-->
+                        <!--</p>-->
+                        <!--<ul class="termsuseandcondition">-->
+                            <!--<li>-->
+                                <!--Make it extremely simple to share data-->
+                            <!--</li>-->
+                            <!--<li>Provide user statistics</li>-->
+                            <!--<li>Easily add comments, ratings, tags</li>-->
+                            <!--<li>Allow collaborative filtering</li>-->
+                            <!--<li>Provide rankings of best ‘views’ and data sets contributed o Highest rated, most viewed,-->
+                                <!--most shared-->
+                            <!--</li>-->
+                            <!--<li>Allow connectivity between several GeoDASH instances to augment the collaborative-->
+                                <!--potential of government GIS databases.-->
+                            <!--</li>-->
+                        <!--</ul>-->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

@@ -1,0 +1,68 @@
+{% extends "site_base.html" %}
+
+{% load i18n %}
+{% load avatar_tags %}
+
+{% block title %}{% trans "Message Inbox" %} — {{ block.super }}{% endblock %}
+
+{% block body %}
+<div class="row">
+  <div class="col-md-12">
+    <h2 class="page-title">{%  trans "Messages" %}</h2>
+    <div class="row">
+      <div class="col-md-12">
+        <ul class="nav nav-tabs">
+          <li class="active"><a href="#inbox" data-toggle="tab"><i class=""></i>{% trans "Inbox" %}</a></li>
+          <li><a href="#all" data-toggle="tab"><i class=""></i> {% trans "All" %}</a></li>
+        </ul>
+        <div class="tab-content">
+          <article id="inbox" class="tab-pane active">
+            {% with threads_unread as threads %}
+                {% include "user_messages/_message_snippet.html" %}
+            {% endwith %}
+          </article>
+          <article id="all" class="tab-pane">
+            {% with threads_all as threads %}
+                {% include "user_messages/_message_snippet.html" %}
+            {% endwith %}
+          </article>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+{% endblock %}
+
+{% block sidebar %}
+<a href="{% url "message_create" %}" class="btn btn-primary" type="button">{% trans "Create Message" %}</a>
+{% endblock %}
+
+{% block extra_script %}
+{{ block.super }}
+<script type="text/javascript">
+$('.tab-content').click(function(event) {
+  objectClicked = event.target;
+  // If we clicked the delete button
+  if ($(objectClicked)[0].className.includes('message_delete_btn')) {
+    // Grab the correct form
+    form = $(objectClicked).closest('form')[0];
+    // Asynchronous delete thread and refresh on same page
+    $.ajax({
+      type: "POST",
+      url: $(form).attr('action'),
+      data: $(form).serialize(),
+      success: function() {
+        $('#all').load(window.location.pathname + ' #all');
+        $('#inbox').load(window.location.pathname + ' #inbox');
+      }
+    });
+  }
+  return false;
+});
+// Allow thread links to work
+$('.tab-content a').click(function(event) {
+  event.stopPropagation();
+});
+</script>
+{% endblock extra_script %}

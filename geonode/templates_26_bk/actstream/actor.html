@@ -1,0 +1,33 @@
+{% extends 'site_base.html' %}
+{% load activity_tags social_tags i18n %}
+
+{% block extra_head %}
+{{ block.super }}{% endblock %}
+
+{% block title %}{% ifequal request.user actor %}{% trans "My Activity feed" %}{% else %}{{ actor }}'s {% trans "Activity Feed" %}{% endifequal %}{% endblock %}
+{% block content_title %}{% ifequal request.user actor %}{%  trans "My Activity feed" %}{% else %}{{ actor }}'s {% trans "Activity Feed" %}{% endifequal %}{% endblock %}
+
+{% comment %}
+{% block navlinks %}
+<li><a href="{% url "actstream_object_feed" content_type_id=ctype.pk  object_id=actor.pk %}">RSS</a></li>
+<li><a href="{% url "actstream_object_feed_atom" content_type_id=ctype.pk  object_id=actor.pk %}">ATOM</a></li>
+{% endblock %}
+{% endcomment %}
+
+{% block body %}
+<div class="page-header">
+  <h2>{%  trans "Activity Feed for"  %} {{ actor }}</h2>
+</div>
+
+<div class="row">
+  <div class="col-md-12">
+    <ul class="no-style-list">
+      {% for action in action_list %}
+      {% activity_item action %}
+      {% empty %}
+      <p>{% trans "No actions yet" %}</p>
+      {% endfor %}
+    </ul>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,244 @@
+{% load i18n %}
+{% load base_tags %}
+<div class="container ad-search">
+    <div class="gd-content-body-filters">
+        <div class="row">
+            <div class="close-btn-ad-search">
+                <button class="close advanced-search-control" type="button">
+                    <span aria-hidden="true">×</span>
+                </button>
+            </div>
+        </div>
+        <div class="changepass" id="changepass">
+            <form>
+                <div class="row">
+                    {% if SEARCH_FILTERS.TEXT_ENABLED or SEARCH_FILTERS.DATE_ENABLED or SEARCH_FILTERS.REGION_ENABLED %}
+                        <div class="col-md-4">
+                            {% if SEARCH_FILTERS.TEXT_ENABLED %}
+                                <div class="text_search_input_box">
+                                    <label for="Txt">{% trans "Text" %}</label>
+                                    <input name="text_search_input" id="text_search_input" ng-model="text_query"
+                                           type="text" placeholder="Type text to search" class="form-control">
+                                </div>
+                            {% endif %}
+                            {% if SEARCH_FILTERS.REGION_ENABLED %}
+                                <div class="region_search_input_box margin-top-10px">
+                                    <label for="Region">{% trans "Regions" %}</label>
+                                    <input name="region_search_input" id="region_search_input" type="text"
+                                           placeholder="Search by region" class="form-control">
+                                </div>
+                            {% endif %}
+                            {% if SEARCH_FILTERS.DATE_ENABLED %}
+                                <div class="filter margin-top-10px">
+                                    <label for="Type">{% trans "Date" %}</label>
+                                    <div class="form-group">
+                                        <div class='input-group date' id='datetimepicker'>
+                                            <input value="yyyy-mm-dd" data-date-format="YYYY-MM-DD" type="text"
+                                                   class="datepicker form-control" placeholder="{% trans 'yyyy-mm-dd' %}"
+                                                   ng-model="advanced_date_query.date__gte"/>
+                                            <span class="input-group-addon">
+                                                <span class="glyphicon glyphicon-calendar"></span>
+                                            </span>
+                                            <input value="yyyy-mm-dd" data-date-format="YYYY-MM-DD" type="text"
+                                                   class="datepicker form-control inmar" placeholder="{% trans 'yyyy-mm-dd' %}"
+                                                   ng-model="advanced_date_query.date__lte"/>
+                                            <span class="input-group-addon spanpad">
+                                                <span class="glyphicon glyphicon-calendar"></span>
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+                            {% endif %}
+                        </div>
+                    {% endif %}
+                    {% if SEARCH_FILTERS.CATEGORIES_ENABLED %}
+                        <div class="col-md-4">
+                            <div class="advanced-search-filter-box">
+                                <label for="Categories">{% trans "Categories" %}</label>
+                                <ul class="list-group advanced-search-list" id="categories">
+                                    {% verbatim %}
+                                    <li class="list-group-item" ng-repeat="category in categories" ng-if="category.count > 0">
+                                        <div class="gas checkbox">
+                                            <label>
+                                                <input class="{{category.active}}" ng-checked="category.active=='active'"
+                                                id="unselect-category-{{ category.identifier }}"
+                                                data-value="{{ category.identifier }}"
+                                                data-filter="category__identifier__in" type="checkbox"
+                                                ng-click="advanced_search_choice_listener($event)">
+                                                {{ category.gn_description | limitTo: 25 }}
+                                                {{ category.gn_description.length > 25 ? '...' : ''}}
+                                                <span class="badge pull-right">{{ category.count }}</span>
+                                            </label>
+                                        </div>
+                                        <!-- <a data-value="{{ category.identifier }}"
+                                           data-filter="category__identifier__in"
+                                           ng-click="advanced_search_choice_listener($event)" class="{{category.active}}">
+                                            {{ category.gn_description | limitTo: 25 }}
+                                            {{ category.gn_description.length > 25 ? '...' : ''}}
+                                            <span class="badge pull-right">{{ category.count }}</span>
+                                        </a> -->
+                                    </li>
+                                    {% endverbatim %}
+                                </ul>
+                            </div>
+                        </div>
+                    {% endif %}
+                    {% if SEARCH_FILTERS.KEYWORDS_ENABLED %}
+                        <div class="col-md-4">
+                            <div class="advanced-search-filter-box">
+                                <label for="keyWords">{% trans "Keywords" %}</label>
+                                <ul class="list-group advanced-search-list" id="keywords">
+                                    {% verbatim %}
+                                    <li class="list-group-item" ng-repeat="keyword in keywords"> <!-- ng-if="keyword.count > 0" -->
+                                        <div class="gas checkbox">
+                                            <label>
+                                                <input data-value="{{ keyword.slug }}" data-filter="keywords__slug__in"
+                                                id="unselect-keyword-{{ keyword.slug }}"
+                                                class="{{keyword.active}}" type="checkbox" ng-checked="keyword.active=='active'"
+                                                ng-click="advanced_search_choice_listener($event)">
+                                                {{ keyword.name }}
+                                                <span class="badge pull-right">{{ keyword.count }}</span>
+                                            </label>
+                                        </div>
+                                        <!-- <a data-value="{{ keyword.slug }}" data-filter="keywords__slug__in"
+                                           ng-click="advanced_search_choice_listener($event)"
+                                           class="{{keyword.active}}">{{ keyword.name }}
+                                            <span class="badge pull-right">{{ keyword.count }}</span>
+                                        </a> -->
+                                    </li>
+                                    {% endverbatim %}
+                                </ul>
+                            </div>
+                        </div>
+                    {% endif %}
+                </div>
+                <div class="row">
+                    {% if SEARCH_FILTERS.TYPE_ENABLED and include_type_filter == 'true' %}
+                        <div class="col-md-4">
+                            <div class="advanced-search-filter-box">
+                                <label for="Type">{% trans header %}</label>
+                                <ul class="list-group advanced-search-list" id="types">
+                                    {% facets as facets %}
+                                    {% for facet, count in facets.items %}
+                                        {% if count > 0 %}
+                                            <li class="list-group-item">
+                                                <div class="checkbox" id="{{ facet }}" data-value="{{ facet }}" data-filter="{{ filter }}">
+                                                    <label>
+                                                        <input type="checkbox" ng-checked="category.active=='active'"
+                                                               ng-click="advanced_search_choice_listener($event)">
+                                                        {{ facet|capfirst }}
+                                                        <span class="badge pull-right">{{ count }}</span>
+                                                    </label>
+                                                </div>
+                                            </li>
+                                        {% endif %}
+                                    {% endfor %}
+                                </ul>
+                            </div>
+                        </div>
+                    {% endif %}
+                    {% if SEARCH_FILTERS.OWNERS_ENABLED %}
+                        <div class="col-md-4">
+                            <div class="advanced-search-filter-box">
+                                <label for="Owners">{% trans "Owners" %}</label>
+                                <ul class="list-group advanced-search-list" id="owners">
+                                    {% verbatim %}
+                                    <li class="list-group-item" ng-repeat="owner in owners" ng-if="owner.count > 0">
+                                        <div class="gas checkbox">
+                                            <label>
+                                                <input data-value="{{ owner.username }}" data-filter="owner__username__in"
+                                                ng-click="advanced_search_choice_listener($event)" ng-checked="category.active=='active'"
+                                                class="{{owner.active}}" type="checkbox">
+                                                {{ owner.username }}
+                                                <span class="badge pull-right">{{ owner.count }}</span>
+                                            </label>
+                                        </div>
+                                        <!-- <a data-value="{{ owner.username }}" data-filter="owner__username__in"
+                                           ng-click="advanced_search_choice_listener($event)" class="{{owner.active}}">
+                                           {{ owner.username }}
+                                            <span class="badge pull-right">{{ owner.count }}</span>
+                                        </a> -->
+                                    </li>
+                                    {% endverbatim %}
+                                </ul>
+                            </div>
+                        </div>
+                    {% endif %}
+                    {% if SEARCH_FILTERS.EXTENT_ENABLED %}
+                        <div class="col-md-4">
+                            <label for="Region">{% trans "Extent" %}</label>
+                            <fieldset class="nav closed">
+                                <div class="control-group leaflet_map">
+                                    <leaflet class="filter-map-container" center="map_center" defaults="defaults"
+                                             layers="layers" id="filter-map">
+                                    </leaflet>
+                                </div>
+                            </fieldset>
+                        </div>
+                    {% endif %}
+                    <!--{% if SEARCH_FILTERS.OWNERS_ENABLED %}-->
+                        <div class="col-md-4">
+                            <div class="advanced-search-filter-box">
+                                <label for="layers-map-doc">{% trans "Search by layer,map,document" %}</label>
+                                <ul class="list-group advanced-search-list" id="layers-map-doc">
+                                    {% verbatim %}
+                                    <li class="list-group-item" >
+                                        <div class="gas checkbox">
+                                            <label>
+                                                <input data-value="{{ 'layer' }}" data-filter="resource_type__in"
+                                                ng-click="advanced_search_choice_listener($event)" ng-checked="layerEnable()"
+                                                class="{{layerEnableClass}}" type="checkbox">
+                                                layers
+                                                <span class="badge pull-right"></span>
+                                            </label>
+                                        </div>
+                                    </li>
+                                    <li class="list-group-item" >
+                                        <div class="gas checkbox">
+                                            <label>
+                                                <input data-value="{{ 'map' }}" data-filter="resource_type__in"
+                                                ng-click="advanced_search_choice_listener($event)" ng-checked="mapEnable()"
+                                                class="{{mapEnableClass}}" type="checkbox" >
+                                                maps
+                                                <span class="badge pull-right"></span>
+                                            </label>
+                                        </div>
+                                    </li>
+                                    <li class="list-group-item" >
+                                        <div class="gas checkbox">
+                                            <label>
+                                                <input data-value="{{ 'document' }}" data-filter="resource_type__in"
+                                                ng-click="advanced_search_choice_listener($event)" ng-checked="docEnable()"
+                                                class="{{docEnableClass}}" type="checkbox" >
+                                                document
+                                                <span class="badge pull-right"></span>
+                                            </label>
+                                        </div>
+                                    </li>
+                                    {% endverbatim %}
+                                </ul>
+                            </div>
+                        </div>
+                    <!--{% endif %}-->
+                </div>
+                <hr/>
+                <div class="block-separator"></div>
+                <div class="row">
+                    <div class="col-md-3 col-md-offset-1">
+
+                    </div>
+                    <div class="col-md-3">
+                        <button type="reset" id="clear-search" class="btn btn-gd-gray btn-lg col-md-12 col-sm-12 col-xs-12">
+                            {% trans "Clear" %} {% trans "Filters" %}
+                        </button>
+                    </div>
+                    <div class="col-md-3">
+                        <button ng-click="applyAdvancedSearch()" type="button" class="btn btn-gd-primary btn-lg col-md-12 col-sm-12 col-xs-12">
+                            APPLY FILTER
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

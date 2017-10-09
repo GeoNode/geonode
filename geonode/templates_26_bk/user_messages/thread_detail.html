@@ -1,0 +1,33 @@
+{% extends "site_base.html" %}
+
+{% load i18n %}
+{% load avatar_tags %}
+
+{% block title %}{{ thread.subject }} — {{ block.super }}{% endblock %}
+
+{% block body %}
+<h3>{{ thread.subject }}</h3>
+<hr />
+{% for message in thread.messages.all %}
+  <div class="well">
+    {% avatar message.sender 50 %}
+    {{ message.sent_at }} by {% ifequal request.user message.sender %}{% trans "me" %}{% else %}<a href="{{ message.sender.get_absolute_url }}">{{ message.sender }}</a>{% endifequal %}
+    <p>{{ message.content }}</p>
+  </div>
+  {% empty %}
+  You have no messages.
+{% endfor %}
+<div>
+  <form action="{{ thread.get_absolute_url }}" method="post">
+    {% csrf_token %}
+    <fieldset>
+      <textarea name="content"></textarea>
+    </fieldset>
+    <input type="submit" value="{% trans "Send Reply" %}" class="btn btn-primary" type="button"/>
+  </form>
+</div>
+{% endblock %}
+
+{% block sidebar %}
+<a href="{% url "messages_inbox" %}" class="btn btn-primary" type="button">{% trans "Back to Inbox" %}</a>
+{% endblock %}

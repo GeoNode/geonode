@@ -1,0 +1,4 @@
+{{ object.content }}
+{{ object.title }}
+{{ object.description }}
+{{ object.keyword_list }}

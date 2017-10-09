@@ -1,0 +1,375 @@
+{% extends "site_base.html" %}
+{% load i18n %}
+{% load bootstrap_tags %}
+
+{% block title %}{{ resource.title }} — {{ block.super }}{% endblock %}
+
+{% block body_class %}data{% endblock %}
+
+{% block body_outer %}
+
+<style>
+
+    .subtitle {
+        font-size:16px;
+        color: #428bca;
+    }
+
+    .sep_title hr {
+        margin-top: 2px;
+    }
+
+</style>
+
+<div class="page-header">
+    {% if resource.class_name == "Document" %}
+    <a href="{% url 'document_detail' docid=resource.id %}" class="btn btn-primary pull-right">{% trans "Return to Document" %}</a>
+    {% elif resource.class_name == "Layer" %}
+    <a href="{% url 'layer_detail' layername=resource.typename %}" class="btn btn-primary pull-right">{% trans "Return to Layer" %}</a>
+    {% else %}
+    <a href="{% url 'map_detail' mapid=resource.id %}" class="btn btn-primary pull-right">{% trans "Return to Map" %}</a>
+    {% endif %}
+    <h2 class="page-title">{% trans "Metadata" %} : {{ resource.title }}</h2>
+</div>
+
+
+<article class="description tab-pane active" id="info">
+
+    <span class="subtitle">{% trans "Identification" %}</span>
+    <div class="sep_title"><hr></div>
+
+    <dl class="dl-horizontal">
+        {% if resource.title %}
+        <dt>{% trans "Title" %}</dt>
+        <dd>{{ resource.title|truncatechars:80 }}</dd>
+        {% endif %}
+
+        {% if resource.abstract %}
+        <dt>{% trans "Abstract" %}</dt>
+        <dd>{{ resource.abstract|escape|urlize|linebreaks|safe|truncatechars:1000 }}</dd>
+        {% endif %}
+
+    </dl>
+
+    <dl class="dl-horizontal">
+
+        {% if LICENSES_ENABLED and LICENSES_DETAIL == 'above' and resource.license %}
+        <dt>{% trans "License" %}</dt>
+        <dd>{{ resource.license.name_long }} <a href="#license-more-above" data-toggle="collapse" data-target=".license-more-above"><i class="fa fa-info-circle"></i></a></dd>
+        {% endif %}
+        <dd class="license-more-above collapse">
+            {% for bullet in resource.license.description_bullets %}
+            {{ bullet }}<br/><br/>
+            {% endfor %}
+            {% if resource.license.url %}
+            + For more info see <a href="{{ resource.license.url }}">{{ resource.license.url }}</a>.
+            {% endif %}
+        </dd>
+
+
+        {% if resource.date %}
+        <dt>{% trans resource.date_type|title %} {% trans "Date" %}</dt>
+        <dd>{{ resource.date }}</dd>
+        {% endif %}
+
+        {% if resource.display_type %}
+        <dt>{% trans "Type" %}</dt>
+        <dd>{{ resource.display_type }}</dd>
+        {% endif %}
+
+        {% if resource.keyword_list %}
+        <dt>{% trans "Keywords" %}</dt>
+        <dd>{% for keyword in resource.keyword_list %}
+            {{ keyword }}
+            {% endfor %}</dd>
+        {% endif %}
+
+        {% if resource.category %}
+        <dt>{% trans "Category" %}</dt>
+        <dd><a href="/search/?category__identifier__in={{ resource.category.identifier }}">{{ resource.category }}</a> {% if resource.category.description %}<a href="#category-more" data-toggle="collapse" data-target=".category-more"><i class="fa fa-info-circle"></i></a>{% endif %}</dd>
+        {% if resource.category.description %}
+        <dd class="category-more collapse">
+            {{ resource.category.description }}
+        </dd>
+        {% endif %}
+        {% endif %}
+
+        {% if resource.regions.all %}
+        <dt>{% trans "Regions" %}</dt>
+        <dd>{{ resource.regions.all|join:", " }}</dd>
+        {% endif %}
+
+        <dt>{% trans "Published" %}</dt>
+        <dd>{% if resource.is_published %} {% trans "Yes" %} {% else %} {% trans "No" %} {% endif %}</dd>
+
+        <dt>{% trans "Featured" %}</dt>
+        <dd>{% if resource.featured %} {% trans "Yes" %} {% else %} {% trans "No" %} {% endif %}</dd>
+
+
+    </dl>
+
+
+    <span class="subtitle">{% trans "Owner" %}</span>
+    <div class="sep_title"><hr></div>
+
+    <dl class="dl-horizontal">
+
+        {% if resource.owner %}
+        {% with resource.owner as poc %}
+
+        <dt>{% trans "Name" %}</dt>
+        <dd>{{ poc.name_long }}</dd>
+
+        <dt>{% trans "email" %}</dt>
+        <dd>{{ poc.email }}</dd>
+
+        <dt>{% trans "Position" %}</dt>
+        <dd>{{ poc.position }}</dd>
+
+        <dt>{% trans "Organization" %}</dt>
+        <dd>{{ poc.organization }}</dd>
+
+        <dt>{% trans "Location" %}</dt>
+        <dd>{{ poc.location }}</dd>
+
+        <dt>{% trans "Voice" %}</dt>
+        <dd>{{ poc.voice }}</dd>
+
+        <dt>{% trans "Fax" %}</dt>
+        <dd>{{ poc.fax }}</dd>
+
+        {% if poc.keyword_list %}
+        <dt>{% trans "Keywords" %}</dt>
+        <dd>{% for keyword in poc.keyword_list %}
+            {{ keyword }}
+            {% endfor %}</dd>
+        {% endif %}
+
+        {% endwith %}
+        {% endif %}
+
+    </dl>
+
+    <span class="subtitle">{% trans "Information" %}</span>
+    <div class="sep_title"><hr></div>
+
+    <dl class="dl-horizontal">
+
+        <dt>{% trans "Identification Image" %}</dt>
+        <dd>
+            <a href="{{ resource.get_thumbnail_url }}"><img ng-src="{{ resource.get_thumbnail_url }}" src="{{ resource.get_thumbnail_url }}"></a>
+        </dd>
+
+    </dl>
+
+    <dl class="dl-horizontal">
+
+        <dt>{% trans "Spatial Resolution" %}</dt>
+        <dd>{% if resource.scale %} {{ resource.scale }} {% else %} --- {% endif %}</dd>
+
+        <dt>{% trans "Projetion System" %}</dt>
+        <dd>{{ resource.srid }}</dd>
+
+        <dt>{% trans "Extension x0" %}</dt>
+        <dd>{{resource.bbox_x0}}</dd>
+
+        <dt>{% trans "Extension x1" %}</dt>
+        <dd>{{resource.bbox_x1}}</dd>
+
+        <dt>{% trans "Extension y0" %}</dt>
+        <dd>{{resource.bbox_y0}}</dd>
+
+        <dt>{% trans "Extension y1" %}</dt>
+        <dd>{{resource.bbox_y1}}</dd>
+
+    </dl>
+
+    <span class="subtitle">{% trans "Features" %}</span>
+    <div class="sep_title"><hr></div>
+
+    <dl class="dl-horizontal">
+
+        {% if LICENSES_ENABLED and LICENSES_DETAIL == 'below' and resource.license %}
+        <dt>{% trans "License" %}</dt>
+        <dd>{{ resource.license.name_long }} <a href="#license-more-below" data-toggle="collapse" data-target=".license-more-below"><i class="fa fa-info-circle"></i></a></dd>
+        <dd class="license-more-below collapse">
+            {% for bullet in resource.license.description_bullets %}
+            {{ bullet }}<br/><br/>
+            {% endfor %}
+            {% if resource.license.url %}
+            + For more info see <a href="{{ resource.license.url }}">{{ resource.license.url }}</a>.
+            {% endif %}
+        </dd>
+        {% endif %}
+
+        {% if resource.maintenance_frequency %}
+        <dt>{% trans "Maintenance Frequency" %}</dt>
+        <dd>{{ resource.maintenance_frequency_title }}</dd>
+        {% endif %}
+
+        {% if resource.restriction_code_type or resource.constraints_other %}
+        <dt>{% trans "Restrictions" %}</dt>
+        <dd>{% if resource.constraints_other %}
+            {{ resource.constraints_other }}
+            {% else %}
+            {{ resource.restriction_code_type }}
+            {% endif %}</dd>
+        {% endif %}
+
+        {% if resource.edition %}
+        <dt>{% trans "Edition" %}</dt>
+        <dd>{{ resource.edition}}</dd>
+        {% endif %}
+
+        {% if resource.purpose %}
+        <dt>{% trans "Purpose" %}</dt>
+        <dd>{{ resource.purpose|escape|urlize|linebreaks|safe|truncatechars:160 }}</dd>
+        {% endif %}
+
+        {% if resource.language %}
+        <dt>{% trans "Language" %}</dt>
+        <dd>{{ resource.language_title }}</dd>
+        {% endif %}
+
+        {% if resource.temporal_extent_start and resource.temporal_extent_end %}
+        <dt>{% trans "Temporal Extent" %}</dt>
+        <dd>{{ resource.temporal_extent_start }} - {{ resource.temporal_extent_end }}</dd>
+        {% endif %}
+
+        {% if resource.data_quality_statement %}
+        <dt>{% trans "Data Quality" %}</dt>
+        <dd>{{ resource.data_quality_statement }}</dd>
+        {% endif %}
+
+        {% if resource.supplemental_information %}
+        <dt>{% trans "Supplemental Information" %}</dt>
+        <dd>{{ resource.supplemental_information|truncatechars:160|escape|urlize|linebreaks|safe }}</dd>
+        {% endif %}
+
+        {% if resource.spatial_representation_type %}
+        <dt>{% trans "Spatial Representation Type" %}</dt>
+        <dd>{{ resource.spatial_representation_type }}</dd>
+        {% endif %}
+
+    </dl>
+
+    {% if resource.poc %}
+    <span class="subtitle">{% trans "Contact Points" %}</span>
+    <div class="sep_title"><hr></div>
+
+    <dl class="dl-horizontal">
+
+        <dt>{% trans "Name" %}</dt>
+        <dd>{{ resource.poc.name_long }}</dd>
+
+        <dt>{% trans "email" %}</dt>
+        <dd>{{ resource.poc.email }}</dd>
+
+        <dt>{% trans "Position" %}</dt>
+        <dd>{{ resource.poc.position }}</dd>
+
+        <dt>{% trans "Organization" %}</dt>
+        <dd>{{ resource.poc.organization }}</dd>
+
+        <dt>{% trans "Location" %}</dt>
+        <dd>{{ resource.poc.location }}</dd>
+
+        <dt>{% trans "Voice" %}</dt>
+        <dd>{{ resource.poc.voice }}</dd>
+
+        <dt>{% trans "Fax" %}</dt>
+        <dd>{{ resource.poc.fax }}</dd>
+
+        {% if poc.keyword_list %}
+        <dt>{% trans "Keywords" %}</dt>
+        <dd>{% for keyword in resource.poc.keyword_list %}
+            {{ keyword }}
+            {% endfor %}</dd>
+        {% endif %}
+
+        <hr>
+
+    </dl>
+
+
+
+    {% endif %}
+
+    <span class="subtitle">{% trans "References" %}</span>
+    <div class="sep_title"><hr></div>
+
+    <dl class="dl-horizontal">
+
+        <dt>{% trans "Link Online" %}</dt>
+        <dd><a href="{{ resource.get_absolute_url }}">{{ resource.get_absolute_url }}</a></dd>
+
+        <dt>{% trans "Metadata Page" %}</dt>
+        <dd><a href="{{ resource.get_absolute_url }}/metadata_detail">{{ resource.get_absolute_url }}/metadata_detail</a></dd>
+
+        {% if resource.doc_file %}
+        <dt>{% trans "Online Link" %}</dt>
+        <dd><a href="{{ resource.get_absolute_url }}/download">{{ resource.get_absolute_url }}/download</a></dd>
+        {% endif %}
+
+        <hr>
+
+        {% for link in resource.link_set.download %}
+        <dt>{{link.name}}</dt>
+        <dd><a href="{{link.url}}">{{resource.title}}.{{link.extension}}</a></dd>
+        {% endfor %}
+
+        <hr>
+
+        {% for link in resource.link_set.ows %}
+        <dt>{{link.name}}</dt>
+        <dd><a href="{{link.url}}">Geoservice {{link.link_type}}</a></dd>
+        {% endfor %}
+
+    </dl>
+
+    {% if resource.metadata_author %}
+    <span class="subtitle">{% trans "Metadata Author" %}</span>
+    <div class="sep_title"><hr></div>
+
+    <dl class="dl-horizontal">
+
+        {% with resource.metadata_author as poc %}
+
+        <dt>{% trans "Name" %}</dt>
+        <dd>{{ poc.name_long }}</dd>
+
+        <dt>{% trans "email" %}</dt>
+        <dd>{{ poc.email }}</dd>
+
+        <dt>{% trans "Position" %}</dt>
+        <dd>{{ poc.position }}</dd>
+
+        <dt>{% trans "Organization" %}</dt>
+        <dd>{{ poc.organization }}</dd>
+
+        <dt>{% trans "Location" %}</dt>
+        <dd>{{ poc.location }}</dd>
+
+        <dt>{% trans "Voice" %}</dt>
+        <dd>{{ poc.voice }}</dd>
+
+        <dt>{% trans "Fax" %}</dt>
+        <dd>{{ poc.fax }}</dd>
+
+        {% if poc.keyword_list %}
+        <dt>{% trans "Keywords" %}</dt>
+        <dd>{% for keyword in poc.keyword_list %}
+            {{ keyword }}
+            {% endfor %}</dd>
+        {% endif %}
+
+        {% endwith %}
+
+    </dl>
+    {% endif %}
+
+
+</article>
+
+
+{% endblock %}

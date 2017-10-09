@@ -6,8 +6,22 @@
     {% verbatim %}
       <li ng-repeat="category in categories" ng-if="category.count > 0">
         <a data-value="{{ category.identifier }}" data-filter="category__identifier__in"
-         ng-click="multiple_choice_listener($event)" class="{{category.active}}"><div class="fa-stack fa-1g"><i class="fa fa-square-o fa-stack-2x"></i><i class="fa {{category.fa_class}} fa-stack-1x"></i></div>{{ category.gn_description | limitTo: 25 }}{{ category.gn_description.length > 25 ? '...' : ''}}
+         ng-click="multiple_choice_listener($event)" class="{{category.active}}">{{ category.gn_description | limitTo: 25 }}{{ category.gn_description.length > 25 ? '...' : ''}}
           <span class="badge pull-right">{{ category.count }}</span>
+        </a>
+      </li>
+    {% endverbatim %}
+  </ul>
+</nav>
+{% endif %}
+{% if SEARCH_FILTERS.KEYWORDS_ENABLED %}
+<nav class="filter">
+  <h4><a href="#" class="toggle toggle-nav"><i class="fa fa-chevron-right"></i> {% trans "Keywords" %}</a></h4>
+  <ul class="nav closed" id="keywords">
+    {% verbatim %}
+      <li ng-repeat="keyword in keywords" ng-if="keyword.count > 0">
+        <a data-value="{{ keyword.slug }}" data-filter="keywords__slug__in" ng-click="multiple_choice_listener($event)" class="{{keyword.active}}">{{ keyword.name }}
+          <span class="badge pull-right">{{ keyword.count }}</span>
         </a>
       </li>
     {% endverbatim %}

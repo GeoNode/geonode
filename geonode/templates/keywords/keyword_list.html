@@ -1,0 +1,74 @@
+{% extends "site_base.html" %}
+{% load bootstrap_tags %}
+
+{% load i18n %}
+{% block title %} {% trans "Keyword List" %} - {{ block.super }} {% endblock %}
+
+{% block body_outer %}
+<div class="gd-content">
+    <div class="gd-content-heading">
+        <div class="row">
+          <div class="col-md-6">
+              <div class="title small-content">
+                  {% trans "Keyword List" %}
+              </div>
+          </div>
+          <div class="col-md-6">
+              <div class="small-content text-right">
+                  <a href="{% url "keyword-create" %}" class="btn btn-gd-primary pull-right icon-btn-color" style="font-size:12px;">
+                        {% trans "Add Keyword" %} <i class="fa fa-map-marker" aria-hidden="true"></i>
+                  </a>
+              </div>
+          </div>
+      </div>
+      <div class="hr"></div>
+    </div>
+    <div class="gd-content-body transparent top-bottom-margin-20px">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="gd-content-body1 full-pad-40px1">
+                  <form id=""  method="post"  action="{% url "keyword-delete" %}">
+                    {% csrf_token %}
+                    <div class="row topic-cat-list">
+                        <div class="col-md-2" style="color:#fff;">
+                            <h4 >No.</h4>
+                        </div>
+                        <div class="col-md-4" style="color:#fff;">
+                            <h4>Name </h4>
+                        </div>
+{#                        <div class="col-md-4" style="color:#fff;">#}
+{#                            <h4>Category Description</h4>#}
+{#                        </div>#}
+                        <div class="col-md-2" style="color:#fff;">
+                            <h4>Action</h4>
+                        </div>
+                    </div>
+                      {% for keyword in keyword_list %}
+                    <div class="row topic-cat-list-data">
+                        <div class="col-md-2">
+                            {{ forloop.counter }}
+                        </div>
+                        <div class="col-md-4">
+                            {{ keyword.name}}
+                        </div>
+{#                        <div class="col-md-4">#}
+{#                            {{ category.gn_description }}#}
+{#                        </div>#}
+                        <div class="col-md-2">
+                            <input type="checkbox" value="{{ keyword.id }}" name="keyword_id" id="keyword_id{{ keyword.id }}">
+                        </div>
+                    </div>
+                      {%endfor %}
+
+                    <div class="block-separator"></div>
+                    <div class="text-right">
+                        <button type="submit" id="" class="btn btn-gd-primary" style="font-size:12px;">Delete Keyword</button>
+                    </div>
+                  </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+

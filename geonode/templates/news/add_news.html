@@ -1,0 +1,44 @@
+{% extends "site_base.html" %}
+
+{% load i18n %}
+{% block title %} {% trans "Add News" %} - {{ block.super }} {% endblock %}
+
+{% block body_outer %}
+<div class="gd-content">
+    <div class="gd-content-body transparent top-bottom-margin-20px">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="gd-content-body full-pad-40px">
+                  <form id=""  method="post" enctype="multipart/form-data" action="">
+                    <div class="row">
+                        <div class="col-md-12">
+                            <label class="control-label"> {% trans "News Title " %} </label>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-12">
+                            <input id="" class="form-control" type="text" name="newstitle" maxlength="255">
+                        </div>
+                    </div>
+                    <div class="block-separator"></div>
+                    <div class="row">
+                        <div class="col-md-12">
+                            <label class="control-label"> {% trans "News Description " %} </label>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-12" >
+                            <textarea id="" name="newsdescription" class="form-control" rows="10" cols="40" style="text-align:left;">
+                           </textarea>
+                        </div>
+                    </div>
+                    <div class="block-separator"></div>
+                    <button type="submit" id="" class="btn btn-gd-primary">Add News</button>
+                  </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+

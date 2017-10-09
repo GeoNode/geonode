@@ -1,0 +1,6 @@
+{{ object.content }}
+{{ object.title }}
+{{ object.abstract }}
+{{ object.purpose }}
+{{ object.supplemental_information }}
+{{ object.keyword_list }}

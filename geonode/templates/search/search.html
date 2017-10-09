@@ -8,31 +8,63 @@
 {% block body_class %}search{% endblock %}
 
 {% block body_outer %}
-  <div class="page-header">
-    <h2>{% trans "Search" %} <span ng-if="text_query != ''">:</span> <span ng-bind="text_query"></span></h2>
-  </div>
-  {% with include_type_filter='true' %}
-  {% with header='Type' %}
-  {% with filter='type__in' %}
-  {% include "search/_search_content.html" %}
-  {% endwith %}
-  {% endwith %}
-  {% endwith %}
+    <div class="gd-content">
+        <div class="gd-content-heading">
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="title small-content">
+                        {% trans "Search" %}
+                        <span ng-if="text_query != ''">:</span>
+                        <span ng-bind="text_query"></span>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="small-content text-right">
+                        <div ng-show="cart.getCart().items.length > 0" ng-controller="CartList">
+                            <div class="selectfixed">
+                                <resource-cart></resource-cart>
+                            </div>
+                        </div>
+                        <a href="javascript:;" id="advanced-search-control"
+                           class="btn btn-gd-primary pull-right icon-btn-color">
+                            Advanced <i class="fa fa-search"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+            <div class="hr"></div>
+        </div>
+        <div class="gd-content-body transparent top-bottom-margin-20px">
+            <div class="row">
+                <div class="col-md-12">
+                    {% with include_type_filter='true' %}
+                        {% with header='Type' %}
+                            {% with filter='type__in' %}
+                                {% include "search/_search_content.html" %}
+                            {% endwith %}
+                        {% endwith %}
+                    {% endwith %}
+                </div>
+            </div>
+        </div>
+    </div>
 {% endblock %}
 
 {% block extra_script %}
-{{ block.super }}
-  {% if GEONODE_SECURITY_ENABLED %}
-    {% include "_permissions_form_js.html" %}
-  {% endif %}
-  <script type="text/javascript">
-    {% if HAYSTACK_SEARCH %}
-    SEARCH_URL = '{% url 'api_get_search' api_name='api' resource_name='base' %}'
-    {% else %}
-    SEARCH_URL = '{% url 'api_dispatch_list' api_name='api' resource_name='base' %}'
+    {% if GEONODE_SECURITY_ENABLED %}
+        {% include "_permissions_form_js.html" %}
     {% endif %}
-  </script>
-  {% with include_spatial='true' %}
-  {% include 'search/search_scripts.html' %}
-  {% endwith %}
+    <script type="text/javascript">
+        {% if HAYSTACK_SEARCH %}
+            SEARCH_URL = '{% url 'api_get_search' api_name='api' resource_name='base' %}'
+        {% else %}
+            SEARCH_URL = '{% url 'api_dispatch_list' api_name='api' resource_name='base' %}'
+        {% endif %}
+        /*$(document).ready(function() {
+         $("#advanced-search-menu").show();
+         });*/
+    </script>
+    {% with include_spatial='true' %}
+        {% include 'search/search_scripts.html' %}
+    {% endwith %}
 {% endblock extra_script %}

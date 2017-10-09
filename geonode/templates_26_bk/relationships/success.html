@@ -1,0 +1,8 @@
+{% extends "site_base.html" %}
+{% load i18n %}
+
+{% block body %}
+  <h1>{% trans "Success" %}</h1>
+  <p>{% trans "You are " %}{% if add %}{% trans "now" %}{% else %}{% trans "no longer" %}{% endif %} {{ status.from_slug }} {{ to_user.username }}</p>
+  <p><a href="{% url "profile_detail" to_user.username %}">{% blocktrans with to_user.username as to_user_username %}{{ to_user_username }}'s profile{% endblocktrans %}</a></p>
+{% endblock %}

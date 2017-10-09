@@ -15,19 +15,29 @@
 {% endcomment %}
 
 {% block body %}
-<div class="page-header">
-  <h2>{%  trans "Activity Feed for"  %} {{ actor }}</h2>
-</div>
-
-<div class="row">
-  <div class="col-md-12">
-    <ul class="no-style-list">
-      {% for action in action_list %}
-      {% activity_item action %}
-      {% empty %}
-      <p>{% trans "No actions yet" %}</p>
-      {% endfor %}
-    </ul>
-  </div>
-</div>
+    <div class="gd-content">
+        <div class="gd-content-heading">
+            <div class="title small-content">
+                {%  trans "Activity Feed for"  %} {{ actor }}
+            </div>
+            <div class="hr"></div>
+        </div>
+        <div class="gd-content-body gd-history transparent top-bottom-margin-20px">
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="tab-content activity-style-list">
+                        <article id="all" class="tab-pane active">
+                            <div class="no-style-list">
+                                {% for action in action_list %}
+                                    {% activity_item action %}
+                                {% empty %}
+                                    <p>{% trans "No actions yet" %}</p>
+                                {% endfor %}
+                            </div>
+                        </article>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 {% endblock %}

@@ -1,0 +1,6 @@
+{% load i18n %}
+
+{% trans "The user" %} {{ resource.owner.username }} {% trans "created the following map" %}:
+{{ resource.title }}
+
+{% trans "You can visit the map's detail page here" %}: http://{{ current_site }}{% url "map_detail" resource.id %}

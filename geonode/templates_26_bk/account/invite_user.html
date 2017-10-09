@@ -1,0 +1,19 @@
+{% extends "site_base.html" %}
+{% load i18n %}
+{% load bootstrap_tags %}
+
+{% block body %}
+
+<div class="page-header">
+  <h2>{% trans "Invite User" %}</h2>
+</div>
+  
+<form action="" class="form-horizontal" method="post">
+  {% csrf_token %}
+  {{ form|as_bootstrap }}
+  <div class="form-actions">
+    <input type="submit" value="{% trans "Invite User" %}" class="btn btn-primary"/>
+  </div>
+</form>
+  
+{% endblock %}

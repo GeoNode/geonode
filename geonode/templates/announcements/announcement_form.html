@@ -7,24 +7,42 @@
 {% block body_class %}announcements{% endblock %}
 
 {% block body %}
-<div class="page-header">
-  <h2>{% if announcement %}{% trans "Edit Announcement" %}{% else %}{% trans "Create Announcement" %}{% endif %}</h2>
-</div>
-{% if announcement %}
-  {% url "announcements_update" pk=announcement.pk as post_url %}
-{% else %}
-  {% url "announcements_create" as post_url %}
-{% endif %}
-
-<form action="{{ post_url }}" method="POST" class="form form-horizontal">
-  {% csrf_token %}
-  {{ form|as_bootstrap }}
-  <div class="form-actions">
-    <a href="{% url "announcements_list" %}" class="btn btn-default">{% trans "Cancel" %}</a>
+<div class="gd-content">
+    <div class="gd-content-heading">
+        <div class="row">
+            <div class="col-md-8">
+                <div class="title small-content">
+                    {% if announcement %}
+                        {% trans "Edit Announcement" %}
+                    {% else %}
+                        {% trans "Create Announcement" %}
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        <div class="hr"></div>
+    </div>
     {% if announcement %}
-    <a href="{% url "announcements_delete" pk=announcement.pk %}" class="btn btn-danger">{% trans "Delete" %}</a>
+    {% url "announcements_update" pk=announcement.pk as post_url %}
+    {% else %}
+    {% url "announcements_create" as post_url %}
     {% endif %}
-    <button type="submit" class="btn btn-primary">{% trans "Save" %}</button>
-  </div>
-</form>
+    <div class="gd-content-body full-pad-40px top-bottom-margin-20px">
+        <form action="{{ post_url }}" method="POST" class="form">
+            {% csrf_token %}
+            {{ form|as_bootstrap }}
+            <div class="form-group">
+                <a href="{% url "announcements_list" %}" class="btn btn-gd-gray btn-lg">
+                    {% trans "Cancel" %}
+                </a>
+                {% if announcement %}
+                    <a href="{% url "announcements_delete" pk=announcement.pk %}" class="btn btn-danger btn-gd-remove btn-lg">
+                        {% trans "Delete"%}
+                    </a>
+                {% endif %}
+                <button type="submit" class="btn btn-gd-primary btn-lg">{% trans "Save" %}</button>
+            </div>
+        </form>
+    </div>
+</div>
 {% endblock %}

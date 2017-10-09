@@ -5,29 +5,102 @@
 
 {% block title %}{{ thread.subject }} — {{ block.super }}{% endblock %}
 
-{% block body %}
-<h3>{{ thread.subject }}</h3>
-<hr />
-{% for message in thread.messages.all %}
-  <div class="well">
-    {% avatar message.sender 50 %}
-    {{ message.sent_at }} by {% ifequal request.user message.sender %}{% trans "me" %}{% else %}<a href="{{ message.sender.get_absolute_url }}">{{ message.sender }}</a>{% endifequal %}
-    <p>{{ message.content }}</p>
-  </div>
-  {% empty %}
-  You have no messages.
-{% endfor %}
-<div>
-  <form action="{{ thread.get_absolute_url }}" method="post">
-    {% csrf_token %}
-    <fieldset>
-      <textarea name="content"></textarea>
-    </fieldset>
-    <input type="submit" value="{% trans "Send Reply" %}" class="btn btn-primary" type="button"/>
-  </form>
+{% block body_header %}
+<div class="gd-content">
+    <div class="gd-content-heading">
+        <div class="row">
+            <div class="col-md-8">
+                <div class="title small-content">
+                    {{ thread.subject }}
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="small-content pull-right">
+                    <a href="{% url "messages_inbox" %}" class="btn btn-gd-primary btn-xm col-md-12 col-sm-12
+                    col-xs-12" type="button">
+                    {% trans "Back to Inbox" %}
+                    </a>
+                </div>
+            </div>
+        </div>
+        <div class="hr"></div>
+    </div>
 </div>
 {% endblock %}
+{% block body %}
+<div class="gd-content">
+    <div class="gd-content-body transparent top-bottom-margin-20px">
+        <div class="row resources-content mr-left-zero">
+            <ul class="resources-list">
+                {% for message in thread.messages.all %}
+                <li class="box">
+                    <div class="media">
+                        <div class="media-left">
+                            {% avatar message.sender 50 %}
+                            <!-- <a href="{{ item.detail_url }}">
+                                <img height="100" class="media-object" alt="map-layout"
+                                     ng-src="{{ item.thumbnail_url }}"/>
+                            </a> -->
+                        </div>
+                        <div class="media-body">
+                            <div class="heading">
+                                <div class="row">
+                                    <div class="col-md-9">
+                                        <h4 class="media-heading">
+                                            <a href="javascript:;">
+                                                {{ message.sent_at }}
+                                            </a>
+                                        </h4>
+                                        <div class="media-sub-heading">
+                                             by {% ifequal request.user message.sender %}{% trans "me" %}{% else %}
+                                            <a href="{{ message.sender.get_absolute_url }}">{{ message.sender }}</a>
+                                            {% endifequal %}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="description">
+                                {{ message.content }}
+                            </div>
+                        </div>
+                    </div>
+                </li>
+                {% empty %}
+                <li class="box">
+                    <div class="media">
+                        <div class="media-body">
+                            <div class="heading">
+                                <div class="row">
+                                    <div class="col-md-9">
+                                        <h4 class="media-heading">
+                                            <a href="javascript:;">
+                                                You have no messages.
+                                            </a>
+                                        </h4>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="description">
+                                You have no messages.
+                            </div>
+                        </div>
+                    </div>
+                </li>
+                {% endfor %}
+            </ul>
+        </div>
 
-{% block sidebar %}
-<a href="{% url "messages_inbox" %}" class="btn btn-primary" type="button">{% trans "Back to Inbox" %}</a>
+    </div>
+    <div class="gd-content-body full-pad-20px">
+        <form action="{{ thread.get_absolute_url }}" method="post">
+            {% csrf_token %}
+            <fieldset>
+                <textarea class="form-control" name="content"></textarea>
+            </fieldset>
+            <div class="block-separator"></div>
+            <input type="submit" value="{% trans " Send Reply" %}" class="btn btn-gd-primary" type="button"/>
+        </form>
+    </div>
+</div>
+
 {% endblock %}

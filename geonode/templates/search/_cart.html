@@ -1,0 +1,33 @@
+<div class="row">
+    <div class="col-md-12">
+       <resource-cart></resource-cart>
+    </div>
+</div>
+<div class="row">
+    <div class="col-md-12">
+        {% block bulk_perms_button %}
+            <div class="margin-top-20px">
+                <div class="btn-group btn-group-justified" role="group" aria-label="tools">
+                    {% if request.user.is_authenticated %}
+                        <div class="btn-group" role="group">
+                            <button type="button" class="btn spcam btn-gd-primary"
+                                    ng-disabled="!cart.getCart().items.length"
+                                    data-toggle="modal" data-target="#_bulk_permissions">
+                                Set Permissions
+                            </button>
+                        </div>
+                    {% endif %}
+                    {% if facet_type == 'layers' %}
+                        <div class="btn-group" role="group">
+                            <button type="button" class="btn btn-gd-primary"
+                                    ng-disabled="!cart.getCart().items.length"
+                                    ng-click="newMap()">
+                                {% trans "Create a map" %}
+                            </button>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        {% endblock %}
+    </div>
+</div>

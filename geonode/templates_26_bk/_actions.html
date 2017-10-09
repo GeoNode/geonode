@@ -1,0 +1,21 @@
+{% load i18n %}
+<ul class="nav nav-tabs">
+  <li class="active"><a href="#info" data-toggle="tab"><i class="fa fa-info-circle"></i>{% trans "Info" %}</a></li>
+  {% if resource.polymorphic_ctype.name == 'layer' %}
+  <li><a href="#attributes" data-toggle="tab"><i class="fa fa-bars"></i>{% trans "Attributes" %}</a></li>
+  {% endif %}
+  {% if resource.is_mosaic %}
+  <li><a href="#granules" data-toggle="tab"><i class="fa fa-bars"></i>{% trans "Granules" %}</a></li>
+  {% endif %}
+  {% if SOCIAL_BUTTONS %}
+  <li><a href="#share" data-toggle="tab"><i class="fa fa-share"></i>{% trans "Share" %}</a></li>
+  {% endif %}
+  <li><a href="#rate" data-toggle="tab"><i class="fa fa-star"></i>{% trans "Ratings" %}</a></li>
+  <li><a href="#comments" data-toggle="tab"><i class="fa fa-comment-o"></i> {% trans "Comments" %}</a></li>
+  {% if GEOGIG_ENABLED and resource.link_set.geogig %}
+  <li><a href="#geogig" data-toggle="tab"><i class="fa fa-code-fork"></i> {% trans "GeoGig" %}</a></li>
+  {% endif %}
+  {% if EXIF_ENABLED and resource.polymorphic_ctype.name == 'document' and exif_data %}
+  <li><a href="#exif" data-toggle="tab"><i class="fa fa-photo"></i> {% trans "Exif" %}</a></li>
+  {% endif %}
+</ul>

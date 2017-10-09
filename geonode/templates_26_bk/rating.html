@@ -1,0 +1,14 @@
+<script type="text/javascript">
+$(function() {
+    $('div.overall_rating').raty({
+        half: true,
+        readOnly: true,
+        score: function() {
+          return $(this).attr('data-score');
+        },
+        path: "{{ STATIC_URL }}lib/img/"
+    });
+    var activeTab = $("[href='" + location.hash + "']");
+    activeTab && activeTab.tab('show');
+});
+</script>  

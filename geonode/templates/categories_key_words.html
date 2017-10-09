@@ -1,0 +1,220 @@
+{% extends "site_base.html" %}
+
+{% load i18n %}
+{% block title %} {% trans "User Guide" %} - {{ block.super }} {% endblock %}
+
+{% block body_outer %}
+    <div class="gd-content">
+        <div class="gd-content-heading">
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="title small-content">
+                        {% trans "Categories and Key words" %}
+                    </div>
+                </div>
+            </div>
+            <div class="hr"></div>
+        </div>
+        <div class="gd-content">
+            <div id="help-content" class="gd-content-body">
+                <div class="row">
+                    <div class="col-md-12">
+                        <p><b>Categories</b></p>
+                        <ul class="termsuseandcondition">
+                            <li>Disaster</li>
+                            <li>Agriculture</li>
+                            <li>Water bodies</li>
+                            <li>Marine & Coastal</li>
+                            <li>Environment</li>
+                            <li>Development and Facilities (utilities...)</li>
+                            <li>Urban</li>
+                            <li>Infrastructure</li>
+                            <li>Education</li>
+                            <li>Health</li>
+                            <li>Transport and Communication (Roads, Highway etc)</li>
+                            <li>Demography</li>
+                            <li>Commercial</li>
+                            <li>Recreational</li>
+                            <li>Conservation area</li>
+                            <li>Forest</li>
+                            <li>Climate and Atmosphere</li>
+                            <li>Physiographic (Mountain, Terrain, Depression etc.)</li>
+                            <li>Geology</li>
+                            <li>Engineering</li>
+                            <li>Administrative</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-12">
+                        <p><b>Keywords</b></p>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-3">
+                        <ul class="termsuseandcondition">
+                            <li>Asia</li>
+                            <li>Agriculture</li>
+                            <li>Area</li>
+                            <li>Atmosphere</li>
+                            <li>Alluvial</li>
+                            <li>Boundary</li>
+                            <li>Built up</li>
+                            <li>Bangladesh</li>
+                            <li>Basin</li>
+                            <li>Bridge</li>
+                            <li>Chanel</li>
+                            <li>College</li>
+                            <li>Coal</li>
+                            <li>Country</li>
+                            <li>Char lands</li>
+                            <li>City</li>
+                            <li>Commercial</li>
+                            <li>Crops</li>
+                            <li>Cross-section</li>
+                            <li>Climate</li>
+                            <li>Climate change</li>
+                            <li>Cultivation</li>
+                            <li>Cloud</li>
+                            <li>Coastal</li>
+                            <li>Cyclones</li>
+                            <li>Cable</li>
+                            <li>Drainage</li>
+                            <li>Disaster</li>
+                            <li>District</li>
+                            <li>Delta</li>
+                            <li>Division</li>
+                            <li>Demographic</li>
+                            <li>Dams</li>
+                            <li>Youth</li>
+                            <li>Zilla</li>
+                            <li>Zone</li>
+                        </ul>
+                    </div>
+                    <div class="col-md-3">
+                        <ul class="termsuseandcondition">
+                            <li>Education</li>
+                            <li>Elevation</li>
+                            <li>Energy</li>
+                            <li>Elevation</li>
+                            <li>Electricity</li>
+                            <li>Emergency</li>
+                            <li>Earthquake</li>
+                            <li>Entertainment</li>
+                            <li>Economy</li>
+                            <li>Environment</li>
+                            <li>Erosion</li>
+                            <li>Estuary</li>
+                            <li>Floodplain</li>
+                            <li>Flood</li>
+                            <li>Farm</li>
+                            <li>Facilities</li>
+                            <li>Fertility</li>
+                            <li>Forest</li>
+                            <li>Fault</li>
+                            <li>Frequency</li>
+                            <li>Geography</li>
+                            <li>Gender</li>
+                            <li>Geology</li>
+                            <li>Ground water</li>
+                            <li>GDP</li>
+                            <li>GNP</li>
+                            <li>Hazard</li>
+                            <li>Haor</li>
+                            <li>Humidity</li>
+                            <li>Highway</li>
+                            <li>Island</li>
+                            <li>Watershed</li>
+                            <li>Waterbody</li>
+                            <li>Waste disposal</li>
+                            <li>Waste management</li>
+                            <li>Weather</li>
+                        </ul>
+                    </div>
+                    <div class="col-md-3">
+                        <ul class="termsuseandcondition">
+                            <li>Infrastructure</li>
+                            <li>Institution</li>
+                            <li>Industry</li>
+                            <li>Inundation</li>
+                            <li>Landfill</li>
+                            <li>Literacy</li>
+                            <li>Levelling</li>
+                            <li>Layer</li>
+                            <li>Magnitude</li>
+                            <li>Marine</li>
+                            <li>Mining</li>
+                            <li>Mineral</li>
+                            <li>Mortality</li>
+                            <li>Map</li>
+                            <li>Market</li>
+                            <li>Migration</li>
+                            <li>Mosque</li>
+                            <li>Madrassa</li>
+                            <li>Natural disaster</li>
+                            <li>Natural Hazard</li>
+                            <li>Natural gas</li>
+                            <li>Nodes</li>
+                            <li>National</li>
+                            <li>Occupation</li>
+                            <li>Ocean</li>
+                            <li>Population</li>
+                            <li>Primary road</li>
+                            <li>Poverty</li>
+                            <li>Plantation</li>
+                            <li>Police station</li>
+                            <li>Production</li>
+                            <li>Park</li>
+                            <li>Precipitation</li>
+                            <li>Pipes</li>
+                            <li>Port</li>
+                            <li>Projection</li>
+                            <li>Political</li>
+                            <li>Pastoral</li>
+                            <li>Power plants</li>
+                        </ul>
+                    </div>
+                    <div class="col-md-3">
+                        <ul class="termsuseandcondition">
+                            <li>Quality</li>
+                            <li>Residential</li>
+                            <li>Renewable use</li>
+                            <li>Risk</li>
+                            <li>River</li>
+                            <li>Railways</li>
+                            <li>Revenue</li>
+                            <li>Rainfall</li>
+                            <li>River erosion</li>
+                            <li>Roads</li>
+                            <li>Street</li>
+                            <li>Schools</li>
+                            <li>Station</li>
+                            <li>Security</li>
+                            <li>Sea</li>
+                            <li>Structure</li>
+                            <li>Service</li>
+                            <li>Soil</li>
+                            <li>Storm surge</li>
+                            <li>Sewerage</li>
+                            <li>Site</li>
+                            <li>Service</li>
+                            <li>Shelter</li>
+                            <li>Trade</li>
+                            <li>Transport</li>
+                            <li>Transmission lines</li>
+                            <li>Tornado</li>
+                            <li>Temperature</li>
+                            <li>Technical</li>
+                            <li>Urban</li>
+                            <li>Urbanization</li>
+                            <li>University</li>
+                            <li>Union</li>
+                            <li>Vulnerability</li>
+                            <li>Valley</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

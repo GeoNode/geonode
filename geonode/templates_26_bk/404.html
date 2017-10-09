@@ -1,0 +1,9 @@
+{% extends "site_base.html" %}
+{% load i18n %}
+
+{% block body %}
+  <div id="description"><h3>{% trans "Page Not Found" %}</h3></div>
+  {% blocktrans %}
+      The page you requested does not exist.  Perhaps you are using an outdated bookmark?
+  {% endblocktrans %}
+{% endblock %}

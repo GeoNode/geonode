@@ -1,0 +1,56 @@
+{% extends "notification/base.html" %}
+
+{% load i18n %}
+{% load url from future %}
+
+{% block body_id %}notification-settings{% endblock %}
+
+{% block head_title %}{% trans "Notification Settings" %}{% endblock %}
+
+{% block body %}
+    <h2>{% trans "Notification Settings" %}</h2>
+
+    {% url "account_settings" as email_url %}
+    {% if not request.user.email %}
+        {% blocktrans %}
+        <p class="alert alert-warning">
+            <span class="warning">Note</span>:
+            You do not have a verified email address to which notices can be sent. <a href="{{ email_url }}">Add one</a> now.
+        </p>
+        {% endblocktrans %}
+    {% endif %}
+
+    <form method="POST" class="form" action="">
+        {% csrf_token %}
+        <table class="table table-striped notice_settings">
+            <tr>
+                <th>{% trans "Notification Type" %}</th>
+                {% for header in notice_settings.column_headers %}
+                    <th>
+                        {{ header.title }}
+                    </th>
+                {% endfor %}
+            </tr>
+            {% for row in notice_settings.rows %}
+                <tr class="notice-row">
+                    <td>
+                        <strong>{{ row.notice_type.display }}</strong><br/>
+                        <span class="notice_type_description">
+                            {{ row.notice_type.description }}
+                        </span>
+                    </td>
+                    {% for cell in row.cells %}
+                        <td>
+                            <input type="checkbox" name="{{ cell.0 }}" {% if cell.1 %}checked="yes"{% endif %} />
+                        </td>
+                    {% endfor %}
+                </tr>
+            {% endfor %}
+        </table>
+
+        <div class="form-actions">
+            <button id='change-notification-settings' type="submit" class="btn btn-primary pull-right">{% trans "Change" %}</button>
+        </div>
+    </form>
+{% endblock %}
+

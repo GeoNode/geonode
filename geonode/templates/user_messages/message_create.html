@@ -5,19 +5,39 @@
 
 {% block title %}{% trans "Create Message" %} — {{ block.super }}{% endblock %}
 
-{% block body %}
-<h3>{% trans "Create Message" %}</h3>
-<form method="post" action="{% url "message_create" %}">
-  {% csrf_token %}
-  <table width=100%>
-    {{ form|as_bootstrap }}
-  </table>
-  <div class="form-actions">
-    <input type="submit" value="{% trans "Send message" %}"  class="btn btn-primary" type="button"/>
+{% block body_header %}
+<div class="gd-content">
+    <div class="gd-content-heading">
+      <div class="row">
+          <div class="col-md-8">
+              <div class="title small-content">
+                  {% trans "Create Message" %}
+              </div>
+          </div>
+          <div class="col-md-4">
+              <div class="small-content pull-right">
+                  <a href="{% url "messages_inbox" %}" class="btn btn-gd-primary btn-xm col-md-12 col-sm-12 col-xs-12" type="button">
+                    {% trans "Back to Inbox" %}
+                  </a>
+              </div>
+          </div>
+      </div>
+      <div class="hr"></div>
   </div>
-</form>
+</div>
 {% endblock %}
-
-{% block sidebar %}
-<a href="{% url "messages_inbox" %}" class="btn btn-primary" type="button">{% trans "Back to Inbox" %}</a>
+{% block body %}
+<div class="gd-content">
+  <div class="gd-content-body full-pad-40px top-bottom-margin-20px">
+      <form method="post" action="{% url "message_create" %}">
+        {% csrf_token %}
+        <table width=100%>
+          {{ form|as_bootstrap }}
+        </table>
+        <div class="form-actions">
+          <input type="submit" class="btn btn-gd-primary" value="{% trans "Send message" %}"  class="btn btn-primary" type="button"/>
+        </div>
+      </form>
+  </div>
+</div>
 {% endblock %}

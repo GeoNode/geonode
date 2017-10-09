@@ -1,0 +1,31 @@
+
+
+{% extends "site_base.html" %}
+
+{% load i18n %}
+
+{% block head_title %}{% trans "Notification" %}{% endblock %}
+
+{% block body_outer %}
+    <div class="container">
+      <div class="gd-content">
+          <div class="gd-content-heading">
+              <div class="row">
+                  <div class="col-md-8">
+                      <div class="title small-content">
+                          {% trans "All Notifications" %}
+                      </div>
+                  </div>
+              </div>
+              <div class="notifications">
+                  {% load notification_tags %}
+                  {% include_notify_js_variables %}
+                  {% user_notifications %}
+              </div>
+          </div>
+      </div>
+  </div>
+</div>
+{% endblock %}
+
+<script src="{{ STATIC_URL }}notify/notifyX.js?v={{ VERSION }}"></script>

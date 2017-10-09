@@ -1,0 +1,30 @@
+{% extends "site_base.html" %}
+{% load i18n %}
+
+{% block body %}
+    <div id="description"> 
+      <h3> 
+        {% if error_title %}
+          {{ error_title }}
+        {% else %}
+          {% trans "Not Permitted" %}
+        {% endif %}
+      </h3>
+    </div>
+    <p>
+    {% if error_message %}
+      {{ error_message }}
+    {% else %}
+      {% blocktrans %}
+          You are not allowed to perform this operation.  
+      {% endblocktrans %}
+    {% endif %}
+    </p>
+    <p>
+    {% if not request.user.is_anonymous %}
+    {% blocktrans %}Please verify that you are logged in as the correct user.{%endblocktrans%}
+    {% else %}
+    {% blocktrans %}Please login or register and retry.{% endblocktrans %}
+    {% endif %}
+    </p>
+{% endblock %}

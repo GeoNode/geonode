@@ -6,11 +6,29 @@
 {% block head_title %}{% trans "Confirm your email address" %}{% endblock %}
 
 {% block body %}
-
-<div class="page-header">
-  <h2>{% trans "Confirm your email address" %}</h2>
+<div class="gd-content">
+    <div class="gd-content-heading">
+        <div class="row">
+            <div class="col-md-8">
+                <div class="title small-content">
+                    {% trans "Confirm your email address" %}
+                </div>
+            </div>
+        </div>
+        <div class="hr"></div>
+    </div>
+    <div class="gd-content-body full-pad-40px top-bottom-margin-20px">
+      <div class="row">
+        <div class="col-md-10">
+            <p>
+              {% blocktrans %}
+                We have sent you an email to <b>{{ email }}</b> for verification.
+                Follow the link provided to finalize the signup process.
+              {% endblocktrans %}
+            </p>
+            <p><a href="{{ success_url }}">Go back</a></p>
+        </div>
+      </div>
+    </div>
 </div>
-
-<p>{% blocktrans %}We have sent you an email to <b>{{ email }}</b> for verification. Follow the link provided to finalize the signup process.{% endblocktrans %}</p>
-<p><a href="{{ success_url }}">Go back</a></p>
 {% endblock %}

@@ -1,0 +1,57 @@
+{% extends "site_base.html" %}
+
+{% load i18n %}
+{% block title %} {% trans "User Guide" %} - {{ block.super }} {% endblock %}
+
+{% block body_outer %}
+<div class="gd-content">
+    <div class="gd-content-heading">
+        <div class="row">
+            <div class="col-md-6">
+                <div class="title small-content">
+                    {% trans "Privacy Policy" %}
+                </div>
+            </div>
+        </div>
+        <div class="hr"></div>
+    </div>
+    <div class="gd-content">
+        <div class="row">
+            <div class="col-md-12">
+                <div id="help-content" class="gd-content-body">
+                    <p>
+                        Some applications and/or transactions with the GeoDASH Platform may require a User to register
+                        and have a unique member account, with a User name and password combination in order to access
+                        and use certain features or functions of the Platform. To register, Users may be asked for
+                        certain Personal Information. Except as specifically provided for in the Platform or herein, the
+                        Personal Information provided is only used for technical and user administration and evaluation
+                        of the Platform. The data collected is not intended to be traced back to a particular
+                        individual/User. Instead, the purpose of this data collection is so that the Bangladesh Computer
+                        Council (BCC) can better understand the preferences of its visitors and improve this Platform
+                        and its services. In this regard, Users grant the BCC a right to use the data collected.
+                    </p>
+                    <p>
+                        The BCC will not use Personal Data for marketing purposes; neither will it share Personal
+                        Information with outside parties for those purposes. Nevertheless, the BCC may conserve or
+                        release Personal Information if required to do so by the applicable law of a specific
+                        jurisdiction or in the belief that such an action is necessary to comply with legal process,
+                        enforce the present Terms and Conditions, respond to claims that any content violates the rights
+                        of third parties, or protect the BCC’s rights and property. In addition, GeoDASH developers may
+                        store email addresses provided by users to generate a mailing list.
+                    </p>
+                    <p>
+                        Registering for certain applications or Interactive Tools is optional. If a User chooses not to
+                        register or provide Personal Information, he or she can still use the Platform. However, Users
+                        who choose not to do so will not be able to use some Interactive Tools or applications or to
+                        perform certain actions, such as download information or to receive certain communications, such
+                        as emails and newsletters.
+                    </p>
+                    <p>
+                        A User is entitled to cancel his or her member account at any time.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

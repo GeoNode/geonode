@@ -1,0 +1,42 @@
+{% load i18n %}
+
+    <div class="modal fade" id="_deny_comments" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+        <div class="modal-dialog" style="width:650px;">
+          <div class="modal-content">
+            <div class="modal-header">
+              <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+              <h4 class="modal-title text-center" id="myModalLabel">{% trans "Comments" %}</h4>
+            </div>
+            <div class="modal-body">
+                <table class="table table-hover">
+                <thead>
+                    <tr>
+                    <th>#</th>
+                    <th>Comment Title</th>
+                    <th>Comment body</th>
+                    <th>Commenter</th>
+                    <th>Date of comment</th>
+                    </tr>
+                </thead>
+                {% for comment in denied_comments %}
+                    <tbody>
+                        <tr>
+                        <td>{{ forloop.counter}}</td>
+                        <td>{{ comment.comment_subject }}</td>
+                        <td>{{ comment.comment_body }}</td>
+                        <td>{{ comment.auditor }}</td>
+                        <td>{{ comment.date_updated }}</td>
+                        </tr>
+                    </tbody>
+                {% empty %}
+                    <p>{% trans "No comments for this layer " %}</p>
+                {% endfor %}
+                </table>
+            </div>
+            <div class="alert hidden" id="bulk_perms_message">
+              <p class="message">}</p>
+              <p class="extra_content"></p>
+            </div>
+          </div>
+        </div>
+    </div>

@@ -1,0 +1,209 @@
+{% extends "site_base.html" %}
+{% load i18n %}
+{% load staticfiles %}
+{% load base_tags %}
+
+{% block title %} {% trans "Welcome!" %} - {{ block.super }} {% endblock %}
+
+{% block body_class %}home{% endblock %}
+
+{% block middle %}
+  {% block hero %}
+  <div class="jumbotron">
+  	<div class="container">
+  		<h1>{% trans "Welcome" %}</h1>
+  		<p></p>
+  		<p>{% blocktrans %}GeoNode is an open source platform for sharing geospatial data and maps.{% endblocktrans %}</p>
+		<p>{% blocktrans %}If you have any questions about the software or service, join our <a href="http://lists.osgeo.org/cgi-bin/mailman/listinfo/geonode-users">mailing list</a>.{% endblocktrans %}</p>
+  		<a class="btn btn-default btn-lg" target="_blank" href="http://docs.geonode.org/en/master/tutorials/users/index.html" role="button">{% blocktrans %}Get Started &raquo;{% endblocktrans %}</a>
+  	</div>
+  </div>
+  {% include "_status_message.html" %}
+  {% include "_announcements.html" %}
+  {% include "_messages.html" %}
+  {% endblock %}
+
+  {% block mainbody %}
+  <div class="big-search">
+  	<div class="container">
+  		<h1>{% trans "Search for Data." %}</h1>
+  		<div class="search">
+  			<form id="search" action="{% url "search" %}" >
+  				<span class="fa fa-search fa-2x"></span>
+  				{% if HAYSTACK_SEARCH %}
+  				<input id="search_input" type="text" placeholder="Search" class="form-control" name="q">
+  				{% else %}
+  				<input id="search_input" type="text" placeholder="Search" class="form-control" name="title__icontains">
+  				{% endif %}
+  			</form>
+  		</div>
+  		<p><a class="btn btn-default btn-lg" href="/search/">Advanced Search</a></p>
+  	</div>
+  </div>
+
+  {% block datasets %}
+  <section id="datasets">
+  	<div class="container">
+  		<div class="row">
+  			<div class="container text-center">
+  				<h1>Discover the available datasets.</h1>
+  				<div class="col-xs-4 col-sm-2">
+  					<a href="/search/?limit=100&offset=0&category__identifier__in=boundaries&category__identifier__in=planningCadastre" data-toggle="tooltip" data-placement="auto"
+  						title="Political and administrative boundaries. Land use maps, zoning maps, cadastral surveys, land ownership.">
+  						<div class="category">
+  							<i class="fa fa-flag fa-4x"></i>
+  							<h4>Boundaries</h4>
+  						</div>
+  					</a>
+  				</div>
+  				<div class="col-xs-4 col-sm-2">
+  					<a href="/search/?limit=100&offset=0&category__identifier__in=structure&category__identifier__in=intelligenceMilitary&category__identifier__in=utilitiesCommunication" data-toggle="tooltip" data-placement="auto"
+  						title="Buildings, museums, churches, factories, housing, monuments, shops, towers. Energy, water and waste systems and communications infrastructure and services. Military bases, structures, activities." >
+  						<div class="category">
+  							<i class="fa fa-home fa-4x"></i>
+  							<h4>Buildings</h4>
+  						</div>
+  					</a>
+  				</div>
+  				<div class="col-xs-4 col-sm-2">
+  					<a href="/search/?limit=100&offset=0&category__identifier__in=climatologyMeteorologyAtmosphere" data-toggle="tooltip" data-placement="auto"
+  						title="Cloud cover, weather, climate, atmospheric conditions, climate change, precipitation" >
+  						<div class="category">
+  							<i class="fa fa-umbrella fa-4x"></i>
+  							<h4>Climate</h4>
+  						</div>
+  					</a>
+  				</div>
+  				<div class="col-xs-4 col-sm-2">
+  					<a href="/search/?limit=100&offset=0&category__identifier__in=elevation" data-toggle="tooltip" data-placement="auto"
+  						title="Altitude, bathymetry, digital elevation models, slope, derived products" >
+  						<div class="category">
+  							<i class="fa fa-level-up fa-4x"></i>
+  							<h4>Elevation</h4>
+  						</div>
+  					</a>
+  				</div>
+  				<div class="col-xs-4 col-sm-2">
+  					<a href="/search/?limit=100&offset=0&category__identifier__in=geoscientificInformation" data-toggle="tooltip" data-placement="auto"
+  						title="Geophysical features and processes, geology, minerals, sciences dealing with the composition, structure and origin of the earth s rocks, risks of earthquakes, volcanic activity, landslides, gravity information, soils, permafrost, hydrogeology, erosion." >
+  						<div class="category">
+  							<i class="fa fa-globe fa-4x"></i>
+  							<h4>Geology</h4>
+  						</div>
+  					</a>
+  				</div>
+  				<div class="col-xs-4 col-sm-2">
+  					<a href="/search/?limit=100&offset=0&category__identifier__in=health" data-toggle="tooltip" data-placement="auto"
+  						title="Health, health services, human ecology, and safety." >
+  						<div class="category">
+  							<i class="fa fa-medkit fa-4x"></i>
+  							<h4>Health</h4>
+  						</div>
+  					</a>
+  				</div>
+  				<div class="col-xs-4 col-sm-2">
+  					<a href="/search/?limit=100&offset=0&category__identifier__in=imageryBaseMapsEarthCover" data-toggle="tooltip" data-placement="auto"
+  						title="Land cover, topographic maps, imagery, unclassified images, annotations." >
+  						<div class="category">
+  							<i class="fa fa-tree fa-4x"></i>
+  							<h4>Land Cover</h4>
+  						</div>
+  					</a>
+  				</div>
+  				<div class="col-xs-4 col-sm-2">
+  					<a href="/search/?limit=100&offset=0&category__identifier__in=biota&category__identifier__in=farming&category__identifier__in=environment" data-toggle="tooltip" data-placement="auto"
+  						title="Wildlife, vegetation, biological sciences, ecology, wilderness, sealife, wetlands, habitat. Environmental resources, protection and conservation. Agriculture, irrigation, aquaculture, plantations, herding, pests and diseases affecting crops and livestock" >
+  						<div class="category">
+  							<i class="fa fa-leaf fa-4x"></i>
+  							<h4>Nature</h4>
+  						</div>
+  					</a>
+  				</div>
+  				<div class="col-xs-4 col-sm-2">
+  					<a href="/search/?limit=100&offset=0&category__identifier__in=location" data-toggle="tooltip" data-placement="auto"
+  						title="Addresses, geodetic networks, control points, postal zones and services, place names" >
+  						<div class="category">
+  							<i class="fa fa-map-marker fa-4x"></i>
+  							<h4>Places</h4>
+  						</div>
+  					</a>
+  				</div>
+  				<div class="col-xs-4 col-sm-2">
+  					<a href="/search/?limit=100&offset=0&category__identifier__in=economy&category__identifier__in=society" data-toggle="tooltip" data-placement="auto"
+  						title="Settlements, anthropology, archaeology, education, traditional beliefs, demographic data, crime and justice, census information. Economic activities, conditions and employment." >
+  						<div class="category">
+  							<i class="fa fa-male fa-4x"></i>
+  							<h4>Population</h4>
+  						</div>
+  					</a>
+  				</div>
+  				<div class="col-xs-4 col-sm-2">
+  					<a href="/search/?limit=100&offset=0&category__identifier__in=transportation" data-toggle="tooltip" data-placement="auto"
+  						title="Roads, airports/airstrips, shipping routes, tunnels, nautical charts, vehicle or vessel location, aeronautical charts, railways." >
+  						<div class="category">
+  							<i class="fa fa-road fa-4x"></i>
+  							<h4>Transportation</h4>
+  						</div>
+  					</a>
+  				</div>
+  				<div class="col-xs-4 col-sm-2">
+  					<a href="/search/?limit=100&offset=0&category__identifier__in=inlandWaters&category__identifier__in=oceans" data-toggle="tooltip" data-placement="auto"
+  						title="Rivers and glaciers, salt lakes, water utilization plans, dams, currents, floods. Water quality, hydrographic charts, tides, tidal waves, coastal information, reefs." >
+  						<div class="category">
+  							<i class="fa fa-tint fa-4x"></i>
+  							<h4>Water</h4>
+  						</div>
+  					</a>
+  				</div>
+  			</div>
+  		</div>
+  	</div>
+  </section>
+  {% endblock %}
+
+  {% block showcase %}
+  <section id="showcase">
+    <div class="container">
+      <div class="row">
+        <h2>Featured Datasets</h2>
+        {% verbatim %}
+        <div ng-app="featured">
+          <div ng-repeat="item in featured | limitTo:4">
+            <div class="col-md-3">
+              <a href="{{ item.detail_url }}"><img ng-src="{{ item.thumbnail_url }}" /></a>
+              <h4>{{ item.title | limitTo: 20 }}{{item.title.length > 20 ? '...' : ''}}</h4>
+            </div>
+          </div>
+        </div>
+  		{% endverbatim %}
+      </div>
+      <p><a href="/search/">Explore all datasets</a></p>
+    </div>
+  </section>
+  {% endblock %}
+
+  {% endblock %}
+
+{% endblock %}
+
+{% block extra_script %}
+{{ block.super }}
+{% if DEBUG_STATIC %}
+<script src="{{ STATIC_URL }}lib/js/angular.js"></script>
+{% endif %}
+<script type="text/javascript">
+    FEATURED_URL = '{% url 'api_dispatch_list' api_name='api' resource_name='featured' %}'
+    'use strict';
+    (function(){
+      var module = angular.module('featured', []);
+      module.run(function($http, $rootScope){
+        $http.get(FEATURED_URL).success(function(data){
+          $rootScope.featured = data.objects;
+        });
+      });
+    })();
+</script>
+<script>
+	$('[data-toggle="tooltip"]').tooltip();
+</script>
+{% endblock extra_script %}

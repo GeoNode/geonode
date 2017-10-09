@@ -6,18 +6,27 @@
 {% block head_title %}{% trans "Log out" %}{% endblock %}
 
 {% block body %}
-  <div class="row">
-    <div class="col-md-12">
-      <form method="POST" action="{% url "account_logout" %}" class="form-horizontal">
-        <h2 class="page-title">{% trans "Log out" %}</h2>
-        <fieldset>
-          {% csrf_token %}
-          <p>{% trans "Are you sure you want to log out?" %}</p>
-          <div class="form-actions">
-            <button type="submit" class="btn btn-primary">{% trans "Log out" %}</button>
-          </div>
-        </fieldset>
-      </form>
+<div class="gd-content">
+    <div class="gd-content-heading">
+        <div class="title small-content">
+            {% trans "Log out" %}
+        </div>
+        <div class="hr"></div>
     </div>
-  </div>
+    <div class="gd-content-body top-bottom-margin-20px full-pad-30px">
+      <div class="row">
+        <div class="col-md-12">
+          <form method="POST" action="{% url "account_logout" %}" class="form-horizontal">
+          <fieldset>
+            {% csrf_token %}
+            <div>{% trans "Are you sure you want to log out?" %}</div>
+            <div class="form-actions">
+              <button type="submit" class="btn btn-gd-primary">{% trans "Log out" %}</button>
+            </div>
+          </fieldset>
+        </form>
+        </div>
+      </div>
+    </div>
+</div>
 {% endblock %}

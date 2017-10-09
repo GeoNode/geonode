@@ -1,0 +1,36 @@
+{% load bootstrap_tags %}
+{% load i18n %}
+<div class="modal fade" id="_deney_layer" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog" style="width:500px;">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+          <h4 class="modal-title text-center" id="myModalLabel">{% trans "Deny Layer" %}</h4>
+        </div>
+        <div class="modal-body" style="padding:0px 50px 0px 50px;">
+              <div class="form-group">
+                <h5> Are you sure you want to Deny layer : <a href="{{ resource.detail_url }}/admin">{{ resource.title }}</a> </h5>
+              </div>
+        </div>
+        <div class="alert hidden" id="bulk_perms_message">
+          <p class="message">}</p>
+          <p class="extra_content"></p>
+        </div>
+
+          <form method="post" action="{% url "layer-deny" resource.id %}">
+              {% csrf_token %}
+
+                 <div style="padding:0px 50px 0px 50px;">
+                      {{ deny_form|as_bootstrap }}
+                      <div class="block-separator"></div>
+                  </div>
+              <div class="modal-footer" style="padding:10px 50px 0px 50px;">
+                  <button class="btn btn-default" data-dismiss="modal">{% trans "Cancel" %}</button>
+              <button type="submit" class="btn btn-primary" >{% trans "Yes" %}</button>
+              </div>
+              <div class="block-separator"></div>
+              </form>
+
+      </div>
+    </div>
+</div>

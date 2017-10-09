@@ -1,0 +1,103 @@
+{% extends "site_base.html" %}
+
+{% load i18n %}
+{% block title %} {% trans "Information for Developers" %} — {{ block.super }} {% endblock %}
+
+{% block body_outer %}
+<div class="page-header">
+  <h2>{% trans "Information for Developers" %}</h2>
+</div>
+
+<div class="row">
+  <div class="col-md-8">
+    <p class="lead">{% trans "Useful information for developers interested in GeoNode." %}</p>
+    {% blocktrans %}
+    <p><a href="http://geonode.org/">GeoNode</a> is an open service built on open source software. We encourage you to build new applications using the components and resources it provides. This page is a starting point for developers interesting in taking full advantage of GeoNode. It also includes links to the project's source code so anyone can build and customize their own GeoNode. </p>
+
+    <h3>GeoNode Software</h3>
+
+    <p>All the code that runs GeoNode is open source. The code is available at <a href="http://github.com/GeoNode/geonode">http://github.com/GeoNode/geonode/</a>. The issue tracker for the project is at <a href="http://github.com/GeoNode/geonode/issues">http://github.com/GeoNode/geonode/issues</a>.</p>
+
+    <p>GeoNode is built using several open source projects, each with its own community. If you are interested in contributing new features to the GeoNode, we encourage you to do so by contributing to one of the projects on which it is built:</p>
+    <ul>
+      <li><a href="http://geoext.org">GeoExt</a> - The JavaScript toolkit for rich web mapping applications</li>
+      <li><a href="http://geoserver.org">GeoServer</a> - Standards based server for geospatial information</li>
+      <li><a href="http://geowebcache.org">GeoWebCache</a> - Cache engine for WMS Tiles</li><li><a href="http://openlayers.org">OpenLayers</a> - Pure JavaScript library powering the maps of GeoExt</li>
+      <li><a href="http://pycsw.org">pycsw</a> - CSW, OpenSearch and OAI-PMH metadata catalogue server</li>
+    </ul>
+
+    <h3>What are OGC Services?</h3>
+    <p>The data in this application is served using open standards endorsed by the <a href="http://opengeospatial.org/">Open Geospatial Consortium</a>; in particular, WMS (Web Map Service) is used for accessing maps, WFS (Web Feature Service) is used for accessing vector data, and WCS (Web Coverage Service) is used for accessing raster data.  WMC (Web Map Context Documents) is used for sharing maps. You can use these services in your own applications using libraries such as OpenLayers, GeoTools, and OGR (all of which are open-source software and available at zero cost).</p>
+
+    <h3>What is GeoWebCache?</h3>
+    <p>GeoWebCache provides mapping tiles that are compatible with a number of mapping engines, including Google Maps, Bing Maps and OpenLayers. All the data hosted by GeoNode is also available through GeoWebCache. GeoWebCache improves on WMS by caching data and providing more responsive maps.</p>
+
+    <h3>CSW Example Code</h3>
+    <p>To interact with GeoNode's CSW you can use any CSW client (QGIS MetaSearch, GRASS, etc.).  The following example illustrates a simple invocation using the OWSLib Python package:</p>
+    <p><code>from owslib.csw import CatalogueServiceWeb</code></p>
+    <p><code>from owslib.fes import PropertyIsLike</code></p>
+    <p><code>csw = CatalogueServiceWeb('{{ CATALOGUE_BASE_URL }}')</code></p>
+    <p><code>anytext = PropertyIsLike('csw:AnyText', 'birds')')</code></p>
+    <p><code>csw.getrecords2(constraints=[anytext])</code></p>
+    <p><code>print csw.results</code></p>
+    <p><code>print csw.records</code></p>
+
+    <h3>OpenLayers Example Code</h3>
+
+    <p>To include a GeoNode map layer in an OpenLayers map, first find the name for that layer. This is found in the layer's <code>name</code> field (not <code>title</code>) of the layer list. For this example, we will use the Nicaraguan political boundaries background layer, whose name is <code>risk:nicaragua_admin</code>. Then, create an instance of OpenLayers.Layer.WMS:</p>
+    <p><code>var geonodeLayer = new OpenLayers.Layer.WMS("GeoNode Risk Data", "http://demo.geonode.org/geoserver/wms",{ layers: "risk:nicaragua_admin" });</code></p>
+
+    <h3>Google Maps Example Code</h3>
+    <p>To include a GeoNode map layer in a Google Map, include the layer namein the URL template.</p>
+    <p><code>var tilelayer =  new GTileLayer(null, null, null, {tileUrlTemplate: 'http://demo.geonode.org/geoserver/gwc/service/gmaps?layers=risk:nicaragua_admin&#38;zoom={Z}&#38;x={X}&#38;y={Y}', isPng:true, opacity:0.5 } );</code></p>
+
+    <h3>Shapefile/GeoJSON/GML Output</h3>
+    <p>To get data from the GeoNode web services use the WFS protocol. For example, to get the full Nicaraguan admin boundaries use:</p>
+    <p><code>http://demo.geonode.org/geoserver/wfs?request=GetFeature&#38;typeName=risk:nicaragua_admin&#38;outputformat=SHAPE-ZIP</code></p>
+    <p>Changing output format to <code>json</code>, <code>GML2</code>, <code>GML3</code>, or <code>csv</code> will get data in those formats. The WFS protocol also can handle more precise queries, specifying a bounding box or various spatial and non-spatial filters based on the attributes of the data.</p>
+
+    <h3>GeoTools Example Code</h3>
+    <p>Create a DataStore and extract a FeatureType from it, then run a Query. It is all documented on the wiki at <code>http://geotools.org/</code>.</p>
+    {% endblocktrans %}
+  </div>
+
+  <div class="col-md-4">
+    <h3>{% trans "GeoNode's Web Services" %}</h3>
+    <p>{% trans "GeoNode's Web Services are available from the following URLs:" %}</p>
+    <table class="table table-striped table-condensed">
+      <tr>
+        <td><strong>{% trans "Dynamic tiles via WMS:" %}</strong></td>
+        <td><a href="{{GEOSERVER_BASE_URL}}ows?service=WMS&version=1.1.1&request=GetCapabilities">WMS 1.1.1</a></td>
+      </tr>
+      <tr>
+        <td><strong>{% trans "Vector data via WFS:" %}</strong></td>
+        <td><a href="{{GEOSERVER_BASE_URL}}ows?service=WFS&version=1.1.0&request=GetCapabilities">WFS 1.1.0</a></td>
+      </tr>
+      <tr>
+        <td><strong>{% trans "Raster data via WCS:" %}</strong></td>
+        <td><a href="{{GEOSERVER_BASE_URL}}ows?service=WCS&version=1.1.1&request=GetCapabilities">WCS 1.1.1</a></td>
+      </tr>
+      <tr>
+        <td><strong>{% trans "Metadata search via CSW:" %}</strong></td>
+        <td><a href="{{CATALOGUE_BASE_URL}}?service=CSW&version=2.0.2&request=GetCapabilities">CSW 2.0.2</a></td>
+      </tr>
+      <tr>
+        <td><strong>{% trans "Metadata search via OpenSearch:" %}</strong></td>
+        <td><a href="{{CATALOGUE_BASE_URL}}?mode=opensearch&service=CSW&version=2.0.2&request=GetCapabilities">OpenSearch 1.0</a></td>
+      </tr>
+      <tr>
+        <td><strong>{% trans "Metadata search via OAI-PMH:" %}</strong></td>
+        <td><a href="{{CATALOGUE_BASE_URL}}?mode=oaipmh&verb=Identify">OAI-PMH 2.0</a></td>
+      </tr>
+      <tr>
+        <td><strong>{% trans "Open Data:" %}</strong></td>
+        <td><a href="{{SITEURL}}/data.json">data.json</a></td>
+      </tr>
+      <tr>
+        <td><strong>{% trans "Cached tiles via WMTS:" %}</strong></td>
+        <td><a href="{{GEOSERVER_BASE_URL}}gwc/service/wmts?service=WMTS&version=1.0.0&request=GetCapabilities">WMTS 1.0.0</a></td>
+      </tr>
+    </table>
+  </div>
+</div>
+{% endblock %}

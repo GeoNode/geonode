@@ -1,0 +1,334 @@
+{% load i18n %}
+<script type="text/javascript">
+
+  function permissionsString(form, type) {
+    var permissions = {
+      'users': {},
+      'groups': {}
+    }
+    if (typeof form === 'string'){
+      form = $(form);
+    }
+    var data = form.serializeObject();   
+
+    /*
+    * If there's the anonymous user then set it's view permission and pop it
+    */
+    permissions['users']['AnonymousUser'] = [];
+    if (data.hasOwnProperty('view_anonymous')) {
+      permissions['users']['AnonymousUser'] = ['view_resourcebase'];
+      delete data['view_anonymous'];
+    }
+    if (data.hasOwnProperty('download_anonymous')) {
+      if (permissions['users']['AnonymousUser'] != undefined){
+        permissions['users']['AnonymousUser'].push('download_resourcebase');
+      } else {
+        permissions['users']['AnonymousUser'] = ['download_resourcebase'];
+      };
+      delete data['download_anonymous'];
+    }
+
+    /*
+    * Cycle through permissions to map the form structure perm = ['user1',',user2'] to
+    * the geonode user = ['perm1','perm2'], the same for groups
+    */
+    
+    for(var perm in data){
+      if(data[perm][0] !== ''){
+        var perms_to_assign = [perm];
+        if(perm=='manage_resourcebase'){
+          perms_to_assign = ['change_resourcebase', 'delete_resourcebase', 'change_resourcebase_permissions', 'publish_resourcebase'];
+        }
+        for (var i=0;i<data[perm][0].split(',').length;i++){
+          var user = data[perm][0].split(',')[i];
+          for(var j=0;j< perms_to_assign.length;j++){
+            if(permissions['users'].hasOwnProperty(user)){
+              permissions['users'][user].push(perms_to_assign[j]);
+            }else{
+              permissions['users'][user] = [perms_to_assign[j]];
+            }
+          }
+        }
+      }
+      if(data[perm][1] !== ''){
+        var perms_to_assign = [perm];
+        if(perm=='manage_resourcebase'){
+          perms_to_assign = ['change_resourcebase', 'delete_resourcebase', 'change_resourcebase_permissions', 'publish_resourcebase'];
+        }
+        for (var i=0;i<data[perm][1].split(',').length;i++){
+          var group = data[perm][1].split(',')[i];
+          for(var j=0;j< perms_to_assign.length;j++){
+            if(permissions['groups'].hasOwnProperty(group)){
+              permissions['groups'][group].push(perms_to_assign[j]);
+            }else{
+              permissions['groups'][group] = [perms_to_assign[j]];
+            }
+          }
+        }
+      }
+    }
+    return permissions
+  };
+
+  $(function() {
+
+    $('#permissions-body').ready(function(){
+      {% if resource %}
+      $.ajax(
+        "{% url "resource_permissions" resource.id %}",
+        {
+          success: function(data){
+            var users = {
+              view_resourcebase: [],
+              download_resourcebase: [],
+              change_resourcebase_metadata: [],
+              change_layer_data: [],
+              change_layer_style: [],
+              manage_resourcebase: [],
+            };
+
+            // let's initialize the anyone flags to false, if there's the AnonymousUser
+            // they will be chacked later
+            $('#perms_view_anyone').prop('checked', false);
+            $('#perms_download_resourcebase_anyone').prop('checked', false);
+
+            /*
+            * Compile the users fields after receiving the current permissions status from the server
+            */
+            var perms = $.parseJSON($.parseJSON(data).permissions);
+
+            var perms_users = perms.users;
+
+            /*
+            * If there is the group anonymous then treas it as it is the AnonymousUser
+            * since the server doesn't explicitly send the users that belongs to a group with permissions
+            */
+            if (perms.groups.hasOwnProperty('anonymous')){
+              perms_users.AnonymousUser = perms.groups.anonymous;
+            }
+
+            for (var user in perms_users){
+              var user_perms = perms_users[user];
+              if (user === 'AnonymousUser'){
+                if(user_perms.indexOf('view_resourcebase') > -1){
+                  $('#perms_view_anyone').prop('checked', true);
+                }
+                if(user_perms.indexOf('download_resourcebase') > -1){
+                  $('#perms_download_resourcebase_anyone').prop('checked', true);
+                }
+              }else{
+                for (var i=0;i<user_perms.length;i++){
+                  if(['change_resourcebase', 'delete_resourcebase', 'change_resourcebase_permissions', 'publish_resourcebase'].indexOf(user_perms[i]) >= 0){
+                    if(users['manage_resourcebase'].indexOf(user)<0){
+                      users['manage_resourcebase'].push(user);
+                    }
+                  }else{
+                    if(users.hasOwnProperty(user_perms[i])){
+                      users[user_perms[i]].push(user);
+                    }
+                  }
+                }
+              }          
+            }
+            
+            // If "anyone" is checked then don't show all the users in the view perms field
+            // if (perms_users.hasOwnProperty('AnonymousUser') 
+            //   && perms_users['AnonymousUser'].indexOf('view_resourcebase') > -1){
+            //   users.view_resourcebase=[]
+            // };
+            
+            // if (perms_users.hasOwnProperty('AnonymousUser') 
+            //   && perms_users['AnonymousUser'].indexOf('download_resourcebase') > -1){
+            //   users.download_resourcebase=[]
+            // };
+
+            for (var perm in users){
+              if(['change_resourcebase', 'delete_resourcebase', 'change_resourcebase_permissions', 'publish_resourcebase'].indexOf(user_perms[i]) >= 0){
+                if(users['manage_resourcebase'].indexOf(user)<0){
+                  users['manage_resourcebase'].push(user);
+                }
+              }else{
+                if(users.hasOwnProperty(user_perms[i])){
+                  users[user_perms[i]].push(user);
+                }
+              }
+              $('#' + perm + '_users').val(users[perm].join());
+            }
+            addSelectUsers();
+
+            /*
+            * Compile the groups fields after receiving the current permissions status from the server
+            */
+            var groups = {
+              view_resourcebase: [],
+              download_resourcebase: [],
+              change_resourcebase_metadata: [],
+              change_layer_data: [],
+              change_layer_style: [],
+              manage_resourcebase: []
+            };
+            var perms_groups = perms.groups;
+            for (var group in perms_groups){
+              if (group !== 'anonymous'){
+                var group_perms = perms_groups[group];
+                for (var i=0;i<group_perms.length;i++){
+                  if(['change_resourcebase', 'delete_resourcebase', 'change_resourcebase_permissions', 'publish_resourcebase'].indexOf(group_perms[i]) >= 0){
+                    if(groups['manage_resourcebase'].indexOf(group)<0){
+                      groups['manage_resourcebase'].push(group);
+                    }
+                  }else{
+                    if(groups.hasOwnProperty(group_perms[i])){
+                      groups[group_perms[i]].push(group);
+                    }
+                  }
+                }
+              }
+            }
+            for (var perm in groups){
+              $('#' + perm + '_groups').val(groups[perm].join());
+            }
+            
+            addSelectGroups();
+
+          }
+        }
+      );
+      {% else %}
+      addSelectUsers();
+      addSelectGroups();
+      {% endif %}
+    });
+    
+    function addSelectUsers(){
+      $("input.user-select").select2({
+        placeholder: '{% trans "Choose users..." %}',
+        minimumInputLength: 1,
+        multiple: true,
+        width: 'copy',
+        ajax: {
+          url: "{% url "account_ajax_lookup" %}",
+          dataType: "json",
+          type: "POST",
+          data: function (term, page) {
+            return {
+              query: term,
+            };
+          },
+          results: function (data, page) {
+            return {results: data.users};
+          }
+        },
+        id: userID,
+        formatResult: userFormatResult,
+        formatSelection: userFormatSelection,
+        initSelection: function(element, callback) {
+          var data = [];
+          var val = element.val().split(",");
+          $(element.val().split(",")).each(function (index,value) {
+              data.push({username: value});
+          });
+          callback(data);
+        }
+      });
+    }
+
+    function addSelectGroups(){
+      $("input.group-select").select2({
+        placeholder: '{% trans "Choose groups..." %}',
+        minimumInputLength: 1,
+        multiple: true,
+        width: 'copy',
+        ajax: {
+          url: "{% url "account_ajax_lookup" %}",
+          dataType: "json",
+          type: "POST",
+          data: function (term, page) {
+            return {
+              query: term,
+            };
+          },
+          results: function (data, page) {
+            return {results: data.groups};
+          }
+        },
+        id: groupID,
+        formatResult: groupFormatResult,
+        formatSelection: groupFormatSelection,
+        initSelection: function(element, callback) {
+          var data = [];
+          var val = element.val().split(",");
+          $(element.val().split(",")).each(function (index,value) {
+              data.push({name: value});
+          });
+          callback(data);
+        }
+      });
+    }
+    
+    function userID(user) {
+      return user.username;
+    }
+
+    function groupID(group) {
+      return group.name;
+    }
+
+    function userFormatResult(user) {
+      return user.username;
+    }
+
+    function userFormatSelection(user) {
+        return user.username;
+    }
+
+    function groupFormatResult(group) {
+      return group.title;
+    }
+
+    function groupFormatSelection(group) {
+        return group.name;
+    }
+
+
+    var perms_submit = function() {
+      var form = $(this);
+      var action = form.attr("action");
+
+      var permissions = permissionsString(form, 'base');
+      $.ajax(
+        {
+          type: "POST",
+          url: action,
+          data: JSON.stringify(permissions),
+          success: function(data) {
+            $("#modal_perms").modal("hide");
+            message = JSON.parse(data);
+            title = "";
+            body = message.message;
+            if (message.success) {
+                title = "OK";
+            } else {
+                title = "Warning";
+            }
+            $("#_permissions_feedbacks").find('.modal-title').text(title);
+            $("#_permissions_feedbacks").find('.modal-body').text(body);
+            $("#_permissions_feedbacks").modal("show");
+          }
+        }
+      );
+      return false;
+    };
+
+    $("#perms_submit").click(function(){
+        $("#permission_form").submit();
+    });
+
+    {% if resource %}
+    $("#permission_form").submit(perms_submit);
+    {% endif %}
+    
+    $("#_bulk_permissions").on('hidden.bs.modal', function (e) {
+      $('#bulk_perms_message').addClass("hidden");
+    });
+  });
+</script>

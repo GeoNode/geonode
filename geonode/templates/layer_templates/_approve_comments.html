@@ -1,0 +1,20 @@
+{% load i18n %}
+
+<div class="modal fade" id="_approve_comments" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog" style="width:500px;">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+          <h4 class="modal-title text-center" id="myModalLabel">{% trans "Approve Comment" %}</h4>
+        </div>
+        <div class="modal-body" style="padding:10px 50px 0px 50px;">
+             <h1> {{ approve_comment }}</h1>
+        </div>
+        <div class="alert hidden" id="bulk_perms_message">
+          <p class="message">}</p>
+          <p class="extra_content"></p>
+        </div>
+      </div>
+    </div>
+
+</div>

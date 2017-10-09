@@ -1,0 +1,18 @@
+{% load friendly_loader %}
+{% friendly_load relationship_tags %}
+
+{% if_relationship request.user profile.user "following" %}
+    {# they are following them, so show a "remove" url #}
+    <a href="{{ profile.user|remove_relationship_url:"following" }}" class="btn btn-mini" type="button">{% trans "Unfollow" %}</a>
+{% else %}
+    {# they are not following them, so show a link to start following #}
+    <a href="{{ profile.user|add_relationship_url:"following" }}" class="btn btn-mini" type="button">{% trans "Follow" %}</a>
+{% endif_relationship %}
+
+{% if_relationship request.user profile.user "blocking" %}
+    {# they are blocking them, so show a "remove" url #}
+    <a href="{{ profile.user|remove_relationship_url:"blocking" }}" class="btn btn-mini" type="button">{% trans "Unblock" %}</a>
+{% else %}
+    {# they are not blocking them, so show a link to start blocking #}
+    <a href="{{ profile.user|add_relationship_url:"blocking" }}" class="btn btn-mini" type="button">{% trans "Block" %}</a>
+{% endif_relationship %}

@@ -1,0 +1,17 @@
+{% extends "site_base.html" %}
+{% load i18n %}
+
+{% block title %} {% blocktrans %}Announcements : {{ announcement }}{% endblocktrans %} {{ block.super }} {% endblock %}
+
+{% block body %}
+<div class="page-header">
+  <h2>{{ announcement.title }} ({{ announcement.level_label }})</h2>
+</div>
+<p>{{ announcement.creation_date }}</p>
+<div class="col-md-10">
+  <blockquote>
+    <p>{{ announcement.content }}</p>
+    <small>{{ announcement.creator }}</small>
+  </blockquote>
+</div>
+{% endblock %}

@@ -1,0 +1,18 @@
+{% load i18n %}
+{% load base_tags %}
+<nav class="filter">
+
+    <h4><a href="#" class="toggle toggle-nav"><i class="fa fa-chevron-right"></i>{% trans "Regions" %}</a></h4>
+    <ul class="nav closed" id="regions">
+        <li>
+            <div class="input-group">
+            <input name="region_search_input" id="region_search_input" type="text"
+                   placeholder="Search by region" class="form-control">
+            <span class="input-group-btn">
+                <button class="btn btn-primary" type="submit" id="region_search_btn"><i class="fa fa-search"></i></button>
+            </span>
+            </div>
+        </li>
+    </ul>
+
+</nav>

@@ -1,0 +1,102 @@
+{% load i18n %}
+{% load base_tags %}
+<div class="gd-apply-filters" ng-show="GD_APPLY_FILTERS.APPLY_FILTER_ENABLE">
+    <form>
+        <div class="row">
+            <div class="col-md-8">
+                <label for="AppliedFilters">APPLIED FILTERS</label>
+            </div>
+            <div class="col-md-4 gd-txt-right">
+                <label for="ClearAll">
+                    CLEAR ALL
+                    <a href="." class="glyphicon glyphicon-remove filters_normal"></a>
+                </label>
+            </div>
+        </div>
+        <div class="row">
+            {% if SEARCH_FILTERS.TEXT_ENABLED %}
+                <div class="col-md-6" ng-show="GD_APPLY_FILTERS.textQuery">
+                    <label for="Category">{% trans "Text" %}:</label>
+                    {% verbatim %}
+                    <label class="filters_normal" title="{{ GD_APPLY_FILTERS.text_query }}">
+                        {{ GD_APPLY_FILTERS.text_query | limitTo: 35 }}
+                        {{ GD_APPLY_FILTERS.text_query > 35 ? '...' : ''}}
+                        <a href="javascript:;" ng-click="removeTextQuery()"
+                           class="glyphicon glyphicon-remove"></a>
+                    </label>
+                    {% endverbatim %}
+                </div>
+            {% endif %}
+            {% if SEARCH_FILTERS.TEXT_ENABLED %}
+                 <div class="col-md-6" ng-show="GD_APPLY_FILTERS.dateRange">
+                    <label for="Category">{% trans "Date" %}:</label>
+                    <div class="row">
+                        <article>
+                            {% verbatim %}
+                                <div class="col-md-6" ng-show="GD_APPLY_FILTERS.date__gte != ''">
+                                    <label class="filters_normal" title="{{ GD_APPLY_FILTERS.date__gte }}">
+                                        Date ends before: {{ GD_APPLY_FILTERS.date__gte }}
+                                        <a href="javascript:;" class="glyphicon glyphicon-remove"></a>
+                                    </label>
+                                </div>
+                                <div class="col-md-6" ng-show="GD_APPLY_FILTERS.date__lte != ''">
+                                    <label class="filters_normal" title="{{ GD_APPLY_FILTERS.date__lte }}">
+                                        Date begins after: {{ GD_APPLY_FILTERS.date__lte }}
+                                        <a href="javascript:;" class="glyphicon glyphicon-remove"></a>
+                                    </label>
+                                </div>
+                            {% endverbatim %}
+                        </article>
+                    </div>
+                </div>
+            {% endif %}
+        </div>
+        <div class="row">
+            {% if SEARCH_FILTERS.CATEGORIES_ENABLED %}
+                <div class="col-md-6" ng-show="GD_APPLY_FILTERS.categoryEnable">
+                    <label for="Category">{% trans "Categories" %}:</label>
+                    <div class="row">
+                        <article>
+                            {% verbatim %}
+                            <div id="remove-category-{{ category.identifier }}"
+                                 ng-repeat="category in GD_APPLY_FILTERS.category_items" class="col-md-4">
+                                <label for="category" class="filters_normal" title="{{ category.gn_description }}">
+                                    {{ category.gn_description | limitTo: 15 }}
+                                    {{ category.gn_description.length > 15 ? '...' : ''}}
+                                    <a do-remove="true" remove-id="remove-category-{{ category.identifier }}"
+                                       unselect-id="unselect-category-{{ category.identifier }}"
+                                       href="javascript:;" ng-click="multiple_choice_listener($event)"
+                                       data-value="{{ category.identifier }}" data-filter="category__identifier__in"
+                                       class="active glyphicon glyphicon-remove"></a>
+                                </label>
+                            </div>
+                            {% endverbatim %}
+                        </article>
+                    </div>
+                </div>
+            {% endif %}
+            {% if SEARCH_FILTERS.KEYWORDS_ENABLED %}
+                <div class="col-md-6" ng-show="GD_APPLY_FILTERS.keywordsEnable">
+                    <label for="Category">{% trans "Keywords" %}:</label>
+                    <div class="row">
+                        <article>
+                            {% verbatim %}
+                            <div id="remove-keyword-{{ keyword.slug }}"
+                                 ng-repeat="keyword in GD_APPLY_FILTERS.keyword_items" class="col-md-4" >
+                                <label class="filters_normal" title="{{ keyword.name }}">
+                                    {{ keyword.name }}
+                                    <a do-remove="true" remove-id="remove-keyword-{{ keyword.slug }}"
+                                       unselect-id="unselect-keyword-{{ keyword.slug }}"
+                                       href="javascript:;" ng-click="multiple_choice_listener($event)"
+                                       data-value="{{ keyword.slug }}" data-filter="keywords__slug__in"
+                                       class="active glyphicon glyphicon-remove"></a>
+                                </label>
+                            </div>
+                            {% endverbatim %}
+                        </article>
+                    </div>
+                </div>
+            {% endif %}
+        </div>
+    </form>
+</div>
