@@ -310,7 +310,7 @@ class ResourceBaseForm(TranslationModelForm):
         "icon_attrs": {"class": "fa fa-calendar"},
         "attrs": {"class": "form-control input-sm"},
         # "format": "%Y-%m-%d %I:%M %p",
-        "format": "%Y-%m-%d %H:%M",
+        "format": "%Y-%m-%d %H:%M %p",
         # Options for the datetimepickers are not set here on purpose.
         # They are set in the metadata_form_js.html template because
         # bootstrap-datetimepicker uses jquery for its initialization

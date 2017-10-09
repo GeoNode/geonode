@@ -562,15 +562,7 @@ span.grippy::after {
                         </div>
                         <div>
                             <span><label for="{{ layer_form.is_published|id }}">{{ layer_form.is_published.label }}</label></span>
-                            {% if ADMIN_MODERATE_UPLOADS %}
-                                {% if not request.user.is_superuser and not request.user.is_staff %}
-                                    <input readonly="true" disabled="disabled" data-html="true" data-placement="right" id="id_resource-is_published" name="resource-is_published" type="checkbox">
-                                {% else %}
-                                    {{ layer_form.is_published }}
-                                {% endif %}
-                            {% else %}
-                                {{ layer_form.is_published }}
-                            {% endif %}
+                            {{ layer_form.is_published }}
                         </div>
                         <div>
                             <span><label for="{{ layer_form.featured|id }}">{{ layer_form.featured.label }}</label></span>
