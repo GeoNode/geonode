@@ -421,6 +421,18 @@ class Attribute(models.Model):
         default=True)
     display_order = models.IntegerField(_('display order'), help_text=_(
         'specifies the order in which attribute should be displayed in identify results'), default=1)
+    
+    searchable = models.BooleanField(
+        _('Searchable?'),
+        default=False)
+    created_dttm = models.DateTimeField(
+        auto_now_add=True)
+    date_format = models.CharField(
+        _('Date Format'),
+        max_length=255,
+        blank=True,
+        null=True)
+    last_modified = models.DateTimeField(auto_now=True)
 
     # statistical derivations
     count = models.IntegerField(
