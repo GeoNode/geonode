@@ -69,7 +69,7 @@ class BaseProbe(object):
 
         return {'all': m(vm.total),
                 'usage': m(vm.used),
-                'free': m(vm.free),
+                'free': m(vm.available),
                 'percent': (vm.used/(vm.total * 100.0))
                 }
 

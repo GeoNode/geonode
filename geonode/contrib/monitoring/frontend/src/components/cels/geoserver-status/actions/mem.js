@@ -37,7 +37,7 @@ const fail = createAction(
 const get = (host, interval) =>
   (dispatch) => {
     dispatch(begin());
-    let url = `${apiUrl}/metric_data/mem.usage/?service=${host}`;
+    let url = `${apiUrl}/metric_data/mem.free/?service=${host}`;
     url += `&last=${interval}&interval=${interval}`;
     fetch({ url })
       .then(response => {

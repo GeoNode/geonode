@@ -71,6 +71,7 @@ class Command(BaseCommand):
             print('available services')
             for s in services:
                 print('  ', s.name, '(', s.url, ')')
+                print('   type', s.service_type.name)
                 print('   running on', s.host.name, s.host.ip)
                 print('   active:', s.active)
                 if s.last_check:
