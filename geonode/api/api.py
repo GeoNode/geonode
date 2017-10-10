@@ -71,7 +71,7 @@ class CountJSONSerializer(Serializer):
                 'base.view_resourcebase'
             )
         if settings.RESOURCE_PUBLISHING:
-            resources = resources.filter(is_published=True)
+            resources = resources.filter(Q(is_published=True) | Q(owner__username__iexact=str(options['user'])))
 
         if options['title_filter']:
             resources = resources.filter(title__icontains=options['title_filter'])
@@ -247,10 +247,10 @@ class TopicCategoryResource(TypeFilteredResource):
             # Get the list of objects the user has access to
             if settings.ADMIN_MODERATE_UPLOADS:
                 if not is_admin and not is_staff:
-                    filter_set = filter_set.filter(is_published=True)
+                    filter_set = filter_set.filter(Q(is_published=True) | Q(owner__username__iexact=str(request.user)))
 
             if settings.RESOURCE_PUBLISHING:
-                filter_set = filter_set.filter(is_published=True)
+                filter_set = filter_set.filter(Q(is_published=True) | Q(owner__username__iexact=str(request.user)))
 
             try:
                 anonymous_group = Group.objects.get(name='anonymous')
@@ -258,20 +258,26 @@ class TopicCategoryResource(TypeFilteredResource):
                 anonymous_group = None
 
             if settings.GROUP_PRIVATE_RESOURCES:
+                public_groups = GroupProfile.objects.exclude(access="private").values('group')
                 if is_admin:
                     filter_set = filter_set
                 elif request.user:
                     groups = request.user.groups.all()
                     if anonymous_group:
                         filter_set = filter_set.filter(
-                            Q(group__isnull=True) | Q(group__in=groups) | Q(group=anonymous_group))
+                            Q(group__isnull=True) | Q(group__in=groups) |
+                            Q(group__in=public_groups) | Q(group=anonymous_group))
                     else:
-                        filter_set = filter_set.filter(Q(group__isnull=True) | Q(group__in=groups))
+                        filter_set = filter_set.filter(
+                            Q(group__isnull=True) |
+                            Q(group__in=public_groups) | Q(group__in=groups))
                 else:
                     if anonymous_group:
-                        filter_set = filter_set.filter(Q(group__isnull=True) | Q(group=anonymous_group))
+                        filter_set = filter_set.filter(
+                            Q(group__isnull=True) | Q(group__in=public_groups) | Q(group=anonymous_group))
                     else:
-                        filter_set = filter_set.filter(Q(group__isnull=True))
+                        filter_set = filter_set.filter(
+                            Q(group__isnull=True) | Q(group__in=public_groups))
 
         return filter_set.distinct().count()
 

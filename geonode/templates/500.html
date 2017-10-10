@@ -4,7 +4,7 @@
   <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1"> 
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>{% block title %}{{ SITE_NAME }}{% endblock %}</title>
     {% block head %}
       {% if DEBUG_STATIC %}
@@ -17,6 +17,7 @@
       <link href="{{ STATIC_URL }}lib/css/assets.min.css" rel="stylesheet"/>
       {% endif %}
       <link href="{{ STATIC_URL }}geonode/css/ext-compatibility.css" rel="stylesheet" />
+      <link href="{{ STATIC_URL }}geonode/css/ux-all.css" rel="stylesheet" />
       <link href="{{ STATIC_URL }}geonode/css/base.css" rel="stylesheet" />
       <style type="text/css">[ng\:cloak],[ng-cloak],[data-ng-cloak],[x-ng-cloak],.ng-cloak,.x-ng-cloak,.ng-hide:not(.ng-hide-animate){display:none !important;}</style>
       {% block extra_head %}
@@ -33,7 +34,7 @@
       </style>
     <![endif]-->
   </head>
-  
+
   <body class="{% block body_class %}{% endblock %}">
 
     {% block header %}
@@ -97,7 +98,7 @@
             {% else %}
             <li>
               <a href="#" data-toggle="modal" data-target="#SigninModal" role="button" >
-                {% trans "Sign in" %} 
+                {% trans "Sign in" %}
               </a>
             </li>
             {% endif %}
@@ -140,7 +141,7 @@
     </div>
     {% endblock middle %}
   </div>
-    
+
     {% block footer %}
     <footer class="footer">
       <div class="container">
@@ -250,7 +251,7 @@
     </div>
     {% endif %}
     <!-- End of Modal -->
-    
+
     {% if DEBUG_STATIC %}
     <script src="{{ STATIC_URL }}lib/js/jquery.min.js"></script>
     <script src="{{ STATIC_URL }}lib/js/jquery.dataTables.js"></script>

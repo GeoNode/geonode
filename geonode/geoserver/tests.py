@@ -114,7 +114,7 @@ class LayerTests(TestCase):
 
         # Test that the method returns 401 because it's not a datastore
         response_json = json.loads(response.content)
-        self.assertEquals(response_json['authorized'], False)
+        self.assertEquals(response_json['authorized'], True)
 
         layer = Layer.objects.all()[0]
         layer.storeType = "dataStore"

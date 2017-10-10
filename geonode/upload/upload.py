@@ -650,12 +650,12 @@ def final_step(upload_session, user):
     style = None
     if sld is not None:
         try:
-            cat.create_style(name, sld)
+            cat.create_style(name, sld, raw=True)
         except geoserver.catalog.ConflictingDataError as e:
             msg = 'There was already a style named %s in GeoServer, try using another name: "%s"' % (
                 name, str(e))
             try:
-                cat.create_style(name + '_layer', sld)
+                cat.create_style(name + '_layer', sld, raw=True)
             except geoserver.catalog.ConflictingDataError as e:
                 msg = 'There was already a style named %s in GeoServer, cannot overwrite: "%s"' % (
                     name, str(e))

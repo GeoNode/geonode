@@ -80,7 +80,7 @@ setup(name='GeoNode',
         "pyflakes<=1.6.0",
         "pep8<=1.7.0",  # python-pep8 (1.7.0)
         "boto<=2.38.0",  # python-boto (2.38.0)
-        "six<1.11.0", # https://github.com/benjaminp/six/issues/210
+        "six<1.11.0",  # https://github.com/benjaminp/six/issues/210
         "diff-match-patch<=20121119",
 
         # Django Apps

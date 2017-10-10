@@ -163,7 +163,7 @@ def _install_data_dir():
             m = re.search('userAuthorizationUri>([^<]+)', xml)
             xml = xml[:m.start(1)] + "http://localhost:8000/o/authorize/" + xml[m.end(1):]
             m = re.search('redirectUri>([^<]+)', xml)
-            xml = xml[:m.start(1)] + "http://localhost:8080/geoserver" + xml[m.end(1):]
+            xml = xml[:m.start(1)] + "http://localhost:8080/geoserver/index.html" + xml[m.end(1):]
             m = re.search('checkTokenEndpointUrl>([^<]+)', xml)
             xml = xml[:m.start(1)] + "http://localhost:8000/api/o/v4/tokeninfo/" + xml[m.end(1):]
             m = re.search('logoutUri>([^<]+)', xml)
@@ -411,13 +411,13 @@ def start_django():
     foreground = '' if options.get('foreground', False) else '&'
     sh('python manage.py runserver %s %s' % (bind, foreground))
 
+
 def start_messaging():
     """
     Start the GeoNode messaging server
     """
     foreground = '' if options.get('foreground', False) else '&'
     sh('python manage.py runmessaging %s' % foreground)
-
 
 
 @cmdopts([
@@ -489,7 +489,7 @@ def start_geoserver(options):
         sh((
             '%(javapath)s -Xms512m -Xmx1024m -server -XX:+UseConcMarkSweepGC -XX:MaxPermSize=256m'
             ' -DGEOSERVER_DATA_DIR=%(data_dir)s'
-            # ' -Dgeofence.dir=%(geofence_dir)s'
+            ' -Dgeofence.dir=%(geofence_dir)s'
             # ' -Dgeofence-ovr=geofence-datasource-ovr.properties'
             # workaround for JAI sealed jar issue and jetty classloader
             # ' -Dorg.eclipse.jetty.server.webapp.parentLoaderPriority=true'

@@ -235,7 +235,7 @@ def fixup_style(cat, resource, style):
             else:
                 sld = style.read()
             logger.info("Creating style [%s]", name)
-            style = cat.create_style(name, sld)
+            style = cat.create_style(name, sld, overwrite=True, raw=True)
             lyr.default_style = cat.get_style(name)
             logger.info("Saving changes to %s", lyr)
             cat.save(lyr)
@@ -1155,7 +1155,9 @@ def geoserver_upload(
                 'successful import to GeoSever', name)
 
     # Verify the resource was created
+    # print("*********************{}******************************".format(gs_resource))
     if gs_resource is not None:
+        # print(" *********************{}/{}*****************".format(gs_resource.name, name))
         assert gs_resource.name == name
     else:
         msg = ('GeoNode encountered problems when creating layer %s.'
@@ -1203,19 +1205,31 @@ def geoserver_upload(
     style = None
     if sld is not None:
         try:
-            cat.create_style(name, sld)
+            style = cat.get_style(name)
+            overwrite = style or False
+            cat.create_style(name, sld, overwrite=overwrite, raw=True)
         except geoserver.catalog.ConflictingDataError as e:
             msg = ('There was already a style named %s in GeoServer, '
                    'try to use: "%s"' % (name + "_layer", str(e)))
             logger.warn(msg)
             e.args = (msg,)
+        except geoserver.catalog.UploadError as e:
+            msg = ('Error while trying to upload style named %s in GeoServer, '
+                   'try to use: "%s"' % (name + "_layer", str(e)))
+            e.args = (msg,)
+            logger.exception(e)
 
         if style is None:
             try:
                 style = cat.get_style(name)
+                overwrite = style or False
+                cat.create_style(name, sld, overwrite=overwrite, raw=True)
             except:
                 try:
-                    cat.create_style(name + '_layer', sld)
+                    style = cat.get_style(name + '_layer')
+                    overwrite = style or False
+                    cat.create_style(name + '_layer', sld, overwrite=overwrite, raw=True)
+                    style = cat.get_style(name + '_layer')
                 except geoserver.catalog.ConflictingDataError as e:
                     msg = ('There was already a style named %s in GeoServer, '
                            'cannot overwrite: "%s"' % (name, str(e)))
@@ -1232,7 +1246,13 @@ def geoserver_upload(
         if style:
             publishing.default_style = style
             logger.info('default style set to %s', name)
-            cat.save(publishing)
+            try:
+                cat.save(publishing)
+            except geoserver.catalog.FailedRequestError as e:
+                msg = ('Error while trying to save resource named %s in GeoServer, '
+                       'try to use: "%s"' % (publishing, str(e)))
+                e.args = (msg,)
+                logger.exception(e)
 
     # Step 10. Create the Django record for the layer
     logger.info('>>> Step 10. Creating Django record for [%s]', name)
