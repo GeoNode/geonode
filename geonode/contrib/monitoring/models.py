@@ -50,6 +50,17 @@ from geonode.utils import parse_datetime
 
 log = logging.getLogger(__name__)
 
+GEOIP_DB = None
+
+
+def get_geoip():
+    # defer init until it's really needed
+    # otherwise, some cli commands may fail (like updating geouip)
+    global GEOIP_DB
+    if GEOIP_DB is None:
+        GEOIP_DB = GeoIP()
+    return GEOIP_DB
+
 
 class Host(models.Model):
     """
@@ -366,7 +377,7 @@ class RequestEvent(models.Model):
                 ip = '127.0.0.1'
             ip = gethostbyname(ip)
 
-            geoip = GeoIP()
+            geoip = get_geoip()
             client_loc = geoip.city(ip)
 
             if client_loc:
@@ -419,7 +430,7 @@ class RequestEvent(models.Model):
         lat = lon = None
         country = region = city = None
         if ip:
-            geoip = GeoIP()
+            geoip = get_geoip()
             client_loc = geoip.city(ip)
             if client_loc:
                 lat, lon = client_loc['latitude'], client_loc['longitude'],
