@@ -369,6 +369,7 @@ INSTALLED_APPS = (
     'polymorphic',
     'guardian',
     'oauth2_provider',
+    'corsheaders',
 ) + GEONODE_APPS
 
 MONITORING_ENABLED = False
@@ -458,6 +459,7 @@ TEMPLATES = [
 ]
 
 MIDDLEWARE_CLASSES = (
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
@@ -483,7 +485,6 @@ MIDDLEWARE_CLASSES = (
     'django.contrib.auth.middleware.SessionAuthenticationMiddleware',
     'oauth2_provider.middleware.OAuth2TokenMiddleware',
 )
-
 
 # Replacement of default authentication backend in order to support
 # permissions per object.

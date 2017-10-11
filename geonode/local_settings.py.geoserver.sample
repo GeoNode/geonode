@@ -248,7 +248,6 @@ LAYER_PREVIEW_LIBRARY = 'geoext'
 #    'RESET_VIEW': False
 #}
 
-    'corsheaders',
 ALT_OSM_BASEMAPS = os.environ.get('ALT_OSM_BASEMAPS', False)
 CARTODB_BASEMAPS = os.environ.get('CARTODB_BASEMAPS', False)
 STAMEN_BASEMAPS = os.environ.get('STAMEN_BASEMAPS', False)
@@ -382,10 +381,6 @@ LOGGING = {
         },
     }
 
-MIDDLEWARE_CLASSES += (
-    'corsheaders.middleware.CorsMiddleware',
-    'django.middleware.common.CommonMiddleware',
-)
 CORS_ORIGIN_ALLOW_ALL = True
 
 GEOIP_PATH = "/usr/local/share/GeoIP"
