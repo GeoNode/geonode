@@ -174,7 +174,6 @@ def layer_upload(request, template='upload/layer_upload.html'):
             else:
                 abstract = "No abstract provided."
 
-
             try:
                 # Moved this inside the try/except block because it can raise
                 # exceptions when unicode characters are present.
