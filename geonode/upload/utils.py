@@ -45,6 +45,8 @@ def create_geoserver_db_featurestore(
             ds = cat.get_store(dsname)
         else:
             return None
+        if ds is None:
+            raise FailedRequestError
     except FailedRequestError:
         if store_type == 'geogig':
             if store_name is None and hasattr(
