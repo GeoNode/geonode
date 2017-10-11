@@ -969,23 +969,22 @@ def _create_db_featurestore(name, data, overwrite=False, charset="UTF-8", worksp
         ds_exists = True
     except FailedRequestError:
         ds = cat.create_datastore(dsname, workspace=workspace)
-
-    db = ogc_server_settings.datastore_db
-    db_engine = 'postgis' if \
-        'postgis' in db['ENGINE'] else db['ENGINE']
-    ds.connection_parameters.update(
-        {'validate connections': 'true',
-         'max connections': '10',
-         'min connections': '1',
-         'fetch size': '1000',
-         'host': db['HOST'],
-         'port': db['PORT'] if isinstance(
-             db['PORT'], basestring) else str(db['PORT']) or '5432',
-         'database': db['NAME'],
-         'user': db['USER'],
-         'passwd': db['PASSWORD'],
-         'dbtype': db_engine}
-    )
+        db = ogc_server_settings.datastore_db
+        db_engine = 'postgis' if \
+            'postgis' in db['ENGINE'] else db['ENGINE']
+        ds.connection_parameters.update(
+            {'validate connections': 'true',
+             'max connections': '10',
+             'min connections': '1',
+             'fetch size': '1000',
+             'host': db['HOST'],
+             'port': db['PORT'] if isinstance(
+                 db['PORT'], basestring) else str(db['PORT']) or '5432',
+             'database': db['NAME'],
+             'user': db['USER'],
+             'passwd': db['PASSWORD'],
+             'dbtype': db_engine}
+        )
 
     if ds_exists:
         ds.save_method = "PUT"
@@ -997,7 +996,8 @@ def _create_db_featurestore(name, data, overwrite=False, charset="UTF-8", worksp
         cat.add_data_to_store(ds, name, data,
                               overwrite=overwrite,
                               charset=charset)
-        return ds, cat.get_resource(name, store=ds, workspace=workspace)
+        resource = cat.get_resource(name, store=ds, workspace=workspace)
+        return ds, resource
     except Exception:
         msg = _("An exception occurred loading data to PostGIS")
         msg += "- %s" % (sys.exc_info()[1])
@@ -1419,7 +1419,7 @@ class OGC_Servers_Handler(object):
         server.setdefault('GEOGIG_DATASTORE_DIR', str())
 
         for option in ['MAPFISH_PRINT_ENABLED', 'PRINT_NG_ENABLED', 'GEONODE_SECURITY_ENABLED',
-                       'BACKEND_WRITE_ENABLED']:
+                       'GEOFENCE_SECURITY_ENABLED', 'BACKEND_WRITE_ENABLED']:
             server.setdefault(option, True)
 
         for option in ['GEOGIG_ENABLED', 'WMST_ENABLED', 'WPS_ENABLED']:

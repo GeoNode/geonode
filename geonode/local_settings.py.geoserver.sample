@@ -91,6 +91,7 @@ OGC_SERVER = {
         'MAPFISH_PRINT_ENABLED': True,
         'PRINT_NG_ENABLED': True,
         'GEONODE_SECURITY_ENABLED': True,
+        'GEOFENCE_SECURITY_ENABLED' : True,
         'GEOGIG_ENABLED': False,
         'WMST_ENABLED': False,
         'BACKEND_WRITE_ENABLED': True,
@@ -247,120 +248,6 @@ LAYER_PREVIEW_LIBRARY = 'geoext'
 #    'RESET_VIEW': False
 #}
 
-GEONODE_APPS = (
-    # GeoNode internal apps
-    'geonode.people',
-    'geonode.base',
-    'geonode.layers',
-    'geonode.maps',
-    'geonode.proxy',
-    'geonode.security',
-    'geonode.social',
-    'geonode.catalogue',
-    'geonode.documents',
-    'geonode.api',
-    'geonode.groups',
-    'geonode.services',
-
-    # QGIS Server Apps
-    # 'geonode_qgis_server',
-
-    # GeoServer Apps
-    # Geoserver needs to come last because
-    # it's signals may rely on other apps' signals.
-    'geonode.geoserver',
-    'geonode.upload',
-    'geonode.tasks',
-
-)
-
-GEONODE_CONTRIB_APPS = (
-    # GeoNode Contrib Apps
-    # 'geonode.contrib.dynamic',
-    # 'geonode.contrib.exif',
-    # 'geonode.contrib.favorite',
-    # 'geonode.contrib.geogig',
-    # 'geonode.contrib.geosites',
-    # 'geonode.contrib.nlp',
-    # 'geonode.contrib.slack',
-    'geonode.contrib.metadataxsl',
-)
-
-GEONODE_APPS = GEONODE_APPS + GEONODE_CONTRIB_APPS
-
-INSTALLED_APPS = (
-
-    'modeltranslation',
-
-    # Boostrap admin theme
-    # 'django_admin_bootstrapped.bootstrap3',
-    # 'django_admin_bootstrapped',
-
-    # Apps bundled with Django
-    'django.contrib.auth',
-    'django.contrib.contenttypes',
-    'django.contrib.sessions',
-    'django.contrib.sites',
-    'django.contrib.admin',
-    'django.contrib.sitemaps',
-    'django.contrib.staticfiles',
-    'django.contrib.messages',
-    'django.contrib.humanize',
-    'django.contrib.gis',
-
-    # Third party apps
-
-    # Utility
-    'pagination',
-    'taggit',
-    'treebeard',
-    'friendlytagloader',
-    'geoexplorer',
-    'leaflet',
-    'django_extensions',
-    #'geonode-client',
-    # 'haystack',
-    'autocomplete_light',
-    'mptt',
-    # 'modeltranslation',
-    # 'djkombu',
-    'djcelery',
-    'kombu.transport.django',
-
-    'storages',
-    'floppyforms',
-
-    # Theme
-    "pinax_theme_bootstrap",
-    'django_forms_bootstrap',
-
-    # Social
-    'account',
-    'avatar',
-    'dialogos',
-    'agon_ratings',
-    'announcements',
-    'actstream',
-    'user_messages',
-    'tastypie',
-    'polymorphic',
-    'guardian',
-    'oauth2_provider',
-    'corsheaders',
-) + GEONODE_APPS
-
-# default map projection
-# Note: If set to EPSG:4326, then only EPSG:4326 basemaps will work.
-DEFAULT_MAP_CRS = "EPSG:900913"
-
-# Where should newly created maps be focused?
-DEFAULT_MAP_CENTER = (0, 0)
-
-# How tightly zoomed should newly created maps be?
-# 0 = entire world;
-# maximum zoom is between 12 and 15 (for Google Maps, coverage varies by area)
-DEFAULT_MAP_ZOOM = 0
-
 ALT_OSM_BASEMAPS = os.environ.get('ALT_OSM_BASEMAPS', False)
 CARTODB_BASEMAPS = os.environ.get('CARTODB_BASEMAPS', False)
 STAMEN_BASEMAPS = os.environ.get('STAMEN_BASEMAPS', False)
@@ -494,11 +381,6 @@ LOGGING = {
         },
     }
 
-FREETEXT_KEYWORDS_READONLY = True
-MIDDLEWARE_CLASSES += (
-    'corsheaders.middleware.CorsMiddleware',
-    'django.middleware.common.CommonMiddleware',
-)
 CORS_ORIGIN_ALLOW_ALL = True
 
 GEOIP_PATH = "/usr/local/share/GeoIP"

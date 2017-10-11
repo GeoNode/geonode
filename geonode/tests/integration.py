@@ -441,10 +441,17 @@ class GeoNodeMapTest(TestCase):
         shp_store = gs_cat.get_store(shp_layer.store, ws)
         shp_store_name = shp_store.name
         shp_layer.delete()
-        # self.assertIsNone(gs_cat.get_resource(shp_layer.name, store=shp_store))
+
+        # Verify that it no longer exists in GeoServer
         self.assertRaises(
             FailedRequestError,
-            lambda: gs_cat.get_store(shp_store_name))
+            lambda: gs_cat.get_resource(
+                shp_layer.name,
+                store=shp_store))
+
+        # Verify that the store was deleted
+        ds = gs_cat.get_store(shp_store_name)
+        self.assertIsNone(ds)
 
         # Test Uploading then Deleting a TIFF file from GeoServer
         tif_file = os.path.join(gisdata.RASTER_DATA, 'test_grid.tif')
@@ -484,11 +491,12 @@ class GeoNodeMapTest(TestCase):
         shp_layer.delete()
 
         # Verify that it no longer exists in GeoServer
-        # self.assertIsNone(gs_cat.get_resource(name, store=shp_store))
-        # self.assertIsNone(gs_cat.get_layer(shp_layer.name))
-        self.assertRaises(
-            FailedRequestError,
-            lambda: gs_cat.get_store(shp_store_name))
+        res = gs_cat.get_layer(shp_layer.name)
+        self.assertIsNone(res)
+
+        # Verify that the store was deleted
+        ds = gs_cat.get_store(shp_store_name)
+        self.assertIsNone(ds)
 
         # Check that it was also deleted from GeoNodes DB
         self.assertRaises(ObjectDoesNotExist,
@@ -540,9 +548,8 @@ class GeoNodeMapTest(TestCase):
                 store=store))
 
         # Verify that the store was deleted
-        self.assertRaises(
-            FailedRequestError,
-            lambda: gs_cat.get_store(store_name))
+        ds = gs_cat.get_store(store_name)
+        self.assertIsNone(ds)
 
         # Clean up by deleting the layer from GeoNode's DB and GeoNetwork
         shp_layer.delete()

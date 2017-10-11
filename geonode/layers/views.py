@@ -168,7 +168,6 @@ def layer_upload(request, template='upload/layer_upload.html'):
                     form.cleaned_data["base_file"].name)
                 title = slugify(name_base.replace(".", "_"))
             name = slugify(name_base.replace(".", "_"))
-            saved_layer = None
 
             if form.cleaned_data["abstract"] is not None and len(form.cleaned_data["abstract"]) > 0:
                 abstract = form.cleaned_data["abstract"]
