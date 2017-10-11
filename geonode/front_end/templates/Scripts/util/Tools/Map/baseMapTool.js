@@ -131,7 +131,7 @@
                         visible: false,
                         extent: reprojection.extent.to3857([-180, -90, 180, 90]),
                         source: new ol.source.ImageStatic({
-                            url: './Content/assets/images/empty.jpg',
+                            url: '/static/Content/assets/images/empty.jpg',
                             imageExtent: reprojection.extent.to3857([-180, -90, 180, 90]),
                             imageSize: [128, 128],
                             attributions: [
