@@ -36,9 +36,7 @@ from django.conf import settings
 from guardian.utils import get_user_obj_perms_model
 from guardian.shortcuts import assign_perm, get_groups_with_perms
 
-
 logger = logging.getLogger("geonode.security.models")
-
 
 ADMIN_PERMISSIONS = [
     'view_resourcebase',
@@ -54,6 +52,12 @@ LAYER_ADMIN_PERMISSIONS = [
     'change_layer_data',
     'change_layer_style'
 ]
+
+ogc_server_settings = settings.OGC_SERVER['default']
+
+GEOFENCE_SECURITY_ENABLED = False
+if 'GEOFENCE_SECURITY_ENABLED' in ogc_server_settings:
+    GEOFENCE_SECURITY_ENABLED = ogc_server_settings['GEOFENCE_SECURITY_ENABLED']
 
 
 def get_users_with_perms(obj):
@@ -267,7 +271,7 @@ def get_geofence_rules_count():
 
 def set_geofence_invalidate_cache():
     """invalidate GeoFence Cache Rules"""
-    if settings.OGC_SERVER['default']['GEOFENCE_SECURITY_ENABLED']:
+    if GEOFENCE_SECURITY_ENABLED:
         try:
             url = settings.OGC_SERVER['default']['LOCATION']
             user = settings.OGC_SERVER['default']['USER']
@@ -290,7 +294,7 @@ def set_geofence_invalidate_cache():
 
 def set_geofence_all(instance):
     """assign access permissions to all users"""
-    if settings.OGC_SERVER['default']['GEOFENCE_SECURITY_ENABLED']:
+    if GEOFENCE_SECURITY_ENABLED:
         resource = instance.get_self_resource()
 
         if hasattr(resource, "layer"):
@@ -356,7 +360,7 @@ def set_geofence_all(instance):
 
 def set_geofence_owner(instance, username, view_perms=False, download_perms=False):
     """assign access permissions to owner user"""
-    if settings.OGC_SERVER['default']['GEOFENCE_SECURITY_ENABLED']:
+    if GEOFENCE_SECURITY_ENABLED:
         resource = instance.get_self_resource()
 
         if hasattr(resource, "layer"):
@@ -469,7 +473,7 @@ def set_geofence_owner(instance, username, view_perms=False, download_perms=Fals
 
 def set_geofence_group(instance, groupname, view_perms=False, download_perms=False):
     """assign access permissions to owner group"""
-    if settings.OGC_SERVER['default']['GEOFENCE_SECURITY_ENABLED']:
+    if GEOFENCE_SECURITY_ENABLED:
         resource = instance.get_self_resource()
 
         if groupname and hasattr(resource, "layer"):
@@ -592,7 +596,7 @@ def remove_object_permissions(instance):
 
     if hasattr(resource, "layer"):
         try:
-            if settings.OGC_SERVER['default']['GEOFENCE_SECURITY_ENABLED']:
+            if GEOFENCE_SECURITY_ENABLED:
                 # Scan GeoFence Rules associated to the Layer
                 """
                 curl -u admin:geoserver

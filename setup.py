@@ -145,7 +145,7 @@ setup(name='GeoNode',
 
         "geonode-arcrest>=10.0",
         "geonode-dialogos>=0.5",
-        "gsconfig<=1.0.6",  # (1.0.3 in ppa) FIXME
+        "gsconfig<2.0.0",  # (1.0.3 in ppa) FIXME
         "gsimporter<=1.0.0",  # (0.1 in ppa) FIXME
         "gisdata>=0.5.4",
 
@@ -200,7 +200,7 @@ setup(name='GeoNode',
         'psutil',
         'django-cors-headers',
         'django-multi-email-field',
-        ],
+      ],
       zip_safe=False,
       dependency_links=[
         'https://github.com/cezio/django-user-accounts/archive/252_255_mixed.zip#egg=django-user-accounts-2.0.2dev'
