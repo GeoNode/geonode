@@ -10,10 +10,10 @@
     })
     .run(['$rootScope', '$window', '$timeout', '$http', 'mapRepository', 'mapService', 'dirtyManager', 'surfToastr', 'urlResolver', 'userProfileService', 'mapAccessLevel', '$modal', 'layerService', 'interactionHandler', 'GeoLocationTool', 'LocationSearchTool', 'ActiveLayerTool', 'AllSelectableLayerTool', 'google', 'SurfMap', 'layerRenderingModeFactory', 'ZoomTrackerTool', 'ZoomToLayerTool', 'BaseMapTool', 'reprojection', 'mapTools', 'mapToolsFactory', 'onZoomHandler', '$cookies',
         function($rootScope, $window, $timeout, $http, mapRepository, mapService, dirtyManager, surfToastr, urlResolver, userProfileService, mapAccessLevel, $modal, layerService, interactionHandler, GeoLocationTool, LocationSearchTool, ActiveLayerTool, AllSelectableLayerTool, google, SurfMap, layerRenderingModeFactory, ZoomTrackerTool, ZoomToLayerTool, BaseMapTool, reprojection, mapTools, mapToolsFactory, onZoomHandler, $cookies) {
-            $window.GeoServerHttp2Root = "https://172.16.0.246:8500/";
-            $window.GeoServerTileRoot = "http://172.16.0.246:8082/api/GeoServerCaching";
+            $window.GeoServerHttp2Root = "http://172.16.0.247:8080/geoserver/";
+            $window.GeoServerTileRoot = "http://172.16.0.247:8080/geoserver/wms";
             console.log($window);
-            // urlResolver.setGeoserverRoot($window.GeoServerHttp2Root, $window.GeoServerTileRoot);
+            urlResolver.setGeoserverRoot($window.GeoServerHttp2Root, $window.GeoServerTileRoot);
             userProfileService.loadData();
             $cookies.put('ASP.NET_SessionId', 'l20edewgv2bqa41dgdwijcuq');
             $cookies.put('shape-maker-uat', '7F496AF1D3F4D37373D6DA951DD7D3797424FFC4480B582CF7879450C6FE952B084F5BE79EABCFA0B38C9F52340F8C1E8F36B92C3DD2BFDC4E7C728167588CD1BF4F075966AF13E7EFF01C177B13D19074408E517BAF9827EAEDE29C5ED8700FED2584EAB2F79CBD81DC8021512BBEC1EC474D5C6ABB44418A42967D2546770E');
@@ -288,10 +288,20 @@ appModule.controller('appController', [
     function($scope, mapService, $modal, $timeout, mapAccessLevel, interactionHandler) {
         $scope.mapService = mapService;
         $scope.mapAccessLevel = mapAccessLevel;
-        $scope.$on('LayerAdded', function(e, layer){
-            console.log(layer);
-            console.log($scope.mapService);
-            $scope.mapService.getMap().addLayer(layer);
+        $scope.$on('LayerAdded', function(e, layer) {
+            // console.log(layer);
+            // console.log($scope.mapService);
+            
+            // var olLayer = new ol.layer.Tile({
+            //     extent: [layer.BoundingBox[1]._minx, layer.BoundingBox[1]._miny, layer.BoundingBox[1]._maxx, layer.BoundingBox[1]._maxy],
+            //     source: new ol.source.TileWMS({
+            //         url: '/proxy/?url=http://172.16.0.247:8080/geoserver/wms',
+            //         params: { 'LAYERS': layer.Name, 'TILED': true },
+            //         serverType: 'geoserver'
+            //     })
+            // });
+            // console.log(olLayer);
+            $scope.mapService.addDataLayer(layer);
         });
         var sidePaneStyles = {
             false: {

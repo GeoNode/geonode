@@ -150,8 +150,9 @@
                 source: new ol.source.TileWMS({
                     url: urlResolver.resolveGeoserverTile(),
                     params: {
-                        LAYERS: surfLayer.DataId,
-                        STYLES: surfLayer.Style.Name,
+                        // LAYERS: surfLayer.DataId,
+                        LAYERS: surfLayer.Name, //new
+                        // STYLES: surfLayer.Style.Name,
                         FORMAT: 'image/png',
                         TRANSPARENT: true
                     }
@@ -165,7 +166,8 @@
                 source: new ol.source.ImageWMS({
                     url: urlResolver.resolveGeoserverTile(),
                     params: {
-                        LAYERS: surfLayer.DataId,
+                        // LAYERS: surfLayer.DataId,
+                        LAYERS: surfLayer.Name, //new
                         STYLES: surfLayer.Style.Name + '_visualization',
                         FORMAT: 'image/png',
                         TRANSPARENT: true

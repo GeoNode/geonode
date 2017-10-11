@@ -79,7 +79,7 @@
                 new ol.style.Style({
                     image: new ol.style.Icon({
                         anchor: [0.5, 1],
-                        src: './Content/assets/images/marker.png'
+                        src: '/static/Content/assets/images/marker.png'
                     })
                 }));
 
