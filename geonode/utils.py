@@ -67,6 +67,7 @@ ALPHABET = string.ascii_uppercase + string.ascii_lowercase + \
 ALPHABET_REVERSE = dict((c, i) for (i, c) in enumerate(ALPHABET))
 BASE = len(ALPHABET)
 SIGN_CHARACTER = '$'
+SQL_PARAMS_RE = re.compile(r'%\(([\w_\-]+)\)s')
 
 http_client = httplib2.Http()
 
@@ -994,13 +995,11 @@ def parse_datetime(value):
     raise ValueError("Invalid datetime input: {}".format(value))
 
 
-sql_params_re = re.compile(r'%\(([\w_\-]+)\)s')
-
 def _convert_sql_params(cur, query):
     # sqlite driver doesn't support %(key)s notation,
     # use :key instead.
     if cur.db.vendor in ('sqlite', 'sqlite3', 'spatialite',):
-        return sql_params_re.sub(r':\1', query)
+        return SQL_PARAMS_RE.sub(r':\1', query)
     return query
 
 
