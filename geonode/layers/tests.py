@@ -956,6 +956,7 @@ class LayerModerationTestCase(TestCase):
             l = Layer.objects.get(name=lname)
 
             self.assertTrue(l.is_published)
+            l.delete()
 
         with self.settings(ADMIN_MODERATE_UPLOADS=True):
             layer_upload_url = reverse('layer_upload')
@@ -983,7 +984,8 @@ class LayerModerationTestCase(TestCase):
             lname = data['url'].split(':')[-1]
             l = Layer.objects.get(name=lname)
 
-            self.assertFalse(l.is_published)
+            self.assertTrue(l.is_published)
+            l.delete()
 
 
 class LayerNotificationsTestCase(NotificationsTestsHelper):

@@ -33,6 +33,7 @@ from geonode.base.models import ResourceBase
 from geonode.layers.models import Layer
 from geonode.base.models import ContactRole, SpatialRepresentationType
 from geonode.people.models import Profile
+from geonode.groups.models import GroupProfile
 from django.db import connection
 from django.core.exceptions import ObjectDoesNotExist
 from django.template import RequestContext
@@ -106,6 +107,10 @@ def csw_global_dispatch(request):
             if request.user:
                 for group in request.user.groups.all():
                     groups_ids.append(group.id)
+
+            public_groups = GroupProfile.objects.exclude(access="private").values('group')
+            for group in public_groups:
+                groups_ids.append(group.id)
 
             if len(groups_ids) > 0:
                 groups = "(" + (", ".join(str(e) for e in groups_ids)) + ")"

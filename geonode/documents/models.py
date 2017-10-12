@@ -189,7 +189,7 @@ def post_save_document(instance, *args, **kwargs):
         name = "External Document"
         url = instance.doc_url
 
-    if name and url:
+    if name and url and ext:
         Link.objects.get_or_create(
             resource=instance.resourcebase_ptr,
             url=url,

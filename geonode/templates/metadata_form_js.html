@@ -128,8 +128,8 @@
     $(document).ready(
         function() {
           var pickerOptions = {
-              // format: 'YYYY-MM-DD hh:mm',
-              format: 'YYYY-MM-DD',
+              //format: 'YYYY-MM-DD hh:mm:ss',
+              format: 'YYYY-MM-DD HH:mm',
               icons: {
                   time: 'fa fa-clock-o',
                   date: 'fa fa-calendar',
@@ -528,21 +528,27 @@
                     if (resource_date.length >= 1) {
                         resource_date[0].value = date + ' AM';
                     } */
-                $.post('metadata', /*$(this).serialize()*/ $.param(formData), function(data){
-                    // Do something more fancy with your respone
-                    // $('.message').html(data.message);
-                    if (!is_advanced) {
-                        try {
-                            $('#preview_encoder_iframe')[0].style.width='100%';
-                            $('#preview_encoder_iframe')[0].style.height='100%';
-                            $('#preview_encoder_iframe')[0].contentWindow.location.reload(true);
-                        } catch(err) {
-                            // Log error
-                            console.log(err);
+                $.post('metadata', /*$(this).serialize()*/ $.param(formData))
+                    .done(function(data){
+                        // Do something more fancy with your respone
+                        // $('.message').html(data.message);
+                        if (!is_advanced) {
+                            try {
+                                $('#preview_encoder_iframe')[0].style.width='100%';
+                                $('#preview_encoder_iframe')[0].style.height='100%';
+                                $('#preview_encoder_iframe')[0].contentWindow.location.reload(true);
+                            } catch(err) {
+                                // Log error
+                                console.log(err);
+                            }
                         }
-                    }
-                    $('#preview_pleaseWaitDialog').modal('hide');
-                });
+                        $('#preview_pleaseWaitDialog').modal('hide');
+                    })
+                    .fail(function(xhr, status, error) {
+                        // error handling
+                        console.log(error);
+                        $('#preview_pleaseWaitDialog').modal('hide');
+                    });
             }
             e.preventDefault();
             if (metadata_update_done) {

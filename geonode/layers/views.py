@@ -157,6 +157,7 @@ def layer_upload(request, template='upload/layer_upload.html'):
         out = {'success': False}
         if form.is_valid():
             title = form.cleaned_data["layer_title"]
+
             # Replace dots in filename - GeoServer REST API upload bug
             # and avoid any other invalid characters.
             # Use the title if possible, otherwise default to the filename
@@ -165,7 +166,14 @@ def layer_upload(request, template='upload/layer_upload.html'):
             else:
                 name_base, __ = os.path.splitext(
                     form.cleaned_data["base_file"].name)
+                title = slugify(name_base.replace(".", "_"))
             name = slugify(name_base.replace(".", "_"))
+
+            if form.cleaned_data["abstract"] is not None and len(form.cleaned_data["abstract"]) > 0:
+                abstract = form.cleaned_data["abstract"]
+            else:
+                abstract = "No abstract provided."
+
             try:
                 # Moved this inside the try/except block because it can raise
                 # exceptions when unicode characters are present.
@@ -178,8 +186,8 @@ def layer_upload(request, template='upload/layer_upload.html'):
                         user=request.user,
                         overwrite=False,
                         charset=form.cleaned_data["charset"],
-                        abstract=form.cleaned_data["abstract"],
-                        title=form.cleaned_data["layer_title"],
+                        abstract=abstract,
+                        title=title,
                         metadata_uploaded_preserve=form.cleaned_data[
                             "metadata_uploaded_preserve"],
                         metadata_upload_form=form.cleaned_data["metadata_upload_form"])
@@ -199,6 +207,15 @@ def layer_upload(request, template='upload/layer_upload.html'):
                     el = dom.findall(
                         "{http://www.opengis.net/sld}NamedLayer/{http://www.opengis.net/sld}Name")
                     if len(el) == 0:
+                        el = dom.findall(
+                            "{http://www.opengis.net/sld}UserLayer/{http://www.opengis.net/sld}Name")
+                    if len(el) == 0:
+                        el = dom.findall(
+                            "{http://www.opengis.net/sld}NamedLayer/{http://www.opengis.net/se}Name")
+                    if len(el) == 0:
+                        el = dom.findall(
+                            "{http://www.opengis.net/sld}UserLayer/{http://www.opengis.net/se}Name")
+                    if len(el) == 0:
                         raise Exception(
                             "Please provide a name, unable to extract one from the SLD.")
 
@@ -209,22 +226,30 @@ def layer_upload(request, template='upload/layer_upload.html'):
                         if style and style.name == saved_layer.name:
                             match = style
                             break
+                    cat = gs_catalog
+                    layer = cat.get_layer(title)
                     if match is None:
-                        cat = gs_catalog
                         try:
-                            cat.create_style(saved_layer.name, sld)
+                            cat.create_style(saved_layer.name, sld, raw=True)
+                            style = cat.get_style(saved_layer.name)
+                            if layer and style:
+                                layer.default_style = style
+                                cat.save(layer)
+                                saved_layer.default_style = save_style(style)
                         except Exception as e:
                             logger.exception(e)
-                        style = cat.get_style(saved_layer.name)
-                        layer = cat.get_layer(title)
-                        if layer and style:
-                            layer.default_style = style
-                            cat.save(layer)
-                            saved_layer.default_style = save_style(style)
                     else:
-                        cat = gs_catalog
                         style = cat.get_style(saved_layer.name)
-                        style.update_body(sld)
+                        # style.update_body(sld)
+                        try:
+                            cat.create_style(saved_layer.name, sld, overwrite=True, raw=True)
+                            style = cat.get_style(saved_layer.name)
+                            if layer and style:
+                                layer.default_style = style
+                                cat.save(layer)
+                                saved_layer.default_style = save_style(style)
+                        except Exception as e:
+                            logger.exception(e)
             except Exception as e:
                 exception_type, error, tb = sys.exc_info()
                 logger.exception(e)
@@ -823,6 +848,9 @@ def layer_metadata(
 
         return HttpResponse(json.dumps({'message': message}))
 
+    if settings.ADMIN_MODERATE_UPLOADS:
+        if not request.user.is_superuser and not request.user.is_staff:
+            layer_form.fields['is_published'].widget.attrs.update({'disabled': 'true'})
     if poc is not None:
         layer_form.fields['poc'].initial = poc.id
         poc_form = ProfileForm(prefix="poc")
