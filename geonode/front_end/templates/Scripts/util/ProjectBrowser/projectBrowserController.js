@@ -24,12 +24,13 @@
             var projectName = $scope.file.saveAs;
             if (projectName && projectName.toLowerCase() == 'untitled') {
                 surfToastr.error(appMessages.toastr.invalidMapName(projectName));
-            } else if (!helperService.isNameUnique(projectName, $scope)) {
-                dialogBox.confirm({
-                    action: executeSave,
-                    text: appMessages.confirm.mapAlreadyExists(projectName)
-                });
-            } else if (subscriptionStatus.validateAddProject()) {
+            // } 
+            //else if (!helperService.isNameUnique(projectName, $scope)) {
+            //     dialogBox.confirm({
+            //         action: executeSave,
+            //         text: appMessages.confirm.mapAlreadyExists(projectName)
+            //     });
+            } else /*if (subscriptionStatus.validateAddProject())*/ {
                 executeSave(true);
             }
 

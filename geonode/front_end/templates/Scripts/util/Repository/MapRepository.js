@@ -54,8 +54,18 @@
                     dirtyManager.setDirty(true);
                 });
             },
-            saveAs: function (name) {
-                return $http.get(urlResolver.resolveMap("SaveAs", { projectName: name })).success(function () {
+            // saveAs: function (name) { // old
+            //     return $http.get(urlResolver.resolveMap("SaveAs", { projectName: name })).success(function () {
+            //         dirtyManager.setDirty(false);
+            //         surfToastr.success(appMessages.toastr.mapSaveAs(name));
+            //     });
+            // },
+            saveAs: function (obj) { //new
+                return $http.post('new/data', obj, {
+                    headers: {
+                        "X-CSRFToken": obj.csrfToken
+                    }
+                }).success(function () {
                     dirtyManager.setDirty(false);
                     surfToastr.success(appMessages.toastr.mapSaveAs(name));
                 });

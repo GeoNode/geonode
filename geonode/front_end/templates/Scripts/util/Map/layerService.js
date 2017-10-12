@@ -40,6 +40,7 @@
                     });
             },
             saveVisibility: function(surfLayer) {
+                return;
                 layerRepository.saveVisibility(surfLayer.getId(), surfLayer.IsVisible).success(function() {
                     if (surfLayer.hasClassifierDefinitions()) {
                         var classes = surfLayer.getClassifierDefinitions().selected;
@@ -114,7 +115,8 @@
                         layerRepository.getLayers(url).then(function(res) {
                             console.log(res);
                             res.WMS_Capabilities.Capability.Layer.Layer.forEach(function(e) {
-                                e.CanWrite = true
+                                e.CanWrite = true;
+                                e.geoserverUrl = url;
                             }, this);
                             resolve(res.WMS_Capabilities.Capability.Layer.Layer);
                         });
