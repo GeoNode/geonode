@@ -148,7 +148,8 @@
         function createWmsOlLayer(surfLayer) {
             return new ol.layer.Tile({
                 source: new ol.source.TileWMS({
-                    url: urlResolver.resolveGeoserverTile(),
+                    // url: urlResolver.resolveGeoserverTile(),
+                    url: surfLayer.geoserverUrl,
                     params: {
                         // LAYERS: surfLayer.DataId,
                         LAYERS: surfLayer.Name, //new

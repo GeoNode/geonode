@@ -8,7 +8,7 @@
                 $scope.enable = {};
 
                 $scope.enable.saveProject = function () {
-                    return dirtyManager.isDirty();
+                    return dirtyManager.isDirty() | true;
                 };
             })();
 
@@ -172,7 +172,7 @@
             
             function showProjectBrowserDialog(openForSave) {
                 $modal.open({
-                    templateUrl: './Project/Browser',
+                    templateUrl: '/static/Templates/Project/Browser.html',
                     controller: 'projectBrowserController',
                     backdrop: 'static',
                     keyboard: false,

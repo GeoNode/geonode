@@ -1,0 +1,31 @@
+<div class="MainBodyContainer catalog-browser" data-ng-init="fetchData()" style="height: 100%;
+width: 100%;">
+<div class="file-browser-button-container draggable-div">
+    <i class="fa fa-times-circle modal-close-icon" style="float: right; cursor: pointer"
+        ng-click="closeDialog()"></i>
+    <button data-ng-if="!project.showNameInput" data-ng-click="openProject()" ng-disabled="!selectedFile.Name || selectedFile.Name == ProjectName || editing" title="Open selected map">
+        <i class="fa fa-map-marker"></i>Open Map</button>
+    <button data-ng-click="rename()" ng-disabled="!selectedFile.Name || editing" title="Rename selected map">
+        <i class="fa fa-pencil-square-o"></i>Rename</button>
+    <button data-ng-click="deleteFile()" ng-disabled="!selectedFile.Name" title="Delete selected map">
+        <i class="fa fa-trash-o"></i>Delete</button>
+    <button data-ng-click="download()" ng-disabled="!selectedFile.Name" title="Download selected map data">
+        <i class="fa fa-download"></i>Download
+    </button>
+    <button data-ng-click="openPublishDialog()" ng-disabled="!selectedFile.Name" title="Publish/Unpublish selected map">
+        <i class="fa fa-share"></i>Publish
+    </button>
+</div>
+<!-- @Html.Partial("FileBrowser") -->
+<div class="fSaveContainer" data-ng-show="project.showNameInput">
+    <form ng-submit="save()">
+    <label style="float: left; width: 62px; line-height: 32px;">
+        Filename</label>
+    <div class="col-sm-10">
+        <input required type="text" placeholder="Map name" validatefilename class="form-control"
+            style="float: left; margin-right: 5px; width: 45%;" maxlength="100" ng-model="file.saveAs" autofocus />
+        <input class="btn" type="submit" style="float: left;" value="Save" />
+    </div>
+    </form>
+</div>
+</div>

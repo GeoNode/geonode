@@ -12,6 +12,7 @@
         function($rootScope, $window, $timeout, $http, mapRepository, mapService, dirtyManager, surfToastr, urlResolver, userProfileService, mapAccessLevel, $modal, layerService, interactionHandler, GeoLocationTool, LocationSearchTool, ActiveLayerTool, AllSelectableLayerTool, google, SurfMap, layerRenderingModeFactory, ZoomTrackerTool, ZoomToLayerTool, BaseMapTool, reprojection, mapTools, mapToolsFactory, onZoomHandler, $cookies) {
             $window.GeoServerHttp2Root = "http://172.16.0.247:8080/geoserver/";
             $window.GeoServerTileRoot = "http://172.16.0.247:8080/geoserver/wms";
+            // $window.GeoServerTileRoot = "https://geodata.nationaalgeoregister.nl/bestuurlijkegrenzen/wms";
             console.log($window);
             urlResolver.setGeoserverRoot($window.GeoServerHttp2Root, $window.GeoServerTileRoot);
             userProfileService.loadData();
