@@ -43,6 +43,22 @@ var createMapThumbnail = function(obj_id) {
         data: body,
         async: true,
         cache: false,
+        beforeSend: function(){
+             // Handle the beforeSend event
+             try {
+                 $("#_thumbnail_processing").modal("show");
+             } catch(err) {
+                 console.log(err);
+             }
+        },
+        complete: function(){
+             // Handle the complete event
+             try {
+                 $("#_thumbnail_processing").modal("hide");
+             } catch(err) {
+                 console.log(err);
+             }
+        },
         success: function(data, status, jqXHR) {
             try {
                 $("#_thumbnail_feedbacks").find('.modal-title').text(status);
@@ -55,15 +71,17 @@ var createMapThumbnail = function(obj_id) {
             }
         },
         error: function(jqXHR, textStatus){
-            if(textStatus === 'timeout')
-            {
-                 alert('Failed from timeout: Could not create Thumbnail');
-                 //do something. Try again perhaps?
-            }
             try {
-                $("#_thumbnail_feedbacks").find('.modal-title').text(status);
-                $("#_thumbnail_feedbacks").find('.modal-body').text(data);
-                $("#_thumbnail_feedbacks").modal("show");
+                if(textStatus === 'timeout')
+                {
+                     $("#_thumbnail_feedbacks").find('.modal-title').text('Timeout');
+                     $("#_thumbnail_feedbacks").find('.modal-body').text('Failed from timeout: Could not create Thumbnail');
+                     $("#_thumbnail_feedbacks").modal("show");
+                } else {
+                    $("#_thumbnail_feedbacks").find('.modal-title').text(status);
+                    $("#_thumbnail_feedbacks").find('.modal-body').text(data);
+                    $("#_thumbnail_feedbacks").modal("show");
+                }
             } catch(err) {
                 console.log(err);
             } finally {
