@@ -1210,22 +1210,6 @@ def layer_sld_upload(
     }))
 
 
-def layer_sld_upload(
-        request,
-        layername,
-        template='layers/layer_style_upload.html'):
-    layer = _resolve_layer(
-        request,
-        layername,
-        'base.change_resourcebase',
-        _PERMISSION_MSG_METADATA)
-    return render_to_response(template, RequestContext(request, {
-        "resource": layer,
-        "layer": layer,
-        'SITEURL': settings.SITEURL[:-1]
-    }))
-
-
 @login_required
 def layer_batch_metadata(request, ids):
     return batch_modify(request, ids, 'Layer')
