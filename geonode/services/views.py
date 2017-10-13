@@ -83,7 +83,7 @@ def services(request):
     """
     This view shows the list of all registered services
     """
-    services = Service.objects.all()
+    services = Service.objects.all().order_by('name')
     return render_to_response("services/service_list.html", RequestContext(request, {
         'services': services,
     }))
