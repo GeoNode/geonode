@@ -15,12 +15,14 @@
   	<th>Title</th>
   	<th>URL</th>
     <th>Publisher</th>
+    <th>Published</th>
   </thead>
   {% for service in services %}
   <tr>
 	<td><a href='{% url "service_detail" service.id %}'>{{ service.title }}</a></td>
 	<td><a href='{% url "service_detail" service.id %}'>{{ service.base_url }}</a></td>
     <td><a href='{% url "service_detail" service.id %}'>{{ service.owner.username }}</a></td>
+    <td><a href='{% url "service_detail" service.id %}'>{{ service.is_published }}</a></td>
   </tr>
   {% endfor %}
 </table>
