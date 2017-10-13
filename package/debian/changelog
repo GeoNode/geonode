@@ -1,3 +1,10 @@
+geonode (2.7.2+dev20171013181704) xenial; urgency=high
+
+  * [24c08c]  - Bump to version 2.7.2
+  * [48e26e]  - geonode user accounts 1.0.15
+
+ -- Alessio Fabiani <alessio.fabiani@geo-solutions.it>  Fri, 13 Oct 2017 20:18:21 +0200
+
 geonode (2.7.1+dev20171013111656) xenial; urgency=high
 
   [ Alessio Fabiani ]
