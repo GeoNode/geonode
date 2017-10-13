@@ -29,7 +29,7 @@ try:
 except ImportError:
     from django.utils import simplejson as json
 from django.contrib.contenttypes.models import ContentType
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import ugettext as _
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.urlresolvers import reverse
 from django.template.defaultfilters import slugify
@@ -313,10 +313,16 @@ class Map(ResourceBase, GXPMapBase):
         if 'geonode.geoserver' in settings.INSTALLED_APPS:
             from geonode.geoserver.helpers import gs_catalog, ogc_server_settings
             lg_name = '%s_%d' % (slugify(self.title), self.id)
-            return {
-                'catalog': gs_catalog.get_layergroup(lg_name),
-                'ows': ogc_server_settings.ows
-            }
+            try:
+                return {
+                    'catalog': gs_catalog.get_layergroup(lg_name),
+                    'ows': ogc_server_settings.ows
+                }
+            except:
+                return {
+                    'catalog': None,
+                    'ows': ogc_server_settings.ows
+                }
         else:
             return None
 

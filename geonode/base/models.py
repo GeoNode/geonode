@@ -35,7 +35,7 @@ from urlparse import urljoin, urlsplit
 from django.db import models
 from django.core import serializers
 from django.db.models import Q, signals
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import ugettext as _
 from django.core.exceptions import ValidationError
 from django.conf import settings
 from django.contrib.staticfiles.templatetags import staticfiles
@@ -382,8 +382,11 @@ class _HierarchicalTagManager(_TaggableManager):
             tag_objs.add(HierarchicalKeyword.add_root(name=new_tag))
 
         for tag in tag_objs:
-            self.through.objects.get_or_create(
-                tag=tag, **self._lookup_kwargs())
+            try:
+                self.through.objects.get_or_create(
+                    tag=tag, **self._lookup_kwargs())
+            except Exception as e:
+                logger.exception(e)
 
 
 class Thesaurus(models.Model):
@@ -1139,7 +1142,6 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
     def handle_moderated_uploads(self):
         if settings.ADMIN_MODERATE_UPLOADS:
             self.is_published = False
-            self.save()
 
     metadata_author = property(_get_metadata_author, _set_metadata_author)
 
@@ -1306,7 +1308,6 @@ def resourcebase_post_save(instance, *args, **kwargs):
 
         if no_license and len(no_license) > 0:
             instance.license = no_license[0]
-            instance.save()
 
 
 def rating_post_save(instance, *args, **kwargs):

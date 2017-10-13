@@ -1,0 +1,88 @@
+.. _async_signals:
+
+=============================
+Asynchronous signals handling
+=============================
+
+Asynchronous signals handling is a part of GeoNode scalabilty architecture. It allows to offload post-processing tasks from main web application process, also to integrate closely with GeoServer.
+
+In this setup GeoNode produces events (small messages with serialized configuration) that are queued by external broker (AMQP broker, prefferably RabbitMQ), and later, are consumed (processed) by separate worker process. Additionally, GeoServer can be attached and used as producer as well, so two-way data synchronization between GeoNode and GeoServer can be established.
+
+.. note:: Default configuration (in-memory queue) doesn't require AMQP broker, and will process signals synchronously. Also, default configuration won't allow two-way synchronization with GeoServer, even if GS is configured to work with external broker.
+
+Async signals handling components
+=================================
+
+GeoNode
+-------
+
+GeoNode can be switched to asynchronous signals processing by specifying `ASYNC_SIGNALS_BROKER_URL` setting in settings. See :ref:`GeoNode settings <settings_entries>`. This setting is consumed by `kombu library <http://kombu.readthedocs.io/>`_. You can set type of transport with connection details (credentials, host), for example: ``amqp://localhost/`` will connect to AMQP broker (RabbitMQ) running locally, without any authentication.
+
+.. note:: while this is easiest to use asynchronous signals handling, it is not recommended setup due to security issues.
+
+
+GeoServer (optional)
+--------------------
+
+See `GeoServer documentation for Notification module <http://docs.geoserver.org/stable/en/user/community/notification/index.html>`_.
+
+RabbitMQ (AMQP broker)
+----------------------
+
+Asynchronous signals infrastructure can be used with different protocols (supported by `Kombu` library), but AMQP with RabbitMQ broker is recommended. 
+
+Install and run RabbitMQ instance:
+
+.. code::
+ 
+    sudo apt-get install rabbitmq-server
+    sudo service rabbitmq-server start
+
+
+Additional information about RabbitMQ configuration is available in `Documentation <https://www.rabbitmq.com/configure.html>`_.
+
+
+Consumer process
+----------------
+
+To handle events produced by GeoNode and GeoServer, a receiver, consumer process is needed. GeoNode provides `runmessaging` django command. This will start long-running process, which will handle incoming messages. For production deployments, it should be configured with process managers like supervisord or runit.
+
+
+Following is sample configuration for supervisord:
+
+.. note: this is just a sample configuration, you should adjust paths accordingly to your deployment
+
+.. code::
+
+    [program:geonode-runmessaging]
+    command=/bin/bash -c "(source /path/to/virtualenv/bin/activate && django-admin.py runmessaging --autoscale 2,1 --loglevel DEBUG)"
+    directory = # /path/to/rundir
+    environment=DJANGO_SETTINGS_MODULE="geonode.local_settings"
+    user=geonode
+    numproc=1
+    stdout_logfile=/path/to/log/output.log
+    stderr_logfile=/path/to/log/output.log
+    autostart = true
+    autorestart = true
+    startsecs = 10
+    stopwaitsecs = 600
+    priority = 998
+
+
+This file is also available in `scripts/misc/runmessaging.supervisord.conf` file in GeoNode repository.
+
+To use it, you should have `supervisord` installed and configured:
+
+.. code::
+
+    sudo apt-get install supervisor
+    sudo supervisor start
+    vi /etc/supervisor/conf.d/runmessaging.supervisord.conf # adjust paths and variables.
+    sudo supervisorctl reload
+
+
+Notes
+-----
+
+Technical details and motivation is described in `GNIP <https://github.com/GeoNode/geonode/issues/2889>`_.
+

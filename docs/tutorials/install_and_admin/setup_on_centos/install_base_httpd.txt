@@ -56,7 +56,7 @@ httpd configuration
 As ``root``, create the file ``/etc/httpd/conf.d/geonode.conf``
 and insert into it :download:`this content <resources/geonode.conf>`.
 
-Add `thumbs` and `layers` folders::
+Add ``thumbs`` and ``layers`` folders::
 
     mkdir -p /opt/apps/geonode/geonode/geonode/static_root
     mkdir -p /opt/apps/geonode/geonode/geonode/uploaded/thumbs

@@ -129,14 +129,61 @@ def _install_data_dir():
     original_data_dir = path('geoserver/geoserver/data')
     justcopy(original_data_dir, target_data_dir)
 
-    config = path(
-        'geoserver/data/security/auth/geonodeAuthProvider/config.xml')
-    with open(config) as f:
-        xml = f.read()
-        m = re.search('baseUrl>([^<]+)', xml)
-        xml = xml[:m.start(1)] + "http://localhost:8000/" + xml[m.end(1):]
-        with open(config, 'w') as f:
-            f.write(xml)
+    try:
+        config = path(
+            'geoserver/data/security/auth/geonodeAuthProvider/config.xml')
+        with open(config) as f:
+            xml = f.read()
+            m = re.search('baseUrl>([^<]+)', xml)
+            xml = xml[:m.start(1)] + "http://localhost:8000/" + xml[m.end(1):]
+            with open(config, 'w') as f:
+                f.write(xml)
+    except Exception as e:
+        print(e)
+
+    try:
+        config = path(
+            'geoserver/data/global.xml')
+        with open(config) as f:
+            xml = f.read()
+            m = re.search('proxyBaseUrl>([^<]+)', xml)
+            xml = xml[:m.start(1)] + "http://localhost:8080/geoserver" + xml[m.end(1):]
+            with open(config, 'w') as f:
+                f.write(xml)
+    except Exception as e:
+        print(e)
+
+    try:
+        config = path(
+            'geoserver/data/security/filter/geonode-oauth2/config.xml')
+        with open(config) as f:
+            xml = f.read()
+            m = re.search('accessTokenUri>([^<]+)', xml)
+            xml = xml[:m.start(1)] + "http://localhost:8000/o/token/" + xml[m.end(1):]
+            m = re.search('userAuthorizationUri>([^<]+)', xml)
+            xml = xml[:m.start(1)] + "http://localhost:8000/o/authorize/" + xml[m.end(1):]
+            m = re.search('redirectUri>([^<]+)', xml)
+            xml = xml[:m.start(1)] + "http://localhost:8080/geoserver/index.html" + xml[m.end(1):]
+            m = re.search('checkTokenEndpointUrl>([^<]+)', xml)
+            xml = xml[:m.start(1)] + "http://localhost:8000/api/o/v4/tokeninfo/" + xml[m.end(1):]
+            m = re.search('logoutUri>([^<]+)', xml)
+            xml = xml[:m.start(1)] + "http://localhost:8000/account/logout/" + xml[m.end(1):]
+            with open(config, 'w') as f:
+                f.write(xml)
+    except Exception as e:
+        print(e)
+
+    try:
+        config = path(
+            'geoserver/data/security/role/geonode REST role service/config.xml')
+        with open(config) as f:
+            xml = f.read()
+            m = re.search('baseUrl>([^<]+)', xml)
+            xml = xml[:m.start(1)] + "http://localhost:8000" + xml[m.end(1):]
+            with open(config, 'w') as f:
+                f.write(xml)
+    except Exception as e:
+        print(e)
 
 
 @task
@@ -309,6 +356,8 @@ def start():
     """
     Start GeoNode (Django, GeoServer & Client)
     """
+    call_task('start_messaging')
+
     info("GeoNode is now available.")
 
 
@@ -318,6 +367,7 @@ def stop_django():
     Stop the GeoNode Django application
     """
     kill('python', 'runserver')
+    kill('python', 'runmessaging')
 
 
 @task
@@ -353,6 +403,14 @@ def start_django():
     sh('python manage.py runserver %s %s' % (bind, foreground))
 
 
+def start_messaging():
+    """
+    Start the GeoNode messaging server
+    """
+    foreground = '' if options.get('foreground', False) else '&'
+    sh('python manage.py runmessaging %s' % foreground)
+
+
 @cmdopts([
     ('java_path=', 'j', 'Full path to java install for Windows')
 ])
@@ -377,6 +435,7 @@ def start_geoserver(options):
     jetty_runner = download_dir / \
         os.path.basename(dev_config['JETTY_RUNNER_URL'])
     data_dir = path('geoserver/data').abspath()
+    geofence_dir = path('geoserver/data/geofence').abspath()
     web_app = path('geoserver/geoserver').abspath()
     log_file = path('geoserver/jetty.log').abspath()
     config = path('scripts/misc/jetty-runner.xml').abspath()
@@ -421,8 +480,10 @@ def start_geoserver(options):
         sh((
             '%(javapath)s -Xms512m -Xmx1024m -server -XX:+UseConcMarkSweepGC -XX:MaxPermSize=256m'
             ' -DGEOSERVER_DATA_DIR=%(data_dir)s'
+            ' -Dgeofence.dir=%(geofence_dir)s'
+            # ' -Dgeofence-ovr=geofence-datasource-ovr.properties'
             # workaround for JAI sealed jar issue and jetty classloader
-            ' -Dorg.eclipse.jetty.server.webapp.parentLoaderPriority=true'
+            # ' -Dorg.eclipse.jetty.server.webapp.parentLoaderPriority=true'
             ' -jar %(jetty_runner)s'
             ' --port %(jetty_port)i'
             ' --log %(log_file)s'

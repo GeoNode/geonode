@@ -48,7 +48,7 @@ Once you have the ``.rpm`` file, you can install it by::
 
 Once installed, you still see that the default ``java`` and ``javac`` commands
 are still the ones from OpenJDK.
-In order to switch JDK version you have to set the proper system `alternatives`.
+In order to switch JDK version you have to set the proper system ``alternatives``.
 
 Issue the command::
 
@@ -118,7 +118,7 @@ Copy the existing management script::
   sudo cp /usr/lib/systemd/system/tomcat.service \
   /usr/lib/systemd/system/tomcat\@geoserver.service
 
-Edit the `EnvironmentFile` variable in service management file as follows::
+Edit the ``EnvironmentFile`` variable in service management file as follows::
 
   sudo vim /usr/lib/systemd/system/tomcat\@geoserver.service
 
@@ -150,7 +150,7 @@ Create the associated configuration file from template::
 
   sudo cp /etc/sysconfig/tomcat /etc/sysconfig/tomcat\@geoserver
 
-Edit the configuration file and customize the `CATALINA_HOME` and `CATALINA_BASE`
+Edit the configuration file and customize the ``CATALINA_HOME`` and ``CATALINA_BASE``
 variables::
 
   ...
@@ -162,6 +162,7 @@ Now download and copy GeoServer web archive inside the webapps folder. Tomcat wi
 war file and run GeoServer::
 
   curl -LO http://build.geonode.org/geoserver/latest/geoserver-2.9.x-oauth2.war && mv geoserver-2.9.x-oauth2.war geoserver.war
+  sudo mkdir -p /var/lib/tomcats/geoserver/webapps/
   sudo cp geoserver.war /var/lib/tomcats/geoserver/webapps/
 
 And fix the permissions on the files::

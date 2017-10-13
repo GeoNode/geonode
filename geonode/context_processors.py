@@ -76,6 +76,10 @@ def resource_urls(request):
             settings,
             'OPENGRAPH_ENABLED',
             False),
+        ADMIN_MODERATE_UPLOADS=getattr(
+            settings,
+            'ADMIN_MODERATE_UPLOADS',
+            False),
         HAYSTACK_SEARCH=getattr(
             settings,
             'HAYSTACK_SEARCH',
@@ -135,6 +139,11 @@ def resource_urls(request):
         THESAURI_FILTERS=[t['name'] for t in settings.THESAURI if t.get('filter')],
         MAP_CLIENT_USE_CROSS_ORIGIN_CREDENTIALS=getattr(
             settings, 'MAP_CLIENT_USE_CROSS_ORIGIN_CREDENTIALS', False
+        ),
+        SHOW_PROFILE_EMAIL=getattr(
+            settings,
+            "SHOW_PROFILE_EMAIL",
+            False
         ),
     )
     defaults['message_create_url'] = 'message_create' if not settings.USER_MESSAGES_ALLOW_MULTIPLE_RECIPIENTS\

@@ -141,6 +141,16 @@ def layer_style_upload(request, layername):
     el = dom.findall(
         "{http://www.opengis.net/sld}NamedLayer/{http://www.opengis.net/sld}Name")
     if len(el) == 0 and not data.get('name'):
+        el = dom.findall(
+            "{http://www.opengis.net/sld}UserLayer/{http://www.opengis.net/sld}Name")
+    if len(el) == 0 and not data.get('name'):
+        el = dom.findall(
+            "{http://www.opengis.net/sld}NamedLayer/{http://www.opengis.net/se}Name")
+    if len(el) == 0 and not data.get('name'):
+        el = dom.findall(
+            "{http://www.opengis.net/sld}UserLayer/{http://www.opengis.net/se}Name")
+
+    if len(el) == 0 and not data.get('name'):
         return respond(
             errors="Please provide a name, unable to extract one from the SLD.")
     name = data.get('name') or el[0].text
@@ -157,7 +167,7 @@ def layer_style_upload(request, layername):
     else:
         try:
             cat = gs_catalog
-            cat.create_style(name, sld)
+            cat.create_style(name, sld, raw=True)
             layer.styles = layer.styles + \
                 [type('style', (object,), {'name': name})]
             cat.save(layer.publishing)
@@ -292,7 +302,14 @@ def feature_edit_check(request, layername):
     layer = _resolve_layer(request, layername)
     datastore = ogc_server_settings.DATASTORE
     feature_edit = getattr(settings, "GEOGIG_DATASTORE", None) or datastore
-    if request.user.has_perm(
+    is_admin = False
+    is_staff = False
+    is_owner = False
+    if request.user:
+        is_admin = request.user.is_superuser if request.user else False
+        is_staff = request.user.is_staff if request.user else False
+        is_owner = (str(request.user) == str(layer.owner))
+    if is_admin or is_staff or is_owner or request.user.has_perm(
             'change_layer_data',
             obj=layer) and layer.storeType == 'dataStore' and feature_edit:
         return HttpResponse(

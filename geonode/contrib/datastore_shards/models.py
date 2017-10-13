@@ -22,7 +22,7 @@ from geonode.layers.models import Layer
 
 from django.db import models
 from django.db.models import signals
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import ugettext as _
 
 
 class Database(models.Model):
@@ -52,9 +52,11 @@ def update_shard_layers_count(instance, sender, **kwargs):
     Update layers_count for Database model.
     """
     store_name = instance.store
-    shardatabase = Database.objects.get(name=store_name)
-    shardatabase.layers_count = Layer.objects.filter(store=store_name).count()
-    shardatabase.save()
+    # if layer is part of a shards we need to increment layers_count
+    if Database.objects.filter(name=store_name).exists():
+        shardatabase = Database.objects.get(name=store_name)
+        shardatabase.layers_count = Layer.objects.filter(store=store_name).count()
+        shardatabase.save()
 
 
 signals.post_delete.connect(update_shard_layers_count, sender=Layer)

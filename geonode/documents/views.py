@@ -34,7 +34,7 @@ from django.core.exceptions import PermissionDenied
 from django_downloadview.response import DownloadResponse
 from django.views.generic.edit import UpdateView, CreateView
 from django.db.models import F
-from django.forms.util import ErrorList
+from django.forms.utils import ErrorList
 
 from geonode.utils import resolve_object
 from geonode.security.views import _perms_info_json
@@ -449,6 +449,10 @@ def document_metadata(
                 metadata_author.group_list_all(),
                 GroupProfile.objects.exclude(
                     access="private"))
+
+        if settings.ADMIN_MODERATE_UPLOADS:
+            if not request.user.is_superuser and not request.user.is_staff:
+                document_form.fields['is_published'].widget.attrs.update({'disabled': 'true'})
 
         return render_to_response(template, RequestContext(request, {
             "resource": document,

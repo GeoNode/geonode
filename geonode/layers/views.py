@@ -29,10 +29,14 @@ import decimal
 from lxml import etree
 from requests import Request
 from itertools import chain
+from six import string_types
+from owslib.wfs import WebFeatureService
+from owslib.feature.schema import get_schema
 
 from guardian.shortcuts import get_perms
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth import get_user_model
 from django.core.urlresolvers import reverse
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render_to_response
@@ -48,7 +52,7 @@ from django.template.defaultfilters import slugify
 from django.forms.models import inlineformset_factory
 from django.db import transaction
 from django.db.models import F
-from django.forms.util import ErrorList
+from django.forms.utils import ErrorList
 
 from geonode.tasks.deletion import delete_layer
 from geonode.services.models import Service
@@ -71,8 +75,8 @@ from geonode.utils import build_social_links
 from geonode.geoserver.helpers import cascading_delete, gs_catalog
 from geonode.geoserver.helpers import ogc_server_settings, save_style
 from geonode.base.views import batch_modify
-
 from geonode.base.models import Thesaurus
+from geonode.maps.models import Map
 
 if 'geonode.geoserver' in settings.INSTALLED_APPS:
     from geonode.geoserver.helpers import _render_thumbnail
@@ -153,6 +157,7 @@ def layer_upload(request, template='upload/layer_upload.html'):
         out = {'success': False}
         if form.is_valid():
             title = form.cleaned_data["layer_title"]
+
             # Replace dots in filename - GeoServer REST API upload bug
             # and avoid any other invalid characters.
             # Use the title if possible, otherwise default to the filename
@@ -161,7 +166,14 @@ def layer_upload(request, template='upload/layer_upload.html'):
             else:
                 name_base, __ = os.path.splitext(
                     form.cleaned_data["base_file"].name)
+                title = slugify(name_base.replace(".", "_"))
             name = slugify(name_base.replace(".", "_"))
+
+            if form.cleaned_data["abstract"] is not None and len(form.cleaned_data["abstract"]) > 0:
+                abstract = form.cleaned_data["abstract"]
+            else:
+                abstract = "No abstract provided."
+
             try:
                 # Moved this inside the try/except block because it can raise
                 # exceptions when unicode characters are present.
@@ -174,8 +186,8 @@ def layer_upload(request, template='upload/layer_upload.html'):
                         user=request.user,
                         overwrite=False,
                         charset=form.cleaned_data["charset"],
-                        abstract=form.cleaned_data["abstract"],
-                        title=form.cleaned_data["layer_title"],
+                        abstract=abstract,
+                        title=title,
                         metadata_uploaded_preserve=form.cleaned_data[
                             "metadata_uploaded_preserve"],
                         metadata_upload_form=form.cleaned_data["metadata_upload_form"])
@@ -195,6 +207,15 @@ def layer_upload(request, template='upload/layer_upload.html'):
                     el = dom.findall(
                         "{http://www.opengis.net/sld}NamedLayer/{http://www.opengis.net/sld}Name")
                     if len(el) == 0:
+                        el = dom.findall(
+                            "{http://www.opengis.net/sld}UserLayer/{http://www.opengis.net/sld}Name")
+                    if len(el) == 0:
+                        el = dom.findall(
+                            "{http://www.opengis.net/sld}NamedLayer/{http://www.opengis.net/se}Name")
+                    if len(el) == 0:
+                        el = dom.findall(
+                            "{http://www.opengis.net/sld}UserLayer/{http://www.opengis.net/se}Name")
+                    if len(el) == 0:
                         raise Exception(
                             "Please provide a name, unable to extract one from the SLD.")
 
@@ -205,22 +226,30 @@ def layer_upload(request, template='upload/layer_upload.html'):
                         if style and style.name == saved_layer.name:
                             match = style
                             break
+                    cat = gs_catalog
+                    layer = cat.get_layer(title)
                     if match is None:
-                        cat = gs_catalog
                         try:
-                            cat.create_style(saved_layer.name, sld)
+                            cat.create_style(saved_layer.name, sld, raw=True)
+                            style = cat.get_style(saved_layer.name)
+                            if layer and style:
+                                layer.default_style = style
+                                cat.save(layer)
+                                saved_layer.default_style = save_style(style)
                         except Exception as e:
                             logger.exception(e)
-                        style = cat.get_style(saved_layer.name)
-                        layer = cat.get_layer(title)
-                        if layer and style:
-                            layer.default_style = style
-                            cat.save(layer)
-                            saved_layer.default_style = save_style(style)
                     else:
-                        cat = gs_catalog
                         style = cat.get_style(saved_layer.name)
-                        style.update_body(sld)
+                        # style.update_body(sld)
+                        try:
+                            cat.create_style(saved_layer.name, sld, overwrite=True, raw=True)
+                            style = cat.get_style(saved_layer.name)
+                            if layer and style:
+                                layer.default_style = style
+                                cat.save(layer)
+                                saved_layer.default_style = save_style(style)
+                        except Exception as e:
+                            logger.exception(e)
             except Exception as e:
                 exception_type, error, tb = sys.exc_info()
                 logger.exception(e)
@@ -318,9 +347,7 @@ def layer_detail(request, layername, template='layers/layer_detail.html'):
 
     # Update count for popularity ranking,
     # but do not includes admins or resource owners
-    if request.user != layer.owner and not request.user.is_superuser:
-        Layer.objects.filter(
-            id=layer.id).update(popular_count=F('popular_count') + 1)
+    layer.view_count_up(request.user)
 
     # center/zoom don't matter; the viewer will center on the layer bounds
     map_obj = GXPMap(
@@ -429,8 +456,99 @@ def layer_detail(request, layername, template='layers/layer_detail.html'):
 
     if settings.SOCIAL_ORIGINS:
         context_dict["social_links"] = build_social_links(request, layer)
+    layers_names = layer.alternate
+    try:
+        if 'geonode' in layers_names:
+            workspace, name = layers_names.split(':', 1)
+        else:
+            name = layers_names
+    except:
+        print "Can not identify workspace type and layername"
 
+    context_dict["layer_name"] = json.dumps(layers_names)
+
+    try:
+        # get type of layer (raster or vector)
+        if layer.storeType == 'coverageStore':
+            context_dict["layer_type"] = "raster"
+        elif layer.storeType == 'dataStore':
+            context_dict["layer_type"] = "vector"
+
+            location = "{location}{service}".format(** {
+                'location': settings.OGC_SERVER['default']['LOCATION'],
+                'service': 'wms',
+            })
+            # get schema for specific layer
+            username = settings.OGC_SERVER['default']['USER']
+            password = settings.OGC_SERVER['default']['PASSWORD']
+            schema = get_schema(location, name, username=username, password=password)
+
+            # get the name of the column which holds the geometry
+            if 'the_geom' in schema['properties']:
+                schema['properties'].pop('the_geom', None)
+            elif 'geom' in schema['properties']:
+                schema['properties'].pop("geom", None)
+
+            # filter the schema dict based on the values of layers_attributes
+            layer_attributes_schema = []
+            for key in schema['properties'].keys():
+                    layer_attributes_schema.append(key)
+
+            filtered_attributes = layer_attributes_schema
+            context_dict["schema"] = schema
+            context_dict["filtered_attributes"] = filtered_attributes
+
+    except:
+        print "Possible error with OWSLib. Turning all available properties to string"
+
+    # maps owned by user needed to fill the "add to existing map section" in template
+    if request.user.is_authenticated():
+        context_dict["maps"] = Map.objects.filter(owner=request.user)
     return render_to_response(template, RequestContext(request, context_dict))
+
+
+# Loads the data using the OWS lib when the "Do you want to filter it" button is clicked.
+def load_layer_data(request, template='layers/layer_detail.html'):
+    context_dict = {}
+    data_dict = json.loads(request.POST.get('json_data'))
+    layername = data_dict['layer_name']
+    filtered_attributes = data_dict['filtered_attributes']
+    workspace, name = layername.split(':')
+    location = "{location}{service}".format(** {
+        'location': settings.OGC_SERVER['default']['LOCATION'],
+        'service': 'wms',
+    })
+
+    try:
+        username = settings.OGC_SERVER['default']['USER']
+        password = settings.OGC_SERVER['default']['PASSWORD']
+        wfs = WebFeatureService(location, version='1.1.0', username=username, password=password)
+        response = wfs.getfeature(typename=name, propertyname=filtered_attributes, outputFormat='application/json')
+        x = response.read()
+        x = json.loads(x)
+        features_response = json.dumps(x)
+        decoded = json.loads(features_response)
+        decoded_features = decoded['features']
+        properties = {}
+        for key in decoded_features[0]['properties']:
+            properties[key] = []
+
+        # loop the dictionary based on the values on the list and add the properties
+        # in the dictionary (if doesn't exist) together with the value
+        for i in range(len(decoded_features)):
+
+            for key, value in decoded_features[i]['properties'].iteritems():
+                if value != '' and isinstance(value, (string_types, int, float)):
+                    properties[key].append(value)
+
+        for key in properties:
+            properties[key] = list(set(properties[key]))
+            properties[key].sort()
+
+        context_dict["feature_properties"] = properties
+    except:
+        print "Possible error with OWSLib."
+    return HttpResponse(json.dumps(context_dict), content_type="application/json")
 
 
 def layer_feature_catalogue(
@@ -450,7 +568,7 @@ def layer_feature_catalogue(
 
     attributes = []
 
-    for attrset in layer.attribute_set.all():
+    for attrset in layer.attribute_set.order_by('display_order'):
         attr = {
             'name': attrset.attribute,
             'type': attrset.attribute_type
@@ -730,6 +848,9 @@ def layer_metadata(
 
         return HttpResponse(json.dumps({'message': message}))
 
+    if settings.ADMIN_MODERATE_UPLOADS:
+        if not request.user.is_superuser and not request.user.is_staff:
+            layer_form.fields['is_published'].widget.attrs.update({'disabled': 'true'})
     if poc is not None:
         layer_form.fields['poc'].initial = poc.id
         poc_form = ProfileForm(prefix="poc")
@@ -869,8 +990,10 @@ def layer_replace(request, layername, template='layers/layer_replace.html'):
                         'layer_detail', args=[
                             saved_layer.service_typename])
             except Exception as e:
+                logger.exception(e)
+                tb = traceback.format_exc()
                 out['success'] = False
-                out['errors'] = str(e)
+                out['errors'] = str(tb)
             finally:
                 if tempdir is not None:
                     shutil.rmtree(tempdir)
@@ -1087,6 +1210,28 @@ def layer_sld_upload(
     }))
 
 
+def layer_sld_upload(
+        request,
+        layername,
+        template='layers/layer_style_upload.html'):
+    layer = _resolve_layer(
+        request,
+        layername,
+        'base.change_resourcebase',
+        _PERMISSION_MSG_METADATA)
+    return render_to_response(template, RequestContext(request, {
+        "resource": layer,
+        "layer": layer,
+        'SITEURL': settings.SITEURL[:-1]
+    }))
+
+
 @login_required
 def layer_batch_metadata(request, ids):
     return batch_modify(request, ids, 'Layer')
+
+
+def layer_view_counter(layer_id, viewer):
+    l = Layer.objects.get(id=layer_id)
+    u = get_user_model().objects.get(username=viewer)
+    l.view_count_up(u, do_local=True)

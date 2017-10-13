@@ -18,17 +18,19 @@
 #
 #########################################################################
 
-import autocomplete_light
+from autocomplete_light.registry import register
+from autocomplete_light.autocomplete.shortcuts import AutocompleteModelBase, AutocompleteModelTemplate
 
 from guardian.shortcuts import get_objects_for_user
 from django.conf import settings
 from django.db.models import Q
 from django.contrib.auth.models import Group
+from geonode.groups.models import GroupProfile
 
 from models import ResourceBase, Region, HierarchicalKeyword, ThesaurusKeywordLabel
 
 
-class ResourceBaseAutocomplete(autocomplete_light.AutocompleteModelTemplate):
+class ResourceBaseAutocomplete(AutocompleteModelTemplate):
     choice_template = 'autocomplete_response.html'
     model = ResourceBase
 
@@ -47,10 +49,10 @@ class ResourceBaseAutocomplete(autocomplete_light.AutocompleteModelTemplate):
 
         if settings.ADMIN_MODERATE_UPLOADS:
             if not is_admin and not is_staff:
-                self.choices = self.choices.filter(is_published=True)
+                self.choices = self.choices.filter(Q(is_published=True) | Q(owner__username__iexact=str(request.user)))
 
         if settings.RESOURCE_PUBLISHING:
-            self.choices = self.choices.filter(is_published=True)
+            self.choices = self.choices.filter(Q(is_published=True) | Q(owner__username__iexact=str(request.user)))
 
         try:
             anonymous_group = Group.objects.get(name='anonymous')
@@ -58,41 +60,46 @@ class ResourceBaseAutocomplete(autocomplete_light.AutocompleteModelTemplate):
             anonymous_group = None
 
         if settings.GROUP_PRIVATE_RESOURCES:
+            public_groups = GroupProfile.objects.exclude(access="private").values('group')
             if is_admin:
                 self.choices = self.choices
             elif request.user:
                 groups = request.user.groups.all()
                 if anonymous_group:
                     self.choices = self.choices.filter(
-                        Q(group__isnull=True) | Q(group__in=groups) | Q(group=anonymous_group))
+                        Q(group__isnull=True) | Q(group__in=groups) |
+                        Q(group__in=public_groups) | Q(group=anonymous_group))
                 else:
-                    self.choices = self.choices.filter(Q(group__isnull=True) | Q(group__in=groups))
+                    self.choices = self.choices.filter(
+                        Q(group__isnull=True) | Q(group__in=public_groups) | Q(group__in=groups))
             else:
                 if anonymous_group:
-                    self.choices = self.choices.filter(Q(group__isnull=True) | Q(group=anonymous_group))
+                    self.choices = self.choices.filter(
+                        Q(group__isnull=True) | Q(group__in=public_groups) | Q(group=anonymous_group))
                 else:
-                    self.choices = self.choices.filter(Q(group__isnull=True))
+                    self.choices = self.choices.filter(
+                        Q(group__isnull=True) | Q(group__in=public_groups))
 
         return super(ResourceBaseAutocomplete, self).choices_for_request()
 
 
-autocomplete_light.register(Region,
-                            search_fields=['name'],
-                            autocomplete_js_attributes={'placeholder': 'Region/Country ..', },)
+register(Region,
+         search_fields=['name'],
+         autocomplete_js_attributes={'placeholder': 'Region/Country ..', },)
 
-autocomplete_light.register(ResourceBaseAutocomplete,
-                            search_fields=['title'],
-                            order_by=['title'],
-                            limit_choices=100,
-                            autocomplete_js_attributes={'placeholder': 'Resource name..', },)
+register(ResourceBaseAutocomplete,
+         search_fields=['title'],
+         order_by=['title'],
+         limit_choices=100,
+         autocomplete_js_attributes={'placeholder': 'Resource name..', },)
 
-autocomplete_light.register(HierarchicalKeyword,
-                            search_fields=['name', 'slug'],
-                            autocomplete_js_attributes={'placeholder':
-                                                        'A space or comma-separated list of keywords', },)
+register(HierarchicalKeyword,
+         search_fields=['name', 'slug'],
+         autocomplete_js_attributes={'placeholder':
+                                     'A space or comma-separated list of keywords', },)
 
 
-class ThesaurusKeywordLabelAutocomplete(autocomplete_light.AutocompleteModelBase):
+class ThesaurusKeywordLabelAutocomplete(AutocompleteModelBase):
 
     search_fields = ['label']
 
@@ -113,7 +120,7 @@ if hasattr(settings, 'THESAURI'):
 
         # print('Registering thesaurus autocomplete for {}: {}'.format(tname, ac_name))
 
-        autocomplete_light.register(
+        register(
             ThesaurusKeywordLabelAutocomplete,
             name=ac_name,
             choices=ThesaurusKeywordLabel.objects.filter(Q(keyword__thesaurus__identifier=tname))

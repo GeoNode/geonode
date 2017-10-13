@@ -533,6 +533,39 @@ Default: ``'admin@example.com'``
 
 This email address is added to the bottom of the password reset page in case users have trouble unlocking-locking their account.
 
+
+.. _pinax-notifications:
+
+User notifications settings
+===========================
+
+.. note:: `PINAX_*` settings are relevant if you have `pinax.notifications` app added to `INSTALLED_APPS`.
+
+.. note:: user configuration is described :ref:`notifications`.
+
+.. note:: Full list of Pinax-notifications app settings is `available in Pinax notifications docs <https://pinax-notifications.readthedocs.io/en/latest/settings/>`_.
+
+PINAX_NOTIFICATIONS_QUEUE_ALL
+-----------------------------
+
+Default: `False`
+
+A boolean that specifies if user notifications should be queued and send outside main web application process. If set to `True`, additional sending script, `python manage.py emit_notices` should be called periodically. 
+
+PINAX_NOTIFICATIONS_BACKENDS
+----------------------------
+
+Default: 
+
+.. code::
+
+    [
+    ("email", "pinax.notifications.backends.email.EmailBackend"),
+    ]
+
+List of backends (channels) that delivers messages to receipients.
+
+
 Download settings
 =================
 

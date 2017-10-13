@@ -61,6 +61,7 @@
   <h3>{{ profile.first_name|default:profile.name_long }}</h3>
   <table class="table table-user-profile">
     <tbody>
+      {% if SHOW_PROFILE_EMAIL %}
       <tr>
         <td class="table-user-profile-attribute">{% trans 'Email' %}</td>
         {% if profile.email %}
@@ -69,6 +70,7 @@
             <td>{% trans 'Not provided.' %}</td>
         {% endif %}
       </tr>
+      {% endif %}
       <tr>
         <td class="table-user-profile-attribute">{% trans 'Position' %}</td>
         <td>{{ profile.position | default:_('Not provided.') }}</td>
@@ -114,7 +116,7 @@
     </tbody>
   </table>
 </div>
-  
+
 <div class="col-xs-12 col-md-3">
   <ul class="list-group">
       <li class="list-group-item"><a href="{% url "message_create" profile.pk %}"><i class="fa fa-paper-plane-o"></i> {% trans "Message User" %}</a></li>
@@ -126,6 +128,9 @@
     </ul>
     <ul class="list-group">
       <li class="list-group-item"><a href="{% url "layer_upload" %}"><i class="fa fa-cloud-upload"></i> {% trans "Upload new layers" %}</a></li>
+      {% if 'geonode.contrib.createlayer' in INSTALLED_APPS %}
+        <li class="list-group-item"><a href="{% url "layer_create" %}"><i class="fa fa-map-o"></i> {% trans "Create a new layer" %}</a></li>
+      {% endif %}
       <li class="list-group-item"><a href="{% url "new_map" %}"><i class="fa fa-map-marker"></i> {% trans "Create a new map" %}</a></li>
       <li class="list-group-item"><a href="{% url "user-activity" profile.username %}"><i class="fa fa-fire"></i> {% trans "My Activities" %}</a></li>
     </ul>

@@ -21,7 +21,7 @@
 import os
 import tempfile
 import zipfile
-import autocomplete_light
+from autocomplete_light.registry import autodiscover
 
 from django.conf import settings
 from django import forms
@@ -32,7 +32,7 @@ except ImportError:
 from geonode.layers.utils import unzip_file
 from geonode.layers.models import Layer, Attribute
 
-autocomplete_light.autodiscover() # flake8: noqa
+autodiscover() # flake8: noqa
 
 from geonode.base.forms import ResourceBaseForm
 
@@ -139,7 +139,6 @@ class LayerUploadForm(forms.Form):
                 xml_file = cleaned["xml_file"].name
             if cleaned["sld_file"] is not None:
                 sld_file = cleaned["sld_file"].name
-
         if not cleaned["metadata_upload_form"] and not cleaned["style_upload_form"] and base_ext.lower() not in (
                 ".shp", ".tif", ".tiff", ".geotif", ".geotiff", ".asc"):
             raise forms.ValidationError(

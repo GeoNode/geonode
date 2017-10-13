@@ -235,7 +235,7 @@ def fixup_style(cat, resource, style):
             else:
                 sld = style.read()
             logger.info("Creating style [%s]", name)
-            style = cat.create_style(name, sld)
+            style = cat.create_style(name, sld, overwrite=True, raw=True)
             lyr.default_style = cat.get_style(name)
             logger.info("Saving changes to %s", lyr)
             cat.save(lyr)
@@ -762,7 +762,11 @@ def set_attributes_from_geoserver(layer, overwrite=False):
 
 def set_styles(layer, gs_catalog):
     style_set = []
+
     gs_layer = gs_catalog.get_layer(layer.name)
+    if not gs_layer:
+        gs_layer = gs_catalog.get_layer(layer.alternate)
+
     if gs_layer.default_style:
         default_style = gs_layer.default_style
     else:
@@ -965,23 +969,22 @@ def _create_db_featurestore(name, data, overwrite=False, charset="UTF-8", worksp
         ds_exists = True
     except FailedRequestError:
         ds = cat.create_datastore(dsname, workspace=workspace)
-
-    db = ogc_server_settings.datastore_db
-    db_engine = 'postgis' if \
-        'postgis' in db['ENGINE'] else db['ENGINE']
-    ds.connection_parameters.update(
-        {'validate connections': 'true',
-         'max connections': '10',
-         'min connections': '1',
-         'fetch size': '1000',
-         'host': db['HOST'],
-         'port': db['PORT'] if isinstance(
-             db['PORT'], basestring) else str(db['PORT']) or '5432',
-         'database': db['NAME'],
-         'user': db['USER'],
-         'passwd': db['PASSWORD'],
-         'dbtype': db_engine}
-    )
+        db = ogc_server_settings.datastore_db
+        db_engine = 'postgis' if \
+            'postgis' in db['ENGINE'] else db['ENGINE']
+        ds.connection_parameters.update(
+            {'validate connections': 'true',
+             'max connections': '10',
+             'min connections': '1',
+             'fetch size': '1000',
+             'host': db['HOST'],
+             'port': db['PORT'] if isinstance(
+                 db['PORT'], basestring) else str(db['PORT']) or '5432',
+             'database': db['NAME'],
+             'user': db['USER'],
+             'passwd': db['PASSWORD'],
+             'dbtype': db_engine}
+        )
 
     if ds_exists:
         ds.save_method = "PUT"
@@ -993,7 +996,8 @@ def _create_db_featurestore(name, data, overwrite=False, charset="UTF-8", worksp
         cat.add_data_to_store(ds, name, data,
                               overwrite=overwrite,
                               charset=charset)
-        return ds, cat.get_resource(name, store=ds, workspace=workspace)
+        resource = cat.get_resource(name, store=ds, workspace=workspace)
+        return ds, resource
     except Exception:
         msg = _("An exception occurred loading data to PostGIS")
         msg += "- %s" % (sys.exc_info()[1])
@@ -1199,19 +1203,31 @@ def geoserver_upload(
     style = None
     if sld is not None:
         try:
-            cat.create_style(name, sld)
+            style = cat.get_style(name)
+            overwrite = style or False
+            cat.create_style(name, sld, overwrite=overwrite, raw=True)
         except geoserver.catalog.ConflictingDataError as e:
             msg = ('There was already a style named %s in GeoServer, '
                    'try to use: "%s"' % (name + "_layer", str(e)))
             logger.warn(msg)
             e.args = (msg,)
+        except geoserver.catalog.UploadError as e:
+            msg = ('Error while trying to upload style named %s in GeoServer, '
+                   'try to use: "%s"' % (name + "_layer", str(e)))
+            e.args = (msg,)
+            logger.exception(e)
 
         if style is None:
             try:
                 style = cat.get_style(name)
+                overwrite = style or False
+                cat.create_style(name, sld, overwrite=overwrite, raw=True)
             except:
                 try:
-                    cat.create_style(name + '_layer', sld)
+                    style = cat.get_style(name + '_layer')
+                    overwrite = style or False
+                    cat.create_style(name + '_layer', sld, overwrite=overwrite, raw=True)
+                    style = cat.get_style(name + '_layer')
                 except geoserver.catalog.ConflictingDataError as e:
                     msg = ('There was already a style named %s in GeoServer, '
                            'cannot overwrite: "%s"' % (name, str(e)))
@@ -1228,7 +1244,13 @@ def geoserver_upload(
         if style:
             publishing.default_style = style
             logger.info('default style set to %s', name)
-            cat.save(publishing)
+            try:
+                cat.save(publishing)
+            except geoserver.catalog.FailedRequestError as e:
+                msg = ('Error while trying to save resource named %s in GeoServer, '
+                       'try to use: "%s"' % (publishing, str(e)))
+                e.args = (msg,)
+                logger.exception(e)
 
     # Step 10. Create the Django record for the layer
     logger.info('>>> Step 10. Creating Django record for [%s]', name)
@@ -1395,7 +1417,7 @@ class OGC_Servers_Handler(object):
         server.setdefault('GEOGIG_DATASTORE_DIR', str())
 
         for option in ['MAPFISH_PRINT_ENABLED', 'PRINT_NG_ENABLED', 'GEONODE_SECURITY_ENABLED',
-                       'BACKEND_WRITE_ENABLED']:
+                       'GEOFENCE_SECURITY_ENABLED', 'BACKEND_WRITE_ENABLED']:
             server.setdefault(option, True)
 
         for option in ['GEOGIG_ENABLED', 'WMST_ENABLED', 'WPS_ENABLED']:
@@ -1823,13 +1845,11 @@ def create_gs_thumbnail(instance, overwrite=False):
     # Avoid using urllib.urlencode here because it breaks the url.
     # commas and slashes in values get encoded and then cause trouble
     # with the WMS parser.
-    p = "&".join("%s=%s" % item for item in params.items())
+    _p = "&".join("%s=%s" % item for item in params.items())
 
     import posixpath
-
-    thumbnail_remote_url = posixpath.join(ogc_server_settings.PUBLIC_LOCATION, wms_endpoint) + "?" + p
-
-    thumbnail_create_url = posixpath.join(ogc_server_settings.LOCATION, wms_endpoint) + "?" + p
+    thumbnail_remote_url = posixpath.join(ogc_server_settings.PUBLIC_LOCATION, wms_endpoint) + "?" + _p
+    thumbnail_create_url = posixpath.join(ogc_server_settings.LOCATION, wms_endpoint) + "?" + _p
 
     create_thumbnail(instance, thumbnail_remote_url, thumbnail_create_url,
                      ogc_client=http_client, overwrite=overwrite, check_bbox=check_bbox)
