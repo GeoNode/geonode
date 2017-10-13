@@ -1,3 +1,186 @@
+geonode (2.7.1+dev20171013111656) xenial; urgency=high
+
+  [ Alessio Fabiani ]
+  * [084a43]  - Add the possibility of uploading an arbitrary SLD to a Layer
+
+  [ Simone Dalmasso ]
+  * [8fd14a] drop alpha version in favour of unstable. reflects the release versions agreement where unstable will be only for odd versions.
+  * [99d82c] make sure get_version is happy with the unstable flag
+  * [a29591] bump version to 2.9 unstable
+
+  [ Alessio Fabiani ]
+  * [c718c3]  - Add the possibility of uploading an arbitrary SLD to a Layer
+
+  [ capooti ]
+  * [6231be] Adding the createlayer contrib application, as per GNIP #3269
+
+  [ Francesco Bartoli ]
+  * [649c38] Fix rst syntax errors on setup centos 7 (#3274)
+
+  [ Paolo Corti ]
+  * [9897a6] Adding the createlayer contrib application, as per GNIP #3269 (#3278)
+
+  [ Alessio Fabiani ]
+  * [b7ad02]  - Fix dev dependencies for OWSLib and django-user-accounts on requirements.txt and setup.py (#3281)
+  * [aa10da]  - Fix SLD Upload issue with Create Layer functionality
+  * [b302ee]  - Fix dev dependencies for OWSLib and django-user-accounts on requirements.txt and setup.py (#3281)
+
+  [ karakostis ]
+  * [280ca9] changes in the libraries in setup.py and requirements.txt
+
+  [ Alessio Fabiani ]
+  * [bd9561]  - Fix SLD Upload issue with Create Layer functionality
+  * [5e5921]  - Add default port 80 host to 'default_oauth_apps.json' also
+  * [52f29d]  - Avoid exception on User Account deletion
+  * [eaf0e5]  - Specify 'django-user-accounts' egg in order to avoid requirements error during setup on clean environment (#3289)
+  * [8c5020]  - Update Pinax Notifications to v.4.0.0, fix templates and enable them by default
+  * [28667a]  - Add default port 80 host to 'default_oauth_apps.json' also
+  * [141e88]  - Avoid exception on User Account deletion
+  * [a0f2b6]  - Specify 'django-user-accounts' egg in order to avoid requirements error during setup on clean environment (#3289)
+
+  [ karakostis ]
+  * [9d404b] download_layer
+
+  [ Alessio Fabiani ]
+  * [e5aa63] Merge pull request #3290 from GeoNode/pinax_upd
+
+  [ Cezary Statkiewicz ]
+  * [780710] improved ows links app: csw and homepage
+
+  [ capooti ]
+  * [7a0d5f] Adding the datastore shards contrib application
+
+  [ Cezary Statkiewicz ]
+  * [6e0cb0] improved ows links app: csw and homepage
+
+  [ Alessio Fabiani ]
+  * [eea064]  - Update OWSLib version to 0.15.0 (#3296)
+  * [f4239b]  - Update OWSLib version to 0.15.0 (#3296)
+
+  [ capooti ]
+  * [05b044] Merging requirements with master
+
+  [ Jonathan Doig ]
+  * [426e08] Mention ISO and describe CSW in developer page
+  * [f04988] Fixed typo "for" not "from"
+
+  [ capooti ]
+  * [1a90e8] Adding the datastore shards contrib application
+
+  [ Ami Rahav ]
+  * [0bcdce] Version constrain six, see https://github.com/benjaminp/six/issues/210
+
+  [ karakostis ]
+  * [e0e2d6] remove unnecessary code
+
+  [ Paolo Corti ]
+  * [a5882a] Add a link to create-layer in profile page (#3301)
+
+  [ karakostis ]
+  * [b5f8e3] adding max features and clear button
+
+  [ Glenn Vorhes ]
+  * [04f635] gitignore celery helper files
+
+  [ Paolo Corti ]
+  * [cc0234] Add a link to create-layer in profile page (#3301)
+
+  [ karakostis ]
+  * [240e15] Download a layer filtered by attributes
+
+  [ GeoSolutions ]
+  * [914a55]  - Fix GeoFence rule creation when priority is not continuous
+
+  [ Alessio Fabiani ]
+  * [7a68cb]  - Fix GeoFence rule creation when priority is not continuous
+
+  [ Glenn Vorhes ]
+  * [9f5246] gitignore celery helper files
+
+  [ Alessio Fabiani ]
+  * [9bce2a]  - Fix GeoFence rule creation when priority is not continuous
+
+  [ Francesco Bartoli ]
+  * [f9f45a] Fix #3308
+  * [ce68d0] Fix #3308 (#3309)
+
+  [ Alessio Fabiani ]
+  * [9cf92a] Merge pull request #3305 from GeoNode/GEOFENCE_FIX
+
+  [ Francesco Bartoli ]
+  * [289f5a] Fix malformed value for ast
+
+  [ Alessio Fabiani ]
+  * [ee5fef]  - Avoid Multiple Tags Exception
+
+  [ capooti ]
+  * [fe2a08] Add the "Add the layer to an existing map" feature in layer detail page
+
+  [ Alessio Fabiani ]
+  * [3b1d7f]  - Master branch alignment
+
+  [ Jose ]
+  * [2081ab] Message colors fix.
+
+  [ Omar Ureta ]
+  * [934963] Added additional instructions
+
+  [ Cezary Statkiewicz ]
+  * [e2909e] async notifications - updated, improved
+  * [aa3e82] async notifications - updated, improved
+
+  [ Alessio Fabiani ]
+  * [49ec1e]  - Master branch alignment (#3318)
+
+  [ Cezary Statkiewicz ]
+  * [eea80f] async signals docs #2889, #3307
+  * [a39b57] pinax notifications docs update #2889, #3307
+  * [fb86c3] pinax notifications docs update #2889, #3307
+
+  [ Alessio Fabiani ]
+  * [801511]  - Avoid Multiple Tags Exception
+
+  [ karakostis ]
+  * [4ebba3] updated gitignore
+  * [00aeff] small fixes
+  * [9f7d17] pep8 syntax issue fix
+  * [ab2509] proposed minor fixes
+
+  [ Alessio Fabiani ]
+  * [78fc38]  - Make Pavement GeoServer setup/reset command checks oauth2 filter also
+  * [0c903f]  - Make SLD Upload method checking fo UserLayer node also
+  * [06c1a2]  - Jetty Runner Update Version
+
+  [ karakostis ]
+  * [633482] refactoring download filtered layer
+
+  [ Alessio Fabiani ]
+  * [a7104a]  - Reduce logs verbosity of consumer when logger level is 'INFO'
+
+  [ Paolo Corti ]
+  * [b82e0c] Fixes #3337 (#3339)
+  * [d4140c] Fixes #3332 (#3333)
+
+  [ karakostis ]
+  * [db95c2] fixes
+  * [5c719b] blank line fixes
+  * [d7ef63] fix js error
+
+  [ Paolo Corti ]
+  * [fa416f] Fixes #3341 and provide a setting to enable/disable email display in profiles (#3342)
+
+  [ Alessio Fabiani ]
+  * [0b3a4c]  - Cumulative patches for fixing: GeoExt SLD Editor, Layer SLD Upload, Layer Upload, Document Upload, Layer Metadata Editor, Document Metadata Editor
+
+  [ Tyler Battle ]
+  * [8826ba] GeoServer stores weren’t being created automatically
+
+  [ Alessio Fabiani ]
+  * [66d4b0]  - Improved Thumbnail Feedbacks
+  * [8bf09a] Merge with master
+
+ -- Alessio Fabiani <alessio.fabiani@geo-solutions.it>  Fri, 13 Oct 2017 17:14:40 +0200
+
 geonode (2.7.0+thefinal0) xenial; urgency=high
 
   [ afabiani ]
