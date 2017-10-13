@@ -39,7 +39,7 @@ class ProfileIndex(indexes.SearchIndex, indexes.Indexable):
 
     def prepare_id(self, obj):
         # this is awful I'm so sorry
-        return int(uuid.UUID(obj.uuid).time_low)
+        return obj.id
 
     def prepare_title(self, obj):
         return str(obj)
