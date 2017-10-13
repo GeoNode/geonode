@@ -25,6 +25,7 @@ from django.conf import settings
 from haystack import indexes
 
 from geonode.groups.models import GroupProfile
+import uuid
 
 
 class GroupIndex(indexes.SearchIndex, indexes.Indexable):
@@ -33,12 +34,16 @@ class GroupIndex(indexes.SearchIndex, indexes.Indexable):
     # https://github.com/toastdriven/django-haystack/issues/569 - Necessary for sorting
     title_sortable = indexes.CharField(indexed=False)
     description = indexes.CharField(model_attr='description', boost=1.5)
-    id = indexes.IntegerField(model_attr='id')
+    id = indexes.IntegerField()
     type = indexes.CharField(faceted=True)
     json = indexes.CharField(indexed=False)
 
     def get_model(self):
         return GroupProfile
+
+    def prepare_id(self, obj):
+        # this is awful I'm so sorry
+        return int(uuid.UUID(obj.uuid).time_low)
 
     def prepare_title(self, obj):
         return str(obj)

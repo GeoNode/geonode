@@ -24,10 +24,11 @@ from django.contrib.contenttypes.models import ContentType
 from django.db.models import Avg
 from haystack import indexes
 from geonode.maps.models import Layer
+import uuid
 
 
 class LayerIndex(indexes.SearchIndex, indexes.Indexable):
-    id = indexes.IntegerField(model_attr='resourcebase_ptr_id')
+    id = indexes.IntegerField()
     abstract = indexes.CharField(model_attr="abstract", boost=1.5)
     category__gn_description = indexes.CharField(model_attr="category__gn_description", null=True)
     csw_type = indexes.CharField(model_attr="csw_type")
@@ -96,6 +97,10 @@ class LayerIndex(indexes.SearchIndex, indexes.Indexable):
 
     def get_model(self):
         return Layer
+
+    def prepare_id(self, obj):
+        # this is awful I'm so sorry
+        return int(uuid.UUID(obj.uuid).time_low)
 
     def prepare_type(self, obj):
         return "layer"

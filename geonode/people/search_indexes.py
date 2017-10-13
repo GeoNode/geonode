@@ -20,10 +20,11 @@
 
 from haystack import indexes
 from geonode.people.models import Profile
+import uuid
 
 
 class ProfileIndex(indexes.SearchIndex, indexes.Indexable):
-    id = indexes.IntegerField(model_attr='id')
+    id = indexes.IntegerField()
     username = indexes.CharField(model_attr='username', null=True)
     first_name = indexes.CharField(model_attr='first_name', null=True)
     last_name = indexes.CharField(model_attr='last_name', null=True)
@@ -35,6 +36,10 @@ class ProfileIndex(indexes.SearchIndex, indexes.Indexable):
 
     def get_model(self):
         return Profile
+
+    def prepare_id(self, obj):
+        # this is awful I'm so sorry
+        return int(uuid.UUID(obj.uuid).time_low)
 
     def prepare_title(self, obj):
         return str(obj)
