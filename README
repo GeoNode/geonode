@@ -7,7 +7,7 @@
     :target: http://travis-ci.org/GeoNode/geonode
 
 
-GeoNode Support 
+GeoNode Support
 ===============
 
 To get support, give feedback and suggestions please use the GeoNode official channels, the users mailing list: http://lists.osgeo.org/pipermail/geonode-users/ and the developers mailing list: http://lists.osgeo.org/pipermail/geonode-devel/.
@@ -56,8 +56,8 @@ Or if you want to use the provided Makefile::
 
     # pull latest images
     make pull
-    
-**Note:**  
+
+**Note:**
 For deveployment you need to add `geonode` alias into `/ect/hosts/` file as following:
 
 ```
@@ -72,7 +72,7 @@ $ sudo vim /etc/hosts
 255.255.255.255 broadcasthost
 ::1             localhost
 ```
-To access GeoNode just enter the following url: `http://geonode/` on your web browser. 
+To access GeoNode just enter the following url: `http://geonode/` on your web browser.
 For GeoServer: `http://geonode/geoserver/web/`
 
 
@@ -100,7 +100,7 @@ Ubuntu development build instructions using an isolated virtual environment (tes
     cd geonode
 
     # Install pip dependencies
-    pip install -r requirements.txt
+    pip install -r requirements.txt --no-deps
     pip install -e .
     pip install pygdal==1.10.1
 
