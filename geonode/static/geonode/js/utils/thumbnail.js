@@ -24,6 +24,7 @@ var createMapThumbnail = function(obj_id) {
             e.removeAttr("id");
         }
     });
+
     var url = window.location.pathname.replace('/view', '');
         url = url.replace('/edit', '');
         url = url.replace('/metadata', '');
@@ -34,7 +35,6 @@ var createMapThumbnail = function(obj_id) {
     }
 
     url+= '/thumbnail';
-
     var body = ("<div style='height:" + height + "px; width: " + width + "px;'>" + map.html() + "</div>");
 
     $.ajax({

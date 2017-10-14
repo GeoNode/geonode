@@ -1123,6 +1123,7 @@ if S3_MEDIA_ENABLED:
     DEFAULT_FILE_STORAGE = 'storages.backends.s3boto.S3BotoStorage'
     MEDIA_URL = "https://%s/%s/" % (AWS_S3_BUCKET_DOMAIN, MEDIAFILES_LOCATION)
 
+
 # djcelery.setup_loader()
 
 # There are 3 ways to override GeoNode settings:
