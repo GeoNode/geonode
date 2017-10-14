@@ -114,15 +114,5 @@ CATALOGUE = {
     }
 }
 
-
-REGISTRATION_OPEN = True  #keep True if registration process is open
-ACCOUNT_EMAIL_CONFIRMATION_EMAIL = False  # If True then confirmation mail will sent
-ACCOUNT_EMAIL_CONFIRMATION_REQUIRED = False # If True, confirmation required
-ACCOUNT_APPROVAL_REQUIRED = False  # keep False
-ACCOUNT_EMAIL_UNIQUE = True
-
-ALLOWED_HOSTS= [ 'localhost',  '103.48.16.135' ]
-
-
 # Default preview library
 #LAYER_PREVIEW_LIBRARY = 'geoext'
