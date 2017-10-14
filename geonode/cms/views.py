@@ -298,7 +298,7 @@ class SectionUpdate(UpdateView):
     """
     template_name = 'section_update.html'
     model = SectionManagementModel
-    # import pdb; pdb.set_trace()
+
 
     def get_form_class(self):
         slug = SectionManagementTable.objects.get(pk=self.kwargs['section_pk']).slug
