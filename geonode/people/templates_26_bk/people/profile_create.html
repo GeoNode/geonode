@@ -1,0 +1,17 @@
+{% extends "people/profile_base.html" %}
+
+{% load i18n %}
+{% load bootstrap_tags %}
+
+{% block body %}
+  <form action="" class="form-horizontal" method="post">
+    <legend>{% trans "Create Profile" %}</legend>
+    {% csrf_token %}
+    <div class="form-controls">
+      {{ form|as_bootstrap }}
+    </div>
+    <div class="form-actions">
+      <input type="submit" value="{% trans "Create Profile" %}" class="btn btn-primary"/>
+    </div>
+  </form>
+{% endblock %}

@@ -1,0 +1,24 @@
+{% extends "site_base.html" %}
+{% load i18n %}
+
+{% block body_outer %}
+<div class="page-header">
+  <h2>{% trans "Forgot Username" %}</h2>
+</div>
+<div class="row">
+  <div class="col-md-8">
+    <p class="lead">{% trans "Enter your email address and click the submit button. <br />Your username will be sent to you." %}</p>
+    <form method="post" action="">
+      {% csrf_token %}
+      {{ form.as_p }}
+      <div class="form-actions">
+        <input class="btn btn-primary" type="submit" value="{% trans 'Submit' %}" />
+      </div>
+    </form>
+    {% if message %}
+    <div class="alert alert-danger grid-spacer">{{ message }}</div>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}
+

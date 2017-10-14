@@ -1,0 +1,90 @@
+{% extends "layers/layer_base.html" %}
+{% load i18n %}
+
+{% block title %}{{ layer.typename }} — {{ block.super }}{% endblock %}
+
+{% block body_class %}layers{% endblock %}
+
+{% block body_outer %}
+{% if error %}
+<div class="alert alert-error">{{ error }}</div>
+{% endif %}
+
+<div class="page-header">
+  <h2>{% trans "Manage Styles" %}</h2>
+</div>
+<h4>{% blocktrans with layer.typename as layer_title %}
+      Manage Available Styles for <a href="/layers/{{ layer_title }}">{{ layer_title }}</a>
+    {% endblocktrans %}</h4>
+<form action="{% url "layer_style_manage" layer.service_typename %}" method="POST">
+  <div class="row grid-spacer">
+    <fieldset>
+      <div class="col-md-3">
+        <h4>{% trans "Layer Default Style" %}</h4>
+      </div>
+      <div class="col-md-6">
+        <select id='default_style' name='default_style' required='required'>
+          {% for style in layer_styles %}
+            {% if style = layer.default_style %}
+            <option value="{{ style.0 }}" selected>{{ style.1 }}</option>
+            {% else %}
+            <option value="{{ style.0 }}">{{ style.1 }}</option>
+            {% endif %}
+          {% endfor %}
+        </select>
+      </div>
+    </fieldset>
+  </div>
+  <div class="row grid-spacer">
+    <fieldset>
+      <div class="col-md-3">
+        <h4>{% trans "Available styles" %}</h4>
+        <p>{% trans "Click on an available style in the upper box to assign it to this layer. Selected styles appear in the lower box." %}</p>
+      </div>
+      <div class="col-md-9">
+        <select multiple="multiple" id="style-select" name="style-select">
+          {% for style in gs_styles %}
+            {% if style in layer_styles %}
+            <option value='{{ style.0 }}' selected>{{ style.1 }}</option>
+            {% else %}
+            <option value='{{ style.0 }}'>{{ style.1 }}</option>
+            {% endif %}
+          {% endfor %}
+        </select>
+        {% csrf_token %}
+        <input type="hidden" value="{{ layer.service_typename }}" />
+      </div>
+    </fieldset>
+  </div>
+  <div class="row grid-spacer">
+    <div class="col-md-offset-3 col-md-6 form-actions">
+      <input type="submit" value="{% trans "Update Available Styles" %}" class="btn btn-danger" />
+    </div>
+  </div>
+</form>
+
+{% endblock %}
+{% block extra_script %}
+{{ block.super }}
+<script type="text/javascript">
+  $(function () {
+
+    $('#style-select').multiSelect({
+      afterSelect: function(values){
+        $('#default_style').append($("<option/>", {
+          value: values[0],
+          text: values[0]
+        }));
+      },
+      afterDeselect: function(values){
+        $('#default_style option').each(function() {
+          if ( $(this).val() == values[0] ) {
+            $(this).remove();
+          }
+        });
+      }
+    });
+
+  });
+</script>
+{% endblock %}

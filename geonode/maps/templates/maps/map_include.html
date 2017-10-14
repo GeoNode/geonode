@@ -18,7 +18,8 @@ Ext.onReady(function() {
         proxy: '{{ PROXY_URL }}',
         {% endif %}
         {% if MAPFISH_PRINT_ENABLED %}
-        printService: "{{GEOSERVER_BASE_URL}}pdf/",
+        //printService: "{{GEOSERVER_BASE_URL}}pdf/",
+		printService: "{{GEOSERVER_BASE_URL}}pdf/info.json?url={{GEOSERVER_BASE_URL}}pdf/",
         {% else %}
         printService: "",
         {% endif %} 
@@ -26,11 +27,11 @@ Ext.onReady(function() {
 
         // tell the map viewer where and how to be rendered
         portalConfig: {
-            height: 600,
+            height: GD_WRAPPER__HEIGHT,
             renderTo: "the_map"
         }
     }, {{ config }});
-app = new GeoExplorer.Viewer(config);
+    app = new GeoExplorer.Viewer(config);
 {% endautoescape %}
 });
 </script>

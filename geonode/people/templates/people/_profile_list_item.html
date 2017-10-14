@@ -1,54 +1,126 @@
 {% load i18n %}
 
 {% verbatim %}
-  <article ng-repeat="profile in results" ng-cloak class="ng-cloak">
-    <div class="col-xs-12 col-sm-6 profile-container">
-      <div class="col-xs-12 profile-avatar">
-        <div class="col-xs-4 profile-image">
-          <a href="{{ profile.profile_detail_url }}" ><img ng-src="{{ profile.avatar_100 }}"/></a>
-        </div>
-        <div class="col-xs-8 profile-details" style="height: 110px;">
-          <h5>
-            <a href="{{ profile.profile_detail_url }}">{{ profile.first_name != '' ? profile.first_name : profile.username }} {{ profile.last_name != '' ? profile.last_name : '' }}
-            </a>
-          </h5>
-          <p>
-            <small ng-hide="profile.organization">
-              No Organization Info
-            </small>
-            <small ng-show="profile.organization">
-              {{ profile.organization | limitTo:30 }} <small ng-if="profile.organization.length > 30">...</small>
-            </small>
-          </p>
-          <!-- <p>{{ profile.username }}</p> -->
-          <!-- <a href="mailto:{{ profile.email }}" ng-if="profile.email != ''"><i class="fa fa-envelope"></i></a> -->
-        </div>
-        <div class="col-xs-12 profile-items">
-          <ul class="list-inline">
-            <li>
-              <a href="{{ profile.profile_detail_url }}?content=layers">
-                <i class="fa fa-square-o rotate-45"></i>
-                {{ profile.layers_count }}
-                <!-- <ng-pluralize count="profile.layers_count" when="{'1': 'Layer', 'other': 'Layers'}"></ng-pluralize> -->
-              </a>
-            </li>
-            <li>
-              <a href="{{ profile.profile_detail_url }}?content=maps">
-                <i class="fa fa-map-marker"></i>
-                {{ profile.maps_count }}
-                <!-- <ng-pluralize count="profile.maps_count" when="{'1': 'Map', 'other': 'Maps'}"></ng-pluralize> -->
-              </a>
-            </li>
-            <li>
-              <a href="{{ profile.profile_detail_url }}?content=documents">
-                <i class="fa fa-file-text-o"></i>
-                {{ profile.documents_count }}
-                <!-- <ng-pluralize count="profile.documents_count" when="{'1': 'Doc', 'other': 'Docs'}"></ng-pluralize> -->
-              </a>
-            </li>
-          </ul>
-        </div>
+  <div ng-if="pageViewing == 'list'" class="gd-content-body">
+    <table  class="table gd-list-table border-none">
+        <tbody>
+            <tr ng-repeat="profile in results" ng-cloak>
+                <td width="50%">
+                    <a href="{{ profile.profile_detail_url }}" class="media-list">
+                        <div class="media">
+                            <div class="media-left" style="width: 50%;">
+                              <img height="60" class="media-object" ng-src="{{ profile.avatar_100 }}" alt="Profile Image"/>
+                            </div>
+                            <div class="media-body">
+                                {{ profile.first_name != '' ? profile.first_name : profile.username }} {{ profile.last_name != '' ? profile.last_name : '' }}
+                            </div>
+                        </div>
+                    </a>
+                </td>
+                <td>
+                    <div class="pull-right">
+                        <ul class="user-actions">
+                            <!-- <li>
+                                <a href="javascript:;" class="hover-off">
+                                    {{ profile.organization != '' && profile.organization != null ?  profile.organization : "No Organization info" }}
+                                </a>
+                            </li> -->
+                            <li>
+                                <a href="{{ profile.profile_detail_url }}?content=layers" >
+                                    <!--<img  src="{{ STATIC_URL }}geonode/images/leyer-icon.png" alt="leyer-icon">-->
+                                    <span class="fa-layers-group fa-stack fa-rotate-90" style="font-size:12px;">
+                                        <i class="fa fa-stop fa-layers fa-stack-1x" style="left: 0;"></i>
+                                        <i class="fa fa-stop fa-layers fa-stack-1x" style="left: -.15em;color:#fff;"></i>
+                                        <i class="fa fa-stop fa-layers fa-stack-1x" style="left: -.3em;"></i>
+                                        <i class="fa fa-stop fa-layers fa-stack-1x" style="left: -.45em;color:#fff;"></i>
+                                        <i class="fa fa-stop fa-layers fa-stack-1x" style="left: -.6em;"></i>
+                                    </span>
+                                    {{ profile.layers_count }}
+                                </a>
+                            </li>
+                            <li>
+                                <a href="{{ profile.profile_detail_url }}?content=documents">
+                                    <i class="fa fa-file-text-o"></i>
+                                    {{ profile.documents_count }}
+                                </a>
+                            </li>
+                            <li>
+                                <a href="{{ profile.profile_detail_url }}?content=maps">
+                                    <i class="fa fa-map-marker"></i>
+                                    {{ profile.maps_count }}
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+  </div>
+  <div ng-if="pageViewing == 'grid'" class="gd-content-body transparent">
+      <div class="row">
+        <article>
+            <div class="col-xs-12 col-sm-6 col-md-4 col-lg-3" ng-repeat="profile in results" ng-cloak>
+                <div class="grid-container">
+                    <div class="top-content text-center">
+                        <div class="avater">
+                            <a href="{{ profile.profile_detail_url }}?content=layers">
+                                <div class="avater-img">
+                                  <div class="avater-img-mid">
+                                    <div class="text-center">
+                                      <img height="100" class="img-circle" ng-src="{{ profile.avatar_100 }}" alt="Profile Image"/>
+                                    </div>
+                                  </div>
+                                </div>
+                                <div class="txt" style="min-height: 60px;">
+                                  {{ profile.first_name != '' ? profile.first_name : profile.username }} {{ profile.last_name != '' ? profile.last_name : '' }}
+                                </div>
+                            </a>
+                        </div>
+                        <div class="details pro-org" title="{{profile.organization}}">
+                            <div ng-show="profile.organization != '' && profile.organization != null">
+                                {{ profile.organization | limitTo: 50 }} {{ profile.organization.length  > 50 ? '...' : ''}}
+                            </div>
+                            <div ng-show="profile.organization == '' || profile.organization == null">
+                                No Organization info
+                            </div>
+                        </div>
+                    </div>
+                    <div class="bottom-content">
+                        <div class="row">
+                            <div class="profile-items text-center">
+                                <ul class="list-inline">
+                                    <li>
+                                        <a href="{{ profile.profile_detail_url }}?content=layers" >
+                                            <span class="fa-layers-group fa-stack fa-rotate-90" style="font-size:12px;">
+                                                <i class="fa fa-stop fa-layers fa-stack-1x" style="left: 0;"></i>
+                                                <i class="fa fa-stop fa-layers fa-stack-1x" style="left: -.15em;color:#fff;"></i>
+                                                <i class="fa fa-stop fa-layers fa-stack-1x" style="left: -.3em;"></i>
+                                                <i class="fa fa-stop fa-layers fa-stack-1x" style="left: -.45em;color:#fff;"></i>
+                                                <i class="fa fa-stop fa-layers fa-stack-1x" style="left: -.6em;"></i>
+                                            </span>
+                                            {{ profile.layers_count }}
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a href="{{ profile.profile_detail_url }}?content=documents">
+                                            <i class="fa fa-file-text-o"></i>
+                                            {{ profile.documents_count }}
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a href="{{ profile.profile_detail_url }}?content=maps">
+                                            <i class="fa fa-map-marker"></i>
+                                            {{ profile.maps_count }}
+                                        </a>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </article>
       </div>
-     </div>
-  </article>
+  </div>
 {% endverbatim %}

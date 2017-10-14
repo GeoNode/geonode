@@ -5,21 +5,28 @@
 {% block body_class %}groups remove{% endblock %}
 
 {% block body %}
-<div class="row">
-  <div class="col-md-8">
-    <form action="{% url "group_remove" group.slug %}" method="POST">
-      <h2>
-        {% blocktrans with group.title as group_title %}
-          Are you sure you want to remove the group: {{ group_title }}?
-        {% endblocktrans %}
-      </h2>
-      {% csrf_token %}
-      <input type="hidden" value="{{ group.slug }}" />
-      <div class="form-actions">
-        <input type="submit" value="{% trans "Yes, I am sure" %}" class="btn btn-danger" />
-        <a href="{% url "group_detail" group.slug %}" class="btn btn-info">{% trans "No, don't remove it" %}</a>
-      </div>
-    </form>
-  </div>
+<div class="gd-content">
+    <div class="gd-content-heading">
+        <div class="title small-content">
+          {% blocktrans with group.title as group_title %}
+            Are you sure you want to remove the group: {{ group_title }}?
+          {% endblocktrans %}
+        </div>
+        <div class="hr"></div>
+    </div>
+    <div class="gd-content-body full-pad-30px top-bottom-margin-20px">
+        <div class="row">
+          <div class="col-xs-12 col-md-12">
+            <form action="{% url "group_remove" group.slug %}" method="POST">
+              {% csrf_token %}
+              <input type="hidden" value="{{ group.slug }}" />
+              <div class="form-actions">
+                <input type="submit" value="{% trans "Yes, I am sure" %}" class="btn btn-danger btn-gd-remove" />
+                <a href="{% url "group_detail" group.slug %}" class="btn btn-info btn-gd-info">{% trans "No, don't remove it" %}</a>
+              </div>
+            </form>
+          </div>
+        </div>
+    </div>
 </div>
 {% endblock %}

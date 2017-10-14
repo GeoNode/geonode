@@ -1,0 +1,126 @@
+{% extends "upload/layer_upload_base.html" %}
+{% load i18n %}
+{% load staticfiles %}
+
+{% block title %} {% trans "Replace Layer"  %} - {{ block.super }}  {% endblock %}
+
+{% block body_class %}data data-list upload{% endblock %}
+
+{% block extra_head %}{{ block.super }}{% endblock %}
+
+{% block head %}
+
+{{ block.super }}
+{% endblock %}
+
+{% block body %}
+
+  <div class="col-md-8">
+    <p class="lead">{% trans "Replace Layer: " %}<a href="{{ layer.get_absolute_url }}">{{ layer.title }}</a></p>
+
+    {% if incomplete %}
+    <section class="widget" id="incomplete-download-list">
+      <h3>{% trans "Incomplete Uploads" %}</h3>
+      <p>{% trans "You have the following incomplete uploads" %}:</p>
+      {% for u in incomplete %}
+      <div class="clearfix uip" id="incomplete-{{ u.import_id }}">
+        <div class="pull-left">{{ u.name }}, {% trans "last updated on" %} {{ u.date }}</div>
+        <div class="upload_actions pull-right">
+          <a class="btn btn-mini" href="#" id="resume-{{ u.import_id }}">{% trans "Resume" %}</a>
+          <a class="btn btn-mini" href="#" id="delete-{{ u.import_id }}"><i class="fa fa-trash-o"></i> {% trans "Delete" %}</a>
+      </div>
+      </div>
+      {% endfor %}
+    </section>
+    <div id="confirm-delete" class="hide alert alert-warn" style="padding:10px; margin: 10px 0;">
+      {% trans "Are you sure you want to delete this upload?" %}
+      <div style="margin: 5px 0">
+        <a href="#y" class="btn btn-danger">{% trans "Delete" %}</a>
+        <a href="#n" class="btn">{% trans "Cancel" %}</a>
+      </div>
+      <a href="#yy" style="font-weight:normal">{% trans "Delete, and don't ask me again." %}</a>
+    </div>
+    {% endif %}
+    {% block additional_info %}{% endblock %}
+
+    {% if errors %}
+    <div id="errors">
+      {% for error in errors %}
+        <div>{{ error }}</div>
+      {% endfor %}
+      </div>
+        {% endif %}
+
+    <section id="drop-zone">
+      <h3><i class="fa fa-cloud-upload"></i><br />{% trans "Drop files here" %}</h3>
+    </section>
+
+    <p>{% trans " or select them one by one:" %}</p>
+
+    <form id="file-uploader" method="post" enctype="multipart/form-data">
+      <input class="btn" id="file-input" type="file" multiple>
+    </form>
+
+    <section class="widget">
+      <ul id="global-errors"></ul>
+      <h4>{% trans "Files to be uploaded" %}</h4>
+      <div id="file-queue"></div>
+    </section>
+
+    <section class="charset">
+      <p>{% trans "Select the charset or leave default" %}</p>
+      <select id="charset">
+        {% for charset in charsets %}
+        {% if charset.0 == 'UTF-8' %}
+        <option selected='selected' value={{ charset.0 }}>{{ charset.1 }}</option>
+        {% else %}
+        <option value={{ charset.0 }}>{{ charset.1 }}</option>
+        {% endif %}
+        {% endfor %}
+      </select>
+    </section>
+
+    <section>
+      <a href="#" id="clear-button" class="btn btn-default">{% trans "Clear" %}</a>
+      <a href="#" id="upload-button" class="btn btn-danger">{% trans "Replace Layer" %}</a>
+    </section>
+  </div>
+{% endblock %}
+
+{% block sidebar %}
+
+{% if GEONODE_SECURITY_ENABLED %}
+<div class="col-md-4">
+  <h3>{% trans "Permissions"  %}</h3>
+  <form id="permission_form">
+    {% include "_permissions.html" %}
+  </form>
+</div>
+{% endif %}
+
+{% endblock %}
+
+{% block extra_script %}
+{{ block.super }}
+
+<script data-main="{% static 'geonode/js/upload/main' %}"
+  src="{% static 'lib/js/require.js' %}">
+</script>
+
+<script type="text/javascript">
+{% autoescape off %}
+
+  csrf_token =  "{{ csrf_token }}",
+  form_target = "{% url "layer_replace" layer.service_typename %}",
+  geogig_enabled = {{ GEOGIG_ENABLED|lower  }},
+  time_enabled = {{ TIME_ENABLED|lower  }},
+  mosaic_enabled = {{ MOSAIC_ENABLED|lower  }},
+  userLookup = "{% url "geonode.views.ajax_lookup" %}"
+
+{% endautoescape %}
+
+</script>
+{% with "none" as layer %}
+{% include "_permissions_form_js.html" %}
+{% endwith %}
+{% endblock extra_script %}

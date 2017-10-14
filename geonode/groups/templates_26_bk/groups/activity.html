@@ -1,0 +1,70 @@
+{% extends 'site_base.html' %}
+{% load activity_tags social_tags i18n %}
+
+{% block extra_head %}
+{{ block.super }}{% endblock %}
+
+{% block title %}{%  trans "Activity Feed for"  %} {{ group.title }}{% endblock %}
+{% block content_title %}{%  trans "Activity Feed for"  %} {{ group.title }}{% endblock %}
+
+{% comment %}
+{% block navlinks %}
+<li><a href="{% url "actstream_object_feed" content_type_id=ctype.pk  object_id=actor.pk %}">RSS</a></li>
+<li><a href="{% url "actstream_object_feed_atom" content_type_id=ctype.pk  object_id=actor.pk %}">ATOM</a></li>
+{% endblock %}
+{% endcomment %}
+
+{% block body_outer %}
+<div class="page-header">
+  <h2 class="page-title">{%  trans "Activity Feed for"  %} <a href="{% url "group_detail" group.slug %}">{{ group.title }}</a></h2>
+</div>
+
+<div class="row">
+  <div class="col-md-8">
+    <ul class="nav nav-tabs">
+      <li class="active"><a href="#all" data-toggle="tab"><i class=""></i>{% trans "All" %}</a></li>
+      <li><a href="#layers" data-toggle="tab"><i class="fa fa-square-o rotate-45"></i> {% trans "Layers" %}</a></li>
+      <li><a href="#maps" data-toggle="tab"><i class="fa fa-map-marker"></i> {% trans "Maps" %}</a></li>
+      <li><a href="#comments" data-toggle="tab"><i class="fa fa-comment-o"></i> {% trans "Comments" %}</a></li>
+    </ul>
+    <div class="tab-content">
+      <article id="all" class="tab-pane active">
+        <ul class="no-style-list">
+        {% for action in action_list %}
+          {% activity_item action %}
+          {% empty %}
+          <p>{% trans "No actions yet" %}</p>
+        {% endfor %}
+        </ul>
+      </article>
+      <article id="layers" class="tab-pane">
+        <ul class="no-style-list">
+        {% for action in action_list_layers %}
+          {% activity_item action %}
+          {% empty %}
+          <p>{% trans "No actions yet" %}</p>
+        {% endfor %}
+        </ul>
+      </article>
+      <article id="maps" class="tab-pane">
+        <ul class="no-style-list">
+        {% for action in action_list_maps %}
+          {% activity_item action %}
+          {% empty %}
+          <p>{% trans "No actions yet" %}</p>
+        {% endfor %}
+        </ul>
+      </article>
+      <article id="comments" class="tab-pane">
+        <ul class="no-style-list">
+        {% for action in action_list_comments %}
+          {% activity_item action %}
+          {% empty %}
+          <p>{% trans "No actions yet" %}</p>
+        {% endfor %}
+        </ul>
+      </article>
+    </div>
+  </div>
+</div>
+{% endblock %}

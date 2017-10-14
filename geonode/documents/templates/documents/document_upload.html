@@ -12,34 +12,67 @@
     {{ block.super }}
 {% endblock %}
 
-{% block body %}
-
-<div class="col-md-8">
-  <form id="upload_form"  method="post" enctype="multipart/form-data" action="{% url "document_upload" %}">
-    <input type="hidden" name="csrfmiddlewaretoken" value="{{ csrf_token }}" />
-    {{ form.as_p }}
-    <button type="submit" id="upload-button" class="btn btn-danger">{% trans "Upload" %}</button>
-  </form>
-</div>
-
-{% endblock %}
-
-{% block sidebar %}
-
-<div class="col-md-4">
-  <h3>{% trans "Permissions"  %}</h3>
-  <form id="permission_form">
-    {% include "_permissions.html" %}
-  </form>
+{% block body_content %}
+<div class="gd-content">
+    <div class="gd-content-body transparent top-bottom-margin-20px">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="gd-content-body full-pad-40px">
+                  <form id="upload_form"  method="post" enctype="multipart/form-data" action="{% url "document_upload" %}">
+                    <div class="row">
+                        <div class="col-md-12">
+                            <label class="control-label"> <span style="color:red;"> * </span>{% trans "Select Organization " %} </label>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-12">
+                            <select id= "org-id" name="org-id" class="col-md-12" >
+                            {% for organization in ogranizations %}
+                            <option  value={{ organization.id }} >{{ organization.title }}</option>
+                            {% endfor %}
+                           </select>
+                        </div>
+                    </div>
+                    <div class="block-separator"></div>
+                    <div class="row">
+                        <div class="col-md-12">
+                            <label class="control-label"> <span style="color:red;"> * </span> {% trans "Select Category " %} </label>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-12">
+                            <select id= "category-id" name="category-id" class="col-md-12">
+                            {% for category in categories %}
+                            <option  value={{ category.gn_description }} >{{ category.gn_description }}</option>
+                            {% endfor %}
+                           </select>
+                        </div>
+                    </div>
+                    <div class="block-separator"></div>
+                    <input type="hidden" name="csrfmiddlewaretoken" value="{{ csrf_token }}" />
+                    {{ form|as_bootstrap }}
+                    <div class="sidebar-title">{% trans "Permissions"  %}</div>
+                    <div id="permission_form">
+                        {% include "_permissions.html" %}
+                    </div>
+                    <button type="submit" id="upload-button" class="btn btn-gd-primary">Upload</button>
+                  </form>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
 
 {% endblock %}
 
 {% block extra_script %}
-{{ block.super }}
 {% include "_permissions_form_js.html" %}
 
 <script type="text/javascript">
+    $(document).ready(function () {
+        anyonePermissionDisable();
+    });
+
     $('#id_doc_file').on('change', function(){
         if($('#id_title').val() == ''){
             $('#id_title').val($('#id_doc_file').val().replace("C:\\fakepath\\", ""));
@@ -48,7 +81,8 @@
     $("#resource").select2({
         minimumInputLength: 1,
         placeholder: 'Select layer, map or empty',
-        width: 'element',
+        //width: 'element',
+        width: 'copy',
         ajax: {
           traditional: true,
           url: '{% url 'api_dispatch_list' api_name='api' resource_name='base' %}',
@@ -64,7 +98,7 @@
                 return {id: object.id, text: object.title};
               })
             }
-          }
+          }          
         }
       });
     $('#upload_form').submit(function(){

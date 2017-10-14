@@ -1,4 +1,4 @@
-{% extends 'site_base.html' %}
+{% extends 'base_activity.html' %}
 {% load activity_tags social_tags i18n %}
 
 {% block extra_head %}
@@ -15,56 +15,151 @@
 {% endcomment %}
 
 {% block body_outer %}
-<div class="page-header">
-  <h2 class="page-title">{%  trans "Activity Feed for"  %} <a href="{% url "group_detail" group.slug %}">{{ group.title }}</a></h2>
-</div>
-
-<div class="row">
-  <div class="col-md-8">
-    <ul class="nav nav-tabs">
-      <li class="active"><a href="#all" data-toggle="tab"><i class=""></i>{% trans "All" %}</a></li>
-      <li><a href="#layers" data-toggle="tab"><i class="fa fa-square-o rotate-45"></i> {% trans "Layers" %}</a></li>
-      <li><a href="#maps" data-toggle="tab"><i class="fa fa-map-marker"></i> {% trans "Maps" %}</a></li>
-      <li><a href="#comments" data-toggle="tab"><i class="fa fa-comment-o"></i> {% trans "Comments" %}</a></li>
-    </ul>
-    <div class="tab-content">
-      <article id="all" class="tab-pane active">
-        <ul class="no-style-list">
-        {% for action in action_list %}
-          {% activity_item action %}
-          {% empty %}
-          <p>{% trans "No actions yet" %}</p>
-        {% endfor %}
-        </ul>
-      </article>
-      <article id="layers" class="tab-pane">
-        <ul class="no-style-list">
-        {% for action in action_list_layers %}
-          {% activity_item action %}
-          {% empty %}
-          <p>{% trans "No actions yet" %}</p>
-        {% endfor %}
-        </ul>
-      </article>
-      <article id="maps" class="tab-pane">
-        <ul class="no-style-list">
-        {% for action in action_list_maps %}
-          {% activity_item action %}
-          {% empty %}
-          <p>{% trans "No actions yet" %}</p>
-        {% endfor %}
-        </ul>
-      </article>
-      <article id="comments" class="tab-pane">
-        <ul class="no-style-list">
-        {% for action in action_list_comments %}
-          {% activity_item action %}
-          {% empty %}
-          <p>{% trans "No actions yet" %}</p>
-        {% endfor %}
-        </ul>
-      </article>
+    <div class="gd-content">
+        <div class="gd-content-heading">
+            <!--{% if page_obj.has_next or page_obj.has_previous %}-->
+            <!--<div class="title small-content" id="home_back_act">-->
+                <!--<a href="{% url "home" %}">-->
+                    <!--Home-->
+                <!--</a>-->
+                <!--<a href="{% url "group_detail" group.slug %}">-->
+                    <!--Back-->
+                <!--</a>-->
+            <!--</div>-->
+            <!--{% endif %}-->
+            <div class="title small-content">
+                {%  trans "Activity Feed for"  %}
+                <a href="{% url "group_detail" group.slug %}">
+                    {{ group.title }}
+                </a>
+            </div>
+            <div class="hr"></div>
+        </div>
+        <div class="gd-content-body gd-history transparent top-bottom-margin-20px">
+            <div class="row">
+                <div class="col-md-12">
+                    <ul class="nav navbar-nav nav-pills">
+                      <li class="active"><a href="#all" data-toggle="tab"><i class=""></i>{% trans "All" %}</a></li>
+                      <li><a href="#layers" data-toggle="tab"><i class="fa fa-square-o rotate-45"></i> {% trans "Layers" %}</a></li>
+                      <li><a href="#maps" data-toggle="tab"><i class="fa fa-map-marker"></i> {% trans "Maps" %}</a></li>
+                      <li><a href="#comments" data-toggle="tab"><i class="fa fa-comment-o"></i> {% trans "Comments" %}</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="block-separator"></div>
+                    <!--{% if is_paginated %}-->
+                        <!--<div class="pagination">-->
+                            <!--<span class="page-links">-->
+                                <!--{% if page_obj.has_previous %}-->
+                                    <!--&lt;!&ndash;<a href="?page={{ page_obj.previous_page_number }}">previous</a>&ndash;&gt;-->
+                                <!--<a target="_self" href="{% url "group_activity" group.slug %}?page={{ page_obj.previous_page_number }}">Previous</a>-->
+                                <!--{% endif %}-->
+                                <!--<span class="page-current">-->
+                                    <!--Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}-->
+                                <!--</span>-->
+                                <!--{% if page_obj.has_next %}-->
+                                    <!--&lt;!&ndash;<a href="/cars?page={{ page_obj.next_page_number }}">next</a>&ndash;&gt;-->
+                                <!--<a target="_self" href="{% url "group_activity" group.slug %}?page={{ page_obj.next_page_number }}">Next</a>-->
+                                <!--{% endif %}-->
+                            <!--</span>-->
+                        <!--</div>-->
+                    <!--{% endif %}-->
+                    <div class="tab-content activity-style-list">
+                        <article id="all" class="tab-pane active">
+                            <div class="no-style-list">
+                                {% for action in action_list %}
+                                    {% activity_item action %}
+                                {% empty %}
+                                    <p>{% trans "No actions yet" %}</p>
+                                {% endfor %}
+                            </div>
+                            {% if is_paginated %}
+                                <div class="pagination">
+                                    <span class="page-links">
+                                        {% if page_obj.has_previous %}
+                                            <!--<a href="?page={{ page_obj.previous_page_number }}">previous</a>-->
+                                        <a target="_self" href="{% url "group_activity" group.slug %}?page={{ page_obj.previous_page_number }}">Previous</a>
+                                        {% endif %}
+                                        <span class="page-current">
+                                            Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}
+                                        </span>
+                                        {% if page_obj.has_next %}
+                                            <!--<a href="/cars?page={{ page_obj.next_page_number }}">next</a>-->
+                                        <a target="_self" href="{% url "group_activity" group.slug %}?page={{ page_obj.next_page_number }}">Next</a>
+                                        {% endif %}
+                                    </span>
+                                </div>
+                            {% endif %}
+                        </article>
+                        <article id="layers" class="tab-pane">
+                            <div class="no-style-list">
+                                {% for action in action_list_layers %}
+                                    {% activity_item action %}
+                                {% empty %}
+                                    <p>{% trans "No actions yet" %}</p>
+                                {% endfor %}
+                            </div>
+                            {% if action_list_layers %}
+                                <div class="pagination">
+                                    <span class="page-links">
+                                        {% if page_obj.has_previous %}
+                                            <!--<a href="?page={{ page_obj.previous_page_number }}">previous</a>-->
+                                        <a target="_self" href="{% url "group_activity" group.slug %}?page={{ page_obj.previous_page_number }}&type='layers'">Previous</a>
+                                        {% endif %}
+                                        <span class="page-current">
+                                            Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}
+                                        </span>
+                                        {% if page_obj.has_next %}
+                                            <!--<a href="/cars?page={{ page_obj.next_page_number }}">next</a>-->
+                                        <a target="_self" href="{% url "group_activity" group.slug %}?page={{ page_obj.next_page_number }}&type='layers'">Next</a>
+                                        {% endif %}
+                                    </span>
+                                </div>
+                            {% endif %}
+                        </article>
+                        <article id="maps" class="tab-pane">
+                            <div class="no-style-list">
+                                {% for action in action_list_maps %}
+                                    {% activity_item action %}
+                                {% empty %}
+                                    <p>{% trans "No actions yet" %}</p>
+                                {% endfor %}
+                            </div>
+                        </article>
+                        <article id="comments" class="tab-pane">
+                            <div class="no-style-list">
+                                {% for action in action_list_comments %}
+                                    {% activity_item action %}
+                                {% empty %}
+                                    <p>{% trans "No actions yet" %}</p>
+                                {% endfor %}
+                            </div>
+                        </article>
+                    </div>
+                    <!--{% if is_paginated %}-->
+                        <!--<div class="pagination">-->
+                            <!--<span class="page-links">-->
+                                <!--{% if page_obj.has_previous %}-->
+                                    <!--&lt;!&ndash;<a href="?page={{ page_obj.previous_page_number }}">previous</a>&ndash;&gt;-->
+                                <!--<a target="_self" href="{% url "group_activity" group.slug %}?page={{ page_obj.previous_page_number }}">Previous</a>-->
+                                <!--{% endif %}-->
+                                <!--<span class="page-current">-->
+                                    <!--Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}-->
+                                <!--</span>-->
+                                <!--{% if page_obj.has_next %}-->
+                                    <!--&lt;!&ndash;<a href="/cars?page={{ page_obj.next_page_number }}">next</a>&ndash;&gt;-->
+                                <!--<a target="_self" href="{% url "group_activity" group.slug %}?page={{ page_obj.next_page_number }}">Next</a>-->
+                                <!--{% endif %}-->
+                            <!--</span>-->
+                        <!--</div>-->
+                    <!--{% endif %}-->
+                </div>
+            </div>
+        </div>
     </div>
-  </div>
-</div>
 {% endblock %}
+{% block extra_script %}
+
+{% endblock extra_script %}

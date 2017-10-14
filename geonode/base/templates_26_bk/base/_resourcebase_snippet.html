@@ -1,0 +1,42 @@
+{% load i18n %}
+{% verbatim %}
+<div class="row">
+  <div ng-if="results.length == 0" ng-cloak>
+    <div><h3>No content created yet.</h3></div>
+  </div>
+  <article ng-repeat="item in results" resource_id="{{ item.id }}" ng-cloak class="ng-cloak">
+    <div class="col-xs-12 item-container">
+      <div class="col-xs-12 profile-avatar">
+        <div class="col-xs-4 item-thumb">
+          <a href="{{ item.detail_url }}"><img ng-src="{{ item.thumbnail_url }}" /></a>
+        </div>
+        <div class="col-xs-8 item-details">
+          {% endverbatim %}
+          <button class="btn btn-default btn-xs pull-right" ng-if="cart" ng-click="cart.toggleItem(item)"><i ng-class="cart.getFaClass(item.id)" class="fa fa-lg"></i></button>
+          {% verbatim %}
+          <p class="item-meta"><span class="item-category">{{ item.category__gn_description }}</span></p>
+          <h4><a href="{{ item.detail_url }}">{{ item.title }}</a></h4>
+          <p class="abstract">{{ item.abstract | limitTo: 300 }}{{ item.abstract.length  > 300 ? '...' : ''}}</p>
+          <div class="row">
+            <div class="col-xs-12 item-items">
+              <ul class="list-inline">
+                <li><a href="/people/profile/{{ item.owner__username }}"><i class="fa fa-user"></i>{{ item.owner__username }}</a></li>
+                <li><a href="{{ item.detail_url }}#info"><i class="fa fa-calendar-o"></i>{{ item.date|date:'d MMM y' }}</a></li>
+                <li><a href="{{ item.detail_url }}"><i class="fa fa-eye"></i>{{ item.popular_count }}</a></li>
+                <li><a href="{{ item.detail_url }}#share"><i class="fa fa-share"></i>{{ item.share_count }}</a></li>
+                <li><a href="{{ item.detail_url }}#rate"><i class="fa fa-star"></i>{{ item.rating }}</a></li>
+                <li><a ng-if="item.detail_url.indexOf('/layers/') > -1" href="{% endverbatim %}{% url "new_map" %}?layer={% verbatim %}{{ item.detail_url.substring(8) }}">
+                  {% endverbatim %}
+                  <i class="fa fa-map-marker"></i>{% trans "Create a Map" %}</a>
+                  {% verbatim %}
+                </li>
+                <li><a ng-if="item.detail_url.indexOf('/maps/') > -1" href="/maps/{{item.id}}/view"><i class="fa fa-map-marker"></i>View Map</a></li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </article>
+</div>
+{% endverbatim %}

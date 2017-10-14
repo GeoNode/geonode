@@ -1,0 +1,113 @@
+{% extends "groups/group_base.html" %}
+{% load i18n %}
+
+{% block title %}{{ object.title|default:object.slug }} — {{ block.super }}{% endblock %}
+
+{% block head %}
+  {% if TWITTER_CARD %}
+    {% include "groups/_group_twittercard.html" %}
+  {% endif %}
+  {% if OPENGRAPH_ENABLED %}
+    {% include "groups/_group_opengraph.html" %}
+  {% endif %}
+  {{ block.super }}
+{% endblock %}
+
+{% block body_class %}groups{% endblock %}
+
+{% block body_outer %}
+<div class="page-header">
+  <h2 class="page-title">{{ object.title|default:object.slug }}</h2>
+</div>
+<div class="row">
+  <div class="col-md-8 group-details">
+    <div class="row">
+      <div class="col-xs-4 col-md-3 group-logo">
+      {% if object.logo %}
+        <img src="{{ object.logo.url }}" alt="{{ object.title }}" />
+      {% else %}
+        <!-- <p>{% trans "This group has not created a logo." %}</p> -->
+      {% endif %}
+      </div>
+      <div class="col-xs-8 col-md-9 group-details">
+        <p class="group-desc">{{ object.description }}</p>
+        {% if object.keyword_list %}
+        <p>
+          {% for keyword in object.keyword_list %}
+            <span class="label label-default">{{ keyword }}</span>
+          {% endfor %}
+        </p>
+        {% else %}
+        {% endif %}
+        {% if object.email %}
+        <p><i class="fa fa-envelope-o"></i>
+          <a href="mailto:{{ object.email }}">{{ object.email }}</a>
+        </p>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+  <div class="col-md-4">
+    <ul class="list-group">
+      {% if is_manager %}
+      <li class="list-group-item"><a href="{% url "group_update" object.slug %}">{% trans "Edit Group Details" %}</a></li>
+      <li class="list-group-item"><a href="{% url "group_members" object.slug %}">{% trans "Manage Group Members" %}</a></li>
+      <li class="list-group-item"><a href="{% url "group_remove" object.slug %}">{% trans "Delete this Group" %}</a></li>
+      {% endif %}
+      {% if can_view %}
+      <li class="list-group-item"><a href="{% url "group_activity" object.slug %}">{% trans "Group Activities" %}</a></li>
+      {% endif %}
+      <li class="list-group-item">
+        <h4>{% trans "Permissions" %}</h4>
+        <p>
+          {% blocktrans with object.get_access_display as access %}
+            This group is <strong>{{ access }}</strong>.
+          {% endblocktrans %}
+          {% if object.access == "public" %}
+            {% trans "Anyone may join this group." %}
+            <form class="uniForm" method="POST" action="{% url "group_join" object.slug %}">
+              {% csrf_token %}
+              {% if not is_member %}
+              <input type="submit" class="btn btn-default btn-md btn-block" value="Join Group" />
+              {% endif %}
+            </form>
+          {% else %} {% if object.access == "public-invite" %}
+            {% trans "Anyone may view this group but membership is by invitation only." %}
+          {% else %} {% if object.access == "private" %}
+            {% trans "Membership is by invitation only." %}
+          {% endif %} {% endif %} {% endif %}
+        </p>
+      </li>
+      <li class="list-group-item">
+        <h4>{% trans "Managers" %}</h4>
+        {% for manager in object.get_managers %}
+        {% with manager as profile %}
+          {% include "people/_profile_about_item.html" %}
+        {% endwith %}
+        {% endfor %}
+      </li>
+    </ul>
+  </div>
+</div>
+<div class="row">
+  <div class="col-md-12">
+    <h4>{% trans "Members" %}</h4>
+    <div class="tab-content paginate paginate-auto" id="search-content">
+    {% include 'people/_profile_list_item.html' %}
+    </div>
+  </div>
+  {% include 'search/_pagination.html' %}
+</div>
+{% endblock %}
+
+
+{% block extra_script %}
+{{ block.super }}
+  <script type="text/javascript">
+  SEARCH_URL = '{% url 'api_dispatch_list' api_name='api' resource_name='profiles' %}'+ '?group='+ '{{ object.slug }}';
+  </script>
+  {% with include_spatial='false' %}
+  {% include 'search/search_scripts.html' %}
+  {% endwith %}
+{% endblock extra_script %}
+

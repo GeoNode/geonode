@@ -14,7 +14,8 @@ Ext.onReady(function() {
         authStatus: {% if user.is_authenticated %} 200{% else %} 401{% endif %},
         proxy: '{{ PROXY_URL }}',
         {% if MAPFISH_PRINT_ENABLED %}
-        printService: "{{GEOSERVER_BASE_URL}}pdf/",
+        //printService: "{{GEOSERVER_BASE_URL}}pdf/",
+		printService: "{{GEOSERVER_BASE_URL}}pdf/info.json?url={{GEOSERVER_BASE_URL}}pdf/",
         {% else %}
         printService: "",
         {% endif %}

@@ -1,25 +1,86 @@
 {% extends "people/profile_base.html" %}
 {% load i18n %}
 
-{% block title %} {% trans "Explore People" %} - {{ block.super }} {% endblock %}
-
 {% block body_class %}people people-list explore{% endblock %}
 
 {% block body %}
-<div class="page-header">
-  <h2>{% trans "Explore People" %}</h2>
+  <div class="container">
+      <div class="gd-content">
+          <div class="gd-content-heading">
+              <div class="row">
+                  <div class="col-md-8">
+                      <div class="title small-content">
+                          {% trans "Explore Users" %}
+                      </div>
+                  </div>
+                  <div class="col-md-4">
+                      <div class="small-content pull-right">
+                          <ul class="search-type">
+                              <li ng-class="{active : pageViewing == 'list'}">
+                                  <a href="javascript:;" ng-click="displayView('list')">
+                                      <i class="fa fa-bars fa-stack-1-5x"></i>
+                                  </a>
+                              </li>
+                              <li ng-class="{active : pageViewing == 'grid'}">
+                                  <a href="javascript:;" ng-click="displayView('grid')">
+                                      <i class="fa fa-th-large fa-stack-1-5x"></i>
+                                      <!--<img src="images/user-separator-icon.png" />-->
+                                  </a>
+                              </li>
+                              <li class="has-caret">
+                                  <div class="btn-group pull-right" role="group" aria-label="tools">
+                                      <div id="profileSortId" class="btn-group" role="group">
+                                          <a href="javascript:;" class="dropdown-toggle" data-toggle="dropdown"
+                                             aria-haspopup="true" aria-expanded="false">
+                                              <span id="currtenSortTitle">{% trans "Most recent" %}</span>
+                                              <span class="caret"></span>
+                                          </a>
+                                          <ul class="dropdown-menu dropdown-menu-right" id="sort">
+                                              <li>
+                                                  <a data-value="-date_joined" data-filter="order_by" class="selected" ng-click="single_choice_listener($event)">
+                                                      {% trans "Most recent" %}
+                                                  </a>
+                                              </li>
+                                              <li>
+                                                  <a data-value="date_joined" data-filter="order_by" ng-click="single_choice_listener($event)">
+                                                        {% trans "Less recent" %}
+                                                  </a>
+                                              </li>
+                                              <li>
+                                                  <a data-value="username" data-filter="order_by" ng-click="single_choice_listener($event)">
+                                                      {% trans "A - Z" %}
+                                                  </a>
+                                              </li>
+                                              <li>
+                                                  <a data-value="-username" data-filter="order_by" ng-click="single_choice_listener($event)">
+                                                      {% trans "Z - A" %}
+                                                  </a>
+                                              </li>
+                                              <!--<li>-->
+                                                  <!--<a data-value="-popular_count" data-filter="order_by" ng-click="single_choice_listener($event)">-->
+                                                      <!--{% trans "Most popular" %}-->
+                                                  <!--</a>-->
+                                              <!--</li>-->
+                                          </ul>
+                                      </div>
+                                  </div>
+                              </li>
+                          </ul>
+                      </div>
+                  </div>
+              </div>
+          </div>
+          <div class="">
+              {% include "people/_profile_list_item.html" %}
+          </div>
+          <div class="block-separator"></div>
+          {% include 'search/_pagination.html' %}
+      </div>
+  </div>
 </div>
-
-  {% with include_type_filter='true' %}
-  {% with facet_type='people' %}
-  {% include "search/_search_user_content.html" %}
-  {% endwith %}
-  {% endwith %}
-  {% include "_bulk_permissions_form.html" %}
 {% endblock %}
 
 {% block extra_script %}
-{{ block.super }}
 <script type="text/javascript">
   SEARCH_URL = '{% url 'api_dispatch_list' api_name='api' resource_name='profiles' %}';
 </script>

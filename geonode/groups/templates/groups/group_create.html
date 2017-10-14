@@ -6,29 +6,49 @@
 {% block body_class %}groups create{% endblock %}
 
 {% block body %}
-    <div class="block">
-      <div class="col-md-10">
-        <h2 class="page-title">{% trans "Create a Group" %}</h2>
-        {% if errors %}
-          <div id="errors">
-            {% for error in errors %}
-              <div>{{ error }}</div>
-            {% endfor %}
-          </div>
-        {% endif %}
-        <div>
-        <form class="uniForm" id="form" method="POST" action="" enctype="multipart/form-data">
-        {% csrf_token %}
-        <fieldset>
-            {{ form|as_bootstrap }}
-            <div class="form_block">
-                <input type="hidden" name="action" value="create" />
-                <input type="submit" class="btn btn-primary" value="{% trans 'Create' %}"/>
-            </div>
-        </fieldset>
-    </form>
+<div class="gd-content">
+    <div class="gd-content-heading">
+        <div class="title small-content">
+          {% trans "Create An Organization" %}
+        </div>
+        <div class="hr"></div>
+    </div>
+    <div class="gd-content-body full-pad-30px top-bottom-margin-20px">
+        <div class="row">
+            <div class="col-md-12">
+                {% if errors %}
+                  <div id="errors">
+                    {% for error in errors %}
+                      <div>{{ error }}</div>
+                    {% endfor %}
+                  </div>
+                {% endif %}
             </div>
         </div>
+        <div class="row">
+          <div class="col-xs-12 col-md-12">
+            <form class="uniForm" id="form" method="POST" action="" enctype="multipart/form-data">
+                {% csrf_token %}
+                <fieldset>
+                    {{ form|as_bootstrap }}
+                    <div class="form_block">
+                        <input type="hidden" name="action" value="create" />
+                        <input type="submit" class="btn btn-gd-primary" value="{% trans 'Create Organization' %}"/>
+                        <div style="float:right;">
+                            <a href="{% url "create-user" %}" class="">
+                            {% trans " Do You Want To Create New Organization Admin?" %}
+                            </a>
+                        </div>
+                    </div>
+                    <!--<div class="form_block" style="float:right;">-->
+                        <!--<a href="{% url "create-user" %}" class="btn btn-gd-primary pull-left">-->
+                            <!--{% trans "Or Create New Admin" %}-->
+                        <!--</a>-->
+                    <!--</div>-->
+                </fieldset>
+            </form>
+          </div>
+        </div>
     </div>
-    
+</div>
 {% endblock %}

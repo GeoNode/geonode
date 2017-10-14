@@ -1,0 +1,24 @@
+{% extends "site_base.html" %}
+{% load i18n %}
+{% load url from future %}
+
+{% block title %} {{ block.super }} {% endblock %}
+
+{% block body_class %}documents{% endblock %}
+
+{% block body_outer %}
+<div class="page-header">
+  <a href="{% url "document_browse" %}" class="btn btn-primary pull-right">{% trans "Explore Documents" %}</a>
+  <h2 class="page-title">{% trans "Upload Documents" %}</h2>
+	<p>Allowed document types:</p>
+	<p>
+	{% for doc in ALLOWED_DOC_TYPES %}
+		<span class="label label-default">.{{ doc }}</span>
+	{% endfor %}
+	</p>
+</div>
+<div class="row">    
+  {% block body %}{% endblock body %}
+  {% block sidebar %}{% endblock sidebar %}
+</div>
+{% endblock body_outer %}

@@ -1,0 +1,8 @@
+{% load avatar_tags %}
+<meta property="og:title" content="{{ profile.username }}" />
+<meta property="og:site_name" content="{{ SITE_NAME }}" />
+<meta property="og:url" content="http{% if request.is_secure %}s{% endif %}://{{ SITE_DOMAIN }}{{ profile.get_absolute_url }}" />
+<meta property="og:description" content="{{ profile.get_full_name | default:profile.username }} on {{ SITE_NAME }}" />
+<meta name="og:image" content="{% avatar_url profile 200 %}" />
+<meta name="og:image:width" content="200" />
+<meta name="og:image:height" content="200" />

@@ -1,0 +1,108 @@
+{% extends "site_base.html" %}
+
+{% load i18n %}
+{% block title %} {% trans "View Map" %} - {{ block.super }} {% endblock %}
+
+{% block body_outer %}
+<div class="gd-content">
+    <div class="gd-content-heading">
+        <div class="row">
+            <div class="col-md-6">
+                <div class="title small-content">
+                    {% trans "View Map" %}
+                </div>
+            </div>
+        </div>
+        <div class="hr"></div>
+    </div>
+    <div class="gd-content">
+        <div class="row">
+            <div class="col-md-12">
+                <div id="help-content" class="gd-content-body">
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <label class="control-label"> {% trans "Select Map " %} </label>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-12" id="bcccheck_view">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-8">
+                            <div class="row">
+                                <div class="col-md-12" id="bcccheck_view_map">
+                                    <!--<div id="embedded_map" class="mrg-btm">-->
+                                        <!--<div id="preview_map"></div>-->
+                                    <!--</div>-->
+                                    <!--<iframe style="border: none;" height="400" width="600" src="http://localhost:8000/maps/13/embed"></iframe>-->
+                                </div>
+                            </div>
+                        </div>
+                     </div>
+                    <!--<div class="block-separator"></div>-->
+                    <!--<div class="row">-->
+                        <!--<div class="col-md-12">-->
+                        <!--</div>-->
+                    <!--</div>-->
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+{% block extra_script %}
+<script type="text/javascript">
+    $(document).ready(function(){
+      var url = '{% url 'api_dispatch_list' api_name='api' resource_name='maps_with_favorite' %}';
+      $.ajax({
+        url: url,
+        type: 'GET',
+        data: {},
+        contentType: "application/json; charset=utf-8",
+        dataType: "json",
+        context: document.body,
+        success: function(jsondata){
+            //console.log(JSON.stringify(jsondata));
+            var data = eval(jsondata.objects);
+            var output = '';
+            output +='<select id="id_select_district" class="col-md-12">';
+            output +='<option selected="selected"> Select One </option>';
+            $.each(data, function(i, item) {
+                    //alert(item.thumbnail_url);
+               output +='<option value="'+ item.id +'" onclick="selectmap('+item.id+');"> '+ item.title +' </option>';
+           });
+           output +='</select>';
+           $("#bcccheck_view").append(output);
+      }});
+    });
+
+    function selectmap(selectmapID){
+        //var make_favoriteStatus = undockStatus;
+        //alert(selectmapID);
+            var url = '{% url 'api_dispatch_list' api_name='api' resource_name='maps_with_favorite' %}?id='+ selectmapID +'';
+            $.ajax({
+                url: url,
+                type: 'GET',
+                data: {},
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                context: document.body,
+                success: function(jsondata){
+                    //console.log(JSON.stringify(jsondata));
+                    var data = eval(jsondata.objects);
+                    var output = '';
+                    $.each(data, function(i, item) {
+                            //alert(item.thumbnail_url);
+                       output +='<div>';
+                       output +='<iframe style="border: none;" height="400" width="600" src="http://localhost:8000/maps/'+ item.id +'/embed"></iframe>';
+                       output +='</div>';
+                   });
+                   $("#bcccheck_view_map").html(output);
+            }});
+        }
+  </script>
+
+{% endblock extra_script %}

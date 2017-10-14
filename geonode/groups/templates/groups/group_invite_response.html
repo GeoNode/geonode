@@ -2,17 +2,37 @@
 {% load i18n %}
 
 {% block body %}
-<div class="onecol">
-
-    <h2> {% trans "Members" %} </h2>
-    <div id="assets"></div>
-
-    <h2>{% trans "Membership Request" %}</h2>
-    <p>You have been invited to join the group {{ object.title }}. Would you like to join?
-    <form class="uniForm" method="POST" action="">
-        {% csrf_token %}
-        <button type="submit" value="decline" name="decline">{% trans "Don't Join" %}</button>
-        <button type="submit" value="accept" name="accept">{% trans "Join Group" %}</button>
-    </form>
+<div class="gd-content">
+    <div class="gd-content-heading">
+        <div class="title small-content">
+          {% trans "Members" %}
+        </div>
+        <div class="hr"></div>
+    </div>
+    <div class="gd-content-body full-pad-30px top-bottom-margin-20px">
+        <div class="row">
+            <div class="col-md-12">
+                {% if errors %}
+                  <div id="errors">
+                    {% for error in errors %}
+                      <div>{{ error }}</div>
+                    {% endfor %}
+                  </div>
+                {% endif %}
+            </div>
+        </div>
+        <div class="row">
+          <div class="col-xs-12 col-md-12">
+            <div id="assets"></div>
+            <div class="lead">{% trans "Membership Request" %}</div>
+            <p>You have been invited to join the group {{ object.title }}. Would you like to join?
+            <form class="uniForm" method="POST" action="">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-danger btn-gd" value="decline" name="decline">{% trans "Don't Join" %}</button>
+                <button type="submit" class="btn btn-gd-primary" value="accept" name="accept">{% trans "Join Group" %}</button>
+            </form>
+          </div>
+        </div>
+    </div>
 </div>
 {% endblock %}

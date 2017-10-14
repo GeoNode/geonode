@@ -17,7 +17,8 @@
             useToolbar: false,
             proxy: '{{ PROXY_URL }}',
             {% if MAPFISH_PRINT_ENABLED %}
-            printService: "{{GEOSERVER_BASE_URL}}pdf/",
+            //printService: "{{GEOSERVER_BASE_URL}}pdf/",
+			printService: "{{GEOSERVER_BASE_URL}}pdf/info.json?url={{GEOSERVER_BASE_URL}}pdf/",
             {% else %}
             printService: "",
             {% endif %}

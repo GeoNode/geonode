@@ -7,9 +7,24 @@
 {% block body_class %}data{% endblock %}
 
 {% block body_outer %}
-<div class="page-header">
-  <a href="{% url "layer_browse" %}" class="btn btn-primary pull-right">{% trans "Explore Layers" %}</a>
-  <h2 class="page-title">{% trans "Upload Layers" %}</h2>
+<div class="gd-content">
+    <div class="gd-content-heading">
+        <div class="row">
+          <div class="col-md-6">
+              <div class="title small-content">
+                  {% trans "Upload Layers" %}
+              </div>
+          </div>
+          <div class="col-md-6">
+              <div class="small-content text-right">
+                <a href="{% url "layer_browse" %}" class="btn btn-gd-primary pull-right">
+                    {% trans "Explore Layers" %}
+                </a>
+              </div>
+          </div>
+      </div>
+      <div class="hr"></div>
+    </div>
 </div>
 <div class="row">
   {% block body %}{% endblock body %}

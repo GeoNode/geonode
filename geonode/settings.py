@@ -320,6 +320,9 @@ INSTALLED_APPS = (
     'django.contrib.humanize',
     'django.contrib.gis',
 
+    # Social auth app
+    'social.apps.django_app.default',
+
     # Third party apps
 
     # Utility
@@ -440,6 +443,10 @@ TEMPLATES = [
                 'account.context_processors.account',
                 'geonode.context_processors.resource_urls',
                 'geonode.geoserver.context_processors.geoserver_urls',
+		# Template context processor for social auth
+    		'social.apps.django_app.context_processors.backends',
+    		'social.apps.django_app.context_processors.login_redirect',
+
             ],
             'debug': DEBUG,
         },
@@ -450,7 +457,6 @@ MIDDLEWARE_CLASSES = (
     'django.middleware.common.CommonMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
-
     # The setting below makes it possible to serve different languages per
     # user depending on things like headers in HTTP requests.
     'django.middleware.locale.LocaleMiddleware',
@@ -458,7 +464,6 @@ MIDDLEWARE_CLASSES = (
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-
     # This middleware allows to print private layers for the users that have
     # the permissions to view them.
     # It sets temporary the involved layers as public before restoring the
@@ -471,6 +476,10 @@ MIDDLEWARE_CLASSES = (
     # SessionAuthenticationMiddleware is NOT required for using django-oauth-toolkit.
     'django.contrib.auth.middleware.SessionAuthenticationMiddleware',
     'oauth2_provider.middleware.OAuth2TokenMiddleware',
+    # Middleware class for social auth
+    'social.apps.django_app.middleware.SocialAuthExceptionMiddleware',
+
+
 )
 
 
@@ -480,6 +489,12 @@ AUTHENTICATION_BACKENDS = (
     'oauth2_provider.backends.OAuth2Backend',
     'django.contrib.auth.backends.ModelBackend',
     'guardian.backends.ObjectPermissionBackend',
+    'account.auth_backends.EmailAuthenticationBackend',
+
+    # Authentication backend for facebook
+    'social.backends.facebook.FacebookOAuth2',
+    'social.backends.google.GoogleOAuth2',
+
 )
 
 OAUTH2_PROVIDER = {

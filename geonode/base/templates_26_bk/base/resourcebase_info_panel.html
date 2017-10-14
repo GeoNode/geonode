@@ -1,0 +1,10 @@
+{% extends "base/_resourcebase_info_panel.html" %}
+{% load i18n %}
+
+<article itemscope itemtype="http://schema.org/Dataset" class="description tab-pane active" id="info">
+  {% block article_content %}
+    {% block content %}
+      {{ block.super }}
+    {% endblock %}
+  {% endblock %}
+</article>

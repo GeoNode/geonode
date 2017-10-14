@@ -1,0 +1,17 @@
+{% extends "site_base.html" %}
+{% load i18n %}
+{% load url from future %}
+
+{% block title %}{% block title_sub %}{% trans "Explore Maps" %}{% endblock %} - {{ block.super }} {% endblock %}
+
+{% block body_class %}maps{% endblock %}
+
+{% block body_outer %}
+  <!-- <div class="span12">
+    <ul class="nav nav-tabs" id="subnav-tabs">
+      <li><a href="{% url "maps_browse" %}" class="explore">{% trans 'Explore Maps' %}</a></li>
+    </ul>
+  </div> -->
+  {% block body %}{% endblock body %}
+  {% block sidebar %}{% endblock sidebar %}
+{% endblock %}

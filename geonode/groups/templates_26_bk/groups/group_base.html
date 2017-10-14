@@ -1,0 +1,24 @@
+{% extends "site_base.html" %}
+{% load i18n %}
+{% load url from future %}
+
+{% block title %} {{ block.super }} {% endblock %}
+
+{% block body_class %}groups explore{% endblock %}
+
+{% block body_outer %}
+  <!-- {% block subnav %}
+  <div class="col-md-12">
+    <ul class="nav nav-tabs" id="subnav-tabs">
+      <li><a href="{% url "group_list" %}" class="explore">{% trans "Explore Groups" %}</a></li>
+      <li><a href="{% url "group_create" %}" class="create">{% trans "Create a Group" %}</a></li>
+      {% if group %}
+      <li><a href="{% url "group_update" group.slug %}" class="update">{% trans "Update Group" %}</a></li>
+      <li><a href="{% url "group_remove" group.slug %}" class="remove">{% trans "Remove Group" %}</a></li>
+      {% endif %}
+    </ul>
+  </div>
+  {% endblock subnav %} -->
+  {% block body %}{% endblock body %}
+  {% block sidebar %}{% endblock sidebar %}
+{% endblock body_outer %}

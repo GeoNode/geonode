@@ -1,0 +1,25 @@
+{% extends "groups/group_base.html" %}
+{% load i18n %}
+
+{% block title %}{{ group.title }} — {{ block.super }}{% endblock %}
+{% block body_class %}groups remove{% endblock %}
+
+{% block body %}
+<div class="row">
+  <div class="col-md-8">
+    <form action="{% url "group_remove" group.slug %}" method="POST">
+      <h2>
+        {% blocktrans with group.title as group_title %}
+          Are you sure you want to remove the group: {{ group_title }}?
+        {% endblocktrans %}
+      </h2>
+      {% csrf_token %}
+      <input type="hidden" value="{{ group.slug }}" />
+      <div class="form-actions">
+        <input type="submit" value="{% trans "Yes, I am sure" %}" class="btn btn-danger" />
+        <a href="{% url "group_detail" group.slug %}" class="btn btn-info">{% trans "No, don't remove it" %}</a>
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}

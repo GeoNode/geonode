@@ -1,0 +1,167 @@
+{% extends "upload/layer_upload_base.html" %}
+{% load i18n %}
+{% load staticfiles %}
+
+{% block body_class %}data data-list upload{% endblock %}
+
+{% block title %} {% trans "Upload Layer Step 2" %} - {{ block.super }} {% endblock %}
+
+{% block head %}
+{{ block.super }}
+{% endblock %}
+
+{% block body %}
+<div class="span7">
+  <h2> {% trans "Editing details for " %} {{ layer_name }} </h2>
+
+  <form method="POST" id="timeForm" role="form">
+      
+  <h3>{% trans "Time Options" %}</h3>
+    {% csrf_token %}
+    
+    <h4>{% trans "Choose time attribute" %}:</h4>
+    <div class="radio" title="Map animations will not be enabled">
+        <input type="radio" name="timetype" checked="checked" id="notime">
+        <label for="notime">{% trans "This data does not have a time attribute" %}</label>
+    </div>
+    {% if time_form.time_attribute %}
+    <div class="radio" title="Use an existing timestamp attribute in the data">
+        <input type="radio" name="timetype" id="existing">
+        <label for="existing">{% trans "Existing Time Attribute" %}  :</label>{{ time_form.time_attribute }}
+    </div>
+    {% endif %}
+    {% if time_form.text_attribute %}
+    <div class="radio" title="Convert text in the data to a timestamp using standard date/time representation or a custom format">
+        <input type="radio" name="timetype" id="textattribute">
+        <label for="textattribute">{% trans "Convert Text Attribute" %}  :</label>{{ time_form.text_attribute }}
+        <br/>
+        <label for="format_select">{% trans "Date Format" %}  :</label>
+        {{ time_form.text_attribute_format }}
+        <select id="format_select">
+            <option selected="true" value="0">Best Guess</option>
+            <option value="1">Custom</option>
+        </select>
+    </div>
+    {% endif %}
+    {% if time_form.year_attribute %}
+    <div class="radio" title="Convert a number field into a year">
+        <input type="radio" name="timetype" id="convertnumber">
+        <label for="convertnumber">{% trans "Convert Number (As Year)" %}  :</label>{{ time_form.year_attribute }}
+    </div>
+    {% endif %}
+    
+    <h4>{% trans "Choose optional end time attribute" %}:</h4>
+    {% if time_form.time_attribute %}
+    <div class="radio" title="Use an existing timestamp attribute in the data">
+        <input type="radio" name="end_timetype" id="end_existing">
+        <label for="end_existing">{% trans "Existing Time Attribute" %}  :</label>{{ time_form.end_time_attribute }}
+    </div>
+    {% endif %}
+    {% if time_form.text_attribute %}
+    <div class="radio" title="Convert text in the data to a timestamp using standard date/time representation or a custom format">
+        <input type="radio" name="end_timetype" id="end_textattribute">
+        <label for="end_textattribute">{% trans "Convert Text Attribute" %}  :</label>{{ time_form.end_text_attribute }}
+        <br/>
+        <label for="end_format_select">{% trans "Date Format" %}  :</label>
+        {{ time_form.end_text_attribute_format }}
+        <select id="end_format_select">
+            <option selected="true" value="0">Best Guess</option>
+            <option value="1">Custom</option>
+        </select>
+    </div>
+    {% endif %}
+    {% if time_form.year_attribute %}
+    <div class="radio" title="Convert a number field into a year">
+        <input type="radio" name="end_timetype" id="end_convertnumber">
+        <label for="end_convertnumber">{% trans "Convert Number (As Year)" %}  :</label>{{ time_form.end_year_attribute }}
+    </div>
+    {% endif %}
+
+    <div id="presentation" class="formSection left">
+        <h4>{% trans "Present time attribute as" %}:</h4>
+        <div class="radio">
+            <input id="LIST" type='radio' value='LIST' checked='checked' name='presentation_strategy'/>
+            <label for="LIST"><strong>{% trans "List" %}</strong> {% trans "of all the distinct time values" %}</label>
+        </div>
+        <div class="radio">
+            <input id="DISCRETE_INTERVAL" type='radio' value='DISCRETE_INTERVAL' name='presentation_strategy'/>
+            <label for="DISCRETE_INTERVAL"><strong>{% trans "Intervals" %}</strong> {% trans "defined by the resolution" %}</label>
+        </div>
+        <div class="radio">
+            <input id="CONTINUOUS_INTERVAL" type='radio' value='CONTINUOUS_INTERVAL' name='presentation_strategy'/>
+            <label for="CONTINUOUS_INTERVAL"><strong>{% trans "Continuous Intervals" %}</strong> {% trans "for data that is frequently updated, resolution describes the frequency of updates" %}</label>
+        </div>
+        
+        <div id="precision" style="display:none">
+            <p><strong>{% trans "Resolution of time attribute" %}</strong>: <input type="text" name="precision_value" size="3"/>
+            {{ time_form.precision_step }}
+            </p>
+        </div>
+    </div>
+    <button id='next' class="btn btn-default" type="submit" value="{% trans 'Next' %}"> Next
+        <i id="next-spinner" class="fa fa-spinner fa-spin hide"></i>
+    </button>
+    <div id="upload-status"></div>
+  </form>
+</div>
+<div id="timehelp" class="span5">
+    <h3>{% trans "Need Help?" %}</h3>
+    <h4>{% trans "Enabling Time" %}</h4>
+    <p>{% blocktrans %}A feature can currently support one or two time attributes. If a single
+    attribute is used, the feature is considered relevant at that single point in time. If two
+    attributes are used, the second attribute represents the end of a valid period for the
+    feature.{% endblocktrans %}</p>
+    <h4>{% trans "Selecting an Attribute" %}</h4>
+    <p>{% trans "A time attribute can be one of" %}:</p>
+    <ul>
+        <li>{% trans "An existing date" %}</li>
+        <li>{% trans "Text that can be converted to a timestamp" %}</li>
+        <li>{% trans "A number representing a year" %}</li>
+    </ul>
+    <p>
+    {% blocktrans %}
+    For text attributes, one can specify a custom format or use the 'best guess' approach.
+    The most common formatting flags are:
+    {% endblocktrans %}
+    </p>
+    <ul>
+        <li><code>y</code> {% trans "year" %}</li>
+        <li><code>M</code> {% trans "month" %}</li>
+        <li><code>d</code> {% trans "day of month" %}</li>
+        <li><code>H</code> {% trans "hour of day" %} (0-23)</li>
+        <li><code>k</code> {% trans "hour of day" %} (1-24)</li>
+        <li><code>m</code> {% trans "minute in hour" %}</li>
+        <li><code>s</code> {% trans "second in minute" %}</li>
+    </ul>
+    
+    <p class="alert alert-info">{% trans "Note that single quotes represent a literal character." %}</p>
+    <p class="alert alert-info">{% trans "To remove ambiguity, repeat a code to represent the maximum number of digits - for example yyyy" %}</p>
+    
+    {% trans "The 'best guess' will handle date and optional time variants of" %} <a href="http://en.wikipedia.org/wiki/ISO_8601">ISO-8601</a>.
+    {% trans "In terms of the formatting flags noted above, these are" %}:
+    <pre>
+    yyyy-MM-dd'T'HH:mm:ss.SSS'Z'
+    yyyy-MM-dd'T'HH:mm:sss'Z'
+    yyyy-MM-dd'T'HH:mm:ss'Z'
+    yyyy-MM-dd'T'HH:mm'Z'
+    yyyy-MM-dd'T'HH'Z'
+    yyyy-MM-dd
+    yyyy-MM
+    yyyy
+    </pre>
+</div>
+{% endblock %}
+
+{% block extra_script %}
+{{ block.super }}
+<script data-main="{% static 'geonode/js/upload/time' %}"
+  src="{% static 'lib/js/require.js' %}">
+</script>
+<script type="text/javascript">
+{% autoescape off %}
+{% if async_upload %}
+//enableUploadProgress('timeForm');
+{% endif %}
+{% endautoescape %}
+</script>
+{% endblock %}

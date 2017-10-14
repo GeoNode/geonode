@@ -395,6 +395,7 @@ def layer_detail(request, layername, template='layers/layer_detail.html'):
     #     xlink = dict2['sld:Graphic']['sld:ExternalGraphic']['sld:OnlineResource']['@xlink:href']
     # except:
     #     pass
+    import pdb; pdb.set_trace()
     xlink = style_chart_legend_color(layer)
 
     context_dict = {

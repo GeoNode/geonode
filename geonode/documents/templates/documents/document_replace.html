@@ -11,24 +11,28 @@
 {% endblock %}
 
 {% block body %}
-  <div class="block">
-    <div class="col-md-8">
-      <h2 class="page-title">{% trans "Replace " %}{{ document.title }}</h2>
-      <div id="upload_form">
-        <form method="post" enctype="multipart/form-data" action="{% url "document_replace" document.id %}">
-          <input type="hidden" name="csrfmiddlewaretoken" value="{{ csrf_token }}" />
-          {{ form.errors }}
-          {% if document.doc_file %}
-            {{ form.doc_file }}
-          {% elif document.doc_url %}
-            {{ form.doc_url }}
-          {% endif %}
-          <section>
-            <button id="clear-button" type="reset" class="btn btn-default">{% trans "Clear" %}</button>
-            <button id="upload-button" type="submit" class="btn btn-danger" value="Update">{% trans "Replace Document" %}</button>
-          </section>
-        </form>
-      </div>
+<div class="gd-content">
+    <div class="gd-content-body transparent top-bottom-margin-20px">
+        <div class="row">
+            <div class="col-md-8">
+                <div class="gd-content-body full-pad-40px">
+                    <div class="lead">{% trans "Replace " %}{{ document.title }}</div>
+                    <form method="post" enctype="multipart/form-data" action="{% url "document_replace" document.id %}">
+                      <input type="hidden" name="csrfmiddlewaretoken" value="{{ csrf_token }}" />
+                      {{ form.errors }}
+                      {% if document.doc_file %}
+                        {{ form.doc_file }}
+                      {% elif document.doc_url %}
+                        {{ form.doc_url }}
+                      {% endif %}
+                      <section class="margin-top-20px">
+                        <button id="clear-button" type="reset" class="btn btn-gd-gray">{% trans "Clear" %}</button>
+                        <button id="upload-button" type="submit" class="btn btn-danger btn-gd" value="Update">{% trans "Replace Document" %}</button>
+                      </section>
+                    </form>
+                </div>
+            </div>
+        </div>
     </div>
-  </div>
+</div>
 {% endblock %}

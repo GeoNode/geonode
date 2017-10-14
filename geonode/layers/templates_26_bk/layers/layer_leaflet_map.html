@@ -1,0 +1,79 @@
+{% load leaflet_tags %}
+
+{% leaflet_js %}
+{% leaflet_css %}
+
+<style>
+    .leaflet-container { /* all maps */
+        height: 400px;
+    }
+</style>
+<script type="text/javascript">
+    document.addEventListener("DOMContentLoaded", function (event) {
+        var osm = L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png', {
+            attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors',
+        });
+
+        var OpenMapSurfer_Roads = L.tileLayer('http://korona.geog.uni-heidelberg.de/tiles/roads/x={x}&y={y}&z={z}', {
+            maxZoom: 20,
+            attribution: 'Imagery from <a href="http://giscience.uni-hd.de/">GIScience Research Group @ University of Heidelberg</a> &mdash; Map data &copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+        });
+
+        var base_maps = {
+            "OpenMapSurfer_Roads": OpenMapSurfer_Roads,
+            'OpenStreetMap': osm
+        };
+
+        var overlay_layer = {};
+
+        var map = L.map('preview_map');
+        map.addLayer(OpenMapSurfer_Roads);
+
+        {% if resource.bbox_string %}
+            zoom_to_box(map, [{{ resource.bbox_string }}]);
+        {% endif %}
+
+        {% if resource.get_tiles_url %}
+            tile_layer = L.tileLayer("{{ resource.get_tiles_url|safe }}",
+                    {
+                        'opacity': 0.8
+                    });
+        {%  elif resource.ptype == "gxp_wmscsource"  %}
+            tile_layer = L.tileLayer.wms('{{ resource.ows_url|safe }}', {
+                layers: '{{ resource.typename }}',
+                format: 'image/png',
+                transparent: true,
+                'opacity': 0.8
+            });
+        {%  elif resource.ptype == "gxp_arcrestsource" %}
+            tile_layer = L.esri.dynamicMapLayer('{{ resource.ows_url|safe }}', {
+                layers: '{{ resource.typename }}',
+                format: 'png',
+                transparent: true,
+                'opacity': 0.8
+            });
+
+        {% endif %}
+
+        if (tile_layer != null) {
+            overlay_layer["{{ resource.title }}"] = tile_layer;
+            map.addLayer(tile_layer);
+        }
+        layerControl = L.control.layers(
+                base_maps, overlay_layer
+        ).addTo(map);
+
+        if (L.control.hasOwnProperty('fullscreen')) {
+            L.control.fullscreen().addTo(map);
+        }
+
+
+    });
+    function zoom_to_box(map, bbox) {
+        var bounds = [
+            [bbox[1], bbox[0]],
+            [bbox[3], bbox[2]]
+        ];
+        map.fitBounds(bounds);
+    }
+</script>

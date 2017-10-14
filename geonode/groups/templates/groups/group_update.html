@@ -6,29 +6,39 @@
 {% block body_class %}groups update{% endblock %}
 
 {% block body %}
-     <div class="block">
-        <div class="col-md-10">
-          <h2 class="page-title">{% trans "Update Group" %}</h2>
-          {% if errors %}
-            <div id="errors">
-              {% for error in errors %}
-                <div>{{ error }}</div>
-              {% endfor %}
-            </div>
-          {% endif %}
-            <div>
-                    <form class="uniForm" id="form" method="POST" action="" enctype="multipart/form-data">
-        {% csrf_token %}
-        <fieldset>
-            {{ form|as_bootstrap }}
-            <div class="form_block">
-                <input type="hidden" name="action" value="create" />
-                <input type="submit" class="btn btn-primary" value="{% trans 'Update' %}"/>
-            </div>
-        </fieldset>
-    </form>
+<div class="gd-content">
+    <div class="gd-content-heading">
+        <div class="title small-content">
+          {% trans "Update Group" %}
+        </div>
+        <div class="hr"></div>
+    </div>
+    <div class="gd-content-body full-pad-30px top-bottom-margin-20px">
+        <div class="row">
+            <div class="col-md-12">
+                {% if errors %}
+                    <div id="errors">
+                      {% for error in errors %}
+                        <div>{{ error }}</div>
+                      {% endfor %}
+                    </div>
+                {% endif %}
             </div>
         </div>
+        <div class="row">
+          <div class="col-xs-12 col-md-12">
+            <form class="uniForm" id="form" method="POST" action="" enctype="multipart/form-data">
+                {% csrf_token %}
+                <fieldset>
+                    {{ form|as_bootstrap }}
+                    <div class="form_block">
+                        <input type="hidden" name="action" value="create" />
+                        <input type="submit" class="btn btn-gd-primary" value="{% trans 'Update' %}"/>
+                    </div>
+                </fieldset>
+            </form>
+          </div>
+        </div>
     </div>
-    
+</div>
 {% endblock %}

@@ -4,14 +4,14 @@
 {% load bootstrap_tags %}
 
 {% block body %}
-  <form action="" class="form-horizontal" method="post">
+  <form action="" class="" method="post">
     <legend>{% trans "Create Profile" %}</legend>
     {% csrf_token %}
     <div class="form-controls">
       {{ form|as_bootstrap }}
     </div>
     <div class="form-actions">
-      <input type="submit" value="{% trans "Create Profile" %}" class="btn btn-primary"/>
+      <input type="submit" value="{% trans "Create Profile" %}" class="btn btn-gd-primary"/>
     </div>
   </form>
 {% endblock %}

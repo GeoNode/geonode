@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="utf-8" standalone="no" ?>
+<ViewContext version="1.1.0" id="{{ map.id }}" xmlns="http://www.opengis.net/context" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.opengis.net/context http://schemas.opengis.net/context/1.1.0/context.xsd">
+    <General>
+        <Window width="500" height="300"/>
+        <BoundingBox SRS="EPSG:4326" minx="{{ map.bbox.0 }}" miny="{{ map.bbox.1 }}" maxx="{{ map.bbox.2 }}" maxy="{{ map.bbox.3 }}"/>
+        <Title>{{ map.title }}</Title>
+        {% if map.keyword_list %}
+        <KeywordList>
+            {% for keyword in map.keyword_list %}
+            <Keyword>{{ keyword }}</Keyword>
+            {% endfor %}
+        </KeywordList>
+        {% endif %}
+        <Abstract>{{ map.abstract }}</Abstract>
+        <LogoURL width="307" height="168" format="image/png">
+            <OnlineResource xlink:type="simple" xlink:href="http://geonode.org/static/img/GeoNode-logo.png"/>
+        </LogoURL>
+        <DescriptionURL format="text/html">
+            <OnlineResource xlink:type="simple" xlink:href="{{ siteurl }}{{ map.get_absolute_url }}"/>
+        </DescriptionURL>
+        {% with profile as profile %}
+        <ContactInformation>
+            <ContactPersonPrimary>
+                <ContactPerson>{{ profile.name }}</ContactPerson>
+                <ContactOrganization>{{ profile.organization }}</ContactOrganization>
+            </ContactPersonPrimary>
+            <ContactPosition>{{ profile.position }}</ContactPosition>
+            <ContactAddress>
+                <AddressType>postal</AddressType>
+                <Address>{{ profile.delivery }}</Address>
+                <City>{{ profile.city }}</City>
+                <StateOrProvince>{{ profile.area }}</StateOrProvince>
+                <PostCode>{{ profile.zipcode }}</PostCode>
+                <Country>{{ profile.country }}</Country>
+            </ContactAddress>
+            <ContactVoiceTelephone>{{ profile.voice }}</ContactVoiceTelephone>
+            <ContactFacsimileTelephone>{{ profile.fax }}</ContactFacsimileTelephone>
+            <ContactElectronicMailAddress>{{ map.owner.email }}</ContactElectronicMailAddress>
+        </ContactInformation>
+        {% endwith %}
+    </General>
+    <LayerList>
+    {% for layer in map.layers %}        
+        {% if layer.ows_url != None %}        
+        {% with layer.layer_config as lc %}
+        <Layer queryable="{{ lc.capability.queryable|lower }}" hidden="{% if lc.visibility == False %}true{%else%}false{%endif%}">
+            <Server service="OGC:WMS" version="1.1.1">
+                <OnlineResource xlink:type="simple" xlink:href="{{ layer.ows_url }}"/>
+            </Server>
+            <Name>{{ layer.name }}</Name>
+            <Title>{{ lc.capability.title }}</Title>
+            <Abstract>{{ lc.capability.abstract }}</Abstract>
+            {% if lc.capability.metadataURLs %}
+            <MetadataURL> 
+                <OnlineResource xlink:type="simple" xlink:href="{{ lc.metadataURLs }}"/>
+            </MetadataURL> 
+            {% endif %}
+            <SRS>EPSG:4326</SRS>
+            <FormatList>
+                {% if layer.format %}
+                <Format current="1">{{ layer.format }}</Format>
+                {% else %}
+                <Format current="1">image/png</Format>
+                {% endif %}
+                {% for f in lc.capability.formats %}
+                {% if f != layer.format %}
+                <Format>{{ f }}</Format>
+                {% endif %}
+                {% endfor %}
+            </FormatList>
+            <StyleList>
+                {% for s in lc.capability.styles %}
+                <Style>
+                    <Name>{{ s.name }}</Name>
+                    <Title>{{ s.abstract }}</Title>
+                    <LegendURL width="{{ s.legend.width}}" height="{{ s.legend.height }}" format="{{ s.legend.format }}">
+                        <OnlineResource xlink:type="simple" xlink:href="{{ s.legend.href }}"/>
+                    </LegendURL>
+                </Style>
+                {% endfor %}
+            </StyleList>
+        </Layer>
+        {% endwith %}
+        {% endif %}
+    {% endfor %}
+    </LayerList>
+</ViewContext> 

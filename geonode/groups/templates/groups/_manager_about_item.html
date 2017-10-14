@@ -1,0 +1,32 @@
+{% load friendly_loader %}
+{% friendly_load avatar_tags %}
+{% load i18n %}
+
+<article>
+  <div class="grid-container ">
+      <div class="top-content text-center">
+          <div class="avater">
+              <a href="{% url "profile_detail" profile.username %}">
+              <!--<a href="{{ profile.get_absolute_url }}">-->
+                  <div>
+                    {% with 100 as avatar_size %}
+                      {% avatar profile avatar_size %}
+                    {% endwith %}
+                  </div>
+                  <div class="txt">{{ profile.username }}</div>
+              </a>
+          </div>
+          <div class="designation">
+              Manager
+          </div>
+          <div class="details">
+              {% if profile.organization %}
+                {{ profile.organization }}
+              {% else %}
+                  {% trans "No Group" %}
+              {% endif %}
+          </div>
+      </div>
+  </div>
+</article>
+

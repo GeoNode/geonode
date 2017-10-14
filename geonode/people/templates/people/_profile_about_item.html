@@ -1,15 +1,32 @@
 {% load friendly_loader %}
 {% friendly_load avatar_tags %}
 {% load i18n %}
-  <div class="pull-left">
-  {% with 48 as avatar_size %}
-    <a href="{% url "profile_detail" profile.username %}" class="avatar">{% avatar profile avatar_size %}</a>
-  {% endwith %}
+
+<section class="last">
+<div class="media">
+  <div class="media-left">
+    {% with 40 as avatar_size %}
+        <div class="avatar span1 pull-left">
+            <a href="{% url "profile_detail" profile.username %}">
+                {% avatar profile avatar_size %}
+            </a>
+        </div>
+    {% endwith %}
   </div>
-  <div>
-    <p><a href="{{ profile.get_absolute_url }}">{{ profile.username }}</a>
-      {{ username }}
-      <br />{% if profile.organization %}{{ profile.organization }}
-      {% else %}{% trans "No Group" %}
-      {% endif %}</p>
+  <div class="media-body">
+    <h4 class="media-heading">
+        <a href="{{ profile.get_absolute_url }}">{{ profile.username }}</a>
+    </h4>
+    {{ username }}
+    <div class="details">
+      <div class="meta">
+          {% if profile.organization %}
+            {{ profile.organization }}
+          {% else %}
+            {% trans "No Group" %}
+          {% endif %}
+      </div>
+    </div>
   </div>
+</div>
+</section>

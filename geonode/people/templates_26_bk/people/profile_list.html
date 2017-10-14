@@ -1,0 +1,29 @@
+{% extends "people/profile_base.html" %}
+{% load i18n %}
+
+{% block title %} {% trans "Explore People" %} - {{ block.super }} {% endblock %}
+
+{% block body_class %}people people-list explore{% endblock %}
+
+{% block body %}
+<div class="page-header">
+  <h2>{% trans "Explore People" %}</h2>
+</div>
+
+  {% with include_type_filter='true' %}
+  {% with facet_type='people' %}
+  {% include "search/_search_user_content.html" %}
+  {% endwith %}
+  {% endwith %}
+  {% include "_bulk_permissions_form.html" %}
+{% endblock %}
+
+{% block extra_script %}
+{{ block.super }}
+<script type="text/javascript">
+  SEARCH_URL = '{% url 'api_dispatch_list' api_name='api' resource_name='profiles' %}';
+</script>
+  {% with include_spatial='false' %}
+  {% include 'search/search_scripts.html' %}
+  {% endwith %}
+{% endblock extra_script %}

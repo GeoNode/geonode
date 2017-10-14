@@ -1,0 +1,30 @@
+{% verbatim %}
+<article ng-repeat="group in results" ng-cloak class="ng-cloak">
+  <div class="col-xs-12 col-sm-6 col-lg-4 group-container">
+    <div class="col-xs-12 group-avatar">
+      <div class="col-xs-4 group-image">
+        <a ng-if="group.logo" href="{{ group.detail_url }}" ><img ng-if="group.logo" ng-src="{{ group.logo }}" alt="{{ group.title }}" class="group-logo" /></a>
+      </div>
+      <div class="col-xs-8 group-details">
+        <h5><a href="{{ group.detail_url }}">{{ group.title }}</a></h5>
+        <!-- <a href="mailto:{{ group.email }}" ng-if="group.email != ''"><i class="fa fa-envelope-o"></i></a> -->
+        <p><small>{{ group.description | limitTo: 100 }}{{ group.description.length  > 100 ? '...' : ''}}</small></p>
+      </div>
+      <div class="col-xs-12 group-items">
+        <ul class="list-inline">
+          <li>
+        <a href="{{ group.detail_url }}">
+          <strong>{{ group.member_count }}</strong>
+          <ng-pluralize count="group.member_count" when="{'1': 'Member', 'other': 'Members'}"></ng-pluralize>
+        </a>
+      </li>
+      <li>
+        <a href="{{ group.detail_url }}">
+          <strong>{{ group.manager_count }}</strong>
+          <ng-pluralize count="group.manager_count" when="{'1': 'Manager', 'other': 'Managers'}"></ng-pluralize>
+        </a>
+      </li>
+    </div>
+  </div>
+</article>
+{% endverbatim %}

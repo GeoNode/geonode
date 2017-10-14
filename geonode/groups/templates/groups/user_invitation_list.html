@@ -1,0 +1,79 @@
+{% extends 'site_base.html' %}
+{% load i18n %}
+
+{% block title %}{% trans "User Invitation List" %}{% endblock %}
+
+{% comment %}
+{% block subnav %}
+<li><a href="{% url "actstream_object_feed" content_type_id=ctype.pk  object_id=actor.pk %}">RSS</a></li>
+<li><a href="{% url "actstream_object_feed_atom" content_type_id=ctype.pk  object_id=actor.pk %}">ATOM</a></li>
+{% endblock %}
+{% endcomment %}
+
+{% block body_outer %}
+    <div class="gd-content">
+        <div class="gd-content-heading">
+            <div class="row">
+              <div class="col-md-6">
+                  <div class="title small-content">
+                      {% trans "User Invitation List" %}
+                  </div>
+              </div>
+              <div class="col-md-6">
+                  <div class="small-content text-right">
+                      <a href="{% url "group_detail" slug  %}" class="btn btn-gd-primary pull-right icon-btn-color" style="font-size:12px;">
+                            {% trans "Back to Organization" %}
+                      </a>
+                  </div>
+              </div>
+            </div>
+            <div class="hr"></div>
+        </div>
+        <div class="gd-content-body gd-history transparent top-bottom-margin-20px">
+            <div class="row">
+              <div class="col-md-12">
+
+                <div class="tab-content">
+                  <article id="draft" class="tab-pane active">
+                    <ul class="no-style-list">
+                        <table class="table table-hover" style="background:#ffffff;">
+                            <thead>
+                                <tr>
+                                    <th>Serial No</th>
+                                    <th>User Name</th>
+                                    <th>Request Date</th>
+                                </tr>
+                            </thead>
+                            {% for pending in pending_invitations %}
+                                <tbody>
+                                    <tr>
+                                        <td>{{ forloop.counter}}</td>
+                                        <td><a href="{% url "profile_detail" slug %}">{{ pending.user }}</a> </td>
+                                        <td>{{ pending.date_created }}</td>
+                                        <td>
+                                            <form action="{% url "user-invitation-accept" slug pending.user.id %}" method="post">
+                                            {% csrf_token %}
+                                                <button  type="submit" class="btn btn-gd-primary pull-right icon-btn-color" href="" title="Accept Request">Accept Request</button>
+                                            </form>
+                                        </td>
+                                        <td>
+                                            <a class="btn btn-gd-primary pull-right icon-btn-color" href="{% url "user-invitation-delete" slug pending.id%}" title="Delete request">Delete Request</a>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            {% empty %}
+                                <p>{% trans "No pending invitations" %}</p>
+                            {% endfor %}
+                        </table>
+                    </ul>
+                  </article>
+
+
+
+                </div>
+              </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+

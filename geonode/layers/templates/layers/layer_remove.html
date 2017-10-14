@@ -4,37 +4,66 @@
 {% block title %}{{ layer.typename }} — {{ block.super }}{% endblock %}
 
 {% block body %}
-<div class="page-header">
-  <a href="{% url "layer_browse" %}" class="btn btn-primary pull-right">{% trans "Explore Layers" %}</a>
-  <h2 class="page-title">{% trans "Remove Layers" %}</h2>
-</div>
-<div class="row">
-  <div class="col-md-8">
-    <p class="lead">
-        {% blocktrans with layer.typename as layer_title %}
-          Are you sure you want to remove <a href="{{ layer.get_absolute_url }}">{{ layer_title }}</a>?
-        {% endblocktrans %}
-      </p>
-    <form action="{% url "layer_remove" layer.service_typename %}" method="POST">
-      {% csrf_token %}
-      <input type="hidden" value="{{ layer.service_typename }}" />
-      <div class="form-actions">
-        <input type="submit" value="{% trans "Yes, I am sure" %}" class="btn btn-danger" />
-        <a href="{{ layer.get_absolute_url }}" class="btn btn-default">{% trans "No, don't remove it" %}</a>
+<div class="gd-content">
+    <div class="gd-content-heading">
+        <div class="row">
+          <div class="col-md-6">
+              <div class="title small-content">
+                  {% trans "Remove Layers" %}
+              </div>
+          </div>
+          <div class="col-md-6">
+              <div class="small-content text-right">
+                <a href="{% url "layer_browse" %}" class="btn btn-gd-primary pull-right">
+                    {% trans "Explore Layers" %}
+                </a>
+              </div>
+          </div>
       </div>
-    </form>
-  </div>
-  {% if layer.maps %}
-    <div class="col-md-4">
-    <ul class="nav nav-list">
-    <li class="nav-header">{% trans "This action affects the following maps:" %}</li>
-    {% for map_layer in layer.maps %}
-      <li><a href="{{ map_layer.map.get_absolute_url }}">{{ map_layer.map.title }}</a></li>
-    {% empty %}
-      <li>{% trans "No maps are using this layer" %}</li>
-    {% endfor %}
-    </ul>
+      <div class="hr"></div>
     </div>
-  {% endif %}
+    <div class="gd-content-body transparent top-bottom-margin-20px">
+        <div class="row">
+            <div class="col-md-8">
+                <div class="gd-content-body full-pad-30px">
+                    <div class="lead">
+                        {% blocktrans with layer.typename as layer_title %}
+                            Are you sure you want to remove <a href="{{ layer.get_absolute_url }}">{{ layer_title }}</a>?
+                        {% endblocktrans %}
+                    </div>
+                    <form action="{% url "layer_remove" layer.service_typename %}" method="POST">
+                        {% csrf_token %}
+                        <input type="hidden" value="{{ layer.service_typename }}"/>
+                        <div class="form-actions">
+                            <input type="submit" value="{% trans "Yes, I am sure" %}" class="btn btn-danger btn-gd"/>
+                            <a href="{{ layer.get_absolute_url }}" class="btn btn-gd btn-default">
+                                {% trans "No, don't remove it" %}
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            {% if layer.maps %}
+                <div class="col-md-4">
+                    <div class="gd-content-body full-pad-30px">
+                        <ul class="nav nav-list gd-link-style">
+                            <li class="nav-header">{% trans "This action affects the following maps:" %}</li>
+                            {% for map_layer in layer.maps %}
+                                <li>
+                                    <a href="{{ map_layer.map.get_absolute_url }}">
+                                        {{ map_layer.map.title }}
+                                    </a>
+                                </li>
+                            {% empty %}
+                                <li>
+                                    {% trans "No maps are using this layer" %}
+                                </li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                </div>
+            {% endif %}
+        </div>
+    </div>
 </div>
 {% endblock %}

@@ -1,42 +1,380 @@
-{% load i18n %}
 {% verbatim %}
-<div class="row">
-  <div ng-if="results.length == 0" ng-cloak>
-    <div><h3>No content created yet.</h3></div>
-  </div>
-  <article ng-repeat="item in results" resource_id="{{ item.id }}" ng-cloak class="ng-cloak">
-    <div class="col-xs-12 item-container">
-      <div class="col-xs-12 profile-avatar">
-        <div class="col-xs-4 item-thumb">
-          <a href="{{ item.detail_url }}"><img ng-src="{{ item.thumbnail_url }}" /></a>
-        </div>
-        <div class="col-xs-8 item-details">
-          {% endverbatim %}
-          <button class="btn btn-default btn-xs pull-right" ng-if="cart" ng-click="cart.toggleItem(item)"><i ng-class="cart.getFaClass(item.id)" class="fa fa-lg"></i></button>
-          {% verbatim %}
-          <p class="item-meta"><span class="item-category">{{ item.category__gn_description }}</span></p>
-          <h4><a href="{{ item.detail_url }}">{{ item.title }}</a></h4>
-          <p class="abstract">{{ item.abstract | limitTo: 300 }}{{ item.abstract.length  > 300 ? '...' : ''}}</p>
-          <div class="row">
-            <div class="col-xs-12 item-items">
-              <ul class="list-inline">
-                <li><a href="/people/profile/{{ item.owner__username }}"><i class="fa fa-user"></i>{{ item.owner__username }}</a></li>
-                <li><a href="{{ item.detail_url }}#info"><i class="fa fa-calendar-o"></i>{{ item.date|date:'d MMM y' }}</a></li>
-                <li><a href="{{ item.detail_url }}"><i class="fa fa-eye"></i>{{ item.popular_count }}</a></li>
-                <li><a href="{{ item.detail_url }}#share"><i class="fa fa-share"></i>{{ item.share_count }}</a></li>
-                <li><a href="{{ item.detail_url }}#rate"><i class="fa fa-star"></i>{{ item.rating }}</a></li>
-                <li><a ng-if="item.detail_url.indexOf('/layers/') > -1" href="{% endverbatim %}{% url "new_map" %}?layer={% verbatim %}{{ item.detail_url.substring(8) }}">
-                  {% endverbatim %}
-                  <i class="fa fa-map-marker"></i>{% trans "Create a Map" %}</a>
-                  {% verbatim %}
-                </li>
-                <li><a ng-if="item.detail_url.indexOf('/maps/') > -1" href="/maps/{{item.id}}/view"><i class="fa fa-map-marker"></i>View Map</a></li>
-              </ul>
+<div ng-if="pageViewing == 'list'" class="gd-content-body transparent gd-cart-checkbox-style">
+  <ul class="resources-list lmd">
+    <li class="box" ng-repeat="item in results" resource_id="{{ item.id }}" ng-cloak class="ng-cloak">
+        <div class="media">
+            <div class="media-left">
+                <a href="{{ item.detail_url }}" >
+                  <img height="180" width="240" ng-src="{{ item.thumbnail_url }}" alt="{{ group.title }}" class="group-logo" />
+                </a>
+                    <div class="checkbox-overlay">
+                        <div class="checkbox" ng-if="cart" ng-click="cart.toggleItem(item)">
+                            <label>
+                                <i ng-show="!cart.isActive(item.id)" class="fa fa-square"></i>
+                                <i ng-show="cart.isActive(item.id)" class="fa fa-check-square"></i>
+                                <!-- <input ng-class="cart.getFaClass(item.id)" type="checkbox"> -->
+                            </label>
+                        </div>
+                    </div>
             </div>
-          </div>
+            <div class="media-body">
+                <div class="heading">
+                    <div class="row">
+                        <div class="col-md-9">
+                            <h4 class="media-heading">
+                                <a href="{{ item.detail_url }}">
+                                    {{ item.title }}
+                                </a>
+                            </h4>
+                            <div class="media-sub-heading">
+                                {{ item.category }}
+                                {{ item.category == null || item.category == '' ? 'Not provided.' : '' }}
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+
+                        </div>
+                    </div>
+                </div>
+                <div class="description">
+                    {{ item.abstract | limitTo: 300 }}{{ item.abstract.length  > 300 ? '...' : ''}}
+                </div>
+                <ul class="resources-summery">
+                  <li>
+                      <a href="/people/profile/{{ item.owner__username}}" title="{{item.resource_type}} owner">
+                          <i class="fa fa-user"></i>
+                          {{ item.owner__username }}
+                      </a>
+                  </li>
+                  <li>
+                      <a href="{{ item.detail_url }}#info" title="{{item.resource_type}} creation date">
+                          <i class="fa fa-calendar-o"></i>
+                          {{ item.date|date:'d MMM y' }}
+                      </a>
+                  </li>
+                  <li>
+                      <a href="{{ item.detail_url }}" title="{{item.resource_type}} view count">
+                          <i class="fa fa-eye"></i>
+                          {{ item.popular_count }}
+                      </a>
+                  </li>
+                  <li>
+                      <a href="{{ item.detail_url }}#share" title="{{item.resource_type}} share count">
+                          <i class="fa fa-share"></i>
+                          {{ item.share_count }}
+                      </a>
+                  </li>
+                  <li>
+                      <a href="{{ item.detail_url }}#rate" title="{{item.resource_type}} rating">
+                          <i class="fa fa-star"></i>
+                          {{ item.rating }}
+                      </a>
+                  </li>
+                  {% endverbatim %}
+                  {% if request.user.is_manager_of_any_group %}
+                  <!--{{ request.user.group_list_all }}-->
+                  <li ng-if="item.featured && item.resource_type=='layer' && item.can_make_featured==true">
+                      <button class="btn col-md-12 btn-gd-primary" style="background:#d0d0d0;border:none;color:#000;font-size:12px;padding:7px 25px;margin-left:15px;margin-top:-5px;"
+                         data-layerID="{{item.id}}" dataname="{{item.can_make_featured}}" data-statusID="false" ng-click="featuredFunction(item.id,false);" >
+                         <i class="fa fa-heart-o" style="border:none;color:#000;"></i>
+                          Unfeatured
+                      </button>
+                  </li>
+                  <li ng-if="!item.featured && item.resource_type=='layer' && item.can_make_featured==true">
+                      <button class="btn col-md-12 btn-gd-primary" style="margin-left:15px;margin-top:-4px;" dataname="{{item.group}}" ng-click="featuredFunction(item.id,true);" data-layerID="{{item.id}}" data-statusID="true">
+                         <i class="fa fa-heart-o"></i>
+                          Make Featured
+                      </button>
+                  </li>
+                  <li ng-if="item.favorite && item.resource_type=='layer' && item.can_make_featured==false">
+                      <button class="btn col-md-12 btn-gd-primary" ng-click="favouriteFunction(item.id,false);" style="background:#d0d0d0;border:none;color:#000;font-size:12px;padding:5px 25px;margin-left:30px;margin-top:-5px;"
+                              data-favouriteID="{{item.id}}" data-favouriteStatus="false">
+                          <i class="fa fa-heart-o" style="border:none;color:#000;"></i>
+                          Unfavorite
+                      </button>
+                  </li>
+                  <li ng-if="!item.favorite && item.resource_type=='layer' && item.can_make_featured==false">
+                      <button class="btn col-md-12 btn-gd-primary" style="margin-left:30px;margin-top:-4px;" ng-click="favouriteFunction(item.id,true);" data-favouriteID="{{item.id}}" data-favouriteStatus="true">
+                          <i class="fa fa-heart-o"></i>
+                          Add to favorite
+                      </button>
+                  </li>
+                  <li ng-if="item.favorite && item.resource_type=='layer' && item.can_make_featured==true">
+                      <button class="btn col-md-12 btn-gd-primary" ng-click="favouriteFunction(item.id,false);" style="background:#d0d0d0;border:none;color:#000;font-size:12px;padding:7px 25px;margin-left:30px;margin-top:-5px;"
+                              data-favouriteID="{{item.id}}" data-favouriteStatus="false">
+                          <i class="fa fa-heart-o" style="border:none;color:#000;"></i>
+                          Unfavorite
+                      </button>
+                  </li>
+                  <li ng-if="!item.favorite && item.resource_type=='layer' && item.can_make_featured==true">
+                      <button class="btn col-md-12 btn-gd-primary" style="margin-left:30px;margin-top:-4px;" style="margin-left:15px;margin-top:-4px;" ng-click="favouriteFunction(item.id,true);" data-favouriteID="{{item.id}}" data-favouriteStatus="true">
+                          <i class="fa fa-heart-o"></i>
+                          Add to favorite
+                      </button>
+                  </li>
+                  <li ng-if="item.favorite && item.resource_type=='map'">
+                      <button class="btn col-md-12 btn-gd-primary" style="background:#d0d0d0;border:none;color:#000;font-size:12px;padding:5px 25px;margin-left:15px;margin-top:-5px;" ng-click="favouriteFunction(item.id,false);" data-favouriteID="{{item.id}}" data-favouriteStatus="false">
+                          <i class="fa fa-heart-o" style="border:none;color:#000;"></i>
+                          Unfavorite
+                      </button>
+                  </li>
+                  <li ng-if="!item.favorite && item.resource_type=='map'">
+                      <button class="btn col-md-12 btn-gd-primary" style="margin-left:15px;margin-top:-5px;" ng-click="favouriteFunction(item.id,true);" data-favouriteID="{{item.id}}" data-favouriteStatus="true">
+                          <i class="fa fa-heart-o"></i>
+                          Add to favorite
+                      </button>
+                  </li>
+                  <li ng-if="item.favorite && item.resource_type=='document'">
+                      <button class="btn col-md-12 btn-gd-primary" style="background:#d0d0d0;border:none;color:#000;font-size:12px;padding:5px 25px;margin-left:15px;margin-top:-5px;" ng-click="favouriteFunction(item.id,false);" data-favouriteID="{{item.id}}" data-favouriteStatus="false">
+                          <i class="fa fa-heart-o" style="border:none;color:#000;"></i>
+                          Unfavorite
+                      </button>
+                  </li>
+                  <li ng-if="!item.favorite && item.resource_type=='document'">
+                      <button class="btn col-md-12 btn-gd-primary" style="margin-left:15px;margin-top:-5px;" ng-click="favouriteFunction(item.id,true);" data-favouriteID="{{item.id}}" data-favouriteStatus="true">
+                          <i class="fa fa-heart-o"></i>
+                          Add to favorite
+                      </button>
+                  </li>
+                  {% else %}
+                  {% if user.is_authenticated %}
+                  <li ng-if="item.favorite">
+                      <button class="btn col-md-12 btn-gd-primary" ng-click="favouriteFunction(item.id,false);" style="background:#d0d0d0;border:none;color:#000;font-size:12px;padding:5px 25px;margin-left:15px;margin-top:-5px;" href="" data-favouriteID="{{item.id}}" data-favouriteStatus="false">
+                          <i class="fa fa-heart-o" style="border:none;color:#000;"></i>
+                          Unfavorite
+                      </button>
+                  </li>
+                  <li ng-if="!item.favorite" >
+                      <button class="btn col-md-12 btn-gd-primary" style="margin-left:15px;margin-top:-5px;" ng-click="favouriteFunction(item.id,true);" data-favouriteID="{{item.id}}" data-favouriteStatus="true">
+                          <i class="fa fa-heart-o"></i>
+                          Add to favorite
+                      </button>
+                  </li>
+                  {% endif %}
+                  {% endif %}
+                    {% verbatim %}
+                </ul>
+            </div>
         </div>
+    </li>
+    <li class="box" ng-if="results.length == 0">
+        <div class="text-center">
+            <button class="btn button-loading btn-large btn-link btn-lg">
+                Loading...
+                <i class="fa fa-spinner fa-spin fa-large"></i>
+            </button>
+        </div>
+    </li>
+  </ul>
+</div>
+<div ng-if="pageViewing == 'grid'" class="gd-content-body transparent gd-cart-checkbox-style">
+  <div class="row">
+    <article ng-repeat="item in results" resource_id="{{ item.id }}" ng-cloak class="ng-cloak">
+      <div class="col-xs-12 col-sm-6 col-md-4 col-lg-4">
+          <div class="grid-container lmd">
+              <div class="avater">
+                  <div class="avater-img">
+                    <a class="avater-img-mid" href="{{ item.detail_url }}" >
+                      <img ng-if="item.thumbnail_url != null" ng-src="{{ item.thumbnail_url }}" alt="{{ group.title }}" class="group-logo" />
+                      <img ng-if="item.thumbnail_url == null" ng-src="/static/geonode/img/missing_thumb.png" alt="{{ group.title }}" class="group-logo" />
+                    </a>
+                  </div>
+                      <div class="checkbox-overlay">
+                          <div class="checkbox" ng-if="cart" ng-click="cart.toggleItem(item)">
+                              <label>
+                                  <span ng-show="cart.isActive(item.id)" class="fa-stack fa-lg">
+                                      <i class="fa fa-square fa-stack-1x" style="color: #FFF;"></i>
+                                      <i class="fa fa-check-square fa-stack-1x"></i>
+                                  </span>
+                                  <span ng-show="!cart.isActive(item.id)" class="fa-stack fa-lg">
+                                      <i class="fa fa-square fa-stack-1x"></i>
+                                  </span>
+
+                                  <!-- <i ng-show="cart.isActive(item.id)" class="fa fa-check-square"></i>
+                                  <input ng-checked="cart.isActive(item.id)" ng-class="cart.getFaClass(item.id)" type="checkbox"> -->
+                              </label>
+                          </div>
+                      </div>
+
+              </div>
+              <div class="information">
+                  <div class="top-content text-center">
+                      <div class="title">
+                          <a href="{{ item.detail_url }}" title="{{ item.title }}">
+                              {{ item.title | limitTo: 20 }}{{ item.title.length  > 20 ? '...' : ''}}
+                          </a>
+                      </div>
+                      <div class="category">
+                          {{ item.category }}
+                          {{ item.category == null || item.category == '' ? 'Not provided.' : '' }}
+                      </div>
+                      <div class="details">
+                          {{ item.abstract | limitTo: 220 }}{{ item.abstract.length  > 220 ? '...' : ''}}
+                      </div>
+                  </div>
+
+                  <div class="summery">
+                      <div class="item-items">
+                          <ul class="list-inline lmd">
+                              <li>
+                                  <a href="/people/profile/{{ item.owner__username }}" title="{{item.resource_type}} owner">
+                                      <i class="fa fa-user"></i>
+                                      {{ item.owner__username }}
+                                  </a>
+                              </li>
+                              <li>
+                                  <a href="{{ item.detail_url }}#info" title="{{item.resource_type}} creation date">
+                                      <i class="fa fa-calendar-o"></i>
+                                      {{ item.date|date:'d MMM y' }}
+                                  </a>
+                              </li>
+                              <li>
+                                  <a href="{{ item.detail_url }}" title="{{item.resource_type}} view count">
+                                      <i class="fa fa-eye"></i>
+                                      {{ item.popular_count }}
+                                  </a>
+                              </li>
+                              <li>
+                                  <a href="{{ item.detail_url }}#share" title="{{item.resource_type}} share count">
+                                      <i class="fa fa-share"></i>
+                                      {{ item.share_count }}
+                                  </a>
+                              </li>
+                              <li>
+                                  <a href="{{ item.detail_url }}#rate" title="{{item.resource_type}} rating">
+                                      <i class="fa fa-star"></i>
+                                      {{ item.rating }}
+                                  </a>
+                              </li>
+                          </ul>
+                      </div>
+                  </div>
+              </div>
+              {% endverbatim %}
+              <div>
+                  <div class="bottom-content">
+                      <div class="row">
+                          <div class="profile-items text-center">
+                              <ul class="list-inline">
+                                  {% if request.user.is_manager_of_any_group %}
+                                  <!--{{ request.user.group_list_all }}-->
+                                  <li ng-if="item.featured && item.resource_type=='layer' && item.can_make_featured==true" class="col-md-6">
+                                      {% verbatim %}
+                                      <button class="btn col-md-12 btn-gd-primary-all" style="background:#d0d0d0;border:none;color:#000;font-size:12px;padding:5px;"
+                                         data-layerID="{{item.id}}" dataname="{{item.can_make_featured}}" data-statusID="false" ng-click="featuredFunction(item.id,false);" >
+                                         <i class="fa fa-heart-o" style="border:none;color:#000;"></i>
+                                          Unfeatured
+                                      </button>
+                                      {% endverbatim %}
+                                  </li>
+
+                                  <li ng-if="!item.featured && item.resource_type=='layer' && item.can_make_featured==true" class="col-md-6" id="featured_chng">
+                                      {% verbatim %}
+                                      <button class="btn col-md-12 btn-gd-primary-all" dataname="{{item.group}}" ng-click="featuredFunction(item.id,true);" data-layerID="{{item.id}}" data-statusID="true">
+                                         <i class="fa fa-heart-o"></i>
+                                          Make Featured
+                                      </button>
+                                      {% endverbatim %}
+                                  </li>
+                                  <li ng-if="item.favorite && item.resource_type=='layer' && item.can_make_featured==false" class="col-md-12">
+                                      {% verbatim %}
+                                      <button class="btn col-md-12 btn-gd-primary-all" ng-click="favouriteFunction(item.id,false);" style="background:#d0d0d0;border:none;color:#000;font-size:12px;padding:5px;"
+                                              data-favouriteID="{{item.id}}" data-favouriteStatus="false">
+                                          <i class="fa fa-heart-o" style="border:none;color:#000;"></i>
+                                          Unfavorite
+                                      </button>
+                                      {% endverbatim %}
+                                  </li>
+                                  <li ng-if="!item.favorite && item.resource_type=='layer' && item.can_make_featured==false" class="col-md-12">
+                                      {% verbatim %}
+                                      <button class="btn col-md-12 btn-gd-primary-all" ng-click="favouriteFunction(item.id,true);" data-favouriteID="{{item.id}}" data-favouriteStatus="true">
+                                          <i class="fa fa-heart-o"></i>
+                                          Add to favorite
+                                      </button>
+                                      {% endverbatim %}
+                                  </li>
+
+                                  <li ng-if="item.favorite && item.resource_type=='layer' && item.can_make_featured==true" class="col-md-6">
+                                      {% verbatim %}
+                                      <button class="btn col-md-12 btn-gd-primary-all" ng-click="favouriteFunction(item.id,false);" style="background:#d0d0d0;border:none;color:#000;font-size:12px;padding:5px;"
+                                              data-favouriteID="{{item.id}}" data-favouriteStatus="false">
+                                          <i class="fa fa-heart-o" style="border:none;color:#000;"></i>
+                                          Unfavorite
+                                      </button>
+                                      {% endverbatim %}
+                                  </li>
+                                  <li ng-if="!item.favorite && item.resource_type=='layer' && item.can_make_featured==true" class="col-md-6">
+                                      {% verbatim %}
+                                      <button class="btn col-md-12 btn-gd-primary-all" ng-click="favouriteFunction(item.id,true);" data-favouriteID="{{item.id}}" data-favouriteStatus="true">
+                                          <i class="fa fa-heart-o"></i>
+                                          Add to favorite
+                                      </button>
+                                      {% endverbatim %}
+                                  </li>
+
+                                  <li ng-if="item.favorite && item.resource_type=='map'" class="col-md-12">
+                                      {% verbatim %}
+                                      <button class="btn col-md-12 btn-gd-primary-all" ng-click="favouriteFunction(item.id,false);" style="background:#d0d0d0;border:none;color:#000;font-size:12px;padding:5px;" data-favouriteID="{{item.id}}" data-favouriteStatus="false">
+                                          <i class="fa fa-heart-o" style="border:none;color:#000;"></i>
+                                          Unfavorite
+                                      </button>
+                                      {% endverbatim %}
+                                  </li>
+                                  <li ng-if="!item.favorite && item.resource_type=='map'" class="col-md-12">
+                                      {% verbatim %}
+                                      <button class="btn col-md-12 btn-gd-primary-all" ng-click="favouriteFunction(item.id,true);" data-favouriteID="{{item.id}}" data-favouriteStatus="true">
+                                          <i class="fa fa-heart-o"></i>
+                                          Add to favorite
+                                      </button>
+                                      {% endverbatim %}
+                                  </li>
+
+                                  <li ng-if="item.favorite && item.resource_type=='document'" class="col-md-12">
+                                      {% verbatim %}
+                                      <button class="btn col-md-12 btn-gd-primary-all" ng-click="favouriteFunction(item.id,false);" style="background:#d0d0d0;border:none;color:#000;font-size:12px;padding:5px;" data-favouriteID="{{item.id}}" data-favouriteStatus="false">
+                                          <i class="fa fa-heart-o" style="border:none;color:#000;"></i>
+                                          Unfavorite
+                                      </button>
+                                      {% endverbatim %}
+                                  </li>
+                                  <li ng-if="!item.favorite && item.resource_type=='document'" class="col-md-12">
+                                      {% verbatim %}
+                                      <button class="btn col-md-12 btn-gd-primary-all" ng-click="favouriteFunction(item.id,true);" data-favouriteID="{{item.id}}" data-favouriteStatus="true">
+                                          <i class="fa fa-heart-o"></i>
+                                          Add to favorite
+                                      </button>
+                                      {% endverbatim %}
+                                  </li>
+                                  {% else %}
+                                  {% if user.is_authenticated %}
+                                  <li ng-if="item.favorite" class="col-md-12">
+                                      {% verbatim %}
+                                      <button class="btn col-md-12 btn-gd-primary-all" ng-click="favouriteFunction(item.id,false);" style="background:#d0d0d0;border:none;color:#000;font-size:12px;padding:5px;" href="" data-favouriteID="{{item.id}}" data-favouriteStatus="false">
+                                          <i class="fa fa-heart-o" style="border:none;color:#000;"></i>
+                                          Unfavorite
+                                      </button>
+                                      {% endverbatim %}
+                                  </li>
+                                  <li ng-if="!item.favorite" class="col-md-12">
+                                      {% verbatim %}
+                                      <button class="btn col-md-12 btn-gd-primary-all" ng-click="favouriteFunction(item.id,true);" data-favouriteID="{{item.id}}" data-favouriteStatus="true">
+                                          <i class="fa fa-heart-o"></i>
+                                          Add to favorite
+                                      </button>
+                                      {% endverbatim %}
+                                  </li>
+                                  {% endif %}
+                                  {% endif %}
+                              </ul>
+                          </div>
+                      </div>
+                  </div>
+              </div>
+              {% verbatim %}
+          </div>
       </div>
-    </div>
-  </article>
+    </article>
+  </div>
 </div>
 {% endverbatim %}
+

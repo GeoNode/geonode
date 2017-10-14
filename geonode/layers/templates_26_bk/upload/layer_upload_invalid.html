@@ -1,0 +1,8 @@
+{% extends "upload/layer_upload_base.html" %}
+{% load i18n %}
+{% block body_class %}data data-list upload{% endblock %}
+
+{% block body %}
+<p>{% trans "Your upload is either complete or you haven't resumed an earlier one." %}</p>
+<p>{% trans "Return to" %} <a href="{% url "layer_upload" %}">{% trans "Upload Form" %}</a>.</p>
+{% endblock %}

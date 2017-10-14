@@ -2,74 +2,97 @@
 {% load i18n %}
 
 {% block body %}
-<div class="span12">
-  <h3>{% trans "Download" %} {{map.title}}</h3>
-  <p>
-    {% blocktrans %}
-      Here you can download all the layers of this map that
-      are hosted on this GeoNode.
-    {% endblocktrans %}
-    <ul>
-      {% for layer in downloadable_layers %} 
-        <li>
-          {% if layer.local %}
-            {{ layer.local_link|safe }}
-          {% else %}
-            {{ layer }}
-          {% endif %}
-        </li>
-      {% empty %}
-      {% blocktrans %}
-      <div class="alert alert-warning">Could not find downloadable layers for this map. You can go back to  
-      {% endblocktrans %}<a href="{% url 'map_detail' map.id %}">{{map.title}}</a></div>
-      {% endfor %} 
-    </ul>
-   
-    {% if locked_layers %}
-      {% blocktrans %}
-        Additionally, the map contains these layers which will not be downloaded
-        due to security restrictions:
-      {% endblocktrans %}
-      <ul>
-        {% for layer in locked_layers %} 
-          <li>{{ layer.layer_title }}</li>
-        {% endfor %} 
-      </ul>
-    {% endif %}
-
-	  {% if remote_layers %}
-      {% blocktrans %}
-        Finally, the map contains these layers which will not be downloaded
-        because they are not available directly from this GeoNode:
-      {% endblocktrans %}
-      <ul>
-        {% for layer in remote_layers %} 
-          <li>{{ layer }}</li>
-        {% endfor %} 
-      </ul>
-    {% endif %}
-
-    {% if map_status %}
-      <div class="alert alert-success span8" id="download">
-          <div id="pb-status">{% trans 'Downloading' %}...</div>
-          <div class="progress">
-            <div id="pb" class="bar bar-success"></div>
+<div class="gd-content">
+    <div class="gd-content-heading">
+        <div class="row">
+          <div class="col-md-12">
+              <div class="title small-content">
+                  {% trans "Download" %} {{map.title}}
+              </div>
           </div>
           <a class="btn" href="#" id="cancel">{%  trans 'Cancel' %}</a>
           <a class="btn" href="{% url 'map_download' map.id %}" style="display:none;" id="retry">{%  trans 'Retry' %}</a>
       </div>
-    {% elif downloadable_layers|length > 0 %} 
-      <form action="{% url 'map_download' map.id %}" method="POST">
-        {% csrf_token %}
-        <div class="form-actions">
-          <input type="submit" class="btn btn-primary" value="{% trans "Start downloading this map" %}" /> 
+      <div class="hr"></div>
+    </div>
+    <div class="gd-content-body full-pad-30px top-bottom-margin-20px">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="lead">
+                    {% blocktrans %}
+                        Here you can download all the layers of this map that
+                        are hosted on this GeoNode.
+                    {% endblocktrans %}
+                </div>
+                <ul class="nav">
+                    {% for layer in downloadable_layers %}
+                        <li>
+                            {% if layer.local %}
+                                {{ layer.local_link|safe }}
+                            {% else %}
+                                {{ layer }}
+                            {% endif %}
+                        </li>
+                    {% empty %}
+                        {% blocktrans %}
+                            <div class="alert alert-warning">Could not find downloadable layers for this map. You can go
+                            back to
+                        {% endblocktrans %}<a href="{% url 'map_detail' map.id %}">{{ map.title }}</a></div>
+                    {% endfor %}
+                </ul>
+
+                {% if locked_layers %}
+                    <div class="lead">
+                        {% blocktrans %}
+                            Additionally, the map contains these layers which will not be downloaded
+                            due to security restrictions:
+                        {% endblocktrans %}
+                    </div>
+                    <ul class="nav">
+                        {% for layer in locked_layers %}
+                            <li>{{ layer.layer_title }}</li>
+                        {% endfor %}
+                    </ul>
+                {% endif %}
+
+                {% if remote_layers %}
+                    <div class="lead">
+                        {% blocktrans %}
+                            Finally, the map contains these layers which will not be downloaded
+                            because they are not available directly from this GeoNode:
+                        {% endblocktrans %}
+                    </div>
+                    <ul class="nav">
+                        {% for layer in remote_layers %}
+                            <li>{{ layer }}</li>
+                        {% endfor %}
+                    </ul>
+                {% endif %}
+
+                {% if map_status %}
+                    <div class="alert alert-success span8" id="download">
+                        <div id="pb-status">{% trans 'Downloading' %}...</div>
+                        <div class="progress">
+                            <div id="pb" class="bar bar-success"></div>
+                        </div>
+                        <a class="btn" href="#" id="cancel">{% trans 'Cancel' %}</a>
+                        <a class="btn" href="{% url 'map_download' map.id %}" style="display:none;"
+                           id="retry">{% trans 'Retry' %}</a>
+                    </div>
+                {% elif downloadable_layers|length > 0 %}
+                    <form action="{% url 'map_download' map.id %}" method="POST">
+                        {% csrf_token %}
+                        <div class="form-actions">
+                            <input type="submit" class="btn btn-gd-primary" value="{% trans "Start downloading this map" %}"/>
+                        </div>
+                    </form>
+                {% endif %}
+            </div>
         </div>
-      </form>
-    {% endif %} 
+    </div>
 </div>
 {% endblock %}
 {% block extra_script %}
-{{ block.super }}
 <script type="text/javascript">
 
   {% autoescape off %}

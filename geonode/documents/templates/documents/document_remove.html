@@ -4,23 +4,43 @@
 {% block title %}{% trans "Deleting" %} {{ document.title }} — {{ block.super }}{% endblock %}
 
 {% block body %}
-<div class="page-header">
-  <h2 class="page-title">{% trans "Remove Document" %}</h2>
-</div>
-<div class="row">
-  <div class="col-md-8">
-    <p class="lead">
-        {% blocktrans with document.title as document_title %}
-          Are you sure you want to remove <a href="{{ document.get_absolute_url }}">{{ document_title }}</a>?
-        {% endblocktrans %}
-      </p>
-    <form action="{% url "document_remove" document.id %}" method="POST">
-      {% csrf_token %}
-      <div class="form-actions">
-        <input type="submit" value="{% trans "Yes, I am sure" %}" class="btn btn-danger" />
-        <a href="{{ document.get_absolute_url }}" class="btn btn-default">{% trans "No, don't remove it" %}</a>
+<div class="gd-content">
+    <div class="gd-content-heading">
+        <div class="row">
+          <div class="col-md-6">
+              <div class="title small-content">
+                  {% trans "Remove Document" %}
+              </div>
+          </div>
+          <div class="col-md-6">
+              <div class="small-content text-right">
+                <a href="{% url "document_browse" %}" class="btn btn-gd-primary pull-right">
+                    {% trans "Explore Documents" %}
+                </a>
+              </div>
+          </div>
       </div>
-    </form>
-  </div>
+      <div class="hr"></div>
+    </div>
+    <div class="gd-content-body full-pad-30px top-bottom-margin-20px">
+        <div class="row">
+            <div class="col-md-8">
+                <div class="lead">
+                    {% blocktrans with document.title as document_title %}
+                        Are you sure you want to remove
+                        <a href="{{ document.get_absolute_url }}">{{ document_title }}</a>?
+                    {% endblocktrans %}
+                </div>
+                <form action="{% url "document_remove" document.id %}" method="POST">
+                    {% csrf_token %}
+                    <div class="form-actions">
+                        <input type="submit" value="{% trans "Yes, I am sure" %}" class="btn btn-danger btn-gd"/>
+                        <a href="{{ document.get_absolute_url }}"
+                           class="btn btn-gd-gray">{% trans "No, don't remove it" %}</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
 </div>
 {% endblock %}

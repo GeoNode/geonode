@@ -1,0 +1,18 @@
+{% extends "site_base.html" %}
+{% load i18n %}
+{% load url from future %}
+
+{% block title %} {{ block.super }} {% endblock %}
+
+{% block body_class %}data{% endblock %}
+
+{% block body_outer %}
+<div class="page-header">
+  <a href="{% url "layer_browse" %}" class="btn btn-primary pull-right">{% trans "Explore Layers" %}</a>
+  <h2 class="page-title">{% trans "Upload Layers" %}</h2>
+</div>
+<div class="row">
+  {% block body %}{% endblock body %}
+  {% block sidebar %}{% endblock sidebar %}
+</div>
+{% endblock body_outer %}

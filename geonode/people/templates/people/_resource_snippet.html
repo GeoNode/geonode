@@ -1,0 +1,109 @@
+{% verbatim %}
+<div class="row resources-content">
+  <ul class="resources-list">
+    <li class="box" ng-repeat="item in results" resource_id="{{ item.id }}" ng-cloak class="ng-cloak">
+        <div class="media">
+            <div class="media-left">
+                <a href="{{ item.detail_url }}">
+                  <img height="100" class="media-object" alt="map-layout" ng-src="{{ item.thumbnail_url }}" />
+                </a>
+            </div>
+            <div class="media-body">
+                <div class="heading">
+                    <div class="row">
+                        <div class="col-md-9">
+                            <h4 class="media-heading">
+                                <a href="{{ item.detail_url }}">
+                                    {{ item.title }}
+                                </a>
+                            </h4>
+                            <div class="media-sub-heading">{{ item.category__gn_description }}</div>
+                        </div>
+                        {% endverbatim %}
+                        <div class="col-md-3">
+                            <div class="pull-right">
+                                <!-- <button class="btn btn-default">
+                                    <i class="fa fa-map-marker"></i>
+                                </button> -->
+                                <button class="btn btn-default" ng-if="cart" ng-click="cart.toggleItem(item)">
+                                    <!--<i ng-class="cart.getFaClass(item.id)" class="fa fa-heart-o"></i>-->
+                                    <i class="fa fa-heart-o"></i>
+                                </button>
+                            </div>
+                        </div>
+                        {% verbatim %}
+                    </div>
+                </div>
+                <div class="description">
+                    {{ item.abstract | limitTo: 300 }}{{ item.abstract.length  > 300 ? '...' : ''}}
+                </div>
+                <ul class="resources-summery">
+                    <li>
+                        <a href="/people/profile/{{ item.owner__username }}">
+                            <i class="fa fa-user"></i>
+                            {{ item.owner__username }}
+                        </a>
+                    </li>
+                    <li>
+                        <a href="{{ item.detail_url }}#info" >
+                            <i class="fa fa-calendar"></i>
+                            {{ item.date|date:'d MMM y' }}
+                        </a>
+                    </li>
+                    <li>
+                        <a href="{{ item.detail_url }}">
+                            <i class="fa fa-eye"></i>
+                            {{ item.popular_count }}
+                        </a>
+                    </li>
+                    <li>
+                        <a href="{{ item.detail_url }}#share">
+                            <i class="fa fa-star-o"></i>
+                            {{ item.share_count }}
+                        </a>
+                    </li>
+                    <li>
+                        <a href="{{ item.detail_url }}#rate">
+                            <i class="fa fa-share"></i>
+                            {{ item.rating }}
+                        </a>
+                    </li>
+                    <li ng-if="item.detail_url.indexOf('/layers/') > -1">
+                        <a href="{% endverbatim %}{% url "new_map" %}?layer={% verbatim %}{{ item.detail_url.substring(8) }}">
+                            <i class="fa fa-map-marker"></i>
+                            Create a Map
+                        </a>
+                    </li>
+                    <li ng-if="item.detail_url.indexOf('/maps/') > -1">
+                        <a href="/maps/{{item.id}}/view">
+                            <i class="fa fa-map-marker"></i>
+                            View Map
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </li>
+    <li class="box" ng-if="results.length == 0">
+        <div class="media">
+            <div class="media-body">
+                <div class="heading">
+                    <div class="row">
+                        <div class="col-md-9">
+                            <h4 class="media-heading">
+                                <a href="javascript:;">
+                                    Result Not Found.
+                                </a>
+                            </h4>
+                        </div>
+                    </div>
+                </div>
+                <div class="description">
+                    No Result Found.
+                </div>
+            </div>
+        </div>
+    </li>
+  </ul>
+</div>
+{% endverbatim %}

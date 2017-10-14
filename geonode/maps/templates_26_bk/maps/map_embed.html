@@ -1,0 +1,40 @@
+{% load i18n %}
+
+{% block head %}
+    {% include "geonode/ext_header.html" %}
+    {% include "geonode/app_header.html" %}
+    {% include "geonode/geo_header.html" %}
+    <script type="text/javascript">
+        google.load("earth", "1");
+    </script>
+
+    <script type="text/javascript">
+    var app;
+    Ext.onReady(function() {
+    {% autoescape off %}
+        var config = {
+            useCapabilities: false,
+            useToolbar: false,
+            proxy: '{{ PROXY_URL }}',
+            {% if MAPFISH_PRINT_ENABLED %}
+            printService: "{{GEOSERVER_BASE_URL}}pdf/",
+            {% else %}
+            printService: "",
+            {% endif %}
+            /* The URL to a REST map configuration service.  This service 
+             * provides listing and, with an authenticated user, saving of 
+             * maps on the server for sharing and editing.
+             */
+            rest: "/maps/"
+        };
+
+        Ext.apply(config, {{ config }});
+        app = new GeoExplorer.Viewer(config);
+
+    {% endautoescape %}
+    });
+    </script>
+{% endblock %}
+
+{% block body %}
+{% endblock %}

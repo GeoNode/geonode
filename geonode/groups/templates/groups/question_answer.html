@@ -1,0 +1,62 @@
+{% load i18n %}
+{% load bootstrap_tags %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+</head>
+ <meta charset="UTF-8">
+ <div class="hr"></div>
+    {% for question in question_list %}
+        <div class="row">
+            <div class="col-md-12">
+                <div style="padding-top:10px;">
+                    Question : {{ question.question }}
+                </div>
+            </div>
+        </div>
+        {% if question.answer%}
+        <div class="row">
+            <div class="col-md-12">
+                <div style="padding-left:60px;">
+                    Answer : {{ question.answer }}
+                </div>
+            </div>
+        </div>
+        {% endif %}
+        <div class="block-separator"></div>
+        {% if request.user.is_superuser or request.user in group.get_managers %}
+                <div class="row" style="border-bottom: 1px solid #c0c0c0">
+                    <div class="col-md-11">
+                         <div class="text-right">
+                             {% if question.answer %}
+                             <button class="btn btn-gd-primary open-AddBookDialog" data-id="{{ question.id }}" data-toggle="modal" data-target="#_edit_answer">{% trans "Edit Answer" %} </button>
+                                 {% include "groups/edit_answer.html" %}
+                             {% else %}
+                             <button class="btn btn-gd-primary open-AddBookDialog" data-id="{{ question.id }}" data-toggle="modal" data-target="#_create_answer">{% trans "Answer" %}</button>
+                                 {% include "groups/create_answer.html" %}
+                             {% endif %}
+
+
+                         </div>
+                    <div class="block-separator"></div>
+                    </div>
+                    <div class="col-md-1">
+                        <div class="text-left">
+                             <form id=""  method="post"  action="{% url "delete-question" slug question.id %}">
+                                 {% csrf_token %}
+                                <button id="" class="btn btn-gd-primary" type="submit">Delete</button>
+                             </form>
+                        </div>
+                    </div>
+                </div>
+        {% endif %}
+    {% endfor %}
+    {{ answer }}
+<form action="{% url "question-answer-list" slug%}" method="post">
+    {% csrf_token %}
+    {{ form |as_bootstrap}}
+    <input type="submit" value="Submit" class="btn btn-gd-primary"/>
+</form>
+</body>
+</html>

@@ -1,0 +1,74 @@
+{% extends "documents/document_upload_base.html" %}
+{% load bootstrap_tags %}
+{% load i18n %}
+
+{% block title %} {% trans "Upload Document" %} - {{ block.super }} {% endblock %}
+
+{% block body_class %}documents upload{% endblock body_class %}
+
+{% block head %}
+    {% include "geonode/ext_header.html" %}
+    {% include "geonode/app_header.html" %}
+    {{ block.super }}
+{% endblock %}
+
+{% block body %}
+
+<div class="col-md-8">
+  <form id="upload_form"  method="post" enctype="multipart/form-data" action="{% url "document_upload" %}">
+    <input type="hidden" name="csrfmiddlewaretoken" value="{{ csrf_token }}" />
+    {{ form.as_p }}
+    <button type="submit" id="upload-button" class="btn btn-danger">{% trans "Upload" %}</button>
+  </form>
+</div>
+
+{% endblock %}
+
+{% block sidebar %}
+
+<div class="col-md-4">
+  <h3>{% trans "Permissions"  %}</h3>
+  <form id="permission_form">
+    {% include "_permissions.html" %}
+  </form>
+</div>
+
+{% endblock %}
+
+{% block extra_script %}
+{{ block.super }}
+{% include "_permissions_form_js.html" %}
+
+<script type="text/javascript">
+    $('#id_doc_file').on('change', function(){
+        if($('#id_title').val() == ''){
+            $('#id_title').val($('#id_doc_file').val().replace("C:\\fakepath\\", ""));
+        }
+    });
+    $("#resource").select2({
+        minimumInputLength: 1,
+        placeholder: 'Select layer, map or empty',
+        width: 'element',
+        ajax: {
+          traditional: true,
+          url: '{% url 'api_dispatch_list' api_name='api' resource_name='base' %}',
+          data: function(term,page){
+            return {
+              type__in: ['layer','map'],
+              title__contains: term.replace(/[`~!@#$%^&*()_|+\-=?;:'",.<>\{\}\[\]\\\/]/gi, '')
+            }
+          },
+          results: function(data) {
+            return {
+              results: $.map(data.objects,function(object){
+                return {id: object.id, text: object.title};
+              })
+            }
+          }
+        }
+      });
+    $('#upload_form').submit(function(){
+      $('#permissions').val(JSON.stringify(permissionsString($('#permission_form'),'base')));
+    });
+</script>
+{% endblock extra_script %}

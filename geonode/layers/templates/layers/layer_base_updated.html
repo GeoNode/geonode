@@ -1,0 +1,29 @@
+{% extends "site_base.html" %}
+{% load i18n %}
+{% load url from future %}
+
+{% block title %} {{ block.super }} {% endblock %}
+
+{% block body_class %}data layer-detail-page{% endblock %}
+
+{% block middle %}
+    <div class="container">
+      {% include "_status_message.html" %}
+      <!--{% include "_announcements.html" %}-->
+      {% include "_messages.html" %}
+    </div>
+    <div class="container-fluid padding-zero">
+      {% block body_outer %}
+      {% block body_header %}{% endblock %}
+      <div class="row">
+        <div class="col-md-8">
+        {% block body %}{% endblock %}
+        </div>
+        <div class="col-md-4">
+        {% block sidebar %}{% endblock %}
+        </div>
+      </div>
+      {% endblock %}
+    </div>
+{% endblock middle %}
+{% block footer %}{% endblock footer %}

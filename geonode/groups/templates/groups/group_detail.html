@@ -1,5 +1,7 @@
 {% extends "groups/group_base.html" %}
 {% load i18n %}
+{% load bootstrap_tags %}
+{% load activity_tags social_tags i18n %}
 
 {% block title %}{{ object.title|default:object.slug }} — {{ block.super }}{% endblock %}
 
@@ -14,100 +16,1139 @@
 {% endblock %}
 
 {% block body_class %}groups{% endblock %}
+{% block extra_head %}
 
+
+{% endblock %}
 {% block body_outer %}
-<div class="page-header">
-  <h2 class="page-title">{{ object.title|default:object.slug }}</h2>
-</div>
-<div class="row">
-  <div class="col-md-8 group-details">
-    <div class="row">
-      <div class="col-xs-4 col-md-3 group-logo">
-      {% if object.logo %}
-        <img src="{{ object.logo.url }}" alt="{{ object.title }}" />
-      {% else %}
-        <!-- <p>{% trans "This group has not created a logo." %}</p> -->
-      {% endif %}
+<div class="gd-content">
+      <div class="gd-content-heading">
+          <div class="row">
+              <div class="col-md-9">
+                  <div class="title with-icon-content">
+                      <a href="javascript:;">
+                        {% if object.logo %}
+                          <img height="65" src="{{ object.logo.url }}" alt="{{ object.title }}" />
+                        {% else %}
+                        <!-- <p>{% trans "This group has not created a logo." %}</p> -->
+                        {% endif %}
+                        {{ object.title|default:object.slug }}
+                      </a>
+                  </div>
+              </div>
+              <div class="col-md-3">
+                  <div class="small-content text-right margin-top-50px">
+                    {% if can_view %}
+                      <!--<a class="btn btn-gd-primary" href="{% url "group_activity" object.slug %}">
+                      {% trans "Group Activities" %}
+                      </a>-->
+                    {% endif %}
+                  </div>
+              </div>
+          </div>
+          <div class="hr"></div>
       </div>
-      <div class="col-xs-8 col-md-9 group-details">
-        <p class="group-desc">{{ object.description }}</p>
-        {% if object.keyword_list %}
-        <p>
-          {% for keyword in object.keyword_list %}
-            <span class="label label-default">{{ keyword }}</span>
-          {% endfor %}
-        </p>
-        {% else %}
-        {% endif %}
-        {% if object.email %}
-        <p><i class="fa fa-envelope-o"></i>
-          <a href="mailto:{{ object.email }}">{{ object.email }}</a>
-        </p>
-        {% endif %}
+  <div class="gd-content-heading">
+      <div class="hr"></div>
+      <div class="row">
+            <div class="col-md-12">
+                <ul class="nav navbar-nav nav-pills">
+                  <li class="active"><a href="#org-profile" id="org_profile" data-toggle="tab" ><i class="fa fa-square-o rotate-45"></i> {% trans "Organization Profile" %}</a></li>
+                  <li><a href="#layerslist" id="layers_list" data-toggle="tab" ><i class="fa fa-square-o rotate-45"></i> {% trans "Layers List" %}</a></li>
+                  <li ><a href="#userlist" data-toggle="tab"><i class="fa fa-square-o rotate-45"></i> {% trans "User List" %}</a></li>
+                    {% if user.is_authenticated %}
+                  <li><a href="#acitivity" id="qroup_activity" data-toggle="tab"><i class="fa fa-map-marker"></i> {% trans "Activity" %}</a></li>
+                    {% endif %}
+                  <li><a href="#qtionanswer" id="qst_ans" data-target="#qtionanswer" data-toggle="tab"><i class="fa fa-comment-o"></i> {% trans "Question/Answer" %}</a></li>
+                    {% if request.user.is_superuser or request.user in object.get_managers %}
+                  <li><a href="{% url "user-invitation-list" object.slug %}"><i class="fa fa-comment-o"></i> {% trans "Member Requests" %}</a></li>
+                    {% endif %}
+                </ul>
+            </div>
       </div>
-    </div>
+      <div class="row">
+            <div class="col-md-12">
+                <div class="tab-content activity-style-list">
+                    <article id="org-profile" class="tab-pane active">
+                      <div class="gd-content-body transparent top-bottom-margin-20px">
+                          <div class="row">
+                              <div class="col-md-8">
+                                  <div class="description">
+                                      {{ object.description }}
+                                  </div>
+                                  <div class="keywords">
+                                    {% if object.keyword_list %}
+                                      {% for keyword in object.keyword_list %}
+                                      <button type="reset" class="btn btn-default btn-xs">
+                                          {{ keyword }}
+                                      </button>
+                                      {% endfor %}
+                                    {% else %}
+                                    {% endif %}
+                                  </div>
+                                  <div class="emails">
+                                    {% if object.email %}
+                                      <i class="fa fa-envelope"></i>
+                                      <a href="mailto:{{ object.email }}">{{ object.email }}</a>
+                                    {% endif %}
+                                  </div>
+                              </div>
+                              <div class="col-md-4">
+                                {% if is_manager or request.user.is_superuser %}
+                                  <ul class="list-group gd-link-style">
+                                      <li class="list-group-item">
+                                          <a href="{% url "group_update" object.slug %}">
+                                            {% trans "Edit Organization Details" %}
+                                          </a>
+                                      </li>
+                                      <li class="list-group-item">
+                                          <a href="{% url "group_members" object.slug %}">
+                                            {% trans "Manage Organization Members" %}
+                                          </a>
+                                      </li>
+                                      {% if request.user.is_superuser %}
+                                      <li class="list-group-item">
+                                          <a href="{% url "group_remove" object.slug %}">
+                                            {% trans "Delete this Group" %}
+                                          </a>
+                                      </li>
+                                      {% endif %}
+                                  </ul>
+                                {% endif %}
+                                <!-- <div class="row">
+                                    <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                                        <div class="text-right">
+                                            <a href="javascript:;">More...</a>
+                                        </div>
+                                    </div>
+                                </div> -->
+                              </div>
+                          </div>
+                          <div class="row">
+                              {% for manager in object.get_managers %}
+                                  <div class="col-xs-3 col-sm-3 col-md-3 col-lg-3">
+                                        {% with manager as profile %}
+                                          {% include "groups/_manager_about_item.html" %}
+                                        {% endwith %}
+                                  </div>
+                              {% endfor %}
+                          </div>
+                      </div>
+                      <div class="gd-content-body">
+                          <div class="row">
+                              <div class="col-md-12">
+                                  <div class="gd-box">
+                                      <h3>{% trans "Permissions" %}</h3>
+                                      <div class="block-separator"></div>
+                                      {% blocktrans with object.get_access_display as access %}
+                                        This group is <strong>{{ access }}</strong>.
+                                      {% endblocktrans %}
+                                      {% if object.access == "public" %}
+                                        {% trans "Anyone may join this group." %}
+                                        <div class="row">
+                                            <div class="col-md-3">
+                                                <div class="block-separator"></div>
+                                                <form class="uniForm" method="POST" action="{% url "group_join" object.slug %}">
+                                                  {% csrf_token %}
+                                                  {% if not is_member %}
+                                                    <input type="submit" class="btn btn-gd-gray btn-md btn-block" value="Join Group" />
+                                                  {% endif %}
+                                                </form>
+                                            </div>
+                                        </div>
+                                      {% else %}
+                                          {% if object.access == "public-invite" %}
+                                            {% trans "Anyone may view this group but membership is by invitation only." %}
+                                              <div class="row">
+                                                    <div class="col-md-3">
+                                                        <div class="block-separator"></div>
+                                                            <form class="uniForm" method="POST" action="{% url "user-invitation" object.slug %}">
+                                                            {% csrf_token %}
+                                                            {% if can_send_request %}
+                                                                <input type="submit" class="btn btn-gd-gray btn-md btn-block" value="Send Request" />
+                                                             {% elif pending_request %}
+                                                                {% trans "You already have pending request to join this group." %}
+                                                            {% endif %}
+                                                            </form>
+                                                    </div>
+                                                </div>
+                                          {% else %}
+                                            {% if object.access == "private" %}
+                                                {% trans "Membership is by invitation only." %}
+                                            {% endif %}
+                                          {% endif %}
+                                      {% endif %}
+                                  </div>
+                              </div>
+                          </div>
+                      </div>
+                    </article>
+                    <article id="layerslist" class="tab-pane">
+
+                        <div class="no-style-list">
+                            <div class="gd-content-body transparent" id="search-content-layers">
+
+                              {% include 'search/_pagination.html' %}
+                          </div>
+                        </div>
+                    </article>
+                    <article id="userlist" class="tab-pane">
+                        <div class="no-style-list">
+                            <div class="gd-content-body transparent">
+                              <div class="paginate paginate-auto" id="search-content">
+                                {% include 'people/_profile_list_item.html' %}
+                              </div>
+                              {% include 'search/_pagination.html' %}
+                          </div>
+                        </div>
+                    </article>
+                    <article id="acitivity" class="tab-pane ">
+                        <div class="gd-content">
+                            <div class="gd-content-heading">
+                                <div class="title small-content">
+                                    {%  trans "Activity Feed for"  %}
+                                        <a href="{% url "group_detail" object.slug %}">
+                                            {{ object.title }}
+                                        </a>
+                                </div>
+                                <div class="hr"></div>
+                            </div>
+                            <div class="gd-content-body gd-history transparent top-bottom-margin-20px">
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <ul class="nav navbar-nav nav-pills">
+                                            <li class="active">
+                                                <a href="#all" data-toggle="tab">
+                                                    <i class=""></i>
+                                                    {% trans "All" %}
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a href="#layers" id="layersdata" data-toggle="tab">
+                                                    <i class="fa fa-square-o rotate-45"></i>
+                                                    {% trans "Layers" %}
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a href="#maps" id="mapsdata" data-toggle="tab">
+                                                    <i class="fa fa-map-marker"></i>
+                                                    {% trans "Maps" %}
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a href="#comments" id="commentsdata" data-toggle="tab">
+                                                    <i class="fa fa-comment-o"></i>
+                                                    {% trans "Comments" %}
+                                                </a>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <div class="tab-content activity-style-list">
+                                            <article id="all" class="tab-pane active">
+                                                <div class="no-style-list">
+                                                    <div id="showallactivite">
+
+                                                    </div>
+                                                </div>
+                                            </article>
+                                            <article id="layers" class="tab-pane">
+                                                <div class="no-style-list">
+                                                    <div id="showallactivitelayers">
+
+                                                    </div>
+                                                </div>
+                                            </article>
+                                            <article id="maps" class="tab-pane">
+                                                <div class="no-style-list">
+                                                    <div id="showallactivitemaps">
+
+                                                    </div>
+                                                </div>
+                                            </article>
+                                            <article id="comments" class="tab-pane">
+                                                <div class="no-style-list" id="pagi_test">
+                                                    <div id="showallactivitecomments" class="list">
+
+                                                    </div>
+                                                </div>
+                                            </article>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </article>
+                    <article id="qtionanswer" class="tab-pane">
+                        <div class="no-style-list">
+                            <div id="showquestans">
+                            </div>
+                        </div>
+                    </article>
+                </div>
+            </div>
+      </div>
   </div>
-  <div class="col-md-4">
-    <ul class="list-group">
-      {% if is_manager %}
-      <li class="list-group-item"><a href="{% url "group_update" object.slug %}">{% trans "Edit Group Details" %}</a></li>
-      <li class="list-group-item"><a href="{% url "group_members" object.slug %}">{% trans "Manage Group Members" %}</a></li>
-      <li class="list-group-item"><a href="{% url "group_remove" object.slug %}">{% trans "Delete this Group" %}</a></li>
-      {% endif %}
-      {% if can_view %}
-      <li class="list-group-item"><a href="{% url "group_activity" object.slug %}">{% trans "Group Activities" %}</a></li>
-      {% endif %}
-      <li class="list-group-item">
-        <h4>{% trans "Permissions" %}</h4>
-        <p>
-          {% blocktrans with object.get_access_display as access %}
-            This group is <strong>{{ access }}</strong>.
-          {% endblocktrans %}
-          {% if object.access == "public" %}
-            {% trans "Anyone may join this group." %}
-            <form class="uniForm" method="POST" action="{% url "group_join" object.slug %}">
-              {% csrf_token %}
-              {% if not is_member %}
-              <input type="submit" class="btn btn-default btn-md btn-block" value="Join Group" />
-              {% endif %}
-            </form>
-          {% else %} {% if object.access == "public-invite" %}
-            {% trans "Anyone may view this group but membership is by invitation only." %}
-          {% else %} {% if object.access == "private" %}
-            {% trans "Membership is by invitation only." %}
-          {% endif %} {% endif %} {% endif %}
-        </p>
-      </li>
-      <li class="list-group-item">
-        <h4>{% trans "Managers" %}</h4>
-        {% for manager in object.get_managers %}
-        {% with manager as profile %}
-          {% include "people/_profile_about_item.html" %}
-        {% endwith %}
-        {% endfor %}
-      </li>
-    </ul>
-  </div>
-</div>
-<div class="row">
-  <div class="col-md-12">
-    <h4>{% trans "Members" %}</h4>
-    <div class="tab-content paginate paginate-auto" id="search-content">
-    {% include 'people/_profile_list_item.html' %}
-    </div>
-  </div>
-  {% include 'search/_pagination.html' %}
+  <div class="block-separator"></div>
 </div>
 {% endblock %}
 
 
 {% block extra_script %}
-{{ block.super }}
   <script type="text/javascript">
   SEARCH_URL = '{% url 'api_dispatch_list' api_name='api' resource_name='profiles' %}'+ '?group='+ '{{ object.slug }}';
   </script>
   {% with include_spatial='false' %}
   {% include 'search/search_scripts.html' %}
   {% endwith %}
+    <script type="text/javascript" language="JavaScript">
+        $(document).ready(function(){
+            $("#layers_list").click(function(){
+                var url = "{% url 'api_dispatch_list' api_name='api' resource_name='layers_with_favorite' %}"+ '?group='+ '{{ object.id }}';
+
+                $.ajax({
+                    cache: false,
+                    type: 'GET',
+                    url: url,
+                    data: {},
+                    contentType: "application/json; charset=utf-8",
+                    dataType: "json",
+                    success: function(jsondata) {
+                        console.log("success");
+                        //console.log(JSON.stringify(jsondata));
+
+                        var data = eval(jsondata.objects);
+                        var output='';
+                      $.each(data, function(i, item) {
+                        //alert(item.date);
+                            output +='<div class="col-xs-12 col-sm-6 col-md-4 col-lg-4">';
+                            output +='<div class="grid-container lmd">';
+                            output +='<div class="avater">';
+                            output +='<div class="avater-img">';
+                            output +='<a class="avater-img-mid" href="'+item.detail_url+'" target="_self">';
+                                    if(item.thumbnail_url){
+                            output +='<img src="' +item.thumbnail_url+ '" alt="" class="group-logo" />';
+                                    }
+                                    else{
+                            output +='<img src="/static/geonode/img/missing_thumb.png" alt="" class="group-logo" />';
+                                        }
+                            output +='</a>';
+                            output +='</div>';
+                            output +='</div>';
+                            output +='<div class="information">';
+                            output +='<div class="top-content text-center">';
+                            output +='<div class="title">';
+                            output +='<a href="'+item.detail_url+'" target="_self" title="' +item.title+ '">';
+                                    if (item.title.length >= 25){
+                            output +=''+item.title.slice(0,15)+'.....';
+                                    }else{
+                            output +=''+ item.title +'';
+                                    }
+                            output +='</a>';
+                            output +='</div>';
+                            output +='<div class="category">';
+                                    if(item.category__gn_description){
+                            output +='' +item.category__gn_description+ '';
+                                    }
+                                    else{
+                            output +='Not provided';
+                                    }
+                            output +='</div>';
+                            output +='<div class="details">';
+                                    if (item.abstract.length >= 250){
+                            output +=''+item.abstract.slice(0,220)+'.....';
+                                    }else{
+                            output +=''+ item.abstract+ '';
+                                    }
+                            output +='</div>';
+                            output +='</div>';
+                            output +='<div class="summery">';
+                            output +='<div class="item-items">';
+                            output +='<ul class="list-inline lmd">';
+                            output +='<li>';
+                            output +='<a href="/people/profile/'+ item.owner__username +'" title="'+item.resource_type+' owner">';
+                            output +='<i class="fa fa-user"></i> ';
+                            output +=''+ item.owner__username +'';
+                            output +='</a>';
+                            output +='</li>';
+                            output +='<li>';
+                            output +='<a href="' +item.detail_url+ '" title="'+item.resource_type+' information">';
+                            output +='<i class="fa fa-calendar-o"></i> ';
+
+                            output +='</a>';
+                            output +='</li>';
+                            output +='<li>';
+                            output +='<a href="' +item.detail_url+ '#info" title="'+item.resource_type+' popular count">';
+                            output +='<i class="fa fa-eye"></i> ';
+                            output +=''+ item.popular_count +'';
+                            output +='</a>';
+                            output +='</li>';
+                            output +='<li>';
+                            output +='<a href="'+ item.detail_url +'#share" title="'+item.resource_type+' share count">';
+                            output +='<i class="fa fa-share"></i> ';
+                            output +=''+ item.share_count +'';
+                            output +='</a>';
+                            output +='</li>';
+                            output +='<li>';
+                            output +='<a href="'+ item.detail_url+'#rate" title="'+item.resource_type+' rating">';
+                            output +='<i class="fa fa-star"></i> ';
+                            output +=''+ item.rating +'';
+                            output +='</a>';
+                            output +='</li>';
+                            output +='</ul>';
+                            output +='</div>';
+                            output +='</div>';
+                            output +='</div>';
+
+                            output +='<div class="bottom-content">';
+                            output +='<div class="row">';
+                            output +='<div class="profile-items text-center">';
+                            output +='<ul class="list-inline">';
+                              {% if request.user.is_manager_of_any_group %}
+                              if(item.can_make_featured){
+                              if(item.featured){
+                            output +='<li ng-click=""class="col-md-6">';
+                            output +='<button class="btn col-md-12 btn-gd-primary-all" style="background:#d0d0d0;border:none;color:#000;font-size:12px;padding:5px;"';
+                            output +='data-layerID="'+item.id+'" dataname="'+item.can_make_featured+'" data-statusID="false" onclick="featuredorgpage('+item.id+',false);" >';
+                            output +='<i class="fa fa-heart-o" style="border:none;color:#000;"></i>';
+                            output +='Unfeatured';
+                            output +='</button>';
+                            output +='</li>';
+                                }else{
+                            output +='<li class="col-md-6" id="featured_chng">';
+                            output +='<button class="btn col-md-12 btn-gd-primary-all" dataname="{{item.group}}" onclick="featuredorgpage('+item.id+',true);" data-layerID="'+item.id+'" data-statusID="true">';
+                            output +='<i class="fa fa-heart-o"></i>';
+                            output +='Make Featured';
+                            output +='</button>';
+                            output +='</li>';
+                                }
+                                if(item.favorite){
+                            output +='<li class="col-md-6">';
+                            output +='<button class="btn col-md-12 btn-gd-primary-all" onclick="favoriteorgpage('+item.id+',false);" style="background:#d0d0d0;border:none;color:#000;font-size:12px;padding:5px;"';
+                            output +='data-favouriteID="{{item.id}}" data-favouriteStatus="false">';
+                            output +='<i class="fa fa-heart-o" style="border:none;color:#000;"></i>';
+                            output +='Unfavorite';
+                            output +='</button>';
+                            output +='</li>';
+                                }else{
+                            output +='<li class="col-md-6">';
+                            output +='<button class="btn col-md-12 btn-gd-primary-all" onclick="favoriteorgpage('+item.id+',true);" data-favouriteID="'+item.id+'" data-favouriteStatus="true">';
+                            output +='<i class="fa fa-heart-o"></i>';
+                            output +='Add to favorite';
+                            output +='</button>';
+                            output +='</li>';
+                                }
+                              }
+                              else{
+                              if(item.favorite){
+                            output +='<li class="col-md-12">';
+                            output +='<button class="btn col-md-12 btn-gd-primary-all" onclick="favoriteorgpage('+item.id+',false);" style="background:#d0d0d0;border:none;color:#000;font-size:12px;padding:5px;" href="" data-favouriteID="'+item.id+'" data-favouriteStatus="false">';
+                            output +='<i class="fa fa-heart-o" style="border:none;color:#000;"></i>';
+                            output +='Unfavorite';
+                            output +='</button>';
+                            output +='</li>';
+                              }else{
+                            output +='<li class="col-md-12">';
+                            output +='<button class="btn col-md-12 btn-gd-primary-all" onclick="favoriteorgpage('+item.id+',true);" data-favouriteID="'+item.id+'" data-favouriteStatus="true">';
+                            output +='  <i class="fa fa-heart-o"></i>';
+                            output +=' Add to favorite';
+                            output +=' </button>';
+                            output +='</li>';
+                              }
+                              }
+                            {% else %}
+                            {% if user.is_authenticated %}
+                              if(item.favorite){
+                            output +='<li class="col-md-12">';
+                            output +='<button class="btn col-md-12 btn-gd-primary-all" onclick="favoriteorgpage('+item.id+',false);" style="background:#d0d0d0;border:none;color:#000;font-size:12px;padding:5px;" href="" data-favouriteID="'+item.id+'" data-favouriteStatus="false">';
+                            output +='    <i class="fa fa-heart-o" style="border:none;color:#000;"></i>';
+                            output +='    Unfavorite';
+                            output +='</button>';
+                            output +='</li>';
+                              }else{
+                            output +='<li class="col-md-12">';
+                            output +='<button class="btn col-md-12 btn-gd-primary-all" onclick="favoriteorgpage('+item.id+',true);" data-favouriteID="'+item.id+'" data-favouriteStatus="true">';
+                            output +='  <i class="fa fa-heart-o"></i>';
+                            output +=' Add to favorite';
+                            output +=' </button>';
+                            output +='</li>';
+                              }
+                            {% endif %}
+                            {% endif %}
+                            output +='</ul>';
+                            output +='</div>';
+                            output +='</div>';
+                            output +='</div>';
+                            output +='</div>';
+                            output +='</div>';
+                      });
+                    $("#search-content-layers").append(output);
+                    },
+                    error: function(xhr, ajaxOptions, thrownError) {
+                        console.log("error");
+                    }
+                 });
+                 $("#layers_list").unbind('click');
+             });
+        });
+
+    </script>
+    <script type="text/javascript" language="JavaScript">
+
+        function featuredorgpage(featuredID,featuredStatus){
+        var make_featuredID = featuredID;
+        var make_featuredStatus = featuredStatus;
+        //alert(make_favoriteStatus);
+            var url = '{% url 'api_dispatch_list' api_name='api' resource_name='make-featured' %}';
+               var makefavoriteID = make_featuredID;
+               var makefavoritesID = make_featuredStatus;
+                var data = JSON.stringify({
+                "resource_id": makefavoriteID,
+                "status": makefavoritesID
+            });
+            $.ajax({
+                cache: true,
+                type: 'POST',
+                url: url,
+                data: data,
+                dataType: "json",
+                success: function(jsondata) {
+                    console.log("success");
+                    //console.log(JSON.stringify(jsondata));
+                    //location.reload(true);
+
+                    var data = eval(jsondata.objects);
+                        window.location.href = data;
+                        window.location.reload();
+
+                },
+                error: function(xhr, ajaxOptions, thrownError) {
+                    console.log("error");
+                }
+             });
+        }
+    </script>
+    <script type="text/javascript" language="JavaScript">
+
+        function favoriteorgpage(favoriteID,favoriteStatus){
+        var make_favoriteID = favoriteID;
+        var make_favoriteStatus = favoriteStatus;
+        //alert(make_favoriteStatus);
+            var url = '{% url 'api_dispatch_list' api_name='api' resource_name='makefavorite' %}';
+               var makefavoriteID = make_favoriteID;
+               var makefavoritesID = make_favoriteStatus;
+                var data = JSON.stringify({
+                "resource_id": makefavoriteID,
+                "status": makefavoritesID
+            });
+            $.ajax({
+                cache: true,
+                type: 'POST',
+                url: url,
+                data: data,
+                dataType: "json",
+                success: function(jsondata) {
+                    console.log("success");
+                    //console.log(JSON.stringify(jsondata));
+                    //location.reload(true);
+
+                    var data = eval(jsondata.objects);
+                        window.location.href = data;
+                        window.location.reload();
+
+                },
+                error: function(xhr, ajaxOptions, thrownError) {
+                    console.log("error");
+                }
+             });
+        }
+    </script>
+    <script type="text/javascript" language="JavaScript">
+        $(document).ready(function(){
+            $("#qst_ans").click(function(){
+                var url = "{% url "question-answer-list" object.slug %}";
+                    $.ajax({
+                        cache: true,
+                        type: 'GET',
+                        url: url,
+                        data: {},
+                        dataType: "html",
+                        success: function(jsondata) {
+                            console.log("success");
+                            console.log(JSON.stringify(jsondata));
+                            $('#showquestans').html(jsondata);
+                        },
+                        error: function(xhr, ajaxOptions, thrownError) {
+                            console.log("error");
+                        }
+                     });
+            });
+        });
+    </script>
+    <script type="text/javascript" language="JavaScript">
+        function showLimitData(targeturl){
+            var limit = 25;
+            if(targeturl== undefined){
+                var url = "{% url 'api_dispatch_list' api_name='api' resource_name='group_activity' %}?limit="+ limit +"&group={{ object.slug }}";
+            }
+            else{
+                var url = targeturl;
+            }
+            //var url = "{% url 'api_dispatch_list' api_name='api' resource_name='group_activity' %}?limit="+ Plimit +"&group={{ object.slug }}";
+                $.ajax({
+                    cache: true,
+                    type: 'GET',
+                    url: url,
+                    data: {},
+                    dataType: "json",
+                    success: function(jsondata) {
+                        console.log("success");
+                        //console.log(JSON.stringify(jsondata));
+                    var data = eval(jsondata.objects);
+                    var meta = eval(jsondata.meta);
+                    var t_count = meta.total_count;
+                    var t_limit = meta.limit;
+                    var t_offset = meta.offset;
+                    var t_next = meta.next;
+                    var t_previous = meta.previous;
+                        //alert(t_offset);
+                    var output='';
+                  $.each(data, function(i, item) {
+                    //alert(item.activity_class);
+                    output+='<div class="row" id="shownextact">';
+                    output+='<div class="col-md-1" style="padding:0px;">';
+                    output+='<div class="history-lines">';
+                    output+='<div class="history-lines-icon">';
+                                   if(item.activity_class == 'map'){
+                    output+='<i class="fa fa-map-marker"></i>';}
+                                   else if(item.activity_class == 'upload'){
+                    output+='<span class="fa-layers-group fa-stack fa-rotate-90" style="font-size:12px;margin-top: 0;">';
+                    output+='<i class="fa fa-stop fa-layers fa-stack-1x" style="left: 0;"></i>';
+                    output+='<i class="fa fa-stop fa-layers fa-stack-1x" style="left: -.15em;color:#fff;"></i>';
+                    output+='<i class="fa fa-stop fa-layers fa-stack-1x" style="left: -.3em;"></i>';
+                    output+='<i class="fa fa-stop fa-layers fa-stack-1x" style="left: -.45em;color:#fff;"></i>';
+                    output+='<i class="fa fa-stop fa-layers fa-stack-1x" style="left: -.6em;"></i>';
+                    output+='</span>';}
+                                   else{
+                    output+='<i class="fa fa-comment-o" style="font-size: 20px;"></i>';
+                                   }
+                    output+='</div>';
+                    output+='</div>';
+                    output+='</div>';
+                    output+='<div class="col-md-11" style="padding:0px;margin-top: 10px;">';
+                    output+='<div class="gd-history-content" >';
+                    output+='<div class="'+ item.activity_class +'">';
+
+                    if(item.object_thumbnail_url){
+                        output+='<img src="'+ item.object_thumbnail_url +'" />';
+                                   }
+                    output+='</div>';
+
+                    output+='<div class="details">';
+                    output+='<div class="usr-info">';
+
+                    output+='<a href="'+ item.actor_absolute_url +'" target="_self">'+ item.username +' </a>';
+
+                    output+=''+ item.verb +' ';
+
+
+                    if(item.object){
+                        if (item.object_absolute_url){
+                            output+='<a href=" '+ item.object_absolute_url +' " target="_self">'+ item.object +' </a>';
+                        }
+                        else{
+                            output+=''+ item.object_name +' ';
+                        }
+                     }
+
+                    else if(item.object_name){
+                        output+=''+ item.object_name + '';
+                        }
+
+
+                    if (item.target){
+                        output+=''+ item.preposition +' ';
+
+                        if (item.fragment){
+                            output+='<a href=" '+ item.target_absolute_url +' #'+ item.fragment+'" target="_self">'+  item.target +' </a>';
+                        }
+                        else {
+                            output+='<a href=" '+ item.target_absolute_url +' " target="_self">'+ item.target +' </a>';
+                        }
+                    }
+
+                    output+='</div>';
+                    output+='<div class="time-info">';
+                    output+='<span>'+ item.timesince +' {% trans "ago" %}</span>';
+                    output+='</div>';
+                    output+='</div>';
+                    output+='</div>';
+                    output+='</div>';
+                    output+='</div>';
+                  });
+                  output+='<nav>';
+                  output+='<ul class="pagination pull-left">';
+
+                  var nexturl = meta.next;
+                  var previousurl = meta.previous;
+
+                  if(previousurl){
+                  output+='<li><a href="javascript:;" id="previousData"><strong><i class="fa fa-angle-left"> <span>Previous</span></i></strong></a></li>';
+                  }
+                  if(nexturl){
+                  output+='<li><a href="javascript:;" id="nextData"><strong><span>Next</span> <i class="fa fa-angle-right"></i></strong></a></li>';
+                  }
+                  output+='</ul>';
+                  output+='</nav>';
+                   $("#showallactivite").html(output);
+                   $("#nextData").click(function(){
+                        showLimitData(nexturl)
+                   });
+                   $("#previousData").click(function(){
+                        showLimitData(previousurl)
+                   });
+                    },
+                    error: function(xhr, ajaxOptions, thrownError) {
+                        console.log("error");
+                    }
+                });
+        }
+
+        $(document).ready(function(){
+            showLimitData();
+        });
+ </script>
+    <script type="text/javascript" language="JavaScript">
+
+        function showLimitDatalayers(targeturl){
+            var limit = 25;
+            if(targeturl== undefined){
+                var url = "{% url 'api_dispatch_list' api_name='api' resource_name='group_activity' %}?limit="+ limit +"&group={{ object.slug }}&option=layers";
+            }
+            else{
+                var url = targeturl;
+            }
+            //var url = "{% url 'api_dispatch_list' api_name='api' resource_name='group_activity' %}?limit="+ Plimit +"&group={{ object.slug }}";
+                $.ajax({
+                    cache: true,
+                    type: 'GET',
+                    url: url,
+                    data: {},
+                    dataType: "json",
+                    success: function(jsondata) {
+                        console.log("success");
+                        //console.log(JSON.stringify(jsondata));
+                    var data = eval(jsondata.objects);
+                    var meta = eval(jsondata.meta);
+                    var t_count = meta.total_count;
+                    var t_limit = meta.limit;
+                    var t_offset = meta.offset;
+                    var t_next = meta.next;
+                    var t_previous = meta.previous;
+                        //alert(t_offset);
+                    var output='';
+                  $.each(data, function(i, item) {
+                    //alert(item.activity_class);
+                    output+='<div class="row" id="shownextact">';
+                    output+='<div class="col-md-1" style="padding:0px;">';
+                    output+='<div class="history-lines">';
+                    output+='<div class="history-lines-icon">';
+                                   if(item.activity_class == 'map'){
+                    output+='<i class="fa fa-map-marker"></i>';}
+                                   else if(item.activity_class == 'upload'){
+                    output+='<span class="fa-layers-group fa-stack fa-rotate-90" style="font-size:12px;margin-top: 0;">';
+                    output+='<i class="fa fa-stop fa-layers fa-stack-1x" style="left: 0;"></i>';
+                    output+='<i class="fa fa-stop fa-layers fa-stack-1x" style="left: -.15em;color:#fff;"></i>';
+                    output+='<i class="fa fa-stop fa-layers fa-stack-1x" style="left: -.3em;"></i>';
+                    output+='<i class="fa fa-stop fa-layers fa-stack-1x" style="left: -.45em;color:#fff;"></i>';
+                    output+='<i class="fa fa-stop fa-layers fa-stack-1x" style="left: -.6em;"></i>';
+                    output+='</span>';}
+                                   else{
+                    output+='<i class="fa fa-comment-o" style="font-size: 20px;"></i>';
+                                   }
+                    output+='</div>';
+                    output+='</div>';
+                    output+='</div>';
+                    output+='<div class="col-md-11" style="padding:0px;margin-top: 10px;">';
+                    output+='<div class="gd-history-content" >';
+                    output+='<div class="'+ item.activity_class +'">';
+
+                    if(item.object_thumbnail_url){
+                        output+='<img src="'+ item.object_thumbnail_url +'" />';
+                                   }
+                    output+='</div>';
+
+                    output+='<div class="details">';
+                    output+='<div class="usr-info">';
+
+                    output+='<a href="'+ item.actor_absolute_url +'" target="_self">'+ item.username +' </a>';
+
+                    output+=''+ item.verb +' ';
+
+
+                    if(item.object){
+                        if (item.object_absolute_url){
+                            output+='<a href=" '+ item.object_absolute_url +' " target="_self">'+ item.object +' </a>';
+                        }
+                        else{
+                            output+=''+ item.object_name +' ';
+                        }
+                     }
+
+                    else if(item.object_name){
+                        output+=''+ item.object_name + '';
+                        }
+
+
+                    if (item.target){
+                        output+=''+ item.preposition +' ';
+
+                        if (item.fragment){
+                            output+='<a href=" '+ item.target_absolute_url +' #'+ item.fragment+'" target="_self">'+  item.target +' </a>';
+                        }
+                        else {
+                            output+='<a href=" '+ item.target_absolute_url +' " target="_self">'+ item.target +' </a>';
+                        }
+                    }
+
+                    output+='</div>';
+                    output+='<div class="time-info">';
+                    output+='<span>'+ item.timesince +' {% trans "ago" %}</span>';
+                    output+='</div>';
+                    output+='</div>';
+                    output+='</div>';
+                    output+='</div>';
+                    output+='</div>';
+                  });
+                  output+='<nav>';
+                  output+='<ul class="pagination pull-left">';
+
+                  var nexturl = meta.next;
+                  var previousurl = meta.previous;
+
+                  if(previousurl){
+                  output+='<li><a href="javascript:;" id="previousDatalayers"><strong><i class="fa fa-angle-left"> <span>Previous</span></i></strong></a></li>';
+                  }
+                  if(nexturl){
+                  output+='<li><a href="javascript:;" id="nextDatalayers"><strong><span>Next</span> <i class="fa fa-angle-right"></i></strong></a></li>';
+                  }
+                  output+='</ul>';
+                  output+='</nav>';
+                   $("#showallactivitelayers").html(output);
+                   $("#nextDatalayers").click(function(){
+                        showLimitDatalayers(nexturl)
+                   });
+                   $("#previousDatalayers").click(function(){
+                        showLimitDatalayers(previousurl)
+                   });
+                    },
+                    error: function(xhr, ajaxOptions, thrownError) {
+                        console.log("error");
+                    }
+                });
+        }
+
+        $(document).ready(function(){
+            $("#layersdata").click(function(){
+                showLimitDatalayers();
+                });
+             });
+ </script>
+    <script type="text/javascript" language="JavaScript">
+
+        function showLimitDatamaps(targeturl){
+                    var limit = 25;
+                    if(targeturl== undefined){
+                        var url = "{% url 'api_dispatch_list' api_name='api' resource_name='group_activity' %}?limit="+ limit +"&group={{ object.slug }}&option=maps";
+                    }
+                    else{
+                        var url = targeturl;
+                    }
+                    //var url = "{% url 'api_dispatch_list' api_name='api' resource_name='group_activity' %}?limit="+ Plimit +"&group={{ object.slug }}";
+                        $.ajax({
+                            cache: true,
+                            type: 'GET',
+                            url: url,
+                            data: {},
+                            dataType: "json",
+                            success: function(jsondata) {
+                                console.log("success");
+                                //console.log(JSON.stringify(jsondata));
+                            var data = eval(jsondata.objects);
+                            var meta = eval(jsondata.meta);
+                            var t_count = meta.total_count;
+                            var t_limit = meta.limit;
+                            var t_offset = meta.offset;
+                            var t_next = meta.next;
+                            var t_previous = meta.previous;
+                                //alert(t_offset);
+                            var output='';
+                          $.each(data, function(i, item) {
+                            //alert(item.activity_class);
+                            output+='<div class="row" id="shownextact">';
+                            output+='<div class="col-md-1" style="padding:0px;">';
+                            output+='<div class="history-lines">';
+                            output+='<div class="history-lines-icon">';
+                                           if(item.activity_class == 'map'){
+                            output+='<i class="fa fa-map-marker"></i>';}
+                                           else if(item.activity_class == 'upload'){
+                            output+='<span class="fa-layers-group fa-stack fa-rotate-90" style="font-size:12px;margin-top: 0;">';
+                            output+='<i class="fa fa-stop fa-layers fa-stack-1x" style="left: 0;"></i>';
+                            output+='<i class="fa fa-stop fa-layers fa-stack-1x" style="left: -.15em;color:#fff;"></i>';
+                            output+='<i class="fa fa-stop fa-layers fa-stack-1x" style="left: -.3em;"></i>';
+                            output+='<i class="fa fa-stop fa-layers fa-stack-1x" style="left: -.45em;color:#fff;"></i>';
+                            output+='<i class="fa fa-stop fa-layers fa-stack-1x" style="left: -.6em;"></i>';
+                            output+='</span>';}
+                                           else{
+                            output+='<i class="fa fa-comment-o" style="font-size: 20px;"></i>';
+                                           }
+                            output+='</div>';
+                            output+='</div>';
+                            output+='</div>';
+                            output+='<div class="col-md-11" style="padding:0px;margin-top: 10px;">';
+                            output+='<div class="gd-history-content" >';
+                            output+='<div class="'+ item.activity_class +'">';
+
+                            if(item.object_thumbnail_url){
+                                output+='<img src="'+ item.object_thumbnail_url +'" />';
+                                           }
+                            output+='</div>';
+
+                            output+='<div class="details">';
+                            output+='<div class="usr-info">';
+
+                            output+='<a href="'+ item.actor_absolute_url +'" target="_self">'+ item.username +' </a>';
+
+                            output+=''+ item.verb +' ';
+
+
+                            if(item.object){
+                                if (item.object_absolute_url){
+                                    output+='<a href=" '+ item.object_absolute_url +' " target="_self">'+ item.object +' </a>';
+                                }
+                                else{
+                                    output+=''+ item.object_name +' ';
+                                }
+                             }
+
+                            else if(item.object_name){
+                                output+=''+ item.object_name + '';
+                                }
+
+
+                            if (item.target){
+                                output+=''+ item.preposition +' ';
+
+                                if (item.fragment){
+                                    output+='<a href=" '+ item.target_absolute_url +' #'+ item.fragment+'" target="_self">'+  item.target +' </a>';
+                                }
+                                else {
+                                    output+='<a href=" '+ item.target_absolute_url +' " target="_self">'+ item.target +' </a>';
+                                }
+                            }
+
+                            output+='</div>';
+                            output+='<div class="time-info">';
+                            output+='<span>'+ item.timesince +' {% trans "ago" %}</span>';
+                            output+='</div>';
+                            output+='</div>';
+                            output+='</div>';
+                            output+='</div>';
+                            output+='</div>';
+                          });
+                          output+='<nav>';
+                          output+='<ul class="pagination pull-left">';
+
+                          var nexturl = meta.next;
+                          var previousurl = meta.previous;
+
+                          if(previousurl){
+                          output+='<li><a href="javascript:;" id="previousDatamaps"><strong><i class="fa fa-angle-left"> <span>Previous</span></i></strong></a></li>';
+                          }
+                          if(nexturl){
+                          output+='<li><a href="javascript:;" id="nextDatamaps"><strong><span>Next</span> <i class="fa fa-angle-right"></i></strong></a></li>';
+                          }
+                          output+='</ul>';
+                          output+='</nav>';
+                           $("#showallactivitemaps").html(output);
+                           $("#nextDatamaps").click(function(){
+                                showLimitDatamaps(nexturl)
+                           });
+                           $("#previousDatamaps").click(function(){
+                                showLimitDatamaps(previousurl)
+                           });
+                            },
+                            error: function(xhr, ajaxOptions, thrownError) {
+                                console.log("error");
+                            }
+                        });
+                }
+
+    $(document).ready(function(){
+        $("#mapsdata").click(function(){
+               showLimitDatamaps();
+            });
+         });
+ </script>
+
+    <script type="text/javascript" language="JavaScript">
+
+        function showLimitDatacomments(targeturl){
+                var limit = 25;
+                if(targeturl== undefined){
+                    var url = "{% url 'api_dispatch_list' api_name='api' resource_name='group_activity' %}?limit="+ limit +"&group={{ object.slug }}&option=comments";
+                }
+                else{
+                    var url = targeturl;
+                }
+                //var url = "{% url 'api_dispatch_list' api_name='api' resource_name='group_activity' %}?limit="+ Plimit +"&group={{ object.slug }}";
+                    $.ajax({
+                        cache: true,
+                        type: 'GET',
+                        url: url,
+                        data: {},
+                        dataType: "json",
+                        success: function(jsondata) {
+                            console.log("success");
+                            //console.log(JSON.stringify(jsondata));
+                        var data = eval(jsondata.objects);
+                        var meta = eval(jsondata.meta);
+                        var t_count = meta.total_count;
+                        var t_limit = meta.limit;
+                        var t_offset = meta.offset;
+                        var t_next = meta.next;
+                        var t_previous = meta.previous;
+                            //alert(t_offset);
+                        var output='';
+                      $.each(data, function(i, item) {
+                        //alert(item.activity_class);
+                        output+='<div class="row" id="shownextact">';
+                        output+='<div class="col-md-1" style="padding:0px;">';
+                        output+='<div class="history-lines">';
+                        output+='<div class="history-lines-icon">';
+                                       if(item.activity_class == 'map'){
+                        output+='<i class="fa fa-map-marker"></i>';}
+                                       else if(item.activity_class == 'upload'){
+                        output+='<span class="fa-layers-group fa-stack fa-rotate-90" style="font-size:12px;margin-top: 0;">';
+                        output+='<i class="fa fa-stop fa-layers fa-stack-1x" style="left: 0;"></i>';
+                        output+='<i class="fa fa-stop fa-layers fa-stack-1x" style="left: -.15em;color:#fff;"></i>';
+                        output+='<i class="fa fa-stop fa-layers fa-stack-1x" style="left: -.3em;"></i>';
+                        output+='<i class="fa fa-stop fa-layers fa-stack-1x" style="left: -.45em;color:#fff;"></i>';
+                        output+='<i class="fa fa-stop fa-layers fa-stack-1x" style="left: -.6em;"></i>';
+                        output+='</span>';}
+                                       else{
+                        output+='<i class="fa fa-comment-o" style="font-size: 20px;"></i>';
+                                       }
+                        output+='</div>';
+                        output+='</div>';
+                        output+='</div>';
+                        output+='<div class="col-md-11" style="padding:0px;margin-top: 10px;">';
+                        output+='<div class="gd-history-content" >';
+                        output+='<div class="'+ item.activity_class +'">';
+
+                        if(item.object_thumbnail_url){
+                            output+='<img src="'+ item.object_thumbnail_url +'" />';
+                                       }
+                        output+='</div>';
+
+                        output+='<div class="details">';
+                        output+='<div class="usr-info">';
+
+                        output+='<a href="'+ item.actor_absolute_url +'" target="_self">'+ item.username +' </a>';
+
+                        output+=''+ item.verb +' ';
+
+
+                        if(item.object){
+                            if (item.object_absolute_url){
+                                output+='<a href=" '+ item.object_absolute_url +' " target="_self">'+ item.object +' </a>';
+                            }
+                            else{
+                                output+=''+ item.object_name +' ';
+                            }
+                         }
+
+                        else if(item.object_name){
+                            output+=''+ item.object_name + '';
+                            }
+
+
+                        if (item.target){
+                            output+=''+ item.preposition +' ';
+
+                            if (item.fragment){
+                                output+='<a href=" '+ item.target_absolute_url +' #'+ item.fragment+'" target="_self">'+  item.target +' </a>';
+                            }
+                            else {
+                                output+='<a href=" '+ item.target_absolute_url +' " target="_self">'+ item.target +' </a>';
+                            }
+                        }
+
+                        output+='</div>';
+                        output+='<div class="time-info">';
+                        output+='<span>'+ item.timesince +' {% trans "ago" %}</span>';
+                        output+='</div>';
+                        output+='</div>';
+                        output+='</div>';
+                        output+='</div>';
+                        output+='</div>';
+                      });
+                      output+='<nav>';
+                      output+='<ul class="pagination pull-left">';
+
+                      var nexturl = meta.next;
+                      var previousurl = meta.previous;
+
+                      if(previousurl){
+                      output+='<li><a href="javascript:;" id="previousDatacomments"><strong><i class="fa fa-angle-left"> <span>Previous</span></i></strong></a></li>';
+                      }
+                      if(nexturl){
+                      output+='<li><a href="javascript:;" id="nextDatacomments"><strong><span>Next</span> <i class="fa fa-angle-right"></i></strong></a></li>';
+                      }
+                      output+='</ul>';
+                      output+='</nav>';
+                       $("#showallactivitecomments").html(output);
+                       $("#nextDatacomments").click(function(){
+                            showLimitDatacomments(nexturl)
+                       });
+                       $("#previousDatacomments").click(function(){
+                            showLimitDatacomments(previousurl)
+                       });
+                        },
+                        error: function(xhr, ajaxOptions, thrownError) {
+                            console.log("error");
+                        }
+                    });
+            }
+
+        $(document).ready(function(){
+            $("#commentsdata").click(function(){
+                showLimitDatacomments();
+                });
+             });
+    </script>
+    <script type="text/javascript" language="JavaScript">
+        <!--$(document).ready(function(){-->
+            <!--$("#qroup_activity").click(function(){-->
+                <!--var url = "{% url "group_activity" object.slug %}";-->
+                    <!--$.ajax({-->
+                        <!--cache: true,-->
+                        <!--type: 'GET',-->
+                        <!--url: url,-->
+                        <!--data: {},-->
+                        <!--dataType: "html",-->
+                        <!--success: function(jsondata) {-->
+                            <!--console.log("success");-->
+                            <!--$('#acitivity').html(jsondata);-->
+                        <!--},-->
+                        <!--error: function(xhr, ajaxOptions, thrownError) {-->
+                            <!--console.log("error");-->
+                        <!--}-->
+                     <!--});-->
+            <!--});-->
+        <!--});-->
+    </script>
 {% endblock extra_script %}
 

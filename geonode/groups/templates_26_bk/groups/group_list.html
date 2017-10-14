@@ -1,0 +1,33 @@
+{% extends "groups/group_base.html" %}
+{% load i18n %}
+{% load staticfiles %}
+
+{% block title %} {% trans "Explore Groups" %} - {{ block.super }} {% endblock %}
+
+{% block body_class %}groups explore{% endblock %}
+
+{% block body %}
+  <div class="page-header">
+    {% if user.is_authenticated %}
+    <a href="{% url "group_create" %}" class="btn btn-primary pull-right">{% trans "Create a New Group" %}</a>
+    {% endif %}
+    <h2>{% trans "Explore Groups" %}</h2>
+  </div>
+
+  {% with include_type_filter='true' %}
+  {% with facet_type='groups' %}
+  {% include "search/_search_user_content.html" %}
+  {% endwith %}
+  {% endwith %}
+  {% include "_bulk_permissions_form.html" %}
+{% endblock %}
+
+{% block extra_script %}
+{{ block.super }}
+  <script type="text/javascript">
+  SEARCH_URL = '{% url 'api_dispatch_list' api_name='api' resource_name='groups' %}'
+  </script>
+  {% with include_spatial='false' %}
+  {% include 'search/search_scripts.html' %}
+  {% endwith %}
+{% endblock extra_script %}

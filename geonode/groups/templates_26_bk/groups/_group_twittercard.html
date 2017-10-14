@@ -1,0 +1,9 @@
+<meta name="twitter:card" content="summary" />
+<meta name="twitter:site" content="{{ TWITTER_SITE }}" />
+<!-- Twitter truncates twitter:title to 70 characters. -->
+<meta name="twitter:title" content="{{ object.title|default:object.slug|truncatechars:70 }}" />
+<!-- Twitter truncates twitter:description at the word to 200 characters. -->
+<meta name="twitter:description" content="Group {{ object.title|default:object.slug }} on {{ SITE_NAME }}" />
+<!-- Need to create thumbnails for group logos since there are size restrictions
+<meta name="twitter:image" content="" />
+-->

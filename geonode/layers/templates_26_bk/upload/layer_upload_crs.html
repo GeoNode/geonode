@@ -1,0 +1,46 @@
+{% extends "upload/layer_upload_base.html" %}
+{% load i18n %}
+{% load staticfiles %}
+
+{% block body_class %}data data-list upload{% endblock %}
+
+{% block title %} {% trans "Upload Layer" %} - {{ block.super }} {% endblock %}
+
+{% block body %}
+  <h2> {% trans "Provide CRS for " %} "{{ layer_name }}" </h2>
+
+  <form method="POST" id="crsForm">
+    {% csrf_token %}    
+    <h3>{% trans "Coordinate Reference System" %}</h3>
+    {% if native_crs %}
+    <p>
+    {% blocktrans %}
+        A coordinate reference system for this layer could not be determined.
+        Locate or enter the appropriate ESPG code for this layer below.
+        One way to do this is do visit:
+        <a href="http://prj2epsg.org/search" target="_">prj2epsg</a>
+        and enter the following:
+    {% endblocktrans %}
+    </p>
+    <pre>
+    {{ native_crs }}
+    </pre>
+    <div>
+        {{ form.srs.errors }}
+        <label for="id_srs">EPSG Code (SRS)  :</label>{{ form.srs }}
+    </div>
+    <input id='next' type="button" value="{% trans "Next" %}"/>
+    {% else %}
+    <p>
+        {% blocktrans %}
+        There is a problem recognizing the projection of this data. Please
+        reproject this data to a more common projection.
+        {% endblocktrans %}
+    </p>
+    </p>
+    {% endif %}
+  </form>
+<script data-main="{% static '/geonode/js/upload/srs' %}"
+  src="{% static 'lib/js/require.js' %}">
+</script>
+{% endblock %}

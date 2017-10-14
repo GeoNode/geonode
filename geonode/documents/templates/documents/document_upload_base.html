@@ -7,17 +7,37 @@
 {% block body_class %}documents{% endblock %}
 
 {% block body_outer %}
-<div class="page-header">
-  <a href="{% url "document_browse" %}" class="btn btn-primary pull-right">{% trans "Explore Documents" %}</a>
-  <h2 class="page-title">{% trans "Upload Documents" %}</h2>
-	<p>Allowed document types:</p>
-	<p>
-	{% for doc in ALLOWED_DOC_TYPES %}
-		<span class="label label-default">.{{ doc }}</span>
-	{% endfor %}
-	</p>
+<div class="gd-content">
+    <div class="gd-content-heading top-bottom-margin-20px">
+        <div class="row">
+          <div class="col-md-6">
+              <div class="title">
+                  {% trans "Upload Documents" %}
+              </div>
+          </div>
+          <div class="col-md-6">
+              <div class="text-right">
+                <a href="{% url "document_browse" %}" class="btn btn-gd-primary pull-right">
+                    {% trans "Explore Documents" %}
+                </a>
+              </div>
+          </div>
+      </div>
+      <div class="row">
+          <div class="col-md-12">
+            <div>Allowed document types:</div>
+            <div>
+                {% for doc in ALLOWED_DOC_TYPES %}
+                    <span class="label label-default">.{{ doc }}</span>
+                {% endfor %}
+            </div>
+          </div>
+      </div>
+    </div>
+    <div class="hr"></div>
 </div>
 <div class="row">    
+  {% block body_content %}{% endblock body_content %}
   {% block body %}{% endblock body %}
   {% block sidebar %}{% endblock sidebar %}
 </div>

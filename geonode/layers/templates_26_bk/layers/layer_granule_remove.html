@@ -1,0 +1,40 @@
+{% extends "layers/layer_base.html" %}
+{% load i18n %}
+
+{% block title %}{{ layer.typename }} — {{ block.super }}{% endblock %}
+
+{% block body %}
+<div class="page-header">
+  <a href="{% url "layer_browse" %}" class="btn btn-primary pull-right">{% trans "Explore Layers" %}</a>
+  <h2 class="page-title">{% trans "Remove Mosaic Granules" %}</h2>
+</div>
+<div class="row">
+  <div class="col-md-8">
+    <p class="lead">
+        {% blocktrans with layer.typename as layer_title %}
+          Are you sure you want to remove Granule {{ granule_id }} of the Mosaic <a href="{{ layer.get_absolute_url }}">{{ layer_title }}</a>?
+        {% endblocktrans %}
+      </p>
+    <form action="{% url "layer_granule_remove" granule_id layer.service_typename %}" method="POST">
+      {% csrf_token %}
+      <input type="hidden" value="{{ layer.service_typename }}" />
+      <div class="form-actions">
+        <input type="submit" value="{% trans "Yes, I am sure" %}" class="btn btn-danger" />
+        <a href="{{ layer.get_absolute_url }}" class="btn btn-default">{% trans "No, don't remove it" %}</a>
+      </div>
+    </form>
+  </div>
+  {% if layer.maps %}
+    <div class="col-md-4">
+    <ul class="nav nav-list">
+    <li class="nav-header">{% trans "This action affects the following maps:" %}</li>
+    {% for map_layer in layer.maps %}
+      <li><a href="{{ map_layer.map.get_absolute_url }}">{{ map_layer.map.title }}</a></li>
+    {% empty %}
+      <li>{% trans "No maps are using this layer" %}</li>
+    {% endfor %}
+    </ul>
+    </div>
+  {% endif %}
+</div>
+{% endblock %}

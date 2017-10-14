@@ -1,0 +1,1 @@
+Invitation to join the group "{{ group.title }}" at {{ domain }}
