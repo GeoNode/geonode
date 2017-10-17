@@ -67,7 +67,7 @@ class ServiceForm(forms.ModelForm):
         label=_("Classification"), choices=get_classifications(), 
         widget=forms.Select(attrs={'cols': 60, 'class': 'inputText'}))
     caveat = forms.ChoiceField(
-        label=_("Caveat"), choices=get_caveats(), 
+        label=_("Releasability"), choices=get_caveats(), 
         widget=forms.Select(attrs={'cols': 60, 'class': 'inputText'}))
     provenance = forms.ChoiceField(
         label=_("Provenance"), choices=get_provenances(), 
