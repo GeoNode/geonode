@@ -1088,10 +1088,10 @@ def style_chart_legend_color(layer):
     # except:
     #     pass
 
-    if xlink:
-        return xlink
-    else:
-        return ''
+        if xlink:
+            return xlink
+
+    return ''
 
 
 
