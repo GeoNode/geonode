@@ -120,7 +120,7 @@ class CollectorAPI(object):
         GS_METRIC_MAP = dict((('SYSTEM_UPTIME', ('uptime', None, None,),),
                               ('SYSTEM_AVERAGE_LOAD', ('load.1m', None, None,),),
                               ('CPU_LOAD', ('cpu.usage.percent', None, None,),),
-                              ('MEMORY_USED', ('mem.usage', get_mem_label, None,),),
+                              ('MEMORY_USED', ('mem.usage.percent', get_mem_label, None,),),
                               ('MEMORY_TOTAL', ('mem.all', get_mem_label, None,),),
                               ('MEMORY_FREE', ('mem.free', get_mem_label, None,),),
                               ('NETWORK_INTERFACE_SEND', ('network.out', get_iface_name, get_network_rate),),

@@ -1239,13 +1239,13 @@ class BuiltIns(object):
                        'response.time', 'response.status', 'response.size',
                        'response.error.types',)
     host_metrics = ('load.1m', 'load.5m', 'load.15m',
-                    'mem.free', 'mem.usage', 'mem.buffers', 'mem.all',
+                    'mem.free', 'mem.usage', 'mem.usage.percent', 'mem.buffers', 'mem.all',
                     'uptime', 'cpu.usage', 'cpu.usage.rate', 'cpu.usage.percent',
                     'storage.free', 'storage.total', 'storage.used',  # mountpoint is the label
                     'network.in', 'network.out', 'network.in.rate', 'network.out.rate',)
 
     rates = ('response.time', 'response.size', 'network.in.rate', 'network.out.rate', 'load.1m', 'load.5m',
-             'load.15m', 'cpu.usage.rate', 'cpu.usage.percent', 'cpu.usage',
+             'load.15m', 'cpu.usage.rate', 'cpu.usage.percent', 'cpu.usage', 'mem.usage.percent',
              'storage.free', 'storage.total', 'storage.used',)
 
     values = ('request.ip', 'request.ua', 'request.ua.family', 'request.path',
@@ -1261,7 +1261,7 @@ class BuiltIns(object):
                   'mem.free', 'mem.usage', 'mem.buffers', 'mem.all',)
     unit_bps = ('network.in.rate', 'network.out.rate',)
     unit_rate = ('cpu.usage.rate', 'load.1m', 'load.5m', 'load.15m',)
-    unit_percentage = ('cpu.usage.percent',)
+    unit_percentage = ('cpu.usage.percent', 'mem.usage.percent',)
 
     descriptions = {'request.count': 'Number of requests',
                     'response.time': 'Time of making a response',

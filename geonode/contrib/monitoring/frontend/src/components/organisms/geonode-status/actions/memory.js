@@ -38,7 +38,7 @@ const get = (host, argInterval) =>
   (dispatch) => {
     dispatch(begin());
     const interval = sequenceInterval(argInterval);
-    let url = `${apiUrl}/metric_data/mem.usage/?last=${argInterval}`;
+    let url = `${apiUrl}/metric_data/mem.usage.percent/?last=${argInterval}`;
     url += `&interval=${interval}&service=${host}`;
     fetch({ url })
       .then(response => {

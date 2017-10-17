@@ -94,7 +94,7 @@ class GeoserverStatus extends React.Component {
     ) {
       cpuData = this.props.cpu.data.data.map(element => ({
         name: element.valid_from,
-        percents: element.data.length > 0 ? Math.floor(element.data[0].val) : 0,
+        'CPU used': element.data.length > 0 ? Math.floor(element.data[0].val) : 0,
       }));
     }
     if (
@@ -104,7 +104,7 @@ class GeoserverStatus extends React.Component {
     ) {
       memoryData = this.props.memory.data.data.map(element => ({
         name: element.valid_from,
-        MB: element.data.length > 0 ? element.data[0].val / 1024 / 1024 : 0,
+        'MEM used': element.data.length > 0 ? Math.floor(element.data[0].val) : 0,
       }));
     }
     const contentStyle = this.props.half
@@ -130,8 +130,8 @@ class GeoserverStatus extends React.Component {
           {hosts}
         </SelectField>
         <div style={styles.stat}>
-          <CPU cpu={5} data={cpuData} />
-          <Memory memory={5} data={memoryData} />
+          <CPU data={cpuData} />
+          <Memory data={memoryData} />
         </div>
       </HoverPaper>
     );
