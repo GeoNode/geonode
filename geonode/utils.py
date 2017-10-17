@@ -202,6 +202,8 @@ def layer_from_viewer_config(model, layer, source, ordering):
               "fixed", "group", "visibility", "source", "getFeatureInfo"]:
         if k in layer_cfg:
             del layer_cfg[k]
+    layer_cfg["wrapDateLine"] = True
+    layer_cfg["displayOutsideMaxExtent"] = True
 
     source_cfg = dict(source)
     for k in ["url", "projection"]:
@@ -475,6 +477,8 @@ class GXPLayer(GXPLayerBase):
         self.fixed = False
         self.group = None
         self.visibility = True
+        self.wrapDateLine = True
+        self.displayOutsideMaxExtent = True
         self.ows_url = ows_url
         self.layer_params = ""
         self.source_params = ""

@@ -726,6 +726,7 @@ def add_layers_to_map_config(request, map_obj, layer_names, add_base_layers=True
         # Add required parameters for GXP lazy-loading
         config["title"] = layer.title
         config["queryable"] = True
+        config["wrapDateLine"] = True
 
         config["srs"] = getattr(
             settings, 'DEFAULT_MAP_CRS', 'EPSG:900913')
