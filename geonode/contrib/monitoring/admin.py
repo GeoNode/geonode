@@ -51,6 +51,7 @@ class ServiceAdmin(admin.ModelAdmin):
 class ServiceTypeMetricAdmin(admin.ModelAdmin):
     list_display = ('service_type', 'metric',)
     list_select_related = True
+    list_filter = ('service_type', 'metric',)
 
 
 @admin.register(Metric)

@@ -196,13 +196,16 @@ def align_period_start(start, interval):
     return day_start + timedelta(seconds=(interval_num * interval.total_seconds()))
 
 
-def generate_periods(since, interval, end=None):
+def generate_periods(since, interval, end=None, align=True):
     """
     Generator of periods: tuple of [start, end).
     since parameter will be aligned to closest interval before since.1
     """
     end = end or datetime.now()
-    since_aligned = align_period_start(since, interval)
+    if align:
+        since_aligned = align_period_start(since, interval)
+    else:
+        since_aligned = since
 
     full_interval = (end - since).total_seconds()
     _periods = divmod(full_interval, interval.total_seconds())

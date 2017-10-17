@@ -68,6 +68,9 @@ class CollectorAPI(object):
         if not isinstance(current_value, Decimal):
             current_value = Decimal(current_value)
 
+        # this means counter was reset, don't want rates below 0
+        if current_value < prev_val:
+            return
         rate = float((current_value - prev_val)) / interval.total_seconds()
         return rate
 
@@ -75,19 +78,10 @@ class CollectorAPI(object):
         """
         Find previous network metric value and caclulate percent
         """
-        prev = MetricValue.objects.filter(service_metric__metric__name=metric_name,
-                                          label__name=metric_label,
-                                          valid_to__lt=valid_to)\
-                                  .order_by('-valid_to').first()
-        if not prev:
+        rate = self._calculate_rate(metric_name, metric_label, current_value, valid_to)
+        if rate is None:
             return
-        prev_val = prev.value_num
-        interval = valid_to - prev.valid_to
-        if not isinstance(current_value, Decimal):
-            current_value = Decimal(current_value)
-
-        percent = float((current_value - prev_val) * 100) / interval.total_seconds()
-        return percent
+        return rate * 100
 
     def process_host_geoserver(self, service, data, valid_from, valid_to):
         """
@@ -119,13 +113,16 @@ class CollectorAPI(object):
             mdata.update(metric_defaults)
             print MetricValue.add(**mdata)
 
+        def get_mem_label(*args):
+            return 'B'
+
         # gs metric -> monitoring metric name, label function, postproc function
         GS_METRIC_MAP = dict((('SYSTEM_UPTIME', ('uptime', None, None,),),
                               ('SYSTEM_AVERAGE_LOAD', ('load.1m', None, None,),),
                               ('CPU_LOAD', ('cpu.usage.percent', None, None,),),
-                              ('MEMORY_USED', ('mem.usage', None, None,),),
-                              ('MEMORY_TOTAL', ('mem.all', None, None,),),
-                              ('MEMORY_FREE', ('mem.free', None, None,),),
+                              ('MEMORY_USED', ('mem.usage', get_mem_label, None,),),
+                              ('MEMORY_TOTAL', ('mem.all', get_mem_label, None,),),
+                              ('MEMORY_FREE', ('mem.free', get_mem_label, None,),),
                               ('NETWORK_INTERFACE_SEND', ('network.out', get_iface_name, get_network_rate),),
                               ('NETWORK_INTERFACE_RECEIVED', ('network.in', get_iface_name, get_network_rate),),
                               ('NETWORK_INTERFACES_SEND', ('network.out', None, get_network_rate),),
@@ -224,7 +221,7 @@ class CollectorAPI(object):
                      'value_raw': mdata,
                      'value_num': mdata,
                      'metric': 'mem.{}'.format(mkey),
-                     'label': 'MB',
+                     'label': 'B',
                      }
             mdata.update(mdefaults)
             MetricValue.objects.filter(service_metric__metric__name=mdata['metric'],
@@ -555,7 +552,7 @@ class CollectorAPI(object):
             metric_defaults['resource'] = resource
             metric_defaults['requests'] = _requests
 
-            MetricValue.add('request.count', valid_from, valid_to, service, 'count', value=count, value_num=count,
+            MetricValue.add('request.count', valid_from, valid_to, service, 'Count', value=count, value_num=count,
                             samples_count=count, value_raw=count, resource=resource)
             self.set_metric_values('request.ip', 'client_ip', **metric_defaults)
             self.set_metric_values('request.country', 'client_country', **metric_defaults)
@@ -577,7 +574,7 @@ class CollectorAPI(object):
                 metric_defaults['ows_service'] = ows_all
 
                 print(MetricValue.add('request.count', valid_from,
-                                      valid_to, service, 'count',
+                                      valid_to, service, 'Count',
                                       value=count, value_num=count,
                                       samples_count=count,
                                       value_raw=count,
@@ -609,7 +606,7 @@ class CollectorAPI(object):
                     count = ows_requests.count()
                     metric_defaults['ows_service'] = ows_service
                     metric_defaults['requests'] = ows_requests
-                    print(MetricValue.add('request.count', valid_from, valid_to, service, 'count',
+                    print(MetricValue.add('request.count', valid_from, valid_to, service, 'Count',
                                           value=count,
                                           value_num=count,
                                           samples_count=count,
@@ -668,7 +665,7 @@ class CollectorAPI(object):
                'type': metric.type,
                'axis_label': metric.unit,
                'data': []}
-        periods = generate_periods(valid_from, interval, valid_to)
+        periods = generate_periods(valid_from, interval, valid_to, align=False)
         for pstart, pend in periods:
             pdata = self.get_metrics_data(metric_name, pstart, pend,
                                           interval=interval,
@@ -721,7 +718,8 @@ class CollectorAPI(object):
                   'join monitoring_servicetypemetric mt on (mv.service_metric_id = mt.id)',
                   'join monitoring_metric m on (m.id = mt.metric_id)',
                   'join monitoring_metriclabel ml on (mv.label_id = ml.id) ']
-        q_where = ['where', 'mv.valid_from >= %(valid_from)s and mv.valid_to <= %(valid_to)s ',
+        q_where = ['where', ' ((mv.valid_from >= %(valid_from)s and mv.valid_to < %(valid_to)s)'
+                   'or (mv.valid_to > %(valid_from)s and mv.valid_to <= %(valid_to)s) )',
                    'and m.name = %(metric_name)s']
         q_group = ['ml.name']
         params.update({'metric_name': metric_name,
@@ -745,16 +743,27 @@ class CollectorAPI(object):
             q_from.append('join monitoring_service ms on '
                           '(ms.id = mv.service_id and ms.service_type_id = %(service_type_id)s )')
             params['service_type_id'] = service_type.id
+
         if ows_service:
             q_where.append(' and mv.ows_service_id = %(ows_service)s ')
             params['ows_service'] = ows_service.id
+        else:
+            q_where.append(' and mv.ows_service_id is null ')
+
         if label:
             q_where.append(' and ml.id = %(label)s')
             params['label'] = label.id
+
         if resource:
             q_from.append('join monitoring_monitoredresource mr on '
                           '(mv.resource_id = mr.id and mr.id = %(resource_id)s)')
             params['resource_id'] = resource.id
+        elif group_by != 'resource':
+            q_from.append('left join monitoring_monitoredresource mr on '
+                          '(mv.resource_id = mr.id and mr.type = %(resource_type)s and mr.name = %(resource_name)s ) ')
+            params['resource_type'] = ''
+            params['resource_name'] = ''
+
         if label and has_agg:
             q_group.extend(['ml.name'])
         if resource and q_group == 'resource':

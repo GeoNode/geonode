@@ -68,9 +68,10 @@ class BaseProbe(object):
             return val
 
         return {'all': m(vm.total),
-                'usage': m(vm.used),
+                # 'usage': m(vm.used),
+                'used': m(vm.used),
                 'free': m(vm.available),
-                'percent': (vm.used/(vm.total * 100.0))
+                'usage': (vm.used/(vm.total * 100.0))
                 }
 
     @staticmethod

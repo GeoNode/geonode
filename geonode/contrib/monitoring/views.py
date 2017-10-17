@@ -44,7 +44,7 @@ from geonode.contrib.monitoring.models import (
     MetricNotificationCheck,
 )
 from geonode.contrib.monitoring.models import do_autoconfigure
-from geonode.contrib.monitoring.utils import TypeChecks, align_period_start, dump
+from geonode.contrib.monitoring.utils import TypeChecks, dump
 from geonode.contrib.monitoring.service_handlers import exposes
 
 # Create your views here.
@@ -262,7 +262,7 @@ class ResourcesList(FilteredView):
                 interval = 60
             if not isinstance(interval, timedelta):
                 interval = timedelta(seconds=interval)
-            valid_from = align_period_start(_from, interval)
+            valid_from = _from
         if valid_from:
             qparams['metric_values__valid_from__gte'] = valid_from
         if valid_to:
@@ -291,7 +291,7 @@ class LabelsList(FilteredView):
                 interval = 60
             if not isinstance(interval, timedelta):
                 interval = timedelta(seconds=interval)
-            valid_from = align_period_start(_from, interval)
+            valid_from = _from
         if valid_from:
             qparams['metric_values__valid_from__gte'] = valid_from
         if valid_to:
@@ -380,7 +380,7 @@ class ExceptionsListView(FilteredView):
                 interval = 60
             if not isinstance(interval, timedelta):
                 interval = timedelta(seconds=interval)
-            valid_from = align_period_start(_from, interval)
+            valid_from = _from
         if valid_from:
             q = q.filter(created__gte=valid_from)
         if valid_to:
