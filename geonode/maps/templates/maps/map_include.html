@@ -14,7 +14,7 @@ Ext.onReady(function() {
             ptype: "gxp_wmsgetfeatureinfo",
             format: "grid",
             actionTarget: "main.tbar",
-            outputConfig: {width: 400, height: 200, panIn: false}
+            outputConfig: {width: 400, height: 200, panIn: false, wrapDateLine: true}
         }],
         useToolbar: true,
         {% if PROXY_URL %}
@@ -29,17 +29,25 @@ Ext.onReady(function() {
 
         // tell the map viewer where and how to be rendered
         portalConfig: {
-            height: 600,
+            height: 400,
             renderTo: "the_map"
         },
 
         listeners: {
             "ready": function() {
                 app.mapPanel.map.getMaxExtent = function() {
-                    return new OpenLayers.Bounds(-80150033.36,-80150033.36,80150033.36,80150033.36);
+                    return new OpenLayers.Bounds(-80150033.36/2,-80150033.36/2,80150033.36/2,80150033.36/2);
                 }
                 app.mapPanel.map.getMaxResolution = function() {
-                    return 626172.135625;
+                    return 626172.135625/2;
+                }
+                l = app.selectedLayer.getLayer();
+                l.addOptions({wrapDateLine:true, displayOutsideMaxExtent: true});
+                l.addOptions({maxExtent:app.mapPanel.map.getMaxExtent(), restrictedExtent:app.mapPanel.map.getMaxExtent()});
+                for (var l in app.mapPanel.map.layers) {
+                    l = app.selectedLayer.getLayer();
+                    l.addOptions({wrapDateLine:true, displayOutsideMaxExtent: true});
+                    l.addOptions({maxExtent:app.mapPanel.map.getMaxExtent(), restrictedExtent:app.mapPanel.map.getMaxExtent()});
                 }
 
                 var map = app.mapPanel.map;
