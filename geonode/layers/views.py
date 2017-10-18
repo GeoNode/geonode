@@ -849,6 +849,7 @@ def get_layer(request, layername):
             'name': layer_obj.name,
             'title': layer_obj.title,
             'url': layer_obj.get_tiles_url(),
+            'ows_url': layer_obj.ows_url,
             'bbox_string': layer_obj.bbox_string,
             'bbox_x0': layer_obj.bbox_x0,
             'bbox_x1': layer_obj.bbox_x1,

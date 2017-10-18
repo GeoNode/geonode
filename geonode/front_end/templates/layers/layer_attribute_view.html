@@ -1,0 +1,31 @@
+{% extends "layers/layer_base.html" %}
+{% load i18n %}
+
+{% block title %}{{ block.super }}{% endblock %}
+
+{% block head %}
+<base href="/">
+{{ block.super }}
+{% endblock %}
+
+{% block body_outer %}
+
+<div ng-controller="AttributeViewController as ctrl" ng-app="LayerApp" >
+        <table class="table">
+            <tr>
+                <td ng-repeat="name in ctrl.propertyNames">[{name}]</td>
+            </tr>
+            <tr ng-repeat="attribute in ctrl.attributeDetails.features">
+                [{attribute}]
+                    <td ng-repeat="name in ctrl.propertyNames">[{attribute.properties[name]}]</td>
+            </tr>
+        </table>
+</div>
+{% endblock %}
+
+{% block extra_script %}
+{{ block.super }}
+<script src="/static/layers/js/layer.module.js"></script>
+<script src="/static/layers/js/layer.service.js"></script>
+<script src="/static/layers/js/attribute-view.controller.js"></script>
+{% endblock extra_script %}

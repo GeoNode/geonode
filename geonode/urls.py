@@ -28,6 +28,7 @@ from django.contrib import admin
 
 import geonode.proxy.urls
 from geonode.cms.views import IndexClass
+import geonode.front_end.urls
 
 from geonode.api.urls import api
 from geonode.api.views import verify_token, roles, users, admin_role
@@ -209,3 +210,7 @@ urlpatterns += patterns('',
                         (r'^featured/(?P<site>[A-Za-z0-9_\-]+)/$', 'geonode.maps.views.featured_map'),
                         (r'^featured/(?P<site>[A-Za-z0-9_\-]+)/info$', 'geonode.maps.views.featured_map_info'),
                         )
+
+#Custom injected app
+urlpatterns += geonode.front_end.urls.urlpatterns
+
