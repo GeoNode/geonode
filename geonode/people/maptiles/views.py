@@ -24,7 +24,7 @@ from geonode.cephgeo.models import CephDataObject, DataClassification, FTPReques
 from geonode.cephgeo.cart_utils import *
 from geonode.maptiles.utils import *
 from geonode.documents.models import get_related_documents
-from geonode.registration.models import Province, Municipality
+from geonode.registration.models import Province, Municipality 
 
 import geonode.settings as settings
 
@@ -73,7 +73,7 @@ def _resolve_layer(request, typename, permission='base.view_resourcebase',
 #
 @login_required
 def tiled_view(request, overlay=settings.TILED_SHAPEFILE, template="maptiles/maptiles_map.html",test_mode=False, jurisdiction=None):
-
+    
     context_dict = {}
     context_dict["grid"] = get_layer_config(request, overlay, "base.view_resourcebase", _PERMISSION_VIEW )
     if jurisdiction is None:
@@ -86,14 +86,14 @@ def tiled_view(request, overlay=settings.TILED_SHAPEFILE, template="maptiles/map
             print "No jurisdiction found"
     else:
         context_dict["jurisdiction"] = get_layer_config(request,jurisdiction, "base.view_resourcebase", _PERMISSION_VIEW)
-
+    
     context_dict["feature_municipality"]  = settings.MUNICIPALITY_SHAPEFILE.split(":")[1]
     context_dict["feature_tiled"] = overlay.split(":")[1]
     context_dict["test_mode"]=test_mode
     context_dict["data_classes"]= DataClassification.labels.values()
-
+    
     return render_to_response(template, RequestContext(request, context_dict))
-
+    
 #
 # Function for processing the georefs submitted by the user
 #
@@ -129,9 +129,8 @@ def process_georefs(request):
                     filter_query = filter_query & ~Q(data_class=filtered_class)
 
                 #Execute query
+                # objects = CephDataObject.objects.filter(filter_query)
                 objects = CephDataObjectResourceBase.objects.filter(filter_query)
-                if len(objects) <= 0:
-                    objects = CephDataObject.objects.filter(filter_query)
 
                 #Count duplicates and empty references
                 count += len(objects)
@@ -143,26 +142,26 @@ def process_georefs(request):
                             duplicates.append(ceph_obj.name)
                 else:
                     empty_georefs += 1
-
+            
             #if len(duplicates) > 0:         # Warn on duplicates
             #    messages.warning(request, "WARNING: The following items are already in the cart and have not been added: \n{0}".format(str(duplicates)))
-
+            
             if empty_georefs > 0:
                 messages.error(request, "ERROR: [{0}] out of selected [{1}] georef tiles have no data! A total of [{2}] objects have been added to cart. \n".format(empty_georefs,len(georef_list),(count - len(duplicates))))
             elif len(duplicates)>0: # Inform user of the number of processed georefs and objects
                 messages.info(request, "Processed [{0}] georefs tiles. [{2}] duplicate objects found in cart have been skipped. A total of [{1}] objects have been added to cart. ".format(len(georef_list),(count - len(duplicates)),len(duplicates)))
             else: # Inform user of the number of processed georefs and objects
                 messages.info(request, "Processed [{0}] georefs tiles. A total of [{1}] objects have been added to cart.".format(len(georef_list),(count - len(duplicates))))
-
+            
             return redirect('geonode.cephgeo.views.get_cart')
-
+            
         except ValidationError:             # Redirect and inform if an invalid georef is encountered
             messages.error(request, "Invalid georefs list")
             return HttpResponseRedirect('/maptiles/')
             #return redirect('geonode.maptiles.views.tiled_view')
-
+    
     else:   # Must process HTTP POST method from form
-        raise Exception("HTTP method must be POST!")
+        raise Exception("HTTP method must be POST!")    
 
 #
 # Validates if the total file size requested is less than the limit specified in local settings
@@ -184,23 +183,23 @@ def georefs_validation(request):
         pprint(request.POST)
         georefs_list = filter(None, georefs.split(","))
         cart_total_size = get_cart_datasize(request)
-
+        
         yesterday = datetime.now() -  timedelta(days=1)
-
+        
         requests_last24h = FTPRequest.objects.filter(date_time__gt=yesterday, user=request.user)
-
+        
         total_size = 0
         for georef in georefs_list:
             objects = CephDataObject.objects.filter(name__startswith=georef)
             for o in objects:
                 total_size += o.size_in_bytes
-
+                
         request_size_last24h = 0
-
+        
         for r in requests_last24h:
             request_size_last24h += r.size_in_bytes
-
-        if total_size + cart_total_size + request_size_last24h > settings.SELECTION_LIMIT:
+        
+        if total_size + cart_total_size + request_size_last24h > settings.SELECTION_LIMIT:            
             return HttpResponse(
                content=json.dumps({ "response": False, "total_size": total_size, "cart_size":cart_total_size, "recent_requests_size": request_size_last24h }),
                 status=200,
@@ -224,7 +223,7 @@ def province_lookup(request, province=""):
         provinces = []
         for p in Province.objects.all():
             p.append(p.province_name)
-
+            
         return HttpResponse(
             content=json.dumps({"provinces":provinces}),
             status=200,
@@ -235,9 +234,10 @@ def province_lookup(request, province=""):
         municipalities = []
         for m in Municipality.objects.filter(province__province_name="province"):
             m.append(m.municipality_name)
-
+            
         return HTTPResponse(
             content=json.dumps({"province":province, "municipalities": municipalities }),
             status=200,
             content_type="application/json",
         )
+    
