@@ -92,7 +92,10 @@ class DocumentIndex(indexes.SearchIndex, indexes.Indexable):
 
     def prepare_id(self, obj):
         # this is awful I'm so sorry
-        return int(uuid.UUID(obj.uuid).time_low)
+        if obj.uuid is None or '':
+            return obj.id
+        else:
+            return int(uuid.UUID(obj.uuid).time_low)
 
     def prepare_type(self, obj):
         return "document"
