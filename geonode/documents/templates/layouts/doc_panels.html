@@ -299,6 +299,10 @@
                         {{ document_form.metadata_uploaded_preserve }}
                     </div>
                     <div>
+                        <span><label for="{{ document_form.is_approved|id }}">{{ document_form.is_approved.label }}</label></span>
+                        {{ document_form.is_approved }}
+                    </div>
+                    <div>
                         <span><label for="{{ document_form.is_published|id }}">{{ document_form.is_published.label }}</label></span>
                         {{ document_form.is_published }}
                     </div>

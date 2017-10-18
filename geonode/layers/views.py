@@ -851,8 +851,16 @@ def layer_metadata(
         return HttpResponse(json.dumps({'message': message}))
 
     if settings.ADMIN_MODERATE_UPLOADS:
-        if not request.user.is_superuser and not request.user.is_staff:
+        if not request.user.is_superuser:
             layer_form.fields['is_published'].widget.attrs.update({'disabled': 'true'})
+        if not request.user.is_superuser and not request.user.is_staff:
+            can_change_metadata = request.user.has_perm(
+                'change_resourcebase_metadata',
+                layer.get_self_resource())
+            is_manager = request.user.groupmember_set.all().filter(role='manager').exists()
+            if not is_manager or not can_change_metadata:
+                layer_form.fields['is_approved'].widget.attrs.update({'disabled': 'true'})
+
     if poc is not None:
         layer_form.fields['poc'].initial = poc.id
         poc_form = ProfileForm(prefix="poc")
