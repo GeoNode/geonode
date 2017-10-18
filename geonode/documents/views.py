@@ -466,7 +466,10 @@ def document_metadata(
                 can_change_metadata = request.user.has_perm(
                     'change_resourcebase_metadata',
                     document.get_self_resource())
-                is_manager = request.user.groupmember_set.all().filter(role='manager').exists()
+                try:
+                    is_manager = request.user.groupmember_set.all().filter(role='manager').exists()
+                except:
+                    is_manager = False
                 if not is_manager or not can_change_metadata:
                     document_form.fields['is_approved'].widget.attrs.update({'disabled': 'true'})
 

@@ -293,7 +293,10 @@ def map_metadata(request, mapid, template='maps/map_metadata.html'):
             can_change_metadata = request.user.has_perm(
                 'change_resourcebase_metadata',
                 map_obj.get_self_resource())
-            is_manager = request.user.groupmember_set.all().filter(role='manager').exists()
+            try:
+                is_manager = request.user.groupmember_set.all().filter(role='manager').exists()
+            except:
+                is_manager = False
             if not is_manager or not can_change_metadata:
                 map_form.fields['is_approved'].widget.attrs.update({'disabled': 'true'})
 

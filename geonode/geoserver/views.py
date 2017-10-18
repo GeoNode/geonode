@@ -310,7 +310,10 @@ def feature_edit_check(request, layername):
         is_admin = request.user.is_superuser if request.user else False
         is_staff = request.user.is_staff if request.user else False
         is_owner = (str(request.user) == str(layer.owner))
-        is_manager = request.user.groupmember_set.all().filter(role='manager').exists()
+        try:
+            is_manager = request.user.groupmember_set.all().filter(role='manager').exists()
+        except:
+            is_manager = False
     if is_admin or is_staff or is_owner or is_manager or request.user.has_perm(
             'change_layer_data',
             obj=layer) and layer.storeType == 'dataStore' and feature_edit:
