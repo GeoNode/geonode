@@ -20,7 +20,7 @@ from geonode.cephgeo.models import FTPStatus
 
 from geonode.groups.models import GroupProfile
 
-from geonode.automation.models import CephDataObjectResourceBase
+from geonode.cephgeo.models import CephDataObject
 from geonode import local_settings
 from fabric.contrib.files import upload_template
 
@@ -423,7 +423,7 @@ below:
 def upload_xml(folder_dir,obj_dl_list):
     for grid_ref_file_name in obj_dl_list.split(" "):
         try:
-            cephobj_resbase = CephDataObjectResourceBase.objects.get(name=grid_ref_file_name)
+            cephobj_resbase = CephDataObject.objects.get(name=grid_ref_file_name)
         except:
             continue
         keyword_text = ""

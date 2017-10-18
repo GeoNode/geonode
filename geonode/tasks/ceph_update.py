@@ -14,7 +14,6 @@ from geonode.cephgeo.utils import get_data_class_from_filename
 from geonode.cephgeo import ceph_client
 from swiftclient.exceptions import ClientException
 
-from geonode.automation.models import AutomationJob, CephDataObjectResourceBase
 from geonode.cephgeo.models import LidarCoverageBlock
 from celery.decorators import periodic_task
 from datetime import datetime
@@ -108,34 +107,7 @@ def ceph_metadata_update(update_grid=True):
                 print 'Metadata', x
 
             ceph_obj = None
-            try:
-                ceph_obj = CephDataObjectResourceBase.objects.get(name=metadata_list[0])
-                # Commented attributes are not relevant to update
-                # ceph_obj.grid_ref = metadata_list[5]
-                # ceph_obj.data_class = get_data_class_from_filename(metadata_list[0])
-                # ceph_obj.content_type = metadata_list[3]
-
-                ceph_obj.last_modified = metadata_list[1]
-                ceph_obj.size_in_bytes = metadata_list[2]
-                ceph_obj.file_hash = metadata_list[4]
-
-                ceph_obj.save()
-
-                objects_updated += 1
-            except ObjectDoesNotExist:
-                ceph_obj = CephDataObjectResourceBase(name=metadata_list[0],
-                                                      last_modified=metadata_list[1],
-                                                      size_in_bytes=metadata_list[2],
-                                                      content_type=metadata_list[3],
-                                                      data_class=get_data_class_from_filename(
-                    metadata_list[0]),
-                    file_hash=metadata_list[4],
-                    grid_ref=metadata_list[5],
-                    block_uid=get_uid_from_filename(
-                    metadata_list[0]),
-                    uuid=str(uuid.uuid1()),
-                    title=metadata_list[0],
-                    abstract='''
+            abstract_text = '''
 All LiDAR point cloud data were acquired and processed by the UP Training Center for Applied Geodesy and Photogrammetry (UP-TCAGP), through the DOST-GIA funded Disaster Risk and Exposure Assessment for Mitigation (DREAM) Program.
 
 The LiDAR point cloud data was acquired by an Optech ALTM Gemini and Pegasus LiDAR system. It was pre-processed using POSPac MMS and LMS software. The TerraScan software was used to classify the point cloud into ground, vegetation and building classes. LASTools was used to compress the classified LiDAR point cloud data (.las) in a completely lossless manner to the compressed LAZ format (.laz).
@@ -161,6 +133,38 @@ Please refer to the corresponding End-User License Agreement (EULA) for product 
 
 
 © All Rights Reserved, 2013''' % metadata_list[1]
+            try:
+                ceph_obj = CephDataObject.objects.get(name=metadata_list[0])
+                # Commented attributes are not relevant to update
+                # ceph_obj.grid_ref = metadata_list[5]
+                # ceph_obj.data_class = get_data_class_from_filename(metadata_list[0])
+                # ceph_obj.content_type = metadata_list[3]
+
+                ceph_obj.last_modified = metadata_list[1]
+                ceph_obj.size_in_bytes = metadata_list[2]
+                ceph_obj.file_hash = metadata_list[4]
+                ceph_obj.content_type = metadata_list[3]
+                ceph_obj.data_class = get_data_class_from_filename(metadata_list[0])
+                ceph_obj.title = metadata_list[0]
+                ceph_obj.abstract = abstract_text
+
+                ceph_obj.save()
+
+                objects_updated += 1
+            except ObjectDoesNotExist:
+                ceph_obj = CephDataObject(name=metadata_list[0],
+                                                      last_modified=metadata_list[1],
+                                                      size_in_bytes=metadata_list[2],
+                                                      content_type=metadata_list[3],
+                                                      data_class=get_data_class_from_filename(
+                    metadata_list[0]),
+                    file_hash=metadata_list[4],
+                    grid_ref=metadata_list[5],
+                    block_uid=get_uid_from_filename(
+                    metadata_list[0]),
+                    uuid=str(uuid.uuid1()),
+                    title=metadata_list[0],
+                    abstract=abstract_text,
                     )
                 ceph_obj.save()
 
@@ -234,7 +238,7 @@ def ceph_metadata_remove(uploaded_objects_list, update_grid=True, delete_from_ce
             ceph_obj = None
             try:
                 # Retrieve object
-                ceph_obj = CephDataObjectResourceBase.objects.get(name=metadata_list[0])
+                ceph_obj = CephDataObject.objects.get(name=metadata_list[0])
                 # ceph_obj = CephDataObject.objects.get(name=metadata_list[0])
 
                 # Add object to list for grid removal

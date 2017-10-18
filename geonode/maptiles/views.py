@@ -110,7 +110,7 @@ def tiled_view(request, overlay=settings.TILED_SHAPEFILE, template="maptiles/map
         context_dict["laz"] = None
         context_dict["dsm"] = None
         context_dict["philgrid_sld"] = None
-        
+
     context_dict["geoserver_url"] = settings.OGC_SERVER['default']['PUBLIC_LOCATION']
     jurisdiction_object = None
 
@@ -243,7 +243,7 @@ def process_georefs(request):
 
                 # Execute query
                 # objects = CephDataObject.objects.filter(filter_query)
-                objects = CephDataObjectResourceBase.objects.filter(filter_query)
+                objects = CephDataObject.objects.filter(filter_query)
                 pprint("objects found for georef:" + georef)
 
                 # Count duplicates and empty references
@@ -334,7 +334,7 @@ def georefs_validation(request):
         print '2nd georefs_list:', georefs_list
         for georef in georefs_list:
             print 'georef:', georef
-            objects = CephDataObjectResourceBase.objects.filter(name__startswith=georef)
+            objects = CephDataObject.objects.filter(name__startswith=georef)
             # objects = CephDataObject.objects.filter(name__startswith=georef)
             for o in objects:
                 print 'o in objects:', o
@@ -415,7 +415,7 @@ def georefs_datasize(request):
         for eachgeoref_clicked in georefs_clicked_list:
             # pprint(eachgeoref_clicked)
             # clicked_objects = CephDataObject.objects.filter(
-            clicked_objects = CephDataObjectResourceBase.objects.filter(
+            clicked_objects = CephDataObject.objects.filter(
 
                 name__startswith=eachgeoref_clicked)
             for o in clicked_objects:
