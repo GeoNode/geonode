@@ -999,7 +999,7 @@ if not DEBUG_STATIC:
     }
 
 # option to enable/disable resource unpublishing for administrators
-RESOURCE_PUBLISHING = False
+RESOURCE_PUBLISHING = True
 
 # Settings for EXIF contrib app
 EXIF_ENABLED = False
@@ -1210,7 +1210,7 @@ RISKS = {'DEFAULT_LOCATION': None,
                            'ARGS': []}}
 
 # Each uploaded Layer must be approved by an Admin before becoming visible
-ADMIN_MODERATE_UPLOADS = False
+ADMIN_MODERATE_UPLOADS = True
 
 # add following lines to your local settings to enable monitoring
 if MONITORING_ENABLED:
