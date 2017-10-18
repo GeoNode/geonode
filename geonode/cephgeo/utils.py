@@ -4,7 +4,6 @@ import re
 from changuito.proxy import CartProxy
 from geonode.cephgeo.models import CephDataObject, DataClassification, MissionGridRef, SucToLayer, FTPRequestToObjectIndex, RIDF
 from geonode.datarequests.models import DataRequestProfile
-from geonode.automation.models import CephDataObjectResourceBase
 
 
 from osgeo import ogr
@@ -123,9 +122,8 @@ def get_cart_datasize(request):
         # print dir(item)
         print 'item.object_id:', item.object_id
         try:
-            # obj = CephDataObject.objects.get(id=int(item.object_id))
-            obj = CephDataObjectResourceBase.objects.get(id=int(item.object_id))
-        except CephDataObjectResourceBase.DoesNotExist:
+            obj = CephDataObject.objects.get(id=int(item.object_id))
+        except CephDataObject.DoesNotExist:
             print 'Item does not exist!'
             cart.remove_item(item.id)
         else:
