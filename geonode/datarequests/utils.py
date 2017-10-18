@@ -18,7 +18,7 @@ from geonode.people.models import Profile
 from geonode.documents.models import Document
 from geonode.layers.models import Layer
 from geonode.cephgeo.models import UserJurisdiction, UserTiles, TileDataClass
-
+from geonode.cephgeo.models import CephDataObject
 import geocoder
 
 UNALLOWED_USERNAME_CHARACTERS='"[]:;|=+*?<>/\,.'
@@ -178,6 +178,7 @@ def get_juris_data_size(juris_shp_name):
 
             if not tile.intersection(juris_shp).is_empty:
                 gridref = "E{0}N{1}".format(tile_x / _TILE_SIZE, tile_y / _TILE_SIZE,)
+                # georef_query = CephDataObject.objects.filter(name__startswith=gridref)
                 georef_query = CephDataObject.objects.filter(name__startswith=gridref)
                 total_size = 0
                 for georef_query_objects in georef_query:
@@ -187,10 +188,10 @@ def get_juris_data_size(juris_shp_name):
 
 def get_area_coverage(geoms):
     area = 0
-    
+
     for g in geoms:
         area += g.area
-        
+
     return area/1000000
 
 
@@ -206,11 +207,10 @@ def get_shp_ogr(juris_shp_name):
         return juris_shp
     else:
         return None
-        
+
 def data_class_choices():
     choices =[]
     for dc in TileDataClass.objects.all():
         choices.append((dc.short_name, _(dc.full_name)))
-    
+
     return tuple(choices)
-        

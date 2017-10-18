@@ -356,7 +356,7 @@ def caller_function(keyword_filter, layer_list):
             tag_layer(layers, keyword_filter)
         elif keyword_filter == 'dem':
             layers = Layer.objects.filter(Q(workspace='geonode') & Q(
-                name__icontains=keyword_filter)).exclude(owner__username='dataRegistrationUploader')
+            name__icontains=keyword_filter)).exclude(owner__username='dataRegistrationUploader')
             tag_layer(layers, keyword_filter)
         elif keyword_filter == 'fhm':
             layers = Layer.objects.filter(Q(workspace='geonode') & Q(

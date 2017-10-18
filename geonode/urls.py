@@ -116,6 +116,9 @@ urlpatterns = patterns('',
 					   # CephGeo
 					   url(r'^ceph/', include("geonode.cephgeo.urls")),
 
+             # Automation
+             url(r'^automation/', include('geonode.automation.urls', namespace='automation')),
+
 					   #MapTiles
 					   url(r'^maptiles/',include("geonode.maptiles.urls")),
 

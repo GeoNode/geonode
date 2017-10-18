@@ -8,11 +8,11 @@
 
 {% block body_outer %}
   {% block body %}
-  
+
   <div class="page-header">
     <h2 class="page-title">{% trans "Metadata Input Form" %}</h2>
   </div>
-  
+
   {% load crispy_forms_tags %}
   {% crispy data_input_form %}
 {% endblock body %}

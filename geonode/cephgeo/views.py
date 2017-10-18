@@ -41,6 +41,8 @@ from geonode.base.enumerations import CHARSETS
 from django.conf import settings
 from geonode.layers.models import Layer
 
+from geonode.cephgeo.models import CephDataObject
+
 # Create your views here.
 
 
@@ -54,6 +56,7 @@ def tile_check(request):
     try:
         json_tiles = UserTiles.objects.get(user=user)
     except ObjectDoesNotExist as e:
+        print 'tile_check ObjectDoesNotExist'
         return HttpResponse(status=404)
 
     georefs = map(str, request.POST.get('georefs', ''))
@@ -64,7 +67,6 @@ def tile_check(request):
             valid_tiles.append(x)
 
     return HttpResponse(json.dumps(valid_tiles), status=200)
-
 
 @login_required
 @user_passes_test(lambda u: u.is_superuser)
@@ -210,6 +212,7 @@ def data_input(request):
     if request.method == 'POST':
         # create a form instance and populate it with data from the request:
         # pprint(request.POST)
+        print 'REQUEST POST', request.POST
         form = DataInputForm(request.POST)
         # check whether it's valid:
         if form.is_valid():
@@ -221,7 +224,12 @@ def data_input(request):
                 form.cleaned_data['data']).splitlines()
             update_grid = form.cleaned_data['update_grid']
 
-            ceph_metadata_update.delay(uploaded_objects_list, update_grid)
+            print '*' * 40
+            print 'uploaded_objects_list:', uploaded_objects_list
+            print 'update_grid:', update_grid
+            print '*' * 40
+
+            # ceph_metadata_update.delay(uploaded_objects_list, update_grid)
 
             ctx = {
                 'charsets': CHARSETS,
@@ -282,6 +290,9 @@ def error(request):
 
 @login_required
 def get_cart(request):
+    print 'process_georefs::request.user:', request.user
+    cart_id = request.session.get('CART-ID')
+    print 'process_georefs::cart_id:', cart_id
     return render_to_response('cart.html',
                               dict(cart=CartProxy(request), cartsize=get_cart_datasize(
                                   request), projections=SRS.labels.values()),
@@ -299,7 +310,9 @@ def get_cart_json(request):
     # TODO: debug serialization for CephDataObjects
 
     obj_name_dict = [CephDataObject.objects.get(
+    # obj_name_dict = [CephDataObject.objects.get(
         id=int(item.object_id)).name for item in cart]
+    print 'obj_name_dict:', obj_name_dict
     return HttpResponse(json.dumps(obj_name_dict), content_type="application/json")
 
 
@@ -342,6 +355,7 @@ def create_ftp_folder(request, projection=None):
     total_size_in_bytes = 0
     num_tiles = 0
     for item in cart:
+        # obj = CephDataObject.objects.get(id=int(item.object_id))
         obj = CephDataObject.objects.get(id=int(item.object_id))
         total_size_in_bytes += obj.size_in_bytes
         num_tiles += 1
@@ -365,6 +379,7 @@ def create_ftp_folder(request, projection=None):
     # Mapping of FTP Request to requested objects
     ftp_objs = []
     for item in cart:
+        # obj = CephDataObject.objects.get(id=int(item.object_id))
         obj = CephDataObject.objects.get(id=int(item.object_id))
         ftp_objs.append(obj)
         ftp_obj_idx = FTPRequestToObjectIndex(ftprequest=ftp_request,

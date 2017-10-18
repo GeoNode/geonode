@@ -110,7 +110,7 @@ def tiled_view(request, overlay=settings.TILED_SHAPEFILE, template="maptiles/map
         context_dict["laz"] = None
         context_dict["dsm"] = None
         context_dict["philgrid_sld"] = None
-        
+
     context_dict["geoserver_url"] = settings.OGC_SERVER['default']['PUBLIC_LOCATION']
     jurisdiction_object = None
 
@@ -181,6 +181,9 @@ def tiled_view2(request, overlay=settings.TILED_SHAPEFILE, template="maptiles/ma
 
 
 def process_georefs(request):
+    print 'process_georefs::request.user:', request.user
+    cart_id = request.session.get('CART-ID')
+    print 'process_georefs::cart_id:', cart_id
     if request.method == "POST":
         try:
             # Get georef list filtered with georefs computed upon approval of
@@ -201,7 +204,8 @@ def process_georefs(request):
             try:
                 jurisdiction_georefs = str(
                     UserTiles.objects.get(user=request.user).gridref_list)
-            except ObjectDoesNotExist as e:
+            except ObjectDoesNotExist:
+                print 'process_georefs'
                 pprint("No jurisdiction tiles for this user")
                 raise PermissionDenied
 
@@ -228,6 +232,8 @@ def process_georefs(request):
             empty_georefs = 0
             duplicates = []
 
+            cart = CartProxy(request)
+            print 'A: cart.cart:', cart.cart
             for georef in georef_list:      # Process each georef in list
 
                 # Build filter query to exclude unselected data classes
@@ -236,6 +242,7 @@ def process_georefs(request):
                     filter_query = filter_query & ~Q(data_class=filtered_class)
 
                 # Execute query
+                # objects = CephDataObject.objects.filter(filter_query)
                 objects = CephDataObject.objects.filter(filter_query)
                 pprint("objects found for georef:" + georef)
 
@@ -244,7 +251,7 @@ def process_georefs(request):
                 if len(objects) > 0:
                     for ceph_obj in objects:    # Add each Ceph object to cart
                         try:
-                            add_to_cart_unique(request, ceph_obj.id)
+                            add_to_cart_unique(cart, ceph_obj.id)
                             pprint("object " + ceph_obj.name + " added to cart")
                         except DuplicateCartItemException:  # List each duplicate object
                             duplicates.append(ceph_obj.name)
@@ -264,6 +271,11 @@ def process_georefs(request):
                 messages.info(request, "Processed [{0}] georefs tiles. A total of [{1}] objects have been added to cart.".format(
                     len(georef_list), (count - len(duplicates))))
 
+            # print 'dict(cart=CartProxy(request)):', dict(cart=CartProxy(request))
+
+            for item in cart:
+                print 'A: item:', item
+
             return redirect('geonode.cephgeo.views.get_cart')
 
         except ValidationError:             # Redirect and inform if an invalid georef is encountered
@@ -281,6 +293,9 @@ def process_georefs(request):
 
 @login_required
 def georefs_validation(request):
+    print 'georefs_validation::request.user:', request.user
+    cart_id = request.session.get('CART-ID')
+    print 'georefs_validation::cart_id:', cart_id
     """
     Note: does not check yet if tiles to be added are unique (or are not yet included in the cart)
     """
@@ -291,10 +306,15 @@ def georefs_validation(request):
             mimetype='text/plain'
         )
     else:
+        print '#' * 80
+        # print 'request:', request
         georefs = request.POST["georefs"]
+        print 'georefs:', georefs
         print("[VALIDATION]")
         pprint(request.POST)
         georefs_list = filter(None, georefs.split(","))
+        print 'georefs_list:', georefs_list
+
         cart_total_size = get_cart_datasize(request)
 
         # Retrieve FTPRequests from the last 24 hours
@@ -310,9 +330,14 @@ def georefs_validation(request):
         print "PREVIOUS REQUESTS:  "
         pprint(requests_today)
         total_size = 0
+
+        print '2nd georefs_list:', georefs_list
         for georef in georefs_list:
+            print 'georef:', georef
             objects = CephDataObject.objects.filter(name__startswith=georef)
+            # objects = CephDataObject.objects.filter(name__startswith=georef)
             for o in objects:
+                print 'o in objects:', o
                 total_size += o.size_in_bytes
 
         request_size_last24h = 0
@@ -389,7 +414,9 @@ def georefs_datasize(request):
 
         for eachgeoref_clicked in georefs_clicked_list:
             # pprint(eachgeoref_clicked)
+            # clicked_objects = CephDataObject.objects.filter(
             clicked_objects = CephDataObject.objects.filter(
+
                 name__startswith=eachgeoref_clicked)
             for o in clicked_objects:
                 total_data_size_clicked += o.size_in_bytes

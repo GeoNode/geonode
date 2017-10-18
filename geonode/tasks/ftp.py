@@ -20,6 +20,10 @@ from geonode.cephgeo.models import FTPStatus
 
 from geonode.groups.models import GroupProfile
 
+from geonode.cephgeo.models import CephDataObject
+from geonode import local_settings
+from fabric.contrib.files import upload_template
+
 logger = logging.getLogger("geonode.tasks.ftp")
 FTP_USERS_DIRS = {"test-ftp-user": "/mnt/ftp_pool/FTP/PL1/testfolder", }
 env.skip_bad_hosts = True
@@ -208,6 +212,7 @@ so that we can address this issue.
                             os.path.join(
                                 ftp_dir, utm_51n_dir),
                             obj_dl_list))
+                    upload_xml(os.path.join(ftp_dir, utm_51n_dir),obj_dl_list)
                     if result.return_code is not 0:  # Handle error
                         logger.error(
                             "Error on FTP request: Failed to download file/s \
@@ -414,3 +419,130 @@ below:
     send_mail(mail_subject, mail_body, settings.FTP_AUTOMAIL,
               user_email, fail_silently=False)
     # return
+
+def upload_xml(folder_dir,obj_dl_list):
+    for grid_ref_file_name in obj_dl_list.split(" "):
+        try:
+            cephobj_resbase = CephDataObject.objects.get(name=grid_ref_file_name)
+        except:
+            continue
+        keyword_text = ""
+        if cephobj_resbase.keyword_list():
+            keyword_text+="""       <gmd:descriptiveKeywords>\n         <gmd:MD_Keywords>"""
+            for eachkeyword in cephobj_resbase.keyword_list():
+                keyword_text+="""\n           <gmd:keyword>\n             <gco:CharacterString>%s</gco:CharacterString>\n           </gmd:keyword>"""%eachkeyword
+            keyword_text+="""\n           <gmd:type>\n              <gmd:MD_KeywordTypeCode codeSpace="ISOTC211/19115" codeList="http://www.isotc211.org/2005/resources/Codelist/gmxCodelists.xml#MD_KeywordTypeCode" codeListValue="theme">theme</gmd:MD_KeywordTypeCode>\n            </gmd:type>\n         </gmd:MD_Keywords>\n       </gmd:descriptiveKeywords>"""
+
+        region_text = ""
+        for eachregion in cephobj_resbase.regions.all():
+            region_text +='\n       <gmd:descriptiveKeywords>\n         <gmd:MD_Keywords>\n           <gmd:keyword>\n             <gco:CharacterString>%s</gco:CharacterString>\n           </gmd:keyword>\n           <gmd:type>\n              <gmd:MD_KeywordTypeCode codeSpace="ISOTC211/19115" codeList="http://www.isotc211.org/2005/resources/Codelist/gmxCodelists.xml#MD_KeywordTypeCode" codeListValue="place">place</gmd:MD_KeywordTypeCode>\n            </gmd:type>\n         </gmd:MD_Keywords>\n       </gmd:descriptiveKeywords>'%eachregion.name
+
+        license_text = ""
+        if cephobj_resbase.license:
+            license_text+='       <gmd:resourceConstraints>\n         <gmd:MD_LegalConstraints>\n           <gmd:useConstraints>\n             <gmd:MD_RestrictionCode codeSpace="ISOTC211/19115" codeList="http://www.isotc211.org/2005/resources/Codelist/gmxCodelists.xml#MD_RestrictionCode" codeListValue="license">license</gmd:MD_RestrictionCode>\n           </gmd:useConstraints>\n           <gmd:otherConstraints>\n             <gco:CharacterString>%s</gco:CharacterString>\n           </gmd:otherConstraints>\n         </gmd:MD_LegalConstraints>\n       </gmd:resourceConstraints>'%cephobj_resbase.license_light
+            license_text+='\n       <gmd:resourceConstraints>\n         <gmd:MD_LegalConstraints>\n           <gmd:useConstraints>\n             <gmd:MD_RestrictionCode codeSpace="ISOTC211/19115" codeList="http://www.isotc211.org/2005/resources/Codelist/gmxCodelists.xml#MD_RestrictionCode" codeListValue="license">license</gmd:MD_RestrictionCode>\n           </gmd:useConstraints>\n           <gmd:otherConstraints>\n             <gco:CharacterString>%s</gco:CharacterString>\n           </gmd:otherConstraints>\n         </gmd:MD_LegalConstraints>\n       </gmd:resourceConstraints>'%cephobj_resbase.license_verbose
+
+        temporal_text = ""
+        if cephobj_resbase.temporal_extent_start and cephobj_resbase.temporal_extent_end:
+            temporal_text += """\n       <gmd:extent>\n         <gmd:EX_Extent>\n           <gmd:temporalElement>\n             <gmd:EX_TemporalExtent>\n               <gmd:extent>\n                 <gml:TimePeriod gml:id="T_01">\n                   <gml:beginPosition>%s</gml:beginPosition>\n                   <gml:endPosition>%s</gml:endPosition>\n                 </gml:TimePeriod>\n               </gmd:extent>\n             </gmd:EX_TemporalExtent>\n           </gmd:temporalElement>\n         </gmd:EX_Extent>\n       </gmd:extent>\n                """%(cephobj_resbase.temporal_extent_start.strftime("%c"),cephobj_resbase.temporal_extent_end.strftime("%c"))
+
+        linkdl_text = ""
+        for eachlink in cephobj_resbase.link_set.download():
+            linkdl_text+='\n           <gmd:onLine>\n             <gmd:CI_OnlineResource>\n               <gmd:linkage>\n                 <gmd:URL>%(LinkURL)s</gmd:URL>\n               </gmd:linkage>\n               <gmd:protocol>\n                 <gco:CharacterString>WWW:DOWNLOAD-1.0-http--download</gco:CharacterString>\n               </gmd:protocol>\n               <gmd:name>\n                 <gco:CharacterString>%(LayerName)s.%(LinkExtension)s</gco:CharacterString>\n               </gmd:name>\n               <gmd:description>\n                 <gco:CharacterString>%(Title)s (%(LinkName)s Format)</gco:CharacterString>\n               </gmd:description>\n             </gmd:CI_OnlineResource>\n           </gmd:onLine>'%{'LinkURL': eachlink.url,'LayerName': cephobj_resbase.layer.name,'LinkExtension': eachlink.extension,'Title': cephobj_resbase.title,'LinkName':eachlink.name}
+        linkows_text = ""
+        for eachows in cephobj_resbase.link_set.ows():
+            linkows_text+='\n           <gmd:onLine>\n             <gmd:CI_OnlineResource>\n               <gmd:linkage>\n                 <gmd:URL>%(LinkURL)s</gmd:URL>\n               </gmd:linkage>\n               <gmd:protocol>\n                 <gco:CharacterString>%(LinkType)s</gco:CharacterString>\n               </gmd:protocol>\n               <gmd:name>\n                 <gco:CharacterString>%(LinkType)s %(LayerWorkspace)s Service - Provides Layer: %(Title)s</gco:CharacterString>\n               </gmd:name>\n               <gmd:description>\n                 <gco:CharacterString>%(LinkName)s Root Endpoint.  This service contains the %(Title)s layer.</gco:CharacterString>\n               </gmd:description>\n             </gmd:CI_OnlineResource>\n           </gmd:onLine>'%{'LinkURL': eachows.url,'LinkType': eachows.link_type,'LayerWorkspace': cephobj_resbase.layer.workspace,'Title': cephobj_resbase.title,'LinkName':eachows.name}
+
+        try:
+            xml_owner={
+                "Name": ">\n                   <gco:CharacterString>"+cephobj_resbase.owner.get_full_name()+"</gco:CharacterString> " if cephobj_resbase.owner.get_full_name() else 'gco:nilReason="missing">',
+                "Org": ">\n                   <gco:CharacterString>"+cephobj_resbase.owner.organization+"</gco:CharacterString> " if cephobj_resbase.owner.organization else 'gco:nilReason="missing">',
+                "Position": ">\n                   <gco:CharacterString>"+cephobj_resbase.owner.position+"</gco:CharacterString> " if cephobj_resbase.owner.position else 'gco:nilReason="missing">',
+                "Voice": ">\n                   <gco:CharacterString>"+cephobj_resbase.owner.voice+"</gco:CharacterString> " if cephobj_resbase.owner.voice else 'gco:nilReason="missing">',
+                "Fax": ">\n                   <gco:CharacterString>"+cephobj_resbase.owner.fax+"</gco:CharacterString> " if cephobj_resbase.owner.fax else 'gco:nilReason="missing">',
+                "Delivery": ">\n                   <gco:CharacterString>"+cephobj_resbase.owner.delivery+"</gco:CharacterString> " if cephobj_resbase.owner.delivery else 'gco:nilReason="missing">',
+                "City": ">\n                   <gco:CharacterString>"+cephobj_resbase.owner.city+"</gco:CharacterString> " if cephobj_resbase.owner.city else 'gco:nilReason="missing">',
+                "Area": ">\n                   <gco:CharacterString>"+cephobj_resbase.owner.area+"</gco:CharacterString> " if cephobj_resbase.owner.area else 'gco:nilReason="missing">',
+                "Zipcode": ">\n                   <gco:CharacterString>"+cephobj_resbase.owner.zipcode+"</gco:CharacterString> " if cephobj_resbase.owner.zipcode else 'gco:nilReason="missing">',
+                "Country": ">\n                   <gco:CharacterString>"+cephobj_resbase.owner.country+"</gco:CharacterString> " if cephobj_resbase.owner.country else 'gco:nilReason="missing">',
+                "Email": ">\n                   <gco:CharacterString>"+cephobj_resbase.owner.email+"</gco:CharacterString> " if cephobj_resbase.owner.email else 'gco:nilReason="missing">',
+            }
+        except:
+            xml_owner={
+                "Name": '',
+                "Org": '',
+                "Position": '',
+                "Voice": '',
+                "Fax": '',
+                "Delivery": '',
+                "City": '',
+                "Area": '',
+                "Zipcode": '',
+                "Country": '',
+                "Email": '',
+            }
+        try:
+            xml_layer={
+                "MDFormat": "<gco:CharacterString>GeoTIFF</gco:CharacterString>" if cephobj_resbase.layer.storeType == 'coverageStore' else '<gco:CharacterString>ESRI Shapefile</gco:CharacterString>',
+                "CIOnlineResource": local_settings.SITEURL + cephobj_resbase.layer.get_absolute_url,
+            }
+        except:
+            xml_layer={
+                "MDFormat":'',
+                "CIOnlineResource": '',
+            }
+
+        xml_context = {
+            "Identifier": cephobj_resbase.uuid,
+            "Language": cephobj_resbase.language,
+            "Name": xml_owner['Name'],
+            "Org": xml_owner['Org'],
+            "Position": xml_owner['Position'],
+            "Voice": xml_owner['Voice'],
+            "Fax": xml_owner['Fax'],
+            "Delivery": xml_owner['Delivery'],
+            "City": xml_owner['City'],
+            "Area": xml_owner['Area'],
+            "Zipcode": xml_owner['Zipcode'],
+            "Country": xml_owner['Country'],
+            "Email": xml_owner['Email'],
+            "InsertDate": cephobj_resbase.csw_insert_date.strftime("%Y-%m-%dT%H:%M:%SZ"),
+            "Title": cephobj_resbase.title,
+            "Date": cephobj_resbase.date.strftime("%Y-%m-%dT%H:%M:%SZ"),
+            "DateType": cephobj_resbase.date_type,
+            "Edition": ">\n                   <gco:CharacterString>"+cephobj_resbase.edition+"</gco:CharacterString> " if cephobj_resbase.edition else 'gco:nilReason="missing">',
+            "Abstract": cephobj_resbase.abstract,
+            "Purpose": ">\n                   <gco:CharacterString>"+cephobj_resbase.purpose+"</gco:CharacterString> " if cephobj_resbase.purpose else 'gco:nilReason="missing">',
+            "MaintenanceFrequency": """       <gmd:resourceMaintenance>
+     <gmd:MD_MaintenanceInformation>
+       <gmd:maintenanceAndUpdateFrequency>
+         <gmd:MD_MaintenanceFrequencyCode codeSpace="ISOTC211/19115" codeList="http://www.isotc211.org/2005/resources/Codelist/gmxCodelists.xml#MD_MaintenanceFrequencyCode" codeListValue="%(MaintenanceFrequency)s">%(MaintenanceFrequency)s</gmd:MD_MaintenanceFrequencyCode>
+       </gmd:maintenanceAndUpdateFrequency>
+     </gmd:MD_MaintenanceInformation>
+   </gmd:resourceMaintenance>"""%{"MaintenanceFrequency": cephobj_resbase.maintenance_frequency} if cephobj_resbase.maintenance_frequency else {"MaintenanceFrequency": ""},
+            "ThumbUrl": cephobj_resbase.get_thumbnail_url(),
+            "MDFormat": xml_layer['MDFormat'],
+            "Keywords": keyword_text,
+            "Regions": region_text,
+            "Licenses": license_text,
+            "RCT": cephobj_resbase.restriction_code_type.identifier if cephobj_resbase.restriction_code_type else "",
+            "ConstraintsOther": cephobj_resbase.constraints_other,
+            "SRTC": cephobj_resbase.spatial_representation_type.identifier if cephobj_resbase.spatial_representation_type else "",
+            "LayerCategory": ">\n         <gmd:MD_TopicCategoryCode>"+cephobj_resbase.category.identifier+"</gmd:MD_TopicCategoryCode>" if cephobj_resbase.category else 'gco:nilReason="missing">',
+            "BboxX0": cephobj_resbase.bbox_x0,
+            "BboxX1": cephobj_resbase.bbox_x1,
+            "BboxY0": cephobj_resbase.bbox_y0,
+            "BboxY1": cephobj_resbase.bbox_y1,
+            "Temporal": temporal_text,
+            "SupplementalInformation": cephobj_resbase.supplemental_information,
+            "CIOnlineResource": xml_layer['CIOnlineResource'],
+            "LinkDLText": linkdl_text,
+            "LinkOWSText": linkows_text,
+            "Statement": "><gco:CharacterString>"+cephobj_resbase.data_quality_statement+"</gco:CharacterString></gmd:statement>" if cephobj_resbase.data_quality_statement else 'gco:nilReason="missing"/>',
+        }
+
+        xml_file_dest = os.path.join(folder_dir,grid_ref_file_name+'.xml')
+        #tree.write(grid_ref_file_name+".xml",xml_declaration=True,encoding='utf-8',method="xml")
+
+        #Fabric append which appends/creates a file
+        upload_template("/opt/geonode/geonode/tasks/ftp_metadata.xml",xml_file_dest,xml_context)

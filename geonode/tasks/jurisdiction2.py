@@ -19,6 +19,7 @@ import geonode.settings as settings
 from geonode.geoserver.helpers import ogc_server_settings
 from geoserver.catalog import Catalog
 from geonode.cephgeo.models import CephDataObject, UserJurisdiction, UserTiles
+
 from geonode.datarequests.models import DataRequestProfile
 from geonode.datarequests.utils import  get_place_name, get_area_coverage
 
@@ -118,6 +119,7 @@ def get_juris_data_size(geometry):
         (minx, miny, maxx, maxy) = tile.bounds
         gridref = "E{0}N{1}".format(int(minx / settings._TILE_SIZE), int(maxy / settings._TILE_SIZE))
         georef_query = CephDataObject.objects.filter(name__startswith=gridref)
+        # georef_query = CephDataObject.objects.filter(name__startswith=gridref)
         total_size = 0
         for georef_query_objects in georef_query:
             total_size += georef_query_objects.size_in_bytes
