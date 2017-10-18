@@ -71,21 +71,6 @@ class TileDataClass(models.Model):
     def __unicode__(self):
         return "{0}:{1}".format(self.short_name, self.full_name)
 
-class CephDataObject(models.Model):
-    size_in_bytes = models.IntegerField()
-    file_hash = models.CharField(max_length=40)
-    name = models.CharField(max_length=100)
-    last_modified = models.DateTimeField()
-    content_type = models.CharField(max_length=20)
-    #geo_type        = models.CharField(max_length=20)
-    data_class = enum.EnumField(
-        DataClassification, default=DataClassification.UNKNOWN)
-    grid_ref = models.CharField(max_length=10)
-    block_uid = models.ForeignKey(LidarCoverageBlock, null=True, blank=True)
-
-    def __unicode__(self):
-        return "{0}:{1}".format(self.name, DataClassification.labels[self.data_class])
-
 
 class FTPRequest(models.Model):
     name = models.CharField(max_length=50)
@@ -221,3 +206,18 @@ class LidarCoverageBlock(models.Model):
 
     class Meta:
         verbose_name_plural = 'Lidar Coverage Blocks'
+
+class CephDataObject(models.Model):
+    size_in_bytes = models.IntegerField()
+    file_hash = models.CharField(max_length=40)
+    name = models.CharField(max_length=100)
+    last_modified = models.DateTimeField()
+    content_type = models.CharField(max_length=20)
+    #geo_type        = models.CharField(max_length=20)
+    data_class = enum.EnumField(
+        DataClassification, default=DataClassification.UNKNOWN)
+    grid_ref = models.CharField(max_length=10)
+    block_uid = models.ForeignKey(LidarCoverageBlock, null=True, blank=True)
+
+    def __unicode__(self):
+        return "{0}:{1}".format(self.name, DataClassification.labels[self.data_class])
