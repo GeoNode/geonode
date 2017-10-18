@@ -19,7 +19,6 @@
 #########################################################################
 
 import logging
-import sys
 
 from geonode.geoserver.signals import geoserver_post_save_local
 from geonode.security.views import send_email_consumer, send_email_owner_on_view
@@ -34,8 +33,6 @@ from queues import queue_email_events, queue_geoserver_events,\
                    queue_geoserver, queue_layer_viewers
 
 logger = logging.getLogger(__package__)
-logger.addHandler(logging.StreamHandler(sys.stdout))
-logger.setLevel(logging.DEBUG)
 
 
 class Consumer(ConsumerMixin):

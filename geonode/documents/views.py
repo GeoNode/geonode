@@ -143,6 +143,10 @@ def document_detail(request, docid):
 
 def document_download(request, docid):
     document = get_object_or_404(Document, pk=docid)
+
+    if settings.MONITORING_ENABLED:
+        request.add_resource('document', document.alternate)
+
     if not request.user.has_perm(
             'base.download_resourcebase',
             obj=document.get_self_resource()):
@@ -259,6 +263,9 @@ class DocumentUploadView(CreateView):
             except BaseException:
                 print "Could not send slack message for new document."
 
+        if settings.MONITORING_ENABLED:
+            self.request.add_resource('document', self.object.alternate)
+
         if self.request.REQUEST.get('no__redirect', False):
             out['success'] = True
             out['url'] = reverse(
@@ -300,6 +307,8 @@ class DocumentUpdateView(UpdateView):
         If the form is valid, save the associated model.
         """
         self.object = form.save()
+        if settings.MONITORING_ENABLED:
+            self.request.add_resource('document', self.object.alternate)
         return HttpResponseRedirect(
             reverse(
                 'document_metadata',

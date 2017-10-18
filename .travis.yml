@@ -14,7 +14,7 @@ branches:
 
 install:
   - sudo apt-get -qq -y update
-  - sudo apt-get install -y libgdal1h python-gdal gdal-bin
+  - sudo apt-get install -y libgdal1h python-gdal gdal-bin spatialite-bin
   - sudo apt-get install -y python-virtualenv python-imaging python-lxml python-pyproj python-shapely python-nose python-httplib2 python-httplib2 gettext
   - sudo apt-get install -y python-dev libxml2 libxml2-dev libxslt1-dev zlib1g-dev libjpeg-dev libpq-dev libgdal-dev git default-jdk
   - sudo add-apt-repository -y ppa:webupd8team/java

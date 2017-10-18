@@ -1155,7 +1155,9 @@ def geoserver_upload(
                 'successful import to GeoSever', name)
 
     # Verify the resource was created
+    # print("*********************{}******************************".format(gs_resource))
     if gs_resource is not None:
+        # print(" *********************{}/{}*****************".format(gs_resource.name, name))
         assert gs_resource.name == name
     else:
         msg = ('GeoNode encountered problems when creating layer %s.'

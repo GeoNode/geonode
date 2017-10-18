@@ -302,6 +302,8 @@ def layer_upload(request, template='upload/layer_upload.html'):
             status_code = 200
         else:
             status_code = 400
+        if settings.MONITORING_ENABLED:
+            request.add_resource('layer', saved_layer.alternate if saved_layer else name)
         return HttpResponse(
             json.dumps(out),
             content_type='application/json',
@@ -922,6 +924,10 @@ def layer_metadata_advanced(request, layername):
 @login_required
 def layer_change_poc(request, ids, template='layers/layer_change_poc.html'):
     layers = Layer.objects.filter(id__in=ids.split('_'))
+
+    if settings.MONITORING_ENABLED:
+        for l in layers:
+            request.add_resource('layer', l.altername)
     if request.method == 'POST':
         form = PocForm(request.POST)
         if form.is_valid():
@@ -1139,7 +1145,6 @@ def get_layer(request, layername):
         if isinstance(obj, decimal.Decimal):
             return float(obj)
         raise TypeError
-
     logger.debug('Call get layer')
     if request.method == 'GET':
         layer_obj = _resolve_layer(request, layername)

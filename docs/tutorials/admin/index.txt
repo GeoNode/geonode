@@ -40,6 +40,7 @@ You will know how to:
     loading_data_into_geonode/index
     s3_config/index
     backup_restore/index
+    monitoring/index
     database_shards/index
     async_signals/index
 
@@ -80,6 +81,9 @@ You will know how to:
 
 :ref:`backup_restore_geonode`
     How to perform a full backup / restore of GeoNode and GeoServer catalogs and how to migrate data. Customization backup / restore fixtures and data manglers.
+
+:ref:`geonode_monitoring`
+    How to set up and use internal monitoring application.
 
 :ref:`datastore_shards`
     How to use the PostGIS datastore shards contrib application in order to have GeoServer stores containing a fewer number of layers. Useful for organizations with hundreds of layers.

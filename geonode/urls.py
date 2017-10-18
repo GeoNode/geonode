@@ -177,3 +177,7 @@ urlpatterns += patterns('',
                         (r'^featured/(?P<site>[A-Za-z0-9_\-]+)/$', 'geonode.maps.views.featured_map'),
                         (r'^featured/(?P<site>[A-Za-z0-9_\-]+)/info$', 'geonode.maps.views.featured_map_info'),
                         )
+
+
+if settings.MONITORING_ENABLED:
+    urlpatterns += [url(r'^monitoring/', include('geonode.contrib.monitoring.urls', namespace='monitoring'))]

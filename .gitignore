@@ -117,5 +117,8 @@ geonode/pip-selfcheck.json
 geonode/shapely/
 geonode/share/
 
+# Contrib monitoring module
+geonode/contrib/monitoring/frontend/node_modules
+geonode/contrib/monitoring/frontend/static
 # celery files
 celerybeat-schedule.*
