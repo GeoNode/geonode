@@ -285,6 +285,7 @@ GEONODE_APPS = (
 
     #end
 
+    'geonode.front_end',
 )
 
 GEONODE_CONTRIB_APPS = (
