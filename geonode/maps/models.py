@@ -516,6 +516,12 @@ class MapLayer(models.Model, GXPLayerBase):
         return '%s?layers=%s' % (self.ows_url, self.name)
 
 
+def pre_save_map(instance, sender, **kwargs):
+    # Copy the way layer is generating a uuid for consistency
+    if instance.uuid == '':
+        instance.uuid = str(uuid.uuid1())
+
+
 def pre_delete_map(instance, sender, **kwrargs):
     ct = ContentType.objects.get_for_model(instance)
     OverallRating.objects.filter(
@@ -554,5 +560,6 @@ class MapSnapshot(models.Model):
         }
 
 
+signals.pre_save.connect(pre_save_map, sender=Map)
 signals.pre_delete.connect(pre_delete_map, sender=Map)
 signals.post_save.connect(resourcebase_post_save, sender=Map)
