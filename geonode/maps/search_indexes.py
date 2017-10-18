@@ -92,7 +92,7 @@ class MapIndex(indexes.SearchIndex, indexes.Indexable):
 
     def prepare_id(self, obj):
         # this is awful I'm so sorry
-        if obj.uuid is None or '':
+        if obj.uuid is None or obj.uuid == '':
             return obj.id
         else:
             return int(uuid.UUID(obj.uuid).time_low)
