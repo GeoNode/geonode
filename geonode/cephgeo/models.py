@@ -89,13 +89,6 @@ class EULA(models.Model):
     document = models.FileField(upload_to=settings.MEDIA_ROOT)
 
 
-class FTPRequestToObjectIndex(models.Model):
-    # FTPRequest
-    ftprequest = models.ForeignKey(FTPRequest, null=False, blank=False)
-    # CephObject
-    cephobject = models.ForeignKey(CephDataObject, null=False, blank=False)
-
-
 class UserJurisdiction(models.Model):
     user = models.ForeignKey(Profile, null=False, blank=False)
     jurisdiction_shapefile = models.ForeignKey(Layer, null=True, blank=True)
@@ -221,3 +214,9 @@ class CephDataObject(models.Model):
 
     def __unicode__(self):
         return "{0}:{1}".format(self.name, DataClassification.labels[self.data_class])
+
+class FTPRequestToObjectIndex(models.Model):
+    # FTPRequest
+    ftprequest = models.ForeignKey(FTPRequest, null=False, blank=False)
+    # CephObject
+    cephobject = models.ForeignKey(CephDataObject, null=False, blank=False)
