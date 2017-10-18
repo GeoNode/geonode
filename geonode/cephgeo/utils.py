@@ -123,9 +123,11 @@ def get_cart_datasize(request):
         # print dir(item)
         print 'item.object_id:', item.object_id
         try:
+            # obj = CephDataObject.objects.get(id=int(item.object_id))
             obj = CephDataObjectResourceBase.objects.get(id=int(item.object_id))
         except CephDataObjectResourceBase.DoesNotExist:
-            obj = CephDataObject.objects.get(id=int(item.object_id))
+            print 'Item does not exist!'
+            cart.remove_item(item.id)
         else:
             print 'obj:', obj
             total_size += obj.size_in_bytes

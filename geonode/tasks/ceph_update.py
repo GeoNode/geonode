@@ -234,10 +234,8 @@ def ceph_metadata_remove(uploaded_objects_list, update_grid=True, delete_from_ce
             ceph_obj = None
             try:
                 # Retrieve object
-                try:
-                    ceph_obj = CephDataObjectResourceBase.objects.get(name=metadata_list[0])
-                except CephDataObjectResourceBase.DoesNotExist:
-                    ceph_obj = CephDataObject.objects.get(name=metadata_list[0])
+                ceph_obj = CephDataObjectResourceBase.objects.get(name=metadata_list[0])
+                # ceph_obj = CephDataObject.objects.get(name=metadata_list[0])
 
                 # Add object to list for grid removal
                 if DataClassification.gs_feature_labels[ceph_obj.data_class] in gridref_dict_by_data_class:
