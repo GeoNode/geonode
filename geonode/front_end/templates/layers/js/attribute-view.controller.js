@@ -2,47 +2,64 @@
     angular
         .module('LayerApp')
         .controller('AttributeViewController', AttributeViewController);
+
     AttributeViewController.$inject = ['$location', 'LayerService'];
 
     function AttributeViewController($location, LayerService) {
         var self = this;
+        self.geoServerUrl = '';
+        self.propertyNames = [];
         self.layerName = $location.search().name;
+
+        self.gridOptions = {
+            paginationPageSizes: [25, 50, 75, 100],
+            paginationPageSize: 25,
+            data: []
+        };
+        
+        function errorFn() {
+
+        }
 
         function getFeatureDetails(url, layerName, propertyName) {
             LayerService.getFeatureDetails(url, layerName, propertyName).then(function(res) {
-                self.attributeDetails = res.data;
-                console.log(self.attributeDetails);
-            }, function(error) {
-
-            });
+                self.attributeDetails = [];
+                res.features.forEach(function(e) {
+                    self.attributeDetails.push(e.properties);
+                });
+                self.gridOptions.data = self.attributeDetails;
+            }, errorFn);
         }
 
         function getLayerFeature(url, layerName) {
-
             LayerService.getLayerFeatureByName(url, layerName).then(function(res) {
-                console.log(res);
-                self.propertyNames = [];
-                res.data.featureTypes["0"].properties.forEach(function(e) {
-                    if (e.name !== 'the_geom')
-                        self.propertyNames.push(e.name);
+                res.featureTypes.forEach(function(featureType) {
+                    featureType.properties.forEach(function(e) {
+                        if (e.name !== 'the_geom')
+                            self.propertyNames.push(e.name);
+                    }, this);
                 }, this);
-                console.log(self.propertyNames);
                 getFeatureDetails(url, layerName, self.propertyNames);
-            }, function(error) {
-
-            });
+            }, errorFn);
 
         }
-        LayerService.getLayerByName(self.layerName)
-            .then(function(res) {
-                console.log(res);
-                getLayerFeature(res.data.ows_url, res.data.typename);
-            }, function(error) {
 
-            });
+        function getLayerByName() {
+            LayerService.getLayerByName(self.layerName)
+                .then(function(res) {
+                    getLayerFeature(self.geoServerUrl, res.typename);
+                }, errorFn);
+        }
 
+        function getGeoServerSettings() {
+            LayerService.getGeoServerSettings()
+                .then(function(res) {
+                    self.geoServerUrl = res.url;
+                    getLayerByName();
+                }, errorFn);
+        }
 
-
-
+        // Initialize Call
+        (getGeoServerSettings)();
     }
 })();
