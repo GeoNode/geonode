@@ -6,17 +6,50 @@
     LayerService.$inject = ['$http', '$q'];
 
     function LayerService($http, $q) {
+        function get(url) {
+            var deferred = $q.defer();
+            $http.get(url)
+                .success(function(res) {
+                    deferred.resolve(res);
+                }).error(function(error, status) {
+                    deferred.reject({ error: error, status: status });
+                });
+            return deferred.promise;
+        }
         return {
+            getGeoServerSettings: function() {
+                return get('api/geoserver-settings/');
+            },
             getLayerByName: function(layerName) {
-                return $http.get('layers/' + layerName + '/get');
+                return get('layers/' + layerName + '/get');
+            },
+            getWFS: function(url, params) {
+                url = url + "wfs/?service=WFS";
+                for (var k in params) {
+                    url += '&' + k + '=' + params[k];
+                }
+                var uri = encodeURIComponent(url);
+                return get('/proxy/?url=' + uri);
+
             },
             getLayerFeatureByName: function(url, layerName) {
-                var uri = encodeURIComponent(url + "?version=2.0.0&request=describeFeatureType&outputFormat=application/json&service=WFS&typeName=" + layerName);
-                return $http.get('/proxy/?url=' + uri);
+                return this.getWFS(url, {
+                    typeName: layerName,
+                    request: "describeFeatureType",
+                    version: "2.0.0",
+                    outputFormat: "application/json"
+
+                });
             },
             getFeatureDetails: function(url, layerName, propertyNames) {
-                var uri = encodeURIComponent(url + "?version=2.0.0&request=GetFeature&outputFormat=application/json&service=WFS&typeNames=" + layerName + "&propertyName=" + propertyNames);
-                return $http.get('/proxy/?url=' + uri);
+                return this.getWFS(url, {
+                    typeNames: layerName,
+                    request: "GetFeature",
+                    propertyName: propertyNames,
+                    version: "2.0.0",
+                    outputFormat: "application/json"
+
+                });
             }
         };
     }
