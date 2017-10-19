@@ -1,0 +1,149 @@
+<Rules>
+  <Rule>
+    <Title> &gt; 19.651 AND &lt;= 33.37774</Title>
+    <Filter>
+      <And>
+        <PropertyIsGreaterThanOrEqualTo>
+          <PropertyName>latitude</PropertyName>
+          <Literal>19.651</Literal>
+        </PropertyIsGreaterThanOrEqualTo>
+        <PropertyIsLessThanOrEqualTo>
+          <PropertyName>latitude</PropertyName>
+          <Literal>33.37774</Literal>
+        </PropertyIsLessThanOrEqualTo>
+      </And>
+    </Filter>
+    <PolygonSymbolizer>
+      <Fill>
+        <CssParameter name="fill">#466D13</CssParameter>
+      </Fill>
+      <Stroke/>
+    </PolygonSymbolizer>
+  </Rule>
+  <Rule>
+    <Title> &gt; 33.37774 AND &lt;= 34.0719</Title>
+    <Filter>
+      <And>
+        <PropertyIsGreaterThan>
+          <PropertyName>latitude</PropertyName>
+          <Literal>33.37774</Literal>
+        </PropertyIsGreaterThan>
+        <PropertyIsLessThanOrEqualTo>
+          <PropertyName>latitude</PropertyName>
+          <Literal>34.0719</Literal>
+        </PropertyIsLessThanOrEqualTo>
+      </And>
+    </Filter>
+    <PolygonSymbolizer>
+      <Fill>
+        <CssParameter name="fill">#CACBBF</CssParameter>
+      </Fill>
+      <Stroke/>
+    </PolygonSymbolizer>
+  </Rule>
+  <Rule>
+    <Title> &gt; 34.0719 AND &lt;= 36.8636</Title>
+    <Filter>
+      <And>
+        <PropertyIsGreaterThan>
+          <PropertyName>latitude</PropertyName>
+          <Literal>34.0719</Literal>
+        </PropertyIsGreaterThan>
+        <PropertyIsLessThanOrEqualTo>
+          <PropertyName>latitude</PropertyName>
+          <Literal>36.8636</Literal>
+        </PropertyIsLessThanOrEqualTo>
+      </And>
+    </Filter>
+    <PolygonSymbolizer>
+      <Fill>
+        <CssParameter name="fill">#139D70</CssParameter>
+      </Fill>
+      <Stroke/>
+    </PolygonSymbolizer>
+  </Rule>
+  <Rule>
+    <Title> &gt; 36.8636 AND &lt;= 38.7412</Title>
+    <Filter>
+      <And>
+        <PropertyIsGreaterThan>
+          <PropertyName>latitude</PropertyName>
+          <Literal>36.8636</Literal>
+        </PropertyIsGreaterThan>
+        <PropertyIsLessThanOrEqualTo>
+          <PropertyName>latitude</PropertyName>
+          <Literal>38.7412</Literal>
+        </PropertyIsLessThanOrEqualTo>
+      </And>
+    </Filter>
+    <PolygonSymbolizer>
+      <Fill>
+        <CssParameter name="fill">#FA20AB</CssParameter>
+      </Fill>
+      <Stroke/>
+    </PolygonSymbolizer>
+  </Rule>
+  <Rule>
+    <Title> &gt; 38.7412 AND &lt;= 40.1397</Title>
+    <Filter>
+      <And>
+        <PropertyIsGreaterThan>
+          <PropertyName>latitude</PropertyName>
+          <Literal>38.7412</Literal>
+        </PropertyIsGreaterThan>
+        <PropertyIsLessThanOrEqualTo>
+          <PropertyName>latitude</PropertyName>
+          <Literal>40.1397</Literal>
+        </PropertyIsLessThanOrEqualTo>
+      </And>
+    </Filter>
+    <PolygonSymbolizer>
+      <Fill>
+        <CssParameter name="fill">#81B6CB</CssParameter>
+      </Fill>
+      <Stroke/>
+    </PolygonSymbolizer>
+  </Rule>
+  <Rule>
+    <Title> &gt; 40.1397 AND &lt;= 41.884</Title>
+    <Filter>
+      <And>
+        <PropertyIsGreaterThan>
+          <PropertyName>latitude</PropertyName>
+          <Literal>40.1397</Literal>
+        </PropertyIsGreaterThan>
+        <PropertyIsLessThanOrEqualTo>
+          <PropertyName>latitude</PropertyName>
+          <Literal>41.884</Literal>
+        </PropertyIsLessThanOrEqualTo>
+      </And>
+    </Filter>
+    <PolygonSymbolizer>
+      <Fill>
+        <CssParameter name="fill">#7DBBE0</CssParameter>
+      </Fill>
+      <Stroke/>
+    </PolygonSymbolizer>
+  </Rule>
+  <Rule>
+    <Title> &gt; 41.884 AND &lt;= 64.85300000000001</Title>
+    <Filter>
+      <And>
+        <PropertyIsGreaterThan>
+          <PropertyName>latitude</PropertyName>
+          <Literal>41.884</Literal>
+        </PropertyIsGreaterThan>
+        <PropertyIsLessThanOrEqualTo>
+          <PropertyName>latitude</PropertyName>
+          <Literal>64.85300000000001</Literal>
+        </PropertyIsLessThanOrEqualTo>
+      </And>
+    </Filter>
+    <PolygonSymbolizer>
+      <Fill>
+        <CssParameter name="fill">#AF50F9</CssParameter>
+      </Fill>
+      <Stroke/>
+    </PolygonSymbolizer>
+  </Rule>
+</Rules>

@@ -501,6 +501,11 @@ def layer_metadata(
         else llbbox_to_mercator([float(coord) for coord in bbox])
     config["title"] = layer.title
     config["queryable"] = True
+    # hack needed to see if the layer is in Postgres (otherwise no gazetteer):
+    # all PostGIS stores starts with wm. There is also a dataverse postgres database
+    show_gazetteer_form = settings.USE_GAZETTEER
+    if layer.store[:2] != 'wm' and layer.store != 'dataverse':
+    	show_gazetteer_form = False
 
     if layer.storeType == "remoteStore":
         service = layer.service

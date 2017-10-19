@@ -1,216 +1,518 @@
+from __future__ import print_function
+import logging
 import sys
-import os
 import json
 import traceback
-from django.core import serializers
-from django.core.serializers.json import Serializer
-from django.shortcuts import render, get_object_or_404
-from django.http import HttpResponse, HttpResponseRedirect
+from django.http import HttpResponse
 from django.contrib.auth.decorators import login_required
-from django.utils.text import slugify
+from geonode.contrib.basic_auth_decorator import http_basic_auth_for_api
+
 from django.views.decorators.csrf import csrf_exempt
-from django.utils.translation import ugettext_lazy as _
+from django.views.decorators.http import require_GET
+from geonode.contrib.dataverse_connect.dv_utils import MessageHelperJSON          # format json response object
+from shared_dataverse_information.shared_form_util.format_form_errors import format_errors_as_text
 
-from .models import DataTable, JoinTarget, TableJoin
-from .forms import UploadDataTableForm
-from .utils import process_csv_file, setup_join, create_point_col_from_lat_lon
+from geonode.contrib.datatables.forms import JoinTargetForm,\
+                                        TableUploadAndJoinRequestForm,\
+                                        DataTableResponseForm,\
+                                        TableJoinResultForm,\
+                                        DataTableUploadFormLatLng
 
-@login_required
+#from geonode.contrib.dataverse_connect.layer_metadata import LayerMetadata        # object with layer metadata
+from shared_dataverse_information.worldmap_datatables.forms import MapLatLngLayerRequestForm
+
+from geonode.contrib.msg_util import *
+
+from .models import DataTable, JoinTarget, TableJoin, LatLngTableMappingRecord
+from geonode.contrib.datatables.name_helper import standardize_column_name
+
+from geonode.contrib.datatables.utils import attempt_tablejoin_from_request_params,\
+    attempt_datatable_upload_from_request_params
+#from geonode.contrib.datatables.utils_joins import drop_view_from_table_join
+from geonode.contrib.datatables.utils_lat_lng import create_point_col_from_lat_lon
+from geonode.contrib.datatables.db_helper import get_datastore_connection_string
+
+from geonode.contrib.datatables.column_checker import ColumnHelper
+
+logger = logging.getLogger(__name__)
+
+
+@http_basic_auth_for_api
 @csrf_exempt
-def datatable_upload_api(request):
+def datatable_upload_api(request, is_dataverse_db=True):
+    """
+    API to upload a datatable -- saved as a DataTable object
 
+    Note: For table joins: is_dataverse_db=True
+          For datatables with lat/lng columns: is_dataverse_db=False
+    """
     if request.method != 'POST':
-        return HttpResponse("Invalid Request", content_type="text/plain", status=500)
-    else:
-        form = UploadDataTableForm(request.POST, request.FILES)
-        if form.is_valid():
-            data = form.cleaned_data
-            table_name = slugify(unicode(os.path.splitext(os.path.basename(request.FILES['uploaded_file'].name))[0])).replace('-','_')
-            instance = DataTable(uploaded_file=request.FILES['uploaded_file'], table_name=table_name, title=table_name)
-            delimiter = data['delimiter_type']
-            no_header_row = data['no_header_row']
-            instance.save()
-            dt, msg = process_csv_file(instance, delimiter=delimiter, no_header_row=no_header_row)
+        return HttpResponse("Invalid Request", mimetype="text/plain", status=405)
 
-            if dt:
-                return_dict = {
-                    'datatable_id': dt.pk,
-                    'datatable_name': dt.table_name,
-                    'success': True,
-                    'msg': ""
-                }
-                return HttpResponse(json.dumps(return_dict), content_type="application/json", status=200)
-            else:
-                return_dict = {
-                    'datatable_id': None,
-                    'datatable_name': None,
-                    'success': False,
-                    'msg': msg
-                }
-                return HttpResponse(json.dumps(return_dict), content_type="application/json", status=400)
-        else:
-            return_dict = {
-                'datatable_id': None,
-                'datatable_name': None,
-                'success': False,
-                'msg': "Form Errors: " + form.errors.as_text()
-            }
-            return HttpResponse(json.dumps(return_dict), content_type="application/json", status=400)
+    # Note: The User used for auth is set as the DataTable owner
+    (success, data_table_or_error) = attempt_datatable_upload_from_request_params(request, request.user, is_dataverse_db)
+    if not success:
+        json_msg = MessageHelperJSON.get_json_fail_msg(data_table_or_error)
+        return HttpResponse(json_msg, mimetype="application/json", status=400)
 
-@login_required
+    return_dict = dict(datatable_id=data_table_or_error.pk,
+                       datatable_name=data_table_or_error.table_name)
+    json_msg = MessageHelperJSON.get_json_success_msg(msg='Success, DataTable created',
+                                                      data_dict=return_dict)
+    return HttpResponse(json_msg, mimetype="application/json", status=200)
+
+
+
+@http_basic_auth_for_api
 @csrf_exempt
 def datatable_detail(request, dt_id):
-    dt = get_object_or_404(DataTable, pk=dt_id)
-    object = json.loads(serializers.serialize("json", (dt,), fields=('uploaded_file', 'table_name')))[0]
-    attributes = json.loads(serializers.serialize("json", dt.attributes.all()))
-    attribute_list = []
-    for attribute in attributes:
-        attribute_list.append({'attribute':attribute['fields']['attribute'], 'type':attribute['fields']['attribute_type']})
-    object["attributes"] = attribute_list
-    data = json.dumps(object)
-    return HttpResponse(data)
+    """
+    For a given Datatable id, return the Datatable values as JSON
+    """
+    # get Datatable
+    try:
+        datatable = DataTable.objects.get(pk=dt_id)
+    except DataTable.DoesNotExist:
+        err_msg = 'No DataTable object found'
+        logger.error(err_msg + 'for id: %s' % dt_id)
+        json_msg = MessageHelperJSON.get_json_fail_msg(err_msg)
+        return HttpResponse(json_msg, mimetype='application/json', status=404)
 
-@login_required
+    # Check if the owner is making the request.
+    # Note: This a simplified check for geonode 1.2
+    #
+    if request.user != datatable.owner:
+        err_msg = "You are not permitted to view this DataTable object"
+        logger.error(err_msg + ' (id: %s)' % dt_id)
+        json_msg = MessageHelperJSON.get_json_fail_msg(err_msg)
+        return HttpResponse(json_msg, mimetype='application/json', status=401)
+
+    datatable_info = DataTableResponseForm.getDataTableAsJson(datatable)
+
+    json_msg = MessageHelperJSON.get_json_success_msg(msg=None, data_dict=datatable_info)
+    return HttpResponse(json_msg, mimetype="application/json", status=200)
+
+
+
+@require_GET
+@http_basic_auth_for_api
 def jointargets(request):
-    if len(request.GET.keys()) > 0:
-        kwargs = {}
-        if request.GET.get('title'):
-            kwargs['layer__title__icontains'] = request.GET.get('title')
-        if request.GET.get('type'):
-            kwargs['geocode_type__name__icontains'] = request.GET.get('type')
-        if request.GET.get('start_year'):
-            if request.GET.get('start_year').isdigit():
-                kwargs['year__gte'] = request.GET.get('start_year')
-            else:
-                return HttpResponse(json.dumps({'success': False, 'msg':'Invalid Start Year'}), content_type="application/json")
-        if request.GET.get('end_year'):
-            if request.GET.get('end_year').isdigit():
-                kwargs['year__lte'] = request.GET.get('end_year')
-            else:
-                return HttpResponse(json.dumps({'success': False, 'msg':'Invalid End Year'}), content_type="application/json")
-        jts = JoinTarget.objects.filter(**kwargs)
-        results = [ob.as_json() for ob in jts]
-        return HttpResponse(json.dumps(results), content_type="application/json")
-    else:
-        jts = JoinTarget.objects.all()
-        results = [ob.as_json() for ob in jts]
-        return HttpResponse(json.dumps(results), content_type="application/json")
+    """"
+    Return the JoinTarget objects in JSON format
 
-@login_required
+    Filters may be applied for:
+        - title
+        - type
+        - start_year
+        - end_year
+
+    These filters are validated through the JoinTargetForm
+
+    Available to any WorldMap user
+    """
+    f = JoinTargetForm(request.GET)
+    if not f.is_valid():
+
+        err_msg = f.get_error_messages_as_html_string()
+        json_msg = MessageHelperJSON.get_json_fail_msg(err_msg, data_dict=f.errors)
+
+        #fail_dict = dict(success=False, msg=f.get_error_messages_as_html_string())
+        return HttpResponse(json_msg,
+                            mimetype='application/json',
+                            status=400)
+
+    jts = JoinTarget.objects.filter(**f.get_join_target_filter_kwargs())
+    json_data = [ob.as_json() for ob in jts]
+    json_msg = MessageHelperJSON.get_json_success_msg(msg='', data_dict=json_data)
+
+    return HttpResponse(json_msg,
+                            mimetype='application/json',
+                            status=200)
+
+
+@http_basic_auth_for_api
 @csrf_exempt
 def tablejoin_api(request):
-    if request.method == 'GET':
-         return HttpResponse("Unsupported Method", content_type="application/json", status=500)
-    elif request.method == 'POST':
-        table_name = request.POST.get("table_name", None)
-        layer_typename = request.POST.get("layer_typename", None)
-        table_attribute = request.POST.get("table_attribute", None)
-        layer_attribute = request.POST.get("layer_attribute", None)
-        if table_name and layer_typename and table_attribute and layer_attribute:
-            try:
-                tj, msg = setup_join(table_name, layer_typename, table_attribute, layer_attribute)
-                if tj:
-                    return_dict = {
-                        'join_id': tj.pk,
-                        'view_name': tj.view_name,
-                        'matched_records': tj.matched_records_count,
-                        'unmatched_records': tj.unmatched_records_count,
-                        'unmatched_records_list': tj.unmatched_records_list,
-                        'datatable': tj.datatable.table_name,
-                        'source_layer': tj.source_layer.typename,
-                        'table_attribute': tj.table_attribute.attribute,
-                        'layer_attribute': tj.layer_attribute.attribute,
-                        'join_layer': tj.join_layer.typename,
-                        'layer_url': tj.join_layer.get_absolute_url()
-                    }
-                    return HttpResponse(json.dumps(return_dict), content_type="application/json", status=200)
-                else:
-                    return_dict = {
-                        'success': False,
-                        'msg': "Error Creating Join: %s" % msg
-                    }
-                    return HttpResponse(json.dumps(return_dict), content_type="application/json", status=400)
-            except:
-                return_dict = {
-                    'success': False,
-                    'msg': "Error Creating Join: %s" % msg
-                }
-                return HttpResponse(json.dumps(return_dict), content_type="application/json", status=400)
-        else:
-            return HttpResponse(json.dumps({'msg':'Invalid Request', 'success':False}), content_type='application/json', status=400)
+    """
+    Join a DataTable to the Geometry of an existing layer
+    """
+    logger.info('tablejoin_api')
+    if not request.method == 'POST':
+        err_msg = "Unsupported Method"
+        json_msg = MessageHelperJSON.get_json_fail_msg(err_msg)
+        logger.error(err_msg)
+        return HttpResponse(json_msg, mimetype="application/json", status=405)
 
-@login_required
+    # ---------------------------------
+    # Attempt the table join
+    # ---------------------------------
+    (success, tablejoin_obj_or_err_msg) = attempt_tablejoin_from_request_params(request, request.user)
+
+    # ---------------------------------
+    # Failed, return an error message
+    # ---------------------------------
+    if not success:
+        json_msg = MessageHelperJSON.get_json_fail_msg(tablejoin_obj_or_err_msg)
+        return HttpResponse(json_msg, mimetype="application/json", status=400)
+
+    # ----------------------------------
+    # Success, return TableJoin params
+    # ----------------------------------
+    join_result_info_dict = TableJoinResultForm.get_cleaned_data_from_table_join(tablejoin_obj_or_err_msg)
+    return HttpResponse(json.dumps(join_result_info_dict), mimetype="application/json", status=200)
+
+
+
+@http_basic_auth_for_api
 @csrf_exempt
 def tablejoin_detail(request, tj_id):
-    tj = get_object_or_404(TableJoin, pk=tj_id)
+    """
+    Return details of a TableJoin object
+    """
+    # -------------------------------------------------------
+    # Retrieve TableJoin
+    # -------------------------------------------------------
+    try:
+        tj = TableJoin.objects.get(pk=tj_id)
+    except TableJoin.DoesNotExist:
+        err_msg = 'No TableJoin object found'
+        logger.error(err_msg + 'for id: %s' % tj_id)
+        json_msg = MessageHelperJSON.get_json_fail_msg(err_msg)
+        return HttpResponse(json_msg, mimetype='application/json', status=404)
+
+    # -------------------------------------------------------
+    # Check if the DataTable owner is making the request.
+    # Note: This a simplified check for geonode 1.2
+    # -------------------------------------------------------
+    #if not request.user.has_perm('maps.view_layer', obj=tj.join_layer):
+    if request.user != tj.datatable.owner:
+        err_msg = "You are not permitted to view this TableJoin object"
+        logger.error(err_msg + ' (id: %s)' % tj_id)
+        json_msg = MessageHelperJSON.get_json_fail_msg(err_msg)
+        return HttpResponse(json_msg, mimetype='application/json', status=401)
+
     results = [ob.as_json() for ob in [tj]][0]
     data = json.dumps(results)
     return HttpResponse(data)
 
-@login_required
+
+@http_basic_auth_for_api
 @csrf_exempt
 def tablejoin_remove(request, tj_id):
-    # TODO: Check Permissions!!
+    """
+    Via the API, delete a TableJoin object
+    """
+
+    # -----------------------------------------------
+    # Retrieve the TableJoin object
+    # -----------------------------------------------
     try:
-        tj = get_object_or_404(TableJoin, pk=tj_id)
+        tj = TableJoin.objects.get(pk=tj_id)
+    except TableJoin.DoesNotExist:
+        err_msg = 'No TableJoin object found'
+        logger.error(err_msg + 'for id: %s' % tj_id)
+        json_msg = MessageHelperJSON.get_json_fail_msg(err_msg)
+
+        return HttpResponse(json_msg, mimetype='application/json', status=404)
+
+    # -------------------------------------------------------
+    # Check if the Layer owner is making the request.
+    # Note: This a simplified check for geonode 1.2
+    # -------------------------------------------------------
+    #if not request.user.has_perm('maps.delete_layer', obj=tj.join_layer):
+    if request.user != tj.datatable.owner:
+        err_msg = "You are not permitted to delete this TableJoin object"
+        logger.error(err_msg + ' (id: %s)' % tj_id)
+        json_msg = MessageHelperJSON.get_json_fail_msg(err_msg)
+        return HttpResponse(json_msg, mimetype='application/json', status=401)
+
+
+    # -----------------------------------------------
+    # Delete the view...the TableJoin "Layer"
+    # -----------------------------------------------
+    """
+    # Not needed!
+    view_dropped, err_msg = drop_view_from_table_join(tj)
+    if not view_dropped:
+        json_msg = MessageHelperJSON.get_json_fail_msg(err_msg)
+        return HttpResponse(json_msg, mimetype='application/json', status=400)
+    """
+    # -----------------------------------------------
+    # Delete The DataTable, JoinLayer, and TableJoin objects!
+    # -----------------------------------------------
+    try:
         tj.datatable.delete()
         tj.join_layer.delete()
         tj.delete()
-        return HttpResponse(json.dumps({'success':True, 'msg': ('%s removed' % (tj.view_name))}), content_type='application/json', status=200)
+        return HttpResponse(json.dumps({'success':True, 'msg': ('%s removed' % (tj.view_name))}),
+            mimetype='application/json', status=200)
     except:
-        return HttpResponse(json.dumps({'success':False, 'msg': ('Error removing Join %s' % (sys.exc_info()[0]))}), content_type='application/json', status=400)
+        return HttpResponse(json.dumps({'success':False, 'msg': ('Error removing Join %s' % (sys.exc_info()[0]))}),
+            mimetype='application/json', status=400)
 
-# @login_required
+
+@http_basic_auth_for_api
 @csrf_exempt
 def datatable_remove(request, dt_id):
-    # TODO: Check Permissions!!
-    try:
-        dt = get_object_or_404(DataTable, pk=dt_id)
-        dt.delete()
-        return HttpResponse(json.dumps({'success':True, 'msg': ('%s removed' % (dt.table_name))}), content_type='application/json', status=200)
-    except:
-        return HttpResponse(json.dumps({'success':False, 'msg': ('Error removing DataTable %s' % (sys.exc_info()[0]))}), content_type='application/json', status=400)
+    """
+    Check if the user has 'delete_datatable' permissions
+    """
 
-@login_required
+    # -----------------------------------------------
+    # Retrieve the DataTable object
+    # -----------------------------------------------
+    try:
+        datatable = DataTable.objects.get(pk=dt_id)
+    except DataTable.DoesNotExist:
+        err_msg = 'No DataTable object found'
+        logger.error(err_msg + ' for id: %s' % dt_id)
+        json_msg = MessageHelperJSON.get_json_fail_msg(err_msg)
+        return HttpResponse(json_msg, mimetype='application/json', status=404)
+
+    # -----------------------------------------------
+    # Check if the Layer owner is making the request.
+    # Note: This a simplified check for geonode 1.2
+    # -----------------------------------------------
+    #if not request.user.has_perm('datatables.delete_datatable', obj=datatable):
+    if request.user != datatable.owner:
+        err_msg = "You are not permitted to delete this DataTable object"
+        logger.error(err_msg + ' (id: %s)' % dt_id)
+        json_msg = MessageHelperJSON.get_json_fail_msg(err_msg)
+        return HttpResponse(json_msg, mimetype='application/json', status=401)
+
+    # -----------------------------------------------
+    # Delete it!
+    # -----------------------------------------------
+    dt_name = str(datatable)
+    try:
+        datatable.delete()
+        success_msg = 'DataTable "%s" successfully deleted.' % (dt_name)
+        logger.info(success_msg)
+        json_msg = MessageHelperJSON.get_json_success_msg(success_msg)
+        return HttpResponse(json_msg, mimetype='application/json', status=200)
+    except:
+        err_msg = 'Failed to delete DataTable "%s" (id: %s)\nError: %s' % (dt_name, datatable.id, sys.exc_info()[0])
+        logger.info(err_msg)
+        json_msg = MessageHelperJSON.get_json_fail_msg(err_msg)
+        return HttpResponse(json_msg, mimetype='application/json', status=400)
+
+
+
+@http_basic_auth_for_api
 @csrf_exempt
-def datatable_upload_and_join_api(request):
+def datatable_upload_and_join_api(request, is_dataverse_db=True):
+    """
+    Upload a Datatable and join it to an existing Layer
+    """
+    logger.info('datatable_upload_and_join_api')
+
     request_post_copy = request.POST.copy()
     join_props = request_post_copy
-    try:
-        resp = datatable_upload_api(request)
-        upload_return_dict = json.loads(resp.content)
-        if upload_return_dict['success'] != True:
-            return HttpResponse(json.dumps(upload_return_dict), content_type='application/json', status=400)
-        join_props['table_name'] = upload_return_dict['datatable_name']
-    except:
-        traceback.print_exc(sys.exc_info())
-        return HttpResponse(json.dumps({'msg':'Uncaught error ingesting Data Table', 'success':False}), content_type='application/json', status=400)
-    try:
-        original_table_attribute = join_props['table_attribute']
-        sanitized_table_attribute = slugify(unicode(original_table_attribute)).replace('-','_')
-        join_props['table_attribute'] = sanitized_table_attribute
-        request.POST = join_props
-        resp = tablejoin_api(request)
-        return resp
-    except:
-        traceback.print_exc(sys.exc_info())
-        return HttpResponse("Not yet")
 
-@login_required
+    f = TableUploadAndJoinRequestForm(join_props, request.FILES)
+    if not f.is_valid():
+        err_msg = "Form errors found. %s" % format_errors_as_text(f)#.as_json()#.as_text()
+        logger.error(err_msg)
+        json_msg = MessageHelperJSON.get_json_fail_msg(err_msg, data_dict=f.errors)
+        return HttpResponse(json_msg, mimetype="application/json", status=400)
+
+    # ----------------------------------------------------
+    # Does the DataTable join column need to be char?
+    #  - Check if the existing target join column is char?
+    # ----------------------------------------------------
+    (check_worked, force_char_convert) = ColumnHelper.is_char_column_conversion_recommended(\
+                f.cleaned_data['layer_name'],\
+                f.cleaned_data['layer_attribute'])
+    if not check_worked:
+        err_msg = 'Could not check the target column type'
+        logger.error(err_msg)
+        json_msg = MessageHelperJSON.get_json_fail_msg(err_msg)
+        return HttpResponse(json_msg, mimetype="application/json", status=400)
+
+    if force_char_convert:  # It is, make sure the Datatable col will be char
+        force_char_column = join_props['table_attribute']
+    else:                   # Nope, let the datatable col stand, good or bad
+        force_char_column = None
+
+    # ----------------------------------------------------
+    # Create a DataTable object from the file
+    # ----------------------------------------------------
+    (success, data_table_or_error) = attempt_datatable_upload_from_request_params(\
+                                request,\
+                                request.user,\
+                                is_dataverse_db=is_dataverse_db,\
+                                force_char_column=force_char_column)
+    if not success:
+        json_msg = MessageHelperJSON.get_json_fail_msg(data_table_or_error)
+        return HttpResponse(json_msg, mimetype="application/json", status=400)
+
+    # ----------------------------------------------------
+    # Attempt to join the new Datatable to a layer
+    # ----------------------------------------------------
+
+    # The table has been loaded, update the join properties
+    # to include the new table name
+    #
+    join_props['table_name'] = data_table_or_error.table_name
+    original_table_attribute = join_props['table_attribute']
+    sanitized_table_attribute = standardize_column_name(original_table_attribute)
+    join_props['table_attribute'] = sanitized_table_attribute
+
+    (success, tablejoin_obj_or_err_msg) = attempt_tablejoin_from_request_params(join_props, request.user)
+    # ---------------------------------
+    # Failed, return an error message
+    # ---------------------------------
+    if not success:
+        msg('Failed join!: %s' % tablejoin_obj_or_err_msg)
+        json_msg = MessageHelperJSON.get_json_fail_msg(tablejoin_obj_or_err_msg)
+        return HttpResponse(json_msg, mimetype="application/json", status=400)
+
+    msg('Good join!')
+
+    # ----------------------------------
+    # Success, return TableJoin params
+    # ----------------------------------
+    join_result_info_dict = TableJoinResultForm.get_cleaned_data_from_table_join(tablejoin_obj_or_err_msg)
+    return HttpResponse(json.dumps(join_result_info_dict), mimetype="application/json", status=200)
+
+
+@http_basic_auth_for_api
 @csrf_exempt
 def datatable_upload_lat_lon_api(request):
-    try:
-        resp = datatable_upload_api(request)
-        upload_return_dict = json.loads(resp.content)
-        if upload_return_dict['success'] != True:
-            return HttpResponse(json.dumps(upload_return_dict), content_type='application/json', status=400)
-    except:
-        traceback.print_exc(sys.exc_info())
-        return HttpResponse(json.dumps({'msg':'Uncaught error ingesting Data Table', 'success':False}), content_type='application/json', status=400)
+    """
+    Join a DataTable to the Geometry of an existing layer (API)
+    """
 
+    # Is it a POST?
+    #
+    #
+    if not request.method == 'POST':
+        json_msg = MessageHelperJSON.get_json_fail_msg("Unsupported Method")
+        return HttpResponse(json_msg, mimetype="application/json", status=500)
+
+    # Is the request data valid?
+    # Check with the MapLatLngLayerRequestForm
+    #
+    #f = MapLatLngLayerRequestForm(request.POST, request.FILES)
+    f = DataTableUploadFormLatLng(request.POST, request.FILES)
+    if not f.is_valid():
+        err_msg = "Invalid data in request: %s" % format_errors_as_text(f)
+        logger.error("datatable_upload_lat_lon_api. %s" % err_msg)
+        json_msg = MessageHelperJSON.get_json_fail_msg(err_msg, data_dict=f.errors)
+        return HttpResponse(json_msg, mimetype="application/json", status=400)
+
+    #   Set the new table/layer owner
+    #
+    new_table_owner = request.user
+
+    # --------------------------------------
+    # (1) Datatable Upload
+    # --------------------------------------
     try:
-        layer, msg = create_point_col_from_lat_lon(upload_return_dict['datatable_name'], request.POST.get('lat_column'), request.POST.get('lon_column'))
-        return HttpResponse(json.dumps(upload_return_dict), content_type='application/json', status=200)
+        resp = datatable_upload_api(request, is_dataverse_db=False)
+        upload_return_dict = json.loads(resp.content)
+        if upload_return_dict.get('success', None) is not True:
+            return HttpResponse(json.dumps(upload_return_dict), mimetype='application/json', status=400)
+        else:
+            pass # keep going
+    except:
+        err_msg = 'Uncaught error ingesting Data Table'
+        logger.error(err_msg)
+        json_msg = MessageHelperJSON.get_json_fail_msg(err_msg)
+        traceback.print_exc(sys.exc_info())
+        return HttpResponse(json_msg, mimetype='application/json', status=400)
+
+
+    # --------------------------------------
+    # (2) Create layer using the Lat/Lng columns
+    # --------------------------------------
+    msg('datatable_upload_lat_lon_api 2')
+    try:
+        success, latlng_record_or_err_msg = create_point_col_from_lat_lon(new_table_owner
+                        , upload_return_dict['data']['datatable_name']
+                        , f.cleaned_data['lat_attribute']
+                        , f.cleaned_data['lng_attribute']
+                    )
+
+
+
+        if not success:
+            logger.error('Failed to (2) Create layer for map lat/lng table: %s' % latlng_record_or_err_msg)
+
+            # FAILED
+            #
+            json_msg = MessageHelperJSON.get_json_fail_msg(latlng_record_or_err_msg)
+
+
+            return HttpResponse(json_msg, mimetype="application/json", status=400)
+        else:
+            # SUCCESS
+            #
+
+            # Get the Layer metadata
+            #layer_metadata_obj = LayerMetadata(latlng_record_or_err_msg.layer)
+            #response_params = layer_metadata_obj.get_metadata_dict()
+
+            # Addd lat/lng attributes
+            layer_params = latlng_record_or_err_msg.as_json()
+            msgt('layer_params: %s' % layer_params)
+
+            json_msg = MessageHelperJSON.get_json_success_msg(msg='New layer created', data_dict=layer_params)
+            return HttpResponse(json_msg, mimetype="application/json", status=200)
     except:
         traceback.print_exc(sys.exc_info())
-        return HttpResponse(json.dumps({'msg':'Uncaught error ingesting Data Table', 'success':False}), content_type='application/json', status=400)
+        err_msg = 'Uncaught error ingesting Data Table'
+        json_msg = MessageHelperJSON.get_json_fail_msg(err_msg)
+        logger.error(err_msg)
+
+        return HttpResponse(json_msg, mimetype="application/json", status=400)
+
+@http_basic_auth_for_api
+@csrf_exempt
+def datatable_lat_lon_remove(request, dt_id):
+    """
+    Check if the user has 'delete_datatable' permissions
+    """
+
+    # -----------------------------------------------
+    # Retrieve the DataTable object
+    # -----------------------------------------------
+    try:
+        lat_lng_datatable = LatLngTableMappingRecord.objects.get(pk=dt_id)
+    except LatLngTableMappingRecord.DoesNotExist:
+        err_msg = 'No LatLngTableMappingRecord object found'
+        logger.error(err_msg + ' for id: %s' % dt_id)
+        json_msg = MessageHelperJSON.get_json_fail_msg(err_msg)
+        return HttpResponse(json_msg, mimetype='application/json', status=404)
+
+    # -----------------------------------------------
+    # Does the user have permissions to Delete it?
+    # Note: This a simplified check for geonode 1.2
+    # -------------------------------------------------------
+    #if not request.user.has_perm('datatables.delete_latlngtablemappingrecord', obj=lat_lng_datatable):
+    if request.user != lat_lng_datatable.datatable.owner:
+        err_msg = "You are not permitted to delete this Latitude/Longitude layer and datatable"
+        logger.error(err_msg + ' (id: %s)' % dt_id)
+        json_msg = MessageHelperJSON.get_json_fail_msg(err_msg)
+        return HttpResponse(json_msg, mimetype='application/json', status=401)
+
+    # -----------------------------------------------
+    # Delete it!
+    # -----------------------------------------------
+    if lat_lng_datatable.layer:
+        lat_lng_datatable.layer.delete()
+    if lat_lng_datatable.datatable:
+        lat_lng_datatable.datatable.delete()
+
+    dt_name = str(lat_lng_datatable)
+    try:
+        lat_lng_datatable.delete()
+        success_msg = 'LatLngTableMappingRecord "%s" successfully deleted.' % (dt_name)
+        logger.info(success_msg)
+        json_msg = MessageHelperJSON.get_json_success_msg(success_msg)
+        return HttpResponse(json_msg, mimetype='application/json', status=200)
+    except:
+        err_msg = 'Failed to delete LatLngTableMappingRecord "%s" (id: %s)\nError: %s' % (dt_name, lat_lng_datatable.id, sys.exc_info()[0])
+        logger.info(err_msg)
+        json_msg = MessageHelperJSON.get_json_fail_msg(err_msg)
+        return HttpResponse(json_msg, mimetype='application/json', status=400)

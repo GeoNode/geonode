@@ -1,0 +1,32 @@
+<Rules>
+  <Rule>
+    <Title>A</Title>
+    <Filter>
+      <PropertyIsEqualTo>
+        <PropertyName>Match_type</PropertyName>
+        <Literal>A</Literal>
+      </PropertyIsEqualTo>
+    </Filter>
+    <PolygonSymbolizer>
+      <Fill>
+        <CssParameter name="fill">#6D78A3</CssParameter>
+      </Fill>
+      <Stroke/>
+    </PolygonSymbolizer>
+  </Rule>
+  <Rule>
+    <Title>M</Title>
+    <Filter>
+      <PropertyIsEqualTo>
+        <PropertyName>Match_type</PropertyName>
+        <Literal>M</Literal>
+      </PropertyIsEqualTo>
+    </Filter>
+    <PolygonSymbolizer>
+      <Fill>
+        <CssParameter name="fill">#F2D103</CssParameter>
+      </Fill>
+      <Stroke/>
+    </PolygonSymbolizer>
+  </Rule>
+</Rules>
