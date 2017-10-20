@@ -187,7 +187,7 @@ class CephDataObjectAdmin(admin.ModelAdmin):
         'size_in_bytes',)
     list_filter = ('data_class', 'content_type')
     search_fields = ('name', 'data_class', 'content_type',
-                     'grid_ref', 'block_uid__uid', 'block_uid__name')
+                     'grid_ref', 'block_uid__uid', 'block_uid__block_name')
 
 
 admin.site.register(Cart, CartAdmin)
