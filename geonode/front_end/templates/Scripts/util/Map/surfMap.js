@@ -151,7 +151,7 @@
             };
 
             factory.getZoom = function() {
-                return olMap.zoom;
+                return olMap.getView().getZoom();
             };
 
             factory.getExtent = function() {

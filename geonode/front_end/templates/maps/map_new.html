@@ -195,6 +195,7 @@
 <script src="{{ STATIC_URL }}Scripts/util/Tools/Map/navigationHistoryTool.js"></script>
 <script src="{{ STATIC_URL }}Scripts/util/Tools/Map/mapToolsFactory.js"></script>
 <script src="{{ STATIC_URL }}Scripts/util/Tools/Map/mapTools.js"></script>
+<script src="{{ STATIC_URL }}Scripts/util/Tools/Map/zoomInOutTool.js"></script>
 
 <script src="{{ STATIC_URL }}Scripts/util/Tools/UI/featureEditButtonsDirective.js"></script>
 <script src="{{ STATIC_URL }}Scripts/util/Tools/UI/featureRedoUndoButtonsDirective.js"></script>
@@ -207,6 +208,8 @@
 <script src="{{ STATIC_URL }}Scripts/util/Tools/UI/locationCaptureButtonsDirective.js"></script>
 <script src="{{ STATIC_URL }}Scripts/util/Tools/UI/navigationHistoryButtonsDirective.js"></script>
 <script src="{{ STATIC_URL }}Scripts/util/Tools/UI/propertyGridOverlayDirective.js"></script>
+<script src="{{ STATIC_URL }}Scripts/util/Tools/UI/zoomInOutButtonDirective.js"></script>
+
 
 {% endblock extra_script %} 
 {% block middle %}
@@ -228,6 +231,9 @@
                             <li class="divider-vertical" draft-only></li>
                             <li>
                                 <navigation-history-buttons></navigation-history-buttons>
+                            </li>
+                            <li>
+                                <zoom-in-out-buttons>   </zoom-in-out-buttons>     
                             </li>
                             <li class="divider-vertical" draft-only></li>
                             <li draft-only>
