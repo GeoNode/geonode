@@ -9,7 +9,8 @@
     'AllSelectableLayerTool',
     'NavigationHistoryTool',
     'WmsMultiSelectFeatureTool',
-    function (ol, GeoLocationTool, LocationSearchTool, ActiveLayerTool, ZoomToLayerTool, ZoomTrackerTool, BaseMapTool, AllSelectableLayerTool, NavigationHistoryTool, WmsMultiSelectFeatureTool) {
+    'ZoomInOutTool',
+    function (ol, GeoLocationTool, LocationSearchTool, ActiveLayerTool, ZoomToLayerTool, ZoomTrackerTool, BaseMapTool, AllSelectableLayerTool, NavigationHistoryTool, WmsMultiSelectFeatureTool, ZoomInOutTool) {
         var _markerSource;
         var _olMap, _olView;
         var _gMap;
@@ -116,6 +117,10 @@
             return new WmsMultiSelectFeatureTool(_olMap, _surfMap);
         }
 
+        function createZoomInOutTool() {
+            return new ZoomInOutTool(_olView);
+        }
+
         return {
             initialize: initialize,
             createGeoLocationTool: createGeoLocationTool,
@@ -126,7 +131,8 @@
             createBaseMapTool: createBaseMapTool,
             createAllSelectableLayerTool: createAllSelectableLayerTool,
             createNavigationHistoryTool: createNavigationHistoryTool,
-            createSelectFeatureTool: createSelectFeatureTool
+            createSelectFeatureTool: createSelectFeatureTool,
+            createZoomInOutTool: createZoomInOutTool
         };
     }
 ]);

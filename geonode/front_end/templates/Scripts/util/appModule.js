@@ -228,6 +228,7 @@
                 mapTools.zoomTracker = mapToolsFactory.createZoomTrackerTool();
                 mapTools.baseMap = mapToolsFactory.createBaseMapTool();
                 mapTools.navigationHistory = mapToolsFactory.createNavigationHistoryTool();
+                mapTools.zoomInOutTool = mapToolsFactory.createZoomInOutTool();
                 mapTools.selectFeature = mapToolsFactory.createSelectFeatureTool();
 
                 onZoomHandler.activate(olMap);
