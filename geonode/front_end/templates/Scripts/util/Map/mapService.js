@@ -6,10 +6,13 @@
         var factory = {
             setSurfMap: function(surfMap) {
                 map = surfMap;
+                factory.addInteraction = surfMap.addInteraction;
+                factory.removeInteraction = map.removeInteraction;
                 factory.events = map.events;
                 factory.getZoom = map.getZoom;
                 factory.zoomToLevel = map.zoomToLevel;
                 factory.sortableLayers = map.sortableLayers;
+                factory.zoomToExtent = map.zoomToExtent;
             },
             loadMap: function(mapInfo) {
                 mapTools.baseMap.setBaseMapByName(mapInfo.BaseLayerName);
