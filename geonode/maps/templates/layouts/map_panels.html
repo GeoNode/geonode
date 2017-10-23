@@ -318,6 +318,10 @@
                         {{ map_form.metadata_uploaded_preserve }}
                     </div>
                     <div>
+                        <span><label for="{{ map_form.is_approved|id }}">{{ map_form.is_approved.label }}</label></span>
+                        {{ map_form.is_approved }}
+                    </div>
+                    <div>
                         <span><label for="{{ map_form.is_published|id }}">{{ map_form.is_published.label }}</label></span>
                         {{ map_form.is_published }}
                     </div>

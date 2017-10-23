@@ -50,9 +50,14 @@ def facets(context):
     request = context['request']
     is_admin = False
     is_staff = False
+    is_manager = False
     if request.user:
         is_admin = request.user.is_superuser if request.user else False
         is_staff = request.user.is_staff if request.user else False
+        try:
+            is_manager = request.user.groupmember_set.all().filter(role='manager').exists()
+        except:
+            is_manager = False
 
     title_filter = request.GET.get('title__icontains', '')
     extent_filter = request.GET.get('extent', None)
@@ -92,10 +97,42 @@ def facets(context):
 
         if settings.ADMIN_MODERATE_UPLOADS:
             if not is_admin and not is_staff:
-                documents = documents.filter(Q(is_published=True) | Q(owner__username__iexact=str(request.user)))
+                if is_manager:
+                    groups = request.user.groups.all()
+                    public_groups = GroupProfile.objects.exclude(access="private").values('group')
+                    try:
+                        anonymous_group = Group.objects.get(name='anonymous')
+                        documents = documents.filter(
+                            Q(group__isnull=True) | Q(group__in=groups) |
+                            Q(group__in=public_groups) | Q(group=anonymous_group) |
+                            Q(owner__username__iexact=str(request.user)))
+                    except:
+                        documents = documents.filter(
+                            Q(group__isnull=True) | Q(group__in=groups) |
+                            Q(group__in=public_groups) |
+                            Q(owner__username__iexact=str(request.user)))
+                else:
+                    documents = documents.filter(Q(is_published=True) |
+                                                 Q(owner__username__iexact=str(request.user)))
 
         if settings.RESOURCE_PUBLISHING:
-            documents = documents.filter(Q(is_published=True) | Q(owner__username__iexact=str(request.user)))
+            if is_manager:
+                groups = request.user.groups.all()
+                public_groups = GroupProfile.objects.exclude(access="private").values('group')
+                try:
+                    anonymous_group = Group.objects.get(name='anonymous')
+                    documents = documents.filter(
+                        Q(group__isnull=True) | Q(group__in=groups) |
+                        Q(group__in=public_groups) | Q(group=anonymous_group) |
+                        Q(owner__username__iexact=str(request.user)))
+                except:
+                    documents = documents.filter(
+                        Q(group__isnull=True) | Q(group__in=groups) |
+                        Q(group__in=public_groups) |
+                        Q(owner__username__iexact=str(request.user)))
+            else:
+                documents = documents.filter(Q(is_published=True) |
+                                             Q(owner__username__iexact=str(request.user)))
 
         if settings.GROUP_PRIVATE_RESOURCES:
             public_groups = GroupProfile.objects.exclude(access="private").values('group')
@@ -166,10 +203,42 @@ def facets(context):
 
         if settings.ADMIN_MODERATE_UPLOADS:
             if not is_admin and not is_staff:
-                layers = layers.filter(Q(is_published=True) | Q(owner__username__iexact=str(request.user)))
+                if is_manager:
+                    groups = request.user.groups.all()
+                    public_groups = GroupProfile.objects.exclude(access="private").values('group')
+                    try:
+                        anonymous_group = Group.objects.get(name='anonymous')
+                        layers = layers.filter(
+                            Q(group__isnull=True) | Q(group__in=groups) |
+                            Q(group__in=public_groups) | Q(group=anonymous_group) |
+                            Q(owner__username__iexact=str(request.user)))
+                    except:
+                        layers = layers.filter(
+                            Q(group__isnull=True) | Q(group__in=groups) |
+                            Q(group__in=public_groups) |
+                            Q(owner__username__iexact=str(request.user)))
+                else:
+                    layers = layers.filter(Q(is_published=True) |
+                                           Q(owner__username__iexact=str(request.user)))
 
         if settings.RESOURCE_PUBLISHING:
-            layers = layers.filter(Q(is_published=True) | Q(owner__username__iexact=str(request.user)))
+            if is_manager:
+                groups = request.user.groups.all()
+                public_groups = GroupProfile.objects.exclude(access="private").values('group')
+                try:
+                    anonymous_group = Group.objects.get(name='anonymous')
+                    layers = layers.filter(
+                        Q(group__isnull=True) | Q(group__in=groups) |
+                        Q(group__in=public_groups) | Q(group=anonymous_group) |
+                        Q(owner__username__iexact=str(request.user)))
+                except:
+                    layers = layers.filter(
+                        Q(group__isnull=True) | Q(group__in=groups) |
+                        Q(group__in=public_groups) |
+                        Q(owner__username__iexact=str(request.user)))
+            else:
+                layers = layers.filter(Q(is_published=True) |
+                                       Q(owner__username__iexact=str(request.user)))
 
         if settings.GROUP_PRIVATE_RESOURCES:
             public_groups = GroupProfile.objects.exclude(access="private").values('group')
@@ -263,12 +332,58 @@ def facets(context):
 
         if settings.ADMIN_MODERATE_UPLOADS:
             if not is_admin and not is_staff:
-                maps = maps.filter(Q(is_published=True) | Q(owner__username__iexact=str(request.user)))
-                documents = documents.filter(Q(is_published=True) | Q(owner__username__iexact=str(request.user)))
+                if is_manager:
+                    groups = request.user.groups.all()
+                    public_groups = GroupProfile.objects.exclude(access="private").values('group')
+                    try:
+                        anonymous_group = Group.objects.get(name='anonymous')
+                        maps = maps.filter(
+                            Q(group__isnull=True) | Q(group__in=groups) |
+                            Q(group__in=public_groups) | Q(group=anonymous_group) |
+                            Q(owner__username__iexact=str(request.user)))
+                        documents = documents.filter(
+                            Q(group__isnull=True) | Q(group__in=groups) |
+                            Q(group__in=public_groups) | Q(group=anonymous_group) |
+                            Q(owner__username__iexact=str(request.user)))
+                    except:
+                        maps = maps.filter(
+                            Q(group__isnull=True) | Q(group__in=groups) |
+                            Q(group__in=public_groups) |
+                            Q(owner__username__iexact=str(request.user)))
+                        documents = documents.filter(
+                            Q(group__isnull=True) | Q(group__in=groups) |
+                            Q(group__in=public_groups) |
+                            Q(owner__username__iexact=str(request.user)))
+                else:
+                    maps = maps.filter(Q(is_published=True) |
+                                       Q(owner__username__iexact=str(request.user)))
+                    documents = documents.filter(Q(is_published=True) |
+                                                 Q(owner__username__iexact=str(request.user)))
 
         if settings.RESOURCE_PUBLISHING:
-            maps = maps.filter(Q(is_published=True) | Q(owner__username__iexact=str(request.user)))
-            documents = documents.filter(Q(is_published=True) | Q(owner__username__iexact=str(request.user)))
+            if is_manager:
+                groups = request.user.groups.all()
+                public_groups = GroupProfile.objects.exclude(access="private").values('group')
+                try:
+                    anonymous_group = Group.objects.get(name='anonymous')
+                    maps = maps.filter(
+                        Q(group__isnull=True) | Q(group__in=groups) |
+                        Q(group__in=public_groups) | Q(group=anonymous_group) |
+                        Q(owner__username__iexact=str(request.user)))
+                    documents = documents.filter(
+                        Q(group__isnull=True) | Q(group__in=groups) |
+                        Q(group__in=public_groups) | Q(group=anonymous_group) |
+                        Q(owner__username__iexact=str(request.user)))
+                except:
+                    maps = maps.filter(
+                        Q(group__isnull=True) | Q(group__in=groups) | Q(group__in=public_groups) |
+                        Q(owner__username__iexact=str(request.user)))
+                    documents = documents.filter(
+                        Q(group__isnull=True) | Q(group__in=groups) | Q(group__in=public_groups) |
+                        Q(owner__username__iexact=str(request.user)))
+            else:
+                maps = maps.filter(Q(is_published=True) | Q(owner__username__iexact=str(request.user)))
+                documents = documents.filter(Q(is_published=True) | Q(owner__username__iexact=str(request.user)))
 
         if settings.GROUP_PRIVATE_RESOURCES:
             public_groups = GroupProfile.objects.exclude(access="private").values('group')

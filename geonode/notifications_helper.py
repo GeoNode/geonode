@@ -89,7 +89,10 @@ def send_notification(*args, **kwargs):
         # queue for further processing if required
         if settings.PINAX_NOTIFICATIONS_QUEUE_ALL:
             return queue_notification(*args, **kwargs)
-        return notifications.models.send(*args, **kwargs)
+        try:
+            return notifications.models.send(*args, **kwargs)
+        except:
+            return False
 
 
 def queue_notification(*args, **kwargs):

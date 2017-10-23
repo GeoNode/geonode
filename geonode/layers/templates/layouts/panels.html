@@ -37,6 +37,7 @@ form #mdeditor_form label{
 
 /* publishing checkboxes */
 #mdeditor_form #id_resource-metadata_uploaded_preserve,
+#mdeditor_form #id_resource-is_approved,
 #mdeditor_form #id_resource-is_published,
 #mdeditor_form #id_resource-featured  {
   float: right;
@@ -559,6 +560,10 @@ span.grippy::after {
                         <div>
                             <span><label for="{{ layer_form.metadata_uploaded_preserve|id }}">{{ layer_form.metadata_uploaded_preserve.label }}</label></span>
                             {{ layer_form.metadata_uploaded_preserve }}
+                        </div>
+                        <div>
+                            <span><label for="{{ layer_form.is_approved|id }}">{{ layer_form.is_approved.label }}</label></span>
+                            {{ layer_form.is_approved }}
                         </div>
                         <div>
                             <span><label for="{{ layer_form.is_published|id }}">{{ layer_form.is_published.label }}</label></span>

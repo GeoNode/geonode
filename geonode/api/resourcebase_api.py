@@ -171,12 +171,32 @@ class CommonModelApi(ModelResource):
     def filter_published(self, queryset, request):
         is_admin = False
         is_staff = False
+        is_manager = False
         if request.user:
             is_admin = request.user.is_superuser if request.user else False
             is_staff = request.user.is_staff if request.user else False
+            try:
+                is_manager = request.user.groupmember_set.all().filter(role='manager').exists()
+            except:
+                is_manager = False
 
         if not is_admin and not is_staff:
-            filtered = queryset.filter(Q(is_published=True) | Q(owner__username__iexact=str(request.user)))
+            if is_manager:
+                groups = request.user.groups.all()
+                public_groups = GroupProfile.objects.exclude(access="private").values('group')
+                try:
+                    anonymous_group = Group.objects.get(name='anonymous')
+                    filtered = queryset.filter(Q(group__isnull=True) |
+                                               Q(group__in=groups) | Q(group__in=public_groups) |
+                                               Q(group=anonymous_group) |
+                                               Q(owner__username__iexact=str(request.user)))
+                except BaseException:
+                    anonymous_group = None
+                    filtered = queryset.filter(Q(group__isnull=True) |
+                                               Q(group__in=groups) | Q(group__in=public_groups) |
+                                               Q(owner__username__iexact=str(request.user)))
+            else:
+                filtered = queryset.filter(Q(is_published=True) | Q(owner__username__iexact=str(request.user)))
         else:
             filtered = queryset
         return filtered
@@ -432,19 +452,56 @@ class CommonModelApi(ModelResource):
         if not settings.SKIP_PERMS_FILTER:
             is_admin = False
             is_staff = False
+            is_manager = False
             if request.user:
                 is_admin = request.user.is_superuser if request.user else False
                 is_staff = request.user.is_staff if request.user else False
+                try:
+                    is_manager = request.user.groupmember_set.all().filter(role='manager').exists()
+                except:
+                    is_manager = False
 
             # Get the list of objects the user has access to
             filter_set = get_objects_for_user(
                 request.user, 'base.view_resourcebase')
             if settings.ADMIN_MODERATE_UPLOADS:
                 if not is_admin and not is_staff:
-                    filter_set = filter_set.filter(Q(is_published=True) | Q(owner__username__iexact=str(request.user)))
+                    if is_manager:
+                        groups = request.user.groups.all()
+                        public_groups = GroupProfile.objects.exclude(access="private").values('group')
+                        try:
+                            anonymous_group = Group.objects.get(name='anonymous')
+                            filter_set = filter_set.filter(
+                                Q(group__isnull=True) | Q(group__in=groups) |
+                                Q(group__in=public_groups) | Q(group=anonymous_group) |
+                                Q(owner__username__iexact=str(request.user)))
+                        except:
+                            filter_set = filter_set.filter(
+                                Q(group__isnull=True) | Q(group__in=groups) |
+                                Q(group__in=public_groups) |
+                                Q(owner__username__iexact=str(request.user)))
+                    else:
+                        filter_set = filter_set.filter(Q(is_published=True) |
+                                                       Q(owner__username__iexact=str(request.user)))
 
             if settings.RESOURCE_PUBLISHING:
-                filter_set = filter_set.filter(Q(is_published=True) | Q(owner__username__iexact=str(request.user)))
+                if is_manager:
+                    groups = request.user.groups.all()
+                    public_groups = GroupProfile.objects.exclude(access="private").values('group')
+                    try:
+                        anonymous_group = Group.objects.get(name='anonymous')
+                        filter_set = filter_set.filter(
+                            Q(group__isnull=True) | Q(group__in=groups) |
+                            Q(group__in=public_groups) | Q(group=anonymous_group) |
+                            Q(owner__username__iexact=str(request.user)))
+                    except:
+                        filter_set = filter_set.filter(
+                            Q(group__isnull=True) | Q(group__in=groups) |
+                            Q(group__in=public_groups) |
+                            Q(owner__username__iexact=str(request.user)))
+                else:
+                    filter_set = filter_set.filter(Q(is_published=True) |
+                                                   Q(owner__username__iexact=str(request.user)))
 
             try:
                 anonymous_group = Group.objects.get(name='anonymous')

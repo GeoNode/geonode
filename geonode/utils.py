@@ -567,8 +567,8 @@ def resolve_object(request, model, query, permission='base.view_resourcebase',
 
     if settings.RESOURCE_PUBLISHING:
         if (not obj_to_check.is_published) and (
-                not request.user.has_perm('publish_resourcebase', obj_to_check)
-        ):
+            not request.user.has_perm('publish_resourcebase', obj_to_check)) and (
+                not request.user.has_perm('change_resourcebase_metadata', obj_to_check)):
             raise Http404
 
     allowed = True
