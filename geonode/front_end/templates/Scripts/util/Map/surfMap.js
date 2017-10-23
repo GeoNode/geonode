@@ -4,7 +4,12 @@
             var factory = this;
             factory.autoCenterToCurrentLocation = true;
             factory.events = new Event();
-
+            factory.addInteraction = function(interaction){
+                olMap.addInteraction(interaction);
+            }
+            factory.removeInteraction = function(interaction){
+                olMap.removeInteraction(interaction);
+            }
             factory.openMap = function(mapInfo) {
 
                 angular.extend(factory, mapInfo);
