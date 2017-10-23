@@ -230,6 +230,7 @@
                 mapTools.navigationHistory = mapToolsFactory.createNavigationHistoryTool();
                 mapTools.zoomInOutTool = mapToolsFactory.createZoomInOutTool();
                 mapTools.selectFeature = mapToolsFactory.createSelectFeatureTool();
+                mapTools.zoomToMaxExtentTool = mapToolsFactory.createZoomToMaxExtentTool();
 
                 onZoomHandler.activate(olMap);
 

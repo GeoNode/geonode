@@ -1,6 +1,6 @@
 mapModule.factory('ZoomInOutTool', [
     function() {
-        return function ZoomToLayerTool(olView) {
+        return function ZoomInOutTool(olView) {
             this.zoomIn = function() {
                 olView.setZoom(olView.getZoom() + 1);
             };
