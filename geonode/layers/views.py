@@ -894,12 +894,14 @@ def layer_metadata(
         metadataxsl = True
 
     metadata_author_groups = []
-    if request.user.is_superuser:
+    if request.user.is_superuser or request.user.is_staff:
         metadata_author_groups = GroupProfile.objects.all()
     else:
-        metadata_author_groups = chain(
-            metadata_author.group_list_all(),
+        all_metadata_author_groups = chain(
+            request.user.group_list_all().distinct(),
             GroupProfile.objects.exclude(access="private"))
+        [metadata_author_groups.append(item) for item in all_metadata_author_groups
+            if item not in metadata_author_groups]
 
     return render_to_response(template, RequestContext(request, {
         "resource": layer,
