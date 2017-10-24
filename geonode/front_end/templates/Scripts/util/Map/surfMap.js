@@ -7,6 +7,9 @@
             factory.addInteraction = function(interaction){
                 olMap.addInteraction(interaction);
             }
+            factory.getInteractions = function(){
+                return olMap.getInteractions();
+            }
             factory.removeInteraction = function(interaction){
                 olMap.removeInteraction(interaction);
             }

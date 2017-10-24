@@ -13,6 +13,7 @@
                 factory.zoomToLevel = map.zoomToLevel;
                 factory.sortableLayers = map.sortableLayers;
                 factory.zoomToExtent = map.zoomToExtent;
+                factory.getInteractions = map.getInteractions;
             },
             loadMap: function(mapInfo) {
                 mapTools.baseMap.setBaseMapByName(mapInfo.BaseLayerName);
