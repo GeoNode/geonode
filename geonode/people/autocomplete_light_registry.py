@@ -18,6 +18,7 @@
 #
 #########################################################################
 
+from django.db.models import Q
 from autocomplete_light.registry import register
 from autocomplete_light.autocomplete.shortcuts import AutocompleteModelTemplate
 from .models import Profile
@@ -27,7 +28,7 @@ class ProfileAutocomplete(AutocompleteModelTemplate):
     choice_template = 'autocomplete_response.html'
 
     def choices_for_request(self):
-        self.choices = self.choices.exclude(username='AnonymousUser')
+        self.choices = self.choices.exclude(Q(username='AnonymousUser') | Q(is_active=False))
         return super(ProfileAutocomplete, self).choices_for_request()
 
 
