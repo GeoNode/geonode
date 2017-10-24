@@ -14,6 +14,7 @@
                 factory.sortableLayers = map.sortableLayers;
                 factory.zoomToExtent = map.zoomToExtent;
                 factory.getInteractions = map.getInteractions;
+                factory.removeUserInteractions = map.removeUserInteractions;
             },
             loadMap: function(mapInfo) {
                 mapTools.baseMap.setBaseMapByName(mapInfo.BaseLayerName);

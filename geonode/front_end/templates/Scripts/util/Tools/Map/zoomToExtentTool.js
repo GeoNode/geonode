@@ -25,6 +25,7 @@ function ZoomToExtentTool(mapService) {
             //Dragbox - select
             if (!this.isActivated) {
                 this.isActivated = true;
+                mapService.removeUserInteractions();
                 mapService.addInteraction(draw);
             } else {
                 this.isActivated = false;

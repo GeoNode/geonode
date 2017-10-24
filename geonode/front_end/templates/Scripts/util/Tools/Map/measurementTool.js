@@ -190,7 +190,7 @@ function MeasurementTool(mapService) {
                     })
                 })
             });
-            map.addInteraction(draw);
+            mapService.addInteraction(draw);
 
             createMeasureTooltip();
             createHelpTooltip();
@@ -249,12 +249,12 @@ function MeasurementTool(mapService) {
 
         this.lineMeasurement = function() {
             map.on('pointermove', pointerMoveHandler);
-            map.removeInteraction(draw);
+            mapService.removeUserInteractions();
             addInteraction('LineString');
         };
         this.areaMeasurement = function() {
             map.on('pointermove', pointerMoveHandler);
-            map.removeInteraction(draw);
+            mapService.removeUserInteractions();
             addInteraction('Polygon');
         };
 
