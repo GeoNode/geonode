@@ -573,6 +573,10 @@ def file_upload(filename, name=None, user=None, title=None, abstract=None,
     if category is not None:
         layer.category = category
         saveAgain = True
+    
+    if charset != 'UTF-8':
+        layer.charset = charset
+        saveAgain = True
 
     if saveAgain:
         layer.save()
@@ -586,7 +590,8 @@ def upload(incoming, user=None, overwrite=False,
            category=None, keywords=None, regions=None,
            skip=True, ignore_errors=True,
            verbosity=1, console=None,
-           private=False, metadata_uploaded_preserve=False):
+           private=False, metadata_uploaded_preserve=False,
+           charset='UTF-8'):
     """Upload a directory of spatial data files to GeoNode
 
        This function also verifies that each layer is in GeoServer.
@@ -680,8 +685,8 @@ def upload(incoming, user=None, overwrite=False,
                                     category=category,
                                     keywords=keywords,
                                     regions=regions,
-                                    metadata_uploaded_preserve=metadata_uploaded_preserve
-                                    )
+                                    metadata_uploaded_preserve=metadata_uploaded_preserve,
+                                    charset=charset)
                 if not existed:
                     status = 'created'
                 else:
