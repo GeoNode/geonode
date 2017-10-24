@@ -12,10 +12,11 @@ mapToolsFactory.$inject = [
     'WmsMultiSelectFeatureTool',
     'ZoomInOutTool',
     'ZoomToMaxExtentTool',
-    'ZoomToExtentTool'
+    'ZoomToExtentTool',
+    'MeasurementTool'
 ];
 
-function mapToolsFactory(ol, GeoLocationTool, LocationSearchTool, ActiveLayerTool, ZoomToLayerTool, ZoomTrackerTool, BaseMapTool, AllSelectableLayerTool, NavigationHistoryTool, WmsMultiSelectFeatureTool, ZoomInOutTool, ZoomToMaxExtentTool, ZoomToExtentTool) {
+function mapToolsFactory(ol, GeoLocationTool, LocationSearchTool, ActiveLayerTool, ZoomToLayerTool, ZoomTrackerTool, BaseMapTool, AllSelectableLayerTool, NavigationHistoryTool, WmsMultiSelectFeatureTool, ZoomInOutTool, ZoomToMaxExtentTool, ZoomToExtentTool, MeasurementTool) {
     var _markerSource;
     var _olMap, _olView;
     var _gMap;
@@ -132,6 +133,9 @@ function mapToolsFactory(ol, GeoLocationTool, LocationSearchTool, ActiveLayerToo
     function createZoomToExtentTool(){
         return new ZoomToExtentTool();
     }
+    function createMeasurementTool(){
+        return new MeasurementTool(_olMap);
+    }
     return {
         initialize: initialize,
         createGeoLocationTool: createGeoLocationTool,
@@ -145,6 +149,7 @@ function mapToolsFactory(ol, GeoLocationTool, LocationSearchTool, ActiveLayerToo
         createSelectFeatureTool: createSelectFeatureTool,
         createZoomInOutTool: createZoomInOutTool,
         createZoomToMaxExtentTool: createZoomToMaxExtentTool,
-        createZoomToExtentTool: createZoomToExtentTool
+        createZoomToExtentTool: createZoomToExtentTool,
+        createMeasurementTool: createMeasurementTool
     };
 }

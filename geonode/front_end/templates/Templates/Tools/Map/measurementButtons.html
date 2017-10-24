@@ -1,0 +1,50 @@
+<style>
+    .tooltip {
+        position: relative;
+        background: rgba(0, 0, 0, 0.5);
+        border-radius: 4px;
+        color: white;
+        padding: 4px 8px;
+        opacity: 0.7;
+        white-space: nowrap;
+    }
+    
+    .tooltip-measure {
+        opacity: 1;
+        font-weight: bold;
+    }
+    
+    .tooltip-static {
+        background-color: #ffcc33;
+        color: black;
+        border: 1px solid white;
+    }
+    
+    .tooltip-measure:before,
+    .tooltip-static:before {
+        border-top: 6px solid rgba(0, 0, 0, 0.5);
+        border-right: 6px solid transparent;
+        border-left: 6px solid transparent;
+        content: "";
+        position: absolute;
+        bottom: -6px;
+        margin-left: -7px;
+        left: 50%;
+    }
+    
+    .tooltip-static:before {
+        border-top-color: #ffcc33;
+    }
+</style>
+<!-- Single button -->
+
+<div class="btn-group">
+    <button type="button" class="control-button icon icon32 icon-print-map dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+      Measurement <span class="caret"></span>
+    </button>
+    <ul class="dropdown-menu">
+        <li ng-click="lineMeasurement()"><a> Line</a></li>
+        <li ng-click="areaMeasurement()"><a>Area</a></li>
+        <!-- <li role="separator" class="divider"></li> -->
+    </ul>
+</div>
