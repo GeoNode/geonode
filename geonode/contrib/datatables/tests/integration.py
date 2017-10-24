@@ -6,7 +6,7 @@ import requests
 
 client = requests.session()
 
-base_url = "http://localhost:8000"
+base_url = "http://23.23.180.177"
 login_url = base_url + "/account/login/"
 
 # Retrieve the CSRF token first
@@ -25,11 +25,11 @@ datatable_name = resp_dict['datatable_name']
 print datatable_name
 
 files = {
-    'base_file': open('input/tl_2014_25_tract/tl_2014_25_tract.shp','rb'),
-    'dbf_file': open('input/tl_2014_25_tract/tl_2014_25_tract.dbf','rb'),
-    'prj_file': open('input/tl_2014_25_tract/tl_2014_25_tract.prj','rb'),
-    'shx_file': open('input/tl_2014_25_tract/tl_2014_25_tract.shx','rb'),
-    'xml_file': open('input/tl_2014_25_tract/tl_2014_25_tract.shp.xml','rb')
+    'base_file': open('scratch/tl_2013_06_tract.shp','rb'),
+    'dbf_file': open('scratch/tl_2013_06_tract.dbf','rb'),
+    'prj_file': open('scratch/tl_2013_06_tract.prj','rb'),
+    'shx_file': open('scratch/tl_2013_06_tract.shx','rb'),
+    'xml_file': open('scratch/tl_2013_06_tract.shp.xml','rb')
     }
 
 # Retrieve the CSRF token first
