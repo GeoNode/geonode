@@ -108,7 +108,7 @@ def csw_global_dispatch(request):
                 for group in request.user.groups.all():
                     groups_ids.append(group.id)
 
-            public_groups = GroupProfile.objects.exclude(access="private").values('group').distinct()
+            public_groups = GroupProfile.objects.exclude(access="private").values('group')
             for group in public_groups:
                 if isinstance(group, dict):
                     if 'group' in group:
