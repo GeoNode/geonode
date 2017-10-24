@@ -138,7 +138,17 @@ class Layer(ResourceBase):
     charset = models.CharField(max_length=255, default='UTF-8')
 
     upload_session = models.ForeignKey('UploadSession', blank=True, null=True)
-
+    # join target: available only for layers within the DATAVERSE_DB
+    def add_as_join_target(self):
+        if not self.id:
+            return 'n/a'
+        if self.store != settings.DB_DATAVERSE_NAME:
+            return 'n/a'
+        admin_url = reverse('admin:datatables_jointarget_add', args=())
+        add_as_target_link = '%s?layer=%s' % (admin_url, self.id)
+        return '<a href="%s">Add as Join Target</a>' % (add_as_target_link)
+    add_as_join_target.allow_tags = True
+    
     @property
     def is_remote(self):
         return self.storeType == "remoteStore"
