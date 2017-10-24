@@ -232,6 +232,7 @@
                 mapTools.selectFeature = mapToolsFactory.createSelectFeatureTool();
                 mapTools.zoomToMaxExtentTool = mapToolsFactory.createZoomToMaxExtentTool();
                 mapTools.zoomToExtentTool = mapToolsFactory.createZoomToExtentTool();
+                mapTools.measurementTool = mapToolsFactory.createMeasurementTool();
                 onZoomHandler.activate(olMap);
 
                 if (mapAccessLevel.isPrivate) {

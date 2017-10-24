@@ -193,7 +193,7 @@
 <script src="{{ STATIC_URL }}Scripts/util/Tools/Map/zoomInOutTool.js"></script>
 <script src="{{ STATIC_URL }}Scripts/util/Tools/Map/zoomToMaxExtentTool.js"></script>
 <script src="{{ STATIC_URL }}Scripts/util/Tools/Map/zoomToExtentTool.js"></script>
-<!-- <script src="{{ STATIC_URL }}Scripts/util/Tools/Map/zoomToExtentTool.js"></script> -->
+<script src="{{ STATIC_URL }}Scripts/util/Tools/Map/measurementTool.js"></script>
 
 <script src="{{ STATIC_URL }}Scripts/util/Tools/UI/featureEditButtonsDirective.js"></script>
 <script src="{{ STATIC_URL }}Scripts/util/Tools/UI/featureRedoUndoButtonsDirective.js"></script>
@@ -209,6 +209,7 @@
 <script src="{{ STATIC_URL }}Scripts/util/Tools/UI/zoomInOutButtonDirective.js"></script>
 <script src="{{ STATIC_URL }}Scripts/util/Tools/UI/zoomToMaxExtentButtonDirective.js"></script>
 <script src="{{ STATIC_URL }}Scripts/util/Tools/UI/zoomToExtentButtonDirective.js"></script>
+<script src="{{ STATIC_URL }}Scripts/util/Tools/UI/measurementButtonsDirective.js"></script>
 
 
 {% endblock extra_script %} {% block middle %}
@@ -239,6 +240,9 @@
                             </li>
                             <li>
                                 <zoom-to-extent-button></zoom-to-extent-button>
+                            </li>
+                            <li>
+                                <measurement-buttons></measurement-buttons>
                             </li>
                             <li class="divider-vertical" draft-only></li>
                             <li draft-only>
