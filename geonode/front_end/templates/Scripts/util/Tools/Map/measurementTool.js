@@ -246,15 +246,16 @@ function MeasurementTool(mapService) {
             });
             map.addOverlay(measureTooltip);
         }
-
         this.lineMeasurement = function() {
-            map.on('pointermove', pointerMoveHandler);
+            mapService.removeEvents();
             mapService.removeUserInteractions();
+            mapService.registerEvent('pointermove', pointerMoveHandler);
             addInteraction('LineString');
         };
         this.areaMeasurement = function() {
-            map.on('pointermove', pointerMoveHandler);
+            mapService.removeEvents();
             mapService.removeUserInteractions();
+            mapService.registerEvent('pointermove', pointerMoveHandler);
             addInteraction('Polygon');
         };
 

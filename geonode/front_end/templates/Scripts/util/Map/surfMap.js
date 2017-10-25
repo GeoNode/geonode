@@ -2,22 +2,33 @@
     function(surfLayerFactory, featureService, Event, ol, $rootScope) {
         return function SurfMap(olMap) {
             var _userInteractions = [];
+            var _userEvents = [];
             var factory = this;
             factory.autoCenterToCurrentLocation = true;
             factory.events = new Event();
-            factory.addInteraction = function(interaction){
+            factory.addInteraction = function(interaction) {
                 _userInteractions.push(interaction);
                 olMap.addInteraction(interaction);
-            }
-            factory.removeUserInteractions = function(){
+            };
+            factory.removeUserInteractions = function() {
                 _userInteractions.forEach(function(interaction) {
                     factory.removeInteraction(interaction);
                 }, this);
-            }
-            factory.getInteractions = function(){
+            };
+
+            factory.registerEvent = function(type, cb) {
+                var id = olMap.on(type, cb);
+                _userEvents.push(id);
+            };
+            factory.removeEvents = function() {
+                _userEvents.forEach(function(element) {
+                    olMap.unByKey(element);
+                }, this);
+            };
+            factory.getInteractions = function() {
                 return olMap.getInteractions();
             }
-            factory.removeInteraction = function(interaction){
+            factory.removeInteraction = function(interaction) {
                 olMap.removeInteraction(interaction);
             }
             factory.openMap = function(mapInfo) {
