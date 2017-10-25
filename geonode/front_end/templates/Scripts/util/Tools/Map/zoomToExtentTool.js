@@ -22,18 +22,8 @@ function ZoomToExtentTool(mapService) {
             mapService.zoomToExtent(ext);
         });
         this.drawBox = function() {
-            //Dragbox - select
-            if (!this.isActivated) {
-                this.isActivated = true;
-                mapService.removeUserInteractions();
-                mapService.addInteraction(draw);
-            } else {
-                this.isActivated = false;
-                mapService.removeInteraction(draw);
-            }
-
-            //Dragbox - get coordinates to fields
-
+            mapService.removeUserInteractions();
+            mapService.addInteraction(draw);
         };
     };
 }

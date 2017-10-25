@@ -5,6 +5,7 @@ SetMarkerTool.$inject = ['mapService'];
 function SetMarkerTool(mapService) {
     return function SetMarkerTool(map, view) {
         var container, content, close, popup;
+        this.showPopup = false;
 
         function createPopup() {
             container = document.getElementById('popup');
@@ -41,6 +42,7 @@ function SetMarkerTool(mapService) {
             var iconFeature = new ol.Feature({
                 geometry: new ol.geom.Point(evt.coordinate),
                 name: 'Lat: ' + latLong[1] + ' lon: ' + latLong[0],
+                coordinate: evt.coordinate,
                 population: 4000,
                 rainfall: 500
             });
@@ -70,27 +72,26 @@ function SetMarkerTool(mapService) {
             return iconFeature;
         }
 
-        function showPopup(evt, feature) {
+        function showPopup(feature) {
+            container.style.visibility = 'visible';
             content.innerHTML = feature.get('name');
-            popup.setPosition(evt.coordinate);
+            popup.setPosition(feature.get('coordinate'));
         }
         this.setMarker = function() {
             mapService.removeUserInteractions();
             mapService.removeEvents();
             createPopup();
-            function doSomething(evt) {
-                console.log(evt);
+
+            mapService.registerEvent('singleclick', function(evt) {
                 var feature = map.forEachFeatureAtPixel(evt.pixel,
                     function(feature, layer) {
                         return feature;
                     });
-                if (feature) {
-                    showPopup(evt, feature);
-                    return;
+                if (!feature) {
+                    feature = addMarker(evt);
                 }
-                showPopup(evt, addMarker(evt));
-            }
-            mapService.registerEvent('singleclick', doSomething);
+                showPopup(feature);
+            });
 
         };
     };
