@@ -91,7 +91,12 @@ class ServiceForm(forms.ModelForm):
     fees = forms.CharField(label=_('Fees'), max_length=1000, widget=forms.TextInput(
         attrs={'size': '60', 'class': 'inputText'}))
 
-
+    def __init__(self, *args, **kwargs):
+        super(ServiceForm, self).__init__(*args, **kwargs)
+        if not getattr(settings, 'CLASSIFICATION_BANNER_ENABLED', False):
+            self.fields.pop('classification')
+            self.fields.pop('caveat')
+                
     class Meta:
         model = Service
         labels = {'description': _('Short Name'),}
