@@ -334,7 +334,7 @@ def layer_detail(request, layername, template='layers/layer_detail.html'):
                       item.url and 'wms' not in item.url and 'gwc' not in item.url]
     for item in links_view:
         if item.url and access_token:
-            item.url = "%s&access_token=%s" % (item.url, access_token)
+            item.url = "%s&access_token=%s&time=%s" % (item.url, access_token, "0/9999")
     for item in links_download:
         if item.url and access_token:
             item.url = "%s&access_token=%s" % (item.url, access_token)
