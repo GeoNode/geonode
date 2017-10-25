@@ -194,6 +194,7 @@
 <script src="{{ STATIC_URL }}Scripts/util/Tools/Map/zoomToMaxExtentTool.js"></script>
 <script src="{{ STATIC_URL }}Scripts/util/Tools/Map/zoomToExtentTool.js"></script>
 <script src="{{ STATIC_URL }}Scripts/util/Tools/Map/measurementTool.js"></script>
+<script src="{{ STATIC_URL }}Scripts/util/Tools/Map/setMarkerTool.js"></script>
 
 <script src="{{ STATIC_URL }}Scripts/util/Tools/UI/featureEditButtonsDirective.js"></script>
 <script src="{{ STATIC_URL }}Scripts/util/Tools/UI/featureRedoUndoButtonsDirective.js"></script>
@@ -210,7 +211,7 @@
 <script src="{{ STATIC_URL }}Scripts/util/Tools/UI/zoomToMaxExtentButtonDirective.js"></script>
 <script src="{{ STATIC_URL }}Scripts/util/Tools/UI/zoomToExtentButtonDirective.js"></script>
 <script src="{{ STATIC_URL }}Scripts/util/Tools/UI/measurementButtonsDirective.js"></script>
-
+<script src="{{ STATIC_URL }}Scripts/util/Tools/UI/setMarkerButtonDirective.js"></script>
 
 {% endblock extra_script %} {% block middle %}
 <div class="surfgis" ng-app="appModule" ng-click="bodyClicked()">
@@ -243,6 +244,9 @@
                             </li>
                             <li>
                                 <measurement-buttons></measurement-buttons>
+                            </li>
+                            <li>
+                                <set-marker></set-marker>
                             </li>
                             <li class="divider-vertical" draft-only></li>
                             <li draft-only>
