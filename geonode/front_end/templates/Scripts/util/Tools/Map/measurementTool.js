@@ -226,7 +226,8 @@ function MeasurementTool(mapService) {
                 offset: [15, 0],
                 positioning: 'center-left'
             });
-            map.addOverlay(helpTooltip);
+            //Will be added later if needed;
+            // map.addOverlay(helpTooltip);
         }
 
 
