@@ -15,6 +15,8 @@
                 factory.zoomToExtent = map.zoomToExtent;
                 factory.getInteractions = map.getInteractions;
                 factory.removeUserInteractions = map.removeUserInteractions;
+                factory.registerEvent = map.registerEvent;
+                factory.removeEvents = map.removeEvents;
             },
             loadMap: function(mapInfo) {
                 mapTools.baseMap.setBaseMapByName(mapInfo.BaseLayerName);
