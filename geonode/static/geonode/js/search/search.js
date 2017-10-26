@@ -421,7 +421,7 @@
     * and pushes/removes the value of the element from the query object
     */
     $scope.multiple_choice_listener = function($event){
-      var element = $($event.target);
+      var element = $(event.currentTarget);
       var query_entry = [];
       var data_filter = element.attr('data-filter');
       var value = element.attr('data-value');
@@ -467,7 +467,7 @@
     }
 
     $scope.single_choice_listener = function($event){
-      var element = $($event.target);
+      var element = $(event.currentTarget);
       var query_entry = [];
       var data_filter = element.attr('data-filter');
       var value = element.attr('data-value');
@@ -560,7 +560,7 @@
     });
 
     $scope.feature_select = function($event){
-      var element = $($event.target);
+      var element = $(event.currentTarget);
       var article = $(element.parents('article')[0]);
       if (article.hasClass('resource_selected')){
         element.html('Select');
