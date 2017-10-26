@@ -283,8 +283,7 @@ def map_metadata(request, mapid, template='maps/map_metadata.html'):
     else:
         all_metadata_author_groups = chain(
             request.user.group_list_all(),
-            GroupProfile.objects.exclude(
-                access="private"))
+            GroupProfile.objects.exclude(access="private").exclude(access="public-invite"))
         [metadata_author_groups.append(item) for item in all_metadata_author_groups
             if item not in metadata_author_groups]
 
