@@ -559,12 +559,12 @@ def file_upload(filename, name=None, user=None, title=None, abstract=None,
         if len(regions_resolved) > 0:
             layer.regions.clear()
             layer.regions.add(*regions_resolved)
-    
+
     # Assign and save the charset using the Layer class' object (layer)
     if charset != 'UTF-8':
         layer.charset = charset
         layer.save()
-    
+
     to_update = {}
     if title is not None:
         to_update['title'] = title
