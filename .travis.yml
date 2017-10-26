@@ -1,3 +1,5 @@
+sudo: required
+
 language: python
 
 python:
@@ -5,6 +7,23 @@ python:
 
 virtualenv:
   system_site_packages: true
+
+services:
+  - docker
+
+env:
+  - BACKEND: 'geonode.geoserver'
+#  FIXME. Will be uncommented when qgis_server backend exists
+#  - BACKEND: 'geonode.qgis_server'
+#    DOCKER_COMPOSE_VERSION: 1.11.2
+#    # This is qgis server address
+#    QGIS_SERVER_URL: http://localhost:9000/
+#    # This is the location of docker network bridge
+#    # So QGIS server can access this address
+#    SITEURL: http://localhost:8000/
+#    GEONODE_PROJECT_PATH: /home/travis/build/kartoza/geonode/
+#    ON_TRAVIS: True
+#    CELERY_ALWAYS_EAGER: True
 
 branches:
   only:
@@ -23,8 +42,8 @@ install:
   - sudo update-java-alternatives --set java-8-oracle
   - pip install -r requirements.txt
   - pip install -e .
-  - pip install coveralls
   - pip install pygdal==`gdal-config --version`
+  - pip install codecov
 
 before_script:
   - paver setup
@@ -36,7 +55,7 @@ after_script:
   - paver reset_hard
 
 after_success:
-  - coveralls
+  - codecov
 
 notifications:
   irc:

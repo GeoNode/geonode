@@ -1020,3 +1020,22 @@ def raw_sql(query, params=None, ret=True):
             desc = [r[0] for r in c.description]
             for row in c:
                 yield dict(zip(desc, row))
+
+
+def check_ogc_backend(backend_package):
+    """Check that geonode use a particular OGC Backend integration
+
+    :param backend_package: django app of backend to use
+    :type backend_package: str
+
+    :return: bool
+    :rtype: bool
+    """
+    # Check exists in INSTALLED_APPS
+    try:
+        in_installed_apps = backend_package in settings.INSTALLED_APPS
+        ogc_conf = settings.OGC_SERVER['default']
+        is_configured = ogc_conf.get('BACKEND') == backend_package
+        return in_installed_apps and is_configured
+    except:
+        return False
