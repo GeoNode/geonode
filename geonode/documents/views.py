@@ -113,12 +113,19 @@ def document_detail(request, docid):
         metadata = document.link_set.metadata().filter(
             name__in=settings.DOWNLOAD_FORMATS_METADATA)
 
+        group = None
+        if document.group:
+            try:
+                group = GroupProfile.objects.get(slug=document.group.name)
+            except GroupProfile.DoesNotExist:
+                group = None
         context_dict = {
             'perms_list': get_perms(
                 request.user,
                 document.get_self_resource()),
             'permissions_json': _perms_info_json(document),
             'resource': document,
+            'group': group,
             'metadata': metadata,
             'imgtypes': IMGTYPES,
             'related': related}
@@ -570,8 +577,15 @@ def document_metadata_detail(
         docid,
         'view_resourcebase',
         _PERMISSION_MSG_METADATA)
+    group = None
+    if document.group:
+        try:
+            group = GroupProfile.objects.get(slug=document.group.name)
+        except GroupProfile.DoesNotExist:
+            group = None
     return render_to_response(template, RequestContext(request, {
         "resource": document,
+        "group": group,
         'SITEURL': settings.SITEURL[:-1]
     }))
 
