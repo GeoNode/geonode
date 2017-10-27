@@ -80,4 +80,5 @@ django-suit==0.2.21
 Shapely==1.5.13
 pyshp==1.2.3
 python-social-auth==0.2.19
+
 #end
