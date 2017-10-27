@@ -110,7 +110,6 @@ class LayersTest(TestCase):
         lyr.group = None
         lyr.save()
 
-
     # Layer Tests
 
     # Test layer upload endpoint
