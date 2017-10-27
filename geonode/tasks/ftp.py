@@ -24,6 +24,8 @@ from geonode.cephgeo.models import CephDataObject
 from geonode import local_settings
 from fabric.contrib.files import upload_template
 
+from geonode.automation.models import CephDataObjectResourceBase
+
 logger = logging.getLogger("geonode.tasks.ftp")
 FTP_USERS_DIRS = {"test-ftp-user": "/mnt/ftp_pool/FTP/PL1/testfolder", }
 env.skip_bad_hosts = True
