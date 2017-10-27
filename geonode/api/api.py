@@ -480,7 +480,7 @@ class ProfileResource(TypeFilteredResource):
         return super(ProfileResource, self).serialize(request, data, format, options)
 
     class Meta:
-        queryset = get_user_model().objects.exclude(username='AnonymousUser')
+        queryset = get_user_model().objects.exclude(Q(username='AnonymousUser') | Q(is_active=False))
         resource_name = 'profiles'
         allowed_methods = ['get']
         ordering = ['username', 'date_joined']
