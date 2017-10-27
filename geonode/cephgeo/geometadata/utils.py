@@ -60,26 +60,17 @@ def lidar_coverage_data():
         params = {}
         params['uid'] = feature.GetFieldAsInteger('uid')
         params['block_name'] = feature.GetFieldAsString('block_name')
-        params['adjusted_l'] = feature.GetFieldAsString('adjusted_l')
+        params['adjusted_l'] = feature.GetFieldAsString('is_adjuste')
         params['sensor'] = feature.GetFieldAsString('sensor')
         params['processor'] = feature.GetFieldAsString('processor')
         params['flight_num'] = feature.GetFieldAsString('flight_num')
         params['mission_na'] = feature.GetFieldAsString('mission_na')
-        temp = feature.GetFieldAsString('date_flown')
-        if temp != '':
-            print 'Temp', temp
-            temp_date = datetime.strptime(
-                temp, "%Y/%m/%d %H:%M:%S") + timedelta(hours=8)
-            print 'Temp date', temp_date
-            params['date_flown'] = datetime(
-                temp_date.year, temp_date.month, temp_date.day)
-        else:
-            params['date_flown'] = None
-        params['x_shift_m'] = feature.GetFieldAsString('x_shift_m')
-        params['y_shift_m'] = feature.GetFieldAsString('y_shift_m')
-        params['z_shift_m'] = feature.GetFieldAsString('z_shift_m')
+        params['date_flown'] = feature.GetFieldAsString('date_flown')
+        params['x_shift_m'] = feature.GetFieldAsString('x_shift')
+        params['y_shift_m'] = feature.GetFieldAsString('y_shift')
+        params['z_shift_m'] = feature.GetFieldAsString('z_shift')
         params['height_dif'] = feature.GetFieldAsString('height_dif')
-        params['rmse_val_m'] = feature.GetFieldAsString('rmse_val_m')
+        params['rmse_val_m'] = feature.GetFieldAsString('rmse_val')
         params['cal_ref_pt'] = feature.GetFieldAsString('cal_ref_pt')
         params['val_ref_pt'] = feature.GetFieldAsString('val_ref_pt')
         params['floodplain'] = feature.GetFieldAsString('floodplain')

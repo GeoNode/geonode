@@ -181,8 +181,7 @@ class LidarCoverageBlock(models.Model):
     processor = models.TextField(blank=True, help_text=processor_ht)
     flight_num = models.TextField(blank=True, help_text=flight_num_ht)
     mission_na = models.TextField(blank=True, help_text=mission_na_ht)
-    date_flown = models.DateField(
-        blank=True, null=True, help_text=date_flown_ht)
+    date_flown = models.TextField(blank=True, help_text=date_flown_ht)
     x_shift_m = models.TextField(blank=True, help_text=x_shift_m_ht)
     y_shift_m = models.TextField(blank=True, help_text=y_shift_m_ht)
     z_shift_m = models.TextField(blank=True, help_text=z_shift_m_ht)
