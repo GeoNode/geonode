@@ -68,16 +68,15 @@ class ServicesTests(TestCase):
         """Test registering an arcrest service
         """
         self.client.login(username='admin', password='admin')
-        response = self.client.post(
-            reverse('register_service'),
-            {
-                'type': 'REST',
-                'url': 'http://maps1.arcgisonline.com/ArcGIS/rest/services/EPA_Toxic_Release_Inventory_2010/MapServer',
-            })
-        self.assertEqual(response.status_code, 200)
-        service_dict = json.loads(response.content)[0]
-
         try:
+            response = self.client.post(
+                reverse('register_service'),
+                {
+                    'type': 'REST',
+                    'url': 'http://maps1.arcgisonline.com/ArcGIS/rest/services/EPA_Facilities/MapServer',
+                })
+            self.assertEqual(response.status_code, 200)
+            service_dict = json.loads(response.content)[0]
             service = Service.objects.get(id=service_dict['service_id'])
             # Harvested some layers
             self.assertTrue(ServiceLayer.objects.filter(service=service).count() > 0)
