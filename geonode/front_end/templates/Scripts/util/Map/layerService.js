@@ -97,6 +97,9 @@
                     interactionHandler.clearFeatures();
                 });
             },
+            fetchWMSFeatures: function(params){
+                return layerRepository.getWMS(undefined, params);
+            },
             fetchLayers: function(url) {
 
 

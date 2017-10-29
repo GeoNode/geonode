@@ -1,8 +1,8 @@
 mapModule
     .factory('SetMarkerTool', SetMarkerTool);
-SetMarkerTool.$inject = ['mapService'];
+SetMarkerTool.$inject = ['mapService', 'layerService'];
 
-function SetMarkerTool(mapService) {
+function SetMarkerTool(mapService, layerService) {
     return function SetMarkerTool(map, view) {
         var container, content, close, popup;
         this.showPopup = false;
@@ -72,8 +72,31 @@ function SetMarkerTool(mapService) {
             return iconFeature;
         }
 
-        function showPopup(feature) {
+        function showPopup(feature, event) {
+            var size = map.getSize();
+            var bbox = map.getView().calculateExtent(size);
+
+            var urlParams = {
+                bbox: bbox.join(','),
+                width: size[0],
+                height: size[1],
+                info_format: 'application/json',
+                exceptions: 'application/json',
+                x: Math.round(event.pixel[0]),
+                y: Math.round(event.pixel[1])
+            };
             container.style.visibility = 'visible';
+            layerService.fetchWMSFeatures(urlParams)
+                .then(function(res) {
+                    var html = feature.get('name');
+                    var properties = res.features.length > 0 ? res.features[0].properties : {};
+                    for (var key in properties) {
+                        html += "<p>" + key + ": " + res.features["0"].properties[key] + "</p>";
+                    }
+                    content.innerHTML = html;
+                }, function(error) {
+
+                });
             content.innerHTML = feature.get('name');
             popup.setPosition(feature.get('coordinate'));
         }
@@ -90,7 +113,7 @@ function SetMarkerTool(mapService) {
                 if (!feature) {
                     feature = addMarker(evt);
                 }
-                showPopup(feature);
+                showPopup(feature, evt);
             });
 
         };
