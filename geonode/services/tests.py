@@ -72,7 +72,7 @@ class ServicesTests(TestCase):
             reverse('register_service'),
             {
                 'type': 'REST',
-                'url': 'http://maps1.arcgisonline.com/ArcGIS/rest/services/EPA_Facilities/MapServer',
+                'url': 'http://maps1.arcgisonline.com/ArcGIS/rest/services/EPA_Toxic_Release_Inventory_2010/MapServer',
             })
         self.assertEqual(response.status_code, 200)
         service_dict = json.loads(response.content)[0]
