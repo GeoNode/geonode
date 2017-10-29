@@ -86,7 +86,8 @@ class ServicesTests(TestCase):
             self.assertEqual(service.ptype, 'gxp_arcrestsource')
         except Exception, e:
             traceback.print_exc(file=sys.stdout)
-            # self.fail("Service not created: %s" % str(e))
+            print("Service not created: %s" % str(e))
+            self.assertRaises(KeyError)
 
     # Making more tolerant the test below because it uses an external service and fails randomly.
     # def test_register_csw(self):
