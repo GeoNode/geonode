@@ -504,7 +504,7 @@ def clean_config(conf):
         return conf
 
 
-def new_map(request, template='maps/map_view.html'):
+def new_map(request, template='maps/map_new.html'):
     config = new_map_config(request)
     context_dict = {
         'config': config,

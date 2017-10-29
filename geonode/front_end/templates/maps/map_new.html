@@ -1,4 +1,5 @@
  {% extends "site_base.html" %} {% load i18n %} {% load base_tags %} {% block title %} {% trans "New Map" %} - {{ block.super }} {% endblock %} {% block head %}
+ <base href="/">
 <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}Content/assets/css/toastr.min.css">
 <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}Content/assets/css/bootstrap-2.3.2.min.css">
 <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}Content/assets/css/theme.css">
@@ -212,6 +213,10 @@
 <script src="{{ STATIC_URL }}Scripts/util/Tools/UI/zoomToExtentButtonDirective.js"></script>
 <script src="{{ STATIC_URL }}Scripts/util/Tools/UI/measurementButtonsDirective.js"></script>
 <script src="{{ STATIC_URL }}Scripts/util/Tools/UI/setMarkerButtonDirective.js"></script>
+
+<script src="{{ STATIC_URL }}.components/angular-ui-grid/ui-grid.min.js"></script>
+<script src="{{ STATIC_URL }}layers/js/layer.module.js"></script>
+<script src="{{ STATIC_URL }}layers/js/layer.service.js"></script>
 
 {% endblock extra_script %} {% block middle %}
 <div class="surfgis" ng-app="appModule" ng-click="bodyClicked()">
