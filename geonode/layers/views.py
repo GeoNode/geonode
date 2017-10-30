@@ -77,6 +77,7 @@ from geonode.geoserver.helpers import ogc_server_settings, save_style
 from geonode.base.views import batch_modify
 from geonode.base.models import Thesaurus
 from geonode.maps.models import Map
+from geonode.geoserver.helpers import _invalidate_geowebcache_layer
 
 if 'geonode.geoserver' in settings.INSTALLED_APPS:
     from geonode.geoserver.helpers import _render_thumbnail
@@ -250,6 +251,10 @@ def layer_upload(request, template='upload/layer_upload.html'):
                                 saved_layer.default_style = save_style(style)
                         except Exception as e:
                             logger.exception(e)
+
+                    # Invalidate GeoWebCache for the updated resource
+                    _invalidate_geowebcache_layer(saved_layer.alternate)
+
             except Exception as e:
                 exception_type, error, tb = sys.exc_info()
                 logger.exception(e)
@@ -899,7 +904,7 @@ def layer_metadata(
     else:
         all_metadata_author_groups = chain(
             request.user.group_list_all().distinct(),
-            GroupProfile.objects.exclude(access="private"))
+            GroupProfile.objects.exclude(access="private").exclude(access="public-invite"))
         [metadata_author_groups.append(item) for item in all_metadata_author_groups
             if item not in metadata_author_groups]
 

@@ -407,7 +407,7 @@ def start_django():
     """
     Start the GeoNode Django application
     """
-    bind = options.get('bind', '')
+    bind = options.get('bind', '0.0.0.0:8000')
     foreground = '' if options.get('foreground', False) else '&'
     sh('python manage.py runserver %s %s' % (bind, foreground))
 
@@ -429,7 +429,12 @@ def start_geoserver(options):
     Start GeoServer with GeoNode extensions
     """
 
-    from geonode.settings import OGC_SERVER
+    from geonode.settings import OGC_SERVER, INSTALLED_APPS
+
+    # only start if using Geoserver backend
+    if 'geonode.geoserver' not in INSTALLED_APPS:
+        return
+
     GEOSERVER_BASE_URL = OGC_SERVER['default']['LOCATION']
     url = GEOSERVER_BASE_URL
 
@@ -552,7 +557,7 @@ def test_integration(options):
             sh('sleep 30')
             call_task('setup_data')
         sh(('python manage.py test %s'
-            ' --noinput --liveserver=localhost:8000' % name))
+            ' --noinput --liveserver=0.0.0.0:8000' % name))
     except BuildFailure as e:
         info('Tests failed! %s' % str(e))
     else:

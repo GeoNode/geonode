@@ -18,22 +18,31 @@
 #
 #########################################################################
 
-from django.db.models import Q
-from autocomplete_light.registry import register
-from autocomplete_light.autocomplete.shortcuts import AutocompleteModelTemplate
-from .models import Profile
+
+from functools import wraps
+
+from geonode.utils import check_ogc_backend
 
 
-class ProfileAutocomplete(AutocompleteModelTemplate):
-    choice_template = 'autocomplete_response.html'
+def on_ogc_backend(backend_package):
+    """Decorator for function specific to a certain ogc backend.
 
-    def choices_for_request(self):
-        self.choices = self.choices.exclude(Q(username='AnonymousUser') | Q(is_active=False))
-        return super(ProfileAutocomplete, self).choices_for_request()
+    This decorator will wrap function so it only gets executed if the
+    specified ogc backend is currently used. If not, the function will just
+    be skipped.
 
+    Useful to decorate features/tests that only available for specific
+    backend.
+    """
 
-register(
-    Profile,
-    ProfileAutocomplete,
-    search_fields=['first_name', 'last_name', 'email', 'username'],
-)
+    def decorator(func):
+
+        @wraps(func)
+        def wrapper(*args, **kwargs):
+            on_backend = check_ogc_backend(backend_package)
+            if on_backend:
+                return func(*args, **kwargs)
+
+        return wrapper
+
+    return decorator

@@ -35,7 +35,7 @@ from geonode.layers.populate_layers_data import create_layer_data
 from geonode.groups.models import Group
 
 
-class BulkPermissionsTests(ResourceTestCaseMixin):
+class BulkPermissionsTests(ResourceTestCaseMixin, TestCase):
     fixtures = ['initial_data.json', 'bobby']
 
     def setUp(self):
