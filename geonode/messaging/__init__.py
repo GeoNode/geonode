@@ -17,12 +17,8 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
-
-from __future__ import with_statement
-
 from django.conf import settings
 from kombu import BrokerConnection
-
 
 # run in-memory if broker is not available
 # see producer code for synchronous queue

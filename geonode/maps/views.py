@@ -278,17 +278,28 @@ def map_metadata(request, mapid, template='maps/map_metadata.html'):
     layers = MapLayer.objects.filter(map=map_obj.id)
 
     metadata_author_groups = []
-    if request.user.is_superuser:
+    if request.user.is_superuser or request.user.is_staff:
         metadata_author_groups = GroupProfile.objects.all()
     else:
-        metadata_author_groups = chain(
-            metadata_author.group_list_all(),
-            GroupProfile.objects.exclude(
-                access="private"))
+        all_metadata_author_groups = chain(
+            request.user.group_list_all(),
+            GroupProfile.objects.exclude(access="private").exclude(access="public-invite"))
+        [metadata_author_groups.append(item) for item in all_metadata_author_groups
+            if item not in metadata_author_groups]
 
     if settings.ADMIN_MODERATE_UPLOADS:
-        if not request.user.is_superuser and not request.user.is_staff:
+        if not request.user.is_superuser:
             map_form.fields['is_published'].widget.attrs.update({'disabled': 'true'})
+        if not request.user.is_superuser or not request.user.is_staff:
+            can_change_metadata = request.user.has_perm(
+                'change_resourcebase_metadata',
+                map_obj.get_self_resource())
+            try:
+                is_manager = request.user.groupmember_set.all().filter(role='manager').exists()
+            except:
+                is_manager = False
+            if not is_manager or not can_change_metadata:
+                map_form.fields['is_approved'].widget.attrs.update({'disabled': 'true'})
 
     return render_to_response(template, RequestContext(request, {
         "config": json.dumps(config),
@@ -726,6 +737,7 @@ def add_layers_to_map_config(request, map_obj, layer_names, add_base_layers=True
         # Add required parameters for GXP lazy-loading
         config["title"] = layer.title
         config["queryable"] = True
+        config["wrapDateLine"] = True
 
         config["srs"] = getattr(
             settings, 'DEFAULT_MAP_CRS', 'EPSG:900913')

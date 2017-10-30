@@ -23,13 +23,14 @@
 import os
 import sys
 import re
+from datetime import timedelta
 
 from kombu import Queue
 from geonode import __file__ as geonode_path
 from geonode import get_version
 from geonode.celery_app import app  # flake8: noqa
 from distutils.util import strtobool
-# import djcelery
+from django.conf.global_settings import DATETIME_INPUT_FORMATS
 import dj_database_url
 
 #
@@ -97,6 +98,11 @@ DATABASE_URL = os.getenv(
 #DATABASE_URL = 'postgresql://test_geonode:test_geonode@localhost:5432/geonode'
 
 # Defines settings for development
+
+# since GeoDjango is in use, you should use gis-enabled engine, for example:
+# 'ENGINE': 'django.contrib.gis.db.backends.postgis'
+# see https://docs.djangoproject.com/en/1.8/ref/contrib/gis/db-api/#module-django.contrib.gis.db.backends for
+# detailed list of supported backends and notes.
 DATABASES = {
     'default': dj_database_url.parse(DATABASE_URL, conn_max_age=600)
 }
@@ -363,7 +369,18 @@ INSTALLED_APPS = (
     'polymorphic',
     'guardian',
     'oauth2_provider',
+    'corsheaders',
 ) + GEONODE_APPS
+
+MONITORING_ENABLED = False
+
+# how long monitoring data should be stored
+MONITORING_DATA_TTL = timedelta(days=7)
+
+# this will disable csrf check for notification config views,
+# use with caution - for dev purpose only
+MONITORING_DISABLE_CSRF = False
+
 
 LOGGING = {
     'version': 1,
@@ -442,6 +459,7 @@ TEMPLATES = [
 ]
 
 MIDDLEWARE_CLASSES = (
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
@@ -467,7 +485,6 @@ MIDDLEWARE_CLASSES = (
     'django.contrib.auth.middleware.SessionAuthenticationMiddleware',
     'oauth2_provider.middleware.OAuth2TokenMiddleware',
 )
-
 
 # Replacement of default authentication backend in order to support
 # permissions per object.
@@ -752,6 +769,10 @@ THUNDERFOREST_BASEMAPS = os.environ.get('THUNDERFOREST_BASEMAPS', False)
 MAPBOX_ACCESS_TOKEN = os.environ.get('MAPBOX_ACCESS_TOKEN', None)
 BING_API_KEY = os.environ.get('BING_API_KEY', None)
 GOOGLE_API_KEY = os.environ.get('GOOGLE_API_KEY', None)
+
+# handle timestamps like 2017-05-30 16:04:00.719 UTC
+DATETIME_INPUT_FORMATS = DATETIME_INPUT_FORMATS +\
+    ('%Y-%m-%d %H:%M:%S.%f %Z', '%Y-%m-%dT%H:%M:%S.%f', '%Y-%m-%dT%H:%M:%S%Z')
 
 MAP_BASELAYERS = [{
     "source": {"ptype": "gxp_olsource"},
@@ -1132,7 +1153,7 @@ if S3_MEDIA_ENABLED:
 # 3. Override settings in a local_settings.py file, legacy.
 # Load more settings from a file called local_settings.py if it exists
 try:
-    from local_settings import *  # noqa
+    from geonode.local_settings import *
 except ImportError:
     pass
 
@@ -1191,6 +1212,12 @@ RISKS = {'DEFAULT_LOCATION': None,
 # Each uploaded Layer must be approved by an Admin before becoming visible
 ADMIN_MODERATE_UPLOADS = False
 
+# add following lines to your local settings to enable monitoring
+if MONITORING_ENABLED:
+    INSTALLED_APPS + ('geonode.contrib.monitoring',)
+    MIDDLEWARE_CLASSES + ('geonode.contrib.monitoring.middleware.MonitoringMiddleware',)
+
+GEOIP_PATH = os.path.join(PROJECT_ROOT, 'GeoIPCities.dat')
 # If this option is enabled, Resources belonging to a Group won't be visible by others
 GROUP_PRIVATE_RESOURCES = False
 

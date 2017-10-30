@@ -48,7 +48,9 @@ from geonode.tasks.update import geoserver_update_layers
 from geonode.utils import json_response, _get_basic_auth_info
 from geoserver.catalog import FailedRequestError, ConflictingDataError
 from lxml import etree
-from .helpers import get_stores, ogc_server_settings, set_styles, style_update, create_gs_thumbnail
+from .helpers import (get_stores, ogc_server_settings,
+                      set_styles, style_update, create_gs_thumbnail,
+                      _invalidate_geowebcache_layer)
 
 logger = logging.getLogger(__name__)
 
@@ -174,6 +176,8 @@ def layer_style_upload(request, layername):
         except ConflictingDataError:
             return respond(errors="""A layer with this name exists. Select
                                      the update option if you want to update.""")
+    # Invalidate GeoWebCache for the updated resource
+    _invalidate_geowebcache_layer(layer.alternate)
     return respond(
         body={
             'success': True,
@@ -183,7 +187,6 @@ def layer_style_upload(request, layername):
 
 @login_required
 def layer_style_manage(request, layername):
-
     layer = _resolve_layer(
         request,
         layername,
@@ -274,6 +277,10 @@ def layer_style_manage(request, layername):
             # Save to Django
             layer = set_styles(layer, cat)
             layer.save()
+
+            # Invalidate GeoWebCache for the updated resource
+            _invalidate_geowebcache_layer(layer.alternate)
+
             return HttpResponseRedirect(
                 reverse(
                     'layer_detail',
@@ -299,17 +306,27 @@ def feature_edit_check(request, layername):
     If the layer is not a raster and the user has edit permission, return a status of 200 (OK).
     Otherwise, return a status of 401 (unauthorized).
     """
-    layer = _resolve_layer(request, layername)
+    try:
+        layer = _resolve_layer(request, layername)
+    except:
+        # Intercept and handle correctly resource not found exception
+        return HttpResponse(
+            json.dumps({'authorized': False}), content_type="application/json")
     datastore = ogc_server_settings.DATASTORE
     feature_edit = getattr(settings, "GEOGIG_DATASTORE", None) or datastore
     is_admin = False
     is_staff = False
     is_owner = False
+    is_manager = False
     if request.user:
         is_admin = request.user.is_superuser if request.user else False
         is_staff = request.user.is_staff if request.user else False
         is_owner = (str(request.user) == str(layer.owner))
-    if is_admin or is_staff or is_owner or request.user.has_perm(
+        try:
+            is_manager = request.user.groupmember_set.all().filter(role='manager').exists()
+        except:
+            is_manager = False
+    if is_admin or is_staff or is_owner or is_manager or request.user.has_perm(
             'change_layer_data',
             obj=layer) and layer.storeType == 'dataStore' and feature_edit:
         return HttpResponse(

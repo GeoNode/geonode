@@ -77,6 +77,7 @@ from geonode.geoserver.helpers import ogc_server_settings, save_style
 from geonode.base.views import batch_modify
 from geonode.base.models import Thesaurus
 from geonode.maps.models import Map
+from geonode.geoserver.helpers import _invalidate_geowebcache_layer
 
 if 'geonode.geoserver' in settings.INSTALLED_APPS:
     from geonode.geoserver.helpers import _render_thumbnail
@@ -250,6 +251,10 @@ def layer_upload(request, template='upload/layer_upload.html'):
                                 saved_layer.default_style = save_style(style)
                         except Exception as e:
                             logger.exception(e)
+
+                    # Invalidate GeoWebCache for the updated resource
+                    _invalidate_geowebcache_layer(saved_layer.alternate)
+
             except Exception as e:
                 exception_type, error, tb = sys.exc_info()
                 logger.exception(e)
@@ -302,6 +307,8 @@ def layer_upload(request, template='upload/layer_upload.html'):
             status_code = 200
         else:
             status_code = 400
+        if settings.MONITORING_ENABLED:
+            request.add_resource('layer', saved_layer.alternate if saved_layer else name)
         return HttpResponse(
             json.dumps(out),
             content_type='application/json',
@@ -849,8 +856,19 @@ def layer_metadata(
         return HttpResponse(json.dumps({'message': message}))
 
     if settings.ADMIN_MODERATE_UPLOADS:
-        if not request.user.is_superuser and not request.user.is_staff:
+        if not request.user.is_superuser:
             layer_form.fields['is_published'].widget.attrs.update({'disabled': 'true'})
+        if not request.user.is_superuser and not request.user.is_staff:
+            can_change_metadata = request.user.has_perm(
+                'change_resourcebase_metadata',
+                layer.get_self_resource())
+            try:
+                is_manager = request.user.groupmember_set.all().filter(role='manager').exists()
+            except:
+                is_manager = False
+            if not is_manager or not can_change_metadata:
+                layer_form.fields['is_approved'].widget.attrs.update({'disabled': 'true'})
+
     if poc is not None:
         layer_form.fields['poc'].initial = poc.id
         poc_form = ProfileForm(prefix="poc")
@@ -881,12 +899,14 @@ def layer_metadata(
         metadataxsl = True
 
     metadata_author_groups = []
-    if request.user.is_superuser:
+    if request.user.is_superuser or request.user.is_staff:
         metadata_author_groups = GroupProfile.objects.all()
     else:
-        metadata_author_groups = chain(
-            metadata_author.group_list_all(),
-            GroupProfile.objects.exclude(access="private"))
+        all_metadata_author_groups = chain(
+            request.user.group_list_all().distinct(),
+            GroupProfile.objects.exclude(access="private").exclude(access="public-invite"))
+        [metadata_author_groups.append(item) for item in all_metadata_author_groups
+            if item not in metadata_author_groups]
 
     return render_to_response(template, RequestContext(request, {
         "resource": layer,
@@ -922,6 +942,10 @@ def layer_metadata_advanced(request, layername):
 @login_required
 def layer_change_poc(request, ids, template='layers/layer_change_poc.html'):
     layers = Layer.objects.filter(id__in=ids.split('_'))
+
+    if settings.MONITORING_ENABLED:
+        for l in layers:
+            request.add_resource('layer', l.altername)
     if request.method == 'POST':
         form = PocForm(request.POST)
         if form.is_valid():
@@ -1139,7 +1163,6 @@ def get_layer(request, layername):
         if isinstance(obj, decimal.Decimal):
             return float(obj)
         raise TypeError
-
     logger.debug('Call get layer')
     if request.method == 'GET':
         layer_obj = _resolve_layer(request, layername)

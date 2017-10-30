@@ -201,6 +201,11 @@ setup(name='GeoNode',
         "factory-boy<=2.9.2",
         "Faker<=0.8.4",
         # "WeasyPrint",
+        "user-agents",
+        "xmljson",
+        'psutil',
+        'django-cors-headers',
+        'django-multi-email-field',
       ],
       zip_safe=False
       )
