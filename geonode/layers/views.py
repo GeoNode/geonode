@@ -399,8 +399,15 @@ def layer_detail(request, layername, template='layers/layer_detail.html'):
             granules = {"features": []}
             all_granules = {"features": []}
 
+    group = None
+    if layer.group:
+        try:
+            group = GroupProfile.objects.get(slug=layer.group.name)
+        except GroupProfile.DoesNotExist:
+            group = None
     context_dict = {
-        "resource": layer,
+        'resource': layer,
+        'group': group,
         'perms_list': get_perms(request.user, layer.get_self_resource()),
         "permissions_json": _perms_info_json(layer),
         "documents": get_related_documents(layer),
@@ -1195,8 +1202,15 @@ def layer_metadata_detail(
         layername,
         'view_resourcebase',
         _PERMISSION_MSG_METADATA)
+    group = None
+    if layer.group:
+        try:
+            group = GroupProfile.objects.get(slug=layer.group.name)
+        except GroupProfile.DoesNotExist:
+            group = None
     return render_to_response(template, RequestContext(request, {
         "resource": layer,
+        "group": group,
         'SITEURL': settings.SITEURL[:-1]
     }))
 
