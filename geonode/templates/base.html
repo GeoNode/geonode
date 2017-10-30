@@ -837,6 +837,12 @@
                 </a>
             </li>
             <li class="c-menu__item">
+                <a href="{% url "analytics" %}" class="c-menu__link">
+                    <img src="{{ STATIC_URL }}geonode/images/user-icon/help.png" alt="Help">
+                    <span style="text-align:left;color:#fff;margin-left:-10px;">{% trans "Analytics" %}</span>
+                </a>
+            </li>
+            <li class="c-menu__item">
                 <a href="{% url "data-folder-backup" %}" class="c-menu__link">
                     <img src="{{ STATIC_URL }}geonode/images/user-icon/help.png" alt="Help">
                     <span style="text-align:left;color:#fff;margin-left:-10px;">{% trans "Geoserver Data Backup" %}</span>
@@ -891,7 +897,7 @@
     <script src="{{ STATIC_URL }}notify/notifyX.js?v={{ VERSION }}"></script>
     {% include 'autocomplete_light/static.html' %}
     <script type="text/javascript" src="{% url 'django.views.i18n.javascript_catalog' %}"></script>
-
+    <script src="{{ STATIC_URL }}geonode/js/base/analytics.js" type="text/javascript"></script>
 
     {% block extra_script %}{% endblock extra_script %}
 
@@ -1036,6 +1042,11 @@
    <!--</script>-->
 
     <script type="text/javascript" src="{% url "lang" %}"></script>
+    <script type="text/javascript">
+        user_info = '{{ request.user.id }}';
+        layer_info = '{{ resource.id }}';
+        map_info = '{{ maps|length }}' == 'NULL' ? 0 : '{{ maps.0.id }}';
+    </script>
 
   </body>
 </html>
