@@ -29,6 +29,9 @@ from django.conf import settings
 from django.forms.models import model_to_dict
 
 
+# use different name to avoid module clash
+from geonode import geoserver as geoserver_app
+from geonode.decorators import on_ogc_backend
 from geonode.geoserver.ows import wcs_links, wfs_links, wms_links
 from geonode.geoserver.helpers import cascading_delete, set_attributes_from_geoserver
 from geonode.geoserver.helpers import set_styles, gs_catalog
@@ -71,6 +74,7 @@ def geoserver_pre_save(*args, **kwargs):
     pass
 
 
+@on_ogc_backend(geoserver_app.BACKEND_PACKAGE)
 def geoserver_post_save(instance, sender, **kwargs):
     from geonode.messaging import producer
     # this is attached to various models, (ResourceBase, Document)

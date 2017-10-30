@@ -49,6 +49,7 @@ from django.db.models.signals import pre_delete
 from django.template.loader import render_to_string
 from django.utils.translation import ugettext as _
 import geoserver
+from geonode.maps.models import Map
 from geoserver.catalog import Catalog
 from geoserver.catalog import ConflictingDataError
 from geoserver.catalog import FailedRequestError, UploadError
@@ -790,6 +791,12 @@ def set_styles(layer, gs_catalog):
         style_set.append(save_style(alt_style))
 
     layer.styles = style_set
+
+    # Update default style to database
+    to_update = {
+        'default_style': layer.default_style
+    }
+    Layer.objects.filter(id=layer.id).update(**to_update)
     return layer
 
 
@@ -1815,7 +1822,7 @@ def create_gs_thumbnail(instance, overwrite=False):
     """
     Create a thumbnail with a GeoServer request.
     """
-    if instance.class_name == 'Map':
+    if isinstance(instance, Map):
         local_layers = []
         for layer in instance.layers:
             if layer.local:

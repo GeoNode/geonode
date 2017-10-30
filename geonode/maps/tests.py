@@ -32,10 +32,12 @@ from agon_ratings.models import OverallRating
 from django.contrib.auth import get_user_model
 from django.conf import settings
 
+from geonode.decorators import on_ogc_backend
 from geonode.layers.models import Layer
 from geonode.maps.models import Map
 from geonode.maps.utils import fix_baselayers
-from geonode.utils import default_map_config
+from geonode import geoserver, qgis_server
+from geonode.utils import default_map_config, check_ogc_backend
 from geonode.base.populate_test_data import create_models
 from geonode.maps.tests_populate_maplayers import create_maplayers
 from geonode.tests.utils import NotificationsTestsHelper
@@ -57,7 +59,7 @@ VIEWER_CONFIG = """
     }
   },
   "map": {
-    "projection":"EPSG:900913",
+    "projection":"EPSG:3857",
     "units":"m",
     "maxResolution":156543.0339,
     "maxExtent":[-20037508.34,-20037508.34,20037508.34,20037508.34],
@@ -113,7 +115,7 @@ community."
         }
       },
       "map": {
-        "projection":"EPSG:900913",
+        "projection":"EPSG:3857",
         "units":"m",
         "maxResolution":156543.0339,
         "maxExtent":[-20037508.34,-20037508.34,20037508.34,20037508.34],
@@ -137,6 +139,7 @@ community."
                 "view_resourcebase"]},
         "groups": {}}
 
+    @on_ogc_backend(geoserver.BACKEND_PACKAGE)
     def test_map_json(self):
         # Test that saving a map when not logged in gives 401
         response = self.client.put(
@@ -204,6 +207,7 @@ community."
         self.assertEquals(response.status_code, 400)
         self.client.logout()
 
+    @on_ogc_backend(geoserver.BACKEND_PACKAGE)
     def test_map_fetch(self):
         """/maps/[id]/data -> Test fetching a map in JSON"""
         map_obj = Map.objects.get(id=1)
@@ -594,6 +598,20 @@ community."
             content_type="text/json")
         self.assertEquals(response.status_code, 200)
         map_id = int(json.loads(response.content)['id'])
+        # Check new map saved
+        map_obj = Map.objects.get(id=map_id)
+        # Check
+        # BBox format: [xmin, xmax, ymin, ymax
+        bbox_str = [
+            '-90.1932079140', '-79.2067920625',
+            '9.0592199045', '16.5407800920', 'EPSG:4326']
+
+        self.assertEqual(
+            bbox_str,
+            [str(c) for c in map_obj.bbox])
+        bbox_long_str = '-90.1932079140,9.0592199045,' \
+                        '-79.2067920625,16.5407800920'
+        self.assertEqual(bbox_long_str, map_obj.bbox_string)
 
         # Test methods other than GET or POST and no layer in params
         response = self.client.put(url)
@@ -635,8 +653,12 @@ community."
         map_id = 1
         map_obj = Map.objects.get(id=map_id)
 
-        # number of base layers (we remove the local geoserver entry from the total)
-        n_baselayers = len(settings.MAP_BASELAYERS) - 1
+        if check_ogc_backend(geoserver.BACKEND_PACKAGE):
+            # number of base layers (we remove the local geoserver entry from the total)
+            n_baselayers = len(settings.MAP_BASELAYERS) - 1
+        elif check_ogc_backend(qgis_server.BACKEND_PACKAGE):
+            # QGIS Server backend already excluded local geoserver entry
+            n_baselayers = len(settings.MAP_BASELAYERS)
 
         # number of local layers
         n_locallayers = map_obj.layer_set.filter(local=True).count()

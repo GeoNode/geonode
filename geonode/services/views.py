@@ -690,11 +690,11 @@ def _register_indexed_layers(service, wms=None, verbosity=False):
 
             if not existing_layer:
                 try:
-                    signals.post_save.disconnect(
+                    resourcebase_disconnected = signals.post_save.disconnect(
                         resourcebase_post_save, sender=Layer)
-                    signals.post_save.disconnect(
+                    catalogue_disconnected = signals.post_save.disconnect(
                         catalogue_post_save, sender=Layer)
-                    signals.post_save.disconnect(
+                    geoserver_disconnected = signals.post_save.disconnect(
                         geoserver_post_save, sender=Layer)
                     saved_layer = Layer.objects.create(
                         typename=wms_layer.name,
@@ -736,12 +736,18 @@ def _register_indexed_layers(service, wms=None, verbosity=False):
                     logger.error("Error registering %s:%s" %
                                  (wms_layer.name, str(e)))
                 finally:
-                    signals.post_save.connect(
-                        resourcebase_post_save, sender=Layer)
-                    signals.post_save.connect(
-                        catalogue_post_save, sender=Layer)
-                    signals.post_save.connect(
-                        geoserver_post_save, sender=Layer)
+                    # Only reconnect if it was previously disconnected.
+                    # Useful in unittest to avoid mistakenly connecting a
+                    # signals between tests modules.
+                    if resourcebase_disconnected:
+                        signals.post_save.connect(
+                            resourcebase_post_save, sender=Layer)
+                    if catalogue_disconnected:
+                        signals.post_save.connect(
+                            catalogue_post_save, sender=Layer)
+                    if geoserver_disconnected:
+                        signals.post_save.connect(
+                            geoserver_post_save, sender=Layer)
             count += 1
         message = "%d Layers Registered" % count
         return_dict = {'status': 'ok', 'msg': message}
