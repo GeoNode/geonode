@@ -597,12 +597,12 @@
         {% for style in resource.styles.all %}
         <li>
           {% if resource.default_style == style %}
-          <input type="radio" checked name="style" id="{{ style.name }}" value="{{ style.title }}"/>
+          <input type="radio" checked name="style" id="{{ style.name }}" value="{% if style.title %}{{ style.title }}{% else %}{{ style.name }}{% endif %}"/>
           (default style)
           {% else %}
-          <input type="radio" name="style" id="{{ style.name }}" value="{{ style.title }}"/>
+          <input type="radio" name="style" id="{{ style.name }}" value="{% if style.title %}{{ style.title }}{% else %}{{ style.name }}{% endif %}"/>
           {% endif %}
-          <a href="{{ GEOSERVER_BASE_URL }}{{ style.absolute_url }}" >{{ style.sld_title }}</a>
+          <a href="{{ GEOSERVER_BASE_URL }}{{ style.absolute_url }}" >{% if style.sld_title %}{{ style.sld_title }}{% else %}{{ style.name }}{% endif %}</a>
         </li>
         {% empty %}
         <li>{% trans "No styles associated with this layer" %}</li>
