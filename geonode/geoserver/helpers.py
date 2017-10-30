@@ -26,6 +26,7 @@ from itertools import cycle, izip
 import json
 import logging
 import os
+from os.path import basename, splitext, isfile
 import re
 import sys
 from threading import local
@@ -33,7 +34,6 @@ import time
 import uuid
 import base64
 import httplib2
-
 
 import urllib
 from urlparse import urlparse
@@ -182,6 +182,58 @@ _style_templates = dict(
 
 def _style_name(resource):
     return _punc.sub("_", resource.store.workspace.name + ":" + resource.name)
+
+
+def extract_name_from_sld(gs_catalog, sld, sld_file=None):
+    try:
+        if sld:
+            dom = etree.XML(sld)
+        elif sld_file and isfile(sld_file):
+            dom = etree.parse(sld_file)
+    except Exception:
+        logger.exception("The uploaded SLD file is not valid XML")
+        raise Exception(
+            "The uploaded SLD file is not valid XML")
+
+    named_layer = dom.findall(
+        "{http://www.opengis.net/sld}NamedLayer")
+    user_layer = dom.findall(
+        "{http://www.opengis.net/sld}UserLayer")
+
+    el = None
+    if named_layer and len(named_layer) > 0:
+        user_style = named_layer[0].findall("{http://www.opengis.net/sld}UserStyle")
+        if user_style and len(user_style) > 0:
+            el = user_style[0].findall("{http://www.opengis.net/sld}Name")
+            if len(el) == 0:
+                el = user_style[0].findall("{http://www.opengis.net/se}Name")
+
+        if len(el) == 0:
+            el = named_layer[0].findall("{http://www.opengis.net/sld}Name")
+        if len(el) == 0:
+            el = named_layer[0].findall("{http://www.opengis.net/se}Name")
+
+    if not el or len(el) == 0:
+        if user_layer and len(user_layer) > 0:
+            user_style = user_layer[0].findall("{http://www.opengis.net/sld}UserStyle")
+            if user_style and len(user_style) > 0:
+                el = user_style[0].findall("{http://www.opengis.net/sld}Name")
+                if len(el) == 0:
+                    el = user_style[0].findall("{http://www.opengis.net/se}Name")
+
+            if len(el) == 0:
+                el = user_layer[0].findall("{http://www.opengis.net/sld}Name")
+            if len(el) == 0:
+                el = user_layer[0].findall("{http://www.opengis.net/se}Name")
+
+    if not el or len(el) == 0:
+        if sld_file:
+            return splitext(basename(sld_file))[0]
+        else:
+            raise Exception(
+                "Please provide a name, unable to extract one from the SLD.")
+
+    return el[0].text
 
 
 def get_sld_for(gs_catalog, layer):

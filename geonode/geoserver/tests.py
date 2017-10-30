@@ -20,6 +20,10 @@
 
 import base64
 import json
+import os
+import shutil
+import tempfile
+from os.path import basename, splitext
 
 from django.contrib.auth import get_user_model
 from django.http import HttpRequest
@@ -31,10 +35,500 @@ from django.test.utils import override_settings
 
 from guardian.shortcuts import assign_perm, get_anonymous_user
 
-from geonode.geoserver.helpers import OGC_Servers_Handler
+from geonode.geoserver.helpers import OGC_Servers_Handler, extract_name_from_sld
 from geonode.base.populate_test_data import create_models
 from geonode.layers.populate_layers_data import create_layer_data
 from geonode.layers.models import Layer
+
+san_andres_y_providencia_sld = """<?xml version="1.0" encoding="UTF-8"?>
+<sld:StyledLayerDescriptor xmlns:sld="http://www.opengis.net/sld"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xmlns:ogc="http://www.opengis.net/ogc"
+  xmlns:gml="http://www.opengis.net/gml"
+  version="1.0.0"
+  xsi:schemaLocation="http://www.opengis.net/sld http://schemas.opengis.net/sld/1.0.0/StyledLayerDescriptor.xsd">
+  <sld:NamedLayer>
+    <sld:Name>geonode:san_andres_y_providencia_administrative</sld:Name>
+    <sld:UserStyle>
+      <sld:Name>san_andres_y_providencia_administrative</sld:Name>
+      <sld:Title>San Andres y Providencia Administrative</sld:Title>
+      <sld:IsDefault>1</sld:IsDefault>
+      <sld:FeatureTypeStyle>
+        <sld:Rule>
+          <sld:LineSymbolizer>
+            <sld:Stroke>
+              <sld:CssParameter name="stroke">#880000</sld:CssParameter>
+              <sld:CssParameter name="stroke-width">3</sld:CssParameter>
+              <sld:CssParameter name="stroke-dasharray">4.0 4.0</sld:CssParameter>
+            </sld:Stroke>
+          </sld:LineSymbolizer>
+        </sld:Rule>
+      </sld:FeatureTypeStyle>
+      <sld:FeatureTypeStyle>
+        <sld:Rule>
+          <sld:LineSymbolizer>
+            <sld:Stroke>
+              <sld:CssParameter name="stroke">#ffbbbb</sld:CssParameter>
+              <sld:CssParameter name="stroke-width">2</sld:CssParameter>
+            </sld:Stroke>
+          </sld:LineSymbolizer>
+        </sld:Rule>
+      </sld:FeatureTypeStyle>
+    </sld:UserStyle>
+  </sld:NamedLayer>
+</sld:StyledLayerDescriptor>
+"""
+
+lac_sld = """<?xml version="1.0" encoding="UTF-8"?>
+<StyledLayerDescriptor xmlns="http://www.opengis.net/sld"
+  xmlns:ogc="http://www.opengis.net/ogc"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  version="1.1.0" xmlns:xlink="http://www.w3.org/1999/xlink"
+  xsi:schemaLocation="http://www.opengis.net/sld http://schemas.opengis.net/sld/1.1.0/StyledLayerDescriptor.xsd"
+  xmlns:se="http://www.opengis.net/se">
+  <NamedLayer>
+    <se:Name>LAC_NonIndigenous_Access_to_Sanitation2</se:Name>
+    <UserStyle>
+      <se:Name>LAC NonIndigenous Access to Sanitation</se:Name>
+      <se:FeatureTypeStyle>
+        <se:Rule>
+          <se:Name> Low (25 - 40%) </se:Name>
+          <se:Description>
+            <se:Title> Low (25 - 40%) </se:Title>
+          </se:Description>
+          <ogc:Filter xmlns:ogc="http://www.opengis.net/ogc">
+            <ogc:And>
+              <ogc:PropertyIsGreaterThanOrEqualTo>
+                <ogc:PropertyName>NonInd</ogc:PropertyName>
+                <ogc:Literal>24.89999999999999858</ogc:Literal>
+              </ogc:PropertyIsGreaterThanOrEqualTo>
+              <ogc:PropertyIsLessThanOrEqualTo>
+                <ogc:PropertyName>NonInd</ogc:PropertyName>
+                <ogc:Literal>39.89999999999999858</ogc:Literal>
+              </ogc:PropertyIsLessThanOrEqualTo>
+            </ogc:And>
+          </ogc:Filter>
+          <se:PolygonSymbolizer>
+            <se:Fill>
+              <se:SvgParameter name="fill">#ff8b16</se:SvgParameter>
+            </se:Fill>
+            <se:Stroke>
+              <se:SvgParameter name="stroke">#000001</se:SvgParameter>
+              <se:SvgParameter name="stroke-width">0.1</se:SvgParameter>
+              <se:SvgParameter name="stroke-linejoin">bevel</se:SvgParameter>
+            </se:Stroke>
+          </se:PolygonSymbolizer>
+        </se:Rule>
+        <se:Rule>
+          <se:Name> Medium Low (40 - 65 %)</se:Name>
+          <se:Description>
+            <se:Title> Medium Low (40 - 65 %)</se:Title>
+          </se:Description>
+          <ogc:Filter xmlns:ogc="http://www.opengis.net/ogc">
+            <ogc:And>
+              <ogc:PropertyIsGreaterThan>
+                <ogc:PropertyName>NonInd</ogc:PropertyName>
+                <ogc:Literal>39.89999999999999858</ogc:Literal>
+              </ogc:PropertyIsGreaterThan>
+              <ogc:PropertyIsLessThanOrEqualTo>
+                <ogc:PropertyName>NonInd</ogc:PropertyName>
+                <ogc:Literal>64.90000000000000568</ogc:Literal>
+              </ogc:PropertyIsLessThanOrEqualTo>
+            </ogc:And>
+          </ogc:Filter>
+          <se:PolygonSymbolizer>
+            <se:Fill>
+              <se:SvgParameter name="fill">#fffb0b</se:SvgParameter>
+            </se:Fill>
+            <se:Stroke>
+              <se:SvgParameter name="stroke">#000001</se:SvgParameter>
+              <se:SvgParameter name="stroke-width">0.1</se:SvgParameter>
+              <se:SvgParameter name="stroke-linejoin">bevel</se:SvgParameter>
+            </se:Stroke>
+          </se:PolygonSymbolizer>
+        </se:Rule>
+        <se:Rule>
+          <se:Name> Medium (65 - 70 %) </se:Name>
+          <se:Description>
+            <se:Title> Medium (65 - 70 %) </se:Title>
+          </se:Description>
+          <ogc:Filter xmlns:ogc="http://www.opengis.net/ogc">
+            <ogc:And>
+              <ogc:PropertyIsGreaterThan>
+                <ogc:PropertyName>NonInd</ogc:PropertyName>
+                <ogc:Literal>64.90000000000000568</ogc:Literal>
+              </ogc:PropertyIsGreaterThan>
+              <ogc:PropertyIsLessThanOrEqualTo>
+                <ogc:PropertyName>NonInd</ogc:PropertyName>
+                <ogc:Literal>69.90000000000000568</ogc:Literal>
+              </ogc:PropertyIsLessThanOrEqualTo>
+            </ogc:And>
+          </ogc:Filter>
+          <se:PolygonSymbolizer>
+            <se:Fill>
+              <se:SvgParameter name="fill">#55d718</se:SvgParameter>
+            </se:Fill>
+            <se:Stroke>
+              <se:SvgParameter name="stroke">#000001</se:SvgParameter>
+              <se:SvgParameter name="stroke-width">0.1</se:SvgParameter>
+              <se:SvgParameter name="stroke-linejoin">bevel</se:SvgParameter>
+            </se:Stroke>
+          </se:PolygonSymbolizer>
+        </se:Rule>
+        <se:Rule>
+          <se:Name> Medium High (70 - 85 %) </se:Name>
+          <se:Description>
+            <se:Title> Medium High (70 - 85 %) </se:Title>
+          </se:Description>
+          <ogc:Filter xmlns:ogc="http://www.opengis.net/ogc">
+            <ogc:And>
+              <ogc:PropertyIsGreaterThan>
+                <ogc:PropertyName>NonInd</ogc:PropertyName>
+                <ogc:Literal>69.90000000000000568</ogc:Literal>
+              </ogc:PropertyIsGreaterThan>
+              <ogc:PropertyIsLessThanOrEqualTo>
+                <ogc:PropertyName>NonInd</ogc:PropertyName>
+                <ogc:Literal>84.90000000000000568</ogc:Literal>
+              </ogc:PropertyIsLessThanOrEqualTo>
+            </ogc:And>
+          </ogc:Filter>
+          <se:PolygonSymbolizer>
+            <se:Fill>
+              <se:SvgParameter name="fill">#3f7122</se:SvgParameter>
+            </se:Fill>
+            <se:Stroke>
+              <se:SvgParameter name="stroke">#000001</se:SvgParameter>
+              <se:SvgParameter name="stroke-width">0.1</se:SvgParameter>
+              <se:SvgParameter name="stroke-linejoin">bevel</se:SvgParameter>
+            </se:Stroke>
+          </se:PolygonSymbolizer>
+        </se:Rule>
+        <se:Rule>
+          <se:Name> High (85 - 93 %) </se:Name>
+          <se:Description>
+            <se:Title> High (85 - 93 %) </se:Title>
+          </se:Description>
+          <ogc:Filter xmlns:ogc="http://www.opengis.net/ogc">
+            <ogc:And>
+              <ogc:PropertyIsGreaterThan>
+                <ogc:PropertyName>NonInd</ogc:PropertyName>
+                <ogc:Literal>84.90000000000000568</ogc:Literal>
+              </ogc:PropertyIsGreaterThan>
+              <ogc:PropertyIsLessThanOrEqualTo>
+                <ogc:PropertyName>NonInd</ogc:PropertyName>
+                <ogc:Literal>92.90000000000000568</ogc:Literal>
+              </ogc:PropertyIsLessThanOrEqualTo>
+            </ogc:And>
+          </ogc:Filter>
+          <se:PolygonSymbolizer>
+            <se:Fill>
+              <se:SvgParameter name="fill">#76ffff</se:SvgParameter>
+            </se:Fill>
+            <se:Stroke>
+              <se:SvgParameter name="stroke">#000001</se:SvgParameter>
+              <se:SvgParameter name="stroke-width">0.1</se:SvgParameter>
+              <se:SvgParameter name="stroke-linejoin">bevel</se:SvgParameter>
+            </se:Stroke>
+          </se:PolygonSymbolizer>
+        </se:Rule>
+        <se:Rule>
+          <se:Name> Very High (93 - 96 %) </se:Name>
+          <se:Description>
+            <se:Title> Very High (93 - 96 %) </se:Title>
+          </se:Description>
+          <ogc:Filter xmlns:ogc="http://www.opengis.net/ogc">
+            <ogc:And>
+              <ogc:PropertyIsGreaterThan>
+                <ogc:PropertyName>NonInd</ogc:PropertyName>
+                <ogc:Literal>92.90000000000000568</ogc:Literal>
+              </ogc:PropertyIsGreaterThan>
+              <ogc:PropertyIsLessThanOrEqualTo>
+                <ogc:PropertyName>NonInd</ogc:PropertyName>
+                <ogc:Literal>96.09999999999999432</ogc:Literal>
+              </ogc:PropertyIsLessThanOrEqualTo>
+            </ogc:And>
+          </ogc:Filter>
+          <se:PolygonSymbolizer>
+            <se:Fill>
+              <se:SvgParameter name="fill">#0a4291</se:SvgParameter>
+            </se:Fill>
+            <se:Stroke>
+              <se:SvgParameter name="stroke">#000001</se:SvgParameter>
+              <se:SvgParameter name="stroke-width">0.1</se:SvgParameter>
+              <se:SvgParameter name="stroke-linejoin">bevel</se:SvgParameter>
+            </se:Stroke>
+          </se:PolygonSymbolizer>
+        </se:Rule>
+        <se:Rule>
+          <se:Name> Country not surveyed</se:Name>
+          <se:Description>
+            <se:Title> Country not surveyed</se:Title>
+          </se:Description>
+          <ogc:Filter xmlns:ogc="http://www.opengis.net/ogc">
+            <ogc:And>
+              <ogc:PropertyIsGreaterThan>
+                <ogc:PropertyName>NonInd</ogc:PropertyName>
+                <ogc:Literal>-999</ogc:Literal>
+              </ogc:PropertyIsGreaterThan>
+              <ogc:PropertyIsLessThanOrEqualTo>
+                <ogc:PropertyName>NonInd</ogc:PropertyName>
+                <ogc:Literal>24.89999999999999858</ogc:Literal>
+              </ogc:PropertyIsLessThanOrEqualTo>
+            </ogc:And>
+          </ogc:Filter>
+          <se:PolygonSymbolizer>
+            <se:Fill>
+              <se:SvgParameter name="fill">#d9d9d9</se:SvgParameter>
+            </se:Fill>
+            <se:Stroke>
+              <se:SvgParameter name="stroke">#000001</se:SvgParameter>
+              <se:SvgParameter name="stroke-width">0.1</se:SvgParameter>
+              <se:SvgParameter name="stroke-linejoin">bevel</se:SvgParameter>
+            </se:Stroke>
+          </se:PolygonSymbolizer>
+        </se:Rule>
+      </se:FeatureTypeStyle>
+    </UserStyle>
+  </NamedLayer>
+</StyledLayerDescriptor>
+"""
+
+freshgwabs2_sld = """<?xml version="1.0" encoding="UTF-8"?>
+<sld:StyledLayerDescriptor xmlns:sld="http://www.opengis.net/sld"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xmlns:ogc="http://www.opengis.net/ogc"
+  xmlns:gml="http://www.opengis.net/gml"
+  version="1.0.0"
+  xsi:schemaLocation="http://www.opengis.net/sld http://schemas.opengis.net/sld/1.0.0/StyledLayerDescriptor.xsd">
+  <sld:NamedLayer>
+    <sld:Name>geonode:freshgwabs2</sld:Name>
+    <sld:UserStyle>
+      <sld:Name>freshgwabs2</sld:Name>
+      <sld:IsDefault>1</sld:IsDefault>
+      <sld:FeatureTypeStyle>
+        <sld:Rule>
+          <sld:Name>&lt; 1112 million cubic metres</sld:Name>
+          <sld:Title>&lt; 1112 million cubic metres</sld:Title>
+          <ogc:Filter>
+            <ogc:And>
+              <ogc:PropertyIsGreaterThanOrEqualTo>
+                <ogc:PropertyName>y2007</ogc:PropertyName>
+                <ogc:Literal>0</ogc:Literal>
+              </ogc:PropertyIsGreaterThanOrEqualTo>
+              <ogc:PropertyIsLessThanOrEqualTo>
+                <ogc:PropertyName>y2007</ogc:PropertyName>
+                <ogc:Literal>1112</ogc:Literal>
+              </ogc:PropertyIsLessThanOrEqualTo>
+            </ogc:And>
+          </ogc:Filter>
+          <sld:PolygonSymbolizer>
+            <sld:Fill>
+              <sld:CssParameter name="fill">#ffe9b1</sld:CssParameter>
+            </sld:Fill>
+            <sld:Stroke>
+              <sld:CssParameter name="stroke">#000001</sld:CssParameter>
+              <sld:CssParameter name="stroke-width">0.1</sld:CssParameter>
+            </sld:Stroke>
+          </sld:PolygonSymbolizer>
+        </sld:Rule>
+        <sld:Rule>
+          <sld:Name> 1112 - 4794 million cubic metres</sld:Name>
+          <sld:Title> 1112 - 4794 million cubic metres</sld:Title>
+          <ogc:Filter>
+            <ogc:And>
+              <ogc:PropertyIsGreaterThan>
+                <ogc:PropertyName>y2007</ogc:PropertyName>
+                <ogc:Literal>1112</ogc:Literal>
+              </ogc:PropertyIsGreaterThan>
+              <ogc:PropertyIsLessThanOrEqualTo>
+                <ogc:PropertyName>y2007</ogc:PropertyName>
+                <ogc:Literal>4794</ogc:Literal>
+              </ogc:PropertyIsLessThanOrEqualTo>
+            </ogc:And>
+          </ogc:Filter>
+          <sld:PolygonSymbolizer>
+            <sld:Fill>
+              <sld:CssParameter name="fill">#eaad57</sld:CssParameter>
+            </sld:Fill>
+            <sld:Stroke>
+              <sld:CssParameter name="stroke">#000001</sld:CssParameter>
+              <sld:CssParameter name="stroke-width">0.1</sld:CssParameter>
+            </sld:Stroke>
+          </sld:PolygonSymbolizer>
+        </sld:Rule>
+        <sld:Rule>
+          <sld:Name> 4794 - 12096 million cubic metres</sld:Name>
+          <sld:Title> 4794 - 12096 million cubic metres</sld:Title>
+          <ogc:Filter>
+            <ogc:And>
+              <ogc:PropertyIsGreaterThan>
+                <ogc:PropertyName>y2007</ogc:PropertyName>
+                <ogc:Literal>4794</ogc:Literal>
+              </ogc:PropertyIsGreaterThan>
+              <ogc:PropertyIsLessThanOrEqualTo>
+                <ogc:PropertyName>y2007</ogc:PropertyName>
+                <ogc:Literal>12096</ogc:Literal>
+              </ogc:PropertyIsLessThanOrEqualTo>
+            </ogc:And>
+          </ogc:Filter>
+          <sld:PolygonSymbolizer>
+            <sld:Fill>
+              <sld:CssParameter name="fill">#ff7f1d</sld:CssParameter>
+            </sld:Fill>
+            <sld:Stroke>
+              <sld:CssParameter name="stroke">#000001</sld:CssParameter>
+              <sld:CssParameter name="stroke-width">0.1</sld:CssParameter>
+            </sld:Stroke>
+          </sld:PolygonSymbolizer>
+        </sld:Rule>
+        <sld:Rule>
+          <sld:Name> 12096 - 28937 million cubic metres</sld:Name>
+          <sld:Title> 12096 - 28937 million cubic metres</sld:Title>
+          <ogc:Filter>
+            <ogc:And>
+              <ogc:PropertyIsGreaterThan>
+                <ogc:PropertyName>y2007</ogc:PropertyName>
+                <ogc:Literal>12096</ogc:Literal>
+              </ogc:PropertyIsGreaterThan>
+              <ogc:PropertyIsLessThanOrEqualTo>
+                <ogc:PropertyName>y2007</ogc:PropertyName>
+                <ogc:Literal>28937</ogc:Literal>
+              </ogc:PropertyIsLessThanOrEqualTo>
+            </ogc:And>
+          </ogc:Filter>
+          <sld:PolygonSymbolizer>
+            <sld:Fill>
+              <sld:CssParameter name="fill">#af8a33</sld:CssParameter>
+            </sld:Fill>
+            <sld:Stroke>
+              <sld:CssParameter name="stroke">#000001</sld:CssParameter>
+              <sld:CssParameter name="stroke-width">0.1</sld:CssParameter>
+            </sld:Stroke>
+          </sld:PolygonSymbolizer>
+        </sld:Rule>
+        <sld:Rule>
+          <sld:Name>&gt; 28937 million cubic metres</sld:Name>
+          <sld:Title>&gt; 28937 million cubic metres</sld:Title>
+          <ogc:Filter>
+            <ogc:And>
+              <ogc:PropertyIsGreaterThan>
+                <ogc:PropertyName>y2007</ogc:PropertyName>
+                <ogc:Literal>28937</ogc:Literal>
+              </ogc:PropertyIsGreaterThan>
+              <ogc:PropertyIsLessThanOrEqualTo>
+                <ogc:PropertyName>y2007</ogc:PropertyName>
+                <ogc:Literal>106910</ogc:Literal>
+              </ogc:PropertyIsLessThanOrEqualTo>
+            </ogc:And>
+          </ogc:Filter>
+          <sld:PolygonSymbolizer>
+            <sld:Fill>
+              <sld:CssParameter name="fill">#5b4b2d</sld:CssParameter>
+            </sld:Fill>
+            <sld:Stroke>
+              <sld:CssParameter name="stroke">#000001</sld:CssParameter>
+              <sld:CssParameter name="stroke-width">0.1</sld:CssParameter>
+            </sld:Stroke>
+          </sld:PolygonSymbolizer>
+        </sld:Rule>
+        <sld:Rule>
+          <sld:Name>No data for 2007</sld:Name>
+          <sld:Title>No data for 2007</sld:Title>
+          <ogc:Filter>
+            <ogc:And>
+              <ogc:PropertyIsGreaterThan>
+                <ogc:PropertyName>y2007</ogc:PropertyName>
+                <ogc:Literal>-99</ogc:Literal>
+              </ogc:PropertyIsGreaterThan>
+              <ogc:PropertyIsLessThanOrEqualTo>
+                <ogc:PropertyName>y2007</ogc:PropertyName>
+                <ogc:Literal>0</ogc:Literal>
+              </ogc:PropertyIsLessThanOrEqualTo>
+            </ogc:And>
+          </ogc:Filter>
+          <sld:PolygonSymbolizer>
+            <sld:Fill>
+              <sld:CssParameter name="fill">#d9d9d9</sld:CssParameter>
+            </sld:Fill>
+            <sld:Stroke>
+              <sld:CssParameter name="stroke">#000001</sld:CssParameter>
+            </sld:Stroke>
+          </sld:PolygonSymbolizer>
+        </sld:Rule>
+      </sld:FeatureTypeStyle>
+    </sld:UserStyle>
+  </sld:NamedLayer>
+</sld:StyledLayerDescriptor>
+"""
+
+raster_sld = """<?xml version="1.0" ?>
+<sld:StyledLayerDescriptor version="1.0.0" xmlns="http://www.opengis.net/sld"
+xmlns:gml="http://www.opengis.net/gml" xmlns:ogc="http://www.opengis.net/ogc"
+xmlns:sld="http://www.opengis.net/sld">
+    <sld:UserLayer>
+        <sld:LayerFeatureConstraints>
+            <sld:FeatureTypeConstraint/>
+        </sld:LayerFeatureConstraints>
+        <sld:UserStyle>
+            <sld:Name>geonode-geonode_gwpollriskafriotest</sld:Name>
+            <sld:Title/>
+            <sld:FeatureTypeStyle>
+                <sld:Name/>
+                <sld:Rule>
+                    <sld:RasterSymbolizer>
+                        <sld:Geometry>
+                            <ogc:PropertyName>grid</ogc:PropertyName>
+                        </sld:Geometry>
+                        <sld:Opacity>1</sld:Opacity>
+                        <sld:ColorMap>
+                            <sld:ColorMapEntry color="#000000" opacity="1.0" quantity="77"/>
+                            <sld:ColorMapEntry color="#FFFFFF" opacity="1.0" quantity="214"/>
+                        </sld:ColorMap>
+                    </sld:RasterSymbolizer>
+                </sld:Rule>
+            </sld:FeatureTypeStyle>
+        </sld:UserStyle>
+    </sld:UserLayer>
+</sld:StyledLayerDescriptor>
+"""
+
+line_sld = """<?xml version="1.0" encoding="UTF-8"?>
+<StyledLayerDescriptor xmlns="http://www.opengis.net/sld"
+  xmlns:ogc="http://www.opengis.net/ogc"
+  xsi:schemaLocation="http://www.opengis.net/sld http://schemas.opengis.net/sld/1.1.0/StyledLayerDescriptor.xsd"
+  xmlns:xlink="http://www.w3.org/1999/xlink"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  version="1.1.0" xmlns:se="http://www.opengis.net/se">
+  <NamedLayer>
+    <se:Name>line_3</se:Name>
+    <UserStyle>
+      <se:Name>line 3</se:Name>
+      <se:FeatureTypeStyle>
+        <se:Rule>
+          <se:Name>Single symbol</se:Name>
+          <se:LineSymbolizer>
+            <se:Stroke>
+              <se:SvgParameter name="stroke">#db1e2a</se:SvgParameter>
+              <se:SvgParameter name="stroke-width">2</se:SvgParameter>
+              <se:SvgParameter name="stroke-linejoin">round</se:SvgParameter>
+              <se:SvgParameter name="stroke-linecap">round</se:SvgParameter>
+              <se:SvgParameter name="stroke-dasharray">2 7</se:SvgParameter>
+            </se:Stroke>
+          </se:LineSymbolizer>
+        </se:Rule>
+      </se:FeatureTypeStyle>
+    </UserStyle>
+  </NamedLayer>
+</StyledLayerDescriptor>
+"""
+
+SLDS = {
+    'san_andres_y_providencia': san_andres_y_providencia_sld,
+    'lac': lac_sld,
+    'freshgwabs2': freshgwabs2_sld,
+    'raster': raster_sld,
+    'line': line_sld
+}
 
 
 class LayerTests(TestCase):
@@ -60,6 +554,55 @@ class LayerTests(TestCase):
         self.assertEquals(logged_in, True)
         response = self.client.get(reverse('layer_style_manage', args=(layer.alternate,)))
         self.assertEqual(response.status_code, 200)
+
+    def test_style_validity_and_name(self):
+        # Check that including an SLD with a valid shapefile results in the SLD
+        # getting picked up
+        d = None
+        try:
+            d = tempfile.mkdtemp()
+            for f in ("san_andres_y_providencia.sld",
+                      "lac.sld",
+                      "freshgwabs2.sld",
+                      "raster.sld",
+                      "line.sld",):
+                path = os.path.join(d, f)
+                f = open(path, "wb")
+                f.write(SLDS[splitext(basename(path))[0]])
+                f.close()
+
+            # Test 'san_andres_y_providencia.sld'
+            san_andres_y_providencia_sld_file = os.path.join(d, "san_andres_y_providencia.sld")
+            san_andres_y_providencia_sld_xml = open(san_andres_y_providencia_sld_file).read()
+            san_andres_y_providencia_sld_name = extract_name_from_sld(None, san_andres_y_providencia_sld_xml)
+            self.assertEquals(san_andres_y_providencia_sld_name, 'san_andres_y_providencia_administrative')
+
+            # Test 'lac.sld'
+            lac_sld_file = os.path.join(d, "lac.sld")
+            lac_sld_xml = open(lac_sld_file).read()
+            lac_sld_name = extract_name_from_sld(None, lac_sld_xml, sld_file=lac_sld_file)
+            self.assertEquals(lac_sld_name, 'LAC NonIndigenous Access to Sanitation')
+
+            # Test 'freshgwabs2.sld'
+            freshgwabs2_sld_file = os.path.join(d, "freshgwabs2.sld")
+            freshgwabs2_sld_xml = open(freshgwabs2_sld_file).read()
+            freshgwabs2_sld_name = extract_name_from_sld(None, freshgwabs2_sld_xml, sld_file=freshgwabs2_sld_file)
+            self.assertEquals(freshgwabs2_sld_name, 'freshgwabs2')
+
+            # Test 'raster.sld'
+            raster_sld_file = os.path.join(d, "raster.sld")
+            raster_sld_xml = open(raster_sld_file).read()
+            raster_sld_name = extract_name_from_sld(None, raster_sld_xml, sld_file=raster_sld_file)
+            self.assertEquals(raster_sld_name, 'geonode-geonode_gwpollriskafriotest')
+
+            # Test 'line.sld'
+            line_sld_file = os.path.join(d, "line.sld")
+            line_sld_xml = open(line_sld_file).read()
+            line_sld_name = extract_name_from_sld(None, line_sld_xml, sld_file=line_sld_file)
+            self.assertEquals(line_sld_name, 'line 3')
+        finally:
+            if d is not None:
+                shutil.rmtree(d)
 
     def test_feature_edit_check(self):
         """Verify that the feature_edit_check view is behaving as expected

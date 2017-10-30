@@ -277,6 +277,26 @@ community."
         response = self.client.get(reverse('map_detail', args=(map_obj.id,)))
         self.assertEquals(response.status_code, 200)
 
+    def test_describe_map(self):
+        map_obj = Map.objects.get(id=1)
+        map_obj.set_default_permissions()
+        response = self.client.get(reverse('map_metadata_detail', args=(map_obj.id,)))
+        self.failUnlessEqual(response.status_code, 200)
+        self.assertContains(response, "Approved", count=1, status_code=200, msg_prefix='', html=False)
+        self.assertContains(response, "Published", count=1, status_code=200, msg_prefix='', html=False)
+        self.assertContains(response, "Featured", count=1, status_code=200, msg_prefix='', html=False)
+        self.assertContains(response, "<dt>Group</dt>", count=0, status_code=200, msg_prefix='', html=False)
+
+        # ... now assigning a Group to the map
+        group = Group.objects.first()
+        map_obj.group = group
+        map_obj.save()
+        response = self.client.get(reverse('map_metadata_detail', args=(map_obj.id,)))
+        self.failUnlessEqual(response.status_code, 200)
+        self.assertContains(response, "<dt>Group</dt>", count=1, status_code=200, msg_prefix='', html=False)
+        map_obj.group = None
+        map_obj.save()
+
     def test_new_map_without_layers(self):
         # TODO: Should this test have asserts in it?
         self.client.get(reverse('new_map'))

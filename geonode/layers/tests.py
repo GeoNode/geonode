@@ -90,6 +90,28 @@ class LayersTest(TestCase):
         response = self.client.get(reverse('layer_metadata', args=('geonode:CA',)))
         self.failUnlessEqual(response.status_code, 200)
 
+    def test_describe_data_3(self):
+        '''/data/geonode:CA/metadata_detail -> Test accessing the description of a layer '''
+        self.client.login(username='admin', password='admin')
+        # ... all should be good
+        response = self.client.get(reverse('layer_metadata_detail', args=('geonode:CA',)))
+        self.failUnlessEqual(response.status_code, 200)
+        self.assertContains(response, "Approved", count=1, status_code=200, msg_prefix='', html=False)
+        self.assertContains(response, "Published", count=1, status_code=200, msg_prefix='', html=False)
+        self.assertContains(response, "Featured", count=1, status_code=200, msg_prefix='', html=False)
+        self.assertContains(response, "<dt>Group</dt>", count=0, status_code=200, msg_prefix='', html=False)
+
+        # ... now assigning a Group to the Layer
+        lyr = Layer.objects.get(alternate='geonode:CA')
+        group = Group.objects.first()
+        lyr.group = group
+        lyr.save()
+        response = self.client.get(reverse('layer_metadata_detail', args=('geonode:CA',)))
+        self.failUnlessEqual(response.status_code, 200)
+        self.assertContains(response, "<dt>Group</dt>", count=1, status_code=200, msg_prefix='', html=False)
+        lyr.group = None
+        lyr.save()
+
     # Layer Tests
 
     # Test layer upload endpoint
@@ -141,7 +163,6 @@ class LayersTest(TestCase):
     def test_layer_attributes_feature_catalogue(self):
         """ Test layer feature catalogue functionality
         """
-
         # test a non-existing layer
         url = reverse('layer_feature_catalogue', args=('bad_layer',))
         response = self.client.get(url)
