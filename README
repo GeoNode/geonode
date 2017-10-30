@@ -1,6 +1,6 @@
-.. image:: https://coveralls.io/repos/github/GeoNode/geonode/badge.svg?branch=master
+.. image:: https://codecov.io/gh/GeoNode/geonode/branch/master/graph/badge.svg
     :alt: Coverage Badge
-    :target: https://coveralls.io/github/GeoNode/geonode?branch=master
+    :target: https://codecov.io/gh/GeoNode/geonode
 
 .. image:: https://secure.travis-ci.org/GeoNode/geonode.png
     :alt: Build Status
