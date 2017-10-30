@@ -26,7 +26,6 @@ import base64
 import traceback
 import uuid
 import decimal
-from lxml import etree
 from requests import Request
 from itertools import chain
 from six import string_types
@@ -72,12 +71,12 @@ from geonode.people.forms import ProfileForm, PocForm
 from geonode.security.views import _perms_info_json
 from geonode.documents.models import get_related_documents
 from geonode.utils import build_social_links
-from geonode.geoserver.helpers import cascading_delete, gs_catalog
-from geonode.geoserver.helpers import ogc_server_settings, save_style
 from geonode.base.views import batch_modify
 from geonode.base.models import Thesaurus
 from geonode.maps.models import Map
-from geonode.geoserver.helpers import _invalidate_geowebcache_layer
+from geonode.geoserver.helpers import (cascading_delete, gs_catalog,
+                                       ogc_server_settings, save_style,
+                                       extract_name_from_sld, _invalidate_geowebcache_layer)
 
 if 'geonode.geoserver' in settings.INSTALLED_APPS:
     from geonode.geoserver.helpers import _render_thumbnail
@@ -198,27 +197,8 @@ def layer_upload(request, template='upload/layer_upload.html'):
                         msg = 'Failed to process.  Could not find matching layer.'
                         raise Exception(msg)
                     sld = open(base_file).read()
-
-                    try:
-                        dom = etree.XML(sld)
-                    except Exception:
-                        raise Exception(
-                            "The uploaded SLD file is not valid XML")
-
-                    el = dom.findall(
-                        "{http://www.opengis.net/sld}NamedLayer/{http://www.opengis.net/sld}Name")
-                    if len(el) == 0:
-                        el = dom.findall(
-                            "{http://www.opengis.net/sld}UserLayer/{http://www.opengis.net/sld}Name")
-                    if len(el) == 0:
-                        el = dom.findall(
-                            "{http://www.opengis.net/sld}NamedLayer/{http://www.opengis.net/se}Name")
-                    if len(el) == 0:
-                        el = dom.findall(
-                            "{http://www.opengis.net/sld}UserLayer/{http://www.opengis.net/se}Name")
-                    if len(el) == 0:
-                        raise Exception(
-                            "Please provide a name, unable to extract one from the SLD.")
+                    # Check SLD is valid
+                    extract_name_from_sld(gs_catalog, sld, sld_file=base_file)
 
                     match = None
                     styles = list(saved_layer.styles.all()) + [
