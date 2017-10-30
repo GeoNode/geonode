@@ -64,7 +64,7 @@ geonode-arcrest==10.2
 geonode-avatar==2.1.6
 geonode-dialogos==0.7
 geonode-notification==1.1.1
-geonode-user-accounts==1.0.13
+geonode-user-accounts==1.0.15
 geonode-user-messages==0.1.5
 gisdata==0.5.4
 gsconfig==1.0.6
@@ -91,7 +91,6 @@ pep8==1.6.2
 Pillow==3.3.1
 Pinax==0.9a2
 pinax-notifications==4.0.0
-pinax-ratings==2.0.0
 pinax-theme-bootstrap==3.0a11
 pinax-theme-bootstrap-account==1.0b2
 psutil==5.4.0
