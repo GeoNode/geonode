@@ -26,6 +26,10 @@ import base64
 import traceback
 import uuid
 import decimal
+import re
+
+from django.contrib.gis.geos import GEOSGeometry
+from django.template.response import TemplateResponse
 from requests import Request
 from itertools import chain
 from six import string_types
@@ -42,6 +46,9 @@ from django.shortcuts import render_to_response
 from django.conf import settings
 from django.template import RequestContext
 from django.utils.translation import ugettext as _
+
+from geonode import geoserver
+
 try:
     import json
 except ImportError:
@@ -62,7 +69,7 @@ from geonode.base.enumerations import CHARSETS
 from geonode.base.models import TopicCategory
 from geonode.groups.models import GroupProfile
 
-from geonode.utils import default_map_config
+from geonode.utils import default_map_config, check_ogc_backend
 from geonode.utils import GXPLayer
 from geonode.utils import GXPMap
 from geonode.layers.utils import file_upload, is_raster, is_vector
@@ -78,7 +85,7 @@ from geonode.geoserver.helpers import (cascading_delete, gs_catalog,
                                        ogc_server_settings, save_style,
                                        extract_name_from_sld, _invalidate_geowebcache_layer)
 
-if 'geonode.geoserver' in settings.INSTALLED_APPS:
+if check_ogc_backend(geoserver.BACKEND_PACKAGE):
     from geonode.geoserver.helpers import _render_thumbnail
 CONTEXT_LOG_FILE = ogc_server_settings.LOG_FILE
 
@@ -267,6 +274,7 @@ def layer_upload(request, template='upload/layer_upload.html'):
                         'type': 'name',
                         'properties': saved_layer.srid
                     }
+                out['ogc_backend'] = settings.OGC_SERVER['default']['BACKEND']
                 upload_session = saved_layer.upload_session
                 if upload_session:
                     upload_session.processed = True
@@ -416,6 +424,14 @@ def layer_detail(request, layername, template='layers/layer_detail.html'):
         'DEFAULT_MAP_CRS',
         'EPSG:900913')
 
+    # provide bbox in EPSG:4326 for leaflet
+    if context_dict["preview"] == 'leaflet':
+        srid, wkt = layer.geographic_bounding_box.split(';')
+        srid = re.findall(r'\d+', srid)
+        geom = GEOSGeometry(wkt, srid=int(srid[0]))
+        geom.transform(4326)
+        context_dict["layer_bbox"] = ','.join([str(c) for c in geom.extent])
+
     if layer.storeType == 'dataStore':
         links = layer.link_set.download().filter(
             name__in=settings.DOWNLOAD_FORMATS_VECTOR)
@@ -498,7 +514,8 @@ def layer_detail(request, layername, template='layers/layer_detail.html'):
     # maps owned by user needed to fill the "add to existing map section" in template
     if request.user.is_authenticated():
         context_dict["maps"] = Map.objects.filter(owner=request.user)
-    return render_to_response(template, RequestContext(request, context_dict))
+    return TemplateResponse(
+        request, template, RequestContext(request, context_dict))
 
 
 # Loads the data using the OWS lib when the "Do you want to filter it" button is clicked.
@@ -986,9 +1003,12 @@ def layer_replace(request, layername, template='layers/layer_replace.html'):
                     out['errors'] = _(
                         "You are attempting to replace a raster layer with a vector.")
                 else:
-                    # delete geoserver's store before upload
-                    cat = gs_catalog
-                    cascading_delete(cat, layer.alternate)
+                    if check_ogc_backend(geoserver.BACKEND_PACKAGE):
+                        # delete geoserver's store before upload
+                        cat = gs_catalog
+                        cascading_delete(cat, layer.typename)
+                        out['ogc_backend'] = geoserver.BACKEND_PACKAGE
+
                     saved_layer = file_upload(
                         base_file,
                         name=layer.name,

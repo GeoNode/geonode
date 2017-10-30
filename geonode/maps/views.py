@@ -48,7 +48,8 @@ from django.views.decorators.http import require_http_methods
 from geonode.layers.models import Layer
 from geonode.maps.models import Map, MapLayer, MapSnapshot
 from geonode.layers.views import _resolve_layer
-from geonode.utils import forward_mercator, llbbox_to_mercator
+from geonode.utils import forward_mercator, llbbox_to_mercator, \
+    check_ogc_backend
 from geonode.utils import DEFAULT_TITLE
 from geonode.utils import DEFAULT_ABSTRACT
 from geonode.utils import default_map_config
@@ -65,10 +66,11 @@ from geonode.documents.models import get_related_documents
 from geonode.people.forms import ProfileForm
 from geonode.utils import num_encode, num_decode
 from geonode.utils import build_social_links
+from geonode import geoserver, qgis_server
 from geonode.base.views import batch_modify
 
 
-if 'geonode.geoserver' in settings.INSTALLED_APPS:
+if check_ogc_backend(geoserver.BACKEND_PACKAGE):
     # FIXME: The post service providing the map_status object
     # should be moved to geonode.geoserver.
     from geonode.geoserver.helpers import ogc_server_settings
@@ -76,7 +78,7 @@ if 'geonode.geoserver' in settings.INSTALLED_APPS:
     # Use the http_client with one that knows the username
     # and password for GeoServer's management user.
     from geonode.geoserver.helpers import http_client, _render_thumbnail
-else:
+elif check_ogc_backend(qgis_server.BACKEND_PACKAGE):
     from geonode.utils import http_client
 
 logger = logging.getLogger("geonode.maps.views")
