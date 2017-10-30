@@ -162,6 +162,9 @@ urlpatterns = patterns('',
                        url(r'^api/adminRole', admin_role, name='adminRole'),
                        url(r'^api/users', users, name='users'),
                        url(r'', include(api.urls)),
+
+                       # Analytics
+                       url(r'^analytics/', include('geonode.analytics.urls')),
                        )
 
 if "geonode.contrib.dynamic" in settings.INSTALLED_APPS:
