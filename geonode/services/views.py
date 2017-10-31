@@ -18,51 +18,47 @@
 #
 #########################################################################
 
-import urllib
-import uuid
 import logging
 import re
-from urlparse import urlsplit, urlunsplit
+import urllib
 import urlparse
+import uuid
+from urlparse import urlsplit, urlunsplit
 
-from django.contrib.auth.decorators import login_required
-from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
-from django.core.urlresolvers import reverse
-from django.http import HttpResponse, HttpResponseRedirect
-from django.shortcuts import render_to_response
+from arcrest import Folder as ArcFolder
+from arcrest import MapService as ArcMapService
 from django.conf import settings
+from django.contrib.auth.decorators import login_required
+from django.core.paginator import EmptyPage, PageNotAnInteger, Paginator
+from django.core.urlresolvers import reverse
+from django.db.models import signals
+from django.http import HttpResponse, HttpResponseRedirect
+from django.shortcuts import get_object_or_404, render_to_response
 from django.template import RequestContext, loader
 from django.template.defaultfilters import slugify
 from django.utils.translation import ugettext as _
-from django.db.models import signals
+from geonode.base.models import Link, resourcebase_post_save
+from geonode.catalogue.models import catalogue_post_save
+from geonode.geoserver.helpers import set_attributes_from_geoserver
+from geonode.geoserver.signals import geoserver_post_save
+from geonode.layers.utils import create_thumbnail
+from geonode.security.views import _perms_info_json
+from geonode.services.forms import CreateServiceForm, ServiceForm
+from geonode.services.models import (Layer, Service, ServiceLayer,
+                                     WebServiceHarvestLayersJob)
+from geonode.utils import bbox_to_wkt, mercator_to_llbbox
+from geoserver.catalog import Catalog
+from owslib.csw import CatalogueServiceWeb
+from owslib.tms import TileMapService
+from owslib.wfs import WebFeatureService
+from owslib.wms import WebMapService
+
 try:
     # Django >= 1.7
     import json
 except ImportError:
     # Django <= 1.6 backwards compatibility
     from django.utils import simplejson as json
-from django.shortcuts import get_object_or_404
-
-from owslib.wms import WebMapService
-from owslib.wfs import WebFeatureService
-from owslib.tms import TileMapService
-from owslib.csw import CatalogueServiceWeb
-
-from arcrest import Folder as ArcFolder, MapService as ArcMapService
-
-from geoserver.catalog import Catalog
-
-from geonode.services.models import Service, Layer, ServiceLayer, WebServiceHarvestLayersJob
-from geonode.security.views import _perms_info_json
-from geonode.utils import bbox_to_wkt
-from geonode.services.forms import CreateServiceForm, ServiceForm
-from geonode.utils import mercator_to_llbbox
-from geonode.layers.utils import create_thumbnail
-from geonode.geoserver.helpers import set_attributes_from_geoserver
-from geonode.geoserver.signals import geoserver_post_save
-from geonode.base.models import Link
-from geonode.base.models import resourcebase_post_save
-from geonode.catalogue.models import catalogue_post_save
 
 
 logger = logging.getLogger("geonode.core.layers.views")
@@ -71,11 +67,14 @@ _user = settings.OGC_SERVER['default']['USER']
 _password = settings.OGC_SERVER['default']['PASSWORD']
 
 OGP_ABSTRACT = _("""
-The Open Geoportal is a consortium comprised of contributions of several universities and organizations to help
-facilitate the discovery and acquisition of geospatial data across many organizations and platforms. Current partners
-include: Harvard, MIT, MassGIS, Princeton, Columbia, Stanford, UC Berkeley, UCLA, Yale, and UConn. Built on open source
-technology, The Open Geoportal provides organizations the opportunity to share thousands of geospatial data layers,
-maps, metadata, and development resources through a single common interface.
+The Open Geoportal is a consortium comprised of contributions of several
+universities and organizations to help facilitate the discovery and acquisition
+of geospatial data across many organizations and platforms. Current partners
+include: Harvard, MIT, MassGIS, Princeton, Columbia, Stanford, UC Berkeley,
+UCLA, Yale, and UConn. Built on open source technology, The Open Geoportal
+provides organizations the opportunity to share thousands of geospatial data
+layers, maps, metadata, and development resources through a single common
+interface.
 """)
 
 
@@ -92,8 +91,8 @@ def services(request):
 @login_required
 def register_service(request):
     """
-    This view is used for manually registering a new service, with only URL as a
-    parameter.
+    This view is used for manually registering a new service, with only URL
+    as a parameter.
     """
 
     if request.method == "GET":
@@ -770,7 +769,8 @@ def _register_harvested_service(
         csw=None,
         owner=None):
     """
-    Register a CSW service, then step through results (or queue for asynchronous harvesting)
+    Register a CSW service, then step through results (or queue for
+    asynchronous harvesting)
     """
     try:
         service = Service.objects.get(base_url=url)
@@ -826,7 +826,8 @@ def _register_harvested_service(
 
 def _harvest_csw(csw, maxrecords=10, totalrecords=float('inf')):
     """
-    Step through CSW results, and if one seems to be a WMS or Arc REST service then register it
+    Step through CSW results, and if one seems to be a WMS or Arc REST
+    service then register it
     """
     stop = 0
     flag = 0
@@ -903,11 +904,12 @@ def _register_arcgis_url(
         # This is a MapService
         try:
             arcserver = ArcMapService(baseurl)
+            srsid = arcserver.spatialReference.wkid
         except Exception as e:
             logger.exception(e)
         if isinstance(
                 arcserver,
-                ArcMapService) and arcserver.spatialReference.wkid in [
+                ArcMapService) and srsid in [
                 102100,
                 102113,
                 3785,
@@ -946,6 +948,11 @@ def _register_arcgis_layers(service, arc=None):
         layer_uuid = str(uuid.uuid1())
         bbox = [layer.extent.xmin, layer.extent.ymin,
                 layer.extent.xmax, layer.extent.ymax]
+        layer_srs = layer.extent.spatialReference.wkid
+        for layer_srs in [
+            102100
+        ]:
+            layer_srs = 3857
         alternate = layer.id
 
         existing_layer = None
@@ -978,7 +985,7 @@ def _register_arcgis_layers(service, arc=None):
                         'description'] or _("Not provided"),
                     uuid=layer_uuid,
                     owner=None,
-                    srid="EPSG:%s" % layer.extent.spatialReference.wkid,
+                    srid="EPSG:%s" % layer_srs,
                     bbox_x0=llbbox[0],
                     bbox_x1=llbbox[2],
                     bbox_y0=llbbox[1],
@@ -1460,7 +1467,8 @@ def create_arcgis_links(instance):
          instance.bbox_y1))
 
     thumbnail_remote_url = instance.ows_url + 'export?LAYERS=show%3A' + str(instance.alternate) + \
-        '&TRANSPARENT=true&FORMAT=png&BBOX=' + bbox + '&SIZE=200%2C150&F=image&BBOXSR=4326&IMAGESR=3857'
+        '&TRANSPARENT=true&FORMAT=png&BBOX=' + bbox + \
+        '&SIZE=200%2C150&F=image&BBOXSR=4326&IMAGESR=3857'
     create_thumbnail(instance, thumbnail_remote_url)
 
 

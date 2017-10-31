@@ -22,8 +22,9 @@ import json
 import sys
 import traceback
 
-from django.test import TestCase
 from django.core.urlresolvers import reverse
+from django.test import TestCase
+
 from .models import Service, ServiceLayer
 
 
@@ -56,7 +57,8 @@ class ServicesTests(TestCase):
             service = Service.objects.get(id=service_dict['service_id'])
             # Harvested some layers
 
-            self.assertTrue(ServiceLayer.objects.filter(service=service).count() > 0)
+            self.assertTrue(ServiceLayer.objects.filter(
+                service=service).count() > 0)
             self.assertEqual(service.method, "I")
             self.assertEqual(service.type, "WMS")
             self.assertEqual(service.ptype, 'gxp_wmscsource')
@@ -64,7 +66,8 @@ class ServicesTests(TestCase):
             traceback.print_exc(file=sys.stdout)
             self.fail("Service not created: %s" % str(e))
 
-    # Making more tolerant the test below because it uses an external services and fails randomly.
+    # Making more tolerant the test below because it uses an external services
+    # and fails randomly.
     def test_register_arcrest(self):
         """Test registering an arcrest service
         """
@@ -74,13 +77,15 @@ class ServicesTests(TestCase):
                 reverse('register_service'),
                 {
                     'type': 'REST',
-                    'url': 'http://maps1.arcgisonline.com/ArcGIS/rest/services/EPA_Facilities/MapServer',
+                    'url': 'https://server.arcgisonline.com/arcgis/rest\
+/services/World_Imagery/MapServer',
                 })
             self.assertEqual(response.status_code, 200)
             service_dict = json.loads(response.content)[0]
             service = Service.objects.get(id=service_dict['service_id'])
             # Harvested some layers
-            self.assertTrue(ServiceLayer.objects.filter(service=service).count() > 0)
+            self.assertTrue(ServiceLayer.objects.filter(
+                service=service).count() > 0)
             self.assertEqual(service.method, "I")
             self.assertEqual(service.type, "REST")
             self.assertEqual(service.ptype, 'gxp_arcrestsource')
@@ -89,7 +94,8 @@ class ServicesTests(TestCase):
             print("Service not created: %s" % str(e))
             self.assertRaises(KeyError)
 
-    # Making more tolerant the test below because it uses an external service and fails randomly.
+    # Making more tolerant the test below because it uses an external service
+    # and fails randomly.
     # def test_register_csw(self):
     #    self.client.login(username='admin', password='admin')
     #    response = self.client.post(reverse('register_service'),
@@ -107,6 +113,8 @@ class ServicesTests(TestCase):
     #    self.assertEqual(service.method, "H")
     #    self.assertEqual(service.type, "CSW")
     #    self.assertEqual(service.base_url, 'http://demo.pycsw.org/cite/csw')
-    # TODO: Use CSW or make mock CSW containing just a few small WMS & ESRI service records
-    # self.assertEquals(service.service_set.all().count(), 0) #No WMS/REST services
+    # TODO: Use CSW or make mock CSW containing just a few small WMS & ESRI
+    # service records
+    # self.assertEquals(service.service_set.all().count(), 0) #No
+    # WMS/REST services
     # self.assertEquals(service.layers.count(),0)   # No Layers for this one
