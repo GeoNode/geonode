@@ -12,6 +12,7 @@ geonode/development.db
 /geoserver/
 downloaded
 package-lock.json
+GeoIPCities.dat
 
 docs/i18n/pot/
 

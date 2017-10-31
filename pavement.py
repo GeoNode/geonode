@@ -18,6 +18,8 @@
 #
 #########################################################################
 
+import fileinput
+import glob
 import os
 import re
 import shutil
@@ -26,16 +28,12 @@ import time
 import urllib
 import urllib2
 import zipfile
-import glob
-import fileinput
-import yaml
-
-from setuptools.command import easy_install
 from urlparse import urlparse
 
-from paver.easy import task, options, cmdopts, needs
-from paver.easy import path, sh, info, call_task
-from paver.easy import BuildFailure
+import yaml
+from paver.easy import (BuildFailure, call_task, cmdopts, info, needs, options,
+                        path, sh, task)
+from setuptools.command import easy_install
 
 try:
     from geonode.settings import GEONODE_APPS
@@ -131,23 +129,12 @@ def _install_data_dir():
 
     try:
         config = path(
-            'geoserver/data/security/auth/geonodeAuthProvider/config.xml')
-        with open(config) as f:
-            xml = f.read()
-            m = re.search('baseUrl>([^<]+)', xml)
-            xml = xml[:m.start(1)] + "http://localhost:8000/" + xml[m.end(1):]
-            with open(config, 'w') as f:
-                f.write(xml)
-    except Exception as e:
-        print(e)
-
-    try:
-        config = path(
             'geoserver/data/global.xml')
         with open(config) as f:
             xml = f.read()
             m = re.search('proxyBaseUrl>([^<]+)', xml)
-            xml = xml[:m.start(1)] + "http://localhost:8080/geoserver" + xml[m.end(1):]
+            xml = xml[:m.start(1)] + \
+                "http://localhost:8080/geoserver" + xml[m.end(1):]
             with open(config, 'w') as f:
                 f.write(xml)
     except Exception as e:
@@ -159,15 +146,20 @@ def _install_data_dir():
         with open(config) as f:
             xml = f.read()
             m = re.search('accessTokenUri>([^<]+)', xml)
-            xml = xml[:m.start(1)] + "http://localhost:8000/o/token/" + xml[m.end(1):]
+            xml = xml[:m.start(1)] + \
+                "http://localhost:8000/o/token/" + xml[m.end(1):]
             m = re.search('userAuthorizationUri>([^<]+)', xml)
-            xml = xml[:m.start(1)] + "http://localhost:8000/o/authorize/" + xml[m.end(1):]
+            xml = xml[:m.start(
+                1)] + "http://localhost:8000/o/authorize/" + xml[m.end(1):]
             m = re.search('redirectUri>([^<]+)', xml)
-            xml = xml[:m.start(1)] + "http://localhost:8080/geoserver/index.html" + xml[m.end(1):]
+            xml = xml[:m.start(
+                1)] + "http://localhost:8080/geoserver/index.html" + xml[m.end(1):]
             m = re.search('checkTokenEndpointUrl>([^<]+)', xml)
-            xml = xml[:m.start(1)] + "http://localhost:8000/api/o/v4/tokeninfo/" + xml[m.end(1):]
+            xml = xml[:m.start(
+                1)] + "http://localhost:8000/api/o/v4/tokeninfo/" + xml[m.end(1):]
             m = re.search('logoutUri>([^<]+)', xml)
-            xml = xml[:m.start(1)] + "http://localhost:8000/account/logout/" + xml[m.end(1):]
+            xml = xml[:m.start(
+                1)] + "http://localhost:8000/account/logout/" + xml[m.end(1):]
             with open(config, 'w') as f:
                 f.write(xml)
     except Exception as e:
