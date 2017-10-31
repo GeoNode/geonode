@@ -1,0 +1,88 @@
+
+{% load i18n %}
+{% load bootstrap_tags %}
+
+{% if page_reload %}
+<script type="text/javascript">
+    window.location.reload()
+</script>
+<p>
+{% trans "Layer Style changed. Redirecting to apply changes..." %}
+</p>
+<p>
+{% trans "You may also use browser reload." %}
+</p>
+{% else %}
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>{% trans "Name" %}</th>
+                <th>{% trans "Title" %}</th>
+                <th>{% trans "Action" %}</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for style in resource.qgis_layer.styles.all %}
+                <tr>
+                    <td>
+                        {{ style.name|safe }}
+                        {% if resource.qgis_layer.default_style.name == style.name %}
+                            (default style)
+                        {% endif %}
+                    </td>
+                    <td>{{ style.title|safe }}</td>
+                    <td>
+                        {% if resource.qgis_layer.default_style.name != style.name %}
+                            <button class="btn btn-primary" onclick="qml_set_default_style('{% url "qgis_server:default-qml" layername=resource.name style_name=style.name %}')">{% trans "Set As Default Style" %}</button>
+                        {% endif %}
+                        <a href="{% url "qgis_server:download-qml" layername=resource.name style_name=style.name %}" class="btn btn-primary">{% trans "Download Style" %}</a>
+                        <button class="btn btn-primary" onclick="qml_remove_style('{% url "qgis_server:remove-qml" layername=resource.name style_name=style.name %}')">{% trans "Remove Style" %}</button>
+                    </td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% if alert %}
+    <div class="alert {{ alert_class }}">
+        {{ alert_message }}
+        {% if alert_class == 'alert-success' %}
+            <br />
+            <a href="#" onclick="location.reload(true); return false;">{% trans "Reload to see changes" %}</a>
+        {% endif %}
+    </div>
+    {% endif %}
+    <div id="style-add-form">
+        <form id="qgis-server-style-add-form" method="post" action="{% url "qgis_server:upload-qml" layername=resource.name %}" enctype="multipart/form-data">
+            {% csrf_token %}
+            {{ style_upload_form|as_bootstrap }}
+            <button type="submit" class="btn btn-primary">{% trans "Upload" %}</button>
+        </form>
+    </div>
+    <script type="text/javascript">
+        function qml_remove_style(delete_url) {
+            $.ajax({
+                url: delete_url,
+                type: 'DELETE',
+                success: function (data) {
+                    $("#qgis-server-style-edit .modal-body").html(data);
+                    $(document).ready(function() {
+                        $("#qgis-server-style-add-form").on('submit', edit_style_on_submit);
+                    });
+                }
+            });
+        }
+
+        function qml_set_default_style(set_default_url) {
+            $.ajax({
+                url: set_default_url,
+                type: 'POST',
+                success: function (data) {
+                    $("#qgis-server-style-edit .modal-body").html(data);
+                    $(document).ready(function() {
+                        $("#qgis-server-style-add-form").on('submit', edit_style_on_submit);
+                    });
+                }
+            });
+        }
+    </script>
+{% endif %}
