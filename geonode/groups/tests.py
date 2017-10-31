@@ -356,6 +356,68 @@ class SmokeTest(TestCase):
         response = self.client.get("/groups/group/bar/invite/")
         self.assertEqual(405, response.status_code)
 
+    def test_group_activity_pages_render(self):
+        """
+        Verify Activity List pages
+        """
+
+        self.assertTrue(self.client.login(username="admin", password="admin"))
+
+        response = self.client.get("/groups/")
+        self.assertEqual(200, response.status_code)
+
+        response = self.client.get("/groups/group/bar/activity/")
+        self.assertEqual(200, response.status_code)
+        self.assertContains(response,
+            '<a href="/layers/geonode:CA">CA</a>',
+            count=0,
+            status_code=200,
+            msg_prefix='',
+            html=False)
+        self.assertContains(response,
+            'uploaded',
+            count=0,
+            status_code=200,
+            msg_prefix='',
+            html=False)
+        try:
+            # Add test to test perms being sent to the front end.
+            layer = Layer.objects.all()[0]
+            layer.set_default_permissions()
+            perms_info = layer.get_all_level_info()
+
+            # Ensure there is only one group 'anonymous' by default
+            self.assertEqual(len(perms_info['groups'].keys()), 1)
+
+            # Add the foo group to the layer object groups
+            layer.set_permissions({'groups': {'bar': ['view_resourcebase']}})
+
+            perms_info = _perms_info_json(layer)
+            # Ensure foo is in the perms_info output
+            self.assertItemsEqual(json.loads(perms_info)['groups'], {'bar': ['view_resourcebase']})
+
+            layer.group = self.bar.group
+            layer.save()
+
+            response = self.client.get("/groups/group/bar/activity/")
+            self.assertEqual(200, response.status_code)
+            self.assertContains(response,
+                '<a href="/layers/geonode:CA">CA</a>',
+                count=2,
+                status_code=200,
+                msg_prefix='',
+                html=False)
+            self.assertContains(response,
+                'uploaded',
+                count=2,
+                status_code=200,
+                msg_prefix='',
+                html=False)
+        finally:
+            layer.set_default_permissions()
+            layer.group = None
+            layer.save()
+
 
 class MembershipTest(TestCase):
     """
