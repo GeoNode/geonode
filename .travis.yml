@@ -40,7 +40,7 @@ install:
   - sudo apt-get update
   - sudo apt-get install -y --force-yes oracle-java8-installer ant maven2 --no-install-recommends
   - sudo update-java-alternatives --set java-8-oracle
-  - pip install -r requirements.txt --no-deps --no-cache -U
+  - pip install -r requirements.txt
   - pip install -e .
   - pip install pygdal==`gdal-config --version`
   - pip install codecov
