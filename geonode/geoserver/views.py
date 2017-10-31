@@ -47,10 +47,9 @@ from geonode.geoserver.signals import gs_catalog
 from geonode.tasks.update import geoserver_update_layers
 from geonode.utils import json_response, _get_basic_auth_info
 from geoserver.catalog import FailedRequestError, ConflictingDataError
-from lxml import etree
 from .helpers import (get_stores, ogc_server_settings,
-                      set_styles, style_update, create_gs_thumbnail,
-                      _invalidate_geowebcache_layer)
+                      extract_name_from_sld, set_styles, style_update,
+                      create_gs_thumbnail, _invalidate_geowebcache_layer)
 
 logger = logging.getLogger(__name__)
 
@@ -134,28 +133,14 @@ def layer_style_upload(request, layername):
         _PERMISSION_MSG_MODIFY)
 
     sld = request.FILES['sld'].read()
-
+    sld_name = None
     try:
-        dom = etree.XML(sld)
-    except Exception:
-        return respond(errors="The uploaded SLD file is not valid XML")
+        # Check SLD is valid
+        sld_name = extract_name_from_sld(gs_catalog, sld, sld_file=request.FILES['sld'])
+    except Exception, e:
+        respond(errors="The uploaded SLD file is not valid XML: {}".format(e))
 
-    el = dom.findall(
-        "{http://www.opengis.net/sld}NamedLayer/{http://www.opengis.net/sld}Name")
-    if len(el) == 0 and not data.get('name'):
-        el = dom.findall(
-            "{http://www.opengis.net/sld}UserLayer/{http://www.opengis.net/sld}Name")
-    if len(el) == 0 and not data.get('name'):
-        el = dom.findall(
-            "{http://www.opengis.net/sld}NamedLayer/{http://www.opengis.net/se}Name")
-    if len(el) == 0 and not data.get('name'):
-        el = dom.findall(
-            "{http://www.opengis.net/sld}UserLayer/{http://www.opengis.net/se}Name")
-
-    if len(el) == 0 and not data.get('name'):
-        return respond(
-            errors="Please provide a name, unable to extract one from the SLD.")
-    name = data.get('name') or el[0].text
+    name = data.get('name') or sld_name
     if data['update']:
         match = None
         styles = list(layer.styles) + [layer.default_style]

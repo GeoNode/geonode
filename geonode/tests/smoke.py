@@ -23,6 +23,9 @@ import math
 from django.test import TestCase
 from django.core.urlresolvers import reverse
 
+from geonode import geoserver
+from geonode.decorators import on_ogc_backend
+
 from geonode.utils import forward_mercator, inverse_mercator
 
 
@@ -66,6 +69,7 @@ class GeoNodeSmokeTests(TestCase):
         response = self.client.get(reverse('layer_browse'))
         self.failUnlessEqual(response.status_code, 200)
 
+    @on_ogc_backend(geoserver.BACKEND_PACKAGE)
     def test_layer_acls(self):
         'Test if the data/acls endpoint renders.'
         response = self.client.get(reverse('layer_acls'))

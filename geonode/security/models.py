@@ -17,6 +17,9 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
+from geonode import geoserver
+from geonode.decorators import on_ogc_backend
+
 try:
     import json
 except ImportError:
@@ -269,6 +272,7 @@ def get_geofence_rules_count():
         return -1
 
 
+@on_ogc_backend(geoserver.BACKEND_PACKAGE)
 def set_geofence_invalidate_cache():
     """invalidate GeoFence Cache Rules"""
     if GEOFENCE_SECURITY_ENABLED:
@@ -292,6 +296,7 @@ def set_geofence_invalidate_cache():
             raise e
 
 
+@on_ogc_backend(geoserver.BACKEND_PACKAGE)
 def set_geofence_all(instance):
     """assign access permissions to all users"""
     if GEOFENCE_SECURITY_ENABLED:
@@ -358,6 +363,7 @@ def set_geofence_all(instance):
                 set_geofence_invalidate_cache()
 
 
+@on_ogc_backend(geoserver.BACKEND_PACKAGE)
 def set_geofence_owner(instance, username, view_perms=False, download_perms=False):
     """assign access permissions to owner user"""
     if GEOFENCE_SECURITY_ENABLED:
@@ -471,6 +477,7 @@ def set_geofence_owner(instance, username, view_perms=False, download_perms=Fals
                 set_geofence_invalidate_cache()
 
 
+@on_ogc_backend(geoserver.BACKEND_PACKAGE)
 def set_geofence_group(instance, groupname, view_perms=False, download_perms=False):
     """assign access permissions to owner group"""
     if GEOFENCE_SECURITY_ENABLED:

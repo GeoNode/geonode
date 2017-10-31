@@ -2,6 +2,9 @@
     :alt: Coverage Badge
     :target: https://coveralls.io/github/GeoNode/geonode?branch=master
 
+.. image:: https://codecov.io/gh/GeoNode/geonode/branch/master/graph/badge.svg
+    :target: https://codecov.io/gh/GeoNode/geonode
+
 .. image:: https://secure.travis-ci.org/GeoNode/geonode.png
     :alt: Build Status
     :target: http://travis-ci.org/GeoNode/geonode
@@ -56,26 +59,22 @@ Or if you want to use the provided Makefile::
 
     # pull latest images
     make pull
+    
+.. note:: For development you need to add ``geonode`` alias into ``/etc/hosts/`` file as following::
 
-**Note:**
-For deveployment you need to add `geonode` alias into `/ect/hosts/` file as following:
+        $ sudo vim /etc/hosts
+        ##
+        # Host Database
+        #
+        # localhost is used to configure the loopback interface
+        # when the system is booting.  Do not change this entry.
+        ##
+        127.0.0.1       localhost geonode
+        255.255.255.255 broadcasthost
+        ::1             localhost
 
-```
-$ sudo vim /etc/hosts
-##
-# Host Database
-#
-# localhost is used to configure the loopback interface
-# when the system is booting.  Do not change this entry.
-##
-127.0.0.1       localhost geonode
-255.255.255.255 broadcasthost
-::1             localhost
-```
-To access GeoNode just enter the following url: `http://geonode/` on your web browser.
-For GeoServer: `http://geonode/geoserver/web/`
-
-
+To access GeoNode just enter the following url: http://geonode/ on your web browser. 
+For GeoServer: http://geonode/geoserver/web/
 
 Ubuntu
 ------

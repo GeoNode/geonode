@@ -12,6 +12,7 @@ geonode/development.db
 /geoserver/
 downloaded
 package-lock.json
+GeoIPCities.dat
 
 docs/i18n/pot/
 
@@ -72,6 +73,8 @@ geonode/static/lib/js/bootstrap-treeview.min.js
 
 # Uploaded files
 geonode/uploaded
+geonode/qgis_layer
+geonode/qgis_tiles
 
 #Testing output
 .coverage

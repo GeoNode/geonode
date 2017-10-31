@@ -215,6 +215,8 @@ class Map(ResourceBase, GXPMapBase):
     def get_bbox_from_layers(self, layers):
         """
         Calculate the bbox from a given list of Layer objects
+
+        bbox format: [xmin, xmax, ymin, ymax]
         """
         bbox = None
         for layer in layers:
@@ -239,6 +241,9 @@ class Map(ResourceBase, GXPMapBase):
         self.center_y = 0
         bbox = None
         index = 0
+
+        if self.uuid is None or self.uuid == '':
+            self.uuid = str(uuid.uuid1())
 
         DEFAULT_MAP_CONFIG, DEFAULT_BASE_LAYERS = default_map_config(None)
 
@@ -273,6 +278,7 @@ class Map(ResourceBase, GXPMapBase):
             index += 1
 
         # Set bounding box based on all layers extents.
+        # bbox format: [xmin, xmax, ymin, ymax]
         bbox = self.get_bbox_from_layers(self.local_layers)
 
         self.set_bounds_from_bbox(bbox)

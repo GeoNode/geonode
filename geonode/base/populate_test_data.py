@@ -39,7 +39,8 @@ import os.path
 import six
 
 
-if 'geonode.geoserver' in settings.INSTALLED_APPS:
+def disconnect_signals():
+    """Disconnect signals for test class purposes."""
     from django.db.models import signals
     from geonode.geoserver.signals import geoserver_pre_save_maplayer
     from geonode.geoserver.signals import geoserver_post_save_map
@@ -49,6 +50,23 @@ if 'geonode.geoserver' in settings.INSTALLED_APPS:
     signals.post_save.disconnect(geoserver_post_save_map, sender=Map)
     signals.pre_save.disconnect(geoserver_pre_save, sender=Layer)
     signals.post_save.disconnect(geoserver_post_save, sender=Layer)
+
+
+def reconnect_signals():
+    """Reconnect signals for test class purposes."""
+    from django.db.models import signals
+    from geonode.geoserver.signals import geoserver_pre_save_maplayer
+    from geonode.geoserver.signals import geoserver_post_save_map
+    from geonode.geoserver.signals import geoserver_pre_save
+    from geonode.geoserver.signals import geoserver_post_save
+    signals.pre_save.connect(geoserver_pre_save_maplayer, sender=MapLayer)
+    signals.post_save.connect(geoserver_post_save_map, sender=Map)
+    signals.pre_save.connect(geoserver_pre_save, sender=Layer)
+    signals.post_save.connect(geoserver_post_save, sender=Layer)
+
+
+if 'geonode.geoserver' in settings.INSTALLED_APPS:
+    disconnect_signals()
 
 # This is used to populate the database with the search fixture data. This is
 # primarily used as a first step to generate the json data for the fixture using
