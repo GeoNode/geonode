@@ -64,12 +64,21 @@ class SmokeTest(TestCase):
         layer.set_default_permissions()
 
         # Test that the anonymous user can read
-        self.assertTrue(self.anonymous_user.has_perm('view_resourcebase', layer.get_self_resource()))
+        self.assertTrue(
+            self.anonymous_user.has_perm(
+                'view_resourcebase',
+                layer.get_self_resource()))
 
         # Test that the default perms give Norman view permissions but not
         # write permissions
-        self.assertTrue(self.norman.has_perm('view_resourcebase', layer.get_self_resource()))
-        self.assertFalse(self.norman.has_perm('change_resourcebase', layer.get_self_resource()))
+        self.assertTrue(
+            self.norman.has_perm(
+                'view_resourcebase',
+                layer.get_self_resource()))
+        self.assertFalse(
+            self.norman.has_perm(
+                'change_resourcebase',
+                layer.get_self_resource()))
 
         # Make sure Norman is not in the bar group.
         self.assertFalse(self.bar.user_is_member(self.norman))
@@ -81,22 +90,38 @@ class SmokeTest(TestCase):
         self.assertTrue(self.bar.user_is_member(self.norman))
 
         # Give the bar group permissions to change the layer.
-        permissions = {'groups': {'bar': ['view_resourcebase', 'change_resourcebase']}}
+        permissions = {
+            'groups': {
+                'bar': [
+                    'view_resourcebase',
+                    'change_resourcebase']}}
         layer.set_permissions(permissions)
 
-        self.assertTrue(self.norman.has_perm('view_resourcebase', layer.get_self_resource()))
+        self.assertTrue(
+            self.norman.has_perm(
+                'view_resourcebase',
+                layer.get_self_resource()))
         # check that now norman can change the layer
-        self.assertTrue(self.norman.has_perm('change_resourcebase', layer.get_self_resource()))
+        self.assertTrue(
+            self.norman.has_perm(
+                'change_resourcebase',
+                layer.get_self_resource()))
 
         # Test adding a new user to the group after setting permissions on the layer.
         # Make sure Test User is not in the bar group.
         self.assertFalse(self.bar.user_is_member(self.test_user))
 
-        self.assertFalse(self.test_user.has_perm('change_resourcebase', layer.get_self_resource()))
+        self.assertFalse(
+            self.test_user.has_perm(
+                'change_resourcebase',
+                layer.get_self_resource()))
 
         self.bar.join(self.test_user)
 
-        self.assertTrue(self.test_user.has_perm('change_resourcebase', layer.get_self_resource()))
+        self.assertTrue(
+            self.test_user.has_perm(
+                'change_resourcebase',
+                layer.get_self_resource()))
 
     def test_group_resource(self):
         """
@@ -116,8 +141,12 @@ class SmokeTest(TestCase):
         self.assertTrue(map.get_self_resource() in self.bar.resources())
 
         # Test the resource filter
-        self.assertTrue(layer.get_self_resource() in self.bar.resources(resource_type='layer'))
-        self.assertTrue(map.get_self_resource() not in self.bar.resources(resource_type='layer'))
+        self.assertTrue(
+            layer.get_self_resource() in self.bar.resources(
+                resource_type='layer'))
+        self.assertTrue(
+            map.get_self_resource() not in self.bar.resources(
+                resource_type='layer'))
 
         # Revoke permissions on the layer from the self.bar group
         layer.set_permissions("{}")
@@ -142,7 +171,9 @@ class SmokeTest(TestCase):
 
         perms_info = _perms_info_json(layer)
         # Ensure foo is in the perms_info output
-        self.assertItemsEqual(json.loads(perms_info)['groups'], {'bar': ['view_resourcebase']})
+        self.assertItemsEqual(
+            json.loads(perms_info)['groups'], {
+                'bar': ['view_resourcebase']})
 
     def test_resource_permissions(self):
         """
@@ -161,22 +192,31 @@ class SmokeTest(TestCase):
         objects = layer, document, map_obj
 
         for obj in objects:
-            response = self.client.get(reverse('resource_permissions', kwargs=dict(resource_id=obj.id)))
+            response = self.client.get(
+                reverse(
+                    'resource_permissions',
+                    kwargs=dict(
+                        resource_id=obj.id)))
             self.assertEqual(response.status_code, 200)
             js = json.loads(response.content)
             permissions = js.get('permissions', dict())
 
-            if isinstance(permissions, unicode) or isinstance(permissions, str):
+            if isinstance(permissions, unicode) or isinstance(
+                    permissions, str):
                 permissions = json.loads(permissions)
 
             # Ensure the groups value is empty by default
             expected_permissions = {}
             if settings.DEFAULT_ANONYMOUS_DOWNLOAD_PERMISSION:
-                expected_permissions.setdefault(u'anonymous', []).append(u'download_resourcebase')
+                expected_permissions.setdefault(
+                    u'anonymous', []).append(u'download_resourcebase')
             if settings.DEFAULT_ANONYMOUS_VIEW_PERMISSION:
-                expected_permissions.setdefault(u'anonymous', []).append(u'view_resourcebase')
+                expected_permissions.setdefault(
+                    u'anonymous', []).append(u'view_resourcebase')
 
-            self.assertItemsEqual(permissions.get('groups'), expected_permissions)
+            self.assertItemsEqual(
+                permissions.get('groups'),
+                expected_permissions)
 
             permissions = {
                 'groups': {
@@ -197,16 +237,23 @@ class SmokeTest(TestCase):
 
             self.assertEqual(response.status_code, 200)
 
-            response = self.client.get(reverse('resource_permissions', kwargs=dict(resource_id=obj.id)))
+            response = self.client.get(
+                reverse(
+                    'resource_permissions',
+                    kwargs=dict(
+                        resource_id=obj.id)))
 
             js = json.loads(response.content)
             permissions = js.get('permissions', dict())
 
-            if isinstance(permissions, unicode) or isinstance(permissions, str):
+            if isinstance(permissions, unicode) or isinstance(
+                    permissions, str):
                 permissions = json.loads(permissions)
 
             # Make sure the bar group now has write permissions
-            self.assertItemsEqual(permissions['groups'], {'bar': ['change_resourcebase']})
+            self.assertItemsEqual(
+                permissions['groups'], {
+                    'bar': ['change_resourcebase']})
 
             # Remove group permissions
             permissions = {"users": {"admin": ['change_resourcebase']}}
@@ -221,12 +268,17 @@ class SmokeTest(TestCase):
 
             self.assertEqual(response.status_code, 200)
 
-            response = self.client.get(reverse('resource_permissions', kwargs=dict(resource_id=obj.id)))
+            response = self.client.get(
+                reverse(
+                    'resource_permissions',
+                    kwargs=dict(
+                        resource_id=obj.id)))
 
             js = json.loads(response.content)
             permissions = js.get('permissions', dict())
 
-            if isinstance(permissions, unicode) or isinstance(permissions, str):
+            if isinstance(permissions, unicode) or isinstance(
+                    permissions, str):
                 permissions = json.loads(permissions)
 
             # Assert the bar group no longer has permissions
@@ -259,11 +311,16 @@ class SmokeTest(TestCase):
         self.client.login(username="admin", password="admin")
 
         # Delete the group
-        response = self.client.post(reverse('group_remove', args=[self.bar.slug]))
+        response = self.client.post(
+            reverse(
+                'group_remove', args=[
+                    self.bar.slug]))
 
         # successful POSTS will redirect to the group list view.
         self.assertEqual(response.status_code, 302)
-        self.assertFalse(GroupProfile.objects.filter(id=self.bar.id).count() > 0)
+        self.assertFalse(
+            GroupProfile.objects.filter(
+                id=self.bar.id).count() > 0)
 
     def test_delete_group_view_no_perms(self):
         """
@@ -276,7 +333,10 @@ class SmokeTest(TestCase):
         self.client.login(username="norman", password="norman")
 
         # Delete the group
-        response = self.client.post(reverse('group_remove', args=[self.bar.slug]))
+        response = self.client.post(
+            reverse(
+                'group_remove', args=[
+                    self.bar.slug]))
 
         self.assertEqual(response.status_code, 403)
 
@@ -369,17 +429,17 @@ class SmokeTest(TestCase):
         response = self.client.get("/groups/group/bar/activity/")
         self.assertEqual(200, response.status_code)
         self.assertContains(response,
-            '<a href="/layers/geonode:CA">CA</a>',
-            count=0,
-            status_code=200,
-            msg_prefix='',
-            html=False)
+                            '<a href="/layers/geonode:CA">CA</a>',
+                            count=0,
+                            status_code=200,
+                            msg_prefix='',
+                            html=False)
         self.assertContains(response,
-            'uploaded',
-            count=0,
-            status_code=200,
-            msg_prefix='',
-            html=False)
+                            'uploaded',
+                            count=0,
+                            status_code=200,
+                            msg_prefix='',
+                            html=False)
         try:
             # Add test to test perms being sent to the front end.
             layer = Layer.objects.all()[0]
@@ -394,7 +454,9 @@ class SmokeTest(TestCase):
 
             perms_info = _perms_info_json(layer)
             # Ensure foo is in the perms_info output
-            self.assertItemsEqual(json.loads(perms_info)['groups'], {'bar': ['view_resourcebase']})
+            self.assertItemsEqual(
+                json.loads(perms_info)['groups'], {
+                    'bar': ['view_resourcebase']})
 
             layer.group = self.bar.group
             layer.save()
@@ -402,17 +464,17 @@ class SmokeTest(TestCase):
             response = self.client.get("/groups/group/bar/activity/")
             self.assertEqual(200, response.status_code)
             self.assertContains(response,
-                '<a href="/layers/geonode:CA">CA</a>',
-                count=2,
-                status_code=200,
-                msg_prefix='',
-                html=False)
+                                '<a href="/layers/geonode:CA">CA</a>',
+                                count=2,
+                                status_code=200,
+                                msg_prefix='',
+                                html=False)
             self.assertContains(response,
-                'uploaded',
-                count=2,
-                status_code=200,
-                msg_prefix='',
-                html=False)
+                                'uploaded',
+                                count=2,
+                                status_code=200,
+                                msg_prefix='',
+                                html=False)
         finally:
             layer.set_default_permissions()
             layer.group = None
@@ -468,13 +530,19 @@ class InvitationTest(TestCase):
         group = GroupProfile.objects.get(slug="bar")
         group.invite(normal, admin, role="member", send=False)
 
-        self.assert_(GroupInvitation.objects.filter(user=normal, from_user=admin, group=group).exists())
+        self.assert_(
+            GroupInvitation.objects.filter(
+                user=normal,
+                from_user=admin,
+                group=group).exists())
 
-        invite = GroupInvitation.objects.get(user=normal, from_user=admin, group=group)
+        invite = GroupInvitation.objects.get(
+            user=normal, from_user=admin, group=group)
 
         # Test that the user can access the token url.
         self.client.login(username="norman", password="norman")
-        response = self.client.get("/groups/group/{group}/invite/{token}/".format(group=group, token=invite.token))
+        response = self.client.get(
+            "/groups/group/{group}/invite/{token}/".format(group=group, token=invite.token))
         self.assertEqual(200, response.status_code)
 
     def test_accept_invitation(self):
@@ -488,7 +556,8 @@ class InvitationTest(TestCase):
         group = GroupProfile.objects.get(slug="bar")
         group.invite(normal, admin, role="member", send=False)
 
-        invitation = GroupInvitation.objects.get(user=normal, from_user=admin, group=group)
+        invitation = GroupInvitation.objects.get(
+            user=normal, from_user=admin, group=group)
 
         self.assertRaises(ValueError, lambda: invitation.accept(anon))
         self.assertRaises(ValueError, lambda: invitation.accept(admin))
@@ -508,7 +577,8 @@ class InvitationTest(TestCase):
         group = GroupProfile.objects.get(slug="bar")
         group.invite(normal, admin, role="member", send=False)
 
-        invitation = GroupInvitation.objects.get(user=normal, from_user=admin, group=group)
+        invitation = GroupInvitation.objects.get(
+            user=normal, from_user=admin, group=group)
 
         self.assertRaises(ValueError, lambda: invitation.decline(anon))
         self.assertRaises(ValueError, lambda: invitation.decline(admin))
@@ -522,6 +592,7 @@ class GroupCategoriesTestCase(TestCase):
     """
     Group Categories tests
     """
+
     def setUp(self):
         c1 = GroupCategory.objects.create(name='test #1 category')
         g = GroupProfile.objects.create(title='test')
@@ -538,13 +609,19 @@ class GroupCategoriesTestCase(TestCase):
         r = self.client.get(api_url)
         self.assertEqual(r.status_code, 200)
         data = json.loads(r.content)
-        self.assertEqual(data['meta']['total_count'], GroupCategory.objects.all().count())
+        self.assertEqual(
+            data['meta']['total_count'],
+            GroupCategory.objects.all().count())
 
         # check if we have non-empty group category
-        self.assertTrue(GroupCategory.objects.filter(groups__isnull=False).exists())
+        self.assertTrue(
+            GroupCategory.objects.filter(
+                groups__isnull=False).exists())
 
         for item in data['objects']:
-            self.assertTrue(GroupCategory.objects.filter(slug=item['slug']).count() == 1)
+            self.assertTrue(
+                GroupCategory.objects.filter(
+                    slug=item['slug']).count() == 1)
             g = GroupCategory.objects.get(slug=item['slug'])
             self.assertEqual(item['member_count'], g.groups.all().count())
 
