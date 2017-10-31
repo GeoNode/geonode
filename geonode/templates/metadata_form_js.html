@@ -583,12 +583,7 @@
         var params = typeof FILTER_TYPE == 'undefined' ? {} : {'type': FILTER_TYPE};
         $.ajax('/h_keywords_api', {params: params}).success(function(data){
             data = JSON.parse(data)
-            var kws = [];
-            for (kw in data) {
-                if (data[kw] && data[kw].text) {
-				    kws.push(data[kw].text);
-                }
-            }
+            var kws = parseKeywords(data);
 
             {% if freetext_readonly %}
                 $('#id_resource-keywords').tokenfield({
@@ -698,6 +693,23 @@
               icon.toggleClass('fa-folder').toggleClass('fa-folder-open');
             });
         });
+
+        var parseKeywords = function(data) {
+            var kws = [];
+            for (kw in data) {
+                if (data[kw] && data[kw].text) {
+                    kws.push(data[kw].text);
+                    if (data[kw].nodes) {
+                        var kwcs = parseKeywords(data[kw].nodes);
+                        for (kwc in kwcs) {
+                            kws.push(kwcs[kwc]);
+                        }
+                    }
+                }
+            }
+            return kws;
+        };
+
     });
 {% endautoescape %}
 </script>
