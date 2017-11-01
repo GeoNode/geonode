@@ -518,6 +518,8 @@ def new_map(request, template='maps/map_new.html'):
     else:
         return render_to_response(template, RequestContext(request, context_dict))
 
+def old_map(request, template='maps/map_view.html'):
+    return new_map(request, template);
 
 def new_map_json(request):
 
