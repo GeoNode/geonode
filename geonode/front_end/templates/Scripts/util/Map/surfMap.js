@@ -31,6 +31,9 @@
             factory.removeInteraction = function(interaction) {
                 olMap.removeInteraction(interaction);
             }
+            factory.addVectorLayer = function(layer){
+                olMap.addLayer(layer);
+            };
             factory.openMap = function(mapInfo) {
 
                 angular.extend(factory, mapInfo);
@@ -51,7 +54,9 @@
                         mapInfo.InitialExtent.XMax, mapInfo.InitialExtent.YMax
                     ]);
                 }
+                
             };
+            
 
             var _layers = {};
             var _dataIdLayerMapper = {};

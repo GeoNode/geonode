@@ -1,0 +1,10 @@
+<div class="MainBodyContainer catalog-browser" style="height: 100%; width: 100%;">
+    <div class="file-browser-button-container draggable-div">
+        <i class="fa fa-times-circle modal-close-icon" style="float: right; cursor: pointer" ng-click="closeDialog()"></i>
+        <button data-ng-click="executeQuery(queryStr)" title="Execute query">
+        Execute</button>
+    </div>
+    <div style="margin-top:80px; height: inherit">
+        <textarea style="resize: none;width: 90%; height: 100%" ng-model="queryStr"></textarea>
+    </div>
+</div>
