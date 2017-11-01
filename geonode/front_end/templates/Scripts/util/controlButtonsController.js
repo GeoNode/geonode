@@ -59,6 +59,10 @@
                     showProjectBrowserDialog(false);
                 };
 
+                $scope.action.overpassApiQuery = function(){
+                    showOverpassApiQueryDialog();
+                };
+
                 $scope.action.browseData = function () {
                     $modal.open({
                         templateUrl: '/static/Templates/CatalogBrowser/Browser.html',
@@ -182,6 +186,16 @@
                             return openForSave || false;
                         }
                     }
+                });
+            }
+
+            function showOverpassApiQueryDialog() {
+                $modal.open({
+                    templateUrl: '/static/Templates/Project/OverpassApiQueryBuilder.html',
+                    controller: 'OverpassApiQueryBuilderController',
+                    // backdrop: 'static',
+                    keyboard: false,
+                    // windowClass: 'fullScreenModal'
                 });
             }
 

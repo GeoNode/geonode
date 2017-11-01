@@ -112,6 +112,7 @@
 <script src="{{ STATIC_URL }}Scripts/util/CatalogBrowser/epsgService.js"></script>
 <script src="{{ STATIC_URL }}Scripts/util/CatalogBrowser/catalogBrowserController.js"></script>
 <script src="{{ STATIC_URL }}Scripts/util/ProjectBrowser/projectBrowserController.js"></script>
+<script src="{{ STATIC_URL }}Scripts/util/OverpassQueryBuilder/overpass-query-builder.controller.js"></script>
 <script src="{{ STATIC_URL }}Scripts/util/CatalogBrowser/uploadDataService.js"></script>
 <script src="{{ STATIC_URL }}Scripts/util/CatalogBrowser/uploadDataController.js"></script>
 <script src="{{ STATIC_URL }}Scripts/util/CatalogBrowser/shareDataController.js"></script>
@@ -265,6 +266,13 @@
                                         <span>Browse
                                             <br />
                                             Map</span>
+                                    </button>
+                            </li>
+                            <li draft-only>
+                                <button class="control-button icon icon32 icon-browse-projects" id="overpass-query" ng-disabled="isAttributeGridOn" ng-click="action.overpassApiQuery()" remove-focus title="Overpass Query">
+                                        <span>Overpass API
+                                            <br />
+                                            Query</span>
                                     </button>
                             </li>
                             <li draft-only>

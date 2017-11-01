@@ -17,6 +17,7 @@
                 factory.removeUserInteractions = map.removeUserInteractions;
                 factory.registerEvent = map.registerEvent;
                 factory.removeEvents = map.removeEvents;
+                factory.addVectorLayer = map.addVectorLayer;
             },
             loadMap: function(mapInfo) {
                 mapTools.baseMap.setBaseMapByName(mapInfo.BaseLayerName);
