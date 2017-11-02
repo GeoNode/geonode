@@ -2,7 +2,7 @@
  * Created by jahangir on 10/22/17.
  */
 
-//$(window).load(function(){
+$(window).load(function(){
 
     // "ext-gen61" pan button ID
     // "ext-gen64" click button ID
@@ -107,7 +107,7 @@
     }
 
     // pan activity
-    $("#ext-gen61").on('click', function(e){
+    $("#ext-gen62").on('click', function(e){
 
         var user_location = JSON.parse(localStorage.getItem("user_location"));
 
@@ -130,7 +130,7 @@
     });
 
     // click activity
-    $("#ext-gen64").on('click', function(e){
+    $("#ext-gen65").on('click', function(e){
 
         var user_location = JSON.parse(localStorage.getItem("user_location"));
 
@@ -153,7 +153,7 @@
     });
 
     // zoom in activity
-    $("#ext-gen75").on('click', function(e){
+    $("#ext-gen76").on('click', function(e){
 
         var user_location = JSON.parse(localStorage.getItem("user_location"));
 
@@ -175,7 +175,7 @@
     });
 
     // zoom out activity
-    $("#ext-gen77").on('click', function(e){
+    $("#ext-gen78").on('click', function(e){
 
         var user_location = JSON.parse(localStorage.getItem("user_location"));
 
@@ -202,4 +202,4 @@
     // Layer Load
 
 
-//});
+});
