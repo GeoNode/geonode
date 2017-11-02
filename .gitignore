@@ -59,6 +59,7 @@ geonode/static/node_modules/
 #node_modules/
 # Listing all of them instead of putting geonode/static/lib out of version control.
 geonode/cephgeo/logs/
+geonode/cephgeo/local_settings.py*
 geonode/local_settings.py*
 #geonode/static/lib/css/jquery-ui.css
 #geonode/static/lib/css/jquery.dataTables.css
