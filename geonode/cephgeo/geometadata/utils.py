@@ -25,23 +25,33 @@ os.environ.setdefault("DJANGO_SETTINGS_MODULE", "geonode.settings")
 
 def create_object(params):
     obj = LidarCoverageBlock.objects.create(uid=params['uid'],
+                                            area=params['area'],
                                             block_name=params['block_name'],
-                                            adjusted_l=params['adjusted_l'],
-                                            sensor=params['sensor'],
                                             processor=params['processor'],
+                                            sensor=params['sensor'],
+                                            base_used=params['base_used'],
                                             flight_num=params['flight_num'],
                                             mission_na=params['mission_na'],
                                             date_flown=params['date_flown'],
-                                            x_shift_m=params['x_shift_m'],
-                                            y_shift_m=params['y_shift_m'],
-                                            z_shift_m=params['z_shift_m'],
+                                            x_shift=params['x_shift_m'],
+                                            y_shift=params['y_shift_m'],
+                                            z_shift=params['z_shift_m'],
                                             height_dif=params['height_dif'],
-                                            rmse_val_m=params['rmse_val_m'],
+                                            rmse_val=params['rmse_val_m'],
                                             cal_ref_pt=params['cal_ref_pt'],
                                             val_ref_pt=params['val_ref_pt'],
                                             floodplain=params['floodplain'],
                                             pl1_suc=params['pl1_suc'],
-                                            pl2_suc=params['pl2_suc'])
+                                            pl2_suc=params['pl2_suc'],
+                                            is_laz_adj=params['is_laz_adj'],
+                                            is_orp_adj=params['is_orp_adj'],
+                                            is_laz_upl=params['is_laz_upl'],
+                                            is_orp_upl=params['is_orp_upl'],
+                                            is_problem=params['is_problem'],
+                                            is_removed=params['is_removed'],
+                                            remarks=params['remarks'],
+                                            area_sqkm=params['area_sqkm'],
+                                            )
     return obj
 
 
@@ -59,23 +69,32 @@ def lidar_coverage_data():
         i += 1
         params = {}
         params['uid'] = feature.GetFieldAsInteger('uid')
+        params['area'] = feature.GetFieldAsInteger('area')
         params['block_name'] = feature.GetFieldAsString('block_name')
-        params['adjusted_l'] = feature.GetFieldAsString('is_adjuste')
-        params['sensor'] = feature.GetFieldAsString('sensor')
         params['processor'] = feature.GetFieldAsString('processor')
+        params['sensor'] = feature.GetFieldAsString('sensor')
+        params['base_used'] = feature.GetFieldAsString('base_used')
         params['flight_num'] = feature.GetFieldAsString('flight_num')
         params['mission_na'] = feature.GetFieldAsString('mission_na')
         params['date_flown'] = feature.GetFieldAsString('date_flown')
-        params['x_shift_m'] = feature.GetFieldAsString('x_shift')
-        params['y_shift_m'] = feature.GetFieldAsString('y_shift')
-        params['z_shift_m'] = feature.GetFieldAsString('z_shift')
+        params['x_shift'] = feature.GetFieldAsString('x_shift')
+        params['y_shift'] = feature.GetFieldAsString('y_shift')
+        params['z_shift'] = feature.GetFieldAsString('z_shift')
         params['height_dif'] = feature.GetFieldAsString('height_dif')
-        params['rmse_val_m'] = feature.GetFieldAsString('rmse_val')
+        params['rmse_val'] = feature.GetFieldAsString('rmse_val')
         params['cal_ref_pt'] = feature.GetFieldAsString('cal_ref_pt')
         params['val_ref_pt'] = feature.GetFieldAsString('val_ref_pt')
         params['floodplain'] = feature.GetFieldAsString('floodplain')
         params['pl1_suc'] = feature.GetFieldAsString('pl1_suc')
         params['pl2_suc'] = feature.GetFieldAsString('pl2_suc')
+        params['is_laz_adj'] = feature.GetFieldAsString('is_laz_adj')
+        params['is_orp_adj'] = feature.GetFieldAsString('is_orp_adj')
+        params['is_laz_upl'] = feature.GetFieldAsString('is_laz_upl')
+        params['is_orp_upl'] = feature.GetFieldAsString('is_orp_upl')
+        params['is_problem'] = feature.GetFieldAsString('is_problem')
+        params['is_removed'] = feature.GetFieldAsString('is_removed')
+        params['remarks'] = feature.GetFieldAsString('remarks')
+        params['area_sqkm'] = feature.GetFieldAsString('area_sqkm')
 
         # print params
         print 'Creating object...'

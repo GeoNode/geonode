@@ -20,6 +20,7 @@ from celery.decorators import periodic_task
 from datetime import datetime
 import uuid
 from django.utils.encoding import smart_str
+from pyproj import transform, Proj
 
 logger = get_task_logger("geonode.tasks.ceph_update")
 
