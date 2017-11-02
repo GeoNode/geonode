@@ -283,6 +283,11 @@ GEONODE_APPS = (
     'geonode.cms',
     'geonode.workspace',
 
+    'rest_framework',
+    'rest_framework_gis',
+
+    'geonode.analytics',
+
     #end
 
     'geonode.front_end',

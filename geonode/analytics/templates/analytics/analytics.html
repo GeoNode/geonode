@@ -1,0 +1,104 @@
+{% extends "site_base.html" %}
+{% load activity_tags  social_tags i18n %}
+
+{% block title %}{% trans "Analytics" %}{% endblock %}
+
+{% block body_outer %}
+
+    <div class="row">
+        <div class="col-md-12 analytics-header"><p class="text-center">WEB MAP METRICS</p></div>
+        <div class="col-md-12 analytics-heading"><h2 class="text-center">Track the metrics that convert</h2></div>
+    </div>
+    <div class="row">
+        <div class="col-md-2">&nbsp;</div>
+        <div class="col-md-2 analytics-box">
+            <h3 class="text-center">58%</h3>
+            <p class="text-center">Bounce Rate</p>
+        </div>
+        <div class="col-md-1">&nbsp;</div>
+        <div class="col-md-2 analytics-box">
+            <h3 class="text-center">{{ map_loads }}</h3>
+            <p class="text-center">Map Loads</p>
+        </div>
+        <div class="col-md-1">&nbsp;</div>
+        <div class="col-md-2 analytics-box">
+            <h3 class="text-center">{{ average_activity_load }}</h3>
+            <p class="text-center">Avg. Activities / Load</p>
+        </div>
+        <div class="col-md-2">&nbsp;</div>
+    </div>
+    <div class="row">
+        <div class="col-md-12">&nbsp;</div>
+    </div>
+    <div class="row">
+        <div class="col-md-2">&nbsp;</div>
+        <div class="col-md-2 analytics-box">
+            <h3 class="text-center">2</h3>
+            <p class="text-center">Avg. Visitor Duration (min)</p>
+        </div>
+        <div class="col-md-1">&nbsp;</div>
+        <div class="col-md-2 analytics-box">
+            <h3 class="text-center">{{ average_layer_load }}</h3>
+            <p class="text-center">Avg. Layer Load (sec)</p>
+        </div>
+        <div class="col-md-1">&nbsp;</div>
+        <div class="col-md-2 analytics-box">
+            <h3 class="text-center">{{ zooms }}</h3>
+            <p class="text-center">Zooms</p>
+        </div>
+        <div class="col-md-2">&nbsp;</div>
+    </div>
+    <div class="row">
+        <div class="col-md-12">
+            <div id="container-highchart" style="min-width: 310px; height: 400px; max-width: 600px; margin: 0 auto"></div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block extra_head %}
+    <link href="{{ STATIC_URL }}geonode/css/geoexplorer/analytics.css" rel="stylesheet" />
+{% endblock %}
+
+{% block extra_script %}
+    {# { block.super } #}}
+    <script src="https://code.highcharts.com/highcharts.js"></script>
+    <script src="https://code.highcharts.com/modules/exporting.js"></script>
+    <script>
+        $(function () {
+
+            Highcharts.chart('container-highchart', {
+                chart: {
+                    plotBackgroundColor: null,
+                    plotBorderWidth: null,
+                    plotShadow: false,
+                    type: 'pie'
+                },
+                title: {
+                    text: 'User Pinpoint Activities'
+                },
+                tooltip: {
+                    pointFormat: '{series.name}: <b>{point.percentage:.1f}%</b>'
+                },
+                plotOptions: {
+                    pie: {
+                        allowPointSelect: true,
+                        cursor: 'pointer',
+                        dataLabels: {
+                            enabled: true,
+                            format: '<b>{point.name}</b>: {point.percentage:.1f} %',
+                            style: {
+                                color: (Highcharts.theme && Highcharts.theme.contrastTextColor) || 'black'
+                            }
+                        }
+                    }
+                },
+                series: [{
+                    name: 'Activities',
+                    colorByPoint: true,
+                    data: {{ chart_data|safe }}
+                }]
+            });
+
+        });
+    </script>
+{% endblock %}
