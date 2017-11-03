@@ -18,6 +18,8 @@
 #
 #########################################################################
 
+import fileinput
+import glob
 import os
 import re
 import shutil
@@ -26,18 +28,15 @@ import time
 import urllib
 import urllib2
 import zipfile
-import glob
-import fileinput
-import yaml
-
-from setuptools.command import easy_install
 from urlparse import urlparse
 
-from paver.easy import task, options, cmdopts, needs
-from paver.easy import path, sh, info, call_task
-from paver.easy import BuildFailure
+import yaml
+from paver.easy import (BuildFailure, call_task, cmdopts, info, needs, options,
+                        path, sh, task)
+from setuptools.command import easy_install
 
 try:
+    import ipdb; ipdb.set_trace()
     from geonode.settings import GEONODE_APPS
 except BaseException:
     # probably trying to run install_win_deps.
@@ -131,23 +130,12 @@ def _install_data_dir():
 
     try:
         config = path(
-            'geoserver/data/security/auth/geonodeAuthProvider/config.xml')
-        with open(config) as f:
-            xml = f.read()
-            m = re.search('baseUrl>([^<]+)', xml)
-            xml = xml[:m.start(1)] + "http://localhost:8000/" + xml[m.end(1):]
-            with open(config, 'w') as f:
-                f.write(xml)
-    except Exception as e:
-        print(e)
-
-    try:
-        config = path(
             'geoserver/data/global.xml')
         with open(config) as f:
             xml = f.read()
             m = re.search('proxyBaseUrl>([^<]+)', xml)
-            xml = xml[:m.start(1)] + "http://localhost:8080/geoserver" + xml[m.end(1):]
+            xml = xml[:m.start(1)] + \
+                "http://localhost:8080/geoserver" + xml[m.end(1):]
             with open(config, 'w') as f:
                 f.write(xml)
     except Exception as e:
@@ -159,15 +147,20 @@ def _install_data_dir():
         with open(config) as f:
             xml = f.read()
             m = re.search('accessTokenUri>([^<]+)', xml)
-            xml = xml[:m.start(1)] + "http://localhost:8000/o/token/" + xml[m.end(1):]
+            xml = xml[:m.start(1)] + \
+                "http://localhost:8000/o/token/" + xml[m.end(1):]
             m = re.search('userAuthorizationUri>([^<]+)', xml)
-            xml = xml[:m.start(1)] + "http://localhost:8000/o/authorize/" + xml[m.end(1):]
+            xml = xml[:m.start(
+                1)] + "http://localhost:8000/o/authorize/" + xml[m.end(1):]
             m = re.search('redirectUri>([^<]+)', xml)
-            xml = xml[:m.start(1)] + "http://localhost:8080/geoserver" + xml[m.end(1):]
+            xml = xml[:m.start(
+                1)] + "http://localhost:8080/geoserver/index.html" + xml[m.end(1):]
             m = re.search('checkTokenEndpointUrl>([^<]+)', xml)
-            xml = xml[:m.start(1)] + "http://localhost:8000/api/o/v4/tokeninfo/" + xml[m.end(1):]
+            xml = xml[:m.start(
+                1)] + "http://localhost:8000/api/o/v4/tokeninfo/" + xml[m.end(1):]
             m = re.search('logoutUri>([^<]+)', xml)
-            xml = xml[:m.start(1)] + "http://localhost:8000/account/logout/" + xml[m.end(1):]
+            xml = xml[:m.start(
+                1)] + "http://localhost:8000/account/logout/" + xml[m.end(1):]
             with open(config, 'w') as f:
                 f.write(xml)
     except Exception as e:
@@ -199,6 +192,7 @@ def static(options):
 def setup(options):
     """Get dependencies and prepare a GeoNode development environment."""
 
+    updategeoip(options)
     info(('GeoNode development environment successfully set up.'
           'If you have not set up an administrative account,'
           ' please do so now. Use "paver start" to start up the server.'))
@@ -267,6 +261,14 @@ def upgradedb(options):
         print "Please specify your GeoNode version"
     else:
         print "Upgrades from version %s are not yet supported." % version
+
+
+@task
+def updategeoip(options):
+    """
+    Update geoip db
+    """
+    sh("python manage.py updategeoip -o")
 
 
 @task
@@ -398,9 +400,10 @@ def start_django():
     """
     Start the GeoNode Django application
     """
-    bind = options.get('bind', '')
+    bind = options.get('bind', '0.0.0.0:8000')
     foreground = '' if options.get('foreground', False) else '&'
     sh('python manage.py runserver %s %s' % (bind, foreground))
+
 
 def start_messaging():
     """
@@ -408,7 +411,6 @@ def start_messaging():
     """
     foreground = '' if options.get('foreground', False) else '&'
     sh('python manage.py runmessaging %s' % foreground)
-
 
 
 @cmdopts([
@@ -420,7 +422,12 @@ def start_geoserver(options):
     Start GeoServer with GeoNode extensions
     """
 
-    from geonode.settings import OGC_SERVER
+    from geonode.settings import OGC_SERVER, INSTALLED_APPS
+
+    # only start if using Geoserver backend
+    if 'geonode.geoserver' not in INSTALLED_APPS:
+        return
+
     GEOSERVER_BASE_URL = OGC_SERVER['default']['LOCATION']
     url = GEOSERVER_BASE_URL
 
@@ -480,7 +487,7 @@ def start_geoserver(options):
         sh((
             '%(javapath)s -Xms512m -Xmx1024m -server -XX:+UseConcMarkSweepGC -XX:MaxPermSize=256m'
             ' -DGEOSERVER_DATA_DIR=%(data_dir)s'
-            # ' -Dgeofence.dir=%(geofence_dir)s'
+            ' -Dgeofence.dir=%(geofence_dir)s'
             # ' -Dgeofence-ovr=geofence-datasource-ovr.properties'
             # workaround for JAI sealed jar issue and jetty classloader
             # ' -Dorg.eclipse.jetty.server.webapp.parentLoaderPriority=true'
@@ -543,7 +550,7 @@ def test_integration(options):
             sh('sleep 30')
             call_task('setup_data')
         sh(('python manage.py test %s'
-            ' --noinput --liveserver=localhost:8000' % name))
+            ' --noinput --liveserver=0.0.0.0:8000' % name))
     except BuildFailure as e:
         info('Tests failed! %s' % str(e))
     else:
