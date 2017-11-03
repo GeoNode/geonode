@@ -1,31 +1,61 @@
 version: '2'
 services:
 
-  postgres:
-    image: postgres
+  database:
+    image: camptocamp/postgis:9.5
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=secret
+    volumes:
+      - postgresql_data:/var/lib/postgresql/data
 
   elasticsearch:
-   image: elasticsearch
+    image: elasticsearch:5.2
+    volumes:
+      - elasticsearch_data:/usr/share/elasticsearch/data
 
   rabbitmq:
-     image: rabbitmq
+     image: rabbitmq:3.6
+     volumes:
+      - rabbitmq_data:/var/lib/rabbitmq
 
   django:
-    image: geonode/django
+    image: geonode/geonode
     links:
-      - postgres
+      - database
       - elasticsearch
       - rabbitmq
     command: django-admin.py runserver 0.0.0.0:8000 --settings=geonode.settings
-    env_file:
-      - ./scripts/docker/env/production/django.env
+    ports:
+      - "8000:8000"
+    environment:
+      - SITENAME=GeoNode
+      - SITEURL=http://geonode:8000/
+      - DJANGO_SETTINGS_MODULE=geonode.settings
+      - ALLOWED_HOSTS=['localhost', 'geonode']
+      - C_FORCE_ROOT=1
+      - BROKER_URL=amqp://guest:guest@rabbitmq:5672/
+      - DB_HOST=database
+      - DB_PORT=5432
+      - DB_ADMIN_USER=postgres
+      - DB_ADMIN_PASSWORD=secret
+      - DB_GEONODE_NAME=geonode
+      - DB_GEONODE_USER=geonode
+      - DB_GEONODE_PASSWORD=secret
+      - DB_GEOSERVER_NAME=geoserver
+      - DB_GEOSERVER_USER=geoserver
+      - DB_GEOSERVER_PASSWORD=secret
+    volumes:
+      - geonode_data:/mnt/geonode_data
+      - geonode_config:/mnt/geonode_config
 
   celery:
-    image: geonode/django
+    image: geonode/geonode
     links:
       - rabbitmq
-      - postgres
+      - database
       - elasticsearch
+    entrypoint: sh -c
     command: celery worker --app=geonode.celery_app:app -B -l INFO
     env_file:
       - ./scripts/docker/env/production/django.env
@@ -43,21 +73,21 @@ services:
   geoserver:
     image: geonode/geoserver:alias
     links:
-      - postgres
+      - database
     ports:
-      - "8080"
+      - "8080:8080"
     volumes_from:
       - data_dir_conf
     env_file:
       - ./scripts/docker/env/production/geoserver.env
 
-  geonode:
-    image: geonode/nginx:geoserver
-    links:
-      - django
-      - geoserver
-    ports:
-      - "80:80"
+#  geonode:
+#    image: geonode/nginx:geoserver
+#    links:
+#      - django
+#      - geoserver
+#    ports:
+#      - "80:80"
 
   data_dir_conf:
     image: geonode/geoserver_data:2.9.x-oauth2
@@ -67,5 +97,10 @@ services:
       - /geoserver_data/data
 
 volumes:
-
+  rabbitmq_data:
+  elasticsearch_data:
+  geoserver_data:
+  postgresql_data:
   geoserver_data_dir:
+  geonode_config:
+  geonode_data:
