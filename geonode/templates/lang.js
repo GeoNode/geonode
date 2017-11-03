@@ -26,6 +26,8 @@ if (window.GeoNode && GeoNode.plugins && GeoNode.plugins.XHRTrouble) {
 if (window.GeoExplorer) {
     Ext.apply(GeoExplorer.prototype, {
         addLayersButtonText: gettext("Add Layers"),
+        saveMapBtnText: gettext("Save"),
+        publishBtnText: gettext("Link"),
         areaActionText: gettext("Area"),
         backgroundContainerText: gettext("Background"),
         capGridAddLayersText: gettext("Add Layers"),
@@ -43,7 +45,7 @@ if (window.GeoExplorer) {
         legendPanelText: gettext("Legend"),
         lengthActionText: gettext("Length"),
         loadingMapMessage: gettext("Loading Map..."),
-        mapSizeLabel: gettext("Map Size"), 
+        mapSizeLabel: gettext("Map Size"),
         measureSplitText: gettext("Measure"),
         metaDataMapContact: gettext("Contact"),
         metaDataMapId: gettext("Permalink"),
@@ -194,7 +196,7 @@ if (window.GeoNode && GeoNode.SearchTable) {
         loadingText: gettext("Loading..."),
         permalinkText: gettext('permalink'),
         unviewableTooltip: gettext('You do not have permission to view this data'),
-        remoteTooltip: gettext('This data is stored on a remote server')    
+        remoteTooltip: gettext('This data is stored on a remote server')
     });
 }
 if (window.GeoNode && GeoNode.SearchTableRowExpander) {
@@ -218,7 +220,7 @@ if (window.GeoNode && GeoNode.DataCart) {
         emptySelectionText: gettext('No Layers Selected'),
         titleText: gettext('Title'),
         clearSelectedButtonText: gettext('Clear Selected'),
-        clearAllButtonText: gettext('Clear All') 
+        clearAllButtonText: gettext('Clear All')
     });
 }
 
