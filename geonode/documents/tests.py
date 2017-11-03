@@ -207,12 +207,32 @@ class DocumentsTest(TestCase):
 
     def test_document_details(self):
         """/documents/1 -> Test accessing the detail view of a document"""
-
         d = Document.objects.get(pk=1)
         d.set_default_permissions()
 
         response = self.client.get(reverse('document_detail', args=(str(d.id),)))
         self.assertEquals(response.status_code, 200)
+
+    def test_document_metadata_details(self):
+        d = Document.objects.get(pk=1)
+        d.set_default_permissions()
+
+        response = self.client.get(reverse('document_metadata_detail', args=(str(d.id),)))
+        self.failUnlessEqual(response.status_code, 200)
+        self.assertContains(response, "Approved", count=1, status_code=200, msg_prefix='', html=False)
+        self.assertContains(response, "Published", count=1, status_code=200, msg_prefix='', html=False)
+        self.assertContains(response, "Featured", count=1, status_code=200, msg_prefix='', html=False)
+        self.assertContains(response, "<dt>Group</dt>", count=0, status_code=200, msg_prefix='', html=False)
+
+        # ... now assigning a Group to the document
+        group = Group.objects.first()
+        d.group = group
+        d.save()
+        response = self.client.get(reverse('document_metadata_detail', args=(str(d.id),)))
+        self.failUnlessEqual(response.status_code, 200)
+        self.assertContains(response, "<dt>Group</dt>", count=1, status_code=200, msg_prefix='', html=False)
+        d.group = None
+        d.save()
 
     def test_access_document_upload_form(self):
         """Test the form page is returned correctly via GET request /documents/upload"""

@@ -61,6 +61,7 @@
   <h3>{{ profile.first_name|default:profile.name_long }}</h3>
   <table class="table table-user-profile">
     <tbody>
+      {% if SHOW_PROFILE_EMAIL %}
       <tr>
         <td class="table-user-profile-attribute">{% trans 'Email' %}</td>
         {% if profile.email %}
@@ -69,6 +70,7 @@
             <td>{% trans 'Not provided.' %}</td>
         {% endif %}
       </tr>
+      {% endif %}
       <tr>
         <td class="table-user-profile-attribute">{% trans 'Position' %}</td>
         <td>{{ profile.position | default:_('Not provided.') }}</td>

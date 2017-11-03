@@ -186,4 +186,7 @@ def send_email_owner_on_view(owner, viewer, layer_id, geonode_email="email@geo.n
         subject_email = "Your Layer has been seen."
         msg = ("Your layer called {0} with uuid={1}"
                " was seen by {2}").format(layer.name, layer.uuid, viewer)
-        send_mail(subject_email, msg, geonode_email, [owner_email, ])
+        try:
+            send_mail(subject_email, msg, geonode_email, [owner_email, ])
+        except:
+            pass

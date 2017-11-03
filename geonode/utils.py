@@ -40,8 +40,11 @@ from django.core.exceptions import PermissionDenied
 from django.http import Http404
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404
-from django.utils.translation import ugettext as _
-from django.db import models
+# use lazy gettext because some translated strings are used before
+# i18n infra is up
+from django.utils.translation import ugettext_lazy as _
+from django.db import models, connection, transaction
+from django.core.serializers.json import DjangoJSONEncoder
 import httplib2
 import urlparse
 import urllib
@@ -112,6 +115,7 @@ ALPHABET = string.ascii_uppercase + string.ascii_lowercase + \
 ALPHABET_REVERSE = dict((c, i) for (i, c) in enumerate(ALPHABET))
 BASE = len(ALPHABET)
 SIGN_CHARACTER = '$'
+SQL_PARAMS_RE = re.compile(r'%\(([\w_\-]+)\)s')
 
 http_client = httplib2.Http()
 
@@ -250,6 +254,8 @@ def layer_from_viewer_config(model, layer, source, ordering):
               "fixed", "group", "visibility", "source", "getFeatureInfo"]:
         if k in layer_cfg:
             del layer_cfg[k]
+    layer_cfg["wrapDateLine"] = True
+    layer_cfg["displayOutsideMaxExtent"] = True
 
     source_cfg = dict(source)
     for k in ["url", "projection"]:
@@ -527,6 +533,8 @@ class GXPLayer(GXPLayerBase):
         self.fixed = False
         self.group = None
         self.visibility = True
+        self.wrapDateLine = True
+        self.displayOutsideMaxExtent = True
         self.ows_url = ows_url
         self.layer_params = ""
         self.source_params = ""
@@ -612,8 +620,8 @@ def resolve_object(request, model, query, permission='base.view_resourcebase',
 
     if settings.RESOURCE_PUBLISHING:
         if (not obj_to_check.is_published) and (
-                not request.user.has_perm('publish_resourcebase', obj_to_check)
-        ):
+            not request.user.has_perm('publish_resourcebase', obj_to_check)) and (
+                not request.user.has_perm('change_resourcebase_metadata', obj_to_check)):
             raise Http404
 
     allowed = True
@@ -629,6 +637,8 @@ def resolve_object(request, model, query, permission='base.view_resourcebase',
     if not allowed:
         mesg = permission_msg or _('Permission Denied')
         raise PermissionDenied(mesg)
+    if settings.MONITORING_ENABLED:
+        request.add_resource(model._meta.verbose_name_raw, obj.alternate if hasattr(obj, 'alternate') else obj.title)
     return obj
 
 
@@ -675,7 +685,7 @@ def json_response(body=None, errors=None, redirect_to=None, exception=None,
         status = 200
 
     if not isinstance(body, basestring):
-        body = json.dumps(body)
+        body = json.dumps(body, cls=DjangoJSONEncoder)
     return HttpResponse(body, content_type=content_type, status=status)
 
 
@@ -1079,3 +1089,53 @@ class WorldmapDatabaseRouter(object):
         elif model._meta.app_label in self.apps:
             return False
         return None
+
+def parse_datetime(value):
+    for patt in settings.DATETIME_INPUT_FORMATS:
+        try:
+            return datetime.datetime.strptime(value, patt)
+        except ValueError:
+            pass
+    raise ValueError("Invalid datetime input: {}".format(value))
+
+
+def _convert_sql_params(cur, query):
+    # sqlite driver doesn't support %(key)s notation,
+    # use :key instead.
+    if cur.db.vendor in ('sqlite', 'sqlite3', 'spatialite',):
+        return SQL_PARAMS_RE.sub(r':\1', query)
+    return query
+
+
+@transaction.atomic
+def raw_sql(query, params=None, ret=True):
+    """
+    Execute raw query
+    param ret=True returns data from cursor as iterator
+    """
+    with connection.cursor() as c:
+        query = _convert_sql_params(c, query)
+        c.execute(query, params)
+        if ret:
+            desc = [r[0] for r in c.description]
+            for row in c:
+                yield dict(zip(desc, row))
+
+
+def check_ogc_backend(backend_package):
+    """Check that geonode use a particular OGC Backend integration
+
+    :param backend_package: django app of backend to use
+    :type backend_package: str
+
+    :return: bool
+    :rtype: bool
+    """
+    # Check exists in INSTALLED_APPS
+    try:
+        in_installed_apps = backend_package in settings.INSTALLED_APPS
+        ogc_conf = settings.OGC_SERVER['default']
+        is_configured = ogc_conf.get('BACKEND') == backend_package
+        return in_installed_apps and is_configured
+    except:
+        return False

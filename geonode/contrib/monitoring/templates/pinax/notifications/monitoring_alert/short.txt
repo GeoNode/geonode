@@ -1,0 +1,10 @@
+{% load i18n %}
+
+{% trans "Monitoring on" %} {{ host }} {% trans "has detected following problems :" %}
+{% for ndata in alerts %}
+     * {{ ndata.message }}
+         {% trans "spotted" %} {{ ndata.spotted_at|date}} {{ ndata.spotted_at|time }} - {{ ndata.spotted_at|timesince }} {% trans "ago" %}
+         {% trans "emerged" %} {{ ndata.valid_to|date}} {{ ndata.valid_to|time }}- {{ ndata.valid_to|timesince }} {% trans "ago" %}
+
+         {{ ndata.description }}
+{% endfor %}

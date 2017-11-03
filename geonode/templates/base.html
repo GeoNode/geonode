@@ -24,6 +24,7 @@
       {% endif %}
 
       <link href="{{ STATIC_URL }}geonode/css/ext-compatibility.css?v={{ VERSION }}" rel="stylesheet" />
+      <link href="{{ STATIC_URL }}geonode/css/ux-all.css?v={{ VERSION }}" rel="stylesheet" />
       <link href="{{ STATIC_URL }}geonode/css/base.css?v={{ VERSION }}" rel="stylesheet" />
       <style type="text/css">[ng\:cloak],[ng-cloak],[data-ng-cloak],[x-ng-cloak],.ng-cloak,.x-ng-cloak,.ng-hide:not(.ng-hide-animate){display:none !important;}</style>
 
@@ -102,6 +103,7 @@
                 {% endif %}
               </ul>
             </li>
+        
 	        {% block extra_tab %}
             {% endblock %}
             {% endblock %}
@@ -142,7 +144,11 @@
                 <li role="separator" class="divider"></li>
                 <li><a href="{% url "admin:index" %}">Admin</a></li>
                 {% if 'geonode.geoserver' in INSTALLED_APPS %}
-                <li><a href="{{ GEOSERVER_BASE_URL }}">GeoServer</a></li>
+                <li><a href="{{ GEOSERVER_BASE_URL }}index.html">GeoServer</a></li>
+                {% endif %}
+                {% if user.is_superuser and USE_MONITORING %}
+                <li role="separator" class="divider"></li>
+                <li><a href="{% url "monitoring:index" %}">{% trans "Monitoring" %}</a></li>
                 {% endif %}
                 <li role="separator" class="divider"></li>
                 <li><a href="{% url "help" %}">{% trans "Help" %}</a></li>
@@ -185,6 +191,9 @@
     </div>
     {% endblock middle %}
   </div>
+
+  {% block monitoring %}
+  {% endblock %}
 
   {% block footer %}
   <footer>
@@ -347,5 +356,38 @@
     </script>
     <script type="text/javascript" src="{% url "lang" %}"></script>
 
+    <div class="modal fade" style="width: 100%; height: 100%;" id="_thumbnail_processing" data-backdrop="static" data-keyboard="false" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1>Processing...</h1>
+                </div>
+                <div class="modal-body">
+                    <div class="progress">
+                      <div class="progress-bar progress-bar-info progress-bar-striped active" role="progressbar" aria-valuenow="40" aria-valuemin="0" aria-valuemax="100" style="width:100%">
+                        Updating Thumbnail...
+                      </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="_thumbnail_feedbacks" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            <h4 class="modal-title" id="exampleModalLabel">Message box</h4>
+          </div>
+          <div class="modal-body">
+            ...
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-default" data-dismiss="modal">OK</button>
+          </div>
+        </div>
+      </div>
+    </div>
   </body>
 </html>

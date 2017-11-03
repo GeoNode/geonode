@@ -19,7 +19,6 @@
 #########################################################################
 
 import logging
-import sys
 
 from geonode.geoserver.signals import geoserver_post_save_local
 from geonode.security.views import send_email_consumer, send_email_owner_on_view
@@ -34,8 +33,6 @@ from queues import queue_email_events, queue_geoserver_events,\
                    queue_geoserver, queue_layer_viewers
 
 logger = logging.getLogger(__package__)
-logger.addHandler(logging.StreamHandler(sys.stdout))
-logger.setLevel(logging.DEBUG)
 
 
 class Consumer(ConsumerMixin):
@@ -75,12 +72,12 @@ class Consumer(ConsumerMixin):
         logger.info("finished.")
 
     def on_message(self, body, message):
-        logger.debug("broadcast: RECEIVED MSG - body: %r" % (body,))
+        # logger.debug("broadcast: RECEIVED MSG - body: %r" % (body,))
         message.ack()
         self._check_message_limit()
 
     def on_email_messages(self, body, message):
-        logger.debug("on_email_messages: RECEIVED MSG - body: %r" % (body,))
+        # logger.debug("on_email_messages: RECEIVED MSG - body: %r" % (body,))
         layer_uuid = body.get("layer_uuid")
         user_id = body.get("user_id")
         send_email_consumer(layer_uuid, user_id)
@@ -90,7 +87,7 @@ class Consumer(ConsumerMixin):
         self._check_message_limit()
 
     def on_geoserver_messages(self, body, message):
-        logger.debug("on_geoserver_messages: RECEIVED MSG - body: %r" % (body,))
+        # logger.debug("on_geoserver_messages: RECEIVED MSG - body: %r" % (body,))
         layer_id = body.get("id")
         geoserver_post_save_local(layer_id)
         # Not sure if we need to send ack on this fanout version.
@@ -99,7 +96,7 @@ class Consumer(ConsumerMixin):
         self._check_message_limit()
 
     def on_notifications_messages(self, body, message):
-        logger.debug("on_notifications_message: RECEIVED MSG - body: %r" % (body,))
+        # logger.debug("on_notifications_message: RECEIVED MSG - body: %r" % (body,))
         body.get("id")
         body.get("app_label")
         body.get("model")
@@ -110,20 +107,20 @@ class Consumer(ConsumerMixin):
         self._check_message_limit()
 
     def on_geoserver_all(self, body, message):
-        logger.debug("on_geoserver_all: RECEIVED MSG - body: %r" % (body,))
+        # logger.debug("on_geoserver_all: RECEIVED MSG - body: %r" % (body,))
         message.ack()
         logger.info("on_geoserver_all: finished")
         # TODO:Adding consurmer's producers.
         self._check_message_limit()
 
     def on_geoserver_catalog(self, body, message):
-        logger.debug("on_geoserver_catalog: RECEIVED MSG - body: %r" % (body,))
+        # logger.debug("on_geoserver_catalog: RECEIVED MSG - body: %r" % (body,))
         message.ack()
         logger.info("on_geoserver_catalog: finished")
         self._check_message_limit()
 
     def on_geoserver_data(self, body, message):
-        logger.debug("on_geoserver_data: RECEIVED MSG - body: %r" % (body,))
+        # logger.debug("on_geoserver_data: RECEIVED MSG - body: %r" % (body,))
         message.ack()
         logger.info("on_geoserver_data: finished")
         self._check_message_limit()
@@ -138,7 +135,7 @@ class Consumer(ConsumerMixin):
                                                **kwargs)
 
     def on_layer_viewer(self, body, message):
-        logger.debug("on_layer_viewer: RECEIVED MSG - body: %r" % (body,))
+        # logger.debug("on_layer_viewer: RECEIVED MSG - body: %r" % (body,))
         viewer = body.get("viewer")
         owner_layer = body.get("owner_layer")
         layer_id = body.get("layer_id")

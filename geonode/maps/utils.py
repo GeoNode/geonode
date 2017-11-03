@@ -103,6 +103,10 @@ def fix_baselayers(map_id):
                 layer_params['type'] = base_layer['type']
             if 'args' in base_layer:
                 layer_params['args'] = base_layer['args']
+            if 'wrapDateLine' in base_layer:
+                layer_params['wrapDateLine'] = base_layer['wrapDateLine']
+            else:
+                layer_params['wrapDateLine'] = True
             # source_params
             source_params = {}
             source_params['id'] = source

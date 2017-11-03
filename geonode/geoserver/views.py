@@ -47,8 +47,9 @@ from geonode.geoserver.signals import gs_catalog
 from geonode.tasks.update import geoserver_update_layers
 from geonode.utils import json_response, _get_basic_auth_info
 from geoserver.catalog import FailedRequestError, ConflictingDataError
-from lxml import etree
-from .helpers import get_stores, ogc_server_settings, set_styles, style_update, create_gs_thumbnail
+from .helpers import (get_stores, ogc_server_settings,
+                      extract_name_from_sld, set_styles, style_update,
+                      create_gs_thumbnail, _invalidate_geowebcache_layer)
 
 logger = logging.getLogger(__name__)
 
@@ -132,21 +133,14 @@ def layer_style_upload(request, layername):
         _PERMISSION_MSG_MODIFY)
 
     sld = request.FILES['sld'].read()
-
+    sld_name = None
     try:
-        dom = etree.XML(sld)
-    except Exception:
-        return respond(errors="The uploaded SLD file is not valid XML")
+        # Check SLD is valid
+        sld_name = extract_name_from_sld(gs_catalog, sld, sld_file=request.FILES['sld'])
+    except Exception, e:
+        respond(errors="The uploaded SLD file is not valid XML: {}".format(e))
 
-    el = dom.findall(
-        "{http://www.opengis.net/sld}NamedLayer/{http://www.opengis.net/sld}Name")
-    if len(el) == 0 and not data.get('name'):
-        el = dom.findall(
-            "{http://www.opengis.net/sld}UserLayer/{http://www.opengis.net/sld}Name")
-        if len(el) == 0 and not data.get('name'):
-            return respond(
-                errors="Please provide a name, unable to extract one from the SLD.")
-    name = data.get('name') or el[0].text
+    name = data.get('name') or sld_name
     if data['update']:
         match = None
         styles = list(layer.styles) + [layer.default_style]
@@ -160,13 +154,15 @@ def layer_style_upload(request, layername):
     else:
         try:
             cat = gs_catalog
-            cat.create_style(name, sld)
+            cat.create_style(name, sld, raw=True)
             layer.styles = layer.styles + \
                 [type('style', (object,), {'name': name})]
             cat.save(layer.publishing)
         except ConflictingDataError:
             return respond(errors="""A layer with this name exists. Select
                                      the update option if you want to update.""")
+    # Invalidate GeoWebCache for the updated resource
+    _invalidate_geowebcache_layer(layer.alternate)
     return respond(
         body={
             'success': True,
@@ -176,7 +172,6 @@ def layer_style_upload(request, layername):
 
 @login_required
 def layer_style_manage(request, layername):
-
     layer = _resolve_layer(
         request,
         layername,
@@ -267,6 +262,10 @@ def layer_style_manage(request, layername):
             # Save to Django
             layer = set_styles(layer, cat)
             layer.save()
+
+            # Invalidate GeoWebCache for the updated resource
+            _invalidate_geowebcache_layer(layer.alternate)
+
             return HttpResponseRedirect(
                 reverse(
                     'layer_detail',
@@ -292,10 +291,27 @@ def feature_edit_check(request, layername):
     If the layer is not a raster and the user has edit permission, return a status of 200 (OK).
     Otherwise, return a status of 401 (unauthorized).
     """
-    layer = _resolve_layer(request, layername)
+    try:
+        layer = _resolve_layer(request, layername)
+    except:
+        # Intercept and handle correctly resource not found exception
+        return HttpResponse(
+            json.dumps({'authorized': False}), content_type="application/json")
     datastore = ogc_server_settings.DATASTORE
     feature_edit = getattr(settings, "GEOGIG_DATASTORE", None) or datastore
-    if request.user.has_perm(
+    is_admin = False
+    is_staff = False
+    is_owner = False
+    is_manager = False
+    if request.user:
+        is_admin = request.user.is_superuser if request.user else False
+        is_staff = request.user.is_staff if request.user else False
+        is_owner = (str(request.user) == str(layer.owner))
+        try:
+            is_manager = request.user.groupmember_set.all().filter(role='manager').exists()
+        except:
+            is_manager = False
+    if is_admin or is_staff or is_owner or is_manager or request.user.has_perm(
             'change_layer_data',
             obj=layer) and layer.storeType == 'dataStore' and feature_edit:
         return HttpResponse(

@@ -43,6 +43,7 @@ from geonode.maps.models import Map
 from geonode.documents.models import Document
 from geonode.base.models import ResourceBase
 from geonode.base.models import HierarchicalKeyword
+from geonode.groups.models import GroupProfile
 
 from .authorization import GeoNodeAuthorization
 
@@ -108,7 +109,7 @@ class CommonModelApi(ModelResource):
         'rating',
     ]
 
-    def build_filters(self, filters=None):
+    def build_filters(self, filters=None, ignore_bad_filters=False):
         if filters is None:
             filters = {}
         orm_filters = super(CommonModelApi, self).build_filters(filters)
@@ -170,12 +171,32 @@ class CommonModelApi(ModelResource):
     def filter_published(self, queryset, request):
         is_admin = False
         is_staff = False
+        is_manager = False
         if request.user:
             is_admin = request.user.is_superuser if request.user else False
             is_staff = request.user.is_staff if request.user else False
+            try:
+                is_manager = request.user.groupmember_set.all().filter(role='manager').exists()
+            except:
+                is_manager = False
 
         if not is_admin and not is_staff:
-            filtered = queryset.filter(Q(is_published=True))
+            if is_manager:
+                groups = request.user.groups.all()
+                public_groups = GroupProfile.objects.exclude(access="private").values('group')
+                try:
+                    anonymous_group = Group.objects.get(name='anonymous')
+                    filtered = queryset.filter(Q(group__isnull=True) |
+                                               Q(group__in=groups) | Q(group__in=public_groups) |
+                                               Q(group=anonymous_group) |
+                                               Q(owner__username__iexact=str(request.user)))
+                except BaseException:
+                    anonymous_group = None
+                    filtered = queryset.filter(Q(group__isnull=True) |
+                                               Q(group__in=groups) | Q(group__in=public_groups) |
+                                               Q(owner__username__iexact=str(request.user)))
+            else:
+                filtered = queryset.filter(Q(is_published=True) | Q(owner__username__iexact=str(request.user)))
         else:
             filtered = queryset
         return filtered
@@ -190,22 +211,23 @@ class CommonModelApi(ModelResource):
         except BaseException:
             anonymous_group = None
 
+        public_groups = GroupProfile.objects.exclude(access="private").values('group')
         if is_admin:
             filtered = queryset
         elif request.user:
             groups = request.user.groups.all()
             if anonymous_group:
                 filtered = queryset.filter(Q(group__isnull=True) | Q(
-                    group__in=groups) | Q(group=anonymous_group))
+                    group__in=groups) | Q(group__in=public_groups) | Q(group=anonymous_group))
             else:
                 filtered = queryset.filter(
-                    Q(group__isnull=True) | Q(group__in=groups))
+                    Q(group__isnull=True) | Q(group__in=public_groups) | Q(group__in=groups))
         else:
             if anonymous_group:
                 filtered = queryset.filter(
-                    Q(group__isnull=True) | Q(group=anonymous_group))
+                    Q(group__isnull=True) | Q(group__in=public_groups) | Q(group=anonymous_group))
             else:
-                filtered = queryset.filter(Q(group__isnull=True))
+                filtered = queryset.filter(Q(group__isnull=True) | Q(group__in=public_groups))
         return filtered
 
     def filter_h_keywords(self, queryset, keywords):
@@ -430,19 +452,57 @@ class CommonModelApi(ModelResource):
         if not settings.SKIP_PERMS_FILTER:
             is_admin = False
             is_staff = False
+            is_manager = False
             if request.user:
                 is_admin = request.user.is_superuser if request.user else False
                 is_staff = request.user.is_staff if request.user else False
+                try:
+                    is_manager = request.user.groupmember_set.all().filter(role='manager').exists()
+                except:
+                    is_manager = False
 
             # Get the list of objects the user has access to
             filter_set = get_objects_for_user(
                 request.user, 'base.view_resourcebase')
             if settings.ADMIN_MODERATE_UPLOADS:
                 if not is_admin and not is_staff:
-                    filter_set = filter_set.filter(is_published=True)
+                    if is_manager:
+                        groups = request.user.groups.all()
+                        public_groups = GroupProfile.objects.exclude(access="private").values('group')
+                        try:
+                            anonymous_group = Group.objects.get(name='anonymous')
+                            filter_set = filter_set.filter(
+                                Q(group__isnull=True) | Q(group__in=groups) |
+                                Q(group__in=public_groups) | Q(group=anonymous_group) |
+                                Q(owner__username__iexact=str(request.user)))
+                        except:
+                            filter_set = filter_set.filter(
+                                Q(group__isnull=True) | Q(group__in=groups) |
+                                Q(group__in=public_groups) |
+                                Q(owner__username__iexact=str(request.user)))
+                    else:
+                        filter_set = filter_set.filter(Q(is_published=True) |
+                                                       Q(owner__username__iexact=str(request.user)))
 
             if settings.RESOURCE_PUBLISHING:
-                filter_set = filter_set.filter(is_published=True)
+                if not is_admin and not is_staff:
+                    if is_manager:
+                        groups = request.user.groups.all()
+                        public_groups = GroupProfile.objects.exclude(access="private").values('group')
+                        try:
+                            anonymous_group = Group.objects.get(name='anonymous')
+                            filter_set = filter_set.filter(
+                                Q(group__isnull=True) | Q(group__in=groups) |
+                                Q(group__in=public_groups) | Q(group=anonymous_group) |
+                                Q(owner__username__iexact=str(request.user)))
+                        except:
+                            filter_set = filter_set.filter(
+                                Q(group__isnull=True) | Q(group__in=groups) |
+                                Q(group__in=public_groups) |
+                                Q(owner__username__iexact=str(request.user)))
+                    else:
+                        filter_set = filter_set.filter(Q(is_published=True) |
+                                                       Q(owner__username__iexact=str(request.user)))
 
             try:
                 anonymous_group = Group.objects.get(name='anonymous')
@@ -450,22 +510,23 @@ class CommonModelApi(ModelResource):
                 anonymous_group = None
 
             if settings.GROUP_PRIVATE_RESOURCES:
+                public_groups = GroupProfile.objects.exclude(access="private").values('group')
                 if is_admin:
                     filter_set = filter_set
                 elif request.user:
                     groups = request.user.groups.all()
                     if anonymous_group:
                         filter_set = filter_set.filter(Q(group__isnull=True) | Q(
-                            group__in=groups) | Q(group=anonymous_group))
+                            group__in=groups) | Q(group__in=public_groups) | Q(group=anonymous_group))
                     else:
                         filter_set = filter_set.filter(
-                            Q(group__isnull=True) | Q(group__in=groups))
+                            Q(group__isnull=True) | Q(group__in=public_groups) | Q(group__in=groups))
                 else:
                     if anonymous_group:
                         filter_set = filter_set.filter(
-                            Q(group__isnull=True) | Q(group=anonymous_group))
+                            Q(group__isnull=True) | Q(group__in=public_groups) | Q(group=anonymous_group))
                     else:
-                        filter_set = filter_set.filter(Q(group__isnull=True))
+                        filter_set = filter_set.filter(Q(group__isnull=True) | Q(group__in=public_groups))
 
             filter_set_ids = filter_set.values_list('id')
             # Do the query using the filterset and the query term. Facet the
@@ -635,8 +696,6 @@ class ResourceBaseResource(CommonModelApi):
     class Meta(CommonMetaApi):
         queryset = ResourceBase.objects.polymorphic_queryset() \
             .distinct().order_by('-date')
-        if settings.RESOURCE_PUBLISHING:
-            queryset = queryset.filter(is_published=True)
         resource_name = 'base'
         excludes = ['csw_anytext', 'metadata_xml']
 
@@ -647,8 +706,6 @@ class FeaturedResourceBaseResource(CommonModelApi):
 
     class Meta(CommonMetaApi):
         queryset = ResourceBase.objects.filter(featured=True).order_by('-date')
-        if settings.RESOURCE_PUBLISHING:
-            queryset = queryset.filter(is_published=True)
         resource_name = 'featured'
 
 
@@ -658,8 +715,6 @@ class LayerResource(CommonModelApi):
 
     class Meta(CommonMetaApi):
         queryset = Layer.objects.distinct().order_by('-date')
-        if settings.RESOURCE_PUBLISHING:
-            queryset = queryset.filter(is_published=True)
         resource_name = 'layers'
         excludes = ['csw_anytext', 'metadata_xml']
 
@@ -670,8 +725,6 @@ class MapResource(CommonModelApi):
 
     class Meta(CommonMetaApi):
         queryset = Map.objects.distinct().order_by('-date')
-        if settings.RESOURCE_PUBLISHING:
-            queryset = queryset.filter(is_published=True)
         resource_name = 'maps'
 
 
@@ -683,6 +736,4 @@ class DocumentResource(CommonModelApi):
         filtering = CommonMetaApi.filtering
         filtering.update({'doc_type': ALL})
         queryset = Document.objects.distinct().order_by('-date')
-        if settings.RESOURCE_PUBLISHING:
-            queryset = queryset.filter(is_published=True)
         resource_name = 'documents'

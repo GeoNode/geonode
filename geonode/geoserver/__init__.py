@@ -31,3 +31,5 @@ class GeoserverAppConfig(NotificationsAppConfigBase):
 
 
 default_app_config = 'geonode.geoserver.GeoserverAppConfig'
+
+BACKEND_PACKAGE = 'geonode.geoserver'

@@ -48,7 +48,8 @@ from django.views.decorators.http import require_http_methods
 from geonode.layers.models import Layer
 from geonode.maps.models import Map, MapLayer, MapSnapshot
 from geonode.layers.views import _resolve_layer
-from geonode.utils import forward_mercator, llbbox_to_mercator
+from geonode.utils import forward_mercator, llbbox_to_mercator, \
+    check_ogc_backend
 from geonode.utils import DEFAULT_TITLE
 from geonode.utils import DEFAULT_ABSTRACT
 from geonode.utils import default_map_config
@@ -65,10 +66,11 @@ from geonode.documents.models import get_related_documents
 from geonode.people.forms import ProfileForm
 from geonode.utils import num_encode, num_decode
 from geonode.utils import build_social_links
+from geonode import geoserver, qgis_server
 from geonode.base.views import batch_modify
 
 
-if 'geonode.geoserver' in settings.INSTALLED_APPS:
+if check_ogc_backend(geoserver.BACKEND_PACKAGE):
     # FIXME: The post service providing the map_status object
     # should be moved to geonode.geoserver.
     from geonode.geoserver.helpers import ogc_server_settings
@@ -76,7 +78,7 @@ if 'geonode.geoserver' in settings.INSTALLED_APPS:
     # Use the http_client with one that knows the username
     # and password for GeoServer's management user.
     from geonode.geoserver.helpers import http_client, _render_thumbnail
-else:
+elif check_ogc_backend(qgis_server.BACKEND_PACKAGE):
     from geonode.utils import http_client
 
 logger = logging.getLogger("geonode.maps.views")
@@ -140,9 +142,16 @@ def map_detail(request, mapid, snapshot=None, template='maps/map_detail.html'):
     config = json.dumps(config)
     layers = MapLayer.objects.filter(map=map_obj.id)
 
+    group = None
+    if map_obj.group:
+        try:
+            group = GroupProfile.objects.get(slug=map_obj.group.name)
+        except GroupProfile.DoesNotExist:
+            group = None
     context_dict = {
         'config': config,
         'resource': map_obj,
+        'group': group,
         'layers': layers,
         'perms_list': get_perms(request.user, map_obj.get_self_resource()),
         'permissions_json': _perms_info_json(map_obj),
@@ -278,13 +287,28 @@ def map_metadata(request, mapid, template='maps/map_metadata.html'):
     layers = MapLayer.objects.filter(map=map_obj.id)
 
     metadata_author_groups = []
-    if request.user.is_superuser:
+    if request.user.is_superuser or request.user.is_staff:
         metadata_author_groups = GroupProfile.objects.all()
     else:
-        metadata_author_groups = chain(
-            metadata_author.group_list_all(),
-            GroupProfile.objects.exclude(
-                access="private"))
+        all_metadata_author_groups = chain(
+            request.user.group_list_all(),
+            GroupProfile.objects.exclude(access="private").exclude(access="public-invite"))
+        [metadata_author_groups.append(item) for item in all_metadata_author_groups
+            if item not in metadata_author_groups]
+
+    if settings.ADMIN_MODERATE_UPLOADS:
+        if not request.user.is_superuser:
+            map_form.fields['is_published'].widget.attrs.update({'disabled': 'true'})
+        if not request.user.is_superuser or not request.user.is_staff:
+            can_change_metadata = request.user.has_perm(
+                'change_resourcebase_metadata',
+                map_obj.get_self_resource())
+            try:
+                is_manager = request.user.groupmember_set.all().filter(role='manager').exists()
+            except:
+                is_manager = False
+            if not is_manager or not can_change_metadata:
+                map_form.fields['is_approved'].widget.attrs.update({'disabled': 'true'})
 
     return render_to_response(template, RequestContext(request, {
         "config": json.dumps(config),
@@ -697,6 +721,10 @@ def add_layers_to_map_config(request, map_obj, layer_names, add_base_layers=True
             # bad layer, skip
             continue
 
+        if not layer.is_published:
+            # invisible layer, skip inclusion
+            continue
+
         if not request.user.has_perm(
                 'view_resourcebase',
                 obj=layer.get_self_resource()):
@@ -718,6 +746,7 @@ def add_layers_to_map_config(request, map_obj, layer_names, add_base_layers=True
         # Add required parameters for GXP lazy-loading
         config["title"] = layer.title
         config["queryable"] = True
+        config["wrapDateLine"] = True
 
         config["srs"] = getattr(
             settings, 'DEFAULT_MAP_CRS', 'EPSG:900913')
@@ -1161,8 +1190,15 @@ def map_metadata_detail(
         mapid,
         template='maps/map_metadata_detail.html'):
     map_obj = _resolve_map(request, mapid, 'view_resourcebase')
+    group = None
+    if map_obj.group:
+        try:
+            group = GroupProfile.objects.get(slug=map_obj.group.name)
+        except GroupProfile.DoesNotExist:
+            group = None
     return render_to_response(template, RequestContext(request, {
         "resource": map_obj,
+        "group": group,
         'SITEURL': settings.SITEURL[:-1]
     }))
 

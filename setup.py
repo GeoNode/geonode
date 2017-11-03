@@ -80,7 +80,7 @@ setup(name='GeoNode',
         "pyflakes<=1.6.0",
         "pep8<=1.7.0",  # python-pep8 (1.7.0)
         "boto<=2.38.0",  # python-boto (2.38.0)
-        "six<1.11.0", # https://github.com/benjaminp/six/issues/210
+        "six<1.11.0",  # https://github.com/benjaminp/six/issues/210
         "diff-match-patch<=20121119",
 
         # Django Apps
@@ -145,7 +145,7 @@ setup(name='GeoNode',
 
         "geonode-arcrest>=10.0",
         "geonode-dialogos>=0.5",
-        "gsconfig<=1.0.6",  # (1.0.3 in ppa) FIXME
+        "gsconfig<2.0.0",  # (1.0.3 in ppa) FIXME
         "gsimporter<=1.0.0",  # (0.1 in ppa) FIXME
         "gisdata>=0.5.4",
 
@@ -195,7 +195,12 @@ setup(name='GeoNode',
         "factory-boy<=2.9.2",
         "Faker<=0.8.4",
         # "WeasyPrint",
-        ],
+        "user-agents",
+        "xmljson",
+        'psutil',
+        'django-cors-headers',
+        'django-multi-email-field',
+      ],
       zip_safe=False,
       dependency_links=[
         'https://github.com/cezio/django-user-accounts/archive/252_255_mixed.zip#egg=django-user-accounts-2.0.2dev'

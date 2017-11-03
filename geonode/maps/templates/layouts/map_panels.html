@@ -138,7 +138,7 @@
                                                 value="{{ group.group.id }}"
                                                 {% ifequal resource.group group.group %} selected="selected" {% endifequal %}
                                                 >
-                                                {{ group.group.name }}
+                                                {{ group.title }}
                                             </option>
                                             {% endfor %}
                                         </select>
@@ -316,6 +316,10 @@
                     <div>
                         <span><label for="{{ map_form.metadata_uploaded_preserve|id }}">{{ map_form.metadata_uploaded_preserve.label }}</label></span>
                         {{ map_form.metadata_uploaded_preserve }}
+                    </div>
+                    <div>
+                        <span><label for="{{ map_form.is_approved|id }}">{{ map_form.is_approved.label }}</label></span>
+                        {{ map_form.is_approved }}
                     </div>
                     <div>
                         <span><label for="{{ map_form.is_published|id }}">{{ map_form.is_published.label }}</label></span>

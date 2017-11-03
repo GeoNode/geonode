@@ -220,9 +220,8 @@ def sniff_date(datestr):
         try:
             return datetime.datetime.strptime(datestr.strip(), dfmt)
         except (ValueError, AttributeError):
-            # pass
-            # TODO: FixMe, RMN: handle empty date stamp of xml metadata
-            return datetime.datetime.utcnow()
+            pass
+    return ""
 
 
 def get_tagname(element):

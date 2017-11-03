@@ -15,7 +15,7 @@
                     ptype: "gxp_wmsgetfeatureinfo",
                     format: "grid",
                     actionTarget: "main.tbar",
-                    outputConfig: {width: 400, height: 200, panIn: false}
+                    outputConfig: {width: 400, height: 200, panIn: false, wrapDateLine: true}
                 }],
                 {% if PROXY_URL %}
                 proxy: '{{ PROXY_URL }}',
@@ -40,11 +40,21 @@
 
                 portalConfig: {
                     renderTo: "preview_map",
-                    height: 600
+                    height: 400
                 },
 
                 listeners: {
                     "ready": function() {
+                        app.mapPanel.map.getMaxExtent = function() {
+                            return new OpenLayers.Bounds(-80150033.36/2,-80150033.36/2,80150033.36/2,80150033.36/2);
+                        }
+                        app.mapPanel.map.getMaxResolution = function() {
+                            return 626172.135625/2;
+                        }
+                        l = app.selectedLayer.getLayer();
+                        l.addOptions({wrapDateLine:true, displayOutsideMaxExtent: true});
+                        l.addOptions({maxExtent:app.mapPanel.map.getMaxExtent(), restrictedExtent:app.mapPanel.map.getMaxExtent()});
+
                         var map = app.mapPanel.map;
                         var layer = app.map.layers.slice(-1)[0];
 
@@ -55,7 +65,7 @@
                         if (bbox != undefined)
                         {
                            if (!Array.isArray(bbox) && Object.keys(layer.srs) in bbox) {
-                            bbox = bbox[Object.keys(layer.srs)].bbox;
+                             bbox = bbox[Object.keys(layer.srs)].bbox;
                            }
 
                            var extent = OpenLayers.Bounds.fromArray(bbox);
@@ -68,7 +78,7 @@
                            };
                            map.events.register('changebaselayer',null,zoomToData);
                            if(map.baseLayer){
-                            map.zoomToExtent(extent, false);
+                             map.zoomToExtent(extent, false);
                            }
                         }
                     },
@@ -140,7 +150,8 @@
 
             // change style displayed in map
             Ext.get(Ext.DomQuery.select("input[@name='style']")).on("click", function(evt, elem) {
-                app.selectedLayer.getLayer().mergeNewParams({
+                l = app.selectedLayer.getLayer();
+                l.mergeNewParams({
                     "STYLES": elem.id,
                     "_dc": Math.random()
                 });
@@ -161,6 +172,7 @@
                     };
                 }
             });
+
             Ext.Ajax.on('requestcomplete', function(req, cippa, opts){
                 if(opts.method == 'PUT'){
                     $('#legend_icon').attr('src', $('#legend_icon').attr('src')+'&'+Math.random());

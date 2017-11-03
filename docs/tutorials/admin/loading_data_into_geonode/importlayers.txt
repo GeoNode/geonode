@@ -17,6 +17,8 @@ This will produce output that looks like the following::
     Brings a data file or a directory full of data files into aGeoNode site.  Layers are added to the Django database, theGeoServer configuration, and the GeoNetwork metadata index.
 
     Options:
+      --version             show program's version number and exit
+      -h, --help            show this help message and exit
       -v VERBOSITY, --verbosity=VERBOSITY
                             Verbosity level; 0=minimal output, 1=normal output,
                             2=verbose output, 3=very verbose output
@@ -28,6 +30,7 @@ This will produce output that looks like the following::
                             A directory to add to the Python path, e.g.
                             "/home/djangoprojects/myproject".
       --traceback           Print traceback on exception
+      --no-color            Don't colorize the command output.
       -u USER, --user=USER  Name of the user account which should own the imported
                             layers
       -i, --ignore-errors   Stop after any errors are encountered.
@@ -37,8 +40,38 @@ This will produce output that looks like the following::
                             The default keywords for the imported layer(s). Will
                             be the same for all imported layers if multiple
                             imports are done in one command
-      --version             show program's version number and exit
-      -h, --help            show this help message and exit
+      -l LICENSE, --license=LICENSE
+                            The license for the imported layer(s). Will be the
+                            same for all imported layers if multiple imports are
+                            done in one command
+      -c CATEGORY, --category=CATEGORY
+                            The category for the imported layer(s). Will be the
+                            same for all imported layers if multiple imports are
+                            done in one command
+      -r REGIONS, --regions=REGIONS
+                        The default regions, separated by comma, for the
+                        imported layer(s). Will be the same for all imported
+                        layers if multiple imports are done in one command
+      -n LAYERNAME, --name=LAYERNAME
+                        The name for the imported layer(s). Can not be used
+                        with multiple imports
+      -t TITLE, --title=TITLE
+                        The title for the imported layer(s). Will be the same
+                        for all imported layers if multiple imports are done
+                        in one command
+      -a ABSTRACT, --abstract=ABSTRACT
+                        The abstract for the imported layer(s). Will be the
+                        same forall imported layers if multiple imports are
+                        donein one command
+      -d DATE, --date=DATE  The date and time for the imported layer(s). Will be
+                        the same for all imported layers if multiple imports
+                        are done in one command. Use quotes to specify both
+                        the date and time in the format 'YYYY-MM-DD HH:MM:SS'.
+      -p, --private     Make layer viewable only to owner
+      -m, --metadata_uploaded_preserve
+                        Force metadata XML to be preserved
+      -C CHARSET, --charset=CHARSET
+                        Specify the charset of the data
 
 While the description of most of the options should be self explanatory, its worth reviewing some of the key options in a bit more detail.
 
@@ -47,6 +80,7 @@ While the description of most of the options should be self explanatory, its wor
 - The -o option specifies that layers with the same name as the base name will be loaded and overwrite the existing layer.
 - The -u option specifies which will be the user that owns the imported layers. The same user will be the point of contact and the metadata author as well for that layer
 - The -k option is used to add keywords for all of the layers imported.
+- The -C option specifies the character encoding of the data.
 
 The import layers management command is invoked by specifying options as described above and specifying the path to a single layer file or to a directory that contains multiple files. For purposes of this exercise, lets use the default set of testing layers that ship with geonode. You can replace this path with the directory to your own shapefiles::
 
