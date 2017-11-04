@@ -286,8 +286,12 @@ def _process_wms_service(
     if wms is None:
         wms = WebMapService(url)
     try:
-        base_url = _clean_url(
-            wms.getOperationByName('GetMap').methods['Get']['url'])
+        method_url = [
+            method['url']
+            for method in wms.getOperationByName('GetMap').methods
+            if method['type'] == 'Get'
+        ][0]
+        base_url = _clean_url(method_url)
 
         if base_url and base_url != url:
             url = base_url
