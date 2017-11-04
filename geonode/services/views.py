@@ -667,8 +667,9 @@ def _register_indexed_layers(service, wms=None, verbosity=False):
             srid = None
             # Some ArcGIS WMSServers indicate they support 900913 but really
             # don't
-            if 'EPSG:900913' in wms_layer.crsOptions and "MapServer/WmsServer" not in service.base_url:
-                srid = 'EPSG:900913'
+            if 'EPSG:900913' in wms_layer.crsOptions and "MapServer/WmsServer"\
+                    not in service.base_url:
+                srid = 'EPSG:3857'
             elif len(wms_layer.crsOptions) > 0:
                 matches = re.findall(
                     'EPSG\:(3857|102100|102113)', ' '.join(
