@@ -19,6 +19,7 @@
                 factory.removeEvents = map.removeEvents;
                 factory.addVectorLayer = map.addVectorLayer;
                 factory.getProjection = map.getProjection;
+                factory.removeVectorLayer = map.removeVectorLayer;
             },
             loadMap: function(mapInfo) {
                 mapTools.baseMap.setBaseMapByName(mapInfo.BaseLayerName);
