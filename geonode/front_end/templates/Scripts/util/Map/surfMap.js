@@ -206,6 +206,9 @@
                     olMap.getView().fit(extent, olMap.getSize());
                 }
             };
+            factory.removeVectorLayer = function(vectorLayer){
+                olMap.removeLayer(vectorLayer);
+            };
 
             factory.zoomToMap = function() {
                 var _extent;

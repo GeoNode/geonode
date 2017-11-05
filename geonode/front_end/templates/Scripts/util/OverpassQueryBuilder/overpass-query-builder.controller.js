@@ -7,6 +7,7 @@
     function OverpassApiQueryBuilderController($scope, $modalInstance, mapService, $http, $compile) {
         var url = 'http://overpass-api.de/api/interpreter';
         $scope.queryStr = "node({{bbox}});out;";
+        var vectorLayer = undefined;
         var styles = {
             'amenity': {
                 '.*': [
@@ -17,7 +18,7 @@
                             points: 4,
                             radius: 10,
                             radius2: 0,
-                            angle: Math.PI / 4
+                            angle: Math.PI / 2
                         })
                     })
                 ]
@@ -99,18 +100,41 @@
             return null;
         }
 
+        function _random(number) {
+            return Math.round(Math.random() * number);
+        }
+
         function _AddLayer(features) {
             var vectorSource = new ol.source.Vector({
                 features: features
             });
-            var vector = new ol.layer.Vector({
+            vectorLayer = new ol.layer.Vector({
                 source: vectorSource,
-                style: _Style
+                style: [
+                    new ol.style.Style({
+                        image: new ol.style.Circle({
+                            fill: new ol.style.Fill({
+                                color: 'rgba(' + _random(255) + ',' + _random(255) + ',' + _random(255) + ',' + 1.0 + ')'
+                            }),
+                            stroke: new ol.style.Stroke({
+                                color: 'rgba(' + _random(255) + ',' + _random(255) + ',' + _random(255) + ',' + 0.3 + ')',
+                                width: 2
+                            }),
+                            // points: 4,
+                            radius: 10,
+                            // radius2: 0,
+                            // angle: Math.PI / 2
+                        })
+                    })
+                ]
             });
-            mapService.addVectorLayer(vector);
+            mapService.addVectorLayer(vectorLayer);
         }
 
         $scope.executeQuery = function(query) {
+            if (vectorLayer){
+                mapService.removeVectorLayer(vectorLayer);
+            }
             var extent = mapService.getMapExtent();
             var projection = mapService.getProjection();
             var epsg4326Extent =
