@@ -573,11 +573,21 @@
 
     var url = '/analytics/api/map/load/create/';
 
+    var latitude = '';
+    var longitude = '';
+    try{
+        latitude = user_location.latitude.toString();
+        longitude = user_location.longitude.toString()
+    }catch(err){
+        latitude = "";
+        longitude = "";
+    }
+
     var data = {
         'user': user_info,
         'map': map_info,
-        'latitude': user_location.latitude.toString(),
-        'longitude': user_location.longitude.toString(),
+        'latitude': latitude,
+        'longitude': longitude,
         'agent': '',
         'ip': ''
     };
