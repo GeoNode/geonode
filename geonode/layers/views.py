@@ -762,6 +762,7 @@ def get_layer(request, layername):
             'bbox_y1': layer_obj.bbox_y1,
             'type': slugify(layer_obj.display_type),
             'styles': styles,
+            'versioned': layer_obj.geogig_enabled,
             'attributes': attributes_as_json(layer_obj)
         }
         return HttpResponse(json.dumps(
