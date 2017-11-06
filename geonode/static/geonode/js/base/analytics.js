@@ -91,11 +91,21 @@ $(window).load(function(){
 
                 var url = '/analytics/api/visitor/create/';
 
+                var latitude = '';
+                var longitude = '';
+                try{
+                    latitude = user_location.latitude.toString();
+                    longitude = user_location.longitude.toString()
+                }catch(err){
+                    latitude = "";
+                    longitude = "";
+                }
+
                 var data = {
                     'user': user_info == undefined ? '' : user_info,
                     'page_name': '',
-                    'latitude': user_location.latitude.toString(),
-                    'longitude': user_location.longitude.toString(),
+                    'latitude': latitude,
+                    'longitude': longitude,
                     'agent': '',
                     'ip': ''
                 };
@@ -113,13 +123,23 @@ $(window).load(function(){
 
         var url = '/analytics/api/user/activity/create/';
 
+        var latitude = '';
+        var longitude = '';
+        try{
+            latitude = user_location.latitude.toString();
+            longitude = user_location.longitude.toString()
+        }catch(err){
+            latitude = "";
+            longitude = "";
+        }
+
         var data = {
             'user': user_info,
             'layer': layer_info,
             'map': map_info,
             'activity_type': 'pan',
-            'latitude': user_location.latitude.toString(),
-            'longitude': user_location.longitude.toString(),
+            'latitude': latitude,
+            'longitude': longitude,
             'agent': '',
             'ip': '',
             'point': ''
@@ -136,13 +156,23 @@ $(window).load(function(){
 
         var url = '/analytics/api/user/activity/create/';
 
+        var latitude = '';
+        var longitude = '';
+        try{
+            latitude = user_location.latitude.toString();
+            longitude = user_location.longitude.toString()
+        }catch(err){
+            latitude = "";
+            longitude = "";
+        }
+
         var data = {
             'user': user_info,
             'layer': layer_info,
             'map': map_info,
             'activity_type': 'click',
-            'latitude': user_location.latitude.toString(),
-            'longitude': user_location.longitude.toString(),
+            'latitude': latitude,
+            'longitude': longitude,
             'agent': '',
             'ip': '',
             'point': ''
@@ -159,13 +189,23 @@ $(window).load(function(){
 
         var url = '/analytics/api/user/activity/create/';
 
+        var latitude = '';
+        var longitude = '';
+        try{
+            latitude = user_location.latitude.toString();
+            longitude = user_location.longitude.toString()
+        }catch(err){
+            latitude = "";
+            longitude = "";
+        }
+
         var data = {
             'user': user_info,
             'layer': layer_info,
             'map': map_info,
             'activity_type': 'zoom',
-            'latitude': user_location.latitude.toString(),
-            'longitude': user_location.longitude.toString(),
+            'latitude': latitude,
+            'longitude': longitude,
             'agent': '',
             'ip': '',
             'point': ''
@@ -181,13 +221,23 @@ $(window).load(function(){
 
         var url = '/analytics/api/user/activity/create/';
 
+        var latitude = '';
+        var longitude = '';
+        try{
+            latitude = user_location.latitude.toString();
+            longitude = user_location.longitude.toString()
+        }catch(err){
+            latitude = "";
+            longitude = "";
+        }
+
         var data = {
             'user': user_info,
             'layer': layer_info,
             'map': map_info,
             'activity_type': 'zoom',
-            'latitude': user_location.latitude.toString(),
-            'longitude': user_location.longitude.toString(),
+            'latitude': latitude,
+            'longitude': longitude,
             'agent': '',
             'ip': '',
             'point': ''
