@@ -22,6 +22,7 @@ import re
 from django.db.models import Q
 from django.http import HttpResponse
 from django.conf import settings
+from django.contrib.staticfiles.templatetags import staticfiles
 
 from tastypie.constants import ALL, ALL_WITH_RELATIONS
 from tastypie.resources import ModelResource
@@ -633,7 +634,14 @@ class CommonModelApi(ModelResource):
         """
         Format the objects for output in a response.
         """
-        return objects.values(*self.VALUES)
+        objects_json = objects.values(*self.VALUES)
+        # hack needed because dehydrate does not seem to work in CommonModelApi
+        for item in objects_json:
+            if len(item['thumbnail_url']) == 0:
+                item['thumbnail_url'] = staticfiles.static(settings.MISSING_THUMBNAIL)
+            if len(item['title']) == 0:
+                item['title'] = 'No title'
+        return objects_json
 
     def create_response(
             self,
