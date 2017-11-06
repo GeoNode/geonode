@@ -88,7 +88,7 @@
                 ]
             }
         };
-
+        var boxTopLeft, boxTopRight, boxBottomRight, boxBottomLeft;
         $scope.closeDialog = function () {
             $modalInstance.close();
         };
@@ -202,9 +202,23 @@
                 })
             }),
             geometry: function (feature) {
-                var coordinates = feature.getGeometry().getCoordinates()[0];
-                return new ol.geom.MultiPoint(coordinates);
+                var coordinates = feature.getGeometry().getCoordinates();
+                return new ol.geom.MultiPoint(coordinates[0]);
             }
+        });
+
+        var rectangularStyle = new ol.style.Style({
+            image: new ol.style.RegularShape({
+                points: 4,
+                radius: 10,
+                stroke: new ol.style.Stroke({
+                    color: 'rgba(255, 0, 255, 1)',
+                    width: STROKE_WIDTH
+                }),
+                fill: new ol.style.Fill({
+                    color: FILL_COLOR
+                })
+            })
         });
 
         var features = new ol.Collection();
@@ -218,12 +232,24 @@
         });
         var featureOverlay = new ol.layer.Vector({
             source: vectorSource,
-            style: [lineStyle, verticeStyle]
+            style: [verticeStyle, lineStyle]
         })
         featureOverlay.setMap(map);
 
+        function updateGeometry(feature, coordinate){
+            boxTopLeft = [boxTopLeft[0], coordinate[1]];
+            boxTopRight =  coordinate;
+            boxBottomRight = [coordinate[0], boxBottomRight[1]];
+            // boxBottomLeft =  [end[0], start[1]];
 
-
+            var geometry = feature.getGeometry();
+            geometry.setCoordinates([
+                [boxTopLeft, boxBottomLeft, boxBottomRight , boxTopRight, boxTopLeft]
+            ]);
+        }
+        function finEuclideanDistance(coord1, coord2){
+            return Math.sqrt(Math.pow(coord1[0] - coord2[0], 2) + Math.pow(coord1[1] - coord2[1], 2));
+        }
         var dragInteraction = new ol.interaction.Pointer({
             handleDownEvent: function (event) {
                 var feature = map.forEachFeatureAtPixel(event.pixel,
@@ -234,7 +260,10 @@
 
                 if (feature && feature.get('id') === 'bounding-box') {
                     dragCoordinate = event.coordinate;
+                    // findMinDistance(dragCoordinate);
+                    // updateGeometry(feature, dragCoordinate);
                     dragFeature = feature;
+                    console.log(finEuclideanDistance(dragCoordinate, boxTopRight));
                     return true;
                 }
 
@@ -245,9 +274,10 @@
                 var deltaY = event.coordinate[1] - dragCoordinate[1];
 
                 var geometry = dragFeature.getGeometry();
-                geometry.translate(deltaX, deltaY);
-
-
+                // geometry.translate(deltaX, deltaY);
+                // geometry.setCoordinates()
+                updateGeometry(dragFeature, event.coordinate);
+                
                 dragCoordinate[0] = event.coordinate[0];
                 dragCoordinate[1] = event.coordinate[1];
             },
@@ -300,9 +330,16 @@
             if (!geometry) {
                 geometry = new ol.geom.Polygon(null);
             }
+            boxTopLeft = start;
+            boxBottomLeft  =  [start[0], end[1]];
+            boxBottomRight = end;
+            boxTopRight =  [end[0], start[1]];
+            // geometry.setCoordinates([
+            //     [start, [start[0], end[1]], end, [end[0], start[1]], start]
+            // ]);
 
             geometry.setCoordinates([
-                [start, [start[0], end[1]], end, [end[0], start[1]], start]
+                [boxTopLeft, boxBottomLeft, boxBottomRight , boxTopRight, boxTopLeft]
             ]);
 
             return geometry;
@@ -312,12 +349,20 @@
         drawInteraction.on('drawend', function (event) {
             boundingBox = event.feature.getGeometry().getCoordinates()[0];
             mapService.removeInteraction(drawInteraction);
-            $scope.executeQuery($scope.queryStr);
+            // $scope.executeQuery($scope.queryStr);
+
+            var feature = new ol.Feature({
+                geometry: new ol.geom.Point(boxTopRight),
+                coordinate: event.coordinate,
+                name: 'My Point'
+              });
+              feature.setStyle(rectangularStyle);
+              vectorSource.addFeature(feature);
         });
         $scope.dragBox = function() {
             
             mapService.addInteraction(drawInteraction);
-
+            $scope.closeDialog();
         }
     }
 })();
