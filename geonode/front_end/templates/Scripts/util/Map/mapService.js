@@ -678,7 +678,7 @@
                 return map.info && map.info.PropertyInPopup;
             },
             getMap: function() {
-                return map;
+                return map.getMap();
             }
 
         };
