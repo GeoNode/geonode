@@ -227,6 +227,10 @@
             factory.updateSize = function() {
                 olMap.updateSize();
             };
-        }
+
+            factory.getMap = function(){
+                return olMap;
+            };
+        };
     }
 ]);

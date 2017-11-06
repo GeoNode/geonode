@@ -193,7 +193,7 @@
                 $modal.open({
                     templateUrl: '/static/Templates/Project/OverpassApiQueryBuilder.html',
                     controller: 'OverpassApiQueryBuilderController',
-                    // backdrop: 'static',
+                    backdrop: 'static',
                     keyboard: false,
                     // windowClass: 'fullScreenModal'
                 });

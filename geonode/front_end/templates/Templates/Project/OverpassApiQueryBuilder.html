@@ -3,6 +3,9 @@
         <i class="fa fa-times-circle modal-close-icon" style="float: right; cursor: pointer" ng-click="closeDialog()"></i>
         <button data-ng-click="executeQuery(queryStr)" title="Execute query">
         Execute</button>
+
+        <button data-ng-click="dragBox()" title="Drag Box">
+            Drag Box</button>
     </div>
     <div style="margin-top:80px; height: inherit">
         <textarea style="resize: none;width: 90%; height: 100%" ng-model="queryStr"></textarea>
