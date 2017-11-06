@@ -56,16 +56,16 @@ The steps to install geonode and all dependencies in Ubuntu 14.04 are as follows
 
     IP_ADDRESS=$(ip route get 8.8.8.8 | awk '{print $NF; exit}')
     sudo geonode-updateip $IP_ADDRESS
-   
+
    NB: The IP address must be set to enable access from another machine, e.g. the host machine if geonode is installed in a virtual machine.
-    
+
 5. Access geonode from your web browser, using the IP address from step 3 above. The neonode web applicaiton should be displayed and you can log in using the superuser details entered immediately above::
 
     http://[IP_ADDRESS]
 
 NB: With this installation method you use ``sudo geonode xxxx`` in place of any ``python manage.py xxx`` command referred to in documentation. For example, try::
 
-    sudo geonode help   
+    sudo geonode help
 
 For further information, read the Admin Docs at http://docs.geonode.org/en/master/#for-administrators.
 
@@ -92,19 +92,19 @@ This option installs geonode in a virtual environment. This option is very usefu
     cd geonode
 
     # Install pip dependencies
-    pip install -r requirements.txt
+    pip install -r requirements.txt --no-deps
     pip install -e .
-    
+
     sudo add-apt-repository ppa:ubuntugis/ppa && sudo apt-get update
     sudo apt-get install gdal-bin
     # check GDAL version
     gdalinfo --version
-    
+
     # install the correct PyGDAL version (>1.10.1)
     pip install pygdal==`gdal-config --version`
 
     # if you cannot find exactly the same version, be sure to install at least the closer major one e.g. 2.1.2 -> 2.1.2.3
-    
+
 You can now setup and start GeoNode::
 
     # Paver setup
@@ -314,4 +314,3 @@ CentOS/RHEL and other \*nix distros
 We recommend you to download the latest release and modify the included ``install.sh`` and ``support/config.sh``. GeoNode has been installed in CentOS/RHEL using this mechanism.
 
 Once the package is installed, please consult the :ref:`custom_install` to learn how to create the admin user and tweak the settings to get more performance.
-

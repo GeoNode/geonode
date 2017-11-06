@@ -57,7 +57,9 @@ django-treebeard==4.1.2
 # django-user-accounts==2.0.2
 # we can't use django-user-account until upstream merge changes for geonode.
 # this is temporary solution
-git+git://github.com/cezio/django-user-accounts@252_255_mixed#egg=django-user-accounts-2.0.2dev
+# git+git://github.com/cezio/django-user-accounts@252_255_mixed#egg=django-user-accounts-2.0.2dev
+# updated to https://github.com/geosolutions-it/geonode-user-accounts.git
+geonode-user-accounts==1.0.15
 django-utils==0.0.2
 elasticsearch==2.4.0
 et-xmlfile==1.0.1
