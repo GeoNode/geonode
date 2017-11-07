@@ -19,9 +19,14 @@
 #########################################################################
 
 from datetime import datetime, timedelta
+from django.contrib.auth import get_user_model
 from django.core.urlresolvers import reverse
 from django.test import TestCase
 from tastypie.test import ResourceTestCaseMixin
+from django.contrib.auth.models import Group
+from geonode.groups.models import GroupProfile
+
+from guardian.shortcuts import get_anonymous_user
 
 from geonode.base.populate_test_data import create_models, all_public
 from geonode.layers.models import Layer
@@ -143,7 +148,7 @@ class SearchApiTests(ResourceTestCaseMixin, TestCase):
 
     """Test the search"""
 
-    fixtures = ['initial_data.json', 'bobby']
+    fixtures = ['initial_data.json', 'bobby', 'group_test_data']
 
     def setUp(self):
         super(SearchApiTests, self).setUp()
@@ -155,6 +160,76 @@ class SearchApiTests(ResourceTestCaseMixin, TestCase):
                 'resource_name': 'layers'})
         create_models(type='layer')
         all_public()
+        self.norman = get_user_model().objects.get(username="norman")
+        self.norman.groups.add(Group.objects.get(name='anonymous'))
+        self.test_user = get_user_model().objects.get(username='test_user')
+        self.test_user.groups.add(Group.objects.get(name='anonymous'))
+        self.bar = GroupProfile.objects.get(slug='bar')
+        self.anonymous_user = get_anonymous_user()
+        self.profiles_list_url = reverse(
+            'api_dispatch_list',
+            kwargs={
+                'api_name': 'api',
+                'resource_name': 'profiles'})
+        self.groups_list_url = reverse(
+            'api_dispatch_list',
+            kwargs={
+                'api_name': 'api',
+                'resource_name': 'groups'})
+
+    def test_profiles_filters(self):
+        """Test profiles filtering"""
+
+        filter_url = self.profiles_list_url
+
+        resp = self.api_client.get(filter_url)
+        self.assertValidJSONResponse(resp)
+        self.assertEquals(len(self.deserialize(resp)['objects']), 8)
+
+        filter_url = self.profiles_list_url + '?name__icontains=norm'
+
+        resp = self.api_client.get(filter_url)
+        self.assertValidJSONResponse(resp)
+        self.assertEquals(len(self.deserialize(resp)['objects']), 1)
+
+        filter_url = self.profiles_list_url + '?name__icontains=NoRmAN'
+
+        resp = self.api_client.get(filter_url)
+        self.assertValidJSONResponse(resp)
+        self.assertEquals(len(self.deserialize(resp)['objects']), 1)
+
+        filter_url = self.profiles_list_url + '?name__icontains=bar'
+
+        resp = self.api_client.get(filter_url)
+        self.assertValidJSONResponse(resp)
+        self.assertEquals(len(self.deserialize(resp)['objects']), 0)
+
+    def test_groups_filters(self):
+        """Test groups filtering"""
+
+        filter_url = self.groups_list_url
+
+        resp = self.api_client.get(filter_url)
+        self.assertValidJSONResponse(resp)
+        self.assertEquals(len(self.deserialize(resp)['objects']), 1)
+
+        filter_url = self.groups_list_url + '?name__icontains=bar'
+
+        resp = self.api_client.get(filter_url)
+        self.assertValidJSONResponse(resp)
+        self.assertEquals(len(self.deserialize(resp)['objects']), 1)
+
+        filter_url = self.groups_list_url + '?name__icontains=BaR'
+
+        resp = self.api_client.get(filter_url)
+        self.assertValidJSONResponse(resp)
+        self.assertEquals(len(self.deserialize(resp)['objects']), 1)
+
+        filter_url = self.groups_list_url + '?name__icontains=foo'
+
+        resp = self.api_client.get(filter_url)
+        self.assertValidJSONResponse(resp)
+        self.assertEquals(len(self.deserialize(resp)['objects']), 0)
 
     def test_category_filters(self):
         """Test category filtering"""

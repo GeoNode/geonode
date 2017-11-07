@@ -356,12 +356,49 @@ class GroupCategoryResource(TypeFilteredResource):
         return bundle.obj.groups.all().count()
 
 
-class GroupResource(ModelResource):
+class GroupResource(TypeFilteredResource):
     """Groups api"""
     detail_url = fields.CharField()
     member_count = fields.IntegerField()
     manager_count = fields.IntegerField()
     categories = fields.ToManyField(GroupCategoryResource, 'categories', full=True)
+
+    def build_filters(self, filters=None, ignore_bad_filters=False):
+        """adds filtering by group functionality"""
+        if filters is None:
+            filters = {}
+
+        orm_filters = super(GroupResource, self).build_filters(filters)
+
+        if 'group' in filters:
+            orm_filters['group'] = filters['group']
+
+        if 'name__icontains' in filters:
+            orm_filters['title__icontains'] = filters['name__icontains']
+            orm_filters['title_en__icontains'] = filters['name__icontains']
+        return orm_filters
+
+    def apply_filters(self, request, applicable_filters):
+        """filter by group if applicable by group functionality"""
+
+        group = applicable_filters.pop('group', None)
+        name = applicable_filters.pop('name__icontains', None)
+
+        semi_filtered = super(
+            GroupResource,
+            self).apply_filters(
+            request,
+            applicable_filters)
+
+        if group is not None:
+            semi_filtered = semi_filtered.filter(
+                groupmember__group__slug=group)
+
+        if name is not None:
+            semi_filtered = semi_filtered.filter(
+                Q(title__icontains=name) | Q(title_en__icontains=name))
+
+        return semi_filtered
 
     def dehydrate_member_count(self, bundle):
         return bundle.obj.member_queryset().count()
@@ -404,12 +441,15 @@ class ProfileResource(TypeFilteredResource):
         if 'group' in filters:
             orm_filters['group'] = filters['group']
 
+        if 'name__icontains' in filters:
+            orm_filters['username__icontains'] = filters['name__icontains']
         return orm_filters
 
     def apply_filters(self, request, applicable_filters):
         """filter by group if applicable by group functionality"""
 
         group = applicable_filters.pop('group', None)
+        name = applicable_filters.pop('name__icontains', None)
 
         semi_filtered = super(
             ProfileResource,
@@ -420,6 +460,10 @@ class ProfileResource(TypeFilteredResource):
         if group is not None:
             semi_filtered = semi_filtered.filter(
                 groupmember__group__slug=group)
+
+        if name is not None:
+            semi_filtered = semi_filtered.filter(
+                profile__first_name__icontains=name)
 
         return semi_filtered
 
