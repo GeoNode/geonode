@@ -1,6 +1,7 @@
 {% load i18n %}
 
 {% load avatar_tags %}
+{% load groups_tags %}
 
 <table class="table table-striped table-bordered table-condensed">
     <thead>
@@ -15,26 +16,46 @@
         <tbody>
         {% for thread in threads %}
         <tr>
-            <td>
-                {% for user in thread.users.all %}
-                    {% ifnotequal request.user user %}
-                        <p>{% avatar user 30 %}</p>
-                        <a href="{{ user.get_absolute_url }}">{{ user }}</a>
-                    {% endifnotequal %}
+            <td class="col-md-3">
+                {% for user in thread.single_users.all %}
+                    <div class="media">
+                        {% ifnotequal request.user user %}
+                            <div class="media-left">
+                                {% avatar user 30 %}
+                            </div>
+                            <div class="media-body">
+                                <a href="{{  user.get_absolute_url }}">{{ user }}</a>
+                            </div>
+                        {% endifnotequal %}
+                    </div>
+                {% endfor %}
+                {% for group in thread.registered_groups.all %}
+                    <div class="media">
+                        {% with profile=group.groupprofile %}
+                            <div class="media-left">
+                                <a href="{{ profile.get_absolute_url }}">
+                                    {% group_profile_image profile css_classes="media-object" size=30 %}
+                                </a>
+                            </div>
+                            <div class="media-body">
+                                <a href="{{ profile.get_absolute_url }}">{{ profile.title }}</a>
+                            </div>
+                        {% endwith %}
+                    </div>
                 {% endfor %}
             </td>
-            <td><a href="{{ thread.get_absolute_url }}">{{ thread.subject }}</a></td>
-            <td>
+            <td class="col-md-3"><a href="{{ thread.get_absolute_url }}">{{ thread.subject }}</a></td>
+            <td class="col-md-1">
                 {% ifequal request.user thread.latest_message.sender %}
                   {% trans "me" %}
                 {% else %}
                   <a href="{{ thread.latest_message.sender.get_absolute_url }}">{{ thread.latest_message.sender }}</a>
                 {% endifequal %}
             </td>
-            <td>
+            <td class="col-md-4">
                 {{ thread.latest_message.content|slice:"50" }}<a href="{{ thread.get_absolute_url }}">...</a>
             </td>
-            <td>
+            <td class="col-md-1">
                 <form id="thread_delete_{{ thread.pk }}" method="post" action="{% url "messages_thread_delete" thread.pk %}">
                     {% csrf_token %}
                     <button class="btn btn-danger message_delete_btn">{% trans "Delete" %}</button>
