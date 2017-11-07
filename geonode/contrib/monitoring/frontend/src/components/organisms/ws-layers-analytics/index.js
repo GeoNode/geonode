@@ -15,6 +15,7 @@ const mapStateToProps = (state) => ({
   interval: state.interval.interval,
   response: state.wsLayerResponse.response,
   timestamp: state.interval.timestamp,
+  owsService: state.wsService.service,
 });
 
 
@@ -29,14 +30,15 @@ class WSLayerAnalytics extends React.Component {
     resetResponses: PropTypes.func.isRequired,
     response: PropTypes.object,
     timestamp: PropTypes.instanceOf(Date),
+    owsService: PropTypes.string,
   }
 
   constructor(props) {
     super(props);
-    this.get = (layer, interval = this.props.interval) => {
+    this.get = (layer, interval = this.props.interval, owsService = this.props.owsService) => {
       this.setState({ layer });
-      this.props.getErrors(interval);
-      this.props.getResponses(interval);
+      this.props.getErrors(interval, layer, owsService);
+      this.props.getResponses(interval, layer, owsService);
     };
 
     this.reset = () => {
@@ -44,15 +46,10 @@ class WSLayerAnalytics extends React.Component {
       this.props.resetResponses();
     };
   }
-
-  componentWillReceiveProps(nextProps) {
-    if (nextProps) {
-      if (
-        nextProps.timestamp && nextProps.timestamp !== this.props.timestamp
-        && this.state && this.state.layer
-      ) {
-        this.get(this.state.layer, nextProps.interval);
-      }
+  componentWillReceiveProps({ timestamp, owsService, interval }) {
+    if ((timestamp !== this.props.timestamp || owsService !== this.props.owsService)
+        && this.state && this.state.layer) {
+      this.get(this.state.layer, interval, owsService);
     }
   }
 
