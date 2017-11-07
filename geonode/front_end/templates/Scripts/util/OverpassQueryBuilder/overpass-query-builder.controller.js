@@ -1,10 +1,13 @@
-(function () {
+(function() {
     appModule
         .controller('OverpassApiQueryBuilderController', OverpassApiQueryBuilderController);
 
     OverpassApiQueryBuilderController.$inject = ['$scope', '$modalInstance', 'mapService', '$http', '$compile'];
 
     function OverpassApiQueryBuilderController($scope, $modalInstance, mapService, $http, $compile) {
+        mapService.removeUserInteractions();
+        mapService.removeEvents();
+
         var url = 'http://overpass-api.de/api/interpreter';
         $scope.queryStr = "node({{bbox}});out;";
         var vectorLayer;
@@ -89,7 +92,7 @@
             }
         };
         var boxTopLeft, boxTopRight, boxBottomRight, boxBottomLeft;
-        $scope.closeDialog = function () {
+        $scope.closeDialog = function() {
             $modalInstance.close();
         };
 
@@ -138,13 +141,13 @@
             mapService.addVectorLayer(vectorLayer);
         }
 
-        $scope.executeQuery = function (query) {
+        $scope.executeQuery = function(query) {
             if (vectorLayer) {
                 mapService.removeVectorLayer(vectorLayer);
             }
             var extent = mapService.getMapExtent();
             var projection = mapService.getProjection();
-            if (boundingBox){
+            if (boundingBox) {
                 extent = ol.extent.boundingExtent([
                     boundingBox[0],
                     boundingBox[2]
@@ -159,7 +162,7 @@
                 epsg4326Extent[3] + ',' + epsg4326Extent[2] +
                 ');' + param[1];
             $http.post(url, param)
-                .then(function (response) {
+                .then(function(response) {
                     var features = new ol.format.OSMXML().readFeatures(response.data, {
                         featureProjection: projection
                     });
@@ -168,10 +171,14 @@
         };
         var map = mapService.getMap();
         var dragFeature = null;
+        var resizeFeature = null;
         var dragCoordinate = null;
         var dragCursor = 'pointer';
         var dragPrevCursor = null;
-
+        var topRightFeature = null;
+        var bottomRightFeature = null;
+        var topLeftFeature = null;
+        var bottomLeftFeature = null;
 
         var STROKE_WIDTH = 3,
             CIRCLE_RADIUS = 5;
@@ -201,7 +208,7 @@
                     color: FILL_COLOR
                 })
             }),
-            geometry: function (feature) {
+            geometry: function(feature) {
                 var coordinates = feature.getGeometry().getCoordinates();
                 return new ol.geom.MultiPoint(coordinates[0]);
             }
@@ -212,17 +219,17 @@
                 points: 4,
                 radius: 10,
                 stroke: new ol.style.Stroke({
-                    color: 'rgba(255, 0, 255, 1)',
-                    width: STROKE_WIDTH
+                    color: 'rgba(255, 255, 255, 0)',
+                    width: 0
                 }),
                 fill: new ol.style.Fill({
-                    color: FILL_COLOR
+                    color: 'rgba(255, 255, 255, 0.1)'
                 })
             })
         });
 
         var features = new ol.Collection();
-        features.on('add', function (event) {
+        features.on('add', function(event) {
             var feature = event.element;
             feature.set('id', 'bounding-box');
         });
@@ -234,26 +241,59 @@
             source: vectorSource,
             style: [verticeStyle, lineStyle]
         })
-        featureOverlay.setMap(map);
-
-        function updateGeometry(feature, coordinate){
-            boxTopLeft = [boxTopLeft[0], coordinate[1]];
-            boxTopRight =  coordinate;
-            boxBottomRight = [coordinate[0], boxBottomRight[1]];
-            // boxBottomLeft =  [end[0], start[1]];
-
+        // featureOverlay.setMap(map);
+        mapService.addVectorLayer(featureOverlay);
+        function updateGeometry(feature) {
             var geometry = feature.getGeometry();
             geometry.setCoordinates([
-                [boxTopLeft, boxBottomLeft, boxBottomRight , boxTopRight, boxTopLeft]
+                [boxTopLeft, boxBottomLeft, boxBottomRight, boxTopRight, boxTopLeft]
             ]);
         }
-        function finEuclideanDistance(coord1, coord2){
-            return Math.sqrt(Math.pow(coord1[0] - coord2[0], 2) + Math.pow(coord1[1] - coord2[1], 2));
+
+        function updateTopRight(feature, coordinate) {
+            boxTopLeft = [boxTopLeft[0], coordinate[1]];
+            boxTopRight = coordinate;
+            boxBottomRight = [coordinate[0], boxBottomRight[1]];
+            // boxBottomLeft =  [end[0], start[1]];
+            topLeftFeature.getGeometry().setCoordinates(boxTopLeft);
+            bottomRightFeature.getGeometry().setCoordinates(boxBottomRight);
+            updateGeometry(feature);
         }
+
+        function updateBottomLeft(feature, coordinate) {
+            boxTopLeft = [coordinate[0], boxTopLeft[1]];
+            // boxTopRight = coordinate;
+            boxBottomRight = [boxBottomRight[0], coordinate[1]];
+            boxBottomLeft = coordinate;
+            topLeftFeature.getGeometry().setCoordinates(boxTopLeft);
+            bottomRightFeature.getGeometry().setCoordinates(boxBottomRight);
+            updateGeometry(feature);
+        }
+
+        function updateBottomRight(feature, coordinate) {
+            // boxTopLeft = [coordinate[0], boxTopLeft[1]];
+            boxTopRight = [coordinate[0], boxTopRight[1]];
+            boxBottomRight = coordinate;
+            boxBottomLeft = [boxBottomLeft[0], coordinate[1]];
+            bottomLeftFeature.getGeometry().setCoordinates(boxBottomLeft);
+            topRightFeature.getGeometry().setCoordinates(boxTopRight);
+            updateGeometry(feature);
+        }
+
+        function updateTopLeft(feature, coordinate) {
+            boxTopLeft = coordinate;
+            boxTopRight = [boxTopRight[0], coordinate[1]];
+            // boxBottomRight = coordinate;
+            boxBottomLeft = [coordinate[0], boxBottomLeft[1]];
+            bottomLeftFeature.getGeometry().setCoordinates(boxBottomLeft);
+            topRightFeature.getGeometry().setCoordinates(boxTopRight);
+            updateGeometry(feature);
+        }
+
         var dragInteraction = new ol.interaction.Pointer({
-            handleDownEvent: function (event) {
+            handleDownEvent: function(event) {
                 var feature = map.forEachFeatureAtPixel(event.pixel,
-                    function (feature, layer) {
+                    function(feature, layer) {
                         return feature;
                     }
                 );
@@ -262,31 +302,55 @@
                     dragCoordinate = event.coordinate;
                     // findMinDistance(dragCoordinate);
                     // updateGeometry(feature, dragCoordinate);
-                    dragFeature = feature;
-                    console.log(finEuclideanDistance(dragCoordinate, boxTopRight));
+                    parentFeature = feature.get('parentFeature');
+                    if (parentFeature) {
+                        resizeFeature = feature;
+                    } else {
+                        dragFeature = feature;
+                    }
+
+
                     return true;
                 }
 
                 return false;
             },
-            handleDragEvent: function (event) {
+            handleDragEvent: function(event) {
+                var geometry, parentFeature, updateFn;
                 var deltaX = event.coordinate[0] - dragCoordinate[0];
                 var deltaY = event.coordinate[1] - dragCoordinate[1];
-
-                var geometry = dragFeature.getGeometry();
-                // geometry.translate(deltaX, deltaY);
+                if (resizeFeature) {
+                    geometry = resizeFeature.getGeometry();
+                    parentFeature = resizeFeature.get('parentFeature');
+                    updateFn = resizeFeature.get('updateFn');
+                } else {
+                    geometry = dragFeature.getGeometry();
+                }
+                geometry.translate(deltaX, deltaY);
                 // geometry.setCoordinates()
-                updateGeometry(dragFeature, event.coordinate);
-                
+                if (updateFn) {
+                    updateFn(parentFeature, event.coordinate);
+                } else {
+                    topLeftFeature.getGeometry().translate(deltaX, deltaY);
+                    topRightFeature.getGeometry().translate(deltaX, deltaY);
+                    bottomLeftFeature.getGeometry().translate(deltaX, deltaY);
+                    bottomRightFeature.getGeometry().translate(deltaX, deltaY);
+
+                    coordinates = geometry.getCoordinates()[0];
+                    boxTopLeft = coordinates[0];
+                    boxBottomLeft = coordinates[1];
+                    boxBottomRight = coordinates[2];
+                    boxTopRight = coordinates[3];
+                }
                 dragCoordinate[0] = event.coordinate[0];
                 dragCoordinate[1] = event.coordinate[1];
             },
-            handleMoveEvent: function (event) {
+            handleMoveEvent: function(event) {
                 if (dragCursor) {
                     var map = event.map;
 
                     var feature = map.forEachFeatureAtPixel(event.pixel,
-                        function (feature, layer) {
+                        function(feature, layer) {
                             return feature;
                         });
 
@@ -303,9 +367,12 @@
                     }
                 }
             },
-            handleUpEvent: function (event) {
+            handleUpEvent: function(event) {
                 dragCoordinate = null;
                 dragFeature = null;
+                resizeFeature = null;
+                boundingBox = [boxTopLeft, boxBottomLeft, boxBottomRight, boxTopRight, boxTopLeft];
+                $scope.executeQuery($scope.queryStr);
                 return false;
             }
         });
@@ -331,36 +398,67 @@
                 geometry = new ol.geom.Polygon(null);
             }
             boxTopLeft = start;
-            boxBottomLeft  =  [start[0], end[1]];
+            boxBottomLeft = [start[0], end[1]];
             boxBottomRight = end;
-            boxTopRight =  [end[0], start[1]];
+            boxTopRight = [end[0], start[1]];
             // geometry.setCoordinates([
             //     [start, [start[0], end[1]], end, [end[0], start[1]], start]
             // ]);
 
             geometry.setCoordinates([
-                [boxTopLeft, boxBottomLeft, boxBottomRight , boxTopRight, boxTopLeft]
+                [boxTopLeft, boxBottomLeft, boxBottomRight, boxTopRight, boxTopLeft]
             ]);
 
             return geometry;
         }
 
 
-        drawInteraction.on('drawend', function (event) {
+        drawInteraction.on('drawend', function(event) {
             boundingBox = event.feature.getGeometry().getCoordinates()[0];
             mapService.removeInteraction(drawInteraction);
-            // $scope.executeQuery($scope.queryStr);
+            $scope.executeQuery($scope.queryStr);
 
-            var feature = new ol.Feature({
+            topRightFeature = new ol.Feature({
                 geometry: new ol.geom.Point(boxTopRight),
                 coordinate: event.coordinate,
-                name: 'My Point'
-              });
-              feature.setStyle(rectangularStyle);
-              vectorSource.addFeature(feature);
+                name: 'topRightFeature',
+                parentFeature: event.feature,
+                updateFn: updateTopRight
+            });
+            topLeftFeature = new ol.Feature({
+                geometry: new ol.geom.Point(boxTopLeft),
+                coordinate: event.coordinate,
+                name: 'topLeftFeature',
+                parentFeature: event.feature,
+                updateFn: updateTopLeft
+            });
+            bottomLeftFeature = new ol.Feature({
+                geometry: new ol.geom.Point(boxBottomLeft),
+                coordinate: event.coordinate,
+                name: 'bottomLeftFeature',
+                parentFeature: event.feature,
+                updateFn: updateBottomLeft
+            });
+            bottomRightFeature = new ol.Feature({
+                geometry: new ol.geom.Point(boxBottomRight),
+                coordinate: event.coordinate,
+                name: 'bottomRightFeature',
+                parentFeature: event.feature,
+                updateFn: updateBottomRight
+            });
+
+            topLeftFeature.setStyle(rectangularStyle);
+            topRightFeature.setStyle(rectangularStyle);
+            bottomLeftFeature.setStyle(rectangularStyle);
+            bottomRightFeature.setStyle(rectangularStyle);
+
+            vectorSource.addFeature(topLeftFeature);
+            vectorSource.addFeature(topRightFeature);
+            vectorSource.addFeature(bottomLeftFeature);
+            vectorSource.addFeature(bottomRightFeature);
         });
         $scope.dragBox = function() {
-            
+
             mapService.addInteraction(drawInteraction);
             $scope.closeDialog();
         }
