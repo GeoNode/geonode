@@ -43,7 +43,7 @@ def create_object(params):
     obj.floodplain=params['floodplain']
     obj.pl1_suc=params['pl1_suc']
     obj.pl2_suc=params['pl2_suc']
-    obj.is_laz_adj=params[]'is_adjuste']
+    obj.is_laz_adj=params['is_adjuste']
     # obj.is_laz_adj=params['is_laz_adj']
     # obj.is_orp_adj=params['is_orp_adj']
     # obj.is_laz_upl=params['is_laz_upl']
