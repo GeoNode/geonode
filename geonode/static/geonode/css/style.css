@@ -5,7 +5,6 @@
     padding:0px;
     outline: none;
     color: #5a5d63;
-    font-family: 'Open Sans', sans-serif;
 }
 html,body{
     height: 100%;
@@ -489,6 +488,7 @@ table.gd-list-table tr td .media-body {
   }
   .brow_widt{
     width:230px;
+    height: 30px;
   }
   #search_input{
     width:150px;
@@ -576,6 +576,7 @@ table.gd-list-table tr td .media-body {
 }
 #search .btn-gd-primary{
     padding: 5px 12px;
+    margin: 0;
     background:#fff;
     border:none;
 }
