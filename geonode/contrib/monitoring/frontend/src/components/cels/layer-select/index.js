@@ -37,9 +37,9 @@ class GeonodeData extends React.Component {
     this.state = {};
 
     this.handleChange = (target, id, name) => {
-      if (this.props.onChange) {
+      if (this.props.onChange && this.props.layers[id]) {
         this.setState({ selected: name });
-        this.props.onChange(id);
+        this.props.onChange(this.props.layers[id].id);
       }
     };
   }
