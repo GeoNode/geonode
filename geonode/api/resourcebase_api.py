@@ -637,9 +637,9 @@ class CommonModelApi(ModelResource):
         objects_json = objects.values(*self.VALUES)
         # hack needed because dehydrate does not seem to work in CommonModelApi
         for item in objects_json:
-            if len(item['thumbnail_url']) == 0:
+            if item['thumbnail_url'] and len(item['thumbnail_url']) == 0:
                 item['thumbnail_url'] = staticfiles.static(settings.MISSING_THUMBNAIL)
-            if len(item['title']) == 0:
+            if item['title'] and len(item['title']) == 0:
                 item['title'] = 'No title'
         return objects_json
 
