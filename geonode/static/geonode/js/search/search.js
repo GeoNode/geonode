@@ -615,12 +615,12 @@
         layers: {
           baselayers: {
             stamen: {
-              name: 'Toner Lite',
+              name: 'OpenStreetMap Mapnik',
               type: 'xyz',
-              url: 'http://{s}.tile.stamen.com/toner-lite/{z}/{x}/{y}.png',
+              url: '//{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
               layerOptions: {
                 subdomains: ['a', 'b', 'c'],
-                attribution: 'Map tiles by <a href="http://stamen.com">Stamen Design</a>',
+                attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
                 continuousWorld: true
               }
             }
@@ -649,7 +649,7 @@
 
       var showMap = false;
       $('#_extent_filter').click(function(evt) {
-     	  showMap = !showMap
+          showMap = !showMap
         if (showMap){
           leafletData.getMap().then(function(map) {
             map.invalidateSize();
