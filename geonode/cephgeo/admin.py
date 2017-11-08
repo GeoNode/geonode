@@ -149,7 +149,6 @@ class LidarCoverageBlockAdmin(admin.ModelAdmin):
     list_display = (
         'uid',
         'block_name',
-        'adjusted_l',
         'sensor',
         'processor',
         'flight_num',

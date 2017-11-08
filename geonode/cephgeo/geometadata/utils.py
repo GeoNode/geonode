@@ -24,34 +24,34 @@ os.environ.setdefault("DJANGO_SETTINGS_MODULE", "geonode.settings")
 
 
 def create_object(params):
-    obj = LidarCoverageBlock.objects.create(uid=params['uid'],
-                                            area=params['area'],
-                                            block_name=params['block_name'],
-                                            processor=params['processor'],
-                                            sensor=params['sensor'],
-                                            base_used=params['base_used'],
-                                            flight_num=params['flight_num'],
-                                            mission_na=params['mission_na'],
-                                            date_flown=params['date_flown'],
-                                            x_shift=params['x_shift_m'],
-                                            y_shift=params['y_shift_m'],
-                                            z_shift=params['z_shift_m'],
-                                            height_dif=params['height_dif'],
-                                            rmse_val=params['rmse_val_m'],
-                                            cal_ref_pt=params['cal_ref_pt'],
-                                            val_ref_pt=params['val_ref_pt'],
-                                            floodplain=params['floodplain'],
-                                            pl1_suc=params['pl1_suc'],
-                                            pl2_suc=params['pl2_suc'],
-                                            is_laz_adj=params['is_laz_adj'],
-                                            is_orp_adj=params['is_orp_adj'],
-                                            is_laz_upl=params['is_laz_upl'],
-                                            is_orp_upl=params['is_orp_upl'],
-                                            is_problem=params['is_problem'],
-                                            is_removed=params['is_removed'],
-                                            remarks=params['remarks'],
-                                            area_sqkm=params['area_sqkm'],
-                                            )
+    obj, created = LidarCoverageBlock.objects.get_or_create(uid=params['uid'])
+    obj.area=params['area'],
+    obj.block_name=params['block_name']
+    obj.processor=params['processor']
+    obj.sensor=params['sensor']
+    obj.base_used=params['base_used']
+    obj.flight_num=params['flight_num']
+    obj.mission_na=params['mission_na']
+    obj.date_flown=params['date_flown']
+    obj.x_shift=params['x_shift_m']
+    obj.y_shift=params['y_shift_m']
+    obj.z_shift=params['z_shift_m']
+    obj.height_dif=params['height_dif']
+    obj.rmse_val=params['rmse_val_m']
+    obj.cal_ref_pt=params['cal_ref_pt']
+    obj.val_ref_pt=params['val_ref_pt']
+    obj.floodplain=params['floodplain']
+    obj.pl1_suc=params['pl1_suc']
+    obj.pl2_suc=params['pl2_suc']
+    obj.is_laz_adj=params['is_laz_adj']
+    obj.is_orp_adj=params['is_orp_adj']
+    obj.is_laz_upl=params['is_laz_upl']
+    obj.is_orp_upl=params['is_orp_upl']
+    obj.is_problem=params['is_problem']
+    obj.is_removed=params['is_removed']
+    obj.remarks=params['remarks']
+    obj.area_sqkm=params['area_sqkm']
+    obj.save()
     return obj
 
 
@@ -104,14 +104,13 @@ def lidar_coverage_data():
             print i, '/', feature_count
             print 'UID:', obj.uid
             print 'block_name:', obj.block_name
-            print 'adjusted_l:', obj.adjusted_l
             print 'sensor:', obj.sensor
             print 'processor:', obj.processor
             print 'flight_num:', obj.flight_num
             print 'mission_na:', obj.mission_na
             print 'date_flown:', obj.date_flown
         except Exception:
-            print 'Error creating object!'
+            print 'Error creating or getting object!'
             traceback.print_exc()
         # break
 
