@@ -53,7 +53,7 @@ def get_fhm_count(takes_context=True):
         response = urllib2.urlopen(visit_url)
         data = json.loads(response.read())
         fhm_count = data['meta']['total_count']
-    except HTTPError:
+    except:
         fhm_count = "N/A"
     return fhm_count
 

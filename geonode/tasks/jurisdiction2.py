@@ -24,6 +24,7 @@ from geonode.datarequests.models import DataRequestProfile
 from geonode.datarequests.utils import  get_place_name, get_area_coverage
 
 from django.core.mail import send_mail
+import time
 
 @task(name='geonode.tasks.jurisdiction2.compute_size_update', queue='jurisdiction')
 def compute_size_update(requests_query_list, area_compute = True, data_size = True, save=True):
@@ -82,7 +83,7 @@ def get_juris_tiles(juris_shp, user=None):
     for tile_y in xrange(min_y+settings._TILE_SIZE, max_y+settings._TILE_SIZE, settings._TILE_SIZE):
         for tile_x in xrange(min_x, max_x, settings._TILE_SIZE):
             tile_ulp = (tile_x, tile_y)
-            pprint("tile_ulp:"+str(tile_ulp))
+            # pprint("tile_ulp:"+str(tile_ulp))
             tile_dlp = (tile_x, tile_y - settings._TILE_SIZE)
             tile_drp = (tile_x + settings._TILE_SIZE, tile_y - settings._TILE_SIZE)
             tile_urp = (tile_x + settings._TILE_SIZE, tile_y)
@@ -92,7 +93,6 @@ def get_juris_tiles(juris_shp, user=None):
             if not tile.intersection(juris_shp).is_empty:
                 gridref = 'E{0}N{1}'.format(int(tile_x / settings._TILE_SIZE), int(tile_y / settings._TILE_SIZE))
 
-                # ceph_qs = CephDataObject.objects.filter(grid_ref = gridref)
                 ceph_qs = CephDataObject.objects.filter(grid_ref = gridref)
                 pprint("gridref:"+str(gridref)+" query_length:"+str(len(ceph_qs)))
                 if ceph_qs.count() > 0:
@@ -190,7 +190,12 @@ def get_geometries_ogr(juris_shp_name, dest_epsg=32651): #returns layer
         return []
 
     #reprojection section
-    src_epsg =  get_epsg(juris_shp_name)
+    try:
+        src_epsg =  get_epsg(juris_shp_name)
+    except socket.error:
+        pprint('Socket error, raised. sleeping for 30seconds')
+        time.sleep(30)
+        src_epsg =  get_epsg(juris_shp_name)
 
     if src_epsg == 0:
         return []

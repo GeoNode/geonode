@@ -24,6 +24,8 @@ from geonode.cephgeo.models import CephDataObject
 from geonode import local_settings
 from fabric.contrib.files import upload_template
 
+from geonode.automation.models import CephDataObjectResourceBase
+
 logger = logging.getLogger("geonode.tasks.ftp")
 FTP_USERS_DIRS = {"test-ftp-user": "/mnt/ftp_pool/FTP/PL1/testfolder", }
 env.skip_bad_hosts = True
@@ -423,7 +425,7 @@ below:
 def upload_xml(folder_dir,obj_dl_list):
     for grid_ref_file_name in obj_dl_list.split(" "):
         try:
-            cephobj_resbase = CephDataObject.objects.get(name=grid_ref_file_name)
+            cephobj_resbase = CephDataObjectResourceBase.objects.get(name=grid_ref_file_name)
         except:
             continue
         keyword_text = ""

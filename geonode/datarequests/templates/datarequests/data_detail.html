@@ -59,7 +59,7 @@
       <tr>
       <td class="table-user-profile-attribute">{% trans "Email" %}</td>
       <td>{{ profile.email }}</td>
-      </tr> 
+      </tr>
       {% endif %}
 
       <tr>
@@ -189,6 +189,10 @@
         <li class="list-group-item">
         <form id="tag_suc_form" method="post" class="modal-form" action='{% url "datarequests:data_request_tag_suc" pk=data_request.pk %}'>{% csrf_token %}
                 <button type="submit" class="btn btn-primary btn-md btn-block"  id="tag-suc">{% trans "Tag SUC" %}</button>
+            </form></li>
+        <li class="list-group-item">
+        <form id="assign_gridrefs_user_form" method="post" class="modal-form" action='{% url "datarequests:data_request_assign_gridrefs_user" pk=data_request.pk %}'>{% csrf_token %}
+                <button type="submit" class="btn btn-primary btn-md btn-block"  id="assign-gridrefs-user">{% trans "Assign Grid Refs" %}</button>
             </form></li>
     {% endif %}
       {% if data_request.status == 'approved' %}

@@ -120,6 +120,8 @@ def image_basemap(link, epsg, filetype):
         jsontext['legends'][0]['classes'][0]['icons'][0] = legendurl
         jsontext['isPhilLidar1'] = isPhilLidar1
         jsontext['isPhilLidar2'] = isPhilLidar2
+        # print '******************** J S O N ********************'
+        # pprint(jsontext)
 
         jsonmini = json.dumps(jsontext, separators=(',', ':'))
         urlencoded = urllib.quote(jsonmini)
@@ -144,10 +146,10 @@ def get_prs92_download_url(link):
         return link
     elif '%2Fpdf' in str(link):  # remove this
         link = image_basemap(link, 4683, 'pdf')
-    # elif 'SHAPE-ZIP' in str(link) or 'kml' in str(link):
-    #     link = link + '&srsName=EPSG:4683'
     elif '/download/' in str(link):
         link = link.split('/layers/')[0]+'/geoserver/'+link.split('/download/')[1]
+        if 'SHAPE-ZIP' in str(link) or 'kml' in str(link):
+            link = link + '&srsName=EPSG:4683'
     return link
 
 

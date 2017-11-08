@@ -14,11 +14,13 @@ from geonode.cephgeo.utils import get_data_class_from_filename
 from geonode.cephgeo import ceph_client
 from swiftclient.exceptions import ClientException
 
+from geonode.automation.models import AutomationJob, CephDataObjectResourceBase
 from geonode.cephgeo.models import LidarCoverageBlock
 from celery.decorators import periodic_task
 from datetime import datetime
 import uuid
 from django.utils.encoding import smart_str
+from pyproj import transform, Proj
 
 logger = get_task_logger("geonode.tasks.ceph_update")
 
@@ -105,34 +107,33 @@ def ceph_metadata_update(update_grid=True):
             ceph_obj = None
             for x in metadata_list:
                 print 'Metadata', x
+            if DataClassification.get(get_data_class_from_filename(metadata_list[0])).label == 'LAZ':
+                abstract_text = '''
+    All LiDAR point cloud data were acquired and processed by the UP Training Center for Applied Geodesy and Photogrammetry (UP-TCAGP), through the DOST-GIA funded Disaster Risk and Exposure Assessment for Mitigation (DREAM) Program.
 
-            ceph_obj = None
-            abstract_text = '''
-All LiDAR point cloud data were acquired and processed by the UP Training Center for Applied Geodesy and Photogrammetry (UP-TCAGP), through the DOST-GIA funded Disaster Risk and Exposure Assessment for Mitigation (DREAM) Program.
-
-The LiDAR point cloud data was acquired by an Optech ALTM Gemini and Pegasus LiDAR system. It was pre-processed using POSPac MMS and LMS software. The TerraScan software was used to classify the point cloud into ground, vegetation and building classes. LASTools was used to compress the classified LiDAR point cloud data (.las) in a completely lossless manner to the compressed LAZ format (.laz).
-
-
-Classified LiDAR Point Cloud (LAZ):
-Projection: 	WGS84 UTM Zone 51
-Resolution: 	1 m
-Tile Size:	1km by 1km
-Date of Acquisition: %s
-
-DREAM/PHIL-LiDAR 1 Program
-
-Program Leader: Enrico C. Paringit, Dr.Eng
-Rm. 312-316, National Engineering Center
-Alfred Juinio Hall
-UP Campus, Diliman Quezon City
-Philippines
+    The LiDAR point cloud data was acquired by an Optech ALTM Gemini and Pegasus LiDAR system. It was pre-processed using POSPac MMS and LMS software. The TerraScan software was used to classify the point cloud into ground, vegetation and building classes. LASTools was used to compress the classified LiDAR point cloud data (.las) in a completely lossless manner to the compressed LAZ format (.laz).
 
 
-Please refer to the corresponding End-User License Agreement (EULA) for product licensing.
+    Classified LiDAR Point Cloud (LAZ):
+    Projection: 	WGS84 UTM Zone 51
+    Resolution: 	1 m
+    Tile Size:	1km by 1km
+    Date of Acquisition: %s
+
+    DREAM/PHIL-LiDAR 1 Program
+
+    Program Leader: Enrico C. Paringit, Dr.Eng
+    Rm. 312-316, National Engineering Center
+    Alfred Juinio Hall
+    UP Campus, Diliman Quezon City
+    Philippines
+
+
+    Please refer to the corresponding End-User License Agreement (EULA) for product licensing.
 
 
 
-© All Rights Reserved, 2013''' % metadata_list[1]
+    (c) All Rights Reserved, 2013''' % metadata_list[1]
             try:
                 ceph_obj = CephDataObject.objects.get(name=metadata_list[0])
                 # Commented attributes are not relevant to update
@@ -145,10 +146,22 @@ Please refer to the corresponding End-User License Agreement (EULA) for product 
                 ceph_obj.file_hash = metadata_list[4]
                 ceph_obj.content_type = metadata_list[3]
                 ceph_obj.data_class = get_data_class_from_filename(metadata_list[0])
-                ceph_obj.title = metadata_list[0]
-                ceph_obj.abstract = abstract_text
 
                 ceph_obj.save()
+
+                cephobj_resbase = CephDataObjectResourceBase.objects.get(name=metadata_list[0])
+                # Commented attributes are not relevant to update
+                # ceph_obj.grid_ref = metadata_list[5]
+                # ceph_obj.data_class = get_data_class_from_filename(metadata_list[0])
+                # ceph_obj.content_type = metadata_list[3]
+
+                cephobj_resbase.last_modified = metadata_list[1]
+                cephobj_resbase.size_in_bytes = metadata_list[2]
+                cephobj_resbase.file_hash = metadata_list[4]
+                cephobj_resbase.content_type = metadata_list[3]
+                cephobj_resbase.data_class = get_data_class_from_filename(metadata_list[0])
+
+                cephobj_resbase.save()
 
                 objects_updated += 1
             except ObjectDoesNotExist:
@@ -162,11 +175,40 @@ Please refer to the corresponding End-User License Agreement (EULA) for product 
                     grid_ref=metadata_list[5],
                     block_uid=get_uid_from_filename(
                     metadata_list[0]),
+                    )
+                ceph_obj.save()
+
+                NEx0,NEy1 = [p*1000 for p in map(int,metadata_list[5][1:].split('N'))]
+                NEx1 = NEx0+1*1000
+                NEy0 = NEy1-1*1000
+                ### Converting to lat long and format for csw_wkt_geometry
+                bbox_latlong = { # Outputs string coordinates which are separated by a space, i.e. '<x0> <y0>'
+                    'x0y0' : " ".join([str(i) for i in transform(Proj(init='epsg:32651'), Proj(init='epsg:4326'), NEx0,NEy0)]),
+                    'x0y1' : " ".join([str(i) for i in transform(Proj(init='epsg:32651'), Proj(init='epsg:4326'), NEx0,NEy1)]),
+                    'x1y1' : " ".join([str(i) for i in transform(Proj(init='epsg:32651'), Proj(init='epsg:4326'), NEx1,NEy1)]),
+                    'x1y0' : " ".join([str(i) for i in transform(Proj(init='epsg:32651'), Proj(init='epsg:4326'), NEx1,NEy0)]),
+                }
+                ### Getting bounding box
+                bbox_x0 = min([value.split()[0] for key, value in bbox_latlong.iteritems() if 'x0' in key.lower()])
+                bbox_x1 = max([value.split()[0] for key, value in bbox_latlong.iteritems() if 'x1' in key.lower()])
+                bbox_y0 = min([value.split()[1] for key, value in bbox_latlong.iteritems() if 'y0' in key.lower()])
+                bbox_y1 = max([value.split()[1] for key, value in bbox_latlong.iteritems() if 'y1' in key.lower()])
+
+                cephobj_resbase = CephDataObjectResourceBase(name=metadata_list[0],
+                                                      last_modified=metadata_list[1],
+                                                      size_in_bytes=metadata_list[2],
+                                                      content_type=metadata_list[3],
+                                                      data_class=get_data_class_from_filename(
+                    metadata_list[0]),
+                    file_hash=metadata_list[4],
+                    grid_ref=metadata_list[5],
+                    block_uid=get_uid_from_filename(
+                    metadata_list[0]),
                     uuid=str(uuid.uuid1()),
                     title=metadata_list[0],
                     abstract=abstract_text,
                     )
-                ceph_obj.save()
+                cephobj_resbase.save()
 
                 objects_inserted += 1
             if ceph_obj is not None:
