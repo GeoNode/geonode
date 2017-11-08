@@ -101,7 +101,7 @@ Ubuntu development build instructions using an isolated virtual environment (tes
     # Install pip dependencies
     pip install -r requirements.txt --no-deps
     pip install -e .
-    pip install pygdal==1.10.1
+    pip install pygdal==1.11.3.3
 
 For Ubuntu 16.04 you should create your virtual-env like this instead (so with site packages)::
 
