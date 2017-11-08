@@ -4,13 +4,14 @@ mapModule
 BoxDrawTool.$inject = ['mapService'];
 
 function BoxDrawTool(mapService) {
-    var isBoxDrawn = false;
-    var topRightFeature = null;
-    var bottomRightFeature = null;
-    var topLeftFeature = null;
-    var bottomLeftFeature = null;
-    var boxTopLeft, boxTopRight, boxBottomRight, boxBottomLeft;
     return function(map) {
+        var isBoxDrawn = false;
+        var topRightFeature = null;
+        var bottomRightFeature = null;
+        var topLeftFeature = null;
+        var bottomLeftFeature = null;
+        var boxTopLeft, boxTopRight, boxBottomRight, boxBottomLeft;
+
         var map = map || mapService.getMap();
         var dragFeature = null;
         var resizeFeature = null;
@@ -75,12 +76,12 @@ function BoxDrawTool(mapService) {
         var vectorSource = new ol.source.Vector({
             features: features,
         });
-        var featureOverlay = new ol.layer.Vector({
+        var layer = new ol.layer.Vector({
             source: vectorSource,
             style: [verticeStyle, lineStyle]
         });
 
-        mapService.addVectorLayer(featureOverlay);
+        mapService.addVectorLayer(layer);
 
         function updateGeometry(feature) {
             var geometry = feature.getGeometry();
@@ -94,6 +95,7 @@ function BoxDrawTool(mapService) {
             boxTopRight = coordinate;
             boxBottomRight = [coordinate[0], boxBottomRight[1]];
             // boxBottomLeft =  [end[0], start[1]];
+            topRightFeature.getGeometry().setCoordinates(boxTopRight);
             topLeftFeature.getGeometry().setCoordinates(boxTopLeft);
             bottomRightFeature.getGeometry().setCoordinates(boxBottomRight);
             updateGeometry(feature);
@@ -104,6 +106,7 @@ function BoxDrawTool(mapService) {
             // boxTopRight = coordinate;
             boxBottomRight = [boxBottomRight[0], coordinate[1]];
             boxBottomLeft = coordinate;
+            bottomLeftFeature.getGeometry().setCoordinates(boxBottomLeft);
             topLeftFeature.getGeometry().setCoordinates(boxTopLeft);
             bottomRightFeature.getGeometry().setCoordinates(boxBottomRight);
             updateGeometry(feature);
@@ -114,6 +117,7 @@ function BoxDrawTool(mapService) {
             boxTopRight = [coordinate[0], boxTopRight[1]];
             boxBottomRight = coordinate;
             boxBottomLeft = [boxBottomLeft[0], coordinate[1]];
+            bottomRightFeature.getCoordinates().setCoordinates(boxBottomRight);
             bottomLeftFeature.getGeometry().setCoordinates(boxBottomLeft);
             topRightFeature.getGeometry().setCoordinates(boxTopRight);
             updateGeometry(feature);
@@ -124,6 +128,7 @@ function BoxDrawTool(mapService) {
             boxTopRight = [boxTopRight[0], coordinate[1]];
             // boxBottomRight = coordinate;
             boxBottomLeft = [coordinate[0], boxBottomLeft[1]];
+            topLeftFeature.getGeometry().setCoordinates(boxTopLeft);
             bottomLeftFeature.getGeometry().setCoordinates(boxBottomLeft);
             topRightFeature.getGeometry().setCoordinates(boxTopRight);
             updateGeometry(feature);
@@ -160,11 +165,11 @@ function BoxDrawTool(mapService) {
                 } else {
                     geometry = dragFeature.getGeometry();
                 }
-                geometry.translate(deltaX, deltaY);
-
+                
                 if (updateFn) {
                     updateFn(parentFeature, event.coordinate);
                 } else {
+                    geometry.translate(deltaX, deltaY);
                     topLeftFeature.getGeometry().translate(deltaX, deltaY);
                     topRightFeature.getGeometry().translate(deltaX, deltaY);
                     bottomLeftFeature.getGeometry().translate(deltaX, deltaY);
@@ -289,14 +294,16 @@ function BoxDrawTool(mapService) {
             vectorSource.addFeature(bottomLeftFeature);
             vectorSource.addFeature(bottomRightFeature);
         });
-        this.Draw = function() {
+        this.Draw = function(forceDraw) {
             mapService.addInteraction(dragInteraction);
-            if (!isBoxDrawn) {
+            if (!isBoxDrawn || forceDraw) {
                 mapService.addInteraction(drawInteraction);
                 isBoxDrawn = true;
             }
         };
-
+        this.Remove = function(){
+            mapService.removeVectorLayer(layer);
+        }
         this.Stop = function() {
             mapService.removeInteraction(dragInteraction);
         };
