@@ -172,7 +172,9 @@ class Metric(models.Model):
 
              )
 
-    AGGREGATE_MAP = {TYPE_RATE: '(case when sum(samples_count)> 0 then sum(value_num*samples_count)/sum(samples_count) else 0 end)',
+    AGGREGATE_MAP = {TYPE_RATE: ('(case when sum(samples_count)> 0 '
+                                 'then sum(value_num*samples_count)'
+                                 '/sum(samples_count) else 0 end)'),
                      TYPE_VALUE: 'sum(value_num)',
                      TYPE_VALUE_NUMERIC: 'max(value_num)',
                      TYPE_COUNT: 'sum(value_num)'}
