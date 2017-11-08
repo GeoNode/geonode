@@ -43,6 +43,7 @@ def create_object(params):
     obj.floodplain=params['floodplain']
     obj.pl1_suc=params['pl1_suc']
     obj.pl2_suc=params['pl2_suc']
+    obj.is_laz_adj=params('is_adjuste')
     # obj.is_laz_adj=params['is_laz_adj']
     # obj.is_orp_adj=params['is_orp_adj']
     # obj.is_laz_upl=params['is_laz_upl']
@@ -87,10 +88,11 @@ def lidar_coverage_data():
         params['floodplain'] = feature.GetFieldAsString('floodplain')
         params['pl1_suc'] = feature.GetFieldAsString('pl1_suc')
         params['pl2_suc'] = feature.GetFieldAsString('pl2_suc')
-        params['is_laz_adj'] = feature.GetFieldAsString('is_laz_adj')
-        params['is_orp_adj'] = feature.GetFieldAsString('is_orp_adj')
-        params['is_laz_upl'] = feature.GetFieldAsString('is_laz_upl')
-        params['is_orp_upl'] = feature.GetFieldAsString('is_orp_upl')
+        params['is_adjuste'] = feature.GetFieldAsString('is_adjuste')
+        # params['is_laz_adj'] = feature.GetFieldAsString('is_laz_adj')
+        # params['is_orp_adj'] = feature.GetFieldAsString('is_orp_adj')
+        # params['is_laz_upl'] = feature.GetFieldAsString('is_laz_upl')
+        # params['is_orp_upl'] = feature.GetFieldAsString('is_orp_upl')
         params['is_problem'] = feature.GetFieldAsString('is_problem')
         params['is_removed'] = feature.GetFieldAsString('is_removed')
         params['remarks'] = feature.GetFieldAsString('remarks')
