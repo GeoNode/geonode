@@ -1,4 +1,9 @@
-﻿.feature-edit-button-container
+﻿body
+{
+    overflow: hidden;
+}
+
+.feature-edit-button-container
 {
     position: absolute;
     z-index: 2;
@@ -133,22 +138,24 @@
     top: 5px;
     bottom: 5px;
     background-color: #FFFFFF;
+    height: 100%;
 }
 
 .layout-left, .layout-right
 {
     border: 1px solid #BBB;
+    width: 270px;
 }
 
 .layout-left
 {
-    left: 5px;
+    left: 0;
     overflow: hidden;
 }
 
 .layout-right
 {
-    right: 5px;
+    right: 0;
 }
 
 .layout-center
@@ -165,7 +172,6 @@ body
 {
     padding: 0;
     margin: 0;
-    font-size: 90%;
     background-color: #e2e6ea;
 }
 
@@ -181,7 +187,6 @@ a
     -webkit-box-sizing: border-box;
     -moz-box-sizing: border-box;
     box-sizing: border-box;
-    padding: 5px;
 }
 
 .layout-header
@@ -199,25 +204,11 @@ a
 
 .layout-content
 {
-    top: 95px;
+    top: 61px;
     bottom: 20px;
 }
 
-.logo
-{
-    width: 220px;
-    padding: 20px 0 0 15px;
-}
 
-    .logo a
-    {
-        background-image: url("../images/logo.png");
-        background-repeat: no-repeat;
-        width: 200px;
-        height: 90px;
-        display: block;
-        text-indent: -9999px;
-    }
 
 .control-button-container
 {
@@ -358,12 +349,6 @@ a
     position: absolute;
 }
 
-.container
-{
-    -webkit-box-sizing: border-box; /* Safari/Chrome, other WebKit */
-    -moz-box-sizing: border-box; /* Firefox, other Gecko */
-    box-sizing: border-box;
-}
 
 .captcha-container
 {
@@ -381,14 +366,7 @@ a
 .layer-buttons
 {
     vertical-align: bottom;
-    background: rgba(255,255,255,1);
-    background: -moz-linear-gradient(top, rgba(255,255,255,1) 0%, rgba(240,240,240,1) 100%);
-    background: -webkit-gradient(left top, left bottom, color-stop(0%, rgba(255,255,255,1)), color-stop(100%, rgba(240,240,240,1)));
-    background: -webkit-linear-gradient(top, rgba(255,255,255,1) 0%, rgba(240,240,240,1) 100%);
-    background: -o-linear-gradient(top, rgba(255,255,255,1) 0%, rgba(240,240,240,1) 100%);
-    background: -ms-linear-gradient(top, rgba(255,255,255,1) 0%, rgba(240,240,240,1) 100%);
-    background: linear-gradient(to bottom, rgba(255,255,255,1) 0%, rgba(240,240,240,1) 100%);
-    filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#ffffff', endColorstr='#f0f0f0', GradientType=0 );
+    background-color: #ffffff;
     margin-bottom: 5px;
     padding: 6px;
     border-bottom: 1px solid #d0d0d0;
@@ -415,17 +393,14 @@ a
 {
     cursor: pointer;
     float: right;
-    width: 18px;
-    height: 30px;
+    width: 28px;
+    height: 29px;
     text-align: center;
     padding-top: 7px;
     padding: 0 5px 0 5px;
-    background-repeat: repeat-y;
-    background-position: left;
-    background-color: #555555;
-    background-image: url('images/arrowDivider.png');
-    background-position: left center;
-    background-repeat: repeat-y;
+    background-color: #ffffff;
+    border-left: 1px solid rgb(236, 236, 236);
+    position: relative;
 }
 
 .leftColumnContent
@@ -457,14 +432,15 @@ a
 {
     cursor: pointer;
     float: left;
-    width: 18px;
-    height: 30px;
+    width: 28px;
+    height: 29px;
     text-align: center;
-    padding: 0 5px;
-    background-color: #555555;
-    background-image: url('images/arrowDivider.png');
-    background-position: right center;
-    background-repeat: repeat-y;
+    padding-top: 7px;
+    padding: 0 5px 0 5px;
+    background-color: #ffffff;
+    border-right: 1px solid rgb(236, 236, 236);
+    position: relative;
+    margin-right: 5px;
 }
 
 .user-info
@@ -499,39 +475,18 @@ a
     width: 100%;
 }
 
-.navbar
-{
-    position: absolute;
-    top: 0;
-    right: 0;
-    z-index: 500;
-}
+
 
 .navbar-inner
 {
     padding-left: 0;
     padding-right: 7px;
     height: 58px;
+    display: none;
 }
-
-.navbar .nav > li
-{
-    line-height: 20px;
-}
-
-.navbar .nav .dropdown-toggle .caret
-{
-    margin-top: 10px;
-}
-
 .navbar .nav li.dropdown.open > .dropdown-toggle, .navbar .nav li.dropdown.active > .dropdown-toggle, .navbar .nav li.dropdown.open.active > .dropdown-toggle
 {
     background: none;
-}
-
-.navbar .nav li.dropdown .dropdown-toggle
-{
-    padding: 33px 3px;
 }
 
 .loading-message
@@ -581,21 +536,18 @@ a
 
 .navbar .nav > li button
 {
-    padding: 40px 2px 2px 2px;
-    margin: 9px 5px;
+    margin: 4px 5px;
 }
 
     .navbar .nav > li button:hover
     {
         background-color: #d9e1e7;
-        padding: 38px 0 0 0;
         outline: 1px solid #c2c7d3;
     }
 
     .navbar .nav > li button:disabled
     {
         background-color: transparent;
-        padding: 38px 0 0 0;
         outline: none;
     }
 
@@ -610,13 +562,6 @@ a
     display: none !important;
 }
 
-
-.navbar .nav > li button:hover
-{
-    background-color: #d9e1e7;
-    padding: 38px 0 0 0;
-    outline: 1px solid #c2c7d3;
-}
 
 .navbar .nav > li button:disabled
 {
@@ -731,23 +676,11 @@ a
         width: 150px;
     }
 
-    .navbar .nav > li button
-    {
-        font-size: 11px;
-        color: #2c2c2c;
-    }
-}
 
 
 @media (min-width: 1300px)
 {
 
-    .navbar .nav > li button
-    {
-        font-size: 11px;
-        color: #2c2c2c;
-    }
-}
 
 @media (max-width: 994px)
 {
@@ -887,16 +820,9 @@ button:focus
     line-height: 30px;
     font-size: 15px;
     font-weight: normal;
-    color: #cfcfcf;
-    border-bottom: 1px solid #000;
-    background: rgba(90,90,90,1);
-    background: -moz-linear-gradient(top, rgba(90,90,90,1) 0%, rgba(43,43,43,1) 100%);
-    background: -webkit-gradient(left top, left bottom, color-stop(0%, rgba(90,90,90,1)), color-stop(100%, rgba(43,43,43,1)));
-    background: -webkit-linear-gradient(top, rgba(90,90,90,1) 0%, rgba(43,43,43,1) 100%);
-    background: -o-linear-gradient(top, rgba(90,90,90,1) 0%, rgba(43,43,43,1) 100%);
-    background: -ms-linear-gradient(top, rgba(90,90,90,1) 0%, rgba(43,43,43,1) 100%);
-    background: linear-gradient(to bottom, rgba(90,90,90,1) 0%, rgba(43,43,43,1) 100%);
-    filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#5a5a5a', endColorstr='#2b2b2b', GradientType=0 );
+    color: #353535;
+    border-bottom: 1px solid #f0f0f0;
+    background-color: rgb(248, 248, 248);
 }
 
 .surfgis .nomargin
