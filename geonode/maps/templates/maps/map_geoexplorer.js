@@ -15,13 +15,22 @@ Ext.onReady(function() {
         {% if PROXY_URL %}
         proxy: '{{ PROXY_URL }}',
         {% endif %}
+
+        {% if 'access_token' in request.session %}
+        access_token: "{{request.session.access_token}}",
+        {% else %}
+        access_token: null,
+        {% endif %}
+
         {% if MAPFISH_PRINT_ENABLED %}
         printService: "{{GEOSERVER_BASE_URL}}pdf/",
         {% else %}
-        printService: "",
-        {% endif %} 
-        /* The URL to a REST map configuration service.  This service 
-         * provides listing and, with an authenticated user, saving of 
+        printService: null,
+        printCapabilities: null,
+        {% endif %}
+
+        /* The URL to a REST map configuration service.  This service
+         * provides listing and, with an authenticated user, saving of
          * maps on the server for sharing and editing.
          */
         rest: "{% url "maps_browse" %}",

@@ -20,17 +20,28 @@ Ext.onReady(function() {
         {% if PROXY_URL %}
         proxy: '{{ PROXY_URL }}',
         {% endif %}
-        {% if MAPFISH_PRINT_ENABLED %}
-        printService: "{{GEOSERVER_BASE_URL}}pdf/",
+
+        {% if 'access_token' in request.session %}
+        localGeoServerBaseUrl: "{{GEOSERVER_BASE_URL}}?access_token={{request.session.access_token}}",
+        access_token: "{{request.session.access_token}}",
         {% else %}
-        printService: "",
+        localGeoServerBaseUrl: "{{GEOSERVER_BASE_URL}}",
+        access_token: null,
         {% endif %}
+
         rest: "/maps/",
 
         // tell the map viewer where and how to be rendered
+        {% if MAPFISH_PRINT_ENABLED %}
+        printService: "{{GEOSERVER_BASE_URL}}pdf/",
+        {% else %}
+        printService: null,
+        printCapabilities: null,
+        {% endif %}
+
         portalConfig: {
-            height: 400,
-            renderTo: "the_map"
+            renderTo: "the_map",
+            height: 400
         },
 
         listeners: {

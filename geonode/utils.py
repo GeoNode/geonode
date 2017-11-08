@@ -214,6 +214,17 @@ def layer_from_viewer_config(model, layer, source, ordering):
         if k in source_cfg:
             del source_cfg[k]
 
+    # We don't want to hardcode 'access_token' into the storage
+    if 'capability' in layer_cfg:
+        capability = layer_cfg['capability']
+        if 'styles' in capability:
+            styles = capability['styles']
+            for style in styles:
+                if 'legend' in style:
+                    legend = style['legend']
+                    if 'href' in legend:
+                        legend['href'] = re.sub(r'\&access_token=.*', '', legend['href'])
+
     return model(
         stack_order=ordering,
         format=layer.get("format", None),

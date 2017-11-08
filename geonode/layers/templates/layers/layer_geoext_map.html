@@ -20,11 +20,15 @@
                 {% if PROXY_URL %}
                 proxy: '{{ PROXY_URL }}',
                 {% endif %}
+
                 {% if 'access_token' in request.session %}
                 localGeoServerBaseUrl: "{{GEOSERVER_BASE_URL}}?access_token={{request.session.access_token}}",
+                access_token: "{{request.session.access_token}}",
                 {% else %}
                 localGeoServerBaseUrl: "{{GEOSERVER_BASE_URL}}",
+                access_token: null,
                 {% endif %}
+
                 authorizedRoles: "{{ user.is_authenticated|yesno:"ROLE_ADMINISTRATOR,ROLE_ANONYMOUS" }}",
 
                 /* The URL to a REST map configuration service.  This service
@@ -35,7 +39,8 @@
                 {% if MAPFISH_PRINT_ENABLED %}
                 printService: "{{GEOSERVER_BASE_URL}}pdf/",
                 {% else %}
-                printService: "",
+                printService: null,
+                printCapabilities: null,
                 {% endif %}
 
                 portalConfig: {
