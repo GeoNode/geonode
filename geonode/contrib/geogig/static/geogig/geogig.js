@@ -14,7 +14,7 @@
         var deferred = new $q.defer();
         if (url) {
           var request = url;
-          $http.jsonp(request, {jsonpCallbackParam: 'callback'}).then(function(data, status) {
+          $http({method: 'GET', url: request}).then(function(data, status) {
             deferred.resolve(data);
           },function(error) {
             deferred.reject(error);
