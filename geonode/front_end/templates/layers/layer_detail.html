@@ -118,9 +118,10 @@
                                                         <button type="button" class="close" data-dismiss="modal"
                                                                 aria-hidden="true">&times;</button>
                                                         <h4 class="modal-title"
-                                                            id="myModalLabel">{% trans "Download Layer" %}</h4>
+                                                            id="myModalLabel">{% trans "Download Layer..." %}</h4>
                                                     </div>
                                                     <div class="modal-body">
+                                                        <h3>WGS84 converted</h3>
                                                         {% if links %}
                                                             <ul>
                                                                 {% for link in links %}
@@ -130,15 +131,20 @@
                                                                 {% endfor %}
                                                             </ul>
                                                         {% endif %}
-                                                        {% if links_download %}
-                                                            <ul>
-                                                                {% for link in links_download %}
-                                                                    <li>
-                                                                        <a href="{{ link.url }}">{% trans link.name %}</a>
-                                                                    </li>
-                                                                {% endfor %}
-                                                            </ul>
+                                                        {% if user_data_epsg %}
+                                                            <hr>
+                                                            <h3>User uploaded data format</h3>
+                                                            {% if links %}
+                                                                <ul>
+                                                                    {% for link in links %}
+                                                                        <li>
+                                                                            <a href="{{ link.url }}&srsName=EPSG%3A{{ user_data_epsg }}">{% trans link.name %}</a>
+                                                                        </li>
+                                                                    {% endfor %}
+                                                                </ul>
+                                                            {% endif %}
                                                         {% endif %}
+
                                                     </div>
                                                     <div class="modal-footer">
                                                         <button type="button" class="btn btn-default btn-gd"
