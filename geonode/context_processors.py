@@ -60,6 +60,10 @@ def resource_urls(request):
             settings,
             'DISPLAY_RATINGS',
             False),
+        DISPLAY_WMS_LINKS=getattr(
+            settings,
+            'DISPLAY_WMS_LINKS',
+            False),
         TWITTER_CARD=getattr(
             settings,
             'TWITTER_CARD',

@@ -56,6 +56,10 @@
       <div class="tab-content">
         {% include "base/resourcebase_info_panel.html" %}
 
+        {% if DISPLAY_WMS_LINKS %}
+        <p><a href="{% url 'capabilities_map' resource.id %}"><i class="fa fa-map"></i> {% trans 'Map layers WMS GetCapabilities document' %}</a></p>
+        {% endif %}
+
         {% block social_links %}
             {% if DISPLAY_SOCIAL %}
               {% include "social_links.html" %}
