@@ -85,6 +85,7 @@
           function(error) {
             $scope.error = error;
             $('#geogig-message > h4').text(errorText);
+            $('#geogig-message > i').hide();
           });
     }
 
