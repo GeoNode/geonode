@@ -18,7 +18,7 @@ function BoxDrawTool(mapService) {
         var dragCoordinate = null;
         var dragCursor = 'pointer';
         var dragPrevCursor = null;
-
+        var onBoxDrawEndCallBack;
 
         var STROKE_WIDTH = 3,
             CIRCLE_RADIUS = 5;
@@ -117,7 +117,7 @@ function BoxDrawTool(mapService) {
             boxTopRight = [coordinate[0], boxTopRight[1]];
             boxBottomRight = coordinate;
             boxBottomLeft = [boxBottomLeft[0], coordinate[1]];
-            bottomRightFeature.getCoordinates().setCoordinates(boxBottomRight);
+            bottomRightFeature.getGeometry().setCoordinates(boxBottomRight);
             bottomLeftFeature.getGeometry().setCoordinates(boxBottomLeft);
             topRightFeature.getGeometry().setCoordinates(boxTopRight);
             updateGeometry(feature);
@@ -165,7 +165,7 @@ function BoxDrawTool(mapService) {
                 } else {
                     geometry = dragFeature.getGeometry();
                 }
-                
+
                 if (updateFn) {
                     updateFn(parentFeature, event.coordinate);
                 } else {
@@ -207,10 +207,12 @@ function BoxDrawTool(mapService) {
                 }
             },
             handleUpEvent: function(event) {
+                boundingBox = [boxTopLeft, boxBottomLeft, boxBottomRight, boxTopRight, boxTopLeft];
+                callBackListener(dragFeature || resizeFeature.get('parentFeature'), boundingBox);
                 dragCoordinate = null;
                 dragFeature = null;
                 resizeFeature = null;
-                boundingBox = [boxTopLeft, boxBottomLeft, boxBottomRight, boxTopRight, boxTopLeft];
+
                 // $scope.executeQuery($scope.queryStr);
                 return false;
             }
@@ -249,11 +251,17 @@ function BoxDrawTool(mapService) {
             return geometry;
         }
 
+        function callBackListener(feature, bbox) {
+            if (typeof onBoxDrawEndCallBack === 'function') {
+                onBoxDrawEndCallBack(feature, bbox);
+            }
+        }
 
         drawInteraction.on('drawend', function(event) {
             boundingBox = event.feature.getGeometry().getCoordinates()[0];
             mapService.removeInteraction(drawInteraction);
-            // $scope.executeQuery($scope.queryStr);
+
+            callBackListener(event.feature, [boxTopLeft, boxBottomLeft, boxBottomRight, boxTopRight, boxTopLeft])
 
             topRightFeature = new ol.Feature({
                 geometry: new ol.geom.Point(boxTopRight),
@@ -301,11 +309,20 @@ function BoxDrawTool(mapService) {
                 isBoxDrawn = true;
             }
         };
-        this.Remove = function(){
+        this.Remove = function() {
             mapService.removeVectorLayer(layer);
         }
         this.Stop = function() {
             mapService.removeInteraction(dragInteraction);
         };
+
+        this.OnBoxDrawEnd = function(cb) {
+            onBoxDrawEndCallBack = cb;
+        };
+        this.OnBoxModificationEnd = function(cb) {
+            onBoxDrawEndCallBack = cb;
+        };
+
+
     };
 }
