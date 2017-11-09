@@ -29,6 +29,18 @@ import decimal
 import requests
 import xmltodict
 import  requests
+import string
+import random
+import shutil
+from osgeo import gdal, osr
+from geonode.layers.utils import (
+    reprojection,
+    create_tmp_dir,
+    upload_files,
+    checking_projection,
+    collect_epsg
+)
+import zipfile
 
 from guardian.shortcuts import get_perms
 from django.contrib import messages
@@ -40,6 +52,7 @@ from django.conf import settings
 from django.template import RequestContext
 from django.utils.translation import ugettext as _
 from django.template import RequestContext, loader
+from django.core.files import File
 try:
     import json
 except ImportError:
@@ -74,6 +87,7 @@ from geonode.documents.models import get_related_documents
 from geonode.utils import build_social_links
 from geonode.geoserver.helpers import cascading_delete, gs_catalog
 from geonode.geoserver.helpers import ogc_server_settings
+from geonode import GeoNodeException
 
 from geonode.groups.models import GroupProfile
 from geonode.layers.models import LayerSubmissionActivity, LayerAuditActivity
@@ -156,11 +170,111 @@ def layer_upload(request, template='upload/layer_upload.html'):
         }
         return render_to_response(template, RequestContext(request, ctx))
     elif request.method == 'POST':
+
+        # import pdb;pdb.set_trace()
+
+        file_extension = request.FILES['base_file'].name.split('.')[1].lower()
+        data_dict = dict()
+        tmp_dir = ''
+        epsg_code = ''
+        # Check if zip file then, extract into tmp_dir and convert
+        if zipfile.is_zipfile(request.FILES['base_file']):
+            tmp_dir = create_tmp_dir()
+            with zipfile.ZipFile(request.FILES['base_file']) as zf:
+                zf.extractall(tmp_dir)
+
+            prj_file_name = ''
+            shp_file_name = ''
+            for file in os.listdir(tmp_dir):
+                if file.endswith(".prj"):
+                    prj_file_name = file
+
+                elif file.endswith(".shp"):
+                    shp_file_name = file
+
+            srs = checking_projection(tmp_dir, prj_file_name)
+
+            # collect epsg code
+            epsg_code = collect_epsg(tmp_dir, prj_file_name)
+
+            if epsg_code:
+                data_dict = reprojection(tmp_dir, shp_file_name)
+
+        # import pdb;pdb.set_trace()
+
+        # srs = ''
+        if str(file_extension) == 'shp':
+
+            # create temporary directory for conversion
+            tmp_dir = create_tmp_dir()
+            """
+            tmp_folder_name = ''.join(random.sample(string.lowercase + string.digits, 10))
+            tmp_dir = settings.TEMP_DIR+"/"+tmp_folder_name
+            if not os.path.exists(tmp_dir):
+                os.makedirs(tmp_dir)
+            print(request.FILES)
+            print(tmp_dir)
+            """
+
+            # Upload files
+            upload_files(tmp_dir, request.FILES)
+            """
+            for file in request.FILES:
+                with open(tmp_dir+'/'+str(request.FILES[file].name), 'wb+') as destination:
+                    for chunk in request.FILES[file].chunks():
+                        destination.write(chunk)
+            """
+
+            # collect epsg code
+            epsg_code = collect_epsg(tmp_dir, str(request.FILES['prj_file'].name))
+
+            # Checking projection
+            srs = checking_projection(tmp_dir, str(request.FILES['prj_file'].name))
+            """
+            prj_open = open(tmp_dir + "/" + request.FILES['prj_file'].name, 'r')
+            prj = prj_open.readline()
+            srs = osr.SpatialReference(wkt=prj)
+            """
+
+            # import pdb;pdb.set_trace()
+
+            # if srs.IsProjected:
+            if epsg_code:
+                # print srs.GetAttrValue('projcs')
+                if srs.GetAttrValue('projcs'):
+                    if "WGS" not in srs.GetAttrValue('projcs'):
+
+                        data_dict = reprojection(tmp_dir, str(request.FILES['base_file'].name))
+
+                # check WGS84 projected
+                else:
+                    # call projection util function
+                    data_dict = reprojection(tmp_dir, str(request.FILES['base_file'].name))
+
+            # print srs.GetAttrValue('geogcs')
+            # print command
+            # print(request.FILES['base_file'].name)
+            # print(os.listdir(tmp_dir))
+
         form = NewLayerUploadForm(request.POST, request.FILES)
         tempdir = None
         errormsgs = []
         out = {'success': False}
         if form.is_valid():
+            if str(file_extension) == 'shp' and srs.IsProjected:
+                form.cleaned_data['base_file'] = data_dict['base_file']
+                form.cleaned_data['shx_file'] = data_dict['shx_file']
+                form.cleaned_data['dbf_file'] = data_dict['dbf_file']
+                form.cleaned_data['prj_file'] = data_dict['prj_file']
+                if 'xml_file' in data_dict:
+                    form.cleaned_data['xml_file'] = data_dict['xml_file']
+                """
+                if 'sbn_file' in  data_dict:
+                    form.cleaned_data['sbn_file'] = data_dict['sbn_file']
+                if 'sbx_file' in data_dict:
+                    form.cleaned_data['sbx_file'] = data_dict['sbx_file']
+                """
+
             title = form.cleaned_data["layer_title"]
             category = form.cleaned_data["category"]
             organization_id = form.cleaned_data["organization"]
@@ -201,7 +315,8 @@ def layer_upload(request, template='upload/layer_upload.html'):
                     charset=form.cleaned_data["charset"],
                     abstract=form.cleaned_data["abstract"],
                     title=form.cleaned_data["layer_title"],
-                    metadata_uploaded_preserve=form.cleaned_data["metadata_uploaded_preserve"]
+                    metadata_uploaded_preserve=form.cleaned_data["metadata_uploaded_preserve"],
+                    user_data_epsg=epsg_code
                 )
                 if admin_upload:
                     saved_layer.status = 'ACTIVE'
@@ -237,6 +352,8 @@ def layer_upload(request, template='upload/layer_upload.html'):
                 if permissions is not None and len(permissions.keys()) > 0:
                     saved_layer.set_permissions(permissions)
             finally:
+                # Delete temporary files
+                shutil.rmtree(tmp_dir)
                 if tempdir is not None:
                     shutil.rmtree(tempdir)
         else:
@@ -464,6 +581,9 @@ def layer_detail(request, layername, template='layers/layer_detail.html'):
 
     if settings.SOCIAL_ORIGINS:
         context_dict["social_links"] = build_social_links(request, layer)
+
+    context_dict["user_data_epsg"] = layer.user_data_epsg
+    # import pdb;pdb.set_trace()
 
     return render_to_response(template, RequestContext(request, context_dict))
 

@@ -29,8 +29,12 @@ import glob
 import sys
 import tempfile
 import json
+import string
+import random
+import subprocess
 
-from osgeo import gdal
+
+from osgeo import gdal, osr
 
 # Django functionality
 from django.contrib.auth import get_user_model
@@ -40,6 +44,8 @@ from django.core.files.storage import default_storage as storage
 from django.core.files import File
 from django.conf import settings
 from django.db.models import Q
+from django.db import connection
+from django.utils.translation import ugettext as _
 
 # Geonode functionality
 from geonode import GeoNodeException
@@ -395,7 +401,7 @@ def extract_tarfile(upload_file, extension='.shp', tempdir=None):
 def file_upload(filename, name=None, group=None, user=None, title=None, abstract=None,
                 keywords=None, category=None, regions=None, date=None,
                 skip=True, overwrite=False, charset='UTF-8',
-                metadata_uploaded_preserve=False, status=None):
+                metadata_uploaded_preserve=False, status=None, user_data_epsg=None):
     """Saves a layer in GeoNode asking as little information as possible.
        Only filename is required, user and title are optional.
     """
@@ -467,7 +473,8 @@ def file_upload(filename, name=None, group=None, user=None, title=None, abstract
         'is_published': is_published,
         'category': category,
         'group': group,
-        'status': status
+        'status': status,
+        'user_data_epsg': user_data_epsg
     }
 
     # set metadata
@@ -756,3 +763,106 @@ def create_thumbnail(instance, thumbnail_remote_url, thumbnail_create_url=None,
         if image is not None:
             filename = 'layer-%s-thumb.png' % instance.uuid
             instance.save_thumbnail(filename, image=image)
+
+
+def reprojection(tmp_dir, base_file):
+    command = 'ogr2ogr -f "ESRI Shapefile" -t_srs EPSG:4326 ' + tmp_dir + '/wgs84_repro.shp ' + tmp_dir + '/' + base_file
+    # print command
+    os.system(command)
+
+    # Send message that projection will be change
+
+    # prepare in memory file with wgs 84 converted files
+    data_dict = {
+        'base_file': File(open(tmp_dir + "/wgs84_repro.shp")),
+        'shx_file': File(open(tmp_dir + "/wgs84_repro.shx")),
+
+        'dbf_file': File(open(tmp_dir + "/wgs84_repro.dbf")),
+
+        'prj_file': File(open(tmp_dir + "/wgs84_repro.prj")),
+    }
+
+    # renaming the files
+    for file in os.listdir(tmp_dir):
+        if file.endswith(".xml"):
+            new_name = "wgs84_repro.xml"
+            os.rename(tmp_dir + '/' + file, tmp_dir + '/' + new_name)
+
+            if File(open(tmp_dir + "/wgs84_repro.xml")):
+                data_dict['xml_file'] = File(open(tmp_dir + "/wgs84_repro.xml"))
+        """
+        elif file.endswith(".sbx"):
+            new_name = "wgs84_repro.sbx"
+            os.rename(tmp_dir + '/' + file, tmp_dir + '/' + new_name)
+            if File(open(tmp_dir + "/wgs84_repro.sbx")):
+                data_dict['sbx_file'] = File(open(tmp_dir + "/wgs84_repro.sbx"))
+
+        elif file.endswith(".sbn"):
+            new_name = "wgs84_repro.sbn"
+            os.rename(tmp_dir + '/' + file, tmp_dir + '/' + new_name)
+            if File(open(tmp_dir + "/wgs84_repro.sbn")):
+                data_dict['sbn_file'] = File(open(tmp_dir + "/wgs84_repro.sbn"))
+        """
+
+    return data_dict
+
+
+def create_tmp_dir():
+    tmp_folder_name = ''.join(random.sample(string.lowercase + string.digits, 10))
+    tmp_dir = settings.TEMP_DIR + "/" + tmp_folder_name
+    if not os.path.exists(tmp_dir):
+        os.makedirs(tmp_dir)
+
+    return tmp_dir
+
+
+def upload_files(tmp_dir, FILES):
+    for file in FILES:
+        with open(tmp_dir + '/' + str(FILES[file].name), 'wb+') as destination:
+            for chunk in FILES[file].chunks():
+                destination.write(chunk)
+
+    # renaming the .shp.xml to .xml
+    for file in os.listdir(tmp_dir):
+        if file.endswith(".xml"):
+            new_name = file.replace('.shp', '')
+            os.rename(tmp_dir + '/' + file, tmp_dir + '/' + new_name)
+
+
+def checking_projection(tmp_dir, file_name):
+    prj_open = open(tmp_dir + "/" + file_name, 'r')
+    prj = prj_open.readline()
+    srs = osr.SpatialReference(wkt=prj)
+
+    return srs
+
+
+def collect_epsg(tmp_dir, prj_file_name):
+
+    command = "gdalsrsinfo -o proj4 " + tmp_dir + "/" + prj_file_name
+    proj4_txt = subprocess.check_output(command, shell=True)
+    proj4_txt = proj4_txt.replace('\n', '').replace("'", '')
+
+    """
+    select * from spatial_ref_sys
+    where
+    proj4text = '+proj=longlat +datum=WGS84 +no_defs '
+
+    """
+    cursor = connection.cursor()
+    cursor.execute("SELECT * FROM spatial_ref_sys WHERE proj4text = %s", [proj4_txt])
+    result = cursor.fetchall()
+
+    epsg_code = ''
+    if len(result) == 0:
+        # send error message
+        # There is no epsg code for data
+        msg = _('Given data is not valid. Please upload valid data.')
+        logger.exception(msg)
+        raise GeoNodeException(msg)
+    elif len(result) >= 1:
+        # if more than one result the select first one
+        epsg_code = result[0][2]
+
+    # import pdb;pdb.set_trace()
+    return epsg_code
