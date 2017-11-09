@@ -45,7 +45,7 @@ setup(name='GeoNode',
         # native dependencies
         "pillow==4.3.0",  # python-imaging (3.1.2)
         "lxml==4.1.0",  # python-lxml (3.5.0)
-        "psycopg2==2.6.1",  # python-psycopg2 (2.6.1)
+        "psycopg2==2.7.3.1",  # python-psycopg2 (2.6.1)
         "Django==1.8.18",  # python-django (1.8.7)
 
         # Other
@@ -59,9 +59,9 @@ setup(name='GeoNode',
         "django-nose==1.4.5",  # python-django-nose (1.4.3)
         "celery==3.1.18",  # python-celery (3.1.20)
         "django-celery==3.2.1",  # python-django-celery (3.1.17)
-        "flake8==3.0.4",  # python-flake8 (2.5.4)
+        "flake8==3.4.1",  # python-flake8 (2.5.4)
         "pep8==1.7.1",  # python-pep8 (1.7.0)
-        "boto==2.38.0",  # python-boto (2.38.0)
+        "boto==2.48.0",  # python-boto (2.38.0)
 
         # Django Apps
         "django-pagination==1.0.7",  # python-django-pagination (1.0.7)
