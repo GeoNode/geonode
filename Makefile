@@ -42,3 +42,5 @@ test: smoketest unittest
 reset: down up wait sync
 
 hardreset: pull build reset
+
+develop: pull build up sync
