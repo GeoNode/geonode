@@ -220,10 +220,13 @@
                                                                             <a class="btn btn-default btn-gd btn-block btn-xs"
                                                                                href="{% url "new_map" %}?layer={{ resource.service_typename }}">{% trans "Edit data" %}</a>
                                                                         {% endif %}
-                                                                        {% if "delete_resourcebase" in perms_list %}
+                                                                        {% if layer_status != 'ACTIVE' or request.user.is_superuser %}
+                                                                            {% if "delete_resourcebase" in perms_list %}
                                                                             <a class="btn btn-danger btn-gd btn-block btn-xs"
                                                                                href="{% url "layer_remove" resource.service_typename %}">{% trans "Remove" %}</a>
+                                                                            {% endif %}
                                                                         {% endif %}
+
                                                                     </div>
                                                                 {% endif %}
 

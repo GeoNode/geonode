@@ -584,6 +584,7 @@ def layer_detail(request, layername, template='layers/layer_detail.html'):
 
     context_dict["user_data_epsg"] = layer.user_data_epsg
     # import pdb;pdb.set_trace()
+    context_dict['layer_status'] = layer.status
 
     return render_to_response(template, RequestContext(request, context_dict))
 
@@ -1160,7 +1161,7 @@ def layer_delete(request, layer_pk):
         except:
             return Http404("requested layer does not exists")
         else:
-            if layer.status == 'DRAFT' and ( request.user == layer.owner or request.user in layer.group.get_managers()):
+            if layer.status == 'ACTIVE' and (request.user == request.user.is_superuser or request.user == layer.owner or request.user in layer.group.get_managers()):
                 layer.status = "DELETED"
                 layer.save()
 
