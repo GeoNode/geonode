@@ -19,9 +19,9 @@ Ext.onReady(function() {
         printService: "{{GEOSERVER_BASE_URL}}pdf/",
         {% else %}
         printService: "",
-        {% endif %} 
-        /* The URL to a REST map configuration service.  This service 
-         * provides listing and, with an authenticated user, saving of 
+        {% endif %}
+        /* The URL to a REST map configuration service.  This service
+         * provides listing and, with an authenticated user, saving of
          * maps on the server for sharing and editing.
          */
         rest: "{% url "maps_browse" %}",
@@ -50,18 +50,26 @@ Ext.onReady(function() {
 
                 var map = app.mapPanel.map;
                 var layer = app.map.layers.slice(-1)[0];
-
-                // FIXME(Ariel): Zoom to extent until #1795 is fixed.
-                //map.zoomToExtent(layer.maxExtent, false)
-
                 var bbox = layer.bbox;
+                var crs = layer.crs
                 if (bbox != undefined)
                 {
                    if (!Array.isArray(bbox) && Object.keys(layer.srs) in bbox) {
                     bbox = bbox[Object.keys(layer.srs)].bbox;
                    }
 
-                   var extent = OpenLayers.Bounds.fromArray(bbox);
+                   var extent = new OpenLayers.Bounds();
+                       extent.left = bbox[0];
+                       extent.right = bbox[1];
+                       extent.bottom = bbox[2];
+                       extent.top = bbox[3];
+
+                   if(crs && crs.properties) {
+                       if (crs.properties != map.projection) {
+                           extent = extent.clone().transform(crs.properties, map.projection);
+                       }
+                   }
+
                    var zoomToData = function()
                    {
                        map.zoomToExtent(extent, false);
@@ -71,7 +79,7 @@ Ext.onReady(function() {
                    };
                    map.events.register('changebaselayer',null,zoomToData);
                    if(map.baseLayer){
-                    map.zoomToExtent(extent, false);
+                       map.zoomToExtent(extent, false);
                    }
                 }
             },

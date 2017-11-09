@@ -316,6 +316,11 @@ def layer_detail(request, layername, template='layers/layer_detail.html'):
     # Add required parameters for GXP lazy-loading
     layer_bbox = layer.bbox
     bbox = [float(coord) for coord in list(layer_bbox[0:4])]
+    if hasattr(layer, 'srid'):
+        config['crs'] = {
+            'type': 'name',
+            'properties': layer.srid
+        }
     config["srs"] = getattr(settings, 'DEFAULT_MAP_CRS', 'EPSG:900913')
     config["bbox"] = bbox if config["srs"] != 'EPSG:900913' \
         else llbbox_to_mercator([float(coord) for coord in bbox])
@@ -625,6 +630,11 @@ def layer_metadata(
     # Add required parameters for GXP lazy-loading
     layer_bbox = layer.bbox
     bbox = [float(coord) for coord in list(layer_bbox[0:4])]
+    if hasattr(layer, 'srid'):
+        config['crs'] = {
+            'type': 'name',
+            'properties': layer.srid
+        }
     config["srs"] = getattr(settings, 'DEFAULT_MAP_CRS', 'EPSG:900913')
     config["bbox"] = bbox if config["srs"] != 'EPSG:900913' \
         else llbbox_to_mercator([float(coord) for coord in bbox])
