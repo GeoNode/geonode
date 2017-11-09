@@ -130,10 +130,8 @@
                                 color: 'rgba(' + _random(255) + ',' + _random(255) + ',' + _random(255) + ',' + 0.3 + ')',
                                 width: 2
                             }),
-                            // points: 4,
+                            
                             radius: 10,
-                            // radius2: 0,
-                            // angle: Math.PI / 2
                         })
                     })
                 ]
@@ -169,10 +167,16 @@
                     _AddLayer(features);
                 });
         };
-        
+
+        function onBoxChange(feature, bbox) {
+            boundingBox = bbox;
+            $scope.executeQuery($scope.queryStr);
+        }
         $scope.dragBox = function() {
-           
+
             boxTool.Draw();
+            boxTool.OnBoxDrawEnd(onBoxChange);
+            boxTool.OnBoxModificationEnd(onBoxChange);
             $scope.closeDialog();
         };
     }
