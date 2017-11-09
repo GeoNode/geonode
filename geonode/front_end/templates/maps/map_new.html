@@ -200,6 +200,7 @@
 <script src="{{ STATIC_URL }}Scripts/util/Tools/Map/measurementTool.js"></script>
 <script src="{{ STATIC_URL }}Scripts/util/Tools/Map/setMarkerTool.js"></script>
 <script src="{{ STATIC_URL }}Scripts/util/Tools/Map/boxDrawTool.js"></script>
+<script src="{{ STATIC_URL }}Scripts/util/Tools/Map/circleDrawTools.js"></script>
 
 <script src="{{ STATIC_URL }}Scripts/util/Tools/UI/featureEditButtonsDirective.js"></script>
 <script src="{{ STATIC_URL }}Scripts/util/Tools/UI/featureRedoUndoButtonsDirective.js"></script>
@@ -256,6 +257,9 @@
                             </li>
                             <li>
                                 <set-marker></set-marker>
+                            </li>
+                            <li>
+                                <button ng-click="action.drawCircle()">Draw Circle</button>
                             </li>
                             <li class="divider-vertical" draft-only></li>
                             <li draft-only>

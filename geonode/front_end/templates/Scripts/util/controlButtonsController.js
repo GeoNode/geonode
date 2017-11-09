@@ -1,6 +1,6 @@
 ﻿appModule.controller("controlButtonsController",
-                ["$scope", "$modal", "$timeout", "$rootScope", "$window", "projectService", 'mapModes', 'mapService', 'dirtyManager', 'featureService', 'interactionHandler', 'mapTools',
-        function ($scope, $modal, $timeout, $rootScope, $window, projectService, mapModes, mapService, dirtyManager, featureService, interactionHandler, mapTools) {
+                ["$scope", "$modal", "$timeout", "$rootScope", "$window", "projectService", 'mapModes', 'mapService', 'dirtyManager', 'featureService', 'interactionHandler', 'mapTools', 'CircleDrawTool',
+        function ($scope, $modal, $timeout, $rootScope, $window, projectService, mapModes, mapService, dirtyManager, featureService, interactionHandler, mapTools, CircleDrawTool) {
             $scope.mapService = mapService;
             $scope.mapTools = mapTools;
 
@@ -140,6 +140,11 @@
                         $(item).show();
                     });
                 }
+
+                $scope.action.drawCircle = function(){
+                   var circle =  new CircleDrawTool();
+                    circle.Draw();
+                };
 
                 $scope.action.printPreview = function () {
 
