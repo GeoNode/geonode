@@ -742,12 +742,15 @@ def add_layers_to_map_config(request, map_obj, layer_names, add_base_layers=True
             bbox[3] = max(bbox[3], layer_bbox[3])
 
         config = layer.attribute_config()
-
+        if hasattr(layer, 'srid'):
+            config['crs'] = {
+                'type': 'name',
+                'properties': layer.srid
+            }
         # Add required parameters for GXP lazy-loading
         config["title"] = layer.title
         config["queryable"] = True
         config["wrapDateLine"] = True
-
         config["srs"] = getattr(
             settings, 'DEFAULT_MAP_CRS', 'EPSG:900913')
         config["bbox"] = bbox if config["srs"] != 'EPSG:900913' \
