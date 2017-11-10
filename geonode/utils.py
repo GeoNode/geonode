@@ -429,7 +429,7 @@ class GXPLayerBase(object):
                 request_params = urlparse.parse_qs(my_url.query)
                 if 'access_token' in request_params:
                     del request_params['access_token']
-                request_params['access_token'] = [access_token]
+                # request_params['access_token'] = [access_token]
                 encoded_params = urllib.urlencode(request_params, doseq=True)
 
                 parsed_url = urlparse.SplitResult(
