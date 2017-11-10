@@ -3,7 +3,7 @@ Ext.ns("GeoNode");
 /** api: constructor
  *  .. class:: ComposerMixin(config)
  *
- *    A mixin class to add in functions needed by GeoNode.Composer as well as 
+ *    A mixin class to add in functions needed by GeoNode.Composer as well as
  *    an SDK app.
  */
 GeoNode.ComposerMixin = {
@@ -63,7 +63,7 @@ GeoNode.ComposerMixin = {
     },
 
     /* TODO: we are overriding a private method here for now
-     * The true solution would involve fixing: 
+     * The true solution would involve fixing:
      * https://github.com/opengeo/gxp/issues/163
      */
     showEmbedWindow: function() {
