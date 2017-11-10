@@ -44,7 +44,7 @@ setup(name='GeoNode',
 
         # native dependencies
         "pillow==4.3.0",  # python-imaging (3.1.2)
-        "lxml==4.1.0",  # python-lxml (3.5.0)
+        "lxml==4.1.1",  # python-lxml (3.5.0)
         "psycopg2==2.7.3.1",  # python-psycopg2 (2.6.1)
         "Django==1.8.18",  # python-django (1.8.7)
 
@@ -99,8 +99,8 @@ setup(name='GeoNode',
         "django-modeltranslation==0.12.5",  # python-django-modeltranslation (0.11 Debian)
 
         # GeoNode org maintained apps.
-        "django-geoexplorer==4.0.21",
-        "geonode-user-messages>=0.1.6",  # (0.1.3 in ppa) FIXME
+        "django-geoexplorer==4.0.25",
+        "geonode-user-messages==0.1.6",  # (0.1.3 in ppa) FIXME
         "geonode-avatar==2.1.6",  # (2.1.5 in ppa) FIXME
         "geonode-announcements==1.0.9",
         "geonode-agon-ratings==0.3.5",  # (0.3.1 in ppa) FIXME
