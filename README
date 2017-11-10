@@ -59,6 +59,9 @@ Or if you want to use the provided Makefile::
 
     # pull latest images
     make pull
+
+    # complete development setup
+    make develop
     
 .. note:: For development you need to add ``geonode`` alias into ``/etc/hosts/`` file as following::
 
