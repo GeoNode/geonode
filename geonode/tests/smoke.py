@@ -20,7 +20,7 @@
 
 import os
 import math
-from django.test import TestCase
+from django.test import TestCase, override_settings
 from django.core.urlresolvers import reverse
 
 from geonode import geoserver
@@ -97,6 +97,7 @@ class GeoNodeSmokeTests(TestCase):
         response = self.client.get(reverse('profile_browse'))
         self.failUnlessEqual(response.status_code, 200)
 
+    @override_settings(USE_GEOSERVER=False)
     def test_profiles(self):
         '''Test that user profile pages render.'''
         response = self.client.get(reverse('profile_detail', args=['admin']))

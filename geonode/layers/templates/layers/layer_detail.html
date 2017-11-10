@@ -62,7 +62,7 @@
       <article id="info" class="tab-pane{% if tab == 'info' or not tab %} active{% endif %}">
         {% include "base/resourcebase_info_panel.html" %}
 
-        {% if DISPLAY_WMS_LINKS %}
+        {% if USE_GEOSERVER and DISPLAY_WMS_LINKS %}
         <p><a href="{% url 'capabilities_layer' resource.id %}"><i class="fa fa-map"></i> {% trans 'Layer WMS GetCapabilities document' %}</a></p>
         {% endif %}
       </article>

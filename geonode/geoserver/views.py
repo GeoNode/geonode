@@ -635,32 +635,33 @@ def get_capabilities(request, layerid=None, user=None, mapid=None, category=None
         layers = Layer.objects.filter(alternate__in=alternates)
 
     for layer in layers:
-        try:
-            workspace, layername = layer.typename.split(":")
-            if rootdoc is None:  # 1st one, seed with real GetCapabilities doc
-                try:
-                    layercap = etree.fromstring(get_layer_capabilities(workspace, layername))
-                    rootdoc = etree.ElementTree(layercap)
-                    rootlayerelem = rootdoc.find('.//Capability/Layer')
-                    format_online_resource(workspace, layername, rootdoc)
-                    rootdoc.find('.//Service/Name').text = cap_name
-                except Exception, e:
+        if request.user.has_perm('view_resourcebase', layer.get_self_resource()):
+            try:
+                workspace, layername = layer.typename.split(":")
+                if rootdoc is None:  # 1st one, seed with real GetCapabilities doc
+                    try:
+                        layercap = etree.fromstring(get_layer_capabilities(workspace, layername))
+                        rootdoc = etree.ElementTree(layercap)
+                        rootlayerelem = rootdoc.find('.//Capability/Layer')
+                        format_online_resource(workspace, layername, rootdoc)
+                        rootdoc.find('.//Service/Name').text = cap_name
+                    except Exception, e:
+                        logger.error("Error occurred creating GetCapabilities for %s:%s" % (layer.typename, str(e)))
+                else:
+                        # Get the required info from layer model
+                        tpl = get_template("geoserver/layer.xml")
+                        ctx = Context({
+                                       'layer': layer,
+                                       'geoserver_public_url': ogc_server_settings.public_url,
+                                       'catalogue_url': settings.CATALOGUE['default']['URL'],
+                        })
+                        gc_str = tpl.render(ctx)
+                        gc_str = gc_str.encode("utf-8")
+                        layerelem = etree.XML(gc_str)
+                        rootlayerelem.append(layerelem)
+            except Exception, e:
                     logger.error("Error occurred creating GetCapabilities for %s:%s" % (layer.typename, str(e)))
-            else:
-                    # Get the required info from layer model
-                    tpl = get_template("geoserver/layer.xml")
-                    ctx = Context({
-                                   'layer': layer,
-                                   'geoserver_public_url': ogc_server_settings.public_url,
-                                   'catalogue_url': settings.CATALOGUE['default']['URL'],
-                    })
-                    gc_str = tpl.render(ctx)
-                    gc_str = gc_str.encode("utf-8")
-                    layerelem = etree.XML(gc_str)
-                    rootlayerelem.append(layerelem)
-        except Exception, e:
-                logger.error("Error occurred creating GetCapabilities for %s:%s" % (layer.typename, str(e)))
-                pass
+                    pass
     if rootdoc is not None:
         capabilities = etree.tostring(rootdoc, xml_declaration=True, encoding='UTF-8', pretty_print=True)
         return HttpResponse(capabilities, content_type="text/xml")
