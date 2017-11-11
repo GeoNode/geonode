@@ -15,13 +15,22 @@ Ext.onReady(function() {
         {% if PROXY_URL %}
         proxy: '{{ PROXY_URL }}',
         {% endif %}
+
+        {% if 'access_token' in request.session %}
+        access_token: "{{request.session.access_token}}",
+        {% else %}
+        access_token: null,
+        {% endif %}
+
         {% if MAPFISH_PRINT_ENABLED %}
         printService: "{{GEOSERVER_BASE_URL}}pdf/",
         {% else %}
-        printService: "",
-        {% endif %} 
-        /* The URL to a REST map configuration service.  This service 
-         * provides listing and, with an authenticated user, saving of 
+        printService: null,
+        printCapabilities: null,
+        {% endif %}
+
+        /* The URL to a REST map configuration service.  This service
+         * provides listing and, with an authenticated user, saving of
          * maps on the server for sharing and editing.
          */
         rest: "{% url "maps_browse" %}",
@@ -42,26 +51,69 @@ Ext.onReady(function() {
                 l = app.selectedLayer.getLayer();
                 l.addOptions({wrapDateLine:true, displayOutsideMaxExtent: true});
                 l.addOptions({maxExtent:app.mapPanel.map.getMaxExtent(), restrictedExtent:app.mapPanel.map.getMaxExtent()});
-                for (var l in app.mapPanel.map.layers) {
-                    l = app.selectedLayer.getLayer();
-                    l.addOptions({wrapDateLine:true, displayOutsideMaxExtent: true});
-                    l.addOptions({maxExtent:app.mapPanel.map.getMaxExtent(), restrictedExtent:app.mapPanel.map.getMaxExtent()});
+
+                {% if 'access_token' in request.session %}
+                    try {
+                        l.url += ( !l.url.match(/\b\?/gi) || l.url.match(/\b\?/gi).length == 0 ? '?' : '&');
+
+                        if((!l.url.match(/\baccess_token/gi))) {
+                            l.url += "access_token={{request.session.access_token}}";
+                        } else {
+                            l.url =
+                                l.url.replace(/(access_token)(.+?)(?=\&)/, "$1={{request.session.access_token}}");
+                        }
+                    } catch(err) {
+                        console.log(err);
+                    }
+                {% endif %}
+
+                for (var ll in app.mapPanel.map.layers) {
+                    l = app.mapPanel.map.layers[ll];
+                    if (l.url && l.url.indexOf('{{GEOSERVER_BASE_URL}}') !== -1) {
+                        l.addOptions({wrapDateLine:true, displayOutsideMaxExtent: true});
+                        l.addOptions({maxExtent:app.mapPanel.map.getMaxExtent(), restrictedExtent:app.mapPanel.map.getMaxExtent()});
+                        {% if 'access_token' in request.session %}
+                            try {
+                                    l.url += ( !l.url.match(/\b\?/gi) || l.url.match(/\b\?/gi).length == 0 ? '?' : '&');
+
+                                    if((!l.url.match(/\baccess_token/gi))) {
+                                        l.url += "access_token={{request.session.access_token}}";
+                                    } else {
+                                        l.url =
+                                            l.url.replace(/(access_token)(.+?)(?=\&)/, "$1={{request.session.access_token}}");
+                                    }
+                            } catch(err) {
+                                console.log(err);
+                            }
+                        {% endif %}
+                    }
                 }
 
                 var map = app.mapPanel.map;
                 var layer = app.map.layers.slice(-1)[0];
-
-                // FIXME(Ariel): Zoom to extent until #1795 is fixed.
-                //map.zoomToExtent(layer.maxExtent, false)
-
                 var bbox = layer.bbox;
+                var crs = layer.crs
                 if (bbox != undefined)
                 {
                    if (!Array.isArray(bbox) && Object.keys(layer.srs) in bbox) {
                     bbox = bbox[Object.keys(layer.srs)].bbox;
                    }
 
-                   var extent = OpenLayers.Bounds.fromArray(bbox);
+                   var extent = new OpenLayers.Bounds();
+
+                   if(map.projection != 'EPSG:900913' && crs && crs.properties) {
+                       extent.left = bbox[0];
+                       extent.right = bbox[1];
+                       extent.bottom = bbox[2];
+                       extent.top = bbox[3];
+
+                       if (crs.properties != map.projection) {
+                           extent = extent.clone().transform(crs.properties, map.projection);
+                       }
+                   } else {
+                       extent = OpenLayers.Bounds.fromArray(bbox);
+                   }
+
                    var zoomToData = function()
                    {
                        map.zoomToExtent(extent, false);
@@ -71,7 +123,7 @@ Ext.onReady(function() {
                    };
                    map.events.register('changebaselayer',null,zoomToData);
                    if(map.baseLayer){
-                    map.zoomToExtent(extent, false);
+                       map.zoomToExtent(extent, false);
                    }
                 }
             },
