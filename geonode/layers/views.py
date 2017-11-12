@@ -200,9 +200,6 @@ def layer_upload(request, template='upload/layer_upload.html'):
             if epsg_code:
                 data_dict = reprojection(tmp_dir, shp_file_name)
 
-        # import pdb;pdb.set_trace()
-
-        # srs = ''
         if str(file_extension) == 'shp':
 
             # create temporary directory for conversion
