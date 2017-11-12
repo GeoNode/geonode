@@ -121,19 +121,20 @@
                                                             id="myModalLabel">{% trans "Download Layer..." %}</h4>
                                                     </div>
                                                     <div class="modal-body">
-                                                        <h3>WGS84 converted</h3>
-                                                        {% if links %}
-                                                            <ul>
-                                                                {% for link in links %}
-                                                                    <li>
-                                                                        <a href="{{ link.url }}">{% trans link.name %}</a>
-                                                                    </li>
-                                                                {% endfor %}
-                                                            </ul>
-                                                        {% endif %}
-                                                        {% if user_data_epsg %}
-                                                            <hr>
-                                                            <h3>User uploaded data format</h3>
+                                                        <div class="native">
+                                                            <h3>Native data</h3>
+                                                            {% if links %}
+                                                                <ul>
+                                                                    {% for link in links %}
+                                                                        <li>
+                                                                            <a href="{{ link.url }}">{% trans link.name %}</a>
+                                                                        </li>
+                                                                    {% endfor %}
+                                                                </ul>
+                                                            {% endif %}
+                                                        </div>
+                                                        <div class="projected">
+                                                            <h3>Projected data</h3>
                                                             {% if links %}
                                                                 <ul>
                                                                     {% for link in links %}
@@ -143,6 +144,23 @@
                                                                     {% endfor %}
                                                                 </ul>
                                                             {% endif %}
+                                                        </div>
+
+                                                        {% if user_data_epsg %}
+
+                                                            <h3>Download data format</h3>
+                                                            <div class="radio">
+                                                                <label>
+                                                                    <input type="radio" name="nativeOrProjected" id="native-data" value="native" checked>
+                                                                    Native
+                                                                </label>
+                                                            </div>
+                                                            <div class="radio">
+                                                                <label>
+                                                                    <input type="radio" name="nativeOrProjected" id="projected-data" value="projected">
+                                                                    Projected
+                                                                </label>
+                                                            </div>
                                                         {% endif %}
 
                                                     </div>
@@ -920,6 +938,30 @@
             });
 
         }
+
+        {% if user_data_epsg %}
+            $(".native").show();
+            $(".projected").hide();
+
+            $("#native-data").change(function(){
+                if(this.checked){
+                    $(".native").show();
+                    $(".projected").hide();
+
+                }
+            });
+            $("#projected-data").change(function(){
+                if(this.checked){
+                    $(".native").hide();
+                    $(".projected").show();
+
+                }
+            });
+        {% else %}
+            $(".native").show();
+            $(".projected").hide();
+        {% endif %}
+
 
     </script>
 {% endblock extra_script %}

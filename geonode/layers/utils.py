@@ -767,10 +767,7 @@ def create_thumbnail(instance, thumbnail_remote_url, thumbnail_create_url=None,
 
 def reprojection(tmp_dir, base_file):
     command = 'ogr2ogr -f "ESRI Shapefile" -t_srs EPSG:4326 ' + tmp_dir + '/wgs84_repro.shp ' + tmp_dir + '/' + base_file
-    # print command
     os.system(command)
-
-    # Send message that projection will be change
 
     # prepare in memory file with wgs 84 converted files
     data_dict = {
