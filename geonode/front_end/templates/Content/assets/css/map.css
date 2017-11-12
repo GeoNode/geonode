@@ -9,7 +9,7 @@
 }
 
 .surfgis .ol-zoom.ol-unselectable.ol-control {
-    height: 69px;
+    height: 73px;
 }
 
 .surfgis .ol-zoom-out {
@@ -67,15 +67,15 @@
     }
 
 .surfgis .zoom-level-display {
-    position: absolute;
-    z-index: 2;
-    top: 34px;
-    left: 10px;
     background-color: #9cb6d8;
-    width: 25px;
-    text-align: center;
     color: #fff;
     font-size: 15px;
+    left: 10px;
+    position: absolute;
+    text-align: center;
+    top: 33px;
+    width: 25px;
+    z-index: 2;
 }
 
 .surfgis .base-map-switcher {
