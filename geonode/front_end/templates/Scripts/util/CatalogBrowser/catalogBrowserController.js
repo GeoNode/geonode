@@ -38,7 +38,7 @@ function catalogBrowserController($scope, $rootScope, $modal, catalogDataService
 
     $scope.serverList = [{
         name: 'Geoserver',
-        url: 'http://172.16.0.247:8080/geoserver/wms',
+        url: $window.GeoServerHttp2Root + 'wms',
         type: 'wms'
     }, {
         name: 'geodata.nationaalgeoregister',
