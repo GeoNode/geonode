@@ -18,6 +18,8 @@
                 factory.registerEvent = map.registerEvent;
                 factory.removeEvents = map.removeEvents;
                 factory.addVectorLayer = map.addVectorLayer;
+                factory.getProjection = map.getProjection;
+                factory.removeVectorLayer = map.removeVectorLayer;
             },
             loadMap: function(mapInfo) {
                 mapTools.baseMap.setBaseMapByName(mapInfo.BaseLayerName);
@@ -676,7 +678,7 @@
                 return map.info && map.info.PropertyInPopup;
             },
             getMap: function() {
-                return map;
+                return map.getMap();
             }
 
         };
