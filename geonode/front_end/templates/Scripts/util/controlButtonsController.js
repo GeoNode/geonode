@@ -148,7 +148,7 @@
                     var layers = mapService.getLayers();
                     for (var k in layers) {
                         var layer = layers[k];
-                        LayerService.getWFS($window.GeoServerHttp2Root, {
+                        LayerService.getWFS('/geoserver/wms/', {
                             _dc: 1510220556364,
                             version: '1.0.0',
                             request: 'GetFeature',
@@ -156,7 +156,7 @@
                             srsName: 'EPSG:3857',
                             typeNames: layer.getName(),
                             cql_filter: 'DWithin(the_geom,POINT(' + values.center[1] + ' ' + values.center[0] + '),' + values.radius + ',meters)',
-                        });
+                        }, false);
                     }
                 });
             };

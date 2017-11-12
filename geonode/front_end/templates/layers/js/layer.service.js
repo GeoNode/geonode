@@ -23,14 +23,17 @@
             getLayerByName: function(layerName) {
                 return get('layers/' + layerName + '/get');
             },
-            getWFS: function(url, params) {
+            getWFS: function(url, params, useProxy) {
                 url = url + "wfs/?service=WFS";
                 for (var k in params) {
                     url += '&' + k + '=' + params[k];
                 }
-                var uri = encodeURIComponent(url);
-                return get('/proxy/?url=' + uri);
-
+                var uri = url;
+                if(useProxy == undefined || useProxy){
+                    uri = '/proxy/?url=' + encodeURIComponent(url);
+                }
+                return get(uri);
+                
             },
             getLayerFeatureByName: function(url, layerName) {
                 return this.getWFS(url, {
