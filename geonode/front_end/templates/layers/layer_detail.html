@@ -11,7 +11,8 @@
 {% block title %}{{ resource.title|default:resource.typename }} — {{ block.super }}{% endblock %}
 
 {% block head %}
-
+<base href="/">
+    <link rel="stylesheet" href="/static/.components/angular-ui-grid/ui-grid.min.css">
   {% if TWITTER_CARD %}
     {% include "base/_resourcebase_twittercard.html" %}
   {% endif %}
@@ -102,12 +103,13 @@
                                                     {% endif %}
                                                 {% endif %}
                                             {% endif %}
+                                            {% comment %}
                                             <li class="list-group-item">
                                                 <a href="/layers/attribute-view/?name={{resource.typename}}">
                                                   <button class="btn btn-gd-primary btn-md btn-block">{% trans "Attribute View" %}</button>
                                                 </a>
                                               </li>
-
+                                              {% endcomment %}
                                         <div class="modal fade" id="download-layer" tabindex="-1" role="dialog"
                                              aria-labelledby="myModalLabel" aria-hidden="true">
                                             <div class="modal-dialog modal-dialog-edit">
@@ -614,7 +616,18 @@
           {% endif %}
 
           </div> <!-- col-md-4 -->
-          <div class="col-md-12" id="myNav_map_left">
+          <div class="col-md-12"> 
+
+              <ul class="nav nav-tabs pull-right">
+                  <li role="presentation" class="active" id="map" onclick="activeTab('map')">
+                      <a  aria-controls="profile" role="tab" data-toggle="tab" href="javascript:void(0)">{% trans "Map" %}</a></li>
+                  <li role="presentation" id="attribute" onclick="activeTab('attribute')">
+                      <a aria-controls="profile" role="tab" data-toggle="tab" href="javascript:void(0)">{% trans "Attribute" %}</a></li>
+                </ul>     
+            </div>
+            
+                <div class="col-md-12" id="myNav_map_left">
+
             <div id="embedded_map" class="mrg-btm">
               <div id="preview_map"></div>
             </div>
@@ -634,12 +647,19 @@
                 </span>
               </div>
           </div>
+          <div class="col-md-12" id="attribute_view_left" style="overflow-y: auto;">
+                {% include "layers/_layer_attribute_view.html" %}
+        </div>
         </div> <!-- row -->
       </div>
     </div>
 {% endblock %}
 
 {% block extra_script %}
+<script src="{{ STATIC_URL }}.components/angular-ui-grid/ui-grid.min.js"></script>
+<script src="{{ STATIC_URL }}layers/js/layer.module.js"></script>
+<script src="{{ STATIC_URL }}layers/js/layer.service.js"></script>
+<script src="{{ STATIC_URL }}layers/js/attribute-view.controller.js"></script>
     <script type="text/javascript">
     setTimeout(openNav, 1000);
     $( ".expand_view" ).tooltip({ show: { effect: "blind", duration: 300 } });
@@ -651,6 +671,9 @@
         $('#myNav_map_left').css('width','69%');
         $('#myNav_map_left').css('float','right');
         $('#myNav_map_left').css('left','0%');
+        $('#attribute_view_left').css('width','69%');
+        $('#attribute_view_left').css('float','right');
+        $('#attribute_view_left').css('left','0%');
         $('#layerdetails_show').css('display','none');
         $('#layerdetails_hide').css('display','block');
         $('#mini-slider').css('display','block');
@@ -659,6 +682,7 @@
     {
         $('#myNav').css('width','0%');
         $('#myNav_map_left').css('width','100%');
+        $('#attribute_view_left').css('width','100%');
         $('#layerdetails_arro_addcls').addClass('layerdetails_arro');
         $('#layerdetails_show').css('display','block');
         $('#layerdetails_hide').css('display','none');
@@ -706,6 +730,18 @@
             if (!results[2]) return '';
             return decodeURIComponent(results[2].replace(/\+/g, " "));
         }
+    
+                    function activeTab(tabId){
+                        $('#myTabs a[id=#'+tabId+']').tab('show');
+                        console.log($('#myTabs a[id=#'+tabId+']').tab('show'));
+                        if(tabId == 'attribute'){
+                            $('#attribute_view_left').show();
+                            $('#myNav_map_left').hide();
+                        }else {
+                            $('#attribute_view_left').hide();
+                            $('#myNav_map_left').show();
+                        }           
+                    }
     </script>
     <script type="text/javascript">
         var GD_WRAPPER__HEIGHT = 0;

@@ -3,18 +3,20 @@
         .module('LayerApp')
         .controller('AttributeViewController', AttributeViewController);
 
-    AttributeViewController.$inject = ['$location', 'LayerService'];
+    AttributeViewController.$inject = ['$location', 'LayerService', 'uiGridConstants'];
 
-    function AttributeViewController($location, LayerService) {
+    function AttributeViewController($location, LayerService, uiGridConstants) {
         var self = this;
         self.geoServerUrl = '';
         self.propertyNames = [];
-        self.layerName = $location.search().name;
-
+        // self.layerName = $location.search().name;
+        self.layerName = $location.path().split('/').pop();
         self.gridOptions = {
             paginationPageSizes: [25, 50, 75, 100],
             paginationPageSize: 25,
-            data: []
+            data: [],
+            minRowsToShow: 15,
+            enableHorizontalScrollbar : uiGridConstants.scrollbars.ALWAYS
         };
         
         function errorFn() {
@@ -28,6 +30,7 @@
                     self.attributeDetails.push(e.properties);
                 });
                 self.gridOptions.data = self.attributeDetails;
+                $('#attribute_view_left').hide();
             }, errorFn);
         }
 
@@ -56,6 +59,7 @@
                 .then(function(res) {
                     self.geoServerUrl = res.url;
                     getLayerByName();
+
                 }, errorFn);
         }
 
