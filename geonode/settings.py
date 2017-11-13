@@ -287,6 +287,7 @@ GEONODE_APPS = (
     'rest_framework_gis',
 
     'geonode.analytics',
+    'geonode.error_reporting',
 
     #end
 
@@ -376,11 +377,15 @@ INSTALLED_APPS = (
     'suit',
     #end
 
+    'django_db_logger',
+
 
     'oauth2_provider',
 
 ) + GEONODE_APPS
 
+# TODO: Old settings. Need to delete in future
+"""
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': True,
@@ -426,7 +431,62 @@ LOGGING = {
             "handlers": ["console"], "level": "ERROR", },
         },
     }
+"""
 
+# WARNING: New settings for error logging
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'formatters': {
+        'verbose': {
+            'format': '%(levelname)s %(asctime)s %(module)s %(process)d '
+                      '%(thread)d %(message)s'
+        },
+        'simple': {
+            'format': '%(levelname)s %(asctime)s %(message)s',
+        },
+    },
+    'filters': {
+        'require_debug_false': {
+            '()': 'django.utils.log.RequireDebugFalse'
+        }
+    },
+    'handlers': {
+        'null': {
+            'level': 'ERROR',
+            'class': 'django.utils.log.NullHandler',
+        },
+        'console': {
+            'level': 'ERROR',
+            'class': 'logging.StreamHandler',
+            'formatter': 'simple'
+        },
+        'mail_admins': {
+            'level': 'ERROR', 'filters': ['require_debug_false'],
+            'class': 'django.utils.log.AdminEmailHandler',
+        },
+        'db_log': {
+            'level': 'DEBUG',
+            'class': 'django_db_logger.db_log_handler.DatabaseLogHandler',
+        },
+    },
+    "loggers": {
+        'db': {
+            'handlers': ['db_log'],
+            'level': 'DEBUG',
+        },
+        "django": {
+            "handlers": ["console"], "level": "ERROR", },
+        "geonode": {
+            "handlers": ["console"], "level": "ERROR", },
+        "gsconfig.catalog": {
+            "handlers": ["console"], "level": "ERROR", },
+        "owslib": {
+            "handlers": ["console"], "level": "ERROR", },
+        "pycsw": {
+            "handlers": ["console"], "level": "ERROR", },
+        },
+    }
 #
 # Customizations to built in Django settings required by GeoNode
 #
