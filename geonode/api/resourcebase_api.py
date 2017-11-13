@@ -184,16 +184,17 @@ class CommonModelApi(ModelResource):
         if not is_admin and not is_staff:
             if is_manager:
                 groups = request.user.groups.all()
+                group_list_all = request.user.group_list_all().values('group')
                 public_groups = GroupProfile.objects.exclude(access="private").values('group')
                 try:
                     anonymous_group = Group.objects.get(name='anonymous')
                     filtered = queryset.filter(Q(group__isnull=True) |
                                                Q(group__in=groups) | Q(group__in=public_groups) |
-                                               Q(group=anonymous_group) |
+                                               Q(group__in=group_list_all) | Q(group=anonymous_group) |
                                                Q(owner__username__iexact=str(request.user)))
                 except BaseException:
                     anonymous_group = None
-                    filtered = queryset.filter(Q(group__isnull=True) |
+                    filtered = queryset.filter(Q(group__isnull=True) | Q(group__in=group_list_all) |
                                                Q(group__in=groups) | Q(group__in=public_groups) |
                                                Q(owner__username__iexact=str(request.user)))
             else:
@@ -217,12 +218,17 @@ class CommonModelApi(ModelResource):
             filtered = queryset
         elif request.user:
             groups = request.user.groups.all()
+            group_list_all = request.user.group_list_all().values('group')
             if anonymous_group:
                 filtered = queryset.filter(Q(group__isnull=True) | Q(
-                    group__in=groups) | Q(group__in=public_groups) | Q(group=anonymous_group))
+                    group__in=groups) | Q(group__in=group_list_all) | Q(
+                    group__in=public_groups) | Q(group=anonymous_group) | Q(
+                    owner__username__iexact=str(request.user)))
             else:
                 filtered = queryset.filter(
-                    Q(group__isnull=True) | Q(group__in=public_groups) | Q(group__in=groups))
+                    Q(group__isnull=True) | Q(group__in=group_list_all) |
+                    Q(group__in=public_groups) | Q(group__in=groups) |
+                    Q(owner__username__iexact=str(request.user)))
         else:
             if anonymous_group:
                 filtered = queryset.filter(
@@ -469,17 +475,19 @@ class CommonModelApi(ModelResource):
                 if not is_admin and not is_staff:
                     if is_manager:
                         groups = request.user.groups.all()
+                        group_list_all = request.user.group_list_all().values('group')
                         public_groups = GroupProfile.objects.exclude(access="private").values('group')
                         try:
                             anonymous_group = Group.objects.get(name='anonymous')
                             filter_set = filter_set.filter(
                                 Q(group__isnull=True) | Q(group__in=groups) |
-                                Q(group__in=public_groups) | Q(group=anonymous_group) |
+                                Q(group__in=group_list_all) | Q(group__in=public_groups) |
+                                Q(group=anonymous_group) |
                                 Q(owner__username__iexact=str(request.user)))
                         except:
                             filter_set = filter_set.filter(
                                 Q(group__isnull=True) | Q(group__in=groups) |
-                                Q(group__in=public_groups) |
+                                Q(group__in=group_list_all) | Q(group__in=public_groups) |
                                 Q(owner__username__iexact=str(request.user)))
                     else:
                         filter_set = filter_set.filter(Q(is_published=True) |
@@ -489,17 +497,19 @@ class CommonModelApi(ModelResource):
                 if not is_admin and not is_staff:
                     if is_manager:
                         groups = request.user.groups.all()
+                        group_list_all = request.user.group_list_all().values('group')
                         public_groups = GroupProfile.objects.exclude(access="private").values('group')
                         try:
                             anonymous_group = Group.objects.get(name='anonymous')
                             filter_set = filter_set.filter(
                                 Q(group__isnull=True) | Q(group__in=groups) |
-                                Q(group__in=public_groups) | Q(group=anonymous_group) |
+                                Q(group__in=group_list_all) | Q(group__in=public_groups) |
+                                Q(group=anonymous_group) |
                                 Q(owner__username__iexact=str(request.user)))
                         except:
                             filter_set = filter_set.filter(
                                 Q(group__isnull=True) | Q(group__in=groups) |
-                                Q(group__in=public_groups) |
+                                Q(group__in=group_list_all) | Q(group__in=public_groups) |
                                 Q(owner__username__iexact=str(request.user)))
                     else:
                         filter_set = filter_set.filter(Q(is_published=True) |
@@ -516,12 +526,17 @@ class CommonModelApi(ModelResource):
                     filter_set = filter_set
                 elif request.user:
                     groups = request.user.groups.all()
+                    group_list_all = request.user.group_list_all().values('group')
                     if anonymous_group:
                         filter_set = filter_set.filter(Q(group__isnull=True) | Q(
-                            group__in=groups) | Q(group__in=public_groups) | Q(group=anonymous_group))
+                            group__in=groups) | Q(group__in=group_list_all) | Q(
+                            group__in=public_groups) | Q(group=anonymous_group) | Q(
+                            owner__username__iexact=str(request.user)))
                     else:
                         filter_set = filter_set.filter(
-                            Q(group__isnull=True) | Q(group__in=public_groups) | Q(group__in=groups))
+                            Q(group__isnull=True) | Q(group__in=public_groups) |
+                            Q(group__in=group_list_all) | Q(group__in=groups) |
+                            Q(owner__username__iexact=str(request.user)))
                 else:
                     if anonymous_group:
                         filter_set = filter_set.filter(
