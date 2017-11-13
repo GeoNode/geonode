@@ -16,6 +16,9 @@
             paginationPageSize: 25,
             data: [],
             minRowsToShow: 15,
+            enableGridMenu: true,
+            exporterCsvFilename:  self.layerName+ '.csv',
+            // exporterCsvLinkElement: angular.element(document.querySelectorAll(".custom-csv-link-location")),
             enableHorizontalScrollbar : uiGridConstants.scrollbars.ALWAYS
         };
         
