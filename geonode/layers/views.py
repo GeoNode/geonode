@@ -171,8 +171,6 @@ def layer_upload(request, template='upload/layer_upload.html'):
         return render_to_response(template, RequestContext(request, ctx))
     elif request.method == 'POST':
 
-        # import pdb;pdb.set_trace()
-
         file_extension = request.FILES['base_file'].name.split('.')[1].lower()
         data_dict = dict()
         tmp_dir = ''
@@ -204,40 +202,19 @@ def layer_upload(request, template='upload/layer_upload.html'):
 
             # create temporary directory for conversion
             tmp_dir = create_tmp_dir()
-            """
-            tmp_folder_name = ''.join(random.sample(string.lowercase + string.digits, 10))
-            tmp_dir = settings.TEMP_DIR+"/"+tmp_folder_name
-            if not os.path.exists(tmp_dir):
-                os.makedirs(tmp_dir)
-            print(request.FILES)
-            print(tmp_dir)
-            """
 
             # Upload files
             upload_files(tmp_dir, request.FILES)
-            """
-            for file in request.FILES:
-                with open(tmp_dir+'/'+str(request.FILES[file].name), 'wb+') as destination:
-                    for chunk in request.FILES[file].chunks():
-                        destination.write(chunk)
-            """
 
             # collect epsg code
             epsg_code = collect_epsg(tmp_dir, str(request.FILES['prj_file'].name))
 
             # Checking projection
             srs = checking_projection(tmp_dir, str(request.FILES['prj_file'].name))
-            """
-            prj_open = open(tmp_dir + "/" + request.FILES['prj_file'].name, 'r')
-            prj = prj_open.readline()
-            srs = osr.SpatialReference(wkt=prj)
-            """
-
-            # import pdb;pdb.set_trace()
 
             # if srs.IsProjected:
             if epsg_code:
-                # print srs.GetAttrValue('projcs')
+
                 if srs.GetAttrValue('projcs'):
                     if "WGS" not in srs.GetAttrValue('projcs'):
 
@@ -247,11 +224,6 @@ def layer_upload(request, template='upload/layer_upload.html'):
                 else:
                     # call projection util function
                     data_dict = reprojection(tmp_dir, str(request.FILES['base_file'].name))
-
-            # print srs.GetAttrValue('geogcs')
-            # print command
-            # print(request.FILES['base_file'].name)
-            # print(os.listdir(tmp_dir))
 
         form = NewLayerUploadForm(request.POST, request.FILES)
         tempdir = None
@@ -579,9 +551,8 @@ def layer_detail(request, layername, template='layers/layer_detail.html'):
     if settings.SOCIAL_ORIGINS:
         context_dict["social_links"] = build_social_links(request, layer)
 
-    context_dict["user_data_epsg"] = layer.user_data_epsg
-    # import pdb;pdb.set_trace()
     context_dict['layer_status'] = layer.status
+    context_dict["user_data_epsg"] = str(layer.user_data_epsg)
 
     return render_to_response(template, RequestContext(request, context_dict))
 

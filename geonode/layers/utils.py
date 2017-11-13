@@ -779,7 +779,6 @@ def reprojection(tmp_dir, base_file):
         'prj_file': File(open(tmp_dir + "/wgs84_repro.prj")),
     }
 
-    # renaming the files
     for file in os.listdir(tmp_dir):
         if file.endswith(".xml"):
             new_name = "wgs84_repro.xml"
@@ -861,5 +860,4 @@ def collect_epsg(tmp_dir, prj_file_name):
         # if more than one result the select first one
         epsg_code = result[0][2]
 
-    # import pdb;pdb.set_trace()
     return epsg_code
