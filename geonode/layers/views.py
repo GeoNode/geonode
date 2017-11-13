@@ -26,7 +26,10 @@ import base64
 import traceback
 import uuid
 import decimal
-from lxml import etree
+import re
+
+from django.contrib.gis.geos import GEOSGeometry
+from django.template.response import TemplateResponse
 from requests import Request
 from itertools import chain
 from six import string_types
@@ -43,6 +46,9 @@ from django.shortcuts import render_to_response
 from django.conf import settings
 from django.template import RequestContext
 from django.utils.translation import ugettext as _
+
+from geonode import geoserver
+
 try:
     import json
 except ImportError:
@@ -63,7 +69,7 @@ from geonode.base.enumerations import CHARSETS
 from geonode.base.models import TopicCategory
 from geonode.groups.models import GroupProfile
 
-from geonode.utils import default_map_config
+from geonode.utils import default_map_config, check_ogc_backend
 from geonode.utils import GXPLayer
 from geonode.utils import GXPMap
 from geonode.layers.utils import file_upload, is_raster, is_vector
@@ -72,13 +78,14 @@ from geonode.people.forms import ProfileForm, PocForm
 from geonode.security.views import _perms_info_json
 from geonode.documents.models import get_related_documents
 from geonode.utils import build_social_links
-from geonode.geoserver.helpers import cascading_delete, gs_catalog
-from geonode.geoserver.helpers import ogc_server_settings, save_style
 from geonode.base.views import batch_modify
 from geonode.base.models import Thesaurus
 from geonode.maps.models import Map
+from geonode.geoserver.helpers import (cascading_delete, gs_catalog,
+                                       ogc_server_settings, save_style,
+                                       extract_name_from_sld, _invalidate_geowebcache_layer)
 
-if 'geonode.geoserver' in settings.INSTALLED_APPS:
+if check_ogc_backend(geoserver.BACKEND_PACKAGE):
     from geonode.geoserver.helpers import _render_thumbnail
 CONTEXT_LOG_FILE = ogc_server_settings.LOG_FILE
 
@@ -197,27 +204,8 @@ def layer_upload(request, template='upload/layer_upload.html'):
                         msg = 'Failed to process.  Could not find matching layer.'
                         raise Exception(msg)
                     sld = open(base_file).read()
-
-                    try:
-                        dom = etree.XML(sld)
-                    except Exception:
-                        raise Exception(
-                            "The uploaded SLD file is not valid XML")
-
-                    el = dom.findall(
-                        "{http://www.opengis.net/sld}NamedLayer/{http://www.opengis.net/sld}Name")
-                    if len(el) == 0:
-                        el = dom.findall(
-                            "{http://www.opengis.net/sld}UserLayer/{http://www.opengis.net/sld}Name")
-                    if len(el) == 0:
-                        el = dom.findall(
-                            "{http://www.opengis.net/sld}NamedLayer/{http://www.opengis.net/se}Name")
-                    if len(el) == 0:
-                        el = dom.findall(
-                            "{http://www.opengis.net/sld}UserLayer/{http://www.opengis.net/se}Name")
-                    if len(el) == 0:
-                        raise Exception(
-                            "Please provide a name, unable to extract one from the SLD.")
+                    # Check SLD is valid
+                    extract_name_from_sld(gs_catalog, sld, sld_file=base_file)
 
                     match = None
                     styles = list(saved_layer.styles.all()) + [
@@ -250,6 +238,10 @@ def layer_upload(request, template='upload/layer_upload.html'):
                                 saved_layer.default_style = save_style(style)
                         except Exception as e:
                             logger.exception(e)
+
+                    # Invalidate GeoWebCache for the updated resource
+                    _invalidate_geowebcache_layer(saved_layer.alternate)
+
             except Exception as e:
                 exception_type, error, tb = sys.exc_info()
                 logger.exception(e)
@@ -282,6 +274,7 @@ def layer_upload(request, template='upload/layer_upload.html'):
                         'type': 'name',
                         'properties': saved_layer.srid
                     }
+                out['ogc_backend'] = settings.OGC_SERVER['default']['BACKEND']
                 upload_session = saved_layer.upload_session
                 if upload_session:
                     upload_session.processed = True
@@ -302,6 +295,8 @@ def layer_upload(request, template='upload/layer_upload.html'):
             status_code = 200
         else:
             status_code = 400
+        if settings.MONITORING_ENABLED:
+            request.add_resource('layer', saved_layer.alternate if saved_layer else name)
         return HttpResponse(
             json.dumps(out),
             content_type='application/json',
@@ -321,6 +316,11 @@ def layer_detail(request, layername, template='layers/layer_detail.html'):
     # Add required parameters for GXP lazy-loading
     layer_bbox = layer.bbox
     bbox = [float(coord) for coord in list(layer_bbox[0:4])]
+    if hasattr(layer, 'srid'):
+        config['crs'] = {
+            'type': 'name',
+            'properties': layer.srid
+        }
     config["srs"] = getattr(settings, 'DEFAULT_MAP_CRS', 'EPSG:900913')
     config["bbox"] = bbox if config["srs"] != 'EPSG:900913' \
         else llbbox_to_mercator([float(coord) for coord in bbox])
@@ -392,8 +392,15 @@ def layer_detail(request, layername, template='layers/layer_detail.html'):
             granules = {"features": []}
             all_granules = {"features": []}
 
+    group = None
+    if layer.group:
+        try:
+            group = GroupProfile.objects.get(slug=layer.group.name)
+        except GroupProfile.DoesNotExist:
+            group = None
     context_dict = {
-        "resource": layer,
+        'resource': layer,
+        'group': group,
         'perms_list': get_perms(request.user, layer.get_self_resource()),
         "permissions_json": _perms_info_json(layer),
         "documents": get_related_documents(layer),
@@ -421,6 +428,14 @@ def layer_detail(request, layername, template='layers/layer_detail.html'):
         settings,
         'DEFAULT_MAP_CRS',
         'EPSG:900913')
+
+    # provide bbox in EPSG:4326 for leaflet
+    if context_dict["preview"] == 'leaflet':
+        srid, wkt = layer.geographic_bounding_box.split(';')
+        srid = re.findall(r'\d+', srid)
+        geom = GEOSGeometry(wkt, srid=int(srid[0]))
+        geom.transform(4326)
+        context_dict["layer_bbox"] = ','.join([str(c) for c in geom.extent])
 
     if layer.storeType == 'dataStore':
         links = layer.link_set.download().filter(
@@ -504,7 +519,8 @@ def layer_detail(request, layername, template='layers/layer_detail.html'):
     # maps owned by user needed to fill the "add to existing map section" in template
     if request.user.is_authenticated():
         context_dict["maps"] = Map.objects.filter(owner=request.user)
-    return render_to_response(template, RequestContext(request, context_dict))
+    return TemplateResponse(
+        request, template, RequestContext(request, context_dict))
 
 
 # Loads the data using the OWS lib when the "Do you want to filter it" button is clicked.
@@ -614,6 +630,11 @@ def layer_metadata(
     # Add required parameters for GXP lazy-loading
     layer_bbox = layer.bbox
     bbox = [float(coord) for coord in list(layer_bbox[0:4])]
+    if hasattr(layer, 'srid'):
+        config['crs'] = {
+            'type': 'name',
+            'properties': layer.srid
+        }
     config["srs"] = getattr(settings, 'DEFAULT_MAP_CRS', 'EPSG:900913')
     config["bbox"] = bbox if config["srs"] != 'EPSG:900913' \
         else llbbox_to_mercator([float(coord) for coord in bbox])
@@ -849,8 +870,19 @@ def layer_metadata(
         return HttpResponse(json.dumps({'message': message}))
 
     if settings.ADMIN_MODERATE_UPLOADS:
-        if not request.user.is_superuser and not request.user.is_staff:
+        if not request.user.is_superuser:
             layer_form.fields['is_published'].widget.attrs.update({'disabled': 'true'})
+        if not request.user.is_superuser and not request.user.is_staff:
+            can_change_metadata = request.user.has_perm(
+                'change_resourcebase_metadata',
+                layer.get_self_resource())
+            try:
+                is_manager = request.user.groupmember_set.all().filter(role='manager').exists()
+            except:
+                is_manager = False
+            if not is_manager or not can_change_metadata:
+                layer_form.fields['is_approved'].widget.attrs.update({'disabled': 'true'})
+
     if poc is not None:
         layer_form.fields['poc'].initial = poc.id
         poc_form = ProfileForm(prefix="poc")
@@ -881,12 +913,14 @@ def layer_metadata(
         metadataxsl = True
 
     metadata_author_groups = []
-    if request.user.is_superuser:
+    if request.user.is_superuser or request.user.is_staff:
         metadata_author_groups = GroupProfile.objects.all()
     else:
-        metadata_author_groups = chain(
-            metadata_author.group_list_all(),
-            GroupProfile.objects.exclude(access="private"))
+        all_metadata_author_groups = chain(
+            request.user.group_list_all().distinct(),
+            GroupProfile.objects.exclude(access="private").exclude(access="public-invite"))
+        [metadata_author_groups.append(item) for item in all_metadata_author_groups
+            if item not in metadata_author_groups]
 
     return render_to_response(template, RequestContext(request, {
         "resource": layer,
@@ -922,6 +956,10 @@ def layer_metadata_advanced(request, layername):
 @login_required
 def layer_change_poc(request, ids, template='layers/layer_change_poc.html'):
     layers = Layer.objects.filter(id__in=ids.split('_'))
+
+    if settings.MONITORING_ENABLED:
+        for l in layers:
+            request.add_resource('layer', l.altername)
     if request.method == 'POST':
         form = PocForm(request.POST)
         if form.is_valid():
@@ -975,9 +1013,12 @@ def layer_replace(request, layername, template='layers/layer_replace.html'):
                     out['errors'] = _(
                         "You are attempting to replace a raster layer with a vector.")
                 else:
-                    # delete geoserver's store before upload
-                    cat = gs_catalog
-                    cascading_delete(cat, layer.alternate)
+                    if check_ogc_backend(geoserver.BACKEND_PACKAGE):
+                        # delete geoserver's store before upload
+                        cat = gs_catalog
+                        cascading_delete(cat, layer.typename)
+                        out['ogc_backend'] = geoserver.BACKEND_PACKAGE
+
                     saved_layer = file_upload(
                         base_file,
                         name=layer.name,
@@ -1139,7 +1180,6 @@ def get_layer(request, layername):
         if isinstance(obj, decimal.Decimal):
             return float(obj)
         raise TypeError
-
     logger.debug('Call get layer')
     if request.method == 'GET':
         layer_obj = _resolve_layer(request, layername)
@@ -1172,8 +1212,15 @@ def layer_metadata_detail(
         layername,
         'view_resourcebase',
         _PERMISSION_MSG_METADATA)
+    group = None
+    if layer.group:
+        try:
+            group = GroupProfile.objects.get(slug=layer.group.name)
+        except GroupProfile.DoesNotExist:
+            group = None
     return render_to_response(template, RequestContext(request, {
         "resource": layer,
+        "group": group,
         'SITEURL': settings.SITEURL[:-1]
     }))
 

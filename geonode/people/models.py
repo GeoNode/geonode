@@ -113,7 +113,7 @@ class Profile(AbstractUser):
         return GroupProfile.objects.exclude(access="private").filter(groupmember__user=self)
 
     def group_list_all(self):
-        return GroupProfile.objects.filter(groupmember__user=self)
+        return GroupProfile.objects.filter(groupmember__user=self).distinct()
 
     def keyword_list(self):
         """

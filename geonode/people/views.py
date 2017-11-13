@@ -29,6 +29,7 @@ from django.utils.translation import ugettext as _
 from django.contrib.sites.models import Site
 from django.conf import settings
 from django.http import HttpResponseForbidden
+from django.db.models import Q
 
 from geonode.people.models import Profile
 from geonode.people.forms import ProfileForm
@@ -45,7 +46,7 @@ def profile_edit(request, username=None):
         except Profile.DoesNotExist:
             return redirect("profile_browse")
     else:
-        profile = get_object_or_404(Profile, username=username)
+        profile = get_object_or_404(Profile, Q(is_active=True), username=username)
 
     if username == request.user.username or request.user.is_superuser:
         if request.method == "POST":
@@ -71,7 +72,7 @@ def profile_edit(request, username=None):
 
 
 def profile_detail(request, username):
-    profile = get_object_or_404(Profile, username=username)
+    profile = get_object_or_404(Profile, Q(is_active=True), username=username)
     # combined queryset from each model content type
 
     return render(request, "people/profile_detail.html", {

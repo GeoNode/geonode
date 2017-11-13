@@ -24,9 +24,11 @@ import tempfile
 from django import forms
 from django.conf import settings
 from django.core.exceptions import ValidationError
+from geonode import geoserver, qgis_server
 from geonode.layers.forms import JSONField
 from geonode.upload.models import UploadFile
 from geonode.geoserver.helpers import ogc_server_settings
+from geonode.utils import check_ogc_backend
 
 
 class UploadFileForm(forms.ModelForm):
@@ -43,9 +45,9 @@ class LayerUploadForm(forms.Form):
     prj_file = forms.FileField(required=False)
     xml_file = forms.FileField(required=False)
 
-    if 'geonode.geoserver' in settings.INSTALLED_APPS:
+    if check_ogc_backend(geoserver.BACKEND_PACKAGE):
         sld_file = forms.FileField(required=False)
-    if 'geonode_qgis_server' in settings.INSTALLED_APPS:
+    if check_ogc_backend(qgis_server.BACKEND_PACKAGE):
         qml_file = forms.FileField(required=False)
 
     geogig = forms.BooleanField(required=False)
@@ -78,9 +80,9 @@ class LayerUploadForm(forms.Form):
         "xml_file",
     ]
     # Adding style file based on the backend
-    if 'geonode.geoserver' in settings.INSTALLED_APPS:
+    if check_ogc_backend(geoserver.BACKEND_PACKAGE):
         spatial_files.append('sld_file')
-    if 'geonode_qgis_server' in settings.INSTALLED_APPS:
+    if check_ogc_backend(qgis_server.BACKEND_PACKAGE):
         spatial_files.append('qml_file')
 
     spatial_files = tuple(spatial_files)

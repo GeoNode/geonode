@@ -140,6 +140,13 @@ class Command(BaseCommand):
             default=False,
             action="store_true",
             help="Force metadata XML to be preserved"
+        ),
+        make_option(
+            '-C',
+            '--charset',
+            dest='charset',
+            default='UTF-8',
+            help=("Specify the charset of the data")
         )
     )
 
@@ -158,6 +165,7 @@ class Command(BaseCommand):
         private = options.get('private', False)
         metadata_uploaded_preserve = options.get('metadata_uploaded_preserve',
                                                  False)
+        charset = options.get('charset', 'UTF-8')
 
         if verbosity > 0:
             console = self.stdout
@@ -198,7 +206,8 @@ class Command(BaseCommand):
                 category=category,
                 regions=regions,
                 private=private,
-                metadata_uploaded_preserve=metadata_uploaded_preserve)
+                metadata_uploaded_preserve=metadata_uploaded_preserve,
+                charset=charset)
 
             output.extend(out)
 

@@ -26,6 +26,7 @@ from tastypie.test import ResourceTestCaseMixin
 from django.contrib.auth import get_user_model
 from guardian.shortcuts import get_anonymous_user, assign_perm, remove_perm
 
+from geonode import geoserver
 from geonode.base.populate_test_data import create_models, all_public
 from geonode.maps.tests_populate_maplayers import create_maplayers
 from geonode.people.models import Profile
@@ -33,9 +34,10 @@ from geonode.layers.models import Layer
 from geonode.maps.models import Map
 from geonode.layers.populate_layers_data import create_layer_data
 from geonode.groups.models import Group
+from geonode.utils import check_ogc_backend
 
 
-class BulkPermissionsTests(ResourceTestCaseMixin):
+class BulkPermissionsTests(ResourceTestCaseMixin, TestCase):
     fixtures = ['initial_data.json', 'bobby']
 
     def setUp(self):
@@ -405,17 +407,21 @@ class PermissionsTest(TestCase):
         # 7. change_layer_style
         # 7.1 has not change_layer_style: verify that bobby cannot access
         # the layer style page
-        response = self.client.get(reverse('layer_style_manage', args=(layer.alternate,)))
-        self.assertEquals(response.status_code, 401)
+        if check_ogc_backend(geoserver.BACKEND_PACKAGE):
+            # Only for geoserver backend
+            response = self.client.get(reverse('layer_style_manage', args=(layer.alternate,)))
+            self.assertEquals(response.status_code, 401)
         # 7.2 has change_layer_style: verify that bobby can access the
         # change layer style page
-        assign_perm('change_layer_style', bob, layer)
-        self.assertTrue(
-            bob.has_perm(
-                'change_layer_style',
-                layer))
-        response = self.client.get(reverse('layer_style_manage', args=(layer.alternate,)))
-        self.assertEquals(response.status_code, 200)
+        if check_ogc_backend(geoserver.BACKEND_PACKAGE):
+            # Only for geoserver backend
+            assign_perm('change_layer_style', bob, layer)
+            self.assertTrue(
+                bob.has_perm(
+                    'change_layer_style',
+                    layer))
+            response = self.client.get(reverse('layer_style_manage', args=(layer.alternate,)))
+            self.assertEquals(response.status_code, 200)
 
     def test_anonymus_permissions(self):
 
@@ -462,8 +468,10 @@ class PermissionsTest(TestCase):
         # 7. change_layer_style
         # 7.1 has not change_layer_style: verify that anonymous user cannot access
         # the layer style page but redirected to login
-        response = self.client.get(reverse('layer_style_manage', args=(layer.alternate,)))
-        self.assertEquals(response.status_code, 302)
+        if check_ogc_backend(geoserver.BACKEND_PACKAGE):
+            # Only for geoserver backend
+            response = self.client.get(reverse('layer_style_manage', args=(layer.alternate,)))
+            self.assertEquals(response.status_code, 302)
 
     def test_map_download(self):
         """Test the correct permissions on layers on map download"""

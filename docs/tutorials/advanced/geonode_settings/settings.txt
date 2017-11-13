@@ -599,3 +599,21 @@ Default::
     SLACK_WEBHOOK_URLS = [
         "https://hooks.slack.com/services/T000/B000/XX"
     ]
+
+
+MONITORING_ENABLED
+------------------
+
+Default: ``False``
+
+Enable internal monitoring application (`geonode.contrib.monitoring`). If set to `True`, add following code to your local settings:
+
+.. code::
+
+    MONITORING_ENABLED = True
+    # add following lines to your local settings to enable monitoring
+    if MONITORING_ENABLED:
+        INSTALLED_APPS + ('geonode.contrib.monitoring',)
+        MIDDLEWARE_CLASSES + ('geonode.contrib.monitoring.middleware.MonitoringMiddleware',)
+
+See :ref:`geonode_monitoring` for details.

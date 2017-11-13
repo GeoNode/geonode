@@ -12,6 +12,7 @@ geonode/development.db
 /geoserver/
 downloaded
 package-lock.json
+GeoIPCities.dat
 
 docs/i18n/pot/
 
@@ -72,6 +73,8 @@ geonode/static/lib/js/bootstrap-treeview.min.js
 
 # Uploaded files
 geonode/uploaded
+geonode/qgis_layer
+geonode/qgis_tiles
 
 #Testing output
 .coverage
@@ -83,6 +86,7 @@ geonode/static/geonode/junit.xml
 #Temporary files
 *~
 *.swp
+celerybeat-schedule.*
 celerybeat-schedule
 
 # OSX specific
@@ -117,5 +121,8 @@ geonode/pip-selfcheck.json
 geonode/shapely/
 geonode/share/
 
+# Contrib monitoring module
+geonode/contrib/monitoring/frontend/node_modules
+geonode/contrib/monitoring/frontend/static
 # celery files
 celerybeat-schedule.*

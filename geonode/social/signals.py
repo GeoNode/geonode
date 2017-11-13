@@ -161,6 +161,22 @@ def notification_post_save_resource(instance, sender, created, **kwargs):
     recipients = get_notification_recipients(notice_type_label)
     send_notification(recipients, notice_type_label, {'resource': instance})
 
+    # Approval Notifications Here
+    if settings.ADMIN_MODERATE_UPLOADS:
+        if instance.is_approved and not instance.is_published:
+            notice_type_label = '%s_approved'
+            notice_type_label = notice_type_label % instance.class_name.lower()
+            recipients = get_notification_recipients(notice_type_label)
+            send_notification(recipients, notice_type_label, {'resource': instance})
+
+    # Publishing Notifications Here
+    if settings.RESOURCE_PUBLISHING:
+        if instance.is_approved and instance.is_published:
+            notice_type_label = '%s_published'
+            notice_type_label = notice_type_label % instance.class_name.lower()
+            recipients = get_notification_recipients(notice_type_label)
+            send_notification(recipients, notice_type_label, {'resource': instance})
+
 
 def notification_post_delete_resource(instance, sender, **kwargs):
     """ Send a notification when a layer, map or document is deleted

@@ -23,8 +23,11 @@ import tempfile
 import zipfile
 from autocomplete_light.registry import autodiscover
 
-from django.conf import settings
 from django import forms
+
+from geonode import geoserver, qgis_server
+from geonode.utils import check_ogc_backend
+
 try:
     import json
 except ImportError:
@@ -87,18 +90,29 @@ class LayerUploadForm(forms.Form):
     shx_file = forms.FileField(required=False)
     prj_file = forms.FileField(required=False)
     xml_file = forms.FileField(required=False)
-    sld_file = forms.FileField(required=False)
+    if check_ogc_backend(geoserver.BACKEND_PACKAGE):
+        sld_file = forms.FileField(required=False)
+    if check_ogc_backend(qgis_server.BACKEND_PACKAGE):
+        qml_file = forms.FileField(required=False)
 
     charset = forms.CharField(required=False)
     metadata_uploaded_preserve = forms.BooleanField(required=False)
     metadata_upload_form = forms.BooleanField(required=False)
     style_upload_form = forms.BooleanField(required=False)
 
-    spatial_files = (
+    spatial_files = [
         "base_file",
         "dbf_file",
         "shx_file",
-        "prj_file")
+        "prj_file"]
+
+    # Adding style file based on the backend
+    if check_ogc_backend(geoserver.BACKEND_PACKAGE):
+        spatial_files.append('sld_file')
+    if check_ogc_backend(qgis_server.BACKEND_PACKAGE):
+        spatial_files.append('qml_file')
+
+    spatial_files = tuple(spatial_files)
 
     def clean(self):
         cleaned = super(LayerUploadForm, self).clean()
@@ -137,8 +151,11 @@ class LayerUploadForm(forms.Form):
                 prj_file = cleaned["prj_file"].name
             if cleaned["xml_file"] is not None:
                 xml_file = cleaned["xml_file"].name
-            if cleaned["sld_file"] is not None:
-                sld_file = cleaned["sld_file"].name
+            # SLD style only available in GeoServer backend
+            if check_ogc_backend(geoserver.BACKEND_PACKAGE):
+                if cleaned["sld_file"] is not None:
+                    sld_file = cleaned["sld_file"].name
+
         if not cleaned["metadata_upload_form"] and not cleaned["style_upload_form"] and base_ext.lower() not in (
                 ".shp", ".tif", ".tiff", ".geotif", ".geotiff", ".asc"):
             raise forms.ValidationError(
@@ -209,9 +226,9 @@ class LayerUploadForm(forms.Form):
 
 
 class NewLayerUploadForm(LayerUploadForm):
-    if 'geonode.geoserver' in settings.INSTALLED_APPS:
+    if check_ogc_backend(geoserver.BACKEND_PACKAGE):
         sld_file = forms.FileField(required=False)
-    if 'geonode_qgis_server' in settings.INSTALLED_APPS:
+    if check_ogc_backend(qgis_server.BACKEND_PACKAGE):
         qml_file = forms.FileField(required=False)
     xml_file = forms.FileField(required=False)
 
@@ -229,9 +246,9 @@ class NewLayerUploadForm(LayerUploadForm):
         "xml_file"
     ]
     # Adding style file based on the backend
-    if 'geonode.geoserver' in settings.INSTALLED_APPS:
+    if check_ogc_backend(geoserver.BACKEND_PACKAGE):
         spatial_files.append('sld_file')
-    if 'geonode_qgis_server' in settings.INSTALLED_APPS:
+    if check_ogc_backend(qgis_server.BACKEND_PACKAGE):
         spatial_files.append('qml_file')
 
     spatial_files = tuple(spatial_files)

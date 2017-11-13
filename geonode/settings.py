@@ -21,21 +21,21 @@
 
 # Django settings for the GeoNode project.
 import os
-import sys
 import re
-
-from kombu import Queue
-from geonode import __file__ as geonode_path
-from geonode import get_version
-from geonode.celery_app import app  # flake8: noqa
+import sys
+from datetime import timedelta
 from distutils.util import strtobool
-# import djcelery
-import dj_database_url
 
+import dj_database_url
 #
 # General Django development settings
 #
 import django
+from django.conf.global_settings import DATETIME_INPUT_FORMATS
+from geonode import __file__ as geonode_path
+from geonode import get_version
+from geonode.celery_app import app  # flake8: noqa
+from kombu import Queue
 
 # GeoNode Version
 VERSION = get_version()
@@ -53,7 +53,7 @@ DEBUG = strtobool(os.getenv('DEBUG', 'True'))
 # otherwise it will raise errors for the missing non-minified dependencies
 DEBUG_STATIC = strtobool(os.getenv('DEBUG_STATIC', 'False'))
 
-#Define email service on GeoNode
+# Define email service on GeoNode
 EMAIL_ENABLE = strtobool(os.getenv('EMAIL_ENABLE', 'True'))
 
 if EMAIL_ENABLE:
@@ -97,6 +97,11 @@ DATABASE_URL = os.getenv(
 #DATABASE_URL = 'postgresql://test_geonode:test_geonode@localhost:5432/geonode'
 
 # Defines settings for development
+
+# since GeoDjango is in use, you should use gis-enabled engine, for example:
+# 'ENGINE': 'django.contrib.gis.db.backends.postgis'
+# see https://docs.djangoproject.com/en/1.8/ref/contrib/gis/db-api/#module-django.contrib.gis.db.backends for
+# detailed list of supported backends and notes.
 DATABASES = {
     'default': dj_database_url.parse(DATABASE_URL, conn_max_age=600)
 }
@@ -161,25 +166,25 @@ EXTRA_LANG_INFO = {
         'code': 'am',
         'name': 'Amharic',
         'name_local': 'Amharic',
-        },
+    },
     'tl': {
         'bidi': False,
         'code': 'tl',
         'name': 'Tagalog',
         'name_local': 'tagalog',
-        },
+    },
     'ta': {
         'bidi': False,
         'code': 'ta',
         'name': 'Tamil',
         'name_local': u'tamil',
-        },
+    },
     'si': {
         'bidi': False,
         'code': 'si',
         'name': 'Sinhala',
         'name_local': 'sinhala',
-        },
+    },
 }
 
 
@@ -273,7 +278,7 @@ GEONODE_APPS = (
     'geonode.services',
 
     # QGIS Server Apps
-    # 'geonode_qgis_server',
+    # 'geonode.qgis_server',
 
     # GeoServer Apps
     # Geoserver needs to come last because
@@ -363,7 +368,18 @@ INSTALLED_APPS = (
     'polymorphic',
     'guardian',
     'oauth2_provider',
+    'corsheaders',
 ) + GEONODE_APPS
+
+MONITORING_ENABLED = False
+
+# how long monitoring data should be stored
+MONITORING_DATA_TTL = timedelta(days=7)
+
+# this will disable csrf check for notification config views,
+# use with caution - for dev purpose only
+MONITORING_DISABLE_CSRF = False
+
 
 LOGGING = {
     'version': 1,
@@ -408,8 +424,8 @@ LOGGING = {
             "handlers": ["console"], "level": "ERROR", },
         "pycsw": {
             "handlers": ["console"], "level": "ERROR", },
-        },
-    }
+    },
+}
 
 #
 # Customizations to built in Django settings required by GeoNode
@@ -442,6 +458,7 @@ TEMPLATES = [
 ]
 
 MIDDLEWARE_CLASSES = (
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
@@ -468,7 +485,6 @@ MIDDLEWARE_CLASSES = (
     'oauth2_provider.middleware.OAuth2TokenMiddleware',
 )
 
-
 # Replacement of default authentication backend in order to support
 # permissions per object.
 AUTHENTICATION_BACKENDS = (
@@ -490,7 +506,7 @@ OAUTH2_PROVIDER = {
 # authorized exempt urls needed for oauth when GeoNode is set to lockdown
 AUTH_EXEMPT_URLS = ('/api/o/*', '/api/roles', '/api/adminRole', '/api/users',)
 
-ANONYMOUS_USER_ID = os.getenv('ANONYMOUS_USER_ID','-1')
+ANONYMOUS_USER_ID = os.getenv('ANONYMOUS_USER_ID', '-1')
 GUARDIAN_GET_INIT_ANONYMOUS_USER = os.getenv(
     'GUARDIAN_GET_INIT_ANONYMOUS_USER',
     'geonode.people.models.get_anonymous_user_instance'
@@ -735,7 +751,7 @@ PYCSW = {
 
 # default map projection
 # Note: If set to EPSG:4326, then only EPSG:4326 basemaps will work.
-DEFAULT_MAP_CRS = "EPSG:900913"
+DEFAULT_MAP_CRS = "EPSG:3857"
 
 # Where should newly created maps be focused?
 DEFAULT_MAP_CENTER = (0, 0)
@@ -753,6 +769,10 @@ MAPBOX_ACCESS_TOKEN = os.environ.get('MAPBOX_ACCESS_TOKEN', None)
 BING_API_KEY = os.environ.get('BING_API_KEY', None)
 GOOGLE_API_KEY = os.environ.get('GOOGLE_API_KEY', None)
 
+# handle timestamps like 2017-05-30 16:04:00.719 UTC
+DATETIME_INPUT_FORMATS = DATETIME_INPUT_FORMATS +\
+    ('%Y-%m-%d %H:%M:%S.%f %Z', '%Y-%m-%dT%H:%M:%S.%f', '%Y-%m-%dT%H:%M:%S%Z')
+
 MAP_BASELAYERS = [{
     "source": {"ptype": "gxp_olsource"},
     "type": "OpenLayers.Layer",
@@ -762,18 +782,18 @@ MAP_BASELAYERS = [{
     "fixed": True,
     "group":"background"
 },
-# {
-#     "source": {"ptype": "gxp_olsource"},
-#     "type": "OpenLayers.Layer.XYZ",
-#     "title": "TEST TILE",
-#     "args": ["TEST_TILE", "http://test_tiles/tiles/${z}/${x}/${y}.png"],
-#     "name": "background",
-#     "attribution": "&copy; TEST TILE",
-#     "visibility": False,
-#     "fixed": True,
-#     "group":"background"
-# },
-{
+    # {
+    #     "source": {"ptype": "gxp_olsource"},
+    #     "type": "OpenLayers.Layer.XYZ",
+    #     "title": "TEST TILE",
+    #     "args": ["TEST_TILE", "http://test_tiles/tiles/${z}/${x}/${y}.png"],
+    #     "name": "background",
+    #     "attribution": "&copy; TEST TILE",
+    #     "visibility": False,
+    #     "fixed": True,
+    #     "group":"background"
+    # },
+    {
     "source": {"ptype": "gxp_osmsource"},
     "type": "OpenLayers.Layer.OSM",
     "name": "mapnik",
@@ -785,6 +805,7 @@ MAP_BASELAYERS = [{
 DISPLAY_SOCIAL = strtobool(os.getenv('DISPLAY_SOCIAL', 'True'))
 DISPLAY_COMMENTS = strtobool(os.getenv('DISPLAY_COMMENTS', 'True'))
 DISPLAY_RATINGS = strtobool(os.getenv('DISPLAY_RATINGS', 'True'))
+DISPLAY_WMS_LINKS = strtobool(os.getenv('DISPLAY_WMS_LINKS', 'True'))
 
 SOCIAL_ORIGINS = [{
     "label": "Email",
@@ -821,7 +842,7 @@ TWITTER_CARD = strtobool(os.getenv('TWITTER_CARD', 'True'))
 TWITTER_SITE = '@GeoNode'
 TWITTER_HASHTAGS = ['geonode']
 
-OPENGRAPH_ENABLED =  strtobool(os.getenv('OPENGRAPH_ENABLED', 'True'))
+OPENGRAPH_ENABLED = strtobool(os.getenv('OPENGRAPH_ENABLED', 'True'))
 
 # Enable Licenses User Interface
 # Regardless of selection, license field stil exists as a field in the
@@ -898,7 +919,8 @@ DOWNLOAD_FORMATS_RASTER = [
     'GZIP'
 ]
 
-ACCOUNT_NOTIFY_ON_PASSWORD_CHANGE = strtobool(os.getenv('ACCOUNT_NOTIFY_ON_PASSWORD_CHANGE', 'False'))
+ACCOUNT_NOTIFY_ON_PASSWORD_CHANGE = strtobool(
+    os.getenv('ACCOUNT_NOTIFY_ON_PASSWORD_CHANGE', 'False'))
 
 TASTYPIE_DEFAULT_FORMATS = ['json']
 
@@ -908,11 +930,12 @@ AUTO_GENERATE_AVATAR_SIZES = (
 )
 
 # Number of results per page listed in the GeoNode search pages
-CLIENT_RESULTS_LIMIT = int (os.getenv('CLIENT_RESULTS_LIMIT','100'))
+CLIENT_RESULTS_LIMIT = int(os.getenv('CLIENT_RESULTS_LIMIT', '100'))
 
 # Number of items returned by the apis 0 equals no limit
-API_LIMIT_PER_PAGE = int(os.getenv('API_LIMIT_PER_PAGE','0'))
-API_INCLUDE_REGIONS_COUNT = strtobool(os.getenv('API_INCLUDE_REGIONS_COUNT', 'False'))
+API_LIMIT_PER_PAGE = int(os.getenv('API_LIMIT_PER_PAGE', '0'))
+API_INCLUDE_REGIONS_COUNT = strtobool(
+    os.getenv('API_INCLUDE_REGIONS_COUNT', 'False'))
 
 LEAFLET_CONFIG = {
     'TILES': [
@@ -986,8 +1009,9 @@ EXIF_ENABLED = False
 # Settings for NLP contrib app
 NLP_ENABLED = False
 NLP_LOCATION_THRESHOLD = 1.0
-NLP_LIBRARY_PATH = os.getenv('NLP_LIBRARY_PATH',"/opt/MITIE/mitielib")
-NLP_MODEL_PATH = os.getenv('NLP_MODEL_PATH',"/opt/MITIE/MITIE-models/english/ner_model.dat")
+NLP_LIBRARY_PATH = os.getenv('NLP_LIBRARY_PATH', "/opt/MITIE/mitielib")
+NLP_MODEL_PATH = os.getenv(
+    'NLP_MODEL_PATH', "/opt/MITIE/MITIE-models/english/ner_model.dat")
 
 # Settings for Slack contrib app
 SLACK_ENABLED = False
@@ -1132,7 +1156,7 @@ if S3_MEDIA_ENABLED:
 # 3. Override settings in a local_settings.py file, legacy.
 # Load more settings from a file called local_settings.py if it exists
 try:
-    from local_settings import *  # noqa
+    from geonode.local_settings import *
 except ImportError:
     pass
 
@@ -1152,9 +1176,9 @@ if LOCKDOWN_GEONODE:
 # maybe they set it as a windows environment
 if os.name == 'nt':
     if "GEOS_LIBRARY_PATH" not in locals() \
-      or "GDAL_LIBRARY_PATH" not in locals():
+            or "GDAL_LIBRARY_PATH" not in locals():
         if os.environ.get("GEOS_LIBRARY_PATH", None) \
-          and os.environ.get("GDAL_LIBRARY_PATH", None):
+                and os.environ.get("GDAL_LIBRARY_PATH", None):
             GEOS_LIBRARY_PATH = os.environ.get('GEOS_LIBRARY_PATH')
             GDAL_LIBRARY_PATH = os.environ.get('GDAL_LIBRARY_PATH')
         else:
@@ -1163,7 +1187,8 @@ if os.name == 'nt':
 
 
 # define the urls after the settings are overridden
-if 'geonode.geoserver' in INSTALLED_APPS:
+USE_GEOSERVER = 'geonode.geoserver' in INSTALLED_APPS
+if USE_GEOSERVER:
     LOCAL_GEOSERVER = {
         "source": {
             "ptype": "gxp_wmscsource",
@@ -1191,6 +1216,13 @@ RISKS = {'DEFAULT_LOCATION': None,
 # Each uploaded Layer must be approved by an Admin before becoming visible
 ADMIN_MODERATE_UPLOADS = False
 
+# add following lines to your local settings to enable monitoring
+if MONITORING_ENABLED:
+    INSTALLED_APPS + ('geonode.contrib.monitoring',)
+    MIDDLEWARE_CLASSES + \
+        ('geonode.contrib.monitoring.middleware.MonitoringMiddleware',)
+
+GEOIP_PATH = os.path.join(PROJECT_ROOT, 'GeoIPCities.dat')
 # If this option is enabled, Resources belonging to a Group won't be visible by others
 GROUP_PRIVATE_RESOURCES = False
 

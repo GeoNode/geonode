@@ -1,0 +1,3 @@
+{% load i18n %}
+
+{% trans "A map has been published" %}

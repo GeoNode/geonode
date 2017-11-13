@@ -137,17 +137,29 @@ if "geonode.contrib.createlayer" in settings.INSTALLED_APPS:
                             )
 
 if 'geonode.geoserver' in settings.INSTALLED_APPS:
+    from geonode.geoserver.views import get_capabilities
     # GeoServer Helper Views
     urlpatterns += patterns('',
                             # Upload views
                             (r'^upload/', include('geonode.upload.urls')),
+                            # capabilities
+                            url(r'^capabilities/layer/(?P<layerid>\d+)/$',
+                                get_capabilities, name='capabilities_layer'),
+                            url(r'^capabilities/map/(?P<mapid>\d+)/$',
+                                get_capabilities, name='capabilities_map'),
+                            url(r'^capabilities/user/(?P<user>\w+)/$',
+                                get_capabilities, name='capabilities_user'),
+                            url(r'^capabilities/category/(?P<category>\w+)/$',
+                                get_capabilities, name='capabilities_category'),
                             (r'^gs/', include('geonode.geoserver.urls')),
                             )
-if 'geonode_qgis_server' in settings.INSTALLED_APPS:
+if 'geonode.qgis_server' in settings.INSTALLED_APPS:
     # QGIS Server's urls
     urlpatterns += patterns('',
-                            (r'', include('geonode_qgis_server.urls')),
-                            )
+                            (r'^qgis-server/',
+                             include(
+                                 'geonode.qgis_server.urls',
+                                 namespace='qgis_server')), )
 
 if settings.NOTIFICATIONS_MODULE in settings.INSTALLED_APPS:
     notifications_urls = '{}.urls'.format(settings.NOTIFICATIONS_MODULE)
@@ -177,3 +189,7 @@ urlpatterns += patterns('',
                         (r'^featured/(?P<site>[A-Za-z0-9_\-]+)/$', 'geonode.maps.views.featured_map'),
                         (r'^featured/(?P<site>[A-Za-z0-9_\-]+)/info$', 'geonode.maps.views.featured_map_info'),
                         )
+
+
+if settings.MONITORING_ENABLED:
+    urlpatterns += [url(r'^monitoring/', include('geonode.contrib.monitoring.urls', namespace='monitoring'))]

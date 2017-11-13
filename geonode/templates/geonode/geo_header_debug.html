@@ -324,6 +324,11 @@
 
 <script type="text/javascript">
 OpenLayers.ImgPath = "{{ STATIC_URL }}geoexplorer/externals/openlayers/theme/default/img";
+OpenLayers.Util.onImageLoadErrorColor = 'transparent';
+OpenLayers.Util.onImageLoadError = function() {
+    this.src = '{{ STATIC_URL }}geonode/img/light_gray.jpg';
+};
+
 OpenLayers.Request.DEFAULT_CONFIG.headers = {
   'X-CSRFToken': '{{ csrf_token|escapejs }}'
 };
@@ -332,6 +337,12 @@ OpenLayers.Request.DEFAULT_CONFIG.headers = {
 *  Add GetFeedFeatureInfo tool to GeoExplorer.Viewer
 */
 GeoExplorer.Viewer.prototype.loadConfig = function(config) {
+
+    config.tools.push( {
+      ptype: "gxp_legend",
+      checked: true
+    });
+
   // remove the 3D Viewer if no Google API Key is availbale
   var google_api_key = '{% google_api_key %}';
   if(google_api_key.length == 0 || 'None' == google_api_key) {
