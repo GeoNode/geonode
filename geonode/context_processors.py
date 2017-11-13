@@ -60,6 +60,10 @@ def resource_urls(request):
             settings,
             'DISPLAY_RATINGS',
             False),
+        DISPLAY_WMS_LINKS=getattr(
+            settings,
+            'DISPLAY_WMS_LINKS',
+            False),
         TWITTER_CARD=getattr(
             settings,
             'TWITTER_CARD',
@@ -120,6 +124,7 @@ def resource_urls(request):
             dict()).get(
             'METADATA',
             'never'),
+        USE_GEOSERVER=settings.USE_GEOSERVER,
         USE_NOTIFICATIONS=has_notifications,
         USE_MONITORING='geonode.contrib.monitoring' in settings.INSTALLED_APPS and settings.MONITORING_ENABLED,
         DEFAULT_ANONYMOUS_VIEW_PERMISSION=getattr(settings, 'DEFAULT_ANONYMOUS_VIEW_PERMISSION', False),
