@@ -81,14 +81,14 @@ class ServicesTests(TestCase):
                 })
             self.assertEqual(response.status_code, 200)
             service_dict = json.loads(response.content)[0]
-                service = Service.objects.get(id=service_dict['service_id'])
-                # Harvested some layers
+            service = Service.objects.get(id=service_dict['service_id'])
+            # Harvested some layers
             self.assertTrue(ServiceLayer.objects.filter(
                 service=service).count() > 0)
-                self.assertEqual(service.method, "I")
-                self.assertEqual(service.type, "REST")
-                self.assertEqual(service.ptype, 'gxp_arcrestsource')
-            except Exception, e:
+            self.assertEqual(service.method, "I")
+            self.assertEqual(service.type, "REST")
+            self.assertEqual(service.ptype, 'gxp_arcrestsource')
+        except Exception, e:
             traceback.print_exc(file=sys.stdout)
             print("Service not created: %s" % str(e))
             self.assertRaises(KeyError)
