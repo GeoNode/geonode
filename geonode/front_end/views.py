@@ -17,3 +17,20 @@ class GeoserverSettings (View):
             {'url': getattr(settings, 'GEOSERVER_LOCATION', None)},
             ensure_ascii=False),
             content_type='application/javascript')
+
+
+class LayerAttributeUploadView(View):
+    '''
+    This class will process a csv file for a layer attribute
+    '''
+    def get(self, request, layername):
+        return HttpResponse('Atiq')
+
+    def post(self, request, layername):
+        from django.core.files import File
+        # import pdb;pdb.set_trace()
+        print layername, request.FILES
+        for l in File(request.FILES['file']).file:
+            print l
+        # file = File(request.FILES[0]);
+        return HttpResponse({})
