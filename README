@@ -23,7 +23,7 @@ GeoNode Installation
 
 If you just want to try GeoNode, it is recommended to use Ubuntu 14.04 and install the latest stable release of GeoNode.::
 
-    sudo add-apt-repository ppa:geonode/release
+    sudo add-apt-repository ppa:geonode/stable
     sudo apt-get update
     sudo apt-get install geonode
 
@@ -76,7 +76,7 @@ Or if you want to use the provided Makefile::
         255.255.255.255 broadcasthost
         ::1             localhost
 
-To access GeoNode just enter the following url: http://geonode/ on your web browser. 
+To access GeoNode just enter the following url: http://geonode/ on your web browser.
 For GeoServer: http://geonode/geoserver/web/
 
 Ubuntu
@@ -104,7 +104,7 @@ Ubuntu development build instructions using an isolated virtual environment (tes
     # Install pip dependencies
     pip install -r requirements.txt --no-deps
     pip install -e .
-    pip install pygdal==1.10.1
+    pip install pygdal==1.11.3.3
 
 For Ubuntu 16.04 you should create your virtual-env like this instead (so with site packages)::
 
