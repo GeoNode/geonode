@@ -149,10 +149,12 @@ def facets(context):
                 if anonymous_group:
                     documents = documents.filter(
                         Q(group__isnull=True) | Q(group__in=groups) |
-                        Q(group__in=public_groups) | Q(group=anonymous_group))
+                        Q(group__in=public_groups) | Q(group=anonymous_group) |
+                        Q(owner__username__iexact=str(request.user)))
                 else:
                     documents = documents.filter(
-                        Q(group__isnull=True) | Q(group__in=groups) | Q(group__in=public_groups))
+                        Q(group__isnull=True) | Q(group__in=groups) |
+                        Q(group__in=public_groups) | Q(owner__username__iexact=str(request.user)))
             else:
                 if anonymous_group:
                     documents = documents.filter(
@@ -256,10 +258,12 @@ def facets(context):
                 if anonymous_group:
                     layers = layers.filter(
                         Q(group__isnull=True) | Q(group__in=groups) |
-                        Q(group__in=public_groups) | Q(group=anonymous_group))
+                        Q(group__in=public_groups) | Q(group=anonymous_group) |
+                        Q(owner__username__iexact=str(request.user)))
                 else:
                     layers = layers.filter(
-                        Q(group__isnull=True) | Q(group__in=groups) | Q(group__in=public_groups))
+                        Q(group__isnull=True) | Q(group__in=groups) |
+                        Q(group__in=public_groups) | Q(owner__username__iexact=str(request.user)))
             else:
                 if anonymous_group:
                     layers = layers.filter(
@@ -401,12 +405,18 @@ def facets(context):
                 groups = request.user.groups.all()
                 if anonymous_group:
                     maps = maps.filter(
-                        Q(group__isnull=True) | Q(group__in=groups) | Q(group=anonymous_group))
+                        Q(group__isnull=True) | Q(group__in=groups) |
+                        Q(group=anonymous_group) | Q(owner__username__iexact=str(request.user)))
                     documents = documents.filter(
-                        Q(group__isnull=True) | Q(group__in=groups) | Q(group=anonymous_group))
+                        Q(group__isnull=True) | Q(group__in=groups) |
+                        Q(group=anonymous_group) | Q(owner__username__iexact=str(request.user)))
                 else:
-                    maps = maps.filter(Q(group__isnull=True) | Q(group__in=groups))
-                    documents = documents.filter(Q(group__isnull=True) | Q(group__in=groups))
+                    maps = maps.filter(
+                        Q(group__isnull=True) | Q(group__in=groups) |
+                        Q(owner__username__iexact=str(request.user)))
+                    documents = documents.filter(
+                        Q(group__isnull=True) | Q(group__in=groups) |
+                        Q(owner__username__iexact=str(request.user)))
             else:
                 if anonymous_group:
                     maps = maps.filter(Q(group__isnull=True) | Q(group=anonymous_group))

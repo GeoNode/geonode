@@ -219,10 +219,12 @@ class CommonModelApi(ModelResource):
             groups = request.user.groups.all()
             if anonymous_group:
                 filtered = queryset.filter(Q(group__isnull=True) | Q(
-                    group__in=groups) | Q(group__in=public_groups) | Q(group=anonymous_group))
+                    group__in=groups) | Q(group__in=public_groups) | Q(
+                    group=anonymous_group) | Q(owner__username__iexact=str(request.user)))
             else:
                 filtered = queryset.filter(
-                    Q(group__isnull=True) | Q(group__in=public_groups) | Q(group__in=groups))
+                    Q(group__isnull=True) | Q(group__in=public_groups) |
+                    Q(group__in=groups) | Q(owner__username__iexact=str(request.user)))
         else:
             if anonymous_group:
                 filtered = queryset.filter(
@@ -518,10 +520,12 @@ class CommonModelApi(ModelResource):
                     groups = request.user.groups.all()
                     if anonymous_group:
                         filter_set = filter_set.filter(Q(group__isnull=True) | Q(
-                            group__in=groups) | Q(group__in=public_groups) | Q(group=anonymous_group))
+                            group__in=groups) | Q(group__in=public_groups) | Q(
+                            group=anonymous_group) | Q(owner__username__iexact=str(request.user)))
                     else:
                         filter_set = filter_set.filter(
-                            Q(group__isnull=True) | Q(group__in=public_groups) | Q(group__in=groups))
+                            Q(group__isnull=True) | Q(group__in=public_groups) |
+                            Q(group__in=groups) | Q(owner__username__iexact=str(request.user)))
                 else:
                     if anonymous_group:
                         filter_set = filter_set.filter(

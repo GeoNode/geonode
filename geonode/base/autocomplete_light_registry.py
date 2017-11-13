@@ -106,10 +106,12 @@ class ResourceBaseAutocomplete(AutocompleteModelTemplate):
                 if anonymous_group:
                     self.choices = self.choices.filter(
                         Q(group__isnull=True) | Q(group__in=groups) |
-                        Q(group__in=public_groups) | Q(group=anonymous_group))
+                        Q(group__in=public_groups) | Q(group=anonymous_group) |
+                        Q(owner__username__iexact=str(request.user)))
                 else:
                     self.choices = self.choices.filter(
-                        Q(group__isnull=True) | Q(group__in=public_groups) | Q(group__in=groups))
+                        Q(group__isnull=True) | Q(group__in=public_groups) |
+                        Q(group__in=groups) | Q(owner__username__iexact=str(request.user)))
             else:
                 if anonymous_group:
                     self.choices = self.choices.filter(

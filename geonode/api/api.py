@@ -305,11 +305,13 @@ class TopicCategoryResource(TypeFilteredResource):
                     if anonymous_group:
                         filter_set = filter_set.filter(
                             Q(group__isnull=True) | Q(group__in=groups) |
-                            Q(group__in=public_groups) | Q(group=anonymous_group))
+                            Q(group__in=public_groups) | Q(group=anonymous_group) |
+                            Q(owner__username__iexact=str(request.user)))
                     else:
                         filter_set = filter_set.filter(
                             Q(group__isnull=True) |
-                            Q(group__in=public_groups) | Q(group__in=groups))
+                            Q(group__in=public_groups) | Q(group__in=groups) |
+                            Q(owner__username__iexact=str(request.user)))
                 else:
                     if anonymous_group:
                         filter_set = filter_set.filter(
