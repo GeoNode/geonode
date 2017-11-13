@@ -3,9 +3,9 @@
         .module('LayerApp')
         .controller('AttributeViewController', AttributeViewController);
 
-    AttributeViewController.$inject = ['$location', 'LayerService', 'uiGridConstants'];
+    AttributeViewController.$inject = ['$location', 'LayerService', 'uiGridConstants', 'FileUploader'];
 
-    function AttributeViewController($location, LayerService, uiGridConstants) {
+    function AttributeViewController($location, LayerService, uiGridConstants, FileUploader) {
         var self = this;
         self.geoServerUrl = '';
         self.propertyNames = [];
@@ -65,6 +65,18 @@
 
                 }, errorFn);
         }
+
+        self.file = new FileUploader({
+            url: '/api/attribute/'+self.layerName+'/upload/',
+            queueLimit: 1,
+            headers: {
+                'X-CSRFToken': csrftoken
+            }
+        });
+        self.upload = function(){
+            console.log(csrftoken);
+            self.file.uploadAll();
+        };
 
         // Initialize Call
         (getGeoServerSettings)();
