@@ -124,47 +124,60 @@
                                                         <div class="native">
                                                             <h3>Native data</h3>
                                                             {% if links %}
-                                                                <ul>
+{#                                                                <ul>#}
                                                                     {% for link in links %}
-                                                                        <li>
+                                                                        <div class="radio">
+                                                                            <label>
+                                                                                <input type="radio" name="native-download" id="{{ link.name }}-data" value="{{ link.url }}">
+                                                                                {% trans link.name %}
+                                                                            </label>
+                                                                        </div>
+                                                                        {% comment %}<li>
                                                                             <a href="{{ link.url }}">{% trans link.name %}</a>
-                                                                        </li>
+                                                                        </li>{% endcomment %}
                                                                     {% endfor %}
-                                                                </ul>
+{#                                                                </ul>#}
                                                             {% endif %}
                                                         </div>
-                                                        <div class="projected">
-                                                            <h3>Projected data</h3>
+                                                        <div class="wgs84">
+                                                            <h3>WGS 84</h3>
                                                             {% if links %}
                                                                 <ul>
                                                                     {% for link in links %}
-                                                                        <li>
+                                                                        <div class="radio">
+                                                                            <label>
+                                                                                <input type="radio" name="wgs84-download" id="{{ link.name }}-data" value="{{ link.url }}&srsName=EPSG%3A{{ user_data_epsg }}">
+                                                                                {% trans link.name %}
+                                                                            </label>
+                                                                        </div>
+                                                                        {% comment %}<li>
                                                                             <a href="{{ link.url }}&srsName=EPSG%3A{{ user_data_epsg }}">{% trans link.name %}</a>
-                                                                        </li>
+                                                                        </li>{% endcomment %}
                                                                     {% endfor %}
                                                                 </ul>
                                                             {% endif %}
                                                         </div>
 
-                                                        {% if user_data_epsg %}
+                                                        {% if user_data_epsg != 'None' and user_data_epsg != "4326" %}
 
                                                             <h3>Download data format</h3>
                                                             <div class="radio">
                                                                 <label>
-                                                                    <input type="radio" name="nativeOrProjected" id="native-data" value="native" checked>
+                                                                    <input type="radio" name="nativeOrwgs84" id="native-data" value="native" checked>
                                                                     Native
                                                                 </label>
                                                             </div>
                                                             <div class="radio">
                                                                 <label>
-                                                                    <input type="radio" name="nativeOrProjected" id="projected-data" value="projected">
-                                                                    Projected
+                                                                    <input type="radio" name="nativeOrwgs84" id="wgs84-data" value="wgs84">
+                                                                    WGS 84
                                                                 </label>
                                                             </div>
                                                         {% endif %}
 
                                                     </div>
                                                     <div class="modal-footer">
+                                                        <button type="button" class="btn btn-primary pull-left data-export-button">Export...</button>
                                                         <button type="button" class="btn btn-default btn-gd"
                                                                 data-dismiss="modal">
                                                             {% trans "Close" %}
@@ -939,28 +952,50 @@
 
         }
 
-        {% if user_data_epsg %}
+        {% if user_data_epsg and user_data_epsg != "4326" %}
+
             $(".native").show();
-            $(".projected").hide();
+            $(".wgs84").hide();
 
             $("#native-data").change(function(){
                 if(this.checked){
                     $(".native").show();
-                    $(".projected").hide();
+                    $(".wgs84").hide();
+                    $("input[name='wgs84-download']").attr("checked", false);
 
                 }
             });
-            $("#projected-data").change(function(){
+            $("#wgs84-data").change(function(){
                 if(this.checked){
                     $(".native").hide();
-                    $(".projected").show();
-
+                    $(".wgs84").show();
+                    $("input[name='native-download']").attr("checked", false);
                 }
             });
         {% else %}
             $(".native").show();
-            $(".projected").hide();
+            $(".wgs84").hide();
         {% endif %}
+
+        $(".data-export-button").click(function(e){
+            var nativeDataValue = $("input[name='native-download']:checked").val();
+            var wgs84DataValue = $("input[name='wgs84-download']:checked").val();
+
+            if(nativeDataValue == undefined && wgs84DataValue == undefined){
+                alert("Should have select at least one data format");
+            }else {
+                if(nativeDataValue != undefined){
+                    e.preventDefault();
+                    window.open(nativeDataValue, '_blank');
+                    window.focus();
+
+                }else {
+                    e.preventDefault();
+                    window.open(wgs84DataValue, '_blank');
+                    window.focus();
+                }
+            }
+        });
 
 
     </script>
