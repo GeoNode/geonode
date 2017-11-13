@@ -188,6 +188,9 @@
             factory.getExtent = function() {
                 return olMap.getView().calculateExtent(olMap.getSize());
             }
+            factory.getProjection = function(){
+                return olMap.getView().getProjection();
+            }
 
             factory.zoomToLevel = function(zoomLevel) {
                 olMap.getView().setZoom(zoomLevel);
@@ -202,6 +205,9 @@
                 if (!empty) {
                     olMap.getView().fit(extent, olMap.getSize());
                 }
+            };
+            factory.removeVectorLayer = function(vectorLayer){
+                olMap.removeLayer(vectorLayer);
             };
 
             factory.zoomToMap = function() {
@@ -221,6 +227,10 @@
             factory.updateSize = function() {
                 olMap.updateSize();
             };
-        }
+
+            factory.getMap = function(){
+                return olMap;
+            };
+        };
     }
 ]);

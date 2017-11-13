@@ -28,7 +28,10 @@
 
 .icon18 {
     height: 18px;
+    left: 5px;
     padding: 0;
+    position: absolute;
+    top: 5px;
     width: 18px;
 }
 

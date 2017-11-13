@@ -122,7 +122,7 @@
                                 </li>
 {#                                {% if user.is_authenticated %}#}
                                 <li id="nav_maps">
-                                  <a href="{% url "new_map" %}">{% trans "Create a New Map" %}</a>
+                                  <a href="{% url "old_map" %}">{% trans "Create a New Map" %}</a>
                                 </li>
 {#                                {% endif %}#}
                             </ul>
@@ -191,9 +191,9 @@
                                     {% if HAYSTACK_SEARCH %}
                                         <input id="search_input"  type="text" placeholder="" name="q" style="color:#5a5d63;">
                                     {% else %}
-                                        <input id="search_input"  type="text" placeholder="Search layer/map/doc" style="color:#5a5d63;" name="title__icontains">
+                                        <input id="search_input"  type="text" placeholder="Search layer/map/doc" style="color:#5a5d63;" class="map-search" name="title__icontains">
                                     {% endif %}
-                                    <span style="padding-left:20px;">
+                                    <span style="padding-left:0;">
                                         <!--<select name="" class="user_dropdown" id="user_dropdown_onch" onchange="drop_sec(this);">-->
                                             <!--<option value="Default" id="layermapdocsearch" selected="selected">Layer/Map/Document</option>-->
                                             <!--<option value="Organization" id="organizationsearch" >Organization</option>-->
@@ -215,7 +215,7 @@
                                             <!--</ul>-->
                                         <!--</div>-->
                                         <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button"
-                                               aria-haspopup="true" aria-expanded="false">{% trans "" %} <span class="caret"></span>
+                                               aria-haspopup="true" aria-expanded="false">{% trans "" %} <span class="caret search-caret"></span>
                                         </a>
                                             <ul class="dropdown-menu" >
                                                 <li id="layermapdocsearch">
