@@ -165,6 +165,9 @@ urlpatterns = patterns('',
 
                        # Analytics
                        url(r'^analytics/', include('geonode.analytics.urls')),
+
+                       # Logging and Error Reporting
+                       url(r'^error/reporting/', include('geonode.error_reporting.urls')),
                        )
 
 if "geonode.contrib.dynamic" in settings.INSTALLED_APPS:

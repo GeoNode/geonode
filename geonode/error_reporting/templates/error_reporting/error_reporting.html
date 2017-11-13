@@ -1,0 +1,99 @@
+{% extends "site_base.html" %}
+{% load activity_tags  social_tags i18n %}
+
+{% block title %}{% trans "Analytics" %}{% endblock %}
+
+{% block body_outer %}
+    <br>
+    <h1>Error Logging</h1>
+    {% if object_list %}
+        <div class="table-responsive">
+            <table class="table table-bordered">
+                <tr>
+                    <th><b>Logger Name</b></th>
+                    <th><b>Level</b></th>
+                    {% comment %}<th><b>Custom Message</b></th>{% endcomment %}
+                    <th><b>System Message</b></th>
+                    <th><b>Traceback</b></th>
+                    <th><b>Created Datetime</b></th>
+                </tr>
+                {% for error in object_list %}
+                    <tr>
+                        <td>{{ error.logger_name }}</td>
+                        <td class="error-level">{{ error.level }}</td>
+                        {% comment %}<td>{{ error.custom_msg }}</td>{% endcomment %}
+                        <td>{{ error.msg }}</td>
+                        <td>{{ error.trace }}</td>
+                        <td>{{ error.create_datetime }}</td>
+
+                    </tr>
+                {% endfor %}
+            </table>
+        </div>
+        <div class="text-center">
+            <nav aria-label="Page navigation">
+                {% if is_paginated %}
+                    <ul class="pagination">
+                        {% if page_obj.has_previous %}
+                            <li>
+                                <a href="/error/reporting/?page={{ page_obj.previous_page_number }}" aria-label="Previous">
+                                    <span aria-hidden="true">&laquo;</span>
+                                </a>
+
+                            </li>
+                        {% endif %}
+                        <li>
+                            <span>
+                                Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}
+                            </span>
+                        </li>
+                        {% if page_obj.has_next %}
+                            <li>
+                                <a href="/error/reporting/?page={{ page_obj.next_page_number }}" aria-label="Next">
+                                    <span aria-hidden="true">&raquo;</span>
+                                </a>
+                            </li>
+                        {% endif %}
+                    </ul>
+                {% endif %}
+            </nav>
+        </div>
+    {% else %}
+        <p>No Error Found!!! &#9786;</p>
+    {% endif %}
+
+{% endblock %}
+
+{% block extra_head %}
+{% endblock %}
+
+{% block extra_script %}
+    <script>
+    $(window).load(function(){
+        /*
+        CRITICAL = 50
+        FATAL = CRITICAL
+        ERROR = 40
+        WARNING = 30
+        WARN = WARNING
+        INFO = 20
+        DEBUG = 10
+        NOTSET = 0
+        * */
+
+        var debugObject = {
+            "50": "<span style='color:red; font-weight:bold'>CRITICAL</span>",
+            "40": "<span style='color:red; font-weight:bold'>ERROR</span>",
+            "30": "<span style='color:orange; font-weight:bold'>WARNING</span>",
+            "20": "<span style='color:green; font-weight:bold'>INFO</span>",
+            "10": "<span style='color:orange; font-weight:bold'>DEBUG</span>",
+            "0": "<span style='color:green; font-weight:bold'>NOTSET</span>"
+        };
+
+        $(".error-level").each(function(e){
+            $(this).html(debugObject[$(this).html()]);
+        });
+
+    });
+    </script>
+{% endblock %}
