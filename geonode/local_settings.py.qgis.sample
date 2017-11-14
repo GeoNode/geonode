@@ -18,75 +18,54 @@
 #
 #########################################################################
 
+# flake8: noqa
+# Disable flake8 check, since this is just a custom settings file
+
 import os
-from kombu import Queue
 
-PROJECT_ROOT = os.path.abspath(os.path.dirname(__file__))
+try:
+    # import geonode settings
+    from geonode.settings import *
+except ImportError:
+    pass
 
-SITEURL = "http://localhost:8000/"
+GEONODE_APPS += ("geonode.qgis_server", )
+GEONODE_APPS = list(GEONODE_APPS)
+INSTALLED_APPS += ("geonode.qgis_server", )
+INSTALLED_APPS = list(INSTALLED_APPS)
 
-ALLOWED_HOSTS = ['localhost', 'geonode.example.com']
+# QGIS Server Backend settings
 
-TIME_ZONE = 'America/Chicago'
+# Delete Geoserver settings
 
-DATABASES = {
-    'default': {
-         'ENGINE': 'django.db.backends.postgresql_psycopg2',
-         'NAME': 'geonode',
-         'USER': 'geonode',
-         'PASSWORD': 'geonode',
-     }
-}
+if 'geonode.geoserver' in INSTALLED_APPS:
+    INSTALLED_APPS.remove("geonode.geoserver")
 
-CATALOGUE = {
-    'default': {
-        # The underlying CSW implementation
-        # default is pycsw in local mode (tied directly to GeoNode Django DB)
-        'ENGINE': 'geonode.catalogue.backends.pycsw_local',
-        # pycsw in non-local mode
-        # 'ENGINE': 'geonode.catalogue.backends.pycsw_http',
-        # GeoNetwork opensource
-        # 'ENGINE': 'geonode.catalogue.backends.geonetwork',
-        # deegree and others
-        # 'ENGINE': 'geonode.catalogue.backends.generic',
+if 'geonode.geoserver' in GEONODE_APPS:
+    GEONODE_APPS.remove("geonode.geoserver")
 
-        # The FULLY QUALIFIED base url to the CSW instance for this GeoNode
-        'URL': '%scatalogue/csw' % SITEURL,
-        # 'URL': 'http://localhost:8080/geonetwork/srv/en/csw',
-        # 'URL': 'http://localhost:8080/deegree-csw-demo-3.0.4/services',
+if 'LOCAL_GEOSERVER' in locals():
+    MAP_BASELAYERS.remove(LOCAL_GEOSERVER)
+    del LOCAL_GEOSERVER
 
-        # login credentials (for GeoNetwork)
-        'USER': 'admin',
-        'PASSWORD': 'admin',
-    }
-}
+
+# Change context processors
+geoserver_context_processor = 'geonode.geoserver.context_processors.geoserver_urls'
+if geoserver_context_processor in TEMPLATES[0]['OPTIONS']['context_processors']:
+    TEMPLATES[0]['OPTIONS']['context_processors'].remove(geoserver_context_processor)
+qgis_server_context_processor = 'geonode.qgis_server.context_processors.qgis_server_urls'
+TEMPLATES[0]['OPTIONS']['context_processors'].append(qgis_server_context_processor)
 
 # Leaflet config
 LAYER_PREVIEW_LIBRARY = 'leaflet'
 LEAFLET_CONFIG = {
     'TILES': [
-        # Find tiles at:
-        # http://leaflet-extras.github.io/leaflet-providers/preview/
-
         # Map Quest
         ('Map Quest',
          'http://otile4.mqcdn.com/tiles/1.0.0/osm/{z}/{x}/{y}.png',
          'Tiles Courtesy of <a href="http://www.mapquest.com/">MapQuest</a> '
          '&mdash; Map data &copy; '
          '<a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'),
-        # Stamen toner lite.
-        # ('Watercolor',
-        #  'http://{s}.tile.stamen.com/watercolor/{z}/{x}/{y}.png',
-        #  'Map tiles by <a href="http://stamen.com">Stamen Design</a>, \
-        #  <a href="http://creativecommons.org/licenses/by/3.0">CC BY 3.0</a> &mdash; Map data &copy; \
-        #  <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, \
-        #  <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>'),
-        # ('Toner Lite',
-        #  'http://{s}.tile.stamen.com/toner-lite/{z}/{x}/{y}.png',
-        #  'Map tiles by <a href="http://stamen.com">Stamen Design</a>, \
-        #  <a href="http://creativecommons.org/licenses/by/3.0">CC BY 3.0</a> &mdash; Map data &copy; \
-        #  <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, \
-        #  <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>'),
     ],
     'PLUGINS': {
         'esri-leaflet': {
@@ -104,25 +83,36 @@ LEAFLET_CONFIG = {
 }
 
 # Legacy from Geoserver
+OGC_URL_INSIDE = os.environ.get('OGC_URL_INSIDE', SITEURL)
+# Not using GeoFence if using QGIS Server Backend
+GEOFENCE_SECURITY_ENABLED = False
+
 OGC_SERVER = {
     'default': {
-        'LOGIN_ENDPOINT': '',
-        'LOGOUT_ENDPOINT': '',
-        'LOCATION': SITEURL + 'qgis-server/',
+    	'BACKEND': 'geonode.qgis_server',
+        'LOCATION': OGC_URL_INSIDE + 'qgis-server/',
         'PUBLIC_LOCATION': SITEURL + 'qgis-server/',
-        'LOG_FILE': '/tmp/qgis-server.log'
+        'GEOFENCE_SECURITY_ENABLED': GEOFENCE_SECURITY_ENABLED
     }
 }
 
 # OGC (WMS/WFS/WCS) Server Settings
 tiles_directory = os.path.join(PROJECT_ROOT, "qgis_tiles")
+QGIS_SERVER_URL = os.environ.get(
+    'QGIS_SERVER_URL', 'http://qgis-server/')
 QGIS_SERVER_CONFIG = {
     'tiles_directory': tiles_directory,
-    'tile_path': tiles_directory + '/%s/%d/%d/%d.png',
-    'legend_path': tiles_directory + '/%s/legend.png',
+    'tile_path': tiles_directory + '/%s/%s/%d/%d/%d.png',
+    'legend_path': tiles_directory + '/%s/%s/legend.png',
     'thumbnail_path': tiles_directory + '/%s/thumbnail.png',
     'map_tile_path': os.path.join(
         tiles_directory, '%s', 'map_tiles', '%s', '%s', '%s', '%s.png'),
-    'qgis_server_url': 'http://127.0.0.1/cgi-bin/qgis_mapserv.fcgi',
+    'qgis_server_url': QGIS_SERVER_URL,
     'layer_directory': os.path.join(PROJECT_ROOT, "qgis_layer")
 }
+
+
+on_travis = os.environ.get('ON_TRAVIS', False)
+SKIP_GEOSERVER_TEST = on_travis
+
+CELERY_ALWAYS_EAGER = os.environ.get('CELERY_ALWAYS_EAGER', True)

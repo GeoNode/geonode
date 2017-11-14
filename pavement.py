@@ -81,6 +81,12 @@ def grab(src, dest, name):
 ])
 def setup_geoserver(options):
     """Prepare a testing instance of GeoServer."""
+    from geonode.settings import INSTALLED_APPS
+
+    # only start if using Geoserver backend
+    if 'geonode.geoserver' not in INSTALLED_APPS:
+        return
+
     download_dir = path('downloaded')
     if not download_dir.exists():
         download_dir.makedirs()
@@ -117,6 +123,47 @@ def setup_geoserver(options):
         z.extractall(webapp_dir)
 
     _install_data_dir()
+
+
+@task
+def setup_qgis_server(options):
+    """Prepare a testing instance of QGIS Server."""
+    from geonode.settings import INSTALLED_APPS
+
+    # only start if using QGIS Server backend
+    if 'geonode.qgis_server' not in INSTALLED_APPS:
+        return
+
+    # QGIS Server testing instance run on top of docker
+    try:
+        sh('scripts/misc/docker_check.sh')
+    except BaseException:
+        info("You need to have docker and docker-compose installed.")
+        return
+
+    info('Docker and docker-compose were installed.')
+    info('Proceeded to setup QGIS Server.')
+    info('Create QGIS Server related folder.')
+
+    try:
+        os.makedirs('geonode/qgis_layer')
+    except BaseException:
+        pass
+
+    try:
+        os.makedirs('geonode/qgis_tiles')
+    except BaseException:
+        pass
+
+    all_permission = 0o777
+    os.chmod('geonode/qgis_layer', all_permission)
+    stat = os.stat('geonode/qgis_layer')
+    info('Mode : %o' % stat.st_mode)
+    os.chmod('geonode/qgis_tiles', all_permission)
+    stat = os.stat('geonode/qgis_tiles')
+    info('Mode : %o' % stat.st_mode)
+
+    info('QGIS Server related folder successfully setup.')
 
 
 def _install_data_dir():
@@ -187,6 +234,7 @@ def static(options):
 @task
 @needs([
     'setup_geoserver',
+    'setup_qgis_server',
 ])
 def setup(options):
     """Get dependencies and prepare a GeoNode development environment."""
@@ -347,6 +395,7 @@ def package(options):
 
 @task
 @needs(['start_geoserver',
+        'start_qgis_server',
         'start_django'])
 @cmdopts([
     ('bind=', 'b', 'Bind server to provided IP address and port number.'),
@@ -376,17 +425,48 @@ def stop_geoserver():
     """
     Stop GeoServer
     """
+    from geonode.settings import INSTALLED_APPS
+
+    # only start if using Geoserver backend
+    if 'geonode.geoserver' not in INSTALLED_APPS:
+        return
     kill('java', 'geoserver')
 
 
 @task
+@cmdopts([
+    ('qgis_server_port=', 'p', 'The port of the QGIS Server instance.')
+])
+def stop_qgis_server():
+    """
+    Stop QGIS Server Backend.
+    """
+    from geonode.settings import INSTALLED_APPS
+
+    # only start if using QGIS Server backend
+    if 'geonode.qgis_server' not in INSTALLED_APPS:
+        return
+    port = options.get('qgis_server_port', '9000')
+
+    sh(
+        'docker-compose -f docker-compose-qgis-server.yml down',
+        env={
+            'GEONODE_PROJECT_PATH': os.getcwd(),
+            'QGIS_SERVER_PORT': port
+        })
+
+
+@task
+@needs([
+    'stop_geoserver',
+    'stop_qgis_server'
+])
 def stop():
     """
     Stop GeoNode
     """
     # windows needs to stop the geoserver first b/c we can't tell which python
     # is running, so we kill everything
-    stop_geoserver()
     info("Stopping GeoNode ...")
     stop_django()
 
@@ -509,6 +589,30 @@ def start_geoserver(options):
         info(('GeoServer never started properly or timed out.'
               'It may still be running in the background.'))
         sys.exit(1)
+
+
+@task
+@cmdopts([
+    ('qgis_server_port=', 'p', 'The port of the QGIS Server instance.')
+])
+def start_qgis_server():
+    """Start QGIS Server instance with GeoNode related plugins."""
+    from geonode.settings import INSTALLED_APPS
+
+    # only start if using QGIS Serrver backend
+    if 'geonode.qgis_server' not in INSTALLED_APPS:
+        return
+    info('Starting up QGIS Server...')
+
+    port = options.get('qgis_server_port', '9000')
+
+    sh(
+        'docker-compose -f docker-compose-qgis-server.yml up -d qgis-server',
+        env={
+            'GEONODE_PROJECT_PATH': os.getcwd(),
+            'QGIS_SERVER_PORT': port
+        })
+    info('QGIS Server is up.')
 
 
 @task
