@@ -99,12 +99,19 @@
         <dd>{{ resource.regions.all|join:", " }}</dd>
         {% endif %}
 
+        <dt>{% trans "Approved" %}</dt>
+        <dd>{% if resource.is_approved %} {% trans "Yes" %} {% else %} {% trans "No" %} {% endif %}</dd>
+
         <dt>{% trans "Published" %}</dt>
         <dd>{% if resource.is_published %} {% trans "Yes" %} {% else %} {% trans "No" %} {% endif %}</dd>
 
         <dt>{% trans "Featured" %}</dt>
         <dd>{% if resource.featured %} {% trans "Yes" %} {% else %} {% trans "No" %} {% endif %}</dd>
 
+        {% if resource.group %}
+        <dt>{% trans "Group" %}</dt>
+        <dd><a href="/groups/group/{{ resource.group.name }}/activity/">{{ group }}</a> </dd>
+        {% endif %}
 
     </dl>
 

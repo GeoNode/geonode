@@ -46,18 +46,29 @@
                     "ready": function() {
                         var map = app.mapPanel.map;
                         var layer = app.map.layers.slice(-1)[0];
-
-                        // FIXME(Ariel): Zoom to extent until #1795 is fixed.
-                        //map.zoomToExtent(layer.maxExtent, false)
-
                         var bbox = layer.bbox;
+                        var crs = layer.crs
                         if (bbox != undefined)
                         {
                            if (!Array.isArray(bbox) && Object.keys(layer.srs) in bbox) {
                             bbox = bbox[Object.keys(layer.srs)].bbox;
                            }
 
-                           var extent = OpenLayers.Bounds.fromArray(bbox);
+                           var extent = new OpenLayers.Bounds();
+
+                           if(map.projection != 'EPSG:900913' && crs && crs.properties) {
+                               extent.left = bbox[0];
+                               extent.right = bbox[1];
+                               extent.bottom = bbox[2];
+                               extent.top = bbox[3];
+
+                               if (crs.properties != map.projection) {
+                                   extent = extent.clone().transform(crs.properties, map.projection);
+                               }
+                           } else {
+                               extent = OpenLayers.Bounds.fromArray(bbox);
+                           }
+
                            var zoomToData = function()
                            {
                                map.zoomToExtent(extent, false);
@@ -67,7 +78,7 @@
                            };
                            map.events.register('changebaselayer',null,zoomToData);
                            if(map.baseLayer){
-                            map.zoomToExtent(extent, false);
+                               map.zoomToExtent(extent, false);
                            }
                         }
                     },

@@ -27,6 +27,9 @@ import time
 import logging
 import traceback
 import gisdata
+from decimal import Decimal
+from lxml import etree
+from urlparse import urljoin
 
 from django.conf import settings
 from django.core.exceptions import ObjectDoesNotExist
@@ -36,13 +39,16 @@ from django.core.urlresolvers import reverse
 from django.contrib.staticfiles.templatetags import staticfiles
 from django.contrib.auth import get_user_model
 # from guardian.shortcuts import assign_perm
+from geonode.base.populate_test_data import reconnect_signals
 
 from geoserver.catalog import FailedRequestError, UploadError
 
 # from geonode.security.models import *
+from geonode.decorators import on_ogc_backend
+from geonode.base.models import TopicCategory
 from geonode.layers.models import Layer
 from geonode.maps.models import Map
-from geonode import GeoNodeException
+from geonode import GeoNodeException, geoserver, qgis_server
 from geonode.layers.utils import (
     upload,
     file_upload,
@@ -55,11 +61,14 @@ from geonode.geoserver.helpers import cascading_delete, set_attributes_from_geos
 # from geonode.geoserver.helpers import get_wms
 # from geonode.geoserver.helpers import set_time_info
 from geonode.geoserver.signals import gs_catalog
-
+from geonode.utils import check_ogc_backend
 
 LOGIN_URL = "/accounts/login/"
 
 logging.getLogger("south").setLevel(logging.INFO)
+
+# Reconnect post_save signals that is disconnected by populate_test_data
+reconnect_signals()
 
 """
  HOW TO RUN THE TESTS
@@ -187,6 +196,57 @@ class GeoNodeMapTest(TestCase):
             if link.mime == 'image/tiff':
                 wcs_link = True
         self.assertTrue(wcs_link)
+
+    @on_ogc_backend(qgis_server.BACKEND_PACKAGE)
+    def test_zipped_files(self):
+        """Test that the zipped files is created for raster."""
+        filename = os.path.join(gisdata.GOOD_DATA, 'raster/test_grid.tif')
+        uploaded = file_upload(filename)
+        zip_link = False
+        for link in uploaded.link_set.all():
+            if link.mime == 'ZIP':
+                zip_link = True
+        self.assertTrue(zip_link)
+
+    def test_layer_upload_bbox(self):
+        """Test that the bbox format is correct
+
+        Test that it is correctly saved in` database and represented in the
+        properties correctly.
+        """
+        filename = os.path.join(gisdata.GOOD_DATA, 'raster/test_grid.tif')
+        uploaded = file_upload(filename)
+
+        # Check bbox value
+        bbox_x0 = Decimal('96.9560000000')
+        bbox_x1 = Decimal('97.1097053200')
+        bbox_y0 = Decimal('-5.5187330000')
+        bbox_y1 = Decimal('-5.3035455520')
+        srid = u'EPSG:4326'
+
+        self.assertEqual(bbox_x0, uploaded.bbox_x0)
+        self.assertEqual(bbox_x1, uploaded.bbox_x1)
+        self.assertEqual(bbox_y0, uploaded.bbox_y0)
+        self.assertEqual(bbox_y1, uploaded.bbox_y1)
+        self.assertEqual(srid, uploaded.srid)
+
+        # bbox format: [xmin,xmax,ymin,ymax]
+        expected_bbox = [
+            Decimal('96.9560000000'),
+            Decimal('97.1097053200'),
+            Decimal('-5.5187330000'),
+            Decimal('-5.3035455520'),
+            u'EPSG:4326'
+        ]
+        self.assertEqual(expected_bbox, uploaded.bbox)
+
+        # bbox format: [xmin,ymin,xmax,ymax]
+        expected_bbox_string = (
+            '96.9560000000,-5.5187330000,97.1097053200,-5.3035455520')
+        self.assertEqual(expected_bbox_string, uploaded.bbox_string)
+
+        # Clean up
+        uploaded.delete()
 
     def test_layer_upload(self):
         """Test that layers can be uploaded to running GeoNode/GeoServer
@@ -326,8 +386,15 @@ class GeoNodeMapTest(TestCase):
                          'Expected specific supplemental information '
                          'from uploaded layer XML metadata')
 
-        self.assertEqual(len(uploaded.keyword_list(
-        )), 7, 'Expected specific number of keywords from uploaded layer XML metadata')
+        if check_ogc_backend(geoserver.BACKEND_PACKAGE):
+            self.assertEqual(
+                len(uploaded.keyword_list()), 7,
+                'Expected specific number of keywords from uploaded layer XML metadata')
+        elif check_ogc_backend(qgis_server.BACKEND_PACKAGE):
+            # QGIS Server backend doesn't have GeoServer assigned keywords.
+            self.assertEqual(
+                len(uploaded.keyword_list()), 5,
+                'Expected specific number of keywords from uploaded layer XML metadata')
 
         self.assertTrue(
              u'Airport,Airports,Landing Strips,Runway,Runways' in uploaded.keyword_csv,
@@ -418,6 +485,7 @@ class GeoNodeMapTest(TestCase):
 
     # geonode.maps.views
 
+    @on_ogc_backend(geoserver.BACKEND_PACKAGE)
     def test_layer_delete_from_geoserver(self):
         """Verify that layer is correctly deleted from GeoServer
         """
@@ -465,6 +533,7 @@ class GeoNodeMapTest(TestCase):
                 shp_layer.name,
                 store=tif_store))
 
+    @on_ogc_backend(geoserver.BACKEND_PACKAGE)
     def test_delete_layer(self):
         """Verify that the 'delete_layer' pre_delete hook is functioning
         """
@@ -502,7 +571,7 @@ class GeoNodeMapTest(TestCase):
         self.assertRaises(ObjectDoesNotExist,
                           lambda: Layer.objects.get(pk=shp_layer_id))
 
-    # geonode.geoserver.helpers
+        # geonode.geoserver.helpers
         # If catalogue is installed, then check that it is deleted from there
         # too.
         if 'geonode.catalogue' in settings.INSTALLED_APPS:
@@ -513,7 +582,8 @@ class GeoNodeMapTest(TestCase):
             shp_layer_gn_info = catalogue.get_record(uuid)
             assert shp_layer_gn_info is None
 
-    def test_cascading_delete(self):
+    @on_ogc_backend(geoserver.BACKEND_PACKAGE)
+    def test_geoserver_cascading_delete(self):
         """Verify that the helpers.cascading_delete() method is working properly
         """
         gs_cat = gs_catalog
@@ -617,10 +687,20 @@ class GeoNodeMapTest(TestCase):
             self.assertEquals(response.context['is_featuretype'], True)
 
             # test replace a vector with a raster
+            post_permissions = {
+                'users': {
+                    'AnonymousUser': [
+                        'view_resourcebase', 'download_resourcebase']
+                },
+                'groups': {}
+            }
+            post_data = {
+                'base_file': open(
+                    raster_file, 'rb'),
+                'permissions': json.dumps(post_permissions)
+            }
             response = self.client.post(
-                vector_replace_url, {
-                    'base_file': open(
-                        raster_file, 'rb')})
+                vector_replace_url, post_data)
             # TODO: This should really return a 400 series error with the json dict
             self.assertEquals(response.status_code, 400)
             response_dict = json.loads(response.content)
@@ -642,17 +722,18 @@ class GeoNodeMapTest(TestCase):
                  'dbf_file': layer_dbf,
                  'shx_file': layer_shx,
                  'prj_file': layer_prj,
-                 'charset': 'UTF-8'
+                 'charset': 'UTF-8',
+                 'permissions': json.dumps(post_permissions)
                  })
             response_dict = json.loads(response.content)
 
-            if not response_dict['success'] and 'unknown encoding' in response_dict['errors']:
+            if not response_dict['success'] and 'unknown encoding' in \
+                    response_dict['errors']:
                 print(response_dict['errors'])
                 pass
             else:
                 self.assertEquals(response.status_code, 200)
                 self.assertEquals(response_dict['success'], True)
-
                 # Get a Layer object for the newly created layer.
                 new_vector_layer = Layer.objects.get(pk=vector_layer.pk)
                 # FIXME(Ariel): Check the typename does not change.
@@ -672,7 +753,8 @@ class GeoNodeMapTest(TestCase):
                     {'base_file': layer_base,
                      'dbf_file': layer_dbf,
                      'shx_file': layer_shx,
-                     'prj_file': layer_prj
+                     'prj_file': layer_prj,
+                     'permissions': json.dumps(post_permissions)
                      })
                 self.assertEquals(response.status_code, 401)
         finally:
@@ -705,13 +787,23 @@ class GeoNodeMapTest(TestCase):
                 self.assertIsNotNone(lyr)
                 self.assertEqual(lyr.name, "test_san_andres_y_providencia_administrative")
                 self.assertEqual(lyr.title, "Test San Andres y Providencia Administrative")
-                self.assertEqual(
-                    lyr.keyword_list(), [
+                default_keywords = [
+                    u'import',
+                    u'san andreas',
+                    u'test',
+                ]
+                if check_ogc_backend(geoserver.BACKEND_PACKAGE):
+                    geoserver_keywords = [
                         u'features',
-                        u'import',
-                        u'san andreas',
-                        u'test',
-                        u'test_san_andres_y_providencia_administrative'])
+                        u'test_san_andres_y_providencia_administrative'
+                    ]
+                    self.assertEqual(
+                        set(lyr.keyword_list()),
+                        set(default_keywords + geoserver_keywords))
+                elif check_ogc_backend(qgis_server.BACKEND_PACKAGE):
+                    self.assertEqual(
+                        set(lyr.keyword_list()),
+                        set(default_keywords))
             finally:
                 # Clean up and completely delete the layer
                 lyr.delete()
@@ -840,6 +932,7 @@ xsi:schemaLocation="http://www.opengis.net/sld http://schemas.opengis.net/sld/1.
         layer.delete()
     """
 
+    @on_ogc_backend(geoserver.BACKEND_PACKAGE)
     def test_unpublished(self):
         """Test permissions on an unpublished layer
         """
@@ -857,8 +950,10 @@ xsi:schemaLocation="http://www.opengis.net/sld http://schemas.opengis.net/sld/1.
             # request getCapabilities: layer must be there as it is published and
             # advertised: we need to check if in response there is
             # <Name>geonode:san_andres_y_providencia_water</Name>
-            url = 'http://localhost:8080/geoserver/ows?' \
+            geoserver_base_url = settings.OGC_SERVER['default']['LOCATION']
+            get_capabilities_url = 'ows?' \
                 'service=wms&version=1.3.0&request=GetCapabilities'
+            url = urljoin(geoserver_base_url, get_capabilities_url)
             str_to_check = '<Name>geonode:san_andres_y_providencia_poi</Name>'
             request = urllib2.Request(url)
             response = urllib2.urlopen(request)
@@ -1072,6 +1167,7 @@ class GeoNodeGeoServerSync(TestCase):
     def tearDown(self):
         pass
 
+    @on_ogc_backend(geoserver.BACKEND_PACKAGE)
     def test_set_attributes_from_geoserver(self):
         """Test attributes syncronization
         """
@@ -1101,3 +1197,108 @@ class GeoNodeGeoServerSync(TestCase):
                 attribute.description,
                 '%s_description' % attribute.attribute
             )
+
+
+class GeoNodeGeoServerCapabilities(TestCase):
+
+    """Tests GeoNode/GeoServer GetCapabilities per layer, user, category and map
+    """
+
+    def setUp(self):
+        call_command('loaddata', 'initial_data', verbosity=0)
+        call_command('loaddata', 'people_data', verbosity=0)
+
+    def tearDown(self):
+        pass
+
+    @on_ogc_backend(geoserver.BACKEND_PACKAGE)
+    def test_capabilities(self):
+        """Test capabilities
+        """
+
+        # a category
+        category = TopicCategory.objects.all()[0]
+
+        # some users
+        norman = get_user_model().objects.get(username="norman")
+        admin = get_user_model().objects.get(username="admin")
+
+        # create 3 layers, 2 with norman as an owner an 2 with category as a category
+        layer1 = file_upload(
+            os.path.join(
+                gisdata.VECTOR_DATA,
+                "san_andres_y_providencia_poi.shp"),
+            name='layer1',
+            user=norman,
+            category=category,
+            overwrite=True,
+        )
+        layer2 = file_upload(
+            os.path.join(
+                gisdata.VECTOR_DATA,
+                "single_point.shp"),
+            name='layer2',
+            user=norman,
+            overwrite=True,
+        )
+        layer3 = file_upload(
+            os.path.join(
+                gisdata.VECTOR_DATA,
+                "san_andres_y_providencia_administrative.shp"),
+            name='layer3',
+            user=admin,
+            category=category,
+            overwrite=True,
+        )
+
+        # 0. test capabilities_layer
+        url = reverse('capabilities_layer', args=[layer1.id])
+        resp = self.client.get(url)
+        layercap = etree.fromstring(resp.content)
+        rootdoc = etree.ElementTree(layercap)
+        layernodes = rootdoc.findall('.//Capability/Layer/Layer')
+        layernode = layernodes[0]
+
+        self.assertEquals(1, len(layernodes))
+        self.assertEquals(layernode.find('Name').text, layer1.name)
+
+        # 1. test capabilities_user
+        url = reverse('capabilities_user', args=[norman.username])
+        resp = self.client.get(url)
+        layercap = etree.fromstring(resp.content)
+        rootdoc = etree.ElementTree(layercap)
+        layernodes = rootdoc.findall('.//Capability/Layer/Layer')
+
+        # norman has 2 layers
+        self.assertEquals(2, len(layernodes))
+
+        # the norman two layers are named layer1 and layer2
+        count = 0
+        for layernode in layernodes:
+            if layernode.find('Name').text == layer1.name:
+                count += 1
+            elif layernode.find('Name').text == layer2.name:
+                count += 1
+        self.assertEquals(2, count)
+
+        # 2. test capabilities_category
+        url = reverse('capabilities_category', args=[category.identifier])
+        resp = self.client.get(url)
+        layercap = etree.fromstring(resp.content)
+        rootdoc = etree.ElementTree(layercap)
+        layernodes = rootdoc.findall('.//Capability/Layer/Layer')
+
+        # category is in two layers
+        self.assertEquals(2, len(layernodes))
+
+        # the layers for category are named layer1 and layer3
+        count = 0
+        for layernode in layernodes:
+            if layernode.find('Name').text == layer1.name:
+                count += 1
+            elif layernode.find('Name').text == layer3.name:
+                count += 1
+        self.assertEquals(2, count)
+
+        # 3. test for a map
+        # TODO

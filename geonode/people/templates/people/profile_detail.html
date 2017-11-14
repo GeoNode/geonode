@@ -115,6 +115,9 @@
       </tr>
     </tbody>
   </table>
+  {% if USE_GEOSERVER and DISPLAY_WMS_LINKS %}
+  <p><a href="{% url 'capabilities_user' user.username %}"><i class="fa fa-map"></i> {% trans 'User layers WMS GetCapabilities document' %}</a></p>
+  {% endif %}
 </div>
 
 <div class="col-xs-12 col-md-3">

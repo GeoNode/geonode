@@ -13,7 +13,13 @@
 <script type="text/javascript" src="{{ STATIC_URL }}sdk/lib/app.js?v={{ VERSION }}"></script>
 <script type="text/javascript">
 OpenLayers.ImgPath = "{{ STATIC_URL }}sdk/externals/openlayers/img/";
-OpenLayers.Request.DEFAULT_CONFIG.headers = {
-    'X-CSRFToken': '{{ csrf_token|escapejs }}'
+OpenLayers.Util.onImageLoadErrorColor = 'transparent';
+OpenLayers.Util.onImageLoadError = function() {
+    this.src = '{{ STATIC_URL }}geonode/img/light_gray.jpg';
 };
+
+OpenLayers.Request.DEFAULT_CONFIG.headers = {
+  'X-CSRFToken': '{{ csrf_token|escapejs }}'
+};
+
 </script>

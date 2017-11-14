@@ -119,7 +119,7 @@
                                                 value="{{ group.group.id }}"
                                                 {% ifequal resource.group group.group %} selected="selected" {% endifequal %}
                                                 >
-                                                {{ group.group.name }}
+                                                {{ group.title }}
                                             </option>
                                             {% endfor %}
                                         </select>
@@ -297,6 +297,10 @@
                     <div>
                         <span><label for="{{ document_form.metadata_uploaded_preserve|id }}">{{ document_form.metadata_uploaded_preserve.label }}</label></span>
                         {{ document_form.metadata_uploaded_preserve }}
+                    </div>
+                    <div>
+                        <span><label for="{{ document_form.is_approved|id }}">{{ document_form.is_approved.label }}</label></span>
+                        {{ document_form.is_approved }}
                     </div>
                     <div>
                         <span><label for="{{ document_form.is_published|id }}">{{ document_form.is_published.label }}</label></span>

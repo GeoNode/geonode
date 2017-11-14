@@ -305,7 +305,7 @@ class GroupActivityView(ListView):
         context['action_list_layers'] = [
             action
             for action in actions
-            if action.action_object.group == self.group.group][:15]
+            if action.action_object and action.action_object.group == self.group.group][:15]
         action_list.extend(context['action_list_layers'])
         actions = Action.objects.filter(
             public=True,
@@ -313,7 +313,7 @@ class GroupActivityView(ListView):
         context['action_list_maps'] = [
             action
             for action in actions
-            if action.action_object.group == self.group.group][:15]
+            if action.action_object and action.action_object.group == self.group.group][:15]
         action_list.extend(context['action_list_maps'])
         context['action_list_comments'] = Action.objects.filter(
             public=True,

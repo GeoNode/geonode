@@ -22,6 +22,7 @@ import re
 from django.db.models import Q
 from django.http import HttpResponse
 from django.conf import settings
+from django.contrib.staticfiles.templatetags import staticfiles
 
 from tastypie.constants import ALL, ALL_WITH_RELATIONS
 from tastypie.resources import ModelResource
@@ -109,7 +110,7 @@ class CommonModelApi(ModelResource):
         'rating',
     ]
 
-    def build_filters(self, filters=None):
+    def build_filters(self, filters=None, ignore_bad_filters=False):
         if filters is None:
             filters = {}
         orm_filters = super(CommonModelApi, self).build_filters(filters)
@@ -171,12 +172,33 @@ class CommonModelApi(ModelResource):
     def filter_published(self, queryset, request):
         is_admin = False
         is_staff = False
+        is_manager = False
         if request.user:
             is_admin = request.user.is_superuser if request.user else False
             is_staff = request.user.is_staff if request.user else False
+            try:
+                is_manager = request.user.groupmember_set.all().filter(role='manager').exists()
+            except:
+                is_manager = False
 
         if not is_admin and not is_staff:
-            filtered = queryset.filter(Q(is_published=True) | Q(owner__username__iexact=str(request.user)))
+            if is_manager:
+                groups = request.user.groups.all()
+                group_list_all = request.user.group_list_all().values('group')
+                public_groups = GroupProfile.objects.exclude(access="private").values('group')
+                try:
+                    anonymous_group = Group.objects.get(name='anonymous')
+                    filtered = queryset.filter(Q(group__isnull=True) |
+                                               Q(group__in=groups) | Q(group__in=public_groups) |
+                                               Q(group__in=group_list_all) | Q(group=anonymous_group) |
+                                               Q(owner__username__iexact=str(request.user)))
+                except BaseException:
+                    anonymous_group = None
+                    filtered = queryset.filter(Q(group__isnull=True) | Q(group__in=group_list_all) |
+                                               Q(group__in=groups) | Q(group__in=public_groups) |
+                                               Q(owner__username__iexact=str(request.user)))
+            else:
+                filtered = queryset.filter(Q(is_published=True) | Q(owner__username__iexact=str(request.user)))
         else:
             filtered = queryset
         return filtered
@@ -196,12 +218,17 @@ class CommonModelApi(ModelResource):
             filtered = queryset
         elif request.user:
             groups = request.user.groups.all()
+            group_list_all = request.user.group_list_all().values('group')
             if anonymous_group:
                 filtered = queryset.filter(Q(group__isnull=True) | Q(
-                    group__in=groups) | Q(group__in=public_groups) | Q(group=anonymous_group))
+                    group__in=groups) | Q(group__in=group_list_all) | Q(
+                    group__in=public_groups) | Q(group=anonymous_group) | Q(
+                    owner__username__iexact=str(request.user)))
             else:
                 filtered = queryset.filter(
-                    Q(group__isnull=True) | Q(group__in=public_groups) | Q(group__in=groups))
+                    Q(group__isnull=True) | Q(group__in=group_list_all) |
+                    Q(group__in=public_groups) | Q(group__in=groups) |
+                    Q(owner__username__iexact=str(request.user)))
         else:
             if anonymous_group:
                 filtered = queryset.filter(
@@ -432,19 +459,61 @@ class CommonModelApi(ModelResource):
         if not settings.SKIP_PERMS_FILTER:
             is_admin = False
             is_staff = False
+            is_manager = False
             if request.user:
                 is_admin = request.user.is_superuser if request.user else False
                 is_staff = request.user.is_staff if request.user else False
+                try:
+                    is_manager = request.user.groupmember_set.all().filter(role='manager').exists()
+                except:
+                    is_manager = False
 
             # Get the list of objects the user has access to
             filter_set = get_objects_for_user(
                 request.user, 'base.view_resourcebase')
             if settings.ADMIN_MODERATE_UPLOADS:
                 if not is_admin and not is_staff:
-                    filter_set = filter_set.filter(Q(is_published=True) | Q(owner__username__iexact=str(request.user)))
+                    if is_manager:
+                        groups = request.user.groups.all()
+                        group_list_all = request.user.group_list_all().values('group')
+                        public_groups = GroupProfile.objects.exclude(access="private").values('group')
+                        try:
+                            anonymous_group = Group.objects.get(name='anonymous')
+                            filter_set = filter_set.filter(
+                                Q(group__isnull=True) | Q(group__in=groups) |
+                                Q(group__in=group_list_all) | Q(group__in=public_groups) |
+                                Q(group=anonymous_group) |
+                                Q(owner__username__iexact=str(request.user)))
+                        except:
+                            filter_set = filter_set.filter(
+                                Q(group__isnull=True) | Q(group__in=groups) |
+                                Q(group__in=group_list_all) | Q(group__in=public_groups) |
+                                Q(owner__username__iexact=str(request.user)))
+                    else:
+                        filter_set = filter_set.filter(Q(is_published=True) |
+                                                       Q(owner__username__iexact=str(request.user)))
 
             if settings.RESOURCE_PUBLISHING:
-                filter_set = filter_set.filter(Q(is_published=True) | Q(owner__username__iexact=str(request.user)))
+                if not is_admin and not is_staff:
+                    if is_manager:
+                        groups = request.user.groups.all()
+                        group_list_all = request.user.group_list_all().values('group')
+                        public_groups = GroupProfile.objects.exclude(access="private").values('group')
+                        try:
+                            anonymous_group = Group.objects.get(name='anonymous')
+                            filter_set = filter_set.filter(
+                                Q(group__isnull=True) | Q(group__in=groups) |
+                                Q(group__in=group_list_all) | Q(group__in=public_groups) |
+                                Q(group=anonymous_group) |
+                                Q(owner__username__iexact=str(request.user)))
+                        except:
+                            filter_set = filter_set.filter(
+                                Q(group__isnull=True) | Q(group__in=groups) |
+                                Q(group__in=group_list_all) | Q(group__in=public_groups) |
+                                Q(owner__username__iexact=str(request.user)))
+                    else:
+                        filter_set = filter_set.filter(Q(is_published=True) |
+                                                       Q(owner__username__iexact=str(request.user)))
 
             try:
                 anonymous_group = Group.objects.get(name='anonymous')
@@ -457,12 +526,17 @@ class CommonModelApi(ModelResource):
                     filter_set = filter_set
                 elif request.user:
                     groups = request.user.groups.all()
+                    group_list_all = request.user.group_list_all().values('group')
                     if anonymous_group:
                         filter_set = filter_set.filter(Q(group__isnull=True) | Q(
-                            group__in=groups) | Q(group__in=public_groups) | Q(group=anonymous_group))
+                            group__in=groups) | Q(group__in=group_list_all) | Q(
+                            group__in=public_groups) | Q(group=anonymous_group) | Q(
+                            owner__username__iexact=str(request.user)))
                     else:
                         filter_set = filter_set.filter(
-                            Q(group__isnull=True) | Q(group__in=public_groups) | Q(group__in=groups))
+                            Q(group__isnull=True) | Q(group__in=public_groups) |
+                            Q(group__in=group_list_all) | Q(group__in=groups) |
+                            Q(owner__username__iexact=str(request.user)))
                 else:
                     if anonymous_group:
                         filter_set = filter_set.filter(
@@ -575,7 +649,14 @@ class CommonModelApi(ModelResource):
         """
         Format the objects for output in a response.
         """
-        return objects.values(*self.VALUES)
+        objects_json = objects.values(*self.VALUES)
+        # hack needed because dehydrate does not seem to work in CommonModelApi
+        for item in objects_json:
+            if item['thumbnail_url'] and len(item['thumbnail_url']) == 0:
+                item['thumbnail_url'] = staticfiles.static(settings.MISSING_THUMBNAIL)
+            if item['title'] and len(item['title']) == 0:
+                item['title'] = 'No title'
+        return objects_json
 
     def create_response(
             self,

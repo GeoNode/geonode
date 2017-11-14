@@ -29,6 +29,7 @@ import urllib
 import urllib2
 import cookielib
 
+from geonode.decorators import on_ogc_backend
 from pyproj import transform, Proj
 from urlparse import urljoin, urlsplit
 
@@ -53,6 +54,7 @@ from polymorphic.models import PolymorphicModel
 from polymorphic.managers import PolymorphicManager
 from agon_ratings.models import OverallRating
 
+from geonode import geoserver
 from geonode.base.enumerations import ALL_LANGUAGES, \
     HIERARCHY_LEVELS, UPDATE_FREQUENCIES, \
     DEFAULT_SUPPLEMENTAL_INFORMATION, LINK_TYPES
@@ -207,6 +209,7 @@ class Region(MPTTModel):
 
     @property
     def bbox(self):
+        """BBOX is in the format: [x0,x1,y0,y1]."""
         return [
             self.bbox_x0,
             self.bbox_x1,
@@ -216,11 +219,13 @@ class Region(MPTTModel):
 
     @property
     def bbox_string(self):
+        """BBOX is in the format: [x0,y0,x1,y1]."""
         return ",".join([str(self.bbox_x0), str(self.bbox_y0),
                          str(self.bbox_x1), str(self.bbox_y1)])
 
     @property
     def geographic_bounding_box(self):
+        """BBOX is in the format: [x0,x1,y0,y1]."""
         return bbox_to_wkt(
             self.bbox_x0,
             self.bbox_x1,
@@ -736,6 +741,10 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
         _("Is Published"),
         default=True,
         help_text=_('Should this resource be published and searchable?'))
+    is_approved = models.BooleanField(
+        _("Approved"),
+        default=False,
+        help_text=_('Is this resource validated from a publisher or editor?'))
 
     # fields necessary for the apis
     thumbnail_url = models.TextField(null=True, blank=True)
@@ -753,6 +762,7 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
 
     @property
     def bbox(self):
+        """BBOX is in the format: [x0,x1,y0,y1]."""
         return [
             self.bbox_x0,
             self.bbox_x1,
@@ -762,11 +772,13 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
 
     @property
     def bbox_string(self):
+        """BBOX is in the format: [x0,y0,x1,y1]."""
         return ",".join([str(self.bbox_x0), str(self.bbox_y0),
                          str(self.bbox_x1), str(self.bbox_y1)])
 
     @property
     def geographic_bounding_box(self):
+        """BBOX is in the format: [x0,x1,y0,y1]."""
         return bbox_to_wkt(
             self.bbox_x0,
             self.bbox_x1,
@@ -909,6 +921,11 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
     def set_bounds_from_bbox(self, bbox):
         """
         Calculate zoom level and center coordinates in mercator.
+
+        :param bbox: BBOX is in the  format: [x0, x1, y0, y1], which is:
+            [min lon, max lon, min lat, max lat] or
+            [xmin, xmax, ymin, ymax]
+        :type bbox: list
         """
         self.set_latlon_bounds(bbox)
 
@@ -1322,6 +1339,7 @@ def rating_post_save(instance, *args, **kwargs):
 signals.post_save.connect(rating_post_save, sender=OverallRating)
 
 
+@on_ogc_backend(geoserver.BACKEND_PACKAGE)
 def do_login(sender, user, request, **kwargs):
     """
     Take action on user login. Generate a new user access_token to be shared
@@ -1369,6 +1387,7 @@ def do_login(sender, user, request, **kwargs):
         request.session['JSESSIONID'] = jsessionid
 
 
+@on_ogc_backend(geoserver.BACKEND_PACKAGE)
 def do_logout(sender, user, request, **kwargs):
     """
     Take action on user logout. Cleanup user access_token and send logout

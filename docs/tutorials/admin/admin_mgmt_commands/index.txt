@@ -231,3 +231,17 @@ Usage::
 
   # fix base layers for a given map
   python manage.py fix_baselayers map_id
+
+
+sync_geofence
+=============
+
+Synchronize GeoNode permissions in GeoFence. This can be useful when upgrading GeoNode.
+
+Usage::
+
+  # synchronize all layers
+  python manage.py sync_geofence
+
+  # synchronize all layers which contain a given search string in their name
+  python manage.py sync_geofence --layername cambridge
