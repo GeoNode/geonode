@@ -1,21 +1,21 @@
 {% extends "site_base.html" %}
 {% load activity_tags  social_tags i18n %}
 
-{% block title %}{% trans "Analytics" %}{% endblock %}
+{% block title %}{% trans "Error Logs" %}{% endblock %}
 
 {% block body_outer %}
     <br>
-    <h1>Error Logging</h1>
+    <h1>Error Logs</h1>
     {% if object_list %}
         <div class="table-responsive">
             <table class="table table-bordered">
                 <tr>
-                    <th><b>Logger Name</b></th>
-                    <th><b>Level</b></th>
+                    <th><b>{% trans "User Name" %}</b></th>
+                    <th><b>{% trans "Level" %}</b></th>
                     {% comment %}<th><b>Custom Message</b></th>{% endcomment %}
-                    <th><b>System Message</b></th>
-                    <th><b>Traceback</b></th>
-                    <th><b>Created Datetime</b></th>
+                    <th><b>{% trans "System Message" %}</b></th>
+                    <th><b>{% trans "Traceback" %}</b></th>
+                    <th><b>{% trans "Created Time" %}</b></th>
                 </tr>
                 {% for error in object_list %}
                     <tr>
@@ -37,7 +37,7 @@
                         {% if page_obj.has_previous %}
                             <li>
                                 <a href="/error/reporting/?page={{ page_obj.previous_page_number }}" aria-label="Previous">
-                                    <span aria-hidden="true">&laquo;</span>
+                                    <span aria-hidden="true"><i class="fa fa-angle-double-left" aria-hidden="true"></i></span>
                                 </a>
 
                             </li>
@@ -50,7 +50,7 @@
                         {% if page_obj.has_next %}
                             <li>
                                 <a href="/error/reporting/?page={{ page_obj.next_page_number }}" aria-label="Next">
-                                    <span aria-hidden="true">&raquo;</span>
+                                    <span aria-hidden="true"><i class="fa fa-angle-double-right" aria-hidden="true"></i></span>
                                 </a>
                             </li>
                         {% endif %}
@@ -68,32 +68,4 @@
 {% endblock %}
 
 {% block extra_script %}
-    <script>
-    $(window).load(function(){
-        /*
-        CRITICAL = 50
-        FATAL = CRITICAL
-        ERROR = 40
-        WARNING = 30
-        WARN = WARNING
-        INFO = 20
-        DEBUG = 10
-        NOTSET = 0
-        * */
-
-        var debugObject = {
-            "50": "<span style='color:red; font-weight:bold'>CRITICAL</span>",
-            "40": "<span style='color:red; font-weight:bold'>ERROR</span>",
-            "30": "<span style='color:orange; font-weight:bold'>WARNING</span>",
-            "20": "<span style='color:green; font-weight:bold'>INFO</span>",
-            "10": "<span style='color:orange; font-weight:bold'>DEBUG</span>",
-            "0": "<span style='color:green; font-weight:bold'>NOTSET</span>"
-        };
-
-        $(".error-level").each(function(e){
-            $(this).html(debugObject[$(this).html()]);
-        });
-
-    });
-    </script>
 {% endblock %}
