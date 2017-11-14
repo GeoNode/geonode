@@ -116,7 +116,13 @@
     </tbody>
   </table>
   {% if USE_GEOSERVER and DISPLAY_WMS_LINKS %}
-  <p><a href="{% url 'capabilities_user' user.username %}"><i class="fa fa-map"></i> {% trans 'User layers WMS GetCapabilities document' %}</a></p>
+  <p>
+      {% if request.user.is_authenticated and 'access_token' in request.session %}
+        <a href="{% url 'capabilities_user' profile.username %}?access_token={{ request.session.access_token }}">
+      {% else %}
+        <a href="{% url 'capabilities_user' profile.username %}">
+      {% endif %}
+      <i class="fa fa-map"></i> {% trans 'User layers WMS GetCapabilities document' %}</a></p>
   {% endif %}
 </div>
 
