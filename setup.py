@@ -67,7 +67,7 @@ setup(name='GeoNode',
         "Unidecode<=0.4.19",
         "django-nose<=1.4.5",  # python-django-nose (1.4.3)
         "nose<=1.3.7",  # python-nose (1.3.7)
-        "awesome-slugify<=1.6.2",
+        "awesome-slugify<=1.6.5",
         "django-floppyforms<=1.7.0",
         "certifi<=2017.7.27.1",
         "chardet<=3.0.4",
@@ -134,7 +134,7 @@ setup(name='GeoNode',
 
         # GeoNode org maintained apps.
         "django-geoexplorer>=4.0.0,<5.0",
-        "geonode-user-messages<=0.1.6",  # (0.1.3 in ppa) FIXME
+        "geonode-user-messages<=0.1.8",  # (0.1.3 in ppa) FIXME
         "geonode-avatar<=2.1.6",  # (2.1.5 in ppa) FIXME
         "geonode-announcements<=1.0.8",
         "geonode-agon-ratings<=0.3.5",  # (0.3.1 in ppa) FIXME
