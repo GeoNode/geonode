@@ -45,7 +45,7 @@ from django.db.models import Q
 # Geonode functionality
 from geonode import GeoNodeException, geoserver, qgis_server
 from geonode.people.utils import get_valid_user
-from geonode.layers.models import Layer, UploadSession
+from geonode.layers.models import Layer, UploadSession, LayerFile
 from geonode.base.models import Link, SpatialRepresentationType,  \
     TopicCategory, Region, License, ResourceBase
 from geonode.layers.models import shp_exts, csv_exts, vec_exts, cov_exts
@@ -840,3 +840,16 @@ def create_thumbnail(instance, thumbnail_remote_url, thumbnail_create_url=None,
 
         if image is not None:
             instance.save_thumbnail(thumbnail_name, image=image)
+
+
+def delete_orphaned_layers():
+    """Delete orphaned layer files."""
+    layer_path = os.path.join(settings.MEDIA_ROOT, 'layers')
+    for filename in os.listdir(layer_path):
+        fn = os.path.join(layer_path, filename)
+        if LayerFile.objects.filter(file__icontains=filename).count() == 0:
+            print 'Removing orphan layer file %s' % fn
+            try:
+                os.remove(fn)
+            except OSError:
+                print 'Could not delete file %s' % fn
