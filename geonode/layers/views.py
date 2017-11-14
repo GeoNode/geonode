@@ -158,6 +158,7 @@ def _resolve_layer(request, typename, permission='base.view_resourcebase',
 @login_required
 @user_passes_test(manager_or_member)
 def layer_upload(request, template='upload/layer_upload.html'):
+    db_logger = logging.getLogger('db')
     if request.method == 'GET':
         mosaics = Layer.objects.filter(is_mosaic=True).order_by('name')
         ctx = {
@@ -292,6 +293,7 @@ def layer_upload(request, template='upload/layer_upload.html'):
                     saved_layer.save()
 
             except Exception as e:
+                db_logger.exception(e)
                 exception_type, error, tb = sys.exc_info()
                 logger.exception(e)
                 out['success'] = False
@@ -759,6 +761,7 @@ def layer_change_poc(request, ids, template='layers/layer_change_poc.html'):
 
 @login_required
 def layer_replace(request, layername, template='layers/layer_replace.html'):
+    db_logger = logging.getLogger('db')
     layer = _resolve_layer(
         request,
         layername,
@@ -805,6 +808,7 @@ def layer_replace(request, layername, template='layers/layer_replace.html'):
                         'layer_detail', args=[
                             saved_layer.service_typename])
             except Exception as e:
+                db_logger.exception(e)
                 out['success'] = False
                 out['errors'] = str(e)
             finally:
@@ -830,6 +834,7 @@ def layer_replace(request, layername, template='layers/layer_replace.html'):
 
 @login_required
 def layer_remove(request, layername, template='layers/layer_remove.html'):
+    db_logger = logging.getLogger('db')
     layer = _resolve_layer(
         request,
         layername,
@@ -851,6 +856,7 @@ def layer_remove(request, layername, template='layers/layer_remove.html'):
                     notify.send(request.user, recipient=recipient, actor=request.user,
                     target=layer, verb='deleted your layer')
         except Exception as e:
+            db_logger.exception(e)
             message = '{0}: {1}.'.format(_('Unable to delete layer'), layer.typename)
 
             if 'referenced by layer group' in getattr(e, 'message', ''):
