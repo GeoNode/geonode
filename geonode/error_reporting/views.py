@@ -8,7 +8,7 @@ class ErrorReportingListView(ListView):
 
     template_name = 'error_reporting/error_reporting.html'
     model = StatusLog
-    paginate_by = 3
+    paginate_by = 50
 
     def get_context_data(self, **kwargs):
         context = super(ErrorReportingListView, self).get_context_data(**kwargs)
