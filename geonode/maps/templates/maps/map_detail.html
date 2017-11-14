@@ -56,6 +56,16 @@
       <div class="tab-content">
         {% include "base/resourcebase_info_panel.html" %}
 
+        {% if USE_GEOSERVER and DISPLAY_WMS_LINKS %}
+        <p>
+          {% if request.user.is_authenticated and 'access_token' in request.session %}
+            <a href="{% url 'capabilities_map' resource.id %}?access_token={{ request.session.access_token }}">
+          {% else %}
+            <a href="{% url 'capabilities_map' resource.id %}">
+          {% endif %}
+          <i class="fa fa-map"></i> {% trans 'Map layers WMS GetCapabilities document' %}</a></p>
+        {% endif %}
+
         {% block social_links %}
             {% if DISPLAY_SOCIAL %}
               {% include "social_links.html" %}
@@ -109,8 +119,11 @@
               </div>
               <div class="modal-body">
                 <ul>
-                  <li><a href="{% url "map_download" resource.pk %}">{% trans "Download Data Layers" %}</a></li>
-                  <li><a href="{% url "map_wmc" resource.pk %}" target="_new">{% trans "Download Web Map Context" %}</a></li>
+                    {% if links %}
+                        {% for link in links %}
+                            <li><a href="{{ link.url }}">{{ link.name }}</a></li>
+                        {% endfor %}
+                    {% endif %}
                 <ul>
               </div>
               <div class="modal-footer">
@@ -215,6 +228,27 @@
           <p>{% trans "Duplicate this map and modify it for your own purposes" %}</p>
           <a href="{% url "new_map" %}?copy={{ resource.id }}" class="btn btn-default btn-md btn-block">{% trans "Create a New Map" %}</a>
         </li>
+        {% if 'geonode.qgis_server' in INSTALLED_APPS %}
+          <li class="list-group-item">
+              <h4>{% trans "Embed this map" %}</h4>
+              <p>{% trans "Embed this map to your own sites" %}</p>
+              <div class="btn-group btn-block">
+                  <button type="button" class="btn btn-default btn-block dropdown-toggle"
+                          data-toggle="dropdown"
+                          aria-haspopup="true" aria-expanded="false">
+                      Embed Map <span class="caret"></span></button>
+                  <ul class="dropdown-menu btn-block" id="embed-map-list">
+                      <li id="embed-iframe-link">
+                          <a href="#">Embed Iframe Link</a></li>
+                      <li id="embed-widget-link">
+                          <a href="#">Embed Widget Link</a></li>
+                      <li>
+                          <a href="{% url 'map_download_leaflet' resource.id %}">Download Leaflet page</a></li>
+                  </ul>
+              </div>
+          </li>
+        {% endif %}
+
 
         {% if resource.is_public and "change_resourcebase" in perms_list or resource.layer_group %}
         <li class="list-group-item">
@@ -239,6 +273,49 @@
 
   </div>
 
+    <div class="modal fade" id="embed-iframe" tabindex="-1" role="dialog" aria-labelledby="Embed Iframe"
+         aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    <h4 class="modal-title" id="myModalLabel">{% trans "Embed Iframe" %}</h4>
+                </div>
+                <div class="modal-body">
+                    <p>To embed this map, add the following code snippet and customize its properties (scrolling, width,
+                        height) based on your needs to your site:</p>
+                    <p style="font-weight: bold">
+                        &lt;iframe scrolling="yes" src="{{ SITEURL|slice:":-1" }}{% url "map_embed" resource.id %}"
+                        width="480px" height="360px"&gt;&lt;/iframe&gt;
+                    </p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">{% trans "Close" %}</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="embed-widget" tabindex="-1" role="dialog" aria-labelledby="Embed Widget"
+         aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    <h4 class="modal-title" id="myModalLabel">{% trans "Embed Widget" %}</h4>
+                </div>
+                <div class="modal-body">
+                    <p>To embed this map, copy the following code snippet into your own page:</p>
+                    <pre id="embed-widget-body" style="font-size: 0.5em"></pre>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-clipboard-target="#embed-widget-body">{% trans "Copy to Clipboard" %}</button>
+                    <button type="button" class="btn btn-default" data-dismiss="modal">{% trans "Close" %}</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
   {% endblock %}
 
 {% block extra_script %}
@@ -253,6 +330,25 @@
 {% endif %}
 {% include 'rating.html' %}
 <script type="text/javascript">
+    $(document).ready(function () {
+        post_url = '{% url 'map_embed_widget' resource.id %}';
+        var formatted_data = "";
+        $.post(post_url, function (data) {
+            data = data.split("\n");
+            data_row = data.length;
+            for (var i=0; i < data_row;i++) {
+                formatted_data += data[i] + "\n";
+            }
+            $('#embed-widget-body').text(formatted_data);
+        });
+    });
+    var clipboard = new Clipboard('.btn');
+    clipboard.on('success', function(e) {
+        alert("Code copied");
+    });
+    clipboard.on('error', function(e) {
+        alert("Oops.. something went wrong");
+    });
  $(function() {
 
   {% verbatim %}
@@ -324,6 +420,15 @@
   $('#set_thumbnail').click(function(){
     createMapThumbnail();
     $('#edit-map').modal('toggle');
+  });
+  $('#embed-map-list li').click(function(){
+    if ($(this).attr('id') === 'embed-iframe-link')
+    {
+        $('#embed-iframe').modal('toggle');
+    }
+    else if ($(this).attr('id') === 'embed-widget-link') {
+        $('#embed-widget').modal('toggle');
+    }
   });
 </script>
 

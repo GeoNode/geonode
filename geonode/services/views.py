@@ -130,7 +130,13 @@ def register_service(request):
 
             if type in ["WMS", "OWS"]:
                 return _process_wms_service(
-                    url, name, type, user, password, wms=server, owner=request.user)
+                    url,
+                    name,
+                    type,
+                    user,
+                    password,
+                    wms=server,
+                    owner=request.user)
             elif type == "REST":
                 return _register_arcgis_url(
                     url, name, user, password, owner=request.user)
@@ -281,13 +287,18 @@ def _process_wms_service(
         owner=None,
         parent=None):
     """
-    Create a new WMS/OWS service, cascade it if necessary (i.e. if Web Mercator not available)
+    Create a new WMS/OWS service, cascade it if necessary
+    (i.e. if Web Mercator not available)
     """
     if wms is None:
         wms = WebMapService(url)
     try:
-        base_url = _clean_url(
-            wms.getOperationByName('GetMap').methods['Get']['url'])
+        method_url = [
+            method['url']
+            for method in wms.getOperationByName('GetMap').methods
+            if method['type'] == 'Get'
+        ][0]
+        base_url = _clean_url(method_url)
 
         if base_url and base_url != url:
             url = base_url
@@ -663,8 +674,9 @@ def _register_indexed_layers(service, wms=None, verbosity=False):
             srid = None
             # Some ArcGIS WMSServers indicate they support 900913 but really
             # don't
-            if 'EPSG:900913' in wms_layer.crsOptions and "MapServer/WmsServer" not in service.base_url:
-                srid = 'EPSG:900913'
+            if 'EPSG:900913' in wms_layer.crsOptions and "MapServer/WmsServer"\
+                    not in service.base_url:
+                srid = 'EPSG:3857'
             elif len(wms_layer.crsOptions) > 0:
                 matches = re.findall(
                     'EPSG\:(3857|102100|102113)', ' '.join(
@@ -672,7 +684,8 @@ def _register_indexed_layers(service, wms=None, verbosity=False):
                 if matches:
                     srid = 'EPSG:%s' % matches[0]
             if srid is None:
-                message = "%d Incompatible projection - try setting the service as cascaded" % count
+                message = "%d Incompatible projection - try setting the \
+service as cascaded" % count
                 return_dict = {'status': 'ok', 'msg': message}
                 return HttpResponse(json.dumps(return_dict),
                                     content_type='application/json',
@@ -846,7 +859,8 @@ def _harvest_csw(csw, maxrecords=10, totalrecords=float('inf')):
         max = min(src.results['matches'], totalrecords)
 
         # end the loop, exhausted all records or max records to process
-        if src.results['nextrecord'] == 0 or src.results['returned'] == 0 or src.results['nextrecord'] > max:
+        if src.results['nextrecord'] == 0 or src.results['returned'] == 0 or \
+                src.results['nextrecord'] > max:
             stop = 1
             break
 
@@ -856,11 +870,13 @@ def _harvest_csw(csw, maxrecords=10, totalrecords=float('inf')):
             known_types = {}
             for ref in record.references:
                 if ref["scheme"] == "OGC:WMS" or \
-                        "service=wms&request=getcapabilities" in urllib.unquote(ref["url"]).lower():
+                        "service=wms&request=getcapabilities" in \
+                        urllib.unquote(ref["url"]).lower():
                     print "WMS:%s" % ref["url"]
                     known_types["WMS"] = ref["url"]
                 if ref["scheme"] == "OGC:WFS" or \
-                        "service=wfs&request=getcapabilities" in urllib.unquote(ref["url"]).lower():
+                        "service=wfs&request=getcapabilities" in \
+                        urllib.unquote(ref["url"]).lower():
                     print "WFS:%s" % ref["url"]
                     known_types["WFS"] = ref["url"]
                 if ref["scheme"] == "ESRI":
@@ -923,7 +939,9 @@ def _register_arcgis_url(
                     parent=parent)]
         else:
             return_json = [
-                {'msg': _("Could not find any layers in a compatible projection.")}]
+                {
+                    'msg': _("Could not find any layers in a compatible\
+projection.")}]
 
     else:
         # This is a Folder
@@ -1086,7 +1104,8 @@ def _process_arcgis_folder(
         return_dict = {}
         if not isinstance(service, ArcMapService):
             return_dict[
-                'msg'] = 'Service could not be identified as an ArcMapService, URL: %s' % service.url
+                'msg'] = 'Service could not be identified as an ArcMapService,\
+URL: %s' % service.url
             logger.debug(return_dict['msg'])
         else:
             try:
@@ -1255,25 +1274,27 @@ def process_ogp_results(ogp, result_json, owner=None):
             )
 
             layer_uuid = str(uuid.uuid1())
-            saved_layer, created = Layer.objects.get_or_create(alternate=typename,
-                                                               defaults=dict(
-                                                                   name=doc["Name"],
-                                                                   uuid=layer_uuid,
-                                                                   store=service.name,
-                                                                   storeType="remoteStore",
-                                                                   workspace=doc["WorkspaceName"],
-                                                                   title=doc["LayerDisplayName"],
-                                                                   owner=None,
-                                                                   # Assumption
-                                                                   srid="EPSG:900913",
-                                                                   bbox=list(
-                                                                       bbox),
-                                                                   geographic_bounding_box=bbox_to_wkt(
-                                                                       str(bbox[0]), str(
-                                                                           bbox[1]),
-                                                                       str(bbox[2]), str(bbox[3]), srid="EPSG:4326")
-                                                               )
-                                                               )
+            saved_layer, created = Layer.objects.get_or_create(
+                alternate=typename,
+                defaults=dict(
+                    name=doc["Name"],
+                    uuid=layer_uuid,
+                    store=service.name,
+                    storeType="remoteStore",
+                    workspace=doc["WorkspaceName"],
+                    title=doc["LayerDisplayName"],
+                    owner=None,
+                    # Assumption
+                    srid="EPSG:900913",
+                    bbox=list(bbox),
+                    geographic_bounding_box=bbox_to_wkt(
+                        str(bbox[0]),
+                        str(bbox[1]),
+                        str(bbox[2]),
+                        str(bbox[3]),
+                        srid="EPSG:4326")
+                )
+            )
             saved_layer.set_default_permissions()
             saved_layer.save()
             service_layer, created = ServiceLayer.objects.get_or_create(
@@ -1376,12 +1397,14 @@ def remove_service(request, service_id):
             loader.render_to_string(
                 '401.html', RequestContext(
                     request, {
-                        'error_message': _("You are not permitted to remove this service.")})), status=401)
+                        'error_message': _(
+                            "You are not permitted to remove this service."
+                        )})), status=401)
 
     if request.method == 'GET':
-        return render_to_response("services/service_remove.html", RequestContext(request, {
-            "service": service_obj
-        }))
+        return render_to_response("services/service_remove.html",
+                                  RequestContext(request,
+                                                 {"service": service_obj}))
     elif request.method == 'POST':
         # Retrieve this service's workspace from the GeoServer catalog.
         cat = Catalog(settings.OGC_SERVER['default']['LOCATION'] + "rest",
@@ -1466,9 +1489,9 @@ def create_arcgis_links(instance):
          instance.bbox_x1,
          instance.bbox_y1))
 
-    thumbnail_remote_url = instance.ows_url + 'export?LAYERS=show%3A' + str(instance.alternate) + \
-        '&TRANSPARENT=true&FORMAT=png&BBOX=' + bbox + \
-        '&SIZE=200%2C150&F=image&BBOXSR=4326&IMAGESR=3857'
+    thumbnail_remote_url = instance.ows_url + 'export?LAYERS=show%3A' + \
+        str(instance.alternate) + '&TRANSPARENT=true&FORMAT=png&BBOX=' + \
+        bbox + '&SIZE=200%2C150&F=image&BBOXSR=4326&IMAGESR=3857'
     create_thumbnail(instance, thumbnail_remote_url)
 
 

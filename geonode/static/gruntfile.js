@@ -92,7 +92,8 @@ module.exports = function(grunt) {
             'bootstrap-tokenfield/dist/css/tokenfield-typeahead.min.css',
             'bootstrap-select/dist/css/bootstrap-select.min.css',
             'bootstrap-wysiwyghtml5/dist/bootstrap-wysihtml5-0.0.2.css',
-            'fastselect/dist/fastselect.min.css'
+            'fastselect/dist/fastselect.min.css',
+            'Leaflet.EasyButton/src/easy-button.css'
           ]
         }, {
           expand: true,
@@ -153,7 +154,9 @@ module.exports = function(grunt) {
             'bootstrap-tokenfield/dist/bootstrap-tokenfield.min.js',
             'bootstrap-select/dist/js/bootstrap-select.min.js',
             'bootstrap-wysiwyghtml5/dist/bootstrap-wysihtml5-0.0.2.min.js',
-            'fastselect/dist/fastselect.standalone.min.js'
+            'fastselect/dist/fastselect.standalone.min.js',
+            'clipboard/dist/clipboard.js',
+            'Leaflet.EasyButton/src/easy-button.js'
           ]
         }]
       }
@@ -277,7 +280,8 @@ module.exports = function(grunt) {
             'lib/css/leaflet.fullscreen.css',
             'lib/css/Leaflet.NavBar.css',
             'lib/css/leaflet-measure.css',
-            'lib/css/Control.Opacity.css'
+            'lib/css/Control.Opacity.css',
+            'lib/css/easy-button.css'
           ]
         }
       }
@@ -315,7 +319,8 @@ module.exports = function(grunt) {
             'lib/js/angular.js',
             'lib/js/angular-cookies.js',
             'lib/js/angular-leaflet-directive.min.js',
-            'lib/js/ZeroClipboard.min.js'
+            'lib/js/ZeroClipboard.min.js',
+            'lib/js/clipboard.js'
           ],
           'lib/js/jquery.js': ['lib/js/jquery.min.js'],
           'lib/js/require.js': ['lib/js/require.js'],
@@ -325,7 +330,8 @@ module.exports = function(grunt) {
             'lib/js/Leaflet.fullscreen.min.js',
             'lib/js/Leaflet.NavBar.js',
             'lib/js/leaflet-measure.js',
-            'lib/js/Control.Opacity.js'
+            'lib/js/Control.Opacity.js',
+            'lib/js/easy-button.js'
           ]
         }
       }

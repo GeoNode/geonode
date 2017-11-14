@@ -25,12 +25,11 @@ import urllib2
 # import base64
 import time
 import logging
-
 import traceback
-from urlparse import urljoin
-
 import gisdata
 from decimal import Decimal
+from lxml import etree
+from urlparse import urljoin
 
 from django.conf import settings
 from django.core.exceptions import ObjectDoesNotExist
@@ -42,10 +41,13 @@ from django.contrib.auth import get_user_model
 # from guardian.shortcuts import assign_perm
 from geonode.base.populate_test_data import reconnect_signals
 
+from geonode.qgis_server.models import QGISServerLayer
+
 from geoserver.catalog import FailedRequestError, UploadError
 
 # from geonode.security.models import *
 from geonode.decorators import on_ogc_backend
+from geonode.base.models import TopicCategory
 from geonode.layers.models import Layer
 from geonode.maps.models import Map
 from geonode import GeoNodeException, geoserver, qgis_server
@@ -624,6 +626,58 @@ class GeoNodeMapTest(TestCase):
         # Clean up by deleting the layer from GeoNode's DB and GeoNetwork
         shp_layer.delete()
 
+    @on_ogc_backend(qgis_server.BACKEND_PACKAGE)
+    def test_qgis_server_cascading_delete(self):
+        """Verify that QGIS Server layer deleted and cascaded."""
+        # Upload a Shapefile
+        shp_file = os.path.join(
+            gisdata.VECTOR_DATA,
+            'san_andres_y_providencia_poi.shp')
+        shp_layer = file_upload(shp_file)
+
+        # get layer and QGIS Server Layer object
+        qgis_layer = shp_layer.qgis_layer
+        base_path = qgis_layer.base_layer_path
+        base_name, _ = os.path.splitext(base_path)
+
+        # get existing files
+        file_paths = qgis_layer.files
+
+        for path in file_paths:
+            self.assertTrue(os.path.exists(path))
+
+        # try to access a tile to trigger tile cache
+        tile_url = reverse(
+            'qgis_server:tile',
+            kwargs={
+                'layername': shp_layer.name,
+                'z': 9,
+                'x': 139,
+                'y': 238
+            })
+        response = self.client.get(tile_url)
+
+        self.assertTrue(response.status_code, 200)
+
+        self.assertTrue(os.path.exists(qgis_layer.cache_path))
+
+        # delete layer
+        shp_layer.delete()
+
+        # verify that qgis server layer no longer exists
+        with self.assertRaises(QGISServerLayer.DoesNotExist):
+            QGISServerLayer.objects.get(pk=qgis_layer.pk)
+
+        with self.assertRaises(QGISServerLayer.DoesNotExist):
+            QGISServerLayer.objects.get(layer__id=shp_layer.id)
+
+        # verify that related files in QGIS Server object gets deleted.
+        for path in file_paths:
+            self.assertFalse(os.path.exists(path))
+
+        # verify that cache path gets deleted
+        self.assertFalse(os.path.exists(qgis_layer.cache_path))
+
     def test_keywords_upload(self):
         """Check that keywords can be passed to file_upload
         """
@@ -1197,3 +1251,108 @@ class GeoNodeGeoServerSync(TestCase):
                 attribute.description,
                 '%s_description' % attribute.attribute
             )
+
+
+class GeoNodeGeoServerCapabilities(TestCase):
+
+    """Tests GeoNode/GeoServer GetCapabilities per layer, user, category and map
+    """
+
+    def setUp(self):
+        call_command('loaddata', 'initial_data', verbosity=0)
+        call_command('loaddata', 'people_data', verbosity=0)
+
+    def tearDown(self):
+        pass
+
+    @on_ogc_backend(geoserver.BACKEND_PACKAGE)
+    def test_capabilities(self):
+        """Test capabilities
+        """
+
+        # a category
+        category = TopicCategory.objects.all()[0]
+
+        # some users
+        norman = get_user_model().objects.get(username="norman")
+        admin = get_user_model().objects.get(username="admin")
+
+        # create 3 layers, 2 with norman as an owner an 2 with category as a category
+        layer1 = file_upload(
+            os.path.join(
+                gisdata.VECTOR_DATA,
+                "san_andres_y_providencia_poi.shp"),
+            name='layer1',
+            user=norman,
+            category=category,
+            overwrite=True,
+        )
+        layer2 = file_upload(
+            os.path.join(
+                gisdata.VECTOR_DATA,
+                "single_point.shp"),
+            name='layer2',
+            user=norman,
+            overwrite=True,
+        )
+        layer3 = file_upload(
+            os.path.join(
+                gisdata.VECTOR_DATA,
+                "san_andres_y_providencia_administrative.shp"),
+            name='layer3',
+            user=admin,
+            category=category,
+            overwrite=True,
+        )
+
+        # 0. test capabilities_layer
+        url = reverse('capabilities_layer', args=[layer1.id])
+        resp = self.client.get(url)
+        layercap = etree.fromstring(resp.content)
+        rootdoc = etree.ElementTree(layercap)
+        layernodes = rootdoc.findall('.//Capability/Layer/Layer')
+        layernode = layernodes[0]
+
+        self.assertEquals(1, len(layernodes))
+        self.assertEquals(layernode.find('Name').text, layer1.name)
+
+        # 1. test capabilities_user
+        url = reverse('capabilities_user', args=[norman.username])
+        resp = self.client.get(url)
+        layercap = etree.fromstring(resp.content)
+        rootdoc = etree.ElementTree(layercap)
+        layernodes = rootdoc.findall('.//Capability/Layer/Layer')
+
+        # norman has 2 layers
+        self.assertEquals(2, len(layernodes))
+
+        # the norman two layers are named layer1 and layer2
+        count = 0
+        for layernode in layernodes:
+            if layernode.find('Name').text == layer1.name:
+                count += 1
+            elif layernode.find('Name').text == layer2.name:
+                count += 1
+        self.assertEquals(2, count)
+
+        # 2. test capabilities_category
+        url = reverse('capabilities_category', args=[category.identifier])
+        resp = self.client.get(url)
+        layercap = etree.fromstring(resp.content)
+        rootdoc = etree.ElementTree(layercap)
+        layernodes = rootdoc.findall('.//Capability/Layer/Layer')
+
+        # category is in two layers
+        self.assertEquals(2, len(layernodes))
+
+        # the layers for category are named layer1 and layer3
+        count = 0
+        for layernode in layernodes:
+            if layernode.find('Name').text == layer1.name:
+                count += 1
+            elif layernode.find('Name').text == layer3.name:
+                count += 1
+        self.assertEquals(2, count)
+
+        # 3. test for a map
+        # TODO

@@ -35,7 +35,9 @@ from geonode.base.models import ResourceBase, ResourceBaseManager, resourcebase_
 from geonode.people.utils import get_valid_user
 from agon_ratings.models import OverallRating
 from geonode.utils import check_shp_columnnames
-from geonode.security.models import remove_object_permissions
+from geonode.security.models import (
+    remove_object_permissions,
+    PermissionLevelMixin)
 
 logger = logging.getLogger("geonode.layers.models")
 
@@ -59,7 +61,7 @@ TIME_REGEX_FORMAT = {
 }
 
 
-class Style(models.Model):
+class Style(models.Model, PermissionLevelMixin):
 
     """Model for storing styles.
     """
@@ -92,6 +94,16 @@ class Style(models.Model):
             logger.error(
                 "SLD URL is empty for Style %s" %
                 self.name.encode('utf-8'))
+            return None
+
+    def get_self_resource(self):
+        """Get associated resource base."""
+        # Associate this model with resource
+        try:
+            layer = self.layer_styles.first()
+            """:type: Layer"""
+            return layer.get_self_resource()
+        except:
             return None
 
 

@@ -28,9 +28,10 @@ from guardian.shortcuts import get_perms
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.urlresolvers import reverse
+from django.shortcuts import redirect
 from django.core.serializers.json import DjangoJSONEncoder
 from django.http import HttpResponse, HttpResponseRedirect, HttpResponseNotAllowed, HttpResponseServerError
-from django.shortcuts import render_to_response, get_object_or_404
+from django.shortcuts import render_to_response, get_object_or_404, render
 from django.conf import settings
 from django.template import RequestContext
 from django.utils.translation import ugettext as _
@@ -69,6 +70,7 @@ from geonode.utils import build_social_links
 from geonode import geoserver, qgis_server
 from geonode.base.views import batch_modify
 
+from requests.compat import urljoin
 
 if check_ogc_backend(geoserver.BACKEND_PACKAGE):
     # FIXME: The post service providing the map_status object
@@ -79,6 +81,7 @@ if check_ogc_backend(geoserver.BACKEND_PACKAGE):
     # and password for GeoServer's management user.
     from geonode.geoserver.helpers import http_client, _render_thumbnail
 elif check_ogc_backend(qgis_server.BACKEND_PACKAGE):
+    from geonode.qgis_server.helpers import ogc_server_settings
     from geonode.utils import http_client
 
 logger = logging.getLogger("geonode.maps.views")
@@ -141,6 +144,7 @@ def map_detail(request, mapid, snapshot=None, template='maps/map_detail.html'):
 
     config = json.dumps(config)
     layers = MapLayer.objects.filter(map=map_obj.id)
+    links = map_obj.link_set.download()
 
     group = None
     if map_obj.group:
@@ -156,6 +160,7 @@ def map_detail(request, mapid, snapshot=None, template='maps/map_detail.html'):
         'perms_list': get_perms(request.user, map_obj.get_self_resource()),
         'permissions_json': _perms_info_json(map_obj),
         "documents": get_related_documents(map_obj),
+        'links': links,
     }
 
     context_dict["preview"] = getattr(
@@ -402,6 +407,79 @@ def map_embed(
     return render_to_response(template, RequestContext(request, {
         'config': json.dumps(config)
     }))
+
+
+def map_embed_widget(request, mapid,
+                     template='leaflet_maps/map_embed_widget.html'):
+    """Display code snippet for embedding widget.
+
+    :param request: The request from the frontend.
+    :type request: HttpRequest
+
+    :param mapid: The id of the map.
+    :type mapid: String
+
+    :return: formatted code.
+    """
+
+    map_obj = _resolve_map(request,
+                           mapid,
+                           'base.view_resourcebase',
+                           _PERMISSION_MSG_VIEW)
+    map_bbox = map_obj.bbox_string.split(',')
+
+    map_layers = MapLayer.objects.filter(
+        map_id=mapid).order_by('stack_order')
+    layers = []
+    for layer in map_layers:
+        if layer.group != 'background':
+            layers.append(layer)
+
+    if map_obj.srid != 'EPSG:3857':
+        map_bbox = [float(coord) for coord in map_bbox]
+    else:
+        map_bbox = llbbox_to_mercator([float(coord) for coord in map_bbox])
+
+    if map_bbox is not None:
+        minx, miny, maxx, maxy = [float(coord) for coord in map_bbox]
+        x = (minx + maxx) / 2
+        y = (miny + maxy) / 2
+
+        if getattr(settings, 'DEFAULT_MAP_CRS') == "EPSG:3857":
+            center = list((x, y))
+        else:
+            center = list(forward_mercator((x, y)))
+
+        if center[1] == float('-inf'):
+            center[1] = 0
+
+        BBOX_DIFFERENCE_THRESHOLD = 1e-5
+
+        # Check if the bbox is invalid
+        valid_x = (maxx - minx) ** 2 > BBOX_DIFFERENCE_THRESHOLD
+        valid_y = (maxy - miny) ** 2 > BBOX_DIFFERENCE_THRESHOLD
+
+        if valid_x:
+            width_zoom = math.log(360 / abs(maxx - minx), 2)
+        else:
+            width_zoom = 15
+
+        if valid_y:
+            height_zoom = math.log(360 / abs(maxy - miny), 2)
+        else:
+            height_zoom = 15
+
+        map_obj.center_x = center[0]
+        map_obj.center_y = center[1]
+        map_obj.zoom = math.ceil(min(width_zoom, height_zoom))
+
+    context = {
+        'resource': map_obj,
+        'map_bbox': map_bbox,
+        'map_layers': layers
+    }
+    message = render(request, template, context)
+    return HttpResponse(message)
 
 
 # MAPS VIEWER #
@@ -742,12 +820,15 @@ def add_layers_to_map_config(request, map_obj, layer_names, add_base_layers=True
             bbox[3] = max(bbox[3], layer_bbox[3])
 
         config = layer.attribute_config()
-
+        if hasattr(layer, 'srid'):
+            config['crs'] = {
+                'type': 'name',
+                'properties': layer.srid
+            }
         # Add required parameters for GXP lazy-loading
         config["title"] = layer.title
         config["queryable"] = True
         config["wrapDateLine"] = True
-
         config["srs"] = getattr(
             settings, 'DEFAULT_MAP_CRS', 'EPSG:900913')
         config["bbox"] = bbox if config["srs"] != 'EPSG:900913' \
@@ -862,7 +943,6 @@ def map_download(request, mapid, template='maps/map_download.html'):
 
     map_status = dict()
     if request.method == 'POST':
-        url = "%srest/process/batchDownload/launch/" % ogc_server_settings.LOCATION
 
         def perm_filter(layer):
             return request.user.has_perm(
@@ -878,11 +958,21 @@ def map_download(request, mapid, template='maps/map_download.html'):
             if j_layer["service"] is None:
                 j_layers.remove(j_layer)
                 continue
-            if(len([l for l in j_layers if l == j_layer])) > 1:
+            if (len([l for l in j_layers if l == j_layer])) > 1:
                 j_layers.remove(j_layer)
         mapJson = json.dumps(j_map)
 
-        resp, content = http_client.request(url, 'POST', body=mapJson)
+        if 'geonode.geoserver' in settings.INSTALLED_APPS:
+            # TODO the url needs to be verified on geoserver
+            url = "%srest/process/batchDownload/launch/" % ogc_server_settings.LOCATION
+        elif 'geonode.qgis_server' in settings.INSTALLED_APPS:
+            url = urljoin(settings.SITEURL,
+                          reverse("qgis_server:download-map", kwargs={'mapid': mapid}))
+            # qgis-server backend stop here, continue on qgis_server/views.py
+            return redirect(url)
+
+        # the path to geoserver backend continue here
+        resp, content = http_client.request(url, 'POST', layers=mapJson)
 
         status = int(resp.status)
 

@@ -43,7 +43,7 @@ from django.test.testcases import LiveServerTestCase
 from guardian.shortcuts import get_anonymous_user
 from guardian.shortcuts import assign_perm, remove_perm
 
-from geonode import GeoNodeException, geoserver
+from geonode import GeoNodeException, geoserver, qgis_server
 from geonode.layers.models import Layer, Style
 from geonode.layers.utils import layer_type, get_files, get_valid_name, \
     get_valid_layer_name
@@ -454,6 +454,36 @@ class LayersTest(TestCase):
                         prj="foo.prj",
                         dbf="foo.dbf",
                         sld="foo.sld"))
+            finally:
+                if d is not None:
+                    shutil.rmtree(d)
+
+        # Check that including a QML with a valid shapefile
+        # results in the QML
+        # getting picked up
+        if check_ogc_backend(qgis_server.BACKEND_PACKAGE):
+            d = None
+            try:
+                d = tempfile.mkdtemp()
+                for f in (
+                        "foo.shp", "foo.shx", "foo.prj", "foo.dbf", "foo.qml",
+                        "foo.json"):
+                    path = os.path.join(d, f)
+                    # open and immediately close to create empty file
+                    open(path, 'w').close()
+
+                gotten_files = get_files(os.path.join(d, "foo.shp"))
+                gotten_files = dict((k, v[len(d) + 1:])
+                                    for k, v in gotten_files.iteritems())
+                self.assertEquals(
+                    gotten_files,
+                    dict(
+                        shp="foo.shp",
+                        shx="foo.shx",
+                        prj="foo.prj",
+                        dbf="foo.dbf",
+                        qml="foo.qml",
+                        json="foo.json"))
             finally:
                 if d is not None:
                     shutil.rmtree(d)
