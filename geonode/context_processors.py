@@ -117,8 +117,8 @@ def resource_urls(request):
         SEARCH_FILTERS=getattr(
             settings,
             'SEARCH_FILTERS',
-            False
-        ),
+            False),
+	LOCALURL=settings.LOCALURL,
     )
 
     return defaults
