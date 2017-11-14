@@ -79,6 +79,15 @@
                         <li><a href="/maptiles/">Data Tiles</a></li>
                         <li class="dropdown-submenu"><a tabindex="0" href="/layers/">Layers</a>
                           <ul class="dropdown-menu">
+                            {% if LOCALURL in request.build_absolute_uri %}
+                            <li><a tabindex="1" href="http://lipad-fmc.dmz.dream.upd.edu.ph/layers">Flood Hazard Maps</a></li>
+                            <li><a tabindex="2" href="http://parmap.dmz.dream.upd.edu.ph/">Agricultural Resource Maps</a></li>
+                            <li><a tabindex="3" href="http://coastmap.dmz.dream.upd.edu.ph/">Aquatic Resource Maps</a></li>
+                            <li><a tabindex="4" href="http://frexls.dmz.dream.upd.edu.ph/">Forest Resource Maps</a></li>
+                            <li><a tabindex="5" href="http://phd.dmz.dream.upd.edu.ph/">Hydrology Dataset Maps</a></li>
+                            <li><a tabindex="6" href="http://remap.dmz.dream.upd.edu.ph/">Renewable Energy Resource Maps</a></li>
+                            <li><a tabindex="7" href="/layers/?limit=100&offset=0&keywords__slug__in=sar">SAR DEMs</a></li>
+                            {% else %}
                             <li><a tabindex="1" href="https://lipad-fmc.dream.upd.edu.ph/layers/?limit=100&offset=0&keywords__slug__in=flood-hazard-map">Flood Hazard Maps</a></li>
                             <li><a tabindex="2" href="https://parmap.dream.upd.edu.ph/">Agricultural Resource Maps</a></li>
                             <li><a tabindex="3" href="https://coastmap.dream.upd.edu.ph/">Aquatic Resource Maps</a></li>
@@ -86,6 +95,7 @@
                             <li><a tabindex="5" href="https://phd.dream.upd.edu.ph/">Hydrology Dataset Maps</a></li>
                             <li><a tabindex="6" href="https://remap.dream.upd.edu.ph/">Renewable Energy Resource Maps</a></li>
                             <li><a tabindex="7" href="/layers/?limit=100&offset=0&keywords__slug__in=sar">SAR DEMs</a></li>
+                            {% endif %}
                           </ul>
                         </li>
                         <li><a href="/maps/">Maps</a></li>
@@ -278,7 +288,7 @@
               <li><a href="{% url "datarequests:data_request_browse" %}"><i class="fa fa-users"></i> {% trans "Data Requests History" %}</a></li>
               {% endif %}
               {% if user.is_staff %}
-              <li><a href="{% url "admin:index" %}"><i class="fa fa-cog"></i> {% trans "Admin" %}</a></li>
+              <li><a href="http://{{ LOCALURL }}{% url "admin:index" %}"><i class="fa fa-cog"></i> {% trans "Admin" %}</a></li>
               {% endif %}
               {% block extra_user_menu %}
               {% endblock %}
