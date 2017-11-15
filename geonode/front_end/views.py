@@ -1,6 +1,9 @@
+import csv
 from django.conf import settings
+from django.core.files import File
 from django.http import HttpResponse
 from django.views.generic import View
+
 
 try:
     import json
@@ -27,10 +30,9 @@ class LayerAttributeUploadView(View):
         return HttpResponse('Atiq')
 
     def post(self, request, layername):
-        from django.core.files import File
-        # import pdb;pdb.set_trace()
-        print layername, request.FILES
-        for l in File(request.FILES['file']).file:
-            print l
-        # file = File(request.FILES[0]);
+        csv_file = File(request.FILES['file']).file
+        spamreader = csv.reader(csv_file, delimiter=' ', quotechar='|')
+        for row in spamreader:
+            print ', '.join(row)
+
         return HttpResponse({})
