@@ -7,14 +7,6 @@ build:
 	docker build -t geonode/django:latest .
 	docker build -t geonode/django:`date +%Y%m%d%H%M%S` .
 
-sync: up
-	docker-compose exec django django-admin.py makemigrations --noinput
-	docker-compose exec django django-admin.py migrate account --noinput
-	docker-compose exec django django-admin.py migrate --noinput
-	docker-compose exec django django-admin.py loaddata sample_admin
-	docker-compose exec django django-admin.py loaddata geonode/base/fixtures/default_oauth_apps_docker.json
-	docker-compose exec django django-admin.py loaddata geonode/base/fixtures/initial_data.json
-
 migrate:
 	django-admin.py migrate --noinput
 

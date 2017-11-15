@@ -36,12 +36,15 @@ else
     echo "OK"
 
     echo "Launch genode DB bootstrap procedure..."
-    # python manage.py makemigrations
+    python manage.py makemigrations --noinput
     python manage.py migrate account --noinput
     python manage.py migrate --noinput
 
     echo " Populate db with admin:admin account and some categories"
-    paver sync
+    python manage.py loaddata sample_admin
+    python manage.py loaddata geonode/base/fixtures/default_oauth_apps_docker.json
+    python manage.py loaddata geonode/base/fixtures/initial_data.json
+    #paver sync
 
 fi
 
