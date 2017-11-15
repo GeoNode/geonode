@@ -73,7 +73,7 @@ geonode-announcements==1.0.8
 geonode-arcrest==10.2
 geonode-avatar==2.1.6
 geonode-dialogos==0.7
-geonode-user-messages==0.1.6
+geonode-user-messages==0.1.10
 gisdata==0.5.4
 gsconfig==1.0.8
 gsimporter==1.0.0

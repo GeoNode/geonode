@@ -295,9 +295,13 @@ def map_metadata(request, mapid, template='maps/map_metadata.html'):
     if request.user.is_superuser or request.user.is_staff:
         metadata_author_groups = GroupProfile.objects.all()
     else:
-        all_metadata_author_groups = chain(
-            request.user.group_list_all(),
-            GroupProfile.objects.exclude(access="private").exclude(access="public-invite"))
+        try:
+            all_metadata_author_groups = chain(
+                request.user.group_list_all(),
+                GroupProfile.objects.exclude(access="private").exclude(access="public-invite"))
+        except:
+            all_metadata_author_groups = GroupProfile.objects.exclude(
+                access="private").exclude(access="public-invite")
         [metadata_author_groups.append(item) for item in all_metadata_author_groups
             if item not in metadata_author_groups]
 

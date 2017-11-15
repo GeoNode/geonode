@@ -99,7 +99,11 @@ def facets(context):
             if not is_admin and not is_staff:
                 if is_manager:
                     groups = request.user.groups.all()
-                    group_list_all = request.user.group_list_all().values('group')
+                    group_list_all = []
+                    try:
+                        group_list_all = request.user.group_list_all().values('group')
+                    except:
+                        pass
                     public_groups = GroupProfile.objects.exclude(access="private").values('group')
                     try:
                         anonymous_group = Group.objects.get(name='anonymous')
@@ -121,7 +125,11 @@ def facets(context):
             if not is_admin and not is_staff:
                 if is_manager:
                     groups = request.user.groups.all()
-                    group_list_all = request.user.group_list_all().values('group')
+                    group_list_all = []
+                    try:
+                        group_list_all = request.user.group_list_all().values('group')
+                    except:
+                        pass
                     public_groups = GroupProfile.objects.exclude(access="private").values('group')
                     try:
                         anonymous_group = Group.objects.get(name='anonymous')
@@ -150,7 +158,11 @@ def facets(context):
                 pass
             elif request.user:
                 groups = request.user.groups.all()
-                group_list_all = request.user.group_list_all().values('group')
+                group_list_all = []
+                try:
+                    group_list_all = request.user.group_list_all().values('group')
+                except:
+                    pass
                 if anonymous_group:
                     documents = documents.filter(
                         Q(group__isnull=True) | Q(group__in=group_list_all) |
@@ -215,7 +227,11 @@ def facets(context):
             if not is_admin and not is_staff:
                 if is_manager:
                     groups = request.user.groups.all()
-                    group_list_all = request.user.group_list_all().values('group')
+                    group_list_all = []
+                    try:
+                        group_list_all = request.user.group_list_all().values('group')
+                    except:
+                        pass
                     public_groups = GroupProfile.objects.exclude(access="private").values('group')
                     try:
                         anonymous_group = Group.objects.get(name='anonymous')
@@ -237,7 +253,11 @@ def facets(context):
             if not is_admin and not is_staff:
                 if is_manager:
                     groups = request.user.groups.all()
-                    group_list_all = request.user.group_list_all().values('group')
+                    group_list_all = []
+                    try:
+                        group_list_all = request.user.group_list_all().values('group')
+                    except:
+                        pass
                     public_groups = GroupProfile.objects.exclude(access="private").values('group')
                     try:
                         anonymous_group = Group.objects.get(name='anonymous')
@@ -266,7 +286,11 @@ def facets(context):
                 pass
             elif request.user:
                 groups = request.user.groups.all()
-                group_list_all = request.user.group_list_all().values('group')
+                group_list_all = []
+                try:
+                    group_list_all = request.user.group_list_all().values('group')
+                except:
+                    pass
                 if anonymous_group:
                     layers = layers.filter(
                         Q(group__isnull=True) | Q(group__in=groups) |
@@ -353,7 +377,11 @@ def facets(context):
             if not is_admin and not is_staff:
                 if is_manager:
                     groups = request.user.groups.all()
-                    group_list_all = request.user.group_list_all().values('group')
+                    group_list_all = []
+                    try:
+                        group_list_all = request.user.group_list_all().values('group')
+                    except:
+                        pass
                     public_groups = GroupProfile.objects.exclude(access="private").values('group')
                     try:
                         anonymous_group = Group.objects.get(name='anonymous')
@@ -386,7 +414,11 @@ def facets(context):
             if not is_admin and not is_staff:
                 if is_manager:
                     groups = request.user.groups.all()
-                    group_list_all = request.user.group_list_all().values('group')
+                    group_list_all = []
+                    try:
+                        group_list_all = request.user.group_list_all().values('group')
+                    except:
+                        pass
                     public_groups = GroupProfile.objects.exclude(access="private").values('group')
                     try:
                         anonymous_group = Group.objects.get(name='anonymous')
@@ -424,7 +456,11 @@ def facets(context):
                 pass
             elif request.user:
                 groups = request.user.groups.all()
-                group_list_all = request.user.group_list_all().values('group')
+                group_list_all = []
+                try:
+                    group_list_all = request.user.group_list_all().values('group')
+                except:
+                    pass
                 if anonymous_group:
                     maps = maps.filter(
                         Q(group__isnull=True) | Q(group__in=group_list_all) |
