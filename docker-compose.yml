@@ -84,9 +84,26 @@ services:
     links:
       - database
     ports:
-      - "8080:8080"
+      - "8080"
+    volumes_from:
+      - data_dir_conf
+    env_file:
+      - ./scripts/docker/env/production/geoserver.env
+
+  geonode:
+    image: geonode/nginx:geoserver
+    links:
+      - django
+      - geoserver
+    ports:
+      - "80:80"
+
+  data_dir_conf:
+    image: geonode/geoserver_data:2.9.x-oauth2
+    container_name: geoserver_data_dir
+    command: /bin/true
     volumes:
-      - geoserver_datadir:/mnt/geoserver_datadir
+      - /geoserver_data/data
 
 volumes:
   rabbitmq_data:
