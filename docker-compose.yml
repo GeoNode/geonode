@@ -21,7 +21,7 @@ services:
       - rabbitmq_data:/var/lib/rabbitmq
 
   django:
-    image: camptocamp/geonode_django
+    image: geonode/django
     build: .
     links:
       - database
@@ -52,7 +52,7 @@ services:
       - geonode_data:/mnt/geonode_data
 
   celery:
-    image: camptocamp/geonode_django
+    image: geonode/django
     links:
       - rabbitmq
       - database
@@ -73,14 +73,14 @@ services:
     image: geonode/django
     links:
       - rabbitmq
-      - postgres
+      - database
       - elasticsearch
     command: python manage.py runmessaging
     env_file:
       - ./scripts/docker/env/production/django.env
 
   geoserver:
-    image: camptocamp/geonode_geoserver
+    image: geonode/geoserver:alias
     links:
       - database
     ports:

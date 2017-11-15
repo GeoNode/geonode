@@ -4,8 +4,8 @@ up:
 
 build:
 	docker pull python:2.7
-	docker build -t camptocamp/geonode_django:latest .
-	docker build -t camptocamp/geonode_django:`date +%Y%m%d%H%M%S` .
+	docker build -t geonode/django:latest .
+	docker build -t geonode/django:`date +%Y%m%d%H%M%S` .
 
 sync: up
 	docker-compose exec django django-admin.py makemigrations --noinput
@@ -42,7 +42,7 @@ unittest: up
 test: smoketest unittest
 
 clear:
-	docker volume rm labsgeonode_elasticsearch_data labsgeonode_geoserver_data labsgeonode_geoserver_datadir labsgeonode_postgresql_data labsgeonode_rabbitmq_data
+	docker-compose down --volumes
 
 hardreset: pull build reset
 
