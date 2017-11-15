@@ -34,7 +34,7 @@ services:
       - "8000:8000"
     environment:
       - DJANGO_SETTINGS_MODULE=geonode.settings
-      - ALLOWED_HOSTS='[''localhost'']'
+      - ALLOWED_HOSTS=localhost,django
       - C_FORCE_ROOT=1
       - BROKER_URL=amqp://guest:guest@rabbitmq:5672/
       - DB_HOST=database

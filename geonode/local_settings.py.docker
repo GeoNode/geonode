@@ -188,8 +188,3 @@ MAP_BASELAYERS = [{
 #EMAIL_HOST_USER = 'youremail@gmail.com'
 #EMAIL_HOST_PASSWORD = 'yourpassword'
 #EMAIL_PORT = 587
-
-# For more information on available settings please consult the Django docs at
-# https://docs.djangoproject.com/en/dev/ref/settings
-# Handle by env vars
-#ALLOWED_HOSTS= [ 'localhost',  ]
