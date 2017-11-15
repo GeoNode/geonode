@@ -185,7 +185,11 @@ class CommonModelApi(ModelResource):
         if not is_admin and not is_staff:
             if is_manager:
                 groups = request.user.groups.all()
-                group_list_all = request.user.group_list_all().values('group')
+                group_list_all = []
+                try:
+                    group_list_all = request.user.group_list_all().values('group')
+                except:
+                    pass
                 public_groups = GroupProfile.objects.exclude(access="private").values('group')
                 try:
                     anonymous_group = Group.objects.get(name='anonymous')
@@ -219,7 +223,11 @@ class CommonModelApi(ModelResource):
             filtered = queryset
         elif request.user:
             groups = request.user.groups.all()
-            group_list_all = request.user.group_list_all().values('group')
+            group_list_all = []
+            try:
+                group_list_all = request.user.group_list_all().values('group')
+            except:
+                pass
             if anonymous_group:
                 filtered = queryset.filter(Q(group__isnull=True) | Q(
                     group__in=groups) | Q(group__in=group_list_all) | Q(
@@ -476,7 +484,11 @@ class CommonModelApi(ModelResource):
                 if not is_admin and not is_staff:
                     if is_manager:
                         groups = request.user.groups.all()
-                        group_list_all = request.user.group_list_all().values('group')
+                        group_list_all = []
+                        try:
+                            group_list_all = request.user.group_list_all().values('group')
+                        except:
+                            pass
                         public_groups = GroupProfile.objects.exclude(access="private").values('group')
                         try:
                             anonymous_group = Group.objects.get(name='anonymous')
@@ -498,7 +510,11 @@ class CommonModelApi(ModelResource):
                 if not is_admin and not is_staff:
                     if is_manager:
                         groups = request.user.groups.all()
-                        group_list_all = request.user.group_list_all().values('group')
+                        group_list_all = []
+                        try:
+                            group_list_all = request.user.group_list_all().values('group')
+                        except:
+                            pass
                         public_groups = GroupProfile.objects.exclude(access="private").values('group')
                         try:
                             anonymous_group = Group.objects.get(name='anonymous')
@@ -527,7 +543,11 @@ class CommonModelApi(ModelResource):
                     filter_set = filter_set
                 elif request.user:
                     groups = request.user.groups.all()
-                    group_list_all = request.user.group_list_all().values('group')
+                    group_list_all = []
+                    try:
+                        group_list_all = request.user.group_list_all().values('group')
+                    except:
+                        pass
                     if anonymous_group:
                         filter_set = filter_set.filter(Q(group__isnull=True) | Q(
                             group__in=groups) | Q(group__in=group_list_all) | Q(
