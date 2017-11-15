@@ -846,8 +846,12 @@ def collect_epsg(tmp_dir, prj_file_name):
 
     """
     cursor = connection.cursor()
-    cursor.execute("SELECT * FROM spatial_ref_sys WHERE proj4text = %s", [proj4_txt])
-    result = cursor.fetchall()
+    try:
+
+        cursor.execute("SELECT * FROM spatial_ref_sys WHERE proj4text = %s", [proj4_txt])
+        result = cursor.fetchall()
+    finally:
+        cursor.close()
 
     epsg_code = ''
     if len(result) == 0:
