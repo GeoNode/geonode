@@ -112,4 +112,3 @@ class GeonodeApiKeyAuthentication(ApiKeyAuthentication):
             request.user = user
 
         return key_auth_check
-
