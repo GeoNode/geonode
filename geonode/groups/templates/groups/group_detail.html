@@ -188,6 +188,7 @@
 
                         <div class="no-style-list">
                             <div class="gd-content-body transparent" id="search-content-layers">
+                                <input type="button" class="btn btn-primary pull-right" id="org-layer-download" value="Download">
 
                               {% include 'search/_pagination.html' %}
                           </div>
@@ -318,7 +319,7 @@
                     dataType: "json",
                     success: function(jsondata) {
                         console.log("success");
-                        //console.log(JSON.stringify(jsondata));
+                        console.log(JSON.stringify(jsondata));
 
                         var data = eval(jsondata.objects);
                         var output='';
@@ -326,6 +327,7 @@
                         //alert(item.date);
                             output +='<div class="col-xs-12 col-sm-6 col-md-4 col-lg-4">';
                             output +='<div class="grid-container lmd">';
+                            output +='<div class="checkbox pull-right"><label><input type="checkbox" id="'+item.id+'"></label></div></br>';
                             output +='<div class="avater">';
                             output +='<div class="avater-img">';
                             output +='<a class="avater-img-mid" href="'+item.detail_url+'" target="_self">';
@@ -1130,6 +1132,52 @@
                 });
              });
     </script>
+    <script>
+        /*
+        var checkboxes = $(".checkbox input[type='checkbox']"),
+            orgDownloadBtn = $("#org-layer-download");
+
+        checkboxes.click(function() {
+            alert("clicked");
+            orgDownloadBtn.attr("disabled", !checkboxes.is(":checked"));
+        });
+
+
+        $('.checkbox input[type="checkbox"]').change(function(){
+            alert($('.checkbox input[type="checkbox"]').length);
+        });
+        */
+
+
+        $('#org-layer-download').click(function(){
+            // alert($('input[type="checkbox"]:checked').length);
+            if($('input[type="checkbox"]:checked').length == 0){
+                alert("Please select at least one Layer to download!");
+            }else{
+
+            }
+        });
+
+        $(document).ready(function(){
+
+
+            /*
+            $('.checkbox input[type="checkbox"]').click(function(){
+                alert("clicked");
+                $("#org-layer-download").attr("disabled", !$("input[type='checkbox']").is(":checked"));
+            });
+            */
+         });
+        /*
+        $('input[type="checkbox"]').change(function(){
+            if($(this).prop('checked') == true){
+                $(".org-layer-download").removeClass("disabled");
+            }else {
+                $(".org-layer-download").addClass("disabled");
+            }
+        });
+        */
+    </script>
     <script type="text/javascript" language="JavaScript">
         <!--$(document).ready(function(){-->
             <!--$("#qroup_activity").click(function(){-->
@@ -1151,5 +1199,6 @@
             <!--});-->
         <!--});-->
     </script>
+
 {% endblock extra_script %}
 
