@@ -252,7 +252,9 @@ class Layer(ResourceBase):
                 msg = 'Shapefile has an invalid column name: %s' % wrong_column_name
             else:
                 msg = _('File cannot be opened, maybe check the encoding')
-            assert valid_shp, msg
+            # AF: Removing assertion since if the original file does not exists anymore
+            #     it won't be possible to update Metadata anymore
+            # assert valid_shp, msg
 
         # no error, let's return the base files
         return base_files.get(), list_col
