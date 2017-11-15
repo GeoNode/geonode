@@ -175,6 +175,15 @@
                                                             </div>
                                                         {% endif %}
 
+                                                        {% if links_download %}
+                                                            <ul>
+                                                                {% for link in links_download %}
+                                                                    <li>
+                                                                        <a href="{{ link.url }}">{% trans link.name %}</a>
+                                                                    </li>
+                                                                {% endfor %}
+                                                            </ul>
+                                                        {% endif %}
                                                     </div>
                                                     <div class="modal-footer">
                                                         <button type="button" class="btn btn-primary pull-left data-export-button">Export...</button>

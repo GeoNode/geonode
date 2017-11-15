@@ -27,8 +27,6 @@ from rest_framework_gis.filters import InBBoxFilter
 class MapLoadListAPIView(ListAPIView):
     queryset = MapLoad.objects.all()
     serializer_class = MapLoadSerializer
-    # bbox_filter_field = 'map'
-    # filter_backends = (InBBoxFilter,)
 
     # set permission for admin
 
@@ -36,9 +34,6 @@ class MapLoadListAPIView(ListAPIView):
 class LayerLoadListAPIView(ListAPIView):
     queryset = LayerLoad.objects.all()
     serializer_class = LayerLoadSerializer
-    # import pdb;pdb.set_trace()
-    # bbox_filter_field = 'layer'
-    # filter_backends = (InBBoxFilter,)
 
     # set permission for admin
 
@@ -111,8 +106,6 @@ class LayerLoadCreateAPIView(APIView):
 
         data = request.data
 
-        # import pdb;pdb.set_trace()
-
         layer_load = LayerLoad()
         layer_load.user = None if request.user.id is None else request.user
         layer_load.layer = Layer.objects.get(id=int(data['layer']))
@@ -120,8 +113,6 @@ class LayerLoadCreateAPIView(APIView):
         layer_load.longitude = None if str(data['longitude']) == '' else float(data['longitude'])
         layer_load.ip = str(request.environ['REMOTE_ADDR'])
         layer_load.agent = str(request.environ['HTTP_USER_AGENT'])
-
-        # import pdb;pdb.set_trace()
 
         try:
             layer_load.save()
@@ -136,8 +127,6 @@ class MapLoadCreateAPIView(APIView):
     def post(self, request, format=None):
 
         data = request.data
-
-        # import pdb;pdb.set_trace()
 
         map_load = MapLoad()
         map_load.user = None if request.user.id is None else request.user
