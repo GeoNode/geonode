@@ -67,6 +67,11 @@
             </div>
       </div>
       <div class="row">
+          <div class="col-md-12" >
+              <div class="message-box"></div>
+          </div>
+      </div>
+      <div class="row">
             <div class="col-md-12">
                 <div class="tab-content activity-style-list">
                     <article id="org-profile" class="tab-pane active">
@@ -187,6 +192,7 @@
 
                         <div class="no-style-list">
                             <div class="gd-content-body transparent" id="search-content-layers">
+                                <input type="button" class="btn btn-primary pull-right" id="org-layer-download" value="Download Selected">
 
                               {% include 'search/_pagination.html' %}
                           </div>
@@ -325,6 +331,7 @@
                         //alert(item.date);
                             output +='<div class="col-xs-12 col-sm-6 col-md-4 col-lg-4">';
                             output +='<div class="grid-container lmd">';
+                            output +='<div class="checkbox pull-right"><label><input type="checkbox" id="'+item.id+'"></label></div></br>';
                             output +='<div class="avater">';
                             output +='<div class="avater-img">';
                             output +='<a class="avater-img-mid" href="'+item.detail_url+'" target="_self">';
@@ -1129,6 +1136,20 @@
                 });
              });
     </script>
+    <script>
+
+        $('#org-layer-download').click(function(){
+
+            if($('input[type="checkbox"]:checked').length == 0){
+
+                $('.message-box').append("<div class='alert alert-warning alert-dismissable'><a href='#' class='close' data-dismiss='alert' aria-label='close'>&times;</a><strong>Warning!</strong> Please select at least one Layer to download!</div>")
+            }else{
+                $('.message-box').empty();
+                $('.message-box').append("<div class='alert alert-info alert-dismissable'><a href='#' class='close' data-dismiss='alert' aria-label='close'>&times;</a><strong>Info!</strong> An email will be sent to you with download link.</div>")
+            }
+        });
+
+    </script>
     <script type="text/javascript" language="JavaScript">
         <!--$(document).ready(function(){-->
             <!--$("#qroup_activity").click(function(){-->
@@ -1150,5 +1171,6 @@
             <!--});-->
         <!--});-->
     </script>
+
 {% endblock extra_script %}
 
