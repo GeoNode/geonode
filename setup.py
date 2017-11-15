@@ -112,7 +112,7 @@ setup(name='GeoNode',
         "geonode-avatar>=2.1.6",  # (2.1.5 in ppa) FIXME
         "geonode-announcements>=1.0.8",
         "geonode-agon-ratings>=0.3.5",  # (0.3.1 in ppa) FIXME
-        "geonode-user-accounts>=1.0.13",  # (1.0.11 in ppa) FIXME
+        "geonode-user-accounts==1.0.13",  # (1.0.11 in ppa) FIXME
         "geonode-arcrest>=10.2",
         "geonode-notification>=1.1.1",
         "geonode-dialogos>=0.5",
