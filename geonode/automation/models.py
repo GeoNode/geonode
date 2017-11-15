@@ -88,7 +88,7 @@ class AutomationJob(models.Model):
     )
 
     input_dir = models.TextField(
-        _('Input Directory'),
+        _('Input Directory (multiple entries can be separated with ;)'),
         blank=False,
         null=False,
         help_text=_('Full path of directory location in server')
