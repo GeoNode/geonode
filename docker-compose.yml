@@ -33,10 +33,6 @@ services:
     ports:
       - "8000:8000"
     environment:
-      - DJANGO_SETTINGS_MODULE=geonode.settings
-      - ALLOWED_HOSTS=localhost,django
-      - C_FORCE_ROOT=1
-      - BROKER_URL=amqp://guest:guest@rabbitmq:5672/
       - DB_HOST=database
       - DB_PORT=5432
       - DB_ADMIN_USER=postgres
@@ -47,6 +43,8 @@ services:
       - DB_GEOSERVER_NAME=geoserver
       - DB_GEOSERVER_USER=geoserver
       - DB_GEOSERVER_PASSWORD=secret
+    env_file:
+      - ./scripts/docker/env/production/django.env
     volumes:
       - geonode_config:/mnt/geonode_config
       - geonode_data:/mnt/geonode_data
@@ -75,7 +73,8 @@ services:
       - rabbitmq
       - database
       - elasticsearch
-    command: python manage.py runmessaging
+    entrypoint: python
+    command: manage.py runmessaging
     env_file:
       - ./scripts/docker/env/production/django.env
 
