@@ -104,6 +104,8 @@ class GeoNodeSmokeTests(TestCase):
         self.failUnlessEqual(response.status_code, 200)
         response = self.client.get(reverse('profile_detail', args=['norman']))
         self.failUnlessEqual(response.status_code, 200)
+        response = self.client.get(reverse('profile_detail', args=['a.fancy.username.123']))
+        self.failUnlessEqual(response.status_code, 200)
 
     def test_csw_endpoint(self):
         '''Test that the CSW endpoint is correctly configured.'''
