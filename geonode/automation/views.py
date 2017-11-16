@@ -48,7 +48,8 @@ def metadata_job(request):
             obj = form.save(commit=False)
             for each_idir in obj.input_dir.split(';'):
                 if each_idir:
-                    obj.input_dir = each_idir
+                    obj.input_dir = each_idir.strip()
+                    obj.pk = None
                     obj.save()
             return render(request, "update_task.html")
 
