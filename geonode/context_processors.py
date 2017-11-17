@@ -100,6 +100,10 @@ def resource_urls(request):
             settings,
             'CLIENT_RESULTS_LIMIT',
             10),
+        API_LIMIT_PER_PAGE=getattr(
+            settings,
+            'API_LIMIT_PER_PAGE',
+            20),
         SRID_DETAIL=getattr(
             settings,
             'SRID',
