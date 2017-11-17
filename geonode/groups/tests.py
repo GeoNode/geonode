@@ -519,7 +519,6 @@ class MembershipTest(TestCase):
         Tests profile is_member_of_group property
         """
 
-        anon = get_anonymous_user()
         normal = get_user_model().objects.get(username="norman")
         group = GroupProfile.objects.get(slug="bar")
         self.assertFalse(normal.is_member_of_group(group.slug))
