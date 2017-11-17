@@ -18,7 +18,7 @@
 {{ block.super }}
 
 <div class="page-header">
-  <a href="{% url "document_browse" %}" class="btn btn-primary pull-right">{% trans "Explore Documents" %}</a>
+  <a href="{% url "document_browse" %}?limit={{ API_LIMIT_PER_PAGE }}" class="btn btn-primary pull-right">{% trans "Explore Documents" %}</a>
   <h2 class="page-title">{% trans "Edit Metadata" %}</h2>
 </div>
 <div class="row">
