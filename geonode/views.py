@@ -94,7 +94,8 @@ def ajax_lookup(request):
         'count': users.count(),
     }
 
-    json_dict['groups'] = [({'name': g.slug, 'title': g.title}) for g in groups]
+    json_dict['groups'] = [({'name': g.slug, 'title': g.title})
+                           for g in groups]
     return HttpResponse(
         content=json.dumps(json_dict),
         content_type='text/plain'
@@ -137,10 +138,21 @@ def ident_json(request):
 
     json_data['counts'] = facets({'request': request, 'facet_type': 'home'})
 
-    return HttpResponse(content=json.dumps(json_data), mimetype='application/json')
+    return HttpResponse(content=json.dumps(json_data),
+                        mimetype='application/json')
 
 
 def h_keywords(request):
     from geonode.base.models import HierarchicalKeyword as hk
     keywords = json.dumps(hk.dump_bulk_tree())
     return HttpResponse(content=keywords)
+
+
+def moderator_contacted(request, inactive_user=None):
+    """Used when a user signs up."""
+    user = get_user_model().objects.get(id=inactive_user)
+    return TemplateResponse(
+        request,
+        template="account/admin_approval_sent.html",
+        context={"email": user.email}
+    )
