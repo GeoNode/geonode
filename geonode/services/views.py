@@ -128,7 +128,7 @@ def register_service(request):
                 user = None
                 password = None
 
-            if type in ["WMS", "OWS"]:
+            if type in ["WFS", "WMS", "OWS"]:
                 return _process_wms_service(
                     url,
                     name,

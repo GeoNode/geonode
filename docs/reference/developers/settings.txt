@@ -521,17 +521,85 @@ A boolean that specifies whether the uploader should allow the user to upload da
 User Account settings
 =====================
 
-REGISTRATION_OPEN
------------------
-Default: ``False``
-
-A boolean that specifies whether users can self-register for an account on your site.
-
 THEME_ACCOUNT_CONTACT_EMAIL
 ---------------------------
 Default: ``'admin@example.com'``
 
-This email address is added to the bottom of the password reset page in case users have trouble unlocking-locking their account.
+This email address is added to the bottom of the password reset page in case
+users have trouble unlocking-locking their account.
+
+ACCOUNT_OPEN_SIGNUP
+-------------------
+Default: ``True``
+
+Whether the geonode site allows new users to register for an account. When
+set to ``False`` new users cannot register, they must be created by a staff
+member
+
+ACCOUNT_APPROVAL_REQUIRED
+-------------------------
+Default: ``False``
+
+Whether new user registrations must be manually approved. When set to
+``True``, the site's staff must manually approve every new account. The
+approval flow goes like this:
+
+* User registers in the site (either with a local account or by using a social login);
+* Staff users receive an email notification that a new user is requesting access;
+* Staff users manually approve the user by using geonode's administration interface;
+* User receives an e-mail notification when the account has been approved;
+* User can now login to the geonode site.
+
+ACCOUNT_ADAPTER
+---------------
+Default: ``geonode.people.adapters.LocalAccountAdapter``
+
+This is a `django-allauth setting <https://django-allauth.readthedocs.io/en/latest/configuration.html#configuration>`_.
+It allows specifying a custom class to handle authentication for local
+accounts.
+
+ACCOUNT_CONFIRM_EMAIL_ON_GET
+----------------------------
+Default: ``True``
+
+This is a `django-allauth setting <https://django-allauth.readthedocs.io/en/latest/configuration.html#configuration>`_.
+It allows specifying the HTTP method used when confirming e-mail addresses.
+
+ACCOUNT_EMAIL_REQUIRED
+----------------------
+Default: ``True``
+
+This is a `django-allauth setting <https://django-allauth.readthedocs.io/en/latest/configuration.html#configuration>`_.
+Controls whehter the user is required to provide an e-mail address upon
+registration
+
+ACCOUNT_EMAIL_VERIFICATION
+--------------------------
+Default: ``optional``
+
+This is a `django-allauth setting <https://django-allauth.readthedocs.io/en/latest/configuration.html#configuration>`_.
+
+SOCIALACCOUNT_ADAPTER
+---------------------
+Default: ``geonode.people.adapters.SocialAccountAdapter``
+
+This is a `django-allauth setting <https://django-allauth.readthedocs.io/en/latest/configuration.html#configuration>`_.
+It allows specifying a custom class to handle authentication for social
+accounts.
+
+SOCIALACCOUNT_PROVIDERS
+-----------------------
+Default: ``None``
+
+This is a `django-allauth setting <https://django-allauth.readthedocs.io/en/latest/configuration.html#configuration>`_.
+It should be a dictionary with provider specific settings
+
+SOCIALACCOUNT_PROFILE_EXTRACTORS
+--------------------------------
+Default: ``None``
+
+A dictionary with lowercase provider names as keys and path to custom
+profile extractor classes as values.
 
 
 .. _pinax-notifications:
