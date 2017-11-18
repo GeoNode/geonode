@@ -514,6 +514,18 @@ class MembershipTest(TestCase):
         self.assert_(group.user_is_member(normal))
         self.assertRaises(ValueError, lambda: group.join(anon))
 
+    def test_profile_is_member_of_group(self):
+        """
+        Tests profile is_member_of_group property
+        """
+
+        normal = get_user_model().objects.get(username="norman")
+        group = GroupProfile.objects.get(slug="bar")
+        self.assertFalse(normal.is_member_of_group(group.slug))
+
+        group.join(normal)
+        self.assertTrue(normal.is_member_of_group(group.slug))
+
 
 class InvitationTest(TestCase):
     """
