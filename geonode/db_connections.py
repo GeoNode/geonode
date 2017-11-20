@@ -3,6 +3,7 @@ from django.conf import settings
 
 
 class InformationSchemaColumns:
+    _KEYS = ['column_name', 'is_nullable', 'data_type', 'character_maximum_length']
     column_name = None
     is_nullable = None
     data_type = None
@@ -18,7 +19,7 @@ class InformationSchemaColumns:
         return True if self.is_nullable == 'YES' else False
 
     def keys(self):
-        return [k for k in InformationSchemaColumns.__dict__.keys() if k[:1] != '_' and not callable(getattr(self,k))]
+        return self._KEYS
 
     def __getitem__(self, key):
         return getattr(self, key)
@@ -39,7 +40,7 @@ class Database(object):
     
     def get_table_schema_info(self, table_name):
         columns_details = []
-        schema_columns = ['column_name', 'is_nullable', 'data_type', 'character_maximum_length']
+        schema_columns = InformationSchemaColumns._KEYS
         with self.cursor.cursor() as cursor:
             sql = self.TABLE_SCHEMA_INFO_QUERY % (','.join(schema_columns), table_name)
             cursor.execute(sql)
