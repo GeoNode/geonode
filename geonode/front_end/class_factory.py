@@ -55,7 +55,7 @@ class ClassFactory(object):
         else:
             return self.DJANGO_MODEL[data_type](null=is_null, max_length=character_maximum_length)
 
-    def get_model(self, name, table_name, app_label='dynamic'):
-        schema_infos = Database().get_table_schema_info(table_name=table_name)
+    def get_model(self, name, table_name, app_label='dynamic', db=None):
+        schema_infos = Database(db_name=db).get_table_schema_info(table_name=table_name)
         fields = {f.column_name: self.get_model_field(**f) for f in schema_infos if f.data_type in self.DJANGO_MODEL}
-        return self.create_model(name, app_label=app_label, fields=fields, options=dict(db_table=table_name))                
+        return self.create_model(name, app_label=app_label, fields=fields, options=dict(db_table=table_name), db=db)                

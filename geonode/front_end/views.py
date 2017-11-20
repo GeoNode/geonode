@@ -1,14 +1,20 @@
 import csv
-from django.conf import settings
-from django.core.files import File
-from django.http import HttpResponse
-from django.views.generic import View
-
-
+import logging
 try:
     import json
 except ImportError:
     from django.utils import simplejson as json
+
+from .class_factory import ClassFactory
+from django.conf import settings
+from django.core.files import File
+from django.http import HttpResponse
+from django.views.generic import View
+from geonode.layers.models import Layer
+from geonode.layers.views import _resolve_layer
+
+
+db_logger = logging.getLogger('db')
 
 
 class GeoserverSettings (View):
@@ -26,13 +32,22 @@ class LayerAttributeUploadView(View):
     '''
     This class will process a csv file for a layer attribute
     '''
-    def get(self, request, layername):
-        return HttpResponse('Atiq')
-
     def post(self, request, layername):
+        layer_obj = _resolve_layer(request, layername)
+        factory = ClassFactory()
+        model_instance = factory.get_model(name=str(layer_obj.title_en), table_name=str(layer_obj.name), db=str(layer_obj.store))
         csv_file = File(request.FILES['file']).file
-        spamreader = csv.reader(csv_file, delimiter=' ', quotechar='|')
-        for row in spamreader:
-            print ', '.join(row)
+        csv_reader = csv.reader(csv_file, delimiter=',', quotechar='"')
+        headers = csv_reader.next()
+        headers = [h.lower().replace(' ', '_') for h in headers]
 
-        return HttpResponse({})
+        for row in csv_reader:
+            row = dict(zip(headers, row))
+            try:
+                obj = model_instance(**row)
+                obj.save()
+            except model_instance.DoesNotExist as ex:
+                db_logger.exception(ex)
+        
+        return HttpResponse({'success': True})
+    
