@@ -29,8 +29,11 @@
         function getFeatureDetails(url, layerName, propertyName) {
             LayerService.getFeatureDetails(url, layerName, propertyName).then(function(res) {
                 self.attributeDetails = [];
+                self.propertyNames.push('fid');
                 res.features.forEach(function(e) {
-                    self.attributeDetails.push(e.properties);
+                    var obj = e.properties;
+                    obj.fid =parseInt(e.id.split('.')[1]);
+                    self.attributeDetails.push(obj);
                 });
                 self.gridOptions.data = self.attributeDetails;
                 $('#attribute_view_left').hide();
@@ -74,8 +77,7 @@
             }
         });
         self.upload = function(){
-            console.log(csrftoken);
-            self.file.uploadAll();
+            self.file.uploadItem(0);
         };
 
         // Initialize Call
