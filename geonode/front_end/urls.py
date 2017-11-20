@@ -4,5 +4,6 @@ import views
 
 urlpatterns = patterns('',
     (r'^layers/attribute-view/$', TemplateView.as_view(template_name='layers/layer_attribute_view.html')),
-    (r'^api/geoserver-settings/$', views.GeoserverSettings.as_view())
+    (r'^api/geoserver-settings/$', views.GeoserverSettings.as_view()),
+    (r'^api/attribute/(?P<layername>[^/]*)/upload/$', views.LayerAttributeUploadView.as_view())
 )

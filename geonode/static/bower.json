@@ -30,6 +30,7 @@
     "bootstrap-treeview": "1.2.0",
     "bootstrap-tokenfield": "0.12.0",
     "x2js": "x2js#^1.2.0",
-    "angular-ui-grid": "^4.0.7"
+    "angular-ui-grid": "^4.0.7",
+    "angular-file-upload": "^2.5.0"
   }
 }

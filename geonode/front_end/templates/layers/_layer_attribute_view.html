@@ -2,5 +2,9 @@
 
 <div ng-controller="AttributeViewController as ctrl" ng-app="LayerApp">
     <h3>Attributes</h3>
-    <div ui-grid="ctrl.gridOptions" ui-grid-pagination class="grid"></div>
+    <div ui-grid="ctrl.gridOptions" ui-grid-pagination ui-grid-exporter class="grid"></div>
+
+<label for="">Upload CSV to update information</label>
+<input type="file" nv-file-select uploader="ctrl.file">
+<input type="button" ng-click="ctrl.upload()" value="Upload" class="btn"> 
 </div>

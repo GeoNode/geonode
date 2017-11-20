@@ -3,9 +3,9 @@
         .module('LayerApp')
         .controller('AttributeViewController', AttributeViewController);
 
-    AttributeViewController.$inject = ['$location', 'LayerService', 'uiGridConstants'];
+    AttributeViewController.$inject = ['$location', 'LayerService', 'uiGridConstants', 'FileUploader'];
 
-    function AttributeViewController($location, LayerService, uiGridConstants) {
+    function AttributeViewController($location, LayerService, uiGridConstants, FileUploader) {
         var self = this;
         self.geoServerUrl = '';
         self.propertyNames = [];
@@ -16,6 +16,9 @@
             paginationPageSize: 25,
             data: [],
             minRowsToShow: 15,
+            enableGridMenu: true,
+            exporterCsvFilename:  self.layerName+ '.csv',
+            // exporterCsvLinkElement: angular.element(document.querySelectorAll(".custom-csv-link-location")),
             enableHorizontalScrollbar : uiGridConstants.scrollbars.ALWAYS
         };
         
@@ -26,8 +29,11 @@
         function getFeatureDetails(url, layerName, propertyName) {
             LayerService.getFeatureDetails(url, layerName, propertyName).then(function(res) {
                 self.attributeDetails = [];
+                self.propertyNames.push('fid');
                 res.features.forEach(function(e) {
-                    self.attributeDetails.push(e.properties);
+                    var obj = e.properties;
+                    obj.fid =parseInt(e.id.split('.')[1]);
+                    self.attributeDetails.push(obj);
                 });
                 self.gridOptions.data = self.attributeDetails;
                 $('#attribute_view_left').hide();
@@ -62,6 +68,17 @@
 
                 }, errorFn);
         }
+
+        self.file = new FileUploader({
+            url: '/api/attribute/'+self.layerName+'/upload/',
+            queueLimit: 1,
+            headers: {
+                'X-CSRFToken': csrftoken
+            }
+        });
+        self.upload = function(){
+            self.file.uploadItem(0);
+        };
 
         // Initialize Call
         (getGeoServerSettings)();
