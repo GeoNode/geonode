@@ -1122,7 +1122,7 @@ if S3_MEDIA_ENABLED:
 djcelery.setup_loader()
 
 # Database router
-DATABASE_ROUTERS = ['geonode.front_end.db_router.DbRouter']
+DATABASE_ROUTERS = ['geonode.db_router.DbRouter']
 
 
 # There are 3 ways to override GeoNode settings:
