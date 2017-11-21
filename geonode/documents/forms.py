@@ -30,7 +30,7 @@ from django.conf import settings
 from django.forms import HiddenInput, TextInput
 from modeltranslation.forms import TranslationModelForm
 
-from geonode.documents.models import Document
+from geonode.documents.models import Document, DocumentLayers
 from geonode.maps.models import Map
 from geonode.layers.models import Layer
 from geonode.groups.models import GroupProfile
@@ -42,7 +42,15 @@ from geonode.base.forms import ResourceBaseForm
 
 class DocumentForm(ResourceBaseForm):
 
-    resource = forms.ChoiceField(label='Link to')
+    # resource = forms.ChoiceField(label='Link to')
+    resource = forms.CharField(
+        required=False,
+        label=_("Link to"),
+        widget=TextInput(
+            attrs={
+                'name': 'title__contains',
+                'id': 'resource'
+            }))
 
     def __init__(self, *args, **kwargs):
         super(DocumentForm, self).__init__(*args, **kwargs)
@@ -50,7 +58,7 @@ class DocumentForm(ResourceBaseForm):
         rbases += list(Map.objects.all())
         rbases.sort(key=lambda x: x.title)
         rbases_choices = []
-        rbases_choices.append(['no_link', '---------'])
+        # rbases_choices.append(['no_link', '---------'])
         for obj in rbases:
             type_id = ContentType.objects.get_for_model(obj.__class__).id
             obj_id = obj.id
@@ -58,31 +66,34 @@ class DocumentForm(ResourceBaseForm):
             display_text = '%s (%s)' % (obj.title, obj.polymorphic_ctype.model)
             rbases_choices.append([form_value, display_text])
         self.fields['resource'].choices = rbases_choices
+        """
         if self.instance.content_type:
             self.fields['resource'].initial = 'type:%s-id:%s' % (
                 self.instance.content_type.id, self.instance.object_id)
+        """
 
     def save(self, *args, **kwargs):
-        contenttype_id = None
-        contenttype = None
-        object_id = None
-        resource = self.cleaned_data['resource']
-        if resource != 'no_link':
-            matches = re.match("type:(\d+)-id:(\d+)", resource).groups()
-            contenttype_id = matches[0]
-            object_id = matches[1]
-            contenttype = ContentType.objects.get(id=contenttype_id)
-        self.cleaned_data['content_type'] = contenttype_id
-        self.cleaned_data['object_id'] = object_id
-        self.instance.object_id = object_id
-        self.instance.content_type = contenttype
+        # contenttype_id = None
+        # contenttype = None
+        # object_id = None
+        # resource = self.cleaned_data['resource']
+        # if resource != 'no_link':
+        #     matches = re.match("type:(\d+)-id:(\d+)", resource).groups()
+        #     contenttype_id = matches[0]
+        #     object_id = matches[1]
+        #     contenttype = ContentType.objects.get(id=contenttype_id)
+        # self.cleaned_data['content_type'] = contenttype_id
+        # self.cleaned_data['object_id'] = object_id
+        # self.instance.object_id = object_id
+        # self.instance.content_type = contenttype
         return super(DocumentForm, self).save(*args, **kwargs)
 
     class Meta(ResourceBaseForm.Meta):
         model = Document
         exclude = ResourceBaseForm.Meta.exclude + (
-            'content_type',
-            'object_id',
+            # 'content_type',
+            # 'object_id',
+            'layers',
             'doc_file',
             'extension',
             'doc_type',
