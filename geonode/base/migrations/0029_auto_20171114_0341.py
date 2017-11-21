@@ -7,15 +7,10 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('base', '0029_remove_resourcebase_is_approved'),
+        ('base', '0028_resourcebase_is_approved'),
     ]
 
     operations = [
-        migrations.AddField(
-            model_name='resourcebase',
-            name='is_approved',
-            field=models.BooleanField(default=False, help_text='Is this resource validated from a publisher or editor?', verbose_name='Approved'),
-        ),
         migrations.AlterField(
             model_name='resourcebase',
             name='language',

@@ -551,6 +551,7 @@ class CollectorAPI(object):
             ows_services = self.extract_ows_services(_requests)
             metric_defaults['resource'] = resource
             metric_defaults['requests'] = _requests
+            metric_defaults['ows_service'] = None
 
             MetricValue.add('request.count', valid_from, valid_to, service, 'Count', value=count, value_num=count,
                             samples_count=count, value_raw=count, resource=resource)

@@ -37,9 +37,12 @@
     "bootstrap-datepicker": "1.6.4",
     "bootstrap-select": "1.12.1",
     "bootstrap-multiselect": "https://github.com/davidstutz/bootstrap-multiselect",
-    "fastselect": "https://github.com/dbrekalo/fastselect.git"
+    "fastselect": "https://github.com/dbrekalo/fastselect.git",
+    "clipboard": "^1.7.1",
+    "Leaflet.EasyButton": "^2.2.4"
   },
   "resolutions": {
-    "angular": "1.4.0"
+    "angular": "1.4.0",
+    "leaflet": "~1.0.1"
   }
 }

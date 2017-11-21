@@ -53,13 +53,13 @@
           <ul class="nav navbar-nav">
             {% block tabs %}
             <li id="nav_layers">
-              <a href="{% url "layer_browse" %}">{% trans "Layers" %}</a>
+              <a href="{% url "layer_browse" %}?limit={{ API_LIMIT_PER_PAGE }}">{% trans "Layers" %}</a>
             </li>
             <li id="nav_maps">
-              <a href="{% url "maps_browse" %}">{% trans "Maps" %}</a>
+              <a href="{% url "maps_browse" %}?limit={{ API_LIMIT_PER_PAGE }}">{% trans "Maps" %}</a>
             </li>
             <li id="nav_documents">
-              <a href="{% url "document_browse" %}">{% trans "Documents" %}</a>
+              <a href="{% url "document_browse" %}?limit={{ API_LIMIT_PER_PAGE }}">{% trans "Documents" %}</a>
             </li>
            {% block extra_tab %}
            {% endblock %}
@@ -226,7 +226,7 @@
               <li><a href="{% url "announcements_list" %}"><i class="fa fa-bullhorn"></i> {% trans "Announcements" %}</a></li>
               {% endif %}
               {% if user.is_superuser %}
-              <li><a href="{% url "services" %}"><i class="fa fa-globe"></i> {% trans "Remote Services" %}</a></li>
+              <li><a href="{% url "services" %}?limit={{ API_LIMIT_PER_PAGE }}"><i class="fa fa-globe"></i> {% trans "Remote Services" %}</a></li>
               <li><a href="{% url "account_invite_user" %}"><i class="fa fa-edit"></i> {% trans "Invite User" %}</a></li>
               <li class="modal-divider"></li>
               <li><a href="{{ GEOSERVER_BASE_URL }}"><i class="fa fa-gears"></i> {% trans "GeoServer" %}</a></li>

@@ -67,7 +67,7 @@ setup(name='GeoNode',
         "Unidecode<=0.4.19",
         "django-nose<=1.4.5",  # python-django-nose (1.4.3)
         "nose<=1.3.7",  # python-nose (1.3.7)
-        "awesome-slugify<=1.6.2",
+        "awesome-slugify<=1.6.5",
         "django-floppyforms<=1.7.0",
         "certifi<=2017.7.27.1",
         "chardet<=3.0.4",
@@ -134,14 +134,20 @@ setup(name='GeoNode',
 
         # GeoNode org maintained apps.
         "django-geoexplorer>=4.0.0,<5.0",
-        "geonode-user-messages<=0.1.6",  # (0.1.3 in ppa) FIXME
+        "geonode-user-messages<=0.1.10",  # (0.1.3 in ppa) FIXME
         "geonode-avatar<=2.1.6",  # (2.1.5 in ppa) FIXME
         "geonode-announcements<=1.0.8",
         "geonode-agon-ratings<=0.3.5",  # (0.3.1 in ppa) FIXME
 
         # we can't use django-user-account until upstream merge changes for geonode.
         # this is temporary solution
-        "django-user-accounts==2.0.2dev",
+        # "django-user-accounts==2.0.2dev",
+        # django-user-accounts==2.0.2
+        # we can't use django-user-account until upstream merge changes for geonode.
+        # this is temporary solution
+        # git+git://github.com/cezio/django-user-accounts@252_255_mixed#egg=django-user-accounts-2.0.2dev
+        # updated to https://github.com/geosolutions-it/geonode-user-accounts.git
+        "geonode-user-accounts>=1.0.13",
 
         "geonode-arcrest>=10.0",
         "geonode-dialogos>=0.5",
@@ -180,7 +186,6 @@ setup(name='GeoNode',
         "odfpy<=1.3.5",
         "openpyxl<=2.4.8",
         "pbr<=3.1.1",
-        "pdb<=0.1",
         "python-dateutil<=2.6.1",
         "python-gnupg<=0.4.1",
         "python-mimeparse<=1.6.0",
@@ -201,8 +206,5 @@ setup(name='GeoNode',
         'django-cors-headers',
         'django-multi-email-field',
       ],
-      zip_safe=False,
-      dependency_links=[
-        'https://github.com/cezio/django-user-accounts/archive/252_255_mixed.zip#egg=django-user-accounts-2.0.2dev'
-      ]
+      zip_safe=False
       )

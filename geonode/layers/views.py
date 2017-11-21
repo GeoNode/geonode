@@ -47,7 +47,7 @@ from django.conf import settings
 from django.template import RequestContext
 from django.utils.translation import ugettext as _
 
-from geonode import geoserver
+from geonode import geoserver, qgis_server
 
 try:
     import json
@@ -87,6 +87,8 @@ from geonode.geoserver.helpers import (cascading_delete, gs_catalog,
 
 if check_ogc_backend(geoserver.BACKEND_PACKAGE):
     from geonode.geoserver.helpers import _render_thumbnail
+if check_ogc_backend(qgis_server.BACKEND_PACKAGE):
+    from geonode.qgis_server.models import QGISServerLayer
 CONTEXT_LOG_FILE = ogc_server_settings.LOG_FILE
 
 logger = logging.getLogger("geonode.layers.views")
@@ -316,6 +318,11 @@ def layer_detail(request, layername, template='layers/layer_detail.html'):
     # Add required parameters for GXP lazy-loading
     layer_bbox = layer.bbox
     bbox = [float(coord) for coord in list(layer_bbox[0:4])]
+    if hasattr(layer, 'srid'):
+        config['crs'] = {
+            'type': 'name',
+            'properties': layer.srid
+        }
     config["srs"] = getattr(settings, 'DEFAULT_MAP_CRS', 'EPSG:900913')
     config["bbox"] = bbox if config["srs"] != 'EPSG:900913' \
         else llbbox_to_mercator([float(coord) for coord in bbox])
@@ -393,6 +400,11 @@ def layer_detail(request, layername, template='layers/layer_detail.html'):
             group = GroupProfile.objects.get(slug=layer.group.name)
         except GroupProfile.DoesNotExist:
             group = None
+    # a flag to be used for qgis server
+    show_popup = False
+    if 'show_popup' in request.GET and request.GET["show_popup"]:
+        show_popup = True
+
     context_dict = {
         'resource': layer,
         'group': group,
@@ -404,6 +416,7 @@ def layer_detail(request, layername, template='layers/layer_detail.html'):
         "wps_enabled": settings.OGC_SERVER['default']['WPS_ENABLED'],
         "granules": granules,
         "all_granules": all_granules,
+        "show_popup": show_popup,
         "filter": filter,
     }
 
@@ -625,6 +638,11 @@ def layer_metadata(
     # Add required parameters for GXP lazy-loading
     layer_bbox = layer.bbox
     bbox = [float(coord) for coord in list(layer_bbox[0:4])]
+    if hasattr(layer, 'srid'):
+        config['crs'] = {
+            'type': 'name',
+            'properties': layer.srid
+        }
     config["srs"] = getattr(settings, 'DEFAULT_MAP_CRS', 'EPSG:900913')
     config["bbox"] = bbox if config["srs"] != 'EPSG:900913' \
         else llbbox_to_mercator([float(coord) for coord in bbox])
@@ -912,9 +930,13 @@ def layer_metadata(
     if request.user.is_superuser or request.user.is_staff:
         metadata_author_groups = GroupProfile.objects.all()
     else:
-        all_metadata_author_groups = chain(
-            request.user.group_list_all().distinct(),
-            GroupProfile.objects.exclude(access="private").exclude(access="public-invite"))
+        try:
+            all_metadata_author_groups = chain(
+                request.user.group_list_all().distinct(),
+                GroupProfile.objects.exclude(access="private").exclude(access="public-invite"))
+        except:
+            all_metadata_author_groups = GroupProfile.objects.exclude(
+                access="private").exclude(access="public-invite")
         [metadata_author_groups.append(item) for item in all_metadata_author_groups
             if item not in metadata_author_groups]
 
@@ -1014,6 +1036,14 @@ def layer_replace(request, layername, template='layers/layer_replace.html'):
                         cat = gs_catalog
                         cascading_delete(cat, layer.typename)
                         out['ogc_backend'] = geoserver.BACKEND_PACKAGE
+                    elif check_ogc_backend(qgis_server.BACKEND_PACKAGE):
+                        try:
+                            qgis_layer = QGISServerLayer.objects.get(
+                                layer=layer)
+                            qgis_layer.delete()
+                        except QGISServerLayer.DoesNotExist:
+                            pass
+                        out['ogc_backend'] = qgis_server.BACKEND_PACKAGE
 
                     saved_layer = file_upload(
                         base_file,

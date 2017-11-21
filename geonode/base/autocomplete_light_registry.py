@@ -56,17 +56,23 @@ class ResourceBaseAutocomplete(AutocompleteModelTemplate):
             if not is_admin and not is_staff:
                 if is_manager:
                     groups = request.user.groups.all()
+                    group_list_all = []
+                    try:
+                        group_list_all = request.user.group_list_all().values('group')
+                    except:
+                        pass
                     public_groups = GroupProfile.objects.exclude(access="private").values('group')
                     try:
                         anonymous_group = Group.objects.get(name='anonymous')
                         self.choices = self.choices.filter(
-                            Q(group__isnull=True) | Q(group__in=groups) |
-                            Q(group__in=public_groups) | Q(group=anonymous_group) |
+                            Q(group__isnull=True) | Q(group__in=group_list_all) |
+                            Q(group__in=groups) | Q(group__in=public_groups) |
+                            Q(group=anonymous_group) |
                             Q(owner__username__iexact=str(request.user)))
                     except:
                         self.choices = self.choices.filter(
                             Q(group__isnull=True) | Q(group__in=groups) |
-                            Q(group__in=public_groups) |
+                            Q(group__in=group_list_all) | Q(group__in=public_groups) |
                             Q(owner__username__iexact=str(request.user)))
                 else:
                     self.choices = self.choices.filter(Q(is_published=True) |
@@ -76,17 +82,23 @@ class ResourceBaseAutocomplete(AutocompleteModelTemplate):
             if not is_admin and not is_staff:
                 if is_manager:
                     groups = request.user.groups.all()
+                    group_list_all = []
+                    try:
+                        group_list_all = request.user.group_list_all().values('group')
+                    except:
+                        pass
                     public_groups = GroupProfile.objects.exclude(access="private").values('group')
                     try:
                         anonymous_group = Group.objects.get(name='anonymous')
                         self.choices = self.choices.filter(
                             Q(group__isnull=True) | Q(group__in=groups) |
-                            Q(group__in=public_groups) | Q(group=anonymous_group) |
+                            Q(group__in=group_list_all) | Q(group__in=public_groups) |
+                            Q(group=anonymous_group) |
                             Q(owner__username__iexact=str(request.user)))
                     except:
                         self.choices = self.choices.filter(
                             Q(group__isnull=True) | Q(group__in=groups) |
-                            Q(group__in=public_groups) |
+                            Q(group__in=group_list_all) | Q(group__in=public_groups) |
                             Q(owner__username__iexact=str(request.user)))
                 else:
                     self.choices = self.choices.filter(Q(is_published=True) |
@@ -103,13 +115,21 @@ class ResourceBaseAutocomplete(AutocompleteModelTemplate):
                 self.choices = self.choices
             elif request.user:
                 groups = request.user.groups.all()
+                group_list_all = []
+                try:
+                    group_list_all = request.user.group_list_all().values('group')
+                except:
+                    pass
                 if anonymous_group:
                     self.choices = self.choices.filter(
                         Q(group__isnull=True) | Q(group__in=groups) |
-                        Q(group__in=public_groups) | Q(group=anonymous_group))
+                        Q(group__in=group_list_all) | Q(group__in=public_groups) |
+                        Q(group=anonymous_group) | Q(owner__username__iexact=str(request.user)))
                 else:
                     self.choices = self.choices.filter(
-                        Q(group__isnull=True) | Q(group__in=public_groups) | Q(group__in=groups))
+                        Q(group__isnull=True) | Q(group__in=public_groups) |
+                        Q(group__in=group_list_all) | Q(group__in=groups) |
+                        Q(owner__username__iexact=str(request.user)))
             else:
                 if anonymous_group:
                     self.choices = self.choices.filter(

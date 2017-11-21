@@ -18,10 +18,13 @@
 #
 #########################################################################
 
+from tastypie.authentication import ApiKeyAuthentication
 from tastypie.authorization import DjangoAuthorization
 from tastypie.exceptions import Unauthorized
+from tastypie.compat import get_user_model, get_username_field
 
 from guardian.shortcuts import get_objects_for_user
+from tastypie.http import HttpUnauthorized
 
 
 class GeoNodeAuthorization(DjangoAuthorization):
@@ -69,3 +72,43 @@ class GeoNodeAuthorization(DjangoAuthorization):
         return bundle.request.user.has_perm(
             'delete_resourcebase',
             bundle.obj.get_self_resource())
+
+
+class GeonodeApiKeyAuthentication(ApiKeyAuthentication):
+    """
+    Override ApiKeyAuthentication to prevent 401 response when no api key is provided.
+    """
+
+    def is_authenticated(self, request, **kwargs):
+        """
+        Finds the user and checks their API key.
+
+        Should return either ``True`` if allowed, ``False`` if not or an
+        ``HttpResponse`` if you need something custom.
+        """
+
+        try:
+            username, api_key = self.extract_credentials(request)
+        except ValueError:
+            return self._unauthorized()
+
+        if not username or not api_key:
+            return True
+
+        username_field = get_username_field()
+        User = get_user_model()
+
+        try:
+            lookup_kwargs = {username_field: username}
+            user = User.objects.get(**lookup_kwargs)
+        except (User.DoesNotExist, User.MultipleObjectsReturned):
+            return self._unauthorized()
+
+        if not self.check_active(user):
+            return False
+
+        key_auth_check = self.get_key(user, api_key)
+        if key_auth_check and not isinstance(key_auth_check, HttpUnauthorized):
+            request.user = user
+
+        return key_auth_check

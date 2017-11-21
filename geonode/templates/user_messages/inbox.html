@@ -35,7 +35,7 @@
 {% endblock %}
 
 {% block sidebar %}
-<a href="{% url message_create_url %}" class="btn btn-primary" type="button">{% trans "Create Message" %}</a>
+<a href="{% url 'message_create' %}" class="btn btn-primary" type="button">{% trans "Create Message" %}</a>
 {% endblock %}
 
 {% block extra_script %}

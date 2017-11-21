@@ -172,7 +172,9 @@ class Metric(models.Model):
 
              )
 
-    AGGREGATE_MAP = {TYPE_RATE: '(case when sum(samples_count)> 0 then sum(value_num)/sum(samples_count) else 0 end)',
+    AGGREGATE_MAP = {TYPE_RATE: ('(case when sum(samples_count)> 0 '
+                                 'then sum(value_num*samples_count)'
+                                 '/sum(samples_count) else 0 end)'),
                      TYPE_VALUE: 'sum(value_num)',
                      TYPE_VALUE_NUMERIC: 'max(value_num)',
                      TYPE_COUNT: 'sum(value_num)'}
@@ -581,7 +583,7 @@ class MetricValue(models.Model):
                 l = l.encode('utf-8')
             metric = '{} [{}]'.format(metric, l)
         if self.resource and self.resource.type:
-            metric = '{} for {}'.format(metric, '{}={}'.format(self.resource.name, self.resource.type))
+            metric = '{} for {}'.format(metric, '{}={}'.format(self.resource.type, self.resource.name))
         return 'Metric Value: {}: [{}] (since {} until {})'.format(metric, self.value, self.valid_from, self.valid_to)
 
     @classmethod

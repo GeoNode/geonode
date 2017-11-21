@@ -60,6 +60,10 @@ def resource_urls(request):
             settings,
             'DISPLAY_RATINGS',
             False),
+        DISPLAY_WMS_LINKS=getattr(
+            settings,
+            'DISPLAY_WMS_LINKS',
+            False),
         TWITTER_CARD=getattr(
             settings,
             'TWITTER_CARD',
@@ -96,6 +100,10 @@ def resource_urls(request):
             settings,
             'CLIENT_RESULTS_LIMIT',
             10),
+        API_LIMIT_PER_PAGE=getattr(
+            settings,
+            'API_LIMIT_PER_PAGE',
+            20),
         SRID_DETAIL=getattr(
             settings,
             'SRID',
@@ -120,6 +128,7 @@ def resource_urls(request):
             dict()).get(
             'METADATA',
             'never'),
+        USE_GEOSERVER=settings.USE_GEOSERVER,
         USE_NOTIFICATIONS=has_notifications,
         USE_MONITORING='geonode.contrib.monitoring' in settings.INSTALLED_APPS and settings.MONITORING_ENABLED,
         DEFAULT_ANONYMOUS_VIEW_PERMISSION=getattr(settings, 'DEFAULT_ANONYMOUS_VIEW_PERMISSION', False),
@@ -148,7 +157,4 @@ def resource_urls(request):
         ),
         OGC_SERVER=getattr(settings, 'OGC_SERVER', None),
     )
-    defaults['message_create_url'] = 'message_create' if not settings.USER_MESSAGES_ALLOW_MULTIPLE_RECIPIENTS\
-        else 'message_create_multiple'
-
     return defaults

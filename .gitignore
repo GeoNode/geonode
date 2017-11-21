@@ -36,6 +36,7 @@ geonode/static/lib/css/leaflet.fullscreen.css
 geonode/static/lib/css/Leaflet.NavBar.css
 geonode/static/lib/css/leaflet-measure.css
 geonode/static/lib/css/leaflet-plugins.min.css
+geonode/static/lib/css/easy-button.css
 geonode/static/lib/css/bootstrap-tokenfield.css
 geonode/static/lib/js/assets.min.js
 geonode/static/lib/js/Control.Opacity.js
@@ -64,6 +65,8 @@ geonode/static/lib/js/waypoints.js
 geonode/static/lib/js/angular.min.js
 geonode/static/lib/js/angular.min.js.map
 geonode/static/lib/js/ZeroClipboard.min.js
+geonode/static/lib/js/clipboard.js
+geonode/static/lib/js/easy-button.js
 geonode/static/lib/js/moment.min.js
 geonode/static/lib/css/bootstrap-treeview.css
 geonode/static/lib/js/bootstrap-treeview.js

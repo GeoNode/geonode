@@ -115,6 +115,15 @@
       </tr>
     </tbody>
   </table>
+  {% if USE_GEOSERVER and DISPLAY_WMS_LINKS %}
+  <p>
+      {% if request.user.is_authenticated and 'access_token' in request.session %}
+        <a href="{% url 'capabilities_user' profile.username %}?access_token={{ request.session.access_token }}">
+      {% else %}
+        <a href="{% url 'capabilities_user' profile.username %}">
+      {% endif %}
+      <i class="fa fa-map"></i> {% trans 'User layers WMS GetCapabilities document' %}</a></p>
+  {% endif %}
 </div>
 
 <div class="col-xs-12 col-md-3">
@@ -144,7 +153,7 @@
     </ul>
       {% if user.is_superuser %}
     <ul class="list-group">
-      <li class="list-group-item"><a href="{% url "services" %}"><i class="fa fa-globe"></i> {% trans "Remote Services" %}</a></li>
+      <li class="list-group-item"><a href="{% url "services" %}?limit={{ API_LIMIT_PER_PAGE }}"><i class="fa fa-globe"></i> {% trans "Remote Services" %}</a></li>
       <li class="list-group-item"><a href="{% url "account_invite_user" %}"><i class="fa fa-edit"></i> {% trans "Invite User" %}</a></li>
       <li class="list-group-item"><a href="{{ GEOSERVER_BASE_URL }}"><i class="fa fa-gears"></i> {% trans "GeoServer" %}</a></li>
       {% endif %}

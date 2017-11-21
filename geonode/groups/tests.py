@@ -21,8 +21,10 @@
 import json
 from django.contrib.auth import get_user_model
 from django.contrib.auth.models import Group
+from django.core.files.uploadedfile import SimpleUploadedFile
 from django.core.urlresolvers import reverse
 from django.test import TestCase
+from django.test import override_settings
 from django.conf import settings
 
 from guardian.shortcuts import get_anonymous_user
@@ -512,6 +514,18 @@ class MembershipTest(TestCase):
         self.assert_(group.user_is_member(normal))
         self.assertRaises(ValueError, lambda: group.join(anon))
 
+    def test_profile_is_member_of_group(self):
+        """
+        Tests profile is_member_of_group property
+        """
+
+        normal = get_user_model().objects.get(username="norman")
+        group = GroupProfile.objects.get(slug="bar")
+        self.assertFalse(normal.is_member_of_group(group.slug))
+
+        group.join(normal)
+        self.assertTrue(normal.is_member_of_group(group.slug))
+
 
 class InvitationTest(TestCase):
     """
@@ -646,3 +660,56 @@ class GroupCategoriesTestCase(TestCase):
         q = GroupCategory.objects.filter(name=category)
         self.assertEqual(q.count(), 1)
         self.assertTrue(q.get().slug)
+
+
+class GroupProfileTest(TestCase):
+
+    @override_settings(MEDIA_ROOT="/tmp/geonode_tests")
+    def test_group_logo_is_present_on_list_view(self):
+        """Verify that a group's logo is rendered on list view."""
+        test_group = Group(name="tester")
+        test_profile = GroupProfile(
+            group=test_group,
+            title="test",
+            slug="test",
+            description="test",
+            access="public",
+            logo=SimpleUploadedFile("dummy-file.jpg", b"dummy contents")
+        )
+        test_group.save()
+        test_profile.save()
+        response = self.client.get(
+            reverse("api_dispatch_list",
+                    kwargs={"api_name": "api", "resource_name": "groups"})
+        )
+        response_payload = json.loads(response.content)
+        returned = response_payload["objects"]
+        group = [g for g in returned if g["title"] == test_profile.title][0]
+        self.assertEqual(200, response.status_code)
+        self.assertEqual(group["logo"], test_profile.logo.url)
+
+    def test_group_logo_is_not_present_on_list_view(self):
+        """
+        Verify that no logo exists in list view when a group doesn't have one.
+        """
+
+        test_group = Group(name="tester")
+        test_profile = GroupProfile(
+            group=test_group,
+            title="test",
+            slug="test",
+            description="test",
+            access="public"
+        )
+        test_group.save()
+        test_profile.save()
+
+        response = self.client.get(
+            reverse("api_dispatch_list",
+                    kwargs={"api_name": "api", "resource_name": "groups"})
+        )
+        response_payload = json.loads(response.content)
+        returned = response_payload["objects"]
+        group = [g for g in returned if g["title"] == test_profile.title][0]
+        self.assertEqual(200, response.status_code)
+        self.assertIsNone(group["logo"])

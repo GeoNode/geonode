@@ -353,7 +353,7 @@ API settings
 
 API_LIMIT_PER_PAGE
 ------------------
-Default: ``0``
+Default: ``20``
 
 Number of items returned by the API. 0 equals no limit
 
@@ -550,12 +550,12 @@ PINAX_NOTIFICATIONS_QUEUE_ALL
 
 Default: `False`
 
-A boolean that specifies if user notifications should be queued and send outside main web application process. If set to `True`, additional sending script, `python manage.py emit_notices` should be called periodically. 
+A boolean that specifies if user notifications should be queued and send outside main web application process. If set to `True`, additional sending script, `python manage.py emit_notices` should be called periodically.
 
 PINAX_NOTIFICATIONS_BACKENDS
 ----------------------------
 
-Default: 
+Default:
 
 .. code::
 

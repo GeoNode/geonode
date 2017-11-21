@@ -23,6 +23,7 @@ import logging
 import base64
 import httplib2
 import os
+from lxml import etree
 
 from django.contrib.auth import authenticate
 from django.http import HttpResponse, HttpResponseRedirect
@@ -33,6 +34,8 @@ from django.contrib.auth.decorators import user_passes_test
 from django.contrib.auth import get_user_model
 from django.contrib.auth.decorators import login_required
 from django.core.urlresolvers import reverse
+from django.template.loader import get_template
+from django.template import Context
 from django.template import RequestContext
 from django.utils.datastructures import MultiValueDictKeyError
 from django.utils.translation import ugettext as _
@@ -43,6 +46,7 @@ from geonode.base.models import ResourceBase
 from geonode.layers.forms import LayerStyleUploadForm
 from geonode.layers.models import Layer, Style
 from geonode.layers.views import _resolve_layer, _PERMISSION_MSG_MODIFY
+from geonode.maps.models import Map
 from geonode.geoserver.signals import gs_catalog
 from geonode.tasks.update import geoserver_update_layers
 from geonode.utils import json_response, _get_basic_auth_info
@@ -573,3 +577,92 @@ def layer_acls(request):
         result['email'] = acl_user.email
 
     return HttpResponse(json.dumps(result), content_type="application/json")
+
+
+# capabilities
+def get_layer_capabilities(workspace, layer):
+    """
+    Retrieve a layer-specific GetCapabilities document
+    """
+    # TODO implement this for 1.3.0 too
+    wms_url = '%s%s/%s/wms?request=GetCapabilities&version=1.1.0' % (ogc_server_settings.public_url, workspace, layer)
+    http = httplib2.Http()
+    response, getcap = http.request(wms_url)
+    return getcap
+
+
+def format_online_resource(workspace, layer, element):
+    """
+    Replace workspace/layer-specific OnlineResource links with the more
+    generic links returned by a site-wide GetCapabilities document
+    """
+    layerName = element.find('.//Name')
+    layerName.text = workspace + ":" + layer
+    layerresources = element.findall('.//OnlineResource')
+    for resource in layerresources:
+        wtf = resource.attrib['{http://www.w3.org/1999/xlink}href']
+        resource.attrib['{http://www.w3.org/1999/xlink}href'] = wtf.replace("/" + workspace + "/" + layer, "")
+
+
+def get_capabilities(request, layerid=None, user=None, mapid=None, category=None):
+    """
+    Compile a GetCapabilities document containing public layers
+    filtered by layer, user, map, or category
+    """
+
+    rootdoc = None
+    rootlayerelem = None
+    layers = None
+
+    cap_name = ' Capabilities - '
+    if layerid is not None:
+        layer_obj = Layer.objects.get(id=layerid)
+        cap_name += layer_obj.title
+        layers = Layer.objects.filter(id=layerid)
+    elif user is not None:
+        layers = Layer.objects.filter(owner__username=user)
+        cap_name += user
+    elif category is not None:
+        layers = Layer.objects.filter(category__identifier=category)
+        cap_name += category
+    elif mapid is not None:
+        map_obj = Map.objects.get(id=mapid)
+        cap_name += map_obj.title
+        alternates = []
+        for layer in map_obj.layers:
+            if layer.local:
+                alternates.append(layer.name)
+        layers = Layer.objects.filter(alternate__in=alternates)
+
+    for layer in layers:
+        if request.user.has_perm('view_resourcebase', layer.get_self_resource()):
+            try:
+                workspace, layername = layer.typename.split(":")
+                if rootdoc is None:  # 1st one, seed with real GetCapabilities doc
+                    try:
+                        layercap = etree.fromstring(get_layer_capabilities(workspace, layername))
+                        rootdoc = etree.ElementTree(layercap)
+                        rootlayerelem = rootdoc.find('.//Capability/Layer')
+                        format_online_resource(workspace, layername, rootdoc)
+                        rootdoc.find('.//Service/Name').text = cap_name
+                    except Exception, e:
+                        logger.error("Error occurred creating GetCapabilities for %s:%s" % (layer.typename, str(e)))
+                else:
+                        # Get the required info from layer model
+                        tpl = get_template("geoserver/layer.xml")
+                        ctx = Context({
+                                       'layer': layer,
+                                       'geoserver_public_url': ogc_server_settings.public_url,
+                                       'catalogue_url': settings.CATALOGUE['default']['URL'],
+                        })
+                        gc_str = tpl.render(ctx)
+                        gc_str = gc_str.encode("utf-8")
+                        layerelem = etree.XML(gc_str)
+                        rootlayerelem.append(layerelem)
+            except Exception, e:
+                    logger.error("Error occurred creating GetCapabilities for %s:%s" % (layer.typename, str(e)))
+                    pass
+    if rootdoc is not None:
+        capabilities = etree.tostring(rootdoc, xml_declaration=True, encoding='UTF-8', pretty_print=True)
+        return HttpResponse(capabilities, content_type="text/xml")
+    return HttpResponse(status=200)
