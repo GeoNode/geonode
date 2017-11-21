@@ -1,4 +1,4 @@
-(function() {
+(function () {
     angular
         .module('LayerApp')
         .controller('AttributeViewController', AttributeViewController);
@@ -17,22 +17,22 @@
             data: [],
             minRowsToShow: 15,
             enableGridMenu: true,
-            exporterCsvFilename:  self.layerName+ '.csv',
+            exporterCsvFilename: self.layerName + '.csv',
             // exporterCsvLinkElement: angular.element(document.querySelectorAll(".custom-csv-link-location")),
-            enableHorizontalScrollbar : uiGridConstants.scrollbars.ALWAYS
+            enableHorizontalScrollbar: uiGridConstants.scrollbars.ALWAYS
         };
-        
+
         function errorFn() {
 
         }
 
         function getFeatureDetails(url, layerName, propertyName) {
-            LayerService.getFeatureDetails(url, layerName, propertyName).then(function(res) {
+            LayerService.getFeatureDetails(url, layerName, propertyName).then(function (res) {
                 self.attributeDetails = [];
                 self.propertyNames.push('fid');
-                res.features.forEach(function(e) {
+                res.features.forEach(function (e) {
                     var obj = e.properties;
-                    obj.fid =parseInt(e.id.split('.')[1]);
+                    obj.fid = parseInt(e.id.split('.')[1]);
                     self.attributeDetails.push(obj);
                 });
                 self.gridOptions.data = self.attributeDetails;
@@ -41,9 +41,9 @@
         }
 
         function getLayerFeature(url, layerName) {
-            LayerService.getLayerFeatureByName(url, layerName).then(function(res) {
-                res.featureTypes.forEach(function(featureType) {
-                    featureType.properties.forEach(function(e) {
+            LayerService.getLayerFeatureByName(url, layerName).then(function (res) {
+                res.featureTypes.forEach(function (featureType) {
+                    featureType.properties.forEach(function (e) {
                         if (e.name !== 'the_geom')
                             self.propertyNames.push(e.name);
                     }, this);
@@ -55,14 +55,14 @@
 
         function getLayerByName() {
             LayerService.getLayerByName(self.layerName)
-                .then(function(res) {
+                .then(function (res) {
                     getLayerFeature(self.geoServerUrl, res.typename);
                 }, errorFn);
         }
 
         function getGeoServerSettings() {
             LayerService.getGeoServerSettings()
-                .then(function(res) {
+                .then(function (res) {
                     self.geoServerUrl = res.url;
                     getLayerByName();
 
@@ -70,14 +70,40 @@
         }
 
         self.file = new FileUploader({
-            url: '/api/attribute/'+self.layerName+'/upload/',
+            url: '/api/attribute/' + self.layerName + '/upload/',
             queueLimit: 1,
             headers: {
                 'X-CSRFToken': csrftoken
-            }
+            },
+            filters: [{
+                name: 'extension',
+                fn: function (item) {
+                    var fileExtension = item.name.split('.').pop();
+                    if(fileExtension !== 'csv'){
+                        self.isError = true;
+                        self.Message.Error = "Currently supported .csv file only.";
+                    }
+                    return fileExtension === 'csv';
+                }
+            }]
         });
-        self.upload = function(){
-            self.file.uploadItem(0);
+        self.isSuccess = false;
+        self.isError = false;
+        self.Message = {
+            Success: "",
+            Error: ""
+        };
+        self.file.onSuccessItem = function (item, response, status, headers) {
+            self.isSuccess = true;
+            console.log(response);
+            self.Message.Success = "Updated " + response.success + " items.";
+        };
+
+        self.upload = function () {
+            if (self.file.queue.length) {
+                self.file.uploadItem(0);
+            }
+
         };
 
         // Initialize Call
