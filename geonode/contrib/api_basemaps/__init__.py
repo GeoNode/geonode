@@ -19,7 +19,7 @@
 #
 #########################################################################
 
-from geonode import settings
+from django.conf import settings
 
 if settings.ALT_OSM_BASEMAPS:
     try:
