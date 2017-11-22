@@ -65,7 +65,6 @@
             }
           },
           results: function(data) {
-              console.log(data);
             return {
               results: $.map(data.objects,function(object){
                 return {id: object.id, text: object.title};
