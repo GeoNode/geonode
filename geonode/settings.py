@@ -1121,6 +1121,10 @@ if S3_MEDIA_ENABLED:
 
 djcelery.setup_loader()
 
+# Database router
+DATABASE_ROUTERS = ['geonode.db_router.DbRouter']
+
+
 # There are 3 ways to override GeoNode settings:
 # 1. Using environment variables, if your changes to GeoNode are minimal.
 # 2. Creating a downstream project, if you are doing a lot of customization.
