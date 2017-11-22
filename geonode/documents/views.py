@@ -446,6 +446,24 @@ def document_metadata(
                 the_document.poc = new_poc
                 the_document.metadata_author = new_author
                 the_document.keywords.add(*new_keywords)
+
+                revised_resource = request.POST['resource-resource']
+                revised_resource = str(revised_resource).split(',')
+
+                document_layers = list()
+                if '' not in revised_resource:
+                    for revised_resource_id in revised_resource:
+                        document_layers.append(
+                            DocumentLayers(
+                                content_type_id=document.polymorphic_ctype_id,
+                                document_id=document.id,
+                                layer_id=int(revised_resource_id)
+                            )
+                        )
+
+                    DocumentLayers.objects.filter(document_id=document.id).delete()
+                    DocumentLayers.objects.bulk_create(document_layers)
+
                 Document.objects.filter(id=the_document.id).update(category=new_category)
 
                 if getattr(settings, 'SLACK_ENABLED', False):
