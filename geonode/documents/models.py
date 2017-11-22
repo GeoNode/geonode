@@ -153,7 +153,8 @@ class DocumentLayers(models.Model):
 def get_related_documents(resource):
     if isinstance(resource, Layer) or isinstance(resource, Map):
         ct = ContentType.objects.get_for_model(resource)
-        return Document.objects.filter(content_type=ct, object_id=resource.pk)
+        # return Document.objects.filter(content_type=ct, object_id=resource.pk)
+        return DocumentLayers.objects.filter(content_type_id=ct.id, layer_id=resource.id)
     else:
         return None
 
