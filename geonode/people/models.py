@@ -115,6 +115,12 @@ class Profile(AbstractUser):
     def group_list_all(self):
         return GroupProfile.objects.filter(groupmember__user=self).distinct()
 
+    def is_member_of_group(self, group_slug):
+        """
+        Returns if the Profile belongs to a group of a given slug.
+        """
+        return self.groups.filter(name=group_slug).exists()
+
     def keyword_list(self):
         """
         Returns a list of the Profile's keywords.
