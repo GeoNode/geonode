@@ -34,7 +34,6 @@ from django.utils.module_loading import import_string
 
 from allauth.account.adapter import DefaultAccountAdapter
 from allauth.account.utils import user_field
-from allauth.account.utils import sync_user_email_addresses
 from allauth.socialaccount.adapter import DefaultSocialAccountAdapter
 
 logger = logging.getLogger(__name__)
@@ -112,7 +111,6 @@ class LocalAccountAdapter(DefaultAccountAdapter):
         if settings.ACCOUNT_APPROVAL_REQUIRED:
             user.is_active = False
             user.save()
-        sync_user_email_addresses(user)
         return user
 
     def respond_user_inactive(self, request, user):
@@ -146,7 +144,6 @@ class SocialAccountAdapter(DefaultSocialAccountAdapter):
         if settings.ACCOUNT_APPROVAL_REQUIRED:
             user.is_active = False
             user.save()
-        sync_user_email_addresses(user)
         return user
 
     def respond_user_inactive(self, request, user):
