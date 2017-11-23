@@ -25,7 +25,7 @@ from geonode import __file__ as geonode_path
 from geonode import get_version
 from geonode.celery_app import app  # flake8: noqa
 from distutils.util import strtobool
-import djcelery
+# import djcelery
 import dj_database_url
 
 
@@ -348,7 +348,7 @@ INSTALLED_APPS = (
     'mptt',
     # 'modeltranslation',
     # 'djkombu',
-    'djcelery',
+    # 'djcelery',
     # 'kombu.transport.django',
     'storages',
 
@@ -1119,7 +1119,7 @@ if S3_MEDIA_ENABLED:
     MEDIA_URL = "https://%s/%s/" % (AWS_S3_BUCKET_DOMAIN, MEDIAFILES_LOCATION)
 
 
-djcelery.setup_loader()
+# djcelery.setup_loader()
 
 # Database router
 DATABASE_ROUTERS = ['geonode.db_router.DbRouter']
