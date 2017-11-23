@@ -322,7 +322,7 @@
                     contentType: "application/json; charset=utf-8",
                     dataType: "json",
                     success: function(jsondata) {
-                        console.log("success");
+                        //console.log("success");
                         //console.log(JSON.stringify(jsondata));
 
                         var data = eval(jsondata.objects);
@@ -331,7 +331,7 @@
                         //alert(item.date);
                             output +='<div class="col-xs-12 col-sm-6 col-md-4 col-lg-4">';
                             output +='<div class="grid-container lmd">';
-                            output +='<div class="checkbox pull-right"><label><input type="checkbox" id="'+item.id+'"></label></div></br>';
+                            output +='<div class="checkbox pull-right"><label><input type="checkbox" id="'+item.id+'" value="'+item.id+'"></label></div></br>';
                             output +='<div class="avater">';
                             output +='<div class="avater-img">';
                             output +='<a class="avater-img-mid" href="'+item.detail_url+'" target="_self">';
@@ -1137,15 +1137,87 @@
              });
     </script>
     <script>
+        console.log("href:"+window.location.pathname);
+
 
         $('#org-layer-download').click(function(){
 
             if($('input[type="checkbox"]:checked').length == 0){
 
-                $('.message-box').append("<div class='alert alert-warning alert-dismissable'><a href='#' class='close' data-dismiss='alert' aria-label='close'>&times;</a><strong>Warning!</strong> Please select at least one Layer to download!</div>")
+                $('.message-box').append("<div class='alert alert-warning alert-dismissable'><a href='#' class='close' data-dismiss='alert' aria-label='close'>&times;</a><strong>Warning!</strong> Please select at least one Layer to download!</div>");
             }else{
                 $('.message-box').empty();
-                $('.message-box').append("<div class='alert alert-info alert-dismissable'><a href='#' class='close' data-dismiss='alert' aria-label='close'>&times;</a><strong>Info!</strong> An email will be sent to you with download link.</div>")
+                $('.message-box').append("<div class='alert alert-info alert-dismissable'><a href='#' class='close' data-dismiss='alert' aria-label='close'>&times;</a><strong>Info!</strong> An email will be sent to you with download link.</div>");
+
+
+                var layers = [];
+                $('input[type="checkbox"]:checked').each(function() {
+                    layers.push(this.value);
+                    //console.log(this.value);
+                });
+                var dataValueObj = {
+                    'group': '{{ object.id }}',
+                    'layers': layers
+                };
+                var dataValueJSON = JSON.stringify(dataValueObj);
+
+                url = '/api/download/task/';
+
+                console.log(dataValueJSON);
+
+                downloadLayers(dataValueJSON, url);
+
+                function downloadLayers(data, url){
+
+                    // using jQuery
+                    function getCookie(name) {
+                        var cookieValue = null;
+                        if (document.cookie && document.cookie !== '') {
+                            var cookies = document.cookie.split(';');
+                            for (var i = 0; i < cookies.length; i++) {
+                                var cookie = jQuery.trim(cookies[i]);
+                                // Does this cookie string begin with the name we want?
+                                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                                    break;
+                                }
+                            }
+                        }
+                        return cookieValue;
+                    }
+                    var csrftoken = getCookie('csrftoken');
+                    function csrfSafeMethod(method) {
+                        // these HTTP methods do not require CSRF protection
+                        return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
+                    }
+                    $.ajaxSetup({
+                        beforeSend: function(xhr, settings) {
+                            if (!csrfSafeMethod(settings.type) && !this.crossDomain) {
+                                xhr.setRequestHeader("X-CSRFToken", csrftoken);
+                            }
+                        }
+                    });
+
+                    $.ajax({
+                        url: url,
+                        method: 'POST',
+                        data: data,
+                        dataType: 'json',
+                        success: function(data){
+                            console.log(data);
+
+                        },
+                        statusCode: {
+                            403: function() {
+                                // redirect to login page with next in header
+                                $('.message-box').empty();
+                                window.location = '/account/login/?next='+window.location.pathname;
+                            }
+                        }
+                    });
+
+                }
+
             }
         });
 
