@@ -25,9 +25,6 @@ from django.core.urlresolvers import reverse
 from django.core import mail
 from django.contrib.sites.models import Site
 
-from allauth.account.utils import sync_user_email_addresses
-from allauth.account.models import EmailAddress
-
 
 class PeopleTest(TestCase):
 
