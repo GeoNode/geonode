@@ -1,0 +1,462 @@
+{% extends "site_base.html" %} {% load i18n %} {% load base_tags %} {% block title %} {% trans "New Map" %} - {{ block.super }} {% endblock %} {% block head %}
+<base href="/">
+<link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}Content/assets/css/toastr.min.css">
+<!-- <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}Content/assets/css/bootstrap-2.3.2.min.css"> -->
+<link href="{{ STATIC_URL }}lib/css/bootstrap.min.css?v={{ VERSION }}" rel="stylesheet"/>
+<link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}Content/assets/css/theme.css">
+<link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}Content/assets/css/icon.css">
+<link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}Content/assets/css/jquery-ui.min.css">
+<!-- <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}Content/assets/css/layout-default-1.3.css" > -->
+<link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}Content/assets/css/layout-override.css">
+<link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}Content/assets/css/NewLayout.css">
+<link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}Content/assets/css/PropertyGrid.css">
+<link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}Content/assets/css/attribute-definition-table.css">
+<link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}Content/assets/css/treeAngle.css">
+<link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}Content/assets/css/font-awesome.min.css">
+<!-- <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}Content/assets/css/style.css"> -->
+<!-- <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}Content/assets/css/Dialog.css"> -->
+<link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}Content/assets/css/bootstrap-colorpicker-module.css">
+<link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}Content/assets/css/color-palette.css">
+<link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}Content/assets/css/colorpicker.css">
+<link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}Content/assets/css/ol.css">
+<!-- <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}Content/assets/css/ol3-layerswitcher.css"> -->
+<link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}Content/assets/css/map.css">
+<link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}geonode/css/style.css">
+
+<script src="{{ STATIC_URL }}Content/assets/js/jquery.js"></script>
+<script src="{{ STATIC_URL }}Scripts/lib/jquery-ui-1.9.2.min.js"></script>
+<script src="{{ STATIC_URL }}Scripts/util/jquery.extension.js"></script>
+<script src="{{ STATIC_URL }}Scripts/lib/jantrik.crossDomainAjax.js"></script>
+<script src="{{ STATIC_URL }}Scripts/util/errorMessageManager.js"></script>
+<script src="{{ STATIC_URL }}Scripts/lib/jquery.signalR-2.2.0.js"></script>
+<script src="{{ STATIC_URL }}Scripts/lib/moment.js"></script>
+<script src="{{ STATIC_URL }}Scripts/lib/angular.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/angular.js/1.4.5/angular-cookies.min.js"></script>
+<script src="{{ STATIC_URL }}Scripts/util/appMessages.js"></script>
+<script src="{{ STATIC_URL }}Scripts/lib/toastr.min.js"></script>
+<script src="{{ STATIC_URL }}Scripts/util/surfToastr.js"></script>
+
+{% endblock %} {% block extra_script %}
+<script type="text/javascript" src="https://www.google.com/recaptcha/api/js/recaptcha_ajax.js"></script>
+
+<script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?v=3.exp&key=AIzaSyBvbT4Izaq1XXNZr5dGEAwZ-K752P9CJ84&libraries=places"></script>
+
+<script type="text/javascript" src="https://docs.handsontable.com/0.18.0/bower_components/handsontable/dist/handsontable.full.js"></script>
+<link rel="stylesheet" type="text/css" type="text/css" rel="stylesheet" href="https://docs.handsontable.com/0.18.0/bower_components/handsontable/dist/handsontable.full.min.css">
+
+<!-- <script src="{{ STATIC_URL }}.components/angular/angular.min.js"></script> -->
+<script src="{{ STATIC_URL }}.components/abdmob/x2js/xml2json.js"></script>
+<script src="{{ STATIC_URL }}Scripts/lib/colors.min.js"></script>
+<script src="{{ STATIC_URL }}Scripts/lib/bootstrap-colorpicker-module.js"></script>
+<script src="{{ STATIC_URL }}Scripts/lib/sortable.js"></script>
+<script src="{{ STATIC_URL }}Scripts/lib/jantrik/Jantrik.HandsOnTable.js"></script>
+<script src="{{ STATIC_URL }}Scripts/lib/Classifier/CheckBoxAllDirectives.js"></script>
+<script src="{{ STATIC_URL }}Scripts/lib/Classifier/ColorPaletteDirective.js"></script>
+<script src="{{ STATIC_URL }}Scripts/lib/underscore.js"></script>
+<script src="{{ STATIC_URL }}Scripts/lib/angular-file-upload.min.js"></script>
+<script src="{{ STATIC_URL }}Scripts/lib/ui-bootstrap-tpls-0.6.0.min.js"></script>
+<script src="{{ STATIC_URL }}Scripts/lib/jantrik/Jantrik.GIS.js"></script>
+<script src="{{ STATIC_URL }}Scripts/lib/jantrik/Jantrik.gradientGenerator.js"></script>
+<script src="{{ STATIC_URL }}Scripts/lib/csvParser.js"></script>
+<script src="{{ STATIC_URL }}Scripts/lib/html2canvas.js"></script>
+<script src="{{ STATIC_URL }}Scripts/lib/html2canvas.svg.js"></script>
+<script src="{{ STATIC_URL }}Scripts/lib/angular-dragdrop.js"></script>
+<script src="{{ STATIC_URL }}Scripts/lib/rgbcolor.js"></script>
+<script src="{{ STATIC_URL }}Scripts/lib/ol3/ol-debug.js"></script>
+<script src="{{ STATIC_URL }}Scripts/lib/ol3/ol-format-Style.js"></script>
+<script src="{{ STATIC_URL }}Scripts/Filters/appFilters.js"></script>
+<script src="{{ STATIC_URL }}Scripts/Filters/truncateFilter.js"></script>
+<script src="{{ STATIC_URL }}Scripts/Directives/appHelperModule.js"></script>
+<script src="{{ STATIC_URL }}Scripts/Directives/tableHeightAdjuster.js"></script>
+<script src="{{ STATIC_URL }}Scripts/Directives/TreeAngle.js"></script>
+<script src="{{ STATIC_URL }}Scripts/Directives/attributeDefinitionDirective.js"></script>
+<script src="{{ STATIC_URL }}Scripts/Directives/classifierDefinitionDirective.js"></script>
+<script src="{{ STATIC_URL }}Scripts/Directives/labelingEditorDirective.js"></script>
+<script src="{{ STATIC_URL }}Scripts/Directives/propertyGridDirective.js"></script>
+<script src="{{ STATIC_URL }}Scripts/Directives/datePicker.js"></script>
+<script src="{{ STATIC_URL }}Scripts/Directives/draggableDialogDirective.js"></script>
+<script src="{{ STATIC_URL }}Scripts/Directives/fileNameValidator.js"></script>
+<script src="{{ STATIC_URL }}Scripts/Directives/fixedNumberRange.js"></script>
+<script src="{{ STATIC_URL }}Scripts/Directives/fixedNumberRangeForClassifier.js"></script>
+<script src="{{ STATIC_URL }}Scripts/Directives/inputFocus.js"></script>
+<script src="{{ STATIC_URL }}Scripts/Directives/removeFocus.js"></script>
+<script src="{{ STATIC_URL }}Scripts/Directives/ngEnter.js"></script>
+<script src="{{ STATIC_URL }}Scripts/Directives/layerStyleEditor.js"></script>
+<script src="{{ STATIC_URL }}Scripts/Directives/styleEditor.js"></script>
+<script src="{{ STATIC_URL }}Scripts/Directives/stylePreview.js"></script>
+<script src="{{ STATIC_URL }}Scripts/Directives/stylePreviewSmall.js"></script>
+<script src="{{ STATIC_URL }}Scripts/Directives/Validation/colorCodeValidator.js"></script>
+<script src="{{ STATIC_URL }}Scripts/Directives/CsvFileImport/csvImporter.js"></script>
+<script src="{{ STATIC_URL }}Scripts/Directives/mapLegendDirective.js"></script>
+<script src="{{ STATIC_URL }}Scripts/Directives/resizer.js"></script>
+<script src="{{ STATIC_URL }}Scripts/Directives/hrefWatcher.js"></script>
+<!-- <script src="{{ STATIC_URL }}Scripts/Directives/attributeValue.js"></script> -->
+<script src="{{ STATIC_URL }}Scripts/Directives/visualizationLegends.js"></script>
+<script src="{{ STATIC_URL }}Scripts/Directives/printMapTilteOptions.js"></script>
+<script src="{{ STATIC_URL }}Scripts/Directives/minMaxValidator.js"></script>
+<script src="{{ STATIC_URL }}Scripts/util/appModule.js"></script>
+<script src="{{ STATIC_URL }}maps/js/update-map.controller.js"></script>
+
+<script src="{{ STATIC_URL }}Scripts/util/sldTemplates.js"></script>
+<script src="{{ STATIC_URL }}Scripts/util/sldGenerator.js"></script>
+<script src="{{ STATIC_URL }}Scripts/util/Classifier/featureFilterGenerator.js"></script>
+<script src="{{ STATIC_URL }}Scripts/util/redoUndo.js"></script>
+<script src="{{ STATIC_URL }}Scripts/util/Classifier/ClassType.js"></script>
+<script src="{{ STATIC_URL }}Scripts/util/Classifier/ColorPaletteGenerator.js"></script>
+<script src="{{ STATIC_URL }}Scripts/util/Classifier/RangeCalculator.js"></script>
+<script src="{{ STATIC_URL }}Scripts/util/Classifier/RangeType.js"></script>
+<script src="{{ STATIC_URL }}Scripts/util/Classifier/UniqueType.js"></script>
+<script src="{{ STATIC_URL }}Scripts/util/busyStateManager.js"></script>
+<script src="{{ STATIC_URL }}Scripts/util/ProjectBrowser/publishMapDialogController.js"></script>
+<script src="{{ STATIC_URL }}Scripts/util/ProjectBrowser/projectService.js"></script>
+<script src="{{ STATIC_URL }}Scripts/util/attributeValidatorService.js"></script>
+<script src="{{ STATIC_URL }}Scripts/util/CatalogBrowser/catalogDataService.js"></script>
+<script src="{{ STATIC_URL }}Scripts/util/Browser.Shared/browser.helperService.js"></script>
+<script src="{{ STATIC_URL }}Scripts/util/Browser.Shared/fileBrowserController.js"></script>
+<script src="{{ STATIC_URL }}Scripts/util/CatalogBrowser/epsgService.js"></script>
+<script src="{{ STATIC_URL }}Scripts/util/CatalogBrowser/catalogBrowserController.js"></script>
+<script src="{{ STATIC_URL }}Scripts/util/ProjectBrowser/projectBrowserController.js"></script>
+<script src="{{ STATIC_URL }}Scripts/util/OverpassQueryBuilder/overpass-query-builder.controller.js"></script>
+<script src="{{ STATIC_URL }}Scripts/util/CatalogBrowser/uploadDataService.js"></script>
+<script src="{{ STATIC_URL }}Scripts/util/CatalogBrowser/uploadDataController.js"></script>
+<script src="{{ STATIC_URL }}Scripts/util/CatalogBrowser/shareDataController.js"></script>
+<script src="{{ STATIC_URL }}Scripts/util/CatalogBrowser/csvHeaderMappingService.js"></script>
+<script src="{{ STATIC_URL }}Scripts/util/CatalogBrowser/csvHeaderMappingController.js"></script>
+<script src="{{ STATIC_URL }}Scripts/util/CatalogBrowser/selectEpsgCodeController.js"></script>
+<script src="{{ STATIC_URL }}Scripts/util/AttributeGrid/attributeGridService.js"></script>
+<script src="{{ STATIC_URL }}Scripts/util/AttributeGrid/attributeGridController.js"></script>
+<script src="{{ STATIC_URL }}Scripts/util/CSVEditor/CSVEditorService.js"></script>
+<script src="{{ STATIC_URL }}Scripts/util/CSVEditor/CSVEditorController.js"></script>
+<script src="{{ STATIC_URL }}Scripts/util/cookieManager.js"></script>
+<script src="{{ STATIC_URL }}Scripts/util/maintenanceMessageManager.js"></script>
+<script src="{{ STATIC_URL }}Scripts/util/singnalRManager.js"></script>
+<script src="{{ STATIC_URL }}Scripts/util/Repository/RepositoryModule.js"></script>
+<script src="{{ STATIC_URL }}Scripts/util/Repository/urlResolver.js"></script>
+<script src="{{ STATIC_URL }}Scripts/util/Repository/MapRepository.js"></script>
+<script src="{{ STATIC_URL }}Scripts/util/Repository/LayerRepository.js"></script>
+<script src="{{ STATIC_URL }}Scripts/util/Repository/FeatureRepository.js"></script>
+<script src="{{ STATIC_URL }}Scripts/util/Repository/userProfileRepository.js"></script>
+<script src="{{ STATIC_URL }}Scripts/util/Repository/catalogRepository.js"></script>
+<script src="{{ STATIC_URL }}Scripts/util/Map/MapModule.js"></script>
+<script src="{{ STATIC_URL }}Scripts/util/Map/featureService.js"></script>
+<script src="{{ STATIC_URL }}Scripts/util/Map/layerService.js"></script>
+<script src="{{ STATIC_URL }}Scripts/util/Map/mapService.js"></script>
+<script src="{{ STATIC_URL }}Scripts/util/Tree/treeController.js"></script>
+<script src="{{ STATIC_URL }}Scripts/util/Tree/layerPropertiesController.js"></script>
+<script src="{{ STATIC_URL }}Scripts/util/Tree/blankLayerController.js"></script>
+<script src="{{ STATIC_URL }}Scripts/util/UserProfile/userProfileModule.js"></script>
+<script src="{{ STATIC_URL }}Scripts/util/Subscription/SubscriptionStatus.js"></script>
+<script src="{{ STATIC_URL }}Scripts/util/ImageAttach/imageAttachController.js"></script>
+<script src="{{ STATIC_URL }}Scripts/util/ImageAttach/imagePreviewController.js"></script>
+<script src="{{ STATIC_URL }}Scripts/util/ImageAttach/fileAttachController.js"></script>
+<script src="{{ STATIC_URL }}Scripts/util/ImageAttach/largeImageViewController.js"></script>
+<script src="{{ STATIC_URL }}Scripts/util/Visualization/visualizationController.js"></script>
+<script src="{{ STATIC_URL }}Scripts/util/Visualization/visualizationService.js"></script>
+<script src="{{ STATIC_URL }}Scripts/util/controlButtonsController.js"></script>
+<script src="{{ STATIC_URL }}Scripts/util/jantrik.EventPool.js"></script>
+<script src="{{ STATIC_URL }}Scripts/util/Map/Feature/surfFeature.js"></script>
+<script src="{{ STATIC_URL }}Scripts/util/Map/Feature/surfFeatureFactory.js"></script>
+
+<script src="{{ STATIC_URL }}Scripts/util/Map/Layer/nullSurfLayer.js"></script>
+<script src="{{ STATIC_URL }}Scripts/util/Map/Layer/sourceLessSurfLayer.js"></script>
+<script src="{{ STATIC_URL }}Scripts/util/Map/Layer/surfLayerBase.js"></script>
+<script src="{{ STATIC_URL }}Scripts/util/Map/Layer/wmsSurfLayer.js"></script>
+<script src="{{ STATIC_URL }}Scripts/util/Map/Layer/surfLayerFactory.js"></script>
+
+<script src="{{ STATIC_URL }}Scripts/util/Map/LayerRenderingMode/layerRenderingModeFactory.js"></script>
+<script src="{{ STATIC_URL }}Scripts/util/Map/LayerRenderingMode/nullRenderingMode.js"></script>
+<script src="{{ STATIC_URL }}Scripts/util/Map/LayerRenderingMode/simpleWmsRenderingMode.js"></script>
+
+<script src="{{ STATIC_URL }}Scripts/util/Map/interactionHandler.js"></script>
+<script src="{{ STATIC_URL }}Scripts/util/Map/surfMap.js"></script>
+<!-- <script src="{{ STATIC_URL }}Scripts/util/Map/SurfGIS.OpenLayer.SingleMarkerLayer.js"></script> -->
+<script src="{{ STATIC_URL }}Scripts/util/Map/onZoomHandler.js"></script>
+
+<script src="{{ STATIC_URL }}Scripts/util/Print/printPreviewController.js"></script>
+<script src="{{ STATIC_URL }}Scripts/util/jantrik.Event.js"></script>
+<script src="{{ STATIC_URL }}Scripts/util/Tools/Layer/clearFeaturesTool.js"></script>
+<script src="{{ STATIC_URL }}Scripts/util/Tools/Layer/createFeatureTool.js"></script>
+<script src="{{ STATIC_URL }}Scripts/util/Tools/Layer/wmsSelectionDisplayTool.js"></script>
+<script src="{{ STATIC_URL }}Scripts/util/Tools/Layer/wmsSelectFeatureTool.js"></script>
+<script src="{{ STATIC_URL }}Scripts/util/Tools/Layer/wmsDeleteFeatureTool.js"></script>
+<script src="{{ STATIC_URL }}Scripts/util/Tools/Layer/wmsEditFeatureTool.js"></script>
+<script src="{{ STATIC_URL }}Scripts/util/Tools/Layer/redoUndoTool.js"></script>
+<script src="{{ STATIC_URL }}Scripts/util/Tools/Layer/locationCaptureTool.js"></script>
+<script src="{{ STATIC_URL }}Scripts/util/Tools/Layer/attributeDisplayTool.js"></script>
+<script src="{{ STATIC_URL }}Scripts/util/Tools/Layer/wmsMultiSelectFeatureTool.js"></script>
+
+
+<script src="{{ STATIC_URL }}Scripts/util/Tools/Map/locationSearchTool.js"></script>
+<script src="{{ STATIC_URL }}Scripts/util/Tools/Map/geoLocationTool.js"></script>
+<script src="{{ STATIC_URL }}Scripts/util/Tools/Map/activeLayerTool.js"></script>
+<script src="{{ STATIC_URL }}Scripts/util/Tools/Map/allSelectableLayerTool.js"></script>
+<script src="{{ STATIC_URL }}Scripts/util/Tools/Map/zoomTrackerTool.js"></script>
+<script src="{{ STATIC_URL }}Scripts/util/Tools/Map/zoomToLayerTool.js"></script>
+<script src="{{ STATIC_URL }}Scripts/util/Tools/Map/baseMapTool.js"></script>
+<script src="{{ STATIC_URL }}Scripts/util/Tools/Map/navigationHistoryTool.js"></script>
+<script src="{{ STATIC_URL }}Scripts/util/Tools/Map/mapToolsFactory.js"></script>
+<script src="{{ STATIC_URL }}Scripts/util/Tools/Map/mapTools.js"></script>
+<script src="{{ STATIC_URL }}Scripts/util/Tools/Map/zoomInOutTool.js"></script>
+<script src="{{ STATIC_URL }}Scripts/util/Tools/Map/zoomToMaxExtentTool.js"></script>
+<script src="{{ STATIC_URL }}Scripts/util/Tools/Map/zoomToExtentTool.js"></script>
+<script src="{{ STATIC_URL }}Scripts/util/Tools/Map/measurementTool.js"></script>
+<script src="{{ STATIC_URL }}Scripts/util/Tools/Map/setMarkerTool.js"></script>
+<script src="{{ STATIC_URL }}Scripts/util/Tools/Map/boxDrawTool.js"></script>
+<script src="{{ STATIC_URL }}Scripts/util/Tools/Map/circleDrawTools.js"></script>
+
+<script src="{{ STATIC_URL }}Scripts/util/Tools/UI/featureEditButtonsDirective.js"></script>
+<script src="{{ STATIC_URL }}Scripts/util/Tools/UI/featureRedoUndoButtonsDirective.js"></script>
+<script src="{{ STATIC_URL }}Scripts/util/Tools/UI/mapLoadingIconDirective.js"></script>
+<script src="{{ STATIC_URL }}Scripts/util/Tools/UI/zoomLevelDisplayDirective.js"></script>
+<script src="{{ STATIC_URL }}Scripts/util/Tools/UI/baseMapSwitcherDirective.js"></script>
+<script src="{{ STATIC_URL }}Scripts/util/Tools/UI/locationSearchDirective.js"></script>
+<script src="{{ STATIC_URL }}Scripts/util/Tools/UI/geoLocationToggleButtonDirective.js"></script>
+<script src="{{ STATIC_URL }}Scripts/util/Tools/UI/editToggleButtonDirective.js"></script>
+<script src="{{ STATIC_URL }}Scripts/util/Tools/UI/locationCaptureButtonsDirective.js"></script>
+<script src="{{ STATIC_URL }}Scripts/util/Tools/UI/navigationHistoryButtonsDirective.js"></script>
+<script src="{{ STATIC_URL }}Scripts/util/Tools/UI/propertyGridOverlayDirective.js"></script>
+<script src="{{ STATIC_URL }}Scripts/util/Tools/UI/zoomInOutButtonDirective.js"></script>
+<script src="{{ STATIC_URL }}Scripts/util/Tools/UI/zoomToMaxExtentButtonDirective.js"></script>
+<script src="{{ STATIC_URL }}Scripts/util/Tools/UI/zoomToExtentButtonDirective.js"></script>
+<script src="{{ STATIC_URL }}Scripts/util/Tools/UI/measurementButtonsDirective.js"></script>
+<script src="{{ STATIC_URL }}Scripts/util/Tools/UI/setMarkerButtonDirective.js"></script>
+
+<script src="{{ STATIC_URL }}.components/angular-ui-grid/ui-grid.min.js"></script>
+<script src="{{ STATIC_URL }}layers/js/layer.module.js"></script>
+<script src="{{ STATIC_URL }}layers/js/layer.service.js"></script>
+<script>
+    {% autoescape off %}
+    window.mapConfig = {{config}};
+    {% endautoescape %}
+    </script>
+{% endblock extra_script %} {% block middle %}
+<div class="surfgis" ng-controller="appController" ng-app="appModule" ng-click="bodyClicked()">
+   <div class="application-font all-children-application-font"  ng-controller="MapUpdateController" ng-class='{"draft": mapAccessLevel.IsPublic, "not-draft": !mapAccessLevel.IsPublic}'>
+       <div class="navbar" ng-cloak ng-controller="controlButtonsController">
+           <div class="navbar-inner">
+               <div class="container">
+                   <div class="nav-collapse collapse navbar-responsive-collapse">
+                       <location-search></location-search>
+                       <ul class="nav pull-right">
+
+                           <li draft-only>
+                               <edit-toggle-button></edit-toggle-button>
+                           </li>
+                           <li>
+                               <geo-location-toggle-button></geo-location-toggle-button>
+                           </li>
+                           <li class="divider-vertical" draft-only></li>
+                           <li>
+                               <navigation-history-buttons></navigation-history-buttons>
+                           </li>
+                           <li>
+                               <zoom-in-out-buttons> </zoom-in-out-buttons>
+                           </li>
+                           <li>
+                               <zoom-to-max-extent-button></zoom-to-max-extent-button>
+                           </li>
+                           <li>
+                               <zoom-to-extent-button></zoom-to-extent-button>
+                           </li>
+                           <li>
+                               <measurement-buttons></measurement-buttons>
+                           </li>
+                           <li>
+                               <set-marker></set-marker>
+                           </li>
+                           <li>
+                               <button ng-click="action.drawCircle()">Draw Circle</button>
+                           </li>
+                           <li class="divider-vertical" draft-only></li>
+                           <li draft-only>
+                               <button class="control-button icon icon32 icon-close-project" id="close-project" ng-click="action.showCloseProjectOptions()" ng-disabled="(mapService.isEmpty() && !mapService.getMapName()) || isAttributeGridOn" title="Close Map">
+                                       <span>Close<br />
+                                           Map</span>
+                                   </button>
+                           </li>
+                           <li draft-only>
+                               <button class="control-button icon icon32 icon-browse-projects" id="browse-projects" ng-disabled="isAttributeGridOn" ng-click="action.browseProject()" remove-focus title="Browse Maps">
+                                       <span>Browse
+                                           <br />
+                                           Map</span>
+                                   </button>
+                           </li>
+                           <li draft-only>
+                               <button class="control-button icon icon32 icon-browse-projects" id="overpass-query" ng-disabled="isAttributeGridOn" ng-click="action.overpassApiQuery()" remove-focus title="Overpass Query">
+                                       <span>Overpass API
+                                           <br />
+                                           Query</span>
+                                   </button>
+                           </li>
+                           <li draft-only>
+                               <button class="control-button icon icon32 icon-save" id="save" data-ng-click="action.saveProject()" ng-disabled="!enable.saveProject()" title="Save">
+                                       <span>Save
+                                           <br />
+                                           Map</span>
+                                   </button>
+                           </li>
+                           <li draft-only>
+                               <!-- @* <button class="control-button icon icon32 icon-print" data-ng-click="action.printPreview()" title="Print">
+                                       <span>Print
+                                           <br />
+                                           Map
+                                       </span>
+                                   </button>*@ -->
+                               <button class="control-button icon icon32 icon-print-map" data-ng-click="action.printPreview()" title="Print">
+                                      
+                                       <span style="font-size: 11px;">Print
+                                           <br />
+                                           Map
+                                       </span>
+                                   </button>
+
+                           </li>
+                           <li class="divider-vertical" draft-only></li>
+                           <li draft-only>
+                               <button class="control-button icon icon32 icon-data-warehouse" id="browse-data" ng-click="action.browseData()" ng-disabled="isAttributeGridOn" remove-focus title="Browse Data">
+                                       <span>Browse
+                                           <br />
+                                           Data</span>
+                                   </button>
+                           </li>
+                           <li class="divider-vertical" draft-only></li>
+                           <li>
+                               <!-- <button class="control-button icon icon32 icon-help" ng-click="action.openHelp('Url.Action(" Help ", "Document ")')" title="Open Help">
+                                       <span>Help</span>
+                                   </button> -->
+                           </li>
+                       </ul>
+                   </div>
+                   <!-- /.nav-collapse -->
+               </div>
+           </div>
+           <!-- /navbar-inner -->
+       </div>
+
+       <div class="layout-content">
+           <div class="layout-left donot-print" ng-style="layout.leftStyle">
+               <div ng-show="layout.leftVisible">
+                   <div class="titleBar">
+                       <div class="arrow-left-container" ng-click="layout.setLeftVisible(false)">
+                           <button class="icon icon18 icon-arrow-left"></button>
+                       </div>
+                       Data layers
+                   </div>
+
+                   <div>
+                       <div data-ng-controller="treeController">
+                           <div class="layer-buttons">
+                               <button class="icon add-layer " draft-only ng-disabled="isAttributeGridOn" ng-click="addBlankLayer()" title="Add Blank Layer"></button>
+                               <button class="icon delete-layer" draft-only ng-click="deleteSelectedLayer()" ng-disabled="!enableRemove()" title="Remove active layer">
+                                   </button>
+                               <button class="icon icon-zoom" ng-disabled="!enableZoom()" id="zoom-to-layer" ng-click="zoomToSelectedLayer()" title="Zoom to active layer">
+                                   </button>
+                               <button class="icon download" draft-only ng-click="downloadSelectedLayer()" ng-disabled="!enableDownload()" title="Download active layer's data">
+                                   </button>
+                               <button draft-only class="icon properties" ng-disabled="!enableProperties()" ng-click="showProperties(0)" title="Active layer properties">
+                                   </button>
+                               <button class="icon attribute-grid" ng-disabled="!enableAttributeGrid()" ng-click="showAttributeGrid()" title="Attribute grid">
+                                   </button>
+                               <button draft-only class="icon icon-visualization" ng-disabled="!enableVisualization()" ng-click="showVisualizationWindow()" title="Visualization">
+                                   </button>
+                           </div>
+                           <div class="leftColumnContent">
+                               <!-- <button class="icon icon24 icon-download-project" draft-only style="width: 26px; height: 30px; float: right; margin: 0 5px 0 3px;" ng-click="downloadWorkingProject()" ng-disabled="!enableDownloadProject()" title="Download Map Data">
+                                   </button> -->
+                               <div class="projectName" style="height: 24px; line-height: 26px; cursor: default" ng-attr-title="[{ProjectName}]">
+                                   Working Map: [{mapService.getMapName() || "Untitled"}]
+
+                               </div>
+                               <div class="tree-angle" style="display: inline-block">
+                               </div>
+                           </div>
+                       </div>
+                   </div>
+               </div>
+               <div ng-hide="layout.leftVisible" class="">
+                   <div class="titleBar nopadding">
+                       <div class="arrow-right-container" ng-click="layout.setLeftVisible(true)">
+                           <button class="icon icon18 icon-arrow-right"></button>
+                       </div>
+                   </div>
+               </div>
+           </div>
+           <div id="mainContent" class="layout-center donot-print" ng-style="layout.centerStyle">
+               <div class="feature-edit-button-container donot-print" ng-init="showLegend=true" ng-show="isEditing()">
+                   <feature-edit-buttons></feature-edit-buttons>
+                   <location-capture-buttons></location-capture-buttons>
+                   <feature-redo-undo-buttons></feature-redo-undo-buttons>
+               </div>
+
+               <visualization-legend></visualization-legend>
+
+               <map-loading-icon></map-loading-icon>
+               <zoom-level-display></zoom-level-display>
+               <base-map-switcher></base-map-switcher>
+
+               <div id="map_canvas">
+                   <div id="gmap" class="map">
+                   </div>
+                   <div id="olmap" class="map">
+                   </div>
+               </div>
+           </div>
+           <div class="layout-right donot-print" ng-style="layout.rightStyle" ng-if="!layout.isRightPaneHidden">
+               <div ng-show="layout.rightVisible">
+
+                   <div class="titleBar text-left" style="padding-right: 8px; padding-left: 0">
+
+                       <div class="arrow-right-container" ng-click="layout.setRightVisible(false)">
+                           <button class="icon icon18 icon-arrow-right"></button>
+                       </div>
+                       Attributes
+                   </div>
+
+                   <div class="content">
+                       <div ng-hide="isAttributeGridOn" property-grid options="attributeTableOptions" ng-click="$event.stopPropagation()">
+                       </div>
+                   </div>
+
+                   <div class="feature-image-thumbnail-pane" ng-controller="imagePreviewController">
+                       <div ng-if="hasFeature()">
+                           <div class="featureImageHeader">
+                               <button ng-if="!isReadonly()" class="btn btn-sm btn-primary" draft-only ng-click="openAttachModal()">
+                                      <i class="fa fa-plus fa-fw"></i>Add File
+                                   </button>
+                           </div>
+
+                           <div ng-if="getImages().length == undefined || getImages().length == 0" style="text-align: center; margin-top: 50px;">
+                               <div class="alert" style="margin: 0 10px;">
+                                   <span ng-if="getImages().length == undefined"><i class="fa fa-spinner fa-spin"></i></span>
+                                   <span ng-if="getImages().length == 0">No file available
+                                       </span>
+                               </div>
+                           </div>
+                           <carousel ng-if="!isLargeImageViewOn" interval="-1" style="cursor: pointer;">
+                               <slide ng-repeat="image in getImages()" active="image.active">
+                                   <img ng-src="[{image.url}]" style="margin:auto;min-height: 100px;max-height: 140px;" ng-click="showLargeImage()" />
+                                   <h6 class="carousel-title">[{$index+1}]/[{getImages().length}]</h6>
+                               </slide>
+                           </carousel>
+                       </div>
+                   </div>
+               </div>
+               <div ng-hide="layout.rightVisible">
+                   <div class="titleBar nopadding">
+                       <div class="arrow-right-container" ng-click="layout.setRightVisible(true)">
+                           <button class="icon icon18 icon-arrow-left"></button>
+                       </div>
+                   </div>
+               </div>
+           </div>
+       </div>
+       <div id="location-search-display-popup" class="surf-popup">
+           <label class="addtolayer">
+                   <button class="btn btn-small"><i class="fa fa-plus"></i> Add to layer</button>
+               </label>
+
+           <label class="address"></label>
+           <label class="latlng"></label>
+       </div>
+   </div>
+   {% endblock %} {% block footer %}{% endblock %}

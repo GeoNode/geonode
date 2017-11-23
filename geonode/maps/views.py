@@ -367,7 +367,7 @@ def map_embed(
 # MAPS VIEWER #
 
 
-def map_view(request, mapid, snapshot=None, template='maps/map_view.html'):
+def map_view(request, mapid, snapshot=None, template='maps/detail_map_view.html'):
     """
     The view that returns the map composer opened to
     the map with the given map ID.
