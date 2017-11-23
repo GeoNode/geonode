@@ -226,7 +226,7 @@
 <script src="{{ STATIC_URL }}layers/js/layer.service.js"></script>
 <script>
     {% autoescape off %}
-    window.mapConfig = {{config}};     
+    window.mapConfig = {{config}};
     {% endautoescape %}
     </script>
 {% endblock extra_script %} {% block middle %}
@@ -361,8 +361,8 @@
                                    </button>
                            </div>
                            <div class="leftColumnContent">
-                               <button class="icon icon24 icon-download-project" draft-only style="width: 26px; height: 30px; float: right; margin: 0 5px 0 3px;" ng-click="downloadWorkingProject()" ng-disabled="!enableDownloadProject()" title="Download Map Data">
-                                   </button>
+                               <!-- <button class="icon icon24 icon-download-project" draft-only style="width: 26px; height: 30px; float: right; margin: 0 5px 0 3px;" ng-click="downloadWorkingProject()" ng-disabled="!enableDownloadProject()" title="Download Map Data">
+                                   </button> -->
                                <div class="projectName" style="height: 24px; line-height: 26px; cursor: default" ng-attr-title="[{ProjectName}]">
                                    Working Map: [{mapService.getMapName() || "Untitled"}]
 
