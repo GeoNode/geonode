@@ -33,6 +33,7 @@ def resource_urls(request):
         STATIC_URL=settings.STATIC_URL,
         CATALOGUE_BASE_URL=default_catalogue_backend()['URL'],
         ACCOUNT_OPEN_SIGNUP=settings.ACCOUNT_OPEN_SIGNUP,
+        ACCOUNT_APPROVAL_REQUIRED=settings.ACCOUNT_APPROVAL_REQUIRED,
         VERSION=get_version(),
         SITE_NAME=site.name,
         SITE_DOMAIN=site.domain,

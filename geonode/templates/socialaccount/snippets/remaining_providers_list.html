@@ -1,0 +1,27 @@
+{% load socialaccount %}
+{% load socialaccount_extra %}
+
+{% get_other_social_providers user as other_providers %}
+
+{% for provider in other_providers %}
+    {% if provider.id == "openid" %}
+        {% for brand in provider.get_brands %}
+            <a class="list-group-item" title="{{brand.name}}" href="{% provider_login_url provider.id openid=brand.openid_url process=process %}">
+                {{brand.name}}
+            </a>
+        {% endfor %}
+    {% endif %}
+    <div class="form-group">
+        <a class="btn btn-default btn-block" title="{{provider.name}}" href="{% provider_login_url provider.id process=process scope=scope auth_params=auth_params %}">
+            <i class="fa fa-{{ provider.name|lower }}-square fa-2x" aria-hidden="true"></i>
+            {% if process == "login" %}
+                Sign in with
+            {% elif process == "connect" %}
+                Connect with
+            {% else %}
+                Sign up with
+            {% endif %}
+            {{provider.name}}
+        </a>
+    </div>
+{% endfor %}
