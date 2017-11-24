@@ -425,7 +425,7 @@ linkedin:
 
   * include the relevant app in geonode's ``INSTALLED_APPS`` setting for the
     social provider that you are using. For linkedin this means adding
-    ``allauth.socialaccount.providers.linkedin``.
+    ``allauth.socialaccount.providers.linkedin_oauth2``.
 
   * Access geonode's admin interface and add a new ``Social App`` for the
     provider. Add the previously gathered ``Client id`` and ``Secret key``
@@ -438,14 +438,14 @@ linkedin:
 * Optionally add a profile extractor entry to geonode's
   ``SOCIALACCOUNT_PROFILE_EXTRACTORS`` setting. This setting is specific to
   geonode and is not part of django-allauth. The expected value is a dictionary
-  with the provider's lowercased name as key and the python path to a data
+  with the provider's id as key and the python path to a data
   extractor class as the value. Example:
 
   .. code::
 
      # settings.py
      SOCIALACCOUNT_PROFILE_EXTRACTORS = {
-       "linkedin": "geonode.people.profileextractors.LinkedInExtractor"
+       "linkedin_oauth2": "geonode.people.profileextractors.LinkedInExtractor"
      }
 
    A profile extractor class can retrieve information from each social account
@@ -522,8 +522,8 @@ SOCIALACCOUNT_PROVIDERS
 SOCIALACCOUNT_PROFILE_EXTRACTORS
   Default: ``None``
 
-  A dictionary with lowercase provider names as keys and path to custom
-  profile extractor classes as values.
+  A dictionary with provider ids as keys and path to custom profile extractor
+  classes as values.
 
 
 Django's error templates

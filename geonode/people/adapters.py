@@ -28,18 +28,21 @@ django-allauth.
 import logging
 
 from django.conf import settings
+from django.core.exceptions import ValidationError
 from django.core.urlresolvers import reverse
 from django.http import HttpResponseRedirect
 from django.utils.module_loading import import_string
 
 from allauth.account.adapter import DefaultAccountAdapter
 from allauth.account.utils import user_field
+from allauth.account.utils import user_email
+from allauth.account.utils import user_username
 from allauth.socialaccount.adapter import DefaultSocialAccountAdapter
 
 logger = logging.getLogger(__name__)
 
 
-def get_data_extractor(provider_name):
+def get_data_extractor(provider_id):
     """Get the relevant profile extractor instance for the provider
 
     Retrieve the data extractor instance to use for getting profile
@@ -48,7 +51,7 @@ def get_data_extractor(provider_name):
     """
 
     extractors = getattr(settings, "SOCIALACCOUNT_PROFILE_EXTRACTORS", {})
-    extractor_path = extractors.get(provider_name)
+    extractor_path = extractors.get(provider_id)
     if extractor_path is not None:
         extractor_class = import_string(extractor_path)
         extractor = extractor_class()
@@ -105,6 +108,23 @@ class LocalAccountAdapter(DefaultAccountAdapter):
             "profile_detail", kwargs={"username": request.user.username})
         return profile_path
 
+    def populate_username(self, request, user):
+        # validate the already generated username with django validation
+        # if it passes use that, otherwise use django-allauth's way of
+        # generating a unique username
+        try:
+            user.full_clean()
+            safe_username = user_username(user)
+        except ValidationError:
+            safe_username = self.generate_unique_username([
+                user_field(user, 'first_name'),
+                user_field(user, 'last_name'),
+                user_email(user),
+                user_username(user)
+            ])
+        user_username(user, safe_username)
+
+
     def save_user(self, request, user, form, commit=True):
         user = super(LocalAccountAdapter, self).save_user(
             request, user, form, commit=commit)
@@ -134,7 +154,6 @@ class SocialAccountAdapter(DefaultSocialAccountAdapter):
         """This method is called when a new sociallogin is created"""
         user = super(SocialAccountAdapter, self).populate_user(
             request, sociallogin, data)
-        print("Populating user...")
         update_profile(sociallogin)
         return user
 

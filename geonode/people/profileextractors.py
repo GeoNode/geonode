@@ -30,19 +30,15 @@ class BaseExtractor(object):
     * Some of the method stubs defined below - you don't need to implement
       all of them, just use the ones you need;
 
-    * the ``PROVIDER`` class attribute,, which should be a string with the
-      all lowercase name of the provider;
 
     In the spirit of duck typing, your custom class does not even need to
-    inherit from this one. As long as it provides the expected methods and
-    the ``PROVIDER`` attribute geonode should be able to use it.
+    inherit from this one. As long as it provides the expected methods
+    geonode should be able to use it.
 
     Be sure to let geonode know about any custom adapters that you define by
     updating the ``SOCIALACCOUNT_PROFILE_EXTRACTORS`` setting.
 
     """
-
-    PROVDER = "provider_name"
 
     def extract_area(self, data):
         raise NotImplementedError
@@ -86,8 +82,6 @@ class BaseExtractor(object):
 
 class FacebookExtractor(BaseExtractor):
 
-    PROVIDER = "facebook"
-
     def extract_email(self, data):
         return data.get("email", "")
 
@@ -103,26 +97,37 @@ class FacebookExtractor(BaseExtractor):
 
 class LinkedInExtractor(BaseExtractor):
 
-    PROVIDER = "linkedin"
-
     def extract_email(self, data):
-        return data.get("email-address", "")
+        return data.get("emailAddress", "")
 
     def extract_first_name(self, data):
-        return data.get("first-name", "")
+        return data.get("firstName", "")
 
     def extract_last_name(self, data):
-        return data.get("last-name", "")
+        return data.get("lastName", "")
 
     def extract_position(self, data):
-        return data.get("positions", {}).get("position", {}).get("title", "")
+        latest = _get_latest_position(data)
+        return latest.get("title", "") if latest is not None else ""
 
     def extract_organization(self, data):
-        return data.get("positions", {}).get(
-            "position", {}).get("company", {}).get("name", "")
+        latest = _get_latest_position(data)
+        if latest is not None:
+            organization = latest.get("company", {}).get("name", "")
+        else:
+            organization = ""
+        return organization
 
     def extract_profile(self, data):
         headline = data.get("headline", "")
         summary = data.get("summary", "")
         profile = "\n".join((headline, summary))
         return profile.strip()
+
+
+def _get_latest_position(data):
+    all_positions = data.get(
+        "positions",
+        {"values":[]}
+    )["values"]
+    return all_positions[0] if any(all_positions) else None

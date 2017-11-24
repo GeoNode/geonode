@@ -73,17 +73,25 @@ class LinkedInExtractorTestCase(TestCase):
 
     def setUp(self):
         self.data = {
-            "email-address": "phony_mail",
-            "first-name": "phony_first_name",
+            "emailAddress": "phony_mail",
+            "firstName": "phony_first_name",
             "headline": "phony_headline",
-            "last-name": "phony_last_name",
+            "lastName": "phony_last_name",
             "positions": {
-                "position": {
-                    "title": "phony_title",
-                    "company": {
-                        "name": "phony_company",
-                    },
-                }
+                "_total": 1,
+                "values": [
+                    {
+                        "startDate": {},
+                        "title": "some_title",
+                        "company": {
+                            "industry": "some_industry",
+                            "size": "a_size",
+                            "type": "some_type",
+                            "id": 1,
+                            "name": "phony_name"
+                        },
+                    }
+                ],
             },
             "summary": "phony_summary",
         }
@@ -107,7 +115,7 @@ class LinkedInExtractorTestCase(TestCase):
 
     def test_extract_email(self):
         result = self.extractor.extract_email(self.data)
-        self.assertEqual(result, self.data["email-address"])
+        self.assertEqual(result, self.data["emailAddress"])
 
     def test_extract_fax(self):
         with self.assertRaises(NotImplementedError):
@@ -115,16 +123,16 @@ class LinkedInExtractorTestCase(TestCase):
 
     def test_extract_first_name(self):
         result = self.extractor.extract_first_name(self.data)
-        self.assertEqual(result, self.data["first-name"])
+        self.assertEqual(result, self.data["firstName"])
 
     def test_extract_last_name(self):
         result = self.extractor.extract_last_name(self.data)
-        self.assertEqual(result, self.data["last-name"])
+        self.assertEqual(result, self.data["lastName"])
 
     def test_extract_organization(self):
         result = self.extractor.extract_organization(self.data)
         self.assertEqual(
-            result, self.data["positions"]["position"]["company"]["name"])
+            result, self.data["positions"]["values"][0]["company"]["name"])
 
     def test_extract_organization_no_positions(self):
         data = self.data.copy()
@@ -132,27 +140,22 @@ class LinkedInExtractorTestCase(TestCase):
         result = self.extractor.extract_organization(data)
         self.assertEqual(result, "")
 
-    def test_extract_organization_no_positions_position(self):
-        data = self.data.copy()
-        del data["positions"]["position"]
-        result = self.extractor.extract_organization(data)
-        self.assertEqual(result, "")
-
     def test_extract_organization_no_positions_position_company(self):
         data = self.data.copy()
-        del data["positions"]["position"]["company"]
+        del data["positions"]["values"][0]["company"]
         result = self.extractor.extract_organization(data)
         self.assertEqual(result, "")
 
     def test_extract_organization_no_positions_position_company_name(self):
         data = self.data.copy()
-        del data["positions"]["position"]["company"]["name"]
+        del data["positions"]["values"][0]["company"]["name"]
         result = self.extractor.extract_organization(data)
         self.assertEqual(result, "")
 
     def test_extract_position(self):
         result = self.extractor.extract_position(self.data)
-        self.assertEqual(result, self.data["positions"]["position"]["title"])
+        self.assertEqual(
+            result, self.data["positions"]["values"][0]["title"])
 
     def test_extract_position_no_positions(self):
         data = self.data.copy()
@@ -160,15 +163,9 @@ class LinkedInExtractorTestCase(TestCase):
         result = self.extractor.extract_position(data)
         self.assertEqual(result, "")
 
-    def test_extract_position_no_positions_position(self):
-        data = self.data.copy()
-        del data["positions"]["position"]
-        result = self.extractor.extract_position(data)
-        self.assertEqual(result, "")
-
     def test_extract_position_no_positions_position_title(self):
         data = self.data.copy()
-        del data["positions"]["position"]["title"]
+        del data["positions"]["values"][0]["title"]
         result = self.extractor.extract_position(data)
         self.assertEqual(result, "")
 
