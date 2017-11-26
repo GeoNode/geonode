@@ -30,7 +30,8 @@
 
         function _uuid() {
             function _() {
-                return Math.ceil(1 + Math.random() * 1e5).toString(16).substring(1);
+                var rand = Math.ceil(1e15 + Math.random() * 1e5).toString(16);
+                return rand.substring(rand.length - 4);
             }
             return _() + _() + '-' + _() + '-' + _() + '-' + _() + '-' + _() + _();
 
