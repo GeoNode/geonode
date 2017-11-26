@@ -48,7 +48,9 @@
         content: "✖";
     }
 </style>
-<button class="control-button icon icon32 icon-print-map" data-ng-click="setMarker()" title="Click To Add Marker">Set Marker</button>
+<button class="control-button icon" data-ng-click="setMarker()" title="Click To Add Marker">
+        <i class="fa fa-map-marker" aria-hidden="true"></i>        
+</button>
 
 <div id="popup" class="ol-popup">
     <a href="javascript:void(0)" id="popup-closer" class="ol-popup-closer"></a>

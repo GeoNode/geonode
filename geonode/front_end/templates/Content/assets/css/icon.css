@@ -1,5 +1,6 @@
 ﻿.control-button span {
     margin: 0;
+    height: 18px;
 }
 
 .icon {
@@ -393,9 +394,7 @@
 .buttonActive:not([disabled="disabled"]) {
     background-color: #d9e1e7;
     box-shadow: 0 0 2px 0 rgba(0, 0, 0, 0.22) inset;
-    height: 70px;
     outline: 1px solid #c2c7d3;
-    width: 48px;
 }
 
 button:disabled, input[type="button"]:disabled {

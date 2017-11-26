@@ -10,6 +10,7 @@
 
 .surfgis .ol-zoom.ol-unselectable.ol-control {
     height: 73px;
+    display: none;
 }
 
 .surfgis .ol-zoom-out {
@@ -29,8 +30,8 @@
     padding-left: 1px;
     padding-right: 1px;
     font-size: 12px;
-    top: 0;
-    right: 0;
+    top: 10px;
+    right: 47%;
     padding-left: 2px;
     padding-right: 2px;
 }
@@ -48,10 +49,7 @@
 
 .surfgis .on-map-button {
     /* raugh copy of .ol-control button */
-    background-color: #7b98bc;
-    background-color: rgba(0,60,136,.5);
     border: none;
-    border-radius: 2px;
     text-align: center;
     color: #fff;
     margin: 1px;
@@ -59,10 +57,12 @@
     display: block;
     height: 25px;
     width: 25px;
+    background-color: #4c6079;
+    background-color: rgba(0,60,136,.7);
 }
 
     .surfgis .on-map-button:hover {
-        background-color: #4c6079;
+        background-color: #14365f;
         background-color: rgba(0,60,136,.7);
     }
 
@@ -76,23 +76,21 @@
     top: 33px;
     width: 25px;
     z-index: 2;
+    display: none;
 }
 
 .surfgis .base-map-switcher {
     position: absolute;
     z-index: 2;
-    top: 25px;
+    top: 45px;
     right: 0;
     background-color: #ffffff;
-    opacity: .8;
-    border-top-left-radius: 6px;
-    border-bottom-left-radius: 6px;
-    border: #eeeeee solid 1px;
 }
 
     .surfgis .base-map-switcher .layers-list {
         padding-left: 10px;
         padding-right: 10px;
+        width: 150px;
     }
 
     .surfgis .base-map-switcher label {
@@ -101,6 +99,10 @@
 
     .surfgis .base-map-switcher button {
         width: 25px;
+        margin: 0;
+    }
+    .surfgis .base-map-switcher button i{
+      color: #ffffff;  
     }
 
     .surfgis .base-map-switcher.legends {
