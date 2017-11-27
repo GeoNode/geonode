@@ -20,6 +20,10 @@
 
 # Django settings for the GeoNode project.
 import os
+import re
+import sys
+from datetime import timedelta
+from distutils.util import strtobool
 
 from geonode import __file__ as geonode_path
 from geonode import get_version
@@ -537,6 +541,8 @@ THEME_ACCOUNT_CONTACT_EMAIL = os.getenv(
 # some problematic 3rd party apps
 TEST_RUNNER = 'django_nose.NoseTestSuiteRunner'
 
+TEST = 'test' in sys.argv
+INTEGRATION = 'geonode.tests.integration' in sys.argv
 # Arguments for the test runner
 NOSE_ARGS = [
     '--nocapture',
@@ -573,6 +579,8 @@ GEOSERVER_PUBLIC_LOCATION = os.getenv(
     'GEOSERVER_PUBLIC_LOCATION', 'http://localhost:8080/geoserver/'
 )
 
+GEOFENCE_SECURITY_ENABLED = False if TEST and not INTEGRATION else True
+
 # OGC (WMS/WFS/WCS) Server Settings
 # OGC (WMS/WFS/WCS) Server Settings
 OGC_SERVER = {
@@ -590,6 +598,7 @@ OGC_SERVER = {
         'MAPFISH_PRINT_ENABLED': True,
         'PRINT_NG_ENABLED': True,
         'GEONODE_SECURITY_ENABLED': True,
+        'GEOFENCE_SECURITY_ENABLED': GEOFENCE_SECURITY_ENABLED,
         'GEOGIG_ENABLED': False,
         'WMST_ENABLED': False,
         'BACKEND_WRITE_ENABLED': True,

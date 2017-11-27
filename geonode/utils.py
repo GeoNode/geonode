@@ -287,7 +287,8 @@ class GXPMapBase(object):
                        for source in sources.values() if 'url' in source]
 
         if 'geonode.geoserver' in settings.INSTALLED_APPS:
-            if len(sources.keys()) > 0 and not settings.MAP_BASELAYERS[0]['source']['url'] in source_urls:
+            if len(sources.keys(
+            )) > 0 and not settings.MAP_BASELAYERS[0]['source']['url'] in source_urls:
                 keys = sorted(sources.keys())
                 settings.MAP_BASELAYERS[0]['source'][
                     'title'] = 'Local Geoserver'
@@ -509,7 +510,8 @@ def default_map_config(request):
             u = uuid.uuid1()
             access_token = u.hex
 
-    DEFAULT_MAP_CONFIG = _default_map.viewer_json(user, access_token, *DEFAULT_BASE_LAYERS)
+    DEFAULT_MAP_CONFIG = _default_map.viewer_json(
+        user, access_token, *DEFAULT_BASE_LAYERS)
 
     return DEFAULT_MAP_CONFIG, DEFAULT_BASE_LAYERS
 
@@ -553,7 +555,8 @@ def resolve_object(request, model, query, permission='base.view_resourcebase',
             raise Http404
 
     allowed = True
-    if permission.split('.')[-1] in ['change_layer_data', 'change_layer_style']:
+    if permission.split('.')[-1] in ['change_layer_data',
+                                     'change_layer_style']:
         if obj.__class__.__name__ == 'Layer':
             obj_to_check = obj
     if permission:
@@ -647,7 +650,8 @@ def format_urls(a, values):
 
 def build_abstract(resourcebase, url=None, includeURL=True):
     if resourcebase.abstract and url and includeURL:
-        return u"{abstract} -- [{url}]({url})".format(abstract=resourcebase.abstract, url=url)
+        return u"{abstract} -- [{url}]({url})".format(
+            abstract=resourcebase.abstract, url=url)
     else:
         return resourcebase.abstract
 
@@ -672,8 +676,10 @@ def build_social_links(request, resourcebase):
         host=request.get_host(),
         path=request.get_full_path())
     # Don't use datetime strftime() because it requires year >= 1900
-    # see https://docs.python.org/2/library/datetime.html#strftime-strptime-behavior
-    date = '{0.month:02d}/{0.day:02d}/{0.year:4d}'.format(resourcebase.date) if resourcebase.date else None
+    # see
+    # https://docs.python.org/2/library/datetime.html#strftime-strptime-behavior
+    date = '{0.month:02d}/{0.day:02d}/{0.year:4d}'.format(
+        resourcebase.date) if resourcebase.date else None
     abstract = build_abstract(resourcebase, url=social_url, includeURL=True)
     caveats = build_caveats(resourcebase)
     hashtags = ",".join(getattr(settings, 'TWITTER_HASHTAGS', []))
@@ -726,7 +732,9 @@ def check_shp_columnnames(layer):
             list_col_original.append(field_name)
     try:
         for i in range(0, inLayerDefn.GetFieldCount()):
-            field_name = unicode(inLayerDefn.GetFieldDefn(i).GetName(), layer.charset)
+            field_name = unicode(
+                inLayerDefn.GetFieldDefn(i).GetName(),
+                layer.charset)
 
             if not a.match(field_name):
                 new_field_name = custom_slugify(field_name)
@@ -749,12 +757,14 @@ def check_shp_columnnames(layer):
         return True, None, None
     else:
         for key in list_col.keys():
-            qry = u"ALTER TABLE {0} RENAME COLUMN \"{1}\" TO \"{2}\"".format(inLayer.GetName(), key, list_col[key])
+            qry = u"ALTER TABLE {0} RENAME COLUMN \"{1}\" TO \"{2}\"".format(
+                inLayer.GetName(), key, list_col[key])
             inDataSource.ExecuteSQL(qry.encode(layer.charset))
     return True, None, list_col
 
 
-def set_attributes(layer, attribute_map, overwrite=False, attribute_stats=None):
+def set_attributes(layer, attribute_map, overwrite=False,
+                   attribute_stats=None):
     """ *layer*: a geonode.layers.models.Layer instance
         *attribute_map*: a list of 2-lists specifying attribute names and types,
             example: [ ['id', 'Integer'], ... ]
@@ -788,7 +798,8 @@ def set_attributes(layer, attribute_map, overwrite=False, attribute_stats=None):
                 # store description and attribute_label in attribute_map
                 attribute[attribute_map_dict['description']] = la.description
                 attribute[attribute_map_dict['label']] = la.attribute_label
-                attribute[attribute_map_dict['display_order']] = la.display_order
+                attribute[attribute_map_dict['display_order']
+                          ] = la.display_order
         if overwrite or not lafound:
             logger.debug(
                 "Going to delete [%s] for [%s]",
@@ -861,7 +872,8 @@ def designals():
 
     for signalname in signalnames:
         signaltype = getattr(models.signals, signalname)
-        logger.debug("RETRIEVE: %s: %d" % (signalname, len(signaltype.receivers)))
+        logger.debug("RETRIEVE: %s: %d" %
+                     (signalname, len(signaltype.receivers)))
         signals_store[signalname] = []
         signals = signaltype.receivers[:]
         for signal in signals:
@@ -881,7 +893,7 @@ def designals():
                 # - case id(function) or uid
                 try:
                     receiv_call = id_to_obj(lookup[0])
-                except:
+                except BaseException:
                     uid = lookup[0]
 
             if isinstance(lookup[1], tuple):
@@ -902,9 +914,13 @@ def designals():
                 'uid': uid, 'is_weak': is_weak,
                 'sender_ista': sender_ista, 'sender_call': sender_call,
                 'receiv_call': receiv_call,
-                })
+            })
 
-            signaltype.disconnect(receiver=receiv_call, sender=sender_ista, weak=is_weak, dispatch_uid=uid)
+            signaltype.disconnect(
+                receiver=receiv_call,
+                sender=sender_ista,
+                weak=is_weak,
+                dispatch_uid=uid)
 
 
 def resignals():

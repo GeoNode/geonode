@@ -39,32 +39,33 @@ class CategoryChoiceField(forms.ModelChoiceField):
                'data-content="' + obj.description + '" trigger="hover">' \
                '<div class="fa-stack fa-1g">' \
                '<i class="fa fa-square-o fa-stack-2x"></i>' \
-               '<i class="fa '+obj.fa_class+' fa-stack-1x"></i></div>' \
+               '<i class="fa ' + obj.fa_class + ' fa-stack-1x"></i></div>' \
                '&nbsp;' + obj.gn_description + '</span>'
 
 
 class TreeWidget(forms.TextInput):
-        input_type = 'text'
+    input_type = 'text'
 
-        def __init__(self, attrs=None):
-            super(TreeWidget, self).__init__(attrs)
+    def __init__(self, attrs=None):
+        super(TreeWidget, self).__init__(attrs)
 
-        def render(self, name, values, attrs=None):
-            if isinstance(values, basestring):
-                vals = values
-            else:
-                vals = ','.join([str(i.tag.name) for i in values])
-            output = ["""<input class='form-control' id='id_resource-keywords' name='resource-keywords'
+    def render(self, name, values, attrs=None):
+        if isinstance(values, basestring):
+            vals = values
+        else:
+            vals = ','.join([str(i.tag.name) for i in values])
+        output = ["""<input class='form-control' id='id_resource-keywords' name='resource-keywords'
                  value='%s'><br/>""" % (vals)]
-            output.append('<div id="treeview" class=""></div>')
-            return mark_safe(u'\n'.join(output))
+        output.append('<div id="treeview" class=""></div>')
+        return mark_safe(u'\n'.join(output))
 
 
 class CategoryForm(forms.Form):
     category_choice_field = CategoryChoiceField(required=False,
                                                 label='*' + _('Category'),
                                                 empty_label=None,
-                                                queryset=TopicCategory.objects.filter(is_choice=True)
+                                                queryset=TopicCategory.objects.filter(
+                                                    is_choice=True)
                                                 .extra(order_by=['description']))
 
     def clean(self):
@@ -100,7 +101,7 @@ class ResourceBaseForm(TranslationModelForm):
         # and we need to ensure it is available before trying to
         # instantiate a new datetimepicker. This could probably be improved.
         "options": False,
-        }
+    }
     date = forms.DateTimeField(
         label=_("Date"),
         localize=True,
@@ -190,4 +191,4 @@ class ResourceBaseForm(TranslationModelForm):
             'charset',
             'rating',
             'detail_url'
-            )
+        )

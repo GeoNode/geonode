@@ -85,7 +85,8 @@ class CommonModelApi(ModelResource):
         null=True,
         full=True)
     owner = fields.ToOneField(OwnersResource, 'owner', full=True)
-    tkeywords = fields.ToManyField(ThesaurusKeywordResource, 'tkeywords', null=True)
+    tkeywords = fields.ToManyField(
+        ThesaurusKeywordResource, 'tkeywords', null=True)
     VALUES = [
         # fields in the db
         'id',
@@ -385,7 +386,8 @@ class CommonModelApi(ModelResource):
 
         if not settings.SKIP_PERMS_FILTER:
             # Get the list of objects the user has access to
-            filter_set = get_objects_for_user(request.user, 'base.view_resourcebase')
+            filter_set = get_objects_for_user(
+                request.user, 'base.view_resourcebase')
             if settings.RESOURCE_PUBLISHING:
                 filter_set = filter_set.filter(is_published=True)
 
@@ -437,7 +439,7 @@ class CommonModelApi(ModelResource):
             objects = []
 
         object_list = {
-           "meta": {
+            "meta": {
                 "limit": settings.API_LIMIT_PER_PAGE,
                 "next": next_page,
                 "offset": int(getattr(request.GET, 'offset', 0)),
@@ -445,7 +447,7 @@ class CommonModelApi(ModelResource):
                 "total_count": total_count,
                 "facets": facets,
             },
-           "objects": map(lambda x: self.get_haystack_api_fields(x), objects),
+            "objects": map(lambda x: self.get_haystack_api_fields(x), objects),
         }
         self.log_throttled_access(request)
         return self.create_response(request, object_list)
@@ -485,7 +487,8 @@ class CommonModelApi(ModelResource):
             request,
             to_be_serialized)
 
-        return self.create_response(request, to_be_serialized, response_objects=objects)
+        return self.create_response(
+            request, to_be_serialized, response_objects=objects)
 
     def format_objects(self, objects):
         """
@@ -506,7 +509,8 @@ class CommonModelApi(ModelResource):
         Mostly a useful shortcut/hook.
         """
 
-        # If an user does not have at least view permissions, he won't be able to see the resource at all.
+        # If an user does not have at least view permissions, he won't be able
+        # to see the resource at all.
         filtered_objects_ids = None
         if response_objects:
             filtered_objects_ids = [item.id for item in response_objects if
@@ -535,7 +539,7 @@ class CommonModelApi(ModelResource):
             return [
                 url(r"^(?P<resource_name>%s)/search%s$" % (
                     self._meta.resource_name, trailing_slash()
-                    ),
+                ),
                     self.wrap_view('get_search'), name="api_get_search"),
             ]
         else:
