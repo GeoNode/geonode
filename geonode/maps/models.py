@@ -316,7 +316,7 @@ class Map(ResourceBase, GXPMapBase):
             return {
                 'catalog': gs_catalog.get_layergroup(lg_name),
                 'ows': ogc_server_settings.ows
-                }
+            }
         else:
             return None
 
@@ -475,7 +475,7 @@ class MapLayer(models.Model, GXPLayerBase):
                         obj=layer.resourcebase_ptr):
                     cfg['disabled'] = True
                     cfg['visibility'] = False
-            except:
+            except BaseException:
                 # shows maplayer with pink tiles,
                 # and signals that there is problem
                 # TODO: clear orphaned MapLayers

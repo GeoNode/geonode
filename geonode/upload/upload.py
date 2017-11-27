@@ -130,7 +130,8 @@ class UploaderSession(object):
     # time related info - need to store here until geoserver layer exists
     time_info = None
 
-    # whether the user has selected a time dimension for ImageMosaic granules or not
+    # whether the user has selected a time dimension for ImageMosaic granules
+    # or not
     mosaic = None
     append_to_mosaic_opts = None
     append_to_mosaic_name = None
@@ -282,12 +283,14 @@ def save_step(user, layer, spatial_files, overwrite=True,
     try:
         # importer tracks ids by autoincrement but is prone to corruption
         # which potentially may reset the id - hopefully prevent this...
-        upload_next_id = Upload.objects.all().aggregate(Max('import_id')).values()[0]
+        upload_next_id = Upload.objects.all().aggregate(
+            Max('import_id')).values()[0]
         upload_next_id = upload_next_id if upload_next_id else 0
         # next_id = next_id + 1 if next_id else 1
         importer_sessions = gs_uploader.get_sessions()
 
-        last_importer_session = importer_sessions[len(importer_sessions)-1].id if importer_sessions else 0
+        last_importer_session = importer_sessions[len(
+            importer_sessions) - 1].id if importer_sessions else 0
         next_id = max(int(last_importer_session), int(upload_next_id)) + 1
         next_id = max(int(last_importer_session), int(upload_next_id)) + 1
 
@@ -474,7 +477,10 @@ def time_step(upload_session, time_attribute, time_transform_type,
                 'field': att,
                 'target': 'org.geotools.data.postgis.PostGISDialect$XDate'}
 
-    use_big_date = getattr(settings, 'USE_BIG_DATE', False) and not upload_session.geogig
+    use_big_date = getattr(
+        settings,
+        'USE_BIG_DATE',
+        False) and not upload_session.geogig
 
     if time_attribute:
         if time_transform_type:
@@ -592,7 +598,9 @@ def final_step(upload_session, user):
             import_session.commit()
 
     if not publishing:
-        raise LayerNotReady("Expected to find layer named '%s' in geoserver" % name)
+        raise LayerNotReady(
+            "Expected to find layer named '%s' in geoserver" %
+            name)
 
     _log('Creating style for [%s]', name)
     # get_files will not find the sld if it doesn't match the base name
@@ -626,13 +634,13 @@ def final_step(upload_session, user):
         if style is None:
             try:
                 style = cat.get_style(name)
-            except:
+            except BaseException:
                 logger.warn('Could not retreive the Layer default Style name')
                 # what are we doing with this var?
                 msg = 'No style could be created for the layer, falling back to POINT default one'
                 try:
                     style = cat.get_style(name + '_layer')
-                except:
+                except BaseException:
                     style = cat.get_style('point')
                     logger.warn(msg)
                     e.args = (msg,)
@@ -696,10 +704,12 @@ def final_step(upload_session, user):
         else:
             # saved_layer = Layer.objects.filter(name=upload_session.append_to_mosaic_name)
             # created = False
-            saved_layer, created = Layer.objects.get_or_create(name=upload_session.append_to_mosaic_name)
+            saved_layer, created = Layer.objects.get_or_create(
+                name=upload_session.append_to_mosaic_name)
             try:
                 if saved_layer.temporal_extent_start and end:
-                    if pytz.utc.localize(saved_layer.temporal_extent_start, is_dst=False) < end:
+                    if pytz.utc.localize(
+                            saved_layer.temporal_extent_start, is_dst=False) < end:
                         saved_layer.temporal_extent_end = end
                         Layer.objects.filter(name=upload_session.append_to_mosaic_name).update(
                             temporal_extent_end=end)
@@ -708,7 +718,9 @@ def final_step(upload_session, user):
                         Layer.objects.filter(name=upload_session.append_to_mosaic_name).update(
                             temporal_extent_start=end)
             except Exception as e:
-                _log('There was an error updating the mosaic temporal extent: ' + str(e))
+                _log(
+                    'There was an error updating the mosaic temporal extent: ' +
+                    str(e))
     else:
         saved_layer, created = Layer.objects.get_or_create(
             name=task.layer.name,
@@ -750,7 +762,8 @@ def final_step(upload_session, user):
             zf.extract(xml_file[0], os.path.dirname(archive))
             # Assign the absolute path to this file
             xml_file[0] = os.path.dirname(archive) + '/' + xml_file[0]
-        identifier, vals, regions, keywords = set_metadata(open(xml_file[0]).read())
+        identifier, vals, regions, keywords = set_metadata(
+            open(xml_file[0]).read())
 
         regions_resolved, regions_unresolved = resolve_regions(regions)
         keywords.extend(regions_unresolved)
@@ -812,7 +825,14 @@ def import_imagemosaic_granules(spatial_files, append_to_mosaic_opts, append_to_
     basename = os.path.basename(f)
 
     head, tail = os.path.splitext(basename)
-    dst_file = os.path.join(dirname, head.replace("_", "-") + "_" + mosaic_time_value + tail)
+    dst_file = os.path.join(
+        dirname,
+        head.replace(
+            "_",
+            "-") +
+        "_" +
+        mosaic_time_value +
+        tail)
     os.rename(f, dst_file)
     spatial_files[0].base_file = dst_file
 
@@ -829,8 +849,8 @@ def import_imagemosaic_granules(spatial_files, append_to_mosaic_opts, append_to_
 
     context = {
         "abs_path_flag": "True",
-        "time_attr":  "time",
-        "aux_metadata_flag":  "False",
+        "time_attr": "time",
+        "aux_metadata_flag": "False",
         "mosaic_time_regex": mosaic_time_regex,
         "db_host": db['HOST'],
         "db_port": db['PORT'],
@@ -887,9 +907,14 @@ max\ connections={db_conn_max}"""
 
         z.write(dst_file, arcname=head + "_" + mosaic_time_value + tail)
         z.write(dirname + '/indexer.properties', arcname='indexer.properties')
-        z.write(dirname + '/datastore.properties', arcname='datastore.properties')
+        z.write(
+            dirname +
+            '/datastore.properties',
+            arcname='datastore.properties')
         if mosaic_time_regex:
-            z.write(dirname + '/timeregex.properties', arcname='timeregex.properties')
+            z.write(
+                dirname + '/timeregex.properties',
+                arcname='timeregex.properties')
 
         z.close()
 

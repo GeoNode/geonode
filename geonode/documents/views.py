@@ -80,7 +80,7 @@ def document_detail(request, docid):
             loader.render_to_string(
                 '404.html', RequestContext(
                     request, {
-                        })), status=404)
+                    })), status=404)
 
     except PermissionDenied:
         return HttpResponse(
@@ -100,13 +100,15 @@ def document_detail(request, docid):
         try:
             related = document.content_type.get_object_for_this_type(
                 id=document.object_id)
-        except:
+        except BaseException:
             related = ''
 
         # Update count for popularity ranking,
         # but do not includes admins or resource owners
         if request.user != document.owner and not request.user.is_superuser:
-            Document.objects.filter(id=document.id).update(popular_count=F('popular_count') + 1)
+            Document.objects.filter(
+                id=document.id).update(
+                popular_count=F('popular_count') + 1)
 
         metadata = document.link_set.metadata().filter(
             name__in=settings.DOWNLOAD_FORMATS_METADATA)
@@ -120,7 +122,8 @@ def document_detail(request, docid):
             'related': related}
 
         if settings.SOCIAL_ORIGINS:
-            context_dict["social_links"] = build_social_links(request, document)
+            context_dict["social_links"] = build_social_links(
+                request, document)
 
         if getattr(settings, 'EXIF_ENABLED', False):
             try:
@@ -128,7 +131,7 @@ def document_detail(request, docid):
                 exif = exif_extract_dict(document)
                 if exif:
                     context_dict['exif_data'] = exif
-            except:
+            except BaseException:
                 print "Exif extraction failed."
 
         return render_to_response(
@@ -166,7 +169,8 @@ class DocumentUploadView(CreateView):
         self.object.owner = self.request.user
         resource_id = self.request.POST.get('resource', None)
         if resource_id:
-            self.object.content_type = ResourceBase.objects.get(id=resource_id).polymorphic_ctype
+            self.object.content_type = ResourceBase.objects.get(
+                id=resource_id).polymorphic_ctype
             self.object.object_id = resource_id
         # by default, if RESOURCE_PUBLISHING=True then document.is_published
         # must be set to False
@@ -193,7 +197,7 @@ class DocumentUploadView(CreateView):
                     keywords.extend(exif_metadata.get('keywords', []))
                     bbox = exif_metadata.get('bbox', None)
                     abstract = exif_metadata.get('abstract', None)
-            except:
+            except BaseException:
                 print "Exif extraction failed."
 
         if getattr(settings, 'NLP_ENABLED', False):
@@ -203,7 +207,7 @@ class DocumentUploadView(CreateView):
                 if nlp_metadata:
                     regions.extend(nlp_metadata.get('regions', []))
                     keywords.extend(nlp_metadata.get('keywords', []))
-            except:
+            except BaseException:
                 print "NLP extraction failed."
 
         if abstract:
@@ -232,8 +236,10 @@ class DocumentUploadView(CreateView):
         if getattr(settings, 'SLACK_ENABLED', False):
             try:
                 from geonode.contrib.slack.utils import build_slack_message_document, send_slack_message
-                send_slack_message(build_slack_message_document("document_new", self.object))
-            except:
+                send_slack_message(
+                    build_slack_message_document(
+                        "document_new", self.object))
+            except BaseException:
                 print "Could not send slack message for new document."
 
         return HttpResponseRedirect(
@@ -288,7 +294,7 @@ def document_metadata(
             loader.render_to_string(
                 '404.html', RequestContext(
                     request, {
-                        })), status=404)
+                    })), status=404)
 
     except PermissionDenied:
         return HttpResponse(
@@ -344,8 +350,10 @@ def document_metadata(
                 if poc_form.is_valid():
                     if len(poc_form.cleaned_data['profile']) == 0:
                         # FIXME use form.add_error in django > 1.7
-                        errors = poc_form._errors.setdefault('profile', ErrorList())
-                        errors.append(_('You must set a point of contact for this resource'))
+                        errors = poc_form._errors.setdefault(
+                            'profile', ErrorList())
+                        errors.append(
+                            _('You must set a point of contact for this resource'))
                         poc = None
                 if poc_form.has_changed and poc_form.is_valid():
                     new_poc = poc_form.save()
@@ -359,8 +367,10 @@ def document_metadata(
                 if author_form.is_valid():
                     if len(author_form.cleaned_data['profile']) == 0:
                         # FIXME use form.add_error in django > 1.7
-                        errors = author_form._errors.setdefault('profile', ErrorList())
-                        errors.append(_('You must set an author for this resource'))
+                        errors = author_form._errors.setdefault(
+                            'profile', ErrorList())
+                        errors.append(
+                            _('You must set an author for this resource'))
                         metadata_author = None
                 if author_form.has_changed and author_form.is_valid():
                     new_author = author_form.save()
@@ -370,13 +380,17 @@ def document_metadata(
                 the_document.poc = new_poc
                 the_document.metadata_author = new_author
                 the_document.keywords.add(*new_keywords)
-                Document.objects.filter(id=the_document.id).update(category=new_category)
+                Document.objects.filter(
+                    id=the_document.id).update(
+                    category=new_category)
 
                 if getattr(settings, 'SLACK_ENABLED', False):
                     try:
                         from geonode.contrib.slack.utils import build_slack_message_document, send_slack_messages
-                        send_slack_messages(build_slack_message_document("document_edit", the_document))
-                    except:
+                        send_slack_messages(
+                            build_slack_message_document(
+                                "document_edit", the_document))
+                    except BaseException:
                         print "Could not send slack message for modified document."
 
                 return HttpResponseRedirect(
@@ -445,8 +459,9 @@ def document_remove(request, docid, template='documents/document_remove.html'):
                 slack_message = None
                 try:
                     from geonode.contrib.slack.utils import build_slack_message_document
-                    slack_message = build_slack_message_document("document_delete", document)
-                except:
+                    slack_message = build_slack_message_document(
+                        "document_delete", document)
+                except BaseException:
                     print "Could not build slack message for delete document."
 
                 document.delete()
@@ -454,7 +469,7 @@ def document_remove(request, docid, template='documents/document_remove.html'):
                 try:
                     from geonode.contrib.slack.utils import send_slack_messages
                     send_slack_messages(slack_message)
-                except:
+                except BaseException:
                     print "Could not send slack message for delete document."
             else:
                 document.delete()
@@ -471,7 +486,8 @@ def document_remove(request, docid, template='documents/document_remove.html'):
         )
 
 
-def document_metadata_detail(request, docid, template='documents/document_metadata_detail.html'):
+def document_metadata_detail(
+        request, docid, template='documents/document_metadata_detail.html'):
     document = _resolve_document(
         request,
         docid,
