@@ -1133,8 +1133,6 @@
              });
     </script>
     <script>
-        console.log("href:"+window.location.pathname);
-
 
         $('#org-layer-download').click(function(){
 
@@ -1158,8 +1156,6 @@
                 var dataValueJSON = JSON.stringify(dataValueObj);
 
                 url = '/api/download/task/';
-
-                console.log(dataValueJSON);
 
                 downloadLayers(dataValueJSON, url);
 
