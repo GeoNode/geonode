@@ -1073,7 +1073,8 @@ SEARCH_FILTERS = {
 # Queue non-blocking notifications.
 NOTIFICATION_QUEUE_ALL = False
 
-BROKER_URL = os.getenv('BROKER_URL', "django://")
+# BROKER_URL = os.getenv('BROKER_URL', "django://")
+CELERY_BROKER_URL = 'amqp://geodash:admin1234@localhost:5672/myvhost'
 CELERY_ALWAYS_EAGER = True
 CELERY_EAGER_PROPAGATES_EXCEPTIONS = True
 CELERY_IGNORE_RESULT = True
@@ -1179,3 +1180,10 @@ if 'geonode.geoserver' in INSTALLED_APPS:
 # Required: (boolean, optional, default false) mandatory while editing metadata (not implemented yet)
 # Filter: (boolean, optional, default false) a filter option on that thesaurus will appear in the main search page
 THESAURI = []
+
+
+# EMAIL_FROM = ""
+# EMAIL_HOST = ""
+# EMAIL_PORT = 80
+# EMAIL_HOST_USER = ""
+# EMAIL_HOST_PASSWORD = ""
