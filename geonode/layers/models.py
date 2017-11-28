@@ -607,6 +607,26 @@ class LayerAuditActivity(models.Model):
                                blank=True, null=True)
     date_created = models.DateTimeField(auto_now_add=True)
     date_updated = models.DateTimeField(auto_now=True)
+
+
+class LayerStyle(models.Model):
+    layer = models.ForeignKey(
+        Layer,
+        verbose_name = _('Layer'),
+        help_text=_('Designats related layer'),
+        null=False, blank=False
+    )
+    name = models.CharField(
+        verbose_name=_('Style Name'),
+        help_text=_('Designates layer styles name.'),
+        max_length=25,
+        blank=False
+    )
+    def __str__(self):
+        return self.name
+
+    class Meta:
+        pass
 #end
 
 
