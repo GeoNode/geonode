@@ -35,6 +35,8 @@ from geonode.api.views import verify_token, roles, users, admin_role
 
 import autocomplete_light
 
+from geonode.api.download_task_api import DownloadTaskAPIView, DownloadAPIView
+
 # Setup Django Admin
 autocomplete_light.autodiscover()
 
@@ -168,6 +170,10 @@ urlpatterns = patterns('',
 
                        # Logging and Error Reporting
                        url(r'^error/reporting/', include('geonode.error_reporting.urls')),
+
+                       # Download task API
+                       url(r'^api/download/task/', DownloadTaskAPIView.as_view()),
+                       url(r'^download/(?P<file_name>[0-9a-z.]+)', DownloadAPIView.as_view()),
                        )
 
 if "geonode.contrib.dynamic" in settings.INSTALLED_APPS:

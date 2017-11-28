@@ -5,7 +5,7 @@ awesome-slugify==1.6.2
 beautifulsoup4==4.2.1
 billiard==3.3.0.23
 boto==2.38.0
-celery==3.1.18
+# celery==3.1.18
 certifi==2017.7.27.1
 chardet==3.0.4
 coverage==4.4.1
@@ -21,7 +21,7 @@ django-autoslug==1.9.3
 django-bootstrap-form==3.3
 django-bootstrap3-datetimepicker==2.2.3
 django-braces==1.10.0
-django-celery==3.1.16
+# django-celery==3.1.16
 django-cors-headers==2.1.0
 django-downloadview==1.2
 django-extensions==1.6.1
@@ -133,3 +133,6 @@ django-filter==1.0.4
 djangorestframework==3.6
 djangorestframework-gis==0.11.2
 django-db-logger==0.1.6
+
+celery==4.1.0
+markdown==2.6.9
