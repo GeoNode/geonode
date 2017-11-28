@@ -309,6 +309,9 @@
                             </div>
                         </section>
                     </div>
+                    <div class="projection-alert">
+
+                    </div>
                     {% if GEONODE_SECURITY_ENABLED %}
                         <div class="gd-content-body full-pad-30px" style="padding-top: 0px;">
                             <div class="sidebar-title">{% trans "Permissions" %}</div>
@@ -338,6 +341,9 @@
 
 
 {% block extra_script %}
+
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/proj4js/2.4.4/proj4.js"></script>
+
     <script data-main="{% static 'geonode/js/upload/main' %}"
             src="{% static 'lib/js/require.js' %}">
     </script>
@@ -421,4 +427,49 @@
             {% include "_permissions_form_js.html" %}
         {% endwith %}
     {% endif %}
+    <script type="text/javascript">
+        // file-input multiple files
+
+        $('input[type=file]').change(function(e){
+
+          var inputFiles = document.getElementById('file-input');
+
+          for(var i = 0; i < inputFiles.files.length; i++)
+          {
+              console.log(inputFiles.files[i].name);
+              var fileName = inputFiles.files[i].name;
+              if(fileName.split('.')[1] == 'prj'){
+
+                  (function(i) {
+                        var file = inputFiles.files[i];
+                        var fr = new FileReader();
+                        fr.onload = function(e) {
+                            var filecontent = fr.result;
+                            // My logic here
+                            var projection = proj4(filecontent);
+                            console.log(projection);
+                            var pronectionName = projection.oProj.name;
+                            if(pronectionName.indexOf('WGS') == -1){
+                                //alert('need to convert');
+                                $('.projection-alert').append("<div class='alert alert-warning'><strong>Warning!</strong> The projection system is not WGS 84. Projection will be converted at the time of upload! </div>");
+                            }
+                            /*
+                            if($.inArray('WGS', pronectionName.split('_')) < 0){
+                                //alert('Not WGS 84 projection');
+                                $('.projection-alert').append("<div class='alert alert-warning'><strong>Warning!</strong> The projection system is not WGS 84. Projection will be converted at the time of upload! </div>");
+                            }
+                            */
+
+                        };
+                        fr.readAsText(file);
+                    })(i);
+
+              }
+              // console.log(fileName.split('.')[1])
+          }
+
+
+        });
+
+    </script>
 {% endblock extra_script %}
