@@ -1,6 +1,19 @@
 {% load i18n %} 
 
-<div ng-controller="AttributeViewController as ctrl" ng-app="LayerApp">
+<div ng-controller="AttributeViewController as ctrl" ng-app="LayerApp" ng-cloak>
+        <div class="alert alert-success  alert-dismissable" ng-show="ctrl.isSuccess">
+                <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+                <strong>Success!</strong> [{ctrl.Message.Success}]
+            </div>
+          
+          <div class="alert alert-danger  alert-dismissable" ng-show="ctrl.isError">
+                <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+            <strong>Error!</strong> [{ctrl.Message.Error}]
+          </div>
     <h3>Attributes</h3>
-    <div ui-grid="ctrl.gridOptions" ui-grid-pagination class="grid"></div>
+    <div ui-grid="ctrl.gridOptions" ui-grid-pagination ui-grid-exporter class="grid"></div>
+
+<label for="">Upload CSV to update information</label>
+<input type="file" nv-file-select uploader="ctrl.file">
+<input type="button" ng-click="ctrl.upload()" ng-disabled="ctrl.file.queue.length == 0" value="Upload" class="btn"> 
 </div>

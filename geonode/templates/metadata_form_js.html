@@ -47,5 +47,31 @@
         {% endif %}
         $('.has-popover').popover({'trigger':'hover'});
     });
+
+    $("#resource").select2({
+        minimumInputLength: 1,
+        placeholder: 'Select layer, map or empty',
+        //width: 'element',
+        width: 'copy',
+        multiple: true,
+        ajax: {
+          traditional: true,
+          url: '{% url 'api_dispatch_list' api_name='api' resource_name='base' %}',
+          data: function(term,page){
+
+            return {
+              type__in: ['layer','map'],
+              title__contains: term.replace(/[`~!@#$%^&*()_|+\-=?;:'",.<>\{\}\[\]\\\/]/gi, '')
+            }
+          },
+          results: function(data) {
+            return {
+              results: $.map(data.objects,function(object){
+                return {id: object.id, text: object.title};
+              })
+            }
+          }
+        }
+    });
 {% endautoescape %}
 </script>

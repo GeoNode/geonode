@@ -48,7 +48,7 @@ from geonode.security.views import _perms_info_json
 from geonode.people.forms import ProfileForm
 from geonode.base.forms import CategoryForm, ResourceDenyForm, ResourceApproveForm
 from geonode.base.models import TopicCategory, ResourceBase
-from geonode.documents.models import Document
+from geonode.documents.models import Document, DocumentLayers
 from geonode.documents.forms import DocumentForm, DocumentCreateForm, DocumentReplaceForm
 from geonode.documents.models import IMGTYPES
 from geonode.utils import build_social_links
@@ -58,6 +58,8 @@ from geonode.utils import build_social_links
 from geonode.documents.models import DocumentSubmissionActivity, DocumentAuditActivity
 from geonode.groups.models import GroupProfile
 #end
+
+import logging
 
 
 ALLOWED_DOC_TYPES = settings.ALLOWED_DOCUMENT_TYPES
@@ -154,6 +156,7 @@ def document_detail(request, docid):
             "approve_form": approve_form,
             "deny_form": deny_form,
             "denied_comments": DocumentAuditActivity.objects.filter(document_submission_activity__document=document),
+            "document_layers": document.layers.all(),
 
         }
 
@@ -206,7 +209,8 @@ class DocumentUploadView(CreateView):
         self.object = form.save(commit=False)
         self.object.owner = self.request.user
         resource_id = self.request.POST.get('resource', None)
-        
+        resource_ids = str(resource_id).split(',')
+        db_logger = logging.getLogger('db')
 
         #@jahangir091
         group_id = self.request.POST.get('org-id', None)
@@ -216,17 +220,18 @@ class DocumentUploadView(CreateView):
         except GroupProfile.DoesNotExist:
             raise Http404('Selected organization does not exists')
         try:
-            category = TopicCategory.objects.get(gn_description=category_id)
+            category = [TopicCategory.objects.get(gn_description=category_id)]
+
+            if isinstance(category, list):
+                category = category[0]
         except TopicCategory.DoesNotExist:
+            db_logger.error('Selected category does not exists')
             raise Http404('Selected category does not exists')
         self.object.group = group
         self.object.category = category
         #end
 
 
-        if resource_id:
-            self.object.content_type = ResourceBase.objects.get(id=resource_id).polymorphic_ctype
-            self.object.object_id = resource_id
         # by default, if RESOURCE_PUBLISHING=True then document.is_published
         # must be set to False
         is_published = True
@@ -236,6 +241,15 @@ class DocumentUploadView(CreateView):
 
         self.object.save()
         self.object.set_permissions(form.cleaned_data['permissions'])
+        document_layers = []
+        if '' not in resource_ids:
+
+            for resource_id in resource_ids:
+                document_layer_object = DocumentLayers(document=self.object)
+                document_layer_object.content_type = ResourceBase.objects.get(id=resource_id).polymorphic_ctype
+                document_layer_object.layer_id = resource_id
+                document_layer_object.save()
+                document_layers.append(document_layer_object.id)
 
         abstract = None
         date = None
@@ -253,6 +267,7 @@ class DocumentUploadView(CreateView):
                     bbox = exif_metadata.get('bbox', None)
                     abstract = exif_metadata.get('abstract', None)
             except:
+                db_logger.error("Exif extraction failed.")
                 print "Exif extraction failed."
 
         if getattr(settings, 'NLP_ENABLED', False):
@@ -263,6 +278,7 @@ class DocumentUploadView(CreateView):
                     regions.extend(nlp_metadata.get('regions', []))
                     keywords.extend(nlp_metadata.get('keywords', []))
             except:
+                db_logger.error("NLP extraction failed.")
                 print "NLP extraction failed."
 
         if abstract:
@@ -293,6 +309,7 @@ class DocumentUploadView(CreateView):
                 from geonode.contrib.slack.utils import build_slack_message_document, send_slack_message
                 send_slack_message(build_slack_message_document("document_new", self.object))
             except:
+                db_logger.error("Could not send slack message for new document.")
                 print "Could not send slack message for new document."
 
         return HttpResponseRedirect(
@@ -429,6 +446,24 @@ def document_metadata(
                 the_document.poc = new_poc
                 the_document.metadata_author = new_author
                 the_document.keywords.add(*new_keywords)
+
+                revised_resource = request.POST['resource-resource']
+                revised_resource = str(revised_resource).split(',')
+
+                document_layers = list()
+                if '' not in revised_resource:
+                    for revised_resource_id in revised_resource:
+                        document_layers.append(
+                            DocumentLayers(
+                                content_type_id=document.polymorphic_ctype_id,
+                                document_id=document.id,
+                                layer_id=int(revised_resource_id)
+                            )
+                        )
+
+                    DocumentLayers.objects.filter(document_id=document.id).delete()
+                    DocumentLayers.objects.bulk_create(document_layers)
+
                 Document.objects.filter(id=the_document.id).update(category=new_category)
 
                 if getattr(settings, 'SLACK_ENABLED', False):

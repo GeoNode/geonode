@@ -51,10 +51,8 @@ class Document(ResourceBase):
     """
 
     # Relation to the resource model
-    content_type = models.ForeignKey(ContentType, blank=True, null=True)
-    object_id = models.PositiveIntegerField(blank=True, null=True)
-    resource = generic.GenericForeignKey('content_type', 'object_id')
 
+    layers = models.ManyToManyField(Layer, blank=True, null=True, through='DocumentLayers', through_fields=('document', 'layer'))
     doc_file = models.FileField(upload_to='documents',
                                 null=True,
                                 blank=True,
@@ -142,10 +140,21 @@ class Document(ResourceBase):
         pass
 
 
+class DocumentLayers(models.Model):
+    document = models.ForeignKey(Document)
+    content_type = models.ForeignKey(ContentType, blank=True, null=True)
+    layer = models.ForeignKey(Layer, blank=True, null=True)
+    resource = generic.GenericForeignKey('content_type', 'layer')
+
+    class Meta:
+        db_table = 'document_layers'
+
+
 def get_related_documents(resource):
     if isinstance(resource, Layer) or isinstance(resource, Map):
         ct = ContentType.objects.get_for_model(resource)
-        return Document.objects.filter(content_type=ct, object_id=resource.pk)
+        # return Document.objects.filter(content_type=ct, object_id=resource.pk)
+        return DocumentLayers.objects.filter(content_type_id=ct.id, layer_id=resource.id)
     else:
         return None
 
@@ -178,7 +187,7 @@ def pre_save_document(instance, sender, **kwargs):
     if instance.title == '' or instance.title is None:
         instance.title = instance.doc_file.name
 
-    if instance.resource:
+    if getattr(instance, 'resource', None):
         instance.csw_wkt_geometry = instance.resource.geographic_bounding_box.split(
             ';')[-1]
         instance.bbox_x0 = instance.resource.bbox_x0

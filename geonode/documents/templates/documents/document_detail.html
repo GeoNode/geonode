@@ -188,18 +188,25 @@
         </div>
 
         <li class="list-group-item">
+            {{ document.layers.values_list }}
           <h4>{% trans "Resource using this document" %}</h4>
-          {% if layer.maps %}
-          <p>{% trans "List of resources using this document:" %}</p>
+          {% comment %}{% if layer.maps %}{% endcomment %}
+          {% if document_layers %}
+            <p>{% trans "List of resources using this document:" %}</p>
+              {% for doc_layer in document_layers %}
+                  <a href='{{ doc_layer.get_absolute_url }}'>{{ doc_layer.title }}</a>
+              {% endfor %}
+          {% else %}
+              <p>{% trans "This document is not related to any maps or layers" %}</p>
           {% endif %}
-          <ul class="list-unstyled">
+          {% comment %}<ul class="list-unstyled">
             {% if related.title %}
             <p>{% trans "This document is related to a " %} {{ resource.content_type.name }}</p>
             <a href='{{ related.get_absolute_url }}'>{{ related.title }}</a>
             {% else %}
             <p>{% trans "This document is not related to any maps or layers" %}</p>
             {% endif %}
-          </ul>
+          </ul>{% endcomment %}
         </li>
 
         {% if "change_resourcebase_permissions" in perms_list %}

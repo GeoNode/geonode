@@ -82,7 +82,7 @@
         }
 
         function createAttributeDisplayTool(surfLayer, olLayer) {
-            if (_surfMap.info.PropertyInPopup) {
+            if (_surfMap.info && _surfMap.info.PropertyInPopup) {
                 var wmsSelectFeatureTool = createWmsSelectFeatureTool(surfLayer, olLayer);
                 var attributeDisplayTool = new AttributeDisplayTool(surfLayer, wmsSelectFeatureTool, _propertyGridOverlay, _olMap);
                 return attributeDisplayTool;

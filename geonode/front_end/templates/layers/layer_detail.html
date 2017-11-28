@@ -138,11 +138,26 @@
                                                                     {% endfor %}
 {#                                                                </ul>#}
                                                             {% endif %}
+                                                            {% if links_download %}
+                                                                {% comment %}<ul>{% endcomment %}
+                                                                    {% for link in links_download %}
+                                                                        {% comment %}<li>{% endcomment %}
+                                                                        <div class="radio">
+                                                                            <label>
+                                                                                <input type="radio" name="native-download" id="{{ link.name }}-data" value="{{ link.url }}">
+                                                                                {% trans link.name %}
+                                                                            </label>
+                                                                        </div>
+                                                                            {% comment %}<a href="{{ link.url }}">{% trans link.name %}</a>{% endcomment %}
+                                                                        {% comment %}</li>{% endcomment %}
+                                                                    {% endfor %}
+                                                                {% comment %}</ul>{% endcomment %}
+                                                            {% endif %}
                                                         </div>
                                                         <div class="wgs84">
                                                             <h3>WGS 84</h3>
                                                             {% if links %}
-                                                                <ul>
+                                                                {% comment %}<ul>{% endcomment %}
                                                                     {% for link in links %}
                                                                         <div class="radio">
                                                                             <label>
@@ -154,7 +169,24 @@
                                                                             <a href="{{ link.url }}&srsName=EPSG%3A{{ user_data_epsg }}">{% trans link.name %}</a>
                                                                         </li>{% endcomment %}
                                                                     {% endfor %}
-                                                                </ul>
+                                                                {% comment %}</ul>{% endcomment %}
+                                                            {% endif %}
+
+                                                            {% if links_download %}
+                                                                {% comment %}<ul>{% endcomment %}
+                                                                    {% for link in links_download %}
+                                                                        {% comment %}<li>{% endcomment %}
+                                                                        <div class="radio">
+                                                                            <label>
+                                                                                <input type="radio" name="wgs84-download" id="{{ link.name }}-data" value="{{ link.url }}&srsName=EPSG%3A{{ user_data_epsg }}">
+                                                                                {% trans link.name %}
+                                                                            </label>
+                                                                        </div>
+
+                                                                            {% comment %}<a href="{{ link.url }}">{% trans link.name %}</a>{% endcomment %}
+                                                                        {% comment %}</li>{% endcomment %}
+                                                                    {% endfor %}
+                                                                {% comment %}</ul>{% endcomment %}
                                                             {% endif %}
                                                         </div>
 
@@ -174,6 +206,8 @@
                                                                 </label>
                                                             </div>
                                                         {% endif %}
+
+
 
                                                     </div>
                                                     <div class="modal-footer">
@@ -703,6 +737,8 @@
 
 {% block extra_script %}
 <script src="{{ STATIC_URL }}.components/angular-ui-grid/ui-grid.min.js"></script>
+<script src="{{ STATIC_URL }}.components/angular-file-upload/dist/angular-file-upload.js"></script>
+
 <script src="{{ STATIC_URL }}layers/js/layer.module.js"></script>
 <script src="{{ STATIC_URL }}layers/js/layer.service.js"></script>
 <script src="{{ STATIC_URL }}layers/js/attribute-view.controller.js"></script>
