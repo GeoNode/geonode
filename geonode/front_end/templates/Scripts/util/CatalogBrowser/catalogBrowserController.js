@@ -30,10 +30,10 @@ function catalogBrowserController($scope, $rootScope, $modal, catalogDataService
     $scope.type = { isCatalog: true };
 
     $scope.templates = {
-        viewSelection: './Templates/CatalogBrowser/viewSelection.html',
-        listView: './Templates/CatalogBrowser/listView.html',
-        gridView: './Templates/CatalogBrowser/gridView.html',
-        properties: './Templates/CatalogBrowser/properties.html'
+        viewSelection: '/static/Templates/CatalogBrowser/viewSelection.html',
+        listView: '/static/Templates/CatalogBrowser/listView.html',
+        gridView: '/static/Templates/CatalogBrowser/gridView.html',
+        properties: '/static/Templates/CatalogBrowser/properties.html'
     };
 
     $scope.serverList = [{
@@ -87,7 +87,7 @@ function catalogBrowserController($scope, $rootScope, $modal, catalogDataService
 
     $rootScope.editCSV = function() {
         $modal.open({
-            templateUrl: './Templates/CSVEditor.html',
+            templateUrl: '/static/Templates/CSVEditor.html',
             controller: 'CSVEditorController',
             backdrop: 'static',
             keyboard: false,

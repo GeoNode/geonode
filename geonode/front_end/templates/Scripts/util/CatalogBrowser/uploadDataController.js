@@ -24,7 +24,7 @@
         function showEpsgCodeOptions(epsgResult, onSelect) {
             $modalInstance.close();
             $modal.open({
-                templateUrl: './Templates/CatalogBrowser/selectEpsgCode.html',
+                templateUrl: '/static/Templates/CatalogBrowser/selectEpsgCode.html',
                 controller: 'selectEpsgCodeController',
                 backdrop: 'static',
                 keyboard: false,
@@ -380,7 +380,7 @@
         function openAddressFileMappingDialog() {
             $('#upload-form-container').hide();
             $modal.open({
-                templateUrl: './Templates/CsvHeaderMapping.html',
+                templateUrl: '/static/Templates/CsvHeaderMapping.html',
                 controller: 'csvHeaderMappingController',
                 backdrop: 'static',
                 keyboard: false,

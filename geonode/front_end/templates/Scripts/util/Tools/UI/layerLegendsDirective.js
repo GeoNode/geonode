@@ -4,7 +4,7 @@
         return {
             restrict: 'EA',
             scope: {},
-            templateUrl: './Templates/Tools/Map/layerLegends.html',
+            templateUrl: '/static/Templates/Tools/Map/layerLegends.html',
             controller: [
                 '$scope',
                 function ($scope) {

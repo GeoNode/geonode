@@ -2,7 +2,7 @@
     function () {
         return {
             restrict: 'AE',
-            templateUrl: './Templates/labelingEditor.html',
+            templateUrl: 'static/Templates/labelingEditor.html',
             scope: {
                 labelConfig: '=',
                 attributeDefs: '=',

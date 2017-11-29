@@ -12,8 +12,8 @@
         var editingFileName, isWorkingProject;
 
         $scope.templates = {
-            properties: './Templates/ProjectBrowser/properties.html',
-            gridView: './Templates/ProjectBrowser/gridView.html'
+            properties: '/static/Templates/ProjectBrowser/properties.html',
+            gridView: '/static/Templates/ProjectBrowser/gridView.html'
         };
 
         $scope.save = function () {
@@ -82,7 +82,7 @@
 
         $scope.openPublishDialog = function () {
             $modal.open({
-                templateUrl: './Templates/publishMapDialog.html',
+                templateUrl: '/static/Templates/publishMapDialog.html',
                 controller: 'publishMapDialogController',
                 backdrop: 'static',
                 keyboard: false,

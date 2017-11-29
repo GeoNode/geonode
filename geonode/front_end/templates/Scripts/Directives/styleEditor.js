@@ -3,7 +3,7 @@
     function (featureTypes) {
         return {
             restrict: 'EA',
-            templateUrl: './Templates/styleLabel.html',
+            templateUrl: 'static/Templates/styleLabel.html',
             scope: {
                 featureType: '='
             },
@@ -27,7 +27,7 @@ appHelperModule.directive('styleEditor', [
                 styleHash: '=',
                 featureType: '='
             },
-            templateUrl: './Templates/styleEditor.html',
+            templateUrl: 'static/Templates/styleEditor.html',
             controller: [
                 '$scope',
                 function ($scope) {

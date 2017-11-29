@@ -2,7 +2,7 @@
     'featureTypes', 'strokeDashstyles',
     function (featureTypes, strokeDashstyles) {
         return {
-            templateUrl: './Templates/stylePreview.html',
+            templateUrl: 'static/Templates/stylePreview.html',
             restrict: 'AE',
             replace: true,
             scope: {

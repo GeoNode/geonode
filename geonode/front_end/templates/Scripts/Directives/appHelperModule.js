@@ -211,7 +211,7 @@ appHelperModule.directive('surfImageSlider', [
                 onNextImage: '&',
                 onPreviousImage: '&'
             },
-            templateUrl: './Templates/Lged/surfImageSlider.html',
+            templateUrl: 'static/Templates/Lged/surfImageSlider.html',
             controller: ['$scope', function ($scope) {
                 $scope.selected = $scope.selected ? $scope.selected : {};
                 $scope.selected.Index = $scope.selected.Index || 0;

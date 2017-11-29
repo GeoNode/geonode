@@ -65,7 +65,7 @@
         $scope.showAttributeGrid = function() {
             $rootScope.isAttributeGridOn = true;
             $modal.open({
-                templateUrl: './Templates/attributeGrid.html',
+                templateUrl: '/static/Templates/attributeGrid.html',
                 controller: 'attributeGridController',
                 backdrop: false,
                 keyboard: false,
@@ -80,7 +80,7 @@
 
         $scope.showVisualizationWindow = function() {
             $modal.open({
-                templateUrl: './Templates/visualization.html',
+                templateUrl: '/static/Templates/visualization.html',
                 controller: 'visualizationController',
                 backdrop: 'static',
                 keyboard: false,

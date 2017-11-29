@@ -5,7 +5,7 @@
         return {
             replace: true,
             restrict: 'AE',
-            templateUrl: './Templates/Tools/Layer/propertyGridOverlay.html',
+            templateUrl: '/static/Templates/Tools/Layer/propertyGridOverlay.html',
             scope: {
                 isDraft: '=',
                 options: '='

@@ -4,7 +4,7 @@
         , scope: {
             feature: '='
         }
-        , templateUrl: '../Templates/subscriptionFeature.html'
+        , templateUrl: './static/Templates/subscriptionFeature.html'
         , replace: true
     };
 }]);
@@ -16,7 +16,7 @@ SubscriptionModule.directive("pricingScheme", ['surfToastr', function (surfToast
             pricingSchemes: '=',
             upgradableSchemes: '='
         }
-        , templateUrl: '../Templates/pricingScheme.html'
+        , templateUrl: './static/Templates/pricingScheme.html'
         , replace: true
         , controller: ['$scope', '$window', function ($scope, $window) {
             $scope.canChooseScheme = function (schemeId) {

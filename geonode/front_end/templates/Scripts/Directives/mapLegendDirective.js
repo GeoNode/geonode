@@ -2,7 +2,7 @@
     function () {
         return {
             restrict: 'E',
-            templateUrl: './Templates/mapLegend.html'
+            templateUrl: 'static/Templates/mapLegend.html'
         }
     }
 ]);

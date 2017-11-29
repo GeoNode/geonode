@@ -9,7 +9,7 @@
                 featureType: '=',
                 defaultStyle: '='
             },
-            templateUrl: './Templates/classifierDefinitions.html',
+            templateUrl: 'static/Templates/classifierDefinitions.html',
             controller: ['$scope', '$http', '$filter', 'attributeDefinitionHelper', 'attributeTypes',
                 function ($scope, $http, $filter, attributeDefinitionHelper, attributeTypes) {
 

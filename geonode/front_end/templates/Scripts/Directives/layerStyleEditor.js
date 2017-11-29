@@ -6,7 +6,7 @@
                 layerStyle: '=',
                 featureType: '='
             },
-            templateUrl: './Templates/layerStyleEditor.html'
+            templateUrl: 'static/Templates/layerStyleEditor.html'
         };
     }
 ]);

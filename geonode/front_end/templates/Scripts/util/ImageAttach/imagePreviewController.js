@@ -25,7 +25,7 @@
         $scope.showLargeImage = function () {
             $scope.isLargeImageViewOn = true;
             $modal.open({
-                templateUrl: './Templates/Carousel.html',
+                templateUrl: '/static/Templates/Carousel.html',
                 controller: 'largeImageViewController',
                 scope: $scope,
                 backdrop: 'static',
@@ -42,7 +42,7 @@
         $scope.openAttachModal = function () {
             var feature = featureService.getActive();
             $modal.open({
-                templateUrl: './Templates/AttachFileDialog.html',
+                templateUrl: '/static/Templates/AttachFileDialog.html',
                 controller: 'FileAttachController',
                 backdrop: 'static',
                 keyboard: false,
@@ -57,7 +57,7 @@
         $scope.openImageAttachModal = function () {
             var feature = featureService.getActive();
             $modal.open({
-                templateUrl: './Templates/AttachImageDialog.html',
+                templateUrl: '/static/Templates/AttachImageDialog.html',
                 controller: 'ImageAttachController',
                 backdrop: 'static',
                 keyboard: false,

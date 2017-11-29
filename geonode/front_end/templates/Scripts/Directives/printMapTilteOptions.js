@@ -1,7 +1,7 @@
 ﻿appHelperModule.directive('printMapTitleOptions', [
     function () {
         return {
-            templateUrl: './Templates/printMapTitleOptions.html',
+            templateUrl: 'static/Templates/printMapTitleOptions.html',
             scope: {
                 options: '=printMapTitleOptions'
             },

@@ -2,7 +2,7 @@
     function (attributeTypes) {
         return {
             restrict: 'AE',
-            templateUrl: './Templates/attributeDefinitions.html',
+            templateUrl: 'static/Templates/attributeDefinitions.html',
             controller: ['$scope', function ($scope) {
                 $scope.status = { unchanged: 'unchanged', added: 'added', edited: 'edited', deleted: 'deleted' };
 

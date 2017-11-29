@@ -395,7 +395,7 @@ appModule.controller('appController', [
 
         $scope.viewMapInfo = function() {
             $modal.open({
-                templateUrl: './Templates/mapInfoDialog.html',
+                templateUrl: 'static/Templates/mapInfoDialog.html',
                 backdrop: 'static',
                 keyboard: false,
                 scope: $scope

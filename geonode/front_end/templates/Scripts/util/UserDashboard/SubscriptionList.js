@@ -6,7 +6,7 @@
                 scope: {
                     subscriptions: '='
                 },
-                templateUrl: '../Templates/subscriptionList.html',
+                templateUrl: './static/Templates/subscriptionList.html',
                 replace: true,
                 controller: ['$scope', '$filter',
                     function ($scope, $filter) {
