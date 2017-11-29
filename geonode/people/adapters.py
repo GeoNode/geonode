@@ -124,7 +124,6 @@ class LocalAccountAdapter(DefaultAccountAdapter):
             ])
         user_username(user, safe_username)
 
-
     def save_user(self, request, user, form, commit=True):
         user = super(LocalAccountAdapter, self).save_user(
             request, user, form, commit=commit)
