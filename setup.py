@@ -118,7 +118,6 @@ setup(name='GeoNode',
         "Pinax<=0.9a2",
         # pinax-comments==0.1.1
         "pinax-notifications<=4.0.0",
-        # pinax-ratings==2.0.0
         "pinax-theme-bootstrap<=8.0.1",
         "django-bootstrap-form<=3.3",
         "django-forms-bootstrap<=3.1.0",
