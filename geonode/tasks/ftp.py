@@ -490,8 +490,44 @@ def upload_xml(folder_dir,obj_dl_list):
             }
         except:
             xml_layer={
-                "MDFormat":'',
+                "MDFormat": '',
                 "CIOnlineResource": '',
+            }
+        try:
+            xml_block={
+                "BlockName": ">\n                   <gco:CharacterString>"+cephobj_resbase.block_uid.block_name+"</gco:CharacterString> " if cephobj_resbase.block_uid.block_name else 'gco:nilReason="missing">',
+                "Processor": ">\n                   <gco:CharacterString>"+cephobj_resbase.block_uid.processor+"</gco:CharacterString> " if cephobj_resbase.block_uid.processor else 'gco:nilReason="missing">',
+                "Sensor": ">\n                   <gco:CharacterString>"+cephobj_resbase.block_uid.sensor+"</gco:CharacterString> " if cephobj_resbase.block_uid.sensor else 'gco:nilReason="missing">',
+                "Base": ">\n                   <gco:CharacterString>"+cephobj_resbase.block_uid.base_used+"</gco:CharacterString> " if cephobj_resbase.block_uid.base_used else 'gco:nilReason="missing">',
+                "FlightNum": ">\n                   <gco:CharacterString>"+cephobj_resbase.block_uid.flight_num+"</gco:CharacterString> " if cephobj_resbase.block_uid.flight_num else 'gco:nilReason="missing">',
+                "MissionName": ">\n                   <gco:CharacterString>"+cephobj_resbase.block_uid.mission_na+"</gco:CharacterString> " if cephobj_resbase.block_uid.mission_na else 'gco:nilReason="missing">',
+                "DateFlown": ">\n                   <gco:CharacterString>"+cephobj_resbase.block_uid.date_flown+"</gco:CharacterString> " if cephobj_resbase.block_uid.date_flown else 'gco:nilReason="missing">',
+                "Xshift": ">\n                   <gco:CharacterString>"+cephobj_resbase.block_uid.x_shift+"</gco:CharacterString> " if cephobj_resbase.block_uid.x_shift else 'gco:nilReason="missing">',
+                "Yshift": ">\n                   <gco:CharacterString>"+cephobj_resbase.block_uid.y_shift+"</gco:CharacterString> " if cephobj_resbase.block_uid.y_shift else 'gco:nilReason="missing">',
+                "Zshift": ">\n                   <gco:CharacterString>"+cephobj_resbase.block_uid.z_shift+"</gco:CharacterString> " if cephobj_resbase.block_uid.z_shift else 'gco:nilReason="missing">',
+                "HeightDif": ">\n                   <gco:CharacterString>"+cephobj_resbase.block_uid.height_dif+"</gco:CharacterString> " if cephobj_resbase.block_uid.height_dif else 'gco:nilReason="missing">',
+                "RMSEVal": ">\n                   <gco:CharacterString>"+cephobj_resbase.block_uid.rmse_val+"</gco:CharacterString> " if cephobj_resbase.block_uid.rmse_val else 'gco:nilReason="missing">',
+                "CalRefPt": ">\n                   <gco:CharacterString>"+cephobj_resbase.block_uid.cal_ref_pt+"</gco:CharacterString> " if cephobj_resbase.block_uid.cal_ref_pt else 'gco:nilReason="missing">',
+                "ValRefPt": ">\n                   <gco:CharacterString>"+cephobj_resbase.block_uid.val_ref_pt+"</gco:CharacterString> " if cephobj_resbase.block_uid.val_ref_pt else 'gco:nilReason="missing">',
+                "Floodplain": ">\n                   <gco:CharacterString>"+cephobj_resbase.block_uid.floodplain+"</gco:CharacterString> " if cephobj_resbase.block_uid.floodplain else 'gco:nilReason="missing">',
+            }
+        except:
+            xml_block={
+                "BlockName": '',
+                "Processor": '',
+                "Sensor": '',
+                "Base": '',
+                "FlightNum": '',
+                "MissionName": '',
+                "DateFlown": '',
+                "Xshift": '',
+                "Yshift": '',
+                "Zshift": '',
+                "HeightDif": '',
+                "RMSEVal": '',
+                "CalRefPt": '',
+                "ValRefPt": '',
+                "Floodplain": '',
             }
 
         xml_context = {
@@ -541,6 +577,21 @@ def upload_xml(folder_dir,obj_dl_list):
             "LinkDLText": linkdl_text,
             "LinkOWSText": linkows_text,
             "Statement": "><gco:CharacterString>"+cephobj_resbase.data_quality_statement+"</gco:CharacterString></gmd:statement>" if cephobj_resbase.data_quality_statement else 'gco:nilReason="missing"/>',
+            "BlockName": xml_block['BlockName'],
+            "Processor": xml_block['Processor'],
+            "Sensor": xml_block['Sensor'],
+            "Base": xml_block['Base'],
+            "FlightNum": xml_block['FlightNum'],
+            "MissionName": xml_block['MissionName'],
+            "DateFlown": xml_block['DateFlown'],
+            "Xshift": xml_block['Xshift'],
+            "Yshift": xml_block['Yshift'],
+            "Zshift": xml_block['Zshift'],
+            "HeightDif": xml_block['HeightDif'],
+            "RMSEVal": xml_block['RMSEVal'],
+            "CalRefPt": xml_block['CalRefPt'],
+            "ValRefPt": xml_block['ValRefPt'],
+            "Floodplain": xml_block['Floodplain'],
         }
 
         xml_file_dest = os.path.join(folder_dir,grid_ref_file_name+'.xml')
