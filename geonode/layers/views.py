@@ -50,6 +50,7 @@ from django.forms.models import inlineformset_factory
 from django.db import transaction
 from django.db.models import F
 from django.forms.util import ErrorList
+from django.views.generic import View
 from requests.auth import HTTPBasicAuth
 from geonode.settings import  OGC_SERVER
 
@@ -76,7 +77,7 @@ from geonode.geoserver.helpers import cascading_delete, gs_catalog
 from geonode.geoserver.helpers import ogc_server_settings
 
 from geonode.groups.models import GroupProfile
-from geonode.layers.models import LayerSubmissionActivity, LayerAuditActivity
+from geonode.layers.models import LayerSubmissionActivity, LayerAuditActivity, LayerStyle
 from geonode.base.libraries.decorators import manager_or_member
 from geonode.base.models import KeywordIgnoreListModel
 
@@ -1114,5 +1115,26 @@ def finding_xlink(dic):
             if item is not None:
                 return item
 
+
+class LayerStyleView(View):
+    def post(self, request, layername, **kwargs):
+        layer_obj = _resolve_layer(request, layername)
+        data = json.loads(request.body)
+        obj = LayerStyle(layer=layer_obj, name=data.get('name', None))
+        try:
+            obj.save()
+            return HttpResponse(
+                        json.dumps(
+                            dict(success="OK"),
+                            ensure_ascii=False), 
+                            status=200,
+                            content_type='application/javascript')
+        except Exception as ex:
+            return HttpResponse(
+                    json.dumps(
+                        ex,
+                        ensure_ascii=False), 
+                        status = 500,
+                        content_type='application/javascript')
 #end
 
