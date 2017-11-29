@@ -1221,10 +1221,6 @@ def finding_xlink(dic):
 class LayerStyleView(View):
     @custom_login_required
     def post(self, request, layername, **kwargs):
-        print layername
-        # if not request.user.is_authenticated():
-        #     return HttpResponse(status=403)
-
         layer_obj = _resolve_layer(request, layername)
         data = json.loads(request.body)
         obj = LayerStyle(layer=layer_obj, name=data.get('name', None))
