@@ -128,6 +128,6 @@ class LinkedInExtractor(BaseExtractor):
 def _get_latest_position(data):
     all_positions = data.get(
         "positions",
-        {"values":[]}
+        {"values": []}
     )["values"]
     return all_positions[0] if any(all_positions) else None
