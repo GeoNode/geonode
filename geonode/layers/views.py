@@ -232,8 +232,7 @@ def layer_upload(request, template='upload/layer_upload.html'):
                         style = cat.get_style(saved_layer.name, workspace=settings.DEFAULT_WORKSPACE)
                         # style.update_body(sld)
                         try:
-                            cat.create_style(saved_layer.name, sld, overwrite=True, raw=True,
-                                             workspace=settings.DEFAULT_WORKSPACE)
+                            cat.create_style(saved_layer.name, sld, overwrite=True, raw=True, workspace=settings.DEFAULT_WORKSPACE)
                             style = cat.get_style(saved_layer.name, workspace=settings.DEFAULT_WORKSPACE)
                             if layer and style:
                                 layer.default_style = style

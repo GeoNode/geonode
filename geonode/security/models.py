@@ -341,8 +341,7 @@ def set_geofence_all(instance):
                 """
                 rules_count = get_geofence_rules_count()
                 headers = {'Content-type': 'application/xml'}
-                payload = "<Rule><priority>" + str(rules_count - 1) + \
-                          "</priority><workspace>" + settings.DEFAULT_WORKSPACE + "</workspace><layer>"
+                payload = "<Rule><priority>" + str(rules_count - 1) + "</priority><workspace>" + settings.DEFAULT_WORKSPACE + "</workspace><layer>"
                 payload += resource.layer.name
                 payload += "</layer><access>ALLOW</access></Rule>"
 
