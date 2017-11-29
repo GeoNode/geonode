@@ -80,7 +80,7 @@ from geonode.groups.models import GroupProfile
 from geonode.layers.models import LayerSubmissionActivity, LayerAuditActivity, LayerStyle
 from geonode.base.libraries.decorators import manager_or_member
 from geonode.base.models import KeywordIgnoreListModel
-
+from geonode.authentication_decorators import login_required as custom_login_required
 
 if 'geonode.geoserver' in settings.INSTALLED_APPS:
     from geonode.geoserver.helpers import _render_thumbnail
@@ -1117,7 +1117,12 @@ def finding_xlink(dic):
 
 
 class LayerStyleView(View):
+    @custom_login_required
     def post(self, request, layername, **kwargs):
+        print layername
+        # if not request.user.is_authenticated():
+        #     return HttpResponse(status=403)
+
         layer_obj = _resolve_layer(request, layername)
         data = json.loads(request.body)
         obj = LayerStyle(layer=layer_obj, name=data.get('name', None))
