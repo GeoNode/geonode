@@ -17,3 +17,28 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
+
+"""signal handlers for geonode.services"""
+
+import logging
+
+from .models import HarvestJob
+
+logger = logging.getLogger(__name__)
+
+
+def remove_harvest_job(sender, **kwargs):
+    """Remove a Layer's harvest job so that it may be re-imported later."""
+    layer = kwargs["instance"]
+    if layer.service is not None:
+        job = HarvestJob.objects.filter(resource_id=layer.name).get(
+            service=layer.service)
+        logger.debug("job: {}".format(job.id))
+        job.delete()
+    else:
+        pass  # layer was not harvested from a service, we've nothing to do
+
+
+def post_save_service(instance, sender, created, **kwargs):
+    if created:
+        instance.set_default_permissions()

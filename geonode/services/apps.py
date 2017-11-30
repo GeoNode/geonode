@@ -17,3 +17,24 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
+
+
+from django.db.models import signals
+
+from geonode.notifications_helper import NotificationsAppConfigBase
+from ..layers.models import Layer
+
+from .models import Service
+from . import signals as services_signals
+
+
+class ServicesAppConfig(NotificationsAppConfigBase):
+    name = "geonode.services"
+
+    def ready(self):
+        """Connect relevant signals to their corresponding handlers"""
+        super(ServicesAppConfig, self).ready()
+        signals.post_delete.connect(
+            services_signals.remove_harvest_job, sender=Layer)
+        signals.post_save.connect(
+            services_signals.post_save_service, sender=Service)

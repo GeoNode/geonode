@@ -34,7 +34,6 @@ import django
 from django.conf.global_settings import DATETIME_INPUT_FORMATS
 from geonode import __file__ as geonode_path
 from geonode import get_version
-from geonode.celery_app import app  # flake8: noqa
 from kombu import Queue
 
 # GeoNode Version
@@ -596,8 +595,6 @@ NOSE_ARGS = [
 #
 SITEURL = os.getenv('SITEURL', "http://localhost:8000/")
 
-USE_QUEUE = strtobool(os.getenv('USE_QUEUE', 'False'))
-
 DEFAULT_WORKSPACE = os.getenv('DEFAULT_WORKSPACE', 'geonode')
 CASCADE_WORKSPACE = os.getenv('CASCADE_WORKSPACE', 'geonode')
 
@@ -1095,31 +1092,24 @@ if NOTIFICATION_ENABLED:
     INSTALLED_APPS += (NOTIFICATIONS_MODULE, )
 
 
-# broker url is for celery worker
-BROKER_URL = os.getenv('BROKER_URL', "django://")
 
 # async signals can be the same as broker url
 # but they should have separate setting anyway
 # use amqp:// for local rabbitmq server
 ASYNC_SIGNALS_BROKER_URL = 'memory://'
 
-CELERY_ALWAYS_EAGER = True
-CELERY_EAGER_PROPAGATES_EXCEPTIONS = True
-CELERY_IGNORE_RESULT = True
-CELERY_SEND_EVENTS = False
+CELERY_BROKER_URL = os.getenv('BROKER_URL', "amqp://")
 CELERY_RESULT_BACKEND = None
+CELERY_TASK_ALWAYS_EAGER = True  # set this to False in order to run async
+CELERY_TASK_IGNORE_RESULT = True
+CELERY_TASK_DEFAULT_QUEUE = "default"
+CELERY_TASK_DEFAULT_EXCHANGE = "default"
+CELERY_TASK_DEFAULT_EXCHANGE_TYPE = "direct"
+CELERY_TASK_DEFAULT_ROUTING_KEY = "default"
+CELERY_TASK_CREATE_MISSING_QUEUES = True
 CELERY_TASK_RESULT_EXPIRES = 1
-CELERY_DISABLE_RATE_LIMITS = True
-CELERY_DEFAULT_QUEUE = "default"
-CELERY_DEFAULT_EXCHANGE = "default"
-CELERY_DEFAULT_EXCHANGE_TYPE = "direct"
-CELERY_DEFAULT_ROUTING_KEY = "default"
-CELERY_CREATE_MISSING_QUEUES = True
-CELERY_IMPORTS = (
-    'geonode.tasks.deletion',
-    'geonode.tasks.update',
-    'geonode.tasks.email'
-)
+CELERY_WORKER_DISABLE_RATE_LIMITS = True
+CELERY_WORKER_SEND_TASK_EVENTS = False
 
 
 CELERY_QUEUES = [
