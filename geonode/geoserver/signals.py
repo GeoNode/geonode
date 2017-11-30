@@ -44,6 +44,7 @@ from geonode.people.models import Profile
 from geonode.layers.models import Layer
 from geonode.social.signals import json_serializer_producer
 from geonode.catalogue.models import catalogue_post_save
+from geonode.services.enumerations import CASCADED
 
 import geoserver
 from geoserver.layer import Layer as GsLayer
@@ -64,7 +65,7 @@ def geoserver_pre_delete(instance, sender, **kwargs):
     # cascading_delete should only be called if
     # ogc_server_settings.BACKEND_WRITE_ENABLED == True
     if getattr(ogc_server_settings, "BACKEND_WRITE_ENABLED", True):
-        if not getattr(instance, "service", None):
+        if instance.service is None or instance.service.method == CASCADED:
             if instance.alternate:
                 cascading_delete(gs_catalog, instance.alternate)
 
@@ -85,7 +86,7 @@ def geoserver_post_save(instance, sender, **kwargs):
         producer.geoserver_upload_layer(payload)
 
 
-def geoserver_post_save_local(layer_id, *args, **kwargs):
+def geoserver_post_save_local(instance, *args, **kwargs):
     """Send information to geoserver.
 
        The attributes sent include:
@@ -97,14 +98,6 @@ def geoserver_post_save_local(layer_id, *args, **kwargs):
         * Metadata Links,
         * Point of Contact name and url
     """
-    # If it is a layer object, post process it. If not, abort.
-    try:
-        instance = Layer.objects.get(id=layer_id)
-    except Layer.DoesNotExist as e:
-        logger.exception(e)
-        return
-        # raise e
-
     # Don't run this signal if is a Layer from a remote service
     if getattr(instance, "service", None) is not None:
         return

@@ -60,7 +60,7 @@ from geonode.maps.forms import MapForm
 from geonode.security.views import _perms_info_json
 from geonode.base.forms import CategoryForm
 from geonode.base.models import TopicCategory
-from geonode.tasks.deletion import delete_map
+from .tasks import delete_map
 from geonode.groups.models import GroupProfile
 
 from geonode.documents.models import get_related_documents

@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #########################################################################
 #
-# Copyright (C) 2016 OSGeo
+# Copyright (C) 2017 OSGeo
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -18,16 +18,18 @@
 #
 #########################################################################
 
-from geonode.layers.models import Layer
-from geonode.maps.models import Map
-from celery.task import task
+"""celery tasks for geonode.layers."""
+
+from celery.app import shared_task
 from celery.utils.log import get_task_logger
+
+from geonode.layers.models import Layer
 
 logger = get_task_logger(__name__)
 
 
-@task(name='geonode.tasks.deletion.delete_layer', queue='cleanup')
-def delete_layer(object_id):
+@shared_task(bind=True, queue='cleanup')
+def delete_layer(self, object_id):
     """
     Deletes a layer.
     """
@@ -38,30 +40,3 @@ def delete_layer(object_id):
         return
 
     layer.delete()
-
-
-@task(name='geonode.tasks.deletion.delete_map', queue='cleanup', expires=300)
-def delete_map(object_id):
-    """
-    Deletes a map and the associated map layers.
-    """
-
-    try:
-        map_obj = Map.objects.get(id=object_id)
-    except Map.DoesNotExist:
-        return
-
-    map_obj.layer_set.all().delete()
-    map_obj.delete()
-
-
-@task(name='geonode.tasks.deletion.delete_orphaned_document_files', queue='cleanup')
-def delete_orphaned_document_files():
-    from geonode.documents.utils import delete_orphaned_document_files
-    delete_orphaned_document_files()
-
-
-@task(name='geonode.tasks.deletion.delete_orphaned_thumbs', queue='cleanup')
-def delete_orphaned_thumbnails():
-    from geonode.documents.utils import delete_orphaned_thumbs
-    delete_orphaned_thumbs()

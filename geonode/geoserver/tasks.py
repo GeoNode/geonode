@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #########################################################################
 #
-# Copyright (C) 2016 OSGeo
+# Copyright (C) 2017 OSGeo
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -18,8 +18,17 @@
 #
 #########################################################################
 
-from django.test import TestCase
+from celery.app import shared_task
+from celery.utils.log import get_task_logger
+
+from .helpers import gs_slurp
+
+logger = get_task_logger(__name__)
 
 
-class TasksTests(TestCase):
-    pass
+@shared_task(bind=True, queue='update')
+def geoserver_update_layers(self, *args, **kwargs):
+    """
+    Runs update layers.
+    """
+    return gs_slurp(*args, **kwargs)

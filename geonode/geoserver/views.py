@@ -48,7 +48,7 @@ from geonode.layers.models import Layer, Style
 from geonode.layers.views import _resolve_layer, _PERMISSION_MSG_MODIFY
 from geonode.maps.models import Map
 from geonode.geoserver.signals import gs_catalog
-from geonode.tasks.update import geoserver_update_layers
+from .tasks import geoserver_update_layers
 from geonode.utils import json_response, _get_basic_auth_info
 from geoserver.catalog import FailedRequestError, ConflictingDataError
 from .helpers import (get_stores, ogc_server_settings,
