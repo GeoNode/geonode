@@ -62,7 +62,7 @@ class PinpointUserActivityCreateAPIView(APIView):
         pinpoint_user_activity = PinpointUserActivity()
         pinpoint_user_activity.user = None if request.user.id is None else request.user
         pinpoint_user_activity.map = None if str(data['map']) == '' else Map.objects.get(id=int(data['map']))
-        pinpoint_user_activity.layer = Layer.objects.get(id=int(data['layer']))
+        pinpoint_user_activity.layer = None if str(data['layer']) == '' else Layer.objects.get(id=int(data['layer']))
         pinpoint_user_activity.ip = str(request.environ['REMOTE_ADDR'])
         pinpoint_user_activity.agent = str(request.environ['HTTP_USER_AGENT'])
         pinpoint_user_activity.activity_type = str(data['activity_type'])
@@ -108,7 +108,7 @@ class LayerLoadCreateAPIView(APIView):
 
         layer_load = LayerLoad()
         layer_load.user = None if request.user.id is None else request.user
-        layer_load.layer = Layer.objects.get(id=int(data['layer']))
+        layer_load.layer = None if str(data['layer']) == '' else Layer.objects.get(id=int(data['layer']))
         layer_load.latitude = None if str(data['latitude']) == '' else float(data['latitude'])
         layer_load.longitude = None if str(data['longitude']) == '' else float(data['longitude'])
         layer_load.ip = str(request.environ['REMOTE_ADDR'])
