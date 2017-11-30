@@ -146,6 +146,48 @@
                 // "SavedDataId": "s_fe297a3305394811919f33cdb16fc30d"
             };
         }
+
+        (function(){
+            /*
+            // Map drag / pan event
+            map.on('pointerdrag', function(){
+                console.log('pointerdrag', arguments);
+
+            });
+            */
+
+            //zoom in out event
+            map.getView().on('change:resolution', function(evt){
+                // evt.currentTarget.getResolution()
+                // evt.oldValue
+
+                var zoomType;
+
+                // Zoom in
+                // old Value = 39135.75848201024
+                // current Value = 19567.87924100512
+                if(evt.oldValue > evt.currentTarget.getResolution()){
+                    console.log("Zoom in called");
+                    zoomType = 'zoom-in'
+                }
+
+                // Zoom out
+                // old Value = 39135.75848201024
+                // current Value = 78271.51696402048
+                if(evt.oldValue < evt.currentTarget.getResolution()){
+                    console.log("Zoom out called");
+                    zoomType = 'zoom-out'
+                }
+
+                //debugger
+                //console.log('resolution', arguments);
+                //console.log('resolution', evt);
+
+            });
+
+
+
+        })();
     }
 
 })();

@@ -684,6 +684,10 @@
             },
             getMap: function() {
                 return map.getMap();
+            },
+            saveAnalytics: function () {
+                alert("....");
+                return map.getInteractions();
             }
 
         };
