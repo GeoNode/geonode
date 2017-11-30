@@ -5,18 +5,16 @@
     <div class="row">
       <div class="col-xs-12">
         {% block bulk_perms_button %}
-        <div class="btn-group btn-group-justified" role="group" aria-label="tools">
           {% if request.user.is_authenticated %}
-          <div class="btn-group" role="group">
-            <button type="button" class="btn btn-default" ng-disabled="!cart.getCart().items.length" data-toggle="modal" data-target="#_bulk_permissions">{% trans "Set permissions" %}</button>
+          <div class="btn-group" id="bulk_perms_button_container" role="group">
+            <button type="button" class="btn btn-default" id="bulk_perms_button" ng-disabled="!cart.getCart().items.length" data-toggle="modal" data-target="#_bulk_permissions" title="Set Bulk Permissions">{% trans "Set Bulk Permissions" %}</button>
           </div>
           {% endif %}
           {% if facet_type == 'layers' or include_create_map == 'true' %}
-          <div class="btn-group" role="group">
-            <button type="button" class="btn btn-default" ng-disabled="!cart.getCart().items.length" ng-click="newMap()">{% trans "Create a Map" %}</button>
+          <div class="btn-group" id="open_in_map_button_container" role="group">
+            <button type="button" class="btn btn-default" id="open_in_map_button" ng-click="newMap()" title="Open Workspace in Map">{% trans "Open Workspace in Map" %}</button>
           </div>
           {% endif %}
-        </div>
         {% endblock %}
     
         <div class="selections">
