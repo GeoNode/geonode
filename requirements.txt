@@ -33,7 +33,7 @@ django-extensions==1.6.1
 django-floppyforms==1.7.0
 django-forms-bootstrap==3.1.0
 django-friendly-tag-loader==1.2.1
-django-geoexplorer==4.0.25
+django-geoexplorer==4.0.33
 django-geonode-client==0.0.15
 django-guardian==1.4.9
 django-haystack==2.6.0
@@ -76,7 +76,7 @@ geonode-dialogos==0.7
 geonode-user-messages==0.1.10
 gisdata==0.5.4
 gsconfig==1.0.8
-gsimporter==1.0.0
+gn-gsimporter==1.0.1
 httplib2==0.10.3
 idna==2.6
 ipaddress==1.0.18
