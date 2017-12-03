@@ -22,14 +22,14 @@ class AnalyticsView(TemplateView):
 
         context['map_loads'] = map_loads
 
-        zooms = float(PinpointUserActivity.objects.filter(activity_type='zoom').count())
+        zooms = float(PinpointUserActivity.objects.filter(activity_type__contains='zoom').count())
         pans = float(PinpointUserActivity.objects.filter(activity_type='pan').count())
         clicks = float(PinpointUserActivity.objects.filter(activity_type='click').count())
 
         if map_loads == 0:
             average_activity_load = 0
         else:
-            average_activity_load = int((zooms + pans + clicks) / map_loads)
+            average_activity_load = int((zooms + pans + clicks) / int(map_loads))
 
         context['average_activity_load'] = average_activity_load
         context['zooms'] = int(zooms)
