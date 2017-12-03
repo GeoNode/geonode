@@ -849,6 +849,12 @@
                 </a>
             </li>
             <li class="c-menu__item">
+                <a href="{% url "locations" %}" class="c-menu__link">
+                    <img src="{{ STATIC_URL }}geonode/images/user-icon/help.png" alt="Help">
+                    <span style="text-align:left;color:#fff;margin-left:-10px;">{% trans "Locations" %}</span>
+                </a>
+            </li>
+            <li class="c-menu__item">
                 <a href="{% url "data-folder-backup" %}" class="c-menu__link">
                     <img src="{{ STATIC_URL }}geonode/images/user-icon/help.png" alt="Help">
                     <span style="text-align:left;color:#fff;margin-left:-10px;">{% trans "Geoserver Data Backup" %}</span>
