@@ -2,9 +2,9 @@
     appModule
         .controller('MapUpdateController', MapUpdateController);
 
-    MapUpdateController.$inject = ['mapService', '$window'];
+    MapUpdateController.$inject = ['mapService', '$window', 'analyticsService'];
 
-    function MapUpdateController(mapService, $window) {
+    function MapUpdateController(mapService, $window, analyticsService) {
         var self = this;
         var map = mapService.getMap();
         self.MapConfig = $window.mapConfig;
@@ -146,6 +146,132 @@
                 // "SavedDataId": "s_fe297a3305394811919f33cdb16fc30d"
             };
         }
+
+        (function(){
+
+            // map load
+            //debugger
+            map.on('postrender', function(evt){
+                //console.log('maploaded', evt);
+                var user_href = window.location.href.split('/');
+                var map_info = user_href[user_href.length - 2];
+
+                // Map load
+                var user_location = JSON.parse(localStorage.getItem("user_location"));
+
+                var url = '/analytics/api/map/load/create/';
+
+                var latitude;
+                var longitude;
+                try{
+                    latitude = user_location.latitude.toString();
+                    longitude = user_location.longitude.toString()
+                }catch(err){
+                    latitude = "";
+                    longitude = "";
+                }
+
+                var data = {
+                    'user': user_info,
+                    'map': map_info,
+                    'latitude': latitude,
+                    'longitude': longitude,
+                    'agent': '',
+                    'ip': ''
+                };
+
+                analyticsService.saveAnalytics(data, url);
+            });
+
+            // Map drag / pan event
+            map.on('pointerdrag', function(evt){
+                //console.log('pointerdrag', arguments);
+                var user_location = JSON.parse(localStorage.getItem("user_location"));
+
+                var url = '/analytics/api/user/activity/create/';
+
+                var latitude;
+                var longitude;
+                try{
+                    latitude = user_location.latitude.toString();
+                    longitude = user_location.longitude.toString()
+                }catch(err){
+                    latitude = "";
+                    longitude = "";
+                }
+
+                var user_href = window.location.href.split('/');
+                var map_info = user_href[user_href.length - 2];
+
+                var data = {
+                    'user': user_info,
+                    'layer': layer_info,
+                    'map': map_info,
+                    'activity_type': 'pan',
+                    'latitude': latitude,
+                    'longitude': longitude,
+                    'agent': '',
+                    'ip': '',
+                    'point': ''
+                };
+
+                analyticsService.saveAnalytics(data, url);
+
+            });
+
+            //zoom in out event
+            map.getView().on('change:resolution', function(evt){
+
+                var zoomType;
+                var user_location = JSON.parse(localStorage.getItem("user_location"));
+
+                var url = '/analytics/api/user/activity/create/';
+
+                var latitude = '';
+                var longitude = '';
+
+                // Zoom in
+                if(evt.oldValue > evt.currentTarget.getResolution()){
+                    //console.log("Zoom in called");
+                    zoomType = 'zoom-in'
+                }
+
+                // Zoom out
+                if(evt.oldValue < evt.currentTarget.getResolution()){
+                    //console.log("Zoom out called");
+                    zoomType = 'zoom-out'
+                }
+
+                try{
+                    latitude = user_location.latitude.toString();
+                    longitude = user_location.longitude.toString()
+                }catch(err){
+                    latitude = "";
+                    longitude = "";
+                }
+
+                var user_href = window.location.href.split('/');
+                var map_info = user_href[user_href.length - 2];
+
+                var data = {
+                    'user': user_info,
+                    'layer': layer_info,
+                    'map': map_info,
+                    'activity_type': zoomType,
+                    'latitude': latitude,
+                    'longitude': longitude,
+                    'agent': '',
+                    'ip': '',
+                    'point': ''
+                };
+
+                analyticsService.saveAnalytics(data, url);
+
+            });
+
+
+
+        })();
     }
 
 })();

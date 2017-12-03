@@ -684,7 +684,7 @@
             },
             getMap: function() {
                 return map.getMap();
-            }
+            },
 
         };
 
