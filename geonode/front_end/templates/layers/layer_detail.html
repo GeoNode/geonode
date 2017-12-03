@@ -121,6 +121,7 @@
                                                             id="myModalLabel">{% trans "Download Layer..." %}</h4>
                                                     </div>
                                                     <div class="modal-body">
+                                                        <h2>Download data format</h2>
                                                         <div class="native">
                                                             <h3>Native data</h3>
                                                             {% if links %}
@@ -128,7 +129,7 @@
                                                                     {% for link in links %}
                                                                         <div class="radio">
                                                                             <label>
-                                                                                <input type="radio" name="native-download" id="{{ link.name }}-data" value="{{ link.url }}">
+                                                                                <input type="radio" name="native-download" id="{{ link.name }}-data" value="{{ link.url }}&srsName=EPSG%3A{{ user_data_epsg }}">
                                                                                 {% trans link.name %}
                                                                             </label>
                                                                         </div>
@@ -138,6 +139,21 @@
                                                                     {% endfor %}
 {#                                                                </ul>#}
                                                             {% endif %}
+                                                            {% if links_download %}
+                                                                {% comment %}<ul>{% endcomment %}
+                                                                    {% for link in links_download %}
+                                                                        {% comment %}<li>{% endcomment %}
+                                                                        <div class="radio">
+                                                                            <label>
+                                                                                <input type="radio" name="native-download" id="{{ link.name }}-data" value="{{ link.url }}&srsName=EPSG%3A{{ user_data_epsg }}">
+                                                                                {% trans link.name %}
+                                                                            </label>
+                                                                        </div>
+                                                                            {% comment %}<a href="{{ link.url }}">{% trans link.name %}</a>{% endcomment %}
+                                                                        {% comment %}</li>{% endcomment %}
+                                                                    {% endfor %}
+                                                                {% comment %}</ul>{% endcomment %}
+                                                            {% endif %}
                                                         </div>
                                                         <div class="wgs84">
                                                             <h3>WGS 84</h3>
@@ -146,7 +162,7 @@
                                                                     {% for link in links %}
                                                                         <div class="radio">
                                                                             <label>
-                                                                                <input type="radio" name="wgs84-download" id="{{ link.name }}-data" value="{{ link.url }}&srsName=EPSG%3A{{ user_data_epsg }}">
+                                                                                <input type="radio" name="wgs84-download" id="{{ link.name }}-data" value="{{ link.url }}">
                                                                                 {% trans link.name %}
                                                                             </label>
                                                                         </div>
@@ -154,13 +170,30 @@
                                                                             <a href="{{ link.url }}&srsName=EPSG%3A{{ user_data_epsg }}">{% trans link.name %}</a>
                                                                         </li>{% endcomment %}
                                                                     {% endfor %}
-                                                                </ul>
+                                                                {% comment %}</ul>{% endcomment %}
+                                                            {% endif %}
+
+                                                            {% if links_download %}
+                                                                {% comment %}<ul>{% endcomment %}
+                                                                    {% for link in links_download %}
+                                                                        {% comment %}<li>{% endcomment %}
+                                                                        <div class="radio">
+                                                                            <label>
+                                                                                <input type="radio" name="wgs84-download" id="{{ link.name }}-data" value="{{ link.url }}">
+                                                                                {% trans link.name %}
+                                                                            </label>
+                                                                        </div>
+
+                                                                            {% comment %}<a href="{{ link.url }}">{% trans link.name %}</a>{% endcomment %}
+                                                                        {% comment %}</li>{% endcomment %}
+                                                                    {% endfor %}
+                                                                {% comment %}</ul>{% endcomment %}
                                                             {% endif %}
                                                         </div>
 
                                                         {% if user_data_epsg != 'None' and user_data_epsg != "4326" %}
 
-                                                            <h3>Download data format</h3>
+                                                            <h3>Projections</h3>
                                                             <div class="radio">
                                                                 <label>
                                                                     <input type="radio" name="nativeOrwgs84" id="native-data" value="native" checked>
