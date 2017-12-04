@@ -16,12 +16,12 @@
             <p class="text-center">Bounce Rate</p>
         </div>
         <div class="col-md-1">&nbsp;</div>
-        <div class="col-md-2 analytics-box">
+        <div class="col-md-2 analytics-box" data-toggle="modal" data-target=".map-loads-modal" title="Click to get the detail!">
             <h3 class="text-center">{{ map_loads }}</h3>
             <p class="text-center">Map Loads</p>
         </div>
         <div class="col-md-1">&nbsp;</div>
-        <div class="col-md-2 analytics-box">
+        <div class="col-md-2 analytics-box" data-toggle="modal" data-target=".pin-point-activities-modal" title="Click to get the detail!">
             <h3 class="text-center">{{ average_activity_load }}</h3>
             <p class="text-center">Avg. Activities / Load</p>
         </div>
@@ -37,12 +37,12 @@
             <p class="text-center">Avg. Visitor Duration (min)</p>
         </div>
         <div class="col-md-1">&nbsp;</div>
-        <div class="col-md-2 analytics-box">
+        <div class="col-md-2 analytics-box" data-toggle="modal" data-target=".average-layer-load-modal" title="Click to get the detail!">
             <h3 class="text-center">{{ average_layer_load }}</h3>
             <p class="text-center">Avg. Layer Load (sec)</p>
         </div>
         <div class="col-md-1">&nbsp;</div>
-        <div class="col-md-2 analytics-box">
+        <div class="col-md-2 analytics-box" data-toggle="modal" data-target=".pin-point-activities-modal" title="Click to get the detail!">
             <h3 class="text-center">{{ zooms }}</h3>
             <p class="text-center">Zooms</p>
         </div>
@@ -53,6 +53,132 @@
             <div id="container-highchart" style="min-width: 310px; height: 400px; max-width: 600px; margin: 0 auto"></div>
         </div>
     </div>
+
+    <!-- Map loads modal -->
+    <div class="modal fade map-loads-modal" tabindex="-1" role="dialog" aria-labelledby="gridSystemModalLabel">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            <h4 class="modal-title" id="gridSystemModalLabel">Map Loads Details</h4>
+          </div>
+          <div class="modal-body">
+            <div class="row">
+              <div class="col-md-12">
+                  <div class="table-responsive">
+                      <table class="table">
+                        <thead>
+                          <tr>
+                            <th>IP</th>
+                            <th>Map Name</th>
+                            <th>User Name</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                            {% for map_loads_detail in map_loads_details %}
+                              <tr>
+                                <td>{{ map_loads_detail.ip }}</td>
+                                <td>{{ map_loads_detail.map.title }}</td>
+                                <td>{{ map_loads_detail.user.first_name }}</td>
+                              </tr>
+                            {% endfor %}
+                        </tbody>
+                      </table>
+                  </div>
+              </div>
+            </div>
+
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+          </div>
+        </div><!-- /.modal-content -->
+      </div><!-- /.modal-dialog -->
+    </div><!-- /.modal -->
+
+    <!-- Pin point activities modal -->
+    <div class="modal fade pin-point-activities-modal" tabindex="-1" role="dialog" aria-labelledby="gridSystemModalLabel">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            <h4 class="modal-title" id="gridSystemModalLabel">Pin point activities</h4>
+          </div>
+          <div class="modal-body">
+            <div class="row">
+              <div class="col-md-12">
+                  <div class="table-responsive">
+                      <table class="table">
+                        <thead>
+                          <tr>
+                            <th>IP</th>
+                            <th>Activity Type</th>
+                            <th>User Name</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                            {% for activity in pinpoint_activities %}
+                              <tr>
+                                <td>{{ activity.ip }}</td>
+                                <td>{{ activity.activity_type }}</td>
+                                <td>{{ activity.user.first_name }}</td>
+                              </tr>
+                            {% endfor %}
+                        </tbody>
+                      </table>
+                  </div>
+              </div>
+            </div>
+
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+          </div>
+        </div><!-- /.modal-content -->
+      </div><!-- /.modal-dialog -->
+    </div><!-- /.modal -->
+
+    <!-- Average layer loads modal -->
+    <div class="modal fade average-layer-load-modal" tabindex="-1" role="dialog" aria-labelledby="gridSystemModalLabel">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            <h4 class="modal-title" id="gridSystemModalLabel">Layer loads detail</h4>
+          </div>
+          <div class="modal-body">
+            <div class="row">
+              <div class="col-md-12">
+                  <div class="table-responsive">
+                      <table class="table">
+                        <thead>
+                          <tr>
+                            <th>IP</th>
+                            <th>Layer Name</th>
+                            <th>User Name</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                            {% for layer_load in layer_loads %}
+                              <tr>
+                                <td>{{ layer_load.ip }}</td>
+                                <td>{{ layer_load.layer.name }}</td>
+                                <td>{{ layer_load.user.first_name }}</td>
+                              </tr>
+                            {% endfor %}
+                        </tbody>
+                      </table>
+                  </div>
+              </div>
+            </div>
+
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+          </div>
+        </div><!-- /.modal-content -->
+      </div><!-- /.modal-dialog -->
+    </div><!-- /.modal -->
 {% endblock %}
 
 {% block extra_head %}

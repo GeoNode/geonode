@@ -18,18 +18,20 @@ class AnalyticsView(TemplateView):
     def get_context_data(self, **kwargs):
         context = super(AnalyticsView, self).get_context_data(**kwargs)
 
-        map_loads = MapLoad.objects.all().count()
+        map_loads = MapLoad.objects.all()
+        context['map_loads_details'] = map_loads
+        context['map_loads'] = map_loads.count()
 
-        context['map_loads'] = map_loads
+        pinpoint_activities = PinpointUserActivity.objects.all()
+        context['pinpoint_activities'] = pinpoint_activities
+        zooms = float(pinpoint_activities.filter(activity_type__contains='zoom').count())
+        pans = float(pinpoint_activities.filter(activity_type='pan').count())
+        clicks = float(pinpoint_activities.filter(activity_type='click').count())
 
-        zooms = float(PinpointUserActivity.objects.filter(activity_type__contains='zoom').count())
-        pans = float(PinpointUserActivity.objects.filter(activity_type='pan').count())
-        clicks = float(PinpointUserActivity.objects.filter(activity_type='click').count())
-
-        if map_loads == 0:
+        if int(map_loads.count()) == 0:
             average_activity_load = 0
         else:
-            average_activity_load = int((zooms + pans + clicks) / int(map_loads))
+            average_activity_load = int((zooms + pans + clicks) / int(map_loads.count()))
 
         context['average_activity_load'] = average_activity_load
         context['zooms'] = int(zooms)
@@ -67,7 +69,9 @@ class AnalyticsView(TemplateView):
         context['chart_data'] = json.dumps(chart_data)
 
         try:
-            average_layer_load = LayerLoad.objects.all().aggregate(Avg('layer_id'))
+            layer_loads = LayerLoad.objects.all()
+            context['layer_loads'] = layer_loads
+            average_layer_load = layer_loads.aggregate(Avg('layer_id'))
             average_layer_load = round(average_layer_load['layer_id__avg'] / 60, 2)
         except TypeError as e:
             average_layer_load = 0
