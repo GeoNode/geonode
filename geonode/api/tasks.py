@@ -15,12 +15,14 @@ def send_user_download_link(data, request):
         from geonode.groups.models import GroupProfile
         from geonode.layers.models import Layer
         from django.core.mail import send_mail
+        from django.db import connection
         import time
         import hashlib
         import uuid
         import zipfile
         import requests
         import shutil
+        import json
 
         now = time.time()
 
@@ -55,6 +57,29 @@ def send_user_download_link(data, request):
             zfile.write(r.content)
             zfile.close()
             r.close()
+
+            zip_ref = zipfile.ZipFile(download_dir + '/' + l.name + '.zip', 'r')
+            zip_ref.extractall(download_dir + '/' + l.name)
+            zip_ref.close()
+
+            os.remove(download_dir + '/' + l.name + '.zip')
+
+            # dump the content in table_name.json
+            with connection.cursor() as cursor:
+                # cursor.execute("select * from " + str(l.name))
+                cursor.execute("SELECT ROW_TO_JSON(t) FROM (SELECT * FROM "+str(l.name)+") t")
+
+                all_data = cursor.fetchall()
+
+                table_data = json.dumps(all_data)
+                out = open(download_dir + '/' + l.name + '/' + l.name + ".json", "w")
+                out.write(table_data)
+                out.close()
+
+            # saving metadata
+            meta_data = open(download_dir + '/' + l.name + '/' + l.name + "_meta_data.xml", "w")
+            meta_data.write(l.metadata_xml)
+            meta_data.close()
 
         # keep the location of folder with folder_name for zip and create download link
         # download all layers in that folder
