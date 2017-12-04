@@ -47,7 +47,7 @@ class LayerAttributeUploadView(View):
                 obj = model_instance(**row)
                 obj.save()
                 success_count += 1
-            except model_instance.DoesNotExist as ex:
+            except Exception as ex:
                 db_logger.exception(ex)
                 failed_count += 1
         
