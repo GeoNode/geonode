@@ -72,7 +72,7 @@ geonode-dialogos==0.7
 geonode-user-messages==0.1.10
 gisdata==0.5.4
 gsconfig==1.0.8
-gsimporter==1.0.0
+gn-gsimporter==1.0.1
 httplib2==0.10.3
 idna==2.6
 ipaddress==1.0.18
