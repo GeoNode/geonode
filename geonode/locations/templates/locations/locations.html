@@ -6,23 +6,117 @@
 {% block body_outer %}
 
     <h1>Locations: Settings</h1>
-    <table class="table table-striped">
-
-        <tr>
-
-        </tr>
-
-    </table>
+    <div class="row">
+        <div class="col-md-4">Layer Name:</div>
+        <div class="col-md-3">
+            <select name="layer" id="layer">
+            </select>
+        </div>
+        <div class="col-md-3">
+            <select name="attributes" id="attributes">
+            </select>
+        </div>
+        <div class="col-md-2">
+            <button type="button" class="btn btn-primary">Save</button>
+        </div>
+    </div>
+    <br>
+    <div class="row">
+        <div class="col-md-4">Raster Evaluation:</div>
+        <div class="col-md-3">
+            select input
+        </div>
+        <div class="col-md-3">
+            select input
+        </div>
+        <div class="col-md-2">
+            <button type="button" class="btn btn-primary">Save</button>
+        </div>
+    </div>
 
 {% endblock %}
 
 {% block extra_head %}
-    <link href="{{ STATIC_URL }}geonode/css/geoexplorer/analytics.css" rel="stylesheet" />
+    <link href="{{ STATIC_URL }}geonode/css/geoexplorer/analytics.css" rel="stylesheet"/>
 {% endblock %}
 
 {% block extra_script %}
 
     <script>
 
+        var url = '/locations/settings/api/layers/attributes/';
+
+        layers_attributes(data = null, url);
+
+        function layers_attributes(data, url) {
+
+            // using jQuery
+            function getCookie(name) {
+                var cookieValue = null;
+                if (document.cookie && document.cookie !== '') {
+                    var cookies = document.cookie.split(';');
+                    for (var i = 0; i < cookies.length; i++) {
+                        var cookie = jQuery.trim(cookies[i]);
+                        // Does this cookie string begin with the name we want?
+                        if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                            cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                            break;
+                        }
+                    }
+                }
+                return cookieValue;
+            }
+
+            var csrftoken = getCookie('csrftoken');
+
+            function csrfSafeMethod(method) {
+                // these HTTP methods do not require CSRF protection
+                return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
+            }
+
+            $.ajaxSetup({
+                beforeSend: function (xhr, settings) {
+                    if (!csrfSafeMethod(settings.type) && !this.crossDomain) {
+                        xhr.setRequestHeader("X-CSRFToken", csrftoken);
+                    }
+                }
+            });
+
+            $.ajax({
+                url: url,
+                method: 'GET',
+                data: data,
+                dataType: 'json',
+                success: function (data) {
+                    console.log(data);
+                    //console.log(Object.keys(data));
+
+                    $.each(Object.keys(data), function (index, value) {
+                        //alert( index + ": " + value );
+                        $("#layer").append("<option value='" + value + "'>" + value + "</option>");
+                    });
+
+                    $.each(data, function (key, value) {
+
+                        $.each(value, function (index, value) {
+                            $("#attributes").append("<option value='" + key + "'>" + value + "</option>");
+                        });
+
+                    });
+
+                }
+            });
+
+        }
+
+        $("#layer").change(function () {
+            if ($(this).data('options') === undefined) {
+
+                $(this).data('options', $('#attributes option').clone());
+            }
+            var id = $(this).val();
+            var options = $(this).data('options').filter('[value=' + id + ']');
+            $('#attributes').html(options);
+        });
     </script>
 {% endblock %}
