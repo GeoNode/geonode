@@ -82,6 +82,7 @@ geonode/qgis_tiles
 #Testing output
 .coverage
 .noseids
+.cache
 geonode_test_data/
 nosetests.xml
 geonode/static/geonode/junit.xml
