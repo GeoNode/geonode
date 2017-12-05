@@ -103,7 +103,7 @@ pyelasticsearch==0.6.1
 pyflakes==1.6.0
 pyproj==1.9.5.1
 pytest
-pytest-bdd
+pytest-bdd==2.5.0 # latest requires six>=1.11.0
 pytest-splinter
 python-dateutil==2.6.1
 python-gnupg==0.4.1

@@ -213,7 +213,7 @@ setup(name='GeoNode',
           "django-cors-headers",
           "django-multi-email-field",
           "pytest",
-          "pytest-bdd",
+          "pytest-bdd<=2.5.0",  # latest requires six>=1.11.0
           "pytest-splinter",
       ],
       zip_safe=False
