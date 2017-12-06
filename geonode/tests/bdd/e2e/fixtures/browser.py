@@ -41,5 +41,4 @@ def browser(browser, base_url, credentials):
     else:
         browser.visit(base_url)
 
-
-return browser
+    return browser

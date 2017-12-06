@@ -21,9 +21,8 @@
 import os
 
 import pytest
-
-from .fixtures.auth import *
-from .fixtures.browser import *
+from fixtures.auth import *
+from fixtures.browser import *
 
 
 @pytest.fixture(scope='session')
