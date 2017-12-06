@@ -93,6 +93,8 @@ from geonode.groups.models import GroupProfile
 from geonode.layers.models import LayerSubmissionActivity, LayerAuditActivity
 from geonode.base.libraries.decorators import manager_or_member
 from geonode.base.models import KeywordIgnoreListModel
+from django.db import connection
+from osgeo import osr
 
 
 if 'geonode.geoserver' in settings.INSTALLED_APPS:
@@ -554,6 +556,19 @@ def layer_detail(request, layername, template='layers/layer_detail.html'):
         context_dict["social_links"] = build_social_links(request, layer)
 
     context_dict['layer_status'] = layer.status
+    if str(layer.user_data_epsg):
+        with connection.cursor() as cursor:
+            cursor.execute("SELECT srtext FROM spatial_ref_sys WHERE srid = %s", [str(layer.user_data_epsg)])
+
+            all_data = cursor.fetchall()
+        srstext = str(all_data[0][0])
+
+        srs = osr.SpatialReference(wkt=srstext)
+        if srs.IsProjected:
+            print srs.GetAttrValue('projcs')
+        user_proj = srs.GetAttrValue('geogcs')
+
+        context_dict['user_data_proj'] = user_proj
     context_dict["user_data_epsg"] = str(layer.user_data_epsg)
 
     return render_to_response(template, RequestContext(request, context_dict))
