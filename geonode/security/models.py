@@ -250,7 +250,6 @@ class PermissionLevelMixin(object):
 
         remove_object_permissions(self)
 
-        public_access = False
         if 'users' in perm_spec and "AnonymousUser" in perm_spec['users']:
             anonymous_group = Group.objects.get(name='anonymous')
             for perm in perm_spec['users']['AnonymousUser']:
@@ -259,13 +258,6 @@ class PermissionLevelMixin(object):
                     assign_perm(perm, anonymous_group, self.layer)
                 else:
                     assign_perm(perm, anonymous_group, self.get_self_resource())
-
-                # Assign GeoFence Layer Access to unauthenticated users
-                public_access = True
-        if public_access:
-            # if we allow public access to the layer, why also assign user specific permissions?
-            set_data_public_access(self)
-            # return
 
         # TODO refactor code here
         if 'users' in perm_spec:
@@ -282,8 +274,9 @@ class PermissionLevelMixin(object):
                 has_view_perms = ('view_resourcebase' in perms)
                 has_edit_perms = ('change_layer_data' in perms)
                 if user.username.lower() != 'anonymoususer':
-                    # Anonymous access is already given above
                     set_data_acl(self, str(user), view_perms=has_view_perms, edit_perms=has_edit_perms)
+                else:
+                    set_data_acl(self, '*', view_perms=has_view_perms, edit_perms=has_edit_perms)
 
         if 'groups' in perm_spec:
             for group, perms in perm_spec['groups'].items():
@@ -369,7 +362,7 @@ def set_data_acl(instance, name, view_perms=False, edit_perms=False, type='user'
                     data = "{}<service>{}</service>{}".format(payload, service, rule_end)
                     create_geofence_rule(rule=data)
 
-                for type in ['GETCAPABILITIES', 'GETFEATURETYPE', 'DESCRIBEFEATURETYPE', 'GETFEATURE', 'GETGMLOBJECT']:
+                for type in ['GETCAPABILITIES', 'DESCRIBEFEATURETYPE', 'GETFEATURE']:
                     data = "{}<service>WFS</service><request>{}</request>{}".format(payload, type, rule_end)
                     create_geofence_rule(rule=data)
 
