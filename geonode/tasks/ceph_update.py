@@ -211,6 +211,15 @@ def ceph_metadata_update(update_grid=True):
                 cephobj_resbase.save()
 
                 objects_inserted += 1
+            except MultipleObjectsReturned:
+                cephobj_dup = CephDataObject.objects.filter(name=metadata_list[0])
+                for ndup in range(len(cephobj_dup)):
+                    if ndup==0:
+                        continue
+                    else:
+                        cephobj_dup[ndup].delete()
+                    
+                
             if ceph_obj is not None:
                 # Construct dict of gridrefs to update
                 if DataClassification.gs_feature_labels[ceph_obj.data_class] in gridref_dict_by_data_class:
