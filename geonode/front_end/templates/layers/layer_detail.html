@@ -121,9 +121,9 @@
                                                             id="myModalLabel">{% trans "Download Layer..." %}</h4>
                                                     </div>
                                                     <div class="modal-body">
-                                                        <h2>Download data format</h2>
+                                                        <h2>Data format</h2>
                                                         <div class="native">
-                                                            <h3>Native data</h3>
+
                                                             {% if links %}
 {#                                                                <ul>#}
                                                                     {% for link in links %}
@@ -156,7 +156,7 @@
                                                             {% endif %}
                                                         </div>
                                                         <div class="wgs84">
-                                                            <h3>WGS 84</h3>
+
                                                             {% if links %}
                                                                 <ul>
                                                                     {% for link in links %}
@@ -197,7 +197,10 @@
                                                             <div class="radio">
                                                                 <label>
                                                                     <input type="radio" name="nativeOrwgs84" id="native-data" value="native" checked>
-                                                                    Native
+                                                                    {% comment %}Native{% endcomment %}
+                                                                    {% if user_data_proj %}
+                                                                    {{ user_data_proj }}
+                                                                    {% endif %}
                                                                 </label>
                                                             </div>
                                                             <div class="radio">
@@ -1030,6 +1033,9 @@
             }
         });
 
-
+    $(".panel-left").resizable({
+       handleSelector: ".splitter",
+       resizeHeight: false
+     });
     </script>
 {% endblock extra_script %}
