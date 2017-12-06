@@ -7,7 +7,7 @@ from celery.task import task
 from geonode.geoserver.helpers import gs_slurp
 from geonode.cephgeo.models import CephDataObject, DataClassification
 from geonode.cephgeo.gsquery import nested_grid_update
-from django.core.exceptions import ObjectDoesNotExist
+from django.core.exceptions import ObjectDoesNotExist, MultipleObjectsReturned
 from celery.utils.log import get_task_logger
 import geonode.settings as settings
 from geonode.cephgeo.utils import get_data_class_from_filename
