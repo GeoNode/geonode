@@ -557,7 +557,7 @@ def layer_detail(request, layername, template='layers/layer_detail.html'):
     if settings.SOCIAL_ORIGINS:
         context_dict["social_links"] = build_social_links(request, layer)
 
-    if str(layer.user_data_epsg):
+    if str(layer.user_data_epsg) != 'None':
         with connection.cursor() as cursor:
             cursor.execute("SELECT srtext FROM spatial_ref_sys WHERE srid = %s", [str(layer.user_data_epsg)])
 
