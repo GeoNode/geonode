@@ -1,5 +1,6 @@
 {% extends 'site_base.html' %}
 {% load i18n %}
+{% load jsonify %}
 
 {% block title %}{% trans "Member Workspace" %}{% endblock %}
 
@@ -43,6 +44,7 @@
                                     <th>Layer Title</th>
                                     <th>Organization</th>
                                     <th>Layer Creation Date</th>
+                                    <th>Message</th>
                                 </tr>
                             </thead>
 
@@ -51,6 +53,8 @@
                                 </tbody>
                                 <!--<div id="showallMemberDraftlayerspag"></div>-->
                             <!--{% for draft in draft_list %}-->
+
+
                                 <!--<tbody showallMemberDraftlayers>-->
                                     <!--<tr>-->
                                         <!--<td>{{ forloop.counter}}</td>-->
@@ -81,6 +85,7 @@
                                     <th>Layer Title</th>
                                     <th>Organization</th>
                                     <th>Request Date</th>
+                                    <th>Message</th>
                                 </tr>
                             </thead>
                             <!--{% for pending in pending_list %}-->
@@ -111,6 +116,7 @@
                                     <th>Organization</th>
                                     <th>Who Denied</th>
                                     <th>Deny Date</th>
+                                    <th>Message</th>
                                 </tr>
                             </thead>
                             <!--{% for denied in denied_list %}-->
@@ -143,6 +149,7 @@
                                     <th>Organization</th>
                                     <th>Activator</th>
                                     <th>Activation Date</th>
+                                    <th>Message</th>
                                     <th>Layer Edit</th>
                                 </tr>
                             </thead>
@@ -224,6 +231,7 @@ $(function () {
                     var output='';
                     var outputpag='';
                   var offset = meta.offset;
+                  var draft_list_messages_json = jQuery.parseJSON('{% jsonify draft_list_messages %}');
                   $.each(data, function(i, item) {
                     offset = offset + 1;
                     output+='<tr>';
@@ -231,6 +239,12 @@ $(function () {
                     output+='<td><a href='+ item.detail_url +'>'+ item.title+'</a></td>';
                     output+='<td>'+ item.group +'</td>';
                     output+='<td>'+ item.date_created +'</td>';
+                    if(draft_list_messages_json[item.id] != "Completed"){
+                         output+='<td style="color: #EC971F;">'+ draft_list_messages_json[item.id] +'</td>';
+                    }else{
+                        output+='<td>'+ draft_list_messages_json[item.id] +'</td>';
+                    }
+
                     output+='<td><a href="'+ item.detail_url +'?user_role=member" class="btn btn-gd-primary"> {% trans "Continue for Approval" %}</a></td>';
                     output+='<td>';
                     output+='<button type="button" class="btn btn-gd-primary" onclick="deleteLayer('+ item.id +')" style="color:#fff;">{% trans "Delete Map" %}</button> <br>';
@@ -281,6 +295,7 @@ $(function () {
                 var url = targeturl;
             }
             //var url = "{% url 'api_dispatch_list' api_name='api' resource_name='group_activity' %}?limit="+ Plimit +"&group={{ object.slug }}";
+            var pending_list_messages_json = jQuery.parseJSON('{% jsonify pending_list_messages %}');
                 $.ajax({
                     cache: true,
                     type: 'GET',
@@ -311,6 +326,11 @@ $(function () {
                     output+='<td><a href="'+ item.detail_url +'">'+ item.title+'</a></td>';
                     output+='<td>'+ item.group +'</td>';
                     output+='<td>'+ item.date_updated +'</td>';
+                    if(pending_list_messages_json[item.id] != "Completed"){
+                         output+='<td style="color: #EC971F;">'+ pending_list_messages_json[item.id] +'</td>';
+                    }else{
+                        output+='<td>'+ pending_list_messages_json[item.id] +'</td>';
+                    }
                     output+='</tr>';
                   });
                   outputpag+='<div>';
@@ -359,6 +379,7 @@ $(function () {
                 var url = targeturl;
             }
             //var url = "{% url 'api_dispatch_list' api_name='api' resource_name='group_activity' %}?limit="+ Plimit +"&group={{ object.slug }}";
+            var denied_list_messages_json = jQuery.parseJSON('{% jsonify denied_list_messages %}');
                 $.ajax({
                     cache: true,
                     type: 'GET',
@@ -388,6 +409,11 @@ $(function () {
                     output+='<td>'+ item.group +'</td>';
                     output+='<td>'+ item.last_auditor +'</td>';
                     output+='<td>'+ item.date_updated +'</td>';
+                    if(denied_list_messages_json[item.id] != "Completed"){
+                         output+='<td style="color: #EC971F;">'+ denied_list_messages_json[item.id] +'</td>';
+                    }else{
+                        output+='<td>'+ denied_list_messages_json[item.id] +'</td>';
+                    }
                     output+='<td><a href="'+ item.detail_url +'?user_role=member" class="btn btn-gd-primary"> {% trans "Edit and Push Again" %}</a></td>';
                     output+='</tr>';
                   });
@@ -438,6 +464,7 @@ $(function () {
                 var url = targeturl;
             }
             //var url = "{% url 'api_dispatch_list' api_name='api' resource_name='group_activity' %}?limit="+ Plimit +"&group={{ object.slug }}";
+            var active_list_messages_json = jQuery.parseJSON('{% jsonify active_list_messages %}');
                 $.ajax({
                     cache: true,
                     type: 'GET',
@@ -467,6 +494,11 @@ $(function () {
                     output+='<td>'+ item.group +'</td>';
                     output+='<td>'+ item.last_auditor +'</td>';
                     output+='<td>'+ item.date_updated +'</td>';
+                    if(active_list_messages_json[item.id] != "Completed"){
+                         output+='<td style="color: #EC971F;">'+ active_list_messages_json[item.id] +'</td>';
+                    }else{
+                        output+='<td>'+ active_list_messages_json[item.id] +'</td>';
+                    }
                     output+='<td><a href="'+ item.detail_url +'?user_role=member" class="btn btn-gd-primary"> {% trans "Edit" %}</a></td>';
                     output+='</tr>';
                   });
