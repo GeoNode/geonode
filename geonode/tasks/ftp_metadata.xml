@@ -220,4 +220,43 @@
        </gmd:lineage>
      </gmd:DQ_DataQuality>
    </gmd:dataQualityInfo>
+   <gmd:acquisitionInformation>
+     <gmd:MI_AcquisitionInformation>
+       <gmd:operation>
+         <gmd:MI_Operation>
+           <gmd:blockName %(BlockName)
+           </gmd:blockName>
+           <gmd:processor %(Processor)
+           </gmd:processor>
+           <gmd:sensor %(Sensor)
+           </gmd:sensor>
+           <gmd:baseUsed %(Base)
+           </gmd:baseUsed>
+           <gmd:flightNum %(FlightNum)
+           </gmd:flightNum>
+           <gmd:missionName %(MissionName)
+           </gmd:missionName>
+           <gmd:dateFlown %(DateFlown)
+           </gmd:dateFlown>
+           <gmd:xshift %(Xshift)
+           </gmd:xshift>
+           <gmd:yshift %(Yshift)
+           </gmd:yshift>
+           <gmd:zshift %(Zshift)
+           </gmd:zshift>
+           <gmd:heightDifference %(HeightDif)
+           </gmd:heightDifference>
+           <gmd:rmseValue %(RMSEVal)
+           </gmd:rmseValue>
+           <gmd:calibrationReferencePoint %(CalRefPt)
+           </gmd:calibrationReferencePoint>
+           <gmd:validationReferencePoint %(ValRefPt)
+           </gmd:validationReferencePoint>
+           <gmd:floodplain %(Floodplain)
+           </gmd:floodplain>
+         </gmd:MI_Operation>
+       </gmd:operation>
+     </gmd:MI_AcquisitionInformation>
+   </gmd:acquisitionInformation>
+     <gmd
  </gmd:MD_Metadata>
