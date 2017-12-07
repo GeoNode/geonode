@@ -17,6 +17,7 @@ from geonode.layers.models import LayerSubmissionActivity, LayerAuditActivity
 from geonode.people.models import Profile
 from geonode.groups.models import GroupProfile, GroupMember
 from geonode import settings
+from .utils import prepare_messages
 
 
 class MemberWorkspaceLayer(ListView):
@@ -35,6 +36,12 @@ class MemberWorkspaceLayer(ListView):
         context['pending_list'] = Layer.objects.filter(owner=self.request.user, status='PENDING').order_by('date_updated')  # [:15]
         context['denied_list'] = Layer.objects.filter(owner=self.request.user, status='DENIED').order_by('date_updated')
         context['active_list'] = Layer.objects.filter(owner=self.request.user, status='ACTIVE').order_by('date_updated')
+
+        context['draft_list_messages'] = prepare_messages(context['draft_list'])
+        context['pending_list_messages'] = prepare_messages(context['pending_list'])
+        context['denied_list_messages'] = prepare_messages(context['denied_list'])
+        context['active_list_messages'] = prepare_messages(context['active_list'])
+
         return context
 
 

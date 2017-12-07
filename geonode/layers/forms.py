@@ -65,7 +65,8 @@ class LayerForm(ResourceBaseForm):
             'service',
             'status',
             # 'group',
-            'last_auditor'
+            'last_auditor',
+            'user_data_epsg'
         )
 
 
