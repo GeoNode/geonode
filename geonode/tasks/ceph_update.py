@@ -80,7 +80,7 @@ def ceph_metadata_update(update_grid=True):
     except AutomationJob.DoesNotExist:
         logger.error('Nothing to upload in Ceph Data Object Resourcebase.')
         return
-
+    print job.id
     # uploaded_objects_list = transform_log_to_list(job.ceph_upload_log)
     uploaded_objects_list = smart_str(job.ceph_upload_log).splitlines()
 
