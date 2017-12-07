@@ -17,23 +17,3 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
-
-import os
-
-import pytest
-from geonode.tests.bdd import __file__ as bdd_path
-
-
-@pytest.fixture(scope='session')
-def pytestbdd_selenium_speed():
-    return 0.5
-
-
-@pytest.fixture
-def pytestbdd_feature_base_dir():
-    """Feature files base directory."""
-
-    return os.path.join(
-        os.path.dirname(bdd_path),
-        'features'
-    )
