@@ -19,23 +19,19 @@
 #########################################################################
 
 """User can login using authentication feature tests."""
-# from functools import partial
 from urlparse import urljoin
 
 from geonode import settings
 from pytest_bdd import given, scenario, then, when
-from splinter import browser
-
-# scenario = partial(scenario, '../login.feature')
 
 
-# @scenario('features/login.feature', 'User can access login page')
-# def test_user_can_access_login_page():
-#     """User can access login page."""
-#     pass
+@scenario('login.feature', 'User can access login page')
+def test_user_can_access_login_page():
+    """User can access login page."""
+    pass
 
 
-@scenario('features/login.feature', 'Admin user')
+@scenario('login.feature', 'Admin user')
 def test_admin_user():
     """Admin user."""
     pass
