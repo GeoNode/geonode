@@ -3335,6 +3335,17 @@ ul.termsuseandcondition li {
     display:none;
 }
 
+.modal-dialog{
+width: 100%;
+}
+#SigninModal .modal-dialog
+{
+    width: 600px;
+}
+#SignupModal .modal-dialog
+{
+    width: 600px;
+}
 /***********Sharif Start*****************/
 ul.resources-summery li .btn .fa
 {

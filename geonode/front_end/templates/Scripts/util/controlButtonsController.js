@@ -68,7 +68,9 @@
                     controller: 'catalogBrowserController',
                     backdrop: 'static',
                     keyboard: false,
-                    windowClass: 'fullScreenModal'
+                    windowClass: 'fullScreenModal First',
+                    windowTopClass : 'Second',
+                    openedClass : 'Third'
                 });
             };
 
@@ -169,7 +171,10 @@
                     controller: 'printPreviewController',
                     backdrop: 'static',
                     keyboard: false,
-                    windowClass: 'fullScreenModal printPreviewModal'
+                    windowClass: 'fullScreenModal First',
+                    windowTopClass : 'Second',
+                    openedClass : 'Third'
+                    // windowClass: 'fullScreenModal printPreviewModal'
                 });
 
                 moveShape();
@@ -200,7 +205,10 @@
                 controller: 'projectBrowserController',
                 backdrop: 'static',
                 keyboard: false,
-                windowClass: 'fullScreenModal',
+                // windowClass: 'fullScreenModal',
+                windowClass: 'fullScreenModal First',
+                windowTopClass : 'Second',
+                openedClass : 'Third',
                 resolve: {
                     showProjectNameInput: function() {
                         return openForSave || false;
@@ -215,6 +223,9 @@
                 controller: 'OverpassApiQueryBuilderController',
                 backdrop: 'static',
                 keyboard: false,
+                windowClass: 'fullScreenModal First',
+                windowTopClass : 'Second',
+                openedClass : 'Third'
                 // windowClass: 'fullScreenModal'
             });
         }

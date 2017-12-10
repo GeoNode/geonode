@@ -1,4 +1,4 @@
-<div class="MainBodyContainer catalog-browser" data-ng-init="fetchData()" style="height: 100%; width: 100%;">
+<div class="catalog-browser" data-ng-init="fetchData()" style="height: 10%; width: 100%;">
     <div class="file-browser-button-container draggable-div">
         <i class="fa fa-times-circle modal-close-icon" style="float: right; cursor: pointer" ng-click="closeDialog()"></i>
         <div style="float: left;">
@@ -31,22 +31,36 @@
         </div>
 
     </div>
-    <div>
+    
+    <div class="container-fluid">
+    <div class="row">
+        <div class="col-md-3">
         <div class="folder-list">
             <ul>
                 <li data-ng-repeat="server in serverList" data-ng-class="{'folder-selected':server.name == selectedServerName}" data-ng-click="loadLayers(server)"><span><i class="fa fa-chevron-circle-right"></i>
                     [{server.name}]</span> </li>
             </ul>
         </div>
+        </div>
+
+        <div class="col-md-6">
         <div class="file-container">
             <ul>
                 <li ng-repeat="layer in layers" ng-dblclick="addLayer(layer)">[{layer.Name}]</li>
             </ul>
         </div>
+    </div>
+
+    <div class="col-md-3">
         <div class="file-properties">
             <ng-include ng-if="!!selectedFile.Name" src="templates.properties"></ng-include>
             <div class="clearer">
             </div>
         </div>
     </div>
+
+    </div>
+
+    </div>
+
 </div>
