@@ -326,7 +326,9 @@ def set_data_public_access(instance):
             payload += "<layer>{}</layer></rule>".format(resource.layer.name)
 
         if not rule_exist:
-            create_geofence_rule(payload)
+            geofence_rule = create_geofence_rule(payload)
+            if geofence_rule is not None:
+                invalidate_geofence_cache()
 
 
 def set_data_acl(instance, name, view_perms=False, edit_perms=False, type='user'):
@@ -353,23 +355,36 @@ def set_data_acl(instance, name, view_perms=False, edit_perms=False, type='user'
                 payload += "<rolename>ROLE_{}</rolename>".format(name.upper())
             rule_end = "</rule>"
 
+        rule_created = False
+
         if view_perms and edit_perms:
             data = "{}{}".format(payload, rule_end)
-            create_geofence_rule(rule=data)
+            geofence_rule = create_geofence_rule(rule=data)
+            if geofence_rule:
+                rule_created = True
         else:
             if view_perms:
                 for service in ['WMS', 'GWC', 'WCS']:
                     data = "{}<service>{}</service>{}".format(payload, service, rule_end)
-                    create_geofence_rule(rule=data)
+                    geofence_rule = create_geofence_rule(rule=data)
+                    if geofence_rule:
+                        rule_created = True
 
                 for type in ['GETCAPABILITIES', 'DESCRIBEFEATURETYPE', 'GETFEATURE']:
                     data = "{}<service>WFS</service><request>{}</request>{}".format(payload, type, rule_end)
-                    create_geofence_rule(rule=data)
+                    geofence_rule = create_geofence_rule(rule=data)
+                    if geofence_rule:
+                        rule_created = True
 
             if edit_perms:
                 for service in ['WMS', 'GWC', 'WCS', 'WFS', 'WPS']:
                     data = "{}<service>{}</service>{}".format(payload, service, rule_end)
-                    create_geofence_rule(rule=data)
+                    geofence_rule = create_geofence_rule(rule=data)
+                    if geofence_rule:
+                        rule_created = True
+
+        if rule_created:
+            invalidate_geofence_cache()
 
 
 def set_owner_permissions(resource):
@@ -396,12 +411,19 @@ def remove_object_permissions(instance):
 
     if hasattr(resource, "layer"):
         rules = get_geofence_rules(workspace=resource.layer.workspace, layer=resource.layer.name)
+        rule_deleted = False
+
         for rule in rules:
             if 'layer' in rule and rule['layer'] == resource.layer.name:
                 if '@id' in rule:
-                    delete_geofence_rule(rule['@id'])
+                    if delete_geofence_rule(rule['@id']):
+                        rule_deleted = True
                 else:
-                    delete_geofence_rule(rule['id'])
+                    if delete_geofence_rule(rule['id']):
+                        rule_deleted = True
+
+        if rule_deleted:
+            invalidate_geofence_cache()
 
         try:
             UserObjectPermission.objects.filter(content_type=ContentType.objects.get_for_model(resource.layer),
@@ -564,3 +586,23 @@ def delete_geofence_rule(id):
     else:
         logger.warning("Could not delete rule from GeoFence {}".format(id))
     return None
+
+
+def invalidate_geofence_cache():
+    """
+    invalidate GeoFence Cache Rules
+    """
+
+    url = "{}/rest/ruleCache/invalidate".format(settings.OGC_SERVER['default']['LOCATION'].strip('/'))
+    resp = http_request(
+        url,
+        method='put'
+    )
+
+    logger.debug("Invalidating GeoFence cache at {}".format(url))
+    if resp.status_code in (200, 201):
+        return True
+    else:
+        logger.error("Failed to invalidate GeoFence cache")
+        logger.debug("GeoFence error url: {} code: {} error: {}".format(url, resp.status_code, resp.content))
+        return False
