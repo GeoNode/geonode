@@ -36,6 +36,14 @@
                     self.attributeDetails.push(obj);
                 });
                 self.gridOptions.data = self.attributeDetails;
+
+                self.gridOptions.columnDefs = [];
+                self.propertyNames.forEach(e => {
+                    self.gridOptions.columnDefs.push({
+                        field: e,
+                        displayName: e
+                    });
+                });
                 $('#attribute_view_left').hide();
             }, errorFn);
         }
@@ -61,6 +69,7 @@
         }
 
         function getGeoServerSettings() {
+            self.propertyNames = [];
             LayerService.getGeoServerSettings()
                 .then(function (res) {
                     self.geoServerUrl = res.url;
@@ -95,7 +104,6 @@
         };
         self.file.onSuccessItem = function (item, response, status, headers) {
             self.isSuccess = true;
-            console.log(response);
             self.Message.Success = "Updated " + response.success + " items.";
         };
 
