@@ -17,7 +17,7 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
-
+import logging
 try:
     import json
 except ImportError:
@@ -26,6 +26,8 @@ from django.http import HttpResponse
 
 from geonode.geoserver.helpers import ogc_server_settings
 from geonode.security.views import _perms_info_json
+
+db_logger = logging.getLogger('db')
 
 
 class PrintProxyMiddleware(object):
@@ -56,3 +58,16 @@ def print_map(request):
             layer_obj.set_permissions(json.loads(permissions[layer_obj]))
 
     return resp
+
+
+class ExceptionHandlerMiddleware(object):
+    """
+    Middleware for unhandled exceptions
+    """
+
+    def process_exception(self, request, exception):
+        if request.user:
+            db_logger.name = request.user.name_long
+        
+        db_logger.exception(exception)
+        return None
