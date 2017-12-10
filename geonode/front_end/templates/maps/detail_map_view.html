@@ -54,7 +54,7 @@
 <script src="{{ STATIC_URL }}Scripts/lib/Classifier/ColorPaletteDirective.js"></script>
 <script src="{{ STATIC_URL }}Scripts/lib/underscore.js"></script>
 <script src="{{ STATIC_URL }}Scripts/lib/angular-file-upload.min.js"></script>
-<script src="{{ STATIC_URL }}Scripts/lib/ui-bootstrap-tpls-0.6.0.min.js"></script>
+<script src="{{ STATIC_URL }}Scripts/lib/ui-bootstrap-tpls-0.9.0.min.js"></script>
 <script src="{{ STATIC_URL }}Scripts/lib/jantrik/Jantrik.GIS.js"></script>
 <script src="{{ STATIC_URL }}Scripts/lib/jantrik/Jantrik.gradientGenerator.js"></script>
 <script src="{{ STATIC_URL }}Scripts/lib/csvParser.js"></script>
@@ -321,7 +321,7 @@
                                                <set-marker></set-marker>
                                            </li>
                                            <li>
-                                            <button ng-click="action.drawCircle()">Draw Circle</button>
+                                            <button class="control-button icon" ng-click="action.drawCircle()">Draw Circle</button>
                                         </li>
                                            <li class="divider-vertical" draft-only></li>
                                            <li draft-only>
