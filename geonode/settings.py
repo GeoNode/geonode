@@ -546,7 +546,8 @@ MIDDLEWARE_CLASSES = (
     'oauth2_provider.middleware.OAuth2TokenMiddleware',
     # Middleware class for social auth
     'social.apps.django_app.middleware.SocialAuthExceptionMiddleware',
-
+    'geonode.middleware.ExceptionHandlerMiddleware',
+    
 
 )
 
