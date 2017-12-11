@@ -369,6 +369,8 @@ INSTALLED_APPS = (
     'guardian',
     'oauth2_provider',
     'corsheaders',
+
+    'invitations',
 ) + GEONODE_APPS
 
 MONITORING_ENABLED = False
