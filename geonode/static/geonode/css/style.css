@@ -3345,3 +3345,15 @@ ul.termsuseandcondition li {
 .shownextdata{
     display:none;
 }
+
+.modal-dialog{
+width: 100%;
+}
+#SigninModal .modal-dialog
+{
+    width: 600px;
+}
+#SignupModal .modal-dialog
+{
+    width: 600px;
+}

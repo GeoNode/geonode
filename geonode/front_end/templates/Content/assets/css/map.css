@@ -214,3 +214,162 @@
     .property-grid-overlay-closer:after {
         content: "✖";
     }
+
+    .fullScreenModal {
+        height: 80%;
+        left: 0;
+        margin: 0 auto;
+        width: 80%;
+    }
+    .modal .header {
+        background-color: #f3f3f3;
+        border-bottom: 1px solid #d0d0d0;
+        box-shadow: 0 1px 5px 0 rgba(0, 0, 0, 0.18);
+        display: block;
+        font-size: 14px;
+        margin: -15px;
+        padding: 10px;
+        vertical-align: bottom;
+    }
+    .file-browser-button-container button {
+        background: rgba(0, 0, 0, 0) linear-gradient(to bottom, rgb(253, 253, 253) 0%, rgb(160, 160, 160) 100%) repeat scroll 0 0;
+        border: 1px solid #414141;
+        border-radius: 4px;
+        box-shadow: 0 2px 2px 0 rgb(187, 187, 187);
+        color: #333;
+        cursor: pointer;
+        font-size: 15px;
+        height: 55px;
+        padding: 10px;
+    }
+    .file-browser-button-container button:hover {
+        background: rgba(0, 0, 0, 0) linear-gradient(to bottom, rgb(209, 209, 209) 0%, rgb(140, 140, 140) 100%) repeat scroll 0 0;
+        color: #fff;
+    }
+    .file-browser-button-container button:hover i {
+        color: #c61c20;
+    }
+    .file-browser-button-container button i {
+        color: #538590;
+        display: block;
+        font-size: 20px;
+    }
+    .file-browser-button-container button[disabled="disabled"] {
+        background: #b5b5b5 none repeat scroll 0 0;
+        border: 1px solid #9b9b9b;
+        color: #8a8a8a;
+    }
+    .file-browser-button-container button[disabled="disabled"] i {
+        color: #8a8a8a;
+    }
+    .file-browser-button-container {
+        background: rgba(0, 0, 0, 0) linear-gradient(to bottom, rgb(190, 190, 190) 0%, rgb(141, 141, 141) 100%) repeat scroll 0 0;
+        border-bottom: 1px solid #505050;
+        border-top-left-radius: 8px;
+        border-top-right-radius: 8px;
+        padding: 10px;
+    }
+    .MainBodyContainer button, .MainBodyContainer .header {
+        font-family: RobotoRegular,"Trebuchet MS",Verdana,Helvetica,sans-serif;
+    }
+    .MainBodyContainer {
+        background-color: #f0f0f0;
+        border: 1px solid #e2e2e2;
+        border-radius: 10px;
+        box-shadow: 0 0 5px 0 rgba(0, 0, 0, 0.54);
+        box-sizing: border-box;
+        overflow: hidden;
+        /* position: relative; */
+    }
+    .file-browser-button-container, .folder-list, .file-container, .file-properties, .fSaveContainer {
+        box-sizing: border-box;
+    }
+    .file-browser-button-container {
+        cursor: pointer;
+        height: 75px;
+        left: 0;
+        right: 0;
+        top: 0;
+    }
+    .folder-list {
+
+        box-shadow: 0 1px 5px 0 rgba(0, 0, 0, 0.18);
+        margin:0 -15px;
+    }
+    .folder-list ul {
+        box-shadow: 0 1px 5px 0 rgba(0, 0, 0, 0.18);
+        margin: 0;
+        padding: 0;
+    }
+    .folder-list li.folder-selected {
+    background-color: green;
+    }
+    .folder-list li.folder-selected span {
+
+            color: #fff;
+        }
+        .folder-list li.folder-selected span i{
+            
+                        color: rgb(252, 248, 4);
+                    }
+    .folder-list li {
+        cursor: pointer;
+        display: block;
+        margin-bottom: 1px;
+        padding: 5px;
+    }
+    .folder-list li {
+        list-style-type: none;
+    }
+    .file-properties {
+        bottom: 0;
+        box-shadow: 0 1px 5px 0 rgba(0, 0, 0, 0.18);
+        right: 0;
+        top: 75px;
+        width: 200px;
+    }
+    .file-container {
+        margin: 0 -15px;
+        overflow: auto;
+        padding: 20px;
+        background-color: #f0f0f0;
+    }
+    .file-container ul{
+        list-style-type: none;
+    }
+    .catalog-browser .file-container {
+        bottom: 0;
+    }
+    .fSaveContainer {
+        bottom: 0;
+        height: 65px;
+        left: 200px;
+        right: 200px;
+    }
+    .fullScreenModal {
+        height: 80%;
+        left: 0;
+        margin: 0 auto;
+        position: absolutefullScreenModal;
+        width: 70%;
+    }
+    .attributeGridModal {
+        left: 0;
+        margin: 0 auto;
+        position: relative;
+        width: 80%;
+    }
+    .crossSectionGraphModal {
+        left: 0;
+        margin: 0 auto;
+        position: relative;
+        width: 630px;
+    }
+    .modal.fade.in.crossSectionGraphModal {
+        top: 60px;
+    }
+    .properties-modal
+    {
+         width: 600px;
+         margin: 0 auto;
+    }
