@@ -289,8 +289,9 @@ def fixup_style(cat, resource, style):
             else:
                 sld = style.read()
             logger.info("Creating style [%s]", name)
-            style = cat.create_style(name, sld, overwrite=True, raw=True)
-            lyr.default_style = cat.get_style(name)
+            style = cat.create_style(name, sld, overwrite=True, raw=True, workspace=settings.DEFAULT_WORKSPACE)
+            style = cat.get_style(name, workspace=settings.DEFAULT_WORKSPACE) or cat.get_style(name)
+            lyr.default_style = style
             logger.info("Saving changes to %s", lyr)
             cat.save(lyr)
 
@@ -832,7 +833,8 @@ def set_styles(layer, gs_catalog):
     if gs_layer.default_style:
         default_style = gs_layer.default_style
     else:
-        default_style = gs_catalog.get_style(layer.name)
+        default_style = gs_catalog.get_style(layer.name, workspace=settings.DEFAULT_WORKSPACE) \
+                        or gs_catalog.get_style(layer.name)
         try:
             gs_layer.default_style = default_style
             gs_catalog.save(gs_layer)
@@ -859,10 +861,14 @@ def set_styles(layer, gs_catalog):
 
 def save_style(gs_style):
     style, created = Style.objects.get_or_create(name=gs_style.name)
-    style.sld_title = gs_style.sld_title
-    style.sld_body = gs_style.sld_body
-    style.sld_url = gs_style.body_href
-    style.save()
+    try:
+        style.sld_title = gs_style.sld_title
+    except:
+        style.sld_title = gs_style.name
+    finally:
+        style.sld_body = gs_style.sld_body
+        style.sld_url = gs_style.body_href
+        style.save()
     return style
 
 
@@ -1271,7 +1277,7 @@ def geoserver_upload(
     style = None
     if sld is not None:
         try:
-            style = cat.get_style(name)
+            style = cat.get_style(name, workspace=settings.DEFAULT_WORKSPACE) or cat.get_style(name)
             overwrite = style or False
             cat.create_style(name, sld, overwrite=overwrite, raw=True)
         except geoserver.catalog.ConflictingDataError as e:
@@ -1287,22 +1293,26 @@ def geoserver_upload(
 
         if style is None:
             try:
-                style = cat.get_style(name)
+                style = cat.get_style(name, workspace=settings.DEFAULT_WORKSPACE) or cat.get_style(name)
                 overwrite = style or False
                 cat.create_style(name, sld, overwrite=overwrite, raw=True)
             except:
                 try:
-                    style = cat.get_style(name + '_layer')
+                    style = cat.get_style(name + '_layer', workspace=settings.DEFAULT_WORKSPACE) or \
+                            cat.get_style(name + '_layer')
                     overwrite = style or False
-                    cat.create_style(name + '_layer', sld, overwrite=overwrite, raw=True)
-                    style = cat.get_style(name + '_layer')
+                    cat.create_style(name + '_layer', sld, overwrite=overwrite, raw=True,
+                                     workspace=settings.DEFAULT_WORKSPACE)
+                    style = cat.get_style(name + '_layer', workspace=settings.DEFAULT_WORKSPACE) or \
+                        cat.get_style(name + '_layer')
                 except geoserver.catalog.ConflictingDataError as e:
                     msg = ('There was already a style named %s in GeoServer, '
                            'cannot overwrite: "%s"' % (name, str(e)))
                     logger.warn(msg)
                     e.args = (msg,)
 
-                style = cat.get_style(name + "_layer")
+                style = cat.get_style(name + "_layer", workspace=settings.DEFAULT_WORKSPACE) or \
+                    cat.get_style(name + "_layer")
                 if style is None:
                     style = cat.get_style('point')
                     msg = ('Could not find any suitable style in GeoServer '

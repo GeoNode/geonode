@@ -220,8 +220,9 @@ def layer_upload(request, template='upload/layer_upload.html'):
                     layer = cat.get_layer(title)
                     if match is None:
                         try:
-                            cat.create_style(saved_layer.name, sld, raw=True)
-                            style = cat.get_style(saved_layer.name)
+                            cat.create_style(saved_layer.name, sld, raw=True, workspace=settings.DEFAULT_WORKSPACE)
+                            style = cat.get_style(saved_layer.name, workspace=settings.DEFAULT_WORKSPACE) or \
+                                cat.get_style(saved_layer.name)
                             if layer and style:
                                 layer.default_style = style
                                 cat.save(layer)
@@ -229,11 +230,14 @@ def layer_upload(request, template='upload/layer_upload.html'):
                         except Exception as e:
                             logger.exception(e)
                     else:
-                        style = cat.get_style(saved_layer.name)
+                        style = cat.get_style(saved_layer.name, workspace=settings.DEFAULT_WORKSPACE) or \
+                            cat.get_style(saved_layer.name)
                         # style.update_body(sld)
                         try:
-                            cat.create_style(saved_layer.name, sld, overwrite=True, raw=True)
-                            style = cat.get_style(saved_layer.name)
+                            cat.create_style(saved_layer.name, sld, overwrite=True, raw=True,
+                                             workspace=settings.DEFAULT_WORKSPACE)
+                            style = cat.get_style(saved_layer.name, workspace=settings.DEFAULT_WORKSPACE) or \
+                                cat.get_style(saved_layer.name)
                             if layer and style:
                                 layer.default_style = style
                                 cat.save(layer)
@@ -366,6 +370,7 @@ def layer_detail(request, layername, template='layers/layer_detail.html'):
 
     granules = None
     all_granules = None
+    all_times = None
     filter = None
     if layer.is_mosaic:
         try:
@@ -394,6 +399,25 @@ def layer_detail(request, layername, template='layers/layer_detail.html'):
             granules = {"features": []}
             all_granules = {"features": []}
 
+    if 'geonode.geoserver' in settings.INSTALLED_APPS:
+        from geonode.geoserver.views import get_capabilities
+        if layer.has_time:
+            wms_capabilities_resp = get_capabilities(request, layer.id)
+            if wms_capabilities_resp.status_code >= 200 and wms_capabilities_resp.status_code < 400:
+                wms_capabilities = wms_capabilities_resp.getvalue()
+                if wms_capabilities:
+                    import xml.etree.ElementTree as ET
+                    e = ET.fromstring(wms_capabilities)
+                    for atype in e.findall('Capability/Layer/Layer/Extent'):
+                        dim_name = atype.get('name')
+                        if dim_name:
+                            dim_name = str(dim_name).lower()
+                            if dim_name == 'time':
+                                dim_values = atype.text
+                                if dim_values:
+                                    all_times = dim_values.split(",")
+                                    break
+
     group = None
     if layer.group:
         try:
@@ -416,6 +440,7 @@ def layer_detail(request, layername, template='layers/layer_detail.html'):
         "wps_enabled": settings.OGC_SERVER['default']['WPS_ENABLED'],
         "granules": granules,
         "all_granules": all_granules,
+        "all_times": all_times,
         "show_popup": show_popup,
         "filter": filter,
     }
@@ -495,7 +520,10 @@ def layer_detail(request, layername, template='layers/layer_detail.html'):
         if layer.storeType == 'coverageStore':
             context_dict["layer_type"] = "raster"
         elif layer.storeType == 'dataStore':
-            context_dict["layer_type"] = "vector"
+            if layer.has_time:
+                context_dict["layer_type"] = "vector_time"
+            else:
+                context_dict["layer_type"] = "vector"
 
             location = "{location}{service}".format(** {
                 'location': settings.OGC_SERVER['default']['LOCATION'],

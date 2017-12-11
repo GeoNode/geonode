@@ -256,10 +256,11 @@ def layer_style_manage(request, layername):
             # Save to GeoServer
             cat = gs_catalog
             gs_layer = cat.get_layer(layer.name)
-            gs_layer.default_style = cat.get_style(default_style)
+            gs_layer.default_style = cat.get_style(default_style, workspace=settings.DEFAULT_WORKSPACE) or \
+                cat.get_style(default_style)
             styles = []
             for style in selected_styles:
-                styles.append(cat.get_style(style))
+                styles.append(cat.get_style(style, workspace=settings.DEFAULT_WORKSPACE) or cat.get_style(style))
             gs_layer.styles = styles
             cat.save(gs_layer)
 

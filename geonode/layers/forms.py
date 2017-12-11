@@ -32,7 +32,7 @@ try:
     import json
 except ImportError:
     from django.utils import simplejson as json
-from geonode.layers.utils import unzip_file
+from geonode.utils import unzip_file
 from geonode.layers.models import Layer, Attribute
 
 autodiscover() # flake8: noqa
