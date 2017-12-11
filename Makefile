@@ -3,15 +3,9 @@ up:
 	docker-compose up -d
 
 build:
-	docker-compose build django
-	docker-compose build celery
-
-sync: up
-	# set up the database tablea
-	docker-compose exec django django-admin.py migrate --noinput
-	docker-compose exec django django-admin.py loaddata sample_admin
-	docker-compose exec django django-admin.py loaddata geonode/base/fixtures/default_oauth_apps_docker.json
-	docker-compose exec django django-admin.py loaddata geonode/base/fixtures/initial_data.json
+	docker pull python:2.7
+	docker build -t geonode/django:latest .
+	docker build -t geonode/django:`date +%Y%m%d%H%M%S` .
 
 migrate:
 	django-admin.py migrate --noinput
@@ -39,7 +33,8 @@ unittest: up
 
 test: smoketest unittest
 
-reset: down up wait sync
+clear:
+	docker-compose down --volumes
 
 hardreset: pull build reset
 

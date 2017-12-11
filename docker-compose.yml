@@ -1,32 +1,69 @@
 version: '2'
+
 services:
 
-  postgres:
-    image: postgres
+  database:
+    image: camptocamp/postgis:9.5
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=secret
+    volumes:
+      - postgresql_data:/var/lib/postgresql/data
 
   elasticsearch:
-   image: elasticsearch
+    image: elasticsearch:5.2
+    volumes:
+      - elasticsearch_data:/usr/share/elasticsearch/data
 
   rabbitmq:
-     image: rabbitmq
+    image: rabbitmq:3.6
+    volumes:
+      - rabbitmq_data:/var/lib/rabbitmq
 
   django:
     image: geonode/django
+    build: .
     links:
-      - postgres
+      - database
       - elasticsearch
       - rabbitmq
-    command: django-admin.py runserver 0.0.0.0:8000 --settings=geonode.settings
+      - geoserver
+#    uncomment following line for production setup
+#    command: gunicorn geonode.wsgi --forwarded-allow-ips=* --workers=3 --bind=0.0.0.0 --worker-tmp-dir=/tmp --access-logfile=- --error-logfile=-
+    ports:
+      - "8000:8000"
+    environment:
+      - DB_HOST=database
+      - DB_PORT=5432
+      - DB_ADMIN_USER=postgres
+      - DB_ADMIN_PASSWORD=secret
+      - DB_GEONODE_NAME=geonode
+      - DB_GEONODE_USER=geonode
+      - DB_GEONODE_PASSWORD=secret
+      - DB_GEOSERVER_NAME=geoserver
+      - DB_GEOSERVER_USER=geoserver
+      - DB_GEOSERVER_PASSWORD=secret
     env_file:
       - ./scripts/docker/env/production/django.env
+    volumes:
+      - geonode_config:/mnt/geonode_config
+      - geonode_data:/mnt/geonode_data
 
   celery:
     image: geonode/django
     links:
       - rabbitmq
-      - postgres
+      - database
       - elasticsearch
-    command: celery worker --app=geonode.celery_app:app -B -l INFO
+    entrypoint: celery
+    command:
+      - worker
+      - --app=geonode.celery_app:app
+      - --broker=amqp://guest:guest@rabbitmq:5672/
+      - -B
+      - -l
+      - DEBUG
+      - -E
     env_file:
       - ./scripts/docker/env/production/django.env
 
@@ -34,16 +71,17 @@ services:
     image: geonode/django
     links:
       - rabbitmq
-      - postgres
+      - database
       - elasticsearch
-    command: python manage.py runmessaging
+    entrypoint: python
+    command: manage.py runmessaging
     env_file:
       - ./scripts/docker/env/production/django.env
 
   geoserver:
     image: geonode/geoserver:alias
     links:
-      - postgres
+      - database
     ports:
       - "8080"
     volumes_from:
@@ -67,5 +105,10 @@ services:
       - /geoserver_data/data
 
 volumes:
-
-  geoserver_data_dir:
+  rabbitmq_data:
+  elasticsearch_data:
+  geoserver_datadir:
+  geoserver_data:
+  postgresql_data:
+  geonode_data:
+  geonode_config:
