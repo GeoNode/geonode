@@ -321,7 +321,6 @@ class CommonModelApi(ModelResource):
 
         # Filter by Type and subtype
         if type_facets is not None:
-
             types = []
             subtypes = []
 
@@ -614,7 +613,7 @@ class CommonModelApi(ModelResource):
 
         object_list = {
             "meta": {
-                "limit": settings.API_LIMIT_PER_PAGE,
+                "limit": settings.CLIENT_RESULTS_LIMIT,
                 "next": next_page,
                 "offset": int(getattr(request.GET, 'offset', 0)),
                 "previous": previous_page,

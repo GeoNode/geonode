@@ -74,12 +74,12 @@ var createMapThumbnail = function(obj_id) {
             try {
                 if(textStatus === 'timeout')
                 {
-                     $("#_thumbnail_feedbacks").find('.modal-title').text('Timeout');
-                     $("#_thumbnail_feedbacks").find('.modal-body').text('Failed from timeout: Could not create Thumbnail');
-                     $("#_thumbnail_feedbacks").modal("show");
+                    $("#_thumbnail_feedbacks").find('.modal-title').text('Timeout');
+                    $("#_thumbnail_feedbacks").find('.modal-body').text('Failed from timeout: Could not create Thumbnail');
+                    $("#_thumbnail_feedbacks").modal("show");
                 } else {
-                    $("#_thumbnail_feedbacks").find('.modal-title').text(status);
-                    $("#_thumbnail_feedbacks").find('.modal-body').text(data);
+                    $("#_thumbnail_feedbacks").find('.modal-title').text('Error: ' + textStatus);
+                    $("#_thumbnail_feedbacks").find('.modal-body').text('Could not create Thumbnail');
                     $("#_thumbnail_feedbacks").modal("show");
                 }
             } catch(err) {
