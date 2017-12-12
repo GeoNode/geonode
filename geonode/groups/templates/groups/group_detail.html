@@ -46,27 +46,28 @@
                   </div>
               </div>
           </div>
-          <div class="hr"></div>
+         
       </div>
   <div class="gd-content-heading">
-      <div class="hr"></div>
+      
       <div class="row">
             <div class="col-md-12">
-                <ul class="nav navbar-nav nav-pills">
-                  <li class="active"><a href="#org-profile" id="org_profile" data-toggle="tab" ><i class="fa fa-square-o rotate-45"></i> {% trans "Organization Profile" %}</a></li>
+                <ul class="nav nav-tabs resources-tabs filter">
+                  <li class="active"><a href="#org-profile" id="org_profile" data-toggle="tab" ><i class="fa fa-building-o" aria-hidden="true"></i>
+                    {% trans "Organization Profile" %}</a></li>
                   <li><a href="#layerslist" id="layers_list" data-toggle="tab" ><i class="fa fa-square-o rotate-45"></i> {% trans "Layers List" %}</a></li>
-                  <li ><a href="#userlist" data-toggle="tab"><i class="fa fa-square-o rotate-45"></i> {% trans "User List" %}</a></li>
+                  <li ><a href="#userlist" data-toggle="tab"><i class="fa fa-user rotate-45"></i> {% trans "User List" %}</a></li>
                     {% if user.is_authenticated %}
-                  <li><a href="#acitivity" id="qroup_activity" data-toggle="tab"><i class="fa fa-map-marker"></i> {% trans "Activity" %}</a></li>
+                  <li><a href="#acitivity" id="qroup_activity" data-toggle="tab"><i class="fa fa-dot-circle-o"></i> {% trans "Activity" %}</a></li>
                     {% endif %}
                   <li><a href="#qtionanswer" id="qst_ans" data-target="#qtionanswer" data-toggle="tab"><i class="fa fa-comment-o"></i> {% trans "Question/Answer" %}</a></li>
                     {% if request.user.is_superuser or request.user in object.get_managers %}
-                  <li><a href="{% url "user-invitation-list" object.slug %}"><i class="fa fa-comment-o"></i> {% trans "Member Requests" %}</a></li>
+                  <li><a href="{% url "user-invitation-list" object.slug %}"><i class="fa fa-user-plus"></i> {% trans "Member Requests" %}</a></li>
                     {% endif %}
                 </ul>
             </div>
       </div>
-      <div class="row">
+      <div class="row resources-content">
             <div class="col-md-12">
                 <div class="tab-content activity-style-list">
                     <article id="org-profile" class="tab-pane active">

@@ -31,7 +31,7 @@ and open the template in the editor.
 .c-menu__items {
     list-style: none;
     margin: 0;
-    padding: 10px 0 0;
+    padding: 0;
 }
 
 /**
@@ -105,10 +105,11 @@ and open the template in the editor.
 .c-menu--slide-right .c-menu__link .fa,
 .c-menu--push-left .c-menu__link .fa,
 .c-menu--push-right .c-menu__link .fa{
-    margin-left: 10px;
-    margin-right: 20px;
+    margin-right: 15px;
     font-size: 18px;
     color: #FFFFFF;
+    display: inline-block;
+    width: 25px;
 }
 
 .c-menu--slide-left .c-menu__close,
@@ -116,7 +117,7 @@ and open the template in the editor.
 .c-menu--push-left .c-menu__close,
 .c-menu--push-right .c-menu__close {
     display: block;
-    padding: 12px 24px;
+    padding: 19px 15px;
     width: 100%;
 }
 
@@ -347,14 +348,15 @@ body.has-active-menu {
     outline: none;
 }
 .c-menu__close .c-menu_gd_close {
-    color: #FFFFFF;
+    background: rgba(0, 0, 0, 0) none repeat scroll 0 0;
+    border: 1px solid #fff;
+    color: #fff;
     cursor: pointer;
-    padding: 0 10px;
+    padding: 1px 7px;
 }
 .c-menu__close .c-menu_gd_close:hover {
     text-decoration: none;
 }
 .c-menu__item .c-menu__link img {
-    margin-left: 10px;
     margin-right: 20px;
 }
