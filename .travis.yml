@@ -10,6 +10,13 @@ virtualenv:
 
 services:
   - docker
+  - postgresql
+
+addons:
+  postgresql: 9.6
+  apt:
+    packages:
+    - postgresql-9.6-postgis-2.3
 
 env:
   - BACKEND: 'geonode.geoserver'
@@ -38,7 +45,6 @@ install:
   - sudo apt-get install -y libgdal1h python-gdal gdal-bin spatialite-bin
   - sudo apt-get install -y python-virtualenv python-imaging python-lxml python-pyproj python-shapely python-nose python-httplib2 python-httplib2 gettext
   - sudo apt-get install -y python-dev libxml2 libxml2-dev libxslt1-dev zlib1g-dev libjpeg-dev libpq-dev libgdal-dev git default-jdk
-  - sudo apt-get install -y postgresql postgis postgresql-9.5-postgis-scripts postgresql-contrib
   - sudo add-apt-repository -y ppa:webupd8team/java
   - sudo apt-get update
   - sudo apt-get install -y --force-yes oracle-java8-installer ant maven2 --no-install-recommends
@@ -50,6 +56,8 @@ install:
 
 before_script:
   # Initialize DB
+  # - sudo apt-get install postgresql-9.6-postgis-2.3 -y -q
+  - psql -U postgres -c "create extension postgis"
   - scripts/misc/create_dbs_travis.sh before_script
   # For QGIS Server Travis steps
   - scripts/misc/qgis_server_setup.sh before_script

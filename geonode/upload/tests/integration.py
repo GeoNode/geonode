@@ -41,7 +41,7 @@ from geonode.tests.utils import check_layer
 from geonode.geoserver.helpers import get_time_info, set_time_info
 from geonode.geoserver.signals import gs_catalog
 from geoserver.catalog import Catalog
-from geonode.upload.utils import make_geogig_rest_payload
+# from geonode.upload.utils import make_geogig_rest_payload
 from django.test import LiveServerTestCase as TestCase
 from gisdata import BAD_DATA
 from gisdata import GOOD_DATA
@@ -51,21 +51,20 @@ from poster.streaminghttp import register_openers
 from urllib2 import HTTPError
 from zipfile import ZipFile
 
+import re
+import os
 import csv
 import glob
-import json
-import os
-import logging
-import signal
-import subprocess
-import tempfile
 import time
-import unittest
-import cookielib
-import MultipartPostHandler
+import json
+# import signal
 import urllib
 import urllib2
-import re
+import logging
+import tempfile
+import unittest
+# import subprocess
+import dj_database_url
 
 GEONODE_USER = 'admin'
 GEONODE_PASSWD = 'admin'
@@ -94,7 +93,8 @@ def get_wms(version='1.1.1', type_name=None):
     """ Function to return an OWSLib WMS object """
     # right now owslib does not support auth for get caps
     # requests. Either we should roll our own or fix owslib
-    url = GEOSERVER_URL + '%s/wms?request=getcapabilities' % type_name.replace(':', '/')
+    url = GEOSERVER_URL + \
+        '%s/wms?request=getcapabilities' % type_name.replace(':', '/')
     return WebMapService(
         url,
         version=version,
@@ -115,29 +115,21 @@ class Client(object):
         self.opener = self._init_url_opener()
 
     def _init_url_opener(self):
-        # self.cookies = urllib2.HTTPCookieProcessor(cookielib.CookieJar())
         self.cookies = urllib2.HTTPCookieProcessor()
-        # opener = urllib2.build_opener(
-        #     self.cookies,
-        #     MultipartPostHandler.MultipartPostHandler
-        # )
-        # urllib2.install_opener(opener)
         opener = register_openers()
-        opener.add_handler(self.cookies) # Add cookie handler
+        opener.add_handler(self.cookies)  # Add cookie handler
         return opener
 
-    def make_request(self, path, files=None, data=None, ajax=False, debug=True):
+    def make_request(self, path, files=None, data=None,
+                     ajax=False, debug=True):
         url = path if path.startswith("http") else self.url + path
-        # print("0. ---------------------------- {}".format(url))
-        # print("1. ---------------------------- {}".format(data))
         request = None
         if files:
             items = []
-            #wrap post parameters
+            # wrap post parameters
             for name, value in data.items():
-                # print("2. ---------------------------- {} = {}".format(name, value))
                 items.append(MultipartParam(name, value))
-            #add file
+            # add file
             items.append(MultipartParam.from_file('base_file', files))
             datagen, headers = multipart_encode(items)
             request = urllib2.Request(url, datagen, headers)
@@ -148,7 +140,7 @@ class Client(object):
         try:
             # return urllib2.urlopen(request)
             return self.opener.open(request)
-        except urllib2.HTTPError, ex:
+        except urllib2.HTTPError as ex:
             if not debug:
                 raise
             print 'error in request to %s' % path
@@ -198,7 +190,11 @@ class Client(object):
 
         # base_file = open(_file, 'rb')
         # params['base_file'] = os.path.basename(_file)
-        resp = self.make_request(upload_step(), files=_file, data=params, ajax=True)
+        resp = self.make_request(
+            upload_step(),
+            files=_file,
+            data=params,
+            ajax=True)
         data = resp.read()
         try:
             return resp, json.loads(data)
@@ -292,7 +288,7 @@ class UploaderBase(TestCase):
         #    os.killpg(cls._runserver.pid, signal.SIGKILL)
 
         if os.path.exists('integration_settings.py'):
-           os.unlink('integration_settings.py')
+            os.unlink('integration_settings.py')
 
     def setUp(self):
         # super(UploaderBase, self).setUp()
@@ -306,7 +302,7 @@ class UploaderBase(TestCase):
             try:
                 cl.get_html('/', debug=False)
                 break
-            except:
+            except BaseException:
                 pass
 
         self.client = Client(
@@ -317,10 +313,30 @@ class UploaderBase(TestCase):
         )
 
         self._tempfiles = []
+        # createlayer must use postgis as a datastore
+        # set temporary settings to use a postgis datastore
+        DB_HOST = settings.DATABASES['default']['HOST']
+        DB_PORT = settings.DATABASES['default']['PORT']
+        DB_NAME = settings.DATABASES['default']['NAME']
+        DB_USER = settings.DATABASES['default']['USER']
+        DB_PASSWORD = settings.DATABASES['default']['PASSWORD']
+        settings.DATASTORE_URL = 'postgis://{}:{}@{}:{}/{}'.format(
+            DB_USER,
+            DB_PASSWORD,
+            DB_HOST,
+            DB_PORT,
+            DB_NAME
+        )
+        postgis_db = dj_database_url.parse(settings.DATASTORE_URL, conn_max_age=600)
+        settings.DATABASES['datastore'] = postgis_db
+        settings.OGC_SERVER['default']['DATASTORE'] = 'datastore'
 
     def tearDown(self):
         # super(UploaderBase, self).tearDown()
         map(os.unlink, self._tempfiles)
+        # move to original settings
+        settings.OGC_SERVER['default']['DATASTORE'] = ''
+        del settings.DATABASES['datastore']
 
     def check_layer_geonode_page(self, path):
         """ Check that the final layer page render's correctly after
@@ -353,14 +369,16 @@ class UploaderBase(TestCase):
 
     def check_and_pass_through_timestep(self, redirect_to):
         time_step = upload_step('time')
-        if redirect_to == upload_step('srs'):
+        srs_step = upload_step('srs')
+        if srs_step in redirect_to :
             resp = self.client.make_request(redirect_to)
         else:
-            self.assertEquals(redirect_to, time_step)
-        resp = self.client.make_request(time_step)
+            self.assertTrue(time_step in redirect_to)
+        resp = self.client.make_request(redirect_to)
         token = self.client.get_csrf_token(True)
         self.assertEquals(resp.code, 200)
-        resp = self.client.make_request(time_step, {'csrfmiddlewaretoken': token}, ajax=True)
+        resp = self.client.make_request(
+            redirect_to, {'csrfmiddlewaretoken': token}, ajax=True)
         data = json.loads(resp.read())
         return resp, data
 
@@ -447,7 +465,8 @@ class UploaderBase(TestCase):
             return
         upload = None
         try:
-            # AF: TODO Headhakes here... nose is not accessing to the test db!!!
+            # AF: TODO Headhakes here... nose is not accessing to the test
+            # db!!!
             uploads = Upload.objects.all()
             if uploads:
                 upload = Upload.objects.filter(name=str(original_name)).last()
@@ -473,7 +492,7 @@ class UploaderBase(TestCase):
             try:
                 self.check_layer_geoserver_caps(type_name)
                 caps_found = True
-            except:
+            except BaseException:
                 pass
         self.assertTrue(caps_found)
         self.check_layer_geoserver_rest(layer_name)
@@ -507,13 +526,15 @@ class UploaderBase(TestCase):
             resp, data = self.client.upload_file(_file)
             if session_ids is not None:
                 if data.get('url'):
-                    session_id = re.search(r'.*id=(\d+)', data.get('url')).group(1)
+                    session_id = re.search(
+                        r'.*id=(\d+)', data.get('url')).group(1)
                     if session_id:
                         session_ids += [session_id]
             self.wait_for_progress(data.get('progress'))
             final_check(base, resp, data)
 
-    def upload_file(self, fname, final_check, check_name=None, session_ids=None):
+    def upload_file(self, fname, final_check,
+                    check_name=None, session_ids=None):
         if not check_name:
             check_name, _ = os.path.splitext(fname)
         resp, data = self.client.upload_file(fname)
@@ -613,7 +634,10 @@ class TestUpload(UploaderBase):
         # First of all lets upload a raster
         fname = os.path.join(GOOD_DATA, 'raster', 'relief_san_andres.tif')
         self.assertTrue(os.path.isfile(fname))
-        self.upload_file(fname, self.complete_raster_upload, session_ids=session_ids)
+        self.upload_file(
+            fname,
+            self.complete_raster_upload,
+            session_ids=session_ids)
 
         # Next force an invalid session
         invalid_path = os.path.join(BAD_DATA)
@@ -623,7 +647,10 @@ class TestUpload(UploaderBase):
 
         # Finally try to upload a good file anc check the session IDs
         fname = os.path.join(GOOD_DATA, 'raster', 'relief_san_andres.tif')
-        self.upload_file(fname, self.complete_raster_upload, session_ids=session_ids)
+        self.upload_file(
+            fname,
+            self.complete_raster_upload,
+            session_ids=session_ids)
 
         self.assertTrue(len(session_ids) > 1)
         self.assertTrue(int(session_ids[0]) < int(session_ids[1]))
@@ -652,124 +679,124 @@ class TestUpload(UploaderBase):
         self.assertTrue(data['redirect_to'], "/upload/csv")
 
 
-# @unittest.skipUnless(ogc_server_settings.datastore_db, 'Vector datastore not enabled')
-# class TestUploadDBDataStore(UploaderBase):
-#
-#     settings_overrides = []
-#
-#     def test_csv(self):
-#         """Override the baseclass test and verify a correct CSV upload"""
-#
-#         csv_file = self.make_csv(
-#             ['lat', 'lon', 'thing'], ['-100', '-40', 'foo'])
-#         layer_name, ext = os.path.splitext(os.path.basename(csv_file))
-#         resp, form_data = self.client.upload_file(csv_file)
-#         self.check_save_step(resp, form_data)
-#         csv_step = form_data['redirect_to']
-#         self.assertTrue(upload_step('csv') in csv_step)
-#         form_data = dict(
-#             lat='lat',
-#             lng='lon',
-#             csrfmiddlewaretoken=self.client.get_csrf_token())
-#         resp = self.client.make_request(csv_step, form_data)
-#         content = json.loads(resp.read())
-#
-#         resp = self.client.get(content.get('redirect_to'))
-#         content = json.loads(resp.read())
-#
-#         url = content.get('url')
-#
-#         self.assertTrue(
-#             url.endswith(layer_name),
-#             'expected url to end with %s, but got %s' %
-#             (layer_name,
-#              url))
-#         self.assertEquals(resp.code, 200)
-#
-#         self.check_layer_complete(url, layer_name)
-#
-#     def test_time(self):
-#         """Verify that uploading time based shapefile works properly"""
-#         cascading_delete(self.catalog, 'boxes_with_date')
-#
-#         timedir = os.path.join(GOOD_DATA, 'time')
-#         layer_name = 'boxes_with_date'
-#         shp = os.path.join(timedir, '%s.shp' % layer_name)
-#
-#         # get to time step
-#         resp, data = self.client.upload_file(shp)
-#         self.wait_for_progress(data.get('progress'))
-#         self.assertEquals(resp.code, 200)
-#         self.assertTrue(data['success'])
-#         self.assertTrue(data['redirect_to'], upload_step('time'))
-#
-#         resp, data = self.client.get_html(upload_step('time'))
-#         self.assertEquals(resp.code, 200)
-#         data = dict(csrfmiddlewaretoken=self.client.get_csrf_token(),
-#                     time_attribute='date',
-#                     presentation_strategy='LIST',
-#                     )
-#         resp = self.client.make_request(upload_step('time'), data)
-#
-#         url = json.loads(resp.read())['redirect_to']
-#
-#         resp = self.client.make_request(url, data)
-#
-#         url = json.loads(resp.read())['url']
-#
-#         self.assertTrue(
-#             url.endswith(layer_name),
-#             'expected url to end with %s, but got %s' %
-#             (layer_name,
-#              url))
-#         self.assertEquals(resp.code, 200)
-#
-#         url = urllib.unquote(url)
-#         self.check_layer_complete(url, layer_name)
-#         wms = get_wms(type_name='geonode:%s' % layer_name)
-#         layer_info = wms.items()[0][1]
-#         self.assertEquals(100, len(layer_info.timepositions))
-#
-#     def test_configure_time(self):
-#         # make sure it's not there (and configured)
-#         cascading_delete(gs_catalog, 'boxes_with_end_date')
-#
-#         def get_wms_timepositions():
-#             metadata = get_wms().contents['geonode:boxes_with_end_date']
-#             self.assertTrue(metadata is not None)
-#             return metadata.timepositions
-#
-#         thefile = os.path.join(
-#             GOOD_DATA, 'time', 'boxes_with_end_date.shp'
-#         )
-#         uploaded = file_upload(thefile, overwrite=True)
-#         check_layer(uploaded)
-#         # initial state is no positions or info
-#         self.assertTrue(get_wms_timepositions() is None)
-#         self.assertTrue(get_time_info(uploaded) is None)
-#
-#         # enable using interval and single attribute
-#         set_time_info(uploaded, 'date', None, 'DISCRETE_INTERVAL', 3, 'days')
-#         self.assertEquals(
-#             ['2000-03-01T00:00:00.000Z/2000-06-08T00:00:00.000Z/P3D'],
-#             get_wms_timepositions()
-#         )
-#         self.assertEquals(
-#             {'end_attribute': None, 'presentation': 'DISCRETE_INTERVAL',
-#              'attribute': 'date', 'enabled': True, 'precision_value': '3',
-#              'precision_step': 'days'},
-#             get_time_info(uploaded)
-#         )
-#
-#         # disable but configure to use enddate attribute in list
-#         set_time_info(uploaded, 'date', 'enddate', 'LIST', None, None, enabled=False)
-#         # verify disabled
-#         self.assertTrue(get_wms_timepositions() is None)
-#         # test enabling now
-#         info = get_time_info(uploaded)
-#         info['enabled'] = True
-#         set_time_info(uploaded, **info)
-#         self.assertEquals(100, len(get_wms_timepositions()))
+@unittest.skipUnless(ogc_server_settings.datastore_db, 'Vector datastore not enabled')
+class TestUploadDBDataStore(UploaderBase):
+
+    settings_overrides = []
+
+    def test_csv(self):
+        """Override the baseclass test and verify a correct CSV upload"""
+
+        csv_file = self.make_csv(
+            ['lat', 'lon', 'thing'], ['-100', '-40', 'foo'])
+        layer_name, ext = os.path.splitext(os.path.basename(csv_file))
+        resp, form_data = self.client.upload_file(csv_file)
+        self.check_save_step(resp, form_data)
+        csv_step = form_data['redirect_to']
+        self.assertTrue(upload_step('csv') in csv_step)
+        form_data = dict(
+            lat='lat',
+            lng='lon',
+            csrfmiddlewaretoken=self.client.get_csrf_token())
+        resp = self.client.make_request(csv_step, form_data)
+        content = json.loads(resp.read())
+
+        resp = self.client.get(content.get('redirect_to'))
+        content = json.loads(resp.read())
+
+        url = content.get('url')
+
+        self.assertTrue(
+            url.endswith(layer_name),
+            'expected url to end with %s, but got %s' %
+            (layer_name,
+             url))
+        self.assertEquals(resp.code, 200)
+
+        self.check_layer_complete(url, layer_name)
+
+    def test_time(self):
+        """Verify that uploading time based shapefile works properly"""
+        cascading_delete(self.catalog, 'boxes_with_date')
+
+        timedir = os.path.join(GOOD_DATA, 'time')
+        layer_name = 'boxes_with_date'
+        shp = os.path.join(timedir, '%s.shp' % layer_name)
+
+        # get to time step
+        resp, data = self.client.upload_file(shp)
+        self.wait_for_progress(data.get('progress'))
+        self.assertEquals(resp.code, 200)
+        self.assertTrue(data['success'])
+        self.assertTrue(data['redirect_to'], upload_step('time'))
+
+        resp, data = self.client.get_html(upload_step('time'))
+        self.assertEquals(resp.code, 200)
+        data = dict(csrfmiddlewaretoken=self.client.get_csrf_token(),
+                    time_attribute='date',
+                    presentation_strategy='LIST',
+                    )
+        resp = self.client.make_request(upload_step('time'), data)
+
+        url = json.loads(resp.read())['redirect_to']
+
+        resp = self.client.make_request(url, data)
+
+        url = json.loads(resp.read())['url']
+
+        self.assertTrue(
+            url.endswith(layer_name),
+            'expected url to end with %s, but got %s' %
+            (layer_name,
+             url))
+        self.assertEquals(resp.code, 200)
+
+        url = urllib.unquote(url)
+        self.check_layer_complete(url, layer_name)
+        wms = get_wms(type_name='geonode:%s' % layer_name)
+        layer_info = wms.items()[0][1]
+        self.assertEquals(100, len(layer_info.timepositions))
+
+    def test_configure_time(self):
+        # make sure it's not there (and configured)
+        cascading_delete(gs_catalog, 'boxes_with_end_date')
+
+        def get_wms_timepositions():
+            metadata = get_wms().contents['geonode:boxes_with_end_date']
+            self.assertTrue(metadata is not None)
+            return metadata.timepositions
+
+        thefile = os.path.join(
+            GOOD_DATA, 'time', 'boxes_with_end_date.shp'
+        )
+        uploaded = file_upload(thefile, overwrite=True)
+        check_layer(uploaded)
+        # initial state is no positions or info
+        self.assertTrue(get_wms_timepositions() is None)
+        self.assertTrue(get_time_info(uploaded) is None)
+
+        # enable using interval and single attribute
+        set_time_info(uploaded, 'date', None, 'DISCRETE_INTERVAL', 3, 'days')
+        self.assertEquals(
+            ['2000-03-01T00:00:00.000Z/2000-06-08T00:00:00.000Z/P3D'],
+            get_wms_timepositions()
+        )
+        self.assertEquals(
+            {'end_attribute': None, 'presentation': 'DISCRETE_INTERVAL',
+             'attribute': 'date', 'enabled': True, 'precision_value': '3',
+             'precision_step': 'days'},
+            get_time_info(uploaded)
+        )
+
+        # disable but configure to use enddate attribute in list
+        set_time_info(uploaded, 'date', 'enddate', 'LIST', None, None, enabled=False)
+        # verify disabled
+        self.assertTrue(get_wms_timepositions() is None)
+        # test enabling now
+        info = get_time_info(uploaded)
+        info['enabled'] = True
+        set_time_info(uploaded, **info)
+        self.assertEquals(100, len(get_wms_timepositions()))
 
 
 # class GeogigTest(TestCase):
