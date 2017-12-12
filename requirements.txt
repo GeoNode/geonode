@@ -45,6 +45,7 @@ geonode-dialogos==0.7
 geonode-notification==1.1.1
 geonode-user-accounts==1.0.13
 geonode-user-messages==0.1.5
+git+https://github.com/travislbrundage/geonode-elasticsearch@geonode#egg=geonode-elasticsearch-app
 gisdata==0.5.4
 gsconfig==1.0.6
 gsimporter==1.0.0

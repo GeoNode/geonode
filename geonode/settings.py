@@ -797,6 +797,17 @@ PROXY_ALLOWED_HOSTS = ()
 # The proxy to use when making cross origin requests.
 PROXY_URL = '/proxy/?url=' if DEBUG else None
 
+# Elasticsearch-dsl Backend Configuration. To enable,
+# Set ES_SEARCH to True
+# Run "python manage.py clear_haystack" (if upgrading from haystack)
+# Run "python manage.py rebuild_index"
+ES_SEARCH = strtobool(os.getenv('ES_SEARCH', 'False'))
+
+if ES_SEARCH:
+    INSTALLED_APPS = (
+        'elasticsearch-app',
+    ) + INSTALLED_APPS
+
 # Haystack Search Backend Configuration. To enable,
 # first install the following:
 # - pip install django-haystack

@@ -46,6 +46,8 @@ from geonode.utils import num_encode
 from geonode.security.models import remove_object_permissions
 
 from agon_ratings.models import OverallRating
+from dialogos.models import Comment
+from django.db.models import Avg
 
 logger = logging.getLogger("geonode.maps.models")
 
@@ -366,6 +368,105 @@ class Map(ResourceBase, GXPMapBase):
             lg.layers, lg.styles, lg.bounds = lg_layers, lg_styles, lg_bounds
         gs_catalog.save(lg)
         return lg_name
+
+    # elasticsearch_dsl indexing
+    def indexing(self):
+        if settings.ES_SEARCH:
+            from elasticsearch_app.search import MapIndex
+            obj = MapIndex(
+                meta={'id': self.id},
+                id=self.id,
+                abstract=self.abstract,
+                category__gn_description=self.prepare_category_gn_description(),
+                csw_type=self.csw_type,
+                csw_wkt_geometry=self.csw_wkt_geometry,
+                detail_url=self.get_absolute_url(),
+                owner__username=self.prepare_owner(),
+                popular_count=self.popular_count,
+                share_count=self.share_count,
+                rating=self.prepare_rating(),
+                srid=self.srid,
+                supplemental_information=self.prepare_supplemental_information(),
+                thumbnail_url=self.thumbnail_url,
+                uuid=self.uuid,
+                title=self.title,
+                date=self.date,
+                type=self.prepare_type(),
+                title_sortable=self.prepare_title_sortable(),
+                category=self.prepare_category(),
+                bbox_left=self.bbox_x0,
+                bbox_right=self.bbox_x1,
+                bbox_bottom=self.bbox_y0,
+                bbox_top=self.bbox_y1,
+                temporal_extent_start=self.temporal_extent_start,
+                temporal_extent_end=self.temporal_extent_end,
+                keywords=self.keyword_slug_list(),
+                regions=self.region_name_list(),
+                num_ratings=self.prepare_num_ratings(),
+                num_comments=self.prepare_num_comments(),
+            )
+            obj.save()
+            return obj.to_dict(include_meta=True)
+
+    # elasticsearch_dsl indexing helper functions
+    def prepare_type(self):
+        return "map"
+
+    def prepare_rating(self):
+        ct = ContentType.objects.get_for_model(self)
+        try:
+            rating = OverallRating.objects.filter(
+                object_id=self.pk,
+                content_type=ct
+            ).aggregate(r=Avg("rating"))["r"]
+            return float(str(rating or "0"))
+        except OverallRating.DoesNotExist:
+            return 0.0
+
+    def prepare_title_sortable(self):
+        return self.title.lower()
+
+    def prepare_num_ratings(self):
+        ct = ContentType.objects.get_for_model(self)
+        try:
+            return OverallRating.objects.filter(
+                object_id=self.pk,
+                content_type=ct
+            ).all().count()
+        except OverallRating.DoesNotExist:
+            return 0
+
+    def prepare_num_comments(self):
+        ct = ContentType.objects.get_for_model(self)
+        try:
+            return Comment.objects.filter(
+                object_id=self.pk,
+                content_type=ct
+            ).all().count()
+        except:
+            return 0
+
+    def prepare_category(self):
+        if self.category:
+            return self.category.identifier
+        else:
+            return None
+
+    def prepare_category_gn_description(self):
+        if self.category:
+            return self.category.gn_description
+        else:
+            return None
+
+    def prepare_owner(self):
+        if self.owner:
+            return self.owner.username
+        else:
+            return None
+
+    def prepare_supplemental_information(self):
+        # For some reason this isn't a string
+        return str(self.supplemental_information)
 
     class Meta(ResourceBase.Meta):
         pass
