@@ -3334,7 +3334,14 @@ ul.termsuseandcondition li {
 .shownextdata{
     display:none;
 }
-
+#myNav .panel-heading
+{
+    white-space: normal;
+}
+#myNav .panel-body
+{
+    white-space: normal;
+}
 .modal-dialog{
 width: 100%;
 }
