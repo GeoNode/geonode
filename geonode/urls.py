@@ -79,6 +79,7 @@ urlpatterns = patterns('',
 
                        # Social views
                        (r"^account/", include("account.urls")),
+                       (r'^invitations/', include('invitations.urls', namespace='invitations')),
                        (r'^people/', include('geonode.people.urls')),
                        (r'^avatar/', include('avatar.urls')),
                        # (r'^comments/', include('dialogos.urls')),
