@@ -260,6 +260,7 @@ def _advance_step(req, upload_session):
 
 
 def next_step_response(req, upload_session, force_ajax=True):
+    import_session = upload_session.import_session
     # if the current step is the view POST for this step, advance one
     if req.method == 'POST':
         if upload_session.completed_step:
@@ -271,20 +272,18 @@ def next_step_response(req, upload_session, force_ajax=True):
         return json_response(
             {'status': 'error',
              'success': False,
-             'id': upload_session.import_session.id,
+             'id': import_session.id,
              'error_msg': "%s" % upload_session.error_msg,
              }
         )
 
     if next == 'check':
         # @TODO we skip time steps for coverages currently
-        import_session = upload_session.import_session
         store_type = import_session.tasks[0].target.store_type
         if store_type == 'coverageStore':
             upload_session.completed_step = 'check'
             return next_step_response(req, upload_session, force_ajax)
     if next == 'check' and force_ajax:
-        import_session = upload_session.import_session
         url = reverse('data_upload') + "?id=%s" % import_session.id
         return json_response(
             {'url': url,
@@ -297,7 +296,6 @@ def next_step_response(req, upload_session, force_ajax=True):
 
     if next == 'time':
         # @TODO we skip time steps for coverages currently
-        import_session = upload_session.import_session
         store_type = import_session.tasks[0].target.store_type
         layer = import_session.tasks[0].layer
         (has_time_dim, layer_values) = layer_eligible_for_time_dimension(req,
@@ -311,7 +309,6 @@ def next_step_response(req, upload_session, force_ajax=True):
         upload_session.completed_step = 'time'
         return next_step_response(req, upload_session, force_ajax)
     if next == 'time' and force_ajax:
-        import_session = upload_session.import_session
         url = reverse('data_upload') + "?id=%s" % import_session.id
         return json_response(
             {'url': url,
@@ -323,7 +320,6 @@ def next_step_response(req, upload_session, force_ajax=True):
         )
 
     if next == 'mosaic' and force_ajax:
-        import_session = upload_session.import_session
         url = reverse('data_upload') + "?id=%s" % import_session.id
         return json_response(
             {'url': url,
@@ -335,7 +331,6 @@ def next_step_response(req, upload_session, force_ajax=True):
         )
 
     if next == 'srs' and force_ajax:
-        import_session = upload_session.import_session
         url = reverse('data_upload') + "?id=%s" % import_session.id
         return json_response(
             {'url': url,
@@ -347,7 +342,6 @@ def next_step_response(req, upload_session, force_ajax=True):
         )
 
     if next == 'csv' and force_ajax:
-        import_session = upload_session.import_session
         url = reverse('data_upload') + "?id=%s" % import_session.id
         return json_response(
             {'url': url,
@@ -369,15 +363,27 @@ def next_step_response(req, upload_session, force_ajax=True):
             run_import(upload_session, async=False)
             return next_step_response(req, upload_session,
                                       force_ajax=force_ajax)
+    session_id = None
+    if 'id' in req.GET:
+        session_id = "?id=%s" % req.GET['id']
+    elif import_session and import_session.id:
+        session_id = "?id=%s" % import_session.id
+
     if req.is_ajax() or force_ajax:
         content_type = 'text/html' if not req.is_ajax() else None
-        return json_response(
-            redirect_to=reverse(
-                'data_upload',
-                args=[next]) +
-            "?id=%s" %
-            req.GET['id'],
-            content_type=content_type)
+        if session_id:
+            return json_response(
+                redirect_to=reverse(
+                    'data_upload',
+                    args=[next]) + session_id,
+                content_type=content_type)
+        else:
+            return json_response(
+                url=reverse(
+                    'data_upload',
+                    args=[next]),
+                content_type=content_type)
+
     return HttpResponseRedirect(reverse('data_upload', args=[next]))
 
 

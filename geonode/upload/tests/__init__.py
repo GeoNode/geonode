@@ -24,7 +24,8 @@ import shutil
 import tempfile
 import zipfile
 import geonode.upload.files as files
-from unittest import TestCase
+# from unittest import TestCase
+from django.test import LiveServerTestCase as TestCase
 from geonode.upload.files import SpatialFiles, scan_file
 from geonode.upload.files import _rename_files, _contains_bad_names
 

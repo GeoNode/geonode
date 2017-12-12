@@ -600,7 +600,7 @@ def resolve_object(request, model, query, permission='base.view_resourcebase',
     return obj
 
 
-def json_response(body=None, errors=None, redirect_to=None, exception=None,
+def json_response(body=None, errors=None, url=None, redirect_to=None, exception=None,
                   content_type=None, status=None):
     """Create a proper JSON response. If body is provided, this is the response.
     If errors is not None, the response is a success/errors json object.
@@ -624,6 +624,11 @@ def json_response(body=None, errors=None, redirect_to=None, exception=None,
         body = {
             'success': True,
             'redirect_to': redirect_to
+        }
+    elif url:
+        body = {
+            'success': True,
+            'url': url
         }
     elif exception:
         if body is None:

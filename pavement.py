@@ -23,6 +23,7 @@ import glob
 import os
 import re
 import shutil
+import subprocess
 import sys
 import time
 import urllib
@@ -315,7 +316,11 @@ def updategeoip(options):
     """
     Update geoip db
     """
-    sh("python manage.py updategeoip -o")
+    settings = options.get('settings', '')
+    if settings:
+        settings = 'DJANGO_SETTINGS_MODULE=%s' % settings
+
+    sh("%s python manage.py updategeoip -o" % settings)
 
 
 @task
@@ -323,11 +328,15 @@ def sync(options):
     """
     Run the migrate and migrate management commands to create and migrate a DB
     """
-    sh("python manage.py makemigrations --noinput")
-    sh("python manage.py migrate --noinput")
-    sh("python manage.py loaddata sample_admin.json")
-    sh("python manage.py loaddata geonode/base/fixtures/default_oauth_apps.json")
-    sh("python manage.py loaddata geonode/base/fixtures/initial_data.json")
+    settings = options.get('settings', '')
+    if settings:
+        settings = 'DJANGO_SETTINGS_MODULE=%s' % settings
+
+    sh("%s python manage.py makemigrations --noinput" % settings)
+    sh("%s python manage.py migrate --noinput" % settings)
+    sh("%s python manage.py loaddata sample_admin.json" % settings)
+    sh("%s python manage.py loaddata geonode/base/fixtures/default_oauth_apps.json" % settings)
+    sh("%s python manage.py loaddata geonode/base/fixtures/initial_data.json" % settings)
 
 
 @task
@@ -400,7 +409,8 @@ def package(options):
 @cmdopts([
     ('bind=', 'b', 'Bind server to provided IP address and port number.'),
     ('java_path=', 'j', 'Full path to java install for Windows'),
-    ('foreground', 'f', 'Do not run in background but in foreground')
+    ('foreground', 'f', 'Do not run in background but in foreground'),
+    ('settings', 's', 'Specify custom DJANGO_SETTINGS_MODULE')
 ], share_with=['start_django', 'start_geoserver'])
 def start():
     """
@@ -431,6 +441,17 @@ def stop_geoserver():
     if 'geonode.geoserver' not in INSTALLED_APPS:
         return
     kill('java', 'geoserver')
+    try:
+        p = subprocess.Popen(['ps', '-A'], stdout=subprocess.PIPE)
+        out, err = p.communicate()
+        for line in out.splitlines():
+            if 'geoserver' in line.lower() or \
+                'java' in line.lower():
+                pid = int(line.split(None, 1)[0])
+                print("Stopping java (process number {})".format(pid))
+                os.kill(pid, signal.SIGKILL)
+    except BaseException:
+        print("Could not kill all GeoServer processes. Please double check no process is running!")
 
 
 @task
@@ -479,17 +500,23 @@ def start_django():
     """
     Start the GeoNode Django application
     """
+    settings = options.get('settings', '')
+    if settings:
+        settings = 'DJANGO_SETTINGS_MODULE=%s' % settings
     bind = options.get('bind', '0.0.0.0:8000')
     foreground = '' if options.get('foreground', False) else '&'
-    sh('python manage.py runserver %s %s' % (bind, foreground))
+    sh('%s python manage.py runserver %s %s' % (settings, bind, foreground))
 
 
 def start_messaging():
     """
     Start the GeoNode messaging server
     """
+    settings = options.get('settings', '')
+    if settings:
+        settings = 'DJANGO_SETTINGS_MODULE=%s' % settings
     foreground = '' if options.get('foreground', False) else '&'
-    sh('python manage.py runmessaging %s' % foreground)
+    sh('%s python manage.py runmessaging %s' % (settings, foreground))
 
 
 @cmdopts([
@@ -644,16 +671,22 @@ def test_integration(options):
     info("GeoNode is now available, running the tests now.")
 
     name = options.get('name', 'geonode.tests.integration')
+    settings = options.get('settings', '')
+    if settings:
+        settings = 'DJANGO_SETTINGS_MODULE=%s' % settings
 
     success = False
     try:
-        if name == 'geonode.tests.csw':
-            call_task('sync')
-            call_task('start')
+        if name == 'geonode.tests.csw' or name == 'geonode.upload.tests.integration':
+            call_task('sync', options={'settings': options.get('settings', '')})
+            call_task('start', options={'settings': options.get('settings', '')})
             sh('sleep 30')
-            call_task('setup_data')
-        sh(('python manage.py test %s'
-            ' --noinput --liveserver=0.0.0.0:8000' % name))
+            if name == 'geonode.tests.csw':
+                call_task('setup_data', options={'settings': options.get('settings', '')})
+            if name == 'geonode.upload.tests.integration':
+                settings = 'REUSE_DB=1 %s' % settings
+        sh(('%s python manage.py test %s'
+            ' --noinput --liveserver=0.0.0.0:8000' % (settings, name)))
     except BuildFailure as e:
         info('Tests failed! %s' % str(e))
     else:
@@ -683,6 +716,9 @@ def run_tests(options):
     call_task('test', options={'prefix': prefix})
     call_task('test_integration')
     call_task('test_integration', options={'name': 'geonode.tests.csw'})
+    call_task('test_integration',
+              options={'name': 'geonode.upload.tests.integration',
+                       'settings': 'geonode.upload.tests.test_settings'})
     sh('flake8 geonode')
 
 
@@ -696,6 +732,7 @@ def reset():
 
 
 def _reset():
+    call_task('stop')
     sh("rm -rf geonode/development.db")
     sh("rm -rf geonode/uploaded/*")
     _install_data_dir()
@@ -712,6 +749,7 @@ def reset_hard():
 @task
 @cmdopts([
     ('type=', 't', 'Import specific data type ("vector", "raster", "time")'),
+    ('settings', 's', 'Specify custom DJANGO_SETTINGS_MODULE')
 ])
 def setup_data():
     """
@@ -726,7 +764,11 @@ def setup_data():
     if ctype in ['vector', 'raster', 'time']:
         data_dir = os.path.join(gisdata.GOOD_DATA, ctype)
 
-    sh("python manage.py importlayers %s -v2" % data_dir)
+    settings = options.get('settings', '')
+    if settings:
+        settings = 'DJANGO_SETTINGS_MODULE=%s' % settings
+
+    sh("%s python manage.py importlayers %s -v2" % (settings, data_dir))
 
 
 @needs(['package'])
