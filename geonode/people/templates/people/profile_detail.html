@@ -154,7 +154,7 @@
       {% if user.is_superuser %}
     <ul class="list-group">
       <li class="list-group-item"><a href="{% url "services" %}?limit={{ CLIENT_RESULTS_LIMIT }}"><i class="fa fa-globe"></i> {% trans "Remote Services" %}</a></li>
-      <li class="list-group-item"><a href="{% url "account_invite_user" %}"><i class="fa fa-edit"></i> {% trans "Invite User" %}</a></li>
+      <li class="list-group-item"><a href="{% url "invitations:send-invite" %}"><i class="fa fa-edit"></i> {% trans "Invite User" %}</a></li>
       <li class="list-group-item"><a href="{{ GEOSERVER_BASE_URL }}"><i class="fa fa-gears"></i> {% trans "GeoServer" %}</a></li>
       {% endif %}
       {% if user.is_staff %}
