@@ -26,17 +26,21 @@ import requests
 from celery.task import task
 from requests.exceptions import HTTPError
 
+
 from geonode.layers.models import Layer
 from geonode.layers.utils import create_thumbnail
 from geonode.maps.models import Map
 from geonode.qgis_server.helpers import map_thumbnail_url, layer_thumbnail_url
+from geonode.qgis_server.models import QGISServerLayer
 
 logger = logging.getLogger(__name__)
 
 
 @task(
     name='geonode.qgis_server.tasks.update.create_qgis_server_thumbnail',
-    queue='update')
+    queue='update',
+    autoretry_for=(QGISServerLayer.DoesNotExist, ),
+    retry_kwargs={'max_retries': 5, 'countdown': 5})
 def create_qgis_server_thumbnail(instance, overwrite=False, bbox=None):
     """Task to update thumbnails.
 
@@ -89,6 +93,10 @@ def create_qgis_server_thumbnail(instance, overwrite=False, bbox=None):
     except socket.error as e:
         logger.error('Thumbnail url not accessed {url}'.format(
             url=thumbnail_remote_url))
+        logger.exception(e)
+        # reraise exception with original traceback
+        raise
+    except QGISServerLayer.DoesNotExist as e:
         logger.exception(e)
         # reraise exception with original traceback
         raise
