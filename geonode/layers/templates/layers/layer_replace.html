@@ -58,7 +58,9 @@
     <p>{% trans " or select them one by one:" %}</p>
 
     <form id="file-uploader" method="post" enctype="multipart/form-data">
+      <!-- UI change to hide the list of previously uploaded files from the user -->
       <input class="btn" id="file-input" type="file" multiple>
+      <input class="btn btn-default" type="button" value="Choose Files" onclick="document.getElementById('file-input').click();">
     </form>
 
     <section class="widget">

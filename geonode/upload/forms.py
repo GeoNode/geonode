@@ -156,22 +156,22 @@ class TimeForm(forms.Form):
 
     def __init__(self, *args, **kwargs):
         # have to remove these from kwargs or Form gets mad
-        time_names = kwargs.pop('time_names', None)
-        text_names = kwargs.pop('text_names', None)
-        year_names = kwargs.pop('year_names', None)
+        self._time_names = kwargs.pop('time_names', None)
+        self._text_names = kwargs.pop('text_names', None)
+        self._year_names = kwargs.pop('year_names', None)
         super(TimeForm, self).__init__(*args, **kwargs)
-        self._build_choice('time_attribute', time_names)
-        self._build_choice('end_time_attribute', time_names)
-        self._build_choice('text_attribute', text_names)
-        self._build_choice('end_text_attribute', text_names)
+        self._build_choice('time_attribute', self._time_names)
+        self._build_choice('end_time_attribute', self._time_names)
+        self._build_choice('text_attribute', self._text_names)
+        self._build_choice('end_text_attribute', self._text_names)
         widget = forms.TextInput(attrs={'placeholder': 'Custom Format'})
-        if text_names:
+        if self._text_names:
             self.fields['text_attribute_format'] = forms.CharField(
                 required=False, widget=widget)
             self.fields['end_text_attribute_format'] = forms.CharField(
                 required=False, widget=widget)
-        self._build_choice('year_attribute', year_names)
-        self._build_choice('end_year_attribute', year_names)
+        self._build_choice('year_attribute', self._year_names)
+        self._build_choice('end_year_attribute', self._year_names)
 
     def _resolve_attribute_and_type(self, *name_and_types):
         return [(self.cleaned_data[n], t) for n, t in name_and_types
@@ -183,6 +183,18 @@ class TimeForm(forms.Form):
             choices = [('', '<None>')] + [(a, a) for a in names]
             self.fields[att] = forms.ChoiceField(
                 choices=choices, required=False)
+
+    @property
+    def time_names(self):
+        return self._time_names
+
+    @property
+    def text_names(self):
+        return self._text_names
+
+    @property
+    def year_names(self):
+        return self._year_names
 
     def clean(self):
         starts = self._resolve_attribute_and_type(
@@ -209,4 +221,6 @@ class TimeForm(forms.Form):
 
 
 class SRSForm(forms.Form):
-    srs = forms.CharField(required=True)
+    source = forms.CharField(required=True)
+
+    target = forms.CharField(required=False)

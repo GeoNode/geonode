@@ -38,6 +38,14 @@ from geonode.base.models import HierarchicalKeyword
 
 register = template.Library()
 
+FACETS = {
+    'raster': 'Raster Layer',
+    'vector': 'Vector Layer',
+    'vector_time': 'Vector Temporal Serie',
+    'remote': 'Remote Layer',
+    'wms': 'WMS Cascade Layer'
+}
+
 
 @register.assignment_tag
 def num_ratings(obj):
@@ -337,9 +345,16 @@ def facets(context):
         counts = layers.values('storeType').annotate(count=Count('storeType'))
         count_dict = dict([(count['storeType'], count['count']) for count in counts])
 
+        vector_time_series = layers.exclude(has_time=False).filter(storeType='dataStore'). \
+            values('storeType').annotate(count=Count('storeType'))
+
+        if vector_time_series:
+            count_dict['vectorTimeSeries'] = vector_time_series[0]['count']
+
         facets = {
             'raster': count_dict.get('coverageStore', 0),
             'vector': count_dict.get('dataStore', 0),
+            'vector_time': count_dict.get('vectorTimeSeries', 0),
             'remote': count_dict.get('remoteStore', 0),
             'wms': count_dict.get('wmsStore', 0),
         }
@@ -526,9 +541,18 @@ def facets(context):
                 access="private").count()
 
             facets['layer'] = facets['raster'] + \
-                facets['vector'] + facets['remote'] + facets['wms']
+                facets['vector'] + facets['remote'] + facets['wms'] + \
+                facets['vector_time']
 
     return facets
+
+
+@register.filter(is_safe=True)
+def get_facet_title(value):
+    """Converts a facet_type into a human readable string"""
+    if value in FACETS.keys():
+        return FACETS[value]
+    return value
 
 
 @register.assignment_tag(takes_context=True)
