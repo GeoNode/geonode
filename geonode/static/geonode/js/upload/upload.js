@@ -84,22 +84,26 @@ define(['underscore',
 
         for (name in files) {
             // filter out the prototype properties
-
             if (files.hasOwnProperty(name)) {
-
                 // check to see if the layer was already defined
-
                 if (layers.hasOwnProperty(name)) {
                     info = layers[name];
                     $.merge(info.files, files[name]);
                     info.displayFiles();
                 } else {
-                    info = new LayerInfo({
-                        name: name,
-                        files: files[name]
-                    });
-                    info.collectErrors();
-                    layers[name] = info;
+                    if (Object.keys(layers).length == 0) {
+                        info = new LayerInfo({
+                            name: name,
+                            files: files[name]
+                        });
+                        info.collectErrors();
+                        layers[name] = info;
+                    } else {
+                        log_error({
+                            title: 'Wrong selection',
+                            message: gettext('Only one Layer at a time can be uploaded!')
+                        });
+                    }
                 }
             }
         }

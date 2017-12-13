@@ -955,10 +955,10 @@ GeoNode.Composer = window.GeoExplorer && Ext.extend(GeoExplorer.Composer, {
             actionTarget: ["layers.contextMenu"]
         }, {
             ptype: "gxp_getfeedfeatureinfo"
-        }/* - TEMPORARLY DISABLED GXPLORER PLAYBACK - ,{
+        }, {
 	          ptype: "gxp_playback",
 	          outputTarget: "paneltbar"
-        }*/);
+        });
         GeoNode.Composer.superclass.loadConfig.apply(this, arguments);
         for (key in this.tools) {
             var tool = this.tools[key];
@@ -1010,6 +1010,7 @@ GeoNode.Viewer = window.GeoExplorer && Ext.extend(GeoExplorer.Viewer, {
                  config.map.layers = newLayers;
              }
          }
+
          for (var i=0, ii=config.viewerTools.length; i<ii; i++) {
             if (config.viewerTools[i].ptype === "gxp_styler") {
                 config.viewerTools[i].rasterStyling = true;
