@@ -523,7 +523,8 @@ def pre_save_layer(instance, sender, **kwargs):
         if instance.is_remote:
             instance.alternate = instance.name
         else:
-            instance.alternate = 'geonode:%s' % instance.name
+            # use workspace instead of hardcoded geonode
+            instance.alternate = '%s:%s' % (settings.DEFAULT_WORKSPACE, instance.name)
 
     base_file, info = instance.get_base_file()
 

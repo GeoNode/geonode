@@ -341,7 +341,8 @@ def set_geofence_all(instance):
                 """
                 rules_count = get_geofence_rules_count()
                 headers = {'Content-type': 'application/xml'}
-                payload = "<Rule><priority>" + str(rules_count - 1) + "</priority><workspace>geonode</workspace><layer>"
+                payload = "<Rule><priority>" + str(rules_count - 1) + \
+                          "</priority><workspace>" + settings.DEFAULT_WORKSPACE + "</workspace><layer>"
                 payload += resource.layer.name
                 payload += "</layer><access>ALLOW</access></Rule>"
 
@@ -388,7 +389,7 @@ def set_geofence_owner(instance, username, view_perms=False, download_perms=Fals
                 payload = "<priority>" + str(rules_count - 1) + "</priority>"
                 if username:
                     payload += "<userName>" + username + "</userName>"
-                payload += "<workspace>geonode</workspace>"
+                payload += "<workspace>" + settings.DEFAULT_WORKSPACE + "</workspace>"
                 payload += "<layer>" + resource.layer.name + "</layer>"
                 payload += "<access>ALLOW</access>"
 
@@ -494,7 +495,7 @@ def set_geofence_group(instance, groupname, view_perms=False, download_perms=Fal
                 rules_count = get_geofence_rules_count()
                 payload = "<priority>" + str(rules_count - 1) + "</priority>"
                 payload += "<roleName>ROLE_" + groupname.upper() + "</roleName>"
-                payload += "<workspace>geonode</workspace><layer>"
+                payload += "<workspace>" + settings.DEFAULT_WORKSPACE + "</workspace><layer>"
                 payload += resource.layer.name + "</layer><access>ALLOW</access>"
 
                 if view_perms and download_perms:

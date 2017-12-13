@@ -158,7 +158,7 @@ def layer_style_upload(request, layername):
     else:
         try:
             cat = gs_catalog
-            cat.create_style(name, sld, raw=True)
+            cat.create_style(name, sld, raw=True, workspace=settings.DEFAULT_WORKSPACE)
             layer.styles = layer.styles + \
                 [type('style', (object,), {'name': name})]
             cat.save(layer.publishing)
@@ -194,7 +194,10 @@ def layer_style_manage(request, layername):
                 logger.warn(
                     'Unable to set the default style.  Ensure Geoserver is running and that this layer exists.')
 
-            all_available_gs_styles = cat.get_styles()
+            # Ahmed Nour:
+            # Get public styles also
+            all_available_gs_styles = cat.get_styles(settings.DEFAULT_WORKSPACE)
+            all_available_gs_styles += cat.get_styles()
             gs_styles = []
             for style in all_available_gs_styles:
                 sld_title = style.name
@@ -256,10 +259,11 @@ def layer_style_manage(request, layername):
             # Save to GeoServer
             cat = gs_catalog
             gs_layer = cat.get_layer(layer.name)
-            gs_layer.default_style = cat.get_style(default_style)
+            gs_layer.default_style = cat.get_style(default_style, workspace=settings.DEFAULT_WORKSPACE) or \
+                cat.get_style(default_style)
             styles = []
             for style in selected_styles:
-                styles.append(cat.get_style(style))
+                styles.append(cat.get_style(style, workspace=settings.DEFAULT_WORKSPACE) or cat.get_style(style))
             gs_layer.styles = styles
             cat.save(gs_layer)
 
@@ -366,7 +370,7 @@ def style_change_check(request, path):
     return authorized
 
 
-def geoserver_rest_proxy(request, proxy_path, downstream_path):
+def geoserver_rest_proxy(request, proxy_path, downstream_path, workspace=None):
 
     if not request.user.is_authenticated():
         return HttpResponse(
