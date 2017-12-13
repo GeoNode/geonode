@@ -604,12 +604,12 @@ def final_step(upload_session, user):
     style = None
     if sld is not None:
         try:
-            cat.create_style(name, sld, raw=True)
+            cat.create_style(name, sld, raw=True, workspace=settings.DEFAULT_WORKSPACE)
         except geoserver.catalog.ConflictingDataError as e:
             msg = 'There was already a style named %s in GeoServer, try using another name: "%s"' % (
                 name, str(e))
             try:
-                cat.create_style(name + '_layer', sld, raw=True)
+                cat.create_style(name + '_layer', sld, raw=True, workspace=settings.DEFAULT_WORKSPACE)
             except geoserver.catalog.ConflictingDataError as e:
                 msg = 'There was already a style named %s in GeoServer, cannot overwrite: "%s"' % (
                     name, str(e))
@@ -618,13 +618,14 @@ def final_step(upload_session, user):
 
         if style is None:
             try:
-                style = cat.get_style(name)
+                style = cat.get_style(name, workspace=settings.DEFAULT_WORKSPACE) or cat.get_style(name)
             except BaseException:
                 logger.warn('Could not retreive the Layer default Style name')
                 # what are we doing with this var?
                 msg = 'No style could be created for the layer, falling back to POINT default one'
                 try:
-                    style = cat.get_style(name + '_layer')
+                    style = cat.get_style(name + '_layer', workspace=settings.DEFAULT_WORKSPACE) or \
+                            cat.get_style(name + '_layer')
                 except BaseException:
                     style = cat.get_style('point')
                     logger.warn(msg)

@@ -398,16 +398,14 @@
                         </div>
                         <hr id="hr_filter_layer" />
                       </div>
-                      {% if links %}
-                        <li>
-                            <h4>{% trans "Pick your download format:" %}</h4>
-                            <ul>
-                              {% for link in links_download %}
-                              <li><a href="{{ link.url }}" target="_blank" id="{{ link.name | slugify }}" class="urls">{% trans link.name %}</a></li>
-                              {% endfor %}
-                            </ul>
-                        </li>
-                      {% endif %}
+                      <li>
+                          <h4>{% trans "Pick your download format:" %}</h4>
+                          <ul>
+                            {% for link in links_download %}
+                            <li><a href="{{ link.url }}" target="_blank" id="{{ link.name | slugify }}" class="urls">{% trans link.name %}</a></li>
+                            {% endfor %}
+                          </ul>
+                      </li>
                     </div>
                 {% endif %}
                 </div>
@@ -421,6 +419,10 @@
     </div>
 
     {% if GEOSERVER_BASE_URL %}
+      {% get_obj_perms request.user for resource.layer as "layer_perms" %}
+    {% endif %}
+
+    {% if OGC_SERVER.default.BACKEND == 'geonode.qgis_server' %}
       {% get_obj_perms request.user for resource.layer as "layer_perms" %}
     {% endif %}
 
@@ -465,6 +467,7 @@
                 </div>
                 {% endif %}
               {% elif OGC_SERVER.default.BACKEND == 'geonode.qgis_server' and not resource.service %}
+
                 {% if "change_layer_style" in layer_perms and preview == 'leaflet' %}
                 <div class="col-sm-3">
                   <i class="fa fa-tint fa-3x"></i>
