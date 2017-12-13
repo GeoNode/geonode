@@ -1134,7 +1134,8 @@ def geoserver_upload(
     # Get a short handle to the gsconfig geoserver catalog
     cat = gs_catalog
 
-    workspace = cat.get_default_workspace()
+    # Ahmed Nour: get workspace by name instead of get default one.
+    workspace = cat.get_workspace(settings.DEFAULT_WORKSPACE)
     # Check if the store exists in geoserver
     try:
         store = get_store(cat, name, workspace=workspace)
@@ -1279,7 +1280,7 @@ def geoserver_upload(
         try:
             style = cat.get_style(name, workspace=settings.DEFAULT_WORKSPACE) or cat.get_style(name)
             overwrite = style or False
-            cat.create_style(name, sld, overwrite=overwrite, raw=True)
+            cat.create_style(name, sld, overwrite=overwrite, raw=True, workspace=settings.DEFAULT_WORKSPACE)
         except geoserver.catalog.ConflictingDataError as e:
             msg = ('There was already a style named %s in GeoServer, '
                    'try to use: "%s"' % (name + "_layer", str(e)))
@@ -1295,7 +1296,7 @@ def geoserver_upload(
             try:
                 style = cat.get_style(name, workspace=settings.DEFAULT_WORKSPACE) or cat.get_style(name)
                 overwrite = style or False
-                cat.create_style(name, sld, overwrite=overwrite, raw=True)
+                cat.create_style(name, sld, overwrite=overwrite, raw=True, workspace=settings.DEFAULT_WORKSPACE)
             except:
                 try:
                     style = cat.get_style(name + '_layer', workspace=settings.DEFAULT_WORKSPACE) or \
