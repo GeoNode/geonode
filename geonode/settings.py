@@ -805,7 +805,7 @@ ES_SEARCH = strtobool(os.getenv('ES_SEARCH', 'False'))
 
 if ES_SEARCH:
     INSTALLED_APPS = (
-        'elasticsearch-app',
+        'elasticsearch_app',
     ) + INSTALLED_APPS
 
 # Haystack Search Backend Configuration. To enable,
