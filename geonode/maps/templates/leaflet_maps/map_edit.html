@@ -55,8 +55,8 @@
                         <label for="add_layer_select">Available layers</label>
                         <select class="form-control" id="add_layer_select">
                             {% for layer in layers %}
-                                <option value="{{ layer.typename }}"
-                                        id="option_{{ layer.typename }}">{{ layer.title }}</option>
+                                <option value="{{ layer.alternate }}"
+                                        id="option_{{ layer.alternate }}">{{ layer.title }}</option>
                             {% endfor %}
                         </select>
                         <input id="add_layer_button" type="submit" class="btn btn-info" value="Add Layer">
@@ -340,13 +340,13 @@
 
         function populate_background_layer(the_list, the_dict) {
             console.log(the_list);
-            for (i = 0; i < the_list.length; i++) {
+            for (var i = 0; i < the_list.length; i++) {
                 var background_layer_name = the_list[i];
                 var background_layer = the_dict[background_layer_name];
                 if (background_layer['group'] != 'background') {
                     continue;
                 }
-                if (background_layer['visibility'] == "True") {
+                if (background_layer['visibility']) {
                     active_background_layer = background_layer;
                     $("#background-layer-list").prepend(
                             '<li>' +
@@ -356,17 +356,6 @@
                             background_layer['title'] +
                             '</li>'
                     );
-                } else if (background_layer['visibility']) {
-                    active_background_layer = background_layer;
-                    $("#background-layer-list").prepend(
-                            '<li>' +
-                            '<input type="radio" name="background-layer" value="' +
-                            background_layer_name +
-                            '" checked="checked">' +
-                            background_layer['title'] +
-                            '</li>'
-                    );
-
                 } else {
                     $("#background-layer-list").prepend(
                             '<li>' +
@@ -386,6 +375,16 @@
                 new_background_layer.addTo(map);
                 new_background_layer.setZIndex(0);
                 active_background_layer = new_background_layer;
+                // clear all visibility state
+                for (i = 0; i < all_layers_list.length; i++) {
+                    var key = all_layers_list[i];
+                    var layer_object = all_layers[key];
+                    if(layer_object.group == 'background'){
+                        layer_object.visibility = false;
+                    }
+                }
+                // set new state
+                all_layers[this.value].visibility = true;
             });
         }
 
@@ -473,30 +472,62 @@
                 }
             }); // That's all
 
-            {% for layer in map_layers %}
-                if ("{{ layer.group }}" == 'background') {
-                    all_layers_list.push("{{ layer.name }}");
-                    background_tile = L.tileLayer("{{ layer.ows_url }}");
-                    all_layers["{{ layer.name }}"] = {
-                        'title': '{{ layer.name }}',
-                        'url': '{{ layer.ows_url }}',
-                        'group': '{{ layer.group }}',
-                        'visibility': '{{ layer.visibility }}',
-                        'layer': background_tile,
-                        'zIndex': parseInt("{{ layer.stack_order }}")
-                    };
-                    if ("{{ layer.visibility }}" == 'True') {
-                        background_tile.addTo(map);
+            /**
+             * helper function to register background layer
+             * @param layer_object: object with members;
+             *  {
+             *      name
+             *      title
+             *      url
+             *      group
+             *      visibility
+             *      background
+             *      layer,
+             *      zIndex
+             *  }
+             * @private
+             */
+            function _register_layer(layer_object) {
+                if(layer_object.group == 'background'){
+                    all_layers_list.push(layer_object.name);
+                    all_layers[layer_object.name] = layer_object;
+                    if(layer_object.visibility){
+                        console.log(layer_object)
+                        layer_object.layer.addTo(map);
                     }
-                } else {
-                    console.log("{{ layer.name }} " + "{{ layer.stack_order }}");
-                    {% if layer.visibility %}
-                        add_layer("{{ layer.name }}", true, parseInt("{{ layer.stack_order }}"));
-                    {% else %}
-                        add_layer("{{ layer.name }}", false, parseInt("{{ layer.stack_order }}"));
-                    {% endif %}
                 }
-            {% endfor %}
+                else{
+                    var show_layer = false;
+                    if(layer_object.visibility) {
+                        show_layer = true;
+                    }
+                    add_layer(layer_object.name, show_layer, layer_object.zIndex);
+                }
+            }
+
+            var layer_objects = [
+                {# Serialize objects into javascript object #}
+                {% for layer in map_layers %}
+                    {
+                        name: '{{ layer.name }}',
+                    {% if layer.title  %}
+                        title: '{{ layer.title }}',
+                    {% else %}
+                        title: '{{ layer.name }}',
+                    {% endif %}
+                        url: '{{ layer.ows_url }}',
+                        group: '{{ layer.group }}',
+                        visibility: {{ layer.visibility|lower }},
+                        layer: L.tileLayer('{{ layer.ows_url }}'),
+                        zIndex: parseInt('{{ layer.stack_order }}'),
+                        background: '{{ layer.background }}'
+
+                    }{% if not forloop.last %},{% endif %}
+                {% endfor %}
+            ];
+            for(var i=0;i<layer_objects.length;i++){
+                _register_layer(layer_objects[i]);
+            }
             populate_background_layer(all_layers_list, all_layers);
             console.log("{{ map.center_x }}, {{ map.center_y }}), {{ map.zoom }}");
             map.setView(new L.LatLng({{ map.center_x }}, {{ map.center_y }}), {{ map.zoom }});
