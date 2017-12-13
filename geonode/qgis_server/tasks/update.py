@@ -24,7 +24,6 @@ import socket
 
 import requests
 from celery.task import task
-from geonode.qgis_server.models import QGISServerLayer
 from requests.exceptions import HTTPError
 
 
