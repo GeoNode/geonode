@@ -1,6 +1,6 @@
 ﻿repositoryModule.factory('layerRepository', [
-    '$http', 'urlResolver', 'dirtyManager', '$window', 'surfFeatureFactory', '$q', '$window',
-    function($http, urlResolver, dirtyManager, $window, surfFeatureFactory, $q, $window) {
+    '$http', 'urlResolver', 'dirtyManager', '$window', 'surfFeatureFactory', '$q', '$window', '$cookies',
+    function($http, urlResolver, dirtyManager, $window, surfFeatureFactory, $q, $window, $cookies) {
         return {
 
             getFids: function(layerId) {
@@ -14,15 +14,29 @@
                     dirtyManager.setDirty(true);
                 });
             },
+            // saveProperties: function(layerId, layerName, zoomLevel, properties, sldStyle, selectionStyleSld, labelingSld, callBack) {
+            //     //old
+            //     return $http.post(urlResolver.resolveLayer('SaveProperties'), {
+            //         LayerId: layerId,
+            //         Name: layerName,
+            //         ZoomLevel: zoomLevel,
+            //         StyleString: angular.toJson(properties),
+            //         SldStyle: sldStyle,
+            //         SelectionStyleSld: selectionStyleSld,
+            //         LabelingSld: labelingSld
+            //     }).success(function() {
+            //         dirtyManager.setDirty(true);
+            //         if (callBack) {
+            //             callBack();
+            //         }
+            //     });
+            // },
             saveProperties: function(layerId, layerName, zoomLevel, properties, sldStyle, selectionStyleSld, labelingSld, callBack) {
-                return $http.post(urlResolver.resolveLayer('SaveProperties'), {
-                    LayerId: layerId,
-                    Name: layerName,
-                    ZoomLevel: zoomLevel,
-                    StyleString: angular.toJson(properties),
-                    SldStyle: sldStyle,
-                    SelectionStyleSld: selectionStyleSld,
-                    LabelingSld: labelingSld
+                //new
+                return $http.post('/gs/rest/styles', sldStyle, {
+                    headers: {
+                        'X-CSRFToken': $cookies.get('csrftoken')
+                    }
                 }).success(function() {
                     dirtyManager.setDirty(true);
                     if (callBack) {

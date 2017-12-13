@@ -67,7 +67,6 @@
                         }
                     }
                 }).result.then(function(result) {
-
                     var updatedLayer = result.updatedNode.layer;
                     var originalLayer = mapService.getLayer(updatedLayer.id);
                     var classifierDirty = (function() {

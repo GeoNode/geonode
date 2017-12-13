@@ -298,6 +298,7 @@ def style_change_check(request, path):
     # we will suppose that a user can create a new style only if he is an
     # authenticated (we need to discuss about it)
     authorized = True
+    # impor t ipdb; ipdb.set_trace()
     if request.method == 'POST':
         # new style
         if not request.user.is_authenticated:
@@ -325,7 +326,7 @@ def style_change_check(request, path):
 
 
 def geoserver_rest_proxy(request, proxy_path, downstream_path):
-
+    # import pdb;pdb.set_trace()
     if not request.user.is_authenticated():
         return HttpResponse(
             "You must be logged in to access GeoServer",
@@ -363,7 +364,7 @@ def geoserver_rest_proxy(request, proxy_path, downstream_path):
                     status=401)
             if downstream_path == 'rest/styles':
                 affected_layers = style_update(request, url)
-
+    # import pdb;pdb.set_trace()
     response, content = http.request(
         url, request.method,
         body=request.body or None,

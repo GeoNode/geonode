@@ -1533,6 +1533,7 @@ def style_update(request, url):
     request.body, which is in this format:
     """
     affected_layers = []
+    import pdb;pdb.set_trace()
     if request.method in ('POST', 'PUT'):  # we need to parse xml
         # Need to remove NSx from IE11
         if "HTTP_USER_AGENT" in request.META:

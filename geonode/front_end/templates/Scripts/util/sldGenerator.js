@@ -12,7 +12,7 @@
                 [
                     style.graphicName, style.strokeColor, style.strokeWidth,
                     strokeDashstyles.getDashedArray(style),
-                    style.fillColor, fillOpacity, style.pointRadius,
+                    style.fillColor, fillOpacity, style.pointRadius, style.name, style.userStyle,
                     sldTemplateService.wrapWithFilterTag(getClassificationSldFilter(classification))
                 ]);
             } else if (style.textGraphicName && !style.textFontAwesome) {

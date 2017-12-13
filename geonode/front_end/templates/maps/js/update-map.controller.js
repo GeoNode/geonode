@@ -41,6 +41,7 @@
             if (!layer.bbox) {
                 layer.bbox = [-9818543.41779904, 5183814.6260749, -9770487.95134629, 5235883.07751104];
             }
+            var userStyle = layer.name + '_' + _uuid();
             return {
                 "LayerId": _uuid(),
                 "Name": layer.name,
@@ -51,39 +52,43 @@
                 // "DataId": "s_facf34ee54914605943fe987f5b3637c",
                 "ShapeType": "point",
                 "Style": { /* not available */
-                    //     "Name": "s_a5170c56d2a64a0c8ee7dff53d916e71",
-                    //     "default": {
-                    //         "fillPattern": null,
-                    //         "textFillColor": "#222026",
-                    //         "text": null,
-                    //         "pixelDensity": null,
-                    //         "strokeDashstyle": "solid",
-                    //         "strokeWidth": 1.0,
-                    //         "strokeColor": "#5EF1F2",
-                    //         "strokeOpacity": null,
-                    //         "fillOpacity": 0.75,
-                    //         "fillColor": "#2f7979",
-                    //         "pointRadius": 14.0,
-                    //         "graphicName": "circle",
-                    //         "textGraphicName": null,
-                    //         "externalGraphic": null
-                    //     },
-                    //     "select": {
-                    //         "fillPattern": "",
-                    //         "textFillColor": "#222026",
-                    //         "text": null,
-                    //         "pixelDensity": null,
-                    //         "strokeDashstyle": "solid",
-                    //         "strokeWidth": 1.0,
-                    //         "strokeColor": "#0000ff",
-                    //         "strokeOpacity": 1.0,
-                    //         "fillOpacity": 0.4,
-                    //         "fillColor": "#0000ff",
-                    //         "pointRadius": 6.0,
-                    //         "graphicName": "circle",
-                    //         "textGraphicName": null,
-                    //         "externalGraphic": null
-                    //     },
+                        "Name": _uuid(),
+                        "default": {
+                            "fillPattern": null,
+                            "textFillColor": "#222026",
+                            "text": null,
+                            "pixelDensity": null,
+                            "strokeDashstyle": "solid",
+                            "strokeWidth": 1.0,
+                            "strokeColor": "#5EF1F2",
+                            "strokeOpacity": null,
+                            "fillOpacity": 0.75,
+                            "fillColor": "#2f7979",
+                            "pointRadius": 14.0,
+                            "graphicName": "circle",
+                            "textGraphicName": null,
+                            "externalGraphic": null,
+                            'name': layer.name,
+                            'userStyle': userStyle
+                        },
+                        "select": {
+                            "fillPattern": "",
+                            "textFillColor": "#222026",
+                            "text": null,
+                            "pixelDensity": null,
+                            "strokeDashstyle": "solid",
+                            "strokeWidth": 1.0,
+                            "strokeColor": "#0000ff",
+                            "strokeOpacity": 1.0,
+                            "fillOpacity": 0.4,
+                            "fillColor": "#0000ff",
+                            "pointRadius": 6.0,
+                            "graphicName": "circle",
+                            "textGraphicName": null,
+                            "externalGraphic": null,
+                            'name': layer.name,
+                            'userStyle': userStyle
+                        },
                     "labelConfig": {
                         //         "attribute": null,
                         "visibilityZoomLevel": 0,
