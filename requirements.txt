@@ -38,6 +38,7 @@ django-geonode-client==0.0.15
 django-guardian==1.4.9
 django-haystack==2.6.0
 django-import-export==0.5.1
+django-invitations==1.9.1
 django-jsonfield==1.0.1
 django-jsonfield-compat==0.4.4
 django-leaflet==0.22.0
@@ -54,12 +55,6 @@ django-suit==0.2.15
 django-taggit==0.22.1
 django-tastypie==0.14.0
 django-treebeard==4.1.2
-# django-user-accounts==2.0.2
-# we can't use django-user-account until upstream merge changes for geonode.
-# this is temporary solution
-# git+git://github.com/cezio/django-user-accounts@252_255_mixed#egg=django-user-accounts-2.0.2dev
-# updated to https://github.com/geosolutions-it/geonode-user-accounts.git
-geonode-user-accounts==1.0.15
 django-utils==0.0.2
 elasticsearch==2.4.0
 et-xmlfile==1.0.1
@@ -73,7 +68,8 @@ geonode-announcements==1.0.8
 geonode-arcrest==10.2
 geonode-avatar==2.1.6
 geonode-dialogos==0.7
-geonode-user-messages==0.1.10
+geonode-user-messages==0.1.11
+geonode-user-accounts==1.0.15
 gisdata==0.5.4
 gsconfig==1.0.8
 gn-gsimporter==1.0.1
@@ -95,7 +91,6 @@ Pillow==3.3.1
 Pinax==0.9a2
 # pinax-comments==0.1.1
 pinax-notifications==4.0.0
-pinax-ratings==2.0.0
 pinax-theme-bootstrap==8.0.1
 psycopg2==2.7.3.1
 pycsw==2.0.3

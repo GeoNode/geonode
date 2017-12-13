@@ -98,6 +98,7 @@ setup(name='GeoNode',
         "django-reversion<=2.0.10",
         "django-suit<=0.2.15",
         "django-tastypie<=0.14.0",  # python-django-tastypie (0.12.0, 0.12.2 in our ppa)
+        "django-invitations==1.9.1",
         "django-oauth-toolkit>=0.10.0,<1.0",  # python-django-oauth-toolkit (0.10.0)
         "oauthlib<=2.0.2",
 
@@ -116,7 +117,6 @@ setup(name='GeoNode',
         "Pinax<=0.9a2",
         # pinax-comments==0.1.1
         "pinax-notifications<=4.0.0",
-        # pinax-ratings==2.0.0
         "pinax-theme-bootstrap<=8.0.1",
         "django-bootstrap-form<=3.3",
         "django-forms-bootstrap<=3.1.0",
@@ -134,21 +134,11 @@ setup(name='GeoNode',
 
         # GeoNode org maintained apps.
         "django-geoexplorer>=4.0.0,<5.0",
-        "geonode-user-messages<=0.1.10",  # (0.1.3 in ppa) FIXME
+        "geonode-user-messages<=0.1.11",  # (0.1.3 in ppa) FIXME
         "geonode-avatar<=2.1.6",  # (2.1.5 in ppa) FIXME
         "geonode-announcements<=1.0.8",
         "geonode-agon-ratings<=0.3.5",  # (0.3.1 in ppa) FIXME
-
-        # we can't use django-user-account until upstream merge changes for geonode.
-        # this is temporary solution
-        # "django-user-accounts==2.0.2dev",
-        # django-user-accounts==2.0.2
-        # we can't use django-user-account until upstream merge changes for geonode.
-        # this is temporary solution
-        # git+git://github.com/cezio/django-user-accounts@252_255_mixed#egg=django-user-accounts-2.0.2dev
-        # updated to https://github.com/geosolutions-it/geonode-user-accounts.git
-        "geonode-user-accounts>=1.0.13",
-
+        "geonode-user-accounts==1.0.15",
         "geonode-arcrest>=10.0",
         "geonode-dialogos>=0.5",
         "gsconfig<2.0.0",  # (1.0.3 in ppa) FIXME
