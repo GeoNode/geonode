@@ -48,6 +48,8 @@ try:
 except ImportError:
     from paver.easy import pushd
 
+from geonode.settings import OGC_SERVER, INSTALLED_APPS
+
 assert sys.version_info >= (2, 6), \
     SystemError("GeoNode Build requires python 2.6 or better")
 
@@ -83,8 +85,6 @@ def grab(src, dest, name):
 ])
 def setup_geoserver(options):
     """Prepare a testing instance of GeoServer."""
-    from geonode.settings import INSTALLED_APPS
-
     # only start if using Geoserver backend
     if 'geonode.geoserver' not in INSTALLED_APPS:
         return
@@ -130,8 +130,6 @@ def setup_geoserver(options):
 @task
 def setup_qgis_server(options):
     """Prepare a testing instance of QGIS Server."""
-    from geonode.settings import INSTALLED_APPS
-
     # only start if using QGIS Server backend
     if 'geonode.qgis_server' not in INSTALLED_APPS:
         return
@@ -325,6 +323,9 @@ def updategeoip(options):
 
 
 @task
+@cmdopts([
+    ('settings', 's', 'Specify custom DJANGO_SETTINGS_MODULE')
+])
 def sync(options):
     """
     Run the migrate and migrate management commands to create and migrate a DB
@@ -436,8 +437,6 @@ def stop_geoserver():
     """
     Stop GeoServer
     """
-    from geonode.settings import INSTALLED_APPS
-
     # only start if using Geoserver backend
     if 'geonode.geoserver' not in INSTALLED_APPS:
         return
@@ -472,8 +471,6 @@ def stop_qgis_server():
     """
     Stop QGIS Server Backend.
     """
-    from geonode.settings import INSTALLED_APPS
-
     # only start if using QGIS Server backend
     if 'geonode.qgis_server' not in INSTALLED_APPS:
         return
@@ -537,9 +534,6 @@ def start_geoserver(options):
     """
     Start GeoServer with GeoNode extensions
     """
-
-    from geonode.settings import OGC_SERVER, INSTALLED_APPS
-
     # only start if using Geoserver backend
     if 'geonode.geoserver' not in INSTALLED_APPS:
         return
@@ -651,8 +645,6 @@ def start_geoserver(options):
 ])
 def start_qgis_server():
     """Start QGIS Server instance with GeoNode related plugins."""
-    from geonode.settings import INSTALLED_APPS
-
     # only start if using QGIS Serrver backend
     if 'geonode.qgis_server' not in INSTALLED_APPS:
         return
@@ -707,11 +699,11 @@ def test_integration(options):
     success = False
     try:
         if name == 'geonode.tests.csw' or name == 'geonode.upload.tests.integration':
-            call_task('sync', options={'settings': options.get('settings', settings)})
-            call_task('start', options={'settings': options.get('settings', settings)})
+            call_task('sync', options={'settings': settings})
+            call_task('start', options={'settings': settings})
             sh('sleep 30')
-            if name == 'geonode.tests.csw':
-                call_task('setup_data', options={'settings': options.get('settings', settings)})
+            if name != 'geonode.upload.tests.integration':
+                call_task('setup_data', options={'settings': settings})
 
         if settings:
             settings = 'DJANGO_SETTINGS_MODULE=%s' % settings
@@ -752,8 +744,6 @@ def run_tests(options):
     call_task('test', options={'prefix': prefix})
     call_task('test_integration')
     call_task('test_integration', options={'name': 'geonode.tests.csw'})
-
-    from geonode.settings import OGC_SERVER, INSTALLED_APPS
 
     # only start if using Geoserver backend
     if 'geonode.geoserver' in INSTALLED_APPS:
