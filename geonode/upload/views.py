@@ -51,7 +51,7 @@ from django.utils.html import escape
 from django.shortcuts import get_object_or_404, render_to_response
 from django.template import RequestContext
 from django.views.generic import CreateView, DeleteView
-from geonode.utils import  unzip_file
+from geonode.utils import unzip_file
 from geonode.base.enumerations import CHARSETS
 
 from .forms import SRSForm, LayerUploadForm, UploadFileForm
