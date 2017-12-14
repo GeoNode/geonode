@@ -162,6 +162,7 @@ def layer_upload(request, template='upload/layer_upload.html'):
     elif request.method == 'POST':
         form = NewLayerUploadForm(request.POST, request.FILES)
         tempdir = None
+        saved_layer = None
         errormsgs = []
         out = {'success': False}
         if form.is_valid():
