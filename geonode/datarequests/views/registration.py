@@ -385,7 +385,7 @@ def email_verification_confirm(request):
                     if profile_request.data_request:
                         profile_request.data_request.profile = profile_request.profile
 
-                        if data_request.jurisdiction_shapefile:
+                        if profile_request.data_request.jurisdiction_shapefile:
                             profile_request.data_request.assign_jurisdiction() #assigns/creates jurisdiction object
                             assign_grid_refs.delay(profile_request.data_request.profile)
                         else:
