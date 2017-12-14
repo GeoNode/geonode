@@ -18,8 +18,10 @@
 #
 #########################################################################
 import re
+import os
 import json
 import logging
+import zipfile
 import httplib2
 import traceback
 
@@ -31,7 +33,7 @@ from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render_to_response
 from django.template import RequestContext
 from geoserver.catalog import FailedRequestError
-from geonode.utils import json_response as do_json_response
+from geonode.utils import json_response as do_json_response, unzip_file
 from geonode.geoserver.helpers import gs_catalog, gs_uploader, ogc_server_settings
 
 from .forms import TimeForm
@@ -507,7 +509,22 @@ def _get_time_dimensions(layer, upload_session):
 def _get_layer_values(layer, upload_session, expand=0):
     layer_values = []
     if upload_session:
-        inDataSource = ogr.Open(upload_session.base_file[0].base_file)
+        absolute_base_file = upload_session.base_file[0].base_file
+        tempdir = upload_session.tempdir
+
+        if not os.path.isfile(absolute_base_file):
+            tmp_files = [f for f in os.listdir(tempdir) if os.path.isfile(os.path.join(tempdir, f))]
+            for f in tmp_files:
+                if zipfile.is_zipfile(os.path.join(tempdir, f)):
+                    absolute_base_file = unzip_file(os.path.join(tempdir, f), '.shp', tempdir=tempdir)
+                    absolute_base_file = os.path.join(tempdir,
+                                                      absolute_base_file)
+        elif zipfile.is_zipfile(absolute_base_file):
+            absolute_base_file = unzip_file(upload_session.base_file[0].base_file,
+                                            '.shp', tempdir=tempdir)
+            absolute_base_file = os.path.join(tempdir,
+                                              absolute_base_file)
+        inDataSource = ogr.Open(absolute_base_file)
         lyr = inDataSource.GetLayer(str(layer.name))
         layer_values = []
         limit = 100
@@ -530,6 +547,8 @@ def layer_eligible_for_time_dimension(
     layer_values = values or _get_layer_values(layer, upload_session)
     att_list = _get_time_dimensions(layer, upload_session)
     _is_eligible = att_list or False
+    if upload_session and _is_eligible:
+        upload_session.time = True
     return (_is_eligible, layer_values)
 
 

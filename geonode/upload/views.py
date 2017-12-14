@@ -37,6 +37,7 @@ import os
 import re
 import json
 import logging
+import zipfile
 import traceback
 import gsimporter
 
@@ -50,6 +51,7 @@ from django.utils.html import escape
 from django.shortcuts import get_object_or_404, render_to_response
 from django.template import RequestContext
 from django.views.generic import CreateView, DeleteView
+from geonode.utils import  unzip_file
 from geonode.base.enumerations import CHARSETS
 
 from .forms import SRSForm, LayerUploadForm, UploadFileForm
@@ -136,6 +138,11 @@ def save_step_view(req, session):
 
         if base_file[0].sld_files:
             sld = base_file[0].sld_files[0]
+        if not os.path.isfile(os.path.join(tempdir, base_file[0].base_file)):
+            tmp_files = [f for f in os.listdir(tempdir) if os.path.isfile(os.path.join(tempdir, f))]
+            for f in tmp_files:
+                if zipfile.is_zipfile(os.path.join(tempdir, f)):
+                    unzip_file(os.path.join(tempdir, f), '.shp', tempdir=tempdir)
 
         _log('provided sld is %s' % sld)
         # upload_type = get_upload_type(base_file)

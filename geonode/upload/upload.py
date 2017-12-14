@@ -186,7 +186,6 @@ def upload(
         user = get_default_user()
     if isinstance(user, basestring):
         user = get_user_model().objects.get(username=user)
-
     import_session = save_step(
         user,
         name,
@@ -201,7 +200,6 @@ def upload(
         time_presentation_res=time_presentation_res,
         time_presentation_default_value=time_presentation_default_value,
         time_presentation_reference_value=time_presentation_reference_value)
-
     upload_session = UploaderSession(
         base_file=base_file,
         name=name,
@@ -215,7 +213,6 @@ def upload(
         mosaic_time_regex=mosaic_time_regex,
         mosaic_time_value=mosaic_time_value
     )
-
     time_step(upload_session,
               time_attribute, time_transform_type,
               presentation_strategy, precision_value, precision_step,
