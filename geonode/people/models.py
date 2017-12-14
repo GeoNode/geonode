@@ -137,6 +137,28 @@ class Profile(AbstractUser):
     def location(self):
         return format_address(self.delivery, self.zipcode, self.city, self.area, self.country)
 
+    # elasticsearch_dsl indexing
+    def indexing(self):
+        if settings.ES_SEARCH:
+            from elasticsearch_app.search import ProfileIndex
+            obj = ProfileIndex(
+                meta={'id': self.id},
+                id=self.id,
+                username=self.username,
+                first_name=self.first_name,
+                last_name=self.last_name,
+                profile=self.profile,
+                organization=self.organization,
+                position=self.position,
+                type=self.prepare_type()
+            )
+            obj.save()
+            return obj.to_dict(include_meta=True)
+
+    # elasticsearch_dsl indexing helper functions
+    def prepare_type(self):
+        return "user"
+
 
 def get_anonymous_user_instance(Profile):
     return Profile(pk=-1, username='AnonymousUser')

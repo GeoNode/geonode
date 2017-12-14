@@ -38,6 +38,9 @@ from agon_ratings.models import OverallRating
 from geonode.utils import check_shp_columnnames
 from geonode.security.models import remove_object_permissions
 
+from dialogos.models import Comment
+from django.db.models import Avg
+
 logger = logging.getLogger("geonode.layers.models")
 
 shp_exts = ['.shp', ]
@@ -277,6 +280,147 @@ class Layer(ResourceBase):
         if(self.geogig_enabled):
             return getattr(self.link_set.filter(name__icontains='clone in geogig').first(), 'url', None)
         return None
+
+    # elasticsearch_dsl indexing
+    def indexing(self):
+        if settings.ES_SEARCH:
+            from elasticsearch_app.search import LayerIndex
+            obj = LayerIndex(
+                meta={'id': self.id},
+                id=self.id,
+                abstract=self.abstract,
+                category__gn_description=self.prepare_category_gn_description(),
+                csw_type=self.csw_type,
+                csw_wkt_geometry=self.csw_wkt_geometry,
+                detail_url=self.get_absolute_url(),
+                owner__username=self.prepare_owner(),
+                owner__first_name=self.prepare_owner_first(),
+                owner__last_name=self.prepare_owner_last(),
+                is_published=self.is_published,
+                featured=self.featured,
+                popular_count=self.popular_count,
+                share_count=self.share_count,
+                rating=self.prepare_rating(),
+                srid=self.srid,
+                supplemental_information=self.prepare_supplemental_information(),
+                thumbnail_url=self.thumbnail_url,
+                uuid=self.uuid,
+                title=self.title,
+                date=self.date,
+                type=self.prepare_type(),
+                subtype=self.prepare_subtype(),
+                typename=self.typename,
+                title_sortable=self.prepare_title_sortable(),
+                category=self.prepare_category(),
+                bbox_left=self.bbox_x0,
+                bbox_right=self.bbox_x1,
+                bbox_bottom=self.bbox_y0,
+                bbox_top=self.bbox_y1,
+                temporal_extent_start=self.temporal_extent_start,
+                temporal_extent_end=self.temporal_extent_end,
+                keywords=self.keyword_slug_list(),
+                regions=self.region_name_list(),
+                num_ratings=self.prepare_num_ratings(),
+                num_comments=self.prepare_num_comments(),
+                geogig_link=self.geogig_link,
+                has_time=self.prepare_has_time()
+            )
+            obj.save()
+            return obj.to_dict(include_meta=True)
+
+    # elasticsearch_dsl indexing helper functions
+    def prepare_type(self):
+        return "layer"
+
+    def prepare_subtype(self):
+        if self.storeType == "dataStore":
+            return "vector"
+        elif self.storeType == "coverageStore":
+            return "raster"
+        elif self.storeType == "remoteStore":
+            return "remote"
+        else:
+            return None
+
+    def prepare_rating(self):
+        ct = ContentType.objects.get_for_model(self)
+        try:
+            rating = OverallRating.objects.filter(
+                object_id=self.pk,
+                content_type=ct
+            ).aggregate(r=Avg("rating"))["r"]
+            return float(str(rating or "0"))
+        except OverallRating.DoesNotExist:
+            return 0.0
+
+    def prepare_num_ratings(self):
+        ct = ContentType.objects.get_for_model(self)
+        try:
+            return OverallRating.objects.filter(
+                object_id=self.pk,
+                content_type=ct
+            ).all().count()
+        except OverallRating.DoesNotExist:
+            return 0
+
+    def prepare_num_comments(self):
+        ct = ContentType.objects.get_for_model(self)
+        try:
+            return Comment.objects.filter(
+                object_id=self.pk,
+                content_type=ct
+            ).all().count()
+        except:
+            return 0
+
+    def prepare_title_sortable(self):
+        return self.title.lower()
+
+    # Check to see if either time extent is set on the object,
+    # if so, then it is time enabled.
+    def prepare_has_time(self):
+        try:
+            # if either time field is set to a value then time is enabled.
+            if (self.temporal_extent_start is not None or
+                    self.temporal_extent_end is not None):
+                return True
+        except:
+            # when in doubt, it's false.
+            return False
+
+    def prepare_category(self):
+        if self.category:
+            return self.category.identifier
+        else:
+            return None
+
+    def prepare_category_gn_description(self):
+        if self.category:
+            return self.category.gn_description
+        else:
+            return None
+
+    def prepare_supplemental_information(self):
+        # For some reason this isn't a string
+        return str(self.supplemental_information)
+
+    def prepare_owner(self):
+        if self.owner:
+            return self.owner.username
+        else:
+            return None
+
+    def prepare_owner_first(self):
+        if self.owner.first_name:
+            return self.owner.first_name
+        else:
+            return None
+
+    def prepare_owner_last(self):
+        if self.owner.last_name:
+            return self.owner.last_name
+        else:
+            return None
 
 
 class UploadSession(models.Model):
