@@ -220,8 +220,9 @@ def layer_upload(request, template='upload/layer_upload.html'):
                     layer = cat.get_layer(title)
                     if match is None:
                         try:
-                            cat.create_style(saved_layer.name, sld, raw=True)
-                            style = cat.get_style(saved_layer.name)
+                            cat.create_style(saved_layer.name, sld, raw=True, workspace=settings.DEFAULT_WORKSPACE)
+                            style = cat.get_style(saved_layer.name, workspace=settings.DEFAULT_WORKSPACE) or \
+                                cat.get_style(saved_layer.name)
                             if layer and style:
                                 layer.default_style = style
                                 cat.save(layer)
@@ -229,11 +230,14 @@ def layer_upload(request, template='upload/layer_upload.html'):
                         except Exception as e:
                             logger.exception(e)
                     else:
-                        style = cat.get_style(saved_layer.name)
+                        style = cat.get_style(saved_layer.name, workspace=settings.DEFAULT_WORKSPACE) or \
+                            cat.get_style(saved_layer.name)
                         # style.update_body(sld)
                         try:
-                            cat.create_style(saved_layer.name, sld, overwrite=True, raw=True)
-                            style = cat.get_style(saved_layer.name)
+                            cat.create_style(saved_layer.name, sld, overwrite=True, raw=True,
+                                             workspace=settings.DEFAULT_WORKSPACE)
+                            style = cat.get_style(saved_layer.name, workspace=settings.DEFAULT_WORKSPACE) or \
+                                cat.get_style(saved_layer.name)
                             if layer and style:
                                 layer.default_style = style
                                 cat.save(layer)

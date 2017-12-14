@@ -17,13 +17,18 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
-
+import json
 import re
+
+from django.core.urlresolvers import resolve
 from django.db.models import Q
 from django.http import HttpResponse
 from django.conf import settings
 from django.contrib.staticfiles.templatetags import staticfiles
 from tastypie.authentication import MultiAuthentication, SessionAuthentication
+from django.template.response import TemplateResponse
+from tastypie import http
+from tastypie.bundle import Bundle
 
 from tastypie.constants import ALL, ALL_WITH_RELATIONS
 from tastypie.resources import ModelResource
@@ -37,15 +42,18 @@ from django.core.paginator import Paginator, InvalidPage
 from django.http import Http404
 from django.core.exceptions import ObjectDoesNotExist
 from django.contrib.auth.models import Group
+from django.forms.models import model_to_dict
 
 from tastypie.utils.mime import build_content_type
 
+from geonode import get_version, qgis_server, geoserver
 from geonode.layers.models import Layer
 from geonode.maps.models import Map
 from geonode.documents.models import Document
 from geonode.base.models import ResourceBase
 from geonode.base.models import HierarchicalKeyword
 from geonode.groups.models import GroupProfile
+from geonode.utils import check_ogc_backend
 
 from .authorization import GeoNodeAuthorization, GeonodeApiKeyAuthentication
 
@@ -111,10 +119,11 @@ class CommonModelApi(ModelResource):
         'rating',
     ]
 
-    def build_filters(self, filters=None, ignore_bad_filters=False):
+    def build_filters(self, filters=None, ignore_bad_filters=False, **kwargs):
         if filters is None:
             filters = {}
-        orm_filters = super(CommonModelApi, self).build_filters(filters)
+        orm_filters = super(CommonModelApi, self).build_filters(
+            filters=filters, ignore_bad_filters=ignore_bad_filters, **kwargs)
         if 'type__in' in filters and filters[
                 'type__in'] in FILTER_TYPES.keys():
             orm_filters.update({'type': filters.getlist('type__in')})
@@ -712,6 +721,9 @@ class CommonModelApi(ModelResource):
             else:
                 data['objects'] = list(self.format_objects(data['objects']))
 
+            # give geonode version
+            data['geonode_version'] = get_version()
+
         desired_format = self.determine_format(request)
         serialized = self.serialize(request, data, desired_format)
 
@@ -757,6 +769,161 @@ class FeaturedResourceBaseResource(CommonModelApi):
 class LayerResource(CommonModelApi):
 
     """Layer API"""
+    links = fields.ListField(
+        attribute='links',
+        null=True,
+        use_in='detail',
+        default=[])
+    if check_ogc_backend(qgis_server.BACKEND_PACKAGE):
+        default_style = fields.ForeignKey(
+            'geonode.api.api.StyleResource',
+            attribute='qgis_default_style',
+            null=True)
+        styles = fields.ManyToManyField(
+            'geonode.api.api.StyleResource',
+            attribute='qgis_styles',
+            null=True,
+            use_in='detail')
+    elif check_ogc_backend(geoserver.BACKEND_PACKAGE):
+        default_style = fields.ForeignKey(
+            'geonode.api.api.StyleResource',
+            attribute='default_style',
+            null=True)
+        styles = fields.ManyToManyField(
+            'geonode.api.api.StyleResource',
+            attribute='styles',
+            null=True,
+            use_in='detail')
+
+    def format_objects(self, objects):
+        """
+        Formats the object then adds a geogig_link as necessary.
+        """
+        formatted_objects = []
+        for obj in objects:
+            # convert the object to a dict using the standard values.
+            # includes other values
+            values = self.VALUES + [
+                'alternate',
+                'name'
+            ]
+            formatted_obj = model_to_dict(obj, fields=values)
+            # add the geogig link
+            formatted_obj['geogig_link'] = obj.geogig_link
+
+            # provide style information
+            bundle = self.build_bundle(obj=obj)
+            formatted_obj['default_style'] = self.default_style.dehydrate(
+                bundle, for_list=True)
+
+            if self.links.use_in == 'all' or self.links.use_in == 'list':
+                formatted_obj['links'] = self.dehydrate_links(
+                    bundle)
+            # Add resource uri
+            formatted_obj['resource_uri'] = self.get_resource_uri(bundle)
+            # put the object on the response stack
+            formatted_objects.append(formatted_obj)
+        return formatted_objects
+
+    def dehydrate_links(self, bundle):
+        """Dehydrate links field."""
+
+        dehydrated = []
+        obj = bundle.obj
+        link_fields = [
+            'extension',
+            'link_type',
+            'name',
+            'mime',
+            'url'
+        ]
+        for l in obj.link_set.all():
+            formatted_link = model_to_dict(l, fields=link_fields)
+            dehydrated.append(formatted_link)
+
+        return dehydrated
+
+    def populate_object(self, obj):
+        """Populate results with necessary fields
+
+        :param obj: Layer obj
+        :type obj: Layer
+        :return:
+        """
+        if check_ogc_backend(qgis_server.BACKEND_PACKAGE):
+            # Provides custom links for QGIS Server styles info
+            # Default style
+            try:
+                obj.qgis_default_style = obj.qgis_layer.default_style
+            except:
+                obj.qgis_default_style = None
+
+            # Styles
+            try:
+                obj.qgis_styles = obj.qgis_layer.styles
+            except:
+                obj.qgis_styles = []
+        return obj
+
+    def build_bundle(
+            self, obj=None, data=None, request=None, **kwargs):
+        """Override build_bundle method to add additional info."""
+
+        if obj is None and self._meta.object_class:
+            obj = self._meta.object_class()
+
+        elif obj:
+            obj = self.populate_object(obj)
+
+        return Bundle(
+            obj=obj,
+            data=data,
+            request=request, **kwargs)
+
+    def patch_detail(self, request, **kwargs):
+        """Allow patch request to update default_style.
+
+        Request body must match this:
+
+        {
+            'default_style': <resource_uri_to_style>
+        }
+
+        """
+        reason = 'Can only patch "default_style" field.'
+        try:
+            body = json.loads(request.body)
+            if 'default_style' not in body:
+                return http.HttpBadRequest(reason=reason)
+            match = resolve(body['default_style'])
+            style_id = match.kwargs['id']
+            api_name = match.kwargs['api_name']
+            resource_name = match.kwargs['resource_name']
+            if not (resource_name == 'styles' and api_name == 'api'):
+                raise Exception()
+
+            from geonode.qgis_server.models import QGISServerStyle
+
+            style = QGISServerStyle.objects.get(id=style_id)
+
+            layer_id = kwargs['id']
+            layer = Layer.objects.get(id=layer_id)
+        except:
+            return http.HttpBadRequest(reason=reason)
+
+        from geonode.qgis_server.views import default_qml_style
+
+        request.method = 'POST'
+        response = default_qml_style(
+            request,
+            layername=layer.name,
+            style_name=style.name)
+
+        if isinstance(response, TemplateResponse):
+            if response.status_code == 200:
+                return HttpResponse(status=200)
+
+        return self.error_response(request, response.content)
 
     # copy parent attribute before modifying
     VALUES = CommonModelApi.VALUES[:]
@@ -765,13 +932,59 @@ class LayerResource(CommonModelApi):
     class Meta(CommonMetaApi):
         queryset = Layer.objects.distinct().order_by('-date')
         resource_name = 'layers'
+        detail_uri_name = 'id'
+        include_resource_uri = True
+        allowed_methods = ['get', 'patch']
         excludes = ['csw_anytext', 'metadata_xml']
         authentication = MultiAuthentication(SessionAuthentication(), GeonodeApiKeyAuthentication())
+        filtering = CommonMetaApi.filtering
+        # Allow filtering using ID
+        filtering.update({
+            'id': ALL,
+            'name': ALL,
+            'alternate': ALL,
+        })
 
 
 class MapResource(CommonModelApi):
 
     """Maps API"""
+
+    def format_objects(self, objects):
+        """
+        Formats the objects and provides reference to list of layers in map
+        resources.
+
+        :param objects: Map objects
+        """
+        formatted_objects = []
+        for obj in objects:
+            # convert the object to a dict using the standard values.
+            formatted_obj = model_to_dict(obj, fields=self.VALUES)
+            # get map layers
+            map_layers = obj.layers
+            formatted_layers = []
+            map_layer_fields = [
+                'id'
+                'stack_order',
+                'format',
+                'name',
+                'opacity',
+                'group',
+                'visibility',
+                'transparent',
+                'ows_url',
+                'layer_params',
+                'source_params',
+                'local'
+            ]
+            for layer in map_layers:
+                formatted_map_layer = model_to_dict(
+                     layer, fields=map_layer_fields)
+                formatted_layers.append(formatted_map_layer)
+            formatted_obj['layers'] = formatted_layers
+            formatted_objects.append(formatted_obj)
+        return formatted_objects
 
     class Meta(CommonMetaApi):
         queryset = Map.objects.distinct().order_by('-date')

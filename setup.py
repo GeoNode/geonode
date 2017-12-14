@@ -84,28 +84,24 @@ setup(name='GeoNode',
           "six<1.11.0",  # https://github.com/benjaminp/six/issues/210
           "diff-match-patch<=20121119",
 
-          # Django Apps
-          # python-django-pagination (1.0.7)
-          "django-pagination>=1.0.5,<=1.0.7",
-          # python-django-extensions (1.5.9)
-          "django-extensions>=1.2.5,<=1.6.1",
-          # python-django-jsonfield (0.9.15, 1.0.1 in our ppa)
-          "django-jsonfield<=1.0.1",
-          "django-jsonfield-compat<=0.4.4",
-          "django-leaflet<=0.22.0",
-          "django-taggit<=0.22.1",  # python-django-taggit (0.18.0)
-          "django-mptt<=0.8.7",  # django-mptt (0.8.0, 0.8.6 in our ppa)
-          "django-treebeard<=4.1.2",  # django-treebeard (4.0)
-          "django-guardian<=1.4.9",  # django-guardian (1.4.1)
-          "django-downloadview<=1.8",  # python-django-downloadview (1.8)
-          "django-polymorphic<=1.3",  # python-django-polymorphic (0.8.1) FIXME
-          "django-reversion<=2.0.10",
-          "django-suit<=0.2.15",
-          # python-django-tastypie (0.12.0, 0.12.2 in our ppa)
-          "django-tastypie<=0.14.0",
-          # python-django-oauth-toolkit (0.10.0)
-          "django-oauth-toolkit>=0.10.0,<1.0",
-          "oauthlib<=2.0.2",
+        # Django Apps
+        "django-pagination>=1.0.5,<=1.0.7",  # python-django-pagination (1.0.7)
+        "django-extensions>=1.2.5,<=1.6.1",  # python-django-extensions (1.5.9)
+        "django-jsonfield<=1.0.1",  # python-django-jsonfield (0.9.15, 1.0.1 in our ppa)
+        "django-jsonfield-compat<=0.4.4",
+        "django-leaflet<=0.22.0",
+        "django-taggit<=0.22.1",  # python-django-taggit (0.18.0)
+        "django-mptt<=0.8.7",  # django-mptt (0.8.0, 0.8.6 in our ppa)
+        "django-treebeard<=4.1.2",  # django-treebeard (4.0)
+        "django-guardian<=1.4.9",  # django-guardian (1.4.1)
+        "django-downloadview<=1.8",  # python-django-downloadview (1.8)
+        "django-polymorphic<=1.3",  # python-django-polymorphic (0.8.1) FIXME
+        "django-reversion<=2.0.10",
+        "django-suit<=0.2.15",
+        "django-tastypie<=0.14.0",  # python-django-tastypie (0.12.0, 0.12.2 in our ppa)
+        "django-invitations==1.9.1",
+        "django-oauth-toolkit>=0.10.0,<1.0",  # python-django-oauth-toolkit (0.10.0)
+        "oauthlib<=2.0.2",
 
           # geopython dependencies
           "pyproj>=1.9.5,<=1.9.5.1",  # python-pyproj (1.9.5)
@@ -116,51 +112,39 @@ setup(name='GeoNode',
 
           # # Apps with packages provided in GeoNode's PPA on Launchpad.
 
-          # Django Apps
-          "awesome-slugify<=1.6.5",
-          "dj-database-url<=0.4.2",
-          "Pinax<=0.9a2",
-          # pinax-comments==0.1.1
-          "pinax-notifications<=4.0.0",
-          # pinax-ratings==2.0.0
-          "pinax-theme-bootstrap<=8.0.1",
-          "django-bootstrap-form<=3.3",
-          "django-forms-bootstrap<=3.1.0",
-          "django-friendly-tag-loader<=1.2.1",
-          "django-activity-stream<=0.6.4",
-          "django-appconf<=1.0.2",
-          "django-autocomplete-light>=2.3.3,<3.0a0",
-          "django-autofixture<=0.12.1",
-          "django-autoslug<=1.9.3",
-          "django-braces<=1.11.0",
-          "django-geonode-client<=0.0.15",
-          # python-django-modeltranslation (0.11 Debian)
-          "django-modeltranslation>=0.11,<=0.12.1",
-          "django-import-export<=0.5.1",
-          "django-utils<=0.0.2",
+        # Django Apps
+        "awesome-slugify<=1.6.5",
+        "dj-database-url<=0.4.2",
+        "Pinax<=0.9a2",
+        # pinax-comments==0.1.1
+        "pinax-notifications<=4.0.0",
+        "pinax-theme-bootstrap<=8.0.1",
+        "django-bootstrap-form<=3.3",
+        "django-forms-bootstrap<=3.1.0",
+        "django-friendly-tag-loader<=1.2.1",
+        "django-activity-stream<=0.6.4",
+        "django-appconf<=1.0.2",
+        "django-autocomplete-light>=2.3.3,<3.0a0",
+        "django-autofixture<=0.12.1",
+        "django-autoslug<=1.9.3",
+        "django-braces<=1.11.0",
+        "django-geonode-client<=0.0.15",
+        "django-modeltranslation>=0.11,<=0.12.1",  # python-django-modeltranslation (0.11 Debian)
+        "django-import-export<=0.5.1",
+        "django-utils<=0.0.2",
 
-          # GeoNode org maintained apps.
-          "django-geoexplorer>=4.0.0,<5.0",
-          "geonode-user-messages<=0.1.10",  # (0.1.3 in ppa) FIXME
-          "geonode-avatar<=2.1.6",  # (2.1.5 in ppa) FIXME
-          "geonode-announcements<=1.0.8",
-          "geonode-agon-ratings<=0.3.5",  # (0.3.1 in ppa) FIXME
-
-          # we can't use django-user-account until upstream merge changes for geonode.
-          # this is temporary solution
-          # "django-user-accounts==2.0.2dev",
-          # django-user-accounts==2.0.2
-          # we can't use django-user-account until upstream merge changes for geonode.
-          # this is temporary solution
-          # git+git://github.com/cezio/django-user-accounts@252_255_mixed#egg=django-user-accounts-2.0.2dev
-          # updated to https://github.com/geosolutions-it/geonode-user-accounts.git
-          "geonode-user-accounts>=1.0.13",
-
-          "geonode-arcrest>=10.0",
-          "geonode-dialogos>=0.5",
-          "gsconfig<2.0.0",  # (1.0.3 in ppa) FIXME
-          "gn-gsimporter<2.0.0",  # (0.1 in ppa) FIXME
-          "gisdata>=0.5.4",
+        # GeoNode org maintained apps.
+        "django-geoexplorer>=4.0.0,<5.0",
+        "geonode-user-messages<=0.1.11",  # (0.1.3 in ppa) FIXME
+        "geonode-avatar<=2.1.6",  # (2.1.5 in ppa) FIXME
+        "geonode-announcements<=1.0.8",
+        "geonode-agon-ratings<=0.3.5",  # (0.3.1 in ppa) FIXME
+        "geonode-user-accounts==1.0.15",
+        "geonode-arcrest>=10.0",
+        "geonode-dialogos>=0.5",
+        "gsconfig<2.0.0",  # (1.0.3 in ppa) FIXME
+        "gn-gsimporter<2.0.0",  # (0.1 in ppa) FIXME
+        "gisdata>=0.5.4",
 
           # haystack/elasticsearch, uncomment to use
           "django-haystack<=2.6.0",  # missing from ppa FIXME
