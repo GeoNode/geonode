@@ -23,6 +23,8 @@ import glob
 import os
 import re
 import shutil
+import subprocess
+import signal
 import sys
 import time
 import urllib
@@ -45,6 +47,8 @@ try:
     from paver.path import pushd
 except ImportError:
     from paver.easy import pushd
+
+from geonode.settings import OGC_SERVER, INSTALLED_APPS
 
 assert sys.version_info >= (2, 6), \
     SystemError("GeoNode Build requires python 2.6 or better")
@@ -81,8 +85,6 @@ def grab(src, dest, name):
 ])
 def setup_geoserver(options):
     """Prepare a testing instance of GeoServer."""
-    from geonode.settings import INSTALLED_APPS
-
     # only start if using Geoserver backend
     if 'geonode.geoserver' not in INSTALLED_APPS:
         return
@@ -128,8 +130,6 @@ def setup_geoserver(options):
 @task
 def setup_qgis_server(options):
     """Prepare a testing instance of QGIS Server."""
-    from geonode.settings import INSTALLED_APPS
-
     # only start if using QGIS Server backend
     if 'geonode.qgis_server' not in INSTALLED_APPS:
         return
@@ -315,19 +315,30 @@ def updategeoip(options):
     """
     Update geoip db
     """
-    sh("python manage.py updategeoip -o")
+    settings = options.get('settings', '')
+    if settings:
+        settings = 'DJANGO_SETTINGS_MODULE=%s' % settings
+
+    sh("%s python manage.py updategeoip -o" % settings)
 
 
 @task
+@cmdopts([
+    ('settings', 's', 'Specify custom DJANGO_SETTINGS_MODULE')
+])
 def sync(options):
     """
     Run the migrate and migrate management commands to create and migrate a DB
     """
-    sh("python manage.py makemigrations --noinput")
-    sh("python manage.py migrate --noinput")
-    sh("python manage.py loaddata sample_admin.json")
-    sh("python manage.py loaddata geonode/base/fixtures/default_oauth_apps.json")
-    sh("python manage.py loaddata geonode/base/fixtures/initial_data.json")
+    settings = options.get('settings', '')
+    if settings:
+        settings = 'DJANGO_SETTINGS_MODULE=%s' % settings
+
+    sh("%s python manage.py makemigrations --noinput" % settings)
+    sh("%s python manage.py migrate --noinput" % settings)
+    sh("%s python manage.py loaddata sample_admin.json" % settings)
+    sh("%s python manage.py loaddata geonode/base/fixtures/default_oauth_apps.json" % settings)
+    sh("%s python manage.py loaddata geonode/base/fixtures/initial_data.json" % settings)
 
 
 @task
@@ -400,7 +411,8 @@ def package(options):
 @cmdopts([
     ('bind=', 'b', 'Bind server to provided IP address and port number.'),
     ('java_path=', 'j', 'Full path to java install for Windows'),
-    ('foreground', 'f', 'Do not run in background but in foreground')
+    ('foreground', 'f', 'Do not run in background but in foreground'),
+    ('settings', 's', 'Specify custom DJANGO_SETTINGS_MODULE')
 ], share_with=['start_django', 'start_geoserver'])
 def start():
     """
@@ -425,12 +437,30 @@ def stop_geoserver():
     """
     Stop GeoServer
     """
-    from geonode.settings import INSTALLED_APPS
-
     # only start if using Geoserver backend
     if 'geonode.geoserver' not in INSTALLED_APPS:
         return
     kill('java', 'geoserver')
+
+    # Kill process.
+    try:
+        # proc = subprocess.Popen("ps -ef | grep -i -e '[j]ava\|geoserver' | awk '{print $2}'",
+        proc = subprocess.Popen("ps -ef | grep -i -e 'geoserver' | awk '{print $2}'",
+                                shell=True,
+                                stdout=subprocess.PIPE)
+        for pid in proc.stdout:
+            info('Stopping geoserver (process number %s)' % int(pid))
+            os.kill(int(pid), signal.SIGKILL)
+            os.kill(int(pid), 9)
+            sh('sleep 30')
+            # Check if the process that we killed is alive.
+            try:
+               os.kill(int(pid), 0)
+               # raise Exception("""wasn't able to kill the process\nHINT:use signal.SIGKILL or signal.SIGABORT""")
+            except OSError as ex:
+               continue
+    except Exception as e:
+        info(e)
 
 
 @task
@@ -441,8 +471,6 @@ def stop_qgis_server():
     """
     Stop QGIS Server Backend.
     """
-    from geonode.settings import INSTALLED_APPS
-
     # only start if using QGIS Server backend
     if 'geonode.qgis_server' not in INSTALLED_APPS:
         return
@@ -479,17 +507,23 @@ def start_django():
     """
     Start the GeoNode Django application
     """
+    settings = options.get('settings', '')
+    if settings:
+        settings = 'DJANGO_SETTINGS_MODULE=%s' % settings
     bind = options.get('bind', '0.0.0.0:8000')
     foreground = '' if options.get('foreground', False) else '&'
-    sh('python manage.py runserver %s %s' % (bind, foreground))
+    sh('%s python manage.py runserver %s %s' % (settings, bind, foreground))
 
 
 def start_messaging():
     """
     Start the GeoNode messaging server
     """
+    settings = options.get('settings', '')
+    if settings:
+        settings = 'DJANGO_SETTINGS_MODULE=%s' % settings
     foreground = '' if options.get('foreground', False) else '&'
-    sh('python manage.py runmessaging %s' % foreground)
+    sh('%s python manage.py runmessaging %s' % (settings, foreground))
 
 
 @cmdopts([
@@ -500,9 +534,6 @@ def start_geoserver(options):
     """
     Start GeoServer with GeoNode extensions
     """
-
-    from geonode.settings import OGC_SERVER, INSTALLED_APPS
-
     # only start if using Geoserver backend
     if 'geonode.geoserver' not in INSTALLED_APPS:
         return
@@ -526,58 +557,75 @@ def start_geoserver(options):
     log_file = path('geoserver/jetty.log').abspath()
     config = path('scripts/misc/jetty-runner.xml').abspath()
     jetty_port = urlparse(GEOSERVER_BASE_URL).port
-    # @todo - we should not have set workdir to the datadir but a bug in geoserver
-    # prevents geonode security from initializing correctly otherwise
-    with pushd(data_dir):
-        javapath = "java"
-        loggernullpath = os.devnull
 
-        # checking if our loggernullpath exists and if not, reset it to
-        # something manageable
-        if loggernullpath == "nul":
+    import socket
+    s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    socket_free = True
+    try:
+        s.bind(("127.0.0.1", jetty_port))
+    except socket.error as e:
+        socket_free = False
+        if e.errno == 98:
+            info('Port %s is already in use' % jetty_port)
+        else:
+            info('Something else raised the socket.error exception while checking port %s' % jetty_port)
+            print(e)
+    finally:
+        s.close()
+
+    if socket_free:
+        # @todo - we should not have set workdir to the datadir but a bug in geoserver
+        # prevents geonode security from initializing correctly otherwise
+        with pushd(data_dir):
+            javapath = "java"
+            loggernullpath = os.devnull
+
+            # checking if our loggernullpath exists and if not, reset it to
+            # something manageable
+            if loggernullpath == "nul":
+                try:
+                    open("../../downloaded/null.txt", 'w+').close()
+                except IOError as e:
+                    print "Chances are that you have Geoserver currently running.  You \
+                            can either stop all servers with paver stop or start only \
+                            the django application with paver start_django."
+                    sys.exit(1)
+                loggernullpath = "../../downloaded/null.txt"
+
             try:
-                open("../../downloaded/null.txt", 'w+').close()
-            except IOError as e:
-                print "Chances are that you have Geoserver currently running.  You \
-                        can either stop all servers with paver stop or start only \
-                        the django application with paver start_django."
-                sys.exit(1)
-            loggernullpath = "../../downloaded/null.txt"
+                sh(('java -version'))
+            except BaseException:
+                print "Java was not found in your path.  Trying some other options: "
+                javapath_opt = None
+                if os.environ.get('JAVA_HOME', None):
+                    print "Using the JAVA_HOME environment variable"
+                    javapath_opt = os.path.join(os.path.abspath(
+                        os.environ['JAVA_HOME']), "bin", "java.exe")
+                elif options.get('java_path'):
+                    javapath_opt = options.get('java_path')
+                else:
+                    print "Paver cannot find java in the Windows Environment.  \
+                    Please provide the --java_path flag with your full path to \
+                    java.exe e.g. --java_path=C:/path/to/java/bin/java.exe"
+                    sys.exit(1)
+                # if there are spaces
+                javapath = 'START /B "" "' + javapath_opt + '"'
 
-        try:
-            sh(('java -version'))
-        except BaseException:
-            print "Java was not found in your path.  Trying some other options: "
-            javapath_opt = None
-            if os.environ.get('JAVA_HOME', None):
-                print "Using the JAVA_HOME environment variable"
-                javapath_opt = os.path.join(os.path.abspath(
-                    os.environ['JAVA_HOME']), "bin", "java.exe")
-            elif options.get('java_path'):
-                javapath_opt = options.get('java_path')
-            else:
-                print "Paver cannot find java in the Windows Environment.  \
-                Please provide the --java_path flag with your full path to \
-                java.exe e.g. --java_path=C:/path/to/java/bin/java.exe"
-                sys.exit(1)
-            # if there are spaces
-            javapath = 'START /B "" "' + javapath_opt + '"'
+            sh((
+                '%(javapath)s -Xms512m -Xmx1024m -server -XX:+UseConcMarkSweepGC -XX:MaxPermSize=256m'
+                ' -DGEOSERVER_DATA_DIR=%(data_dir)s'
+                ' -Dgeofence.dir=%(geofence_dir)s'
+                # ' -Dgeofence-ovr=geofence-datasource-ovr.properties'
+                # workaround for JAI sealed jar issue and jetty classloader
+                # ' -Dorg.eclipse.jetty.server.webapp.parentLoaderPriority=true'
+                ' -jar %(jetty_runner)s'
+                ' --port %(jetty_port)i'
+                ' --log %(log_file)s'
+                ' %(config)s'
+                ' > %(loggernullpath)s &' % locals()
+            ))
 
-        sh((
-            '%(javapath)s -Xms512m -Xmx1024m -server -XX:+UseConcMarkSweepGC -XX:MaxPermSize=256m'
-            ' -DGEOSERVER_DATA_DIR=%(data_dir)s'
-            ' -Dgeofence.dir=%(geofence_dir)s'
-            # ' -Dgeofence-ovr=geofence-datasource-ovr.properties'
-            # workaround for JAI sealed jar issue and jetty classloader
-            # ' -Dorg.eclipse.jetty.server.webapp.parentLoaderPriority=true'
-            ' -jar %(jetty_runner)s'
-            ' --port %(jetty_port)i'
-            ' --log %(log_file)s'
-            ' %(config)s'
-            ' > %(loggernullpath)s &' % locals()
-        ))
-
-    info('Starting GeoServer on %s' % url)
+        info('Starting GeoServer on %s' % url)
 
     # wait for GeoServer to start
     started = waitfor(url)
@@ -597,8 +645,6 @@ def start_geoserver(options):
 ])
 def start_qgis_server():
     """Start QGIS Server instance with GeoNode related plugins."""
-    from geonode.settings import INSTALLED_APPS
-
     # only start if using QGIS Serrver backend
     if 'geonode.qgis_server' not in INSTALLED_APPS:
         return
@@ -632,28 +678,51 @@ def test_javascript(options):
 
 @task
 @cmdopts([
-    ('name=', 'n', 'Run specific tests.')
+    ('name=', 'n', 'Run specific tests.'),
+    ('settings', 's', 'Specify custom DJANGO_SETTINGS_MODULE')
 ])
 def test_integration(options):
     """
     Run GeoNode's Integration test suite against the external apps
     """
+    call_task('stop_geoserver')
     _reset()
     # Start GeoServer
     call_task('start_geoserver')
     info("GeoNode is now available, running the tests now.")
 
     name = options.get('name', 'geonode.tests.integration')
+    settings = options.get('settings', '')
+    if not settings and name == 'geonode.upload.tests.integration':
+        settings = 'geonode.upload.tests.test_settings'
 
     success = False
     try:
         if name == 'geonode.tests.csw':
-            call_task('sync')
-            call_task('start')
+            call_task('sync', options={'settings': settings})
+            call_task('start', options={'settings': settings})
             sh('sleep 30')
-            call_task('setup_data')
-        sh(('python manage.py test %s'
-            ' --noinput --liveserver=0.0.0.0:8000' % name))
+            call_task('setup_data', options={'settings': settings})
+
+        settings = 'DJANGO_SETTINGS_MODULE=%s' % settings if settings else ''
+
+        if name == 'geonode.upload.tests.integration':
+            sh("%s python manage.py makemigrations --noinput" % settings)
+            sh("%s python manage.py migrate --noinput" % settings)
+            sh("%s python manage.py loaddata sample_admin.json" % settings)
+            sh("%s python manage.py loaddata geonode/base/fixtures/default_oauth_apps.json" % settings)
+            sh("%s python manage.py loaddata geonode/base/fixtures/initial_data.json" % settings)
+            call_task('start_geoserver')
+            bind = options.get('bind', '0.0.0.0:8000')
+            foreground = '' if options.get('foreground', False) else '&'
+            sh('%s python manage.py runmessaging %s' % (settings, foreground))
+            sh('%s python manage.py runserver %s %s' % (settings, bind, foreground))
+            sh('sleep 30')
+            settings = 'REUSE_DB=1 %s' % settings
+
+        sh(('%s python manage.py test %s'
+            ' --noinput --liveserver=0.0.0.0:8000' % (settings, name)))
+
     except BuildFailure as e:
         info('Tests failed! %s' % str(e))
     else:
@@ -662,6 +731,7 @@ def test_integration(options):
         # don't use call task here - it won't run since it already has
         stop()
 
+    call_task('stop_geoserver')
     _reset()
     if not success:
         sys.exit(1)
@@ -683,6 +753,13 @@ def run_tests(options):
     call_task('test', options={'prefix': prefix})
     call_task('test_integration')
     call_task('test_integration', options={'name': 'geonode.tests.csw'})
+
+    # only start if using Geoserver backend
+    if 'geonode.geoserver' in INSTALLED_APPS:
+        call_task('test_integration',
+                  options={'name': 'geonode.upload.tests.integration',
+                           'settings': 'geonode.upload.tests.test_settings'})
+
     sh('flake8 geonode')
 
 
@@ -712,6 +789,7 @@ def reset_hard():
 @task
 @cmdopts([
     ('type=', 't', 'Import specific data type ("vector", "raster", "time")'),
+    ('settings', 's', 'Specify custom DJANGO_SETTINGS_MODULE')
 ])
 def setup_data():
     """
@@ -726,7 +804,11 @@ def setup_data():
     if ctype in ['vector', 'raster', 'time']:
         data_dir = os.path.join(gisdata.GOOD_DATA, ctype)
 
-    sh("python manage.py importlayers %s -v2" % data_dir)
+    settings = options.get('settings', '')
+    if settings:
+        settings = 'DJANGO_SETTINGS_MODULE=%s' % settings
+
+    sh("%s python manage.py importlayers %s -v2" % (settings, data_dir))
 
 
 @needs(['package'])
