@@ -207,7 +207,7 @@ class GroupProfile(models.Model):
     # elasticsearch_dsl indexing
     def indexing(self):
         if settings.ES_SEARCH:
-            from elasticsearchapp.search import GroupIndex
+            from elasticsearch_app.search import GroupIndex
             obj = GroupIndex(
                 meta={'id': self.id},
                 id=self.id,
