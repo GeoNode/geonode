@@ -153,6 +153,9 @@ def qgis_server_post_save(instance, sender, **kwargs):
         )
     qgis_layer.save()
 
+    # refresh to get QGIS Layer
+    instance.refresh_from_db()
+
     # Set layer crs
     try:
         if is_shapefile:

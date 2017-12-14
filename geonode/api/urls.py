@@ -20,6 +20,7 @@
 
 from tastypie.api import Api
 
+from geonode.api.api import StyleResource
 from .api import TagResource, TopicCategoryResource, ProfileResource, \
     GroupResource, RegionResource, OwnersResource, ThesaurusKeywordResource, \
     GroupCategoryResource
@@ -41,3 +42,4 @@ api.register(FeaturedResourceBaseResource())
 api.register(OwnersResource())
 api.register(ThesaurusKeywordResource())
 api.register(GroupCategoryResource())
+api.register(StyleResource())
