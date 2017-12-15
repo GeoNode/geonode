@@ -51,8 +51,6 @@ from django.http import HttpResponseRedirect
 from django.utils.html import escape
 from django.shortcuts import get_object_or_404
 from django.shortcuts import render
-from django.shortcuts import render_to_response
-from django.template import RequestContext
 from django.views.generic import CreateView, DeleteView
 from geonode.utils import unzip_file
 from geonode.base.enumerations import CHARSETS
@@ -262,8 +260,7 @@ def srs_step_view(request, upload_session):
                            layer_name=name,
                            error=error
                            )
-            return render_to_response('upload/layer_upload_crs.html',
-                                      RequestContext(request, context))
+            return render(request, 'upload/layer_upload_crs.html', context=context)
         else:
             upload_session.completed_step = 'srs'
             return next_step_response(request, upload_session)
@@ -370,8 +367,7 @@ def csv_step_view(request, upload_session):
                        error=error,
                        possible_data_problems=possible_data_problems
                        )
-        return render_to_response('upload/layer_upload_csv.html',
-                                  RequestContext(request, context))
+        return render(request, 'upload/layer_upload_csv.html', context=context)
     elif request.method == 'POST':
         if not lat_field or not lng_field:
             error = 'Please choose which columns contain the latitude and longitude data.'
@@ -463,8 +459,7 @@ def time_step_view(request, upload_session):
                     'layer_attributes': layer_values[0].keys(),
                     'async_upload': is_async_step(upload_session)
                 }
-                return render_to_response('upload/layer_upload_time.html',
-                                          RequestContext(request, context))
+                return render(request, 'upload/layer_upload_time.html', context=context)
             else:
                 upload_session.completed_step = 'time'
                 return next_step_response(request, upload_session)
@@ -621,11 +616,10 @@ def view(req, step):
             del req.session[upload_id]
     else:
         if not upload_id:
-            return render_to_response(
+            return render(
+                req,
                 "upload/layer_upload_invalid.html",
-                RequestContext(
-                    req,
-                    {}))
+                context={})
 
         upload_obj = get_object_or_404(
             Upload, import_id=upload_id, user=req.user)

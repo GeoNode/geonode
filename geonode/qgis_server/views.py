@@ -59,7 +59,7 @@ from geonode.qgis_server.tasks.update import (
 
 logger = logging.getLogger('geonode.qgis_server.views')
 
-QGIS_SERVER_CONFIG = settings.QGIS_SERVER_CONFIG
+QGIS_SERVER_CONFIG = settings.QGIS_SERVER_CONFIG if hasattr(settings, 'QGIS_SERVER_CONFIG') else None
 
 
 def download_zip(request, layername):

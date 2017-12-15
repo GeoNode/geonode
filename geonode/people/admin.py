@@ -18,6 +18,7 @@
 #
 #########################################################################
 
+from django.conf.urls import url
 from django.contrib import admin
 from django.contrib.auth.forms import AdminPasswordChangeForm
 from django.utils.translation import ugettext, ugettext as _
@@ -95,11 +96,10 @@ class ProfileAdmin(admin.ModelAdmin):
         return super(ProfileAdmin, self).get_form(request, obj, **defaults)
 
     def get_urls(self):
-        from django.conf.urls import patterns
-        return patterns('',
-                        (r'^(\d+)/password/$',
-                         self.admin_site.admin_view(self.user_change_password))
-                        ) + super(ProfileAdmin, self).get_urls()
+        return [  # '',
+                url(r'^(\d+)/password/$',
+                    self.admin_site.admin_view(self.user_change_password))
+               ] + super(ProfileAdmin, self).get_urls()
 
     def lookup_allowed(self, lookup, value):
         # See #20078: we don't want to allow any lookups involving passwords.
@@ -166,7 +166,7 @@ class ProfileAdmin(admin.ModelAdmin):
             'adminForm': adminForm,
             'form_url': form_url,
             'form': form,
-            'is_popup': IS_POPUP_VAR in request.REQUEST,
+            'is_popup': IS_POPUP_VAR in request.GET,
             'add': True,
             'change': False,
             'has_delete_permission': False,

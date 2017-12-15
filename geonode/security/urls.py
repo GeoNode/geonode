@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-#########################################################################
+#
 #
 # Copyright (C) 2016 OSGeo
 #
@@ -16,12 +16,17 @@
 # You should have received a copy of the GNU General Public License
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
-#########################################################################
+#
 
-from django.conf.urls import patterns, url
+from django.conf.urls import url
 
-urlpatterns = patterns('geonode.security.views',
-                       url(r'^permissions/(?P<resource_id>\d+)$', 'resource_permissions', name='resource_permissions'),
-                       url(r'^bulk-permissions/?$', 'set_bulk_permissions', name='bulk_permissions'),
-                       url(r'^request-permissions/?$', 'request_permissions', name='request_permissions'),
-                       )
+from . import views
+
+urlpatterns = [  # 'geonode.security.views',
+    url(r'^permissions/(?P<resource_id>\d+)$',
+        views.resource_permissions, name='resource_permissions'),
+    url(r'^bulk-permissions/?$',
+        views.set_bulk_permissions, name='bulk_permissions'),
+    url(r'^request-permissions/?$',
+        views.request_permissions, name='request_permissions'),
+]
