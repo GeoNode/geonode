@@ -44,15 +44,24 @@ class Command(BaseCommand):
     def add_arguments(self, parser):
         parser.add_argument(
             '--layername',
+            action='store_true',
             dest='layername',
             default=None,
             help='Filter by a layername.',
         )
         parser.add_argument(
             '--owner',
+            action='store_true',
             dest='owner',
             default=None,
             help='Filter by a owner.',
+        )
+        parser.add_argument(
+            '--remove',
+            action='store_true',
+            dest='remove',
+            default=False,
+            help='Remove a layer if it is broken.',
         )
 
     def handle(self, **options):
@@ -77,6 +86,9 @@ class Command(BaseCommand):
                 if not is_gs_resource_valid(layer):
                     print 'Layer %s is broken!' % layer.alternate
                     layer_errors.append(layer)
+                    if options['remove']:
+                        print 'Removing this layer...'
+                        layer.delete()
             except:
                 print("Unexpected error:", sys.exc_info()[0])
 
