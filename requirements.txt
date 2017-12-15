@@ -24,7 +24,6 @@ django-appconf==1.0.2
 django-autocomplete-light==2.3.3
 django-autofixture==0.12.1
 django-autoslug==1.9.3
-django-bootstrap-form==3.3
 django-bootstrap3-datetimepicker==2.2.3
 # django-bootstrap3-datetimepicker-2==2.5.0
 django-braces==1.11.0
