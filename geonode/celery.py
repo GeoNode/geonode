@@ -21,34 +21,18 @@
 from __future__ import absolute_import
 
 import os
+from celery import Celery
 
-import imp
-try:
-    imp.find_module('celery')
-    found = True
-except ImportError:
-    found = False
+os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'geonode.settings')
 
-if found:
-    from .celeryapp import app as celery_app
+app = Celery('geonode')
 
-__version__ = (2, 9, 0, 'unstable', 0)
-if found:
-    __all__ = ["celery_app"]
+# Using a string here means the worker will not have to
+# pickle the object when using Windows.
+app.config_from_object('django.conf:settings', namespace="CELERY")
+app.autodiscover_tasks()
 
 
-class GeoNodeException(Exception):
-    """Base class for exceptions in this module."""
-    pass
-
-
-def get_version():
-    import geonode.version
-    return geonode.version.get_version(__version__)
-
-
-def main(global_settings, **settings):
-    from django.core.wsgi import get_wsgi_application
-    os.environ.setdefault('DJANGO_SETTINGS_MODULE', settings.get('django_settings'))
-    app = get_wsgi_application()
-    return app
+@app.task(bind=True)
+def debug_task(self):
+    print("Request: {!r}".format(self.request))

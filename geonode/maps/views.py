@@ -824,6 +824,13 @@ def add_layers_to_map_config(request, map_obj, layer_names, add_base_layers=True
 
         layer_bbox = layer.bbox
         # assert False, str(layer_bbox)
+
+        def decimal_encode(bbox):
+            import decimal
+            for o in [float(coord) for coord in bbox]:
+                if isinstance(o, decimal.Decimal):
+                    o = (str(o) for o in [o])
+
         if bbox is None:
             bbox = list(layer_bbox[0:4])
         else:
@@ -844,7 +851,7 @@ def add_layers_to_map_config(request, map_obj, layer_names, add_base_layers=True
         config["wrapDateLine"] = True
         config["srs"] = getattr(
             settings, 'DEFAULT_MAP_CRS', 'EPSG:900913')
-        config["bbox"] = bbox if config["srs"] != 'EPSG:900913' \
+        config["bbox"] = decimal_encode(bbox) if config["srs"] != 'EPSG:900913' \
             else llbbox_to_mercator([float(coord) for coord in bbox])
 
         if layer.storeType == "remoteStore":
