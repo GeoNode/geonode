@@ -17,3 +17,17 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
+import os
+import django
+from django.conf import settings
+
+# We manually designate which settings we will be using in an environment variable
+# This is similar to what occurs in the `manage.py`
+os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'geonode.settings')
+
+
+def pytest_configure():
+    settings.DEBUG = False
+    # If you have any test specific settings, you can declare them here,
+    
+    django.setup()

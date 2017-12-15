@@ -19,22 +19,20 @@
 #########################################################################
 
 """User can login using authentication feature tests."""
-from urlparse import urljoin
 
-from geonode import settings
 from pytest_bdd import given, scenario, then, when
 
 
 @scenario('login.feature', 'User can access login page')
 def test_user_can_access_login_page():
     """User can access login page."""
-    pass
+    # pass
 
 
 @scenario('login.feature', 'Admin user')
 def test_admin_user():
     """Admin user."""
-    pass
+    # pass
 
 
 @given('I have an admin account')
@@ -48,20 +46,21 @@ def administrator_named_admin():
 
 
 @when('I go to the "login" page')
-def go_to_login(browser):
+def go_to_login(en_browser):
     """I go to the "login" page."""
-    browser.url = settings.SITEURL
-    browser.visit(urljoin(browser.url, settings.LOGIN_URL))
+    assert en_browser.is_text_present('Login')
 
 
 @when('I fill in "Password" with "admin"')
-def fill_password():
+def fill_password(en_browser):
     """I fill in "Password" with "admin"."""
+    en_browser.fill('username', 'admin')
 
 
 @when('I fill in "Username" with "admin"')
-def fill_username():
+def fill_username(en_browser):
     """I fill in "Username" with "admin"."""
+    en_browser.fill('password', 'admin')
 
 
 @when('I go to the "login" page')
@@ -70,18 +69,18 @@ def go_to_login():
 
 
 @when('I press the "Log in" button')
-def login_user(browser):
+def login_user(en_browser):
     """I press the "Log in" button."""
-    browser.find_by_css('button[type=submit]').first.click()
+    en_browser.find_by_css('button[type=submit]').first.click()
 
 
 @then('I see "Log in"')
-def login_page(browser):
+def login_page(en_browser):
     """I see "Log in"."""
-    browser.find_by_css('button[type=submit]')
+    assert en_browser.find_by_css('button[type=submit]')
 
 
 @then('I should see "admin"')
 def authenticated_page(browser):
     """I should see "admin"."""
-    browser.find_by_xpath("//a[contains(@class, 'dropdown-toggle avatar')]")
+    assert browser.find_by_xpath("//a[contains(@class, 'dropdown-toggle avatar')]")

@@ -24,9 +24,21 @@ import pytest
 from geonode.tests.bdd import __file__ as bdd_path
 
 
-@pytest.fixture(scope='session')
-def pytestbdd_selenium_speed():
-    return 0.5
+# @pytest.fixture(scope='session')
+# def pytestbdd_selenium_speed():
+#     return 0.5
+
+# @pytest.fixture(scope='session')
+# def splinter_implicit_wait():
+#     return True
+
+
+@pytest.yield_fixture(scope='function', autouse=True)
+def en_browser(browser):
+    en_browser = browser
+    en_browser.visit('http://localhost:8000/account/login')
+    yield en_browser
+    en_browser.quit()
 
 
 @pytest.fixture
