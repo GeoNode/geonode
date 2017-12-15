@@ -139,6 +139,7 @@ class Layer(ResourceBase):
 
     default_style = models.ForeignKey(
         Style,
+        on_delete=models.SET_NULL,
         related_name='layer_default_style',
         null=True,
         blank=True)
