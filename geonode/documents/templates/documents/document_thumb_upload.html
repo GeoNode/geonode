@@ -89,7 +89,7 @@
       geogig_enabled = {{ GEOGIG_ENABLED|lower  }},
       time_enabled = false,
       mosaic_enabled = false,
-      userLookup = "{% url "geonode.views.ajax_lookup" %}"
+      userLookup = "{% url "account_ajax_lookup" %}"
     {% endautoescape %}
     </script>
     {% if GEONODE_SECURITY_ENABLED %}

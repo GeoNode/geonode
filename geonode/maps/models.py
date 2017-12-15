@@ -210,7 +210,7 @@ class Map(ResourceBase, GXPMapBase):
             return []
 
     def get_absolute_url(self):
-        return reverse('geonode.maps.views.map_detail', None, [str(self.id)])
+        return reverse('map_detail', None, [str(self.id)])
 
     def get_bbox_from_layers(self, layers):
         """

@@ -42,9 +42,8 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth import get_user_model
 from django.core.urlresolvers import reverse
 from django.http import HttpResponse, HttpResponseRedirect
-from django.shortcuts import render_to_response
+from django.shortcuts import render
 from django.conf import settings
-from django.template import RequestContext
 from django.utils.translation import ugettext as _
 
 from geonode import geoserver, qgis_server
@@ -159,7 +158,7 @@ def layer_upload(request, template='upload/layer_upload.html'):
             'charsets': CHARSETS,
             'is_layer': True,
         }
-        return render_to_response(template, RequestContext(request, ctx))
+        return render(request, template, context=ctx)
     elif request.method == 'POST':
         name = None
         form = NewLayerUploadForm(request.POST, request.FILES)
@@ -303,7 +302,7 @@ def layer_detail(request, layername, template='layers/layer_detail.html'):
         source_params = {
             "ptype": service.ptype,
             "remote": True,
-            "url": service.base_url,
+            "url": service.service_url,
             "name": service.name}
         maplayer = GXPLayer(
             name=layer.alternate,
@@ -524,7 +523,7 @@ def layer_detail(request, layername, template='layers/layer_detail.html'):
     if request.user.is_authenticated():
         context_dict["maps"] = Map.objects.filter(owner=request.user)
     return TemplateResponse(
-        request, template, RequestContext(request, context_dict))
+        request, template, context=context_dict)
 
 
 # Loads the data using the OWS lib when the "Do you want to filter it" button is clicked.
@@ -603,9 +602,10 @@ def layer_feature_catalogue(
         'attributes': attributes,
         'metadata': settings.PYCSW['CONFIGURATION']['metadata:main']
     }
-    return render_to_response(
+    return render(
+        request,
         template,
-        context_dict,
+        context=context_dict,
         content_type='application/xml')
 
 
@@ -653,7 +653,7 @@ def layer_metadata(
         source_params = {
             "ptype": service.ptype,
             "remote": True,
-            "url": service.base_url,
+            "url": service.service_url,
             "name": service.name}
         maplayer = GXPLayer(
             name=layer.alternate,
@@ -941,7 +941,7 @@ def layer_metadata(
         [metadata_author_groups.append(item) for item in all_metadata_author_groups
             if item not in metadata_author_groups]
 
-    return render_to_response(template, RequestContext(request, {
+    return render(request, template, context={
         "resource": layer,
         "layer": layer,
         "layer_form": layer_form,
@@ -961,7 +961,7 @@ def layer_metadata(
         "metadata_author_groups": metadata_author_groups,
         "GROUP_MANDATORY_RESOURCES":
             getattr(settings, 'GROUP_MANDATORY_RESOURCES', False),
-    }))
+    })
 
 
 @login_required
@@ -992,10 +992,8 @@ def layer_change_poc(request, ids, template='layers/layer_change_poc.html'):
             return HttpResponseRedirect('/admin/maps/layer')
     else:
         form = PocForm()  # An unbound form
-    return render_to_response(
-        template, RequestContext(
-            request, {
-                'layers': layers, 'form': form}))
+    return render(
+        request, template, context={'layers': layers, 'form': form})
 
 
 @login_required
@@ -1013,8 +1011,7 @@ def layer_replace(request, layername, template='layers/layer_replace.html'):
             'is_featuretype': layer.is_vector(),
             'is_layer': True,
         }
-        return render_to_response(template,
-                                  RequestContext(request, ctx))
+        return render(request, template, context=ctx)
     elif request.method == 'POST':
 
         form = LayerUploadForm(request.POST, request.FILES)
@@ -1093,9 +1090,9 @@ def layer_remove(request, layername, template='layers/layer_remove.html'):
         _PERMISSION_MSG_DELETE)
 
     if (request.method == 'GET'):
-        return render_to_response(template, RequestContext(request, {
+        return render(request, template, context={
             "layer": layer
-        }))
+        })
     if (request.method == 'POST'):
         try:
             with transaction.atomic():
@@ -1111,10 +1108,8 @@ def layer_remove(request, layername, template='layers/layer_remove.html'):
                     'before deleting.')
 
             messages.error(request, message)
-            return render_to_response(
-                template, RequestContext(
-                    request, {
-                        "layer": layer}))
+            return render(
+                request, template, context={"layer": layer})
         return HttpResponseRedirect(reverse("layer_browse"))
     else:
         return HttpResponse("Not allowed", status=403)
@@ -1133,10 +1128,10 @@ def layer_granule_remove(
         _PERMISSION_MSG_DELETE)
 
     if (request.method == 'GET'):
-        return render_to_response(template, RequestContext(request, {
+        return render(request, template, context={
             "granule_id": granule_id,
             "layer": layer
-        }))
+        })
     if (request.method == 'POST'):
         try:
             cat = gs_catalog
@@ -1156,10 +1151,8 @@ def layer_granule_remove(
                     'before deleting.')
 
             messages.error(request, message)
-            return render_to_response(
-                template, RequestContext(
-                    request, {
-                        "layer": layer}))
+            return render(
+                request, template, context={"layer": layer})
         return HttpResponseRedirect(
             reverse(
                 'layer_detail', args=(
@@ -1246,11 +1239,11 @@ def layer_metadata_detail(
             group = GroupProfile.objects.get(slug=layer.group.name)
         except GroupProfile.DoesNotExist:
             group = None
-    return render_to_response(template, RequestContext(request, {
+    return render(request, template, context={
         "resource": layer,
         "group": group,
         'SITEURL': settings.SITEURL[:-1]
-    }))
+    })
 
 
 def layer_metadata_upload(
@@ -1262,11 +1255,11 @@ def layer_metadata_upload(
         layername,
         'base.change_resourcebase',
         _PERMISSION_MSG_METADATA)
-    return render_to_response(template, RequestContext(request, {
+    return render(request, template, context={
         "resource": layer,
         "layer": layer,
         'SITEURL': settings.SITEURL[:-1]
-    }))
+    })
 
 
 def layer_sld_upload(
@@ -1278,11 +1271,11 @@ def layer_sld_upload(
         layername,
         'base.change_resourcebase',
         _PERMISSION_MSG_METADATA)
-    return render_to_response(template, RequestContext(request, {
+    return render(request, template, context={
         "resource": layer,
         "layer": layer,
         'SITEURL': settings.SITEURL[:-1]
-    }))
+    })
 
 
 @login_required

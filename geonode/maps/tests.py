@@ -646,14 +646,14 @@ community."
         # Check
         # BBox format: [xmin, xmax, ymin, ymax
         bbox_str = [
-            '-90.1932079140', '-79.2067920625',
-            '9.0592199045', '16.5407800920', 'EPSG:4326']
+            '-90.193207913954200', '-79.206792062465500',
+            '9.059219904470890', '16.540780092025600', 'EPSG:4326']
 
         self.assertEqual(
             bbox_str,
             [str(c) for c in map_obj.bbox])
-        bbox_long_str = '-90.1932079140,9.0592199045,' \
-                        '-79.2067920625,16.5407800920'
+        bbox_long_str = '-90.193207913954200,9.059219904470890,' \
+                        '-79.206792062465500,16.540780092025600'
         self.assertEqual(bbox_long_str, map_obj.bbox_string)
 
         # Test methods other than GET or POST and no layer in params

@@ -148,7 +148,7 @@
     </ul>
     <ul class="list-group">
       {% if USE_NOTIFICATIONS %}
-      <li class="list-group-item"><a href="{% url "pinax_notifications:notice_settings" %}"><i class="fa fa-bell"></i> {% trans "Notifications" %}</a></li>
+      <li class="list-group-item"><a href="{% url "notice_settings" %}"><i class="fa fa-bell"></i> {% trans "Notifications" %}</a></li>
       {% endif %}
       {% if perms.announcements.can_manage %}
       <li class="list-group-item"><a href="{% url "announcements_list" %}"><i class="fa fa-bullhorn"></i> {% trans "Announcements" %}</a></li>
@@ -158,7 +158,7 @@
       <li class="list-group-item"><a href="{% url "geonode.invitations:geonode-send-invite" %}"><i class="fa fa-edit"></i> {% trans "Invite Users" %}</a></li>
       {% if user.is_superuser %}
       <li class="list-group-item"><a href="{% url "services" %}?limit={{ CLIENT_RESULTS_LIMIT }}"><i class="fa fa-globe"></i> {% trans "Remote Services" %}</a></li>
-      <li class="list-group-item"><a href="{{ GEOSERVER_BASE_URL }}"><i class="fa fa-gears"></i> {% trans "GeoServer" %}</a></li>
+      <li class="list-group-item"><a href="{% url "proxy" %}?url={{ GEOSERVER_LOCAL_URL }}web"><i class="fa fa-gears"></i> {% trans "GeoServer" %}</a></li>
       {% endif %}
       {% if user.is_staff %}
       <li class="list-group-item"><a href="{% url "admin:index" %}"><i class="fa fa-cog"></i> {% trans "Admin" %}</a></li>

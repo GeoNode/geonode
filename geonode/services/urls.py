@@ -27,6 +27,7 @@ urlpatterns = [
     url(r'^$', views.services, name='services'),
     url(r'^register/$', views.register_service, name="register_service"),
     url(r'^(?P<service_id>\d+)/$', views.service_detail, name='service_detail'),
+    url(r'^(?P<service_id>\d+)/proxy$', views.service_proxy, name='service_proxy'),
     url(r'^(?P<service_id>\d+)/edit$', views.edit_service, name='edit_service'),
     url(r'^(?P<service_id>\d+)/rescan$', views.rescan_service,
         name='rescan_service'),

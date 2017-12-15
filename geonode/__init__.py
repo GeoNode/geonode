@@ -18,23 +18,12 @@
 #
 #########################################################################
 
-from __future__ import absolute_import
-
 import os
 
-import imp
-try:
-    imp.find_module('celery')
-    found = True
-except ImportError:
-    found = False
-
-if found:
-    from .celery import app as celery_app
+from .celery_app import app as celery_app
 
 __version__ = (2, 9, 0, 'unstable', 0)
-if found:
-    __all__ = ["celery_app"]
+__all__ = ['celery_app']
 
 
 class GeoNodeException(Exception):

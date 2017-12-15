@@ -26,12 +26,10 @@ from django.utils.http import is_safe_url
 from django.http.request import validate_host
 from django.views.decorators.csrf import requires_csrf_token
 from django.middleware.csrf import get_token
-# from django.views.decorators.csrf import csrf_exempt
 
 
-# @csrf_exempt
 @requires_csrf_token
-def proxy(request):
+def proxy(request, url=None, response_callback=None, **kwargs):
     PROXY_ALLOWED_HOSTS = getattr(settings, 'PROXY_ALLOWED_HOSTS', ())
 
     host = None
@@ -42,13 +40,13 @@ def proxy(request):
         PROXY_ALLOWED_HOSTS += hostname
         host = ogc_server_settings.netloc
 
-    if 'url' not in request.GET:
+    if 'url' not in request.GET and not url:
         return HttpResponse("The proxy service requires a URL-encoded URL as a parameter.",
                             status=400,
                             content_type="text/plain"
                             )
 
-    raw_url = request.GET['url']
+    raw_url = url or request.GET['url']
     url = urlsplit(raw_url)
     locator = str(url.path)
     if url.query != "":
@@ -99,17 +97,21 @@ def proxy(request):
     if request.method in ("POST", "PUT") and "CONTENT_TYPE" in request.META:
         headers["Content-Type"] = request.META["CONTENT_TYPE"]
 
-    if 'HTTP_AUTHORIZATION' in request.META:
-        auth = request.META.get('HTTP_AUTHORIZATION', request.META.get('HTTP_AUTHORIZATION2'))
-        if auth:
-            headers['Authorization'] = auth
-    elif access_token:
+    access_token = None
+    if 'access_token' in request.session:
+        access_token = request.session['access_token']    #
+
+    if access_token:
         # TODO: Bearer is currently cutted of by Djano / GeoServer
         if request.method in ("POST", "PUT"):
             headers['Authorization'] = 'Bearer %s' % access_token
         if access_token and 'access_token' not in locator:
             query_separator = '&' if '?' in locator else '?'
             locator = ('%s%saccess_token=%s' % (locator, query_separator, access_token))
+    elif 'HTTP_AUTHORIZATION' in request.META:
+        auth = request.META.get('HTTP_AUTHORIZATION', request.META.get('HTTP_AUTHORIZATION2'))
+        if auth:
+            headers['Authorization'] = auth
 
     site_url = urlsplit(settings.SITEURL)
 
@@ -141,17 +143,27 @@ def proxy(request):
         f = gzip.GzipFile(fileobj=buf)
         content = f.read()
 
-    # If we get a redirect, let's add a useful message.
-    if status in (301, 302, 303, 307):
-        _response = HttpResponse(('This proxy does not support redirects. The server in "%s" '
-                                 'asked for a redirect to "%s"' % (url, response.getheader('Location'))),
-                                 status=status,
-                                 content_type=content_type
-                                )
-        _response['Location'] = response.getheader('Location')
-        return _response
+    if response_callback:
+        kwargs = {} if not kwargs else kwargs
+        kwargs.update({
+            'response': response,
+            'content': content,
+            'status': status,
+            'content_type': content_type
+        })
+        return response_callback(**kwargs)
     else:
-        return HttpResponse(
-            content=content,
-            status=status,
-            content_type=content_type)
+        # If we get a redirect, let's add a useful message.
+        if status in (301, 302, 303, 307):
+            _response = HttpResponse(('This proxy does not support redirects. The server in "%s" '
+                                     'asked for a redirect to "%s"' % (url, response.getheader('Location'))),
+                                     status=status,
+                                     content_type=content_type
+                                    )
+            _response['Location'] = response.getheader('Location')
+            return _response
+        else:
+            return HttpResponse(
+                content=content,
+                status=status,
+                content_type=content_type)

@@ -298,10 +298,12 @@ class TKeywordForm(forms.Form):
 class ResourceBaseDateTimePicker(DateTimePicker):
 
     def build_attrs(self, base_attrs=None, extra_attrs=None, **kwargs):
+        "Helper function for building an attribute dictionary."
         if extra_attrs:
             base_attrs.update(extra_attrs)
         base_attrs.update(kwargs)
         return super(ResourceBaseDateTimePicker, self).build_attrs(**base_attrs)
+        # return base_attrs
 
 
 class ResourceBaseForm(TranslationModelForm):

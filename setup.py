@@ -51,9 +51,9 @@ setup(name='GeoNode',
 
             # native dependencies
             "Pillow<=3.3.1",  # python-imaging (3.1.2) - python-pillow (3.3.1 in our ppa)
-            "lxml<=3.6.2",  # python-lxml (3.6.2 in our ppa)
+            "lxml<=3.8.0",  # python-lxml (3.6.2 in our ppa) FIXME
             "psycopg2<=2.7.3.1",  # python-psycopg2 (2.7.3.1 in our ppa)
-            "Django<=1.9.13",  # python-django (1.8.18 in our ppa)
+            "Django==1.9.13",  # python-django (1.8.18 in our ppa) FIXME
 
             # Other
             "amqp<=2.2.2",  # (python-amqp 2.2.2 in our ppa)
@@ -76,7 +76,7 @@ setup(name='GeoNode',
             "chardet<=3.0.4",  # python-chardet (3.0.4 in our ppa)
             "decorator<=4.1.2",  # python-decorator (4.1.2 in our ppa)
             "celery>4.0a0c,<=4.1.0",  # python-celery (4.1.0)
-            "certifi<=2017.7.27.1",  # depends on python-elasticsearch
+            "certifi<=2018.1.18",  # depends on python-elasticsearch FIXME
             "click==6.7",  # TODO
             "coreapi==2.3.3",  # TODO
             "coreschema==0.0.4",  # TODO
@@ -90,19 +90,19 @@ setup(name='GeoNode',
 
             # Django Apps
             "dj-pagination<=2.3.2",  # TODO
-            "django-extensions>=1.2.5,<=1.6.1",  # python-django-extensions (1.5.9) TODO
+            "django-extensions>=1.2.5,<=2.0.3",  # python-django-extensions (1.5.9) TODO
             "django-jsonfield<=1.0.1",  # python-django-jsonfield (0.9.15, 1.0.1 in our ppa)
             "django-jsonfield-compat<=0.4.4",  # python-django-jsonfield-compat (0.4.4 in our ppa)
-            "django-leaflet<=0.22.0",  # python-django-leaflet (0.19.0 in our ppa) TODO
-            "django-taggit<=0.22.1",  # python-django-taggit (0.18.0) FIXME
-            "django-mptt<=0.8.7",  # django-mptt (0.8.0, 0.8.6 in our ppa) FIXME
-            "django-treebeard<=4.1.2",  # django-treebeard (4.0) FIXME
+            "django-leaflet<=0.23.0",  # python-django-leaflet (0.19.0 in our ppa) TODO
+            "django-taggit<=0.22.2",  # python-django-taggit (0.18.0) FIXME
+            "django-mptt<=0.9.0",  # django-mptt (0.8.0, 0.8.6 in our ppa) FIXME
+            "django-treebeard<=4.2.1",  # django-treebeard (4.0) FIXME
             "django-guardian<=1.4.9",  # django-guardian (1.4.1) FIXME
-            "django-downloadview<=1.8",  # python-django-downloadview (1.8)
-            "django-polymorphic<=1.3",  # python-django-polymorphic (1.3)
+            "django-downloadview<=1.9",  # python-django-downloadview (1.8) FIXME
+            "django-polymorphic<2.0",  # python-django-polymorphic (1.3)
             "django-rest-swagger==2.1.2",  # TODO
-            "django-reversion<=2.0.10",  # python-django-reversion (1.10.0) FIXME
-            "django-suit<=0.2.15",  # python-django-suit (0.2.15 in our ppa)
+            "django-reversion<=2.0.13",  # python-django-reversion (1.10.0) FIXME
+            "django-suit<=0.2.26",  # python-django-suit (0.2.15 in our ppa) FIXME
             "django-tastypie<=0.14.0",  # python-django-tastypie (0.12.0, 0.12.2, 0.13.3 in our ppa) FIXME
             "django-invitations<=1.9.2",  # python-django-invitations (1.9.1 in our ppa) FIXME
             "django-oauth-toolkit>=0.10.0,<1.0",  # python-django-oauth-toolkit (0.12.0 in our ppa)
@@ -110,11 +110,11 @@ setup(name='GeoNode',
             "djangorestframework-gis<=0.12",  # TODO
             "drf-nested-routers==0.90.0",  # TODO
             "drf-openapi==1.3.0",  # TODO
-            "oauthlib<=2.0.2",  # python-oauthlib (2.0.2 in our ppa)
+            "oauthlib<=2.0.6",  # python-oauthlib (2.0.2 in our ppa) FIXME
 
             # geopython dependencies
             "pyproj>=1.9.5,<=1.9.5.1",  # python-pyproj (1.9.5.1)
-            "OWSLib>=0.10.3,<=0.15.0",  # python-owslib (0.15.0 in our ppa)
+            "OWSLib>=0.10.3,<=0.15.0",  # python-owslib (0.15.0 in our ppa) FIXME
             "pycsw>=1.10.1,<=2.0.3",  # python-pycsw (1.10.1, 2.0.0, 2.0.3 in our ppa)
             "%s" % shapely_dep,  # python-shapely (1.5.13)
 
@@ -128,20 +128,21 @@ setup(name='GeoNode',
             "pinax-theme-bootstrap<=8.0.1",  # python-pinax-theme-bootstrap (8.0.1 in our ppa)
             "django-forms-bootstrap<=3.1.0",  # python-django-forms-bootstrap (3.1.0 in our ppa)
             "django-allauth<=0.34.0",  # TODO
-            "django-activity-stream<=0.6.4",  # python-django-activity-stream (0.6.3 in ppa) FIXME
+            "django-activity-stream<=0.6.5",  # python-django-activity-stream (0.6.3 in ppa) FIXME
             "django-appconf<=1.0.2",  # (1.0.2 in ppa)
             "django-apptemplates==1.4",  # TODO
             "django-autocomplete-light>=2.3.3,<3.0a0",  # (2.3.3.1 in ppa)
             "django-autofixture<=0.12.1",  # python-django-autofixture (0.12.1 in our ppa)
             "django-autoslug<=1.9.3",  # python-django-autoslug (1.9.3 in our ppa)
             "django-braces<=1.12.0",  # pytnon-django-braces (1.12.0 in our ppa)
-            "django-celery-beat==1.0.1",  # TODO
+            "django-celery-beat==1.1.1",  # TODO
             "django-celery-results==1.0.1",  # TODO
             "django-geonode-client<=1.0.0",  # python-django-geonode-client (1.0.0 in our ppa)
-            "django-model-utils==3.0.0",  # TODO
+            "django-model-utils==3.1.1",  # TODO
             "django-modeltranslation>=0.11,<=0.12.2",  # python-django-modeltranslation (0.12 Debian) FIXME
             "django-simple-history<=1.9.0",  # TODO
-            "django-import-export<=0.5.1",  # missing from ppa FIXME
+            "django-import-export<=1.0.0",  # missing from ppa FIXME
+            "django-js-asset<=1.0.0",  # missing from ppa FIXME
             "django-utils<=0.0.2",  # missing from ppa FIXME
             "django-basic-authentication-decorator==0.9",  # missing from ppa FIXME
 
@@ -158,7 +159,7 @@ setup(name='GeoNode',
             "gisdata>=0.5.4",  # python-gisdata (0.5.4 in our ppa)
 
             # haystack/elasticsearch, uncomment to use
-            "django-haystack<=2.6.0",  # (2.4.1 in ppa) FIXME
+            "django-haystack<=2.8.0",  # (2.4.1 in ppa) FIXME
             "elasticsearch<=2.4.0",  # (2.4.0 in ppa)
             "pyelasticsearch<=0.6.1",
 
@@ -188,8 +189,8 @@ setup(name='GeoNode',
             "mccabe<=0.4.0",  # (0.2.1 in ppa) FIXME
             "mock<=2.0.0",  # (1.3.0 in ppa) FIXME
             "numpy<=1.13.1",  # (1.11.0 in ppa) FIXME
-            "odfpy<=1.3.5",  # python-odfpy (1.3.6 in our ppa)
-            "openpyxl<=2.4.8",  # (2.3.0 in ppa) FIXME
+            "odfpy<=1.3.6",  # python-odfpy (1.3.6 in our ppa)
+            "openpyxl<=2.5.0",  # (2.3.0 in ppa) FIXME
             "pbr<=3.1.1",  # (1.8.0 in ppa) FIXME
             "python-dateutil<=2.6.1",  # (2.4.2 in ppa) FIXME
             "python-gnupg<=0.4.1",  # (0.3.8 in ppa) FIXME
@@ -197,11 +198,12 @@ setup(name='GeoNode',
             "pytz<=2018.3",  # python-pytz (2017.3 in our ppa) FIXME
             "regex<=2016.7.21",  # (0.1.20160110 in ppa)
             "requests<=2.18.4",
-            "simplejson<=3.11.1",  # (3.8.1 in ppa) FIXME
+            "simplejson<=3.13.2",  # (3.8.1 in ppa) FIXME
             "tablib<=0.12.1",  # (0.9.11 in ppa) FIXME
+            "typing<=3.6.4",  # TODO
 
             "psutil",  # (3.4.2 in ppa) FIXME
-            "django-cors-headers",  # python-django-cors-headers (2.1.0 in our ppa)
+            "django-cors-headers<=2.2.0",  # python-django-cors-headers (2.1.0 in our ppa) FIXME
             "django-cuser==2017.3.16",  # TODO
             "django-multi-email-field<=0.5.1",  # python-django-multi-email-field (0.5.1 in our ppa)
             # "WeasyPrint",

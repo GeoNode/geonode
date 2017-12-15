@@ -184,8 +184,11 @@ def _style_name(resource):
 def extract_name_from_sld(gs_catalog, sld, sld_file=None):
     try:
         if sld:
+            if isfile(sld):
+                sld = open(sld, "r").read()
             dom = etree.XML(sld)
         elif sld_file and isfile(sld_file):
+            sld = open(sld_file, "r").read()
             dom = etree.parse(sld_file)
     except Exception:
         logger.exception("The uploaded SLD file is not valid XML")
@@ -299,8 +302,20 @@ def fixup_style(cat, resource, style):
 
 def set_layer_style(saved_layer, title, sld, base_file=None):
     # Check SLD is valid
-    extract_name_from_sld(gs_catalog, sld, sld_file=base_file)
+    try:
+        if sld:
+            if isfile(sld):
+                sld = open(sld, "r").read()
+            etree.XML(sld)
+        elif base_file and isfile(base_file):
+            sld = open(base_file, "r").read()
+            etree.parse(base_file)
+    except Exception:
+        logger.exception("The uploaded SLD file is not valid XML")
+        raise Exception(
+            "The uploaded SLD file is not valid XML")
 
+    # Check Layer's available styles
     match = None
     styles = list(saved_layer.styles.all()) + [
         saved_layer.default_style]

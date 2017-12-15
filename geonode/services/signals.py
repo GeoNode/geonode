@@ -36,10 +36,11 @@ def remove_harvest_job(sender, **kwargs):
     """Remove a Layer's harvest job so that it may be re-imported later."""
     layer = kwargs["instance"]
     if layer.remote_service is not None:
-        job = HarvestJob.objects.filter(resource_id=layer.name).get(
-            service=layer.remote_service)
-        logger.debug("job: {}".format(job.id))
-        job.delete()
+        if HarvestJob.objects.filter(resource_id=layer.alternate):
+            job = HarvestJob.objects.filter(resource_id=layer.name).get(
+                service=layer.remote_service)
+            logger.debug("job: {}".format(job.id))
+            job.delete()
     else:
         pass  # layer was not harvested from a service, we've nothing to do
 

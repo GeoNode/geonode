@@ -29,9 +29,8 @@ from django.core.serializers.json import DjangoJSONEncoder
 from django.views.decorators.clickjacking import xframe_options_exempt
 from django.utils.decorators import method_decorator
 from django.core.urlresolvers import reverse
+from django.shortcuts import render
 from django.http import HttpResponse
-from django.shortcuts import render_to_response
-from django.template import RequestContext
 
 from geonode.maps.views import _resolve_map, _PERMISSION_MSG_VIEW, \
     snapshot_config, _resolve_layer
@@ -588,8 +587,7 @@ def map_download_leaflet(request, mapid,
         'for_download': True
     }
 
-    the_page = render_to_response(template,
-                                  RequestContext(request, context))
+    the_page = render(request, template, context=context)
 
     response = HttpResponse(
         the_page.content, content_type="html",

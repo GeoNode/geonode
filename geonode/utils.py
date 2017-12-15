@@ -385,7 +385,7 @@ class GXPMapBase(object):
         index = int(max(sources.keys())) if len(sources.keys()) > 0 else 0
         for service in Service.objects.all():
             remote_source = {
-                'url': service.base_url,
+                'url': service.service_url,
                 'remote': True,
                 'ptype': 'gxp_wmscsource',
                 'name': service.name

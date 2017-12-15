@@ -322,6 +322,7 @@ GEONODE_CONTRIB_APPS = (
     # 'geonode.contrib.datastore_shards',
     'geonode.contrib.metadataxsl',
     'geonode.contrib.api_basemaps',
+    'geonode.contrib.ows_api',
 )
 
 # Uncomment the following line to enable contrib apps
@@ -436,7 +437,7 @@ LOGGING = {
         "geonode": {
             "handlers": ["console"], "level": "ERROR", },
         "geonode.qgis_server": {
-            "handlers": ["console"], "level": "DEBUG", },
+            "handlers": ["console"], "level": "ERROR", },
         "gsconfig.catalog": {
             "handlers": ["console"], "level": "ERROR", },
         "owslib": {
@@ -460,7 +461,11 @@ TEMPLATES = [
         'OPTIONS': {
             'context_processors': [
                 'django.template.context_processors.debug',
+                'django.template.context_processors.i18n',
+                'django.template.context_processors.tz',
                 'django.template.context_processors.request',
+                'django.template.context_processors.media',
+                'django.template.context_processors.static',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
                 'django.contrib.auth.context_processors.auth',
@@ -637,7 +642,7 @@ GEOSERVER_LOCATION = os.getenv(
 )
 
 GEOSERVER_PUBLIC_LOCATION = os.getenv(
-    'GEOSERVER_PUBLIC_LOCATION', 'http://localhost:8080/geoserver/'
+    'GEOSERVER_PUBLIC_LOCATION', 'http://localhost:8000/gs/'
 )
 
 OGC_SERVER_DEFAULT_USER = os.getenv(
@@ -1232,15 +1237,27 @@ if os.name == 'nt':
 # define the urls after the settings are overridden
 USE_GEOSERVER = 'geonode.geoserver' in INSTALLED_APPS
 if USE_GEOSERVER:
-    LOCAL_GEOSERVER = {
+    PUBLIC_GEOSERVER = {
         "source": {
+            "title": "GeoServer - Public Layers",
+            "attribution": "&copy; %s" % SITEURL,
             "ptype": "gxp_wmscsource",
             "url": OGC_SERVER['default']['PUBLIC_LOCATION'] + "wms",
             "restUrl": "/gs/rest"
         }
     }
+    LOCAL_GEOSERVER = {
+        "source": {
+            "title": "GeoServer - Private Layers",
+            "attribution": "&copy; %s" % SITEURL,
+            "ptype": "gxp_wmscsource",
+            "url": "/gs/ows",
+            "restUrl": "/gs/rest"
+        }
+    }
     baselayers = MAP_BASELAYERS
-    MAP_BASELAYERS = [LOCAL_GEOSERVER]
+    # MAP_BASELAYERS = [PUBLIC_GEOSERVER, LOCAL_GEOSERVER]
+    MAP_BASELAYERS = [PUBLIC_GEOSERVER]
     MAP_BASELAYERS.extend(baselayers)
 
 # Keywords thesauri
