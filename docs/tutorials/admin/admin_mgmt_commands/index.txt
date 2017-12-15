@@ -259,3 +259,6 @@ Usage::
 
   # search all layers which contain a given search string in their name and owned by a given user
   python manage.py sync_geofence --layername cambridge  --owner bob
+
+  # remove layers which are broken
+  python manage.py find_geoserver_broken_layers --remove
