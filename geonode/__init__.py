@@ -20,7 +20,10 @@
 
 import os
 
-__version__ = (2, 7, 5, 'unstable', 3)
+from .celery_app import app as celery_app
+
+__version__ = (2, 7, 5, 'unstable', 4)
+__all__ = ['celery_app']
 
 
 class GeoNodeException(Exception):

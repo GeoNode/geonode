@@ -29,7 +29,7 @@ try:
 except ImportError:
     from django.utils import simplejson as json
 from django.contrib.contenttypes.models import ContentType
-from django.utils.translation import ugettext as _
+from django.utils.translation import ugettext_lazy as _
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.urlresolvers import reverse
 from django.template.defaultfilters import slugify
@@ -144,7 +144,7 @@ class Map(ResourceBase, GXPMapBase):
         def layer_json(lyr):
             return {
                 "name": lyr.alternate,
-                "service": lyr.service_type,
+                "service": lyr.service_type if hasattr(lyr, 'service_type') else "QGIS Server",
                 "serviceURL": "",
                 "metadataURL": ""
             }

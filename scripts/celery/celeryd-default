@@ -10,7 +10,7 @@ CELERY_BIN="celery"
 
 # App instance to use
 # comment out this line if you don't use an app
-CELERY_APP="geonode"
+CELERY_APP="geonode.celery_app"
 
 # Where to chdir at start.
 CELERYD_CHDIR=""

@@ -60,7 +60,6 @@ from geonode.maps.forms import MapForm
 from geonode.security.views import _perms_info_json
 from geonode.base.forms import CategoryForm
 from geonode.base.models import TopicCategory
-from geonode.tasks.deletion import delete_map
 from geonode.groups.models import GroupProfile
 
 from geonode.documents.models import get_related_documents
@@ -71,6 +70,7 @@ from geonode import geoserver, qgis_server
 from geonode.base.views import batch_modify
 
 from requests.compat import urljoin
+from .tasks import delete_map
 
 if check_ogc_backend(geoserver.BACKEND_PACKAGE):
     # FIXME: The post service providing the map_status object
@@ -315,7 +315,6 @@ def map_metadata(request, mapid, template='maps/map_metadata.html'):
     if settings.ADMIN_MODERATE_UPLOADS:
         if not request.user.is_superuser:
             map_form.fields['is_published'].widget.attrs.update({'disabled': 'true'})
-        if not request.user.is_superuser or not request.user.is_staff:
             can_change_metadata = request.user.has_perm(
                 'change_resourcebase_metadata',
                 map_obj.get_self_resource())
@@ -822,6 +821,13 @@ def add_layers_to_map_config(request, map_obj, layer_names, add_base_layers=True
 
         layer_bbox = layer.bbox
         # assert False, str(layer_bbox)
+
+        def decimal_encode(bbox):
+            import decimal
+            for o in [float(coord) for coord in bbox]:
+                if isinstance(o, decimal.Decimal):
+                    o = (str(o) for o in [o])
+
         if bbox is None:
             bbox = list(layer_bbox[0:4])
         else:
@@ -842,7 +848,7 @@ def add_layers_to_map_config(request, map_obj, layer_names, add_base_layers=True
         config["wrapDateLine"] = True
         config["srs"] = getattr(
             settings, 'DEFAULT_MAP_CRS', 'EPSG:900913')
-        config["bbox"] = bbox if config["srs"] != 'EPSG:900913' \
+        config["bbox"] = decimal_encode(bbox) if config["srs"] != 'EPSG:900913' \
             else llbbox_to_mercator([float(coord) for coord in bbox])
 
         if layer.storeType == "remoteStore":
@@ -852,12 +858,12 @@ def add_layers_to_map_config(request, map_obj, layer_names, add_base_layers=True
             # sent to remote services.
             ogc_server_url = urlparse.urlsplit(
                 ogc_server_settings.PUBLIC_LOCATION).netloc
-            service_url = urlparse.urlsplit(service.base_url).netloc
+            service_url = urlparse.urlsplit(service.service_url).netloc
 
-            if access_token and ogc_server_url == service_url and 'access_token' not in service.base_url:
-                url = service.base_url + '?access_token=' + access_token
+            if access_token and ogc_server_url == service_url and 'access_token' not in service.service_url:
+                url = service.service_url + '?access_token=' + access_token
             else:
-                url = service.base_url
+                url = service.service_url
             maplayer = MapLayer(map=map_obj,
                                 name=layer.alternate,
                                 ows_url=layer.ows_url,
