@@ -234,7 +234,7 @@ def map_metadata(request, mapid, template='maps/map_metadata.html'):
                 new_author = author_form.save()
 
         if new_poc is not None and new_author is not None:
-            the_map = map_form.save()
+            the_map = map_form.instance
             the_map.poc = new_poc
             the_map.metadata_author = new_author
             the_map.title = new_title
