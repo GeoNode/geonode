@@ -382,9 +382,9 @@ class _HierarchicalTagManager(_TaggableManager):
             name__in=str_tags
         )
         tag_objs.update(existing)
-
         for new_tag in str_tags - set(t.name for t in existing):
-            tag_objs.add(HierarchicalKeyword.add_root(name=new_tag))
+            if new_tag:
+                tag_objs.add(HierarchicalKeyword.add_root(name=new_tag))
 
         for tag in tag_objs:
             try:
