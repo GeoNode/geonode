@@ -19,6 +19,7 @@
 #########################################################################
 
 import json
+import logging
 from itertools import chain
 
 from guardian.shortcuts import get_perms
@@ -47,6 +48,8 @@ from geonode.documents.models import IMGTYPES
 from geonode.utils import build_social_links
 from geonode.groups.models import GroupProfile
 from geonode.base.views import batch_modify
+
+logger = logging.getLogger("geonode.documents.views")
 
 ALLOWED_DOC_TYPES = settings.ALLOWED_DOCUMENT_TYPES
 
@@ -422,10 +425,11 @@ def document_metadata(
                     new_author = author_form.save()
 
             if new_poc is not None and new_author is not None:
-                the_document = document_form.save()
+                the_document = document_form.instance
                 the_document.poc = new_poc
                 the_document.metadata_author = new_author
                 the_document.keywords.add(*new_keywords)
+                the_document.save()
                 document_form.save_many2many()
                 Document.objects.filter(
                     id=the_document.id).update(

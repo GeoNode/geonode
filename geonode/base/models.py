@@ -320,7 +320,7 @@ class HierarchicalKeyword(TagBase, MP_Node):
             serobj = serializers.serialize('python', [pyobj])[0]
             # django's serializer stores the attributes in 'fields'
             fields = serobj['fields']
-            depth = fields['depth']
+            depth = fields['depth'] or 1
             fields['text'] = fields['name']
             fields['href'] = fields['slug']
             del fields['name']
