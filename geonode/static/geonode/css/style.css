@@ -3253,7 +3253,7 @@ ul.termsuseandcondition li {
 .gd-content .gd-content-body .overlay_layerdetails {
     height: 100%;
     width: 0;
-    position: absolute;
+    /*position: absolute;*/
     /*z-index: 100;
     top: 127px;
     top: 74px;
@@ -3345,15 +3345,11 @@ ul.termsuseandcondition li {
 .shownextdata{
     display:none;
 }
-
-.modal-dialog{
-width: 100%;
-}
-#SigninModal .modal-dialog
+#myNav .panel-heading
 {
-    width: 600px;
+    white-space: normal;
 }
-#SignupModal .modal-dialog
+#myNav .panel-body
 {
-    width: 600px;
+    white-space: normal;
 }

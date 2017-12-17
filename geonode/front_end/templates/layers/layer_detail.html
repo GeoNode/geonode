@@ -36,7 +36,9 @@
     <div class="gd-content" style="border-top:5px solid lightgrey;">
       <div class="gd-content-body layer-test" >
         <div class="row">
-          <div class="col-md-4 margin-zero right-pad-zero overlay_layerdetails" id="myNav" >
+        <div class="panel-container">
+          <div class="panel-left">
+          <div class="margin-zero right-pad-zero overlay_layerdetails" id="myNav">
             <div id="gd-accordion-style" class="layer-information">
                         <div class="panel-group" id="accordion___" role="tablist" aria-multiselectable="true">
                             <div class="panel panel-default">
@@ -44,9 +46,10 @@
                                     <h4 class="panel-title">
                                         <a role="button" data-toggle="collapse" data-parent="#accordion1"
                                            href="#collapse1-per" aria-expanded="true" aria-controls="collapseOne">
-                                            {{ resource.title|default:resource.typename }}
+                                            
                                             <i class="fa fa-chevron-up" aria-hidden="true"></i>
                                             <i class="fa fa-chevron-down" aria-hidden="true"></i>
+                                            {{ resource.title|default:resource.typename }}
                                         </a>
                                     </h4>
                                 </div>
@@ -358,9 +361,10 @@
                                                 <a role="button" data-toggle="collapse"
                                                    data-parent="#accordion" href="#collapse7-per" aria-expanded="false"
                                                    aria-controls="collapseTwo">
-                                                    {% trans "Permissions" %}
+                                                    
                                                     <i class="fa fa-chevron-up" aria-hidden="true"></i>
                                                     <i class="fa fa-chevron-down" aria-hidden="true"></i>
+                                                    {% trans "Permissions" %}
                                                 </a>
                                             </h4>
                                         </div>
@@ -384,9 +388,10 @@
                                             <a role="button" data-toggle="collapse"
                                                data-parent="#accordion2" href="#collapse-leg" aria-expanded="false"
                                                aria-controls="collapse2">
-                                                {% trans "Legend" %}
+                                               
                                                 <i class="fa fa-chevron-up" aria-hidden="true"></i>
                                                 <i class="fa fa-chevron-down" aria-hidden="true"></i>
+                                                {% trans "Legend" %}
                                             </a>
                                         </h4>
                                     </div>
@@ -410,9 +415,10 @@
                                         <a role="button" data-toggle="collapse"
                                            data-parent="#accordion3" href="#collapse3-map" aria-expanded="false"
                                            aria-controls="collapseTwo">
-                                            {% trans "Maps using this layer" %}
+                                            
                                             <i class="fa fa-chevron-up" aria-hidden="true"></i>
                                             <i class="fa fa-chevron-down" aria-hidden="true"></i>
+                                            {% trans "Maps using this layer" %}
                                         </a>
                                     </h4>
                                 </div>
@@ -440,9 +446,10 @@
                                         <a role="button" data-toggle="collapse"
                                            data-parent="#accordion" href="#collapse4-create" aria-expanded="false"
                                            aria-controls="collapseTwo">
-                                            {% trans "Create a map using this layer" %}
+                                            
                                             <i class="fa fa-chevron-up" aria-hidden="true"></i>
                                             <i class="fa fa-chevron-down" aria-hidden="true"></i>
+                                            {% trans "Create a map using this layer" %}
                                         </a>
                                     </h4>
                                 </div>
@@ -462,9 +469,10 @@
                                             <a role="button" data-toggle="collapse"
                                                data-parent="#accordion" href="#collapse5" aria-expanded="false"
                                                aria-controls="collapseTwo">
-                                                {% trans "Documents related to this layer" %}
+                                                
                                                 <i class="fa fa-chevron-up" aria-hidden="true"></i>
                                                 <i class="fa fa-chevron-down" aria-hidden="true"></i>
+                                                {% trans "Documents related to this layer" %}
                                             </a>
                                         </h4>
                                     </div>
@@ -490,9 +498,10 @@
                                             <a role="button" data-toggle="collapse"
                                                data-parent="#accordion" href="#collapse6-styles" aria-expanded="false"
                                                aria-controls="collapseTwo">
-                                                {% trans "Styles" %}
+                                               
                                                 <i class="fa fa-chevron-up" aria-hidden="true"></i>
                                                 <i class="fa fa-chevron-down" aria-hidden="true"></i>
+                                                {% trans "Styles" %}
                                             </a>
                                         </h4>
                                     </div>
@@ -532,9 +541,10 @@
                                             <a role="button" data-toggle="collapse"
                                                data-parent="#accordion" href="#collapse8" aria-expanded="false"
                                                aria-controls="collapseTwo">
-                                                {% trans "External service layer" %}
+                                               
                                                 <i class="fa fa-chevron-up" aria-hidden="true"></i>
                                                 <i class="fa fa-chevron-down" aria-hidden="true"></i>
+                                                {% trans "External service layer" %}
                                             </a>
                                         </h4>
                                     </div>
@@ -555,9 +565,10 @@
                                         <a role="button" data-toggle="collapse"
                                            data-parent="#accordion" href="#collapse9" aria-expanded="false"
                                            aria-controls="collapseTwo">
-                                            {% trans "About" %}
+                                           
                                             <i class="fa fa-chevron-up" aria-hidden="true"></i>
                                             <i class="fa fa-chevron-down" aria-hidden="true"></i>
+                                            {% trans "About" %}
                                         </a>
                                     </h4>
                                 </div>
@@ -592,9 +603,10 @@
                                         <a role="button" data-toggle="collapse"
                                            data-parent="#accordion" href="#collapse10" aria-expanded="false"
                                            aria-controls="collapseTwo">
-                                            Information
+                                            
                                             <i class="fa fa-chevron-up" aria-hidden="true"></i>
                                             <i class="fa fa-chevron-down" aria-hidden="true"></i>
+                                            Information
                                         </a>
                                     </h4>
                                 </div>
@@ -700,7 +712,11 @@
           {% endif %}
 
           </div> <!-- col-md-4 -->
-          <div class="col-md-12"> 
+          </div>
+          <div class="splitter">
+          </div>
+          <div class="panel-right">
+            <div class="col-md-12">
 
               <ul class="nav nav-tabs pull-right">
                   <li role="presentation" class="active" id="map" onclick="activeTab('map')">
@@ -734,6 +750,8 @@
           <div class="col-md-12" id="attribute_view_left" style="overflow-y: auto;">
                 {% include "layers/_layer_attribute_view.html" %}
         </div>
+          </div>
+        </div>
         </div> <!-- row -->
       </div>
     </div>
@@ -746,18 +764,23 @@
 <script src="{{ STATIC_URL }}layers/js/layer.module.js"></script>
 <script src="{{ STATIC_URL }}layers/js/layer.service.js"></script>
 <script src="{{ STATIC_URL }}layers/js/attribute-view.controller.js"></script>
+<script>
+    $.fn.resizable = undefined;
+</script>
+<script src="https://rawgit.com/RickStrahl/jquery-resizable/master/src/jquery-resizable.js"></script>
+<link rel="stylesheet" href="{{ STATIC_URL }}layers/css/styles.css">
     <script type="text/javascript">
     setTimeout(openNav, 1000);
     $( ".expand_view" ).tooltip({ show: { effect: "blind", duration: 300 } });
 
     function openNav()
     {
-        $('#myNav').css('width','28%');
+        $('#myNav').css('width','100%');
         $('#layerdetails_arro_addcls').removeClass('layerdetails_arro');
-        $('#myNav_map_left').css('width','69%');
+        $('#myNav_map_left').css('width','100%');
         $('#myNav_map_left').css('float','right');
         $('#myNav_map_left').css('left','0%');
-        $('#attribute_view_left').css('width','69%');
+        $('#attribute_view_left').css('width','100%');
         $('#attribute_view_left').css('float','right');
         $('#attribute_view_left').css('left','0%');
         $('#layerdetails_show').css('display','none');
@@ -847,7 +870,7 @@
             bodyHeight = parseInt(parseInt(bodyHeight) - 53);
             console.log("bodyHeight", bodyHeight);
             GD_WRAPPER__HEIGHT = bodyHeight;
-            $("#gd-wrapper .layer-information, #gd-wrapper .layer-map-info").css("height", bodyHeight + "px");
+            $("#gd-wrapper .layer-information, #gd-wrapper .layer-map-info").css("height", bodyHeight +56 + "px");
         }
 
         $(document).ready(function () {
@@ -1035,9 +1058,13 @@
             }
         });
 
-    $(".panel-left").resizable({
+     $(document).ready(function(){
+         $(".panel-left").resizable({
        handleSelector: ".splitter",
        resizeHeight: false
      });
+     });
     </script>
+
 {% endblock extra_script %}
+
