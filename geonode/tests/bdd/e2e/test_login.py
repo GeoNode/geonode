@@ -20,15 +20,19 @@
 
 """User can login using authentication feature tests."""
 
+import pytest
 from pytest_bdd import given, scenario, then, when
 
 
+# https://github.com/pytest-dev/pytest-django/issues/329
+@pytest.mark.django_db(transaction=True) #, serialized_rollback=True)
 @scenario('login.feature', 'User can access login page')
 def test_user_can_access_login_page():
     """User can access login page."""
     # pass
 
 
+@pytest.mark.django_db(transaction=True) #, serialized_rollback=True)
 @scenario('login.feature', 'Admin user')
 def test_admin_user():
     """Admin user."""

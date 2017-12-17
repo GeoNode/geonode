@@ -21,7 +21,9 @@
 import os
 
 import pytest
+from urlparse import urljoin
 from geonode.tests.bdd import __file__ as bdd_path
+from geonode import settings as gn_settings
 
 
 # @pytest.fixture(scope='session')
@@ -34,9 +36,9 @@ from geonode.tests.bdd import __file__ as bdd_path
 
 
 @pytest.yield_fixture(scope='function', autouse=True)
-def en_browser(browser):
+def en_browser(browser, bdd_server):
     en_browser = browser
-    en_browser.visit('http://localhost:8000/account/login')
+    en_browser.visit(urljoin(bdd_server.url, gn_settings.LOGIN_URL))
     yield en_browser
     en_browser.quit()
 
