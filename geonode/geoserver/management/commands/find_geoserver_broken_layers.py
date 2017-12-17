@@ -44,14 +44,12 @@ class Command(BaseCommand):
     def add_arguments(self, parser):
         parser.add_argument(
             '--layername',
-            action='store_true',
             dest='layername',
             default=None,
             help='Filter by a layername.',
         )
         parser.add_argument(
             '--owner',
-            action='store_true',
             dest='owner',
             default=None,
             help='Filter by a owner.',
