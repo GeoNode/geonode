@@ -39,7 +39,7 @@ class LayerAttributeUploadView(View):
         csv_file = File(request.FILES['file']).file
         csv_reader = csv.reader(csv_file, delimiter=',', quotechar='"')
         headers = csv_reader.next()
-        headers = [h.lower().replace(' ', '_') for h in headers]
+        headers = [h.replace(' ', '_') for h in headers]
         success_count, failed_count = 0, 0
         for row in csv_reader:
             row = dict(zip(headers, row))
@@ -47,7 +47,7 @@ class LayerAttributeUploadView(View):
                 obj = model_instance(**row)
                 obj.save()
                 success_count += 1
-            except model_instance.DoesNotExist as ex:
+            except Exception as ex:
                 db_logger.exception(ex)
                 failed_count += 1
         
