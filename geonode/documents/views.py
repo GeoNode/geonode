@@ -385,6 +385,7 @@ def document_metadata(
             new_poc = document_form.cleaned_data['poc']
             new_author = document_form.cleaned_data['metadata_author']
             new_keywords = document_form.cleaned_data['keywords']
+            new_regions = document_form.cleaned_data['regions']
             new_category = TopicCategory.objects.get(
                 id=category_form.cleaned_data['category_choice_field'])
 
@@ -424,33 +425,40 @@ def document_metadata(
                 if author_form.has_changed and author_form.is_valid():
                     new_author = author_form.save()
 
+            the_document = document_form.instance
             if new_poc is not None and new_author is not None:
-                the_document = document_form.instance
                 the_document.poc = new_poc
                 the_document.metadata_author = new_author
+            if new_keywords:
+                the_document.keywords.clear()
                 the_document.keywords.add(*new_keywords)
-                the_document.save()
-                document_form.save_many2many()
-                Document.objects.filter(
-                    id=the_document.id).update(
-                    category=new_category)
+            if new_regions:
+                the_document.regions.clear()
+                the_document.regions.add(*new_regions)
+            the_document.save()
+            document_form.save_many2many()
+            Document.objects.filter(
+                id=the_document.id).update(
+                category=new_category)
 
-                if getattr(settings, 'SLACK_ENABLED', False):
-                    try:
-                        from geonode.contrib.slack.utils import build_slack_message_document, send_slack_messages
-                        send_slack_messages(
-                            build_slack_message_document(
-                                "document_edit", the_document))
-                    except BaseException:
-                        print "Could not send slack message for modified document."
+            if getattr(settings, 'SLACK_ENABLED', False):
+                try:
+                    from geonode.contrib.slack.utils import build_slack_message_document, send_slack_messages
+                    send_slack_messages(
+                        build_slack_message_document(
+                            "document_edit", the_document))
+                except BaseException:
+                    print "Could not send slack message for modified document."
 
-                return HttpResponseRedirect(
-                    reverse(
-                        'document_detail',
-                        args=(
-                            document.id,
-                        )))
+            return HttpResponseRedirect(
+                reverse(
+                    'document_detail',
+                    args=(
+                        document.id,
+                    )))
+        # - POST Request Ends here -
 
+        # Request.GET
         if poc is not None:
             document_form.fields['poc'].initial = poc.id
             poc_form = ProfileForm(prefix="poc")
