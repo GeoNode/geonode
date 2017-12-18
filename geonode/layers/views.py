@@ -1220,6 +1220,16 @@ def finding_xlink(dic):
 
 
 class LayerStyleView(View):
+    def get(self, request, layername):
+        layer_obj = _resolve_layer(request, layername)
+        layer_style = layer_obj.styles.first()
+        return HttpResponse(
+                        json.dumps(
+                            dict(name=layer_style.name, title=layer_style.sld_title, url=layer_style.sld_url, workspace=layer_style.workspace),
+                            ensure_ascii=False), 
+                            status=200,
+                            content_type='application/javascript')
+
     @custom_login_required
     def post(self, request, layername, **kwargs):
         print layername

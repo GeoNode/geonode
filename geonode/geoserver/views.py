@@ -326,7 +326,6 @@ def style_change_check(request, path):
 
 
 def geoserver_rest_proxy(request, proxy_path, downstream_path):
-    # import pdb;pdb.set_trace()
     if not request.user.is_authenticated():
         return HttpResponse(
             "You must be logged in to access GeoServer",
@@ -364,7 +363,7 @@ def geoserver_rest_proxy(request, proxy_path, downstream_path):
                     status=401)
             if downstream_path == 'rest/styles':
                 affected_layers = style_update(request, url)
-    # import pdb;pdb.set_trace()
+
     response, content = http.request(
         url, request.method,
         body=request.body or None,

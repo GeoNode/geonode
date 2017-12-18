@@ -33,7 +33,8 @@
             // },
             saveProperties: function(layerId, layerName, zoomLevel, properties, sldStyle, selectionStyleSld, labelingSld, callBack) {
                 //new
-                return $http.post('/gs/rest/styles', sldStyle, {
+                // debugger
+                return $http.put('/gs/rest/styles/' + properties.Name + '.xml', sldStyle, {
                     headers: {
                         'X-CSRFToken': $cookies.get('csrftoken')
                     }

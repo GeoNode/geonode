@@ -2,31 +2,70 @@
     appModule
         .controller('MapUpdateController', MapUpdateController);
 
-    MapUpdateController.$inject = ['mapService', '$window', 'analyticsService'];
+    MapUpdateController.$inject = ['mapService', '$window', 'analyticsService', 'LayerService'];
 
-    function MapUpdateController(mapService, $window, analyticsService) {
+    function MapUpdateController(mapService, $window, analyticsService, LayerService) {
         var self = this;
         var map = mapService.getMap();
         self.MapConfig = $window.mapConfig;
         console.log(self.MapConfig);
         mapService.setMapName(self.MapConfig.about.title);
-        self.MapConfig.map.layers.forEach(function(layer) {
-            console.log(layer);
-            var url = self.MapConfig.sources[layer.source].url;
-            if (url) {
-                layer.geoserverUrl = url;
-                mapService.addDataLayer(_map(layer), false);
-                // mapService.addVectorLayer(new ol.layer.Tile({
-                //         extent: layer.bbox,
-                //         source: new ol.source.TileWMS({
-                //             url: url,
-                //             params: { 'LAYERS': layer.name, 'TILED': true },
-                //             serverType: 'geoserver'
-                //         })
-                //     }))
-                // mapService.addVectorLayer(vector);
-            }
-        });
+
+        function setLayers() {
+            self.MapConfig.map.layers.forEach(function(layer) {
+                console.log(layer);
+                var url = self.MapConfig.sources[layer.source].url;
+                if (url) {
+                    layer.geoserverUrl = url;
+                    getLayerFeature(self.geoServerUrl, layer);
+                }
+            });
+        }
+
+        function errorFn() {
+
+        }
+
+        function getGeoServerSettings() {
+            self.propertyNames = [];
+            LayerService.getGeoServerSettings()
+                .then(function(res) {
+                    self.geoServerUrl = res.url;
+                    setLayers();
+                }, errorFn);
+        }
+
+        function getLayerStyle(layer, new_layer) {
+            LayerService.getStyleByLayer(layer.name)
+                .then(function(res) {
+                    new_layer.Style.Name = res.name;
+                    new_layer.Style.default.name = layer.name;
+                    new_layer.Style.default.userStyle = res.name;
+                    new_layer.Style.select.name = layer.name;
+                    new_layer.Style.select.userStyle = res.name;
+                    mapService.addDataLayer(new_layer, false);
+                }, errorFn);
+        }
+
+        function getLayerFeature(url, layer) {
+            LayerService.getLayerFeatureByName(url, layer.name).then(function(res) {
+                res.featureTypes.forEach(function(featureType) {
+                    featureType.properties.forEach(function(e) {
+                        if (e.name === 'the_geom') {
+                            var new_layer = _map(layer);
+                            if (e.localType.toLowerCase().search('polygon') != -1)
+                                new_layer["ShapeType"] = 'polygon';
+                            else if (e.localType.toLowerCase().search('point') != -1)
+                                new_layer["ShapeType"] = 'point';
+                            getLayerStyle(layer, new_layer);
+                            
+                        }
+                    }, this);
+                }, this);
+
+            }, errorFn);
+
+        }
 
         function _uuid() {
             function _() {
@@ -52,43 +91,43 @@
                 // "DataId": "s_facf34ee54914605943fe987f5b3637c",
                 "ShapeType": "point",
                 "Style": { /* not available */
-                        "Name": _uuid(),
-                        "default": {
-                            "fillPattern": null,
-                            "textFillColor": "#222026",
-                            "text": null,
-                            "pixelDensity": null,
-                            "strokeDashstyle": "solid",
-                            "strokeWidth": 1.0,
-                            "strokeColor": "#5EF1F2",
-                            "strokeOpacity": null,
-                            "fillOpacity": 0.75,
-                            "fillColor": "#2f7979",
-                            "pointRadius": 14.0,
-                            "graphicName": "circle",
-                            "textGraphicName": null,
-                            "externalGraphic": null,
-                            'name': layer.name,
-                            'userStyle': userStyle
-                        },
-                        "select": {
-                            "fillPattern": "",
-                            "textFillColor": "#222026",
-                            "text": null,
-                            "pixelDensity": null,
-                            "strokeDashstyle": "solid",
-                            "strokeWidth": 1.0,
-                            "strokeColor": "#0000ff",
-                            "strokeOpacity": 1.0,
-                            "fillOpacity": 0.4,
-                            "fillColor": "#0000ff",
-                            "pointRadius": 6.0,
-                            "graphicName": "circle",
-                            "textGraphicName": null,
-                            "externalGraphic": null,
-                            'name': layer.name,
-                            'userStyle': userStyle
-                        },
+                    "Name": _uuid(),
+                    "default": {
+                        "fillPattern": null,
+                        "textFillColor": "#222026",
+                        "text": null,
+                        "pixelDensity": null,
+                        "strokeDashstyle": "solid",
+                        "strokeWidth": 1.0,
+                        "strokeColor": "#5EF1F2",
+                        "strokeOpacity": null,
+                        "fillOpacity": 0.75,
+                        "fillColor": "#2f7979",
+                        "pointRadius": 14.0,
+                        "graphicName": "circle",
+                        "textGraphicName": null,
+                        "externalGraphic": null,
+                        'name': layer.name,
+                        'userStyle': userStyle
+                    },
+                    "select": {
+                        "fillPattern": "",
+                        "textFillColor": "#222026",
+                        "text": null,
+                        "pixelDensity": null,
+                        "strokeDashstyle": "solid",
+                        "strokeWidth": 1.0,
+                        "strokeColor": "#0000ff",
+                        "strokeOpacity": 1.0,
+                        "fillOpacity": 0.4,
+                        "fillColor": "#0000ff",
+                        "pointRadius": 6.0,
+                        "graphicName": "circle",
+                        "textGraphicName": null,
+                        "externalGraphic": null,
+                        'name': layer.name,
+                        'userStyle': userStyle
+                    },
                     "labelConfig": {
                         //         "attribute": null,
                         "visibilityZoomLevel": 0,
@@ -151,12 +190,13 @@
                 // "SavedDataId": "s_fe297a3305394811919f33cdb16fc30d"
             };
         }
+        (getGeoServerSettings)();
 
-        (function(){
+        (function() {
 
             // map load
             //debugger
-            map.on('postrender', function(evt){
+            map.on('postrender', function(evt) {
                 //console.log('maploaded', evt);
                 var user_href = window.location.href.split('/');
                 var map_info = user_href[user_href.length - 2];
@@ -168,10 +208,10 @@
 
                 var latitude;
                 var longitude;
-                try{
+                try {
                     latitude = user_location.latitude.toString();
                     longitude = user_location.longitude.toString()
-                }catch(err){
+                } catch (err) {
                     latitude = "";
                     longitude = "";
                 }
@@ -189,7 +229,7 @@
             });
 
             // Map drag / pan event
-            map.on('pointerdrag', function(evt){
+            map.on('pointerdrag', function(evt) {
                 //console.log('pointerdrag', arguments);
                 var user_location = JSON.parse(localStorage.getItem("user_location"));
 
@@ -197,10 +237,10 @@
 
                 var latitude;
                 var longitude;
-                try{
+                try {
                     latitude = user_location.latitude.toString();
                     longitude = user_location.longitude.toString()
-                }catch(err){
+                } catch (err) {
                     latitude = "";
                     longitude = "";
                 }
@@ -225,7 +265,7 @@
             });
 
             //zoom in out event
-            map.getView().on('change:resolution', function(evt){
+            map.getView().on('change:resolution', function(evt) {
 
                 var zoomType;
                 var user_location = JSON.parse(localStorage.getItem("user_location"));
@@ -236,21 +276,21 @@
                 var longitude = '';
 
                 // Zoom in
-                if(evt.oldValue > evt.currentTarget.getResolution()){
+                if (evt.oldValue > evt.currentTarget.getResolution()) {
                     //console.log("Zoom in called");
                     zoomType = 'zoom-in'
                 }
 
                 // Zoom out
-                if(evt.oldValue < evt.currentTarget.getResolution()){
+                if (evt.oldValue < evt.currentTarget.getResolution()) {
                     //console.log("Zoom out called");
                     zoomType = 'zoom-out'
                 }
 
-                try{
+                try {
                     latitude = user_location.latitude.toString();
                     longitude = user_location.longitude.toString()
-                }catch(err){
+                } catch (err) {
                     latitude = "";
                     longitude = "";
                 }

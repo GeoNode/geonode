@@ -153,7 +153,7 @@
                     params: {
                         // LAYERS: surfLayer.DataId,
                         LAYERS: surfLayer.Name, //new
-                        // STYLES: surfLayer.Style.Name,
+                        STYLES: surfLayer.Style.Name,
                         FORMAT: 'image/png',
                         TRANSPARENT: true
                     }

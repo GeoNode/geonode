@@ -1513,7 +1513,7 @@ def _invalidate_geowebcache_layer(layer_name, url=None):
     if not url:
         url = '%sgwc/rest/masstruncate' % ogc_server_settings.LOCATION
     response, _ = http.request(url, method, body=body, headers=headers)
-
+    import pdb;pdb.set_trace()
     if response.status != 200:
         line = "Error {0} invalidating GeoWebCache at {1}".format(
             response.status, url
@@ -1533,7 +1533,6 @@ def style_update(request, url):
     request.body, which is in this format:
     """
     affected_layers = []
-    import pdb;pdb.set_trace()
     if request.method in ('POST', 'PUT'):  # we need to parse xml
         # Need to remove NSx from IE11
         if "HTTP_USER_AGENT" in request.META:
@@ -1563,6 +1562,7 @@ def style_update(request, url):
             style.save()
             affected_layers.append(layer)
         elif request.method == 'PUT':  # update style in GN
+            import pdb;pdb.set_trace()        
             style = Style.objects.get(name=style_name)
             style.sld_body = sld_body
             style.sld_url = url

@@ -121,19 +121,29 @@
             '</Stroke> ' +
             '</LineSymbolizer>',
 
-        simplePolygonTemplate: '{5}' +
-            '<PolygonSymbolizer>' +
-            '<Fill>' +
-            '<CssParameter name="fill">{0}</CssParameter> ' +
-            '<CssParameter name="fill-opacity">{1}</CssParameter> ' +
+        simplePolygonTemplate: '{7}' +
+            '<sld:NamedLayer>' +
+            '<sld:Name>' +
+            '{5}' +
+            '</sld:Name>' +
+            '</sld:NamedLayer>' +
+            '<sld:UserStyle>' +
+            '<sld:Name>' +
             '{6}' +
-            '</Fill>' +
-            '<Stroke>' +
-            '<CssParameter name="stroke">{2}</CssParameter> ' +
-            '<CssParameter name="stroke-width">{3}</CssParameter> ' +
-            '<CssParameter name="stroke-dasharray">{4}</CssParameter>' +
-            '</Stroke>' +
-            '</PolygonSymbolizer>',
+            '</sld:Name>' +
+            '</sld:UserStyle>' +    
+            '<sld:PolygonSymbolizer>' +
+            '<sld:Fill>' +
+            '<sld:CssParameter name="fill">{0}</sld:CssParameter> ' +
+            '<sld:CssParameter name="fill-opacity">{1}</sld:CssParameter> ' +
+            '{6}' +
+            '</sld:Fill>' +
+            '<sld:Stroke>' +
+            '<sld:CssParameter name="stroke">{2}</sld:CssParameter> ' +
+            '<sld:CssParameter name="stroke-width">{3}</sld:CssParameter> ' +
+            '<sld:CssParameter name="stroke-dasharray">{4}</sld:CssParameter>' +
+            '</sld:Stroke>' +
+            '</sld:PolygonSymbolizer>',
         fillPatternTemplate: '<GraphicFill>' +
             '<Graphic>' +
             '<Mark>' +
@@ -150,27 +160,27 @@
             '<Opacity>{0}</Opacity>' +
             '</RasterSymbolizer>',
 
-        sldHeader: '<StyledLayerDescriptor xmlns="http://www.opengis.net/sld" xmlns:ogc="http://www.opengis.net/ogc" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="1.0.0" xsi:schemaLocation="http://www.opengis.net/sld StyledLayerDescriptor.xsd">' +
-            '<UserStyle>' +
-            '<FeatureTypeStyle>' +
-            '<Rule>' +
+        sldHeader: '<sld:StyledLayerDescriptor xmlns:sld="http://www.opengis.net/sld" version="1.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.opengis.net/sld http://schemas.opengis.net/sld/1.0.0/StyledLayerDescriptor.xsd" xmlns:ogc="http://www.opengis.net/ogc" xmlns:gml="http://www.opengis.net/gml">' +
+            '<sld:UserStyle>' +
+            '<sld:FeatureTypeStyle>' +
+            '<sld:Rule>' +
             '<!--default filter starts-->' +
             '<!--default filter ends-->' +
             '<!--default style starts-->' +
             '{0}' +
             '<!--default style ends-->' +
-            '</Rule> ' +
-            '<Rule>' +
+            '</sld:Rule> ' +
+            '<sld:Rule>' +
             '<!--label starts-->' +
             '<!--label ends-->' +
-            '</Rule> ' +
-            '</FeatureTypeStyle>' +
-            '<FeatureTypeStyle>' +
+            '</sld:Rule> ' +
+            '</sld:FeatureTypeStyle>' +
+            '<sld:FeatureTypeStyle>' +
             '<!--classification starts-->' +
             '<!--classification ends-->' +
-            '</FeatureTypeStyle>' +
-            '</UserStyle>' +
-            '</StyledLayerDescriptor>',
+            '</sld:FeatureTypeStyle>' +
+            '</sld:UserStyle>' +
+            '</sld:StyledLayerDescriptor>',
 
         labelTemplateForPointAndPolygon: '<TextSymbolizer>' +
             '<Label>' +

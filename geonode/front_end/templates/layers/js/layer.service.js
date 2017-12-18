@@ -53,6 +53,9 @@
                     outputFormat: "application/json"
 
                 });
+            },
+            getStyleByLayer: function(layerName){
+                return get('/layers/' + layerName + '/style/');
             }
             
         };

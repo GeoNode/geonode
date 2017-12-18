@@ -101,6 +101,7 @@
             [
                 style.fillColor, fillOpacity, style.strokeColor, style.strokeWidth,
                 strokeDashstyles.getDashedArray(style),
+                style.name, style.userStyle,
                 sldTemplateService.wrapWithFilterTag(getClassificationSldFilter(classification)),
                 fillPatternSld
             ]);
