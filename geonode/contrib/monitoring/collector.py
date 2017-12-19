@@ -19,6 +19,7 @@
 #########################################################################
 import logging
 import re
+import pytz
 from datetime import datetime, timedelta
 from decimal import Decimal
 from itertools import chain
@@ -130,7 +131,8 @@ class CollectorAPI(object):
                               )
                              )
 
-        collected_at = datetime.now()
+        utc = pytz.utc
+        collected_at = datetime.utcnow().replace(tzinfo=utc)
 
         valid_from = align_period_start(collected_at, service.check_interval)
         valid_to = align_period_end(collected_at, service.check_interval)
@@ -174,8 +176,10 @@ class CollectorAPI(object):
         """
         Generates mertic values for system-level measurements
         """
-        collected_at = parse_datetime(data['timestamp'])
-
+        utc = pytz.utc
+        import dateutil.parser
+        collected_at = parse_datetime(dateutil.parser.parse(data['timestamp'])
+                                      .strftime("%Y-%m-%d %H:%M:%S")).replace(tzinfo=utc)
         valid_from = align_period_start(collected_at, service.check_interval)
         valid_to = align_period_end(collected_at, service.check_interval)
 
@@ -504,6 +508,10 @@ class CollectorAPI(object):
         """
         Processes requests information into metric values
         """
+
+        utc = pytz.utc
+        valid_from = valid_from.replace(tzinfo=utc)
+        valid_to = valid_to.replace(tzinfo=utc)
         if not requests.count():
             return
         log.info("Processing batch of %s requests from %s to %s", requests.count(), valid_from, valid_to)
@@ -643,8 +651,9 @@ class CollectorAPI(object):
         """
         Returns metric data for given metric. Returned dataset contains list of periods and values in that periods
         """
+        utc = pytz.utc
         default_interval = False
-        now = datetime.now()
+        now = datetime.utcnow().replace(tzinfo=utc)
         if not interval:
             default_interval = True
             interval = timedelta(seconds=60)
@@ -804,18 +813,20 @@ class CollectorAPI(object):
         return [postproc(row) for row in raw_sql(q, params)]
 
     def clear_old_data(self):
+        utc = pytz.utc
         threshold = settings.MONITORING_DATA_TTL
         if not isinstance(threshold, timedelta):
             raise TypeError("MONITORING_DATA_TTL should be an instance of "
                             "datatime.timedelta, not {}".format(threshold.__class__))
-        cutoff = datetime.now() - threshold
+        cutoff = datetime.utcnow().replace(tzinfo=utc) - threshold
         ExceptionEvent.objects.filter(created__lte=cutoff).delete()
         RequestEvent.objects.filter(created__lte=cutoff).delete()
         MetricValue.objects.filter(valid_to__lte=cutoff).delete()
 
     def compose_notifications(self, ndata, when=None):
+        utc = pytz.utc
         return {'alerts': ndata,
-                'when': when or datetime.now(),
+                'when': when or datetime.utcnow().replace(tzinfo=utc),
                 'host': settings.SITEURL}
 
     def emit_notifications(self, for_timestamp=None):
