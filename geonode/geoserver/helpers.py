@@ -1513,7 +1513,7 @@ def _invalidate_geowebcache_layer(layer_name, url=None):
     if not url:
         url = '%sgwc/rest/masstruncate' % ogc_server_settings.LOCATION
     response, _ = http.request(url, method, body=body, headers=headers)
-    import pdb;pdb.set_trace()
+    # import pdb;pdb.set_trace()
     if response.status != 200:
         line = "Error {0} invalidating GeoWebCache at {1}".format(
             response.status, url
@@ -1562,17 +1562,20 @@ def style_update(request, url):
             style.save()
             affected_layers.append(layer)
         elif request.method == 'PUT':  # update style in GN
-            import pdb;pdb.set_trace()        
+            # import pdb;pdb.set_trace()                    
+        
             style = Style.objects.get(name=style_name)
             style.sld_body = sld_body
             style.sld_url = url
             if len(elm_user_style_title.text) > 0:
                 style.sld_title = elm_user_style_title.text
             style.save()
+            # import pdb;pdb.set_trace()                    
             for layer in style.layer_styles.all():
                 layer.save()
                 affected_layers.append(layer)
-
+                
+        # import pdb;pdb.set_trace()
         # Invalidate GeoWebCache so it doesn't retain old style in tiles
         _invalidate_geowebcache_layer(layer_name)
 

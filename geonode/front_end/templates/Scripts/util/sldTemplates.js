@@ -123,27 +123,28 @@
 
         simplePolygonTemplate: '{7}' +
             '<sld:NamedLayer>' +
-            '<sld:Name>' +
-            '{5}' +
-            '</sld:Name>' +
-            '</sld:NamedLayer>' +
-            '<sld:UserStyle>' +
-            '<sld:Name>' +
-            '{6}' +
-            '</sld:Name>' +
-            '</sld:UserStyle>' +    
-            '<sld:PolygonSymbolizer>' +
-            '<sld:Fill>' +
-            '<sld:CssParameter name="fill">{0}</sld:CssParameter> ' +
-            '<sld:CssParameter name="fill-opacity">{1}</sld:CssParameter> ' +
-            '{6}' +
-            '</sld:Fill>' +
-            '<sld:Stroke>' +
-            '<sld:CssParameter name="stroke">{2}</sld:CssParameter> ' +
-            '<sld:CssParameter name="stroke-width">{3}</sld:CssParameter> ' +
-            '<sld:CssParameter name="stroke-dasharray">{4}</sld:CssParameter>' +
-            '</sld:Stroke>' +
-            '</sld:PolygonSymbolizer>',
+            '   <sld:Name>{5}</sld:Name>' +
+            '   <sld:UserStyle>' +
+            '       <sld:Name>{6}</sld:Name>' +
+            '       <sld:IsDefault>1</sld:IsDefault>' +
+            '       <sld:FeatureTypeStyle>' +
+            '           <sld:Rule>' +
+            '               <sld:PolygonSymbolizer>' +
+            '                   <sld:Fill>' +
+            '                       <sld:CssParameter name="fill">{0}</sld:CssParameter> ' +
+            '                       <sld:CssParameter name="fill-opacity">{1}</sld:CssParameter> ' +
+            '                   </sld:Fill>' +
+            '                   <sld:Stroke>' +
+            '                       <sld:CssParameter name="stroke">{2}</sld:CssParameter> ' +
+            '                       <sld:CssParameter name="stroke-width">{3}</sld:CssParameter> ' +
+            // '                       <sld:CssParameter name="stroke-dasharray">{4}</sld:CssParameter>' +
+            '                   </sld:Stroke>' +
+            '               </sld:PolygonSymbolizer>' +
+            '           </sld:Rule> ' +
+            '       </sld:FeatureTypeStyle>' +
+            '   </sld:UserStyle>' +
+            '</sld:NamedLayer>',
+
         fillPatternTemplate: '<GraphicFill>' +
             '<Graphic>' +
             '<Mark>' +
@@ -161,25 +162,7 @@
             '</RasterSymbolizer>',
 
         sldHeader: '<sld:StyledLayerDescriptor xmlns:sld="http://www.opengis.net/sld" version="1.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.opengis.net/sld http://schemas.opengis.net/sld/1.0.0/StyledLayerDescriptor.xsd" xmlns:ogc="http://www.opengis.net/ogc" xmlns:gml="http://www.opengis.net/gml">' +
-            '<sld:UserStyle>' +
-            '<sld:FeatureTypeStyle>' +
-            '<sld:Rule>' +
-            '<!--default filter starts-->' +
-            '<!--default filter ends-->' +
-            '<!--default style starts-->' +
             '{0}' +
-            '<!--default style ends-->' +
-            '</sld:Rule> ' +
-            '<sld:Rule>' +
-            '<!--label starts-->' +
-            '<!--label ends-->' +
-            '</sld:Rule> ' +
-            '</sld:FeatureTypeStyle>' +
-            '<sld:FeatureTypeStyle>' +
-            '<!--classification starts-->' +
-            '<!--classification ends-->' +
-            '</sld:FeatureTypeStyle>' +
-            '</sld:UserStyle>' +
             '</sld:StyledLayerDescriptor>',
 
         labelTemplateForPointAndPolygon: '<TextSymbolizer>' +
