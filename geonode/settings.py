@@ -21,9 +21,7 @@
 
 # Django settings for the GeoNode project.
 import os
-os.environ['Path'] = r'F:\work\cartoview\cartoview_win_installer\GDAL;'+ os.environ['Path']
-os.environ['GEOS_LIBRARY_PATH'] = r'F:\work\cartoview\cartoview_win_installer\GDAL\geos_c.dll'
-os.environ['GDAL_LIBRARY_PATH'] = r'F:\work\cartoview\cartoview_win_installer\GDAL\gdal111.dll'
+
 import re
 import sys
 from datetime import timedelta
