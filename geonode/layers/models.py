@@ -611,18 +611,55 @@ class LayerAuditActivity(models.Model):
 
 
 class LayerStyle(models.Model):
+    '''
+    Layer style extension
+    '''
+
+    style = models.OneToOneField(
+        Style,
+        verbose_name = _('Style'),
+        help_text=_('Designats related Style'),
+         null=False, blank=False
+        )
     layer = models.ForeignKey(
         Layer,
         verbose_name = _('Layer'),
         help_text=_('Designats related layer'),
-        null=False, blank=False
+       
     )
-    name = models.CharField(
-        verbose_name=_('Style Name'),
-        help_text=_('Designates layer styles name.'),
-        max_length=25,
-        blank=False
+    json_field = models.TextField(
+         verbose_name=_('Json Field'),
+        help_text=_('Designates json field.'),
+        blank=True
     )
+    sld_body = models.TextField(
+        verbose_name=_('SLD Text'), 
+        help_text=_('Designates SLD Text.'),
+        blank=True
+    )
+    created_by = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        verbose_name=_('Created by'), 
+        related_name = 'layer_style_created_by',        
+        help_text=_('Designates user who creates the record.'),
+        )
+    modified_by = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        verbose_name=_('Modified by'), 
+        related_name = 'layer_style_modified_by',
+        help_text=_('Designates user who updates the record.'),
+        )
+    created_date = models.DateTimeField(
+        verbose_name=_('Created Date'), 
+        help_text=_('Designates when this record created.'),
+        auto_now_add=True
+    )
+    last_modified = models.DateTimeField(
+        verbose_name=_('Last Modified'), 
+        help_text=_('Designates when this record last modified.'),
+        auto_now=True
+    )
+
     def __str__(self):
         return self.name
 
