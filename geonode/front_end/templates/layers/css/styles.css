@@ -23,16 +23,18 @@
     min-height: 200px;
     min-width: 150px;
     white-space: nowrap;
-    background: #838383;
+    background: #fff;
     color: white;
 }
 
 .splitter {
     flex: 0 0 auto;
-    width: 18px;
-    background: url(https://raw.githubusercontent.com/RickStrahl/jquery-resizable/master/assets/vsizegrip.png) center center no-repeat #535353;
+    width: 15px;
+    background: #e4e4e4 url("vsizegrip.png") no-repeat scroll center center;
     min-height: 200px;
     cursor: col-resize;
+    border-left: 1px solid #bfbfbf;
+    border-right: 1px solid #bfbfbf;
 }
 
 .panel-right {

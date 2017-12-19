@@ -18,9 +18,6 @@ a:focus {
     outline: 0;
     text-decoration: none;
 }
-h2, h3, select, option, button{
-    color:#5a5d63;
-}
 a:hover{
     text-decoration: none;
 }
@@ -3342,7 +3339,21 @@ ul.termsuseandcondition li {
 {
     white-space: normal;
 }
-.modal-dialog{
+#gd-accordion-style .panel-heading
+{
+    white-space: normal;
+}
+#gd-accordion-style .panel-body
+{
+    white-space: normal;
+}
+.btn-delete i
+{
+    color: #f2555b;
+}
+.ext-el-mask {
+    background-color: #000;
+}.modal-dialog{
 width: 100%;
 }
 #SigninModal .modal-dialog
@@ -3375,5 +3386,12 @@ text-align: left;
 {
     padding: 15px;
 }
-
+.ui-grid-menu .ui-grid-menu-inner ul li button
+{
+    color: #3c3c3c;
+}
+.nav-tabs
+{
+    width: 100%;
+}
 /***********Sharif End*****************/

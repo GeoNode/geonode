@@ -10,10 +10,13 @@
                 <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
             <strong>Error!</strong> [{ctrl.Message.Error}]
           </div>
-    <h3>Attributes</h3>
+    <h3 style="margin:0;padding:5px;background-color:#fff">Attributes</h3>
     <div ui-grid="ctrl.gridOptions" ui-grid-pagination ui-grid-exporter class="grid"></div>
 
+    <div style="padding:10px;background-color:#fff;border: 1px solid #d4d4d4;">
 <label for="">Upload CSV to update information</label>
 <input type="file" nv-file-select uploader="ctrl.file">
 <input type="button" ng-click="ctrl.upload()" ng-disabled="ctrl.file.queue.length == 0" value="Upload" class="btn"> 
+</div>
+
 </div>

@@ -2,14 +2,14 @@
 
 {% load avatar_tags %}
 
-<table class="table hashr table-bordered gd-list-table">
+<table class="table table-bordered table-striped table-hover table-condensed">
     <thead>
         <tr>
             <td width="25%"><strong>{% trans "With" %}</strong></td>
             <td width="20%"><strong>{% trans "Subject" %}</strong></td>
             <td width="15%"><strong>{% trans "Sender" %}</strong></td>
             <td width="30%"><strong>{% trans "Preview" %}</strong></td>
-            <td width="10%"><strong>{% trans "Delete?" %}</strong></td>
+            <td width="10%"></td>
         </tr>
     </thead>
     <tbody>
@@ -51,14 +51,14 @@
             <td>
                 {{ thread.latest_message.content|slice:"50" }}<a href="{{ thread.get_absolute_url }}" title="{{ thread.latest_message.content }}">...</a>
             </td>
-            <td>
+            <td class="text-center">
                 <form id="thread_delete_{{ thread.pk }}" method="post" action="{% url "messages_thread_delete" thread.pk %}">
                     {% csrf_token %}
-                    <button type="submit" class="btn btn-default btn-link">
-                        <span class="fa-stack fa-lg fa-delete">
-                            <i class="fa fa-circle-thin fa-stack-2x"></i>
-                            <i class="fa fa-trash-o fa-stack-1x"></i>
-                        </span>
+                    <button type="submit" class="btn btn-default btn-delete">
+                       
+                          
+                            <i class="fa fa-trash-o"></i>
+                       
                     </button>
                     <!--<input type="submit" value="{% trans "Delete" %}" class="btn btn-danger" type="button"/>-->
                 </form>
