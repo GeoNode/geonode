@@ -30,8 +30,6 @@ from geonode import settings as gn_settings
 # from geonode.tests.bdd.e2e.factories.profile import SuperAdminProfileFactory
 from pytest_django.fixtures import live_server
 
-# from pytest_django.live_server_helper import LiveServer
-
 # We manually designate which settings we will be using in an environment variable
 # This is similar to what occurs in the `manage.py`
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', gn_settings)
@@ -41,23 +39,15 @@ sys.path.append(os.path.dirname(__file__))
 def pytest_configure():
     settings.DEBUG = False
     # If you have any test specific settings, you can declare them here
-    # TEST_DATABASES = {
-    #     'default': {
-    #         'ENGINE': 'django.db.backends.sqlite3',
-    #         'NAME': ':memory:',
-    #     }
-    # }
-    # settings.configure(DATABASES=TEST_DATABASES)
+    TEST_DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': ':memory:',
+        }
+    }
+    settings.DATABASES = TEST_DATABASES
 
     django.setup()
-
-
-# @pytest.yield_fixture(scope='session', autouse=True)
-# def bdd_server(live_server):
-#     if not live_server:
-#         live_server = LiveServer('localhost:8000')
-#     yield live_server
-#     live_server.stop()
 
 
 @pytest.fixture(scope='function', autouse=True)
