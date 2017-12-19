@@ -21,18 +21,19 @@
 """User can login using authentication feature tests."""
 
 import pytest
+from geonode.people.models import Profile
 from pytest_bdd import given, scenario, then, when
 
 
 # https://github.com/pytest-dev/pytest-django/issues/329
-@pytest.mark.django_db(transaction=True) #, serialized_rollback=True)
+@pytest.mark.django_db(transaction=True)  # , serialized_rollback=True)
 @scenario('login.feature', 'User can access login page')
-def test_user_can_access_login_page():
+def test_user_can_access_login_page(db, geonode_db_setup):
     """User can access login page."""
     # pass
 
 
-@pytest.mark.django_db(transaction=True) #, serialized_rollback=True)
+@pytest.mark.django_db(transaction=True)  # , serialized_rollback=True)
 @scenario('login.feature', 'Admin user')
 def test_admin_user():
     """Admin user."""
@@ -47,6 +48,8 @@ def admin_user():
 @given('A global administrator named "admin"')
 def administrator_named_admin():
     """A global administrator named "admin"."""
+    admin = Profile.objects.filter(username='admin')
+    assert admin.exists() is True
 
 
 @when('I go to the "login" page')
@@ -87,4 +90,5 @@ def login_page(en_browser):
 @then('I should see "admin"')
 def authenticated_page(browser):
     """I should see "admin"."""
-    assert browser.find_by_xpath("//a[contains(@class, 'dropdown-toggle avatar')]")
+    assert browser.find_by_xpath(
+        "//a[contains(@class, 'dropdown-toggle avatar')]")

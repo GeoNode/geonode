@@ -17,19 +17,24 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
+
 import os
 import sys
+from urlparse import urlparse
+
 import django
 import pytest
 from django.conf import settings
+from django.core.management import call_command
 from geonode import settings as gn_settings
-from urlparse import urlparse
+# from geonode.tests.bdd.e2e.factories.profile import SuperAdminProfileFactory
 from pytest_django.fixtures import live_server
-from pytest_django.live_server_helper import LiveServer
+
+# from pytest_django.live_server_helper import LiveServer
 
 # We manually designate which settings we will be using in an environment variable
 # This is similar to what occurs in the `manage.py`
-os.environ.setdefault('DJANGO_SETTINGS_MODULE', gn_settings) # 'geonode.settings')
+os.environ.setdefault('DJANGO_SETTINGS_MODULE', gn_settings)
 sys.path.append(os.path.dirname(__file__))
 
 
@@ -43,7 +48,7 @@ def pytest_configure():
     #     }
     # }
     # settings.configure(DATABASES=TEST_DATABASES)
-    
+
     django.setup()
 
 
@@ -58,7 +63,7 @@ def pytest_configure():
 @pytest.fixture(scope='function', autouse=True)
 def bdd_server(request):
     """
-        Workaround inspired by 
+        Workaround inspired by
         https://github.com/mozilla/addons-server/pull/4875/files#diff-0223c02758be2ac7967ea22c6fa4b361R96
     """
 
@@ -77,3 +82,17 @@ def bdd_server(request):
             os.environ['DJANGO_LIVE_TEST_SERVER_ADDRESS'] = siteurl_fqdn
 
     return live_server(request)
+
+
+@pytest.fixture(scope='function', autouse=True)
+def geonode_db_setup(django_db_setup, django_db_blocker):
+    with django_db_blocker.unblock():
+        call_command('loaddata', 'sample_admin.json')
+
+
+# @pytest.fixture(scope='function', autouse=True)
+# def admin(db):
+#     """Add admin user to the database."""
+#     admintest = SuperAdminProfileFactory(username='admin')
+#
+#     return admintest
