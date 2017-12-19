@@ -88,7 +88,7 @@ def login_page(en_browser):
 
 
 @then('I should see "admin"')
-def authenticated_page(browser):
+def authenticated_page(en_browser):
     """I should see "admin"."""
-    assert browser.find_by_xpath(
+    assert en_browser.find_by_xpath(
         "//a[contains(@class, 'dropdown-toggle avatar')]")

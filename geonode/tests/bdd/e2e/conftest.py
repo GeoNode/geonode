@@ -24,6 +24,7 @@ from urlparse import urljoin
 import pytest
 from geonode import settings as gn_settings
 from geonode.tests.bdd import __file__ as bdd_path
+from splinter import Browser
 
 # @pytest.fixture(scope='session')
 # def pytestbdd_selenium_speed():
@@ -37,6 +38,7 @@ from geonode.tests.bdd import __file__ as bdd_path
 @pytest.yield_fixture(scope='function', autouse=True)
 def en_browser(browser, bdd_server):
     """Browser login page from live server."""
+    browser = Browser('chrome', headless=True)
     en_browser = browser
     en_browser.visit(urljoin(bdd_server.url, gn_settings.LOGIN_URL))
     yield en_browser
