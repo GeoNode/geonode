@@ -289,6 +289,7 @@ GEONODE_APPS = (
     'geonode.analytics',
     'geonode.error_reporting',
     'geonode.locations',
+    'geonode.system_settings',
 
     #end
 

@@ -11,7 +11,7 @@ from rest_framework import status
 import json
 
 
-class LocationView(TemplateView):
+class SystemSettingsView(TemplateView):
 
-    template_name = "locations/locations.html"
+    template_name = "system_settings/system_settings.html"
 

@@ -1,0 +1,122 @@
+{% extends "site_base.html" %}
+{% load activity_tags  social_tags i18n %}
+
+{% block title %}{% trans "Locations" %}{% endblock %}
+
+{% block body_outer %}
+
+    <h1>Location's: Settings</h1>
+    <div class="row" ng-controller="SystemSettingsController" ng-app="SystemSettingsApp" >
+        <div class="col-md-3">Layer Name:</div>
+        <div class="col-md-3">
+            Saved layer: <span id="saved-layer">[{ layerName }]</span>
+        </div>
+        <div class="col-md-4">
+            <select name="layer" id="layer">
+            </select>
+        </div>
+
+        <div class="col-md-2">
+            <button type="button" class="btn btn-primary layer-settings">Save</button>
+        </div>
+    </div>
+    <br>
+    <div class="row">
+        <div class="col-md-4">Elevation Raster:</div>
+        <div class="col-md-6">
+            <select name="elevation-raster" id="elevation-raster">
+                <option>Raster 1</option>
+                <option>Raster 2</option>
+                <option>Raster 3</option>
+                <option>Raster 4</option>
+            </select>
+        </div>
+
+        <div class="col-md-2">
+            <button type="button" class="btn btn-primary">Save</button>
+        </div>
+    </div>
+
+{% endblock %}
+
+{% block extra_head %}
+    <link href="{{ STATIC_URL }}geonode/css/geoexplorer/analytics.css" rel="stylesheet"/>
+{% endblock %}
+
+{% block head %} {{ block.super }}
+    <script src="{{ STATIC_URL }}Content/assets/js/jquery.js"></script>
+<script src="{{ STATIC_URL }}Scripts/lib/jquery-ui-1.9.2.min.js"></script>
+<script src="{{ STATIC_URL }}Scripts/util/jquery.extension.js"></script>
+    <script src="{{ STATIC_URL }}Scripts/lib/angular.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/angular.js/1.4.5/angular-cookies.min.js"></script>
+    <script src="{{ STATIC_URL }}geonode/js/system-settings/system-settings.module.js"></script>
+    <script src="{{ STATIC_URL }}geonode/js/system-settings/system-settings.service.js"></script>
+    <script src="{{ STATIC_URL }}geonode/js/system-settings/system-settings.controller.js"></script>
+    <script>
+
+    </script>
+{% endblock %}
+
+{% block extra_script %}
+    <script>
+    $(".layer-settings").click(function(){
+
+            var layer_name;
+
+            var layer_uuid = $('#layer :selected').val();
+
+            // submit data with angular
+            var url = '/settings/api/settings/save/';
+
+            var data = {
+                'layer_uuid': layer_uuid
+            };
+
+            system_settings_submit(data, url);
+        });
+
+        function system_settings_submit(data, url){
+
+            // using jQuery
+            function getCookie(name) {
+                var cookieValue = null;
+                if (document.cookie && document.cookie !== '') {
+                    var cookies = document.cookie.split(';');
+                    for (var i = 0; i < cookies.length; i++) {
+                        var cookie = jQuery.trim(cookies[i]);
+                        // Does this cookie string begin with the name we want?
+                        if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                            cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                            break;
+                        }
+                    }
+                }
+                return cookieValue;
+            }
+            var csrftoken = getCookie('csrftoken');
+            function csrfSafeMethod(method) {
+                // these HTTP methods do not require CSRF protection
+                return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
+            }
+            $.ajaxSetup({
+                beforeSend: function(xhr, settings) {
+                    if (!csrfSafeMethod(settings.type) && !this.crossDomain) {
+                        xhr.setRequestHeader("X-CSRFToken", csrftoken);
+                    }
+                }
+            });
+
+            $.ajax({
+                url: url,
+                method: 'POST',
+                data: data,
+                dataType: 'json',
+                success: function(data){
+                    console.log(data);
+
+                }
+            });
+
+        }
+    </script>
+{% endblock %}

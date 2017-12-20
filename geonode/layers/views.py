@@ -324,7 +324,8 @@ def layer_upload(request, template='upload/layer_upload.html'):
                     saved_layer.set_permissions(permissions)
             finally:
                 # Delete temporary files
-                shutil.rmtree(tmp_dir)
+                if tmp_dir != '':
+                    shutil.rmtree(tmp_dir)
                 if tempdir is not None:
                     shutil.rmtree(tempdir)
         else:
