@@ -348,7 +348,7 @@ def geoserver_rest_proxy(request, proxy_path, downstream_path):
     affected_layers = None
 
     if request.method in ("POST", "PUT") and "CONTENT_TYPE" in request.META:
-        headers["Content-Type"] = 'application/vnd.ogc.sld+xml'
+        headers["Content-Type"] = request.META["CONTENT_TYPE"]
         headers["Authorization"] = "Basic " + auth
         # if user is not authorized, we must stop him
         # we need to sync django here and check if some object (styles) can
@@ -362,7 +362,6 @@ def geoserver_rest_proxy(request, proxy_path, downstream_path):
                     content_type="text/plain",
                     status=401)
             if downstream_path == 'rest/styles':
-                
                 affected_layers = style_update(request, url)
 
     response, content = http.request(
