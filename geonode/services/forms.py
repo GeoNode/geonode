@@ -102,3 +102,42 @@ class CreateServiceForm(forms.Form):
                     )
             self.cleaned_data["service_handler"] = service_handler
             self.cleaned_data["type"] = service_handler.service_type
+
+
+class ServiceForm(forms.ModelForm):
+    title = forms.CharField(
+        label=_('Title'),
+        max_length=255,
+        widget=forms.TextInput(
+            attrs={
+                'size': '60',
+                'class': 'inputText'
+            }
+        )
+    )
+    description = forms.CharField(
+        label=_('Description'),
+        widget=forms.Textarea(
+            attrs={
+                'cols': 60
+            }
+        )
+    )
+    abstract = forms.CharField(
+        label=_("Abstract"),
+        widget=forms.Textarea(
+            attrs={
+                'cols': 60
+            }
+        )
+    )
+    keywords = taggit.forms.TagField(required=False)
+
+    class Meta:
+        model = Service
+        fields = (
+            'title',
+            'description',
+            'abstract',
+            'keywords',
+        )
