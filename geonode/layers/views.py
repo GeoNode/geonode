@@ -162,6 +162,7 @@ def layer_upload(request, template='upload/layer_upload.html'):
     elif request.method == 'POST':
         form = NewLayerUploadForm(request.POST, request.FILES)
         tempdir = None
+        saved_layer = None
         errormsgs = []
         out = {'success': False}
         if form.is_valid():
@@ -810,13 +811,8 @@ def layer_metadata(
             layer.keywords.clear()
             layer.keywords.add(*new_keywords)
 
-        try:
-            the_layer = layer_form.save()
-        except BaseException:
-            tb = traceback.format_exc()
-            if tb:
-                logger.debug(tb)
-            the_layer = layer
+        the_layer = layer_form.instance
+        the_layer.save()
 
         up_sessions = UploadSession.objects.filter(layer=the_layer.id)
         if up_sessions.count() > 0 and up_sessions[0].user != the_layer.owner:
