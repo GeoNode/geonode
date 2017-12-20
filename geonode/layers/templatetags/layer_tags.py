@@ -41,8 +41,11 @@ def lower(value):  # Only one argument.
 
 @register.filter(is_safe=True)
 def camelize(value):  # Only one argument.
-    """Converts a string into all camel"""
-    return do_camelize(value)
+    if str(value)[0].isdigit():
+        return value
+    else:
+        """Converts a string into all camel"""
+        return do_camelize(value)
 
 
 @register.filter(is_safe=True)

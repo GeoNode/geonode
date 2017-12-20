@@ -728,6 +728,8 @@ def final_step(upload_session, user):
                     'There was an error updating the mosaic temporal extent: ' +
                     str(e))
     else:
+        _has_time = (True if upload_session.time and upload_session.time_info and
+                     upload_session.time_transforms else False)
         saved_layer, created = Layer.objects.get_or_create(
             name=task.layer.name,
             defaults=dict(store=target.name,
@@ -738,8 +740,7 @@ def final_step(upload_session, user):
                           uuid=layer_uuid,
                           abstract=abstract or '',
                           owner=user,),
-            has_time=True if upload_session.time and upload_session.time_info and \
-                upload_session.time_transforms else False
+            has_time=_has_time
         )
 
     # Should we throw a clearer error here?
