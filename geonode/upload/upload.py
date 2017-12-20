@@ -508,9 +508,12 @@ def time_step(upload_session, time_attribute, time_transform_type,
         upload_session.import_session.tasks[0].add_transforms(transforms)
         try:
             upload_session.time_transforms = transforms
+            upload_session.time = True
         except BadRequest as br:
             raise UploadException.from_exc('Error configuring time:', br)
         upload_session.import_session.tasks[0].save_transforms()
+    else:
+        upload_session.time = False
 
 
 def csv_step(upload_session, lat_field, lng_field):
@@ -575,8 +578,11 @@ def final_step(upload_session, user):
     if import_session.state == 'INCOMPLETE':
         if task.state != 'ERROR':
             raise Exception('unknown item state: %s' % task.state)
+    elif import_session.state == 'READY':
+        import_session.commit()
     elif import_session.state == 'PENDING':
-        if task.state == 'READY' and task.data.format != 'Shapefile':
+        if task.state == 'READY':
+            # if not task.data.format or task.data.format != 'Shapefile':
             import_session.commit()
 
     if not publishing:
@@ -592,9 +598,25 @@ def final_step(upload_session, user):
         base_file = upload_session.base_file
         sld_file = base_file[0].sld_files[0]
 
-        f = open(sld_file, 'r')
-        sld = f.read()
-        f.close()
+        f = None
+        if os.path.isfile(sld_file):
+            try:
+                f = open(sld_file, 'r')
+            except:
+                pass
+        elif upload_session.tempdir and os.path.exists(upload_session.tempdir):
+            tempdir = upload_session.tempdir
+            if os.path.isfile(os.path.join(tempdir, sld_file)):
+                try:
+                    f = open(os.path.join(tempdir, sld_file), 'r')
+                except:
+                    pass
+
+        if f:
+            sld = f.read()
+            f.close()
+        else:
+            sld = get_sld_for(cat, publishing)
     else:
         sld = get_sld_for(cat, publishing)
 
@@ -716,7 +738,8 @@ def final_step(upload_session, user):
                           uuid=layer_uuid,
                           abstract=abstract or '',
                           owner=user,),
-            has_time=True if upload_session.time and upload_session.time_info else False
+            has_time=True if upload_session.time and upload_session.time_info and \
+                upload_session.time_transforms else False
         )
 
     # Should we throw a clearer error here?

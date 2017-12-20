@@ -165,6 +165,17 @@
         }
     },
     {
+        "pk": 16,
+        "model": "base.topiccategory",
+        "fields": {
+            "description": "means and aids for conveying persons and/or goods. Examples: roads, airports/airstrips, shipping routes, tunnels, nautical charts, vehicle or vessel location, aeronautical charts, railways",
+            "gn_description": "Transportation",
+            "is_choice": true,
+            "fa_class": "fa-truck",
+            "identifier": "transportation"
+        }
+    },
+    {
         "pk": 17,
         "model": "base.topiccategory",
         "fields": {
@@ -187,14 +198,14 @@
         }
     },
     {
-        "pk": 16,
+        "pk": 19,
         "model": "base.topiccategory",
         "fields": {
-            "description": "means and aids for conveying persons and/or goods. Examples: roads, airports/airstrips, shipping routes, tunnels, nautical charts, vehicle or vessel location, aeronautical charts, railways",
-            "gn_description": "Transportation",
+            "description": "settlements, anthropology, archaeology, education, traditional beliefs, manners and customs, demographic data, recreational areas and activities, social impact assessments, crime and justice, census information. Economic activities, conditions and employment.",
+            "gn_description": "Population",
             "is_choice": true,
-            "fa_class": "fa-truck",
-            "identifier": "transportation"
+            "fa_class": "fa-male",
+            "identifier": "population"
         }
     },
     {
