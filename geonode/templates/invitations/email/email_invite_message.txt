@@ -1,0 +1,20 @@
+{% load i18n %}
+{% autoescape off %}
+
+{{ inviter_name }} is inviting you to join {{ site_name }}
+
+To do so, please register at:
+
+    {{ invite_url}}
+
+{{ inviter_name }} manages the following groups:
+{% for group in groups %}
+- {{ group }}
+{% endfor %}
+
+After registering, send {{ inviter_first_name }} a message through {{ site_name}}{% url 'message_create' inviter_id %} expressing your willingness to join her/his group(s).
+
+
+Best regards
+
+{% endautoescape %}
