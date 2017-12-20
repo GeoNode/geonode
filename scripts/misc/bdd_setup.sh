@@ -11,4 +11,8 @@ case $1 in
 		sudo tar xvjf phantomjs-2.1.1-linux-x86_64.tar.bz2 -C /usr/local/share/
 		sudo ln -s /usr/local/share/phantomjs-2.1.1-linux-x86_64/bin/phantomjs /usr/local/bin/
 		;;
+	"before_script")
+		echo "Setting up PyTest suite"
+		pip install pytest==2.9.0 pytest-bdd==2.5.0 pytest-splinter
+		;;
 esac

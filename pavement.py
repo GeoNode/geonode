@@ -625,6 +625,20 @@ def test(options):
 
 
 @task
+def test_bdd():
+    """
+    Run GeoNode's BDD Test Suite
+    """
+    call_task('reset_hard')
+    call_task('sync')
+    # Start GeoServer
+    call_task('start_geoserver')
+    info("GeoNode is now available, running the tests now.")
+
+    sh('py.test')
+
+
+@task
 def test_javascript(options):
     with pushd('geonode/static/geonode'):
         sh('./run-tests.sh')
@@ -683,6 +697,7 @@ def run_tests(options):
     call_task('test', options={'prefix': prefix})
     call_task('test_integration')
     call_task('test_integration', options={'name': 'geonode.tests.csw'})
+    call_task('test_bdd')
     sh('flake8 geonode')
 
 
