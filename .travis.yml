@@ -32,6 +32,7 @@ branches:
 
 before_install:
   - scripts/misc/qgis_server_setup.sh before_install
+  - scripts/misc/phantomjs_setup.sh before_install
 
 install:
   - sudo apt-get -qq -y update
