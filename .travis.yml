@@ -32,6 +32,7 @@ branches:
 
 before_install:
   - scripts/misc/qgis_server_setup.sh before_install
+  - chmod +x scripts/misc/bdd_setup.sh
   - scripts/misc/bdd_setup.sh before_install
 
 install:
