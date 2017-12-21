@@ -630,10 +630,11 @@ def test_bdd():
     Run GeoNode's BDD Test Suite
     """
     call_task('reset_hard')
+    call_task('setup')
     call_task('sync')
     # Start GeoServer
     call_task('start_geoserver')
-    info("GeoNode is now available, running the tests now.")
+    info("GeoNode is now available, running the bdd tests now.")
 
     sh('py.test')
 
@@ -925,7 +926,18 @@ def justcopy(origin, target):
     if os.path.isdir(origin):
         shutil.rmtree(target, ignore_errors=True)
         shutil.copytree(origin, target)
+        #copytree(origin, target)
     elif os.path.isfile(origin):
         if not os.path.exists(target):
             os.makedirs(target)
         shutil.copy(origin, target)
+
+#
+# def _copytree(src, dst, symlinks=False, ignore=None):
+#     for item in os.listdir(src):
+#         s = os.path.join(src, item)
+#         d = os.path.join(dst, item)
+#         if os.path.isdir(s):
+#             shutil.copytree(s, d, symlinks, ignore)
+#         else:
+#             shutil.copy2(s, d)
