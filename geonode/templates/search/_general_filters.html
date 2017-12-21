@@ -31,7 +31,7 @@
   <ul class="nav closed" id="owners">
     {% verbatim %}
     <li ng-repeat="owner in owners" ng-if="owner.count > 0">
-      <a data-value="{{ owner.username }}" data-filter="owner__username__in" ng-click="multiple_choice_listener($event)" class="{{owner.active}}">{{ owner.username }}
+      <a data-value="{{ owner.username }}" data-filter="owner__username__in" ng-click="multiple_choice_listener($event)" class="{{owner.active}}">{{ owner.full_name }}
         <span class="badge pull-right">{{ owner.count }}</span>
       </a>
     </li>
