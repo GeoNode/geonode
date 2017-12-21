@@ -296,8 +296,8 @@ mapModule.factory("mapModes", [function () {
             };
         }
 
-        function getSldStyle(featureType, style, includeHeader, classification) {
-            return sldGenerator.getSld(featureType, style, includeHeader, classification);
+        function getSldStyle(featureType, style, includeHeader, classification, labelConfig) {
+            return sldGenerator.getSld(featureType, style, includeHeader, classification, labelConfig);
         }
 
         function getConditionalSld(classification) {

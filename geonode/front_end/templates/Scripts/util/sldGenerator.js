@@ -3,7 +3,7 @@
 
         var types = { point: getPointTemplate, polyline: getPolylineTemplate, polygon: getPolygonTemplate, geoTiff: getRasterTemplate, geoPdf: getRasterTemplate };
 
-        function getPointTemplate(style, includeHeader, classification) {
+        function getPointTemplate(style, includeHeader, classification, labelConfig) {
 
             var fillOpacity = style.fillOpacity === 0 ? 0.005 : style.fillOpacity; //fix for transparent feature selection problem
             var sld;
@@ -79,7 +79,7 @@
             return vendorOptions /*+ formatString(sldTemplateService.labelingVendorOptionTemplates.resolveConflict, ['false'])*/;
         }
 
-        function getPolylineTemplate(style, includeHeader, classification) {
+        function getPolylineTemplate(style, includeHeader, classification, labelConfig) {
             var sldTemplateForPolyline = getSldTemplate(sldTemplateService.simplePolylineTemplate, includeHeader);
 
             return formatString(sldTemplateForPolyline,
@@ -89,7 +89,7 @@
             ]);
         }
 
-        function getPolygonTemplate(style, includeHeader, classification) {
+        function getPolygonTemplate(style, includeHeader, classification, labelConfig) {
             var sldTemplateForPolygon = getSldTemplate(sldTemplateService.simplePolygonTemplate, includeHeader);
             var fillOpacity = style.fillOpacity === 0 ? 0.005 : style.fillOpacity; //fix for transparent feature selection problem
             var fillPatternSld = "";
@@ -101,9 +101,10 @@
             [
                 style.fillColor, fillOpacity, style.strokeColor, style.strokeWidth,
                 strokeDashstyles.getDashedArray(style),
-                style.name, style.userStyle,
+                style.name, style.userStyle,  
                 sldTemplateService.wrapWithFilterTag(getClassificationSldFilter(classification)),
-                fillPatternSld
+                getLabelSld(labelConfig, 'polygon')||'',
+                fillPatternSld,
             ]);
         }
 
@@ -179,8 +180,8 @@
 
         return {
             formatString: formatString,
-            getSld: function (type, styles, includeHeader, classification) {
-                return types[type](styles, includeHeader, classification);
+            getSld: function (type, styles, includeHeader, classification, labelConfig) {
+                return types[type](styles, includeHeader, classification, labelConfig);
             },
             getLabelingSld: getLabelSld,
             getClassificationConditionalSld: getConditionalTemplate,

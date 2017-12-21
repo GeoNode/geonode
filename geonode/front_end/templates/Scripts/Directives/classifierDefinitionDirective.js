@@ -87,7 +87,6 @@
                     };
 
                     $scope.dropdownSelectionChanged = function () {
-
                         resetData();
                         if (_.isNull($scope.flags.field)) {
                             return;

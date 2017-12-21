@@ -21,7 +21,7 @@
 from django.conf.urls import patterns, url
 from django.conf import settings
 from django.views.generic import TemplateView
-from .views import LayerStyleView
+from .views import LayerStyleView, LayerAttributeView
 
 js_info_dict = {
     'packages': ('geonode.layers',),
@@ -69,4 +69,5 @@ if 'geonode.geoserver' in settings.INSTALLED_APPS:
 #custom
 urlpatterns = patterns('',
     url(r'^(?P<layername>[^/]*)/style/$', LayerStyleView.as_view(), name='layer_style'),
+    url(r'^(?P<layername>[^/]*)/unique-value-for-attribute/(?P<attributename>[^/]*)/$', LayerAttributeView.as_view(), name='layer_attribute'),
 ) + urlpatterns

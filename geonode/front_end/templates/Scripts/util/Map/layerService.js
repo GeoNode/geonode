@@ -18,7 +18,7 @@
             },
             saveProperties: function(surfLayer, name, zoomLevel, style, excludeSld, callBack) {
                 var defaultStyleSld = excludeSld ? null : layerStyleGenerator.getSldStyle(surfLayer.getFeatureType(),
-                    style.default, HTMLOptGroupElement, null);
+                    style.default, HTMLOptGroupElement, null, style.labelConfig);
 
                 var selectionStyleSld = excludeSld ? null : layerStyleGenerator.getSldStyle(surfLayer.getFeatureType(),
                     style.select, HTMLOptGroupElement, null);

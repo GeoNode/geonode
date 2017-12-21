@@ -101,6 +101,7 @@ from django.db import connection
 from osgeo import osr
 
 from geonode.authentication_decorators import login_required as custom_login_required
+from geonode.class_factory import ClassFactory
 
 if 'geonode.geoserver' in settings.INSTALLED_APPS:
     from geonode.geoserver.helpers import _render_thumbnail
@@ -1284,6 +1285,20 @@ class LayerStyleView(View):
         return HttpResponse(
                     json.dumps(
                         dict(success="OK"),
+                        ensure_ascii=False), 
+                        status=200,
+                        content_type='application/javascript')
+
+
+class LayerAttributeView(View):
+    def get(self, request, layername, attributename, **kwargs):
+        layer_obj = _resolve_layer(request, layername)
+        factory = ClassFactory()
+        model_instance = factory.get_model(name=str(layer_obj.title_en), table_name=str(layer_obj.name), db=str(layer_obj.store))
+        values = set([getattr(l, attributename) for l in model_instance.objects.all()])
+        return HttpResponse(
+                    json.dumps(
+                        dict(values=[dict(value=v,checked=False) for v in values], count=len(values)),
                         ensure_ascii=False), 
                         status=200,
                         content_type='application/javascript')

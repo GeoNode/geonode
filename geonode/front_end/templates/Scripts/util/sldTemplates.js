@@ -141,6 +141,14 @@
             '                   </sld:Stroke>' +
             '               </sld:PolygonSymbolizer>' +
             '           </sld:Rule> ' +
+            '           <sld:Rule>' +
+            '               <!--label starts-->{8}' +
+            '               <!--label ends-->' +
+            '           </sld:Rule> ' +
+            '       </sld:FeatureTypeStyle>' +
+            '       <sld:FeatureTypeStyle>' +
+            '           <!--classification starts-->{9}' +
+            '           <!--classification ends-->' +
             '       </sld:FeatureTypeStyle>' +
             '   </sld:UserStyle>' +
             '</sld:NamedLayer>',

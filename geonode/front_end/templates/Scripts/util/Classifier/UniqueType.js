@@ -71,13 +71,12 @@
     this.getPropertyDataFromServer = function () {
         $this.isDataLoading = true;
         $http({
-            method: "POST",
-            url: "/Classification/GetUniqueValuesForField",
-            data: { layerId: $scope.layerId, attributeId: $scope.flags.field }
+            method: "GET",
+            url: "/layers/"+$scope.layerId+"/unique-value-for-attribute/"+$scope.flags.field+"/",
         })
         .success(function (data, status, headers, config) {
 
-            data = filterDataIfDateType(data);
+            data = filterDataIfDateType(data.values);
             $scope.originalData = data;
             $scope.flags.PropertyData = getUnSelectedItems();
             $this.isDataLoading = false;

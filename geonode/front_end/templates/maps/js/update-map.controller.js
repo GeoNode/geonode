@@ -88,7 +88,8 @@
                     "repeatInterval": 5.0,
                     "wrap": false,
                     "wrapPixel": 50.0
-                }
+                },
+                "classifierDefinitions": {}
             }
         }
         function getLayerStyle(layer, new_layer) {
@@ -103,6 +104,7 @@
                     new_layer.Style.default.userStyle = res.name;
                     new_layer.Style.select.name = layer.name;
                     new_layer.Style.select.userStyle = res.name;
+                    new_layer.ClassifierDefinitions = new_layer.Style.classifierDefinitions || {};
                     mapService.addDataLayer(new_layer, false);
                 }, errorFn);
         }
@@ -110,17 +112,31 @@
         function getLayerFeature(url, layer) {
             LayerService.getLayerFeatureByName(url, layer.name).then(function(res) {
                 res.featureTypes.forEach(function(featureType) {
+                    var new_layer = _map(layer);
+                    new_layer.AttributeDefinition = [];
                     featureType.properties.forEach(function(e) {
                         if (e.name === 'the_geom') {
-                            var new_layer = _map(layer);
+                            
                             if (e.localType.toLowerCase().search('polygon') != -1)
                                 new_layer["ShapeType"] = 'polygon';
                             else if (e.localType.toLowerCase().search('point') != -1)
                                 new_layer["ShapeType"] = 'point';
-                            getLayerStyle(layer, new_layer);
                             
+                            
+                        }else {
+                            new_layer.AttributeDefinition.push({
+                                "Id": e.name,
+                                "Name": e.name,
+                                "AttributeName": null,
+                                "IsPublished": true,
+                                "Type": e.localType,
+                                "Length": 92,
+                                "Precision": null,
+                                "Scale": null
+                            });
                         }
                     }, this);
+                    getLayerStyle(layer, new_layer);
                 }, this);
 
             }, errorFn);
@@ -136,13 +152,15 @@
 
         }
 
+        
+
         function _map(layer, order) {
             if (!layer.bbox) {
                 layer.bbox = [-9818543.41779904, 5183814.6260749, -9770487.95134629, 5235883.07751104];
             }
             var userStyle = layer.name + '_' + _uuid();
             return {
-                "LayerId": _uuid(),
+                "LayerId": layer.name,
                 "Name": layer.name,
                 "SortOrder": order || 0,
                 // "LastUpdateOn": "2017-10-10T11:10:26.083Z",
@@ -162,25 +180,35 @@
                     "MaxX": layer.bbox[3],
                     "MaxY": layer.bbox[2]
                 },
-                // "AttributeDefinition": [{ /* not available*/
-                //     "Id": "s_985cd4386b6a4762812371ca8ae4c5a3",
-                //     "Name": "category",
-                //     "AttributeName": null,
-                //     "IsPublished": true,
-                //     "Type": "text",
-                //     "Length": 30,
-                //     "Precision": null,
-                //     "Scale": null
-                // }, {
-                //     "Id": "s_5d1416d309df49cab55858ff2b463f70",
-                //     "Name": "name",
-                //     "AttributeName": null,
-                //     "IsPublished": true,
-                //     "Type": "text",
-                //     "Length": 92,
-                //     "Precision": null,
-                //     "Scale": null
-                // }],
+                "AttributeDefinition": [{ /* not available*/
+                    "Id": "NAME_3",
+                    "Name": "NAME_3",
+                    "AttributeName": null,
+                    "IsPublished": true,
+                    "Type": "text",
+                    "Length": 30,
+                    "Precision": null,
+                    "Scale": null
+                }, {
+                    "Id": "NAME_2",
+                    "Name": "NAME_2",
+                    "AttributeName": null,
+                    "IsPublished": true,
+                    "Type": "text",
+                    "Length": 92,
+                    "Precision": null,
+                    "Scale": null
+                },
+                {
+                    "Id": "NAME_4",
+                    "Name": "NAME_4",
+                    "AttributeName": null,
+                    "IsPublished": true,
+                    "Type": "text",
+                    "Length": 92,
+                    "Precision": null,
+                    "Scale": null
+                }],
                 // "IdColumn": "gid",
                 "LinearUnit": "Meter",
                 "IsLocked": false,
