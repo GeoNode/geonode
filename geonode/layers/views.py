@@ -1229,7 +1229,6 @@ def save_sld_geoserver(request_method, full_path, sld_body, content_type='applic
     
     proxy_path = '/gs/rest/styles'
     downstream_path='rest/styles'
-    full_path = '/gs/rest/styles'
 
     path = strip_prefix(full_path, proxy_path)
     url = str("".join([ogc_server_settings.LOCATION, downstream_path, path]))
@@ -1240,7 +1239,7 @@ def save_sld_geoserver(request_method, full_path, sld_body, content_type='applic
     headers = dict()
     headers["Content-Type"] = content_type
     headers["Authorization"] = "Basic " + auth
-    import pdb;pdb.set_trace()
+
     return http.request(
         url, request_method,
         body=sld_body or None,
@@ -1250,20 +1249,20 @@ def save_sld_geoserver(request_method, full_path, sld_body, content_type='applic
 class LayerStyleView(View):
     def get(self, request, layername):
         layer_obj = _resolve_layer(request, layername)
-        layer_style = layer_obj.styles.first()
+        layer_style = layer_obj.default_style
+        try:
+            style_extension = layer_style.styleextension
+        except Exception as ex:
+            style_extension = None
         return HttpResponse(
                         json.dumps(
-                            dict(name=layer_style.name, title=layer_style.sld_title, url=layer_style.sld_url, workspace=layer_style.workspace),
+                            dict(name=layer_style.name, title=layer_style.sld_title, url=layer_style.sld_url, workspace=layer_style.workspace, style=style_extension.json_field if style_extension else None),
                             ensure_ascii=False), 
                             status=200,
                             content_type='application/javascript')
 
     @custom_login_required
     def put(self, request, layername, **kwargs):
-        print layername
-        # if not request.user.is_authenticated():
-        #     return HttpResponse(status=403)
-        # import pdb; pdb.set_trace()
         layer_obj = _resolve_layer(request, layername)
         data = json.loads(request.body)
         # check already style extension created or not
@@ -1276,9 +1275,9 @@ class LayerStyleView(View):
             style_extension = StyleExtension(style=layer_obj.default_style, json_field=data.get("StyleString", None), sld_body=data.get('SldStyle', None), created_by=request.user, modified_by=request.user)
         
         style_extension.save()
-
+        full_path = '/gs/rest/styles/{0}.xml'.format(layer_obj.default_style.name)
         try:
-            save_sld_geoserver('PUT', '', style_extension.sld_body )
+            save_sld_geoserver(request_method='PUT', full_path=full_path, sld_body=style_extension.sld_body )
         except Exception as ex:
             logger.error(ex)
 

@@ -34,10 +34,70 @@
                     setLayers();
                 }, errorFn);
         }
-
+        function getDefaultStyle(){
+            return { /* not available */
+                "Name": _uuid(),
+                "default": {
+                    "fillPattern": null,
+                    "textFillColor": "#0000ff",
+                    "text": null,
+                    "pixelDensity": null,
+                    "strokeDashstyle": "solid",
+                    "strokeWidth": 1.0,
+                    "strokeColor": "#000000",
+                    "strokeOpacity": null,
+                    "fillOpacity": 0.75,
+                    "fillColor": "#ffffff",
+                    "pointRadius": 14.0,
+                    "graphicName": "circle",
+                    "textGraphicName": null,
+                    "externalGraphic": null,
+                },
+                "select": {
+                    "fillPattern": "",
+                    "textFillColor": "#0000ff",
+                    "text": null,
+                    "pixelDensity": null,
+                    "strokeDashstyle": "solid",
+                    "strokeWidth": 1.0,
+                    "strokeColor": "#000000",
+                    "strokeOpacity": 1.0,
+                    "fillOpacity": 0.4,
+                    "fillColor": "#ff00ff",
+                    "pointRadius": 6.0,
+                    "graphicName": "circle",
+                    "textGraphicName": null,
+                    "externalGraphic": null,
+                },
+                "labelConfig": {
+                    "attribute": null,
+                    "visibilityZoomLevel": 0,
+                    "font": "Times",
+                    "fontStyle": "normal",
+                    "fontWeight": "normal",
+                    "color": "#000000",
+                    "borderColor": "#ffffff",
+                    "showBorder": true,
+                    "size": 10.0,
+                    "alignment": 1.0,
+                    "offsetX": 0.0,
+                    "offsetY": 0.0,
+                    "rotation": 0.0,
+                    "followLine": false,
+                    "repeat": false,
+                    "repeatInterval": 5.0,
+                    "wrap": false,
+                    "wrapPixel": 50.0
+                }
+            }
+        }
         function getLayerStyle(layer, new_layer) {
             LayerService.getStyleByLayer(layer.name)
                 .then(function(res) {
+                    new_layer.Style = JSON.parse(res.style);
+                    if(!new_layer.Style){
+                        new_layer.Style = getDefaultStyle();
+                    }
                     new_layer.Style.Name = res.name;
                     new_layer.Style.default.name = layer.name;
                     new_layer.Style.default.userStyle = res.name;
@@ -89,66 +149,8 @@
                 "ClassifierDefinitions": {},
                 "CanWrite": true,
                 // "DataId": "s_facf34ee54914605943fe987f5b3637c",
-                "ShapeType": "point",
-                "Style": { /* not available */
-                    "Name": _uuid(),
-                    "default": {
-                        "fillPattern": null,
-                        "textFillColor": "#222026",
-                        "text": null,
-                        "pixelDensity": null,
-                        "strokeDashstyle": "solid",
-                        "strokeWidth": 1.0,
-                        "strokeColor": "#5EF1F2",
-                        "strokeOpacity": null,
-                        "fillOpacity": 0.75,
-                        "fillColor": "#2f7979",
-                        "pointRadius": 14.0,
-                        "graphicName": "circle",
-                        "textGraphicName": null,
-                        "externalGraphic": null,
-                        'name': layer.name,
-                        'userStyle': userStyle
-                    },
-                    "select": {
-                        "fillPattern": "",
-                        "textFillColor": "#222026",
-                        "text": null,
-                        "pixelDensity": null,
-                        "strokeDashstyle": "solid",
-                        "strokeWidth": 1.0,
-                        "strokeColor": "#0000ff",
-                        "strokeOpacity": 1.0,
-                        "fillOpacity": 0.4,
-                        "fillColor": "#0000ff",
-                        "pointRadius": 6.0,
-                        "graphicName": "circle",
-                        "textGraphicName": null,
-                        "externalGraphic": null,
-                        'name': layer.name,
-                        'userStyle': userStyle
-                    },
-                    "labelConfig": {
-                        //         "attribute": null,
-                        "visibilityZoomLevel": 0,
-                        //         "font": "Times",
-                        //         "fontStyle": "normal",
-                        //         "fontWeight": "normal",
-                        //         "color": "#000000",
-                        //         "borderColor": "#ffffff",
-                        //         "showBorder": true,
-                        //         "size": 10.0,
-                        //         "alignment": 1.0,
-                        //         "offsetX": 0.0,
-                        //         "offsetY": 0.0,
-                        //         "rotation": 0.0,
-                        //         "followLine": false,
-                        //         "repeat": false,
-                        //         "repeatInterval": 5.0,
-                        //         "wrap": false,
-                        //         "wrapPixel": 50.0
-                    }
-                },
+                // "ShapeType": "point",
+                
                 "VisualizationSettings": null,
                 "IsVisible": layer.visibility,
                 "Filters": [],

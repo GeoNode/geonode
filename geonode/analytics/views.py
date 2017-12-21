@@ -78,6 +78,4 @@ class AnalyticsView(TemplateView):
 
         context['average_layer_load'] = average_layer_load
 
-        # import pdb;pdb.set_trace()
-
         return context

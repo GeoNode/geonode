@@ -59,7 +59,7 @@ def proxy(request):
                                 content_type="text/plain"
                                 )
     headers = {}
-    # import pdb;pdb.set_trace()
+
     if settings.SESSION_COOKIE_NAME in request.COOKIES and is_safe_url(url=raw_url, host=host):
         headers["Cookie"] = request.META["HTTP_COOKIE"]
 

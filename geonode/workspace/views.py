@@ -96,9 +96,6 @@ class AdminWorkspaceLayer(ListView):
         context['approved_list'] = Layer.objects.filter(status='ACTIVE', group__in=groups).order_by('date_updated')
         context['user_draft_list'] = Layer.objects.filter(status='DRAFT', group__in=groups).order_by('date_updated')
         context['denied_list'] = Layer.objects.filter(status='DENIED', group__in=groups).order_by('date_updated')  # [:15]
-
-        # import pdb;pdb.set_trace()
-
         return context
 
 
