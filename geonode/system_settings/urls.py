@@ -1,7 +1,6 @@
 from django.conf.urls import url, include
 
-# from .views import LocationView, LayersAttributesAPIView
-from api.views import LayersAttributesAPIView, SystemSettingsSaveAPIView, SystemSettingsAPIView
+from api.views import SystemSettingsSaveAPIView, SystemSettingsAPIView
 from .views import SystemSettingsView
 
 urlpatterns = [

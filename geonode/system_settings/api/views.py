@@ -18,41 +18,6 @@ from geonode.system_settings.models import SystemSettings
 from geonode.base.models import ResourceBase
 
 
-class LayersAttributesAPIView(APIView):
-
-    # permission_classes = (IsAuthenticated,)
-
-    def get(self, request, format=None):
-        # context['latest_articles'] = Article.objects.all()[:5]
-
-        layers = Layer.objects.values('name')
-
-        layers_attributes = dict()
-
-        for layer_name in layers:
-            cursor = connection.cursor()
-            try:
-
-                cursor.execute("select column_name from INFORMATION_SCHEMA.COLUMNS where table_name =  %s",
-                               [layer_name['name']])
-                result = cursor.fetchall()
-                result = [str(r[0]) for r in result]
-                layers_attributes[str(layer_name['name'])] = result
-
-            finally:
-                cursor.close()
-
-        # context['layers'] = layers
-        # context['layers_attributes'] = layers_attributes
-
-        saved_layer = SystemSettings.objects.filter(settings_code='1').first()
-
-        layers_attributes['saved_layer'] = str(saved_layer.value)
-
-        # import pdb;pdb.set_trace()
-        return JsonResponse(layers_attributes)
-
-
 class SystemSettingsSaveAPIView(APIView):
 
     # permission_classes = (IsAuthenticated,)

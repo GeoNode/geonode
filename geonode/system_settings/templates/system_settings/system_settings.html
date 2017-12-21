@@ -36,6 +36,14 @@
             <button type="button" class="btn btn-primary">Save</button>
         </div>
     </div>
+    <br>
+    <div class="row">
+        {% if layer_message %}
+            <div class="alert alert-warning">
+              <strong>Warning!</strong> {{ layer_message }}
+            </div>
+        {% endif %}
+    </div>
 
 {% endblock %}
 

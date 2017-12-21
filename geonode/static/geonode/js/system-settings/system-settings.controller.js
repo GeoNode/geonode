@@ -11,7 +11,7 @@
 
         systemSettings.then(function (value) {
 
-                console.log(value);
+                //console.log(value);
                 $.each(value, function (index, element) {
                     //debugger
                     if (element.settings_code == "location") {
