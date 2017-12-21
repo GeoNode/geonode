@@ -1,6 +1,13 @@
 {% extends "upload/layer_upload_metadata_base.html" %}
 {% load i18n %}
 {% load staticfiles %}
+{% load dialogos_tags %}
+{% load agon_ratings_tags %}
+{% load bootstrap_tags %}
+{% load pagination_tags %}
+{% load url from future %}
+{% load base_tags %}
+{% load guardian_tags %}
 
 {% block title %} {% trans "Upload Layer Metadata"  %} - {{ block.super }}  {% endblock %}
 
@@ -13,10 +20,13 @@
 {% endblock %}
 
 {% block body_outer %}
+
 <div class="page-header">
-  <a href="{% url "layer_browse" %}?limit={{ CLIENT_RESULTS_LIMIT }}" class="btn btn-primary pull-right">{% trans "Explore Layers" %}</a>
-  <h2 class="page-title">{% trans "Upload Layer SLD" %}</h2>
+  <a href="{% url "layer_browse" %}?limit={{ CLIENT_RESULTS_LIMIT }}" class="btn btn-primary pull-right" style="margin-left: 3px;">{% trans "Explore Layers" %}</a>
+  <a href="{% url 'layer_detail' layername=resource.alternate %}" class="btn btn-primary pull-right" style="margin-left: 3px;">{% trans "Return to Layer" %}</a>
+  <h2 class="page-title">{% trans "Upload Layer Style" %} <small>{% trans "(SLD - Style Layer Descriptor 1.0, 1.1)" %}<small></h2>
 </div>
+
 <div class="row">
   <div class="col-md-8">
     {% if incomplete %}
@@ -81,31 +91,54 @@
     </section>
   </div>
 
+  {% if GEOSERVER_BASE_URL %}
+    {% get_obj_perms request.user for resource.layer as "layer_perms" %}
+  {% endif %}
+
+  {% if GEONODE_SECURITY_ENABLED %}
+  {% if "change_resourcebase_permissions" in perms_list %}
+  <li class="list-group-item">
+    <h4>{% trans "Permissions" %}</h4>
+    <p>{% trans "Click the button below to change the permissions of this layer." %}</p>
+    <p><a href="#modal_perms" data-toggle="modal" class="btn btn-primary btn-block" data-target="#_permissions">{% trans "Change Layer Permissions" %}</a></p>
+  </li>
+  {% endif %}
+  {% endif %}
+
+  {% if GEONODE_SECURITY_ENABLED %}
+  <div class="col-md-4">
+    <h3>{% trans "Permissions"  %}</h3>
+    <form id="permission_form">
+      {% include "_permissions.html" %}
+    </form>
+  </div>
+  {% endif %}
+
 </div>
 {% endblock %}
 
 
 {% block extra_script %}
-{{ block.super }}
-<script data-main="{% static 'geonode/js/upload/main' %}"
-  src="{% static 'lib/js/require.js' %}">
-</script>
-<script type="text/javascript">
-{% autoescape off %}
+    {{ block.super }}
+    <script data-main="{% static 'geonode/js/upload/main' %}"
+      src="{% static 'lib/js/require.js' %}">
+    </script>
+    <script type="text/javascript">
+    {% autoescape off %}
 
-  csrf_token =  "{{ csrf_token }}",
-  form_target = "{{ UPLOADER_URL }}",
-  geogig_enabled = {{ GEOGIG_ENABLED|lower  }},
-  time_enabled = {{ TIME_ENABLED|lower  }},
-  mosaic_enabled = {{ MOSAIC_ENABLED|lower  }},
-  userLookup = "{% url "geonode.views.ajax_lookup" %}"
+      csrf_token =  "{{ csrf_token }}",
+      form_target = "{{ UPLOADER_URL }}",
+      geogig_enabled = {{ GEOGIG_ENABLED|lower  }},
+      time_enabled = {{ TIME_ENABLED|lower  }},
+      mosaic_enabled = {{ MOSAIC_ENABLED|lower  }},
+      userLookup = "{% url "geonode.views.ajax_lookup" %}"
 
-{% endautoescape %}
+    {% endautoescape %}
 
-</script>
-{% if GEONODE_SECURITY_ENABLED %}
-{% with resource=layer %}
-{% include "_permissions_form_js.html" %}
-{% endwith %}
-{% endif %}
+    </script>
+    {% if GEONODE_SECURITY_ENABLED %}
+        {% with resource=layer %}
+            {% include "_permissions_form_js.html" %}
+        {% endwith %}
+    {% endif %}
 {% endblock extra_script %}
