@@ -1,0 +1,64 @@
+{% extends "site_base.html" %}
+{% load activity_tags  social_tags i18n %}
+
+{% block title %}{% trans "Locations" %}{% endblock %}
+
+{% block body_outer %}
+
+    <h1>Location's: Settings</h1>
+    <div class="row" ng-controller="SystemSettingsController" ng-app="SystemSettingsApp" >
+        <div class="col-md-3">Layer Name:</div>
+        <div class="col-md-3">
+            Saved layer: <span id="saved-layer">[{ layerName }]</span>
+        </div>
+        <div class="col-md-4">
+            <select name="layer" id="layer">
+            </select>
+        </div>
+
+        <div class="col-md-2">
+            <button type="button" class="btn btn-primary layer-settings" ng-click="layerSettingSave()">Save</button>
+        </div>
+    </div>
+    <br>
+    <div class="row">
+        <div class="col-md-4">Elevation Raster:</div>
+        <div class="col-md-6">
+            <select name="elevation-raster" id="elevation-raster">
+                <option>Raster 1</option>
+                <option>Raster 2</option>
+                <option>Raster 3</option>
+                <option>Raster 4</option>
+            </select>
+        </div>
+
+        <div class="col-md-2">
+            <button type="button" class="btn btn-primary">Save</button>
+        </div>
+    </div>
+
+{% endblock %}
+
+{% block extra_head %}
+    <link href="{{ STATIC_URL }}geonode/css/geoexplorer/analytics.css" rel="stylesheet"/>
+{% endblock %}
+
+{% block head %} {{ block.super }}
+    <script src="{{ STATIC_URL }}Content/assets/js/jquery.js"></script>
+<script src="{{ STATIC_URL }}Scripts/lib/jquery-ui-1.9.2.min.js"></script>
+<script src="{{ STATIC_URL }}Scripts/util/jquery.extension.js"></script>
+    <script src="{{ STATIC_URL }}Scripts/lib/angular.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/angular.js/1.4.5/angular-cookies.min.js"></script>
+    <script src="{{ STATIC_URL }}geonode/js/system-settings/system-settings.module.js"></script>
+    <script src="{{ STATIC_URL }}geonode/js/system-settings/system-settings.service.js"></script>
+    <script src="{{ STATIC_URL }}geonode/js/system-settings/system-settings.controller.js"></script>
+    <script>
+
+    </script>
+{% endblock %}
+
+{% block extra_script %}
+    <script>
+
+    </script>
+{% endblock %}

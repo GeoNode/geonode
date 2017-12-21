@@ -174,6 +174,12 @@ urlpatterns = patterns('',
                        # Download task API
                        url(r'^api/download/task/', DownloadTaskAPIView.as_view()),
                        url(r'^download/(?P<file_name>[0-9a-z.]+)', DownloadAPIView.as_view()),
+
+                       # Locations
+                       url(r'^locations/', include('geonode.locations.urls')),
+
+                       # System Settings
+                       url(r'^settings/', include('geonode.system_settings.urls')),
                        )
 
 if "geonode.contrib.dynamic" in settings.INSTALLED_APPS:
