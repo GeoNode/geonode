@@ -20,15 +20,32 @@
             return deferred.promise;
         }
 
+        function put(url, data) {
+            $http.put(url, data, {
+                headers: {
+                    'X-CSRFToken': $cookies.get('csrftoken')
+                }
+            })
+                .then(
+                    function (response) {
+                        // success callback
+                        //console.log(response);
+                    },
+                    function (response) {
+                        // failure callback
+                    }
+                );
+        }
+
         return {
             getLayers: function (url) {
                 return get('/api/layers/');
             },
-            getSystemSettings: function(url){
+            getSystemSettings: function (url) {
                 return get('/settings/api/system/settings/');
             },
-            saveSystemSettings: function(url){
-
+            saveSystemSettings: function (data) {
+                return put('/settings/api/settings/save/', data);
             }
 
         }

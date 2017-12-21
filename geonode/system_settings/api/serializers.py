@@ -1,30 +1,30 @@
-from rest_framework.serializers import ModelSerializer
+from rest_framework import serializers
 from geonode.system_settings.models import SystemSettings
 from geonode.layers.models import Layer
 from django.utils.translation import ugettext as _
+import json
 
 
-class LayerSerializer(ModelSerializer):
+class LayerSerializer(serializers.ModelSerializer):
     class Meta:
         model = Layer
-        fields = '__all__'
+        fields = ('uuid', 'title',)
+        # fields = '__all__'
 
 
-class SystemSettingsSerializer(ModelSerializer):
+class SystemSettingsSerializer(serializers.ModelSerializer):
 
-    def to_representation(self, value):
-        """
-        Serialize tagged objects to a simple textual representation.
-        """
-        #import pdb;pdb.set_trace()
-        if isinstance(value.content_object, Layer):
-            serializer = LayerSerializer(value.content_object)
+    content_object = serializers.SerializerMethodField()
+
+    def get_content_object(self, obj):
+        if isinstance(obj.content_object, Layer):
+            serializer = LayerSerializer(obj.content_object)
         else:
             raise Exception(_('Unexpected type of tagged object'))
         return serializer.data
 
     class Meta:
         model = SystemSettings
-        exclude = ('created_date', 'last_modified')
-
+        fields = ('settings_code', 'value', 'content_object',)
+        read_only_fields = ('content_object',)
 

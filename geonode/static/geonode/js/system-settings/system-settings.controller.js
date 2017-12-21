@@ -6,22 +6,18 @@
     SystemSettingsController.$inject = ['$scope', 'SettingsService'];
 
     function SystemSettingsController($scope, SettingsService) {
-        //$scope.layerName = 'Layer Name!';
 
         var systemSettings = SettingsService.getSystemSettings();
 
-        //console.log(systemSettings);
-
-
         systemSettings.then(function (value) {
 
-            console.log(value);
-            $.each(value, function (index, element) {
-
-                if (element.settings_code == "location") {
-                    $scope.layerName = element.value
-                }
-            });
+                console.log(value);
+                $.each(value, function (index, element) {
+                    //debugger
+                    if (element.settings_code == "location") {
+                        $scope.layerName = element.content_object.title
+                    }
+                });
 
             }, function (error) {
                 // This is called when error occurs.
@@ -49,10 +45,17 @@
                 // This is called when error occurs.
             }
         );
-        //debugger;
-        //Promise.reso
-        //console.log(layersObject);
-        //console.log(typeof layerSettings);
+
+
+        $scope.layerSettingSave = function () {
+
+            var uuid = $('#layer :selected').val();
+            var data = {
+                'uuid': uuid,
+                'settings_code': 'location',
+            };
+            SettingsService.saveSystemSettings(data);
+        };
 
     }
 })();
