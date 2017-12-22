@@ -144,7 +144,7 @@ class Map(ResourceBase, GXPMapBase):
         def layer_json(lyr):
             return {
                 "name": lyr.alternate,
-                "service": lyr.service_type,
+                "service": lyr.service_type if hasattr(lyr, 'service_type') else "QGIS Server",
                 "serviceURL": "",
                 "metadataURL": ""
             }

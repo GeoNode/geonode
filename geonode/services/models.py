@@ -23,7 +23,6 @@ from django.conf import settings
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
 from geonode.base.models import ResourceBase
-from geonode.layers.models import Layer
 from geonode.people.enumerations import ROLE_VALUES
 
 from . import enumerations

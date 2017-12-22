@@ -43,13 +43,6 @@ from .models import HarvestJob
 from .models import Service
 from . import tasks
 
-try:
-    # Django >= 1.7
-    import json
-except ImportError:
-    # Django <= 1.6 backwards compatibility
-    from django.utils import simplejson as json
-
 logger = logging.getLogger("geonode.core.layers.views")
 
 
@@ -220,7 +213,6 @@ def _gen_harvestable_ids(requested_ids, available_resources):
             yield identifier
 
 
-
 @login_required
 def rescan_service(request, service_id):
     service = get_object_or_404(Service, pk=service_id)
@@ -310,7 +302,8 @@ def edit_service(request, service_id):
 
             return HttpResponseRedirect(service_obj.get_absolute_url())
     else:
-        service_form = forms.ServiceForm(instance=service_obj, prefix="service")
+        service_form = forms.ServiceForm(
+            instance=service_obj, prefix="service")
 
     return render_to_response("services/service_edit.html",
                               RequestContext(request,

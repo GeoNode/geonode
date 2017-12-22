@@ -54,4 +54,3 @@ def send_queued_notifications(self, *args):
         send_all(settings.NOTIFICATION_LOCK_LOCATION)
     else:
         send_all(*args)
-

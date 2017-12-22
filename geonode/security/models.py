@@ -177,7 +177,6 @@ class PermissionLevelMixin(object):
             assign_perm('download_resourcebase',
                         anonymous_group, self.get_self_resource())
 
-
     def set_permissions(self, perm_spec):
         """
         Sets an object's the permission levels based on the perm_spec JSON.
@@ -550,7 +549,7 @@ def remove_object_permissions(instance):
                             logger.debug("Response [{}] : {}".format(r.status_code, r.text))
                             raise e
         except RuntimeError:
-            pass # This layer is not manageable by geofence
+            pass  # This layer is not manageable by geofence
         except Exception:
             tb = traceback.format_exc()
             logger.debug(tb)

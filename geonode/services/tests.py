@@ -18,25 +18,20 @@
 #
 #########################################################################
 
-import json
-import sys
-import traceback
 from unittest import TestCase as StandardTestCase
 
 from django.contrib.auth import get_user_model
-from django.core.urlresolvers import reverse
 from django.template.defaultfilters import slugify
 from django.test import TestCase
 import mock
 from owslib.map.wms111 import ContentMetadata
 from owslib.wms import WebMapService
 
-
 from . import enumerations
-from .models import Service
 from .serviceprocessors import base
 from .serviceprocessors import handler
 from .serviceprocessors import wms
+
 
 class ModuleFunctionsTestCase(StandardTestCase):
 
@@ -68,7 +63,6 @@ class ModuleFunctionsTestCase(StandardTestCase):
         )
         cat.get_workspace.assert_called_with(mock_settings.CASCADE_WORKSPACE)
 
-
     @mock.patch("geonode.services.serviceprocessors.base.Catalog",
                 autospec=True)
     @mock.patch("geonode.services.serviceprocessors.base.settings",
@@ -92,7 +86,7 @@ class ModuleFunctionsTestCase(StandardTestCase):
         self.assertEqual(result, phony_workspace)
         mock_catalog.assert_called_with(
             service_url=mock_settings.OGC_SERVER[
-                            "default"]["LOCATION"] + "rest",
+                "default"]["LOCATION"] + "rest",
             username=mock_settings.OGC_SERVER["default"]["USER"],
             password=mock_settings.OGC_SERVER["default"]["PASSWORD"]
         )
@@ -106,7 +100,7 @@ class ModuleFunctionsTestCase(StandardTestCase):
                 autospec=True)
     def test_get_service_handler_wms(self, mock_wms_handler):
         phony_url = "http://fake"
-        result = handler.get_service_handler(phony_url, enumerations.WMS)
+        handler.get_service_handler(phony_url, enumerations.WMS)
         mock_wms_handler.assert_called_with(phony_url)
 
 
@@ -248,7 +242,8 @@ class WmsServiceHandlerTestCase(TestCase):
     def test_does_not_offer_geonode_projection(self, mock_settings, mock_wms):
         mock_settings.DEFAULT_MAP_CRS = "EPSG:3857"
         mock_wms.return_value = self.parsed_wms
-        self.parsed_wms.contents[self.phony_layer_name].crsOptions = ["EPSG:4326"]
+        self.parsed_wms.contents[self.phony_layer_name].crsOptions = [
+            "EPSG:4326"]
         handler = wms.WmsServiceHandler(self.phony_url)
         result = handler._offers_geonode_projection()
         self.assertFalse(result)

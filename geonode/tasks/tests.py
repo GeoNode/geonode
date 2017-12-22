@@ -18,26 +18,13 @@
 #
 #########################################################################
 
-"""celery tasks for geonode.maps."""
-
-from celery.app import shared_task
-from celery.utils.log import get_task_logger
-
-from geonode.maps.models import Map
-
-logger = get_task_logger(__name__)
+from django.test import TestCase
 
 
-@shared_task(bind=True, queue='cleanup', expires=300)
-def delete_map(self, object_id):
+class TasksTest(TestCase):
     """
-    Deletes a map and the associated map layers.
+    Tests geonode.messaging
     """
-
-    try:
-        map_obj = Map.objects.get(id=object_id)
-    except Map.DoesNotExist:
-        return
-
-    map_obj.layer_set.all().delete()
-    map_obj.delete()
+    def setUp(self):
+        self.adm_un = "admin"
+        self.adm_pw = "admin"
