@@ -108,8 +108,7 @@ def ceph_metadata_update(update_grid=True):
             for x in metadata_list:
                 print 'Metadata', x
             if DataClassification.get(get_data_class_from_filename(metadata_list[0])).label == 'LAZ':
-                abstract_text = '''
-    All LiDAR point cloud data were acquired and processed by the UP Training Center for Applied Geodesy and Photogrammetry (UP-TCAGP), through the DOST-GIA funded Disaster Risk and Exposure Assessment for Mitigation (DREAM) Program.
+                abstract_text = '''All LiDAR point cloud data were acquired and processed by the UP Training Center for Applied Geodesy and Photogrammetry (UP-TCAGP), through the DOST-GIA funded Disaster Risk and Exposure Assessment for Mitigation (DREAM) Program.
 
     The LiDAR point cloud data was acquired by an Optech ALTM Gemini and Pegasus LiDAR system. It was pre-processed using POSPac MMS and LMS software. The TerraScan software was used to classify the point cloud into ground, vegetation and building classes. LASTools was used to compress the classified LiDAR point cloud data (.las) in a completely lossless manner to the compressed LAZ format (.laz).
 
@@ -134,6 +133,32 @@ def ceph_metadata_update(update_grid=True):
 
 
     (c) All Rights Reserved, 2013''' % metadata_list[1]
+            elif DataClassification.get(get_data_class_from_filename(metadata_list[0])).label == 'ORTHO':
+                abstract_text = '''All orthophotos were acquired and processed by the UP Training Center for Applied Geodesy and Photogrammetry (UP-TCAGP), through the DOST-GIA funded Disaster Risk and Exposure Assessment for Mitigation (DREAM) Program.
+
+Orthophoto:
+Projection: 	WGS84 UTM Zone 51
+Resolution: 	0.50 m
+Tile Size:	1km by 1km
+Date of Acquisition: %s
+
+
+DREAM/PHIL-LiDAR 1 Program
+
+Program Leader: Enrico C. Paringit, Dr.Eng
+Rm. 312-316, National Engineering Center
+Alfred Juinio Hall
+UP Campus, Diliman Quezon City
+Philippines
+
+
+Please refer to the corresponding End-User License Agreement (EULA) for product licensing.
+
+
+
+© All Rights Reserved, 2013''' % metadata_list[1]
+            else:
+                abstract_text = ''
             try:
                 ceph_obj = CephDataObject.objects.get(name=metadata_list[0])
                 # Commented attributes are not relevant to update
@@ -218,8 +243,8 @@ def ceph_metadata_update(update_grid=True):
                         continue
                     else:
                         cephobj_dup[ndup].delete()
-                    
-                
+
+
             if ceph_obj is not None:
                 # Construct dict of gridrefs to update
                 if DataClassification.gs_feature_labels[ceph_obj.data_class] in gridref_dict_by_data_class:
