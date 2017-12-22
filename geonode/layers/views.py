@@ -835,6 +835,11 @@ def layer_metadata(
             layer.keywords.clear()
             layer.keywords.add(*new_keywords)
 
+        new_regions = [x.strip() for x in layer_form.cleaned_data['regions']]
+        if new_regions is not None:
+            layer.regions.clear()
+            layer.regions.add(*new_regions)
+
         the_layer = layer_form.instance
         the_layer.save()
 
