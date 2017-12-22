@@ -19,10 +19,9 @@
 #########################################################################
 
 import json
+import pytz
 from datetime import datetime, timedelta
-
 from django.shortcuts import render
-
 from django import forms
 from django.conf import settings
 from django.views.generic.base import View
@@ -257,7 +256,7 @@ class ResourcesList(FilteredView):
             sm = ServiceTypeMetric.objects.filter(metric__name=metric_name)
             qparams['metric_values__service_metric__in'] = sm
         if last:
-            _from = datetime.now() - timedelta(seconds=last)
+            _from = datetime.utcnow().replace(tzinfo=pytz.utc) - timedelta(seconds=last)
             if interval is None:
                 interval = 60
             if not isinstance(interval, timedelta):
@@ -286,7 +285,7 @@ class LabelsList(FilteredView):
             sm = ServiceTypeMetric.objects.filter(metric__name=metric_name)
             qparams['metric_values__service_metric__in'] = sm
         if last:
-            _from = datetime.now() - timedelta(seconds=last)
+            _from = datetime.utcnow().replace(tzinfo=pytz.utc) - timedelta(seconds=last)
             if interval is None:
                 interval = 60
             if not isinstance(interval, timedelta):
@@ -333,7 +332,7 @@ class MetricDataView(View):
         last = filters.pop('last', None)
         if last:
             td = timedelta(seconds=last)
-            now = datetime.now()
+            now = datetime.utcnow().replace(tzinfo=pytz.utc)
             filters['valid_from'] = now - td
             filters['valid_to'] = now
         out = capi.get_metrics_for(metric_name, **filters)
@@ -375,7 +374,7 @@ class ExceptionsListView(FilteredView):
         if error_type:
             q = q.filter(error_type=error_type)
         if last:
-            _from = datetime.now() - timedelta(seconds=last)
+            _from = datetime.utcnow().replace(tzinfo=pytz.utc) - timedelta(seconds=last)
             if interval is None:
                 interval = 60
             if not isinstance(interval, timedelta):
@@ -422,7 +421,7 @@ class BeaconView(View):
         except KeyError:
             return json_response(errors={'exposed': 'No service for {}'.format(service)}, status=404)
         out = {'data': ex.expose(),
-               'timestamp': datetime.now()}
+               'timestamp': datetime.utcnow().replace(tzinfo=pytz.utc)}
         return json_response(out)
 
 

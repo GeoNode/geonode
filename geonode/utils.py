@@ -764,9 +764,11 @@ def check_shp_columnnames(layer):
             list_col_original.append(field_name)
     try:
         for i in range(0, inLayerDefn.GetFieldCount()):
+            charset = layer.charset if layer.charset and 'undefined' not in layer.charset \
+                else 'UTF-8'
             field_name = unicode(
                 inLayerDefn.GetFieldDefn(i).GetName(),
-                layer.charset)
+                charset)
 
             if not a.match(field_name):
                 new_field_name = custom_slugify(field_name)

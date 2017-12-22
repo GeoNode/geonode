@@ -1,4 +1,5 @@
 {% load leaflet_tags %}
+{% load i18n %}
 
 {% leaflet_js %}
 {% leaflet_css %}
@@ -165,15 +166,15 @@
 
         L.control.watermark = function(opts) {
           return new L.Control.Watermark(opts);
-        }
+        };
 
         L.control.watermark({ position: 'bottomright' }).addTo(map);
 
         // L.control.measureControl.addTo(map);
         map.addLayer(OpenMapSurfer_Roads);
 
-        {% if resource.bbox_string %}
-            zoom_to_box(map, [{{ resource.bbox_string }}]);
+        {% if layer_bbox %}
+            zoom_to_box(map, [{{ layer_bbox }}]);
         {% endif %}
 
         var tile_layer;
@@ -228,7 +229,43 @@
             //adjust info
             L.control.navbar().addTo(map);
         }
+
+        {% if OGC_SERVER.default.BACKEND == 'geonode.qgis_server' %}
+            {# expose map object to window #}
+            window.preview_map = map;
+            window.tile_layer = tile_layer;
+
+            {# Trigger dialog for Style edit #}
+            $(".style-edit").on('click', function (event) {
+                $("#qgis-server-style-edit").modal('show');
+            });
+
+            {# Attach form submit event #}
+            $("#qgis-server-style-add-form").on('submit', edit_style_on_submit);
+
+            {# Attach handler for style change #}
+            $("input[name='style']").on('change', function(event){
+                var $input = $(this);
+                if($input.prop('checked') == true){
+                    {# Tile url change #}
+                    var url;
+                    {% if resource.get_tiles_url %}
+                        url = '{% url "qgis_server:tile" layername=resource.name style='style_name' %}';
+                        url = url.replace('style_name', $input.attr('id'));
+                        url = decodeURIComponent(url);
+                        tile_layer.setUrl(url);
+                    {% endif %}
+
+                    {# Legend icon change #}
+                    url = '{% url "qgis_server:legend" layername=resource.name style='style_name' %}';
+                    url = url.replace('style_name', $input.attr('id'));
+                    url = decodeURIComponent(url);
+                    $("#legend_icon").attr('src', url);
+                }
+            });
+        {% endif %}
   });
+
   function zoom_to_box(map, bbox) {
           var bounds = [
               [bbox[1], bbox[0]],
@@ -237,4 +274,74 @@
           map.fitBounds(bounds);
       }
 
+
+  {% if OGC_SERVER.default.BACKEND == 'geonode.qgis_server' %}
+
+    function createMapThumbnail() {
+        {# Use map extent #}
+        var map = window.preview_map;
+        var bbox = map.getBounds().toBBoxString();
+        var data = {
+            'bbox': bbox
+        };
+        $.post('{% url "qgis_server:set-thumbnail" layername=resource.name %}', data);
+    }
+
+    {# Event handler for style editing #}
+    function edit_style_on_submit(event){
+        {# prevent form submit by default #}
+        var data = new FormData();
+        $.each($("#id_qml")[0].files, function(i, file){
+            data.append('qml', file);
+        });
+        data.append('name', $("#id_name").val());
+        data.append('title', $("#id_title").val());
+        var action = $(this).attr('action');
+        $.ajax({
+            url: action,
+            data: data,
+            cache: false,
+            contentType: false,
+            processData: false,
+            type: 'POST',
+            success: function(data){
+                if(data){
+                    $("#qgis-server-style-edit .modal-body").html(data);
+                    $(document).ready(function() {
+                        $("#qgis-server-style-add-form").on('submit', edit_style_on_submit);
+                    });
+                }
+            },
+            error: function(jqXhr, textStatus, errorThrown){
+                $("#qgis-server-style-edit .modal-body").html(jqXhr.responseText);
+                $(document).ready(function() {
+                    $("#qgis-server-style-add-form").on('submit', edit_style_on_submit);
+                });
+            }
+        });
+        return false;
+    }
+  {% endif %}
 </script>
+
+{% if OGC_SERVER.default.BACKEND == 'geonode.qgis_server' %}
+    <style>
+        #qgis-server-style-edit .modal-body{
+            overflow-y: scroll;
+            max-height: 600px;
+        }
+    </style>
+    <div class="modal fade" id="qgis-server-style-edit" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    <h4 class="modal-title">{% trans "Upload QML Style" %}</h4>
+                </div>
+                <div class="modal-body">
+                    {% include "qgis_server/forms/qml_style.html" %}
+                </div>
+            </div>
+        </div>
+    </div>
+{% endif %}

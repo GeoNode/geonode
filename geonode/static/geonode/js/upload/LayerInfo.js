@@ -344,6 +344,10 @@ define(function (require, exports) {
         var c = '<a href="' + resp.url + '/metadata_upload" class="btn btn-warning">' + gettext('Upload Metadata') + '</a>';
         var d = '<a href="' + resp.url + '/style_upload" class="btn btn-warning">' + gettext('Upload SLD') + '</a>';
         var e = '<a href="' + resp.url.replace(/^\/layers/, '/gs') + '/style/manage" class="btn btn-warning">' + gettext('Manage Styles') + '</a>';
+        if(resp.ogc_backend == 'geonode.qgis_server'){
+            // QGIS Server has no manage style interaction.
+            d = '';
+        }
         var msg_col = "";
         if (resp.info){
             var msg_template = gettext('The column %1 was renamed to %2 <br/>');

@@ -56,7 +56,11 @@ class ResourceBaseAutocomplete(AutocompleteModelTemplate):
             if not is_admin and not is_staff:
                 if is_manager:
                     groups = request.user.groups.all()
-                    group_list_all = request.user.group_list_all().values('group')
+                    group_list_all = []
+                    try:
+                        group_list_all = request.user.group_list_all().values('group')
+                    except:
+                        pass
                     public_groups = GroupProfile.objects.exclude(access="private").values('group')
                     try:
                         anonymous_group = Group.objects.get(name='anonymous')
@@ -78,7 +82,11 @@ class ResourceBaseAutocomplete(AutocompleteModelTemplate):
             if not is_admin and not is_staff:
                 if is_manager:
                     groups = request.user.groups.all()
-                    group_list_all = request.user.group_list_all().values('group')
+                    group_list_all = []
+                    try:
+                        group_list_all = request.user.group_list_all().values('group')
+                    except:
+                        pass
                     public_groups = GroupProfile.objects.exclude(access="private").values('group')
                     try:
                         anonymous_group = Group.objects.get(name='anonymous')
@@ -107,7 +115,11 @@ class ResourceBaseAutocomplete(AutocompleteModelTemplate):
                 self.choices = self.choices
             elif request.user:
                 groups = request.user.groups.all()
-                group_list_all = request.user.group_list_all().values('group')
+                group_list_all = []
+                try:
+                    group_list_all = request.user.group_list_all().values('group')
+                except:
+                    pass
                 if anonymous_group:
                     self.choices = self.choices.filter(
                         Q(group__isnull=True) | Q(group__in=groups) |
