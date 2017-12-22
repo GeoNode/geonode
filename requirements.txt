@@ -100,6 +100,7 @@ pyproj==1.9.5.1
 pytest==2.9.0 # latest fails with bdd library at 2.5.0
 pytest-bdd==2.5.0 # latest requires six>=1.11.0
 pytest-splinter
+pytest-django
 python-dateutil==2.6.1
 python-gnupg==0.4.1
 python-mimeparse==1.6.0
