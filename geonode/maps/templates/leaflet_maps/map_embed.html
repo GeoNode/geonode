@@ -1,0 +1,80 @@
+{% if for_download %}
+<html>
+<head>
+    <title>{{ resource.id }}</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.0.3/leaflet.css" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.0.3/leaflet.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/proj4js/2.3.15/proj4-src.js"></script>
+    <script type="text/javascript">
+        $(document).ready(function () {
+            /* init custom layer */
+            var wmsLayer = null;
+            /* set coordinate systems */
+            var firstProjection = proj4('EPSG:3857');   // google mercator
+            var secondProjection = proj4('EPSG:4326');  // WGS84 web mercator
+
+            var point_wsg84 = proj4(firstProjection,secondProjection,[{{ resource.center_x }}, {{ resource.center_y }}]);
+            var map = L.map('map').setView([point_wsg84[1], point_wsg84[0]],6);
+            var osm = L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png', {
+                attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors',
+            });
+            map.addLayer(osm)
+
+            /* zoom to bbox */
+            firstProjection = proj4('{{ resource.srid }}');
+            var corner0 = [{{ resource.bbox_x0 }}, {{ resource.bbox_y0 }}];
+            var corner1 = [{{ resource.bbox_x1 }}, {{ resource.bbox_y1 }}];
+
+            corner0 = proj4(firstProjection, secondProjection, corner0);
+            corner1 = proj4(firstProjection, secondProjection, corner1);
+
+            var bbox = [
+                corner0[0],
+                corner0[1],
+                corner1[0],
+                corner1[1]
+            ];
+
+            zoom_to_box(map, bbox);
+
+            {% for layer in map_layers %}
+                var layer_url = '{{  layer.ows_url }}';
+                var options = {
+                    format: 'image/png',
+                    transparent: true,
+                    layers: '{{ layer.name }}',
+                    opacity: 0.8
+                };
+                /* Determine type of tileLayer */
+                if(layer_url.includes('{z}') && layer_url.includes('{y}') && layer_url.includes('{x}')){
+                    wmsLayer = L.tileLayer(layer_url, options);
+                }
+                else {
+                    wmsLayer = L.tileLayer.wms(layer_url, options);
+                }
+                /* add wmsLayer to the map object itself */
+                if (wmsLayer != null) {
+                    map.addLayer(wmsLayer);
+                }
+            {% endfor %}
+
+        });
+    function zoom_to_box(map, bbox) {
+        var bounds = [
+            [bbox[1], bbox[0]],
+            [bbox[3], bbox[2]]
+        ];
+        map.fitBounds(bounds);
+    }
+    </script>
+    <style>
+        #map { height: 640px; }
+    </style>
+</head>
+
+<body>
+    <div id="map"></div>
+</body>
+</html>
+{% endif %}

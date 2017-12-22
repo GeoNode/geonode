@@ -1,0 +1,53 @@
+<div class="map-container">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.0.3/leaflet.css"/>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.0.3/leaflet.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/proj4js/2.3.15/proj4-src.js"></script>
+    <script type="text/javascript">
+        $(document).ready(function () {
+            var wmsLayer = null;
+
+            var map = L.map('map').setView([{{ resource.center_y }}, {{ resource.center_x }}], {{ resource.zoom }});
+            var osm = L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png', {
+                attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors',
+            });
+            map.addLayer(osm);
+
+            var bbox = {{ map_bbox }};
+
+            zoom_to_box(map, bbox);
+
+            {% for layer in map_layers %}
+                var layer_url = '{{  layer.ows_url }}';
+                var options = {
+                    format: 'image/png',
+                    transparent: true,
+                    layers: '{{ layer.name }}',
+                    opacity: 0.8
+                };
+                if (layer_url.includes('{z}') && layer_url.includes('{y}') && layer_url.includes('{x}')) {
+                    wmsLayer = L.tileLayer(layer_url, options);
+                }
+                else {
+                    wmsLayer = L.tileLayer.wms(layer_url, options);
+                }
+                if (wmsLayer != null) {
+                    map.addLayer(wmsLayer);
+                }
+            {% endfor %}
+        });
+
+        function zoom_to_box(map, bbox) {
+            var bounds = [
+                [bbox[1], bbox[0]],
+                [bbox[3], bbox[2]]
+            ];
+        }
+    </script>
+    <style type="text/css">
+        #map {
+            height: 800px;
+        }
+    </style>
+    <div id="map"></div>
+</div>

@@ -1,0 +1,22 @@
+version: '2'
+services:
+
+  qgis-server:
+    image: kartoza/geonode_qgis-server
+    volumes:
+      # Mount this volume from current directory to
+      # The absolute path, so these files were mounted
+      # with the same path
+      - './:${GEONODE_PROJECT_PATH}'
+    environment:
+      - QGIS_LOG_FILE=/tmp/qgis-server/qgis.log
+      - QGIS_SERVER_LOG_FILE=/tmp/qgis-server/qgis-server.log
+      - QGIS_DEBUG=5
+      - QGIS_SERVER_LOG_LEVEL=5
+      - QGIS_PLUGINPATH=/opt/qgis-server/plugins/
+      # It is important to include this environment variable
+      # QGIS-Server:LTR cgi needs it
+      - QGIS_PROJECT_FILE=
+    ports:
+      - "${QGIS_SERVER_PORT}:80"
+    network_mode: "bridge"

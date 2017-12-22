@@ -39,15 +39,16 @@ class DocumentAdmin(MediaTranslationAdmin):
                     'title',
                     'date',
                     'category',
+                    'group',
                     'is_approved',
                     'is_published',
                     'metadata_completeness')
     list_display_links = ('id',)
-    list_editable = ('title', 'category', 'is_approved', 'is_published')
+    list_editable = ('title', 'category', 'group', 'is_approved', 'is_published')
     list_filter = ('date', 'date_type', 'restriction_code_type', 'category',
-                   'is_approved', 'is_published',)
+                   'group', 'is_approved', 'is_published',)
     search_fields = ('title', 'abstract', 'purpose',
-                     'is_approved', 'is_published', 'metadata_completeness',)
+                     'is_approved', 'is_published',)
     date_hierarchy = 'date'
     form = DocumentAdminForm
     actions = [metadata_batch_edit]

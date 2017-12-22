@@ -156,7 +156,9 @@ def geoserver_post_save_local(layer_id, *args, **kwargs):
                           abstract=gs_resource.abstract or '',
                           owner=instance.owner)
     else:
-        return
+        msg = "There isn't a geoserver resource for this layer: %s" % instance.name
+        logger.exception(msg)
+        raise Exception(msg)
 
     # Get metadata links
     metadata_links = []

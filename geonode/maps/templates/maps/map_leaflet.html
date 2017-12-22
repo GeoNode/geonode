@@ -52,18 +52,44 @@
         /* add initial base layer to the map */
         map.addLayer(osm);
 
+        /* zoom to bbox */
+        firstProjection = proj4('{{ resource.srid }}');
+        var corner0 = [{{ resource.bbox_x0 }}, {{ resource.bbox_y0 }}];
+        var corner1 = [{{ resource.bbox_x1 }}, {{ resource.bbox_y1 }}];
+
+        corner0 = proj4(firstProjection, secondProjection, corner0);
+        corner1 = proj4(firstProjection, secondProjection, corner1);
+
+        var bbox = [
+            corner0[0],
+            corner0[1],
+            corner1[0],
+            corner1[1]
+        ];
+
+        zoom_to_box(map, bbox);
+
         /* loop over the layers used by the map */
         {% for layer in layers %}
             if ("{{ layer.group }}" != 'background') {
                 /* if current layer not a background layer, instantiates a WMS tile layer object 
                  * given the URL of the WMS service and a WMS parameters/options object.
                  */
-                wmsLayer = L.tileLayer.wms('{{ layer.ows_url }}', {
+                var layer_url = '{{  layer.ows_url }}';
+                var options = {
                     format: 'image/png',
                     transparent: true,
                     layers: '{{ layer.name }}',
-                    'opacity': 0.8
-                });   
+                    opacity: 0.8
+                };
+                /* Determine type of tileLayer */
+                if(layer_url.includes('{z}') && layer_url.includes('{y}') && layer_url.includes('{x}')){
+
+                    wmsLayer = L.tileLayer(layer_url, options);
+                }
+                else {
+                    wmsLayer = L.tileLayer.wms(layer_url, options);
+                }
                 /* add wmsLayer to the overlay_layers{} and to the map object itself */
                 if (wmsLayer != null) {
                     overlay_layers["{{ layer.layer_title }}"] = wmsLayer;

@@ -21,6 +21,7 @@ from __future__ import print_function
 
 import logging
 import types
+import pytz
 from urlparse import urlparse
 
 from socket import gethostbyname
@@ -359,12 +360,12 @@ class RequestEvent(models.Model):
 
     @classmethod
     def from_geonode(cls, service, request, response):
-        received = datetime.now()
+        received = datetime.utcnow().replace(tzinfo=pytz.utc)
         rqmeta = getattr(request, '_monitoring', {})
         created = rqmeta.get('started', received)
         if not isinstance(created, datetime):
             created = parse_datetime(created)
-        _ended = rqmeta.get('finished', datetime.now())
+        _ended = rqmeta.get('finished', datetime.utcnow().replace(tzinfo=pytz.utc))
         duration = ((_ended - created).microseconds)/1000.0
 
         ua = request.META.get('HTTP_USER_AGENT') or ''
@@ -425,7 +426,7 @@ class RequestEvent(models.Model):
         if not rd.get('status') in ('FINISHED', 'FAILED',):
             log.warning("request not finished %s", rd.get('status'))
             return
-        received = received or datetime.now()
+        received = received or datetime.utcnow().replace(tzinfo=pytz.utc)
         ua = rd.get('remoteUserAgent') or ''
         ua_family = cls._get_ua_family(ua)
         ip = rd['remoteAddr']
@@ -490,7 +491,7 @@ class ExceptionEvent(models.Model):
 
     @classmethod
     def add_error(cls, from_service, error_type, stack_trace, request=None, created=None, message=None):
-        received = datetime.now()
+        received = datetime.utcnow().replace(tzinfo=pytz.utc)
         if not isinstance(error_type, types.StringTypes):
             _cls = error_type.__class__
             error_type = '{}.{}'.format(_cls.__module__, _cls.__name__)
@@ -734,13 +735,13 @@ class NotificationCheck(models.Model):
     def can_send(self):
         if self.last_send is None:
             return True
-        now = datetime.now()
+        now = datetime.utcnow().replace(tzinfo=pytz.utc)
         if (self.last_send + self.grace_period) > now:
             return False
         return True
 
     def mark_send(self):
-        self.last_send = datetime.now()
+        self.last_send = datetime.utcnow().replace(tzinfo=pytz.utc)
         self.save()
 
     @property
@@ -1126,7 +1127,7 @@ class MetricNotificationCheck(models.Model):
             self.severity = check.notification_check.severity
             self.check_url = check.notification_check.url
             self.check_id = check.notification_check.id
-            self.spotted_at = datetime.now()
+            self.spotted_at = datetime.utcnow().replace(tzinfo=pytz.utc)
             self.description = description
 
             self.valid_from, self.valid_to = metric.valid_from, metric.valid_to
@@ -1185,7 +1186,7 @@ class MetricNotificationCheck(models.Model):
 
             # we have to check for now, because valid_on may be in the past,
             # metric may be at the valid_on point in time
-            valid_on = datetime.now()
+            valid_on = datetime.utcnow().replace(tzinfo=pytz.utc)
             if (valid_on - metric.valid_to) > self.max_timeout:
                 total_seconds = self.max_timeout.total_seconds()
                 actual_seconds = (valid_on - metric.valid_to).total_seconds()
@@ -1207,7 +1208,7 @@ class MetricNotificationCheck(models.Model):
 
         """
         if not for_timestamp:
-            for_timestamp = datetime.now()
+            for_timestamp = datetime.utcnow().replace(tzinfo=pytz.utc)
         qfilter = {'metric': self.metric}
         if self.service:
             qfilter['service'] = self.service

@@ -457,6 +457,29 @@ community."
         # TODO: Also associated layers are not existent
         # self.assertEquals(map_obj.layer_set.all().count(), 0)
 
+    @on_ogc_backend(qgis_server.BACKEND_PACKAGE)
+    def test_map_download_leaflet(self):
+        """ Test that a map can be downloaded as leaflet"""
+        # first, get a new map: user needs to login
+        self.client.login(username='admin', password='admin')
+        new_map = reverse('new_map_json')
+        response = self.client.post(
+            new_map,
+            data=self.viewer_config,
+            content_type="text/json")
+        self.assertEquals(response.status_code, 200)
+        map_id = int(json.loads(response.content)['id'])
+        self.client.logout()
+
+        # then, obtain the map using leaflet
+        response = self.client.get(
+            reverse(
+                'map_download_leaflet', args=(map_id, )))
+
+        # download map leafleT should return OK
+        self.assertEquals(response.status_code, 200)
+        self.assertEquals(response.get('Content-Type'), 'html')
+
     def test_map_embed(self):
         """Test that map can be properly embedded
         """

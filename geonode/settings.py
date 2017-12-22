@@ -369,6 +369,8 @@ INSTALLED_APPS = (
     'guardian',
     'oauth2_provider',
     'corsheaders',
+
+    'invitations',
 ) + GEONODE_APPS
 
 MONITORING_ENABLED = False
@@ -418,6 +420,8 @@ LOGGING = {
             "handlers": ["console"], "level": "ERROR", },
         "geonode": {
             "handlers": ["console"], "level": "ERROR", },
+        "geonode.qgis_server": {
+            "handlers": ["console"], "level": "DEBUG", },
         "gsconfig.catalog": {
             "handlers": ["console"], "level": "ERROR", },
         "owslib": {
@@ -903,6 +907,8 @@ DOWNLOAD_FORMATS_METADATA = [
 DOWNLOAD_FORMATS_VECTOR = [
     'JPEG', 'PDF', 'PNG', 'Zipped Shapefile', 'GML 2.0', 'GML 3.1.1', 'CSV',
     'Excel', 'GeoJSON', 'KML', 'View in Google Earth', 'Tiles',
+    'QGIS layer file (.qlr)',
+    'QGIS project file (.qgs)',
 ]
 DOWNLOAD_FORMATS_RASTER = [
     'JPEG',
@@ -916,7 +922,10 @@ DOWNLOAD_FORMATS_RASTER = [
     'View in Google Earth',
     'Tiles',
     'GML',
-    'GZIP'
+    'GZIP',
+    'QGIS layer file (.qlr)',
+    'QGIS project file (.qgs)',
+    'Zipped All Files'
 ]
 
 ACCOUNT_NOTIFY_ON_PASSWORD_CHANGE = strtobool(
@@ -930,10 +939,10 @@ AUTO_GENERATE_AVATAR_SIZES = (
 )
 
 # Number of results per page listed in the GeoNode search pages
-CLIENT_RESULTS_LIMIT = int(os.getenv('CLIENT_RESULTS_LIMIT', '100'))
+CLIENT_RESULTS_LIMIT = int(os.getenv('CLIENT_RESULTS_LIMIT', '20'))
 
 # Number of items returned by the apis 0 equals no limit
-API_LIMIT_PER_PAGE = int(os.getenv('API_LIMIT_PER_PAGE', '0'))
+API_LIMIT_PER_PAGE = int(os.getenv('API_LIMIT_PER_PAGE', '200'))
 API_INCLUDE_REGIONS_COUNT = strtobool(
     os.getenv('API_INCLUDE_REGIONS_COUNT', 'False'))
 
@@ -1218,8 +1227,8 @@ ADMIN_MODERATE_UPLOADS = False
 
 # add following lines to your local settings to enable monitoring
 if MONITORING_ENABLED:
-    INSTALLED_APPS + ('geonode.contrib.monitoring',)
-    MIDDLEWARE_CLASSES + \
+    INSTALLED_APPS += ('geonode.contrib.monitoring',)
+    MIDDLEWARE_CLASSES += \
         ('geonode.contrib.monitoring.middleware.MonitoringMiddleware',)
 
 GEOIP_PATH = os.path.join(PROJECT_ROOT, 'GeoIPCities.dat')
