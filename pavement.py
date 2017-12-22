@@ -653,9 +653,9 @@ def test_bdd():
     """
     Run GeoNode's BDD Test Suite
     """
-    call_task('stop')
-    call_task('reset_hard')
-    call_task('setup')
+    # call_task('stop')
+    # call_task('reset_hard')
+    # call_task('setup')
     call_task('sync')
     # Start GeoServer
     call_task('start_geoserver')
