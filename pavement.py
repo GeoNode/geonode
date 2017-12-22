@@ -656,7 +656,8 @@ def test_bdd():
     """
     Run GeoNode's BDD Test Suite
     """
-    call_task('stop')
+    call_task('stop_geoserver')
+    sh('sleep 30')
     local = str2bool(options.get('local', 'false'))
     if local:
         call_task('reset_hard')
@@ -670,7 +671,7 @@ def test_bdd():
     sh('py.test')
 
     if local:
-        call_task('stop')
+        call_task('stop_geoserver')
         call_task('reset_hard')
 
 

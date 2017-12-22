@@ -57,7 +57,7 @@ before_script:
   - paver setup
 
 script:
-  - paver run_tests --coverage
+  - paver run_tests --coverage --local false
 
 after_script:
   # For QGIS Server Travis steps

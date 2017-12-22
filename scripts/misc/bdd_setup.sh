@@ -13,6 +13,6 @@ case $1 in
 		;;
 	"before_script")
 		echo "Setting up PyTest suite"
-		pip install pytest==2.9.0 pytest-bdd==2.5.0 pytest-splinter
+		pip install pytest==2.9.0 pytest-bdd==2.5.0 pytest-splinter pytest-django
 		;;
 esac
