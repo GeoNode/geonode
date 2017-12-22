@@ -52,6 +52,7 @@ from geonode.maps.models import Map
 from geonode.documents.models import Document
 from geonode.base.models import ResourceBase
 from geonode.base.models import HierarchicalKeyword
+from geonode.people.models import Profile
 from geonode.groups.models import GroupProfile
 from geonode.utils import check_ogc_backend
 
@@ -679,12 +680,19 @@ class CommonModelApi(ModelResource):
         Format the objects for output in a response.
         """
         objects_json = objects.values(*self.VALUES)
+
         # hack needed because dehydrate does not seem to work in CommonModelApi
         for item in objects_json:
             if item['thumbnail_url'] and len(item['thumbnail_url']) == 0:
                 item['thumbnail_url'] = staticfiles.static(settings.MISSING_THUMBNAIL)
             if item['title'] and len(item['title']) == 0:
                 item['title'] = 'No title'
+            if 'owner__username' in item:
+                username = item['owner__username']
+                profiles = Profile.objects.filter(username=username)
+                if profiles:
+                    full_name = (profiles[0].get_full_name() or username)
+                    item['owner_name'] = full_name
         return objects_json
 
     def create_response(
@@ -808,6 +816,11 @@ class LayerResource(CommonModelApi):
                 'name'
             ]
             formatted_obj = model_to_dict(obj, fields=values)
+            username = obj.owner.get_username()
+            full_name = (obj.owner.get_full_name() or username)
+            formatted_obj['owner__username'] = username
+            formatted_obj['owner_name'] = full_name
+
             # add the geogig link
             formatted_obj['geogig_link'] = obj.geogig_link
 
@@ -961,6 +974,11 @@ class MapResource(CommonModelApi):
         for obj in objects:
             # convert the object to a dict using the standard values.
             formatted_obj = model_to_dict(obj, fields=self.VALUES)
+            username = obj.owner.get_username()
+            full_name = (obj.owner.get_full_name() or username)
+            formatted_obj['owner__username'] = username
+            formatted_obj['owner_name'] = full_name
+
             # get map layers
             map_layers = obj.layers
             formatted_layers = []

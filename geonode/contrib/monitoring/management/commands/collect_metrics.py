@@ -19,6 +19,7 @@
 #########################################################################
 from __future__ import print_function
 import logging
+import pytz
 from datetime import datetime
 
 from django.core.management.base import BaseCommand
@@ -99,15 +100,15 @@ class Command(BaseCommand):
             log.info("Processing notifications for %s", options['until'])
             s = Service.objects.first()
             interval = s.check_interval
-            now = datetime.now()
+            now = datetime.utcnow().replace(tzinfo=pytz.utc)
             notifications_check = now - interval
             c.emit_notifications() #notifications_check)
 
     def run_check(self, service, collector, since=None, until=None, force_check=None, format=None):
+        utc = pytz.utc
+        now = datetime.utcnow().replace(tzinfo=utc)
         Handler = get_for_service(service.service_type.name)
-
-        last_check = service.last_check
-        now = datetime.now()
+        last_check = service.last_check.astimezone(utc) if service.last_check else now
         since = since or last_check or (now - service.check_interval)
         until = until or now
         print('checking', service.name, 'since', since, 'until', until)
