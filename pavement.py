@@ -669,6 +669,10 @@ def test_bdd():
 
     sh('py.test')
 
+    if local:
+        call_task('stop')
+        call_task('reset_hard')
+
 
 @task
 def test_javascript(options):
@@ -726,7 +730,7 @@ def run_tests(options):
         prefix = 'coverage run --branch --source=geonode'
     else:
         prefix = 'python'
-    local = options.get('local', 'false')
+    local = options.get('local', 'false')  # travis uses default to false
     sh('%s manage.py test geonode.tests.smoke' % prefix)
     call_task('test', options={'prefix': prefix})
     call_task('test_integration')
