@@ -1217,8 +1217,8 @@ ADMIN_MODERATE_UPLOADS = False
 
 # add following lines to your local settings to enable monitoring
 if MONITORING_ENABLED:
-    INSTALLED_APPS + ('geonode.contrib.monitoring',)
-    MIDDLEWARE_CLASSES + \
+    INSTALLED_APPS += ('geonode.contrib.monitoring',)
+    MIDDLEWARE_CLASSES += \
         ('geonode.contrib.monitoring.middleware.MonitoringMiddleware',)
 
 GEOIP_PATH = os.path.join(PROJECT_ROOT, 'GeoIPCities.dat')
