@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #########################################################################
 #
-# Copyright (C) 2016 OSGeo
+# Copyright (C) 2017 OSGeo
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -18,15 +18,26 @@
 #
 #########################################################################
 
-from __future__ import absolute_import
+"""celery tasks for geonode.maps."""
 
-import os
-from celery import Celery
+from celery.app import shared_task
+from celery.utils.log import get_task_logger
 
-os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'geonode.settings')
+from geonode.maps.models import Map
 
-app = Celery('geonode')
+logger = get_task_logger(__name__)
 
-# Using a string here means the worker will not have to
-# pickle the object when using Windows.
-app.config_from_object('django.conf:settings')
+
+@shared_task(bind=True, queue='cleanup', expires=300)
+def delete_map(self, object_id):
+    """
+    Deletes a map and the associated map layers.
+    """
+
+    try:
+        map_obj = Map.objects.get(id=object_id)
+    except Map.DoesNotExist:
+        return
+
+    map_obj.layer_set.all().delete()
+    map_obj.delete()

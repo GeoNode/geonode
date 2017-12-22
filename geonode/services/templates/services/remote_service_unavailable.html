@@ -1,0 +1,12 @@
+{% extends "services/services_base.html" %}
+{% load bootstrap_tags %}
+{% load i18n %}
+
+{% block title %}{% trans "Remote service unavailable" %}{% endblock %}
+
+{% block body %}
+    <div class="page-header">
+        <h3>{% trans "Service unavailable" %}<small> {{ service.name }}</small></h3>
+    </div>
+    <p>Could not contact <a href="{{ service.base_url }}" target="_blank">{{ service.base_url }}</a></p>
+{% endblock %}

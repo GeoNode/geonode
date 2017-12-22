@@ -310,17 +310,11 @@ def cascading_delete(cat, layer_name):
             try:
                 store = get_store(cat, name, workspace=ws)
             except FailedRequestError:
-                if ogc_server_settings.DATASTORE:
-                    try:
-                        layer = Layer.objects.get(alternate=layer_name)
-                        store = get_store(cat, layer.store, workspace=ws)
-                    except FailedRequestError:
-                        logger.debug(
-                            'the store was not found in geoserver')
-                        return
-                else:
-                    logger.debug(
-                        'the store was not found in geoserver')
+                try:
+                    layer = Layer.objects.get(alternate=layer_name)
+                    store = get_store(cat, layer.store, workspace=ws)
+                except FailedRequestError:
+                    logger.debug('the store was not found in geoserver')
                     return
             if ws is None:
                 logger.debug(

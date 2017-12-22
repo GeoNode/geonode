@@ -20,6 +20,9 @@
 
 from django.test import TestCase
 
+from geonode.messaging import connection
+from geonode.messaging.consumer import Consumer
+
 
 class MessagingTest(TestCase):
     """
@@ -28,3 +31,11 @@ class MessagingTest(TestCase):
     def setUp(self):
         self.adm_un = "admin"
         self.adm_pw = "admin"
+
+    def test_consumer(self):
+        with connection:
+            try:
+                worker = Consumer(connection)
+                self.assertTrue(worker is not None)
+            except:
+                self.fail("could not create a Consumer.")

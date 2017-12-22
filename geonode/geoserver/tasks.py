@@ -17,3 +17,18 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
+
+from celery.app import shared_task
+from celery.utils.log import get_task_logger
+
+from .helpers import gs_slurp
+
+logger = get_task_logger(__name__)
+
+
+@shared_task(bind=True, queue='update')
+def geoserver_update_layers(self, *args, **kwargs):
+    """
+    Runs update layers.
+    """
+    return gs_slurp(*args, **kwargs)
