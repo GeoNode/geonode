@@ -649,16 +649,22 @@ def test(options):
 
 
 @task
+@cmdopts([
+    ('local=', 'l', 'Set to True if running bdd tests locally')
+])
 def test_bdd():
     """
     Run GeoNode's BDD Test Suite
     """
-    # call_task('stop')
-    # call_task('reset_hard')
-    # call_task('setup')
+    call_task('stop')
+    local = str2bool(options.get('local', 'false'))
+    if local:
+        call_task('reset_hard')
+        call_task('setup')
     call_task('sync')
     # Start GeoServer
     call_task('start_geoserver')
+    sh('sleep 30')
     info("GeoNode is now available, running the bdd tests now.")
 
     sh('py.test')
@@ -709,7 +715,8 @@ def test_integration(options):
 
 @task
 @cmdopts([
-    ('coverage', 'c', 'use this flag to generate coverage during test runs')
+    ('coverage', 'c', 'use this flag to generate coverage during test runs'),
+    ('local=', 'l', 'Set to True if running bdd tests locally')
 ])
 def run_tests(options):
     """
@@ -719,11 +726,12 @@ def run_tests(options):
         prefix = 'coverage run --branch --source=geonode'
     else:
         prefix = 'python'
+    local = options.get('local', 'false')
     sh('%s manage.py test geonode.tests.smoke' % prefix)
     call_task('test', options={'prefix': prefix})
     call_task('test_integration')
     call_task('test_integration', options={'name': 'geonode.tests.csw'})
-    call_task('test_bdd')
+    call_task('test_bdd', options={'local': local})
     sh('flake8 geonode')
 
 
@@ -965,3 +973,10 @@ def justcopy(origin, target):
         if not os.path.exists(target):
             os.makedirs(target)
         shutil.copy(origin, target)
+
+
+def str2bool(v):
+    if v and len(v) > 0:
+        return v.lower() in ("yes", "true", "t", "1")
+    else:
+        return False
