@@ -569,6 +569,10 @@ class ProfileResource(TypeFilteredResource):
 
 class OwnersResource(TypeFilteredResource):
     """Owners api, lighter and faster version of the profiles api"""
+    full_name = fields.CharField(null=True)
+
+    def dehydrate_full_name(self, bundle):
+        return bundle.obj.get_full_name() or bundle.obj.username
 
     def serialize(self, request, data, format, options=None):
         if options is None:
