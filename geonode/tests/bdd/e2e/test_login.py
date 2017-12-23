@@ -55,7 +55,8 @@ def administrator_named_admin():
 @when('I go to the "login" page')
 def go_to_login(en_browser):
     """I go to the "login" page."""
-    assert en_browser.is_text_present('Login')
+    assert en_browser.is_text_present('Username')
+    assert en_browser.is_text_present('Password')
 
 
 @when('I fill in "Password" with "admin"')
