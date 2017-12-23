@@ -70,11 +70,6 @@ def fill_username(en_browser):
     en_browser.fill('password', 'admin')
 
 
-@when('I go to the "login" page')
-def go_to_login():
-    """I go to the "login" page."""
-
-
 @when('I press the "Log in" button')
 def login_user(en_browser):
     """I press the "Log in" button."""
