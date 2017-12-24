@@ -620,3 +620,70 @@ class WmsServer(models.Model):
     date_created = models.DateTimeField(auto_now_add=True)
     date_updated = models.DateTimeField(auto_now=True)
 #end
+
+class MapLayerStyle(models.Model):
+    '''
+    Map Layer style (SLD)
+    '''
+    uuid = models.UUIDField(
+        verbose_name = _('UUID'),
+        help_text=_('Designats uuid'),
+        default=uuid.uuid4, 
+        editable=False
+    )
+    map = models.ForeignKey(
+        Map,
+        verbose_name = _('Map'),
+        help_text=_('Designats related Map'),
+        null=False, blank=False
+    )
+    name = models.CharField(
+        verbose_name = _('Name'),
+        help_text=_('Designats name of the SLD'),
+        max_length=50, blank=False
+    )
+    layer = models.ForeignKey(
+        Layer,
+        verbose_name = _('Layer'),
+        help_text=_('Designats related layer'),
+        null=False, blank=False
+    )
+    json_field = models.TextField(
+        verbose_name=_('Json Field'),
+        help_text=_('Designates json field.'),
+        blank=True
+    )
+    sld_body = models.TextField(
+        verbose_name=_('SLD Text'), 
+        help_text=_('Designates SLD Text.'),
+        blank=True
+    )
+    created_by = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        verbose_name=_('Created by'), 
+        related_name = 'map_layer_style_created_by',        
+        help_text=_('Designates user who creates the record.'),
+        )
+    modified_by = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        verbose_name=_('Modified by'), 
+        related_name = 'map_layer_style_modified_by',
+        help_text=_('Designates user who updates the record.'),
+        )
+    created_date = models.DateTimeField(
+        verbose_name=_('Created Date'), 
+        help_text=_('Designates when this record created.'),
+        auto_now_add=True
+    )
+    last_modified = models.DateTimeField(
+        verbose_name=_('Last Modified'), 
+        help_text=_('Designates when this record last modified.'),
+        auto_now=True
+    )
+    
+    def __str__(self):
+        return "{} - {}".format(self.map.title, self.layer.name)
+
+    class Meta:
+        pass
+
