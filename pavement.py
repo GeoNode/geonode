@@ -166,10 +166,34 @@ def setup_qgis_server(options):
     info('QGIS Server related folder successfully setup.')
 
 
+def _robust_rmtree(path, logger=None, max_retries=5):
+    """Try to delete paths robustly .
+    Retries several times (with increasing delays) if an OSError
+    occurs.  If the final attempt fails, the Exception is propagated
+    to the caller. Taken from https://github.com/hashdist/hashdist/pull/116
+    """
+
+    for i in range(max_retries):
+        try:
+            shutil.rmtree(path)
+            return
+        except OSError, e:
+            if logger:
+                info('Unable to remove path: %s' % path)
+                info('Retrying after %d seconds' % i)
+            time.sleep(i)
+
+    # Final attempt, pass any Exceptions up to caller.
+    shutil.rmtree(path)
+
+
 def _install_data_dir():
     target_data_dir = path('geoserver/data')
     if target_data_dir.exists():
-        target_data_dir.rmtree()
+        try:
+            target_data_dir.rmtree()
+        except OSError:
+            _robust_rmtree(target_data_dir, logger=True)
 
     original_data_dir = path('geoserver/geoserver/data')
     justcopy(original_data_dir, target_data_dir)
@@ -625,6 +649,33 @@ def test(options):
 
 
 @task
+@cmdopts([
+    ('local=', 'l', 'Set to True if running bdd tests locally')
+])
+def test_bdd():
+    """
+    Run GeoNode's BDD Test Suite
+    """
+    call_task('stop_geoserver')
+    sh('sleep 30')
+    local = str2bool(options.get('local', 'false'))
+    if local:
+        call_task('reset_hard')
+        call_task('setup')
+    call_task('sync')
+    # Start GeoServer
+    call_task('start_geoserver')
+    sh('sleep 30')
+    info("GeoNode is now available, running the bdd tests now.")
+
+    sh('py.test')
+
+    if local:
+        call_task('stop_geoserver')
+        call_task('reset_hard')
+
+
+@task
 def test_javascript(options):
     with pushd('geonode/static/geonode'):
         sh('./run-tests.sh')
@@ -669,7 +720,8 @@ def test_integration(options):
 
 @task
 @cmdopts([
-    ('coverage', 'c', 'use this flag to generate coverage during test runs')
+    ('coverage', 'c', 'use this flag to generate coverage during test runs'),
+    ('local=', 'l', 'Set to True if running bdd tests locally')
 ])
 def run_tests(options):
     """
@@ -679,10 +731,12 @@ def run_tests(options):
         prefix = 'coverage run --branch --source=geonode'
     else:
         prefix = 'python'
+    local = options.get('local', 'false')  # travis uses default to false
     sh('%s manage.py test geonode.tests.smoke' % prefix)
     call_task('test', options={'prefix': prefix})
     call_task('test_integration')
     call_task('test_integration', options={'name': 'geonode.tests.csw'})
+    call_task('test_bdd', options={'local': local})
     sh('flake8 geonode')
 
 
@@ -906,11 +960,28 @@ def waitfor(url, timeout=300):
     return started
 
 
+def _copytree(src, dst, symlinks=False, ignore=None):
+    for item in os.listdir(src):
+        s = os.path.join(src, item)
+        d = os.path.join(dst, item)
+        if os.path.isdir(s):
+            shutil.copytree(s, d, symlinks, ignore)
+        else:
+            shutil.copy2(s, d)
+
+
 def justcopy(origin, target):
     if os.path.isdir(origin):
         shutil.rmtree(target, ignore_errors=True)
-        shutil.copytree(origin, target)
+        _copytree(origin, target)
     elif os.path.isfile(origin):
         if not os.path.exists(target):
             os.makedirs(target)
         shutil.copy(origin, target)
+
+
+def str2bool(v):
+    if v and len(v) > 0:
+        return v.lower() in ("yes", "true", "t", "1")
+    else:
+        return False

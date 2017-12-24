@@ -60,7 +60,7 @@ from geonode.maps.forms import MapForm
 from geonode.security.views import _perms_info_json
 from geonode.base.forms import CategoryForm
 from geonode.base.models import TopicCategory
-from geonode.tasks.deletion import delete_map
+from .tasks import delete_map
 from geonode.groups.models import GroupProfile
 
 from geonode.documents.models import get_related_documents
@@ -208,6 +208,7 @@ def map_metadata(request, mapid, template='maps/map_metadata.html'):
         new_poc = map_form.cleaned_data['poc']
         new_author = map_form.cleaned_data['metadata_author']
         new_keywords = map_form.cleaned_data['keywords']
+        new_regions = map_form.cleaned_data['regions']
         new_title = strip_tags(map_form.cleaned_data['title'])
         new_abstract = strip_tags(map_form.cleaned_data['abstract'])
         new_category = TopicCategory.objects.get(
@@ -233,34 +234,40 @@ def map_metadata(request, mapid, template='maps/map_metadata.html'):
             if author_form.has_changed and author_form.is_valid():
                 new_author = author_form.save()
 
+        the_map = map_form.instance
         if new_poc is not None and new_author is not None:
-            the_map = map_form.instance
             the_map.poc = new_poc
             the_map.metadata_author = new_author
-            the_map.title = new_title
-            the_map.abstract = new_abstract
-            the_map.save()
+        the_map.title = new_title
+        the_map.abstract = new_abstract
+        if new_keywords:
             the_map.keywords.clear()
             the_map.keywords.add(*new_keywords)
-            the_map.category = new_category
-            the_map.save()
+        if new_regions:
+            the_map.regions.clear()
+            the_map.regions.add(*new_regions)
+        the_map.category = new_category
+        the_map.save()
 
-            if getattr(settings, 'SLACK_ENABLED', False):
-                try:
-                    from geonode.contrib.slack.utils import build_slack_message_map, send_slack_messages
-                    send_slack_messages(
-                        build_slack_message_map(
-                            "map_edit", the_map))
-                except BaseException:
-                    print "Could not send slack message for modified map."
+        if getattr(settings, 'SLACK_ENABLED', False):
+            try:
+                from geonode.contrib.slack.utils import build_slack_message_map, send_slack_messages
+                send_slack_messages(
+                    build_slack_message_map(
+                        "map_edit", the_map))
+            except BaseException:
+                print "Could not send slack message for modified map."
 
-            return HttpResponseRedirect(
-                reverse(
-                    'map_detail',
-                    args=(
-                        map_obj.id,
-                    )))
+        return HttpResponseRedirect(
+            reverse(
+                'map_detail',
+                args=(
+                    map_obj.id,
+                )))
 
+    # - POST Request Ends here -
+
+    # Request.GET
     if poc is None:
         poc_form = ProfileForm(request.POST, prefix="poc")
     else:

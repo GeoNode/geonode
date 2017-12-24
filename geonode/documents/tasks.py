@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #########################################################################
 #
-# Copyright (C) 2016 OSGeo
+# Copyright (C) 2017 OSGeo
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -18,31 +18,20 @@
 #
 #########################################################################
 
-from logging import getLogger
-from celery.task import task
-from geonode.geoserver.helpers import gs_slurp
+from celery.app import shared_task
+from celery.utils.log import get_task_logger
+
 from geonode.documents.models import Document
-from geonode.documents.renderers import (
-    render_document,
-    generate_thumbnail_content,
-    ConversionError,
-    MissingPILError,
-)
+from geonode.documents.renderers import render_document
+from geonode.documents.renderers import generate_thumbnail_content
+from geonode.documents.renderers import ConversionError
+from geonode.documents.renderers import MissingPILError
+
+logger = get_task_logger(__name__)
 
 
-logger = getLogger(__name__)
-
-
-@task(name='geonode.tasks.update.geoserver_update_layers', queue='update')
-def geoserver_update_layers(*args, **kwargs):
-    """
-    Runs update layers.
-    """
-    return gs_slurp(*args, **kwargs)
-
-
-@task(name='geonode.tasks.update.create_document_thumbnail', queue='update')
-def create_document_thumbnail(object_id):
+@shared_task(bind=True, queue='update')
+def create_document_thumbnail(self, object_id):
     """
     Create thumbnail for a document.
     """
@@ -83,3 +72,15 @@ def create_document_thumbnail(object_id):
     filename = 'document-{}-thumb.png'.format(document.uuid)
     document.save_thumbnail(filename, thumbnail_content)
     logger.debug("Thumbnail for document #{} created.".format(object_id))
+
+
+@shared_task(bind=True, queue='cleanup')
+def delete_orphaned_document_files(self):
+    from geonode.documents.utils import delete_orphaned_document_files
+    delete_orphaned_document_files()
+
+
+@shared_task(bind=True, queue='cleanup')
+def delete_orphaned_thumbnails(self):
+    from geonode.documents.utils import delete_orphaned_thumbs
+    delete_orphaned_thumbs()

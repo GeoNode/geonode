@@ -19,13 +19,15 @@
 #########################################################################
 
 import logging
+import time
 
+from django.conf import settings
+from kombu.mixins import ConsumerMixin
 from geonode.geoserver.signals import geoserver_post_save_local
 from geonode.security.views import send_email_consumer, send_email_owner_on_view
 # from geonode.social.signals import notification_post_save_resource2
 from geonode.layers.views import layer_view_counter
-from kombu.mixins import ConsumerMixin
-from django.conf import settings
+from geonode.layers.models import Layer
 
 from queues import queue_email_events, queue_geoserver_events,\
                    queue_notifications_events, queue_all_events,\
@@ -89,7 +91,12 @@ class Consumer(ConsumerMixin):
     def on_geoserver_messages(self, body, message):
         # logger.debug("on_geoserver_messages: RECEIVED MSG - body: %r" % (body,))
         layer_id = body.get("id")
-        geoserver_post_save_local(layer_id)
+        try:
+            layer = _wait_for_layer(layer_id)
+        except Layer.DoesNotExist as err:
+            logger.exception(err)
+            return
+        geoserver_post_save_local(layer)
         # Not sure if we need to send ack on this fanout version.
         message.ack()
         logger.info("on_geoserver_messages: finished")
@@ -146,3 +153,30 @@ class Consumer(ConsumerMixin):
         message.ack()
         logger.info("on_layer_viewer: finished")
         self._check_message_limit()
+
+
+def _wait_for_layer(layer_id, num_attempts=5, wait_seconds=1):
+    """Blocks execution while the Layer instance is not found on the database
+
+    This is a workaround for the fact that the
+    ``geonode.geoserver.signals.geoserver_post_save_local`` function might
+    try to access the layer's ``id`` parameter before the layer is done being
+    saved in the database.
+
+    """
+
+    for current in range(1, num_attempts+1):
+        try:
+            instance = Layer.objects.get(id=layer_id)
+            logger.debug("Attempt {}/{} - Found layer in the "
+                         "database".format(current, num_attempts))
+            break
+        except Layer.DoesNotExist:
+            time.sleep(wait_seconds)
+            logger.debug("Attempt {}/{} - Could not find layer "
+                         "instance".format(current, num_attempts))
+    else:
+        logger.debug("Reached maximum attempts and layer {!r} is still not "
+                     "saved. Exiting...".format(layer_id))
+        raise Layer.DoesNotExist
+    return instance
