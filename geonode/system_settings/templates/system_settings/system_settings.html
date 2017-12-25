@@ -4,38 +4,53 @@
 {% block title %}{% trans "Locations" %}{% endblock %}
 
 {% block body_outer %}
+<div ng-app="SystemSettingsApp">
+    <div ng-controller="SystemSettingsController" >
+        <h1>Location's: Settings</h1>
+        <div class="row">
 
-    <h1>Location's: Settings</h1>
-    <div class="row" ng-controller="SystemSettingsController" ng-app="SystemSettingsApp" >
-        <div class="col-md-3">Layer Name:</div>
-        <div class="col-md-3">
-            Saved layer: <span id="saved-layer">[{ layerName }]</span>
-        </div>
-        <div class="col-md-4">
-            <select name="layer" id="layer">
-            </select>
-        </div>
+            <div class="alert alert-warning" ng-cloak ng-if="layerStatusMsg">
+              <strong>Warning!</strong> [{ layerStatusMsg }]
+            </div>
 
-        <div class="col-md-2">
-            <button type="button" class="btn btn-primary layer-settings" ng-click="layerSettingSave()">Save</button>
         </div>
+        <br>
+        <div class="row"  >
+            <div class="col-md-3">Layer Name:</div>
+            <div class="col-md-3" ng-cloak>
+                Saved layer: <span id="saved-layer">[{ layerName }]</span>
+            </div>
+            <div class="col-md-4">
+                <select name="layer" id="layer" ng-model="layers" ng-change="changedValue()">
+                </select>
+            </div>
+
+            <div class="col-md-2">
+                <button type="button" class="btn btn-primary layer-settings" ng-click="layerSettingSave()">Save</button>
+            </div>
+        </div>
+        <br>
+        <div class="row">
+            <div class="col-md-4">Elevation Raster:</div>
+            <div class="col-md-6">
+                <select name="elevation-raster" id="elevation-raster">
+                    <option>Raster 1</option>
+                    <option>Raster 2</option>
+                    <option>Raster 3</option>
+                    <option>Raster 4</option>
+                </select>
+            </div>
+
+            <div class="col-md-2">
+                <button type="button" class="btn btn-primary">Save</button>
+            </div>
+        </div>
+        <br>
+
     </div>
-    <br>
-    <div class="row">
-        <div class="col-md-4">Elevation Raster:</div>
-        <div class="col-md-6">
-            <select name="elevation-raster" id="elevation-raster">
-                <option>Raster 1</option>
-                <option>Raster 2</option>
-                <option>Raster 3</option>
-                <option>Raster 4</option>
-            </select>
-        </div>
 
-        <div class="col-md-2">
-            <button type="button" class="btn btn-primary">Save</button>
-        </div>
-    </div>
+</div>
+
 
 {% endblock %}
 

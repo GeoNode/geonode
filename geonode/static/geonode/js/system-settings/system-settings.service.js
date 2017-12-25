@@ -46,6 +46,9 @@
             },
             saveSystemSettings: function (data) {
                 return put('/settings/api/settings/save/', data);
+            },
+            getAddressAttributes: function(uuid){
+                return get('/settings/api/address/attributes/'+uuid+"/");
             }
 
         }

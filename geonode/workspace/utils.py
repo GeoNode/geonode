@@ -8,14 +8,35 @@ def prepare_messages(layers):
                            'data_quality_statement', 'thumbnail_url', 'elevation_regex', 'time_regex', 'keywords',
                            'category']
 
+    metadata_mandatory_fields = ['title', 'date', 'edition', 'abstract', 'restriction_code_type',
+                                 'spatial_representation_type',
+                                 'resource_type', 'data_quality_statement', 'category']
+
     list_messages = dict()
 
     for layer in layers:
-        for field in metadata_field_list:
+        messages = dict()
+
+        for field in metadata_mandatory_fields:
             if not getattr(layer, layer._meta.get_field(field).name):
-                list_messages[layer.id] = "Please update layer metadata, missing some information"
+                messages['mandatory_fields_msg'] = "Please update mandatory fields, missing some information!"
+                list_messages[layer.id] = messages
                 break
             else:
-                list_messages[layer.id] = "Completed"
+                messages['mandatory_fields_msg'] = ''
+                list_messages[layer.id] = messages
+
+        for field in metadata_field_list:
+
+            if not getattr(layer, layer._meta.get_field(field).name):
+                messages['layer_msg'] = "Please update layer metadata, missing some information"
+                # list_messages[layer.id] = "Please update layer metadata, missing some information"
+                list_messages[layer.id] = messages
+                break
+            else:
+                messages['layer_msg'] = "Completed"
+                list_messages[layer.id] = messages
+
+    # import pdb;pdb.set_trace()
 
     return list_messages
