@@ -59,8 +59,6 @@ class MissingAttributeAPIView(APIView):
 
     def get(self, request, format=None, uuid=None):
 
-        # import pdb;pdb.set_trace()
-
         data = dict()
         address_fields = ['post_code', 'road_no', 'house_no']
 
@@ -84,8 +82,6 @@ class MissingAttributeAPIView(APIView):
             data['status'] = "invalid"
 
         data['columns'] = missing_list
-        # data = json.dumps(data)
-        # import pdb;pdb.set_trace()
 
         return JsonResponse(data)
 

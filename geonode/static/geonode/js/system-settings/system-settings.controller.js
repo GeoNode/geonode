@@ -62,24 +62,7 @@
 
             var layerUUID = $("#layer option:selected").val();
             checkSelectedLayerAttrhave($scope, SettingsService, layerUUID);
-            /*
-            var addressColumnsStatus = SettingsService.getAddressAttributes(layerUUID);
 
-            addressColumnsStatus.then(function (value) {
-
-                    if (value.status == 'invalid') {
-
-                        var columns = value.columns.toString().replaceAll(',', ', ');
-
-                        $scope.layerStatusMsg = columns + " are missing!";
-
-                    }
-
-                }, function (error) {
-                    // This is called when error occurs.
-                }
-            );
-            */
 
         }
 
