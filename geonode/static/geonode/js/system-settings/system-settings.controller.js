@@ -50,6 +50,7 @@
 
         $scope.layerSettingSave = function () {
 
+            $scope.layerName = $("#layer option:selected").text();
             var uuid = $('#layer :selected').val();
             var data = {
                 'uuid': uuid,
