@@ -56,6 +56,7 @@ mccabe==0.5.2
 oauthlib==2.0.1
 pep8==1.6.2
 pillow==3.3.1
+six==1.10.0
 pinax-theme-bootstrap==3.0a11
 pinax-theme-bootstrap-account==1.0b2
 pycsw==2.0.2
