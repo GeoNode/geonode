@@ -1,6 +1,6 @@
 ﻿repositoryModule.factory('mapRepository', [
-    '$http', 'urlResolver', 'dirtyManager', 'surfToastr',
-    function ($http, urlResolver, dirtyManager, surfToastr) {
+    '$http', 'urlResolver', 'dirtyManager', 'surfToastr', '$cookies',
+    function ($http, urlResolver, dirtyManager, surfToastr, $cookies) {
 
         return {
             openMap: function (mapId) {
@@ -61,9 +61,9 @@
             //     });
             // },
             saveAs: function (obj) { //new
-                return $http.post('new/data', obj, {
+                return $http.post('maps/new/data', obj, {
                     headers: {
-                        "X-CSRFToken": obj.csrfToken
+                        "X-CSRFToken": $cookies.get('csrftoken')
                     }
                 }).success(function () {
                     dirtyManager.setDirty(false);
@@ -76,6 +76,6 @@
             saveMapSummary: function(mapSummary) {
                 return $http.post(urlResolver.resolveMap('SaveMapSummary'), mapSummary);
             }
-        }
+        };
     }
 ]);

@@ -3,6 +3,88 @@
     function(mapRepository, SurfMap, layerService, layerStyleGenerator, mapTools) {
         var map;
 
+        function _mapSource(source) {
+            return angular.extend({
+                "url": "",
+                "restUrl": "/gs/rest",
+                "title": "Local Geoserver",
+                "projection": "EPSG:4326",
+                "id": "3",
+                "baseParams": {
+                    "SERVICE": "WMS",
+                    "REQUEST": "GetCapabilities",
+                    "TILED": true,
+                    "VERSION": "1.1.1"
+                }
+            }, source);
+        }
+
+        function _mapLayers(layer) {
+            return {
+                "source": layer.source,
+                "name": layer.name,
+                "title": layer.name,
+                "visibility": layer.IsVisible,
+                "opacity": 1,
+                "group": "background",
+                "fixed": true,
+                "selected": false,
+                "type": "OpenLayers.Layer",
+                "args": [
+                    "No background"
+                ]
+            };
+        }
+
+        function _map() {
+            var sources = [];
+            var layers = map.layers;
+            var mapped_layers = [];
+            var mapped_sources = {};
+            i = 0;
+            for (var k in layers) {
+                var e = layers[k];
+                var url = e.olLayer.getSource().getUrls()[0];
+                var index = sources.indexOf(url);
+                if (index == -1) {
+                    sources.push(url);
+                    e.source = i.toString();
+                    mapped_sources[e.source] = _mapSource({ url: url });
+                } else {
+                    e.source = index.toString();
+                }
+                mapped_layers.push(_mapLayers(e));
+                i++;
+            };
+
+            return {
+                "map": {
+                    "layers": mapped_layers,
+                    "center": map.getView().getCenter(),
+                    "units": map.getProjection().getUnits(),
+                    "maxResolution": map.getView().getResolution(),
+                    "maxExtent": map.getProjection().getExtent(),
+                    "zoom": map.getZoom(),
+                    "projection": map.getProjection().getCode()
+                },
+                "about": {
+                    "abstract": "",
+                    "title": name,
+                    "organization": "1",
+                    "category": "1"
+                },
+                "sources":angular.extend({
+                    "search": {
+                        "ptype": "gxp_geonodeapicataloguesource",
+                        "restUrl": "/gs/rest",
+                        "url": "/api/layers/",
+                        "projection": "EPSG:4326",
+                        "id": "search"
+                    }
+                }, mapped_sources)
+            };
+        }
+
         var factory = {
             setSurfMap: function(surfMap) {
                 map = surfMap;
@@ -359,6 +441,8 @@
                 mapRepository.removeLayer(layerId);
             },
             saveMapAs: function(name) {
+                // _map(name);
+
                 var mapObj = {
                     // "proxy": "/proxy/?url=",
                     // "printService": "http://demo.geonode.org/geoserver/pdf/",
@@ -636,6 +720,7 @@
                     //     "checked": true
                     // }]
                 }
+                mapObj = _map(name);
                 mapObj.about.abstract = name;
                 mapObj.about.title = name;
                 busyStateManager.showBusyState(appMessages.busyState.save);
