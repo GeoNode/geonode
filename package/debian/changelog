@@ -1,3 +1,177 @@
+geonode (2.6.3+thefinal0) trusty; urgency=high
+
+  [ Andreas Trawoeger ]
+  * [20b7c2] Use href instead of text for keywords_slugs.
+
+  [ Hisham waleed karam ]
+  * [fc75ae] Fix Shapely Version (#3241)
+
+  [ Alessio Fabiani ]
+  * [01b4bd]  - Backport 2.6.x: fixes #3223 : search won't work anymore using hrefs, unless search… (#3260)
+
+  [ Simone Dalmasso ]
+  * [b941d1] add bbox information in the API (#3262)
+
+ -- Simone Dalmasso <simone.dalmasso@gmail.com>  Fri, 01 Sep 2017 13:29:11 +0000
+
+geonode (2.6.2+thefinal0) trusty; urgency=high
+
+  [ Francesco Bartoli ]
+  * [52b795] Add vagrant for setup centos 7
+  * [abd4bb] Review and align devmode for 2.6 on centos
+  * [bf8134] Fix devmode docs to forwarding port
+  * [6153e8] Add network configuration issues to docs
+  * [115e47] Review and update postgresql docs
+  * [b2a30c] Review and update tomcat installation docs
+  * [a3cf22] Revert deleted rst reference
+  * [1acffb] Fix deploy geoserver default war file name
+  * [288ad7] Review and update geonode docs on centos 7
+  * [491a17] Review and update apache docs on centos 7
+  * [c2d41c] Specify the user
+  * [6fd1d1] Improve deploy with custom project folder
+  * [337bb3] Move python stuff installation together
+  * [131242] Change installation folder out of home
+  * [07691c] Update with latest local_settings
+  * [05adf3] Fix issue with auth which generate ascii encoding error
+  * [89784c] set client encoding aligned with django
+  * [b88b83] Add reference to alternative installations
+  * [cb247f] Add introduction to venv installation
+  * [991d2f] Move version to 2.6
+  * [ae10a8] Fix broken references
+  * [e2c605] Update copyright year
+
+  [ Simone Dalmasso ]
+  * [bc3ead] remove java build dependencies (#3216)
+
+  [ George Petrakis ]
+  * [25605f] Adding django-jsonfield-compat package to setup.py and requirements.txt (#3211)
+
+  [ Simone Dalmasso ]
+  * [6bdb10] make sure sitemap respects at least anonymous permissions, fixes #3190 (#3214)
+
+ -- Simone Dalmasso <simone.dalmasso@gmail.com>  Sat, 19 Aug 2017 21:28:30 +0000
+
+geonode (2.6.1+thefinal0) trusty; urgency=high
+
+  [ Angelos Tzotsos ]
+  * [b6dfc7] Fixing the version number
+
+  [ afabiani ]
+  * [923fcd]  - Fix for ISSUE #3110: Django Outh2 updated version requires updated version of DJango too
+
+  [ Sara Safavi ]
+  * [703a5d] Bump version number for bugfix on 2.6 release
+
+  [ Simone Dalmasso ]
+
+ -- Simone Dalmasso <simone.dalmasso@gmail.com>  Tue, 13 Jun 2017 05:26:12 +0000
+
+geonode (2.6.0+thefinal0) trusty; urgency=high
+
+  [ Alessio Fabiani ]
+  * [d32a09] [Backport 2.6.x] - Add support for big ZIP files and being sure the target folder is cleaned
+
+  [ Simone Dalmasso ]
+  * [583b3c] remove loop from layer api (remove geogig_link) and use faster owner api
+  * [f0cfdb] remove unused import, thanks flake8
+  * [96dc6d] add null and blank to tkeywords in migrations
+
+  [ afabiani ]
+  * [ff6bad]  - Backup/Restore command: fix json import
+  * [df805e]  Fix for Issue #3030 - Backup/Restore command: fix json import
+  * [47723c] Fix for ISSUE #2975 - Upload Layer Issue #2975
+  * [655e97] Fix for ISSUE #2975 - Upload Layer Issue #2975
+
+  [ Angelos Tzotsos ]
+  * [8f2d77] Updating version number to rc1
+
+  [ frippe12573 ]
+  * [28d6a4] Update geosites.txt (#3009)
+
+  [ Simone Dalmasso ]
+
+ -- Simone Dalmasso <simone.dalmasso@gmail.com>  Tue, 16 May 2017 13:00:07 +0000
+
+geonode (2.6.0+rc1) trusty; urgency=high
+
+  [ Simone Dalmasso ]
+  * [8a8ffe] keywords and regions default should be list and not tuple
+
+  [ Ariel Núñez ]
+  * [9b5134] Peg django-tastypie to 0.13.1
+
+  [ Simone Dalmasso ]
+  * [783f7c] make sure Layer delete also removes the associated Tileset (#2999)
+
+ -- Simone Dalmasso <simone.dalmasso@gmail.com>  Mon, 10 Apr 2017 13:32:40 +0000
+
+geonode (2.6.0+beta1) trusty; urgency=high
+
+  [ Simone Dalmasso ]
+  * [ca2e9d] update release version
+  * [fac9e2] add tokenfield to assets.min.js
+
+  [ Paolo Pasquali ]
+  * [0bf6c6] Fiox meta-categories in home page
+  * [8be3dc] Remove truncatechars in Resource Base Info Panel Abstract
+  * [52bf90] Fix tabs in Layer Detail Page
+  * [fe7667] Fix togglable tabs in detail pages
+  * [dd6599] Fix issue #2783 Announcements getting covered by the navbar in the index page
+  * [8e97e4] Enlarge people card
+
+  [ Ezequiel Gonzalez Rial ]
+  * [a3957d] Remove the 3D viewer tool from maps
+  * [13a219] Change Geoexplorer aboutUrl
+
+  [ Paolo Pasquali ]
+  * [be28a3] Add style to comment section and Page Detail About section (#2931)
+
+  [ gonrial ]
+  * [ff80d8] Added {{block.super}} to all {% block extra_script %} (#2939)
+
+  [ Paolo Corti ]
+  * [67b774] Fixes some style stuff (#2950)
+
+  [ Alessio Fabiani ]
+  * [ad2dc0] Update requirements.txt
+  * [9bb475] Update quick_install.txt
+
+  [ Simone Dalmasso ]
+  * [f62544] make travis run also 2.6.x
+  * [4cb8e0] fix services
+
+ -- Simone Dalmasso <simone.dalmasso@gmail.com>  Tue, 28 Mar 2017 11:16:56 +0000
+
+geonode (2.6.0+alpha1) trusty; urgency=high
+
+  [ Simone Dalmasso ]
+  * [b1254a] update release version (#2894)
+
+  [ Jeffrey Johnson ]
+  * [79135f] fix requirements.txt
+
+  [ Martina ]
+  * [bcdc7e] Fix issue with Leaflet library
+
+  [ Jonathan Doig ]
+  * [dbe2e1] Removed uploaded/layers from Apache config
+
+  [ Martina ]
+  * [20a02f] LAYER_PREVIEW_LIBRARY set to geoext as default
+
+  [ Simone Dalmasso ]
+  * [dedd93] deny uploaded/layers access (#2900)
+
+  [ Alessio Fabiani ]
+  * [ffbcdc] Update quick_install.txt
+  * [472cdd] Update quick_install.txt
+  * [87b5fe] Update quick_install.txt
+
+  [ Simone Dalmasso ]
+  * [595023] make sure metadata detail is generalised
+
+ -- Simone Dalmasso <simone.dalmasso@gmail.com>  Thu, 16 Feb 2017 08:57:50 +0000
+
 geonode (2.5.15+thefinal0) trusty; urgency=high
 
   * [c06f6c] update release version (#2890)

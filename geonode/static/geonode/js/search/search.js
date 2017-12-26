@@ -364,7 +364,7 @@
     $scope.$on('select_h_keyword', function($event, element){
       var data_filter = 'keywords__slug__in';
       var query_entry = [];
-      var value = element.text;
+      var value = (element.href ? element.href : element.text);
       // If the query object has the record then grab it
       if ($scope.query.hasOwnProperty(data_filter)){
 
@@ -391,7 +391,7 @@
     $scope.$on('unselect_h_keyword', function($event, element){
       var data_filter = 'keywords__slug__in';
       var query_entry = [];
-      var value = element.text;
+      var value = (element.href ? element.href : element.text);
       // If the query object has the record then grab it
       if ($scope.query.hasOwnProperty(data_filter)){
 

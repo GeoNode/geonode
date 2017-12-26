@@ -26,7 +26,7 @@ on_rtd = os.environ.get('READTHEDOCS', None) == 'True'
 if on_rtd:
     shapely_dep = "Shapely<1.5.13"
 else:
-    shapely_dep = "Shapely>=1.5.13"
+    shapely_dep = "Shapely==1.5.17"
 
 setup(name='GeoNode',
       version=__import__('geonode').get_version(),
@@ -70,11 +70,13 @@ setup(name='GeoNode',
         "flake8>=2.3.0",  # python-flake8 (2.5.4)
         "pep8>=1.6.2",  # python-pep8 (1.7.0)
         "boto>=2.38.0",  # python-boto (2.38.0)
+        "six==1.10.0", # https://github.com/benjaminp/six/issues/210
 
         # Django Apps
         "django-pagination >=1.0.5, <=1.0.7",  # python-django-pagination (1.0.7)
         "django-extensions>=1.2.5",  # python-django-extensions (1.5.9)
         "django-jsonfield>=0.9.16",  # python-django-jsonfield (0.9.15, 1.0.1 in our ppa)
+        "django-jsonfield-compat>=0.4.4",
         "django-taggit>=0.21.0",  # python-django-taggit (0.18.0)
         "django-mptt>=0.8.6",  # django-mptt (0.8.0, 0.8.6 in our ppa)
         "django-treebeard>=3.0",  # django-treebeard (4.0)
