@@ -1,4 +1,4 @@
-version: '2'
+version: '2.2'
 services:
 
   postgres:
@@ -41,11 +41,13 @@ services:
       - ./scripts/docker/env/production/django.env
 
   geoserver:
-    image: geonode/geoserver:alias
+    image: geonode/geoserver:2.10.x
     links:
       - postgres
     ports:
       - "8080"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
     volumes_from:
       - data_dir_conf
     env_file:
@@ -60,7 +62,7 @@ services:
       - "80:80"
 
   data_dir_conf:
-    image: geonode/geoserver_data:2.9.x-oauth2
+    image: geonode/geoserver_data:2.10.x
     container_name: geoserver_data_dir
     command: /bin/true
     volumes:
