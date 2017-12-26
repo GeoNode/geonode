@@ -18,6 +18,8 @@
 #
 #########################################################################
 
+import fileinput
+import glob
 import os
 import re
 import shutil
@@ -26,16 +28,12 @@ import time
 import urllib
 import urllib2
 import zipfile
-import glob
-import fileinput
-import yaml
-
-from setuptools.command import easy_install
 from urlparse import urlparse
 
-from paver.easy import task, options, cmdopts, needs
-from paver.easy import path, sh, info, call_task
-from paver.easy import BuildFailure
+import yaml
+from paver.easy import (BuildFailure, call_task, cmdopts, info, needs, options,
+                        path, sh, task)
+from setuptools.command import easy_install
 
 try:
     from geonode.settings import GEONODE_APPS
@@ -83,17 +81,35 @@ def grab(src, dest, name):
 ])
 def setup_geoserver(options):
     """Prepare a testing instance of GeoServer."""
+    from geonode.settings import INSTALLED_APPS
+
+    # only start if using Geoserver backend
+    if 'geonode.geoserver' not in INSTALLED_APPS:
+        return
+
     download_dir = path('downloaded')
     if not download_dir.exists():
         download_dir.makedirs()
 
     geoserver_dir = path('geoserver')
 
-    geoserver_bin = download_dir / os.path.basename(dev_config['GEOSERVER_URL'])
-    jetty_runner = download_dir / os.path.basename(dev_config['JETTY_RUNNER_URL'])
+    geoserver_bin = download_dir / \
+        os.path.basename(dev_config['GEOSERVER_URL'])
+    jetty_runner = download_dir / \
+        os.path.basename(dev_config['JETTY_RUNNER_URL'])
 
-    grab(options.get('geoserver', dev_config['GEOSERVER_URL']), geoserver_bin, "geoserver binary")
-    grab(options.get('jetty', dev_config['JETTY_RUNNER_URL']), jetty_runner, "jetty runner")
+    grab(
+        options.get(
+            'geoserver',
+            dev_config['GEOSERVER_URL']),
+        geoserver_bin,
+        "geoserver binary")
+    grab(
+        options.get(
+            'jetty',
+            dev_config['JETTY_RUNNER_URL']),
+        jetty_runner,
+        "jetty runner")
 
     if not geoserver_dir.exists():
         geoserver_dir.makedirs()
@@ -109,21 +125,87 @@ def setup_geoserver(options):
     _install_data_dir()
 
 
+def _robust_rmtree(path, logger=None, max_retries=5):
+    """Try to delete paths robustly .
+    Retries several times (with increasing delays) if an OSError
+    occurs.  If the final attempt fails, the Exception is propagated
+    to the caller. Taken from https://github.com/hashdist/hashdist/pull/116
+    """
+
+    for i in range(max_retries):
+        try:
+            shutil.rmtree(path)
+            return
+        except OSError, e:
+            if logger:
+                info('Unable to remove path: %s' % path)
+                info('Retrying after %d seconds' % i)
+            time.sleep(i)
+
+    # Final attempt, pass any Exceptions up to caller.
+    shutil.rmtree(path)
+
+
 def _install_data_dir():
     target_data_dir = path('geoserver/data')
     if target_data_dir.exists():
-        target_data_dir.rmtree()
+        try:
+            target_data_dir.rmtree()
+        except OSError:
+            _robust_rmtree(target_data_dir, logger=True)
 
     original_data_dir = path('geoserver/geoserver/data')
     justcopy(original_data_dir, target_data_dir)
 
-    config = path('geoserver/data/security/auth/geonodeAuthProvider/config.xml')
-    with open(config) as f:
-        xml = f.read()
-        m = re.search('baseUrl>([^<]+)', xml)
-        xml = xml[:m.start(1)] + "http://localhost:8000/" + xml[m.end(1):]
-        with open(config, 'w') as f:
-            f.write(xml)
+    try:
+        config = path(
+            'geoserver/data/global.xml')
+        with open(config) as f:
+            xml = f.read()
+            m = re.search('proxyBaseUrl>([^<]+)', xml)
+            xml = xml[:m.start(1)] + \
+                "http://localhost:8080/geoserver" + xml[m.end(1):]
+            with open(config, 'w') as f:
+                f.write(xml)
+    except Exception as e:
+        print(e)
+
+    try:
+        config = path(
+            'geoserver/data/security/filter/geonode-oauth2/config.xml')
+        with open(config) as f:
+            xml = f.read()
+            m = re.search('accessTokenUri>([^<]+)', xml)
+            xml = xml[:m.start(1)] + \
+                "http://localhost:8000/o/token/" + xml[m.end(1):]
+            m = re.search('userAuthorizationUri>([^<]+)', xml)
+            xml = xml[:m.start(
+                1)] + "http://localhost:8000/o/authorize/" + xml[m.end(1):]
+            m = re.search('redirectUri>([^<]+)', xml)
+            xml = xml[:m.start(
+                1)] + "http://localhost:8080/geoserver/index.html" + xml[m.end(1):]
+            m = re.search('checkTokenEndpointUrl>([^<]+)', xml)
+            xml = xml[:m.start(
+                1)] + "http://localhost:8000/api/o/v4/tokeninfo/" + xml[m.end(1):]
+            m = re.search('logoutUri>([^<]+)', xml)
+            xml = xml[:m.start(
+                1)] + "http://localhost:8000/account/logout/" + xml[m.end(1):]
+            with open(config, 'w') as f:
+                f.write(xml)
+    except Exception as e:
+        print(e)
+
+    try:
+        config = path(
+            'geoserver/data/security/role/geonode REST role service/config.xml')
+        with open(config) as f:
+            xml = f.read()
+            m = re.search('baseUrl>([^<]+)', xml)
+            xml = xml[:m.start(1)] + "http://localhost:8000" + xml[m.end(1):]
+            with open(config, 'w') as f:
+                f.write(xml)
+    except Exception as e:
+        print(e)
 
 
 @task
@@ -139,6 +221,7 @@ def static(options):
 def setup(options):
     """Get dependencies and prepare a GeoNode development environment."""
 
+    updategeoip(options)
     info(('GeoNode development environment successfully set up.'
           'If you have not set up an administrative account,'
           ' please do so now. Use "paver start" to start up the server.'))
@@ -207,6 +290,14 @@ def upgradedb(options):
         print "Please specify your GeoNode version"
     else:
         print "Upgrades from version %s are not yet supported." % version
+
+
+@task
+def updategeoip(options):
+    """
+    Update geoip db
+    """
+    sh("python manage.py updategeoip -o")
 
 
 @task
@@ -311,16 +402,23 @@ def stop_geoserver():
     """
     Stop GeoServer
     """
+    from geonode.settings import INSTALLED_APPS
+
+    # only start if using Geoserver backend
+    if 'geonode.geoserver' not in INSTALLED_APPS:
+        return
     kill('java', 'geoserver')
 
 
 @task
+@needs([
+    'stop_geoserver'
+])
 def stop():
     """
     Stop GeoNode
     """
     # windows needs to stop the geoserver first b/c we can't tell which python is running, so we kill everything
-    stop_geoserver()
     info("Stopping GeoNode ...")
     stop_django()
 
@@ -333,7 +431,7 @@ def start_django():
     """
     Start the GeoNode Django application
     """
-    bind = options.get('bind', '')
+    bind = options.get('bind', '0.0.0.0:8000')
     foreground = '' if options.get('foreground', False) else '&'
     sh('python manage.py runserver %s %s' % (bind, foreground))
 
@@ -347,7 +445,12 @@ def start_geoserver(options):
     Start GeoServer with GeoNode extensions
     """
 
-    from geonode.settings import OGC_SERVER
+    from geonode.settings import OGC_SERVER, INSTALLED_APPS
+
+    # only start if using Geoserver backend
+    if 'geonode.geoserver' not in INSTALLED_APPS:
+        return
+
     GEOSERVER_BASE_URL = OGC_SERVER['default']['LOCATION']
     url = GEOSERVER_BASE_URL
 
@@ -359,8 +462,10 @@ def start_geoserver(options):
         sys.exit(1)
 
     download_dir = path('downloaded').abspath()
-    jetty_runner = download_dir / os.path.basename(dev_config['JETTY_RUNNER_URL'])
+    jetty_runner = download_dir / \
+        os.path.basename(dev_config['JETTY_RUNNER_URL'])
     data_dir = path('geoserver/data').abspath()
+    geofence_dir = path('geoserver/data/geofence').abspath()
     web_app = path('geoserver/geoserver').abspath()
     log_file = path('geoserver/jetty.log').abspath()
     config = path('scripts/misc/jetty-runner.xml').abspath()
@@ -371,11 +476,12 @@ def start_geoserver(options):
         javapath = "java"
         loggernullpath = os.devnull
 
-        # checking if our loggernullpath exists and if not, reset it to something manageable
+        # checking if our loggernullpath exists and if not, reset it to
+        # something manageable
         if loggernullpath == "nul":
             try:
                 open("../../downloaded/null.txt", 'w+').close()
-            except IOError, e:
+            except IOError as e:
                 print "Chances are that you have Geoserver currently running.  You \
                         can either stop all servers with paver stop or start only \
                         the django application with paver start_django."
@@ -384,12 +490,13 @@ def start_geoserver(options):
 
         try:
             sh(('java -version'))
-        except:
+        except BaseException:
             print "Java was not found in your path.  Trying some other options: "
             javapath_opt = None
             if os.environ.get('JAVA_HOME', None):
                 print "Using the JAVA_HOME environment variable"
-                javapath_opt = os.path.join(os.path.abspath(os.environ['JAVA_HOME']), "bin", "java.exe")
+                javapath_opt = os.path.join(os.path.abspath(
+                    os.environ['JAVA_HOME']), "bin", "java.exe")
             elif options.get('java_path'):
                 javapath_opt = options.get('java_path')
             else:
@@ -403,8 +510,10 @@ def start_geoserver(options):
         sh((
             '%(javapath)s -Xmx512m -XX:MaxPermSize=256m'
             ' -DGEOSERVER_DATA_DIR=%(data_dir)s'
+            ' -Dgeofence.dir=%(geofence_dir)s'
+            # ' -Dgeofence-ovr=geofence-datasource-ovr.properties'
             # workaround for JAI sealed jar issue and jetty classloader
-            ' -Dorg.eclipse.jetty.server.webapp.parentLoaderPriority=true'
+            # ' -Dorg.eclipse.jetty.server.webapp.parentLoaderPriority=true'
             ' -jar %(jetty_runner)s'
             ' --port %(jetty_port)i'
             ' --log %(log_file)s'
@@ -444,7 +553,7 @@ def test_javascript(options):
 @task
 @cmdopts([
     ('name=', 'n', 'Run specific tests.')
-    ])
+])
 def test_integration(options):
     """
     Run GeoNode's Integration test suite against the external apps
@@ -464,7 +573,7 @@ def test_integration(options):
             sh('sleep 30')
             call_task('setup_data')
         sh(('python manage.py test %s'
-           ' --noinput --liveserver=localhost:8000' % name))
+            ' --noinput --liveserver=localhost:8000' % name))
     except BuildFailure, e:
         info('Tests failed! %s' % str(e))
     else:
@@ -593,13 +702,13 @@ def deb(options):
             sh('debuild -uc -us -A')
         elif key is None and ppa is not None:
                 # A sources package, signed by daemon
-                sh('debuild -S')
+            sh('debuild -S')
         elif key is not None and ppa is None:
-                # A signed installable package
-                sh('debuild -k%s -A' % key)
+            # A signed installable package
+            sh('debuild -k%s -A' % key)
         elif key is not None and ppa is not None:
-                # A signed, source package
-                sh('debuild -k%s -S' % key)
+            # A signed, source package
+            sh('debuild -k%s -S' % key)
 
     if ppa is not None:
         sh('dput ppa:%s geonode_%s_source.changes' % (ppa, simple_version))
@@ -715,11 +824,28 @@ def waitfor(url, timeout=300):
     return started
 
 
+def _copytree(src, dst, symlinks=False, ignore=None):
+    for item in os.listdir(src):
+        s = os.path.join(src, item)
+        d = os.path.join(dst, item)
+        if os.path.isdir(s):
+            shutil.copytree(s, d, symlinks, ignore)
+        else:
+            shutil.copy2(s, d)
+
+
 def justcopy(origin, target):
     if os.path.isdir(origin):
         shutil.rmtree(target, ignore_errors=True)
-        shutil.copytree(origin, target)
+        _copytree(origin, target)
     elif os.path.isfile(origin):
         if not os.path.exists(target):
             os.makedirs(target)
         shutil.copy(origin, target)
+
+
+def str2bool(v):
+    if v and len(v) > 0:
+        return v.lower() in ("yes", "true", "t", "1")
+    else:
+        return False
