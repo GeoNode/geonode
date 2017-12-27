@@ -11,20 +11,49 @@
     </div>
 </div> -->
 
+<button ng-show="!expanded" class="on-map-button pull-right" ng-click="expanded=true"><img src="/static/geonode/images/map-thumb.jpg" width="20" height="20"/> Change basemap</button>
+<button ng-show="expanded" class="on-map-button pull-right" ng-click="expanded=false"><img src="/static/geonode/images/map-thumb.jpg" width="20" height="20"/> Change basemap</button>
 
-<div class="base-map-switcher">
-    <button ng-show="!expanded" class="on-map-button pull-right" ng-click="expanded=true"><i class="fa fa-chevron-circle-left"></i> Change basemap</button>
-    <button ng-show="expanded" class="on-map-button pull-right" ng-click="expanded=false"><i class="fa fa-chevron-circle-right"></i> Change basemap</button>
+<div class="base-map-switcher" ng-show="expanded">
+   
 
-    <div ng-show="expanded" class="layers-list">
+    <div>
 
             <div class="arrow-up"></div>
 
-            <img src="/static/geonode/images/map-thumb.jpg" width="30px" alt="test"/>
-        <h4>Base Layer</h4>
-        <label ng-repeat="baseMap in baseMaps">
-            <input type="radio" name="baseMapSwitcher" ng-model="model.selectedBaseMap" ng-value="baseMap" ng-change="changed()" />
-            {{baseMap.title}}
-        </label>
+            <ul class="base-map-list">
+                <li class="name"> OpenStreetMap </li>     
+                <li> <a href=""><img src="/static/geonode/images/map-thumb.jpg"/></a></li>
+                <li> <a href=""><img src="/static/geonode/images/map-thumb.jpg"/></a></li>
+                <li> <a href=""><img src="/static/geonode/images/map-thumb.jpg"/></a></li>
+                <li> <a href=""><img src="/static/geonode/images/map-thumb.jpg"/></a></li>
+                <li> <a href=""><img src="/static/geonode/images/map-thumb.jpg"/></a></li>
+                <li> <a href=""><img src="/static/geonode/images/map-thumb.jpg"/></a></li>                  
+            </ul>
+
+            <ul class="base-map-list">
+                    <li class="name"> OpenTopoMap </li>     
+                    <li> <a href=""><img src="/static/geonode/images/map-thumb.jpg"/></a></li>
+                    <li> <a href=""><img src="/static/geonode/images/map-thumb.jpg"/></a></li>
+                    <li> <a href=""><img src="/static/geonode/images/map-thumb.jpg"/></a></li>                              
+                </ul>
+
+                <ul class="base-map-list">
+                        <li class="name"> Thunderforest.Pioneer </li>     
+                        <li> <a href=""><img src="/static/geonode/images/map-thumb.jpg"/></a></li>
+                        <li> <a href=""><img src="/static/geonode/images/map-thumb.jpg"/></a></li>                                             
+                    </ul>
+
+                    <ul class="base-map-list">
+                            <li class="name"> OpenStreetMap </li>     
+                            <li> <a href=""><img src="/static/geonode/images/map-thumb.jpg"/></a></li>
+                            <li> <a href=""><img src="/static/geonode/images/map-thumb.jpg"/></a></li>
+                            <li> <a href=""><img src="/static/geonode/images/map-thumb.jpg"/></a></li>
+                            <li> <a href=""><img src="/static/geonode/images/map-thumb.jpg"/></a></li>
+                            <li> <a href=""><img src="/static/geonode/images/map-thumb.jpg"/></a></li>
+                            <li> <a href=""><img src="/static/geonode/images/map-thumb.jpg"/></a></li>                  
+                            <li> <a href=""><img src="/static/geonode/images/map-thumb.jpg"/></a></li>                  
+                        </ul>
+
     </div>
 </div>

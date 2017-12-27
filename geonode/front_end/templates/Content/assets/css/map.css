@@ -50,20 +50,23 @@
 .surfgis .on-map-button {
     /* raugh copy of .ol-control button */
     border: none;
-    text-align: center;
     color: #fff;
-    margin: 1px;
-    padding: 0;
     display: block;
-    height: 25px;
-    width: 25px;
-    background-color: #4c6079;
-    background-color: rgba(0,60,136,.7);
+    height: 38px;
+    margin: 0;
+    padding: 0;
+    position: absolute;
+    right: 8px;
+    text-align: center;
+    top: 45px;
+    width: 138px;
+    z-index: 1;
+    background-color: rgba(0,60,136,.6);
 }
 
     .surfgis .on-map-button:hover {
         background-color: #14365f;
-        background-color: rgba(0,60,136,.7);
+        background-color: rgba(0,60,136,.8);
     }
 
 .surfgis .zoom-level-display {
@@ -83,9 +86,13 @@
     background-color: #ffffff;
     position: absolute;
     right: 8px;
-    top: 105px;
+    top: 95px;
     width: 500px;
     z-index: 2;
+    padding: 10px;
+    -webkit-box-shadow: 0px 0px 3px 0px rgba(0,0,0,0.37);
+    -moz-box-shadow: 0px 0px 3px 0px rgba(0,0,0,0.37);
+    box-shadow: 0px 0px 3px 0px rgba(0,0,0,0.37);
 }
 
     .surfgis .base-map-switcher .layers-list {
@@ -99,11 +106,11 @@
     }
 
     .surfgis .base-map-switcher button {
-        height: 50px;
+        height: 40px;
         margin: 0;
-        padding: 10px;
+        padding: 5px 10px;
         position: absolute;
-        right: 8px;
+        right: 0;
         top: -60px;
         width: 145px;
     }
@@ -400,3 +407,45 @@
         right: 60px;
         top: -10px;
       }
+      .base-map-list
+      {
+         list-style-type: none;
+         margin: 0;
+         padding: 0;
+         width: 480px;
+         display: inline-block;
+         padding: 5px 0 10px;
+         border-bottom: 1px solid #f1f1f1;
+      } 
+      .base-map-list:last-child
+      {
+       border: none;
+      }      
+     .base-map-list li
+     {
+         float: left;
+         margin-right: 10px;
+     } 
+     .base-map-list li.name
+     {
+        font-size: 17px;
+        color:#b9b9b9;
+        margin-right: 15px;
+        width: 170px;
+        line-height: 30px;
+     } 
+     .base-map-list li img
+     {
+      border: 1px solid #ccc;
+      border-radius: 4px;
+     } 
+     .base-map-list li a
+     {
+     width: 30px;
+     height: 30px;
+     display: block;
+     } 
+     .base-map-list li a:hover
+     {
+      opacity: 0.5;
+     } 
