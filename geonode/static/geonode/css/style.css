@@ -1,11 +1,6 @@
 @import url(https://fonts.googleapis.com/css?family=Open+Sans:400,300,300italic,400italic,600,600italic,700,700italic,800,800italic);
 
-*{
-    margin:0px;
-    padding:0px;
-    outline: none;
-    color: #5a5d63;
-}
+
 html,body{
     height: 100%;
 }
@@ -46,35 +41,8 @@ a:hover{
     transition: border-color 0.15s ease-in-out 0s, box-shadow 0.15s ease-in-out 0s;
     width: 100%;
 }
-#id_email,
-.form-control {
-    height: 40px;
-    color:#5a5d63;
-    display: block;
-    background: #FFF;
-    border-radius: 1px;
-    border: 1px solid #dddddd;
-}
-input[type="file"].form-control{
-    height: auto;
-    background: transparent;
-    border-radius: 0;
-    border: none;
-    border-width: 0;
-}
-input[type="file"].btn,
-input[type="file"].form-control,
-input[type="file"]:focus.form-control,
-input[type="file"]:hover.form-control,
-input[type="file"]:active.form-control{
-    outline: medium none;
-    outline-offset: 0;
-    box-shadow: none;
-    padding: 0;
-}
-.form-control:focus {
-    border: 1px solid #3896e2;
-}
+
+
 .block-separator{
     height: 1px;
     width: 100%;
@@ -534,14 +502,7 @@ table.gd-list-table tr td .media-body {
 #gd-header .navbar-nav.navbar-right{
     margin-top: 10px;
 }
-.btn-group-sm > .btn, .btn-sm {
-    padding: 8px 10px;
-    font-size: 12px;
-    border-radius: 20px;
-    text-transform: uppercase;
-    font-weight: bold;
-    /*margin-right:0px;*/
-}
+
 .btn-group-sm > .btn, .btn-sm >a{
    color:#666666;
    font-size: 12px;
@@ -1662,14 +1623,7 @@ body.modal-open { overflow:inherit; padding-right:inherit !important; }
 #gd-wrapper .gd-content-body-new-map .changepass .navbar-nav.navbar-right a i{
     color:#737373;
 }
-.btn-group-sm > .btn, .btn-sm {
-    padding: 8px 10px;
-    font-size: 12px;
-    border-radius: 20px;
-    /*text-transform: uppercase;*/
-    font-weight: bold;
-    /*margin-right:15px;*/
-}
+
 .btn-group-sm > .btn, .btn-sm >a{
    color:#666666;
    font-size: 12px;
@@ -3356,4 +3310,27 @@ width: 100%;
 #SignupModal .modal-dialog
 {
     width: 600px;
+}
+.style-editor
+{
+    height: 50px;
+}
+.style-label
+{
+    height: 50px;
+    margin: 0;
+    padding: 0;
+    display: block;
+}
+.style-editor.range input[type="number"], .style-editor.range input[type="text"] {
+    width: 30px;
+
+}
+.style-editor.range input[type="range"] {
+    max-width: 105px;
+    display: inline-block;
+}
+.layer-style-editor .style-editor.range span {
+    margin-left: 3px;
+    margin-right: 3px;
 }
