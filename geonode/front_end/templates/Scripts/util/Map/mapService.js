@@ -22,8 +22,8 @@
         function _mapLayers(layer) {
             return {
                 "source": layer.source,
-                "name": layer.name,
-                "title": layer.name,
+                "name": layer.Name,
+                "title": layer.Name,
                 "visibility": layer.IsVisible,
                 "opacity": 1,
                 "group": "background",
