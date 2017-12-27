@@ -34,7 +34,7 @@ from geonode.groups.models import GroupProfile
 class SiteResources(models.Model):
     """Relations to link the resources to the sites"""
     site = models.OneToOneField(Site)
-    resources = models.ManyToManyField(ResourceBase, blank=True, null=True)
+    resources = models.ManyToManyField(ResourceBase, blank=True)
 
     def __unicode__(self):
         return self.site.name
@@ -46,7 +46,7 @@ class SiteResources(models.Model):
 class SitePeople(models.Model):
     """Relations to link the people to the sites"""
     site = models.OneToOneField(Site)
-    people = models.ManyToManyField(Profile, blank=True, null=True)
+    people = models.ManyToManyField(Profile, blank=True)
 
     def __unicode__(self):
         return self.site.name
@@ -57,7 +57,7 @@ class SitePeople(models.Model):
 class SiteGroups(models.Model):
     """Relations to link the groups to the sites"""
     site = models.OneToOneField(Site)
-    group = models.ManyToManyField(GroupProfile, blank=True, null=True)
+    group = models.ManyToManyField(GroupProfile, blank=True)
 
     def __unicode__(self):
         return self.site.name
