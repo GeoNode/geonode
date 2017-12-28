@@ -75,6 +75,9 @@
             },
             saveMapSummary: function(mapSummary) {
                 return $http.post(urlResolver.resolveMap('SaveMapSummary'), mapSummary);
+            },
+            getCategoryList: function(){
+                return $http.get('/api/categories/');
             }
         };
     }

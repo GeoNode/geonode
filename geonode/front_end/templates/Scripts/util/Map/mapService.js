@@ -36,7 +36,7 @@
             };
         }
 
-        function _map() {
+        function _map(name, abstract, organizationId, categoryId) {
             var sources = [];
             var layers = map.layers;
             var mapped_layers = [];
@@ -68,12 +68,12 @@
                     "projection": map.getProjection().getCode()
                 },
                 "about": {
-                    "abstract": "",
+                    "abstract": abstract,
                     "title": name,
-                    "organization": "1",
-                    "category": "1"
+                    "organization": organizationId,
+                    "category": categoryId
                 },
-                "sources":angular.extend({
+                "sources": angular.extend({
                     "search": {
                         "ptype": "gxp_geonodeapicataloguesource",
                         "restUrl": "/gs/rest",
@@ -248,6 +248,9 @@
                 }).error(function() {
                     busyStateManager.hideBusyState();
                 });
+            },
+            getCategoryList: function() {
+                return mapRepository.getCategoryList();
             },
             closeWorkingMap: function() {
                 map.closeMap();
@@ -440,7 +443,7 @@
                 map.removeLayer(layerId);
                 mapRepository.removeLayer(layerId);
             },
-            saveMapAs: function(name) {
+            saveMapAs: function(name, abstract, organizationId, categoryId) {
                 // _map(name);
 
                 var mapObj = {
@@ -720,9 +723,8 @@
                     //     "checked": true
                     // }]
                 }
-                mapObj = _map(name);
-                mapObj.about.abstract = name;
-                mapObj.about.title = name;
+                mapObj = _map(name, abstract, organizationId, categoryId);
+
                 busyStateManager.showBusyState(appMessages.busyState.save);
 
                 return mapRepository.saveAs(mapObj).success(function() {
