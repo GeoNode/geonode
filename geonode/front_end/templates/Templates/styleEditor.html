@@ -1,5 +1,5 @@
 ﻿<div class="style-column">
-    <div class="style-group" ng-if="isPoint">
+    <div class="style-group" style="background-color: #efefef; padding: 8px;" ng-if="isPoint">
         <div class="style-editor dropdown">
             <button class="btn btn-default dropdown-toggle">
                 <img ng-if="styleHash.externalGraphic" ng-src="{{styleHash.externalGraphic}}" ng-attr-alt="{{styleHash.externalGraphic}}" />
@@ -67,7 +67,7 @@
         </div>
     </div>
 
-    <div class="style-group whiteRow" ng-if="!isPolyline">
+    <div class="style-group whiteRow" ng-if="!isPolyline" style="background-color: #fbfbfb;padding:8px;">
         <div ng-if="isPolygon" class="style-editor color">
             <select style="width: 150px;" ng-model="styleHash.fillPattern" ng-options="pattern.value as pattern.name for pattern in fillPatterns"></select>
             <input style="width: 50px;" ng-if="styleHash.fillPattern" type="number" ng-model="styleHash.pixelDensity" min="1" max="100" fixed-number-range
@@ -85,7 +85,7 @@
         </div>
     </div>
 
-    <div class="style-group darkRow">
+    <div class="style-group darkRow" style="background-color: #efefef; padding: 8px;">
         <div class="style-editor color">
             <input type="text" ng-model="styleHash.strokeColor" color-code-validator />
             <button type="button" ng-style="{'background-color': styleHash.strokeColor}" ng-disabled="styleHash.externalGraphic" colorpicker class="colorpicker-btn" draft-only ng-model="styleHash.strokeColor"></button>
@@ -95,7 +95,7 @@
             <span>0</span><input ng-disabled="styleHash.externalGraphic" type='range' min="0" max="100" step="1" ng-model='styleHash.strokeWidth' /><span>100</span>
         </div>
         <div class="style-editor dropdown">
-            <button type="button" ng-disabled="styleHash.externalGraphic" class="btn btn-default dropdown-toggle">
+            <button type="button" ng-disabled="styleHash.externalGraphic" class="btn btn-default dropdown-toggle" style="float: left;margin-right:5px;">
                 {{strokeDashstyles.dashTypeText[styleHash.strokeDashstyle]}}<i class="fa fa-caret-down fa-fw"></i>
             </button>
             <ul class="dropdown-menu dropdown-up">
@@ -111,7 +111,7 @@
                        type="number" min="1" ng-model="styleHash.dashSpace" class="form-control"
                        style="width: 56px;" placeholder="space" title="space between"
                        ng-init="styleHash.dashSpace = styleHash.dashSpace == undefined ? 12 : styleHash.dashSpace" />
-                <sub ng-if="styleHash.strokeDashstyle == 'dash' || styleHash.strokeDashstyle == 'dot'">px</sub>
+                <sub ng-if="styleHash.strokeDashstyle == 'dash' || styleHash.strokeDashstyle == 'dot'" style="margin-left:10px;">px</sub>
             </span>
         </div>
     </div>

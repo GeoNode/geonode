@@ -1,33 +1,55 @@
-﻿<div>
-    <div class="row">
-        <div class="span3" style="width: 68px !important;">
+﻿
+    <div class="row" style="margin-top: 15px;margin-bottom: 15px;">
+       
+        <div class="col-md-6">
+
+<div class="row">
+
+        <label class="col-md-4">
             Label From
-        </div>
-        <div class="span3">
+        </label>
+
+        <div class="col-md-3">
             <select ng-model="labelConfig.attribute" style="margin-left: -17px;"
                     ng-options="attribute.Id as attribute.Name for attribute in attributeDefs">
                 <option value="">--No Attribute Selected--</option>
             </select>
         </div>
 
-        <div class="span2" style="text-align: right;">
+    </div>
+
+
+    </div>
+
+    <div class="col-md-6">
+
+        <div class="row">
+
+        <label class="col-md-6" style="text-align: right;">
             Visibility Zoom Level
-        </div>
-        <div class="span3">
+        </label>
+        <div class="col-md-3">
             <input type="number" ng-model="labelConfig.visibilityZoomLevel" class="input-mini form-control"
                    min="0" max="21" fixed-number-range
                    ng-init="labelConfig.visibilityZoomLevel = labelConfig.visibilityZoomLevel == undefined ? 0: labelConfig.visibilityZoomLevel" />
         </div>
+
+</div>
+
+        </div>
+
+
     </div>
      
-    <div class="row label-styles">
-        <div class="span4 label-style-left-column">
+    <div class="row">
+        
+        <div class="col-md-6 label-style-left-column">
             <div class="label-style-header">Label Styles</div>
-            <ul style="list-style: none; border-right: 1px solid lightgray; width: 300px;">
+            <ul style="list-style: none; width: 300px;padding:0">
                 <li>
                     <div class="row">
-                        <div class="span1">Font</div>
-                        <div class="span2">
+                        <div class="col-md-5">Font</div>
+                        <div class="col-md-7">
                             <select ng-model="labelConfig.font" ng-disabled="!labelConfig.attribute"
                                     ng-options="font.value as font.label for font in service.fontFamilies"></select>
                         </div>
@@ -35,10 +57,10 @@
                 </li>
                 <li>
                     <div class="row">
-                        <div class="span1">
+                        <div class="col-md-5">
                             Font Style
                         </div>
-                        <div class="span2">
+                        <div class="col-md-7">
                             <select ng-model="labelConfig.fontStyle" ng-disabled="!labelConfig.attribute"
                                     ng-options="fontStyle.value as fontStyle.label for fontStyle in service.fontStyles"></select>
                         </div>
@@ -46,10 +68,10 @@
                 </li>
                 <li>
                     <div class="row">
-                        <div class="span1">
+                        <div class="col-md-5">
                             Font Weight
                         </div>
-                        <div class="span2">
+                        <div class="col-md-7">
                             <select ng-model="labelConfig.fontWeight" ng-disabled="!labelConfig.attribute"
                                     ng-options="fontWeight.value as fontWeight.label for fontWeight in service.fontWeights"></select>
                         </div>
@@ -57,10 +79,10 @@
                 </li>
                 <li>
                     <div class="row">
-                        <div class="span1">
+                        <div class="col-md-5">
                             Color
                         </div>
-                        <div class="span2">
+                        <div class="col-md-7">
                             <button type="button" ng-style="{'background-color': labelConfig.color}" ng-disabled="!labelConfig.attribute"
                                     colorpicker class="colorpicker-btn" ng-model="labelConfig.color"></button>
                         </div>
@@ -68,10 +90,10 @@
                 </li>
                 <li>
                     <div class="row">
-                        <div class="span1">
+                        <div class="col-md-5">
                             Border Color
                         </div>
-                        <div class="span2">
+                        <div class="col-md-7">
                             <button type="button" ng-style="{'background-color': labelConfig.borderColor}" ng-disabled="!labelConfig.attribute"
                                     colorpicker class="colorpicker-btn" ng-model="labelConfig.borderColor"></button>
                             <input type="checkbox" ng-model="labelConfig.showBorder" title="show outline" style="margin-left: 10px;" />
@@ -80,10 +102,10 @@
                 </li>
                 <li>
                     <div class="row">
-                        <div class="span1">
+                        <div class="col-md-5">
                             Size
                         </div>
-                        <div class="span2">
+                        <div class="col-md-7">
                             <input type="number" minval="1" maxval="50" defaultval="12" min-max-validator ng-disabled="!labelConfig.attribute" ng-model="labelConfig.size" />
                         </div>
                     </div>
@@ -91,15 +113,15 @@
             </ul>
         </div>
 
-        <div class="span4 label-style-right-column">
+        <div class="col-md-6 label-style-right-column">
             <div class="label-style-header">Label Placement</div>
             <ul style="list-style: none; margin-left: 40px;">
                 <li ng-if="!isPolylineType">
                     <div class="row">
-                        <div class="span1">
+                        <div class="col-md-5">
                             Alignment
                         </div>
-                        <div class="span2">
+                        <div class="col-md-7">
                             <select ng-model="labelConfig.alignment" ng-disabled="!labelConfig.attribute"
                                     ng-options="alignment.value as alignment.label for alignment in service.alignments"></select>
                         </div>
@@ -107,37 +129,37 @@
                 </li>
                 <li ng-if="!isPolylineType">
                     <div class="row">
-                        <div class="span1">
+                        <div class="col-md-5">
                             Offset left
                         </div>
-                        <div class="span2">
+                        <div class="col-md-7">
                             <input type="number" minval="0" maxval="100" defaultval="0" min-max-validator ng-disabled="!labelConfig.attribute" ng-model="labelConfig.offsetX" />
                         </div>
                     </div>
                 </li>
                 <li>
                     <div class="row">
-                        <div class="span1">
+                        <div class="col-md-5">
                             Offset bottom
                         </div>
-                        <div class="span2">
+                        <div class="col-md-7">
                             <input type="number" minval="0" maxval="100" defaultval="0" min-max-validator ng-disabled="!labelConfig.attribute" ng-model="labelConfig.offsetY" />
                         </div>
                     </div>
                 </li>
                 <li>
                     <div class="row" ng-if="!isPolylineType">
-                        <div class="span1">
+                        <div class="col-md-5">
                             Rotation(degree)
                         </div>
-                        <div class="span2">
+                        <div class="col-md-7">
                             <input type="number" minval="0" maxval="360" defaultval="0" min-max-validator ng-disabled="!labelConfig.attribute" ng-model="labelConfig.rotation" min="-360" max="360" />
                         </div>
                     </div>
                 </li>
                 <li ng-if="isPolylineType">
                     <div class="row">
-                        <div class="span1">
+                        <div class="col-md-4">
                             <input type="checkbox" ng-disabled="!labelConfig.attribute" ng-model="labelConfig.followLine" />
                             Follow line
                         </div>
@@ -145,11 +167,11 @@
                 </li>
                 <li ng-if="isPolylineType">
                     <div class="row">
-                        <div class="span1">
+                        <div class="col-md-4">
                             <input type="checkbox" ng-disabled="!labelConfig.attribute" ng-model="labelConfig.repeat" />
                             Repeat
                         </div>
-                        <div class="span2">
+                        <div class="col-md-8">
                             <input ng-if="labelConfig.repeat" type="number" minval="0" maxval="500" defaultval="10" min-max-validator
                                    ng-disabled="!labelConfig.attribute" ng-model="labelConfig.repeatInterval" placeholder="Interval" />
                         </div>
@@ -157,11 +179,11 @@
                 </li>
                 <li>
                     <div class="row">
-                        <div class="span1">
+                        <div class="col-md-4">
                             <input type="checkbox" ng-disabled="!labelConfig.attribute" ng-model="labelConfig.wrap" />
                             Wrap Words
                         </div>
-                        <div class="span2">
+                        <div class="col-md-8">
                             <input ng-if="labelConfig.wrap" type="number" minval="0" maxval="1000" defaultval="50" min-max-validator
                                    ng-disabled="!labelConfig.attribute" ng-model="labelConfig.wrapPixel" placeholder="Wrap Pixel" />
                         </div>
@@ -169,8 +191,9 @@
                 </li>
             </ul>
         </div>
+
     </div>
-</div>
+
 
 <style type="text/css">
     .label-styles select {

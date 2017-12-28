@@ -1,13 +1,13 @@
-﻿<div style="max-height: 650px;">
+﻿<div style="max-height: 650px;margin-top:15px;">
 
     <div ng-if="!isEnvironmentProd" class="row">
-        <div class="span2">
+        <div class="col-md-2">
             <label>
                 <input draft-only type="radio" ng-model="flags.isRange" value="false" ng-change="radioSelectionChanged()" style="margin-top: 0" />
                 By Unique
             </label>
         </div>
-        <div class="span3">
+        <div class="col-md-2">
             <label>
                 <input draft-only type="radio" ng-model="flags.isRange" value="true" ng-change="radioSelectionChanged()" style="margin-top: 0" />
                 By Range
@@ -21,7 +21,7 @@
 
         <div class="row" style="margin-bottom: 10px;">
 
-            <div class="span2">
+            <div class="col-md-3">
                 <label style="font-weight: bold">Select Attribute</label>
 
                 <select ng-disabled="isEnvironmentProd" draft-only ng-model="flags.field" style="width: 150px;" class="form-control" ng-change="dropdownSelectionChanged()" ng-options="i.id as i.name for i in NeededAttributes">
@@ -29,11 +29,11 @@
                 </select>
             </div>
 
-            <div class="span4" draft-only>
+            <div class="col-md-6" draft-only>
                 <label style="font-weight: bold">Color Ramp</label>
                 <sti-plt-pkr ng-model="flags.chosenPalette" sti-pkr-options="paletteItems"></sti-plt-pkr>
             </div>
-            <div class="span2">
+            <div class="col-md-3">
                 <div ng-if="isUnique()" style="padding: 3px; margin-top: 25px;">
                     <button type="button" class="btn btn-danger" ng-disabled="chosenValuesForGrid.length == 0"
                             style="padding: 2px 6px;" ng-click="removeAll()">
@@ -44,11 +44,11 @@
         </div>
 
         <div class="row" ng-show="isRange()">
-            <div class="span3">
+            <div class="col-md-3">
                 <label style="font-weight: bold; display: inline;">Divisions :</label>
                 <input type="number" class="form-control" style="width: 40px;" min="1" max="100" ng-model="flags.division" ng-change="divisionChanged()" />
             </div>
-            <div class="span3">
+            <div class="col-md-3">
                 <i class="fa fa-spinner fa-spin" style="text-align: center; width: 100%; margin-top: 35px;" ng-show="isLoading()"></i>
             </div>
         </div>
@@ -79,14 +79,14 @@
 
             <div id="ListOfValues" class="list-of-values" ng-if="isRange() || isUnique()" ng-class="{'classification-table-hidden-line':!classificationEditor.hide && featureType=='polyline', 'classification-table-hidden-polygon':!classificationEditor.hide && featureType=='polygon', 'classification-table-hidden-point':!classificationEditor.hide && featureType=='point'  }">
                 <div class="row">
-                    <div ng-attr-class="{{isUnique() ? 'span7':'span9'}}">
+                    <div ng-attr-class="{{isUnique() ? 'col-md-7':'col-md-9'}}">
                         <div class="fixed-table-container">
-                            <div class="header-background titleBar"></div>
+                            
                             <div class="fixed-table-container-inner">
                                 <table cellspacing="0" class="table-striped">
                                     <thead>
                                         <tr>
-                                            <th title="click for reverse colors" class="first" style="width: 70px; margin-top: 5px; cursor: pointer" ng-click='reverseColorSet()'>
+                                            <th title="click for reverse colors" class="first" style="width: 80px; margin-top: 5px; cursor: pointer" ng-click='reverseColorSet()'>
                                                 <div class="th-inner">
                                                     <i class='fa fa-fw fa-exchange fa-rotate-90' style='margin-right: 2px; font-size: 17px; color: #14b4f8;'></i>Color
                                                 </div>
@@ -148,11 +148,11 @@
                             </div>
                         </div>
                     </div>
-                    <div class="span1" style="font-size: 20px; margin-top: 10%;">
+                    <div class="col-md-1" style="font-size: 20px; margin-top: 10%;">
                         <i class="fa fa-arrow-circle-up" style="cursor: pointer;" ng-click="moveUp()"></i>
                         <i class="fa fa-arrow-circle-down" style="cursor: pointer;" ng-click="moveDown()"></i>
                     </div>
-                    <div class="span2" ng-if="isUnique()">
+                    <div class="col-md-2" ng-if="isUnique()">
                         <div class="panel panel-default" style="margin-bottom: 0">
                             <div class="panel-heading" style="padding: 3px 6px;">
                                 <h3 class="panel-title" style="font-size: 14px; line-height: 24px; font-family: RobotoRegular, Trebuchet MS, Verdana, Helvetica, Sans-Serif;">

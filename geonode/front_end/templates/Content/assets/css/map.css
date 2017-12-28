@@ -80,11 +80,12 @@
 }
 
 .surfgis .base-map-switcher {
-    position: absolute;
-    z-index: 2;
-    top: 45px;
-    right: 0;
     background-color: #ffffff;
+    position: absolute;
+    right: 8px;
+    top: 105px;
+    width: 500px;
+    z-index: 2;
 }
 
     .surfgis .base-map-switcher .layers-list {
@@ -98,8 +99,13 @@
     }
 
     .surfgis .base-map-switcher button {
-        width: 25px;
+        height: 50px;
         margin: 0;
+        padding: 10px;
+        position: absolute;
+        right: 8px;
+        top: -60px;
+        width: 145px;
     }
     .surfgis .base-map-switcher button i{
       color: #ffffff;  
@@ -370,6 +376,27 @@
     }
     .properties-modal
     {
-         width: 600px;
+         width: 900px;
          margin: 0 auto;
     }
+    .fixed-table-container-inner th
+    {
+        background-color: #637583;
+        color: #fff;
+        padding: 5px;
+    }
+    .label-style-left-column
+    {
+        border-right: 1px solid #ccc;
+    }
+
+    .arrow-up {
+        width: 0; 
+        height: 0; 
+        border-left: 10px solid transparent;
+        border-right: 10px solid transparent;        
+        border-bottom: 10px solid #fff;
+        position: absolute;
+        right: 60px;
+        top: -10px;
+      }

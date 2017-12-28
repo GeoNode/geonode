@@ -11,50 +11,56 @@
                         General
                         <span ng-if="tabs[0].active" class="selected-down-arrow"></span>
                     </tab-heading>
-                    <div class="general-properties">
-                        <div class="row">
-                            <div class="span2" style="text-align: right;font-weight: bold">
+
+                    <div class="general-properties form-horizontal" style="margin-top: 15px;">
+                           
+                        <div class="form-group">
+                            <label class="col-sm-4 control-label">
                                 Name :
+                            </label>
+                          
+                            <div class="col-sm-6">
+                                <input class="form-control" draft-only type='text' ng-model='nodeData.layer.name' maxlength="100" validatefilename focus-me="true" />
                             </div>
-                            <div class="span2">
-                                <input draft-only type='text' ng-model='nodeData.layer.name' maxlength="100" validatefilename focus-me="true" />
-                            </div>
+
                         </div>
-                        <div class="row">
-                            <div class="span2" style="text-align: right;font-weight: bold">
+                        <div class="form-group">
+                            <label class="col-sm-4 control-label">
                                 Type :
-                            </div>
-                            <div class="span2">
+                            </label>
+                            <div class="col-sm-6">
                                 [{nodeData.layer.shapeType}]
                             </div>
                         </div>
-                        <div class="row">
-                            <div class="span2" style="text-align: right;font-weight: bold">
+                        <div class="form-group">
+                            <label class="col-sm-4 control-label">
                                 Data Source :
-                            </div>
-                            <div class="span2">
-                                <span>[{nodeData.layer.dataSourceName || "N/A"}]</span>
+                            </label>
+                            <div class="col-sm-6">
+                                [{nodeData.layer.dataSourceName || "N/A"}]
                             </div>
                         </div>
-                        <div class="row">
-                            <div class="span2" style="text-align: right; font-weight: bold">
+                        <div class="form-group">
+                            <label class="col-sm-4 control-label">
                                 Linear Unit :
-                            </div>
-                            <div class="span2">
+                            </label>
+                            <div class="col-sm-6">
                                 <span>[{nodeData.layer.linearUnit || "None"}]</span>
                             </div>
                         </div>
-                        <div class="row">
-                            <div class="span2" style="text-align: right; font-weight: bold">
+                        <div class="form-group">
+                            <label class="col-sm-4 control-label">
                                 Minimum Zoom Level :
-                            </div>
-                            <div class="span2">
-                                <input type="number" ng-model="nodeData.layer.zoomlevel"
+                            </label>
+                            <div class="col-sm-2">
+                                <input type="number" ng-model6="nodeData.layer.zoomlevel"
                                        class="form-control input-mini" min="0" max="21" fixed-number-range 
                                        ng-init="nodeData.layer.zoomlevel = nodeData.layer.zoomlevel == undefined ? 0: nodeData.layer.zoomlevel" />
                             </div>
                         </div>
+                          
                     </div>
+                
                 </tab>
                 <tab active='tabs[1].active'>
                     <tab-heading>
@@ -76,14 +82,14 @@
                             <div ng-class="{'error':propertiesData.rule3Violated}">&emsp; - Name must be unique</div>
                             <div ng-class="{'error':propertiesData.rule4Violated}">&emsp; - At most one spatial attribute of a type can exist</div>
                         </div>
-                        <div ng-if="!isReadonly" class="add-field-form">
+                        <div ng-if="!isReadonly" class="add-field-form form-inline">
                             <input ng-change="validateAddingFieldName()"
                                    ng-class="{'ng-invalid':!addFieldModel.nameValid}"
-                                   type="text" ng-model="addFieldModel.AttributeName" placeholder="Attribute Name" />
-                            <input type="text" class="form-control input-sm" ng-model="addFieldModel.Name"
+                                   type="text" ng-model="addFieldModel.AttributeName" class="form-control" placeholder="Attribute Name" />
+                            <input type="text" class="form-control" ng-model="addFieldModel.Name"
                                    placeholder="Attribute Alias" />
                             <select ng-change="validateAddingFieldType()"
-                                    ng-class="{'ng-invalid':!addFieldModel.typeValid}" ng-model="addFieldModel.Type" ng-options="type.type as type.viewLabel for type in types">
+                                    ng-class="{'ng-invalid':!addFieldModel.typeValid}" class="form-control" ng-model="addFieldModel.Type" ng-options="type.type as type.viewLabel for type in types">
                                 <option value="">-- type --</option>
                             </select>
                             <input ng-change="validateAddingFieldPrecision()" ng-class="{'ng-invalid':!addFieldModel.precisionValid}" type="number" ng-show="isNumericType(addFieldModel.Type)" ng-model="addFieldModel.Precision" placeholder="precision" />
@@ -91,7 +97,7 @@
                             <input ng-change="validateAddingFieldLength()" ng-class="{'ng-invalid':!addFieldModel.lengthValid}" type="number" ng-show="isTextType(addFieldModel.Type)" ng-model="addFieldModel.Length" placeholder="length" />
 
                             <button ng-click="add()" type="button" class="btn btn-success" ng-disabled="!addingFieldIsValid()">
-                                <i class="fa fa-plus fa-fw btn-sm"></i>Add
+                                <i class="fa fa-plus"></i>Add
                             </button>
                         </div>
                         <attribute-definition-table>
@@ -138,11 +144,5 @@
         width: auto;
         height: 220px;
         text-align: left;
-    }
-</style>
-
-<style>
-    .modal-content {
-        padding: 50px;
     }
 </style>
