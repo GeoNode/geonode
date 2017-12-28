@@ -275,7 +275,7 @@ def data_request_view(request):
             pprint("request has been succesfully submitted")
             if profile_request_obj and not request.user.is_authenticated():
             #    request_data.send_verification_email()
-                if profile_request_get.status == "approved"
+                if profile_request_get.status == "approved":
                     data_request_obj.set_status('approved')
                     data_request_obj.send_approval_email(data_request_obj.profile.username)
                     messages.info(request, "Request "+str(data_request_obj.pk)+" has been approved.")
