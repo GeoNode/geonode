@@ -5,9 +5,15 @@ from django.contrib.auth import get_user_model
 from user_messages.models import Message
 
 
+class MyModelChoiceField(forms.ModelChoiceField):
+    def label_from_instance(self, obj):
+        return obj.name_long
+
+
 class NewMessageForm(forms.Form):
 
-    to_user = forms.ModelChoiceField(label="To",queryset=get_user_model().objects.exclude(username='AnonymousUser').order_by('username'))
+    to_user = MyModelChoiceField(label="To",queryset=get_user_model().objects.exclude(username='AnonymousUser').order_by('username'))
+
     subject = forms.CharField()
     content = forms.CharField(widget=forms.Textarea)
     
