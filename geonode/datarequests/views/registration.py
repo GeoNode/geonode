@@ -363,7 +363,8 @@ def email_verification_confirm(request):
                 #Requests auto approval
                 if profile_request.email in Profile.objects.all().values_list('email', flat=True):
                     messages.info(request,'The email for this profile request is already in use')
-                    pprint(request,'The email for this profile request is already in use')
+                    pprint(request)
+                    pprint('The email for this profile request is already in use')
                     return render(
                         request,
                         'datarequests/registration/verification_failed.html',
