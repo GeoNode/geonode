@@ -60,9 +60,6 @@ class Message(models.Model):
     content = models.TextField()
     
     objects = MessageManager()
-    
-    class Meta:
-        ordering = ("sender",)
-    
+
     def get_absolute_url(self):
         return self.thread.get_absolute_url()

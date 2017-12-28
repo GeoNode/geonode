@@ -7,7 +7,7 @@ from user_messages.models import Message
 
 class NewMessageForm(forms.Form):
 
-    to_user = forms.ModelChoiceField(label="To",queryset=get_user_model().objects.exclude(username='AnonymousUser'))    
+    to_user = forms.ModelChoiceField(label="To",queryset=get_user_model().objects.exclude(username='AnonymousUser').order_by('username'))
     subject = forms.CharField()
     content = forms.CharField(widget=forms.Textarea)
     
@@ -22,9 +22,6 @@ class NewMessageForm(forms.Form):
         data = self.cleaned_data
         return Message.objects.new_message(self.user, [data["to_user"]],
             data["subject"], data["content"])
-
-    class Meta:
-        fields_order = ['username']
 
 
 class NewMessageFormMultiple(forms.Form):
