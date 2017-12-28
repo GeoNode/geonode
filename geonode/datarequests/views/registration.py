@@ -277,7 +277,17 @@ def data_request_view(request):
             #    request_data.send_verification_email()
                 if profile_request_get.status == "approved":
                     data_request_obj.set_status('approved')
+                    data_request_obj.profile = profile_request_get.profile
                     data_request_obj.send_approval_email(data_request_obj.profile.username)
+                    if data_request_obj.jurisdiction_shapefile:
+                        data_request_obj.assign_jurisdiction() #assigns/creates jurisdiction object
+                        assign_grid_refs.delay(data_request_obj.profile)
+                    else:
+                        try:
+                            uj = UserJurisdiction.objects.get(user=data_request_obj.profile)
+                            uj.delete()
+                        except ObjectDoesNotExist as e:
+                            pprint("Jurisdiction Shapefile not found, nothing to delete. Carry on")
                     messages.info(request, "Request "+str(data_request_obj.pk)+" has been approved.")
 
                 out['success_url'] = reverse('datarequests:email_verification_send')
@@ -289,6 +299,8 @@ def data_request_view(request):
                 out['success_url'] = reverse('home')
 
                 out['redirect_to'] = reverse('home')
+
+                data_request_obj.profile = request.user
 
                 if data_request_obj.jurisdiction_shapefile:
                     data_request_obj.assign_jurisdiction() #assigns/creates jurisdiction object
