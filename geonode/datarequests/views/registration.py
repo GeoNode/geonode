@@ -261,8 +261,9 @@ def data_request_view(request):
                 data_request_obj.save()
                 data_request_obj.profile_request = profile_request_obj
                 data_request_obj.save()
-                profile_request_obj.data_request= data_request_obj
-                profile_request_obj.save()
+                profile_request_get = ProfileRequest.objects.get(id=profile_request_obj.id)
+                profile_request_get.data_request= data_request_obj
+                profile_request_get.save()
             data_request_obj.save()
             if saved_layer:
                 data_request_obj.jurisdiction_shapefile = saved_layer
