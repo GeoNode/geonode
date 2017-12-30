@@ -17,6 +17,8 @@ services:
       - elasticsearch
       - rabbitmq
     command: django-admin.py runserver 0.0.0.0:8000 --settings=geonode.settings
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
     env_file:
       - ./scripts/docker/env/production/django.env
 
