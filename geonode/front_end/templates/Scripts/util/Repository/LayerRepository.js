@@ -14,26 +14,17 @@
                     dirtyManager.setDirty(true);
                 });
             },
-            // saveProperties: function(layerId, layerName, zoomLevel, properties, sldStyle, selectionStyleSld, labelingSld, callBack) {
-            //     //old
-            //     return $http.post(urlResolver.resolveLayer('SaveProperties'), {
-            //         LayerId: layerId,
-            //         Name: layerName,
-            //         ZoomLevel: zoomLevel,
-            //         StyleString: angular.toJson(properties),
-            //         SldStyle: sldStyle,
-            //         SelectionStyleSld: selectionStyleSld,
-            //         LabelingSld: labelingSld
-            //     }).success(function() {
-            //         dirtyManager.setDirty(true);
-            //         if (callBack) {
-            //             callBack();
-            //         }
-            //     });
-            // },
             saveProperties: function(layerId, layerName, zoomLevel, properties, sldStyle, selectionStyleSld, labelingSld, callBack) {
-                //new
-                return $http.put('/gs/rest/styles/' + properties.Name + '.xml', sldStyle, {
+                //old
+                return $http.put('/layers/' + layerName + '/style/', {
+                    LayerId: layerId,
+                    Name: layerName,
+                    ZoomLevel: zoomLevel,
+                    StyleString: angular.toJson(properties),
+                    SldStyle: sldStyle,
+                    SelectionStyleSld: selectionStyleSld,
+                    LabelingSld: labelingSld
+                }, {
                     headers: {
                         'X-CSRFToken': $cookies.get('csrftoken')
                     }
@@ -44,6 +35,19 @@
                     }
                 });
             },
+            // saveProperties: function(layerId, layerName, zoomLevel, properties, sldStyle, selectionStyleSld, labelingSld, callBack) {
+            //     //new
+            //     return $http.put('/gs/rest/styles/' + properties.Name + '.xml', sldStyle, {
+            //         headers: {
+            //             'X-CSRFToken': $cookies.get('csrftoken')
+            //         }
+            //     }).success(function() {
+            //         dirtyManager.setDirty(true);
+            //         if (callBack) {
+            //             callBack();
+            //         }
+            //     });
+            // },
             getAttributeValues: function(layerId, attributeId) {
                 return $http.get(urlResolver.resolveClassification('GetAttributeValues', {
                     layerId: layerId,

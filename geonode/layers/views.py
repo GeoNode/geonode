@@ -18,13 +18,15 @@
 #
 #########################################################################
 
-import os
-import sys
+import base64
+import decimal
+import httplib2
 import logging
+import os
 import shutil
+import sys
 import traceback
 import uuid
-import decimal
 
 import requests
 import xmltodict
@@ -91,7 +93,7 @@ from geonode.geoserver.helpers import ogc_server_settings
 from geonode import GeoNodeException
 
 from geonode.groups.models import GroupProfile
-from geonode.layers.models import LayerSubmissionActivity, LayerAuditActivity, LayerStyle
+from geonode.layers.models import LayerSubmissionActivity, LayerAuditActivity, StyleExtension
 from geonode.base.libraries.decorators import manager_or_member
 from geonode.base.models import KeywordIgnoreListModel
 from geonode.authentication_decorators import login_required as custom_login_required
@@ -99,9 +101,12 @@ from django.db import connection
 from osgeo import osr
 
 from geonode.authentication_decorators import login_required as custom_login_required
+from geonode.class_factory import ClassFactory
 
 if 'geonode.geoserver' in settings.INSTALLED_APPS:
     from geonode.geoserver.helpers import _render_thumbnail
+    # from geonode.geoserver.views import save_sld_geoserver
+
 CONTEXT_LOG_FILE = ogc_server_settings.LOG_FILE
 
 logger = logging.getLogger("geonode.layers.views")
@@ -1218,41 +1223,84 @@ def finding_xlink(dic):
             if item is not None:
                 return item
 
+def save_sld_geoserver(request_method, full_path, sld_body, content_type='application/vnd.ogc.sld+xml'):
+    def strip_prefix(path, prefix):
+        assert path.startswith(prefix)
+        return path[len(prefix):]
+    
+    proxy_path = '/gs/rest/styles'
+    downstream_path='rest/styles'
+
+    path = strip_prefix(full_path, proxy_path)
+    url = str("".join([ogc_server_settings.LOCATION, downstream_path, path]))
+
+    http = httplib2.Http()
+    username, password = ogc_server_settings.credentials
+    auth = base64.encodestring(username + ':' + password)
+    headers = dict()
+    headers["Content-Type"] = content_type
+    headers["Authorization"] = "Basic " + auth
+
+    return http.request(
+        url, request_method,
+        body=sld_body or None,
+        headers=headers)
+
 
 class LayerStyleView(View):
     def get(self, request, layername):
         layer_obj = _resolve_layer(request, layername)
-        layer_style = layer_obj.styles.first()
+        layer_style = layer_obj.default_style
+        try:
+            style_extension = layer_style.styleextension
+        except Exception as ex:
+            style_extension = None
         return HttpResponse(
                         json.dumps(
-                            dict(name=layer_style.name, title=layer_style.sld_title, url=layer_style.sld_url, workspace=layer_style.workspace),
+                            dict(name=layer_style.name, title=layer_style.sld_title, url=layer_style.sld_url, workspace=layer_style.workspace, style=style_extension.json_field if style_extension else None),
                             ensure_ascii=False), 
                             status=200,
                             content_type='application/javascript')
 
     @custom_login_required
-    def post(self, request, layername, **kwargs):
-        print layername
-        # if not request.user.is_authenticated():
-        #     return HttpResponse(status=403)
-
+    def put(self, request, layername, **kwargs):
         layer_obj = _resolve_layer(request, layername)
         data = json.loads(request.body)
-        obj = LayerStyle(layer=layer_obj, name=data.get('name', None))
+        # check already style extension created or not
         try:
-            obj.save()
-            return HttpResponse(
-                        json.dumps(
-                            dict(success="OK"),
-                            ensure_ascii=False), 
-                            status=200,
-                            content_type='application/javascript')
+            style_extension = layer_obj.default_style.styleextension
+            style_extension.json_field = data.get("StyleString", None)
+            style_extension.sld_body=data.get('SldStyle', None)
         except Exception as ex:
-            return HttpResponse(
+            # Style extension does not exists
+            style_extension = StyleExtension(style=layer_obj.default_style, json_field=data.get("StyleString", None), sld_body=data.get('SldStyle', None), created_by=request.user, modified_by=request.user)
+        
+        style_extension.save()
+        full_path = '/gs/rest/styles/{0}.xml'.format(layer_obj.default_style.name)
+        try:
+            save_sld_geoserver(request_method='PUT', full_path=full_path, sld_body=style_extension.sld_body )
+        except Exception as ex:
+            logger.error(ex)
+
+        return HttpResponse(
                     json.dumps(
-                        ex,
+                        dict(success="OK"),
                         ensure_ascii=False), 
-                        status = 500,
+                        status=200,
+                        content_type='application/javascript')
+
+
+class LayerAttributeView(View):
+    def get(self, request, layername, attributename, **kwargs):
+        layer_obj = _resolve_layer(request, layername)
+        factory = ClassFactory()
+        model_instance = factory.get_model(name=str(layer_obj.title_en), table_name=str(layer_obj.name), db=str(layer_obj.store))
+        values = set([getattr(l, attributename) for l in model_instance.objects.all()])
+        return HttpResponse(
+                    json.dumps(
+                        dict(values=[dict(value=v,checked=False) for v in values], count=len(values)),
+                        ensure_ascii=False), 
+                        status=200,
                         content_type='application/javascript')
 #end
 

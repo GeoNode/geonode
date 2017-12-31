@@ -196,6 +196,10 @@
                 olMap.getView().setZoom(zoomLevel);
             };
 
+            factory.getView = function(){
+                return olMap.getView();
+            };
+
             factory.zoomToExtent = function(extent) {
                 var empty = ol.extent.isEmpty(extent);
                 empty = empty || extent.every(function(val) {

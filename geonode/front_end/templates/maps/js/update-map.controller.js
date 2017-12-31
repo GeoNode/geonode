@@ -34,15 +34,77 @@
                     setLayers();
                 }, errorFn);
         }
-
+        function getDefaultStyle(){
+            return { /* not available */
+                "Name": _uuid(),
+                "default": {
+                    "fillPattern": null,
+                    "textFillColor": "#0000ff",
+                    "text": null,
+                    "pixelDensity": null,
+                    "strokeDashstyle": "solid",
+                    "strokeWidth": 1.0,
+                    "strokeColor": "#000000",
+                    "strokeOpacity": null,
+                    "fillOpacity": 0.75,
+                    "fillColor": "#ffffff",
+                    "pointRadius": 14.0,
+                    "graphicName": "circle",
+                    "textGraphicName": null,
+                    "externalGraphic": null,
+                },
+                "select": {
+                    "fillPattern": "",
+                    "textFillColor": "#0000ff",
+                    "text": null,
+                    "pixelDensity": null,
+                    "strokeDashstyle": "solid",
+                    "strokeWidth": 1.0,
+                    "strokeColor": "#000000",
+                    "strokeOpacity": 1.0,
+                    "fillOpacity": 0.4,
+                    "fillColor": "#ff00ff",
+                    "pointRadius": 6.0,
+                    "graphicName": "circle",
+                    "textGraphicName": null,
+                    "externalGraphic": null,
+                },
+                "labelConfig": {
+                    "attribute": null,
+                    "visibilityZoomLevel": 0,
+                    "font": "Times",
+                    "fontStyle": "normal",
+                    "fontWeight": "normal",
+                    "color": "#000000",
+                    "borderColor": "#ffffff",
+                    "showBorder": true,
+                    "size": 10.0,
+                    "alignment": 1.0,
+                    "offsetX": 0.0,
+                    "offsetY": 0.0,
+                    "rotation": 0.0,
+                    "followLine": false,
+                    "repeat": false,
+                    "repeatInterval": 5.0,
+                    "wrap": false,
+                    "wrapPixel": 50.0
+                },
+                "classifierDefinitions": {}
+            }
+        }
         function getLayerStyle(layer, new_layer) {
             LayerService.getStyleByLayer(layer.name)
                 .then(function(res) {
+                    new_layer.Style = JSON.parse(res.style);
+                    if(!new_layer.Style){
+                        new_layer.Style = getDefaultStyle();
+                    }
                     new_layer.Style.Name = res.name;
                     new_layer.Style.default.name = layer.name;
                     new_layer.Style.default.userStyle = res.name;
                     new_layer.Style.select.name = layer.name;
                     new_layer.Style.select.userStyle = res.name;
+                    new_layer.ClassifierDefinitions = new_layer.Style.classifierDefinitions || {};
                     mapService.addDataLayer(new_layer, false);
                 }, errorFn);
         }
@@ -50,17 +112,31 @@
         function getLayerFeature(url, layer) {
             LayerService.getLayerFeatureByName(url, layer.name).then(function(res) {
                 res.featureTypes.forEach(function(featureType) {
+                    var new_layer = _map(layer);
+                    new_layer.AttributeDefinition = [];
                     featureType.properties.forEach(function(e) {
                         if (e.name === 'the_geom') {
-                            var new_layer = _map(layer);
+                            
                             if (e.localType.toLowerCase().search('polygon') != -1)
                                 new_layer["ShapeType"] = 'polygon';
                             else if (e.localType.toLowerCase().search('point') != -1)
                                 new_layer["ShapeType"] = 'point';
-                            getLayerStyle(layer, new_layer);
                             
+                            
+                        }else {
+                            new_layer.AttributeDefinition.push({
+                                "Id": e.name,
+                                "Name": e.name,
+                                "AttributeName": null,
+                                "IsPublished": true,
+                                "Type": e.localType,
+                                "Length": 92,
+                                "Precision": null,
+                                "Scale": null
+                            });
                         }
                     }, this);
+                    getLayerStyle(layer, new_layer);
                 }, this);
 
             }, errorFn);
@@ -76,79 +152,23 @@
 
         }
 
+        
+
         function _map(layer, order) {
             if (!layer.bbox) {
                 layer.bbox = [-9818543.41779904, 5183814.6260749, -9770487.95134629, 5235883.07751104];
             }
             var userStyle = layer.name + '_' + _uuid();
             return {
-                "LayerId": _uuid(),
+                "LayerId": layer.name,
                 "Name": layer.name,
                 "SortOrder": order || 0,
                 // "LastUpdateOn": "2017-10-10T11:10:26.083Z",
                 "ClassifierDefinitions": {},
                 "CanWrite": true,
                 // "DataId": "s_facf34ee54914605943fe987f5b3637c",
-                "ShapeType": "point",
-                "Style": { /* not available */
-                    "Name": _uuid(),
-                    "default": {
-                        "fillPattern": null,
-                        "textFillColor": "#222026",
-                        "text": null,
-                        "pixelDensity": null,
-                        "strokeDashstyle": "solid",
-                        "strokeWidth": 1.0,
-                        "strokeColor": "#5EF1F2",
-                        "strokeOpacity": null,
-                        "fillOpacity": 0.75,
-                        "fillColor": "#2f7979",
-                        "pointRadius": 14.0,
-                        "graphicName": "circle",
-                        "textGraphicName": null,
-                        "externalGraphic": null,
-                        'name': layer.name,
-                        'userStyle': userStyle
-                    },
-                    "select": {
-                        "fillPattern": "",
-                        "textFillColor": "#222026",
-                        "text": null,
-                        "pixelDensity": null,
-                        "strokeDashstyle": "solid",
-                        "strokeWidth": 1.0,
-                        "strokeColor": "#0000ff",
-                        "strokeOpacity": 1.0,
-                        "fillOpacity": 0.4,
-                        "fillColor": "#0000ff",
-                        "pointRadius": 6.0,
-                        "graphicName": "circle",
-                        "textGraphicName": null,
-                        "externalGraphic": null,
-                        'name': layer.name,
-                        'userStyle': userStyle
-                    },
-                    "labelConfig": {
-                        //         "attribute": null,
-                        "visibilityZoomLevel": 0,
-                        //         "font": "Times",
-                        //         "fontStyle": "normal",
-                        //         "fontWeight": "normal",
-                        //         "color": "#000000",
-                        //         "borderColor": "#ffffff",
-                        //         "showBorder": true,
-                        //         "size": 10.0,
-                        //         "alignment": 1.0,
-                        //         "offsetX": 0.0,
-                        //         "offsetY": 0.0,
-                        //         "rotation": 0.0,
-                        //         "followLine": false,
-                        //         "repeat": false,
-                        //         "repeatInterval": 5.0,
-                        //         "wrap": false,
-                        //         "wrapPixel": 50.0
-                    }
-                },
+                // "ShapeType": "point",
+                
                 "VisualizationSettings": null,
                 "IsVisible": layer.visibility,
                 "Filters": [],
@@ -160,25 +180,35 @@
                     "MaxX": layer.bbox[3],
                     "MaxY": layer.bbox[2]
                 },
-                // "AttributeDefinition": [{ /* not available*/
-                //     "Id": "s_985cd4386b6a4762812371ca8ae4c5a3",
-                //     "Name": "category",
-                //     "AttributeName": null,
-                //     "IsPublished": true,
-                //     "Type": "text",
-                //     "Length": 30,
-                //     "Precision": null,
-                //     "Scale": null
-                // }, {
-                //     "Id": "s_5d1416d309df49cab55858ff2b463f70",
-                //     "Name": "name",
-                //     "AttributeName": null,
-                //     "IsPublished": true,
-                //     "Type": "text",
-                //     "Length": 92,
-                //     "Precision": null,
-                //     "Scale": null
-                // }],
+                "AttributeDefinition": [{ /* not available*/
+                    "Id": "NAME_3",
+                    "Name": "NAME_3",
+                    "AttributeName": null,
+                    "IsPublished": true,
+                    "Type": "text",
+                    "Length": 30,
+                    "Precision": null,
+                    "Scale": null
+                }, {
+                    "Id": "NAME_2",
+                    "Name": "NAME_2",
+                    "AttributeName": null,
+                    "IsPublished": true,
+                    "Type": "text",
+                    "Length": 92,
+                    "Precision": null,
+                    "Scale": null
+                },
+                {
+                    "Id": "NAME_4",
+                    "Name": "NAME_4",
+                    "AttributeName": null,
+                    "IsPublished": true,
+                    "Type": "text",
+                    "Length": 92,
+                    "Precision": null,
+                    "Scale": null
+                }],
                 // "IdColumn": "gid",
                 "LinearUnit": "Meter",
                 "IsLocked": false,

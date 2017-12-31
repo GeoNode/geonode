@@ -13,7 +13,7 @@
         
         function getSetting(settingName) {
             return _userSettings[settingName];
-        };
+        }
 
         function saveSetting(settingName, settingValue) {
             if (!_isDataLoaded) {
@@ -27,12 +27,21 @@
                     _userSettings[settingName] = oldValue;
                 });
             }
-        };
+        }
+
+        function getUserProfile() {
+            return repository.getUserProfile();
+        }
+        function getUserOrganizationList(userId) {
+            return repository.getUserOrganizationList(userId);
+        }
 
         return {
             getSetting: getSetting,
             saveSetting: saveSetting,
-            loadData: loadData
+            loadData: loadData,
+            getUserProfile: getUserProfile,
+            getUserOrganizationList: getUserOrganizationList
         };
     }
 ]);

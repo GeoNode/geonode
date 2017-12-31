@@ -17,6 +17,8 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
+import json
+
 from agon_ratings.categories import slug
 
 from django.contrib.auth import get_user_model
@@ -130,7 +132,6 @@ def forgot_username(request):
                               }))
 
 
-
 #@jahangir091
 
 class CreateUser(SignupView):
@@ -184,7 +185,8 @@ class UserSignup(SignupView):
     def after_signup(self, form):
         """after signup add created user to default group """
 
-        signals.user_signed_up.send(sender=SignupForm, user=self.created_user, form=form)
+        signals.user_signed_up.send(
+            sender=SignupForm, user=self.created_user, form=form)
 
         default_group = get_object_or_404(GroupProfile, slug='default')
         default_group.join(self.created_user, role='member')
@@ -207,9 +209,19 @@ class InviteUser(InviteUserView):
     """
 
     """
+
     def get_success_url(self, fallback_url=None, **kwargs):
 
         return reverse('invite_user')
 
 
-#end
+@login_required
+def get_current_user(request):
+    if request.method == 'GET':
+        return HttpResponse(
+            json.dumps(
+                dict(id=request.user.id, username=request.user.username),
+                ensure_ascii=False),
+            status=200,
+            content_type='application/javascript')
+# end

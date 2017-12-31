@@ -610,7 +610,7 @@ class LayerAuditActivity(models.Model):
     date_updated = models.DateTimeField(auto_now=True)
 
 
-class LayerStyle(models.Model):
+class StyleExtension(models.Model):
     '''
     Layer style extension
     '''
@@ -619,16 +619,10 @@ class LayerStyle(models.Model):
         Style,
         verbose_name = _('Style'),
         help_text=_('Designats related Style'),
-         null=False, blank=False
-        )
-    layer = models.ForeignKey(
-        Layer,
-        verbose_name = _('Layer'),
-        help_text=_('Designats related layer'),
-       
+        null=False, blank=False
     )
     json_field = models.TextField(
-         verbose_name=_('Json Field'),
+        verbose_name=_('Json Field'),
         help_text=_('Designates json field.'),
         blank=True
     )
@@ -661,7 +655,7 @@ class LayerStyle(models.Model):
     )
 
     def __str__(self):
-        return self.name
+        return self.style.name
 
     class Meta:
         pass

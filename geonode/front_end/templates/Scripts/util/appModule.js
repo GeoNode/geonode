@@ -112,17 +112,17 @@
                         return false;
                     })();
 
-                    if (result.propertiesChanged || labelChanged) {
-
+                    // if (result.propertiesChanged || labelChanged) {
+                        updatedLayer.style.classifierDefinitions = result.classifierDefinitions;
                         layerService.saveProperties(originalLayer, updatedLayer.name, updatedLayer.zoomlevel, updatedLayer.style, false).success(function() {
                             saveClassificationOnNeed();
                             $rootScope.$broadcast('layerPropertiesChanged', { layer: layer });
                         }).error(function() {
                             saveClassificationOnNeed();
                         });
-                    } else {
-                        saveClassificationOnNeed();
-                    }
+                    // } else {
+                    //     saveClassificationOnNeed();
+                    // }
 
                     if (result.fieldChanged) {
                         layerService.saveAttributeDefinitions(originalLayer, result.updatedNode.fields);
