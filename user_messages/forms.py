@@ -12,7 +12,7 @@ class MyModelChoiceField(forms.ModelChoiceField):
 
 class NewMessageForm(forms.Form):
 
-    to_user = MyModelChoiceField(label="To",queryset=get_user_model().objects.exclude(username='AnonymousUser').order_by('username'))
+    to_user = MyModelChoiceField(label="To",queryset=get_user_model().objects.exclude(username='AnonymousUser').order_by('first_name'))
 
     subject = forms.CharField()
     content = forms.CharField(widget=forms.Textarea)
