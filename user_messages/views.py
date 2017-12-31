@@ -18,7 +18,7 @@ def inbox(request, template_name="user_messages/inbox.html"):
     threads_unread = Thread.ordered(Thread.objects.unread(request.user))
 
     page = request.GET.get('page', 1)
-    paginator = Paginator(threads_all_list, 3)
+    paginator = Paginator(threads_all_list, 20)
     try:
         threads_all = paginator.page(page)
     except PageNotAnInteger:
