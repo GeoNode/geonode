@@ -28,6 +28,12 @@
                     <li role="presentation"><a href="{% url "member-workspace-document" %}">{% trans "Documents" %}</a></li>
                   </ul>
                   <br>
+              <div>
+                  <div class="alert alert-warning alert-dismissable">
+                      <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+                      <strong>Warning!</strong> Please update mandatory fields, missing some information!
+                  </div>
+              </div>
                 <ul class="nav nav-tabs">
                   <li class="active"><a href="#draft" data-toggle="tab">{% trans "Draft" %}</a></li>
                   <li><a href="#pending" id="pending_list_layers" data-toggle="tab">{% trans "Pending" %}</a></li>
@@ -232,6 +238,7 @@ $(function () {
                     var outputpag='';
                   var offset = meta.offset;
                   var draft_list_messages_json = jQuery.parseJSON('{% jsonify draft_list_messages %}');
+
                   $.each(data, function(i, item) {
                     offset = offset + 1;
                     output+='<tr>';
@@ -239,13 +246,20 @@ $(function () {
                     output+='<td><a href='+ item.detail_url +'>'+ item.title+'</a></td>';
                     output+='<td>'+ item.group +'</td>';
                     output+='<td>'+ item.date_created +'</td>';
-                    if(draft_list_messages_json[item.id] != "Completed"){
-                         output+='<td style="color: #EC971F;">'+ draft_list_messages_json[item.id] +'</td>';
+
+                    if(draft_list_messages_json[item.id]['layer_msg'] != "Completed"){
+                         output+='<td style="color: #EC971F;">'+ draft_list_messages_json[item.id]['layer_msg'] +'</td>';
                     }else{
-                        output+='<td>'+ draft_list_messages_json[item.id] +'</td>';
+                        output+='<td>'+ draft_list_messages_json[item.id]['layer_msg'] +'</td>';
                     }
 
-                    output+='<td><a href="'+ item.detail_url +'?user_role=member" class="btn btn-gd-primary"> {% trans "Continue for Approval" %}</a></td>';
+                    if(draft_list_messages_json[item.id]['mandatory_fields_msg'] == ""){
+                        output+='<td><a href="'+ item.detail_url +'?user_role=member" class="btn btn-gd-primary"> {% trans "Continue for Approval" %}</a></td>';
+                    }
+                    else{
+                        output+='<td><button class="btn btn-gd-primary" id="mandatory-check"> {% trans "Continue for Approval" %}</button></td>';
+                    }
+
                     output+='<td>';
                     output+='<button type="button" class="btn btn-gd-primary" onclick="deleteLayer('+ item.id +')" style="color:#fff;">{% trans "Delete Map" %}</button> <br>';
                     output+='</td>';
@@ -274,6 +288,10 @@ $(function () {
                    $("#previousMemberDraftlayers").click(function(){
                         showMemberDraftLayer(previousurl)
                    });
+                   $(".alert-warning").hide();
+                   $("#mandatory-check").click(function(){
+                        $(".alert-warning").show();
+                    });
                     },
                     error: function(xhr, ajaxOptions, thrownError) {
                         console.log("error");
@@ -326,10 +344,12 @@ $(function () {
                     output+='<td><a href="'+ item.detail_url +'">'+ item.title+'</a></td>';
                     output+='<td>'+ item.group +'</td>';
                     output+='<td>'+ item.date_updated +'</td>';
-                    if(pending_list_messages_json[item.id] != "Completed"){
-                         output+='<td style="color: #EC971F;">'+ pending_list_messages_json[item.id] +'</td>';
+
+                    if(pending_list_messages_json[item.id]['layer_msg'] != "Completed"){
+                         output+='<td style="color: #EC971F;">'+ pending_list_messages_json[item.id]['layer_msg'] +'</td>';
                     }else{
-                        output+='<td>'+ pending_list_messages_json[item.id] +'</td>';
+                        output+='<td>'+ pending_list_messages_json[item.id]['layer_msg'] +'</td>';
+
                     }
                     output+='</tr>';
                   });
@@ -409,10 +429,12 @@ $(function () {
                     output+='<td>'+ item.group +'</td>';
                     output+='<td>'+ item.last_auditor +'</td>';
                     output+='<td>'+ item.date_updated +'</td>';
-                    if(denied_list_messages_json[item.id] != "Completed"){
-                         output+='<td style="color: #EC971F;">'+ denied_list_messages_json[item.id] +'</td>';
+
+                    if(denied_list_messages_json[item.id]['layer_msg'] != "Completed"){
+                         output+='<td style="color: #EC971F;">'+ denied_list_messages_json[item.id]['layer_msg'] +'</td>';
                     }else{
-                        output+='<td>'+ denied_list_messages_json[item.id] +'</td>';
+                        output+='<td>'+ denied_list_messages_json[item.id]['layer_msg'] +'</td>';
+
                     }
                     output+='<td><a href="'+ item.detail_url +'?user_role=member" class="btn btn-gd-primary"> {% trans "Edit and Push Again" %}</a></td>';
                     output+='</tr>';
@@ -494,10 +516,12 @@ $(function () {
                     output+='<td>'+ item.group +'</td>';
                     output+='<td>'+ item.last_auditor +'</td>';
                     output+='<td>'+ item.date_updated +'</td>';
-                    if(active_list_messages_json[item.id] != "Completed"){
-                         output+='<td style="color: #EC971F;">'+ active_list_messages_json[item.id] +'</td>';
+
+                    if(active_list_messages_json[item.id]['layer_msg'] != "Completed"){
+                         output+='<td style="color: #EC971F;">'+ active_list_messages_json[item.id]['layer_msg'] +'</td>';
                     }else{
-                        output+='<td>'+ active_list_messages_json[item.id] +'</td>';
+                        output+='<td>'+ active_list_messages_json[item.id]['layer_msg'] +'</td>';
+
                     }
                     output+='<td><a href="'+ item.detail_url +'?user_role=member" class="btn btn-gd-primary"> {% trans "Edit" %}</a></td>';
                     output+='</tr>';

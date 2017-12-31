@@ -17,7 +17,7 @@
       {% else %}
       <link href="{{ STATIC_URL }}lib/css/main.4df7c95f.css?v={{ VERSION }}" rel="stylesheet"/>
       <link href="{{ STATIC_URL }}lib/css/bootstrap.min.css?v={{ VERSION }}" rel="stylesheet"/>
-      <link href="{{ STATIC_URL }}lib/css/font-awesome.min.css?v={{ VERSION }}" rel="stylesheet"/>
+      <link href="{{ STATIC_URL }}lib/css/font-awesome.min.css" rel="stylesheet"/>
       <link href="{{ STATIC_URL }}lib/css/bootstrap-datetimepicker.css?v={{ VERSION }}" rel="stylesheet"/>
       <!--<link href="{{ STATIC_URL }}lib/css/bootstrap-select.min.css?v={{ VERSION }}" rel="stylesheet"/>-->
       {% endif %}
@@ -846,6 +846,18 @@
                 <a href="{% url "error_reporting" %}" class="c-menu__link">
                     <img src="{{ STATIC_URL }}geonode/images/user-icon/help.png" alt="Help">
                     <span style="text-align:left;color:#fff;margin-left:-10px;">{% trans "Error Reporting" %}</span>
+                </a>
+            </li>
+            <li class="c-menu__item">
+                <a href="{% url "system_settings" %}" class="c-menu__link">
+                    <img src="{{ STATIC_URL }}geonode/images/user-icon/help.png" alt="Help">
+                    <span style="text-align:left;color:#fff;margin-left:-10px;">{% trans "System Settings" %}</span>
+                </a>
+            </li>
+            <li class="c-menu__item">
+                <a href="{% url "locations" %}" class="c-menu__link">
+                    <img src="{{ STATIC_URL }}geonode/images/user-icon/help.png" alt="Help">
+                    <span style="text-align:left;color:#fff;margin-left:-10px;">{% trans "Locations" %}</span>
                 </a>
             </li>
             <li class="c-menu__item">

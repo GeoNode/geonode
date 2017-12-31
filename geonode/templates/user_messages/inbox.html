@@ -35,6 +35,22 @@
         <div class="hr"></div>
     </div>
 </div>
+<div>
+    <div class="row">
+        <div class="col-md-6">
+            &nbsp;
+        </div><!-- /.col-md-6 -->
+        <div class="col-md-6">
+            <div class="input-group pull-right">
+                <form method="post" action="{% url "message_search" %}">
+                    {% csrf_token %}
+                    {{ search_form }}
+                    <input type="submit" class="btn btn-gd-primary" value="{% trans "Search!" %}"  class="btn btn-default" type="button"/>
+                </form>
+            </div><!-- /input-group -->
+        </div><!-- /.col-md-6 -->
+    </div>
+</div>
 <div class="gd-content">
   <div class="gd-content-body transparent">
     <div class="row">

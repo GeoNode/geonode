@@ -3207,7 +3207,7 @@ ul.termsuseandcondition li {
 .gd-content .gd-content-body .overlay_layerdetails {
     height: 100%;
     width: 0;
-    position: absolute;
+    /*position: absolute;*/
     /*z-index: 100;
     top: 127px;
     top: 74px;
@@ -3333,4 +3333,13 @@ width: 100%;
 .layer-style-editor .style-editor.range span {
     margin-left: 3px;
     margin-right: 3px;
+}
+#myNav .panel-heading
+{
+    white-space: normal;
+}
+#myNav .panel-body
+{
+    white-space: normal;
+
 }

@@ -4,16 +4,16 @@
 
 <table class="table hashr table-bordered gd-list-table">
     <thead>
-        <tr>
-            <td width="25%"><strong>{% trans "With" %}</strong></td>
-            <td width="20%"><strong>{% trans "Subject" %}</strong></td>
-            <td width="15%"><strong>{% trans "Sender" %}</strong></td>
-            <td width="30%"><strong>{% trans "Preview" %}</strong></td>
-            <td width="10%"><strong>{% trans "Delete?" %}</strong></td>
-        </tr>
+    <tr>
+        <td width="25%"><strong>{% trans "With" %}</strong></td>
+        <td width="20%"><strong>{% trans "Subject" %}</strong></td>
+        <td width="15%"><strong>{% trans "Sender" %}</strong></td>
+        <td width="30%"><strong>{% trans "Preview" %}</strong></td>
+        <td width="10%"><strong>{% trans "Delete?" %}</strong></td>
+    </tr>
     </thead>
     <tbody>
-        {% for thread in threads %}
+    {% for thread in threads %}
         <tr>
             <td>
                 {% for user in thread.users.all %}
@@ -43,16 +43,18 @@
             </td>
             <td>
                 {% ifequal request.user thread.latest_message.sender %}
-                  {% trans "me" %}
+                    {% trans "me" %}
                 {% else %}
-                  <a href="{{ thread.latest_message.sender.get_absolute_url }}">{{ thread.latest_message.sender }}</a>
+                    <a href="{{ thread.latest_message.sender.get_absolute_url }}">{{ thread.latest_message.sender }}</a>
                 {% endifequal %}
             </td>
             <td>
-                {{ thread.latest_message.content|slice:"50" }}<a href="{{ thread.get_absolute_url }}" title="{{ thread.latest_message.content }}">...</a>
+                {{ thread.latest_message.content|slice:"50" }}<a href="{{ thread.get_absolute_url }}"
+                                                                 title="{{ thread.latest_message.content }}">...</a>
             </td>
             <td>
-                <form id="thread_delete_{{ thread.pk }}" method="post" action="{% url "messages_thread_delete" thread.pk %}">
+                <form id="thread_delete_{{ thread.pk }}" method="post"
+                      action="{% url "messages_thread_delete" thread.pk %}">
                     {% csrf_token %}
                     <button type="submit" class="btn btn-default btn-link">
                         <span class="fa-stack fa-lg fa-delete">
@@ -64,6 +66,37 @@
                 </form>
             </td>
         </tr>
-        {% endfor %}
-        </tbody>
+    {% endfor %}
+    {% if threads.has_other_pages %}
+        <tr>
+            <td colspan="5">
+                <div class="row">
+                    <div class="col-md-12 text-center">
+
+                        <ul class="pagination">
+                            {% if threads.has_previous %}
+                                <li><a href="?page={{ threads.previous_page_number }}">&laquo;</a></li>
+                            {% else %}
+                                <li class="disabled"><span>&laquo;</span></li>
+                            {% endif %}
+                            {% for i in threads.paginator.page_range %}
+                                {% if threads.number == i %}
+                                    <li class="active"><span>{{ i }} <span class="sr-only">(current)</span></span></li>
+                                {% else %}
+                                    <li><a href="?page={{ i }}">{{ i }}</a></li>
+                                {% endif %}
+                            {% endfor %}
+                            {% if threads.has_next %}
+                                <li><a href="?page={{ threads.next_page_number }}">&raquo;</a></li>
+                            {% else %}
+                                <li class="disabled"><span>&raquo;</span></li>
+                            {% endif %}
+                        </ul>
+
+                    </div>
+                </div>
+            </td>
+        </tr>
+    {% endif %}
+    </tbody>
 </table>
