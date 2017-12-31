@@ -8,15 +8,23 @@ from django.contrib.auth.decorators import login_required
 
 from user_messages.forms import MessageReplyForm, NewMessageForm, NewMessageFormMultiple, SearchMessageForm
 from user_messages.models import Thread
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 
 
 @login_required
 def inbox(request, template_name="user_messages/inbox.html"):
     # threads_all = Thread.ordered(Thread.objects.inbox(request.user))
-    threads_all = Thread.ordered(Thread.objects.all(request.user))
+    threads_all_list = Thread.ordered(Thread.objects.all(request.user))
     threads_unread = Thread.ordered(Thread.objects.unread(request.user))
-    # import pdb;pdb.set_trace()
-    # https://harvesthq.github.io/chosen/
+
+    page = request.GET.get('page', 1)
+    paginator = Paginator(threads_all_list, 3)
+    try:
+        threads_all = paginator.page(page)
+    except PageNotAnInteger:
+        threads_all = paginator.page(1)
+    except EmptyPage:
+        threads_all = paginator.page(paginator.num_pages)
 
     search_form = SearchMessageForm()
     return render_to_response(template_name, {
