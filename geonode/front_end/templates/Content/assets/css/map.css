@@ -83,16 +83,13 @@
 }
 
 .surfgis .base-map-switcher {
-    background-color: #ffffff;
+    
     position: absolute;
     right: 8px;
     top: 95px;
     width: 500px;
     z-index: 2;
     padding: 10px;
-    -webkit-box-shadow: 0px 0px 3px 0px rgba(0,0,0,0.37);
-    -moz-box-shadow: 0px 0px 3px 0px rgba(0,0,0,0.37);
-    box-shadow: 0px 0px 3px 0px rgba(0,0,0,0.37);
 }
 
     .surfgis .base-map-switcher .layers-list {
@@ -397,16 +394,7 @@
         border-right: 1px solid #ccc;
     }
 
-    .arrow-up {
-        width: 0; 
-        height: 0; 
-        border-left: 10px solid transparent;
-        border-right: 10px solid transparent;        
-        border-bottom: 10px solid #fff;
-        position: absolute;
-        right: 60px;
-        top: -10px;
-      }
+   
       .base-map-list
       {
          list-style-type: none;
@@ -449,3 +437,66 @@
      {
       opacity: 0.5;
      } 
+     .dropBox {
+        background-color: #fff;
+        height: auto;
+        right: -51px;
+        position: absolute;
+        top: 46px;
+        width: 400px;
+        padding: 15px;
+        border: 1px solid rgba(0, 0, 0, 0.2);
+        -webkit-box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+        -moz-box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+    }
+    .dropBox:before {
+        content:"";
+        width: 0; 
+        height: 0; 
+        border-left: 10px solid transparent;
+        border-right: 10px solid transparent;        
+        border-bottom: 10px solid rgba(0, 0, 0, 0.2);
+        position: absolute;
+        right: 60px;
+        top: -11px; 
+    }
+    .arrow-up {
+        width: 0; 
+        height: 0; 
+        border-left: 10px solid transparent;
+        border-right: 10px solid transparent;        
+        border-bottom: 10px solid rgb(255, 255, 255);
+        position: absolute;
+        right: 60px;
+        top: -10px;
+      }
+      .directions .input-group-addon
+      {
+        background: none;
+        border: none;
+      }
+      .directions .input-group-addon i
+      {
+       width: 20px;
+       font-size: 21px;
+      }
+      .directions .input-group .form-control
+      {
+        border: none;
+        border-bottom: 1px solid rgba(0, 0, 0, 0.14);
+        box-shadow: none;
+        padding-left: 0;
+      }
+      .directions .input-group .form-control:focus
+      {
+
+        border-bottom: 2px solid rgba(56, 150, 226, 0.9);
+
+      }
+      .btn-group-justified > .btn, .btn-group-justified > .btn-group
+      {
+          border-radius: 0;
+      }
+      
+    
