@@ -22,18 +22,18 @@ import os
 
 PROJECT_ROOT = os.path.abspath(os.path.dirname(__file__))
 
-SITEURL = "http://localhost:8000/"
+SITEURL = "http://localhost:8001/"
 
 REMOVE_ANONYMOUS_USER = False
 
 
 DATABASES = {
     'default': {
-         'ENGINE': 'django.db.backends.postgresql_psycopg2',
+         'ENGINE': 'django.contrib.gis.db.backends.postgis',
          'NAME': 'geodash_dev',
          'USER': 'postgres',
          'PASSWORD': '12345',
-	 'HOST' : 'localhost',
+	     'HOST' : 'localhost',
          'PORT' : '5432',
      },
     # vector datastore for uploads
@@ -49,10 +49,10 @@ DATABASES = {
 }
 
 GEOSERVER_LOCATION = os.getenv(
-    'GEOSERVER_LOCATION', 'http://localhost:8080/geoserver/'
+    'GEOSERVER_LOCATION', 'http://103.48.16.135:8080/geoserver/'
 )
 GEOSERVER_PUBLIC_LOCATION = os.getenv(
-    'GEOSERVER_PUBLIC_LOCATION', 'http://localhost:8080/geoserver/'
+    'GEOSERVER_PUBLIC_LOCATION', 'http://103.48.16.135:8080/geoserver/'
 )
 
 # OGC (WMS/WFS/WCS) Server Settings
@@ -107,8 +107,8 @@ CATALOGUE = {
 
         # The FULLY QUALIFIED base url to the CSW instance for this GeoNode
         'URL': '%scatalogue/csw' % SITEURL,
-        # 'URL': 'http://localhost:8080/geonetwork/srv/en/csw',
-        # 'URL': 'http://localhost:8080/deegree-csw-demo-3.0.4/services',
+        # 'URL': 'http://103.48.16.135:8080/geonetwork/srv/en/csw',
+        # 'URL': 'http://103.48.16.135:8080/deegree-csw-demo-3.0.4/services',
 
         # login credentials (for GeoNetwork)
         'USER': 'admin',
