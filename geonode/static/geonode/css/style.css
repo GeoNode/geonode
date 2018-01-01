@@ -1,6 +1,5 @@
 @import url(https://fonts.googleapis.com/css?family=Open+Sans:400,300,300italic,400italic,600,600italic,700,700italic,800,800italic);
 
-
 html,body{
     height: 100%;
 }
@@ -12,9 +11,6 @@ a:focus {
     /*outline: none;*/
     outline: 0;
     text-decoration: none;
-}
-h2, h3, select, option, button{
-    color:#5a5d63;
 }
 a:hover{
     text-decoration: none;
@@ -219,6 +215,7 @@ ul.user-actions li a .fa{
     margin-left: 10px;
     margin-right: 10px;
     font-size: 16px;
+    width: 15px;
 }
 .grid-container .user-info.buttons ul{
     padding:0 20px;
@@ -492,6 +489,9 @@ table.gd-list-table tr td .media-body {
     /*background-color: transparent;*/
     background-color: #FFFFFF;
     border-color: transparent;
+    -webkit-box-shadow: 0px 0px 5px 0px rgba(0,0,0,0.26);
+    -moz-box-shadow: 0px 0px 5px 0px rgba(0,0,0,0.26);
+    box-shadow: 0px 0px 5px 0px rgba(0,0,0,0.26);
 }
 #gd-header .navbar-nav {
     margin-top:15px;
@@ -991,9 +991,7 @@ fieldset[disabled] .btn-gd-gray.focus {
 .btn.btn-gd-yellow{
     border-radius: 2px;
 }
-.btn.btn-gd-yellow.br15px{
-    border-radius: 15px;
-}
+
 .btn-gd-yellow {
     color: #000;
     background-color: #fcff0e;
@@ -2069,23 +2067,16 @@ body.modal-open { overflow:inherit; padding-right:inherit !important; }
 }
 
 .nav-tabs.gd-style-tabs{
-    border: none;
-    border-width: 0px;
+    border-bottom:1px solid #e0d9e0;
 }
 .nav-tabs.gd-style-tabs > li > a,
 .nav-tabs.gd-style-tabs > li > a:focus,
 .nav-tabs.gd-style-tabs > li > a:hover{
-    border-radius: 1px;
     /*border-color: #f2f2f2;*/
     background: #f2f2f2;
-    border-width: 0px;
-    min-width: 200px;
     text-align: center;
     color: #6e7176;
-
-    -webkit-box-shadow: 0px -2px 2px 0px rgba(224,217,224,1);
-    -moz-box-shadow: 0px -2px 2px 0px rgba(224,217,224,1);
-    box-shadow: 0px -2px 2px 0px rgba(224,217,224,1);
+    border-bottom: none;
 }
 .nav-tabs.gd-style-tabs > li > a.selected,
 .nav-tabs.gd-style-tabs > li > a.selected:focus,
@@ -2093,16 +2084,12 @@ body.modal-open { overflow:inherit; padding-right:inherit !important; }
 .nav-tabs.gd-style-tabs > li.active > a,
 .nav-tabs.gd-style-tabs > li.active > a:focus,
 .nav-tabs.gd-style-tabs > li.active > a:hover {
-    border-radius: 1px;
+   
     border-color: #e0d9e0;
     background: #FFF;
-    border-width: 0px;
-    min-width: 200px;
     text-align: center;
 
-    -webkit-box-shadow: 0px -2px 2px 0px rgba(224,217,224,1);
-    -moz-box-shadow: 0px -2px 2px 0px rgba(224,217,224,1);
-    box-shadow: 0px -2px 2px 0px rgba(224,217,224,1);
+    
 }
 .nav-tabs.gd-style-tabs > li.layer > a,
 .nav-tabs.gd-style-tabs > li.layer > a:focus,
@@ -2200,7 +2187,6 @@ body.modal-open { overflow:inherit; padding-right:inherit !important; }
     /*border-color: #f2f2f2;*/
     background: #f2f2f2;
     border-width: 0px;
-    min-width: 200px;
     text-align: center;
     color: #6e7176;
 
@@ -2218,7 +2204,6 @@ body.modal-open { overflow:inherit; padding-right:inherit !important; }
     border-color: #e0d9e0;
     background: #FFF;
     border-width: 0px;
-    min-width: 200px;
     text-align: center;
 
     -webkit-box-shadow: 0px -2px 2px 0px rgba(224,217,224,1);
@@ -2558,12 +2543,12 @@ ul#global-errors li{
 }
 .grid-container .list-inline.lmd > li {
     display: inline-block;
-    min-width: 30%;
+    min-width: 48%;
     padding-left: 0;
     padding-right: 0;
 }
 .grid-container.lmd{
-    padding: 0;
+    padding: 0 0 5px;
     -webkit-box-shadow: 0px 0px 5px 0px rgba(224,217,224,1);
     -moz-box-shadow: 0px 0px 5px 0px rgba(224,217,224,1);
      box-shadow: 0px 0px 5px 0px rgba(224,217,224,1);
@@ -2575,7 +2560,7 @@ ul#global-errors li{
     position: relative;
 }
 .grid-container.lmd .avater .checkbox-overlay{
-    right: 25px;
+    right: 10px;
     position: absolute;
     top: 0;
 }

@@ -223,13 +223,11 @@
             };
         }
 
-
         (function(){
 
             // map load
             //debugger
             map.on('postrender', function(evt){
-
                 //console.log('maploaded', evt);
                 var user_href = window.location.href.split('/');
                 var map_info = user_href[user_href.length - 2];
@@ -245,7 +243,6 @@
                     latitude = user_location.latitude.toString();
                     longitude = user_location.longitude.toString()
                 }catch(err){
-
                     latitude = "";
                     longitude = "";
                 }
@@ -273,12 +270,10 @@
 
                 var latitude;
                 var longitude;
-
                 try{
                     latitude = user_location.latitude.toString();
                     longitude = user_location.longitude.toString()
                 }catch(err){
-
                     latitude = "";
                     longitude = "";
                 }
@@ -331,12 +326,10 @@
                     zoomType = 'zoom-out'
                 }
 
-
                 try{
                     latitude = user_location.latitude.toString();
                     longitude = user_location.longitude.toString()
                 }catch(err){
-
                     latitude = "";
                     longitude = "";
                 }

@@ -238,7 +238,6 @@ $(function () {
                     var outputpag='';
                   var offset = meta.offset;
                   var draft_list_messages_json = jQuery.parseJSON('{% jsonify draft_list_messages %}');
-
                   $.each(data, function(i, item) {
                     offset = offset + 1;
                     output+='<tr>';

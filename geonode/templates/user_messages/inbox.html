@@ -15,20 +15,21 @@
                 </div>
             </div>
             <div class="col-md-4">
-                <div class="small-content pull-right">
-                    <ul class="search-type separator">
-                        <li>
-                          <a href="{% url "message_create" %}" class="btn btn-gd-primary btn-xs col-md-12 col-sm-12 col-xs-12">
+                <div class="small-content text-right">
+                    
+                       
+                          <a href="{% url "message_create" %}" class="btn btn-gd-primary pull-right icon-btn-color">
                             {% trans "Create Message" %}
+                            <i class="fa fa-pencil-square-o" aria-hidden="true"></i>
                           </a>
-                        </li>
+                       
                         <!--<li class="active">-->
                           <!--<a href="#all" data-toggle="tab"><i class=""></i> {% trans "All" %}</a>-->
                         <!--</li>-->
                         <!--<li >-->
                           <!--<a href="#inbox" data-toggle="tab"><i class=""></i>{% trans "Inbox" %}</a>-->
                         <!--</li>-->
-                    </ul>
+                   
                 </div>
             </div>
         </div>
@@ -55,11 +56,11 @@
   <div class="gd-content-body transparent">
     <div class="row">
       <div class="col-md-12">
-        <ul class="nav nav-tabs">
+        <ul class="nav nav-tabs resources-tabs">
           <li ><a href="#inbox" data-toggle="tab"><i class=""></i>{% trans "New" %}</a></li>
           <li class="active"><a href="#all" data-toggle="tab"><i class=""></i> {% trans "All" %}</a></li>
         </ul>
-        <div class="tab-content">
+        <div class="tab-content resources-content">
           <article id="all" class="tab-pane active">
             {% with threads_all as threads %}
                 {% include "user_messages/_message_snippet.html" %}

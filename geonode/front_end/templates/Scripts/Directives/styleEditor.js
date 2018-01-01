@@ -89,10 +89,10 @@ appHelperModule.directive('styleEditor', [
                             $scope.styleHash.text = "";
                         ftime = false;
                         _mode = mode;
-                 
+
                     });
+                }
+            ]
+        };
     }
-]
-};
-}
 ]);

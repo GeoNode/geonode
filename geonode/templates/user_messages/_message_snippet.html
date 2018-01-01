@@ -2,7 +2,7 @@
 
 {% load avatar_tags %}
 
-<table class="table hashr table-bordered gd-list-table">
+<table class="table table-bordered table-striped table-hover table-condensed">
     <thead>
     <tr>
         <td width="25%"><strong>{% trans "With" %}</strong></td>
@@ -56,11 +56,11 @@
                 <form id="thread_delete_{{ thread.pk }}" method="post"
                       action="{% url "messages_thread_delete" thread.pk %}">
                     {% csrf_token %}
-                    <button type="submit" class="btn btn-default btn-link">
-                        <span class="fa-stack fa-lg fa-delete">
-                            <i class="fa fa-circle-thin fa-stack-2x"></i>
-                            <i class="fa fa-trash-o fa-stack-1x"></i>
-                        </span>
+                    <button type="submit" class="btn btn-default btn-delete">
+                       
+                          
+                            <i class="fa fa-trash-o"></i>
+                       
                     </button>
                     <!--<input type="submit" value="{% trans "Delete" %}" class="btn btn-danger" type="button"/>-->
                 </form>
