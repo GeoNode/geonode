@@ -3,6 +3,14 @@
     <div class="modal-header">
         <h3>[{nodeData.layer.name}] Properties</h3>
     </div>
+    <!-- ng-model="selectedStyleId" ng-change="onStyleChange()" -->
+    <select name="styleSelect" ng-model="selectedStyleId" ng-change="onStyleChange()" ng-options="style.style.name for style in Styles" >
+            <!-- <option ng-repeat="style in Styles"  value="[{style}]" >[{style.style.name}]</option> -->
+        </select>
+        <input type="button" value="New">
+    <div> [{selectedStyleId}]
+        
+    </div>
     <form ng-submit="save()" style="margin: 0" novalidate>
         <div class="modal-body" style="max-height: initial;">
             <tabset>
@@ -53,7 +61,7 @@
                                 Minimum Zoom Level :
                             </label>
                             <div class="col-sm-2">
-                                <input type="number" ng-model6="nodeData.layer.zoomlevel"
+                                <input type="number" ng-model="nodeData.layer.zoomlevel"
                                        class="form-control input-mini" min="0" max="21" fixed-number-range 
                                        ng-init="nodeData.layer.zoomlevel = nodeData.layer.zoomlevel == undefined ? 0: nodeData.layer.zoomlevel" />
                             </div>

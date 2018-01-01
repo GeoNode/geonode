@@ -1,14 +1,15 @@
-﻿appModule.controller('layerPropertiesCtrl', ['$timeout', '$scope', '$http', '$filter', '$modalInstance', 'data', 'inputData', 'settingsData', 'layer',
-    function ($timeout, $scope, $http, $filter, $modalInstance, data, inputData, settingsData, layer) {
+﻿appModule.controller('layerPropertiesCtrl', ['$timeout', '$scope', '$http', '$filter', '$modalInstance', 'data', 'inputData', 'settingsData', 'layer','LayerService',
+    function ($timeout, $scope, $http, $filter, $modalInstance, data, inputData, settingsData, layer, LayerService) {
         $scope.settingsData = settingsData;
         $scope.inputData = inputData;
-        $scope.classifierBinder = { classType: undefined, colorPaletteGenerator: undefined }
+        $scope.classifierBinder = { classType: undefined, colorPaletteGenerator: undefined };
         $scope.propertiesData = { isDirty: false };
         $scope.attributeDefs = data.fields;
         $scope.isReadonly = !layer.isWritable();
         $scope.nodeData = {};
         $scope.tabs = [{}, {}, {}, {}, {}];
         $scope.showSelectStyle = false;
+        $scope.selectedStyleId = {};
 
         $timeout(function () {
             $scope.tabs[data.selectedTabIndex].active = true;
@@ -47,6 +48,30 @@
             $modalInstance.dismiss('cancel');
         };
 
+        function getLayerStyles (){
+            // 
+            // layer.getName()
+            LayerService.getStylesByLayer(layer.getName())
+                .then(function(res){
+                    console.log(res);
+                    $scope.Styles = res;
+                }, function(){
+
+                });
+        }
+        (getLayerStyles)();
+        $scope.onStyleChange = function(){
+            if(!$scope.selectedStyleId)
+                return;
+            LayerService.getStyle($scope.selectedStyleId)
+                .then(function(res){
+                    console.log(res);
+                    $scope.Styles = res;
+                }, function(){
+
+                });
+        };
+        
         $scope.save = function () {
             if ($scope.nodeData.invalidField() || !$scope.nodeData.layer.name) {
                 return;

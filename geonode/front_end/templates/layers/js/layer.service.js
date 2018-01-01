@@ -29,11 +29,11 @@
                     url += '&' + k + '=' + params[k];
                 }
                 var uri = url;
-                if(useProxy == undefined || useProxy){
+                if (useProxy == undefined || useProxy) {
                     uri = '/proxy/?url=' + encodeURIComponent(url);
                 }
                 return get(uri);
-                
+
             },
             getLayerFeatureByName: function(url, layerName) {
                 return this.getWFS(url, {
@@ -54,10 +54,16 @@
 
                 });
             },
-            getStyleByLayer: function(layerName){
+            getStyleByLayer: function(layerName) {
                 return get('/layers/' + layerName + '/style/');
-            }
-            
+            },
+            getStylesByLayer: function(layerName) {
+                return get('/layers/' + layerName + '/styles/');
+            },
+            getStyle: function(id) {
+                return get('/layers/style/' + id + '/');
+            },
+
         };
     }
 })();

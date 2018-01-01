@@ -1246,6 +1246,30 @@ def save_sld_geoserver(request_method, full_path, sld_body, content_type='applic
         body=sld_body or None,
         headers=headers)
 
+from rest_framework.generics import ListAPIView, RetrieveUpdateAPIView
+from .serializers import StyleExtensionSerializer
+from rest_framework.authentication import SessionAuthentication, BasicAuthentication
+from rest_framework.permissions import IsAuthenticated
+
+class LayerStyleListAPIView(ListAPIView):
+    # authentication_classes = (SessionAuthentication, BasicAuthentication)
+    # permission_classes = (IsAuthenticated,)
+
+    serializer_class = StyleExtensionSerializer
+
+    def get_queryset(self):
+        """
+        This view should return a list of all the style extension for a layer.
+        """
+        layername = self.kwargs['layername']
+        layer_obj = _resolve_layer(self.request, layername)
+        styles = layer_obj.styles.all();
+        return StyleExtension.objects.filter(style__in = styles)
+
+class StyleExtensionRetrieveUpdateAPIView(RetrieveUpdateAPIView):
+    queryset = StyleExtension.objects.all()
+    serializer_class = StyleExtensionSerializer
+    
 
 class LayerStyleView(View):
     def get(self, request, layername):
