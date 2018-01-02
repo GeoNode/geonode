@@ -93,7 +93,7 @@ from geonode.geoserver.helpers import ogc_server_settings
 from geonode import GeoNodeException
 
 from geonode.groups.models import GroupProfile
-from geonode.layers.models import LayerSubmissionActivity, LayerAuditActivity, StyleExtension
+from geonode.layers.models import LayerSubmissionActivity, LayerAuditActivity, StyleExtension, Style
 from geonode.base.libraries.decorators import manager_or_member
 from geonode.base.models import KeywordIgnoreListModel
 from geonode.authentication_decorators import login_required as custom_login_required
@@ -1249,7 +1249,7 @@ def save_sld_geoserver(request_method, full_path, sld_body, content_type='applic
 from rest_framework.generics import ListAPIView, RetrieveUpdateAPIView
 from .serializers import StyleExtensionSerializer
 from rest_framework.authentication import SessionAuthentication, BasicAuthentication
-from rest_framework.permissions import IsAuthenticated
+from rest_framework import permissions
 
 class LayerStyleListAPIView(ListAPIView):
     # authentication_classes = (SessionAuthentication, BasicAuthentication)
@@ -1269,7 +1269,32 @@ class LayerStyleListAPIView(ListAPIView):
 class StyleExtensionRetrieveUpdateAPIView(RetrieveUpdateAPIView):
     queryset = StyleExtension.objects.all()
     serializer_class = StyleExtensionSerializer
-    
+    permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
+
+    # @custom_login_required
+    def put(self, request, pk, **kwargs):
+        data = json.loads(request.body)
+        # check already style extension created or not
+        try:
+            style_extension = StyleExtension.objects.get(pk=pk)
+            style_extension.json_field = data.get("StyleString", None)
+            style_extension.sld_body=data.get('SldStyle', None)
+        except Exception as ex:
+            raise ex
+        
+        style_extension.save()
+        full_path = '/gs/rest/styles/{0}.xml'.format(style_extension.style.name)
+        try:
+            save_sld_geoserver(request_method='PUT', full_path=full_path, sld_body=style_extension.sld_body )
+        except Exception as ex:
+            logger.error(ex)
+
+        return HttpResponse(
+                    json.dumps(
+                        dict(success="OK"),
+                        ensure_ascii=False), 
+                        status=200,
+                        content_type='application/javascript')
 
 class LayerStyleView(View):
     def get(self, request, layername):
@@ -1303,6 +1328,43 @@ class LayerStyleView(View):
         full_path = '/gs/rest/styles/{0}.xml'.format(layer_obj.default_style.name)
         try:
             save_sld_geoserver(request_method='PUT', full_path=full_path, sld_body=style_extension.sld_body )
+        except Exception as ex:
+            logger.error(ex)
+
+        return HttpResponse(
+                    json.dumps(
+                        dict(success="OK"),
+                        ensure_ascii=False), 
+                        status=200,
+                        content_type='application/javascript')
+    
+    @custom_login_required
+    def post(self, request, layername, **kwargs):
+        import pdb;pdb.set_trace()
+        #from geonode.geoserver.views import geoserver_rest_proxy
+        layer_obj = _resolve_layer(request, layername)
+        data = json.loads(request.body)
+        json_field=data.get("StyleString", None)
+        sld_body=data.get('SldStyle', None)
+
+        #create style
+        
+        style_extension = StyleExtension(json_field=json_field, created_by=request.user, modified_by=request.user)
+
+        sld_body = sld_body.format(style_name=str(style_extension.uuid))
+        sld_title = json.loads(json_field).get('Name', None) if json_field else None
+
+        style = Style(name=str(style_extension.uuid),sld_body=sld_body,sld_title=sld_title )
+        style.save()
+        
+        layer_obj.styles.add(style)
+
+        style_extension.sld_body = sld_body
+        style_extension.style = style
+        style_extension.save()
+        full_path = '/gs/rest/styles/'
+        try:
+            save_sld_geoserver(request_method='POST', full_path=full_path, sld_body=style_extension.sld_body )
         except Exception as ex:
             logger.error(ex)
 
