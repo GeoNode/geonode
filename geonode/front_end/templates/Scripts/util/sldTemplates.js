@@ -187,6 +187,7 @@
         //     '</sld:StyledLayerDescriptor>',
         sldHeader:  '<StyledLayerDescriptor xmlns="http://www.opengis.net/sld" xmlns:ogc="http://www.opengis.net/ogc" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="1.0.0" xsi:schemaLocation="http://www.opengis.net/sld StyledLayerDescriptor.xsd">' +
         '<UserStyle>' +
+        '    <Name>{style_name}</Name>' + 
         '<FeatureTypeStyle>' +
         '<Rule>' +
         '<!--default filter starts-->' +

@@ -2,9 +2,9 @@
     appModule
         .controller('MapUpdateController', MapUpdateController);
 
-    MapUpdateController.$inject = ['mapService', '$window', 'analyticsService', 'LayerService'];
+    MapUpdateController.$inject = ['mapService', '$window', 'analyticsService', 'LayerService', '$scope'];
 
-    function MapUpdateController(mapService, $window, analyticsService, LayerService) {
+    function MapUpdateController(mapService, $window, analyticsService, LayerService, $scope) {
         var self = this;
         var map = mapService.getMap();
         self.MapConfig = $window.mapConfig;
@@ -21,7 +21,6 @@
                 }
             });
         }
-
         function errorFn() {
 
         }
@@ -92,6 +91,11 @@
                 "classifierDefinitions": {}
             }
         }
+        $scope.$on('layerPropertiesChanged', function (event, args) {
+            var mapId = self.MapConfig.id;
+            var style = args.layer.getStyle();
+            
+        });
         function getLayerStyle(layer, new_layer) {
             LayerService.getStyleByLayer(layer.name)
                 .then(function(res) {

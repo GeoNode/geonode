@@ -14,9 +14,30 @@
                     dirtyManager.setDirty(true);
                 });
             },
-            saveProperties: function(layerId, layerName, zoomLevel, properties, sldStyle, selectionStyleSld, labelingSld, callBack) {
+            saveProperties: function(id, layerId, layerName, zoomLevel, properties, sldStyle, selectionStyleSld, labelingSld, callBack) {
                 //old
-                return $http.put('/layers/' + layerName + '/style/', {
+                return $http.put('/layers/style/' + id + '/', {
+                    LayerId: layerId,
+                    Name: layerName,
+                    ZoomLevel: zoomLevel,
+                    StyleString: angular.toJson(properties),
+                    SldStyle: sldStyle,
+                    SelectionStyleSld: selectionStyleSld,
+                    LabelingSld: labelingSld
+                }, {
+                    headers: {
+                        'X-CSRFToken': $cookies.get('csrftoken')
+                    }
+                }).success(function() {
+                    dirtyManager.setDirty(true);
+                    if (callBack) {
+                        callBack();
+                    }
+                });
+            },
+            createProperties: function(layerId, layerName, zoomLevel, properties, sldStyle, selectionStyleSld, labelingSld, callBack) {
+                //old
+                return $http.post('/layers/' + layerName + '/style/', {
                     LayerId: layerId,
                     Name: layerName,
                     ZoomLevel: zoomLevel,

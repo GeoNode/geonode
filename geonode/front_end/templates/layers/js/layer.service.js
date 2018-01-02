@@ -16,6 +16,64 @@
                 });
             return deferred.promise;
         }
+        function getDefaultStyle(){
+            return {
+                "Name": "",
+                "default": {
+                    "fillPattern": null,
+                    "textFillColor": "#0000ff",
+                    "text": null,
+                    "pixelDensity": null,
+                    "strokeDashstyle": "solid",
+                    "strokeWidth": 1.0,
+                    "strokeColor": "#000000",
+                    "strokeOpacity": null,
+                    "fillOpacity": 0.75,
+                    "fillColor": "#ffffff",
+                    "pointRadius": 14.0,
+                    "graphicName": "circle",
+                    "textGraphicName": null,
+                    "externalGraphic": null,
+                },
+                "select": {
+                    "fillPattern": "",
+                    "textFillColor": "#0000ff",
+                    "text": null,
+                    "pixelDensity": null,
+                    "strokeDashstyle": "solid",
+                    "strokeWidth": 1.0,
+                    "strokeColor": "#000000",
+                    "strokeOpacity": 1.0,
+                    "fillOpacity": 0.4,
+                    "fillColor": "#ff00ff",
+                    "pointRadius": 6.0,
+                    "graphicName": "circle",
+                    "textGraphicName": null,
+                    "externalGraphic": null,
+                },
+                "labelConfig": {
+                    "attribute": null,
+                    "visibilityZoomLevel": 0,
+                    "font": "Times",
+                    "fontStyle": "normal",
+                    "fontWeight": "normal",
+                    "color": "#000000",
+                    "borderColor": "#ffffff",
+                    "showBorder": true,
+                    "size": 10.0,
+                    "alignment": 1.0,
+                    "offsetX": 0.0,
+                    "offsetY": 0.0,
+                    "rotation": 0.0,
+                    "followLine": false,
+                    "repeat": false,
+                    "repeatInterval": 5.0,
+                    "wrap": false,
+                    "wrapPixel": 50.0
+                },
+                "classifierDefinitions": {}
+            };
+        }
         return {
             getGeoServerSettings: function() {
                 return get('api/geoserver-settings/');
@@ -63,7 +121,9 @@
             getStyle: function(id) {
                 return get('/layers/style/' + id + '/');
             },
-
+            getNewStyle : function(){
+                return getDefaultStyle();
+            }
         };
     }
 })();
