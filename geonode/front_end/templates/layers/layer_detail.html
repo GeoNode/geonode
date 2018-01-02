@@ -33,7 +33,7 @@
 {% block body_class %}layers{% endblock %}
 
 {% block body_outer %}
-    <div class="gd-content" style="border-top:5px solid lightgrey;">
+    <div class="gd-content">
       <div class="gd-content-body layer-test" >
         <div class="row">
         <div class="panel-container">
@@ -716,17 +716,21 @@
           <div class="splitter">
           </div>
           <div class="panel-right">
-            <div class="col-md-12">
+         
 
-              <ul class="nav nav-tabs pull-right">
-                  <li role="presentation" class="active" id="map" onclick="activeTab('map')">
-                      <a  aria-controls="profile" role="tab" data-toggle="tab" href="javascript:void(0)">{% trans "Map" %}</a></li>
-                  <li role="presentation" id="attribute" onclick="activeTab('attribute')">
-                      <a aria-controls="profile" role="tab" data-toggle="tab" href="javascript:void(0)">{% trans "Attribute" %}</a></li>
+              <ul class="nav nav-tabs layerNav">
+                    <li role="presentation" id="attribute" onclick="activeTab('attribute')" style="float: right">
+                            <a aria-controls="profile" role="tab" data-toggle="tab" href="javascript:void(0)"><i class="fa fa-table" aria-hidden="true"></i> {% trans "Attribute" %}</a></li>
+
+                  <li role="presentation" class="active" id="map" onclick="activeTab('map')" style="float: right">
+                      <a  aria-controls="profile" role="tab" data-toggle="tab" href="javascript:void(0)"><i class="fa fa-map-o" aria-hidden="true"></i> {% trans "Map" %}</a></li>
+                  
+
+                      
                 </ul>     
-            </div>
+           
             
-                <div class="col-md-12" id="myNav_map_left">
+                <div class="col-md-12" id="myNav_map_left" style="padding: 0">
 
             <div id="embedded_map" class="mrg-btm">
               <div id="preview_map"></div>
@@ -747,6 +751,8 @@
                 </span>
               </div>
           </div>
+
+          
           <div class="col-md-12" id="attribute_view_left" style="overflow-y: auto;">
                 {% include "layers/_layer_attribute_view.html" %}
         </div>

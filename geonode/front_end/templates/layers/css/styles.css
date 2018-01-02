@@ -8,9 +8,8 @@
 .panel-container {
     display: flex;
     flex-direction: row;
-    border: 1px solid silver;
     overflow: hidden;
-    margin: 15px;
+    margin: 0;
 
     /* avoid browser level touch actions */
     xtouch-action: none;
@@ -43,11 +42,12 @@
 .panel-right {
     flex: 1 1 auto;
     /* resizable */
-    padding: 10px;
+    padding: 0;
     width: 100%;
     min-height: 200px;
     min-width: 200px;
-    background: #eee;
+    background: #fff;
+    padding-top: 5px;
 }
 
 

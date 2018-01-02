@@ -22,6 +22,10 @@ a:hover{
     min-height: 20px;
     padding-left: 20px;
 }
+.container
+{
+    width: 1240px;
+}
 #id_email{
     background-color: #fff;
     background-image: none;
@@ -2326,10 +2330,11 @@ ul.resources-summery li a .fa{
 }
 /* end user details page*/
 #user_messages {
-    margin-top: 20px;
+    margin-top: 0;
 }
 #user_messages .alert{
     margin-bottom: 0px;
+    border-radius: 0;
 }
 .row.margin-right-15px{
     margin-right: 0px;
@@ -3093,7 +3098,7 @@ ul.termsuseandcondition li {
 }
 
 #gd-header.navsticky{
-    min-height: 50px;
+    min-height: 61px;
     background: #fff;
 }
 #gd-header.navsticky .navbar-nav {
@@ -3142,17 +3147,16 @@ ul.termsuseandcondition li {
 }
 .layer-mini-slider{
     left: 0%;
+    top: 0;
     position: absolute;
     z-index: 119;
     cursor:pointer;
     margin-top: -49px;
-    border-left: 1px solid #d4d4d4;
-    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.3);
     cursor: pointer;
     height: 48px;
     width: 23px;
-    background:#fff;
-    left:18px;
+    background:#f0f0f0;
+    left:0;
     color:#fff;
 }
 .layerdetails_arro span img{
@@ -3188,6 +3192,7 @@ ul.termsuseandcondition li {
     margin-top: 19px;
     color:#ffffff;
     width: 10px;
+    margin-left: 4px;
 }
 .gd-content .gd-content-body .overlay_layerdetails {
     height: 100%;
@@ -3327,4 +3332,33 @@ width: 100%;
 {
     white-space: normal;
 
+}
+
+.layerNav 
+{
+    padding: 0 15px;
+}
+
+
+.layerNav > li > a
+{
+    border: none;
+    border-radius: 0;
+    margin-right: -1px;
+    padding: 10px 30px;
+    color: #777777;
+    border-width: 0 0 0 3px;
+    border-color: #000;
+}
+.layerNav > li.active > a, .layerNav > li.active > a:focus, .layerNav > li.active > a:hover
+{
+    border-width: 0 0 4px;
+    border-color: #f2555b;
+    border-top: none;
+    color: #000;
+}
+.layerNav > li > a:focus, .layerNav > li > a:hover
+{
+    background: none;
+    color: #000;
 }
