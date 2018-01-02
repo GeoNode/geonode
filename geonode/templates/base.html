@@ -71,7 +71,7 @@
     <section id="gd-header" class="navsticky" >
         <!-- <nav class="navbar navbar-default"> -->
         <nav class="navbar navbar-default navbar-fixed-top">
-            <div class="container">
+            <div class="container-fluid">
                 <div class="navbar-header">
                     <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#gd-navbar-collapse" aria-expanded="false">
                         <span class="sr-only">Toggle navigation</span>
@@ -346,7 +346,7 @@
 
     <section id="gd-wrapper">
     {% block middle %}
-    <div class="container">
+    <div class="container-fluid">
       {% include "_status_message.html" %}
       <!--{% include "_announcements.html" %}-->
       {% include "_messages.html" %}
@@ -367,7 +367,7 @@
 
     {% block footer %}
     <footer id="gd-footer">
-        <div class="container">
+        <div class="container-fluid">
             <div class="row">
                 <div class="col-md-7">
                     <!-- <button type="button" class="navbar-toggle collapsed" data-toggle="collapse"
@@ -456,7 +456,7 @@
 
     <!-- Modal must stay outside the navbar -->
     <section id="gd-announcements-model">
-        <div class="container">
+        <div class="container-fluid">
             <div class="modal fade" id="GDAnnouncementsModel"  tabindex="-1" role="dialog" aria-labelledby="GDAnnouncementsModel">
               <div class="modal-dialog" role="document" >
                 <div class="modal-content" style="min-height: 200px;">
@@ -475,7 +475,7 @@
     </section>
     {% if not user.is_authenticated %}
     <section id="gd-model">
-        <div class="container">
+        <div class="container-fluid">
             <div style="">
                 <div class="modal fade" id="SigninModal"  tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel">
                   <div class="modal-dialog" role="document" >
@@ -566,7 +566,7 @@
     {% endif %}
     {% if not user.is_authenticated and REGISTRATION_OPEN %}
     <section id="gd-model">
-        <div class="container">
+        <div class="container-fluid">
             <div style="">
                 <div class="modal fade" id="SignupModal"  tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel">
                   <div class="modal-dialog" role="document" >

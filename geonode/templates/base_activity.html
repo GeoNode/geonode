@@ -73,7 +73,7 @@
 
     <section id="gd-wrapper">
     {% block middle %}
-    <div class="container">
+    <div class="container-fluid">
       {% include "_status_message.html" %}
       <!--{% include "_announcements.html" %}-->
       {% include "_messages.html" %}
@@ -94,7 +94,7 @@
     <!-- Modal must stay outside the navbar -->
     {% if not user.is_authenticated %}
     <section id="gd-model">
-        <div class="container">
+        <div class="container-fluid">
             <div style="">
                 <div class="modal fade" id="SigninModal"  tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel">
                   <div class="modal-dialog fullScreenModal" role="document" >
@@ -185,7 +185,7 @@
     {% endif %}
     {% if not user.is_authenticated and REGISTRATION_OPEN %}
     <section id="gd-model">
-        <div class="container">
+        <div class="container-fluid">
             <div style="">
                 <div class="modal fade" id="SignupModal"  tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel">
                   <div class="modal-dialog fullScreenModal" role="document" >
