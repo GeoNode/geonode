@@ -66,8 +66,11 @@ class ExceptionHandlerMiddleware(object):
     """
 
     def process_exception(self, request, exception):
-        if request.user:
-            db_logger.name = request.user.name_long
-        
-        db_logger.exception(exception)
+
+        try:
+            if request.user:
+                db_logger.name = request.user.name_long
+        except AttributeError as exception:
+            db_logger.exception(exception)
+
         return None

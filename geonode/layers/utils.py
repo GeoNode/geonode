@@ -845,23 +845,21 @@ def collect_epsg(tmp_dir, prj_file_name):
     proj4text = '+proj=longlat +datum=WGS84 +no_defs '
 
     """
-    cursor = connection.cursor()
-    try:
+    if proj4_txt:
 
-        cursor.execute("SELECT * FROM spatial_ref_sys WHERE proj4text = %s", [proj4_txt])
-        result = cursor.fetchall()
-    finally:
-        cursor.close()
+        with connection.cursor() as cursor:
+            cursor.execute("SELECT * FROM spatial_ref_sys WHERE proj4text = %s", [proj4_txt])
+            result = cursor.fetchall()
 
-    epsg_code = ''
-    if len(result) == 0:
-        # send error message
-        # There is no epsg code for data
-        msg = _('Given data is not valid. Please upload valid data.')
-        logger.exception(msg)
-        raise GeoNodeException(msg)
-    elif len(result) >= 1:
-        # if more than one result the select first one
-        epsg_code = result[0][2]
+        epsg_code = ''
+        if len(result) == 0:
+            # send error message
+            # There is no epsg code for data
+            msg = _('Given data is not valid. Please upload valid data.')
+            logger.exception(msg)
+            raise GeoNodeException(msg)
+        elif len(result) >= 1:
+            # if more than one result the select first one
+            epsg_code = result[0][2]
 
     return epsg_code
