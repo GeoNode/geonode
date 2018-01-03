@@ -22,6 +22,7 @@ try:
     import json
 except ImportError:
     from django.utils import simplejson as json
+from django.contrib.auth.models import AnonymousUser
 from django.http import HttpResponse
 
 from geonode.geoserver.helpers import ogc_server_settings
@@ -67,7 +68,7 @@ class ExceptionHandlerMiddleware(object):
 
     def process_exception(self, request, exception):
         if request.user:
-            db_logger.name = request.user.name_long
+            db_logger.name = 'Anonymous User'  if isinstance(request.user, AnonymousUser) else request.user.name_long
         
         db_logger.exception(exception)
         return None
