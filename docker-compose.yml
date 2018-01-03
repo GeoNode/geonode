@@ -29,6 +29,8 @@ services:
       - postgres
       - elasticsearch
     command: celery worker --app=geonode.celery_app:app -B -l INFO
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
     env_file:
       - ./scripts/docker/env/production/django.env
 
