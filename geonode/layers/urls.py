@@ -69,7 +69,7 @@ if 'geonode.geoserver' in settings.INSTALLED_APPS:
 #custom
 urlpatterns = patterns('',
     url(r'^(?P<layername>[^/]*)/style/$', LayerStyleView.as_view(), name='layer_style'),
-    url(r'^style/(?P<pk>[^/]*)/$', StyleExtensionRetrieveUpdateAPIView.as_view(), name='style_extention'),
+    url(r'^style/(?P<pk>[0-9]+)/$', StyleExtensionRetrieveUpdateAPIView.as_view(), name='style_extention'),
     url(r'^(?P<layername>[^/]*)/styles/$', LayerStyleListAPIView.as_view(), name='layer_styles'),
     url(r'^(?P<layername>[^/]*)/unique-value-for-attribute/(?P<attributename>[^/]*)/$', LayerAttributeView.as_view(), name='layer_attribute'),
 ) + urlpatterns

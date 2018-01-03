@@ -1250,6 +1250,8 @@ from rest_framework.generics import ListAPIView, RetrieveUpdateAPIView
 from .serializers import StyleExtensionSerializer
 from rest_framework.authentication import SessionAuthentication, BasicAuthentication
 from rest_framework import permissions
+from rest_framework.response import Response
+
 
 class LayerStyleListAPIView(ListAPIView):
     # authentication_classes = (SessionAuthentication, BasicAuthentication)
@@ -1340,8 +1342,6 @@ class LayerStyleView(View):
     
     @custom_login_required
     def post(self, request, layername, **kwargs):
-        import pdb;pdb.set_trace()
-        #from geonode.geoserver.views import geoserver_rest_proxy
         layer_obj = _resolve_layer(request, layername)
         data = json.loads(request.body)
         json_field=data.get("StyleString", None)
@@ -1363,14 +1363,13 @@ class LayerStyleView(View):
         style_extension.style = style
         style_extension.save()
         full_path = '/gs/rest/styles/'
-        try:
-            save_sld_geoserver(request_method='POST', full_path=full_path, sld_body=style_extension.sld_body )
-        except Exception as ex:
-            logger.error(ex)
 
+        save_sld_geoserver(request_method='POST', full_path=full_path, sld_body=style_extension.sld_body )
+
+        serializer = StyleExtensionSerializer(style_extension)
         return HttpResponse(
                     json.dumps(
-                        dict(success="OK"),
+                       serializer.data,
                         ensure_ascii=False), 
                         status=200,
                         content_type='application/javascript')

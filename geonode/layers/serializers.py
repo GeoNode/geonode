@@ -8,6 +8,6 @@ class StyleExtensionSerializer(ModelSerializer):
     """
     class Meta:
         model = StyleExtension
-        fields = ('id','style', 'json_field', 'sld_body')
+        fields = ('id', 'uuid', 'title','style', 'json_field', 'sld_body')
         depth = 1
         
