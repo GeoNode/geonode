@@ -165,9 +165,7 @@
 /*---Geo dash featured start---*/
 #gd-featurd-maps{
     color:#fff;
-    background: #f7f7f7;
     /*margin-bottom: 20px;*/
-    padding-bottom: 20px;
 }
 #gd-featurd-maps .header-title{
     color:#6e6b6b;
@@ -238,6 +236,7 @@
 }
 #gd-featurd-maps .gd-featurd-maps-content-dash .gd-featurd-maps-container-dash .contents {
     padding: 15px;
+    background-color: #d9edf7;
 }
 #gd-featurd-maps .gd-featurd-maps-content .gd-featurd-maps-container .contents .title{
     text-align: center;
@@ -890,7 +889,7 @@
 #gd-dashboard{
     /*background: #f7f7f7;*/
     /*margin-bottom: 20px;*/
-    padding-bottom: 20px;
+    padding: 20px;
 }
 #gd-dashboard .header-title{
     color:#6e6b6b;
