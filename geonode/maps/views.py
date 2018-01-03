@@ -1347,13 +1347,21 @@ def set_bounds_from_bbox(bbox):
         center_y = center_y
         return zoom, center_x, center_y
 
-from rest_framework.generics import UpdateAPIView
+from rest_framework.generics import RetrieveUpdateAPIView
 from .serializers import MapLayerSerializer
 from rest_framework.response import Response
 from rest_framework.parsers import JSONParser
+from rest_framework import permissions
 
-class MapLayerUpdateAPIView(UpdateAPIView):
+
+class MapLayerRetrieveUpdateAPIView(RetrieveUpdateAPIView):
     serializer_class = MapLayerSerializer
+    permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
+
+    def get(self, request, map_id, layername, **kwargs):
+        map_obj = MapLayer.objects.filter(map_id=map_id, name=layername).first()
+        serializer = MapLayerSerializer(map_obj)
+        return Response(serializer.data)
 
     def put(self, request, map_id, layername, **kwargs):
         map_obj = MapLayer.objects.filter(map_id=map_id, name=layername).first()
