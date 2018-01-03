@@ -178,55 +178,56 @@ def layer_upload(request, template='upload/layer_upload.html'):
         data_dict = dict()
         tmp_dir = ''
         epsg_code = ''
-        # Check if zip file then, extract into tmp_dir and convert
-        if zipfile.is_zipfile(request.FILES['base_file']):
-            tmp_dir = create_tmp_dir()
-            with zipfile.ZipFile(request.FILES['base_file']) as zf:
-                zf.extractall(tmp_dir)
+        if str(file_extension).lower() == 'shp' or zipfile.is_zipfile(request.FILES['base_file']):
+            # Check if zip file then, extract into tmp_dir and convert
+            if zipfile.is_zipfile(request.FILES['base_file']):
+                tmp_dir = create_tmp_dir()
+                with zipfile.ZipFile(request.FILES['base_file']) as zf:
+                    zf.extractall(tmp_dir)
 
-            prj_file_name = ''
-            shp_file_name = ''
-            for file in os.listdir(tmp_dir):
-                if file.endswith(".prj"):
-                    prj_file_name = file
+                prj_file_name = ''
+                shp_file_name = ''
+                for file in os.listdir(tmp_dir):
+                    if file.endswith(".prj"):
+                        prj_file_name = file
 
-                elif file.endswith(".shp"):
-                    shp_file_name = file
+                    elif file.endswith(".shp"):
+                        shp_file_name = file
 
-            srs = checking_projection(tmp_dir, prj_file_name)
+                srs = checking_projection(tmp_dir, prj_file_name)
 
-            # collect epsg code
-            epsg_code = collect_epsg(tmp_dir, prj_file_name)
+                # collect epsg code
+                epsg_code = collect_epsg(tmp_dir, prj_file_name)
 
-            if epsg_code:
-                data_dict = reprojection(tmp_dir, shp_file_name)
+                if epsg_code:
+                    data_dict = reprojection(tmp_dir, shp_file_name)
 
-        if str(file_extension) == 'shp':
+            if str(file_extension) == 'shp':
 
-            # create temporary directory for conversion
-            tmp_dir = create_tmp_dir()
+                # create temporary directory for conversion
+                tmp_dir = create_tmp_dir()
 
-            # Upload files
-            upload_files(tmp_dir, request.FILES)
+                # Upload files
+                upload_files(tmp_dir, request.FILES)
 
-            # collect epsg code
-            epsg_code = collect_epsg(tmp_dir, str(request.FILES['prj_file'].name))
+                # collect epsg code
+                epsg_code = collect_epsg(tmp_dir, str(request.FILES['prj_file'].name))
 
-            # Checking projection
-            srs = checking_projection(tmp_dir, str(request.FILES['prj_file'].name))
+                # Checking projection
+                srs = checking_projection(tmp_dir, str(request.FILES['prj_file'].name))
 
-            # if srs.IsProjected:
-            if epsg_code:
+                # if srs.IsProjected:
+                if epsg_code:
 
-                if srs.GetAttrValue('projcs'):
-                    if "WGS" not in srs.GetAttrValue('projcs'):
+                    if srs.GetAttrValue('projcs'):
+                        if "WGS" not in srs.GetAttrValue('projcs'):
 
+                            data_dict = reprojection(tmp_dir, str(request.FILES['base_file'].name))
+
+                    # check WGS84 projected
+                    else:
+                        # call projection util function
                         data_dict = reprojection(tmp_dir, str(request.FILES['base_file'].name))
-
-                # check WGS84 projected
-                else:
-                    # call projection util function
-                    data_dict = reprojection(tmp_dir, str(request.FILES['base_file'].name))
 
         form = NewLayerUploadForm(request.POST, request.FILES)
         tempdir = None
@@ -556,7 +557,7 @@ def layer_detail(request, layername, template='layers/layer_detail.html'):
     if settings.SOCIAL_ORIGINS:
         context_dict["social_links"] = build_social_links(request, layer)
 
-    if str(layer.user_data_epsg) != 'None':
+    if str(layer.user_data_epsg) and str(layer.user_data_epsg) != 'None':
         with connection.cursor() as cursor:
             cursor.execute("SELECT srtext FROM spatial_ref_sys WHERE srid = %s", [str(layer.user_data_epsg)])
 
