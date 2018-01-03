@@ -236,7 +236,7 @@
 }
 #gd-featurd-maps .gd-featurd-maps-content-dash .gd-featurd-maps-container-dash .contents {
     padding: 15px;
-    background-color: #d9edf7;
+    background-color: #aedaee;
 }
 #gd-featurd-maps .gd-featurd-maps-content .gd-featurd-maps-container .contents .title{
     text-align: center;
@@ -850,7 +850,7 @@
 }
 .carousel-control{
     z-index: 12;
-    width: 4%;
+    width: 32px;
 }
 .carousel-control.left-panel {
 
@@ -889,7 +889,7 @@
 #gd-dashboard{
     /*background: #f7f7f7;*/
     /*margin-bottom: 20px;*/
-    padding: 20px;
+    padding: 0 20px;
 }
 #gd-dashboard .header-title{
     color:#6e6b6b;

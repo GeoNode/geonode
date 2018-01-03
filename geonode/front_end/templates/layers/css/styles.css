@@ -49,5 +49,9 @@
     background: #fff;
     padding-top: 5px;
 }
+.grid-container-dash .title a
+{
+    color: #000;
+}
 
 

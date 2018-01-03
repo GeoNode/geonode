@@ -2888,7 +2888,7 @@ ul.termsuseandcondition li {
 
 .grid-container-dash.lmd{
     padding: 0;
-    border: 1px solid #ddd;
+    border: 1px solid #3896e2;
      margin-bottom: 0;
 }
 
@@ -2899,9 +2899,9 @@ ul.termsuseandcondition li {
     position: relative;
 }
 .grid-container-dash.lmd .avater .checkbox-overlay{
-    right: 0;
+    right: -15px;
     position: absolute;
-    top: 0;
+    top: -15px;
 }
 .grid-container-dash.lmd .avater img{
     /*height: 200px;*/
@@ -3377,10 +3377,25 @@ width: 100%;
 }
 #gd-featurd-maps .carousel-control span
 {
-    color: #3896e2;
-    font-size: 23px;
+   background-color: #f0ad4e;
+   border-radius: 50%;
+   color: #fff;
+   font-size: 18px;
+   line-height: 26px;
 }
 .panel-heading
 {
     font-size: 18px;
+}
+.panel-body
+{
+    padding: 22px ;
+}
+.checkbox-overlay .btn-primary
+{
+    padding: 3px 8px;
+}
+#gd-featurd-maps .carousel-inner 
+{
+    padding: 10px;
 }
