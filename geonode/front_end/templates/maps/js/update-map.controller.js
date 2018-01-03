@@ -182,12 +182,13 @@
                 // "SavedDataId": "s_fe297a3305394811919f33cdb16fc30d"
             };
         }
+        (getGeoServerSettings)();
 
-        (function(){
+        (function() {
 
             // map load
             //debugger
-            map.on('postrender', function(evt){
+            map.on('postrender', function(evt) {
                 //console.log('maploaded', evt);
                 var user_href = window.location.href.split('/');
                 var map_info = user_href[user_href.length - 2];
@@ -199,10 +200,10 @@
 
                 var latitude;
                 var longitude;
-                try{
+                try {
                     latitude = user_location.latitude.toString();
                     longitude = user_location.longitude.toString()
-                }catch(err){
+                } catch (err) {
                     latitude = "";
                     longitude = "";
                 }
@@ -220,9 +221,7 @@
             });
 
             // Map drag / pan event
-
-            map.on('pointerdrag', function(evt){
-
+            map.on('pointerdrag', function(evt) {
                 //console.log('pointerdrag', arguments);
                 var user_location = JSON.parse(localStorage.getItem("user_location"));
 
@@ -230,10 +229,10 @@
 
                 var latitude;
                 var longitude;
-                try{
+                try {
                     latitude = user_location.latitude.toString();
                     longitude = user_location.longitude.toString()
-                }catch(err){
+                } catch (err) {
                     latitude = "";
                     longitude = "";
                 }
@@ -258,9 +257,7 @@
             });
 
             //zoom in out event
-
-            map.getView().on('change:resolution', function(evt){
-
+            map.getView().on('change:resolution', function(evt) {
 
                 var zoomType;
                 var user_location = JSON.parse(localStorage.getItem("user_location"));
@@ -271,25 +268,21 @@
                 var longitude = '';
 
                 // Zoom in
-
-                if(evt.oldValue > evt.currentTarget.getResolution()){
-
+                if (evt.oldValue > evt.currentTarget.getResolution()) {
                     //console.log("Zoom in called");
                     zoomType = 'zoom-in'
                 }
 
                 // Zoom out
-
-                if(evt.oldValue < evt.currentTarget.getResolution()){
-
+                if (evt.oldValue < evt.currentTarget.getResolution()) {
                     //console.log("Zoom out called");
                     zoomType = 'zoom-out'
                 }
 
-                try{
+                try {
                     latitude = user_location.latitude.toString();
                     longitude = user_location.longitude.toString()
-                }catch(err){
+                } catch (err) {
                     latitude = "";
                     longitude = "";
                 }
