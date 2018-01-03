@@ -50,20 +50,23 @@
 .surfgis .on-map-button {
     /* raugh copy of .ol-control button */
     border: none;
-    text-align: center;
     color: #fff;
-    margin: 1px;
-    padding: 0;
     display: block;
-    height: 25px;
-    width: 25px;
-    background-color: #4c6079;
-    background-color: rgba(0,60,136,.7);
+    height: 38px;
+    margin: 0;
+    padding: 0;
+    position: absolute;
+    right: 8px;
+    text-align: center;
+    top: 45px;
+    width: 138px;
+    z-index: 1;
+    background-color: rgba(0,60,136,.6);
 }
 
     .surfgis .on-map-button:hover {
         background-color: #14365f;
-        background-color: rgba(0,60,136,.7);
+        background-color: rgba(0,60,136,.8);
     }
 
 .surfgis .zoom-level-display {
@@ -80,12 +83,13 @@
 }
 
 .surfgis .base-map-switcher {
-    background-color: #ffffff;
+    
     position: absolute;
     right: 8px;
-    top: 105px;
+    top: 95px;
     width: 500px;
     z-index: 2;
+    padding: 10px;
 }
 
     .surfgis .base-map-switcher .layers-list {
@@ -99,11 +103,11 @@
     }
 
     .surfgis .base-map-switcher button {
-        height: 50px;
+        height: 40px;
         margin: 0;
-        padding: 10px;
+        padding: 5px 10px;
         position: absolute;
-        right: 8px;
+        right: 0;
         top: -60px;
         width: 145px;
     }
@@ -390,13 +394,110 @@
         border-right: 1px solid #ccc;
     }
 
+   
+      .base-map-list
+      {
+         list-style-type: none;
+         margin: 0;
+         padding: 0;
+         width: 480px;
+         display: inline-block;
+         padding: 5px 0 10px;
+         border-bottom: 1px solid #f1f1f1;
+      } 
+      .base-map-list:last-child
+      {
+       border: none;
+      }      
+     .base-map-list li
+     {
+         float: left;
+         margin-right: 10px;
+     } 
+     .base-map-list li.name
+     {
+        font-size: 17px;
+        color:#b9b9b9;
+        margin-right: 15px;
+        width: 170px;
+        line-height: 30px;
+     } 
+     .base-map-list li img
+     {
+      border: 1px solid #ccc;
+      border-radius: 4px;
+     } 
+     .base-map-list li a
+     {
+     width: 30px;
+     height: 30px;
+     display: block;
+     } 
+     .base-map-list li a:hover
+     {
+      opacity: 0.5;
+     } 
+     .dropBox {
+        background-color: #fff;
+        height: auto;
+        right: -51px;
+        position: absolute;
+        top: 46px;
+        width: 400px;
+        padding: 15px;
+        border: 1px solid rgba(0, 0, 0, 0.2);
+        -webkit-box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+        -moz-box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+    }
+    .dropBox:before {
+        content:"";
+        width: 0; 
+        height: 0; 
+        border-left: 10px solid transparent;
+        border-right: 10px solid transparent;        
+        border-bottom: 10px solid rgba(0, 0, 0, 0.2);
+        position: absolute;
+        right: 60px;
+        top: -11px; 
+    }
     .arrow-up {
         width: 0; 
         height: 0; 
         border-left: 10px solid transparent;
         border-right: 10px solid transparent;        
-        border-bottom: 10px solid #fff;
+        border-bottom: 10px solid rgb(255, 255, 255);
         position: absolute;
         right: 60px;
         top: -10px;
       }
+      .directions .input-group-addon
+      {
+        background: none;
+        border: none;
+      }
+      .directions .input-group-addon i
+      {
+       width: 20px;
+       font-size: 21px;
+      }
+      .directions .input-group .form-control
+      {
+        border: none;
+        border-bottom: 1px solid rgba(0, 0, 0, 0.14);
+        box-shadow: none;
+        padding-left: 0;
+      }
+      .directions .input-group .form-control:focus
+      {
+
+        border-bottom: 2px solid rgba(56, 150, 226, 0.9);
+
+      }
+      .btn-group-justified > .btn, .btn-group-justified > .btn-group
+      {
+          border-radius: 0;
+      }
+      
+    
+

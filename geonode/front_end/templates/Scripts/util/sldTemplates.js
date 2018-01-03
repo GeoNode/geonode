@@ -1,4 +1,4 @@
-﻿appModule.factory('sldTemplateService', [function() {
+appModule.factory('sldTemplateService', [function() {
 
     return {
         simplePointTemplate: '{9}' +

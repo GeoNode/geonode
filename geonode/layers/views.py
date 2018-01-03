@@ -96,7 +96,8 @@ from geonode.groups.models import GroupProfile
 from geonode.layers.models import LayerSubmissionActivity, LayerAuditActivity, StyleExtension, Style
 from geonode.base.libraries.decorators import manager_or_member
 from geonode.base.models import KeywordIgnoreListModel
-from geonode.authentication_decorators import login_required as custom_login_required
+# from geonode.authentication_decorators import login_required as custom_login_required
+
 from django.db import connection
 from osgeo import osr
 
@@ -334,7 +335,10 @@ def layer_upload(request, template='upload/layer_upload.html'):
                     saved_layer.set_permissions(permissions)
             finally:
                 # Delete temporary files
-                shutil.rmtree(tmp_dir)
+
+                if tmp_dir != '':
+                    shutil.rmtree(tmp_dir)
+
                 if tempdir is not None:
                     shutil.rmtree(tempdir)
         else:
@@ -576,7 +580,10 @@ def layer_detail(request, layername, template='layers/layer_detail.html'):
         user_proj = srs.GetAttrValue('geogcs')
 
         context_dict['user_data_proj'] = user_proj
+    
     context_dict["user_data_epsg"] = str(layer.user_data_epsg)
+
+    context_dict["layer_status"] = layer.status
 
     return render_to_response(template, RequestContext(request, context_dict))
 

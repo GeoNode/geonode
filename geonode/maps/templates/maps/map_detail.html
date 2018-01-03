@@ -23,20 +23,23 @@
 
 {% block body_outer %}
     {% overall_rating resource "map" as map_rating %}
-    <div class="gd-content" style="border-top:5px solid lightgrey;">
+    <div class="gd-content">
         <div class="gd-content-body layer-test">
             <div class="row">
-                <div class="col-md-4 margin-zero right-pad-zero">
-                    <div id="gd-accordion-style" class="map-details-information">
+                <div class="panel-container">
+                <div class="panel-left">
+                <div class="col-md-4 margin-zero right-pad-zero" style="width: 100%; padding-left: 0;">
+                    <div id="gd-accordion-style" class="map-details-information" style="overflow-x: hidden;">
                         <div class="panel-group" id="accordion__" role="tablist" aria-multiselectable="true">
                             <div class="panel panel-default">
                                 <div class="panel-heading" role="tab" id="headingOne">
                                     <h4 class="panel-title">
                                         <a role="button" data-toggle="collapse" data-parent="#accordion1"
                                            href="#collapse1-down" aria-expanded="true" aria-controls="collapse1">
-                                            {{ resource.title }}
-                                            <i class="fa fa-chevron-up" aria-hidden="true"></i>
-                                            <i class="fa fa-chevron-down" aria-hidden="true"></i>
+                                           <i class="fa fa-chevron-up" aria-hidden="true"></i>
+                                           <i class="fa fa-chevron-down" aria-hidden="true"></i>
+                                           {{ resource.title }}
+                                            
                                         </a>
                                     </h4>
                                 </div>
@@ -424,12 +427,18 @@
                         </div>
                     </div>
                 </div>
-                <div class="col-md-8  margin-zero left-pad-zero">
+                </div>
+                <div class="splitter">
+                </div>
+                <div class="panel-right">
+                <div class="col-md-8  margin-zero left-pad-zero r" style="width: 100%;padding-right: 0;">
                     <div class="gd-content-body map-details-info">
                         <div id="embedded_map">
                             <div id="the_map"></div>
                         </div>
                     </div>
+                </div>
+                </div>
                 </div>
             </div>
           </div>
@@ -551,6 +560,11 @@
     </script>
 {% include "_permissions_form_js.html" %}
 <script type="text/javascript" src="{{ STATIC_URL}}geonode/js/utils/thumbnail.js"></script>
+<script>
+    $.fn.resizable = undefined;
+</script>
+<script src="https://rawgit.com/RickStrahl/jquery-resizable/master/src/jquery-resizable.js"></script>
+<link rel="stylesheet" href="{{ STATIC_URL }}layers/css/styles.css">
 <script type="text/javascript">
   $('#set_thumbnail').click(function(){
     createMapThumbnail();
@@ -638,6 +652,13 @@
         });
 
     }
+
+    $(document).ready(function(){
+        $(".panel-left").resizable({
+            handleSelector: ".splitter",
+            resizeHeight: false
+        });
+    });
 
 </script>
 {% endblock %}

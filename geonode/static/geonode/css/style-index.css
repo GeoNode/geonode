@@ -165,9 +165,7 @@
 /*---Geo dash featured start---*/
 #gd-featurd-maps{
     color:#fff;
-    background: #f7f7f7;
     /*margin-bottom: 20px;*/
-    padding-bottom: 20px;
 }
 #gd-featurd-maps .header-title{
     color:#6e6b6b;
@@ -238,6 +236,7 @@
 }
 #gd-featurd-maps .gd-featurd-maps-content-dash .gd-featurd-maps-container-dash .contents {
     padding: 15px;
+    background-color: #aedaee;
 }
 #gd-featurd-maps .gd-featurd-maps-content .gd-featurd-maps-container .contents .title{
     text-align: center;
@@ -332,7 +331,7 @@
 }
 #gd-latestnews-content{
     border:none;
-    margin: 20px 120px;
+    margin: 20px 0;
     border-radius: 3px;
 }
 @media (max-width: 767px) {
@@ -344,7 +343,7 @@
 
  }
 #gd-latestnews-left{
-    background:#fff;
+    backgrounFd:#fff;
     border-radius: 2px;
     padding: 30px;
     padding-left: 50px;
@@ -851,7 +850,7 @@
 }
 .carousel-control{
     z-index: 12;
-    width: 4%;
+    width: 32px;
 }
 .carousel-control.left-panel {
 
@@ -882,16 +881,15 @@
 }
 .carousel-control .glyphicon-chevron-right, .carousel-control .icon-next,
 .carousel-control .glyphicon-chevron-left, .carousel-control .icon-prev{
-    color: #1ac4e3;
+    color: #ffffff;
 }
 
 /* dashboard style start */
 
 #gd-dashboard{
-    color:#fff;
     /*background: #f7f7f7;*/
     /*margin-bottom: 20px;*/
-    padding-bottom: 20px;
+    padding: 0 20px;
 }
 #gd-dashboard .header-title{
     color:#6e6b6b;

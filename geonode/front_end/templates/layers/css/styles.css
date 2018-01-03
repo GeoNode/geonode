@@ -1,0 +1,57 @@
+
+.page-container {
+    margin: 20px;
+}
+
+/* horizontal panel*/
+
+.panel-container {
+    display: flex;
+    flex-direction: row;
+    overflow: hidden;
+    margin: 0;
+
+    /* avoid browser level touch actions */
+    xtouch-action: none;
+}
+
+.panel-left {
+    flex: 0 0 auto;
+    /* only manually resize */
+    width: 300px;
+    min-height: 200px;
+    min-width: 150px;
+    white-space: nowrap;
+    background: #fff;
+    color: white;
+}
+
+.splitter {
+    flex: 0 0 auto;
+    width: 15px;
+    background: url("vsizegrip.png") center center no-repeat #d8d8d8;
+    border-left: 1px solid #c4c4c4;
+    border-right: 1px solid #c4c4c4;
+    min-height: 200px;
+    cursor: col-resize;
+}
+.splitter:hover {
+    background: url("vsizegrip.png") center center no-repeat #c9c9c9;
+}
+
+.panel-right {
+    flex: 1 1 auto;
+    /* resizable */
+    padding: 0;
+    width: 100%;
+    min-height: 200px;
+    min-width: 200px;
+    background: #fff;
+    padding-top: 5px;
+}
+.grid-container-dash .title a
+{
+    color: #000;
+}
+
+

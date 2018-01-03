@@ -11,404 +11,378 @@
 {% endblock %}
 {% block middle %}
     <div id="gd-dashboard">
-        <div class="container">
-            <div class="gd-content">
-                <div class="gd-content-heading">
-                  <div class="row">
-                      <div class="col-md-6">
-                          <div class="title small-content">
+       
+         
+               
+                  
+                       
+                     
+                          <div class="d-title">
+
+                                <div class="pull-right">
+
+                                    <div class="btn-group" role="group">
+
+                                        <a class="btn btn-success" href="{% url "_dashboard" %}" title="List View">
+                                                <i class="fa fa-bars"></i>
+                                                </a>
+            
+                                                <a class="btn btn-default" href="{% url "_dashboard_grid" %}" title="Tab View">
+                                                <i class="fa fa-th-large"></i>
+                                                </a>
+
+                                   
+
+                                   
+</div>
+
+<a href="{% url "favourite_list" %}" class="btn btn-gd-primary icon-btn-color" >
+    {% trans "View Favorites" %} <i class="fa fa-heart-o"></i>
+    </a>
+
+                                  </div>
+
                               {% trans "Dashboard" %}
                           </div>
-                      </div>
-                      <div class="col-md-6">
-                          <div class="small-content text-right">
-                                <a href="{% url "favourite_list" %}" class="btn btn-gd-primary pull-right icon-btn-color" >
-                                    {% trans "View Favorites" %} <i class="fa fa-heart-o"></i>
-                                </a>
-                          </div>
-                      </div>
-                  </div>
-                  <div class="row" style="padding-bottom:20px;">
-                      <div class="col-md-6">
-                          <div class="" style="font-size:20px;">
-                              {% trans "Layers" %}
-                          </div>
-                      </div>
-                      <div class="col-md-6">
-                          <div class="pull-right">
-                              <ul class="search-type">
-                                  <li>
-                                      <a href="{% url "_dashboard" %}" title="List View">
-                                          <i class="fa fa-bars fa-stack-1-5x"></i>
-                                      </a>
-                                  </li>
-                                  <li>
-                                      <a href="{% url "_dashboard_grid" %}" title="Tab View">
-                                          <i class="fa fa-th-large fa-stack-1-5x"></i>
-                                      </a>
-                                  </li>
-                                  <li style="margin-top:-4px;">
-                                      <span style="font-size:20px;">{% trans "Docked" %}</span>
-                                  </li>
-                                  <li style="margin-top:-4px; padding-left:10px;">
-                                      <span style="font-size:20px;" id="total_layers-fav"></span>
-                                  </li>
-                              </ul>
-                          </div>
-                      </div>
-                  </div>
-                  <div class="hr"></div>
-                </div>
-                <div class="gd-content-body transparent top-bottom-margin-20px">
-                    <div class="row">
-                        <div class="col-md-12">
-                            <div class="gd-content-body1 full-pad-40px1">
-                              <div id="gd-featurd-maps" >
-                                    <div class="container">
-                                        <div class="gd-stastic">
-                                            <div class="gd-featurd-maps-content-dash" >
-                                                <div id="carousel-home-dash-layer" class="carousel slide" data-ride="carousel1" style="background:#f4f8fb">
-                                                  <!-- Indicators -->
-                                                  <!-- <ol class="carousel-indicators">
-                                                      <li data-target="#carousel-home" data-slide-to="0" class="active"></li>
-                                                      <li data-target="#carousel-home" data-slide-to="1"></li>
-                                                      <li data-target="#carousel-home" data-slide-to="2"></li>
-                                                      <li data-target="#carousel-home" data-slide-to="3"></li>
-                                                      <li data-target="#carousel-home" data-slide-to="4"></li>
-                                                  </ol> -->
-                                                  <!-- Wrapper for slides -->
-                                                  <div class="carousel-inner " role="listbox" id="dash-layer-fav">
-                                                      <!--<div class="item active">
-                                                            <div class="grid-container-dash lmd" style="background:none;">
-                                                                <div class="avater">
-                                                                  <div class="avater-img">
-                                                                    <a class="avater-img-mid" href="#" >
-                                                                        <img src="{{ STATIC_URL }}geonode/images/maps/maps7.png"/>
-                                                                    </a>
-                                                                  </div>
-                                                                  <div class="checkbox-overlay">
-                                                                      <div class="checkbox">
-                                                                          <label>
-                                                                              <span class="fa-stack fa-lg" >
-                                                                                  <a href="#" title="Undock" id="undock"><i class="fa fa-times fa-stack-1x"></i></a>
-                                                                              </span>
-                                                                          </label>
-                                                                      </div>
-                                                                  </div>
+                     
+                          <div class="panel panel-info">
+
+
+
+
+
+                                <div class="panel-heading"><span class="label label-success pull-right">{% trans "Docked" %} <span id="total_layers-fav"></span></span> {% trans "Layers" %} </div>
+                                <div class="panel-body">
+                                 
+                                        <div class="gd-content-body">
+                                                
+                                                
+                                                                    <div class="row">
+                                                                        <div class="col-md-12">
+                                                                            <div class="gd-content-body1 full-pad-40px1">
+                                                                              <div id="gd-featurd-maps" >
+
+                                                                                    <div class="row">
+                                                                                        <div class="gd-stastic">
+                                                                                            <div class="gd-featurd-maps-content-dash" >
+                                                                                                <div id="carousel-home-dash-layer" class="carousel slide" data-ride="carousel1">
+                                                                                                  <!-- Indicators -->
+                                                                                                  <!-- <ol class="carousel-indicators">
+                                                                                                      <li data-target="#carousel-home" data-slide-to="0" class="active"></li>
+                                                                                                      <li data-target="#carousel-home" data-slide-to="1"></li>
+                                                                                                      <li data-target="#carousel-home" data-slide-to="2"></li>
+                                                                                                      <li data-target="#carousel-home" data-slide-to="3"></li>
+                                                                                                      <li data-target="#carousel-home" data-slide-to="4"></li>
+                                                                                                  </ol> -->
+                                                                                                  <!-- Wrapper for slides -->
+                                                                                                  <div class="carousel-inner " role="listbox" id="dash-layer-fav">
+                                                                                                      <!--<div class="item active">
+                                                                                                            <div class="grid-container-dash lmd" style="background:none;">
+                                                                                                                <div class="avater">
+                                                                                                                  <div class="avater-img">
+                                                                                                                    <a class="avater-img-mid" href="#" >
+                                                                                                                        <img src="{{ STATIC_URL }}geonode/images/maps/maps7.png"/>
+                                                                                                                    </a>
+                                                                                                                  </div>
+                                                                                                                  <div class="checkbox-overlay">
+                                                                                                                      <div class="checkbox">
+                                                                                                                          <label>
+                                                                                                                              <span class="fa-stack fa-lg" >
+                                                                                                                                  <a href="#" title="Undock" id="undock"><i class="fa fa-times fa-stack-1x"></i></a>
+                                                                                                                              </span>
+                                                                                                                          </label>
+                                                                                                                      </div>
+                                                                                                                  </div>
+                                                                                                                </div>
+                                                                                                                <div class="contents">
+                                                                                                                    <div class="title">
+                                                                                                                        {{ item.id }}.120
+                                                                                                                        <a href="{{ item.detail_url }}" title="{{ item.title }}">
+                                                                                                                              {{ item.title }}
+                                                                                                                        </a>
+                                                                                                                    </div>
+                                                                                                                </div>
+                                                                                                            </div>
+                                                                                                      </div>
+                                                                                                     <div class="item"></div>-->
+                                                                                                  </div>
+                                                                                                  <!-- Controls -->
+                                                                                                  <a class="left-panel carousel-control" style="left:-28px;" href="#carousel-home-dash-layer" role="button" data-slide="prev">
+                                                                                                      <span class="glyphicon glyphicon-chevron-left" aria-hidden="true" ></span>
+                                                                                                  </a>
+                                                                                                  <a class="right-panel carousel-control" style="right:-28px;" href="#carousel-home-dash-layer" role="button" data-slide="next">
+                                                                                                      <span class="glyphicon glyphicon-chevron-right" aria-hidden="true"  ></span>
+                                                                                                  </a>
+                                                                                                </div>
+                                                                                            </div>
+                                                                                        </div>
+                                                                                    </div>
+
+
+                                                                                </div>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
                                                                 </div>
-                                                                <div class="contents">
-                                                                    <div class="title">
-                                                                        {{ item.id }}.120
-                                                                        <a href="{{ item.detail_url }}" title="{{ item.title }}">
-                                                                              {{ item.title }}
-                                                                        </a>
+
+                                </div>
+                              </div>
+
+                 
+               
+                 
+              
+                
+            
+      
+    
+                            
+    
+                            
+                            <div class="panel panel-info">
+                                    <div class="panel-heading"><span class="label label-success pull-right">{% trans "Docked" %} <span id="total_maps-fav"></span></span> {% trans "Maps" %}</div>
+                                    <div class="panel-body">
+                                            <div class="gd-content-body transparent top-bottom-margin-20px">
+                                                    <div class="row">
+                                                        <div class="col-md-12">
+                                                            <div class="gd-content-body1 full-pad-40px1">
+                                                              <div id="gd-featurd-maps" style="background:#fff;">
+                                                                    <div class="row">
+                                                                        <div class="gd-stastic">
+                                                                            <div class="gd-featurd-maps-content-dash">
+                                                                                <div id="carousel-home-dash" class="carousel slide" data-ride="carousel2">
+                                                                                  <!-- Indicators -->
+                                                                                  <!-- <ol class="carousel-indicators">
+                                                                                      <li data-target="#carousel-home" data-slide-to="0" class="active"></li>
+                                                                                      <li data-target="#carousel-home" data-slide-to="1"></li>
+                                                                                      <li data-target="#carousel-home" data-slide-to="2"></li>
+                                                                                      <li data-target="#carousel-home" data-slide-to="3"></li>
+                                                                                      <li data-target="#carousel-home" data-slide-to="4"></li>
+                                                                                  </ol> -->
+                                                                                  <!-- Wrapper for slides -->
+                                                                                  <div class="carousel-inner " role="listbox" id="dash-maps-fav">
+                                                                                      <!--<div class="item active">-->
+                                                                                        <!--<article class="gd-featurd-maps-container-dash" >-->
+                                                                                            <!--<div class="col-xs-12 col-sm-6 col-md-4 col-lg-3">-->
+                                                                                                <!--<div class="gd-featurd-maps-container-dash" style="background:#fff;">-->
+                                                                                                    <!--<div class="grid-container-dash lmd" style="background:none;">-->
+                                                                                                        <!--<div class="avater">-->
+                                                                                                          <!--<div class="avater-img">-->
+                                                                                                            <!--<a class="avater-img-mid" href="#" >-->
+                                                                                                                <!--<img src="{{ STATIC_URL }}geonode/images/maps/maps7.png"/>-->
+                                                                                                            <!--</a>-->
+                                                                                                          <!--</div>-->
+                                                                                                          <!--<div class="checkbox-overlay">-->
+                                                                                                              <!--<div class="checkbox">-->
+                                                                                                                  <!--<label>-->
+                                                                                                                      <!--<span class="fa-stack fa-lg" >-->
+                                                                                                                          <!--<a href="#" title="Undock"><i class="fa fa-times fa-stack-1x"></i></a>-->
+                                                                                                                      <!--</span>-->
+                                                                                                                  <!--</label>-->
+                                                                                                              <!--</div>-->
+                                                                                                          <!--</div>-->
+                                                                                                        <!--</div>-->
+                                                                                                        <!--<div class="contents">-->
+                                                                                                            <!--<div class="title">-->
+                                                                                                                <!--<a href="layers/geonode%3Asubmarine_network_bcc"> Fiber Optics Line Network of Dhaka City</a>-->
+                                                                                                            <!--</div>-->
+                                                                                                        <!--</div>-->
+                                                                                                    <!--</div>-->
+                                                                                                <!--</div>-->
+                                                                                            <!--</div>-->
+                                                                                            <!---->
+                                                                                        <!--</article>-->
+                                                                                      <!--</div>-->
+                                                                                      <!--<div class="item">-->
+                                                                                      <!--</div>-->
+                                                                                  </div>
+                                                                                  <!-- Controls -->
+                                                                                  <a class="left-panel carousel-control" style="left:-28px;" href="#carousel-home-dash" role="button" data-slide="prev">
+                                                                                      <span class="glyphicon glyphicon-chevron-left" aria-hidden="true"></span>
+                                                                                  </a>
+                                                                                  <a class="right-panel carousel-control" style="right:-28px;" href="#carousel-home-dash" role="button" data-slide="next">
+                                                                                      <span class="glyphicon glyphicon-chevron-right" aria-hidden="true"></span>
+                                                                                  </a>
+                                                                                </div>
+                                                                            </div>
+                                                                        </div>
                                                                     </div>
                                                                 </div>
                                                             </div>
-                                                      </div>
-                                                     <div class="item"></div>-->
-                                                  </div>
-                                                  <!-- Controls -->
-                                                  <a class="left-panel carousel-control" href="#carousel-home-dash-layer" role="button" data-slide="prev">
-                                                      <span class="glyphicon glyphicon-chevron-left" aria-hidden="true" ></span>
-                                                  </a>
-                                                  <a class="right-panel carousel-control" href="#carousel-home-dash-layer" role="button" data-slide="next">
-                                                      <span class="glyphicon glyphicon-chevron-right" aria-hidden="true"  ></span>
-                                                  </a>
+                                                        </div>
+                                                    </div>
                                                 </div>
-                                            </div>
-                                        </div>
                                     </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-    <div id="gd-dashboard"  style="background:#fff;">
-        <div class="container">
-            <div class="gd-content" >
-                <div class="gd-content-heading">
-                  <div class="row" style="padding:20px 0px;">
-                      <div class="col-md-6">
-                          <div class="" style="font-size:20px;">
-                              {% trans "Maps" %}
-                          </div>
-                      </div>
-                      <div class="col-md-6">
-                          <div class="text-right" style="font-size:20px;">
-                              <span id="total_maps-fav"></span>
-                              {% trans "Docked" %}
-                          </div>
-                      </div>
-                  </div>
-                  <div class="hr"></div>
-                </div>
-                <div class="gd-content-body transparent top-bottom-margin-20px">
-                    <div class="row">
-                        <div class="col-md-12">
-                            <div class="gd-content-body1 full-pad-40px1">
-                              <div id="gd-featurd-maps" style="background:#fff;">
-                                    <div class="container">
-                                        <div class="gd-stastic">
-                                            <div class="gd-featurd-maps-content-dash">
-                                                <div id="carousel-home-dash" class="carousel slide" data-ride="carousel2">
-                                                  <!-- Indicators -->
-                                                  <!-- <ol class="carousel-indicators">
-                                                      <li data-target="#carousel-home" data-slide-to="0" class="active"></li>
-                                                      <li data-target="#carousel-home" data-slide-to="1"></li>
-                                                      <li data-target="#carousel-home" data-slide-to="2"></li>
-                                                      <li data-target="#carousel-home" data-slide-to="3"></li>
-                                                      <li data-target="#carousel-home" data-slide-to="4"></li>
-                                                  </ol> -->
-                                                  <!-- Wrapper for slides -->
-                                                  <div class="carousel-inner " role="listbox" id="dash-maps-fav">
-                                                      <!--<div class="item active">-->
-                                                        <!--<article class="gd-featurd-maps-container-dash" >-->
-                                                            <!--<div class="col-xs-12 col-sm-6 col-md-4 col-lg-3">-->
-                                                                <!--<div class="gd-featurd-maps-container-dash" style="background:#fff;">-->
-                                                                    <!--<div class="grid-container-dash lmd" style="background:none;">-->
-                                                                        <!--<div class="avater">-->
-                                                                          <!--<div class="avater-img">-->
-                                                                            <!--<a class="avater-img-mid" href="#" >-->
-                                                                                <!--<img src="{{ STATIC_URL }}geonode/images/maps/maps7.png"/>-->
-                                                                            <!--</a>-->
-                                                                          <!--</div>-->
-                                                                          <!--<div class="checkbox-overlay">-->
-                                                                              <!--<div class="checkbox">-->
-                                                                                  <!--<label>-->
-                                                                                      <!--<span class="fa-stack fa-lg" >-->
-                                                                                          <!--<a href="#" title="Undock"><i class="fa fa-times fa-stack-1x"></i></a>-->
-                                                                                      <!--</span>-->
-                                                                                  <!--</label>-->
-                                                                              <!--</div>-->
-                                                                          <!--</div>-->
-                                                                        <!--</div>-->
-                                                                        <!--<div class="contents">-->
-                                                                            <!--<div class="title">-->
-                                                                                <!--<a href="layers/geonode%3Asubmarine_network_bcc"> Fiber Optics Line Network of Dhaka City</a>-->
-                                                                            <!--</div>-->
-                                                                        <!--</div>-->
-                                                                    <!--</div>-->
-                                                                <!--</div>-->
-                                                            <!--</div>-->
-                                                            <!---->
-                                                        <!--</article>-->
-                                                      <!--</div>-->
-                                                      <!--<div class="item">-->
-                                                      <!--</div>-->
-                                                  </div>
-                                                  <!-- Controls -->
-                                                  <a class="left-panel carousel-control" href="#carousel-home-dash" role="button" data-slide="prev">
-                                                      <span class="glyphicon glyphicon-chevron-left" aria-hidden="true"></span>
-                                                  </a>
-                                                  <a class="right-panel carousel-control" href="#carousel-home-dash" role="button" data-slide="next">
-                                                      <span class="glyphicon glyphicon-chevron-right" aria-hidden="true"></span>
-                                                  </a>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-    <div id="gd-dashboard"  style="background:#f4f8fb;">
-        <div class="container">
-            <div class="gd-content">
-                <div class="gd-content-heading" >
-                  <div class="row" style="padding:20px 0px;">
-                      <div class="col-md-6">
-                          <div class="" style="font-size:20px;">
-                              {% trans "Documents" %}
-                          </div>
-                      </div>
-                      <div class="col-md-6">
-                          <div class="text-right" style="font-size:20px;">
-                              <span id="total_documents_fav"></span>
-                              {% trans " Docked" %}
-                          </div>
-                      </div>
-                  </div>
-                  <div class="hr"></div>
-                </div>
-                <div class="gd-content-body transparent top-bottom-margin-20px">
-                    <div class="row">
-                        <div class="col-md-12">
-                            <div class="gd-content-body1 full-pad-40px1">
-                              <div id="gd-featurd-maps">
-                                <div class="block-separator"></div>
-                                    <div class="container">
-                                        <div class="gd-stastic">
-                                            <div class="gd-featurd-maps-content-dash">
-                                                <div id="carousel-home-dash-doc" class="carousel slide" data-ride="carousel3">
-                                                  <!-- Indicators -->
-                                                  <!-- <ol class="carousel-indicators">
-                                                      <li data-target="#carousel-home" data-slide-to="0" class="active"></li>
-                                                      <li data-target="#carousel-home" data-slide-to="1"></li>
-                                                      <li data-target="#carousel-home" data-slide-to="2"></li>
-                                                      <li data-target="#carousel-home" data-slide-to="3"></li>
-                                                      <li data-target="#carousel-home" data-slide-to="4"></li>
-                                                  </ol> -->
-                                                  <!-- Wrapper for slides -->
-                                                  <div class="carousel-inner " role="listbox" id="dash-documents-fav">
-                                                      <!--<div class="item active">-->
-                                                        <!--<article class="gd-featurd-maps-container-dash" >-->
-                                                            <!--&lt;!&ndash;-->
-                                                            <!--<div class="col-xs-12 col-sm-6 col-md-4 col-lg-3">-->
-                                                                <!--<div class="gd-featurd-maps-container-dash">-->
-                                                                    <!--<div class="grid-container-dash lmd" style="background:none;">-->
-                                                                        <!--<div class="avater">-->
-                                                                          <!--<div class="avater-img">-->
-                                                                            <!--<a class="avater-img-mid" href="#" >-->
-                                                                                <!--<img src="{{ STATIC_URL }}geonode/images/maps/maps7.png"/>-->
-                                                                            <!--</a>-->
-                                                                          <!--</div>-->
-                                                                          <!--<div class="checkbox-overlay">-->
-                                                                              <!--<div class="checkbox">-->
-                                                                                  <!--<label>-->
-                                                                                      <!--<span class="fa-stack fa-lg" >-->
-                                                                                          <!--<a href="#" title="Undock"><i class="fa fa-times fa-stack-1x"></i></a>-->
-                                                                                      <!--</span>-->
-                                                                                  <!--</label>-->
-                                                                              <!--</div>-->
-                                                                          <!--</div>-->
-                                                                        <!--</div>-->
-                                                                        <!--<div class="contents">-->
-                                                                            <!--<div class="title">-->
-                                                                                <!--<a href="layers/geonode%3Asubmarine_network_bcc"> Fiber Optics Line Network of Dhaka City</a>-->
-                                                                            <!--</div>-->
-                                                                        <!--</div>-->
-                                                                    <!--</div>-->
-                                                                <!--</div>-->
-                                                            <!--</div>-->
-                                                            <!--&ndash;&gt;-->
-                                                        <!--</article>-->
-                                                      <!--</div>-->
-                                                      <!--<div class="item">-->
+                                  </div>
 
-                                                      <!--</div>-->
-                                                  </div>
-                                                  <!-- Controls -->
-                                                  <a class="left-panel carousel-control" href="#carousel-home-dash-doc" role="button" data-slide="prev">
-                                                      <span class="glyphicon glyphicon-chevron-left" aria-hidden="true"></span>
-                                                  </a>
-                                                  <a class="right-panel carousel-control" href="#carousel-home-dash-doc" role="button" data-slide="next">
-                                                      <span class="glyphicon glyphicon-chevron-right" aria-hidden="true"></span>
-                                                  </a>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-    <div id="gd-dashboard"  style="background:#fff;">
-        <div class="container">
-            <div class="gd-content">
-                <div class="gd-content-heading">
-                  <div class="row" style="padding:20px 0px;">
-                      <div class="col-md-6">
-                          <div class="" style="font-size:20px;">
-                              {% trans "Organizations" %}
-                          </div>
-                      </div>
-                      <div class="col-md-6">
-                          <div class="text-right" style="font-size:20px;">
-                              <span id="total_org-fav"></span>
-                              {% trans " Docked" %}
-                          </div>
-                      </div>
-                  </div>
-                  <div class="hr"></div>
-                </div>
-                <div class="gd-content-body transparent top-bottom-margin-20px">
-                    <div class="row">
-                        <div class="col-md-12">
-                            <div class="gd-content-body1 full-pad-40px1">
-                              <div id="gd-featurd-maps" style="background:#fff;">
-                                <div class="block-separator"></div>
-                                    <div class="container">
-                                        <div class="gd-stastic">
-                                            <div class="gd-featurd-maps-content-dash" style="background:#fff;">
-                                                <div id="carousel-home-dash-org" class="carousel slide" data-ride="carousel4">
-                                                  <!-- Indicators -->
-                                                  <!-- <ol class="carousel-indicators">
-                                                      <li data-target="#carousel-home" data-slide-to="0" class="active"></li>
-                                                      <li data-target="#carousel-home" data-slide-to="1"></li>
-                                                      <li data-target="#carousel-home" data-slide-to="2"></li>
-                                                      <li data-target="#carousel-home" data-slide-to="3"></li>
-                                                      <li data-target="#carousel-home" data-slide-to="4"></li>
-                                                  </ol> -->
-                                                  <!-- Wrapper for slides -->
-                                                  <div class="carousel-inner " role="listbox" id="dash-org-fav">
-                                                      <!--<div class="item active">-->
-                                                        <!--<article class="gd-featurd-maps-container-dash" >-->
-                                                            <!--&lt;!&ndash;-->
-                                                            <!--<div class="col-xs-12 col-sm-6 col-md-4 col-lg-3">-->
-                                                                <!--<div class="gd-featurd-maps-container-dash" style="background:#fff;">-->
-                                                                    <!--<div class="grid-container-dash lmd" style="background:#fff;">-->
-                                                                        <!--<div class="avater">-->
-                                                                          <!--<div class="avater-img">-->
-                                                                            <!--<a class="avater-img-mid" href="#" >-->
-                                                                                <!--<img src="{{ STATIC_URL }}geonode/images/maps/maps7.png"/>-->
-                                                                            <!--</a>-->
-                                                                          <!--</div>-->
-                                                                          <!--<div class="checkbox-overlay">-->
-                                                                              <!--<div class="checkbox">-->
-                                                                                  <!--<label>-->
-                                                                                      <!--<span class="fa-stack fa-lg" >-->
-                                                                                          <!--<a href="#" title="Undock"><i class="fa fa-times fa-stack-1x"></i></a>-->
-                                                                                      <!--</span>-->
-                                                                                  <!--</label>-->
-                                                                              <!--</div>-->
-                                                                          <!--</div>-->
-                                                                        <!--</div>-->
-                                                                        <!--<div class="contents">-->
-                                                                            <!--<div class="title">-->
-                                                                                <!--<a href="layers/geonode%3Asubmarine_network_bcc"> Fiber Optics Line Network of Dhaka City</a>-->
-                                                                            <!--</div>-->
-                                                                        <!--</div>-->
-                                                                    <!--</div>-->
-                                                                <!--</div>-->
-                                                            <!--</div>-->
-                                                            <!--&ndash;&gt;-->
-                                                        <!--</article>-->
-                                                      <!--</div>-->
-                                                      <!--<div class="item">-->
 
-                                                      <!--</div>-->
-                                                  </div>
-                                                  <!-- Controls -->
-                                                  <a class="left-panel carousel-control" href="#carousel-home-dash-org" role="button" data-slide="prev">
-                                                      <span class="glyphicon glyphicon-chevron-left" aria-hidden="true"></span>
-                                                  </a>
-                                                  <a class="right-panel carousel-control" href="#carousel-home-dash-org" role="button" data-slide="next">
-                                                      <span class="glyphicon glyphicon-chevron-right" aria-hidden="true"></span>
-                                                  </a>
+
+
+                                  <div class="panel panel-info">
+                                    <div class="panel-heading"><span class="label label-success pull-right">{% trans "Docked" %} <span id="total_documents_fav"></span></span> {% trans "Documents" %}</div>
+                                    <div class="panel-body">
+                                        <div class="gd-content-body">
+                                            <div class="row">
+                                                <div class="col-md-12">
+                                                    <div class="gd-content-body1 full-pad-40px1">
+                                                      <div id="gd-featurd-maps">
+                                                        <div class="block-separator"></div>
+                                                            <div class="row">
+                                                                <div class="gd-stastic">
+                                                                    <div class="gd-featurd-maps-content-dash">
+                                                                        <div id="carousel-home-dash-doc" class="carousel slide" data-ride="carousel3">
+                                                                          <!-- Indicators -->
+                                                                          <!-- <ol class="carousel-indicators">
+                                                                              <li data-target="#carousel-home" data-slide-to="0" class="active"></li>
+                                                                              <li data-target="#carousel-home" data-slide-to="1"></li>
+                                                                              <li data-target="#carousel-home" data-slide-to="2"></li>
+                                                                              <li data-target="#carousel-home" data-slide-to="3"></li>
+                                                                              <li data-target="#carousel-home" data-slide-to="4"></li>
+                                                                          </ol> -->
+                                                                          <!-- Wrapper for slides -->
+                                                                          <div class="carousel-inner " role="listbox" id="dash-documents-fav">
+                                                                              <!--<div class="item active">-->
+                                                                                <!--<article class="gd-featurd-maps-container-dash" >-->
+                                                                                    <!--&lt;!&ndash;-->
+                                                                                    <!--<div class="col-xs-12 col-sm-6 col-md-4 col-lg-3">-->
+                                                                                        <!--<div class="gd-featurd-maps-container-dash">-->
+                                                                                            <!--<div class="grid-container-dash lmd" style="background:none;">-->
+                                                                                                <!--<div class="avater">-->
+                                                                                                  <!--<div class="avater-img">-->
+                                                                                                    <!--<a class="avater-img-mid" href="#" >-->
+                                                                                                        <!--<img src="{{ STATIC_URL }}geonode/images/maps/maps7.png"/>-->
+                                                                                                    <!--</a>-->
+                                                                                                  <!--</div>-->
+                                                                                                  <!--<div class="checkbox-overlay">-->
+                                                                                                      <!--<div class="checkbox">-->
+                                                                                                          <!--<label>-->
+                                                                                                              <!--<span class="fa-stack fa-lg" >-->
+                                                                                                                  <!--<a href="#" title="Undock"><i class="fa fa-times fa-stack-1x"></i></a>-->
+                                                                                                              <!--</span>-->
+                                                                                                          <!--</label>-->
+                                                                                                      <!--</div>-->
+                                                                                                  <!--</div>-->
+                                                                                                <!--</div>-->
+                                                                                                <!--<div class="contents">-->
+                                                                                                    <!--<div class="title">-->
+                                                                                                        <!--<a href="layers/geonode%3Asubmarine_network_bcc"> Fiber Optics Line Network of Dhaka City</a>-->
+                                                                                                    <!--</div>-->
+                                                                                                <!--</div>-->
+                                                                                            <!--</div>-->
+                                                                                        <!--</div>-->
+                                                                                    <!--</div>-->
+                                                                                    <!--&ndash;&gt;-->
+                                                                                <!--</article>-->
+                                                                              <!--</div>-->
+                                                                              <!--<div class="item">-->
+                        
+                                                                              <!--</div>-->
+                                                                          </div>
+                                                                          <!-- Controls -->
+                                                                          <a class="left-panel carousel-control" style="left: -28px;" href="#carousel-home-dash-doc" role="button" data-slide="prev">
+                                                                              <span class="glyphicon glyphicon-chevron-left" aria-hidden="true"></span>
+                                                                          </a>
+                                                                          <a class="right-panel carousel-control" style="right: -28px;" href="#carousel-home-dash-doc" role="button" data-slide="next">
+                                                                              <span class="glyphicon glyphicon-chevron-right" aria-hidden="true"></span>
+                                                                          </a>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
                                                 </div>
                                             </div>
                                         </div>
                                     </div>
+                                  </div>
+
+
+
+                                  <div class="panel panel-info">
+                                    <div class="panel-heading"><span class="label label-success pull-right">{% trans "Docked" %} <span id="total_org-fav"></span></span> {% trans "Organizations" %}</div>
+                                    <div class="panel-body">
+                                        <div class="gd-content-body">
+                                            <div class="row">
+                                                <div class="col-md-12">
+                                                    <div class="gd-content-body1 full-pad-40px1">
+                                                      <div id="gd-featurd-maps" style="background:#fff;">
+                                                        <div class="block-separator"></div>
+                                                            <div class="row">
+                                                                <div class="gd-stastic">
+                                                                    <div class="gd-featurd-maps-content-dash" style="background:#fff;">
+                                                                        <div id="carousel-home-dash-org" class="carousel slide" data-ride="carousel4">
+                                                                          <!-- Indicators -->
+                                                                          <!-- <ol class="carousel-indicators">
+                                                                              <li data-target="#carousel-home" data-slide-to="0" class="active"></li>
+                                                                              <li data-target="#carousel-home" data-slide-to="1"></li>
+                                                                              <li data-target="#carousel-home" data-slide-to="2"></li>
+                                                                              <li data-target="#carousel-home" data-slide-to="3"></li>
+                                                                              <li data-target="#carousel-home" data-slide-to="4"></li>
+                                                                          </ol> -->
+                                                                          <!-- Wrapper for slides -->
+                                                                          <div class="carousel-inner " role="listbox" id="dash-org-fav">
+                                                                              <!--<div class="item active">-->
+                                                                                <!--<article class="gd-featurd-maps-container-dash" >-->
+                                                                                    <!--&lt;!&ndash;-->
+                                                                                    <!--<div class="col-xs-12 col-sm-6 col-md-4 col-lg-3">-->
+                                                                                        <!--<div class="gd-featurd-maps-container-dash" style="background:#fff;">-->
+                                                                                            <!--<div class="grid-container-dash lmd" style="background:#fff;">-->
+                                                                                                <!--<div class="avater">-->
+                                                                                                  <!--<div class="avater-img">-->
+                                                                                                    <!--<a class="avater-img-mid" href="#" >-->
+                                                                                                        <!--<img src="{{ STATIC_URL }}geonode/images/maps/maps7.png"/>-->
+                                                                                                    <!--</a>-->
+                                                                                                  <!--</div>-->
+                                                                                                  <!--<div class="checkbox-overlay">-->
+                                                                                                      <!--<div class="checkbox">-->
+                                                                                                          <!--<label>-->
+                                                                                                              <!--<span class="fa-stack fa-lg" >-->
+                                                                                                                  <!--<a href="#" title="Undock"><i class="fa fa-times fa-stack-1x"></i></a>-->
+                                                                                                              <!--</span>-->
+                                                                                                          <!--</label>-->
+                                                                                                      <!--</div>-->
+                                                                                                  <!--</div>-->
+                                                                                                <!--</div>-->
+                                                                                                <!--<div class="contents">-->
+                                                                                                    <!--<div class="title">-->
+                                                                                                        <!--<a href="layers/geonode%3Asubmarine_network_bcc"> Fiber Optics Line Network of Dhaka City</a>-->
+                                                                                                    <!--</div>-->
+                                                                                                <!--</div>-->
+                                                                                            <!--</div>-->
+                                                                                        <!--</div>-->
+                                                                                    <!--</div>-->
+                                                                                    <!--&ndash;&gt;-->
+                                                                                <!--</article>-->
+                                                                              <!--</div>-->
+                                                                              <!--<div class="item">-->
+                        
+                                                                              <!--</div>-->
+                                                                          </div>
+                                                                          <!-- Controls -->
+                                                                          <a class="left-panel carousel-control" style="left: -28px;" href="#carousel-home-dash-org" role="button" data-slide="prev">
+                                                                              <span class="glyphicon glyphicon-chevron-left" aria-hidden="true"></span>
+                                                                          </a>
+                                                                          <a class="right-panel carousel-control" style="right: -28px;" href="#carousel-home-dash-org" role="button" data-slide="next">
+                                                                              <span class="glyphicon glyphicon-chevron-right" aria-hidden="true"></span>
+                                                                          </a>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                  </div>
+
+
+
                                 </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
+
+  
 {% endblock %}
 
 {% block extra_script %}
@@ -460,10 +434,10 @@
                 output +='</div>';
                 output +='</div>';
                 output +='<div class="checkbox-overlay">';
-                output +='<div class="checkbox">';
+                output +='<div class="checkbox" style="margin:0;padding:0">';
                 output +='<label>';
-                output +='<span class="fa-stack fa-lg" >';
-                output +='<a href="#" title="Undock" id="undock" data-favouriteID="'+item.id+'" data-favouriteStatus="true" onclick="udock('+item.id+');"><i class="fa fa-times fa-stack-1x"></i></a>';
+                output +='<span>';
+                output +='<a href="#" class="btn btn-primary" style="border-radius:50%" title="Undock" id="undock" data-favouriteID="'+item.id+'" data-favouriteStatus="true" onclick="udock('+item.id+');"><i class="fa fa-times"></i></a>';
                 output +='</span>';
                 output +='</label>';
                 output +='</div>';
@@ -535,10 +509,10 @@
                     output +='</div>';
                     output +='</div>';
                     output +='<div class="checkbox-overlay">';
-                    output +='<div class="checkbox">';
+                    output +='<div class="checkbox" style="margin:0;padding:0">';
                     output +='<label>';
-                    output +='<span class="fa-stack fa-lg" >';
-                    output +='<a href="#" title="Undock" id="undock" data-favouriteID="'+item.id+'" data-favouriteStatus="true" onclick="udock('+item.id+');"><i class="fa fa-times fa-stack-1x"></i></a>';
+                    output +='<span>';
+                    output +='<a href="#" class="btn btn-primary" style="border-radius:50%" title="Undock" id="undock" data-favouriteID="'+item.id+'" data-favouriteStatus="true" onclick="udock('+item.id+');"><i class="fa fa-times"></i></a>';
                     output +='</span>';
                     output +='</label>';
                     output +='</div>';
@@ -605,10 +579,10 @@
                     output +='</div>';
                     output +='</div>';
                     output +='<div class="checkbox-overlay">';
-                    output +='<div class="checkbox">';
+                    output +='<div class="checkbox" style="margin:0;padding:0">';
                     output +='<label>';
-                    output +='<span class="fa-stack fa-lg" >';
-                    output +='<a href="#" title="Undock" id="undock" data-favouriteID="'+item.id+'" data-favouriteStatus="true" onclick="udock('+item.id+');"><i class="fa fa-times fa-stack-1x"></i></a>';
+                    output +='<span>';
+                    output +='<a href="#" class="btn btn-primary" style="border-radius:50%" title="Undock" id="undock" data-favouriteID="'+item.id+'" data-favouriteStatus="true" onclick="udock('+item.id+');"><i class="fa fa-times"></i></a>';
                     output +='</span>';
                     output +='</label>';
                     output +='</div>';
@@ -675,10 +649,10 @@
                     output +='</div>';
                     output +='</div>';
                     output +='<div class="checkbox-overlay">';
-                    output +='<div class="checkbox">';
+                    output +='<div class="checkbox" style="margin:0;padding:0">';
                     output +='<label>';
-                    output +='<span class="fa-stack fa-lg" >';
-                    output +='<a href="javascript:;" title="Undock" id="undock" data-favouriteID="'+item.id+'" data-favouriteStatus="true" onclick="udockorg('+item.id+');"><i class="fa fa-times fa-stack-1x"></i></a>';
+                    output +='<span>';
+                    output +='<a href="javascript:;" class="btn btn-primary" style="border-radius:50%" title="Undock" id="undock" data-favouriteID="'+item.id+'" data-favouriteStatus="true" onclick="udockorg('+item.id+');"><i class="fa fa-times"></i></a>';
                     output +='</span>';
                     output +='</label>';
                     output +='</div>';

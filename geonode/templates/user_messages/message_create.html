@@ -31,13 +31,33 @@
   <div class="gd-content-body full-pad-40px top-bottom-margin-20px">
       <form method="post" action="{% url "message_create" %}">
         {% csrf_token %}
-        <table width=100%>
-          {{ form|as_bootstrap }}
-        </table>
+
+          <div class="form-group">
+            <label for="id_to_user">User:</label>
+            {{ form.to_user }}
+          </div>
+          <div class="form-group">
+            <label for="id_subject">Subject:</label>
+            {{ form.subject }}
+          </div>
+          <div class="form-group">
+            <label for="id_content">Content:</label>
+            {{ form.content }}
+          </div>
+
         <div class="form-actions">
           <input type="submit" class="btn btn-gd-primary" value="{% trans "Send message" %}"  class="btn btn-primary" type="button"/>
         </div>
       </form>
   </div>
 </div>
+{% endblock %}
+
+{% block extra_script %}
+    <link rel="stylesheet" href="{{ STATIC_URL }}lib/chosen_v1.8.2/chosen.css">
+    <script src="{{ STATIC_URL }}lib/chosen_v1.8.2/chosen.jquery.min.js"></script>
+
+    <script>
+        $("#id_to_user").chosen();
+    </script>
 {% endblock %}

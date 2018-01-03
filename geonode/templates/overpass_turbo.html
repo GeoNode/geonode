@@ -16,7 +16,7 @@
       <link href="{{ STATIC_URL }}lib/css/bootstrap-datetimepicker.css?v={{ VERSION }}" rel="stylesheet"/>
       {% else %}
       <link href="{{ STATIC_URL }}lib/css/bootstrap.min.css?v={{ VERSION }}" rel="stylesheet"/>
-      <link href="{{ STATIC_URL }}lib/css/font-awesome.min.css?v={{ VERSION }}" rel="stylesheet"/>
+      <link href="{{ STATIC_URL }}lib/css/font-awesome.min.css" rel="stylesheet"/>
       <link href="{{ STATIC_URL }}lib/css/bootstrap-datetimepicker.css?v={{ VERSION }}" rel="stylesheet"/>
       {% endif %}
     <link href="{{ STATIC_URL }}geonode/css/ext-compatibility.css?v={{ VERSION }}" rel="stylesheet" />
@@ -109,7 +109,7 @@
   <!--layout-->
     <section id="gd-header" class="sticky">
         <nav class="navbar navbar-default navbar-fixed-top">
-            <div class="container">
+            <div class="container-fluid">
                 <div class="navbar-header">
                     <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#gd-navbar-collapse" aria-expanded="false">
                         <span class="sr-only">Toggle navigation</span>
@@ -641,7 +641,7 @@
 <!-- Modal must stay outside the navbar -->
     {% if not user.is_authenticated %}
     <section id="gd-model">
-        <div class="container">
+        <div class="container-fluid">
             <div style="">
                 <div class="modal fade" id="SigninModalturbo" style="z-index:2001;" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel">
                   <div class="modal-dialog" role="document" >
@@ -732,7 +732,7 @@
     {% endif %}
     {% if not user.is_authenticated and REGISTRATION_OPEN %}
     <section id="gd-model">
-        <div class="container">
+        <div class="container-fluid">
             <div style="">
                 <div class="modal fade" id="SignupModal" style="z-index:2001;" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel">
                   <div class="modal-dialog" role="document" >

@@ -480,6 +480,7 @@ a
 .map-toolbar ul li
 {
    float: left;
+    position: relative;
 }
 .layout-center
 {
@@ -586,7 +587,6 @@ a
     position: absolute;
     right: 5px;
     top: 3px;
-    width: 241px;
 }
 
 .svg-icon
@@ -797,7 +797,7 @@ a
 
 .search-box-container .search-box
 {
-    width: 241px;
+    width: 175px;
     margin-bottom: 0;
     height: 27px;
 }
