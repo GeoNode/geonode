@@ -16,7 +16,29 @@
                 });
             return deferred.promise;
         }
-        function getDefaultStyle(){
+
+        function put(url, obj) {
+            var deferred = $q.defer();
+            $http.put(url, obj, {
+                headers: {
+                    "X-CSRFToken": $cookies.get('csrftoken')
+                }
+            }).success(function(res) {
+                deferred.resolve(res);
+            }).error(function(error, status) {
+                deferred.reject({ error: error, status: status });
+            });
+            return deferred.promise;
+        }
+        function _uuid() {
+            function _() {
+                var rand = Math.ceil(1e15 + Math.random() * 1e5).toString(16);
+                return rand.substring(rand.length - 4);
+            }
+            return _() + _() + '-' + _() + '-' + _() + '-' + _() + '-' + _() + _();
+
+        }
+        function getDefaultStyle() {
             return {
                 "Name": "",
                 "default": {
@@ -119,11 +141,31 @@
                 return get('/layers/' + layerName + '/styles/');
             },
             getStyle: function(id) {
-                return get('/layers/style/' + id + '/');
+                var deferred = $q.defer();
+                get('/layers/style/' + id + '/').then(function(res){
+                    var style = JSON.parse(res.json_field);
+                    style.id = res.id;
+                    if (!style) {
+                        style = getNewStyle();
+                    }
+                    style.Name = res.uuid;
+                    style.default.userStyle = style.Name;
+                    style.select.userStyle = style.Name;
+                    deferred.resolve(style);
+                }, function(){
+                    deferred.reject({});
+                });
+                return deferred.promise;
             },
-            getNewStyle : function(){
+            getNewStyle: function() {
                 return getDefaultStyle();
-            }
+            },
+            getLayerByMap: function(mapId, layerName) {
+                return get('/maps/' + mapId + '/layer/' + layerName + '/');
+            },
+            updateLayerByMap: function(mapId, layerName, obj) {
+                return put('/maps/' + mapId + '/layer/' + layerName + '/', obj);
+            },
         };
     }
 })();

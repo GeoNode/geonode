@@ -32,6 +32,12 @@
                 params.t = new Date().getMilliseconds();
                 olLayer.getSource().updateParams(params);
             };
+            this.update = function (stylesName) {
+                var params = olLayer.getSource().getParams();
+                params.STYLES = stylesName;
+                params.t = new Date().getMilliseconds();
+                olLayer.getSource().updateParams(params);
+            };
         }
     }
 ]);

@@ -48,12 +48,15 @@
         };
 
         function getLayerStyles() {
-            // 
-            // layer.getName()
             LayerService.getStylesByLayer(layer.getName())
                 .then(function(res) {
                     console.log(res);
                     $scope.Styles = res;
+                    res.forEach(function(e){
+                        if(e.id == $scope.nodeData.layer.style.id){
+                            $scope.nodeData.selectedStyle = e;
+                        }
+                    });
                 }, function() {
 
                 });
@@ -63,11 +66,11 @@
             if (!$scope.nodeData.selectedStyle || !$scope.nodeData.selectedStyle.hasOwnProperty('id'))
                 return;
             LayerService.getStyle($scope.nodeData.selectedStyle.id)
-                .then(function(res) {
-                    console.log(JSON.parse(res.json_field));
-                    $scope.nodeData.layer.style = JSON.parse(res.json_field);
-                    $scope.nodeData.layer.style.id = res.id;
-                    $scope.nodeData.layer.style.Name = res.style.name;
+            .then(function(res) {
+                    $scope.nodeData.layer.style = res;
+
+                    $scope.settingsData = $scope.nodeData.layer.style.classifierDefinitions || {};
+                    $scope.classifierBinder = { classType: undefined, colorPaletteGenerator: undefined };
                 }, function() {
 
                 });
@@ -76,9 +79,9 @@
         $scope.newStyle = function() {
             console.log(inputData, settingsData);
             angular.copy(LayerService.getNewStyle(), $scope.nodeData.layer.style);
+            $scope.nodeData.selectedStyle = $scope.nodeData.layer.style;
             $scope.settingsData = {};
-            // $scope.classifierBinder = { classType: undefined, colorPaletteGenerator: undefined };
-            $scope.nodeData.layer.style.$isNew = true;
+            $scope.classifierBinder = { classType: undefined, colorPaletteGenerator: undefined };
             $scope.Styles.push($scope.nodeData.layer.style);
         };
 

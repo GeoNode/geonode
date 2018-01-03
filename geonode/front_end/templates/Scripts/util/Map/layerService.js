@@ -35,13 +35,14 @@
                 surfLayer.setName(name);
                 surfLayer.setStyle(style);
                 surfLayer.setZoomLevel(zoomLevel);
-                delete style.$isNew;
-                
-                if (style.hasOwnProperty('$isNew') && style.$isNew) {
-                    delete style.$isNew;
+                if (!style.id) {
                     return layerRepository.createProperties(surfLayer.getId(), surfLayer.getName(), zoomLevel, surfLayer.getStyle(),
                         defaultStyleSld, selectionStyleSld, labelingSld,
-                        function() {
+                        function(res) {
+                            style.id = res.id;
+                            style.Name = res.uuid;
+                            surfLayer.setStyle(style);
+
                             if (callBack) {
                                 callBack();
                             } else {
