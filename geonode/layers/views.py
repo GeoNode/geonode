@@ -93,7 +93,7 @@ from geonode.geoserver.helpers import ogc_server_settings
 from geonode import GeoNodeException
 
 from geonode.groups.models import GroupProfile
-from geonode.layers.models import LayerSubmissionActivity, LayerAuditActivity, StyleExtension
+from geonode.layers.models import LayerSubmissionActivity, LayerAuditActivity, StyleExtension, Style
 from geonode.base.libraries.decorators import manager_or_member
 from geonode.base.models import KeywordIgnoreListModel
 # from geonode.authentication_decorators import login_required as custom_login_required
@@ -187,55 +187,56 @@ def layer_upload(request, template='upload/layer_upload.html'):
         data_dict = dict()
         tmp_dir = ''
         epsg_code = ''
-        # Check if zip file then, extract into tmp_dir and convert
-        if zipfile.is_zipfile(request.FILES['base_file']):
-            tmp_dir = create_tmp_dir()
-            with zipfile.ZipFile(request.FILES['base_file']) as zf:
-                zf.extractall(tmp_dir)
+        if str(file_extension).lower() == 'shp' or zipfile.is_zipfile(request.FILES['base_file']):
+            # Check if zip file then, extract into tmp_dir and convert
+            if zipfile.is_zipfile(request.FILES['base_file']):
+                tmp_dir = create_tmp_dir()
+                with zipfile.ZipFile(request.FILES['base_file']) as zf:
+                    zf.extractall(tmp_dir)
 
-            prj_file_name = ''
-            shp_file_name = ''
-            for file in os.listdir(tmp_dir):
-                if file.endswith(".prj"):
-                    prj_file_name = file
+                prj_file_name = ''
+                shp_file_name = ''
+                for file in os.listdir(tmp_dir):
+                    if file.endswith(".prj"):
+                        prj_file_name = file
 
-                elif file.endswith(".shp"):
-                    shp_file_name = file
+                    elif file.endswith(".shp"):
+                        shp_file_name = file
 
-            srs = checking_projection(tmp_dir, prj_file_name)
+                srs = checking_projection(tmp_dir, prj_file_name)
 
-            # collect epsg code
-            epsg_code = collect_epsg(tmp_dir, prj_file_name)
+                # collect epsg code
+                epsg_code = collect_epsg(tmp_dir, prj_file_name)
 
-            if epsg_code:
-                data_dict = reprojection(tmp_dir, shp_file_name)
+                if epsg_code:
+                    data_dict = reprojection(tmp_dir, shp_file_name)
 
-        if str(file_extension) == 'shp':
+            if str(file_extension) == 'shp':
 
-            # create temporary directory for conversion
-            tmp_dir = create_tmp_dir()
+                # create temporary directory for conversion
+                tmp_dir = create_tmp_dir()
 
-            # Upload files
-            upload_files(tmp_dir, request.FILES)
+                # Upload files
+                upload_files(tmp_dir, request.FILES)
 
-            # collect epsg code
-            epsg_code = collect_epsg(tmp_dir, str(request.FILES['prj_file'].name))
+                # collect epsg code
+                epsg_code = collect_epsg(tmp_dir, str(request.FILES['prj_file'].name))
 
-            # Checking projection
-            srs = checking_projection(tmp_dir, str(request.FILES['prj_file'].name))
+                # Checking projection
+                srs = checking_projection(tmp_dir, str(request.FILES['prj_file'].name))
 
-            # if srs.IsProjected:
-            if epsg_code:
+                # if srs.IsProjected:
+                if epsg_code:
 
-                if srs.GetAttrValue('projcs'):
-                    if "WGS" not in srs.GetAttrValue('projcs'):
+                    if srs.GetAttrValue('projcs'):
+                        if "WGS" not in srs.GetAttrValue('projcs'):
 
+                            data_dict = reprojection(tmp_dir, str(request.FILES['base_file'].name))
+
+                    # check WGS84 projected
+                    else:
+                        # call projection util function
                         data_dict = reprojection(tmp_dir, str(request.FILES['base_file'].name))
-
-                # check WGS84 projected
-                else:
-                    # call projection util function
-                    data_dict = reprojection(tmp_dir, str(request.FILES['base_file'].name))
 
         form = NewLayerUploadForm(request.POST, request.FILES)
         tempdir = None
@@ -567,7 +568,7 @@ def layer_detail(request, layername, template='layers/layer_detail.html'):
     if settings.SOCIAL_ORIGINS:
         context_dict["social_links"] = build_social_links(request, layer)
 
-    if str(layer.user_data_epsg) != 'None':
+    if str(layer.user_data_epsg) and str(layer.user_data_epsg) != 'None':
         with connection.cursor() as cursor:
             cursor.execute("SELECT srtext FROM spatial_ref_sys WHERE srid = %s", [str(layer.user_data_epsg)])
 
@@ -1253,6 +1254,57 @@ def save_sld_geoserver(request_method, full_path, sld_body, content_type='applic
         body=sld_body or None,
         headers=headers)
 
+from rest_framework.generics import ListAPIView, RetrieveUpdateAPIView
+from .serializers import StyleExtensionSerializer
+from rest_framework.authentication import SessionAuthentication, BasicAuthentication
+from rest_framework import permissions
+from rest_framework.response import Response
+
+
+class LayerStyleListAPIView(ListAPIView):
+    # authentication_classes = (SessionAuthentication, BasicAuthentication)
+    # permission_classes = (IsAuthenticated,)
+
+    serializer_class = StyleExtensionSerializer
+
+    def get_queryset(self):
+        """
+        This view should return a list of all the style extension for a layer.
+        """
+        layername = self.kwargs['layername']
+        layer_obj = _resolve_layer(self.request, layername)
+        styles = layer_obj.styles.all();
+        return StyleExtension.objects.filter(style__in = styles)
+
+class StyleExtensionRetrieveUpdateAPIView(RetrieveUpdateAPIView):
+    queryset = StyleExtension.objects.all()
+    serializer_class = StyleExtensionSerializer
+    permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
+
+    # @custom_login_required
+    def put(self, request, pk, **kwargs):
+        data = json.loads(request.body)
+        # check already style extension created or not
+        try:
+            style_extension = StyleExtension.objects.get(pk=pk)
+            style_extension.json_field = data.get("StyleString", None)
+            style_extension.sld_body=data.get('SldStyle', None)
+        except Exception as ex:
+            raise ex
+        
+        style_extension.save()
+        full_path = '/gs/rest/styles/{0}.xml'.format(style_extension.style.name)
+        try:
+            save_sld_geoserver(request_method='PUT', full_path=full_path, sld_body=style_extension.sld_body )
+        except Exception as ex:
+            logger.error(ex)
+
+        return HttpResponse(
+                    json.dumps(
+                        dict(success="OK"),
+                        ensure_ascii=False), 
+                        status=200,
+                        content_type='application/javascript')
 
 class LayerStyleView(View):
     def get(self, request, layername):
@@ -1292,6 +1344,40 @@ class LayerStyleView(View):
         return HttpResponse(
                     json.dumps(
                         dict(success="OK"),
+                        ensure_ascii=False), 
+                        status=200,
+                        content_type='application/javascript')
+    
+    @custom_login_required
+    def post(self, request, layername, **kwargs):
+        layer_obj = _resolve_layer(request, layername)
+        data = json.loads(request.body)
+        json_field=data.get("StyleString", None)
+        sld_body=data.get('SldStyle', None)
+
+        #create style
+        
+        style_extension = StyleExtension(json_field=json_field, created_by=request.user, modified_by=request.user)
+
+        sld_body = sld_body.format(style_name=str(style_extension.uuid))
+        sld_title = json.loads(json_field).get('Name', None) if json_field else None
+
+        style = Style(name=str(style_extension.uuid),sld_body=sld_body,sld_title=sld_title )
+        style.save()
+        
+        layer_obj.styles.add(style)
+
+        style_extension.sld_body = sld_body
+        style_extension.style = style
+        style_extension.save()
+        full_path = '/gs/rest/styles/'
+
+        save_sld_geoserver(request_method='POST', full_path=full_path, sld_body=style_extension.sld_body )
+
+        serializer = StyleExtensionSerializer(style_extension)
+        return HttpResponse(
+                    json.dumps(
+                       serializer.data,
                         ensure_ascii=False), 
                         status=200,
                         content_type='application/javascript')

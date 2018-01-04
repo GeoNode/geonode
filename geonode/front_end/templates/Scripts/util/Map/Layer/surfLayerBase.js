@@ -48,15 +48,15 @@
             };
 
             this.getStyleName = function () {
-                return layerInfo.Style.Name;
+                return this.getStyle().Name;
             }
             
             this.getLabeledStyleName = function () {
-                return layerInfo.Style.Name;
+                return this.getStyle().Name;
             };
 
             this.getSelectStyleName = function() {
-                return layerInfo.Style.Name;
+                return this.getStyle().Name;
             }
 
             this.getSortOrder = function () {
@@ -130,7 +130,7 @@
             };
 
             this.getClassifierDefinitions = function () {
-                return layerInfo.ClassifierDefinitions;
+                return this.getStyle().classifierDefinitions;
             };
 
             this.hasClassifierDefinitions = function () {
@@ -150,7 +150,7 @@
             }
 
             this.refresh = function () {
-                _mode.refresh();
+                _mode.update(this.getStyleName());
                 _thisLayer.events.broadcast('refreshed');
             };
 

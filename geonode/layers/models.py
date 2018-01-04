@@ -614,7 +614,17 @@ class StyleExtension(models.Model):
     '''
     Layer style extension
     '''
-
+    uuid = models.UUIDField(
+        verbose_name = _('UUID'),
+        help_text=_('Designats uuid'),
+        default=uuid.uuid4, 
+        editable=False
+    )
+    title = models.CharField(
+        verbose_name = _('Title'),
+        help_text=_('Designats title of the SLD'),
+        max_length=50, blank=False
+    )
     style = models.OneToOneField(
         Style,
         verbose_name = _('Style'),

@@ -35,7 +35,23 @@
                 surfLayer.setName(name);
                 surfLayer.setStyle(style);
                 surfLayer.setZoomLevel(zoomLevel);
-                return layerRepository.saveProperties(surfLayer.getId(), surfLayer.getName(), zoomLevel, surfLayer.getStyle(),
+                if (!style.id) {
+                    return layerRepository.createProperties(surfLayer.getId(), surfLayer.getName(), zoomLevel, surfLayer.getStyle(),
+                        defaultStyleSld, selectionStyleSld, labelingSld,
+                        function(res) {
+                            style.id = res.id;
+                            style.Name = res.uuid;
+                            surfLayer.setStyle(style);
+
+                            if (callBack) {
+                                callBack();
+                            } else {
+                                surfLayer.refresh();
+                                $rootScope.$broadcast('refreshSelectionLayer');
+                            }
+                        });
+                }
+                return layerRepository.saveProperties(style.id, surfLayer.getId(), surfLayer.getName(), zoomLevel, surfLayer.getStyle(),
                     defaultStyleSld, selectionStyleSld, labelingSld,
                     function() {
                         if (callBack) {
@@ -104,7 +120,7 @@
                     interactionHandler.clearFeatures();
                 });
             },
-            fetchWMSFeatures: function(params){
+            fetchWMSFeatures: function(params) {
                 return layerRepository.getWMS(undefined, params);
             },
             fetchLayers: function(url) {

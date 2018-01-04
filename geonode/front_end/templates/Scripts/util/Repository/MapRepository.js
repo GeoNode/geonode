@@ -70,6 +70,16 @@
                     surfToastr.success(appMessages.toastr.mapSaveAs(name));
                 });
             },
+            updateMapLayer : function (mapId, layerName, obj) { //new
+                return $http.put('maps/'+mapId+'/layer/' + layerName + '/', obj, {
+                    headers: {
+                        "X-CSRFToken": $cookies.get('csrftoken')
+                    }
+                }).success(function () {
+                    dirtyManager.setDirty(false);
+                    surfToastr.success(appMessages.toastr.mapSaveAs(name));
+                });
+            },
             getMapSummary: function (mapId) {
                 return  $http.get(urlResolver.resolveMap('GetMapSummary', { mapId: mapId }));
             },

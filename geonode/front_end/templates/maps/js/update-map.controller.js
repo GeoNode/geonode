@@ -2,11 +2,9 @@
     appModule
         .controller('MapUpdateController', MapUpdateController);
 
+    MapUpdateController.$inject = ['mapService', '$window', 'analyticsService', 'LayerService', '$scope'];
 
-    MapUpdateController.$inject = ['mapService', '$window', 'analyticsService'];
-
-    function MapUpdateController(mapService, $window, analyticsService) {
-
+    function MapUpdateController(mapService, $window, analyticsService, LayerService, $scope) {
         var self = this;
         var map = mapService.getMap();
         self.MapConfig = $window.mapConfig;
@@ -36,79 +34,40 @@
                     setLayers();
                 }, errorFn);
         }
-        function getDefaultStyle(){
-            return { /* not available */
-                "Name": _uuid(),
-                "default": {
-                    "fillPattern": null,
-                    "textFillColor": "#0000ff",
-                    "text": null,
-                    "pixelDensity": null,
-                    "strokeDashstyle": "solid",
-                    "strokeWidth": 1.0,
-                    "strokeColor": "#000000",
-                    "strokeOpacity": null,
-                    "fillOpacity": 0.75,
-                    "fillColor": "#ffffff",
-                    "pointRadius": 14.0,
-                    "graphicName": "circle",
-                    "textGraphicName": null,
-                    "externalGraphic": null,
-                },
-                "select": {
-                    "fillPattern": "",
-                    "textFillColor": "#0000ff",
-                    "text": null,
-                    "pixelDensity": null,
-                    "strokeDashstyle": "solid",
-                    "strokeWidth": 1.0,
-                    "strokeColor": "#000000",
-                    "strokeOpacity": 1.0,
-                    "fillOpacity": 0.4,
-                    "fillColor": "#ff00ff",
-                    "pointRadius": 6.0,
-                    "graphicName": "circle",
-                    "textGraphicName": null,
-                    "externalGraphic": null,
-                },
-                "labelConfig": {
-                    "attribute": null,
-                    "visibilityZoomLevel": 0,
-                    "font": "Times",
-                    "fontStyle": "normal",
-                    "fontWeight": "normal",
-                    "color": "#000000",
-                    "borderColor": "#ffffff",
-                    "showBorder": true,
-                    "size": 10.0,
-                    "alignment": 1.0,
-                    "offsetX": 0.0,
-                    "offsetY": 0.0,
-                    "rotation": 0.0,
-                    "followLine": false,
-                    "repeat": false,
-                    "repeatInterval": 5.0,
-                    "wrap": false,
-                    "wrapPixel": 50.0
-                },
-                "classifierDefinitions": {}
-            }
+
+        $scope.$on('layerPropertiesChanged', function(event, args) {
+            var mapId = self.MapConfig.id;
+            var style = args.layer.getStyle();
+            args.layer.ClassifierDefinitions = style.classifierDefinitions || {};
+            mapService.updateMapLayer(mapId, args.layer.Name, {
+                styles: style.id
+            });
+        });
+        function _setStyle(layer, new_layer){
+            // new_layer.Style.default.name = layer.name;
+            // new_layer.Style.select.name = layer.name;
+            new_layer.ClassifierDefinitions = new_layer.Style.classifierDefinitions || {};
+            mapService.addDataLayer(new_layer, false);
         }
-        function getLayerStyle(layer, new_layer) {
-            LayerService.getStyleByLayer(layer.name)
+        function getStyle(styleId, layer, new_layer) {
+            LayerService.getStyle(styleId)
                 .then(function(res) {
-                    new_layer.Style = JSON.parse(res.style);
-                    if(!new_layer.Style){
-                        new_layer.Style = getDefaultStyle();
-                    }
-                    new_layer.Style.Name = res.name;
-                    new_layer.Style.default.name = layer.name;
-                    new_layer.Style.default.userStyle = res.name;
-                    new_layer.Style.select.name = layer.name;
-                    new_layer.Style.select.userStyle = res.name;
-                    new_layer.ClassifierDefinitions = new_layer.Style.classifierDefinitions || {};
-                    mapService.addDataLayer(new_layer, false);
+                    new_layer.Style = res;
+                    _setStyle(layer, new_layer);
+                   
+                }, function(){
+                    new_layer.Style = LayerService.getNewStyle();
+                    _setStyle(layer, new_layer);
+                });
+        }
+
+        function getLayerStyle(layer, new_layer) {
+            LayerService.getLayerByMap(self.MapConfig.id, layer.name)
+                .then(function(res) {
+                    getStyle(res.styles, layer, new_layer);
                 }, errorFn);
+
+
         }
 
         function getLayerFeature(url, layer) {
@@ -118,14 +77,14 @@
                     new_layer.AttributeDefinition = [];
                     featureType.properties.forEach(function(e) {
                         if (e.name === 'the_geom') {
-                            
+
                             if (e.localType.toLowerCase().search('polygon') != -1)
                                 new_layer["ShapeType"] = 'polygon';
                             else if (e.localType.toLowerCase().search('point') != -1)
                                 new_layer["ShapeType"] = 'point';
-                            
-                            
-                        }else {
+
+
+                        } else {
                             new_layer.AttributeDefinition.push({
                                 "Id": e.name,
                                 "Name": e.name,
@@ -154,7 +113,7 @@
 
         }
 
-        
+
 
         function _map(layer, order) {
             if (!layer.bbox) {
@@ -170,7 +129,7 @@
                 "CanWrite": true,
                 // "DataId": "s_facf34ee54914605943fe987f5b3637c",
                 // "ShapeType": "point",
-                
+
                 "VisualizationSettings": null,
                 "IsVisible": layer.visibility,
                 "Filters": [],
@@ -183,34 +142,35 @@
                     "MaxY": layer.bbox[2]
                 },
                 "AttributeDefinition": [{ /* not available*/
-                    "Id": "NAME_3",
-                    "Name": "NAME_3",
-                    "AttributeName": null,
-                    "IsPublished": true,
-                    "Type": "text",
-                    "Length": 30,
-                    "Precision": null,
-                    "Scale": null
-                }, {
-                    "Id": "NAME_2",
-                    "Name": "NAME_2",
-                    "AttributeName": null,
-                    "IsPublished": true,
-                    "Type": "text",
-                    "Length": 92,
-                    "Precision": null,
-                    "Scale": null
-                },
-                {
-                    "Id": "NAME_4",
-                    "Name": "NAME_4",
-                    "AttributeName": null,
-                    "IsPublished": true,
-                    "Type": "text",
-                    "Length": 92,
-                    "Precision": null,
-                    "Scale": null
-                }],
+                        "Id": "NAME_3",
+                        "Name": "NAME_3",
+                        "AttributeName": null,
+                        "IsPublished": true,
+                        "Type": "text",
+                        "Length": 30,
+                        "Precision": null,
+                        "Scale": null
+                    }, {
+                        "Id": "NAME_2",
+                        "Name": "NAME_2",
+                        "AttributeName": null,
+                        "IsPublished": true,
+                        "Type": "text",
+                        "Length": 92,
+                        "Precision": null,
+                        "Scale": null
+                    },
+                    {
+                        "Id": "NAME_4",
+                        "Name": "NAME_4",
+                        "AttributeName": null,
+                        "IsPublished": true,
+                        "Type": "text",
+                        "Length": 92,
+                        "Precision": null,
+                        "Scale": null
+                    }
+                ],
                 // "IdColumn": "gid",
                 "LinearUnit": "Meter",
                 "IsLocked": false,
@@ -222,12 +182,13 @@
                 // "SavedDataId": "s_fe297a3305394811919f33cdb16fc30d"
             };
         }
+        (getGeoServerSettings)();
 
-        (function(){
+        (function() {
 
             // map load
             //debugger
-            map.on('postrender', function(evt){
+            map.on('postrender', function(evt) {
                 //console.log('maploaded', evt);
                 var user_href = window.location.href.split('/');
                 var map_info = user_href[user_href.length - 2];
@@ -239,10 +200,10 @@
 
                 var latitude;
                 var longitude;
-                try{
+                try {
                     latitude = user_location.latitude.toString();
                     longitude = user_location.longitude.toString()
-                }catch(err){
+                } catch (err) {
                     latitude = "";
                     longitude = "";
                 }
@@ -260,9 +221,7 @@
             });
 
             // Map drag / pan event
-
-            map.on('pointerdrag', function(evt){
-
+            map.on('pointerdrag', function(evt) {
                 //console.log('pointerdrag', arguments);
                 var user_location = JSON.parse(localStorage.getItem("user_location"));
 
@@ -270,10 +229,10 @@
 
                 var latitude;
                 var longitude;
-                try{
+                try {
                     latitude = user_location.latitude.toString();
                     longitude = user_location.longitude.toString()
-                }catch(err){
+                } catch (err) {
                     latitude = "";
                     longitude = "";
                 }
@@ -298,9 +257,7 @@
             });
 
             //zoom in out event
-
-            map.getView().on('change:resolution', function(evt){
-
+            map.getView().on('change:resolution', function(evt) {
 
                 var zoomType;
                 var user_location = JSON.parse(localStorage.getItem("user_location"));
@@ -311,25 +268,21 @@
                 var longitude = '';
 
                 // Zoom in
-
-                if(evt.oldValue > evt.currentTarget.getResolution()){
-
+                if (evt.oldValue > evt.currentTarget.getResolution()) {
                     //console.log("Zoom in called");
                     zoomType = 'zoom-in'
                 }
 
                 // Zoom out
-
-                if(evt.oldValue < evt.currentTarget.getResolution()){
-
+                if (evt.oldValue < evt.currentTarget.getResolution()) {
                     //console.log("Zoom out called");
                     zoomType = 'zoom-out'
                 }
 
-                try{
+                try {
                     latitude = user_location.latitude.toString();
                     longitude = user_location.longitude.toString()
-                }catch(err){
+                } catch (err) {
                     latitude = "";
                     longitude = "";
                 }

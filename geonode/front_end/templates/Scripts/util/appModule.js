@@ -115,10 +115,10 @@
                     // if (result.propertiesChanged || labelChanged) {
                         updatedLayer.style.classifierDefinitions = result.classifierDefinitions;
                         layerService.saveProperties(originalLayer, updatedLayer.name, updatedLayer.zoomlevel, updatedLayer.style, false).success(function() {
-                            saveClassificationOnNeed();
+                            // saveClassificationOnNeed();
                             $rootScope.$broadcast('layerPropertiesChanged', { layer: layer });
                         }).error(function() {
-                            saveClassificationOnNeed();
+                            // saveClassificationOnNeed();
                         });
                     // } else {
                     //     saveClassificationOnNeed();
@@ -128,11 +128,11 @@
                         layerService.saveAttributeDefinitions(originalLayer, result.updatedNode.fields);
                     }
 
-                    function saveClassificationOnNeed() {
-                        if (classifierDirty || classifierAttributeDeleted) {
-                            layerService.saveClassifierDefinitions(originalLayer, result.classifierDefinitions, false, false, true);
-                        }
-                    }
+                    // function saveClassificationOnNeed() {
+                    //     if (classifierDirty || classifierAttributeDeleted) {
+                    //         layerService.saveClassifierDefinitions(originalLayer, result.classifierDefinitions, false, false, true);
+                    //     }
+                    // }
                 });
             };
 

@@ -366,7 +366,7 @@ def map_embed(
 
 # MAPS VIEWER #
 
-
+# detail_map_view
 def map_view(request, mapid, snapshot=None, template='maps/detail_map_view.html'):
     """
     The view that returns the map composer opened to
@@ -1346,5 +1346,35 @@ def set_bounds_from_bbox(bbox):
         center_x = center_x
         center_y = center_y
         return zoom, center_x, center_y
+
+from rest_framework.generics import RetrieveUpdateAPIView
+from .serializers import MapLayerSerializer
+from rest_framework.response import Response
+from rest_framework.parsers import JSONParser
+from rest_framework import permissions
+
+
+class MapLayerRetrieveUpdateAPIView(RetrieveUpdateAPIView):
+    serializer_class = MapLayerSerializer
+    permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
+
+    def get(self, request, map_id, layername, **kwargs):
+        map_obj = MapLayer.objects.filter(map_id=map_id, name=layername).first()
+        serializer = MapLayerSerializer(map_obj)
+        return Response(serializer.data)
+
+    def put(self, request, map_id, layername, **kwargs):
+        map_obj = MapLayer.objects.filter(map_id=map_id, name=layername).first()
+        # data = json.loads(request.body)
+        data = JSONParser().parse(request)
+        # serializer = MapLayerSerializer(data=data,  partial=True)
+        # and serializer.is_valid()
+        if map_obj:
+            # import pdb;pdb.set_trace()
+            map_obj.styles = data.get('styles', str())
+            map_obj.save()
+            return Response(dict(success =True))
+        return Response(dict(success =False))
+
 
 #end

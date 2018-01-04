@@ -1,8 +1,8 @@
-﻿appModule.controller('layerPropertiesCtrl', ['$timeout', '$scope', '$http', '$filter', '$modalInstance', 'data', 'inputData', 'settingsData', 'layer',
-    function ($timeout, $scope, $http, $filter, $modalInstance, data, inputData, settingsData, layer) {
+﻿appModule.controller('layerPropertiesCtrl', ['$timeout', '$scope', '$http', '$filter', '$modalInstance', 'data', 'inputData', 'settingsData', 'layer', 'LayerService',
+    function($timeout, $scope, $http, $filter, $modalInstance, data, inputData, settingsData, layer, LayerService) {
         $scope.settingsData = settingsData;
         $scope.inputData = inputData;
-        $scope.classifierBinder = { classType: undefined, colorPaletteGenerator: undefined }
+        $scope.classifierBinder = { classType: undefined, colorPaletteGenerator: undefined };
         $scope.propertiesData = { isDirty: false };
         $scope.attributeDefs = data.fields;
         $scope.isReadonly = !layer.isWritable();
@@ -10,7 +10,7 @@
         $scope.tabs = [{}, {}, {}, {}, {}];
         $scope.showSelectStyle = false;
 
-        $timeout(function () {
+        $timeout(function() {
             $scope.tabs[data.selectedTabIndex].active = true;
         });
 
@@ -43,11 +43,49 @@
             return layer.getName() != $scope.nodeData.layer.name || layer.getZoomLevel() != $scope.nodeData.layer.zoomlevel || styleChanged;
         }
 
-        $scope.cancel = function () {
+        $scope.cancel = function() {
             $modalInstance.dismiss('cancel');
         };
 
-        $scope.save = function () {
+        function getLayerStyles() {
+            LayerService.getStylesByLayer(layer.getName())
+                .then(function(res) {
+                    console.log(res);
+                    $scope.Styles = res;
+                    res.forEach(function(e){
+                        if(e.id == $scope.nodeData.layer.style.id){
+                            $scope.nodeData.selectedStyle = e;
+                        }
+                    });
+                }, function() {
+
+                });
+        }
+        (getLayerStyles)();
+        $scope.onStyleChange = function() {
+            if (!$scope.nodeData.selectedStyle || !$scope.nodeData.selectedStyle.hasOwnProperty('id'))
+                return;
+            LayerService.getStyle($scope.nodeData.selectedStyle.id)
+            .then(function(res) {
+                    $scope.nodeData.layer.style = res;
+
+                    $scope.settingsData = $scope.nodeData.layer.style.classifierDefinitions || {};
+                    $scope.classifierBinder = { classType: undefined, colorPaletteGenerator: undefined };
+                }, function() {
+
+                });
+        };
+
+        $scope.newStyle = function() {
+            console.log(inputData, settingsData);
+            angular.copy(LayerService.getNewStyle(), $scope.nodeData.layer.style);
+            $scope.nodeData.selectedStyle = $scope.nodeData.layer.style;
+            $scope.settingsData = {};
+            $scope.classifierBinder = { classType: undefined, colorPaletteGenerator: undefined };
+            $scope.Styles.push($scope.nodeData.layer.style);
+        };
+
+        $scope.save = function() {
             if ($scope.nodeData.invalidField() || !$scope.nodeData.layer.name) {
                 return;
             }
@@ -58,4 +96,5 @@
                 propertiesChanged: featurePropertiesDirty()
             });
         };
-    }]);
+    }
+]);

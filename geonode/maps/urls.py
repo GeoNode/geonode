@@ -23,7 +23,7 @@ from django.conf import settings
 from django.views.generic import TemplateView
 
 from geonode.maps.qgis_server_views import MapCreateView, MapDetailView
-from geonode.maps.views import WmsServerList, WmsServerCreate, WmsServerUpdate, WmsServerDelete
+from geonode.maps.views import WmsServerList, WmsServerCreate, WmsServerUpdate, WmsServerDelete, MapLayerRetrieveUpdateAPIView
 
 js_info_dict = {
     'packages': ('geonode.maps',),
@@ -99,3 +99,8 @@ urlpatterns = patterns(
 #end
 
 )
+
+#custom
+urlpatterns = patterns('',
+    url(r'^(?P<map_id>[0-9]+)/layer/(?P<layername>[^/]*)/$', MapLayerRetrieveUpdateAPIView.as_view(), name='map_layer'),
+) + urlpatterns
