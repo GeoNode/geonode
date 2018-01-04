@@ -171,7 +171,13 @@ ul.user-actions li a .fa{
 }
 /* for grid view */
 .user-details .grid-container{
-    background: #5a5d63;
+    background: #ececec;
+    border: none;
+    border-top: 1px solid #d1d1d1;
+    border-bottom: 1px solid #d1d1d1;
+    border-radius: 0;
+    padding: 15px;
+    height: 155px;
 }
 .user-details .grid-container .top-content .designation{
     color: #FFFFFF;

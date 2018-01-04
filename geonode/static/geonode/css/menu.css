@@ -23,9 +23,12 @@ and open the template in the editor.
     /*z-index: 200;*/
     z-index: 9999;
     /*background-color: #67b5d1;*/
-    background-color: #61646a;
+    background-color: #fff;
     -webkit-transition: -webkit-transform 0.3s;
     transition: transform 0.3s;
+    -webkit-box-shadow: 0px 0px 4px 0px rgba(0,0,0,0.35);
+    -moz-box-shadow: 0px 0px 4px 0px rgba(0,0,0,0.35);
+    box-shadow: 0px 0px 4px 0px rgba(0,0,0,0.35);
 }
 
 .c-menu__items {
@@ -98,7 +101,7 @@ and open the template in the editor.
 .c-menu--push-right .c-menu__link {
     display: block;
     padding: 12px 24px;
-    color: #fff;
+    color: #000;
 }
 
 .c-menu--slide-left .c-menu__link .fa,
@@ -107,7 +110,7 @@ and open the template in the editor.
 .c-menu--push-right .c-menu__link .fa{
     margin-right: 15px;
     font-size: 18px;
-    color: #FFFFFF;
+    color: #3896e2;
     display: inline-block;
     width: 25px;
 }
@@ -117,7 +120,7 @@ and open the template in the editor.
 .c-menu--push-left .c-menu__close,
 .c-menu--push-right .c-menu__close {
     display: block;
-    padding: 19px 15px;
+    padding: 10px;
     width: 100%;
 }
 
@@ -332,7 +335,7 @@ body.has-active-menu {
 .c-menu__close {
     color: #fff;
     /*background-color: #3184a1;*/
-    background-color: #5a5d63;
+    background-color: #fff;
     font-size: 14px;
     border: none;
     box-shadow: none;
@@ -348,11 +351,12 @@ body.has-active-menu {
     outline: none;
 }
 .c-menu__close .c-menu_gd_close {
-    background: rgba(0, 0, 0, 0) none repeat scroll 0 0;
-    border: 1px solid #fff;
+    background: rgba(56, 150, 226, 100) none repeat scroll 0 0;
+    border: 1px solid #3896e2;
     color: #fff;
     cursor: pointer;
-    padding: 1px 7px;
+    padding: 1px 6px;
+    border-radius: 2px;
 }
 .c-menu__close .c-menu_gd_close:hover {
     text-decoration: none;
