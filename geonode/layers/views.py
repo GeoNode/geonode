@@ -97,6 +97,11 @@ from geonode.layers.models import LayerSubmissionActivity, LayerAuditActivity, S
 from geonode.base.libraries.decorators import manager_or_member
 from geonode.base.models import KeywordIgnoreListModel
 # from geonode.authentication_decorators import login_required as custom_login_required
+from rest_framework.generics import ListAPIView, RetrieveUpdateAPIView
+from .serializers import StyleExtensionSerializer
+from rest_framework.authentication import SessionAuthentication, BasicAuthentication
+from rest_framework import permissions
+from rest_framework.response import Response
 
 from django.db import connection
 from osgeo import osr
@@ -1254,17 +1259,8 @@ def save_sld_geoserver(request_method, full_path, sld_body, content_type='applic
         body=sld_body or None,
         headers=headers)
 
-from rest_framework.generics import ListAPIView, RetrieveUpdateAPIView
-from .serializers import StyleExtensionSerializer
-from rest_framework.authentication import SessionAuthentication, BasicAuthentication
-from rest_framework import permissions
-from rest_framework.response import Response
-
 
 class LayerStyleListAPIView(ListAPIView):
-    # authentication_classes = (SessionAuthentication, BasicAuthentication)
-    # permission_classes = (IsAuthenticated,)
-
     serializer_class = StyleExtensionSerializer
 
     def get_queryset(self):
@@ -1276,12 +1272,12 @@ class LayerStyleListAPIView(ListAPIView):
         styles = layer_obj.styles.all();
         return StyleExtension.objects.filter(style__in = styles)
 
+
 class StyleExtensionRetrieveUpdateAPIView(RetrieveUpdateAPIView):
     queryset = StyleExtension.objects.all()
     serializer_class = StyleExtensionSerializer
     permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
 
-    # @custom_login_required
     def put(self, request, pk, **kwargs):
         data = json.loads(request.body)
         # check already style extension created or not
@@ -1305,6 +1301,7 @@ class StyleExtensionRetrieveUpdateAPIView(RetrieveUpdateAPIView):
                         ensure_ascii=False), 
                         status=200,
                         content_type='application/javascript')
+
 
 class LayerStyleView(View):
     def get(self, request, layername):

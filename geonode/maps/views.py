@@ -75,6 +75,12 @@ from geonode.groups.models import GroupProfile
 from geonode.maps.models import WmsServer
 from geonode.maps.forms import WmsServerForm
 
+from rest_framework.generics import RetrieveUpdateAPIView
+from .serializers import MapLayerSerializer
+from rest_framework.response import Response
+from rest_framework.parsers import JSONParser
+from rest_framework import permissions
+
 if 'geonode.geoserver' in settings.INSTALLED_APPS:
     # FIXME: The post service providing the map_status object
     # should be moved to geonode.geoserver.
@@ -1347,13 +1353,6 @@ def set_bounds_from_bbox(bbox):
         center_y = center_y
         return zoom, center_x, center_y
 
-from rest_framework.generics import RetrieveUpdateAPIView
-from .serializers import MapLayerSerializer
-from rest_framework.response import Response
-from rest_framework.parsers import JSONParser
-from rest_framework import permissions
-
-
 class MapLayerRetrieveUpdateAPIView(RetrieveUpdateAPIView):
     serializer_class = MapLayerSerializer
     permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
@@ -1365,16 +1364,11 @@ class MapLayerRetrieveUpdateAPIView(RetrieveUpdateAPIView):
 
     def put(self, request, map_id, layername, **kwargs):
         map_obj = MapLayer.objects.filter(map_id=map_id, name=layername).first()
-        # data = json.loads(request.body)
         data = JSONParser().parse(request)
-        # serializer = MapLayerSerializer(data=data,  partial=True)
-        # and serializer.is_valid()
+       
         if map_obj:
-            # import pdb;pdb.set_trace()
             map_obj.styles = data.get('styles', str())
             map_obj.save()
             return Response(dict(success =True))
         return Response(dict(success =False))
-
-
 #end
