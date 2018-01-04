@@ -3345,32 +3345,34 @@ width: 100%;
     padding: 0 15px;
 }
 
-
+.layerNav > li > a i
+{
+    
+    color: #337ab7;
+ 
+}
 .layerNav > li > a
 {
     border: none;
     border-radius: 0;
     margin-right: -1px;
-    padding: 10px 30px;
+    padding: 10px 25px;
     color: #777777;
     border-width: 0 0 0 3px;
     border-color: #000;
 }
 .layerNav > li.active > a, .layerNav > li.active > a:focus, .layerNav > li.active > a:hover
 {
-    border-width: 0 0 4px;
+    border-width: 0 0 3px;
     border-color: #f2555b;
     border-top: none;
     color: #000;
+    background: transparent;
 }
 .layerNav > li > a:focus, .layerNav > li > a:hover
 {
     background: none;
     color: #000;
-}
-.gd-content-heading
-{
-    background-color: #fff;
 }
 #gd-featurd-maps .carousel-control
 {
@@ -3399,4 +3401,18 @@ width: 100%;
 #gd-featurd-maps .carousel-inner 
 {
     padding: 10px;
+}
+.globalNav
+{
+    margin: 0 -14px;
+    padding: 5px 23px 0;
+}
+.globalNavHeading
+{
+    padding: 0 15px;
+}
+.panel-default > .panel-heading
+{
+    background-color: #fff;
+    border-bottom: none;
 }
