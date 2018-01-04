@@ -34,7 +34,7 @@
                             {% endverbatim %}
                             {% if user.is_authenticated %}
                             <li ng-if="group.favorite">
-                                <button class="btn col-md-12 btn-gd-primary" ng-click="favouriteGroup(group.id,false);" style="background:#d0d0d0;border:none;color:#000;padding:7px 25px;" data-favouriteID="{{group.id}}" data-favouriteStatus="false">
+                                <button ng-click="favouriteGroup(group.id,false);" class="btn btn-gd-primary favorite-btn" data-favouriteID="{{group.id}}" data-favouriteStatus="false">
                                   <i class="fa fa-heart-o" style="border:none;color:#000;"></i>
                                   Unfavorite
                                 </button>
@@ -97,8 +97,8 @@
                                   {% if user.is_authenticated %}
                                   {% verbatim %}
                                   <li ng-if="group.favorite" class="col-md-12" style="padding: 0 25px;">
-                                      <button class="btn col-md-12 btn-gd-primary" ng-click="favouriteGroup(group.id,false);" style="background:#d0d0d0;border:none;color:#000;" data-favouriteID="{{group.id}}" data-favouriteStatus="false">
-                                          <i class="fa fa-heart-o" style="border:1px solid #d0d0d0;color:#000;"></i>
+                                      <button class="btn btn-gd-primary favorite-btn btn-block" ng-click="favouriteGroup(group.id,false);"  data-favouriteID="{{group.id}}" data-favouriteStatus="false">
+                                          <i class="fa fa-heart-o"></i>
                                           Unfavorite
                                       </button>
                                   </li>

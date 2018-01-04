@@ -177,11 +177,10 @@ ul.user-actions li a .fa{
     color: #FFFFFF;
 }
 .grid-container{
-    background: #FFF;
-    margin-bottom: 20px;
-    /*padding: 15px;*/
-    padding-bottom: 15px;
-    box-shadow: 0 0 5px 0 rgba(224, 217, 224, 1);
+    border: 1px solid #3896e2;
+    border-radius: 6px;
+    margin-bottom: 0;
+    padding: 0;
 }
 .grid-container.box-shadow {
     -webkit-box-shadow: 0px 2px 5px 0px rgba(224,217,224,1);
@@ -283,12 +282,9 @@ ul.user-actions li a .fa{
 }
 .grid-container ul.list-inline li a {
     padding: 0 10px;
-    border-right: 1px solid #c0c1c3;
+    border-right: 1px solid #000;
 }
-.grid-container ul.list-inline li a ,
-.grid-container ul.list-inline li a .fa{
-    color: #999999;
-}
+
 .grid-container ul.list-inline li.active a
 .grid-container ul.list-inline li.active a .fa
 .grid-container ul.list-inlineul li a:focus,
@@ -306,15 +302,12 @@ ul.user-actions li a .fa{
 .grid-container ul.list-inline li a.btn ,
 .grid-container ul.list-inline li .btn .fa,
 .grid-container ul.list-inline li a.btn .fa{
-    color: #FFF;
     padding: 5px;
-    border-right-width: 0px;
 }
 .grid-container ul.list-inline li .btn:hover ,
 .grid-container ul.list-inline li a.btn:hover ,
 .grid-container ul.list-inline li .btn:hover .fa,
 .grid-container ul.list-inline li a.btn:hover .fa{
-    color: #FFF;
     padding: 5px;
 }
 /* end user-actions list style */
@@ -2806,7 +2799,7 @@ body.layer-detail-page #gd-wrapper .container-fluid.padding-zero{
 .pagination {
     display: inline-block;
     padding-left: 0;
-    margin: 0 0 20px 15px;
+    margin: 0;
     border-radius: 4px;
 }
 
@@ -3415,4 +3408,23 @@ width: 100%;
 {
     background-color: #fff;
     border-bottom: none;
+}
+.bottom-content
+{
+    background-color: #aedaee;
+    padding: 15px;
+    border-bottom-left-radius: 6px;
+    border-bottom-right-radius: 6px;
+}
+.favorite-btn
+{
+    background-color: #d9edf7;
+    border: 1px solid #8ebcd3;
+    color: #000 !important;
+}
+.favorite-btn:hover
+{
+    background-color: #d9edf7;
+    border: 1px solid #8ebcd3;
+    color: #000 !important;
 }
