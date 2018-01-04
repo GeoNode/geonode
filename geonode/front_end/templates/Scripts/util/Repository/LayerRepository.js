@@ -2,7 +2,6 @@
     '$http', 'urlResolver', 'dirtyManager', '$window', 'surfFeatureFactory', '$q', '$window', '$cookies',
     function($http, urlResolver, dirtyManager, $window, surfFeatureFactory, $q, $window, $cookies) {
         return {
-
             getFids: function(layerId) {
                 return $http.get(urlResolver.resolveLayer('GetFids', { layerId: layerId }));
             },
@@ -15,7 +14,6 @@
                 });
             },
             saveProperties: function(id, layerId, layerName, zoomLevel, properties, sldStyle, selectionStyleSld, labelingSld, callBack) {
-                //old
                 if (properties.hasOwnProperty('$isNew'))
                     delete properties.$isNew;
                 return $http.put('/layers/style/' + id + '/', {
@@ -38,7 +36,6 @@
                 });
             },
             createProperties: function(layerId, layerName, zoomLevel, properties, sldStyle, selectionStyleSld, labelingSld, callBack) {
-                //old
                 if (properties.hasOwnProperty('$isNew'))
                     delete properties.$isNew;
                 return $http.post('/layers/' + layerName + '/style/', {
@@ -60,19 +57,6 @@
                     }
                 });
             },
-            // saveProperties: function(layerId, layerName, zoomLevel, properties, sldStyle, selectionStyleSld, labelingSld, callBack) {
-            //     //new
-            //     return $http.put('/gs/rest/styles/' + properties.Name + '.xml', sldStyle, {
-            //         headers: {
-            //             'X-CSRFToken': $cookies.get('csrftoken')
-            //         }
-            //     }).success(function() {
-            //         dirtyManager.setDirty(true);
-            //         if (callBack) {
-            //             callBack();
-            //         }
-            //     });
-            // },
             getAttributeValues: function(layerId, attributeId) {
                 return $http.get(urlResolver.resolveClassification('GetAttributeValues', {
                     layerId: layerId,
@@ -92,17 +76,6 @@
             getNumberOfFeatures: function(dataId) {
                 return $http.get(urlResolver.resolveCatalog('GetNumberOfFeatures', { dataId: dataId }));
             },
-            // saveClassifierDefinitions: function(layerId, classifierDefinitions, sldStyle, defaultStyleConditionalSld) {
-            //     return $http.post(urlResolver.resolveClassification('SaveClassifierDefinitions'), {
-            //         layerId: layerId,
-            //         classifierDefinitions: classifierDefinitions ? angular.toJson(classifierDefinitions) : null,
-            //         attributeId: classifierDefinitions.selectedField,
-            //         sldStyle: sldStyle,
-            //         defaultStyleConditionalSld: defaultStyleConditionalSld
-            //     }).success(function() {
-            //         dirtyManager.setDirty(true);
-            //     });
-            // },
             updateLayerExtent: function(surfLayer) {
                 return $http.get(urlResolver.resolveCatalog('GetDataExtent', { dataId: surfLayer.DataId })).success(function(layerExtent) {
                     surfLayer.setMapExtent(layerExtent);

@@ -8,7 +8,7 @@
         var self = this;
         var map = mapService.getMap();
         self.MapConfig = $window.mapConfig;
-        console.log(self.MapConfig);
+
         mapService.setMapName(self.MapConfig.about.title);
 
         function setLayers() {
@@ -43,19 +43,19 @@
                 styles: style.id
             });
         });
-        function _setStyle(layer, new_layer){
-            // new_layer.Style.default.name = layer.name;
-            // new_layer.Style.select.name = layer.name;
+
+        function _setStyle(layer, new_layer) {
             new_layer.ClassifierDefinitions = new_layer.Style.classifierDefinitions || {};
             mapService.addDataLayer(new_layer, false);
         }
+
         function getStyle(styleId, layer, new_layer) {
             LayerService.getStyle(styleId)
                 .then(function(res) {
                     new_layer.Style = res;
                     _setStyle(layer, new_layer);
-                   
-                }, function(){
+
+                }, function() {
                     new_layer.Style = LayerService.getNewStyle();
                     _setStyle(layer, new_layer);
                 });
@@ -66,8 +66,6 @@
                 .then(function(res) {
                     getStyle(res.styles, layer, new_layer);
                 }, errorFn);
-
-
         }
 
         function getLayerFeature(url, layer) {
@@ -77,13 +75,10 @@
                     new_layer.AttributeDefinition = [];
                     featureType.properties.forEach(function(e) {
                         if (e.name === 'the_geom') {
-
                             if (e.localType.toLowerCase().search('polygon') != -1)
                                 new_layer["ShapeType"] = 'polygon';
                             else if (e.localType.toLowerCase().search('point') != -1)
                                 new_layer["ShapeType"] = 'point';
-
-
                         } else {
                             new_layer.AttributeDefinition.push({
                                 "Id": e.name,
@@ -99,9 +94,7 @@
                     }, this);
                     getLayerStyle(layer, new_layer);
                 }, this);
-
             }, errorFn);
-
         }
 
         function _uuid() {
@@ -110,10 +103,7 @@
                 return rand.substring(rand.length - 4);
             }
             return _() + _() + '-' + _() + '-' + _() + '-' + _() + '-' + _() + _();
-
         }
-
-
 
         function _map(layer, order) {
             if (!layer.bbox) {
@@ -182,6 +172,7 @@
                 // "SavedDataId": "s_fe297a3305394811919f33cdb16fc30d"
             };
         }
+        
         (getGeoServerSettings)();
 
         (function() {

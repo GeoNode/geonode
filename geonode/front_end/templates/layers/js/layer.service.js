@@ -30,6 +30,7 @@
             });
             return deferred.promise;
         }
+
         function _uuid() {
             function _() {
                 var rand = Math.ceil(1e15 + Math.random() * 1e5).toString(16);
@@ -38,6 +39,7 @@
             return _() + _() + '-' + _() + '-' + _() + '-' + _() + '-' + _() + _();
 
         }
+
         function getDefaultStyle() {
             return {
                 "Name": "",
@@ -142,7 +144,7 @@
             },
             getStyle: function(id) {
                 var deferred = $q.defer();
-                get('/layers/style/' + id + '/').then(function(res){
+                get('/layers/style/' + id + '/').then(function(res) {
                     var style = JSON.parse(res.json_field);
                     style.id = res.id;
                     if (!style) {
@@ -152,7 +154,7 @@
                     style.default.userStyle = style.Name;
                     style.select.userStyle = style.Name;
                     deferred.resolve(style);
-                }, function(){
+                }, function() {
                     deferred.reject({});
                 });
                 return deferred.promise;
