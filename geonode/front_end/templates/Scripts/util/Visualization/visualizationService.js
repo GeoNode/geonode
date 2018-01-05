@@ -167,14 +167,37 @@
                         return saveChartProperties(config, layer);
                 }
             },
+            getVisualizationSld: function (layer, config) {
+                if (!config || (layer.ShapeType != 'geoTiff' && layer.ShapeType != 'geoPdf' && !config.attributeId)) {
+                    return factory.saveVisualizationSettingWithSld(layer, null, "");
+                }
+
+                switch (config.name) {
+                    case visualizationTypes.heatmap:
+                        return sldGenerator.getHeatmapSld(config);
+                    case visualizationTypes.weightedPoint:
+                        return saveWeightedPoint(config, layer);
+                    case visualizationTypes.choropleth:
+                        return saveChoropleth(config, layer);
+                    case visualizationTypes.rasterBand:
+                        return saveRasterBandColor(config, layer);
+                    case visualizationTypes.chart:
+                        return saveChartProperties(config, layer);
+                }
+            },
             saveVisualizationSettingWithSld: function (layer, settings, sldStyle) {
-                return layerRepository.saveVisualizationSettings(layer.getId(), settings, sldStyle).success(function () {
-                    layer.VisualizationSettings = settings;
-                    layerRenderingModeFactory.setLayerRenderingMode(layer);
-                    interactionHandler.setMode(mapModes.select);
-                    layer.refresh();
-                    dirtyManager.setDirty(true);
-                });
+                layer.style.VisualizationSettings = settings;
+                layerRenderingModeFactory.setLayerRenderingMode(layer);
+                interactionHandler.setMode(mapModes.select);
+                layer.refresh();
+                dirtyManager.setDirty(true);
+                // return layerRepository.saveVisualizationSettings(layer.getId(), settings, sldStyle).success(function () {
+                //     layer.style.VisualizationSettings = settings;
+                //     layerRenderingModeFactory.setLayerRenderingMode(layer);
+                //     interactionHandler.setMode(mapModes.select);
+                //     layer.refresh();
+                //     dirtyManager.setDirty(true);
+                // });
             },
             getAttributeValueRange: function (layerId, attributeId) {
                 return layerRepository.getAttributeValueRange(layerId, attributeId);
