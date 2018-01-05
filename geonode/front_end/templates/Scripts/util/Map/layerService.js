@@ -1,6 +1,6 @@
 ﻿mapModule.factory('layerService', [
-    '$rootScope', 'layerRepository', 'featureService', 'layerStyleGenerator', 'featureFilterGenerator', 'sldTemplateService', 'interactionHandler', '$q', 'LayerService',
-    function($rootScope, layerRepository, featureService, layerStyleGenerator, featureFilterGenerator, sldTemplateService, interactionHandler, $q, newLayerService) {
+    '$rootScope', 'layerRepository', 'featureService', 'layerStyleGenerator', 'featureFilterGenerator', 'sldTemplateService', 'interactionHandler', '$q', 'LayerService', 'visualizationService',
+    function($rootScope, layerRepository, featureService, layerStyleGenerator, featureFilterGenerator, sldTemplateService, interactionHandler, $q, newLayerService, visualizationService) {
         function _map(layer, order) {
             if (layer.BoundingBox) {
                 layer.bbox = [layer.BoundingBox[0].extent[0],
@@ -78,6 +78,12 @@
 
                 defaultStyleSld = defaultStyleSld.replace(reClassifier, classificationSlds.classificationStyle);
                 defaultStyleSld = defaultStyleSld.replace(reLabel, labelingSld);
+
+                if(surfLayer.Style.VisualizationSettings){
+                    var visSld = visualizationService.getVisualizationSld(surfLayer, surfLayer.Style.VisualizationSettings);
+                    defaultStyleSld = visSld;
+                }
+                //
 
                 surfLayer.setName(name);
                 surfLayer.setStyle(style);

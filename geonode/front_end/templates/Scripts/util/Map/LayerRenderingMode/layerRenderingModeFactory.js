@@ -1,6 +1,6 @@
 ﻿mapModule.factory('layerRenderingModeFactory', [
-    'urlResolver', 'SimpleWmsRenderingMode', 'NullRenderingMode', 'WmsSelectFeatureTool', 'WmsSelectionDisplayTool', 'WmsDeleteFeatureTool', 'RedoUndoTool', 'ClearFeaturesTool', 'WmsEditFeatureTool', 'CreateFeatureTool', 'LocationCaptureTool', 'AttributeDisplayTool', 'mapTools', 'jantrik.Event',
-    function (urlResolver, SimpleWmsRenderingMode, NullRenderingMode, WmsSelectFeatureTool, WmsSelectionDisplayTool, WmsDeleteFeatureTool, RedoUndoTool, ClearFeaturesTool, WmsEditFeatureTool, CreateFeatureTool, LocationCaptureTool, AttributeDisplayTool, mapTools, Event) {
+    'urlResolver', 'SimpleWmsRenderingMode', 'NullRenderingMode', 'WmsSelectFeatureTool', 'WmsSelectionDisplayTool', 'WmsDeleteFeatureTool', 'RedoUndoTool', 'WmsEditFeatureTool', 'CreateFeatureTool', 'LocationCaptureTool', 'AttributeDisplayTool', 'mapTools', 'jantrik.Event',
+    function (urlResolver, SimpleWmsRenderingMode, NullRenderingMode, WmsSelectFeatureTool, WmsSelectionDisplayTool, WmsDeleteFeatureTool, RedoUndoTool, WmsEditFeatureTool, CreateFeatureTool, LocationCaptureTool, AttributeDisplayTool, mapTools, Event) {
         var _olMap, _surfMap;
         var _olInteractiveLayer, _olSelectionDisplayLayer, _propertyGridOverlay;
         var _olGeometryType = new Array();
@@ -55,9 +55,9 @@
             return redoUndoTool;
         }
 
-        function createClearFeaturesTool(surfLayer) {
-            return new ClearFeaturesTool(surfLayer);
-        }
+        // function createClearFeaturesTool(surfLayer) {
+        //     return new ClearFeaturesTool(surfLayer);
+        // }
 
         function createWmsEditFeatureTool(surfLayer, olLayer) {
             var wmsSelectionDisplayTool = createWmsSelectFeatureTool(surfLayer, olLayer);
@@ -239,12 +239,16 @@
             },
             setLayerRenderingMode: function (surfLayer) {
                 var mode;
-                if (surfLayer.ShapeType == 'geoTiff' || surfLayer.ShapeType == 'geoPdf') {
-                    mode = (surfLayer.VisualizationSettings) ? factory.createVisualizationRenderingMode(surfLayer)
-                    : factory.createSimpleRasterRenderingMode(surfLayer);
-                } else {
-                    mode = (surfLayer.VisualizationSettings) ? factory.createVisualizationRenderingMode(surfLayer)
-                    : factory.createSimpleWmsRenderingMode(surfLayer);
+                if(surfLayer.style && surfLayer.style.VisualizationSettings){
+                    mode = factory.createVisualizationRenderingMode(surfLayer);
+                }
+                else{
+                    if (surfLayer.ShapeType == 'geoTiff' || surfLayer.ShapeType == 'geoPdf'){
+                        mode = factory.createSimpleRasterRenderingMode(surfLayer);
+                    }
+                    else{
+                        mode = factory.createSimpleWmsRenderingMode(surfLayer);
+                    }
                 }
                 surfLayer.setRenderingMode(mode);
                 if (mapTools.activeLayer) {
