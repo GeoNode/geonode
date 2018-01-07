@@ -80,7 +80,7 @@ and open the template in the editor.
 .c-menu--slide-right .c-menu__item.active,
 .c-menu--push-left .c-menu__item:hover,
 .c-menu--push-right .c-menu__item:hover{
-    background-color: #3896e2;
+    background-color: #c5f3ff;
 }
 .c-menu--slide-left .c-menu__item:first-child,
 .c-menu--slide-right .c-menu__item:first-child,
@@ -102,6 +102,11 @@ and open the template in the editor.
     display: block;
     padding: 12px 24px;
     color: #000;
+}
+.c-menu__link:hover
+{
+    background-color: #1e4d73;
+    color: #fff;
 }
 
 .c-menu--slide-left .c-menu__link .fa,
