@@ -19,6 +19,7 @@
 #########################################################################
 
 import re
+import datetime
 
 from django.db.models import Q
 from django.http import HttpResponse
@@ -43,6 +44,9 @@ from tastypie import fields
 from tastypie.utils import trailing_slash
 from actstream.models import Action
 from guardian.shortcuts import get_objects_for_user
+from oauth2_provider.models import AccessToken
+from oauth2_provider.settings import oauth2_settings
+
 
 from django.conf.urls import url
 from django.core.paginator import Paginator, InvalidPage
@@ -149,6 +153,18 @@ class CommonModelApi(ModelResource):
         return orm_filters
 
     def apply_filters(self, request, applicable_filters):
+
+        if 'HTTP_AUTHORIZATION' in request.META:
+            token = request.META['HTTP_AUTHORIZATION']
+
+            accesstoken = AccessToken.objects.filter(token=token[7:])
+            if accesstoken:
+                accesstoken = AccessToken.objects.get(token=token[7:])
+                accesstoken.expires = datetime.datetime.now() + datetime.timedelta(
+                    seconds=oauth2_settings.ACCESS_TOKEN_EXPIRE_SECONDS)
+                accesstoken.save()
+
+
         types = applicable_filters.pop('type', None)
         extent = applicable_filters.pop('extent', None)
         keywords = applicable_filters.pop('keywords__slug__in', None)
@@ -664,6 +680,18 @@ class DocumentResource(CommonModelApi):
 class CommonFavorite(ModelResource):
     def dehydrate(self, bundle):
 
+
+        if 'HTTP_AUTHORIZATION' in bundle.request.META:
+            token = bundle.request.META['HTTP_AUTHORIZATION']
+
+            accesstoken = AccessToken.objects.filter(token=token[7:])
+            if accesstoken:
+                accesstoken = AccessToken.objects.get(token=token[7:])
+                accesstoken.expires = datetime.datetime.now() + datetime.timedelta(
+                    seconds=oauth2_settings.ACCESS_TOKEN_EXPIRE_SECONDS)
+                accesstoken.save()
+
+
         if bundle.request.user.is_authenticated():
             try:
                 bundle.data['favorite'] = FavoriteResource.objects.get(user=bundle.request.user, resource=ResourceBase.objects.get(id=bundle.obj.id)).active
@@ -736,6 +764,17 @@ class GroupsResourceWithFavorite(ModelResource):
     manager_count = fields.IntegerField()
 
     def dehydrate_member_count(self, bundle):
+        if 'HTTP_AUTHORIZATION' in bundle.equest.META:
+            token = bundle.request.META['HTTP_AUTHORIZATION']
+
+            accesstoken = AccessToken.objects.filter(token=token[7:])
+            if accesstoken:
+                accesstoken = AccessToken.objects.get(token=token[7:])
+                accesstoken.expires = datetime.datetime.now() + datetime.timedelta(
+                    seconds=oauth2_settings.ACCESS_TOKEN_EXPIRE_SECONDS)
+                accesstoken.save()
+
+
         return bundle.obj.member_queryset().count()
 
     def dehydrate_manager_count(self, bundle):
@@ -807,6 +846,16 @@ class GroupActivity(ModelResource):
             return Action.objects.filter(public=True)[:0]
 
     def dehydrate(self, bundle):
+        if 'HTTP_AUTHORIZATION' in bundle.request.META:
+            token = bundle.request.META['HTTP_AUTHORIZATION']
+
+            accesstoken = AccessToken.objects.filter(token=token[7:])
+            if accesstoken:
+                accesstoken = AccessToken.objects.get(token=token[7:])
+                accesstoken.expires = datetime.datetime.now() + datetime.timedelta(
+                    seconds=oauth2_settings.ACCESS_TOKEN_EXPIRE_SECONDS)
+                accesstoken.save()
+
         actor = bundle.obj.actor
         activity_class = 'activity'
         verb = bundle.obj.verb
@@ -898,6 +947,16 @@ class WorkSpaceLayerApi(ModelResource):
         excludes = ['csw_anytext', 'metadata_xml']
 
     def get_object_list(self, request):
+        if 'HTTP_AUTHORIZATION' in request.META:
+            token = request.META['HTTP_AUTHORIZATION']
+
+            accesstoken = AccessToken.objects.filter(token=token[7:])
+            if accesstoken:
+                accesstoken = AccessToken.objects.get(token=token[7:])
+                accesstoken.expires = datetime.datetime.now() + datetime.timedelta(
+                    seconds=oauth2_settings.ACCESS_TOKEN_EXPIRE_SECONDS)
+                accesstoken.save()
+
         nothing = Layer.objects.all()[:0]
         if request.user.is_authenticated():
             user_type = request.GET.get('user_type')
@@ -975,6 +1034,16 @@ class WorkSpaceDocumentApi(ModelResource):
         resource_name = 'workspace_document_api'
 
     def get_object_list(self, request):
+        if 'HTTP_AUTHORIZATION' in request.META:
+            token = request.META['HTTP_AUTHORIZATION']
+
+            accesstoken = AccessToken.objects.filter(token=token[7:])
+            if accesstoken:
+                accesstoken = AccessToken.objects.get(token=token[7:])
+                accesstoken.expires = datetime.datetime.now() + datetime.timedelta(
+                    seconds=oauth2_settings.ACCESS_TOKEN_EXPIRE_SECONDS)
+                accesstoken.save()
+
         nothing = Document.objects.all()[:0]
         if request.user.is_authenticated():
             user_type = request.GET.get('user_type')
@@ -1057,6 +1126,16 @@ class WorkSpaceMapApi(ModelResource):
         resource_name = 'workspace_map_api'
 
     def get_object_list(self, request):
+        if 'HTTP_AUTHORIZATION' in request.META:
+            token = request.META['HTTP_AUTHORIZATION']
+
+            accesstoken = AccessToken.objects.filter(token=token[7:])
+            if accesstoken:
+                accesstoken = AccessToken.objects.get(token=token[7:])
+                accesstoken.expires = datetime.datetime.now() + datetime.timedelta(
+                    seconds=oauth2_settings.ACCESS_TOKEN_EXPIRE_SECONDS)
+                accesstoken.save()
+
         nothing = Map.objects.all()[:0]
         if request.user.is_authenticated():
             user_type = request.GET.get('user_type')
