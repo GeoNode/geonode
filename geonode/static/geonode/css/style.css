@@ -1212,8 +1212,7 @@ fieldset[disabled] .btn-gd-yellow.focus {
 #gd-wrapper .gd-apply-filters {
     background: #FFFFFF;
     margin: 0;
-    margin-top: 15px;
-    padding: 20px;
+    padding:0 20px;
 }
 #gd-wrapper .gd-apply-filters .filters_normal {
     font-weight:normal;
@@ -2667,6 +2666,7 @@ ul#global-errors li{
     border-radius: 2px;
     display: block;
     height:300px;
+    min-width: 100%;
     overflow:auto;
 }
 #gd-cart ul.dropdown-menu.gd-cart-dropdown-menu li{
@@ -3562,4 +3562,12 @@ width: 100%;
   .btn-delete
   {
       color: #f2555b;
+  }
+  .gd-cart-dropdown-menu-show
+  {
+      border-bottom: 1px solid #ccc;
+  }
+  .gd-cart-dropdown-menu-show a
+  {
+    padding: 10px 20px !important;
   }
