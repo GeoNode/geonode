@@ -3538,3 +3538,24 @@ width: 100%;
     font-size: 11px;
     font-weight: normal;
   }
+  .gSearch
+  {
+      margin-left: 15px;
+      margin-top: 3px;
+  }
+  #id_search
+  {
+      float: left;
+      border: 1px solid #ccc;
+      box-shadow: 0 1px 1px rgba(0, 0, 0, 0.075) inset;
+      color: #555;
+      font-size: 14px;
+      height: 34px;
+      line-height: 1.42857;
+      padding: 6px 12px;
+      transition: border-color 0.15s ease-in-out 0s, box-shadow 0.15s ease-in-out 0s;
+  }
+  .gSearch label
+  {
+   display: none;   
+  }
