@@ -131,36 +131,7 @@
                     "MaxX": layer.bbox[3],
                     "MaxY": layer.bbox[2]
                 },
-                "AttributeDefinition": [{ /* not available*/
-                        "Id": "NAME_3",
-                        "Name": "NAME_3",
-                        "AttributeName": null,
-                        "IsPublished": true,
-                        "Type": "text",
-                        "Length": 30,
-                        "Precision": null,
-                        "Scale": null
-                    }, {
-                        "Id": "NAME_2",
-                        "Name": "NAME_2",
-                        "AttributeName": null,
-                        "IsPublished": true,
-                        "Type": "text",
-                        "Length": 92,
-                        "Precision": null,
-                        "Scale": null
-                    },
-                    {
-                        "Id": "NAME_4",
-                        "Name": "NAME_4",
-                        "AttributeName": null,
-                        "IsPublished": true,
-                        "Type": "text",
-                        "Length": 92,
-                        "Precision": null,
-                        "Scale": null
-                    }
-                ],
+                "AttributeDefinition": [],
                 // "IdColumn": "gid",
                 "LinearUnit": "Meter",
                 "IsLocked": false,

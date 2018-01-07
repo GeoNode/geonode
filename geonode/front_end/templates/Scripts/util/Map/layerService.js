@@ -1,6 +1,45 @@
 ﻿mapModule.factory('layerService', [
-    '$rootScope', 'layerRepository', 'featureService', 'layerStyleGenerator', 'featureFilterGenerator', 'sldTemplateService', 'interactionHandler', '$q',
-    function($rootScope, layerRepository, featureService, layerStyleGenerator, featureFilterGenerator, sldTemplateService, interactionHandler, $q) {
+    '$rootScope', 'layerRepository', 'featureService', 'layerStyleGenerator', 'featureFilterGenerator', 'sldTemplateService', 'interactionHandler', '$q', 'LayerService',
+    function($rootScope, layerRepository, featureService, layerStyleGenerator, featureFilterGenerator, sldTemplateService, interactionHandler, $q, newLayerService) {       
+        function _map(layer, order) {
+            if (!layer.bbox) {
+                layer.bbox = [-9818543.41779904, 5183814.6260749, -9770487.95134629, 5235883.07751104];
+            }
+            // var userStyle = layer.name + '_' + _uuid();
+            return {
+                "LayerId": layer.Name,
+                "Name": layer.Name,
+                "SortOrder": order || 0,
+                // "LastUpdateOn": "2017-10-10T11:10:26.083Z",
+                "ClassifierDefinitions": {},
+                "CanWrite": true,
+                // "DataId": "s_facf34ee54914605943fe987f5b3637c",
+                // "ShapeType": "point",
+
+                "VisualizationSettings": null,
+                "IsVisible": layer.visibility || true,
+                "Filters": [],
+                "ZoomLevel": 0,
+                "ModificationState": "Added",
+                "LayerExtent": {
+                    "MinX": layer.BoundingBox[0].extent[0],
+                    "MinY": layer.BoundingBox[0].extent[1],
+                    "MaxX": layer.BoundingBox[0].extent[2],
+                    "MaxY": layer.BoundingBox[0].extent[3]
+                },
+                "AttributeDefinition": [],
+                // "IdColumn": "gid",
+                "LinearUnit": "Meter",
+                "IsLocked": false,
+                "DataSourceName": "illinois_poi",
+                "SourceFileExists": true,
+                "IsDataOwner": true,
+                "IsRaster": false,
+                "geoserverUrl": layer.geoserverUrl,
+                "Style": newLayerService.getNewStyle()
+                // "SavedDataId": "s_fe297a3305394811919f33cdb16fc30d"
+            };
+        }
 
         var factory = {
 
@@ -124,17 +163,17 @@
                 return layerRepository.getWMS(undefined, params);
             },
             fetchLayers: function(url) {
+            var mappedLayer = [];
                 return $q(function(resolve, reject) {
                     if (!url)
-                        resolve([]);
+                        resolve(mappedLayer);
                     else {
                         layerRepository.getLayers(url).then(function(res) {
-                            console.log(res);
-                            res.WMS_Capabilities.Capability.Layer.Layer.forEach(function(e) {
-                                e.CanWrite = true;
+                            res.forEach(function(e) {
                                 e.geoserverUrl = url;
+                                mappedLayer.push(_map(e));
                             }, this);
-                            resolve(res.WMS_Capabilities.Capability.Layer.Layer);
+                            resolve(mappedLayer);
                         });
                     }
                 });

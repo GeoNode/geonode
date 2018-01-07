@@ -311,7 +311,7 @@ appModule.controller('appController', [
             //     })
             // });
             // console.log(olLayer);
-            $scope.mapService.addDataLayer(layer);
+            $scope.mapService.addDataLayer(layer, false);
         });
         var sidePaneStyles = {
             false: {

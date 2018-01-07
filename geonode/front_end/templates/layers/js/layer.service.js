@@ -3,9 +3,9 @@
         .module('LayerApp')
         .factory('LayerService', LayerService);
 
-    LayerService.$inject = ['$http', '$q'];
+    LayerService.$inject = ['$http', '$q', '$window'];
 
-    function LayerService($http, $q) {
+    function LayerService($http, $q, $window) {
         function get(url) {
             var deferred = $q.defer();
             $http.get(url)
@@ -168,6 +168,49 @@
             updateLayerByMap: function(mapId, layerName, obj) {
                 return put('/maps/' + mapId + '/layer/' + layerName + '/', obj);
             },
+            getAttributesName: function(layerName) {
+                var deferred = $q.defer();
+                this.getLayerFeatureByName($window.GeoServerHttp2Root , layerName).then(function(res) {
+                    res.featureTypes.forEach(function(featureType) {
+                        var attributes = [];
+                        featureType.properties.forEach(function(e) {
+                            if (e.name !== 'the_geom') {
+                                attributes.push({
+                                    "Id": e.name,
+                                    "Name": e.name,
+                                    "AttributeName": null,
+                                    "IsPublished": true,
+                                    "Type": e.localType,
+                                    "Length": 92,
+                                    "Precision": null,
+                                    "Scale": null
+                                });
+                            }
+                        }, this);
+                        deferred.resolve(attributes);
+                    }, this);
+                });
+                return deferred.promise;
+            },
+            getShapeType: function(layerName) {
+                var deferred = $q.defer();
+                this.getLayerFeatureByName($window.GeoServerHttp2Root , layerName).then(function(res) {
+                    res.featureTypes.forEach(function(featureType) {
+                        var shapeType = "";
+                        featureType.properties.forEach(function(e) {
+                            if (e.name === 'the_geom') {
+                                if (e.localType.toLowerCase().search('polygon') != -1)
+                                    shapeType = 'polygon';
+                                else if (e.localType.toLowerCase().search('point') != -1)
+                                    shapeType = 'point';
+                                deferred.resolve(shapeType);
+                                return;
+                            }
+                        }, this);
+                    }, this);
+                });
+                return deferred.promise;
+            }
         };
     }
 })();

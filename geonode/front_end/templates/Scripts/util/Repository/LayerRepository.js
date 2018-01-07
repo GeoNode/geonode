@@ -136,17 +136,17 @@
                         resolve(res.data);
                     }, function(res) {
                         reject(res);
-                    })
+                    });
                 });
             },
             getLayers: function(url) {
                 // http://172.16.0.237:8000/proxy/?url=http%3A%2F%2F172.16.0.247%3A8080%2Fgeoserver%2Fwms%3Faccess_token%3D9df608bcabe911e7a833080027252357%26SERVICE%3DWMS%26REQUEST%3DGetCapabilities%26TILED%3Dtrue%26AcceptFormats%3D
 
-                var x2js = new X2JS();
-
                 return $q(function(resolve, reject) {
                     $http.get('/proxy/?url=' + encodeURIComponent(url)).then(function(res) {
-                        resolve(x2js.xml_str2json(res.data));
+                        var formatter = new ol.format.WMSCapabilities();
+                        var obj = formatter.read(res.data);
+                        resolve(obj.Capability.Layer.Layer);
                     }, function(res) {
                         reject(res);
                     });
