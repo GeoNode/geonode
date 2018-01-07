@@ -2558,6 +2558,7 @@ ul#global-errors li{
 }
 .grid-container.lmd{
     padding: 0;
+     margin-bottom: 30px;
 }
 .grid-container.lmd .avater{
     width: 100%;
