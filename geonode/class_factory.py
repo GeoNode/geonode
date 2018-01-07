@@ -9,7 +9,8 @@ class ClassFactory(object):
         'integer': models.IntegerField,
         'boolean': models.BooleanField,
         'text': models.TextField,
-        'smallint': models.SmallIntegerField
+        'smallint': models.SmallIntegerField,
+        'double precision': models.DecimalField
     }
     def __init__(self):
         super(ClassFactory, self).__init__()

@@ -155,7 +155,8 @@
                         LAYERS: surfLayer.Name, //new
                         STYLES: surfLayer.Style.Name,
                         FORMAT: 'image/png',
-                        TRANSPARENT: true
+                        TRANSPARENT: true,
+                        TILED: surfLayer.tiled
                     }
                 }),
                 visible: surfLayer.IsVisible
