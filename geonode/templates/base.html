@@ -278,19 +278,19 @@
                                 <span class="badge badge-notify" id="rload">{% if user.notification_count %}{{ request.user.notification_count }}{% endif %}</span>
                             </a>
                         </li>
-                        <div id="show-notification-msg" class="show-notification-msg" style="display:none;">
-                            <div class="notifications" style="height:250px;overflow:auto;">
+                        <div id="show-notification-msg" style="display:none;">
+                            <div class="dropBox directions notifications" style="right:86px;top:61px;padding:0">
+                                    <div class="arrow-up"></div>
                                 <ul class="text-center">
                                     {% load notification_tags %}
                                     {% include_notify_js_variables %}
                                     {% user_notifications %}
                                 </ul>
+                                <a class="btn btn-gd-primary icon-btn-color btn-block" href="{% url "notifications_all" %}" target="_self">
+                                    Show All Notifications
+                            </a>
                             </div>
-                            <div style="padding:10px 0px 0px 20px;z-index:100">
-                                <a class="btn btn-gd-primary icon-btn-color" href="{% url "notifications_all" %}" target="_self">
-                                        Show All Notifications
-                                </a>
-                            </div>
+                           
                         </div>
                         <!--<li class="notification">-->
                             <!--<a class="usi" href="{% url "_dashboard" %}" >-->
