@@ -246,7 +246,7 @@ ul.user-actions li a .fa{
     color: #3896e2;
 }
 .grid-container .top-content .avater .avater-img{
-    margin:0 auto;
+    margin:10px auto;
     height:150px;
     max-width:150px;
     overflow: hidden;
@@ -254,7 +254,8 @@ ul.user-actions li a .fa{
 
 .grid-container .top-content .avater .avater-img-mid img{
     margin:0 auto;
-    max-height:150px;
+    height:150px;
+    width:150px;
     text-align: center;
 }
 .grid-container .top-content .avater .avater-img-mid{
@@ -3414,7 +3415,8 @@ width: 100%;
 }
 .bottom-content
 {
-    background-color: #aedaee;
+    background-color: #edf7fc;
+    border-top: 1px solid #3896e2;
     padding: 15px;
     border-bottom-left-radius: 6px;
     border-bottom-right-radius: 6px;
