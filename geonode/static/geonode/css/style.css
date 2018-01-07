@@ -3559,3 +3559,7 @@ width: 100%;
   {
    display: none;   
   }
+  .btn-delete
+  {
+      color: #f2555b;
+  }
