@@ -3431,3 +3431,9 @@ width: 100%;
     border: 1px solid #8ebcd3;
     color: #000 !important;
 }
+.grid-container ul.list-inline li
+{
+    padding-left: 15px;
+    padding-right: 15px;
+
+}

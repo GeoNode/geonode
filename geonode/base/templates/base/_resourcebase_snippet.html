@@ -81,7 +81,7 @@
                       </button>
                   </li>
                   <li ng-if="!item.featured && item.resource_type=='layer' && item.can_make_featured==true">
-                      <button class="btn col-md-12 btn-gd-primary" style="margin-left:15px;margin-top:-4px;" dataname="{{item.group}}" ng-click="featuredFunction(item.id,true);" data-layerID="{{item.id}}" data-statusID="true">
+                      <button class="btn btn-gd-primary btn-block" dataname="{{item.group}}" ng-click="featuredFunction(item.id,true);" data-layerID="{{item.id}}" data-statusID="true">
                          <i class="fa fa-star-o"></i>
                           Make Featured
                       </button>
@@ -94,7 +94,7 @@
                       </button>
                   </li>
                   <li ng-if="!item.favorite && item.resource_type=='layer' && item.can_make_featured==false">
-                      <button class="btn col-md-12 btn-gd-primary" style="margin-left:30px;margin-top:-4px;" ng-click="favouriteFunction(item.id,true);" data-favouriteID="{{item.id}}" data-favouriteStatus="true">
+                      <button class="btn btn-gd-primary btn-block" ng-click="favouriteFunction(item.id,true);" data-favouriteID="{{item.id}}" data-favouriteStatus="true">
                           <i class="fa fa-heart-o"></i>
                           Add to favorite
                       </button>
@@ -107,7 +107,7 @@
                       </button>
                   </li>
                   <li ng-if="!item.favorite && item.resource_type=='layer' && item.can_make_featured==true">
-                      <button class="btn col-md-12 btn-gd-primary" style="margin-left:30px;margin-top:-4px;" style="margin-left:15px;margin-top:-4px;" ng-click="favouriteFunction(item.id,true);" data-favouriteID="{{item.id}}" data-favouriteStatus="true">
+                      <button class="btn btn-gd-primary btn-block" ng-click="favouriteFunction(item.id,true);" data-favouriteID="{{item.id}}" data-favouriteStatus="true">
                           <i class="fa fa-heart-o"></i>
                           Add to favorite
                       </button>
@@ -119,7 +119,7 @@
                       </button>
                   </li>
                   <li ng-if="!item.favorite && item.resource_type=='map'">
-                      <button class="btn col-md-12 btn-gd-primary" style="margin-left:15px;margin-top:-5px;" ng-click="favouriteFunction(item.id,true);" data-favouriteID="{{item.id}}" data-favouriteStatus="true">
+                      <button class="btn btn-gd-primary btn-block" ng-click="favouriteFunction(item.id,true);" data-favouriteID="{{item.id}}" data-favouriteStatus="true">
                           <i class="fa fa-heart-o"></i>
                           Add to favorite
                       </button>
@@ -131,7 +131,7 @@
                       </button>
                   </li>
                   <li ng-if="!item.favorite && item.resource_type=='document'">
-                      <button class="btn col-md-12 btn-gd-primary" style="margin-left:15px;margin-top:-5px;" ng-click="favouriteFunction(item.id,true);" data-favouriteID="{{item.id}}" data-favouriteStatus="true">
+                      <button class="btn btn-gd-primary btn-block" ng-click="favouriteFunction(item.id,true);" data-favouriteID="{{item.id}}" data-favouriteStatus="true">
                           <i class="fa fa-heart-o"></i>
                           Add to favorite
                       </button>
@@ -145,7 +145,7 @@
                       </button>
                   </li>
                   <li ng-if="!item.favorite" >
-                      <button class="btn col-md-12 btn-gd-primary" style="margin-left:15px;margin-top:-5px;" ng-click="favouriteFunction(item.id,true);" data-favouriteID="{{item.id}}" data-favouriteStatus="true">
+                      <button class="btn btn-gd-primary btn-block" ng-click="favouriteFunction(item.id,true);" data-favouriteID="{{item.id}}" data-favouriteStatus="true">
                           <i class="fa fa-heart-o"></i>
                           Add to favorite
                       </button>
@@ -270,7 +270,7 @@
 
                                   <li ng-if="!item.featured && item.resource_type=='layer' && item.can_make_featured==true" class="col-md-6" id="featured_chng">
                                       {% verbatim %}
-                                      <button class="btn col-md-12 btn-gd-primary" dataname="{{item.group}}" ng-click="featuredFunction(item.id,true);" data-layerID="{{item.id}}" data-statusID="true">
+                                      <button class="btn btn-gd-primary btn-block" dataname="{{item.group}}" ng-click="featuredFunction(item.id,true);" data-layerID="{{item.id}}" data-statusID="true">
                                          <i class="fa fa-star-o"></i>
                                           Make Featured
                                       </button>
@@ -287,7 +287,7 @@
                                   </li>
                                   <li ng-if="!item.favorite && item.resource_type=='layer' && item.can_make_featured==false" class="col-md-12">
                                       {% verbatim %}
-                                      <button class="btn col-md-12 btn-gd-primary" ng-click="favouriteFunction(item.id,true);" data-favouriteID="{{item.id}}" data-favouriteStatus="true">
+                                      <button class="btn btn-gd-primary btn-block" ng-click="favouriteFunction(item.id,true);" data-favouriteID="{{item.id}}" data-favouriteStatus="true">
                                           <i class="fa fa-heart-o"></i>
                                           Add to favorite
                                       </button>
@@ -305,7 +305,7 @@
                                   </li>
                                   <li ng-if="!item.favorite && item.resource_type=='layer' && item.can_make_featured==true" class="col-md-6">
                                       {% verbatim %}
-                                      <button class="btn col-md-12 btn-gd-primary" ng-click="favouriteFunction(item.id,true);" data-favouriteID="{{item.id}}" data-favouriteStatus="true">
+                                      <button class="btn btn-gd-primary btn-block" ng-click="favouriteFunction(item.id,true);" data-favouriteID="{{item.id}}" data-favouriteStatus="true">
                                           <i class="fa fa-heart-o"></i>
                                           Add to favorite
                                       </button>
@@ -322,7 +322,7 @@
                                   </li>
                                   <li ng-if="!item.favorite && item.resource_type=='map'" class="col-md-12">
                                       {% verbatim %}
-                                      <button class="btn col-md-12 btn-gd-primary" ng-click="favouriteFunction(item.id,true);" data-favouriteID="{{item.id}}" data-favouriteStatus="true">
+                                      <button class="btn btn-gd-primary btn-block" ng-click="favouriteFunction(item.id,true);" data-favouriteID="{{item.id}}" data-favouriteStatus="true">
                                           <i class="fa fa-heart-o"></i>
                                           Add to favorite
                                       </button>
@@ -339,7 +339,7 @@
                                   </li>
                                   <li ng-if="!item.favorite && item.resource_type=='document'" class="col-md-12">
                                       {% verbatim %}
-                                      <button class="btn col-md-12 btn-gd-primary" ng-click="favouriteFunction(item.id,true);" data-favouriteID="{{item.id}}" data-favouriteStatus="true">
+                                      <button class="btn btn-gd-primary btn-block" ng-click="favouriteFunction(item.id,true);" data-favouriteID="{{item.id}}" data-favouriteStatus="true">
                                           <i class="fa fa-heart-o"></i>
                                           Add to favorite
                                       </button>
@@ -357,7 +357,7 @@
                                   </li>
                                   <li ng-if="!item.favorite" class="col-md-12">
                                       {% verbatim %}
-                                      <button class="btn col-md-12 btn-gd-primary" ng-click="favouriteFunction(item.id,true);" data-favouriteID="{{item.id}}" data-favouriteStatus="true">
+                                      <button class="btn btn-gd-primary btn-block" ng-click="favouriteFunction(item.id,true);" data-favouriteID="{{item.id}}" data-favouriteStatus="true">
                                           <i class="fa fa-heart-o"></i>
                                           Add to favorite
                                       </button>

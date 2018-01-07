@@ -436,7 +436,7 @@
                               if(item.can_make_featured){
                               if(item.featured){
                             output +='<li ng-click=""class="col-md-6">';
-                            output +='<button class="btn col-md-12 btn-gd-primary-all" style="background:#d0d0d0;border:none;color:#000;font-size:12px;padding:5px;"';
+                            output +='<button class="btn btn-gd-primary-all btn-block" style="background:#d0d0d0;border:none;color:#000;font-size:12px;padding:5px;"';
                             output +='data-layerID="'+item.id+'" dataname="'+item.can_make_featured+'" data-statusID="false" onclick="featuredorgpage('+item.id+',false);" >';
                             output +='<i class="fa fa-heart-o" style="border:none;color:#000;"></i>';
                             output +='Unfeatured';
@@ -444,7 +444,7 @@
                             output +='</li>';
                                 }else{
                             output +='<li class="col-md-6" id="featured_chng">';
-                            output +='<button class="btn col-md-12 btn-gd-primary-all" dataname="{{item.group}}" onclick="featuredorgpage('+item.id+',true);" data-layerID="'+item.id+'" data-statusID="true">';
+                            output +='<button class="btn btn-gd-primary-all btn-block" dataname="{{item.group}}" onclick="featuredorgpage('+item.id+',true);" data-layerID="'+item.id+'" data-statusID="true">';
                             output +='<i class="fa fa-heart-o"></i>';
                             output +='Make Featured';
                             output +='</button>';
@@ -452,7 +452,7 @@
                                 }
                                 if(item.favorite){
                             output +='<li class="col-md-6">';
-                            output +='<button class="btn col-md-12 btn-gd-primary-all" onclick="favoriteorgpage('+item.id+',false);" style="background:#d0d0d0;border:none;color:#000;font-size:12px;padding:5px;"';
+                            output +='<button class="btn btn-gd-primary-all btn-block" onclick="favoriteorgpage('+item.id+',false);" style="background:#d0d0d0;border:none;color:#000;font-size:12px;padding:5px;"';
                             output +='data-favouriteID="{{item.id}}" data-favouriteStatus="false">';
                             output +='<i class="fa fa-heart-o" style="border:none;color:#000;"></i>';
                             output +='Unfavorite';
@@ -460,7 +460,7 @@
                             output +='</li>';
                                 }else{
                             output +='<li class="col-md-6">';
-                            output +='<button class="btn col-md-12 btn-gd-primary-all" onclick="favoriteorgpage('+item.id+',true);" data-favouriteID="'+item.id+'" data-favouriteStatus="true">';
+                            output +='<button class="btn btn-gd-primary-all btn-block" onclick="favoriteorgpage('+item.id+',true);" data-favouriteID="'+item.id+'" data-favouriteStatus="true">';
                             output +='<i class="fa fa-heart-o"></i>';
                             output +='Add to favorite';
                             output +='</button>';
@@ -470,14 +470,14 @@
                               else{
                               if(item.favorite){
                             output +='<li class="col-md-12">';
-                            output +='<button class="btn col-md-12 btn-gd-primary-all" onclick="favoriteorgpage('+item.id+',false);" style="background:#d0d0d0;border:none;color:#000;font-size:12px;padding:5px;" href="" data-favouriteID="'+item.id+'" data-favouriteStatus="false">';
+                            output +='<button class="btn btn-gd-primary-all btn-block" onclick="favoriteorgpage('+item.id+',false);" style="background:#d0d0d0;border:none;color:#000;font-size:12px;padding:5px;" href="" data-favouriteID="'+item.id+'" data-favouriteStatus="false">';
                             output +='<i class="fa fa-heart-o" style="border:none;color:#000;"></i>';
                             output +='Unfavorite';
                             output +='</button>';
                             output +='</li>';
                               }else{
                             output +='<li class="col-md-12">';
-                            output +='<button class="btn col-md-12 btn-gd-primary-all" onclick="favoriteorgpage('+item.id+',true);" data-favouriteID="'+item.id+'" data-favouriteStatus="true">';
+                            output +='<button class="btn btn-gd-primary-all btn-block" onclick="favoriteorgpage('+item.id+',true);" data-favouriteID="'+item.id+'" data-favouriteStatus="true">';
                             output +='  <i class="fa fa-heart-o"></i>';
                             output +=' Add to favorite';
                             output +=' </button>';
@@ -488,14 +488,14 @@
                             {% if user.is_authenticated %}
                               if(item.favorite){
                             output +='<li class="col-md-12">';
-                            output +='<button class="btn col-md-12 btn-gd-primary-all" onclick="favoriteorgpage('+item.id+',false);" style="background:#d0d0d0;border:none;color:#000;font-size:12px;padding:5px;" href="" data-favouriteID="'+item.id+'" data-favouriteStatus="false">';
+                            output +='<button class="btn btn-gd-primary-all btn-block" onclick="favoriteorgpage('+item.id+',false);" style="background:#d0d0d0;border:none;color:#000;font-size:12px;padding:5px;" href="" data-favouriteID="'+item.id+'" data-favouriteStatus="false">';
                             output +='    <i class="fa fa-heart-o" style="border:none;color:#000;"></i>';
                             output +='    Unfavorite';
                             output +='</button>';
                             output +='</li>';
                               }else{
                             output +='<li class="col-md-12">';
-                            output +='<button class="btn col-md-12 btn-gd-primary-all" onclick="favoriteorgpage('+item.id+',true);" data-favouriteID="'+item.id+'" data-favouriteStatus="true">';
+                            output +='<button class="btn btn-gd-primary-all btn-block" onclick="favoriteorgpage('+item.id+',true);" data-favouriteID="'+item.id+'" data-favouriteStatus="true">';
                             output +='  <i class="fa fa-heart-o"></i>';
                             output +=' Add to favorite';
                             output +=' </button>';
