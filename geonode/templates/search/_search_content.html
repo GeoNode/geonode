@@ -1,18 +1,14 @@
 {% load i18n %}
 <div ng-controller="CartList">
-    <div class="row">
-        <div class="col-md-12">
-            {% include "search/_sort_filters.html" %}
-        </div>
-    </div>
+   
     <div class="row" id="load_apply_filter_box" style="display: none;">
-        <div class="col-md-12">
+       
          {% include "search/_apply_filters.html" %}
-        </div>
+       
     </div>
     <div class="row">
         <div class="col-md-12 grid-spacer">
-            {% include 'search/_pagination.html' %}
+            
             {% include 'base/_resourcebase_snippet.html' %}
         </div>
       </div>
