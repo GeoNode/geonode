@@ -75,27 +75,55 @@
                 var classificationSlds = getClassificationSld(surfLayer.getFeatureType(), style.classifierDefinitions, excludeSld);
                 var reClassifier = new RegExp("\\{classifierSld\\}", "g");
                 var reLabel = new RegExp("\\{labelSld\\}", "g");
+                var chartSldRegex = new RegExp("<!--chartSld-->", "g");
 
                 defaultStyleSld = defaultStyleSld.replace(reClassifier, classificationSlds.classificationStyle);
                 defaultStyleSld = defaultStyleSld.replace(reLabel, labelingSld);
 
                 if(surfLayer.Style.VisualizationSettings){
-                    var visSld = visualizationService.getVisualizationSld(surfLayer, surfLayer.Style.VisualizationSettings);
-                    defaultStyleSld = visSld;
+                    visualizationService.getVisualizationSld(surfLayer, surfLayer.Style.VisualizationSettings)
+                    .then(function(visSld){
+                        if(visualizationService.isChart(surfLayer.Style.VisualizationSettings)){
+                            defaultStyleSld = defaultStyleSld.replace(chartSldRegex, visSld);
+                            style.tiled = true;
+                        }
+                        else{
+                            defaultStyleSld = visSld;
+                            style.tiled = false;
+                        }
+                        
+                        return doAction();
+                    });
                 }
-                //
+                else{
+                    return doAction();
+                }
+                
 
-                surfLayer.setName(name);
-                surfLayer.setStyle(style);
-                surfLayer.setZoomLevel(zoomLevel);
-
-                if (!style.id) {
-                    return layerRepository.createProperties(surfLayer.getId(), surfLayer.getName(), zoomLevel, surfLayer.getStyle(),
+                function doAction(){
+                    surfLayer.setName(name);
+                    surfLayer.setStyle(style);
+                    //surfLayer.setTiled(surfLayer.Style.tiled);
+                    surfLayer.setZoomLevel(zoomLevel);
+                    if (!style.id) {
+                        return layerRepository.createProperties(surfLayer.getId(), surfLayer.getName(), zoomLevel, surfLayer.getStyle(),
+                            defaultStyleSld, selectionStyleSld, labelingSld,
+                            function(res) {
+                                style.id = res.id;
+                                style.Name = res.uuid;
+                                surfLayer.setStyle(style);
+    
+                                if (callBack) {
+                                    callBack();
+                                } else {
+                                    surfLayer.refresh();
+                                    $rootScope.$broadcast('refreshSelectionLayer');
+                                }
+                            });
+                    }
+                    return layerRepository.saveProperties(style.id, surfLayer.getId(), surfLayer.getName(), zoomLevel, surfLayer.getStyle(),
                         defaultStyleSld, selectionStyleSld, labelingSld,
-                        function(res) {
-                            style.id = res.id;
-                            style.Name = res.uuid;
-                            surfLayer.setStyle(style);
+                        function() {
                             if (callBack) {
                                 callBack();
                             } else {
@@ -104,16 +132,7 @@
                             }
                         });
                 }
-                return layerRepository.saveProperties(style.id, surfLayer.getId(), surfLayer.getName(), zoomLevel, surfLayer.getStyle(),
-                    defaultStyleSld, selectionStyleSld, labelingSld,
-                    function() {
-                        if (callBack) {
-                            callBack();
-                        } else {
-                            surfLayer.refresh();
-                            $rootScope.$broadcast('refreshSelectionLayer');
-                        }
-                    });
+                
             },
             saveVisibility: function(surfLayer) {
                 return;

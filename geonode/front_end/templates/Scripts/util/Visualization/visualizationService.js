@@ -1,5 +1,5 @@
-﻿appModule.factory('visualizationService', ['urlResolver', 'layerRepository', 'sldGenerator', 'sldTemplateService', 'layerStyleGenerator', 'layerRenderingModeFactory', 'dirtyManager', 'interactionHandler', 'mapModes',
-    function (urlResolver, layerRepository, sldGenerator, sldTemplateService, layerStyleGenerator, layerRenderingModeFactory, dirtyManager, interactionHandler, mapModes) {
+﻿appModule.factory('visualizationService', ['urlResolver', 'layerRepository', 'sldGenerator', 'sldTemplateService', 'layerStyleGenerator', 'layerRenderingModeFactory', 'dirtyManager', 'interactionHandler', 'mapModes', '$q',
+    function (urlResolver, layerRepository, sldGenerator, sldTemplateService, layerStyleGenerator, layerRenderingModeFactory, dirtyManager, interactionHandler, mapModes, $q) {
         var visualizationFolder = "Content/visualization/";
         var visualizationTypes = { heatmap: 'Heatmap', weightedPoint: 'Weighted Point', choropleth: 'Choropleth', rasterBand: 'Raster Band', chart:'Chart' };
 
@@ -149,6 +149,9 @@
             getChoroplethStyles: function () {
                 return Jantrik.gradientGenerator.getVisualizationColorPalettes();
             },
+            isChart: function(config){
+                return config.name === visualizationTypes.chart;
+            },
             saveVisualization: function (layer, config) {
                 if (!config || (layer.ShapeType != 'geoTiff' && layer.ShapeType != 'geoPdf' && !config.attributeId)) {
                     return factory.saveVisualizationSettingWithSld(layer, null, "");
@@ -168,13 +171,16 @@
                 }
             },
             getVisualizationSld: function (layer, config) {
+                var q = $q.defer();
                 if (!config || (layer.ShapeType != 'geoTiff' && layer.ShapeType != 'geoPdf' && !config.attributeId)) {
                     return factory.saveVisualizationSettingWithSld(layer, null, "");
                 }
 
                 switch (config.name) {
                     case visualizationTypes.heatmap:
-                        return sldGenerator.getHeatmapSld(config);
+                        var sld = sldGenerator.getHeatmapSld(config);
+                        q.resolve(sld);
+                        break;
                     case visualizationTypes.weightedPoint:
                         return saveWeightedPoint(config, layer);
                     case visualizationTypes.choropleth:
@@ -182,8 +188,15 @@
                     case visualizationTypes.rasterBand:
                         return saveRasterBandColor(config, layer);
                     case visualizationTypes.chart:
-                        return saveChartProperties(config, layer);
+                        layerRepository.getColumnValues(layer.getId(), config.chartSizeAttributeId)
+                        .success(function(data) {
+                            var sld = sldGenerator.getChartSld(config, data.values);
+                            q.resolve(sld);
+                        });
+                        break;
+                        //return saveChartProperties(config, layer);
                 }
+                return q.promise;  
             },
             saveVisualizationSettingWithSld: function (layer, settings, sldStyle) {
                 layer.style.VisualizationSettings = settings;

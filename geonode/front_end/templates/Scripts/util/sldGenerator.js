@@ -171,7 +171,11 @@
         function getChartSizeString(config,sizeAttributeValues) {
             var sum = 0;
             for (var value in sizeAttributeValues) {
-                sum += sizeAttributeValues[value];
+                sum += sizeAttributeValues[value].value;
+            }
+            if (sum === 0) {
+                //to avoid divide by zero error
+                sum = 1;
             }
 
             var sizeString = formatString(sldTemplateService.chartSizeTemplate, [config.chartSizeAttributeId, sum]);

@@ -64,10 +64,11 @@
                 }));
             },
             getColumnValues: function(layerId, attributeId) {
-                return $http.get(urlResolver.resolveClassification('GetColumnValues', {
-                    layerId: layerId,
-                    attributeId: attributeId
-                }));
+                // return $http.get(urlResolver.resolveClassification('GetColumnValues', {
+                //     layerId: layerId,
+                //     attributeId: attributeId
+                // }));
+                return $http.get("/layers/"+layerId+"/unique-value-for-attribute/"+attributeId+"/");
             },
             getAttributeGridData: function(dataRetrievalInfo, surfLayer) {
                 return surfFeatureFactory.getFeatureFromUrl(urlResolver.resolveGeoServer('wfs', dataRetrievalInfo), surfLayer);

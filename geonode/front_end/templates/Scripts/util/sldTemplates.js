@@ -205,6 +205,7 @@ appModule.factory('sldTemplateService', [function() {
         '<!--classification starts-->{classifierSld}' +
         '<!--classification ends-->' +
         '</FeatureTypeStyle>' +
+        '<!--chartSld-->' +
         '</UserStyle>' +
         '</StyledLayerDescriptor>',
 
@@ -446,7 +447,7 @@ appModule.factory('sldTemplateService', [function() {
         },
         chartSizeTemplate: '<Size>' +
             '<ogc:Add>' +
-            '<ogc:Literal>20</ogc:Literal>' +
+            '<ogc:Literal>40</ogc:Literal>' +
             '<ogc:Mul>' +
             '<ogc:Div>' +
             '<ogc:PropertyName>{0}</ogc:PropertyName>' +
