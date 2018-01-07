@@ -1306,17 +1306,14 @@ class StyleExtensionRetrieveUpdateAPIView(RetrieveUpdateAPIView):
 class LayerStyleView(View):
     def get(self, request, layername):
         layer_obj = _resolve_layer(request, layername)
-        layer_style = layer_obj.default_style
-        try:
-            style_extension = layer_style.styleextension
-        except Exception as ex:
-            style_extension = None
+        layer_style = layer_obj.default_style       
+        serializer = StyleExtensionSerializer(layer_style.styleextension)
         return HttpResponse(
-                        json.dumps(
-                            dict(name=layer_style.name, title=layer_style.sld_title, url=layer_style.sld_url, workspace=layer_style.workspace, style=style_extension.json_field if style_extension else None),
-                            ensure_ascii=False), 
-                            status=200,
-                            content_type='application/javascript')
+                    json.dumps(
+                       serializer.data,
+                        ensure_ascii=False), 
+                        status=200,
+                        content_type='application/javascript')
 
     @custom_login_required
     def put(self, request, layername, **kwargs):
@@ -1390,6 +1387,27 @@ class LayerAttributeView(View):
                     json.dumps(
                         dict(values=[dict(value=v,checked=False) for v in values], count=len(values)),
                         ensure_ascii=False), 
+                        status=200,
+                        content_type='application/javascript')
+
+
+class LayerAttributeRangeView(ListAPIView):
+    def get(self, request, layername, **kwargs):
+        from django.db.models import Max, Min
+        layer_obj = _resolve_layer(request, layername)
+        factory = ClassFactory()
+        model_instance = factory.get_model(name=str(layer_obj.title_en), table_name=str(layer_obj.name), db=str(layer_obj.store))
+        data = dict(request.query_params)
+        result = dict()
+        for attribute in data.get('attributes', []):
+            min_value =  model_instance.objects.all().aggregate(Min(attribute))
+            max_value =  model_instance.objects.all().aggregate(Max(attribute))
+            result[attribute]= [min_value.items()[0][1], max_value.items()[0][1]]
+
+        return HttpResponse(
+                    json.dumps(
+                        result,
+                        ensure_ascii=False, default=lambda x: float(x) if isinstance(x, decimal.Decimal) else x), 
                         status=200,
                         content_type='application/javascript')
 #end

@@ -21,7 +21,7 @@
 from django.conf.urls import patterns, url
 from django.conf import settings
 from django.views.generic import TemplateView
-from .views import LayerStyleView, LayerAttributeView, LayerStyleListAPIView, StyleExtensionRetrieveUpdateAPIView
+from .views import LayerStyleView, LayerAttributeView, LayerAttributeRangeView, LayerStyleListAPIView, StyleExtensionRetrieveUpdateAPIView
 
 js_info_dict = {
     'packages': ('geonode.layers',),
@@ -72,4 +72,5 @@ urlpatterns = patterns('',
     url(r'^style/(?P<pk>[0-9]+)/$', StyleExtensionRetrieveUpdateAPIView.as_view(), name='style_extention'),
     url(r'^(?P<layername>[^/]*)/styles/$', LayerStyleListAPIView.as_view(), name='layer_styles'),
     url(r'^(?P<layername>[^/]*)/unique-value-for-attribute/(?P<attributename>[^/]*)/$', LayerAttributeView.as_view(), name='layer_attribute'),
+    url(r'^(?P<layername>[^/]*)/range-value-for-attribute/$', LayerAttributeRangeView.as_view(), name='layer_range_attribute'),
 ) + urlpatterns
