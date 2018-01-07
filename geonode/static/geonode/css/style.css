@@ -394,7 +394,7 @@ table.gd-list-table tr td .media-body {
 #gd-header .gd-title-geodash{
     color:#5ea9dd;
     font-weight:bold;
-    padding: 10px;
+    padding:15px 10px;
     float:right;
     font-size:20px;
 }
@@ -451,9 +451,9 @@ table.gd-list-table tr td .media-body {
 }
 
 @media (min-width: 941px) {
-  .navbar-collapse.collapse{
-    width:1137px;
-  }
+  /* .navbar-collapse.collapse{
+    width:1240px;
+  } */
   .brow_widt{
     width:230px;
     height: 30px;
@@ -531,7 +531,7 @@ table.gd-list-table tr td .media-body {
     font-size:12px;
     position: relative;
     /*padding: 10px 15px;*/
-    padding: 5px 10px;
+    padding: 7px 10px;
 
     text-transform: uppercase;
 }
@@ -3436,4 +3436,8 @@ width: 100%;
     padding-left: 15px;
     padding-right: 15px;
 
+}
+.navbar-right
+{
+    margin-right: 0;
 }
