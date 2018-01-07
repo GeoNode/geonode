@@ -3508,7 +3508,7 @@ width: 100%;
   .notifications ul li
   {
       text-align: left;
-      margin-bottom: 9px;
+      padding: 10px 28px 10px 15px;
   }
   .notification
   {
@@ -3522,14 +3522,14 @@ width: 100%;
   }
   .delete-notification
   {
-    background-color: #f2555b;
-    border-radius: 50%;
-    color: #fff;
+    background-color: #fff;
+    border: 1px solid #ccc;
+    color: #f2555b;
     font-size: 10px;
     padding: 1px 5px;
     position: absolute;
-    right: -9px;
-    top: -8px;
+    right: 3px;
+    top: 3px;
   }
   .mark-notification
   {
