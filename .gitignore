@@ -73,6 +73,7 @@ geonode/static/geonode/junit.xml
 *~
 *.swp
 celerybeat-schedule.*
+*.log
 
 # OSX specific
 .Python
