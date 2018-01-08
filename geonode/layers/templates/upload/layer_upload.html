@@ -437,7 +437,7 @@
           var checkTifFileName = inputFiles.files[0].name;
           var fileExtension = checkTifFileName.substr((checkTifFileName.lastIndexOf('.') +1));
 
-          if(fileExtension == "shp"){
+          if(fileExtension != "tif"){
               for(var i = 0; i < inputFiles.files.length; i++)
               {
                   //console.log(inputFiles.files[i].name);
