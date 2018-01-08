@@ -2668,7 +2668,7 @@ ul#global-errors li{
 #gd-cart ul.dropdown-menu.gd-cart-dropdown-menu{
     border-radius: 2px;
     display: block;
-    height:300px;
+    max-height:300px;
     min-width: 100%;
     overflow:auto;
 }

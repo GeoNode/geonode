@@ -23,19 +23,19 @@
         </li>
         
         <li ng-show="IS_AUTHENTICATED_USER_FOR_CART">
-            <a href="javascript:;" ng-disabled="!cart.getCart().items.length" class="btn btn-success"
-                    data-toggle="modal" data-target="#_bulk_permissions" style="margin: 15px;color:#fff">
+            <a href="javascript:;" ng-disabled="!cart.getCart().items.length" class="btn btn-default"
+                    data-toggle="modal" data-target="#_bulk_permissions" style="margin: 15px;color:#218d61">
                 Set Permissions
             </a>
         </li>
         <li ng-show="IS_LAYERS_PAGE_FOR_CART" >
-            <a href="javascript:;" ng-disabled="!cart.getCart().items.length"
-                ng-click="newMap()" style="text-align: center justify;background:#41a3f7;">
+            <a href="javascript:;" ng-disabled="!cart.getCart().items.length" class="btn btn-default"
+                ng-click="newMap()" style="margin: 15px;color:#006ab1">
                 Create a map
             </a>
         </li>
         <li ng-show="cart.getCart().items.length > 0">
-            <a href="javascript:;" ng-click="cart.clearAllCart()" class="btn btn-danger" style="margin: 15px;color:#fff">
+            <a href="javascript:;" ng-click="cart.clearAllCart()" class="btn btn-default" style="margin: 15px;color:#832323">
                 Cancel All
             </a>
         </li>
