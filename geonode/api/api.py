@@ -61,6 +61,13 @@ from tastypie.utils import trailing_slash
 from guardian.models import UserObjectPermission
 from notify.models import Notification
 from user_messages.models import Message
+from oauth2_provider.models import AccessToken
+from django.contrib.auth import authenticate
+from guardian.shortcuts import get_anonymous_user
+from oauthlib.common import generate_token
+from oauth2_provider.models import Application
+from oauth2_provider.generators import generate_client_id, generate_client_secret
+from oauth2_provider.settings import oauth2_settings
 # end
 
 from geonode.base.models import ResourceBase
@@ -184,9 +191,10 @@ class TypeFilteredResource(ModelResource):
             accesstoken = AccessToken.objects.filter(token=token[7:])
             if accesstoken:
                 accesstoken = AccessToken.objects.get(token=token[7:])
-                accesstoken.expires = datetime.datetime.now() + datetime.timedelta(
-                    seconds=oauth2_settings.ACCESS_TOKEN_EXPIRE_SECONDS)
-                accesstoken.save()
+                if not accesstoken.is_expired():
+                    accesstoken.expires = datetime.datetime.now() + datetime.timedelta(
+                        seconds=oauth2_settings.ACCESS_TOKEN_EXPIRE_SECONDS)
+                    accesstoken.save()
 
         return super(TypeFilteredResource, self).serialize(request, data, format, options)
 
@@ -941,18 +949,7 @@ class ViewNotificationTimeSaving(TypeFilteredResource):
 # end
 
 
-from oauth2_provider.models import AccessToken
-from django.contrib.auth import authenticate
-from guardian.shortcuts import get_anonymous_user
-from oauthlib.common import generate_token
-from oauth2_provider.models import Application
-from oauth2_provider.generators import generate_client_id, generate_client_secret
-from oauth2_provider.settings import oauth2_settings
-
-
 class AccessTokenApi(TypeFilteredResource):
-    # detail_url = fields.CharField()
-    #
     def dehydrate_expires(self, bundle):
         return oauth2_settings.ACCESS_TOKEN_EXPIRE_SECONDS
 
@@ -963,10 +960,9 @@ class AccessTokenApi(TypeFilteredResource):
         fields = ['token', 'expires']
 
     def get_object_list(self, request):
-        username = request.META['HTTP_PASSWORD']
+        username = request.META['HTTP_USER']
         password = request.META['HTTP_PASSWORD']
         user = authenticate(username=username, password=password)
-        # import pdb; pdb.set_trace()
         if user is not None and user.is_active:
             if not super(AccessTokenApi, self).get_object_list(request).filter(user=user):
                 createToken(user)
@@ -1006,7 +1002,6 @@ def getApplication(user):
 
 def createToken(user):
     # Lets create a new one
-    # import pdb; pdb.set_trace()
     accesstoken = AccessToken.objects.filter(user=user)
     if accesstoken:
         accesstoken = AccessToken.objects.get(user=user)
