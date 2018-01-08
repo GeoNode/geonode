@@ -1682,7 +1682,10 @@ def style_update(request, url):
                 affected_layers.append(layer)
 
         # Invalidate GeoWebCache so it doesn't retain old style in tiles
-        _invalidate_geowebcache_layer(layer_name)
+        try:
+            _invalidate_geowebcache_layer(layer_name)
+        except:
+            pass
 
     elif request.method == 'DELETE':  # delete style from GN
         style_name = os.path.basename(request.path)

@@ -18,9 +18,14 @@
 #
 #########################################################################
 
+from __future__ import absolute_import
+
 import os
 
+from .celery import app as celery_app
+
 __version__ = (2, 9, 0, 'unstable', 0)
+__all__ = ["celery_app"]
 
 
 class GeoNodeException(Exception):

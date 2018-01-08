@@ -18,6 +18,7 @@
 #
 #########################################################################
 
+from django.conf import settings
 from django.core.management.base import BaseCommand
 from geonode.layers.models import Layer
 from geonode.security.models import set_geofence_all
@@ -33,7 +34,10 @@ class Command(BaseCommand):
         for index, layer in enumerate(all_layers):
             print "[%s / %s] Setting public permissions to Layer [%s] ..." % ((index + 1), len(all_layers), layer.name)
             try:
-                set_geofence_all(layer)
+                use_geofence = settings.OGC_SERVER['default'].get(
+                    "GEOFENCE_SECURITY_ENABLED", False)
+                if use_geofence:
+                    set_geofence_all(layer)
                 layer.set_default_permissions()
                 perm_spec = {"users": {}, "groups": {}}
                 perm_spec["users"]["admin"] = ['view_resourcebase', 'change_resourcebase_permissions',

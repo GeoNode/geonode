@@ -60,7 +60,6 @@ from django.db import transaction
 from django.db.models import F
 from django.forms.utils import ErrorList
 
-from geonode.tasks.deletion import delete_layer
 from geonode.services.models import Service
 from geonode.layers.forms import LayerForm, LayerUploadForm, NewLayerUploadForm, LayerAttributeForm
 from geonode.base.forms import CategoryForm, TKeywordForm
@@ -84,6 +83,7 @@ from geonode.maps.models import Map
 from geonode.geoserver.helpers import (cascading_delete, gs_catalog,
                                        ogc_server_settings, save_style,
                                        extract_name_from_sld, _invalidate_geowebcache_layer)
+from .tasks import delete_layer
 
 if check_ogc_backend(geoserver.BACKEND_PACKAGE):
     from geonode.geoserver.helpers import _render_thumbnail
