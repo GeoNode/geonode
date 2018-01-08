@@ -66,7 +66,7 @@ def _nginx_exposed_port():
     client = docker.from_env()
     ports_dict = json.dumps(
         [c.attrs['Config']['ExposedPorts'] for c in client.containers.list(
-        ) if c.status in 'running' and 'geonode_geonode' in c.name][0]
+        ) if c.status in 'running' and 'nginx4' in c.name][0]
     )
     for key in json.loads(ports_dict):
         port = re.split('/tcp', key)[0]
