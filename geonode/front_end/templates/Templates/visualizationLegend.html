@@ -10,4 +10,11 @@
             </td>
         </tr>
     </table>
+
+    <table ng-if="showLegend && visName == 'Chart'">
+        <tr ng-repeat="item in chartSelectedAttributes() track by $index">
+            <td> <span style="display: block; height: 12px; width: 40px; background-color: {{item.color}}"></span></td>
+            <td>{{item.name}}</td>
+        </tr>
+    </table>
 </div>

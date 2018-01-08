@@ -1,5 +1,5 @@
-﻿appHelperModule.directive('visualizationLegend', ['mapTools',
-    function (mapTools) {
+﻿appHelperModule.directive('visualizationLegend', ['mapTools', 'utilityService',
+    function (mapTools, utilityService) {
         return {
             restrict: 'EA',
             templateUrl: '/static/Templates/visualizationLegend.html',
@@ -19,11 +19,27 @@
                     $scope.canRenderLegend = function () {
                         if ($scope.activeLayerTool) {
                             var activeLayer = $scope.activeLayerTool.getActiveLayer();
-                            return activeLayer.style && activeLayer.style.VisualizationSettings && activeLayer.getFeatureType() != 'raster'
-                                && activeLayer.style.VisualizationSettings.name == 'Choropleth' && activeLayer.IsVisible;
+                            return activeLayer.Style && activeLayer.Style.VisualizationSettings && activeLayer.getFeatureType() != 'raster'
+                                && isLegendAllowed(activeLayer.Style.VisualizationSettings) && activeLayer.IsVisible;
                         } else {
                             return false;
                         }
+                    };
+
+                    $scope.visName = '';
+                    function isLegendAllowed(config){
+                        $scope.visName = config.name;
+                        $scope.visConfig = config;
+                        return config.name === 'Chart';
+                    }
+
+                    $scope.legendItems = [];
+                    $scope.chartSelectedAttributes = function(){
+                        var selectedAttributes = utilityService.getChartSelectedAttributes($scope.visConfig);
+                        return _.map(selectedAttributes, function(item){ 
+                            return { name: item.numericAttribute.Name, color: item.attributeColor };
+                        });
+                        
                     };
                 }
             ]

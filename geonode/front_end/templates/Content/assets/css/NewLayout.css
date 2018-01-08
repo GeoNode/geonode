@@ -1075,7 +1075,7 @@ input:focus:invalid:focus, textarea:focus:invalid:focus, select:focus:invalid:fo
     bottom: 60px;
     right: 0px;
     z-index: 1005;
-    background-color: lightgrey;
+    background-color: rgb(255, 255, 255);
     padding: 10px;
     border-radius: 4px;
 }
