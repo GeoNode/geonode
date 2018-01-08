@@ -6,42 +6,50 @@
 {% block body_class %}maps explore{% endblock %}
 
 {% block body %}
-<div class="gd-content">
-    <div class="gd-content-heading">
-        <div class="row">
-          <div class="col-md-6">
-              <div class="title small-content">
-                  {% trans "Explore Maps" %}
-              </div>
-          </div>
-          <div class="col-md-6">
-              <div class="small-content text-right">
-                    <div ng-show="cart.getCart().items.length > 0" ng-controller="CartList">
-                        <div class="selectfixed">
-                            <resource-cart></resource-cart>
-                        </div>
-                    </div>
-                    <a href="javascript:;" id="advanced-search-control"
-                       class="btn btn-gd-primary pull-right icon-btn-color">
-                       {% trans "Advanced" %} <i class="fa fa-search"></i>
-                    </a>
-                    <a href="{% url "new_map" %}" class="btn btn-gd-primary pull-right icon-btn-color">
-                        {% trans "Create a New Map" %} <i class="fa fa-map-marker" aria-hidden="true"></i>
-                    </a>
-              </div>
-          </div>
-      </div>
-      <div class="hr"></div>
-    </div>
-    <div class="gd-content-body transparent top-bottom-margin-20px">
-        <div class="row">
-            <div class="col-md-12">
-                {% include "search/_search_content.html" %}
-                {% include "_bulk_permissions_form.html" %}
-            </div>
-        </div>
-    </div>
-</div>
+
+
+<div class="d-title">
+        
+                                        <div class="pull-right">
+        
+                                           
+                                          
+                                                <div class="small-content text-right">
+                                                        <div ng-show="cart.getCart().items.length > 0" ng-controller="CartList">
+                                                            <div class="selectfixed">
+                                                                <resource-cart></resource-cart>
+                                                            </div>
+                                                        </div>
+                                                        <a href="javascript:;" id="advanced-search-control"
+                                                           class="btn btn-gd-primary pull-right icon-btn-color">
+                                                           {% trans "Advanced" %} <i class="fa fa-search"></i>
+                                                        </a>
+                                                        <a href="{% url "new_map" %}" class="btn btn-gd-primary pull-right icon-btn-color">
+                                                            {% trans "Create a New Map" %} <i class="fa fa-map-marker" aria-hidden="true"></i>
+                                                        </a>
+                                                  </div>
+    
+    
+        
+                                          </div>
+        
+                                      {% trans "Explore Maps" %}
+                                  </div>
+
+
+
+                                  <div class="panel panel-default">
+                                        <div class="panel-body">
+                                       
+                                                                     {% include "search/_search_content.html" %}
+                                                                     {% include "_bulk_permissions_form.html" %}
+                                                  
+                                                    
+                                        </div>
+                                      </div>
+
+
+
 {% endblock %}
 
 {% block extra_script %}

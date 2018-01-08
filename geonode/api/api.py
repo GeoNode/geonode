@@ -21,15 +21,14 @@
 import json
 import time
 
-
-#@jahangir091
+# @jahangir091
 import os
 import sys
 import logging
 import traceback
 import shutil
 import datetime
-#end
+# end
 
 from django.conf.urls import url
 from django.contrib.auth import get_user_model
@@ -39,17 +38,17 @@ from django.conf import settings
 from django.db.models import Count
 from django.utils.translation import get_language
 
-#@jahangir091
+# @jahangir091
 from django.http import HttpResponse
 from django.utils.html import escape
 from django.shortcuts import get_object_or_404
 from django.utils import timezone
-#end
+# end
 
 from avatar.templatetags.avatar_tags import avatar_url
 from guardian.shortcuts import get_objects_for_user
 
-#@jahangir091
+# @jahangir091
 from slugify import slugify
 from user_messages.models import UserThread
 from taggit.models import Tag
@@ -62,7 +61,7 @@ from tastypie.utils import trailing_slash
 from guardian.models import UserObjectPermission
 from notify.models import Notification
 from user_messages.models import Message
-#end
+# end
 
 from geonode.base.models import ResourceBase
 from geonode.base.models import TopicCategory
@@ -75,8 +74,7 @@ from geonode.maps.models import Map
 from geonode.documents.models import Document
 from geonode.groups.models import GroupProfile
 
-
-#@jahangir091
+# @jahangir091
 from geonode.groups.models import GroupMember
 from geonode.layers.forms import NewLayerUploadForm
 from geonode.layers.utils import file_upload
@@ -88,12 +86,12 @@ from geonode.security.views import _perms_info, _perms_info_json
 from .authorization import GeoNodeAuthorization
 from geonode.base.models import FavoriteResource, DockedResource
 
-
 CONTEXT_LOG_FILE = None
 
 if 'geonode.geoserver' in settings.INSTALLED_APPS:
     from geonode.geoserver.helpers import _render_thumbnail
     from geonode.geoserver.helpers import ogc_server_settings
+
     CONTEXT_LOG_FILE = ogc_server_settings.LOG_FILE
 
 
@@ -101,8 +99,9 @@ def log_snippet(log_file):
     if not os.path.isfile(log_file):
         return "No log file at %s" % log_file
 
+
 logger = logging.getLogger("geonode.layers.views")
-#end
+# end
 
 
 FILTER_TYPES = {
@@ -180,6 +179,15 @@ class TypeFilteredResource(ModelResource):
         options['type_filter'] = getattr(self, 'type_filter', None)
         options['user'] = request.user
 
+        if 'HTTP_AUTHORIZATION' in request.META:
+            token = request.META['HTTP_AUTHORIZATION']
+            accesstoken = AccessToken.objects.filter(token=token[7:])
+            if accesstoken:
+                accesstoken = AccessToken.objects.get(token=token[7:])
+                accesstoken.expires = datetime.datetime.now() + datetime.timedelta(
+                    seconds=oauth2_settings.ACCESS_TOKEN_EXPIRE_SECONDS)
+                accesstoken.save()
+
         return super(TypeFilteredResource, self).serialize(request, data, format, options)
 
 
@@ -242,10 +250,10 @@ class ThesaurusKeywordResource(TypeFilteredResource):
 
     class Meta:
         queryset = ThesaurusKeywordLabel.objects \
-                                        .all() \
-                                        .order_by('label') \
-                                        .select_related('keyword') \
-                                        .select_related('keyword__thesaurus')
+            .all() \
+            .order_by('label') \
+            .select_related('keyword') \
+            .select_related('keyword__thesaurus')
 
         resource_name = 'thesaurus/keywords'
         allowed_methods = ['get']
@@ -426,16 +434,13 @@ class ProfileResource(TypeFilteredResource):
 
         return super(ProfileResource, self).serialize(request, data, format, options)
 
-
-#@jahangir091
+    # @jahangir091
     def get_object_list(self, request):
         if request.user.is_superuser:
             return super(ProfileResource, self).get_object_list(request).exclude(is_staff=True)
         else:
             return super(ProfileResource, self).get_object_list(request).filter(is_active=True).exclude(is_staff=True)
-#end
-
-
+            # end
 
     class Meta:
         queryset = get_user_model().objects.exclude(username='AnonymousUser')
@@ -476,12 +481,11 @@ class OwnersResource(TypeFilteredResource):
         serializer = CountJSONSerializer()
 
 
-
-#@jahangir091
+# @jahangir091
 class UserOrganizationList(TypeFilteredResource):
-
     group = fields.ForeignKey(GroupResource, 'group', full=True)
     user = fields.ForeignKey(ProfileResource, 'user')
+
     class Meta:
         queryset = GroupMember.objects.all()
         resource_name = 'user-organization-list'
@@ -491,7 +495,6 @@ class UserOrganizationList(TypeFilteredResource):
 
 
 class LayerUpload(TypeFilteredResource):
-
     class Meta:
         resource_name = 'layerupload'
         allowed_methods = ['post']
@@ -602,7 +605,6 @@ class LayerUpload(TypeFilteredResource):
 
 
 class MakeFeatured(TypeFilteredResource):
-
     class Meta:
         resource_name = 'make-featured'
         allowed_methods = ['post']
@@ -641,7 +643,6 @@ class MakeFeatured(TypeFilteredResource):
 
                             layer.set_permissions(perm_dict)
 
-
                         resource.save()
                         out['success'] = 'True'
                         status_code = 200
@@ -656,20 +657,17 @@ class MakeFeatured(TypeFilteredResource):
             return HttpResponse(json.dumps(out), content_type='application/json', status=status_code)
 
 
-
 class MesseagesUnread(TypeFilteredResource):
-
     class Meta:
         resource_name = 'message-unread'
         queryset = UserThread.objects.filter(unread=True)
         allowed_methods = ['get']
 
     def get_object_list(self, request):
-            return super(MesseagesUnread, self).get_object_list(request).filter(user=request.user)
+        return super(MesseagesUnread, self).get_object_list(request).filter(user=request.user)
 
 
 class UndockResources(TypeFilteredResource):
-
     class Meta:
         resource_name = 'undockit'
         allowed_methods = ['post']
@@ -714,7 +712,6 @@ class UndockResources(TypeFilteredResource):
 
 
 class FavoriteUnfavoriteResources(TypeFilteredResource):
-
     class Meta:
         resource_name = 'makefavorite'
 
@@ -766,7 +763,6 @@ class FavoriteUnfavoriteResources(TypeFilteredResource):
 
 
 class OsmOgrInfo(TypeFilteredResource):
-
     class Meta:
         resource_name = 'ogrinfo'
         allowed_methods = ['post']
@@ -813,7 +809,6 @@ class OsmOgrInfo(TypeFilteredResource):
                     return HttpResponse(json.dumps(out), content_type='application/json', status=200)
 
 
-
 class LayerSourceServer(TypeFilteredResource):
     """
     api for retrieving server info for layer source
@@ -829,27 +824,27 @@ class MetaFavorite:
     authorization = GeoNodeAuthorization()
     allowed_methods = ['get']
     ordering = ['date', 'title', 'popular_count']
-    fields =  [
-            'id',
-            'uuid',
-            'title',
-            'date',
-            'abstract',
-            'csw_wkt_geometry',
-            'csw_type',
-            'owner__username',
-            'share_count',
-            'popular_count',
-            'srid',
-            'category__gn_description',
-            'supplemental_information',
-            'thumbnail_url',
-            'detail_url',
-            'rating',
-            'featured',
-            'resource_type',
-            
-        ]
+    fields = [
+        'id',
+        'uuid',
+        'title',
+        'date',
+        'abstract',
+        'csw_wkt_geometry',
+        'csw_type',
+        'owner__username',
+        'share_count',
+        'popular_count',
+        'srid',
+        'category__gn_description',
+        'supplemental_information',
+        'thumbnail_url',
+        'detail_url',
+        'rating',
+        'featured',
+        'resource_type',
+
+    ]
 
 
 class LayersWithFavoriteAndDoocked(TypeFilteredResource):
@@ -861,9 +856,8 @@ class LayersWithFavoriteAndDoocked(TypeFilteredResource):
         allowed_methods = ['get']
 
     def get_object_list(self, request):
-        return super(LayersWithFavoriteAndDoocked, self).get_object_list(request).filter(favoriteresource__user=request.user, dockedresource__active=True).distinct()
-
-
+        return super(LayersWithFavoriteAndDoocked, self).get_object_list(request).filter(
+            favoriteresource__user=request.user, dockedresource__active=True).distinct()
 
 
 class MapsWithFavoriteAndDoocked(TypeFilteredResource):
@@ -876,14 +870,16 @@ class MapsWithFavoriteAndDoocked(TypeFilteredResource):
         allowed_methods = ['get']
 
     def get_object_list(self, request):
-        return super(MapsWithFavoriteAndDoocked, self).get_object_list(request).filter(favoriteresource__user=request.user, dockedresource__active=True).distinct()
+        return super(MapsWithFavoriteAndDoocked, self).get_object_list(request).filter(
+            favoriteresource__user=request.user, dockedresource__active=True).distinct()
 
 
 class GroupsWithFavoriteAndDoocked(TypeFilteredResource):
-
     detail_url = fields.CharField()
+
     def dehydrate_detail_url(self, bundle):
         return reverse('group_detail', args=[bundle.obj.slug])
+
     class Meta:
         queryset = GroupProfile.objects.filter(favoriteresource__active=True)
         if settings.RESOURCE_PUBLISHING:
@@ -893,7 +889,8 @@ class GroupsWithFavoriteAndDoocked(TypeFilteredResource):
         allowed_methods = ['get']
 
     def get_object_list(self, request):
-        return super(GroupsWithFavoriteAndDoocked, self).get_object_list(request).filter(favoriteresource__user=request.user, dockedresource__active=True).distinct()
+        return super(GroupsWithFavoriteAndDoocked, self).get_object_list(request).filter(
+            favoriteresource__user=request.user, dockedresource__active=True).distinct()
 
 
 class DocumentsWithFavoriteAndDoocked(TypeFilteredResource):
@@ -906,7 +903,8 @@ class DocumentsWithFavoriteAndDoocked(TypeFilteredResource):
         allowed_methods = ['get']
 
     def get_object_list(self, request):
-        return super(DocumentsWithFavoriteAndDoocked, self).get_object_list(request).filter(favoriteresource__user=request.user, dockedresource__active=True).distinct()
+        return super(DocumentsWithFavoriteAndDoocked, self).get_object_list(request).filter(
+            favoriteresource__user=request.user, dockedresource__active=True).distinct()
 
 
 class UserNotifications(TypeFilteredResource):
@@ -918,23 +916,106 @@ class UserNotifications(TypeFilteredResource):
         timestamp = request.GET.get('timestamp')
         if timestamp:
             date = datetime.datetime.fromtimestamp(float(timestamp))
-            return super(UserNotifications, self).get_object_list(request).filter(recipient=request.user, created__gt = date.date())
+            return super(UserNotifications, self).get_object_list(request).filter(recipient=request.user,
+                                                                                  created__gt=date.date())
         else:
-            return super(UserNotifications, self).get_object_list(request).filter(recipient=request.user, created__gte=datetime.datetime.now()-datetime.timedelta(days=7))
+            return super(UserNotifications, self).get_object_list(request).filter(recipient=request.user,
+                                                                                  created__gte=datetime.datetime.now() - datetime.timedelta(
+                                                                                      days=7))
 
 
 class ViewNotificationTimeSaving(TypeFilteredResource):
-
     class Meta:
         queryset = Notification.objects.filter(read=False, deleted=False)
         resource_name = 'view-notification'
         allowed_methods = ['get']
 
     def get_object_list(self, request):
-
         user = request.user
         user.last_notification_view = timezone.now()
         user.save()
-        return super(ViewNotificationTimeSaving, self).get_object_list(request).filter(recipient=user, created__gt = user.last_notification_view)
+        return super(ViewNotificationTimeSaving, self).get_object_list(request).filter(recipient=user,
+                                                                                       created__gt=user.last_notification_view)
 
-#end
+
+# end
+
+
+from oauth2_provider.models import AccessToken
+from django.contrib.auth import authenticate
+from guardian.shortcuts import get_anonymous_user
+from oauthlib.common import generate_token
+from oauth2_provider.models import Application
+from oauth2_provider.generators import generate_client_id, generate_client_secret
+from oauth2_provider.settings import oauth2_settings
+
+
+class AccessTokenApi(TypeFilteredResource):
+    # detail_url = fields.CharField()
+    #
+    def dehydrate_expires(self, bundle):
+        return oauth2_settings.ACCESS_TOKEN_EXPIRE_SECONDS
+
+    class Meta:
+        queryset = AccessToken.objects.all()
+        resource_name = 'access-token'
+        allowed_methods = ['get', 'post']
+        fields = ['token', 'expires']
+
+    def get_object_list(self, request):
+        username = request.META['HTTP_PASSWORD']
+        password = request.META['HTTP_PASSWORD']
+        user = authenticate(username=username, password=password)
+        # import pdb; pdb.set_trace()
+        if user is not None and user.is_active:
+            if not super(AccessTokenApi, self).get_object_list(request).filter(user=user):
+                createToken(user)
+            else:
+                accesstoken = AccessToken.objects.get(user=user)
+                if accesstoken.expires < datetime.datetime.now():
+                    createToken(user)
+            return super(AccessTokenApi, self).get_object_list(request).filter(user=user)
+        else:
+            user = get_anonymous_user()
+            return super(AccessTokenApi, self).get_object_list(request).filter(user=user)
+
+
+def getApplication(user):
+    app = Application.objects.filter(user=user)
+
+    if app:
+        return Application.objects.get(user=user)
+    else:
+
+        client_id = generate_client_id()
+        client_secret = generate_client_secret()
+
+        app = Application.objects.create(
+            skip_authorization=True,
+            redirect_uris=ogc_server_settings.public_url,
+            name=user.username,
+            authorization_grant_type='password',
+            client_type='confidential',
+            client_id=client_id,
+            client_secret=client_secret,
+            user=user
+        )
+        app.save()
+        return app
+
+
+def createToken(user):
+    # Lets create a new one
+    # import pdb; pdb.set_trace()
+    accesstoken = AccessToken.objects.filter(user=user)
+    if accesstoken:
+        accesstoken = AccessToken.objects.get(user=user)
+        accesstoken.delete()
+
+    token = generate_token()
+    app = getApplication(user)
+    AccessToken.objects.create(user=user,
+                               application=app,
+                               expires=datetime.datetime.now() + datetime.timedelta(
+                                   seconds=oauth2_settings.ACCESS_TOKEN_EXPIRE_SECONDS),
+                               token=token)
