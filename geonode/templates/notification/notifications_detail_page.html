@@ -8,22 +8,22 @@
 
 {% block body_outer %}
     <div class="container-fluid">
-      <div class="gd-content">
-          <div class="gd-content-heading">
-              <div class="row">
-                  <div class="col-md-8">
-                      <div class="title small-content">
+      
+          
+             
+                  
+                      <div class="d-title">
                           {% trans "All Notifications" %}
                       </div>
-                  </div>
-              </div>
+                  
+             
               <div class="notifications">
                   {% load notification_tags %}
                   {% include_notify_js_variables %}
                   {% user_notifications %}
               </div>
-          </div>
-      </div>
+         
+      
   </div>
 </div>
 {% endblock %}

@@ -9,27 +9,36 @@
 {% block title %} Register Service - {{ block.super }} {% endblock %}
 
 {% block body_outer %}
-<div class="page-header">
-  <h2>{% trans "Register New Service" %}</h2>
+<div class="container">
+<div class="d-title">
+ {% trans "Register New Service" %}
 </div>
-    <form method="POST" id="service_register_form">
-    {% csrf_token %}
-    {{ create_service_form|as_bootstrap }}
 
-    <div align="center"><p><input type="submit" class="btn btn-primary pull-left" id="submit_button" value="{% trans "Create" %}" /></p></div>
-    </form>
+<div class="panel panel-default">
+        <div class="panel-body">
+                <form method="POST" id="service_register_form">
+                        {% csrf_token %}
+                        {{ create_service_form|as_bootstrap }}
+                    
+                        <div align="center"><p><input type="submit" class="btn btn-primary pull-left" id="submit_button" value="{% trans "Create" %}" /></p></div>
+                        </form>
+                    
+                        <div id="responseDiv" style="display:none;">
+                            <h4>{%  trans "Service has been created:" %}</h4>
+                        </div>
+                    
+                        <div class="error" style="display:none;">
+                        </div>
+                    
+                        <div id="tableDiv" style="display:none;">
+                            <p>{%  trans "The following layers will be imported" %}</p>
+                            <table id="dataTable"></table>
+                        </div>
+        </div>
+      </div>
 
-    <div id="responseDiv" style="display:none;">
-        <h4>{%  trans "Service has been created:" %}</h4>
     </div>
 
-    <div class="error" style="display:none;">
-    </div>
-
-    <div id="tableDiv" style="display:none;">
-        <p>{%  trans "The following layers will be imported" %}</p>
-        <table id="dataTable"></table>
-    </div>
 {% endblock %}
 {% block extra_script %}
 {{ block.super }}

@@ -70,7 +70,7 @@ a:hover{
 .gd-footer-language{
     /*margin-left: 20px;*/
     margin-top: 40px;
-    width:220px;
+    width:200px;
 }
 @media (max-width: 767px) {
   .gd-footer-language{
@@ -1071,6 +1071,9 @@ fieldset[disabled] .btn-gd-yellow.focus {
     z-index: 99;
     border-top: 1px solid #dbdbdb;
     margin-top: 4px;
+    -webkit-box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+    -moz-box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
 }
 #gd-advanced-search .gas.checkbox{
     margin: 0;
@@ -1212,8 +1215,7 @@ fieldset[disabled] .btn-gd-yellow.focus {
 #gd-wrapper .gd-apply-filters {
     background: #FFFFFF;
     margin: 0;
-    margin-top: 15px;
-    padding: 20px;
+    padding:0 20px;
 }
 #gd-wrapper .gd-apply-filters .filters_normal {
     font-weight:normal;
@@ -2666,7 +2668,8 @@ ul#global-errors li{
 #gd-cart ul.dropdown-menu.gd-cart-dropdown-menu{
     border-radius: 2px;
     display: block;
-    height:300px;
+    max-height:300px;
+    min-width: 100%;
     overflow:auto;
 }
 #gd-cart ul.dropdown-menu.gd-cart-dropdown-menu li{
@@ -2834,7 +2837,7 @@ ul.termsuseandcondition li {
     border-bottom:1px solid #ddd;
 }
 .topic-cat-list{
-    background:#3896e2;
+    background:#5a5d63;
     text-color:#fff;
     margin-bottom:5px;
 }
@@ -3292,7 +3295,7 @@ ul.termsuseandcondition li {
 }
 
 .modal-dialog{
-width: 100%;
+width: 80%;
 }
 #SigninModal .modal-dialog
 {
@@ -3329,6 +3332,11 @@ width: 100%;
 {
     white-space: normal;
 }
+#gd-accordion-style .panel-heading
+{
+    white-space: normal;
+}
+
 #myNav .panel-body
 {
     white-space: normal;
@@ -3440,4 +3448,139 @@ width: 100%;
 .navbar-right
 {
     margin-right: 0;
+    width: 442px;
 }
+.dropBox {
+    background-color: #fff;
+    height: auto;
+    right: -51px;
+    position: absolute;
+    top: 46px;
+    width: 400px;
+    padding: 15px;
+    border: 1px solid rgba(0, 0, 0, 0.2);
+    -webkit-box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+    -moz-box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+}
+.dropBox:before {
+    content:"";
+    width: 0; 
+    height: 0; 
+    border-left: 10px solid transparent;
+    border-right: 10px solid transparent;        
+    border-bottom: 10px solid rgba(0, 0, 0, 0.2);
+    position: absolute;
+    right: 60px;
+    top: -11px; 
+}
+.arrow-up {
+    width: 0; 
+    height: 0; 
+    border-left: 10px solid transparent;
+    border-right: 10px solid transparent;        
+    border-bottom: 10px solid rgb(255, 255, 255);
+    position: absolute;
+    right: 60px;
+    top: -10px;
+  }
+  .directions .input-group-addon
+  {
+    background: none;
+    border: none;
+  }
+  .directions .input-group-addon i
+  {
+   width: 20px;
+   font-size: 21px;
+  }
+  .directions .input-group .form-control
+  {
+    border: none;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.14);
+    box-shadow: none;
+    padding-left: 0;
+  }
+  .directions .input-group .form-control:focus
+  {
+
+    border-bottom: 2px solid rgba(56, 150, 226, 0.9);
+
+  }
+  .notifications ul
+  {
+    height: 500px;
+    overflow-y: auto;
+    padding: 14px 15px;
+  }
+  .notifications ul li
+  {
+      text-align: left;
+      padding: 10px 28px 10px 15px;
+  }
+  .notification
+  {
+    position: relative;
+  }
+ .timesince
+  {
+    color: #8d8d8d;
+    display: block;
+    font-weight: normal;
+  }
+  .delete-notification
+  {
+    background-color: #fff;
+    border: 1px solid #ccc;
+    color: #f2555b;
+    font-size: 10px;
+    padding: 1px 5px;
+    position: absolute;
+    right: 3px;
+    top: 3px;
+  }
+  .mark-notification
+  {
+    background-color: #1ab394;
+    color: #fff;
+    font-size: 11px;
+    font-weight: normal;
+    border: 1px solid #148770;
+  }
+  .gSearch
+  {
+      margin-left: 15px;
+      margin-top: 3px;
+  }
+  #id_search
+  {
+      float: left;
+      border: 1px solid #ccc;
+      box-shadow: 0 1px 1px rgba(0, 0, 0, 0.075) inset;
+      color: #555;
+      font-size: 14px;
+      height: 34px;
+      line-height: 1.42857;
+      padding: 6px 12px;
+      transition: border-color 0.15s ease-in-out 0s, box-shadow 0.15s ease-in-out 0s;
+  }
+  .gSearch label
+  {
+   display: none;   
+  }
+  .btn-delete
+  {
+      color: #f2555b;
+  }
+  .gd-cart-dropdown-menu-show
+  {
+      border-bottom: 1px solid #ccc;
+  }
+  .gd-cart-dropdown-menu-show a
+  {
+    padding: 10px 20px !important;
+  }
+  .modal-content
+  {
+      color: #3c3c3c;
+  }

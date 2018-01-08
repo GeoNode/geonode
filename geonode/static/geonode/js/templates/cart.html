@@ -13,29 +13,29 @@
       </a>
       <ul class="dropdown-menu gd-cart-dropdown-menu" aria-labelledby="dLabel" ng-show="cart.getCart().items.length > 0" style="">
         <li title="{{ resource.title }}" ng-repeat="resource in cart.getCart().items" class="gd-cart-dropdown-menu-show">
-            <a href="javascript:;">
+            <a href="javascript:;" style="position:relative">
                 {{ resource.title | limitTo: 25}}
                 {{ resource.title.length > 25 ? '...' : '' }}
-                <span class="text-right">
+                <span class="delete-notification">
                     <i ng-click="cart.removeItem(resource)" class="fa fa-times"></i>
                 </span>
             </a>
         </li>
-        <li role="separator" class="divider"></li>
+        
         <li ng-show="IS_AUTHENTICATED_USER_FOR_CART">
-            <a href="javascript:;" ng-disabled="!cart.getCart().items.length" class="text-center"
-                    data-toggle="modal" data-target="#_bulk_permissions" style="text-align: center justify;">
+            <a href="javascript:;" ng-disabled="!cart.getCart().items.length" class="btn btn-default"
+                    data-toggle="modal" data-target="#_bulk_permissions" style="margin: 15px;color:#218d61">
                 Set Permissions
             </a>
         </li>
         <li ng-show="IS_LAYERS_PAGE_FOR_CART" >
-            <a href="javascript:;" ng-disabled="!cart.getCart().items.length"
-                ng-click="newMap()" style="text-align: center justify;background:#41a3f7;">
+            <a href="javascript:;" ng-disabled="!cart.getCart().items.length" class="btn btn-default"
+                ng-click="newMap()" style="margin: 15px;color:#006ab1">
                 Create a map
             </a>
         </li>
         <li ng-show="cart.getCart().items.length > 0">
-            <a href="javascript:;" ng-click="cart.clearAllCart()" style="text-align: center justify;">
+            <a href="javascript:;" ng-click="cart.clearAllCart()" class="btn btn-default" style="margin: 15px;color:#832323">
                 Cancel All
             </a>
         </li>
