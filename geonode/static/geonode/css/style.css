@@ -3574,3 +3574,7 @@ width: 80%;
   {
     padding: 10px 20px !important;
   }
+  .modal-content
+  {
+      color: #3c3c3c;
+  }
