@@ -1,14 +1,22 @@
 ﻿mapModule.factory('layerService', [
     '$rootScope', 'layerRepository', 'featureService', 'layerStyleGenerator', 'featureFilterGenerator', 'sldTemplateService', 'interactionHandler', '$q', 'LayerService',
-    function($rootScope, layerRepository, featureService, layerStyleGenerator, featureFilterGenerator, sldTemplateService, interactionHandler, $q, newLayerService) {       
+    function($rootScope, layerRepository, featureService, layerStyleGenerator, featureFilterGenerator, sldTemplateService, interactionHandler, $q, newLayerService) {
         function _map(layer, order) {
+            if (layer.BoundingBox) {
+                layer.bbox = [layer.BoundingBox[0].extent[0],
+                    layer.BoundingBox[0].extent[1],
+                    layer.BoundingBox[0].extent[2],
+                    layer.BoundingBox[0].extent[3]
+                ];
+
+            }
             if (!layer.bbox) {
                 layer.bbox = [-9818543.41779904, 5183814.6260749, -9770487.95134629, 5235883.07751104];
             }
             // var userStyle = layer.name + '_' + _uuid();
             return {
-                "LayerId": layer.Name,
-                "Name": layer.Name,
+                "LayerId": layer.Name || layer.name,
+                "Name": layer.Name || layer.name,
                 "SortOrder": order || 0,
                 // "LastUpdateOn": "2017-10-10T11:10:26.083Z",
                 "ClassifierDefinitions": {},
@@ -22,10 +30,10 @@
                 "ZoomLevel": 0,
                 "ModificationState": "Added",
                 "LayerExtent": {
-                    "MinX": layer.BoundingBox[0].extent[0],
-                    "MinY": layer.BoundingBox[0].extent[1],
-                    "MaxX": layer.BoundingBox[0].extent[2],
-                    "MaxY": layer.BoundingBox[0].extent[3]
+                    "MinX": layer.bbox[0],
+                    "MinY": layer.bbox[1],
+                    "MaxX": layer.bbox[2],
+                    "MaxY": layer.bbox[3]
                 },
                 "AttributeDefinition": [],
                 // "IdColumn": "gid",
@@ -37,7 +45,7 @@
                 "IsRaster": false,
                 "geoserverUrl": layer.geoserverUrl,
                 "Style": newLayerService.getNewStyle()
-                // "SavedDataId": "s_fe297a3305394811919f33cdb16fc30d"
+                    // "SavedDataId": "s_fe297a3305394811919f33cdb16fc30d"
             };
         }
 
@@ -163,7 +171,7 @@
                 return layerRepository.getWMS(undefined, params);
             },
             fetchLayers: function(url) {
-            var mappedLayer = [];
+                var mappedLayer = [];
                 return $q(function(resolve, reject) {
                     if (!url)
                         resolve(mappedLayer);
@@ -177,6 +185,9 @@
                         });
                     }
                 });
+            },
+            map: function(layer, order){
+                return _map(layer, order);
             }
         };
 

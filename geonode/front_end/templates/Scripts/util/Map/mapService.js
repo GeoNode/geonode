@@ -280,51 +280,73 @@
                     busyStateManager.hideBusyState();
                 });
             },
-            addDataLayer: function(dataId, dataType, shapeType) {
-                var data;
-                if (dataType === "raster") {
-                    data = {
-                        dataId: dataId,
-                        style: layerStyleGenerator.generateDefaultRasterStyle()
-                    }
-                    data.sldStyle = layerStyleGenerator.getSldStyle(shapeType, data.style.default,
-                        true, null);
-                    data.selectionStyleSld = layerStyleGenerator.getSldStyle(shapeType, data.style.select,
-                        true, null);
+            // addDataLayer: function(dataId, dataType, shapeType) {
+            //     var data;
+            //     if (dataType === "raster") {
+            //         data = {
+            //             dataId: dataId,
+            //             style: layerStyleGenerator.generateDefaultRasterStyle()
+            //         }
+            //         data.sldStyle = layerStyleGenerator.getSldStyle(shapeType, data.style.default,
+            //             true, null);
+            //         data.selectionStyleSld = layerStyleGenerator.getSldStyle(shapeType, data.style.select,
+            //             true, null);
 
-                    busyStateManager.showBusyState(appMessages.busyState.addLayer);
-                    mapRepository.createRasterDataLayer(data).success(function(layerInfo) {
-                        map.addLayer(layerInfo);
-                    }).finally(function() {
-                        busyStateManager.hideBusyState();
-                    });
-                } else {
-                    data = {
-                        dataId: dataId,
-                        style: layerStyleGenerator.generate(shapeType)
-                    }
+            //         busyStateManager.showBusyState(appMessages.busyState.addLayer);
+            //         mapRepository.createRasterDataLayer(data).success(function(layerInfo) {
+            //             map.addLayer(layerInfo);
+            //         }).finally(function() {
+            //             busyStateManager.hideBusyState();
+            //         });
+            //     } else {
+            //         data = {
+            //             dataId: dataId,
+            //             style: layerStyleGenerator.generate(shapeType)
+            //         }
 
-                    data.sldStyle = layerStyleGenerator.getSldStyle(shapeType, data.style.default,
-                        true, null);
-                    data.selectionStyleSld = layerStyleGenerator.getSldStyle(shapeType, data.style.select,
-                        true, null);
+            //         data.sldStyle = layerStyleGenerator.getSldStyle(shapeType, data.style.default,
+            //             true, null);
+            //         data.selectionStyleSld = layerStyleGenerator.getSldStyle(shapeType, data.style.select,
+            //             true, null);
 
-                    busyStateManager.showBusyState(appMessages.busyState.addLayer);
-                    mapRepository.createDataLayer(data).success(function(layerInfo) {
-                        map.addLayer(layerInfo);
-                    }).finally(function() {
-                        busyStateManager.hideBusyState();
-                    });
-                }
-            },
+            //         busyStateManager.showBusyState(appMessages.busyState.addLayer);
+            //         mapRepository.createDataLayer(data).success(function(layerInfo) {
+            //             map.addLayer(layerInfo);
+            //         }).finally(function() {
+            //             busyStateManager.hideBusyState();
+            //         });
+            //     }
+            // },
             addDataLayer: function(layer, override) {
-
-                var p1 = newLayerService.getStyleByLayer(layer.Name)
-                    .then(function(res) {
-                        layer.Style = res;
-                    }, function(){
-                        layer.Style = newLayerService.getNewStyle();
-                    });
+                var p1_deferred = $q.defer()
+                var p1 = p1_deferred.promise;
+                mapId = this.getId();
+                if (!mapId) {
+                    p1 = newLayerService.getStyleByLayer(layer.Name)
+                        .then(function(res) {
+                            layer.Style = res;
+                        }, function() {
+                            layer.Style = newLayerService.getNewStyle();
+                        });
+                } else {
+                    newLayerService.getLayerByMap(mapId, layer.Name)
+                        .then(function(res) {
+                            newLayerService.getStyle(res.styles)
+                                .then(function(res) {
+                                    layer.Style = res;
+                                    layer.ClassifierDefinitions = layer.Style.classifierDefinitions || {};
+                                    p1_deferred.resolve({});
+                                }, function() {
+                                    layer.Style = newLayerService.getNewStyle();
+                                    layer.ClassifierDefinitions = layer.Style.classifierDefinitions || {};
+                                    p1_deferred.resolve({});
+                                });
+                        }, function() {
+                            layer.Style = newLayerService.getNewStyle();
+                            layer.ClassifierDefinitions = new_layer.Style.classifierDefinitions || {};
+                            p1_deferred.resolve({});
+                        });
+                }
                 var p2 = newLayerService.getAttributesName(layer.Name)
                     .then(function(res) {
                         layer.AttributeDefinition = res;
@@ -345,21 +367,37 @@
             },
             saveMapAs: function(name, abstract, organizationId, categoryId) {
                 var mapObj = _map(name, abstract, organizationId, categoryId);
-
+                mapObj.id = factory.getId();
                 busyStateManager.showBusyState(appMessages.busyState.save);
-                if(!mapObj.id){
-
-                    return mapRepository.saveAs(mapObj).success(function() {
+                if (!mapObj.id) {
+                    return mapRepository.saveAs(mapObj).success(function(res) {
                         busyStateManager.hideBusyState();
+                        saveSuccess(res.id, name, abstract);
                     }).error(function() {
                         busyStateManager.hideBusyState();
                     });
-                }else {
+                } else {
                     return mapRepository.update(mapObj).success(function() {
                         busyStateManager.hideBusyState();
+                        saveSuccess(mapObj.id, name, abstract);
+
                     }).error(function() {
                         busyStateManager.hideBusyState();
                     });
+                }
+
+                function saveSuccess(id, name, abstract) {
+                    factory.setId(id);
+                    factory.setMapName(name);
+                    factory.setMeta({ abstract: abstract });
+
+                    for (var k in map.layers) {
+                        var layer = map.layers[k];
+                        var style = layer.getStyle();
+                        factory.updateMapLayer(id, layer.Name, {
+                            styles: style.id
+                        });
+                    }
                 }
             },
             updateMapLayer: function(mapId, layerName, obj) {
@@ -404,6 +442,18 @@
             getMap: function() {
                 return map.getMap();
             },
+            getId: function() {
+                return map.Id;
+            },
+            setId: function(id) {
+                map.Id = id;
+            },
+            setMeta: function(meta) {
+                map.Meta = meta;
+            },
+            getMeta: function() {
+                return map.Meta || {};
+            }
 
         };
 

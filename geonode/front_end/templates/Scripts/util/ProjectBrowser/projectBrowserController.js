@@ -4,7 +4,7 @@ appModule.controller('projectBrowserController', ['$scope', '$window', '$rootSco
         $scope.currentlyViewingFiles = [];
         $scope.selectedFolderName = "";
         $scope.selectedFile = {};
-        $scope.file = { saveAs: mapService.getMapName() };
+        $scope.file = { saveAs: mapService.getMapName(), abstract: mapService.getMeta().abstract };
         $scope.data = { loading: true };
         $scope.searchFilter = { queryText: "" };
         $scope.type = { isProject: true };
@@ -44,7 +44,7 @@ appModule.controller('projectBrowserController', ['$scope', '$window', '$rootSco
                 projectService.saveProject(projectName,abstract,organizationId,categoryId ).success(function(data) {
                     // projectService.executeAfterSuccessfulSave(data.layerIdToSavedDataIdMappings);
                     // subscriptionStatus.updateNumberOfProjects(data.numberOfProjects);
-                    window.location = 'maps/' + data.id + '/view';
+                    // window.location = 'maps/' + data.id + '/view';
                 });
                 $modalInstance.close();
             }

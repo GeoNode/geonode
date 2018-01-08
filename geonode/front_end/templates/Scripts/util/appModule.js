@@ -296,6 +296,8 @@
 appModule.controller('appController', [
     '$scope', 'mapService', '$modal', '$timeout', 'mapAccessLevel', 'interactionHandler',
     function($scope, mapService, $modal, $timeout, mapAccessLevel, interactionHandler) {
+        mapService.setId(undefined);
+        
         $scope.mapService = mapService;
         $scope.mapAccessLevel = mapAccessLevel;
         $scope.$on('LayerAdded', function(e, layer) {
