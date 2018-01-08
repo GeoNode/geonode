@@ -152,6 +152,9 @@
             isChart: function(config){
                 return config.name === visualizationTypes.chart;
             },
+            isHeatMap: function(config){
+                return config.name === visualizationTypes.heatmap;
+            },
             saveVisualization: function (layer, config) {
                 if (!config || (layer.ShapeType != 'geoTiff' && layer.ShapeType != 'geoPdf' && !config.attributeId)) {
                     return factory.saveVisualizationSettingWithSld(layer, null, "");
@@ -175,7 +178,6 @@
                 if (!config || (layer.ShapeType != 'geoTiff' && layer.ShapeType != 'geoPdf' && !config.attributeId)) {
                     return factory.saveVisualizationSettingWithSld(layer, null, "");
                 }
-
                 switch (config.name) {
                     case visualizationTypes.heatmap:
                         var sld = sldGenerator.getHeatmapSld(config);
@@ -211,11 +213,18 @@
                 }
                 return q.promise;  
             },
+            saveVisualizationRenderingMode: function (layer, settings, sldStyle) {
+                //layer.style.VisualizationSettings = settings;
+                layerRenderingModeFactory.setLayerRenderingMode(layer);
+                interactionHandler.setMode(mapModes.select);
+                //layer.refresh();
+                dirtyManager.setDirty(true);
+            },
             saveVisualizationSettingWithSld: function (layer, settings, sldStyle) {
                 layer.style.VisualizationSettings = settings;
                 layerRenderingModeFactory.setLayerRenderingMode(layer);
                 interactionHandler.setMode(mapModes.select);
-                layer.refresh();
+                //layer.refresh();
                 dirtyManager.setDirty(true);
                 // return layerRepository.saveVisualizationSettings(layer.getId(), settings, sldStyle).success(function () {
                 //     layer.style.VisualizationSettings = settings;
