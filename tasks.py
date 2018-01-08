@@ -24,6 +24,10 @@ def update(ctx):
     }
     ctx.run("echo export GEOSERVER_PUBLIC_LOCATION=\
 http://{sitedomain}/geoserver/ >> {override_fn}".format(**envs), pty=True)
+    ctx.run("echo export SITEURL=\
+http://{sitedomain}/ >> {override_fn}".format(**envs), pty=True)
+    ctx.run("echo export ALLOWED_HOSTS=\
+['{sitedomain}',] >> {override_fn}".format(**envs), pty=True)
     ctx.run("source $HOME/.override_env", pty=True)
     print "****************************final**********************************"
     ctx.run("env", pty=True)
