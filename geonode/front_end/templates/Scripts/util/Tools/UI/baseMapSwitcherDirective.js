@@ -10,9 +10,11 @@
                 function ($scope) {
                     var baseMapTool = mapTools.baseMap;
                     $scope.baseMaps = baseMapTool.getAllBaseMaps();
+                    $scope.baseMapGroups = _.groupBy($scope.baseMaps, function(item){ return item.groupName; });
                     $scope.model = {};
 
-                    $scope.changed = function () {
+                    $scope.changed = function (basemap) {
+                        $scope.model.selectedBaseMap = basemap;
                         baseMapTool.changeBaseLayer($scope.model.selectedBaseMap);
                     };
 
