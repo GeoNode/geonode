@@ -17,30 +17,38 @@
                     };
                     
                     $scope.canRenderLegend = function () {
+                        var canRender = false;
                         if ($scope.activeLayerTool) {
                             var activeLayer = $scope.activeLayerTool.getActiveLayer();
-                            return activeLayer.Style && activeLayer.Style.VisualizationSettings && activeLayer.getFeatureType() != 'raster'
+                            canRender = activeLayer.Style && activeLayer.Style.VisualizationSettings && activeLayer.getFeatureType() != 'raster'
                                 && isLegendAllowed(activeLayer.Style.VisualizationSettings) && activeLayer.IsVisible;
-                        } else {
-                            return false;
                         }
+                        if(canRender){
+                            setupLegendItems();
+                        }
+                        return canRender;
                     };
 
-                    $scope.visName = '';
+                    function setupLegendItems(){
+                        if($scope.model.visName == 'Chart'){
+                            chartSelectedAttributes();
+                        }
+                    }
+
+                    $scope.model = {
+                        visName: '',
+                        legendItems: []
+                    };
+
                     function isLegendAllowed(config){
-                        $scope.visName = config.name;
+                        $scope.model.visName = config.name;
                         $scope.visConfig = config;
                         return config.name === 'Chart';
                     }
 
-                    $scope.legendItems = [];
-                    $scope.chartSelectedAttributes = function(){
-                        var selectedAttributes = utilityService.getChartSelectedAttributes($scope.visConfig);
-                        return _.map(selectedAttributes, function(item){ 
-                            return { name: item.numericAttribute.Name, color: item.attributeColor };
-                        });
-                        
-                    };
+                    function chartSelectedAttributes(){
+                        $scope.selectedAttributes = utilityService.getChartSelectedAttributes($scope.visConfig);
+                    }
                 }
             ]
         };
