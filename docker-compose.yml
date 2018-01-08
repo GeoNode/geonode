@@ -11,7 +11,7 @@ services:
      image: rabbitmq
 
   django:
-    image: geonode/django
+    image: geonode/geonode:geonode
     links:
       - postgres
       - elasticsearch
@@ -21,7 +21,7 @@ services:
       - ./scripts/docker/env/production/django.env
 
   celery:
-    image: geonode/django
+    image: geonode/geonode:geonode
     links:
       - rabbitmq
       - postgres
@@ -31,7 +31,7 @@ services:
       - ./scripts/docker/env/production/django.env
 
   consumers:
-    image: geonode/django
+    image: geonode/geonode:geonode
     links:
       - rabbitmq
       - postgres
