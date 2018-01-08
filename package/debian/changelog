@@ -1,3 +1,81 @@
+geonode (2.8.0+rc9) xenial; urgency=high
+
+  * UNRELEASED
+
+ -- Alessio Fabiani <alessio.fabiani@geo-solutions.it>  Mon, 22 Jan 2018 17:00:01 +0100
+
+geonode (2.8.0+rc8) xenial; urgency=high
+
+  * UNRELEASED
+
+ -- Alessio Fabiani <alessio.fabiani@geo-solutions.it>  Mon, 22 Jan 2018 16:07:49 +0100
+
+geonode (2.8.0+rc7) xenial; urgency=high
+
+  * [d4e678]  - GeoNode Releasing 2.8.0rc3
+  * [f61c3a]  - GeoNode 2.8rc6
+  * [82927b]  - GeoNode 2.8
+
+ -- Alessio Fabiani <alessio.fabiani@geo-solutions.it>  Mon, 22 Jan 2018 15:12:04 +0100
+
+geonode (2.8.0+rc6) xenial; urgency=high
+
+  * UNRELEASED
+
+ -- Alessio Fabiani <alessio.fabiani@geo-solutions.it>  Fri, 19 Jan 2018 02:42:42 +0100
+
+geonode (2.8.0+rc5) xenial; urgency=high
+
+  * UNRELEASED
+
+ -- Alessio Fabiani <alessio.fabiani@geo-solutions.it>  Fri, 19 Jan 2018 01:59:18 +0100
+
+geonode (2.8.0+rc4) xenial; urgency=high
+
+  * [b92c19]  - GeoNode Releasing 2.8.0rc3
+
+ -- Alessio Fabiani <alessio.fabiani@geo-solutions.it>  Fri, 19 Jan 2018 01:17:22 +0100
+
+geonode (2.8.0+rc3) xenial; urgency=high
+
+  [ Jeremiah Cooper ]
+  * [b4da5a] Remove double migrations causing the build to fail.
+
+  [ Alessio Fabiani ]
+  * [f8b945]  - GeoNode Releasing
+
+ -- Alessio Fabiani <alessio.fabiani@geo-solutions.it>  Thu, 18 Jan 2018 20:39:58 +0100
+
+geonode (2.8.0+rc2) xenial; urgency=high
+
+  * UNRELEASED
+
+ -- Alessio Fabiani <alessio.fabiani@geo-solutions.it>  Thu, 18 Jan 2018 11:34:09 +0100
+
+geonode (2.8.0+rc1) xenial; urgency=high
+
+  * UNRELEASED
+
+ -- Alessio Fabiani <alessio.fabiani@geo-solutions.it>  Wed, 17 Jan 2018 18:50:18 +0100
+
+geonode (2.8.0+rc0) xenial; urgency=high
+
+  * UNRELEASED
+
+ -- Alessio Fabiani <alessio.fabiani@geo-solutions.it>  Wed, 17 Jan 2018 18:45:44 +0100
+
+geonode (2.8.0+rc0) xenial; urgency=high
+
+  * [4c8284] Bump to version 2.7.4
+  * [6afd8c] [Closes #3528] [Backport 2.9.x stable fixes to 2.7.x] - Prepare for 2.8.0 Release
+  * [f0be26] Bump to version 2.7.5
+  * [a2209d] [Backport to 2.7.x][Issue #2948] - Errors saving metadata keywrods and regions (#3532)
+  * [57ba99] [Fixes #3533] - GeoServer Proxy creates a wrong URL when dealing with 'workspaces' bounded SLDs (#3535)
+  * [27db87]  - Fix GeoNode 2.6.3 to 2.7.x+ Migration (#3547)
+  * [a1ed92] [2.7.x] - Prepare for 28x (#3551)
+
+ -- Alessio Fabiani <alessio.fabiani@geo-solutions.it>  Mon, 15 Jan 2018 09:56:20 +0100
+
 geonode (2.7.4+dev20171114153121) xenial; urgency=high
 
   [ Cezary Statkiewicz ]

@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #########################################################################
 #
-# Copyright (C) 2016 OSGeo
+# Copyright (C) 2017 OSGeo
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -18,23 +18,22 @@
 #
 #########################################################################
 
-import os
-
-__version__ = (2, 7, 5, 'unstable', 1)
-
-
-class GeoNodeException(Exception):
-    """Base class for exceptions in this module."""
-    pass
+from django.core.management.base import BaseCommand
+from geonode.layers.models import Layer
 
 
-def get_version():
-    import geonode.version
-    return geonode.version.get_version(__version__)
+class Command(BaseCommand):
+    """Resets Permissions to Public for All Layers
+    """
 
+    def handle(self, *args, **options):
+        all_layers = Layer.objects.all()
 
-def main(global_settings, **settings):
-    from django.core.wsgi import get_wsgi_application
-    os.environ.setdefault('DJANGO_SETTINGS_MODULE', settings.get('django_settings'))
-    app = get_wsgi_application()
-    return app
+        for index, layer in enumerate(all_layers):
+            print "[%s / %s] Checking 'alternate' of Layer [%s] ..." % ((index + 1), len(all_layers), layer.name)
+            try:
+                if not layer.alternate:
+                    layer.alternate = layer.typename
+                    layer.save()
+            except:
+                print "[ERROR] Layer [%s] couldn't be updated" % (layer.name)
