@@ -10,8 +10,8 @@
         </div>
 
     <div class="row" ng-if="(option.selected.name != visualizationTypes.rasterBand && option.selected.name != visualizationTypes.chart)&&  option.selected">
-        <div class="span2" style="text-align: right">Attribute: </div>
-        <div class="span3">
+        <div class="col-md-2" style="text-align: right">Attribute: </div>
+        <div class="col-md-2">
             <select class="input-medium" ng-model="option.selected.attributeId"
                     ng-init="setSelectedAttribute()"
                     ng-options="attribute.Id as attribute.Name for attribute in numericAttributes"></select>
@@ -19,8 +19,8 @@
     </div>
 
     <div class="row" ng-if="option.selected.name == visualizationTypes.chart && option.selected">
-        <div class="span2" style="text-align: right">Chart Type: </div>
-        <div class="span3">
+        <div class="col-md-2" style="text-align: right">Chart Type: </div>
+        <div class="col-md-2">
             <select class="input-medium" ng-model="option.selected.chartId"
                     ng-init="initializeAttributeListItemForChart()"
                     ng-options="chart.value as chart.name for chart  in service.chartTypes"></select>
@@ -28,8 +28,8 @@
     </div>
 
         <div class="row" ng-if="option.selected.name == visualizationTypes.chart && option.selected">
-            <div class="span2" style="text-align: right">Chart Size Attribute: </div>
-            <div class="span3">
+            <div class="col-md-2" style="text-align: right">Chart Size Attribute: </div>
+            <div class="col-md-2">
                 <select class="input-medium" ng-model="option.selected.chartSizeAttributeId"
                         ng-init="setSelectedChartSizeAttribute()"
                         ng-options="attribute.Id as attribute.Name for attribute in numericAttributes"></select>
@@ -71,29 +71,29 @@
 
     <div ng-if="option.selected.name == visualizationTypes.heatmap">
             <div class="row" style="margin-bottom: 10px;">
-                <div class="span2" style="text-align: right">Style Preview:</div>
-                <div class="span3">
+                <div class="col-md-2" style="text-align: right">Style Preview:</div>
+                <div class="col-md-2">
                     <img ng-attr-src="{{heatmapStyles[0].styleUrl}}" height="60" width="60" ng-init="option.selected.style = heatmapStyles[0].colors" />
                 </div>
             </div>
 
             <div class="row">
-                <div class="span2" style="text-align: right">Radius: </div>
-                <div class="span3">
+                <div class="col-md-2" style="text-align: right">Radius: </div>
+                <div class="col-md-2">
                     <input type="number" minVal="1" maxval="100" defaultval="10" min-max-validator class="input-small" ng-model="option.selected.radius" />
                 </div>
             </div>
 
             <div class="row">
-                <div class="span2" style="text-align: right">Pixel Density: </div>
-                <div class="span3">
+                <div class="col-md-2" style="text-align: right">Pixel Density: </div>
+                <div class="col-md-2">
                     <input type="number" minval="1" maxval="100" defaultval="10" min-max-validator class="input-small" ng-model="option.selected.pixelDensity" />
                 </div>
             </div>
 
             <div class="row">
-                <div class="span2" style="text-align: right">Opacity:</div>
-                <div class="span3">
+                <div class="col-md-2" style="text-align: right">Opacity:</div>
+                <div class="col-md-2">
                     <input type="number" class="input-small" minval="0" maxval="1" defaultval="0.5" min-max-validator ng-model="option.selected.opacity" />
                 </div>
             </div>
@@ -101,15 +101,15 @@
 
         <div class="" ng-if="option.selected.name == visualizationTypes.choropleth">
             <div class="row">
-                <div class="span2" style="text-align: right">Divisions:</div>
-                <div class="span3">
+                <div class="col-md-2" style="text-align: right">Divisions:</div>
+                <div class="col-md-2">
                     <select ng-model="option.selected.divisions" class="input-mini" ng-options="item as item for item in [1,2,3,4,5,6,7]"></select>
                 </div>
             </div>
 
             <div class="row" style="margin-bottom: 10px;">
-                <div class="span2" style="text-align: right">&nbsp;</div>
-                <div class="span3">
+                <div class="col-md-2" style="text-align: right">&nbsp;</div>
+                <div class="col-md-2">
                     <sti-plt-pkr ng-model="option.selected.style" sti-pkr-options="choroplethStyles" class="range"
                                  ng-init="option.selected.style = option.selected.style ? option.selected.style : choroplethStyles[0]">
                     </sti-plt-pkr>
@@ -117,8 +117,8 @@
             </div>
 
             <div class="row">
-                <div class="span2" style="text-align: right">Technique: </div>
-                <div class="span3">
+                <div class="col-md-2" style="text-align: right">Technique: </div>
+                <div class="col-md-2">
                     <select ng-model="option.selected.algorithm" class="input-medium"
                             ng-options="algorithm.value as algorithm.name for algorithm in service.choroplethAlgorithms"></select>
                 </div>

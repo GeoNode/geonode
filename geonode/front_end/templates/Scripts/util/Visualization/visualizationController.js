@@ -1,9 +1,9 @@
-﻿appModule.controller('visualizationController', ['$scope', '$modalInstance', 'visualizationService',
-    'attributeDefinitionHelper', 'surfLayer',
-    function ($scope, $modalInstance, visualizationService, attributeDefinitionHelper, surfLayer) {
+﻿appModule.controller('visualizationController', ['$scope', 'visualizationService',
+    'attributeDefinitionHelper', 'mapTools', //'surfLayer',
+    function ($scope, visualizationService, attributeDefinitionHelper, mapTools) {
         function setSelectedOption() {
             $scope.colorRamp = {};
-            var visualizationSettings = surfLayer.VisualizationSettings;
+            var visualizationSettings = surfLayer.Style.VisualizationSettings;
             if (!visualizationSettings) return;
 
             var item = _.findWhere($scope.settings, { name: visualizationSettings.name });
@@ -11,7 +11,7 @@
                 item[i] = $scope.option.selected[i];
             }
             $scope.option.selected = item;
-        };
+        }
 
         function setSelectedStyle() {
             $scope.choroplethStyles = visualizationService.getChoroplethStyles();
@@ -19,16 +19,26 @@
 
             var item = _.findWhere($scope.choroplethStyles, $scope.option.selected.style);
             $scope.option.selected.style = item;
-        };
+        }
 
         function init() {
+            $scope.activeLayerTool = mapTools.activeLayer || {
+                hasActiveLayer: function () { return false; }
+            };
+
+            surfLayer = $scope.activeLayerTool.getActiveLayer();
+            if(surfLayer.Style.VisualizationSettings === undefined){
+                surfLayer.Style.VisualizationSettings = {};
+            }
+            
             $scope.service = visualizationService;
             $scope.visualizationTypes = visualizationService.getVisualizationTypes();
             $scope.settings = visualizationService.getDefaultVisualizationSettings(surfLayer);
 
             $scope.numericAttributes = attributeDefinitionHelper.getNumericAndSpatialAttributeDefs(surfLayer.getAttributeDefinition());
             $scope.heatmapStyles = visualizationService.getHeatmapStyles();
-            $scope.option = { selected: surfLayer.VisualizationSettings };
+            //$scope.option is now passed from parent controller
+            //$scope.option = { selected: surfLayer.Style.VisualizationSettings };
 
 
             setSelectedOption();
@@ -109,13 +119,13 @@
                 $scope.option.selected.chartSizeAttributeId = $scope.option.selected.chartSizeAttributeId ? $scope.option.selected.chartSizeAttributeId : $scope.numericAttributes[0].Id;
         };
 
-        $scope.close = function () {
-            $modalInstance.close();
-        };
+        // $scope.close = function () {
+        //     $modalInstance.close();
+        // };
 
         $scope.applyVisualization = function () {
             visualizationService.saveVisualization(surfLayer, $scope.option.selected);
-            $modalInstance.close();
+            //$modalInstance.close();
         };
 
         $scope.hasCheckedValue = function () {

@@ -7,24 +7,24 @@
                     $scope.activeLayerTool = mapTools.activeLayer;
                     
                     $scope.getSelectedAttributeName = function () {
-                        var visualizationSettings = $scope.activeLayerTool.getActiveLayer().VisualizationSettings;
+                        var visualizationSettings = $scope.activeLayerTool.getActiveLayer().style.VisualizationSettings;
                         if (!visualizationSettings) return "";
 
                         var attribute = _.findWhere($scope.activeLayerTool.getActiveLayer().getAttributeDefinition(), { Id: visualizationSettings.attributeId });
                         if (!attribute) return "";
 
                         return attribute.Name;
-                    }
+                    };
                     
                     $scope.canRenderLegend = function () {
                         if ($scope.activeLayerTool) {
                             var activeLayer = $scope.activeLayerTool.getActiveLayer();
-                            return activeLayer.VisualizationSettings && activeLayer.getFeatureType() != 'raster'
-                                && activeLayer.VisualizationSettings.name == 'Choropleth' && activeLayer.IsVisible;
+                            return activeLayer.style && activeLayer.style.VisualizationSettings && activeLayer.getFeatureType() != 'raster'
+                                && activeLayer.style.VisualizationSettings.name == 'Choropleth' && activeLayer.IsVisible;
                         } else {
                             return false;
                         }
-                    }
+                    };
                 }
             ]
         };

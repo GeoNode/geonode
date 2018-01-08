@@ -130,6 +130,14 @@
                     <labeling-editor attribute-defs="nodeData.layer.attributeDefinitions" label-config="nodeData.layer.style.labelConfig" feature-type="nodeData.layer.shapeType">
                     </labeling-editor>
                 </tab>
+                <tab active="tabs[5].active">
+                    <tab-heading>
+                        Visualization
+                        <span ng-if="tabs[5].active" class="selected-down-arrow"></span>
+                    </tab-heading>
+                    <visualization-editor attribute-defs="nodeData.layer.attributeDefinitions" option="visualizationSettings" feature-type="nodeData.layer.shapeType">
+                    </visualization-editor>
+                </tab>
             </tabset>
         </div>
         <div class="modal-footer">

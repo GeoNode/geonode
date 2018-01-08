@@ -1,5 +1,5 @@
-﻿appModule.factory('visualizationService', ['urlResolver', 'layerRepository', 'sldGenerator', 'sldTemplateService', 'layerStyleGenerator', 'layerRenderingModeFactory', 'dirtyManager', 'interactionHandler', 'mapModes',
-    function (urlResolver, layerRepository, sldGenerator, sldTemplateService, layerStyleGenerator, layerRenderingModeFactory, dirtyManager, interactionHandler, mapModes) {
+﻿appModule.factory('visualizationService', ['urlResolver', 'layerRepository', 'sldGenerator', 'sldTemplateService', 'layerStyleGenerator', 'layerRenderingModeFactory', 'dirtyManager', 'interactionHandler', 'mapModes', '$q',
+    function (urlResolver, layerRepository, sldGenerator, sldTemplateService, layerStyleGenerator, layerRenderingModeFactory, dirtyManager, interactionHandler, mapModes, $q) {
         var visualizationFolder = "Content/visualization/";
         var visualizationTypes = { heatmap: 'Heatmap', weightedPoint: 'Weighted Point', choropleth: 'Choropleth', rasterBand: 'Raster Band', chart:'Chart' };
 
@@ -149,6 +149,12 @@
             getChoroplethStyles: function () {
                 return Jantrik.gradientGenerator.getVisualizationColorPalettes();
             },
+            isChart: function(config){
+                return config.name === visualizationTypes.chart;
+            },
+            isHeatMap: function(config){
+                return config.name === visualizationTypes.heatmap;
+            },
             saveVisualization: function (layer, config) {
                 if (!config || (layer.ShapeType != 'geoTiff' && layer.ShapeType != 'geoPdf' && !config.attributeId)) {
                     return factory.saveVisualizationSettingWithSld(layer, null, "");
@@ -167,14 +173,66 @@
                         return saveChartProperties(config, layer);
                 }
             },
+            getVisualizationSld: function (layer, config) {
+                var q = $q.defer();
+                if (!config || (layer.ShapeType != 'geoTiff' && layer.ShapeType != 'geoPdf' && !config.attributeId)) {
+                    return factory.saveVisualizationSettingWithSld(layer, null, "");
+                }
+                switch (config.name) {
+                    case visualizationTypes.heatmap:
+                        var sld = sldGenerator.getHeatmapSld(config);
+                        q.resolve(sld);
+                        break;
+                    case visualizationTypes.weightedPoint:
+                        return saveWeightedPoint(config, layer);
+                    case visualizationTypes.choropleth:
+                        return saveChoropleth(config, layer);
+                    case visualizationTypes.rasterBand:
+                        return saveRasterBandColor(config, layer);
+                    case visualizationTypes.chart:
+                        layerRepository.getColumnValues(layer.getId(), config.chartSizeAttributeId)
+                        .success(function(data) {
+                            var selectedAttributes = _.filter(config.chartAttributeList, function (attribute) { 
+                                return attribute.checked == true;
+                            });
+                            var selectedAttributeIds = _.map(selectedAttributes, function(item){ return item.numericAttribute.Id;});
+                            if (selectedAttributes.length == 0) {
+                                q.resolve("");
+                            }
+                            else{
+                                var attributeValues = data.values;
+                                layerRepository.getColumnMinMaxValues(layer.getId(), selectedAttributeIds)
+                                .then(function(data){
+                                    var sld = sldGenerator.getChartSld(config, attributeValues, data.data);
+                                    q.resolve(sld);
+                                });
+                            }
+                        });
+                        break;
+                        //return saveChartProperties(config, layer);
+                }
+                return q.promise;  
+            },
+            saveVisualizationRenderingMode: function (layer, settings, sldStyle) {
+                //layer.style.VisualizationSettings = settings;
+                layerRenderingModeFactory.setLayerRenderingMode(layer);
+                interactionHandler.setMode(mapModes.select);
+                //layer.refresh();
+                dirtyManager.setDirty(true);
+            },
             saveVisualizationSettingWithSld: function (layer, settings, sldStyle) {
-                return layerRepository.saveVisualizationSettings(layer.getId(), settings, sldStyle).success(function () {
-                    layer.VisualizationSettings = settings;
-                    layerRenderingModeFactory.setLayerRenderingMode(layer);
-                    interactionHandler.setMode(mapModes.select);
-                    layer.refresh();
-                    dirtyManager.setDirty(true);
-                });
+                layer.style.VisualizationSettings = settings;
+                layerRenderingModeFactory.setLayerRenderingMode(layer);
+                interactionHandler.setMode(mapModes.select);
+                //layer.refresh();
+                dirtyManager.setDirty(true);
+                // return layerRepository.saveVisualizationSettings(layer.getId(), settings, sldStyle).success(function () {
+                //     layer.style.VisualizationSettings = settings;
+                //     layerRenderingModeFactory.setLayerRenderingMode(layer);
+                //     interactionHandler.setMode(mapModes.select);
+                //     layer.refresh();
+                //     dirtyManager.setDirty(true);
+                // });
             },
             getAttributeValueRange: function (layerId, attributeId) {
                 return layerRepository.getAttributeValueRange(layerId, attributeId);
