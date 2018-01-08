@@ -1,6 +1,6 @@
 ﻿mapModule.factory('mapService', [
-    'mapRepository', 'SurfMap', 'layerService', 'layerStyleGenerator', 'mapTools',
-    function(mapRepository, SurfMap, layerService, layerStyleGenerator, mapTools) {
+    'mapRepository', 'SurfMap', 'layerService', 'layerStyleGenerator', 'mapTools', 'LayerService', '$q',
+    function(mapRepository, SurfMap, layerService, layerStyleGenerator, mapTools, newLayerService, $q) {
         var map;
 
         function _mapSource(source) {
@@ -280,458 +280,127 @@
                     busyStateManager.hideBusyState();
                 });
             },
-            addDataLayer: function(dataId, dataType, shapeType) {
-                var data;
-                if (dataType === "raster") {
-                    data = {
-                        dataId: dataId,
-                        style: layerStyleGenerator.generateDefaultRasterStyle()
-                    }
-                    data.sldStyle = layerStyleGenerator.getSldStyle(shapeType, data.style.default,
-                        true, null);
-                    data.selectionStyleSld = layerStyleGenerator.getSldStyle(shapeType, data.style.select,
-                        true, null);
+            // addDataLayer: function(dataId, dataType, shapeType) {
+            //     var data;
+            //     if (dataType === "raster") {
+            //         data = {
+            //             dataId: dataId,
+            //             style: layerStyleGenerator.generateDefaultRasterStyle()
+            //         }
+            //         data.sldStyle = layerStyleGenerator.getSldStyle(shapeType, data.style.default,
+            //             true, null);
+            //         data.selectionStyleSld = layerStyleGenerator.getSldStyle(shapeType, data.style.select,
+            //             true, null);
 
-                    busyStateManager.showBusyState(appMessages.busyState.addLayer);
-                    mapRepository.createRasterDataLayer(data).success(function(layerInfo) {
-                        map.addLayer(layerInfo);
-                    }).finally(function() {
-                        busyStateManager.hideBusyState();
-                    });
-                } else {
-                    data = {
-                        dataId: dataId,
-                        style: layerStyleGenerator.generate(shapeType)
-                    }
+            //         busyStateManager.showBusyState(appMessages.busyState.addLayer);
+            //         mapRepository.createRasterDataLayer(data).success(function(layerInfo) {
+            //             map.addLayer(layerInfo);
+            //         }).finally(function() {
+            //             busyStateManager.hideBusyState();
+            //         });
+            //     } else {
+            //         data = {
+            //             dataId: dataId,
+            //             style: layerStyleGenerator.generate(shapeType)
+            //         }
 
-                    data.sldStyle = layerStyleGenerator.getSldStyle(shapeType, data.style.default,
-                        true, null);
-                    data.selectionStyleSld = layerStyleGenerator.getSldStyle(shapeType, data.style.select,
-                        true, null);
+            //         data.sldStyle = layerStyleGenerator.getSldStyle(shapeType, data.style.default,
+            //             true, null);
+            //         data.selectionStyleSld = layerStyleGenerator.getSldStyle(shapeType, data.style.select,
+            //             true, null);
 
-                    busyStateManager.showBusyState(appMessages.busyState.addLayer);
-                    mapRepository.createDataLayer(data).success(function(layerInfo) {
-                        map.addLayer(layerInfo);
-                    }).finally(function() {
-                        busyStateManager.hideBusyState();
-                    });
-                }
-            },
+            //         busyStateManager.showBusyState(appMessages.busyState.addLayer);
+            //         mapRepository.createDataLayer(data).success(function(layerInfo) {
+            //             map.addLayer(layerInfo);
+            //         }).finally(function() {
+            //             busyStateManager.hideBusyState();
+            //         });
+            //     }
+            // },
             addDataLayer: function(layer, override) {
-                var newLayer = {
-                    "LayerId": "s_31b086d815f5492a9da932bbf9af7333",
-                    "Name": "illinois_poi",
-                    "SortOrder": 2,
-                    "LastUpdateOn": "2017-10-10T11:10:26.083Z",
-                    "ClassifierDefinitions": {},
-                    "CanWrite": true,
-                    // "DataId": "s_facf34ee54914605943fe987f5b3637c",
-                    "ShapeType": "point",
-                    "Style": {
-                        "Name": "s_a5170c56d2a64a0c8ee7dff53d916e71",
-                        "default": {
-                            "fillPattern": null,
-                            "textFillColor": "#222026",
-                            "text": null,
-                            "pixelDensity": null,
-                            "strokeDashstyle": "solid",
-                            "strokeWidth": 1.0,
-                            "strokeColor": "#5EF1F2",
-                            "strokeOpacity": null,
-                            "fillOpacity": 0.75,
-                            "fillColor": "#2f7979",
-                            "pointRadius": 14.0,
-                            "graphicName": "circle",
-                            "textGraphicName": null,
-                            "externalGraphic": null
-                        },
-                        "select": {
-                            "fillPattern": "",
-                            "textFillColor": "#222026",
-                            "text": null,
-                            "pixelDensity": null,
-                            "strokeDashstyle": "solid",
-                            "strokeWidth": 1.0,
-                            "strokeColor": "#0000ff",
-                            "strokeOpacity": 1.0,
-                            "fillOpacity": 0.4,
-                            "fillColor": "#0000ff",
-                            "pointRadius": 6.0,
-                            "graphicName": "circle",
-                            "textGraphicName": null,
-                            "externalGraphic": null
-                        },
-                        "labelConfig": {
-                            "attribute": null,
-                            "visibilityZoomLevel": 0,
-                            "font": "Times",
-                            "fontStyle": "normal",
-                            "fontWeight": "normal",
-                            "color": "#000000",
-                            "borderColor": "#ffffff",
-                            "showBorder": true,
-                            "size": 10.0,
-                            "alignment": 1.0,
-                            "offsetX": 0.0,
-                            "offsetY": 0.0,
-                            "rotation": 0.0,
-                            "followLine": false,
-                            "repeat": false,
-                            "repeatInterval": 5.0,
-                            "wrap": false,
-                            "wrapPixel": 50.0
-                        }
-                    },
-                    "VisualizationSettings": null,
-                    "IsVisible": true,
-                    "Filters": [],
-                    "ZoomLevel": 0,
-                    "ModificationState": "Added",
-                    "LayerExtent": {
-                        "MinX": -9818543.41779904,
-                        "MinY": 5183814.6260749,
-                        "MaxX": -9770487.95134629,
-                        "MaxY": 5235883.07751104
-                    },
-                    "AttributeDefinition": [{
-                        "Id": "s_985cd4386b6a4762812371ca8ae4c5a3",
-                        "Name": "category",
-                        "AttributeName": null,
-                        "IsPublished": true,
-                        "Type": "text",
-                        "Length": 30,
-                        "Precision": null,
-                        "Scale": null
-                    }, {
-                        "Id": "s_5d1416d309df49cab55858ff2b463f70",
-                        "Name": "name",
-                        "AttributeName": null,
-                        "IsPublished": true,
-                        "Type": "text",
-                        "Length": 92,
-                        "Precision": null,
-                        "Scale": null
-                    }],
-                    "IdColumn": "gid",
-                    "LinearUnit": "Meter",
-                    "IsLocked": false,
-                    "DataSourceName": "illinois_poi",
-                    "SourceFileExists": true,
-                    "IsDataOwner": true,
-                    "IsRaster": false,
-                    "SavedDataId": "s_fe297a3305394811919f33cdb16fc30d"
-                };
-
-                if (override == false) {
-                    map.addLayer(layer, false);
+                var p1_deferred = $q.defer()
+                var p1 = p1_deferred.promise;
+                mapId = this.getId();
+                if (!mapId) {
+                    p1 = newLayerService.getStyleByLayer(layer.Name)
+                        .then(function(res) {
+                            layer.Style = res;
+                        }, function() {
+                            layer.Style = newLayerService.getNewStyle();
+                        });
                 } else {
-                    newLayer.Name = layer.Name;
-                    newLayer.LayerExtent = {
-                        "MinX": layer.BoundingBox[0]._minx,
-                        "MinY": layer.BoundingBox[0]._miny,
-                        "MaxX": layer.BoundingBox[0]._maxx,
-                        "MaxY": layer.BoundingBox[0]._maxy
-                    };
-                    newLayer.geoserverUrl = layer.geoserverUrl;
-                    map.addLayer(newLayer, true);
+                    newLayerService.getLayerByMap(mapId, layer.Name)
+                        .then(function(res) {
+                            newLayerService.getStyle(res.styles)
+                                .then(function(res) {
+                                    layer.Style = res;
+                                    layer.ClassifierDefinitions = layer.Style.classifierDefinitions || {};
+                                    p1_deferred.resolve({});
+                                }, function() {
+                                    layer.Style = newLayerService.getNewStyle();
+                                    layer.ClassifierDefinitions = layer.Style.classifierDefinitions || {};
+                                    p1_deferred.resolve({});
+                                });
+                        }, function() {
+                            layer.Style = newLayerService.getNewStyle();
+                            layer.ClassifierDefinitions = new_layer.Style.classifierDefinitions || {};
+                            p1_deferred.resolve({});
+                        });
                 }
-                // factory.updateLayerViewOrders();
+                var p2 = newLayerService.getAttributesName(layer.Name)
+                    .then(function(res) {
+                        layer.AttributeDefinition = res;
+                    });
+                var p3 = newLayerService.getShapeType(layer.Name)
+                    .then(function(res) {
+                        layer.ShapeType = res;
+                    });
+
+                $q.all([p1, p2, p3])
+                    .then(function() {
+                        map.addLayer(layer, true);
+                    });
             },
             removeLayer: function(layerId) {
                 map.removeLayer(layerId);
                 mapRepository.removeLayer(layerId);
             },
             saveMapAs: function(name, abstract, organizationId, categoryId) {
-                // _map(name);
-
-                var mapObj = {
-                    // "proxy": "/proxy/?url=",
-                    // "printService": "http://demo.geonode.org/geoserver/pdf/",
-                    // "rest": "/maps/",
-                    // "ajaxLoginUrl": "/account/ajax_login",
-                    // "homeUrl": "/",
-                    // "localGeoServerBaseUrl": "http://demo.geonode.org/geoserver/",
-                    // "localCSWBaseUrl": "http://demo.geonode.org/catalogue/csw",
-                    "csrfToken": "L3gCVHu8cQmPtwEm44xUuYk7Rx1NOn0i",
-                    // "listeners": {},
-                    // "defaultSourceType": "gxp_wmscsource",
-                    "about": {
-                        "abstract": "Test",
-                        "title": "Test"
-                    },
-                    "map": {
-                        "layers": [{
-                            "source": "1",
-                            "name": "No background",
-                            "title": "No background",
-                            "visibility": false,
-                            "opacity": 1,
-                            "group": "background",
-                            "fixed": true,
-                            "selected": false,
-                            "type": "OpenLayers.Layer",
-                            "args": ["No background"]
-                        }, {
-                            "source": "2",
-                            "name": "mapnik",
-                            "title": "OpenStreetMap",
-                            "visibility": true,
-                            "opacity": 1,
-                            "group": "background",
-                            "fixed": true,
-                            "selected": false
-                        }, {
-                            "source": "5",
-                            "name": "gemeenten",
-                            "title": "gemeenten",
-                            "visibility": true,
-                            "opacity": 1,
-                            "selected": false,
-                            "capability": {
-                                "nestedLayers": [],
-                                // "styles": [{
-                                //     "name": "bestuurlijkegrenzen:bestuurlijkegrenzen_gemeentegrenzen",
-                                //     "title": "gemeenten",
-                                //     "legend": { "width": "86", "height": "40", "format": "image/png", "href": "https://geodata.nationaalgeoregister.nl/bestuurlijkegrenzen/wms?request=GetLegendGraphic&format=image%2Fpng&width=20&height=20&layer=gemeenten" }
-                                // }],
-                                "srs": {
-                                    "EPSG:3857": true
-                                },
-                                // "metadataURLs": [{
-                                //     "type": "TC211",
-                                //     "format": "text/plain",
-                                //     "href": "http://nationaalgeoregister.nl/geonetwork/srv/dut/xml.metadata.get?uuid=c5c4a6d6-b850-473c-8ab5-af9c2c550809"
-                                // }],
-                                "bbox": {
-                                    "EPSG:4326": {
-                                        "bbox": [3.2051823668269814, 50.7334127694571, 7.244186283978288, 53.58278517693342],
-                                        "srs": "EPSG:4326"
-                                    },
-                                    "EPSG:4258": {
-                                        "bbox": [3.2051823668269814, 50.73341277038118, 7.244186283978288, 53.58278517783418],
-                                        "srs": "EPSG:4258"
-                                    },
-                                    "EPSG:3035": {
-                                        "bbox": [3851492.1797789703, 3073614.302509961, 4138450.626227286, 3405033.293444387],
-                                        "srs": "EPSG:3035"
-                                    },
-                                    "EPSG:3034": {
-                                        "bbox": [3546541.1842526076, 2668257.571715348, 3823535.927986264, 2988074.0491355434],
-                                        "srs": "EPSG:3034"
-                                    },
-                                    "EPSG:3857": {
-                                        "bbox": [356799.268974759, 6574272.316704847, 806419.1283440797, 7091533.451465934],
-                                        "srs": "EPSG:3857"
-                                    },
-                                    "EPSG:28992": {
-                                        "bbox": [10425.156, 306846.198, 278026.09, 621876.3],
-                                        "srs": "EPSG:28992"
-                                    },
-                                    "EPSG:25831": {
-                                        "bbox": [513590.01161562005, 5620234.96004342, 791375.717212824, 5943906.836550638],
-                                        "srs": "EPSG:25831"
-                                    },
-                                    "EPSG:25832": {
-                                        "bbox": [100650.211576448, 5622404.0854928065, 383725.93425894435, 5950552.142101422],
-                                        "srs": "EPSG:25832"
-                                    }
-                                },
-                                "llbbox": [3.206235952734017, 50.7336070072307, 7.2452582753351376, 53.58297881371805],
-                                "dimensions": {},
-                                // "authorityURLs": {
-                                //     "PDOK": "http://www.pdok.nl",
-                                //     "EZ": "http://www.rijksoverheid.nl/ministeries/ez"
-                                // },
-                                "identifiers": { "EZ": "nl.ez.1" },
-                                "keywords": ["gemeenten", "features"],
-                                "queryable": true,
-                                "cascaded": 0,
-                                "opaque": false,
-                                "noSubsets": false,
-                                "fixedWidth": 0,
-                                "fixedHeight": 0,
-                                "name": "gemeenten",
-                                "title": "gemeenten",
-                                "abstract": "Bestuurlijke Grenzen bestaan uit de gemeente-, provincie- en rijksgrenzen. Deze worden sinds 2012 vervaardigd op basis van de kadastrale registratie (BRK).",
-                                "prefix": "gemeenten",
-                                "formats": [
-                                    "image/png",
-                                    "application/atom xml",
-                                    "application/atom+xml",
-                                    "application/json;type=utfgrid", "application/openlayers", "application/pdf", "application/rss xml", "application/rss+xml", "application/vnd.google-earth.kml", "application/vnd.google-earth.kml xml", "application/vnd.google-earth.kml+xml", "application/vnd.google-earth.kml+xml;mode=networklink", "application/vnd.google-earth.kmz", "application/vnd.google-earth.kmz xml", "application/vnd.google-earth.kmz+xml", "application/vnd.google-earth.kmz;mode=networklink", "atom", "image/geotiff", "image/geotiff8", "image/gif", "image/gif;subtype=animated", "image/jpeg", "image/png8", "image/png; mode=8bit", "image/svg", "image/svg xml", "image/svg+xml", "image/tiff", "image/tiff8", "image/vnd.jpeg-png", "kml", "kmz", "openlayers", "rss", "text/html; subtype=openlayers", "utfgrid"
-                                ],
-                                "infoFormats": ["text/plain", "application/vnd.ogc.gml", "text/xml", "application/vnd.ogc.gml/3.1.1", "text/xml; subtype=gml/3.1.1", "text/html", "application/json"]
-                            },
-                            "format": "image/png",
-                            "styles": "",
-                            "tiled": true,
-                            "transparent": true,
-                            "attribution": null,
-                            "cached": true
-                        }],
-                        "center": [581609.19865942, 6832902.8840853],
-                        "units": "m",
-                        "maxResolution": 156543.03390625,
-                        "maxExtent": [-20037508.34, -20037508.34, 20037508.34, 20037508.34],
-                        "zoom": 7,
-                        "projection": "EPSG:900913"
-                    },
-                    "id": 0,
-                    "sources": {
-                        "0": {
-                            "url": "http://demo.geonode.org/geoserver/wms",
-                            "restUrl": "/gs/rest",
-                            "ptype": "gxp_wmscsource",
-                            "title": "Local Geoserver",
-                            "projection": "EPSG:900913",
-                            "id": "0",
-                            "baseParams": { "SERVICE": "WMS", "REQUEST": "GetCapabilities", "TILED": true, "VERSION": "1.1.1" }
-                        },
-                        "1": {
-                            "ptype": "gxp_olsource",
-                            "projection": "EPSG:900913",
-                            "id": "1"
-                        },
-                        "2": {
-                            "ptype": "gxp_osmsource",
-                            "projection": "EPSG:900913",
-                            "id": "2"
-                        },
-                        "3": {
-                            "url": "http://hh.worldmap.harvard.edu/search/csw",
-                            "remote": true,
-                            "ptype": "gxp_wmscsource",
-                            "name": "HHypermap",
-                            "projection": "EPSG:900913",
-                            "id": "3",
-                            "baseParams": { "SERVICE": "WMS", "REQUEST": "GetCapabilities", "TILED": true, "VERSION": "1.1.1" }
-                        },
-                        "4": {
-                            "url": "http://fcortesz.servehttp.com:2005/geoserver/Sam/wms",
-                            "remote": true,
-                            "ptype": "gxp_wmscsource",
-                            "name": "Sample",
-                            "projection": "EPSG:900913",
-                            "id": "4",
-                            "baseParams": { "SERVICE": "WMS", "REQUEST": "GetCapabilities", "TILED": true, "VERSION": "1.1.1" }
-                        },
-                        "5": {
-                            "url": "https://geodata.nationaalgeoregister.nl/bestuurlijkegrenzen/wms",
-                            "remote": true,
-                            "ptype": "gxp_wmscsource",
-                            "name": "Besturrlijke_grenzen",
-                            "projection": "EPSG:900913",
-                            "id": "5",
-                            "baseParams": { "SERVICE": "WMS", "REQUEST": "GetCapabilities", "TILED": true, "VERSION": "1.1.1" },
-                            "title": "Bestuurlijke grenzen WMS"
-                        },
-                        "6": {
-                            "url": "https://server.arcgisonline.com/ArcGIS/rest/services/Reference/World_Transportation/MapServer/",
-                            "remote": true,
-                            "ptype": "gxp_wmscsource",
-                            "name": "zhangheng",
-                            "projection": "EPSG:900913",
-                            "id": "6",
-                            "baseParams": { "SERVICE": "WMS", "REQUEST": "GetCapabilities", "TILED": true, "VERSION": "1.1.1" }
-                        },
-                        "search": {
-                            "ptype": "gxp_geonodeapicataloguesource",
-                            "restUrl": "/gs/rest",
-                            "url": "/api/layers/",
-                            "projection": "EPSG:900913",
-                            "id": "search"
-                        }
-                    },
-                    // "viewerTools": [{
-                    //     "hidden": true,
-                    //     "actions": ["layerchooser"],
-                    //     "checked": true
-                    // }, {
-                    //     "hidden": true,
-                    //     "actions": ["-"],
-                    //     "checked": true
-                    // }, {
-                    //     "leaf": true,
-                    //     "text": "Print map",
-                    //     "ptype": "gxp_print",
-                    //     "iconCls": "gxp-icon-print",
-                    //     "customParams": { "outputFilename": "GeoExplorer-print" },
-                    //     "printService": "http://demo.geonode.org/geoserver/pdf/",
-                    //     "checked": true
-                    // }, {
-                    //     "leaf": true,
-                    //     "text": "Pan map",
-                    //     "checked": true,
-                    //     "iconCls": "gxp-icon-pan",
-                    //     "ptype": "gxp_navigation",
-                    //     "toggleGroup": "navigation"
-                    // }, {
-                    //     "leaf": true,
-                    //     "text": "Get Feature Info",
-                    //     "checked": true,
-                    //     "iconCls": "gxp-icon-getfeatureinfo",
-                    //     "ptype": "gxp_wmsgetfeatureinfo",
-                    //     "format": "grid",
-                    //     "toggleGroup": "interaction"
-                    // }, {
-                    //     "leaf": true,
-                    //     "text": "Measure",
-                    //     "checked": true,
-                    //     "iconCls": "gxp-icon-measure-length",
-                    //     "ptype": "gxp_measure",
-                    //     "controlOptions": { "immediate": true },
-                    //     "toggleGroup": "interaction"
-                    // }, {
-                    //     "leaf": true,
-                    //     "text": "Zoom in / Zoom out",
-                    //     "checked": true,
-                    //     "iconCls": "gxp-icon-zoom-in",
-                    //     "ptype": "gxp_zoom"
-                    // }, {
-                    //     "leaf": true,
-                    //     "text": "Zoom to previous extent / Zoom to next extent",
-                    //     "checked": true,
-                    //     "iconCls": "gxp-icon-zoom-previous",
-                    //     "ptype": "gxp_navigationhistory"
-                    // }, {
-                    //     "leaf": true,
-                    //     "text": "Zoom to max extent",
-                    //     "checked": true,
-                    //     "iconCls": "gxp-icon-zoomtoextent",
-                    //     "ptype": "gxp_zoomtoextent"
-                    // }, {
-                    //     "leaf": true,
-                    //     "text": "Show legend",
-                    //     "checked": true,
-                    //     "iconCls": "gxp-icon-legend",
-                    //     "ptype": "gxp_legend"
-                    // }, {
-                    //     "leaf": true,
-                    //     "text": "Switch to 3D Viewer",
-                    //     "checked": true,
-                    //     "iconCls": "gxp-icon-googleearth",
-                    //     "ptype": "gxp_googleearth"
-                    // }, {
-                    //     "hidden": true,
-                    //     "actions": ["->"],
-                    //     "checked": true
-                    // }, {
-                    //     "hidden": true,
-                    //     "actions": ["aboutbutton"],
-                    //     "checked": true
-                    // }]
-                }
-                mapObj = _map(name, abstract, organizationId, categoryId);
-
+                var mapObj = _map(name, abstract, organizationId, categoryId);
+                mapObj.id = factory.getId();
                 busyStateManager.showBusyState(appMessages.busyState.save);
+                if (!mapObj.id) {
+                    return mapRepository.saveAs(mapObj).success(function(res) {
+                        busyStateManager.hideBusyState();
+                        saveSuccess(res.id, name, abstract);
+                    }).error(function() {
+                        busyStateManager.hideBusyState();
+                    });
+                } else {
+                    return mapRepository.update(mapObj).success(function() {
+                        busyStateManager.hideBusyState();
+                        saveSuccess(mapObj.id, name, abstract);
 
-                return mapRepository.saveAs(mapObj).success(function() {
-                    busyStateManager.hideBusyState();
-                }).error(function() {
-                    busyStateManager.hideBusyState();
-                });
+                    }).error(function() {
+                        busyStateManager.hideBusyState();
+                    });
+                }
+
+                function saveSuccess(id, name, abstract) {
+                    factory.setId(id);
+                    factory.setMapName(name);
+                    factory.setMeta({ abstract: abstract });
+
+                    for (var k in map.layers) {
+                        var layer = map.layers[k];
+                        var style = layer.getStyle();
+                        factory.updateMapLayer(id, layer.Name, {
+                            styles: style.id
+                        });
+                    }
+                }
             },
-            updateMapLayer: function(mapId, layerName, obj){
+            updateMapLayer: function(mapId, layerName, obj) {
                 return mapRepository.updateMapLayer(mapId, layerName, obj);
             },
             getLayers: function() {
@@ -773,6 +442,18 @@
             getMap: function() {
                 return map.getMap();
             },
+            getId: function() {
+                return map.Id;
+            },
+            setId: function(id) {
+                map.Id = id;
+            },
+            setMeta: function(meta) {
+                map.Meta = meta;
+            },
+            getMeta: function() {
+                return map.Meta || {};
+            }
 
         };
 
