@@ -160,10 +160,10 @@ class CommonModelApi(ModelResource):
             accesstoken = AccessToken.objects.filter(token=token[7:])
             if accesstoken:
                 accesstoken = AccessToken.objects.get(token=token[7:])
-                accesstoken.expires = datetime.datetime.now() + datetime.timedelta(
-                    seconds=oauth2_settings.ACCESS_TOKEN_EXPIRE_SECONDS)
-                accesstoken.save()
-
+                if not accesstoken.is_expired():
+                    accesstoken.expires = datetime.datetime.now() + datetime.timedelta(
+                        seconds=oauth2_settings.ACCESS_TOKEN_EXPIRE_SECONDS)
+                    accesstoken.save()
 
         types = applicable_filters.pop('type', None)
         extent = applicable_filters.pop('extent', None)
@@ -687,9 +687,10 @@ class CommonFavorite(ModelResource):
             accesstoken = AccessToken.objects.filter(token=token[7:])
             if accesstoken:
                 accesstoken = AccessToken.objects.get(token=token[7:])
-                accesstoken.expires = datetime.datetime.now() + datetime.timedelta(
-                    seconds=oauth2_settings.ACCESS_TOKEN_EXPIRE_SECONDS)
-                accesstoken.save()
+                if not accesstoken.is_expired():
+                    accesstoken.expires = datetime.datetime.now() + datetime.timedelta(
+                        seconds=oauth2_settings.ACCESS_TOKEN_EXPIRE_SECONDS)
+                    accesstoken.save()
 
 
         if bundle.request.user.is_authenticated():
@@ -770,9 +771,10 @@ class GroupsResourceWithFavorite(ModelResource):
             accesstoken = AccessToken.objects.filter(token=token[7:])
             if accesstoken:
                 accesstoken = AccessToken.objects.get(token=token[7:])
-                accesstoken.expires = datetime.datetime.now() + datetime.timedelta(
-                    seconds=oauth2_settings.ACCESS_TOKEN_EXPIRE_SECONDS)
-                accesstoken.save()
+                if not accesstoken.is_expired():
+                    accesstoken.expires = datetime.datetime.now() + datetime.timedelta(
+                        seconds=oauth2_settings.ACCESS_TOKEN_EXPIRE_SECONDS)
+                    accesstoken.save()
 
 
         return bundle.obj.member_queryset().count()
@@ -852,9 +854,10 @@ class GroupActivity(ModelResource):
             accesstoken = AccessToken.objects.filter(token=token[7:])
             if accesstoken:
                 accesstoken = AccessToken.objects.get(token=token[7:])
-                accesstoken.expires = datetime.datetime.now() + datetime.timedelta(
-                    seconds=oauth2_settings.ACCESS_TOKEN_EXPIRE_SECONDS)
-                accesstoken.save()
+                if not accesstoken.is_expired():
+                    accesstoken.expires = datetime.datetime.now() + datetime.timedelta(
+                        seconds=oauth2_settings.ACCESS_TOKEN_EXPIRE_SECONDS)
+                    accesstoken.save()
 
         actor = bundle.obj.actor
         activity_class = 'activity'
@@ -953,9 +956,10 @@ class WorkSpaceLayerApi(ModelResource):
             accesstoken = AccessToken.objects.filter(token=token[7:])
             if accesstoken:
                 accesstoken = AccessToken.objects.get(token=token[7:])
-                accesstoken.expires = datetime.datetime.now() + datetime.timedelta(
-                    seconds=oauth2_settings.ACCESS_TOKEN_EXPIRE_SECONDS)
-                accesstoken.save()
+                if not accesstoken.is_expired():
+                    accesstoken.expires = datetime.datetime.now() + datetime.timedelta(
+                        seconds=oauth2_settings.ACCESS_TOKEN_EXPIRE_SECONDS)
+                    accesstoken.save()
 
         nothing = Layer.objects.all()[:0]
         if request.user.is_authenticated():
@@ -1040,9 +1044,10 @@ class WorkSpaceDocumentApi(ModelResource):
             accesstoken = AccessToken.objects.filter(token=token[7:])
             if accesstoken:
                 accesstoken = AccessToken.objects.get(token=token[7:])
-                accesstoken.expires = datetime.datetime.now() + datetime.timedelta(
-                    seconds=oauth2_settings.ACCESS_TOKEN_EXPIRE_SECONDS)
-                accesstoken.save()
+                if not accesstoken.is_expired():
+                    accesstoken.expires = datetime.datetime.now() + datetime.timedelta(
+                        seconds=oauth2_settings.ACCESS_TOKEN_EXPIRE_SECONDS)
+                    accesstoken.save()
 
         nothing = Document.objects.all()[:0]
         if request.user.is_authenticated():
@@ -1132,9 +1137,10 @@ class WorkSpaceMapApi(ModelResource):
             accesstoken = AccessToken.objects.filter(token=token[7:])
             if accesstoken:
                 accesstoken = AccessToken.objects.get(token=token[7:])
-                accesstoken.expires = datetime.datetime.now() + datetime.timedelta(
-                    seconds=oauth2_settings.ACCESS_TOKEN_EXPIRE_SECONDS)
-                accesstoken.save()
+                if not accesstoken.is_expired():
+                    accesstoken.expires = datetime.datetime.now() + datetime.timedelta(
+                        seconds=oauth2_settings.ACCESS_TOKEN_EXPIRE_SECONDS)
+                    accesstoken.save()
 
         nothing = Map.objects.all()[:0]
         if request.user.is_authenticated():
