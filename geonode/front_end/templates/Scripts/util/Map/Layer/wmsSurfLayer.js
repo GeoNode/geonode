@@ -12,9 +12,12 @@
                 style.display = visible ? '' : 'none';
             }
 
+            var dataId = layerInfo.LayerId.split(':')[1];
             var _thisLayer = this;
             this.inProgress = false;
-
+            _thisLayer.DataId = dataId;
+            layerInfo.DataId = dataId;
+            
             var _base = {
                 setSortOrder: _thisLayer.setSortOrder,
                 setName: _thisLayer.setName,
