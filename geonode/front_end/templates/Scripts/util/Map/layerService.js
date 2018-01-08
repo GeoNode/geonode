@@ -1,6 +1,6 @@
 ﻿mapModule.factory('layerService', [
-    '$rootScope', 'layerRepository', 'featureService', 'layerStyleGenerator', 'featureFilterGenerator', 'sldTemplateService', 'interactionHandler', 'visualizationService', '$q',
-    function($rootScope, layerRepository, featureService, layerStyleGenerator, featureFilterGenerator, sldTemplateService, interactionHandler, visualizationService, $q) {
+    '$rootScope', 'layerRepository', 'featureService', 'layerStyleGenerator', 'featureFilterGenerator', 'sldTemplateService', 'interactionHandler', 'visualizationService', 'layerRenderingModeFactory', '$q',
+    function($rootScope, layerRepository, featureService, layerStyleGenerator, featureFilterGenerator, sldTemplateService, interactionHandler, visualizationService, layerRenderingModeFactory, $q) {
 
         var factory = {
 
@@ -33,16 +33,16 @@
                 defaultStyleSld = defaultStyleSld.replace(reClassifier, classificationSlds.classificationStyle);
                 defaultStyleSld = defaultStyleSld.replace(reLabel, labelingSld);
 
+                layerRenderingModeFactory.setLayerRenderingMode(surfLayer);
+
                 if(surfLayer.Style.VisualizationSettings){
                     visualizationService.getVisualizationSld(surfLayer, surfLayer.Style.VisualizationSettings)
                     .then(function(visSld){
                         if(visualizationService.isChart(surfLayer.Style.VisualizationSettings)){
                             defaultStyleSld = defaultStyleSld.replace(chartSldRegex, visSld);
-                            style.tiled = true;
                         }
-                        else{
+                        else if(visualizationService.isHeatMap(surfLayer.Style.VisualizationSettings)){
                             defaultStyleSld = visSld;
-                            style.tiled = false;
                         }
                         
                         return doAction();

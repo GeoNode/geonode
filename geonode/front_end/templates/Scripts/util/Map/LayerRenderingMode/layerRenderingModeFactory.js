@@ -163,7 +163,7 @@
             });
         }
 
-        function craeteVisualizationOlLayer(surfLayer) {
+        function createSingleImageOlLayer(surfLayer) {
             return new ol.layer.Image({
                 source: new ol.source.ImageWMS({
                     url: urlResolver.resolveGeoserverTile(),
@@ -225,7 +225,13 @@
                 return new SimpleWmsRenderingMode(_olMap, olLayer, tools);
             },
             createVisualizationRenderingMode: function (surfLayer) {
-                var olLayer = craeteVisualizationOlLayer(surfLayer);
+                var olLayer = createSingleImageOlLayer(surfLayer);
+                var tools = getWmpVisualizationToolSet(surfLayer, olLayer);
+
+                return new SimpleWmsRenderingMode(_olMap, olLayer, tools);
+            },
+            createSingleTileRenderingMode: function (surfLayer) {
+                var olLayer = createSingleImageOlLayer(surfLayer);
                 var tools = getWmpVisualizationToolSet(surfLayer, olLayer);
 
                 return new SimpleWmsRenderingMode(_olMap, olLayer, tools);
@@ -240,8 +246,8 @@
             },
             setLayerRenderingMode: function (surfLayer) {
                 var mode;
-                if(surfLayer.style && surfLayer.style.VisualizationSettings){
-                    mode = factory.createVisualizationRenderingMode(surfLayer);
+                if(surfLayer.Style && surfLayer.Style.VisualizationSettings && surfLayer.Style.VisualizationSettings.name === 'Heatmap' ){
+                    mode = factory.createSingleTileRenderingMode(surfLayer);
                 }
                 else{
                     if (surfLayer.ShapeType == 'geoTiff' || surfLayer.ShapeType == 'geoPdf'){
