@@ -8,9 +8,12 @@
 {% block body_class %}announcements{% endblock %}
 
 {% block body_outer %}
-<div class="page-header">
-  <a href="{% url "announcements_create" %}" class="btn btn-primary pull-right">{% trans "New Announcement" %}</a>
-  <h2>{% trans "Announcements" %}</h2>
+<div class="d-title">
+  
+  <div class="pull-right">
+  <a href="{% url "announcements_create" %}" class="btn btn-primary">{% trans "New Announcement" %}</a>
+</div>
+  {% trans "Announcements sdf" %}
 </div>
 
 <div class="row" id="contain-slider">
