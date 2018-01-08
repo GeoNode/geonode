@@ -19,6 +19,7 @@
 #########################################################################
 
 import os
+import signal
 from urlparse import urljoin
 
 import pytest
@@ -42,7 +43,8 @@ def en_browser(browser, bdd_server):
     en_browser = browser
     en_browser.visit(urljoin(bdd_server.url, gn_settings.LOGIN_URL))
     yield en_browser
-    en_browser.quit()
+    en_browser.service.process.send_signal(signal.SIGTERM) # kill the specific phantomjs child proc
+    en_browser.quit()                                      # quit the node proc
 
 
 @pytest.fixture
