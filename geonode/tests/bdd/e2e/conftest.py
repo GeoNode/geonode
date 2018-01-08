@@ -46,11 +46,13 @@ def en_browser(browser, bdd_server):
     en_browser.quit()
 =======
     try:
-        en_browser.service.process.send_signal(signal.SIGTERM) # kill the specific phantomjs child proc
+        # kill the specific phantomjs child proc
+        en_browser.service.process.send_signal(signal.SIGTERM)
     except:
         pass
     try:
-        en_browser.quit()                                      # quit the node proc
+        # quit the node proc
+        en_browser.quit()
     except:
         pass
 >>>>>>> 05e3ec3...  - Tentative fix bdd tests
