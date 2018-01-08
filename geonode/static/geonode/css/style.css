@@ -3332,6 +3332,11 @@ width: 80%;
 {
     white-space: normal;
 }
+#gd-accordion-style .panel-heading
+{
+    white-space: normal;
+}
+
 #myNav .panel-body
 {
     white-space: normal;
