@@ -42,7 +42,18 @@ def en_browser(browser, bdd_server):
     en_browser = browser
     en_browser.visit(urljoin(bdd_server.url, gn_settings.LOGIN_URL))
     yield en_browser
+<<<<<<< HEAD
     en_browser.quit()
+=======
+    try:
+        en_browser.service.process.send_signal(signal.SIGTERM) # kill the specific phantomjs child proc
+    except:
+        pass
+    try:
+        en_browser.quit()                                      # quit the node proc
+    except:
+        pass
+>>>>>>> 05e3ec3...  - Tentative fix bdd tests
 
 
 @pytest.fixture
