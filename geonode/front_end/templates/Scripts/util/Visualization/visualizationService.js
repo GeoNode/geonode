@@ -190,8 +190,21 @@
                     case visualizationTypes.chart:
                         layerRepository.getColumnValues(layer.getId(), config.chartSizeAttributeId)
                         .success(function(data) {
-                            var sld = sldGenerator.getChartSld(config, data.values);
-                            q.resolve(sld);
+                            var selectedAttributes = _.filter(config.chartAttributeList, function (attribute) { 
+                                return attribute.checked == true;
+                            });
+                            var selectedAttributeIds = _.map(selectedAttributes, function(item){ return item.numericAttribute.Id;});
+                            if (selectedAttributes.length == 0) {
+                                q.resolve("");
+                            }
+                            else{
+                                var attributeValues = data.values;
+                                layerRepository.getColumnMinMaxValues(layer.getId(), selectedAttributeIds)
+                                .then(function(data){
+                                    var sld = sldGenerator.getChartSld(config, attributeValues, data.data);
+                                    q.resolve(sld);
+                                });
+                            }
                         });
                         break;
                         //return saveChartProperties(config, layer);

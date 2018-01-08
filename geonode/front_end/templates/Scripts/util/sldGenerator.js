@@ -146,13 +146,15 @@
             return template;
         }
 
-        function getChartDataString(selectedAttributes,config) {
+        function getChartDataString(selectedAttributes,config, selectedAttributesMinMax) {
             var chartDataString = "chd=t:";
             var seriesColor = "chco=";
+            var scaleDataString = 'chds=';
             for (var index in selectedAttributes) {
 
                 var attrId = selectedAttributes[index].numericAttribute.Id;
                 chartDataString += "${" + attrId + "}";
+                scaleDataString += selectedAttributesMinMax[attrId].join()+',';
 
                 seriesColor += selectedAttributes[index].attributeColor.slice(1);
 
@@ -163,7 +165,7 @@
                 }
             }
             return {
-                chartDataString: chartDataString,
+                chartDataString: chartDataString+'&amp;'+scaleDataString,
                 seriesColor:seriesColor
             };
         }
@@ -189,12 +191,12 @@
             },
             getLabelingSld: getLabelSld,
             getClassificationConditionalSld: getConditionalTemplate,
-            getChartSld: function (config,sizeAttributeVaues) {
+            getChartSld: function (config,sizeAttributeVaues, selectedAttributesMinMax) {
                 var selectedAttributes = _.filter(config.chartAttributeList, function (attribute) { return attribute.checked == true });
                 if (selectedAttributes.length == 0) {
                     return "";
                 }
-                var chartProperties = getChartDataString(selectedAttributes,config);
+                var chartProperties = getChartDataString(selectedAttributes,config, selectedAttributesMinMax);
                 var chartSizeString = getChartSizeString(config,sizeAttributeVaues);
                 return formatString(sldTemplateService.chartSld(config, chartProperties.chartDataString, chartProperties.seriesColor, chartSizeString));
             },

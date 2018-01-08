@@ -86,6 +86,13 @@
                 // }));
                 return $http.get("/layers/"+layerId+"/unique-value-for-attribute/"+attributeId+"/");
             },
+            getColumnMinMaxValues: function(layerId, attributeIds) {
+                var attributeQueryString = _.map(attributeIds, function(item){ 
+                    return 'attributes='+item;
+                }).join("&");
+                var url = '/layers/'+layerId+'/range-value-for-attribute/?' + attributeQueryString;
+                return $http.get(url);
+            },
             getAttributeGridData: function(dataRetrievalInfo, surfLayer) {
                 return surfFeatureFactory.getFeatureFromUrl(urlResolver.resolveGeoServer('wfs', dataRetrievalInfo), surfLayer);
             },
