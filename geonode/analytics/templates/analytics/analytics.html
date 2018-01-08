@@ -11,17 +11,17 @@
     </div>
     <div class="row">
         <div class="col-md-2">&nbsp;</div>
-        <div class="col-md-2 analytics-box">
+        {% comment %}<div class="col-md-2 analytics-box">
             <h3 class="text-center">58%</h3>
             <p class="text-center">Bounce Rate</p>
         </div>
-        <div class="col-md-1">&nbsp;</div>
-        <div class="col-md-2 analytics-box" data-toggle="modal" data-target=".map-loads-modal" title="Click to get the detail!">
+        <div class="col-md-1">&nbsp;</div>{% endcomment %}
+        <div class="col-md-3 analytics-box" data-toggle="modal" data-target=".map-loads-modal" title="Click to get the detail!">
             <h3 class="text-center">{{ map_loads }}</h3>
             <p class="text-center">Map Loads</p>
         </div>
-        <div class="col-md-1">&nbsp;</div>
-        <div class="col-md-2 analytics-box" data-toggle="modal" data-target=".pin-point-activities-modal" title="Click to get the detail!">
+        <div class="col-md-2">&nbsp;</div>
+        <div class="col-md-3 analytics-box" data-toggle="modal" data-target=".pin-point-activities-modal" title="Click to get the detail!">
             <h3 class="text-center">{{ average_activity_load }}</h3>
             <p class="text-center">Avg. Activities / Load</p>
         </div>
@@ -32,17 +32,17 @@
     </div>
     <div class="row">
         <div class="col-md-2">&nbsp;</div>
-        <div class="col-md-2 analytics-box">
+        {% comment %}<div class="col-md-2 analytics-box">
             <h3 class="text-center">2</h3>
             <p class="text-center">Avg. Visitor Duration (min)</p>
         </div>
-        <div class="col-md-1">&nbsp;</div>
-        <div class="col-md-2 analytics-box" data-toggle="modal" data-target=".average-layer-load-modal" title="Click to get the detail!">
+        <div class="col-md-1">&nbsp;</div>{% endcomment %}
+        <div class="col-md-3 analytics-box" data-toggle="modal" data-target=".average-layer-load-modal" title="Click to get the detail!">
             <h3 class="text-center">{{ average_layer_load }}</h3>
             <p class="text-center">Avg. Layer Load (sec)</p>
         </div>
-        <div class="col-md-1">&nbsp;</div>
-        <div class="col-md-2 analytics-box" data-toggle="modal" data-target=".pin-point-activities-modal" title="Click to get the detail!">
+        <div class="col-md-2">&nbsp;</div>
+        <div class="col-md-3 analytics-box" data-toggle="modal" data-target=".pin-point-activities-modal" title="Click to get the detail!">
             <h3 class="text-center">{{ zooms }}</h3>
             <p class="text-center">Zooms</p>
         </div>
