@@ -879,8 +879,7 @@ button:focus
 
 .modal-close-icon:hover
 {
-    color: white;
-    font-size: 18px;
+    color:#222222;
     cursor: pointer;
 }
 

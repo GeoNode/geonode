@@ -225,12 +225,6 @@
         content: "✖";
     }
 
-    .fullScreenModal {
-        height: 80%;
-        left: 0;
-        margin: 0 auto;
-        width: 80%;
-    }
     .modal .header {
         background-color: #f3f3f3;
         border-bottom: 1px solid #d0d0d0;
@@ -242,39 +236,38 @@
         vertical-align: bottom;
     }
     .file-browser-button-container button {
-        background: rgba(0, 0, 0, 0) linear-gradient(to bottom, rgb(253, 253, 253) 0%, rgb(160, 160, 160) 100%) repeat scroll 0 0;
-        border: 1px solid #414141;
+        background-color: #3896e2;
+        border: 1px solid #297bb9;
         border-radius: 4px;
-        box-shadow: 0 2px 2px 0 rgb(187, 187, 187);
-        color: #333;
+        color: #fff;
         cursor: pointer;
         font-size: 15px;
         height: 55px;
         padding: 10px;
     }
     .file-browser-button-container button:hover {
-        background: rgba(0, 0, 0, 0) linear-gradient(to bottom, rgb(209, 209, 209) 0%, rgb(140, 140, 140) 100%) repeat scroll 0 0;
+        background-color: #41a3f7;
         color: #fff;
     }
     .file-browser-button-container button:hover i {
-        color: #c61c20;
+        color: #f7de03;
     }
     .file-browser-button-container button i {
-        color: #538590;
+        color: #fff;
         display: block;
         font-size: 20px;
     }
     .file-browser-button-container button[disabled="disabled"] {
-        background: #b5b5b5 none repeat scroll 0 0;
-        border: 1px solid #9b9b9b;
-        color: #8a8a8a;
+        background: #d0e7f9 none repeat scroll 0 0;
+        border: 1px solid #97aec0;
+        color: #97aec0;
     }
     .file-browser-button-container button[disabled="disabled"] i {
-        color: #8a8a8a;
+        color: #97aec0;
     }
     .file-browser-button-container {
-        background: rgba(0, 0, 0, 0) linear-gradient(to bottom, rgb(190, 190, 190) 0%, rgb(141, 141, 141) 100%) repeat scroll 0 0;
-        border-bottom: 1px solid #505050;
+        
+        border-bottom: 1px solid #e5e5e5;
         border-top-left-radius: 8px;
         border-top-right-radius: 8px;
         padding: 10px;
@@ -312,7 +305,7 @@
         padding: 0;
     }
     .folder-list li.folder-selected {
-    background-color: green;
+    background-color:#3896e2;
     }
     .folder-list li.folder-selected span {
 
@@ -357,11 +350,10 @@
         right: 200px;
     }
     .fullScreenModal {
-        height: 80%;
         left: 0;
         margin: 0 auto;
-        position: absolutefullScreenModal;
-        width: 70%;
+        position: absolute;
+        width: 100%;
     }
     .attributeGridModal {
         left: 0;
@@ -442,6 +434,11 @@
       {
           border-radius: 0;
       }
+      .modal-content{
+          min-height: 500px;
+      }
+      
+
       
     
 
