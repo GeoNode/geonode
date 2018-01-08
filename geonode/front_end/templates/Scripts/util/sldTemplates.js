@@ -479,6 +479,11 @@ appModule.factory('sldTemplateService', [function() {
                 '<FeatureTypeStyle>' +
                 '<Rule>' +
                 '<PointSymbolizer>' +
+                '<Geometry>'+
+                '<ogc:Function name="centroid">'+
+                '  <ogc:PropertyName>the_geom</ogc:PropertyName>'+
+                '</ogc:Function>'+
+                '</Geometry>'+
                 '<Graphic>' +
                 '<ExternalGraphic>' +
                 '<OnlineResource xlink:href="http://chart?cht=' +
