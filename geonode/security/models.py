@@ -36,6 +36,7 @@ from django.contrib.auth import get_user_model
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.auth import login
 from django.contrib.auth.models import Group, Permission
+from django.core.exceptions import ObjectDoesNotExist
 from django.conf import settings
 from guardian.utils import get_user_obj_perms_model
 from guardian.shortcuts import assign_perm, get_groups_with_perms
@@ -325,7 +326,7 @@ def set_geofence_all(instance):
     try:
         workspace = _get_layer_workspace(resource.layer)
         logger.debug("going to work in workspace {!r}".format(workspace))
-    except (AttributeError, RuntimeError):
+    except (ObjectDoesNotExist, AttributeError, RuntimeError):
         # This is either not a layer (if raised AttributeError) or it is
         # a layer that is not manageable by geofence (if raised
         # RuntimeError) so we have nothing to do
@@ -413,7 +414,7 @@ def set_geofence_owner(instance, username=None, view_perms=False, download_perms
     resource = instance.get_self_resource()
     try:
         workspace = _get_layer_workspace(resource.layer)
-    except (AttributeError, RuntimeError):
+    except (ObjectDoesNotExist, AttributeError, RuntimeError):
         # resource is either not a layer (if raised AttributeError) or
         # a layer that is not manageable by geofence (if raised
         # RuntimeError) so we have nothing to do
@@ -446,7 +447,7 @@ def set_geofence_group(instance, groupname, view_perms=False,
     resource = instance.get_self_resource()
     try:
         workspace = _get_layer_workspace(resource.layer)
-    except (AttributeError, RuntimeError):
+    except (ObjectDoesNotExist, AttributeError, RuntimeError):
         # resource is either not a layer (if raised AttributeError) or
         # a layer that is not manageable by geofence (if raised
         # RuntimeError) so we have nothing to do
@@ -548,7 +549,7 @@ def remove_object_permissions(instance):
                             e = Exception(msg)
                             logger.debug("Response [{}] : {}".format(r.status_code, r.text))
                             raise e
-        except RuntimeError:
+        except (ObjectDoesNotExist, RuntimeError):
             pass  # This layer is not manageable by geofence
         except Exception:
             tb = traceback.format_exc()
