@@ -41,11 +41,10 @@
 
 <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?v=3.exp&key=AIzaSyBvbT4Izaq1XXNZr5dGEAwZ-K752P9CJ84&libraries=places"></script>
 
-<script type="text/javascript" src="https://docs.handsontable.com/0.18.0/bower_components/handsontable/dist/handsontable.full.js"></script>
+<!-- <script type="text/javascript" src="https://docs.handsontable.com/0.18.0/bower_components/handsontable/dist/handsontable.full.js"></script> -->
 <link rel="stylesheet" type="text/css" type="text/css" rel="stylesheet" href="https://docs.handsontable.com/0.18.0/bower_components/handsontable/dist/handsontable.full.min.css">
 
 <!-- <script src="{{ STATIC_URL }}.components/angular/angular.min.js"></script> -->
-<script src="{{ STATIC_URL }}.components/abdmob/x2js/xml2json.js"></script>
 <script src="{{ STATIC_URL }}Scripts/lib/colors.min.js"></script>
 <script src="{{ STATIC_URL }}Scripts/lib/bootstrap-colorpicker-module.js"></script>
 <script src="{{ STATIC_URL }}Scripts/lib/sortable.js"></script>
@@ -325,7 +324,7 @@
                                                <set-marker></set-marker>
                                            </li>
                                            <li>
-                                            <button class="control-button icon" ng-click="action.drawCircle()">Draw Circle</button>
+                                            <button class="control-button icon" ng-click="action.drawCircle()" title="Draw Circle"><i class="fa fa-circle-o" aria-hidden="true"></i>                                            </button>
                                         </li>
                                            <li class="divider-vertical" draft-only></li>
                                            <li draft-only>
@@ -529,3 +528,4 @@
        </div>
    </div>
    {% endblock %} {% block footer %}{% endblock %}
+   

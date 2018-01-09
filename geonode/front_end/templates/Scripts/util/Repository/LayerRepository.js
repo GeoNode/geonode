@@ -2,7 +2,6 @@
     '$http', 'urlResolver', 'dirtyManager', '$window', 'surfFeatureFactory', '$q', '$window', '$cookies',
     function($http, urlResolver, dirtyManager, $window, surfFeatureFactory, $q, $window, $cookies) {
         return {
-
             getFids: function(layerId) {
                 return $http.get(urlResolver.resolveLayer('GetFids', { layerId: layerId }));
             },
@@ -15,7 +14,6 @@
                 });
             },
             saveProperties: function(id, layerId, layerName, zoomLevel, properties, sldStyle, selectionStyleSld, labelingSld, callBack) {
-                //old
                 if (properties.hasOwnProperty('$isNew'))
                     delete properties.$isNew;
                 return $http.put('/layers/style/' + id + '/', {
@@ -38,7 +36,6 @@
                 });
             },
             createProperties: function(layerId, layerName, zoomLevel, properties, sldStyle, selectionStyleSld, labelingSld, callBack) {
-                //old
                 if (properties.hasOwnProperty('$isNew'))
                     delete properties.$isNew;
                 return $http.post('/layers/' + layerName + '/style/', {
@@ -60,19 +57,6 @@
                     }
                 });
             },
-            // saveProperties: function(layerId, layerName, zoomLevel, properties, sldStyle, selectionStyleSld, labelingSld, callBack) {
-            //     //new
-            //     return $http.put('/gs/rest/styles/' + properties.Name + '.xml', sldStyle, {
-            //         headers: {
-            //             'X-CSRFToken': $cookies.get('csrftoken')
-            //         }
-            //     }).success(function() {
-            //         dirtyManager.setDirty(true);
-            //         if (callBack) {
-            //             callBack();
-            //         }
-            //     });
-            // },
             getAttributeValues: function(layerId, attributeId) {
                 return $http.get(urlResolver.resolveClassification('GetAttributeValues', {
                     layerId: layerId,
@@ -106,17 +90,6 @@
                     resultType: 'hits' 
                 }));
             },
-            // saveClassifierDefinitions: function(layerId, classifierDefinitions, sldStyle, defaultStyleConditionalSld) {
-            //     return $http.post(urlResolver.resolveClassification('SaveClassifierDefinitions'), {
-            //         layerId: layerId,
-            //         classifierDefinitions: classifierDefinitions ? angular.toJson(classifierDefinitions) : null,
-            //         attributeId: classifierDefinitions.selectedField,
-            //         sldStyle: sldStyle,
-            //         defaultStyleConditionalSld: defaultStyleConditionalSld
-            //     }).success(function() {
-            //         dirtyManager.setDirty(true);
-            //     });
-            // },
             updateLayerExtent: function(surfLayer) {
                 return $http.get(urlResolver.resolveCatalog('GetDataExtent', { dataId: surfLayer.DataId })).success(function(layerExtent) {
                     surfLayer.setMapExtent(layerExtent);
@@ -177,17 +150,17 @@
                         resolve(res.data);
                     }, function(res) {
                         reject(res);
-                    })
+                    });
                 });
             },
             getLayers: function(url) {
                 // http://172.16.0.237:8000/proxy/?url=http%3A%2F%2F172.16.0.247%3A8080%2Fgeoserver%2Fwms%3Faccess_token%3D9df608bcabe911e7a833080027252357%26SERVICE%3DWMS%26REQUEST%3DGetCapabilities%26TILED%3Dtrue%26AcceptFormats%3D
 
-                var x2js = new X2JS();
-
                 return $q(function(resolve, reject) {
                     $http.get('/proxy/?url=' + encodeURIComponent(url)).then(function(res) {
-                        resolve(x2js.xml_str2json(res.data));
+                        var formatter = new ol.format.WMSCapabilities();
+                        var obj = formatter.read(res.data);
+                        resolve(obj.Capability.Layer.Layer);
                     }, function(res) {
                         reject(res);
                     });

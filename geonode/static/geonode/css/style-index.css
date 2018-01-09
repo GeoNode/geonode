@@ -178,7 +178,8 @@
 }
 #gd-featurd-maps .gd-featurd-maps-content .gd-featurd-maps-container {
     /*background: #FFF; */
-    background: #f7f7f7;
+    background: #fbfbfb;
+    border: 1px solid #fff;
     border-radius: 3px;
     margin-bottom: 20px;
     padding-top: 22px;
@@ -237,6 +238,8 @@
 #gd-featurd-maps .gd-featurd-maps-content-dash .gd-featurd-maps-container-dash .contents {
     padding: 15px;
     background-color: #aedaee;
+    border-bottom-left-radius: 7px;
+    border-bottom-right-radius: 7px;
 }
 #gd-featurd-maps .gd-featurd-maps-content .gd-featurd-maps-container .contents .title{
     text-align: center;

@@ -116,3 +116,10 @@ CATALOGUE = {
 
 # Default preview library
 #LAYER_PREVIEW_LIBRARY = 'geoext'
+
+#setting for token expiration of api
+OAUTH2_PROVIDER = {
+        'ACCESS_TOKEN_EXPIRE_SECONDS': 180,
+        'OAUTH_SINGLE_ACCESS_TOKEN': True,
+        'OAUTH_DELETE_EXPIRED': True
+ }

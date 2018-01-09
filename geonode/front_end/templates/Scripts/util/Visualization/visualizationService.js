@@ -1,4 +1,4 @@
-﻿appModule.factory('visualizationService', ['urlResolver', 'layerRepository', 'sldGenerator', 'sldTemplateService', 'layerStyleGenerator', 'layerRenderingModeFactory', 'dirtyManager', 'interactionHandler', 'mapModes', 'utilityService', '$q',
+appModule.factory('visualizationService', ['urlResolver', 'layerRepository', 'sldGenerator', 'sldTemplateService', 'layerStyleGenerator', 'layerRenderingModeFactory', 'dirtyManager', 'interactionHandler', 'mapModes', 'utilityService', '$q',
     function (urlResolver, layerRepository, sldGenerator, sldTemplateService, layerStyleGenerator, layerRenderingModeFactory, dirtyManager, interactionHandler, mapModes, utilityService, $q) {
         var visualizationFolder = "Content/visualization/";
         var visualizationTypes = { heatmap: 'Heatmap', weightedPoint: 'Weighted Point', choropleth: 'Choropleth', rasterBand: 'Raster Band', chart:'Chart' };
