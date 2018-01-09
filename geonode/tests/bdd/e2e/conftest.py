@@ -19,6 +19,7 @@
 #########################################################################
 
 import os
+import signal
 from urlparse import urljoin
 
 import pytest
