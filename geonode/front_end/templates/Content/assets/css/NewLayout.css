@@ -1073,3 +1073,9 @@ input:focus:invalid:focus, textarea:focus:invalid:focus, select:focus:invalid:fo
     border: 1px solid #000;
     padding: 10px;
 }
+.fixed-table-container-inner
+{
+    height: 250px;
+    overflow-y: auto;
+    border: 1px solid #ccc;
+}
