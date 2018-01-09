@@ -1,40 +1,55 @@
 ﻿<div class="mini-dialog visualization-window">
-    <div class="modal-header">
-        <h3>Visualization</h3>
-    </div>
-    <div class="modal-body">
-        <div style="text-align: center; background-color: #f5f5f5; padding: 5px; margin: -14px -14px 10px; border-bottom: 1px solid #fff">
-            <select style="margin-bottom: 0" ng-model="option.selected" ng-options="setting as setting.name for setting in settings" ng-change="setSelectedAttribute()">
+   
+        <div class="form-horizontal">
+                
+            <div class="form-group" style="padding: 15px 0;border-bottom:1px solid #eee;padding-bottom:10px;">
+
+        <label class="col-md-5" style="width: 100px;">Visualization </label>
+        <div class="col-md-7" style="width: 150px;">
+        <select class="form-control" ng-model="option.selected" ng-options="setting as setting.name for setting in settings" ng-change="setSelectedAttribute()">
                 <option value="">--None--</option>
             </select>
-        </div>
+            </div>
+</div>
+</div>
+          
+      
+   
+    <div class="modal-body">
+       
+            
+        <div class="form-horizontal">  
 
-    <div class="row" ng-if="(option.selected.name != visualizationTypes.rasterBand && option.selected.name != visualizationTypes.chart)&&  option.selected">
-        <div class="col-md-2" style="text-align: right">Attribute: </div>
-        <div class="col-md-2">
-            <select class="input-medium" ng-model="option.selected.attributeId"
+    <div class="form-group" ng-if="(option.selected.name != visualizationTypes.rasterBand && option.selected.name != visualizationTypes.chart)&&  option.selected">
+        <label class="col-md-2" style="text-align: right">Attribute: </label>
+        <div class="col-md-5">
+            <select class="form-control" ng-model="option.selected.attributeId"
                     ng-init="setSelectedAttribute()"
                     ng-options="attribute.Id as attribute.Name for attribute in numericAttributes"></select>
         </div>
     </div>
 
-    <div class="row" ng-if="option.selected.name == visualizationTypes.chart && option.selected">
-        <div class="col-md-2" style="text-align: right">Chart Type: </div>
-        <div class="col-md-2">
-            <select class="input-medium" ng-model="option.selected.chartId"
+    <div class="form-group" ng-if="option.selected.name == visualizationTypes.chart && option.selected">
+        <label class="col-md-2" style="text-align: right">Chart Type: </label>
+        <div class="col-md-5">
+            <select class="form-control" ng-model="option.selected.chartId"
                     ng-init="initializeAttributeListItemForChart()"
                     ng-options="chart.value as chart.name for chart  in service.chartTypes"></select>
         </div>
     </div>
 
-        <div class="row" ng-if="option.selected.name == visualizationTypes.chart && option.selected">
-            <div class="col-md-2" style="text-align: right">Chart Size Attribute: </div>
-            <div class="col-md-2">
-                <select class="input-medium" ng-model="option.selected.chartSizeAttributeId"
+        <div class="form-group" ng-if="option.selected.name == visualizationTypes.chart && option.selected">
+            <label class="col-md-2" style="text-align: right">Chart Size Attribute: </label>
+            <div class="col-md-5">
+                <select class="form-control" ng-model="option.selected.chartSizeAttributeId"
                         ng-init="setSelectedChartSizeAttribute()"
                         ng-options="attribute.Id as attribute.Name for attribute in numericAttributes"></select>
             </div>
         </div>
+
+        </div>
+
+
 
     <div class="row span3" ng-if="option.selected.name == visualizationTypes.chart && option.selected">
         <div class="panel panel-default" style="margin-bottom: 0">
@@ -47,15 +62,15 @@
             <div class="panel-body" style="padding: 5px; min-height: 163px;">
                <!-- <ul class="nav-stacked" style="margin-bottom: 0; max-height: 165px; min-height: 165px; overflow-y: auto; margin-left: 0">-->
                     <!--<div ng-if="flags.PropertyData.length == 0" class="alert" ng-show="!isLoading()">No item</div>-->
-                    <table>
-                        <tr ng-repeat="item in option.selected.chartAttributeList" class="list-group-item active" style="white-space: nowrap;">
-                            <td>
+                    <table style="width: 500px;">
+                        <tr ng-repeat="item in option.selected.chartAttributeList" class="list-group-item" style="white-space: nowrap;">
+                            <td style="width: 125px;">
                                 <input type="checkbox" ng-model="item.checked" style="margin-top: 0;" />
                                 {{item.numericAttribute.Name}}
                             </td>
                             <!--<span class="style-editor color">-->
                             <td class="style-editor color"> <input type="text" ng-model="item.attributeColor" color-code-validator /></td>
-                            <td ><button type="button" ng-style="{'background-color': item.attributeColor}" colorpicker class="colorpicker-btn" draft-only ng-model="item.attributeColor"></button></td>
+                            <td ><button type="button" style="margin-left: 10px;" ng-style="{'background-color': item.attributeColor}" colorpicker class="colorpicker-btn" draft-only ng-model="item.attributeColor"></button></td>
                             <!--</span>-->
                         </tr>
                     </table>
