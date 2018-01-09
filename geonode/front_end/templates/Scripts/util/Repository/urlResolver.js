@@ -1,9 +1,10 @@
 ﻿repositoryModule.factory('urlResolver', ['$location', function($location) {
-    var geoserverRoot = null;
+    var geoserverRoot = 'http://localhost:8123/';
     var geoserverTileRoot = null;
 
     function resolve(controller, action, params) {
         window.urlRoot = 'api/';
+        //window.urlRoot = '';
         var url = window.urlRoot + controller + "/" + action;
 
         url = addParams(url, params);
@@ -42,11 +43,16 @@
     }
 
     function resolveGeoServer(service, params) {
+        //window.urlRoot = '';
+        
         params = params || {};
         if (window.isProxyEnabled) {
             return addParams(geoserverRoot + service, params);
         }
-        return resolve('GeoServerGateway', service, params);
+        //return resolve('GeoServerGateway', service, params);
+        var url = geoserverRoot + 'geoserver' + "/" + service;
+        url = addParams(url, params);
+        return url;
     }
 
     return {

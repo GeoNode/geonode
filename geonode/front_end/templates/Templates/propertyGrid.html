@@ -1,15 +1,15 @@
 ﻿<div class="propertygrid-wrapper" ng-if="hasFeature()">
     <div class="layer-buttons">
-        <button draft-only ng-if="!isReadonly() && getProperties().length > 0" ng-click="toggleAttributeEditableState()"
+        <!-- <button draft-only ng-if="!isReadonly() && getProperties().length > 0" ng-click="toggleAttributeEditableState()"
             class="btn attribute-locker"
             ng-class="{'btn-success':isAttributeEditable(), 'btn-danger':!isAttributeEditable()}"
             ng-attr-title="{{!isAttributeEditable() && 'Enable attribute editing mode' || 'Disable attribute editing mode'}}">
             <i class="fa" ng-class="{'fa-lock':!isAttributeEditable(), 'fa-unlock':isAttributeEditable()}"></i>
         </button>
-        <button draft-only ng-click="showProperties(2)" class="icon icon24 properties"></button>
+        <button draft-only ng-click="showProperties(2)" class="icon icon24 properties"></button> -->
 
-        <button ng-if="!isReadonly() && isAttributeEditable()" ng-click="redo()" title="redo" ng-disabled="!enableRedo()" class="icon icon24 icon-redo-small pull-right" draft-only></button>
-        <button ng-if="!isReadonly() && isAttributeEditable()" ng-click="undo()" title="undo" ng-disabled="!enableUndo()" class="icon icon24 icon-undo-small pull-right" draft-only></button>
+        <!-- <button ng-if="!isReadonly() && isAttributeEditable()" ng-click="redo()" title="redo" ng-disabled="!enableRedo()" class="icon icon24 icon-redo-small pull-right" draft-only></button>
+        <button ng-if="!isReadonly() && isAttributeEditable()" ng-click="undo()" title="undo" ng-disabled="!enableUndo()" class="icon icon24 icon-undo-small pull-right" draft-only></button> -->
         <button ng-click="prev()" class="icon icon24 icon-undo-small" title="previous feature"></button>
         <span>{{selectFeatureTool.selectedIndex + 1}} of {{selectFeatureTool.featuresData.length}}</span>
         <button ng-click="next()" class="icon icon24 icon-redo-small" title="next feature"></button>

@@ -3,7 +3,7 @@
         <li>
             <h5><i ng-if="!mapService.isEmpty()" ng-click="rootNode.isExpanded = !rootNode.isExpanded" style="cursor: pointer" ng-class="{'fa-caret-right':!rootNode.isExpanded, 'fa-caret-down':rootNode.isExpanded}" class="fa fa-fw"></i>&nbsp;&nbsp;Layers</h5>
             <div class="scrollable-pane">
-                <ul ui-sortable="sortableOptions" ng-model="mapService.sortableLayers" style="list-style: none; padding-bottom: 10px !important; margin-left: 0 !important;">
+                <ul ui-sortable="sortableOptions" ng-model="mapService.sortableLayers" style="list-style: none; padding-bottom: 10px !important; margin-left: 0 !important;padding-left:0">
 
                     <li ng-dblclick="showProperties(0)" ng-repeat="layer in mapService.sortableLayers" ng-show="rootNode.isExpanded" class="tree-node" style="margin: 0">
                         <table style="cursor: pointer; width: 100%" ng-click="activeLayerTool.setActiveLayer(layer.getId())" ng-class="{'tree-node-selected':activeLayerTool.getActiveLayer() == layer}">

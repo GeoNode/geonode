@@ -40,11 +40,13 @@ function catalogBrowserController($scope, $rootScope, $modal, catalogDataService
         name: 'Geoserver',
         url: $window.GeoServerHttp2Root + 'wms',
         type: 'wms'
-    }, {
-        name: 'geodata.nationaalgeoregister',
-        url: 'https://geodata.nationaalgeoregister.nl/bestuurlijkegrenzen/wms',
-        type: 'wms'
-    }];
+    }, 
+    // {
+    //     name: 'geodata.nationaalgeoregister',
+    //     url: 'https://geodata.nationaalgeoregister.nl/bestuurlijkegrenzen/wms',
+    //     type: 'wms'
+    // }
+];
 
     $scope.loadLayers = function(server) {
         $scope.selectedServerName = server.name;

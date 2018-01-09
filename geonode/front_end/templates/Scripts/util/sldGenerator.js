@@ -150,22 +150,26 @@
             var chartDataString = "chd=t:";
             var seriesColor = "chco=";
             var scaleDataString = 'chds=';
+            var labelString = 'chl=';
             for (var index in selectedAttributes) {
 
                 var attrId = selectedAttributes[index].numericAttribute.Id;
                 chartDataString += "${" + attrId + "}";
-                scaleDataString += selectedAttributesMinMax[attrId].join()+',';
+                labelString += attrId;
+                scaleDataString += selectedAttributesMinMax[attrId].join();
 
                 seriesColor += selectedAttributes[index].attributeColor.slice(1);
 
                 if (index != selectedAttributes.length - 1) {
-                    var seriesDataSeparator = config.chartId == 'bvg' ? '|' : ',';
+                    var seriesDataSeparator = config.chartId == 'p' ? ',' : '|';
                     chartDataString += seriesDataSeparator;
+                    labelString += '|';
+                    scaleDataString += ',';
                     seriesColor += ",";
                 }
             }
             return {
-                chartDataString: chartDataString+'&amp;'+scaleDataString,
+                chartDataString: chartDataString+'&amp;'+scaleDataString+'&amp;'+labelString,
                 seriesColor:seriesColor
             };
         }

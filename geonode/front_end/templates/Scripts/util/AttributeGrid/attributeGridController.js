@@ -95,8 +95,11 @@
             loadGridDataFromServer($scope.pagination.currentPage, stopLoading, stopLoading);
 
             attributeGridService.getNumberOfFeatures(surfLayer.DataId).success(function (numberOfFeatures) {
-                $scope.pagination.totalItems = numberOfFeatures;
+                //$scope.pagination.totalItems = numberOfFeatures;
+                $scope.pagination.totalItems = Number($(numberOfFeatures)[1].attributes.numberoffeatures.value);
+                
             }).error(function () {
+                //$scope.pagination.totalItems = 100;
                 $scope.gridData.attributeDefinitions = [];
             });
         }
@@ -110,7 +113,7 @@
                 startIndex: startIndex,
                 count: currentPageSize,
                 maxFeatures: currentPageSize,
-                sortBy: $scope.sorting.predicate ? $scope.sorting.predicate + ($scope.lastActiveHeader.isAccending ? "" : "+D") : surfLayer.IdColumn,
+                sortBy: $scope.sorting.predicate ? $scope.sorting.predicate + ($scope.lastActiveHeader.isAccending ? "" : "+D") : '',//surfLayer.IdColumn
                 version: '2.0.0',
                 outputFormat: 'GML2',
                 exceptions: 'application/json'
