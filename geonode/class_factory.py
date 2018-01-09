@@ -10,7 +10,7 @@ class ClassFactory(object):
         'boolean': models.BooleanField,
         'text': models.TextField,
         'smallint': models.SmallIntegerField,
-        'double precision': models.DecimalField,
+        'double precision': models.DecimalField
     }
     def __init__(self):
         super(ClassFactory, self).__init__()

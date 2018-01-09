@@ -53,7 +53,7 @@ appHelperModule.factory('attributeTypes', [
                 return type === 'date';
             },
             isTextType: function (type) {
-                return type === 'text';
+                return type === 'text' || type === 'string';
             },
             isCreatedAtType: function (type) {
                 return type === 'createdat';

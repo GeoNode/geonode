@@ -140,6 +140,7 @@
 <script src="{{ STATIC_URL }}Scripts/util/Map/MapModule.js"></script>
 <script src="{{ STATIC_URL }}Scripts/util/Map/featureService.js"></script>
 <script src="{{ STATIC_URL }}Scripts/util/Map/dataService.js"></script>
+<script src="{{ STATIC_URL }}Scripts/util/Map/utilityService.js"></script>
 <script src="{{ STATIC_URL }}Scripts/util/Visualization/visualizationService.js"></script>
 <script src="{{ STATIC_URL }}Scripts/util/Map/layerService.js"></script>
 <script src="{{ STATIC_URL }}Scripts/util/Map/mapService.js"></script>
@@ -252,21 +253,21 @@
                                <button class="icon add-layer " draft-only ng-disabled="isAttributeGridOn" ng-click="addBlankLayer()" title="Add Blank Layer"></button>
                                <button class="icon delete-layer" draft-only ng-click="deleteSelectedLayer()" ng-disabled="!enableRemove()" title="Remove active layer">
                                    </button>
-                               <button class="icon" ng-disabled="!enableZoom()" id="zoom-to-layer" ng-click="zoomToSelectedLayer()" title="Zoom to active layer">
+                               <!-- <button class="icon" ng-disabled="!enableZoom()" id="zoom-to-layer" ng-click="zoomToSelectedLayer()" title="Zoom to active layer">
                                        <i class="fa fa-search-plus" aria-hidden="true"></i>                                        
-                               </button>
-                               <button class="icon download" draft-only ng-click="downloadSelectedLayer()" ng-disabled="!enableDownload()" title="Download active layer's data">
-                                   </button>
+                               </button> -->
+                               <!-- <button class="icon download" draft-only ng-click="downloadSelectedLayer()" ng-disabled="!enableDownload()" title="Download active layer's data">
+                                   </button> -->
                                <button draft-only class="icon properties" ng-disabled="!enableProperties()" ng-click="showProperties(0)" title="Active layer properties">
                                    </button>
                                <button class="icon attribute-grid" ng-disabled="!enableAttributeGrid()" ng-click="showAttributeGrid()" title="Attribute grid">
                                    </button>
-                               <button draft-only class="icon icon-visualization" ng-disabled="!enableVisualization()" ng-click="showVisualizationWindow()" title="Visualization">
-                                   </button>
+                               <!-- <button draft-only class="icon icon-visualization" ng-disabled="!enableVisualization()" ng-click="showVisualizationWindow()" title="Visualization">
+                                   </button> -->
                            </div>
                            <div class="leftColumnContent">
-                               <button class="icon icon24 icon-download-project" draft-only style="width: 26px; height: 30px; float: right; margin: 0 5px 0 3px;" ng-click="downloadWorkingProject()" ng-disabled="!enableDownloadProject()" title="Download Map Data">
-                                   </button>
+                               <!-- <button class="icon icon24 icon-download-project" draft-only style="width: 26px; height: 30px; float: right; margin: 0 5px 0 3px;" ng-click="downloadWorkingProject()" ng-disabled="!enableDownloadProject()" title="Download Map Data">
+                                   </button> -->
                                <div class="projectName" style="height: 24px; line-height: 26px; cursor: default" ng-attr-title="[{ProjectName}]">
                                    Working Map: [{mapService.getMapName() || "Untitled"}]
 
@@ -296,14 +297,14 @@
                                        <location-search></location-search>
                                        <ul class="nav">
                
-                                           <li draft-only>
+                                           <!-- <li draft-only>
                                                <edit-toggle-button></edit-toggle-button>
                                            </li>
                                            <li class="divider-vertical" draft-only></li>
                                            <li>
                                                <geo-location-toggle-button></geo-location-toggle-button>
                                            </li>
-                                           <li class="divider-vertical" draft-only></li>
+                                           <li class="divider-vertical" draft-only></li> -->
                                            <li>
                                                <navigation-history-buttons></navigation-history-buttons>
                                            </li>
@@ -484,7 +485,7 @@
                        </div>
                    </div>
 
-                   <div class="feature-image-thumbnail-pane" ng-controller="imagePreviewController">
+                   <!-- <div class="feature-image-thumbnail-pane" ng-controller="imagePreviewController">
                        <div ng-if="hasFeature()">
                            <div class="featureImageHeader">
                                <button ng-if="!isReadonly()" class="btn btn-sm btn-primary" draft-only ng-click="openAttachModal()">
@@ -506,7 +507,7 @@
                                </slide>
                            </carousel>
                        </div>
-                   </div>
+                   </div> -->
                </div>
                <div ng-hide="layout.rightVisible">
                    <div class="titleBar nopadding">

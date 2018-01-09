@@ -1,5 +1,5 @@
-﻿appHelperModule.directive('visualizationLegend', ['mapTools',
-    function (mapTools) {
+﻿appHelperModule.directive('visualizationLegend', ['mapTools', 'utilityService',
+    function (mapTools, utilityService) {
         return {
             restrict: 'EA',
             templateUrl: '/static/Templates/visualizationLegend.html',
@@ -17,14 +17,38 @@
                     };
                     
                     $scope.canRenderLegend = function () {
+                        var canRender = false;
                         if ($scope.activeLayerTool) {
                             var activeLayer = $scope.activeLayerTool.getActiveLayer();
-                            return activeLayer.style && activeLayer.style.VisualizationSettings && activeLayer.getFeatureType() != 'raster'
-                                && activeLayer.style.VisualizationSettings.name == 'Choropleth' && activeLayer.IsVisible;
-                        } else {
-                            return false;
+                            canRender = activeLayer.Style && activeLayer.Style.VisualizationSettings && activeLayer.getFeatureType() != 'raster'
+                                && isLegendAllowed(activeLayer.Style.VisualizationSettings) && activeLayer.IsVisible;
                         }
+                        if(canRender){
+                            setupLegendItems();
+                        }
+                        return canRender;
                     };
+
+                    function setupLegendItems(){
+                        if($scope.model.visName == 'Chart'){
+                            chartSelectedAttributes();
+                        }
+                    }
+
+                    $scope.model = {
+                        visName: '',
+                        legendItems: []
+                    };
+
+                    function isLegendAllowed(config){
+                        $scope.model.visName = config.name;
+                        $scope.visConfig = config;
+                        return config.name === 'Chart';
+                    }
+
+                    function chartSelectedAttributes(){
+                        $scope.selectedAttributes = utilityService.getChartSelectedAttributes($scope.visConfig);
+                    }
                 }
             ]
         };

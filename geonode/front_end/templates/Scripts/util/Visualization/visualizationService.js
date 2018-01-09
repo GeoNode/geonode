@@ -1,5 +1,5 @@
-﻿appModule.factory('visualizationService', ['urlResolver', 'layerRepository', 'sldGenerator', 'sldTemplateService', 'layerStyleGenerator', 'layerRenderingModeFactory', 'dirtyManager', 'interactionHandler', 'mapModes', '$q',
-    function (urlResolver, layerRepository, sldGenerator, sldTemplateService, layerStyleGenerator, layerRenderingModeFactory, dirtyManager, interactionHandler, mapModes, $q) {
+appModule.factory('visualizationService', ['urlResolver', 'layerRepository', 'sldGenerator', 'sldTemplateService', 'layerStyleGenerator', 'layerRenderingModeFactory', 'dirtyManager', 'interactionHandler', 'mapModes', 'utilityService', '$q',
+    function (urlResolver, layerRepository, sldGenerator, sldTemplateService, layerStyleGenerator, layerRenderingModeFactory, dirtyManager, interactionHandler, mapModes, utilityService, $q) {
         var visualizationFolder = "Content/visualization/";
         var visualizationTypes = { heatmap: 'Heatmap', weightedPoint: 'Weighted Point', choropleth: 'Choropleth', rasterBand: 'Raster Band', chart:'Chart' };
 
@@ -65,20 +65,20 @@
                     ];
                 } else if (layer.ShapeType == 'polyline' || layer.ShapeType == 'polygon') {
                     return [
-                    {
-                        name: visualizationTypes.choropleth,
-                        attributeId: null,
-                        divisions: 5,
-                        style: null,
-                        algorithm: factory.choroplethAlgorithms[0].value,
-                    },
-                    {
-                        name: visualizationTypes.chart,
-                        chartId: factory.chartTypes[0].value,
-                        chartAttributeList: [],
-                        chartSizeAttributeId : null,
-                        isCheckedAllAttribute: false
-                }
+                        // {
+                        //     name: visualizationTypes.choropleth,
+                        //     attributeId: null,
+                        //     divisions: 5,
+                        //     style: null,
+                        //     algorithm: factory.choroplethAlgorithms[0].value,
+                        // },
+                        {
+                            name: visualizationTypes.chart,
+                            chartId: factory.chartTypes[0].value,
+                            chartAttributeList: [],
+                            chartSizeAttributeId : null,
+                            isCheckedAllAttribute: false
+                        }
                     ];
                 } else if (layer.ShapeType == 'geoTiff' || layer.ShapeType == 'geoPdf') {
                     var settings = {
@@ -132,6 +132,14 @@
                 {
                     name:'Bar Chart',
                     value:'bvg'
+                },
+                {
+                    name:'Horizontal Bar Chart',
+                    value:'bhg'
+                },
+                {
+                    name:'Stack Bar Chart',
+                    value:'bvs'
                 },
                 {
                     name: 'Pie Chart',
@@ -192,9 +200,7 @@
                     case visualizationTypes.chart:
                         layerRepository.getColumnValues(layer.getId(), config.chartSizeAttributeId)
                         .success(function(data) {
-                            var selectedAttributes = _.filter(config.chartAttributeList, function (attribute) { 
-                                return attribute.checked == true;
-                            });
+                            var selectedAttributes = utilityService.getChartSelectedAttributes(config);
                             var selectedAttributeIds = _.map(selectedAttributes, function(item){ return item.numericAttribute.Id;});
                             if (selectedAttributes.length == 0) {
                                 q.resolve("");

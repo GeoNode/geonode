@@ -82,7 +82,13 @@
             },
 
             getNumberOfFeatures: function(dataId) {
-                return $http.get(urlResolver.resolveCatalog('GetNumberOfFeatures', { dataId: dataId }));
+                return $http.get(urlResolver.resolveGeoServer('wfs', 
+                { 
+                    request:'GetFeature', 
+                    typeName: dataId,
+                    version: '1.1.0',
+                    resultType: 'hits' 
+                }));
             },
             updateLayerExtent: function(surfLayer) {
                 return $http.get(urlResolver.resolveCatalog('GetDataExtent', { dataId: surfLayer.DataId })).success(function(layerExtent) {

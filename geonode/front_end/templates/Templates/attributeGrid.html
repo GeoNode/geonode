@@ -22,7 +22,7 @@
         <div style="float: left;">
             Showing
             <select ng-model="pagination.itemsPerPage" ng-change="itemPerPageChanged()" ng-options="pageSize as pageSize for pageSize in pagination.pageSizes" style="width: 50px; height: 25px; padding: 1px; margin-bottom: 0;"></select>
-            of <b>{{pagination.totalItems}}</b> items
+            of <b>[{pagination.totalItems}]</b> items
         </div>
 
         <pagination first-text="<<" last-text=">>" previous-text="<" next-text=">" total-items="pagination.totalItems" page="pagination.currentPage" max-size="2" style="margin-bottom: 15px;" class="pagination-small" boundary-links="true" rotate="false" items-per-page="pagination.itemsPerPage" on-select-page="onPageSelect(page)"></pagination>
