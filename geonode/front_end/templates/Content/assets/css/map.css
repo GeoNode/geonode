@@ -296,7 +296,7 @@
     }
     .folder-list {
 
-        box-shadow: 0 1px 5px 0 rgba(0, 0, 0, 0.18);
+        
         margin:0 -15px;
     }
     .folder-list ul {
@@ -319,10 +319,13 @@
         cursor: pointer;
         display: block;
         margin-bottom: 1px;
-        padding: 5px;
+        padding: 10px 15px;
     }
     .folder-list li {
         list-style-type: none;
+    }
+    .folder-list li span i{
+       color: #41a3f7;
     }
     .file-properties {
         bottom: 0;
@@ -332,10 +335,12 @@
         width: 200px;
     }
     .file-container {
-        margin: 0 -15px;
+        margin: 0 -15px 0 -14px;
         overflow: auto;
-        padding: 20px;
+        padding: 15px;
         background-color: #f0f0f0;
+        height: 440px;
+        overflow-y: auto;
     }
     .file-container ul{
         list-style-type: none;
