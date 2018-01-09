@@ -1085,3 +1085,7 @@ input:focus:invalid:focus, textarea:focus:invalid:focus, select:focus:invalid:fo
 .modal.fade.image-previewer-dialog {
     top: 20%;
 }
+.btn-default
+{
+    border-radius: 2px;
+}
