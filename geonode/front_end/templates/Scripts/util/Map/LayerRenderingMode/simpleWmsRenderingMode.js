@@ -32,9 +32,10 @@
                 params.t = new Date().getMilliseconds();
                 olLayer.getSource().updateParams(params);
             };
-            this.update = function (stylesName) {
+            this.update = function (stylesName, isTiled) {
                 var params = olLayer.getSource().getParams();
                 params.STYLES = stylesName;
+                params.TILED = isTiled;
                 params.t = new Date().getMilliseconds();
                 olLayer.getSource().updateParams(params);
             };

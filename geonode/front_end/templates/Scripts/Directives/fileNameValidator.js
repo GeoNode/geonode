@@ -29,7 +29,8 @@
                     var length = fileName.length;
                     for (var i = 0; i < length; i++) {
                         var c = fileName[i];
-                        if (c == '/' || c == '\\' || c == '<' || c == '>' || c == ':' || c == '?' || c == '*' || c == '"' || c == '|') {
+                        //if (c == '/' || c == '\\' || c == '<' || c == '>' || c == ':' || c == '?' || c == '*' || c == '"' || c == '|') {
+                        if (c == '/' || c == '\\' || c == '<' || c == '>' || c == '?' || c == '*' || c == '"' || c == '|') {
                             surfToastr.error(appMessages.toastr.invalidFileNameCharacter(c), appMessages.toastr.invalidCharacterTitle());
                             return true;
                         }
