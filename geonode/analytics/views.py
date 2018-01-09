@@ -1,11 +1,8 @@
 from django.shortcuts import render
-from django.views.generic.base import TemplateView
+from django.views.generic.base import TemplateView, View
 from django.db.models import Avg
 
-from geonode.analytics.models.LayerLoad import LayerLoad
-from geonode.analytics.models.MapLoad import MapLoad
-from geonode.analytics.models.Visitor import Visitor
-from geonode.analytics.models.PinpointUserActivity import PinpointUserActivity
+from geonode.analytics.models import LayerLoad, MapLoad, Visitor, PinpointUserActivity
 import json
 
 # Create your views here.
@@ -19,11 +16,11 @@ class AnalyticsView(TemplateView):
         context = super(AnalyticsView, self).get_context_data(**kwargs)
 
         map_loads = MapLoad.objects.all()
-        context['map_loads_details'] = map_loads
+        #context['map_loads_details'] = map_loads
         context['map_loads'] = map_loads.count()
 
         pinpoint_activities = PinpointUserActivity.objects.all()
-        context['pinpoint_activities'] = pinpoint_activities
+        #context['pinpoint_activities'] = pinpoint_activities
         zooms = float(pinpoint_activities.filter(activity_type__contains='zoom').count())
         pans = float(pinpoint_activities.filter(activity_type='pan').count())
         clicks = float(pinpoint_activities.filter(activity_type='click').count())
@@ -70,7 +67,7 @@ class AnalyticsView(TemplateView):
 
         try:
             layer_loads = LayerLoad.objects.all()
-            context['layer_loads'] = layer_loads
+            # context['layer_loads'] = layer_loads
             average_layer_load = layer_loads.aggregate(Avg('layer_id'))
             average_layer_load = round(average_layer_load['layer_id__avg'] / 60, 2)
         except TypeError as e:
