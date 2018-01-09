@@ -114,14 +114,29 @@ You can now setup and start GeoNode::
 
 In case you want to be involved in static files development::
 
-    sudo apt-get install npm
-    sudo npm install
-    sudo npm install -g bower
-    sudo npm install -g grunt
+    # The following lines must be run only the first time
+    sudo apt-get install -y nodejs, npm
+
 
 Rebuild libraries through::
 
     cd geonode/static
+
+    # The following lines must be run only the first time
+    npm install --save-dev
+    npm install bower --save-dev
+    npm install grunt-cli --save-dev
+    npm install grunt-contrib-jshint --save-dev
+    npm install grunt-contrib-less --save-dev
+    npm install grunt-contrib-concat --save-dev
+    npm install grunt-contrib-copy --save-dev
+    npm install grunt-text-replace --save-dev
+    npm install grunt-contrib-uglify --save-dev
+    npm install grunt-contrib-cssmin --save-dev
+    npm install grunt-contrib-watch --save-dev
+    npm install -g grunt-cli
+
+    # Later you can just do the following
     bower cache clean
     bower update
     grunt production
