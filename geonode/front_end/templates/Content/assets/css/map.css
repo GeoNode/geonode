@@ -84,12 +84,12 @@
 
 .surfgis .base-map-switcher {
     
+    padding: 15px 20px;
     position: absolute;
     right: 8px;
     top: 95px;
-    width: 500px;
+    width: 460px;
     z-index: 2;
-    padding: 10px;
 }
 
     .surfgis .base-map-switcher .layers-list {
@@ -392,10 +392,10 @@
          list-style-type: none;
          margin: 0;
          padding: 0;
-         width: 480px;
+         width: 418px;
          display: inline-block;
-         padding: 5px 0 10px;
-         border-bottom: 1px solid #f1f1f1;
+         padding: 5px 0 11px;
+         border-bottom: 1px solid #e0e0e0;
       } 
       .base-map-list:last-child
       {
@@ -409,15 +409,17 @@
      .base-map-list li.name
      {
         font-size: 17px;
-        color:#b9b9b9;
+        color:#73757d;
         margin-right: 15px;
-        width: 170px;
+        width: 100px;
         line-height: 30px;
      } 
      .base-map-list li img
      {
       border: 1px solid #ccc;
-      border-radius: 4px;
+      border-radius: 2px;
+      position: absolute;
+      z-index: 1;
      } 
      .base-map-list li a
      {
@@ -427,8 +429,16 @@
      } 
      .base-map-list li a:hover
      {
-      opacity: 0.5;
+      opacity: 1;
+
      } 
+     .base-map-list li a:hover img
+     {
+        outline: 2px solid #3896e2;
+border-radius: 2px;
+     } 
+
+ 
      
       .btn-group-justified > .btn, .btn-group-justified > .btn-group
       {
