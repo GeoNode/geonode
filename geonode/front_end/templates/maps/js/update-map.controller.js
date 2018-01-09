@@ -18,8 +18,8 @@
                 var url = self.MapConfig.sources[layer.source].url;
                 if (url) {
                     layer.geoserverUrl = url;
+                    mapService.addDataLayer(oldLayerService.map(layer), false);
                 }
-                mapService.addDataLayer(oldLayerService.map(layer), false);
             });
         }
 
