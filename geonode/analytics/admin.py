@@ -3,10 +3,10 @@ from geonode.analytics.models import MapLoad, Visitor, LayerLoad, PinpointUserAc
 
 
 # Register your models here.
-admin.site.register(MapLoad.MapLoad)
+admin.site.register(MapLoad)
 
-admin.site.register(Visitor.Visitor)
+admin.site.register(Visitor)
 
-admin.site.register(LayerLoad.LayerLoad)
+admin.site.register(LayerLoad)
 
-admin.site.register(PinpointUserActivity.PinpointUserActivity)
+admin.site.register(PinpointUserActivity)

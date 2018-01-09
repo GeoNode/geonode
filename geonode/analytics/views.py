@@ -1,11 +1,8 @@
 from django.shortcuts import render
-from django.views.generic.base import TemplateView
+from django.views.generic.base import TemplateView, View
 from django.db.models import Avg
 
-from geonode.analytics.models.LayerLoad import LayerLoad
-from geonode.analytics.models.MapLoad import MapLoad
-from geonode.analytics.models.Visitor import Visitor
-from geonode.analytics.models.PinpointUserActivity import PinpointUserActivity
+from geonode.analytics.models import LayerLoad, MapLoad, Visitor, PinpointUserActivity
 import json
 
 # Create your views here.

@@ -1,8 +1,5 @@
 
-from geonode.analytics.models.MapLoad import MapLoad
-from geonode.analytics.models.Visitor import Visitor
-from geonode.analytics.models.LayerLoad import LayerLoad
-from geonode.analytics.models.PinpointUserActivity import PinpointUserActivity
+from geonode.analytics.models import MapLoad,Visitor,LayerLoad,PinpointUserActivity
 
 from geonode.layers.models import Layer
 from geonode.maps.models import Map
@@ -21,6 +18,7 @@ from rest_framework import status
 
 from rest_framework_gis.filters import InBBoxFilter
 
+from geonode.analytics.mixin import AnalyticsMixin
 # Create your views here.
 
 
@@ -142,3 +140,46 @@ class MapLoadCreateAPIView(APIView):
             return Response(status=status.HTTP_400_BAD_REQUEST)
 
         return Response(status=status.HTTP_200_OK)
+
+
+class MapListAPIView(AnalyticsMixin, ListAPIView):
+    """
+    Will send summary of Map activity
+    """
+    def get_queryset(self):
+        return MapLoad.objects.all().order_by('map', 'last_modified')
+
+    def get(self, request, **kwargs):
+        keys = ['map_id', 'last_modified_date', 'activity_type']
+        map_load_data = self.format_data(query=self.get_queryset(),extra_field=dict(activity_type='load'))
+        pin_point_data = self.format_data(model_instance=PinpointUserActivity, filters=dict(map_id__isnull=False))
+
+        results = self.get_analytics(map_load_data, keys) + self.get_analytics(pin_point_data, keys)
+
+        for r in results:
+            r.update(dict(name=Map.objects.get(id=r['map_id']).title))
+
+        return Response(data=results, status=status.HTTP_200_OK)
+
+
+class LayerListAPIView(AnalyticsMixin, ListAPIView):
+    """
+    Will send summary of Layer activity
+    """
+    def get_queryset(self):
+        return LayerLoad.objects.all().order_by('layer', 'last_modified')
+
+    def get(self, request, **kwargs):
+        keys = ['layer_id', 'last_modified_date', 'activity_type']
+
+        layer_load_data = self.format_data(query=self.get_queryset(),extra_field=dict(activity_type='load'))
+        pin_point_data = self.format_data(model_instance=PinpointUserActivity, filters=dict(layer_id__isnull=False))
+
+        results = self.get_analytics(layer_load_data, keys) + self.get_analytics(pin_point_data, keys)
+        
+        for r in results:
+            r.update(dict(name=Layer.objects.get(id=r['layer_id']).title))
+
+        return Response(data=results, status=status.HTTP_200_OK)
+            
+                
