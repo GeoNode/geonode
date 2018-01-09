@@ -47,7 +47,7 @@ appHelperModule.factory('attributeTypes', [
                 return typeNames[typeName] || typeName;
             },
             isNumericType: function (type) {
-                return type === 'number';
+                return type === 'number' || type === 'int';
             },
             isDateType: function (type) {
                 return type === 'date';

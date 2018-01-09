@@ -8,57 +8,168 @@
 {% block body_class %}documents documents-list explore{% endblock %}
 
 {% block body %}
-<div class="gd-content">
-    <div class="gd-content-heading">
-        <div class="row">
-          <div class="col-md-6">
-              <div class="title small-content">
-                  {% trans "Explore Documents" %}
-              </div>
-          </div>
-          <div class="col-md-6">
-              <div class="small-content text-right">
-                    <div ng-show="cart.getCart().items.length > 0" ng-controller="CartList">
-                        <div class="selectfixed">
-                            <resource-cart></resource-cart>
-                        </div>
-                    </div>
-                    <a href="javascript:;" id="advanced-search-control"
-                       class="btn btn-gd-primary pull-right icon-btn-color">
-                       {% trans "Advanced" %} <i class="fa fa-search"></i>
-                    </a>
-                  {% if not user.is_authenticated %}
-                    <a onclick="documentpopup('SigninModal');" class="btn btn-gd-primary pull-right icon-btn-color">
-                        {% trans "Upload Documents" %} <i class="fa fa-file-o" aria-hidden="true"></i>
-                    </a>
-                  {% endif %}
-                  {% if user.is_authenticated %}
-                    <a href="{% url "document_upload" %}" class="btn btn-gd-primary pull-right icon-btn-color">
-                        {% trans "Upload Documents" %} <i class="fa fa-file-o" aria-hidden="true"></i>
-                    </a>
-                  {% endif %}
-              </div>
-          </div>
-        </div>
-      <div class="hr"></div>
+
+
+<div class="d-title">
+    
+                                    <div class="pull-right">
+    
+                                       
+                                        
+                                                    <div class="btn-group" role="group" aria-label="tools">
+                                                        <div id="profileSortId" class="btn-group" role="group">
+                                                            <a href="javascript:;" class="btn btn-default dropdown-toggle" data-toggle="dropdown"
+                                                               aria-haspopup="true" aria-expanded="false">
+                                                                <span id="currtenSortTitle">{% trans "Most recent" %}</span>
+                                                                <span class="caret"></span>
+                                                            </a>
+                                                            <ul class="dropdown-menu dropdown-menu-right" id="sort">
+                                                                <li>
+                                                                  <a data-value="-date" data-filter="order_by" class="selected" ng-click="single_choice_listener($event)">
+                                                                      {% trans "Most recent" %}
+                                                                  </a>
+                                                                </li>
+                                                                <li>
+                                                                  <a data-value="date" data-filter="order_by" ng-click="single_choice_listener($event)">
+                                                                    {% trans "Less recent" %}
+                                                                  </a>
+                                                                </li>
+                                                                <li>
+                                                                  <a data-value="title" data-filter="order_by" ng-click="single_choice_listener($event)">
+                                                                    {% trans "A - Z" %}
+                                                                  </a>
+                                                                </li>
+                                                                <li>
+                                                                  <a data-value="-title" data-filter="order_by" ng-click="single_choice_listener($event)">
+                                                                    {% trans "Z - A" %}
+                                                                  </a>
+                                                                </li>
+                                                                <!--<li>-->
+                                                                  <!--<a data-value="-popular_count" data-filter="order_by" ng-click="single_choice_listener($event)">-->
+                                                                    <!--{% trans "Most popular" %}-->
+                                                                  <!--</a>-->
+                                                                <!--</li>-->
+                                                            </ul>
+                                                        </div>
+                                                    </div>
+
+
+                                                    <div class="btn-group" role="group" aria-label="tools">
+                                                        <div id="profileSortId" class="btn-group" role="group">
+                                                            <a href="javascript:;" class="btn btn-default dropdown-toggle" data-toggle="dropdown"
+                                                               aria-haspopup="true" aria-expanded="false">
+                                                                <span id="limitOfpage">100</span>
+                                                                <span class="caret"></span>
+                                                            </a>
+                                                            <ul class="dropdown-menu dropdown-menu-right" id="sort">
+                                                                <li>
+                                                                    <a ng-click="limit_choice_listener(20)">
+                                                                        20
+                                                                    </a>
+                                                                </li>
+                                                                <li>
+                                                                    <a ng-click="limit_choice_listener(40)">
+                                                                        40
+                                                                    </a>
+                                                                </li>
+                                                                <li>
+                                                                    <a ng-click="limit_choice_listener(100)">
+                                                                        100
+                                                                    </a>
+                                                                </li>
+                                                            </ul>
+                                                        </div>
+                                                    </div>
+                                            
+                                          
+
+                                        <div class="btn-group" role="group">
+    
+                                           
+
+
+                                                    
+                                                            <a href="javascript:;" ng-class="{'btn-success' : pageViewing == 'list'}" class="btn btn-default" ng-click="displayView('list')">
+                                                                <i class="fa fa-bars"></i>
+                                                            </a>
+                                                       
+
+                                                        
+                                                                <a href="javascript:;" ng-class="{'btn-success' : pageViewing == 'grid'}" class="btn btn-default" ng-click="displayView('grid')">
+                                                                    <i class="fa fa-th-large"></i>
+                                                                    <!--<img src="images/user-separator-icon.png" />-->
+                                                                </a>
+                                                            
+                
+    
+                                       
+    
+                                       
     </div>
-    <div class="gd-content-body transparent top-bottom-margin-20px">
-        <div class="row">
-            <div class="col-md-12">
-                {% with include_type_filter='true' %}
-                {% with facet_type='documents' %}
-                {% with header='Document Type' %}
-                {% with filter='doc_type__in' %}
-                {% include "search/_search_content.html" %}
-                {% endwith %}
-                {% endwith %}
-                {% endwith %}
-                {% endwith %}
-                {% include "_bulk_permissions_form.html" %}
+    
+    
+        <div ng-show="cart.getCart().items.length > 0" ng-controller="CartList">
+            <div class="selectfixed">
+                <resource-cart></resource-cart>
             </div>
         </div>
-    </div>
-</div>
+        <a href="javascript:;" id="advanced-search-control"
+           class="btn btn-gd-primary pull-right icon-btn-color">
+           {% trans "Advanced" %} <i class="fa fa-search"></i>
+        </a>
+      {% if not user.is_authenticated %}
+        <a onclick="documentpopup('SigninModal');" class="btn btn-gd-primary icon-btn-color">
+            {% trans "Upload Documents" %} <i class="fa fa-file-o" aria-hidden="true"></i>
+        </a>
+      {% endif %}
+      {% if user.is_authenticated %}
+        <a href="{% url "document_upload" %}" class="btn btn-gd-primary icon-btn-color">
+            {% trans "Upload Documents" %} <i class="fa fa-file-o" aria-hidden="true"></i>
+        </a>
+      {% endif %}
+ 
+
+
+
+
+    
+                                      </div>
+    
+                                  {% trans "Explore Documents" %}
+                              </div>
+
+
+                              <div class="panel panel-default">
+                                <div class="panel-body">
+                               
+                                    <div>
+                                        {% with include_type_filter='true' %}
+                                        {% with facet_type='documents' %}
+                                        {% with header='Document Type' %}
+                                        {% with filter='doc_type__in' %}
+                                        {% include "search/_search_content.html" %}
+                                        {% endwith %}
+                                        {% endwith %}
+                                        {% endwith %}
+                                        {% endwith %}
+                                        {% include "_bulk_permissions_form.html" %}
+                        
+                                       
+                                    </div>
+                               
+
+                                </div>
+                                <div class="panel-footer">{% include 'search/_pagination.html' %}</div>
+                              </div>
+
+
+
+   
+  
+        
+           
+    
+
 {% endblock %}
 
 {% block extra_script %}

@@ -5,12 +5,12 @@
 
         $httpProvider.interceptors.push('httpInterceptor');
 
-        if (!window.debug) {
-            window.onerror = function (msg, url, line, col, error) {
-                errorMessageManager.showUnexpectedErrorMessage();
-                return true;
-            };
-        }
+        // if (!window.debug) {
+        //     window.onerror = function (msg, url, line, col, error) {
+        //         errorMessageManager.showUnexpectedErrorMessage();
+        //         return true;
+        //     };
+        // }
     }
 ]).factory('httpInterceptor', ['$q', function ($q) {
     return function (promise) {

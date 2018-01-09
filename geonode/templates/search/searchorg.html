@@ -9,15 +9,13 @@
 
 {% block body_outer %}
     <div class="gd-content">
-        <div class="gd-content-heading">
-            <div class="row">
-                <div class="col-md-6">
-                    <div class="title small-content">
+        <div class="d-title">
+ 
                         {% trans "Search" %}
                         <span ng-if="text_query != ''">:</span>
                         <span ng-bind="text_query"></span>
-                    </div>
-                </div>
+                    
+              
                 <!--<div class="col-md-6">-->
                     <!--<div class="small-content text-right">-->
                         <!--<div ng-show="cart.getCart().items.length > 0" ng-controller="CartList">-->
@@ -31,22 +29,30 @@
                         <!--</a>-->
                     <!--</div>-->
                 <!--</div>-->
-            </div>
-            <div class="hr"></div>
+            
+           
         </div>
-        <div class="gd-content-body transparent top-bottom-margin-20px">
-            <div class="row">
-                <div class="col-md-12">
-                    {% with include_type_filter='true' %}
-                        {% with header='Type' %}
-                            {% with filter='type__in' %}
-                                {% include "groups/_group_list_item.html" %}
-                            {% endwith %}
-                        {% endwith %}
-                    {% endwith %}
+
+        <div class="panel panel-default">
+                <div class="panel-body">
+                      
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        {% with include_type_filter='true' %}
+                                            {% with header='Type' %}
+                                                {% with filter='type__in' %}
+                                                    {% include "groups/_group_list_item.html" %}
+                                                {% endwith %}
+                                            {% endwith %}
+                                        {% endwith %}
+                                    </div>
+                                </div>
+                          
                 </div>
-            </div>
-        </div>
+              </div>
+              
+
+       
     </div>
 {% endblock %}
 

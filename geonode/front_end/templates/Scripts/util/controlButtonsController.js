@@ -17,13 +17,14 @@
             $rootScope.action = $rootScope.action || {};
             $rootScope.action.saveProject = function() {
                 var projectName = mapService.getMapName();
-                if (projectName) {
-                    mapService.saveMapAs(projectName).success(function(data) {
-                        projectService.executeAfterSuccessfulSave(data.layerIdToSavedDataIdMappings);
-                    });
-                } else {
-                    showProjectBrowserDialog(true);
-                }
+                showProjectBrowserDialog(true);
+                // if (projectName) {
+                //     mapService.saveMapAs(projectName).success(function(data) {
+                //         projectService.executeAfterSuccessfulSave(data.layerIdToSavedDataIdMappings);
+                //     });
+                // } else {
+                //     showProjectBrowserDialog(true);
+                // }
             };
 
             $scope.action.saveProject = $rootScope.action.saveProject;

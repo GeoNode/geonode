@@ -132,7 +132,7 @@
                                                 </li>
                                                 <div class="modal fade" id="edit-map" tabindex="-1" role="dialog"
                                                      aria-labelledby="myModalLabel" aria-hidden="true">
-                                                    <div class="modal-dialog">
+                                                    <div class="modal-dialog" style="width: 600px;">
                                                         <div class="modal-content">
                                                             <div class="modal-header">
                                                                 <button type="button" class="close"
@@ -144,27 +144,27 @@
                                                             <div class="modal-body">
                                                                 <div class="row edit-modal">
                                                                     {% if "change_resourcebase_metadata" in perms_list %}
-                                                                        <div class="col-sm-3">
-                                                                            <i class="fa fa-list-alt fa-3x"></i>
+                                                                        <div class="col-sm-4 text-center">
+                                                                            <i class="fa fa-list-alt fa-2x" style="color:#0b8e58"></i>
                                                                             <h4>{% trans "Metadata" %}</h4>
-                                                                            <a class="btn btn-default btn-gd btn-block btn-xs"
+                                                                            <a class="btn btn btn-gd-primary btn-block"
                                                                                href="{% url "map_metadata" resource.id %}">{% trans "Edit" %}</a>
                                                                         </div>
                                                                     {% endif %}
                                                                     {% if "change_resourcebase" in perms_list %}
-                                                                        <div class="col-sm-3">
-                                                                            <i class="fa fa-photo fa-3x"></i>
+                                                                    <div class="col-sm-4 text-center">
+                                                                            <i class="fa fa-photo fa-2x" style="color:#0b8e58"></i>
                                                                             <h4>{% trans "Thumbnail" %}</h4>
-                                                                            <a class="btn btn-default btn-gd btn-block btn-xs"
+                                                                            <a class="btn btn btn-gd-primary btn-block"
                                                                                href="#"
                                                                                id="set_thumbnail">{% trans "Set" %}</a>
                                                                         </div>
                                                                     {% endif %}
                                                                     {% if "change_resourcebase" in perms_list %}
-                                                                        <div class="col-sm-3">
-                                                                            <i class="fa fa-map-marker fa-3x"></i>
+                                                                    <div class="col-sm-4 text-center">
+                                                                            <i class="fa fa-map-marker fa-2x" style="color:#0b8e58"></i>
                                                                             <h4>{% trans "Map" %}</h4>
-                                                                            <a class="btn btn-default btn-gd btn-block btn-xs"
+                                                                            <a class="btn btn btn-gd-primary btn-block"
                                                                                href="{% url "map_view" resource.id %}">
                                                                                 {% trans "Edit" %}
                                                                             </a>
@@ -201,9 +201,10 @@
                                             <a role="button" data-toggle="collapse"
                                                data-parent="#accordion3-per" href="#collapse4" aria-expanded="true"
                                                aria-controls="collapse4">
-                                                {% trans "Permissions" %}
+                                                
                                                 <i class="fa fa-chevron-up" aria-hidden="true"></i>
                                                 <i class="fa fa-chevron-down" aria-hidden="true"></i>
+                                                {% trans "Permissions" %}
                                             </a>
                                         </h4>
                                     </div>
@@ -224,9 +225,10 @@
                                         <a role="button" data-toggle="collapse"
                                            data-parent="#accordion2-map" href="#collapse2" aria-expanded="true"
                                            aria-controls="collapse2">
-                                            {% trans "Map Layers" %}
+                                           
                                             <i class="fa fa-chevron-up" aria-hidden="true"></i>
                                             <i class="fa fa-chevron-down" aria-hidden="true"></i>
+                                            {% trans "Map Layers" %}
                                         </a>
                                     </h4>
                                 </div>
@@ -257,9 +259,10 @@
                                             <a role="button" data-toggle="collapse"
                                                data-parent="#accordion" href="#collapse3" aria-expanded="true"
                                                aria-controls="collapse3">
-                                                {% trans "Documents related to this map" %}
+                                              
                                                 <i class="fa fa-chevron-up" aria-hidden="true"></i>
                                                 <i class="fa fa-chevron-down" aria-hidden="true"></i>
+                                                {% trans "Documents related to this map" %}
                                             </a>
                                         </h4>
                                     </div>
@@ -283,9 +286,10 @@
                                         <a role="button" data-toggle="collapse"
                                            data-parent="#accordion4" href="#collapse5" aria-expanded="true"
                                            aria-controls="collapse5">
-                                            {% trans "Copy this map" %}
+                                           
                                             <i class="fa fa-chevron-up" aria-hidden="true"></i>
                                             <i class="fa fa-chevron-down" aria-hidden="true"></i>
+                                            {% trans "Copy this map" %}
                                         </a>
                                     </h4>
                                 </div>
@@ -305,9 +309,10 @@
                                             <a role="button" data-toggle="collapse"
                                                data-parent="#accordion5" href="#collapse11" aria-expanded="true"
                                                aria-controls="collapse11">
-                                                {% trans "Map WMS" %}
+                                               
                                                 <i class="fa fa-chevron-up" aria-hidden="true"></i>
                                                 <i class="fa fa-chevron-down" aria-hidden="true"></i>
+                                                {% trans "Map WMS" %}
                                             </a>
                                         </h4>
                                     </div>
@@ -344,9 +349,10 @@
                                         <a role="button" data-toggle="collapse"
                                            data-parent="#accordion6" href="#collapse7" aria-expanded="true"
                                            aria-controls="collapse7">
-                                            {% trans "About" %}
+                                           
                                             <i class="fa fa-chevron-up" aria-hidden="true"></i>
                                             <i class="fa fa-chevron-down" aria-hidden="true"></i>
+                                            {% trans "About" %}
                                         </a>
                                     </h4>
                                 </div>
@@ -381,9 +387,10 @@
                                         <a role="button" data-toggle="collapse"
                                            data-parent="#accordion7" href="#collapse8" aria-expanded="true"
                                            aria-controls="collapse8">
-                                            Information
+                                           
                                             <i class="fa fa-chevron-up" aria-hidden="true"></i>
                                             <i class="fa fa-chevron-down" aria-hidden="true"></i>
+                                            Information
                                         </a>
                                     </h4>
                                 </div>

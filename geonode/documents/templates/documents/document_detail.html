@@ -25,11 +25,13 @@
 
 {% block body_outer %}
 
-<div class="page-header">
-  <h2>{{ resource.title }}</h2>
-</div>
+<div class="d-title">{{ resource.title }}</div>
+
   <div class="row">
-    <div class="col-md-8" style="background:#fff;padding:30px;">
+    <div class="col-md-8">
+        <div class="panel panel-default">
+            <div class="panel-body">
+
       {% if "download_resourcebase" in perms_list %}
         {% if resource.extension|lower in imgtypes and resource.doc_file %}
         <div id="embedded_map">
@@ -79,6 +81,8 @@
           {% endwith %}
         {% endif %}
       </div>
+</div>
+</div>
     </div>
 
     <div class="col-md-4">

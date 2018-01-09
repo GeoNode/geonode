@@ -879,8 +879,7 @@ button:focus
 
 .modal-close-icon:hover
 {
-    color: white;
-    font-size: 18px;
+    color:#222222;
     cursor: pointer;
 }
 
@@ -939,7 +938,6 @@ input[type='number'].tiny-input
 
 .blankLayerModal
 {
-    width: 360px;
     margin: 0 auto;
     position: relative;
     left: 0;

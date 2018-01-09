@@ -10,6 +10,8 @@
         $scope.tabs = [{}, {}, {}, {}, {}];
         $scope.showSelectStyle = false;
 
+        $scope.visualizationSettings = { selected: layer.Style.VisualizationSettings };
+
         $timeout(function() {
             $scope.tabs[data.selectedTabIndex].active = true;
         });
@@ -22,7 +24,8 @@
             id: layer.getId(),
             linearUnit: layer.linearUnit,
             attributeDefinitions: layer.getAttributeDefinition(),
-            zoomlevel: layer.getZoomLevel()
+            zoomlevel: layer.getZoomLevel(),
+            //visualizationSettings: layer.visualizationSettings
         };
 
         $scope.nodeData.fields = data.fields;
@@ -89,6 +92,7 @@
             if ($scope.nodeData.invalidField() || !$scope.nodeData.layer.name) {
                 return;
             }
+            layer.Style.VisualizationSettings = $scope.visualizationSettings.selected;
             $modalInstance.close({
                 updatedNode: $scope.nodeData,
                 fieldChanged: $scope.propertiesData.isDirty,

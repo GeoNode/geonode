@@ -7,38 +7,52 @@
 {% block body_class %}documents{% endblock %}
 
 {% block body_outer %}
+
+<div class="d-title">
+    
+                                    <div class="pull-right">
+    
+
+        <a href="{% url "document_browse" %}" class="btn btn-gd-primary icon-btn-color">
+            {% trans "Explore Documents" %}
+        </a>
+    
+                                      </div>
+    
+                                  {% trans "Upload Documents" %}
+                              </div>
+
+
 <div class="gd-content">
-    <div class="gd-content-heading top-bottom-margin-20px">
-        <div class="row">
-          <div class="col-md-6">
-              <div class="title">
-                  {% trans "Upload Documents" %}
+    
+
+        <div class="panel panel-info">
+                <div class="panel-heading text-center">
+                        
+                                <h3 style="margin-top:0">Allowed document types:</h3>
+                            {% for doc in ALLOWED_DOC_TYPES %}
+                                <span class="label label-default">.{{ doc }}</span>
+                            {% endfor %}
+                       
+                </div>
+                <div class="panel-body">
+                 
+                        
+                                {% block body_content %}{% endblock body_content %}
+                                {% block body %}{% endblock body %}
+                                {% block sidebar %}{% endblock sidebar %}
+                             
+
+                </div>
               </div>
-          </div>
-          <div class="col-md-6">
-              <div class="text-right">
-                <a href="{% url "document_browse" %}" class="btn btn-gd-primary pull-right">
-                    {% trans "Explore Documents" %}
-                </a>
-              </div>
-          </div>
-      </div>
-      <div class="row">
-          <div class="col-md-12">
-            <div>Allowed document types:</div>
-            <div>
-                {% for doc in ALLOWED_DOC_TYPES %}
-                    <span class="label label-default">.{{ doc }}</span>
-                {% endfor %}
-            </div>
-          </div>
-      </div>
-    </div>
-    <div class="hr"></div>
+
+    
+            
+           
+          
+      
+   
+  
 </div>
-<div class="row">    
-  {% block body_content %}{% endblock body_content %}
-  {% block body %}{% endblock body %}
-  {% block sidebar %}{% endblock sidebar %}
-</div>
+
 {% endblock body_outer %}

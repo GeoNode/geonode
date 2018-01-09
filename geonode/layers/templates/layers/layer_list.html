@@ -8,58 +8,56 @@
 {% block body_class %}layers explore{% endblock %}
 
 {% block body %}
-<div class="gd-content">
-    <div class="gd-content-heading">
-        <div class="row">
-          <div class="col-md-6">
-              <div class="title small-content">
-                  {% trans "Explore Layers" %}
-              </div>
-          </div>
-          <div class="col-md-6">
-              <div class="small-content text-right">
-                    <div ng-show="cart.getCart().items.length > 0" ng-controller="CartList">
-                        <div class="selectfixed">
-                            <resource-cart></resource-cart>
-                        </div>
-                    </div>
-                    <a href="javascript:;" id="advanced-search-control" class="btn btn-gd-primary pull-right icon-btn-color">
-                        {% trans "Advanced" %} <i class="fa fa-search"></i>
-                    </a>
-                  {% if not user.is_authenticated %}
-                    <a onclick="layerpopup('SigninModal');" class="btn btn-gd-primary pull-right icon-btn-color">
-                        {% trans "Upload Layers" %} <i class="fa fa-cloud-upload" aria-hidden="true"></i>
-                    </a>
-                  {% endif %}
-                  {% if user.is_authenticated %}
-                    <a href="{% url "layer_upload"  %}" class="btn btn-gd-primary pull-right icon-btn-color">
-                        {% trans "Upload Layers"  %} <i class="fa fa-cloud-upload" aria-hidden="true"></i>
-                    </a>
-                  {% endif %}
-              </div>
-          </div>
-      </div>
-      <div class="hr"></div>
-    </div>
-    <div class="gd-content-body transparent top-bottom-margin-20px">
-        <div class="row">
-            <div class="col-md-12">
-                {% with include_type_filter='true' %}
-                {% with facet_type='layers' %}
-                {% with header='Type' %}
-                {% with filter='type__in' %}
-                {% include "search/_search_content.html" %}
-                {% endwith %}
-                {% endwith %}
-                {% endwith %}
-                {% endwith %}
-                {% with is_layer='true' %}
-                {% include "_bulk_permissions_form.html" %}
-                {% endwith %}
-            </div>
-        </div>
-    </div>
-</div>
+
+<div class="d-title">
+        
+                                        <div class="pull-right">
+        
+                                                <div class="small-content text-right">
+                                                        <div ng-show="cart.getCart().items.length > 0" ng-controller="CartList">
+                                                            <div class="selectfixed">
+                                                                <resource-cart></resource-cart>
+                                                            </div>
+                                                        </div>
+                                                        <a href="javascript:;" id="advanced-search-control" class="btn btn-gd-primary pull-right icon-btn-color">
+                                                            {% trans "Advanced" %} <i class="fa fa-search"></i>
+                                                        </a>
+                                                      {% if not user.is_authenticated %}
+                                                        <a onclick="layerpopup('SigninModal');" class="btn btn-gd-primary pull-right icon-btn-color">
+                                                            {% trans "Upload Layers" %} <i class="fa fa-cloud-upload" aria-hidden="true"></i>
+                                                        </a>
+                                                      {% endif %}
+                                                      {% if user.is_authenticated %}
+                                                        <a href="{% url "layer_upload"  %}" class="btn btn-gd-primary pull-right icon-btn-color">
+                                                            {% trans "Upload Layers"  %} <i class="fa fa-cloud-upload" aria-hidden="true"></i>
+                                                        </a>
+                                                      {% endif %}
+                                                  </div> 
+                                          
+                                              
+                                          </div>
+        
+                                      {% trans "Explore Layers" %}
+                                  </div>
+
+
+                                  <div class="panel panel-default">
+                                        <div class="panel-body">
+                                                {% with include_type_filter='true' %}
+                                                {% with facet_type='layers' %}
+                                                {% with header='Type' %}
+                                                {% with filter='type__in' %}
+                                                {% include "search/_search_content.html" %}
+                                                {% endwith %}
+                                                {% endwith %}
+                                                {% endwith %}
+                                                {% endwith %}
+                                                {% with is_layer='true' %}
+                                                {% include "_bulk_permissions_form.html" %}
+                                                {% endwith %}
+                                        </div>
+                                      </div>
+
 {% endblock %}
 
 {% block extra_script %}

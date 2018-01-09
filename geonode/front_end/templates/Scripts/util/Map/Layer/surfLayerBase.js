@@ -12,7 +12,7 @@
                 _thisLayer[method] = function () { };
             });
 
-            var _style = {};
+            var _style = { tiled: true };
 
             this.events = new Event();
 
@@ -49,7 +49,7 @@
 
             this.getStyleName = function () {
                 return this.getStyle().Name;
-            }
+            };
             
             this.getLabeledStyleName = function () {
                 return this.getStyle().Name;
@@ -57,7 +57,7 @@
 
             this.getSelectStyleName = function() {
                 return this.getStyle().Name;
-            }
+            };
 
             this.getSortOrder = function () {
                 return layerInfo.SortOrder;
@@ -77,11 +77,11 @@
             this.getSelectedOlStyle = function () {
                 var ol3Style = new ol.format.Style();
                 return ol3Style.getStyle(_style['select']);
-            }
+            };
 
             this.setStyle = function (style) {
                 if (style) {
-                    _style = {};
+                    _style = { };
                     angular.extend(_style, style);
                 }
             };
@@ -145,12 +145,16 @@
                 layerInfo.Name = name;
             };
 
+            this.setTiled = function(isTiled){
+                _style.tiled = isTiled;
+            };
+
             this.setZoomLevel = function (zoomLevel) {
                 layerInfo.ZoomLevel = zoomLevel;
-            }
+            };
 
             this.refresh = function () {
-                _mode.update(this.getStyleName());
+                _mode.update(this.getStyleName(), _style.tiled);
                 _thisLayer.events.broadcast('refreshed');
             };
 

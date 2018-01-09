@@ -3,9 +3,9 @@
         .module('LayerApp')
         .factory('LayerService', LayerService);
 
-    LayerService.$inject = ['$http', '$q'];
+    LayerService.$inject = ['$http', '$q', '$window'];
 
-    function LayerService($http, $q) {
+    function LayerService($http, $q, $window) {
         function get(url) {
             var deferred = $q.defer();
             $http.get(url)
@@ -30,6 +30,7 @@
             });
             return deferred.promise;
         }
+
         function _uuid() {
             function _() {
                 var rand = Math.ceil(1e15 + Math.random() * 1e5).toString(16);
@@ -38,6 +39,7 @@
             return _() + _() + '-' + _() + '-' + _() + '-' + _() + '-' + _() + _();
 
         }
+
         function getDefaultStyle() {
             return {
                 "Name": "",
@@ -142,7 +144,7 @@
             },
             getStyle: function(id) {
                 var deferred = $q.defer();
-                get('/layers/style/' + id + '/').then(function(res){
+                get('/layers/style/' + id + '/').then(function(res) {
                     var style = JSON.parse(res.json_field);
                     style.id = res.id;
                     if (!style) {
@@ -152,7 +154,7 @@
                     style.default.userStyle = style.Name;
                     style.select.userStyle = style.Name;
                     deferred.resolve(style);
-                }, function(){
+                }, function() {
                     deferred.reject({});
                 });
                 return deferred.promise;
@@ -166,6 +168,49 @@
             updateLayerByMap: function(mapId, layerName, obj) {
                 return put('/maps/' + mapId + '/layer/' + layerName + '/', obj);
             },
+            getAttributesName: function(layerName) {
+                var deferred = $q.defer();
+                this.getLayerFeatureByName($window.GeoServerHttp2Root , layerName).then(function(res) {
+                    res.featureTypes.forEach(function(featureType) {
+                        var attributes = [];
+                        featureType.properties.forEach(function(e) {
+                            if (e.name !== 'the_geom') {
+                                attributes.push({
+                                    "Id": e.name,
+                                    "Name": e.name,
+                                    "AttributeName": null,
+                                    "IsPublished": true,
+                                    "Type": e.localType,
+                                    "Length": 92,
+                                    "Precision": null,
+                                    "Scale": null
+                                });
+                            }
+                        }, this);
+                        deferred.resolve(attributes);
+                    }, this);
+                });
+                return deferred.promise;
+            },
+            getShapeType: function(layerName) {
+                var deferred = $q.defer();
+                this.getLayerFeatureByName($window.GeoServerHttp2Root , layerName).then(function(res) {
+                    res.featureTypes.forEach(function(featureType) {
+                        var shapeType = "";
+                        featureType.properties.forEach(function(e) {
+                            if (e.name === 'the_geom') {
+                                if (e.localType.toLowerCase().search('polygon') != -1)
+                                    shapeType = 'polygon';
+                                else if (e.localType.toLowerCase().search('point') != -1)
+                                    shapeType = 'point';
+                                deferred.resolve(shapeType);
+                                return;
+                            }
+                        }, this);
+                    }, this);
+                });
+                return deferred.promise;
+            }
         };
     }
 })();
