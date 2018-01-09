@@ -114,12 +114,12 @@ function showTable(url,rows){
 }
 
     function showMapData(){
-var url="http://172.16.0.237:8000/analytics/maps/";
+var url="/analytics/maps/";
 var rows = ['name','map_id','last_modified_date','activity_type','count'];
 showTable(url,rows);
     }
     function showLayerData(){
-      var url="http://172.16.0.237:8000/analytics/layers/";
+      var url="/analytics/layers/";
       var rows = ['name','layer_id','last_modified_date','activity_type','count'];
       showTable(url,rows);
     }
