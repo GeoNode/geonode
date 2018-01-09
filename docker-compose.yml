@@ -1,9 +1,12 @@
 version: '2.2'
 services:
 
-    container_name: postgres4${COMPOSE_PROJECT_NAME}
   db:
     image: postgres:9.6
+    container_name: db4${COMPOSE_PROJECT_NAME}
+    volumes:
+      - dbdata:/var/lib/postgresql/data
+      - dbbackups:/pg_backups
 
   elasticsearch:
    image: elasticsearch
@@ -74,7 +77,7 @@ services:
 
   data_dir_conf:
     image: geonode/geoserver_data:2.10.x
-    container_name: geoserver_data_dir4${COMPOSE_PROJECT_NAME}
+    container_name: geoserver_data_dir
     command: /bin/true
     volumes:
       - /geoserver_data/data
@@ -82,3 +85,8 @@ services:
 volumes:
 
   geoserver_data_dir:
+      name: ${COMPOSE_PROJECT_NAME}-gsdatadir
+  dbdata:
+      name: ${COMPOSE_PROJECT_NAME}-dbdata
+  dbbackups:
+      name: ${COMPOSE_PROJECT_NAME}-dbbackups
