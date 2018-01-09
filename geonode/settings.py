@@ -239,9 +239,12 @@ _DEFAULT_LOCALE_PATHS = (
 
 LOCALE_PATHS = os.getenv('LOCALE_PATHS', _DEFAULT_LOCALE_PATHS)
 
-
 # Location of url mappings
 ROOT_URLCONF = os.getenv('ROOT_URLCONF', 'geonode.urls')
+
+# Login and logout urls override
+LOGIN_URL = os.getenv('LOGIN_URL', '/account/login/')
+LOGOUT_URL = os.getenv('LOGOUT_URL', '/account/logout/')
 
 LOGIN_REDIRECT_URL = '/'
 
