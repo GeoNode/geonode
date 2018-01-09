@@ -1,5 +1,5 @@
-﻿appModule.controller("controlButtonsController", ["$scope", "$modal", "$timeout", "$rootScope", "$window", "projectService", 'mapModes', 'mapService', 'dirtyManager', 'featureService', 'interactionHandler', 'mapTools', 'CircleDrawTool', 'LayerService',
-    function($scope, $modal, $timeout, $rootScope, $window, projectService, mapModes, mapService, dirtyManager, featureService, interactionHandler, mapTools, CircleDrawTool, LayerService) {
+﻿appModule.controller("controlButtonsController", ["$scope", "$modal", "$timeout", "$rootScope", "$window", "projectService", 'mapModes', 'mapService', 'dirtyManager', 'featureService', 'interactionHandler', 'mapTools', 'CircleDrawTool', 'LayerService', 'urlResolver',
+    function($scope, $modal, $timeout, $rootScope, $window, projectService, mapModes, mapService, dirtyManager, featureService, interactionHandler, mapTools, CircleDrawTool, LayerService, urlResolver) {
         $scope.mapService = mapService;
         $scope.mapTools = mapTools;
 
@@ -148,17 +148,21 @@
                 circle.Remove();
                 circle.Draw();
                 circle.OnModificationEnd(function(feature, values) {
+                    var center = feature.values_.geometry.getCenter();
+                    var centerLongLat = ol.proj.transform([center[0], center[1]], 'EPSG:3857','EPSG:4326');
                     var layers = mapService.getLayers();
+                    var meterPerDegree = 111325;
+                    var radiusInDegree = values.radius/meterPerDegree;
                     for (var k in layers) {
                         var layer = layers[k];
-                        LayerService.getWFS('/geoserver/wms/', {
+                        LayerService.getWFS(urlResolver.getGeoServerRoot()+'geoserver/', {
                             _dc: 1510220556364,
                             version: '1.0.0',
                             request: 'GetFeature',
                             outputFormat: 'JSON',
-                            srsName: 'EPSG:3857',
+                            srsName: 'EPSG:4326',
                             typeNames: layer.getName(),
-                            cql_filter: 'DWithin(the_geom,POINT(' + values.center[1] + ' ' + values.center[0] + '),' + values.radius + ',meters)',
+                            cql_filter: 'DWithin(the_geom,POINT(' + centerLongLat[0] + ' ' + centerLongLat[1] + '),' + values.radius + ',meters)',
                         }, false);
                     }
                 });

@@ -94,6 +94,10 @@
             }
             geoserverTileRoot = tileRoot;
 
+        },
+        getGeoServerRoot: function(){
+            return geoserverRoot;
         }
+
     };
 }]);
