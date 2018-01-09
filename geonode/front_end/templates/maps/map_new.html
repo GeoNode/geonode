@@ -291,14 +291,14 @@
                                         <location-search></location-search>
                                         <ul class="nav">
                 
-                                            <li draft-only>
+                                            <!-- <li draft-only>
                                                 <edit-toggle-button></edit-toggle-button>
-                                            </li>
-                                            <li class="divider-vertical" draft-only></li>
-                                            <li>
+                                            </li> -->
+                                            <!-- <li class="divider-vertical" draft-only></li> -->
+                                            <!-- <li>
                                                 <geo-location-toggle-button></geo-location-toggle-button>
-                                            </li>
-                                            <li class="divider-vertical" draft-only></li>
+                                            </li> -->
+                                            <!-- <li class="divider-vertical" draft-only></li> -->
                                             <li>
                                                 <navigation-history-buttons></navigation-history-buttons>
                                             </li>
@@ -317,6 +317,10 @@
                                             <li>
                                                 <set-marker></set-marker>
                                             </li>
+                                            <li>
+                                                <button class="control-button icon" ng-click="action.drawCircle()" title="Draw Circle"><i class="fa fa-circle-o" aria-hidden="true"></i>                                            </button>
+                                            </li>
+
                                             <li class="divider-vertical" draft-only></li>
                                             <li draft-only>
                                                 <button class="control-button icon" id="close-project" ng-click="action.showCloseProjectOptions()" ng-disabled="(mapService.isEmpty() && !mapService.getMapName()) || isAttributeGridOn" title="Close Map">
@@ -431,7 +435,7 @@
                                                     </button> -->
                                             </li>
 
-                                            <li draft-only>
+                                            <!-- <li draft-only>
                                                     <button class="control-button icon" id="save" data-ng-click="" title="Directions">
                                                         <i class="fa fa-car" aria-hidden="true"></i>                                                        
                                                         </button>
@@ -502,7 +506,7 @@
                                                     </div>
 
 
-                                                </li>
+                                                </li> -->
 
                                         </ul>
                                    
