@@ -1,3 +1,4 @@
+
 (function() {
     angular
         .module('LayerApp')
@@ -203,6 +204,8 @@
                                     shapeType = 'polygon';
                                 else if (e.localType.toLowerCase().search('point') != -1)
                                     shapeType = 'point';
+                                else if (e.localType.toLowerCase().search('linestring') != -1)
+                                    shapeType = 'polyline';
                                 deferred.resolve(shapeType);
                                 return;
                             }
