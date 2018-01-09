@@ -1,9 +1,9 @@
 version: '2.2'
 services:
 
-  postgres:
-    image: postgres
     container_name: postgres4${COMPOSE_PROJECT_NAME}
+  db:
+    image: postgres:9.6
 
   elasticsearch:
    image: elasticsearch
@@ -17,7 +17,7 @@ services:
     image: geonode/geonode:2.6.x
     container_name: django4${COMPOSE_PROJECT_NAME}
     links:
-      - postgres
+      - db
       - elasticsearch
       - rabbitmq
     command: django-admin.py runserver 0.0.0.0:8000 --settings=geonode.settings
@@ -43,7 +43,7 @@ services:
     image: geonode/geoserver:2.10.x
     container_name: geoserver4${COMPOSE_PROJECT_NAME}
     links:
-      - postgres
+      - db
     ports:
       - "8080"
     volumes:
