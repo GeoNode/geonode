@@ -529,6 +529,14 @@ Setup of the GeoNode REST Role Service
 
     Once everything has been setup and it is working, choose the ``Administrator role`` and ``Group administrator role`` as ``ROLE_ADMIN``
 
+Allow GeoFence to validate rules with ``ROLES``
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+.. warning:: The following instruction are different accordingly to the GeoServer version you are currently using.
+
+GeoServer 2.9.x and 2.10.x
+--------------------------
+
 #. Access the ``Security`` > ``Settings`` section
 
     .. figure:: img/oauth011.png
@@ -536,6 +544,19 @@ Setup of the GeoNode REST Role Service
 #. Choose the ``geonode REST role service`` as ``Active role service``
 
     .. figure:: img/oauth012.png
+
+GeoServer 2.12.x and above
+--------------------------
+
+With the latest updates to GeoFence Plugin, the latter no more recognizes the Role Service from the default settings but from the ``geofence-server.properties`` file.
+
+That said, it is important that the ``Security`` > ``Settings`` role service will be set to **default**, in order to allow GeoServer following the standard authorization chain.
+
+On the other side, you will need to be sure that the ``geofence-server.properties`` file under the ``$GEOSERVER_DATA_DIR/geofence`` folder, contains the two following additional properties: ::
+
+    gwc.context.suffix=gwc
+    org.geoserver.rest.DefaultUserGroupServiceName=geonode REST role service
+
 
 Setup of the GeoServer OAuth2 Authentication Filter
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
