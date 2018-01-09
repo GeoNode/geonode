@@ -10,8 +10,8 @@ on an Ubuntu 16.04 machine.
 .. toctree::
     :maxdepth: 2
 
-    install_geonode_application.rst
-    create_geonode_db.rst
-    setup_configure_httpd.rst
-    install_geoserver_application.rst
-    all_together.rst
+    install_geonode_application.txt
+    create_geonode_db.txt
+    setup_configure_httpd.txt
+    install_geoserver_application.txt
+    all_together.txt
