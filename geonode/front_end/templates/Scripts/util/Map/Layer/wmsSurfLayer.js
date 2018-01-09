@@ -17,6 +17,8 @@
             this.inProgress = false;
             _thisLayer.DataId = dataId;
             layerInfo.DataId = dataId;
+
+            _thisLayer.IdColumn = 'fid';
             
             var _base = {
                 setSortOrder: _thisLayer.setSortOrder,

@@ -98,7 +98,13 @@
             },
 
             getNumberOfFeatures: function(dataId) {
-                return $http.get(urlResolver.resolveCatalog('GetNumberOfFeatures', { dataId: dataId }));
+                return $http.get(urlResolver.resolveGeoServer('wfs', 
+                { 
+                    request:'GetFeature', 
+                    typeName: dataId,
+                    version: '1.1.0',
+                    resultType: 'hits' 
+                }));
             },
             // saveClassifierDefinitions: function(layerId, classifierDefinitions, sldStyle, defaultStyleConditionalSld) {
             //     return $http.post(urlResolver.resolveClassification('SaveClassifierDefinitions'), {
