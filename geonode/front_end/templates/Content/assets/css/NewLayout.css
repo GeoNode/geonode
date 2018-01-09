@@ -1069,3 +1069,7 @@ input:focus:invalid:focus, textarea:focus:invalid:focus, select:focus:invalid:fo
     border-bottom: 1px solid #eee;
     padding: 10px;
 }
+.colorpicker-btn {
+    border: 1px solid #000;
+    padding: 10px;
+}
