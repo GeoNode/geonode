@@ -4,6 +4,10 @@ services:
   db:
     image: postgres:9.6
     container_name: db4${COMPOSE_PROJECT_NAME}
+    environment:
+      POSTGRES_DB: postgres
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
     volumes:
       - dbdata:/var/lib/postgresql/data
       - dbbackups:/pg_backups
@@ -33,9 +37,9 @@ services:
     image: geonode/geonode:latest
     container_name: celery4${COMPOSE_PROJECT_NAME}
     links:
-      - rabbitmq
-      - postgres
+      - db
       - elasticsearch
+      - rabbitmq
     command: celery worker --app=geonode.celery_app:app -B -l INFO
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
