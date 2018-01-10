@@ -36,6 +36,7 @@ from paver.easy import (BuildFailure, call_task, cmdopts, info, needs, options,
 from setuptools.command import easy_install
 
 try:
+    import ipdb; ipdb.set_trace()
     from geonode.settings import GEONODE_APPS
 except BaseException:
     # probably trying to run install_win_deps.

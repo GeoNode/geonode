@@ -18,9 +18,11 @@
 #
 #########################################################################
 
+import urllib
+import urlparse
 import logging
 import uuid
-
+import re
 from django.conf import settings
 from django.db import models
 from django.db.models import signals
@@ -44,11 +46,58 @@ from geonode.utils import layer_from_viewer_config
 from geonode.utils import default_map_config
 from geonode.utils import num_encode
 from geonode.security.models import remove_object_permissions
-
+from geonode.maps.encode import despam, XssCleaner
 from agon_ratings.models import OverallRating
 
 logger = logging.getLogger("geonode.maps.models")
-
+ows_sub = re.compile(r"[&\?]+SERVICE=WMS|[&\?]+REQUEST=GetCapabilities", re.IGNORECASE)
+DEFAULT_CONTENT=_(
+    '<h3>The Harvard WorldMap Project</h3>\
+  <p>WorldMap is an open source web mapping system that is currently\
+  under construction. It is built to assist academic research and\
+  teaching as well as the general public and supports discovery,\
+  investigation, analysis, visualization, communication and archiving\
+  of multi-disciplinary, multi-source and multi-format data,\
+  organized spatially and temporally.</p>\
+  <p>The first instance of WorldMap, focused on the continent of\
+  Africa, is called AfricaMap. Since its beta release in November of\
+  2008, the framework has been implemented in several geographic\
+  locations with different research foci, including metro Boston,\
+  East Asia, Vermont, Harvard Forest and the city of Paris. These web\
+  mapping applications are used in courses as well as by individual\
+  researchers.</p>\
+  <h3>Introduction to the WorldMap Project</h3>\
+  <p>WorldMap solves the problem of discovering where things happen.\
+  It draws together an array of public maps and scholarly data to\
+  create a common source where users can:</p>\
+  <ol>\
+  <li>Interact with the best available public data for a\
+  city/region/continent</li>\
+  <li>See the whole of that area yet also zoom in to particular\
+  places</li>\
+  <li>Accumulate both contemporary and historical data supplied by\
+  researchers and make it permanently accessible online</li>\
+  <li>Work collaboratively across disciplines and organizations with\
+  spatial information in an online environment</li>\
+  </ol>\
+  <p>The WorldMap project aims to accomplish these goals in stages,\
+  with public and private support. It draws on the basic insight of\
+  geographic information systems that spatiotemporal data becomes\
+  more meaningful as more "layers" are added, and makes use of tiling\
+  and indexing approaches to facilitate rapid search and\
+  visualization of large volumes of disparate data.</p>\
+  <p>WorldMap aims to augment existing initiatives for globally\
+  sharing spatial data and technology such as <a target="_blank" href="http://www.gsdi.org/">GSDI</a> (Global Spatial Data\
+  Infrastructure).WorldMap makes use of <a target="_blank" href="http://www.opengeospatial.org/">OGC</a> (Open Geospatial\
+  Consortium) compliant web services such as <a target="_blank" href="http://en.wikipedia.org/wiki/Web_Map_Service">WMS</a> (Web\
+  Map Service), emerging open standards such as <a target="_blank" href="http://wiki.osgeo.org/wiki/Tile_Map_Service_Specification">WMS-C</a>\
+  (cached WMS), and standards-based metadata formats, to enable\
+  WorldMap data layers to be inserted into existing data\
+  infrastructures.&nbsp;<br>\
+  <br>\
+  All WorldMap source code will be made available as <a target="_blank" href="http://www.opensource.org/">Open Source</a> for others to use\
+  and improve upon.</p>'
+)
 
 class Map(ResourceBase, GXPMapBase):
 
@@ -80,6 +129,7 @@ class Map(ResourceBase, GXPMapBase):
     urlsuffix = models.CharField(_('Site URL'), max_length=255, blank=True)
     # Alphanumeric alternative to referencing maps by id, appended to end of
     # URL instead of id, ie http://domain/maps/someview
+    content_map = models.TextField(_('Site Content'), blank=True, null=True, default=DEFAULT_CONTENT)
 
     featuredurl = models.CharField(
         _('Featured Map URL'),
@@ -169,7 +219,9 @@ class Map(ResourceBase, GXPMapBase):
 
         self.title = conf['about']['title']
         self.abstract = conf['about']['abstract']
-
+	self.urlsuffix = conf['about']['urlsuffix']
+	x = XssCleaner()
+        self.content_map = despam(x.strip(conf['about']['introtext']))
         self.set_bounds_from_center_and_zoom(
             conf['map']['center'][0],
             conf['map']['center'][1],
@@ -457,6 +509,52 @@ class MapLayer(models.Model, GXPLayerBase):
 
     local = models.BooleanField(default=False)
     # True if this layer is served by the local geoserver
+    def source_config(self,access_token=None):
+        """
+        Generate a dict that can be serialized to a GXP layer source
+        configuration suitable for loading this layer.
+        """
+        try:
+            cfg = json.loads(self.source_params)
+        except Exception:
+            cfg = dict(ptype = "gxp_gnsource", restUrl="/gs/rest")
+
+        if self.ows_url:
+            cfg["url"] = ows_sub.sub('',self.ows_url)
+            if "ptype" not in cfg:
+                cfg["ptype"] = "gxp_wmscsource"
+
+        if "ptype" in cfg and cfg["ptype"] == "gxp_gnsource":
+            cfg["restUrl"] = "/gs/rest"
+       
+	if self.ows_url:
+            '''
+            This limits the access token we add to only the OGC servers decalred in OGC_SERVER.
+            Will also override any access_token in the request and replace it with an existing one.
+            '''
+            urls = []
+            for name, server in settings.OGC_SERVER.iteritems():
+                url = urlparse.urlsplit(server['PUBLIC_LOCATION'])
+                urls.append(url.netloc)
+
+            my_url = urlparse.urlsplit(self.ows_url)
+
+            if access_token and my_url.netloc in urls:
+                request_params = urlparse.parse_qs(my_url.query)
+                if 'access_token' in request_params:
+                    del request_params['access_token']
+                request_params['access_token'] = [access_token]
+                encoded_params = urllib.urlencode(request_params, doseq=True)
+
+                parsed_url = urlparse.SplitResult(my_url.scheme, my_url.netloc, my_url.path,
+                                                  encoded_params, my_url.fragment)
+                cfg["url"] = parsed_url.geturl()
+            else:
+                cfg["url"] = self.ows_url 
+
+	
+		
+	return cfg
 
     def layer_config(self, user=None):
         # Try to use existing user-specific cache of layer config

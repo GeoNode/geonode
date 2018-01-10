@@ -132,3 +132,26 @@ def fix_baselayers(map_id):
             )
             map_layer.save()
         source += 1
+
+def get_db_store_name(user=None):
+    """
+    Used for tabular mapping.
+    In production, monthly dbs are created for new layers.
+    However: for joins, the tables must be in the same db
+
+    # DB_DATASTORE_NAME is not used anymore now until this is fixed:
+    # https://osgeo-org.atlassian.net/browse/GEOS-7533
+    # db_store_name = settings.DB_DATASTORE_NAME
+    """
+    # Is the user in the group "dataverse"?
+    if user:
+        # only users in target-joins-uploader group will use the "dataverse" store
+        if user.groups.filter(name=settings.DATAVERSE_GROUP_NAME).exists():
+            #print 'settings.DB_DATAVERSE_NAME', settings.DB_DATAVERSE_NAME
+            return settings.DB_DATAVERSE_NAME
+
+    # We're using a monthly db
+    now = datetime.datetime.now()
+    db_store_name = 'wm_%s%02d' % (now.year, now.month)
+
+    return db_store_nam
