@@ -225,7 +225,11 @@
 <script src="{{ STATIC_URL }}.components/angular-ui-grid/ui-grid.min.js"></script>
 <script src="{{ STATIC_URL }}layers/js/layer.module.js"></script>
 <script src="{{ STATIC_URL }}layers/js/layer.service.js"></script>
-
+<style>
+    /* .c-menu--slide-right{
+        display: none;
+    } */
+</style>
 {% endblock extra_script %} {% block middle %}
 <div class="surfgis" ng-app="appModule" ng-click="bodyClicked()">
     <div class="application-font all-children-application-font" ng-controller="appController" ng-class='{"draft": mapAccessLevel.IsPublic, "not-draft": !mapAccessLevel.IsPublic}'>
@@ -244,24 +248,24 @@
                     <div>
                         <div data-ng-controller="treeController">
                             <div class="layer-buttons">
-                                <button class="icon add-layer " draft-only ng-disabled="isAttributeGridOn" ng-click="addBlankLayer()" title="Add Blank Layer"></button>
+                                <!-- <button class="icon add-layer " draft-only ng-disabled="isAttributeGridOn" ng-click="addBlankLayer()" title="Add Blank Layer"></button> -->
                                 <button class="icon delete-layer" draft-only ng-click="deleteSelectedLayer()" ng-disabled="!enableRemove()" title="Remove active layer">
                                     </button>
-                                <button class="icon" ng-disabled="!enableZoom()" id="zoom-to-layer" ng-click="zoomToSelectedLayer()" title="Zoom to active layer">
+                                <!-- <button class="icon" ng-disabled="!enableZoom()" id="zoom-to-layer" ng-click="zoomToSelectedLayer()" title="Zoom to active layer">
                                         <i class="fa fa-search-plus" aria-hidden="true"></i>                                        
-                                </button>
-                                <button class="icon download" draft-only ng-click="downloadSelectedLayer()" ng-disabled="!enableDownload()" title="Download active layer's data">
-                                    </button>
+                                </button> -->
+                                <!-- <button class="icon download" draft-only ng-click="downloadSelectedLayer()" ng-disabled="!enableDownload()" title="Download active layer's data">
+                                    </button> -->
                                 <button draft-only class="icon properties" ng-disabled="!enableProperties()" ng-click="showProperties(0)" title="Active layer properties">
                                     </button>
                                 <button class="icon attribute-grid" ng-disabled="!enableAttributeGrid()" ng-click="showAttributeGrid()" title="Attribute grid">
                                     </button>
-                                <button draft-only class="icon icon-visualization" ng-disabled="!enableVisualization()" ng-click="showVisualizationWindow()" title="Visualization">
-                                    </button>
+                                <!-- <button draft-only class="icon icon-visualization" ng-disabled="!enableVisualization()" ng-click="showVisualizationWindow()" title="Visualization">
+                                    </button> -->
                             </div>
                             <div class="leftColumnContent">
-                                <button class="icon icon24 icon-download-project" draft-only style="width: 26px; height: 30px; float: right; margin: 0 5px 0 3px;" ng-click="downloadWorkingProject()" ng-disabled="!enableDownloadProject()" title="Download Map Data">
-                                    </button>
+                                <!-- <button class="icon icon24 icon-download-project" draft-only style="width: 26px; height: 30px; float: right; margin: 0 5px 0 3px;" ng-click="downloadWorkingProject()" ng-disabled="!enableDownloadProject()" title="Download Map Data">
+                                    </button> -->
                                 <div class="projectName" style="height: 24px; line-height: 26px; cursor: default" ng-attr-title="[{ProjectName}]">
                                     Working Map: [{mapService.getMapName() || "Untitled"}]
 
@@ -332,7 +336,7 @@
                                                     <i class="fa fa-map-o" aria-hidden="true"></i>                                    
                                                     </button>
                                             </li> -->
-                                            <li draft-only>
+                                            <!-- <li draft-only>
                                                 <button class="control-button icon svg-ico-button" id="overpass-query" ng-disabled="isAttributeGridOn" ng-click="action.overpassApiQuery()" remove-focus title="Overpass Query">
                                                     
                                                     <svg version="1.1" id="Capa_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
@@ -443,7 +447,7 @@
                                                                                                                 </div>
 
 
-                                            </li>
+                                            </li> -->
                                             <li draft-only>
                                                 <button class="control-button icon" id="save" data-ng-click="action.saveProject()" ng-disabled="!enable.saveProject()" title="Save Map">
                                                     <i class="fa fa-floppy-o" aria-hidden="true"></i>                                    
