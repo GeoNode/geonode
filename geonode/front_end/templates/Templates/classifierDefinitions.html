@@ -21,7 +21,7 @@
 
         <div class="row" style="margin-bottom: 10px;">
 
-            <div class="col-md-3">
+            <div class="col-md-2">
                 <label style="font-weight: bold">Select Attribute</label>
 
                 <select ng-disabled="isEnvironmentProd" draft-only ng-model="flags.field" style="width: 150px;" class="form-control" ng-change="dropdownSelectionChanged()" ng-options="i.id as i.name for i in NeededAttributes">
@@ -33,7 +33,7 @@
                 <label style="font-weight: bold">Color Ramp</label>
                 <sti-plt-pkr ng-model="flags.chosenPalette" sti-pkr-options="paletteItems"></sti-plt-pkr>
             </div>
-            <div class="col-md-3">
+            <div class="col-md-3 text-right">
                 <div ng-if="isUnique()" style="padding: 3px; margin-top: 25px;">
                     <button type="button" class="btn btn-danger" ng-disabled="chosenValuesForGrid.length == 0"
                             style="padding: 2px 6px;" ng-click="removeAll()">
@@ -53,7 +53,7 @@
             </div>
         </div>
 
-        <div style="overflow: hidden; width: 918px;">
+        <div style="overflow: hidden; width: 100%">
 
             <div class="classification-style-editor-container" ng-if="selectedClass && !classificationEditor.hide" ng-class="{'style-editor-shown':!classificationEditor.hide}">
 
@@ -83,7 +83,7 @@
                         <div class="fixed-table-container">
                             
                             <div class="fixed-table-container-inner">
-                                <table cellspacing="0" class="table-striped">
+                                <table cellspacing="0" class="table-striped" style="width: 100%;">
                                     <thead>
                                         <tr>
                                             <th title="click for reverse colors" class="first" style="width: 80px; margin-top: 5px; cursor: pointer" ng-click='reverseColorSet()'>
@@ -148,11 +148,11 @@
                             </div>
                         </div>
                     </div>
-                    <div class="col-md-1" style="font-size: 20px; margin-top: 10%;">
+                    <div class="col-md-1 text-center" style="font-size: 20px; margin-top: 10%;">
                         <i class="fa fa-arrow-circle-up" style="cursor: pointer;" ng-click="moveUp()"></i>
                         <i class="fa fa-arrow-circle-down" style="cursor: pointer;" ng-click="moveDown()"></i>
                     </div>
-                    <div class="col-md-2" ng-if="isUnique()">
+                    <div class="col-md-4" ng-if="isUnique()">
                         <div class="panel panel-default" style="margin-bottom: 0">
                             <div class="panel-heading" style="padding: 3px 6px;">
                                 <h3 class="panel-title" style="font-size: 14px; line-height: 24px; font-family: RobotoRegular, Trebuchet MS, Verdana, Helvetica, Sans-Serif;">
@@ -161,9 +161,9 @@
                                 </h3>
                             </div>
                             <div class="panel-body" style="padding: 5px; min-height: 163px;">
-                                <ul class="nav-stacked" style="margin-bottom: 0; max-height: 165px; min-height: 165px; overflow-y: auto; margin-left: 0">
+                                <ul class="nav-stacked" style="margin-bottom: 0; max-height: 165px; min-height: 165px; overflow-y: auto; margin-left: 0;padding:0">
                                     <div ng-if="flags.PropertyData.length == 0" class="alert" ng-show="!isLoading()">No item</div>
-                                    <li ng-repeat="item in flags.PropertyData" class="list-group-item active" ng-show="!isLoading()" style="white-space: nowrap;">
+                                    <li ng-repeat="item in flags.PropertyData" class="list-group-item" ng-show="!isLoading()" style="white-space: nowrap;">
                                         <input type="checkbox" ng-attr-name="{{item.value}}" ng-model="item.checked" ng-change="selectionModeChanged(item)" style="margin-top: 0;" />
                                         {{item.value | identifyBlank}}
                                     </li>

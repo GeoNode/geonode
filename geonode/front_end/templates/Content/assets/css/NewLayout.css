@@ -904,32 +904,7 @@ input[type='number'].tiny-input
     margin: 10px 10px 0 0;
 }
 
-    .mini-dialog .modal-close-icon:hover
-    {
-        float: right;
-        color: #ffffff;
-        font-size: 16px;
-        margin: 10px 10px 0 0;
-    }
 
-.mini-dialog .dialog-close-icon
-{
-    position: absolute;
-    color: #ffffff;
-    background: #222222;
-    right: 5px;
-    top: 5px;
-    height: 21px;
-    width: 20px;
-    z-index: 50; 
-    cursor: pointer;
-    opacity: 0.5;
-    border-radius: 4px;
-    border: none;
-    text-align: center;
-    font-size: 14px;
-    font-weight: lighter;
-}
 
     .mini-dialog .dialog-close-icon:hover
     {
@@ -1084,4 +1059,23 @@ input:focus:invalid:focus, textarea:focus:invalid:focus, select:focus:invalid:fo
 
 .modal.fade.image-previewer-dialog {
     top: 20%;
+}
+.btn-default
+{
+    border-radius: 2px;
+}
+.modal-sub-header {
+    background-color: #f8f8f8;
+    border-bottom: 1px solid #eee;
+    padding: 10px;
+}
+.colorpicker-btn {
+    border: 1px solid #000;
+    padding: 10px;
+}
+.fixed-table-container-inner
+{
+    height: 250px;
+    overflow-y: auto;
+    border: 1px solid #ccc;
 }

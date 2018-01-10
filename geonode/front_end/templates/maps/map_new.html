@@ -291,14 +291,14 @@
                                         <location-search></location-search>
                                         <ul class="nav">
                 
-                                            <li draft-only>
+                                            <!-- <li draft-only>
                                                 <edit-toggle-button></edit-toggle-button>
-                                            </li>
-                                            <li class="divider-vertical" draft-only></li>
-                                            <li>
+                                            </li> -->
+                                            <!-- <li class="divider-vertical" draft-only></li> -->
+                                            <!-- <li>
                                                 <geo-location-toggle-button></geo-location-toggle-button>
-                                            </li>
-                                            <li class="divider-vertical" draft-only></li>
+                                            </li> -->
+                                            <!-- <li class="divider-vertical" draft-only></li> -->
                                             <li>
                                                 <navigation-history-buttons></navigation-history-buttons>
                                             </li>
@@ -317,17 +317,21 @@
                                             <li>
                                                 <set-marker></set-marker>
                                             </li>
+                                            <li>
+                                                <button class="control-button icon" ng-click="action.drawCircle()" title="Draw Circle"><i class="fa fa-circle-o" aria-hidden="true"></i>                                            </button>
+                                            </li>
+
                                             <li class="divider-vertical" draft-only></li>
-                                            <li draft-only>
+                                            <!-- <li draft-only>
                                                 <button class="control-button icon" id="close-project" ng-click="action.showCloseProjectOptions()" ng-disabled="(mapService.isEmpty() && !mapService.getMapName()) || isAttributeGridOn" title="Close Map">
                                                     <i class="fa fa-times-circle-o" aria-hidden="true"></i>                                                    
                                                     </button>
-                                            </li>
-                                            <li draft-only>
+                                            </li> -->
+                                            <!-- <li draft-only>
                                                 <button class="control-button icon" id="browse-projects" ng-disabled="isAttributeGridOn" ng-click="action.browseProject()" remove-focus title="Browse Maps">
                                                     <i class="fa fa-map-o" aria-hidden="true"></i>                                    
                                                     </button>
-                                            </li>
+                                            </li> -->
                                             <li draft-only>
                                                 <button class="control-button icon svg-ico-button" id="overpass-query" ng-disabled="isAttributeGridOn" ng-click="action.overpassApiQuery()" remove-focus title="Overpass Query">
                                                     
@@ -396,6 +400,49 @@
                                                </svg>
                                                     
                                                     </button>
+
+
+                                                    <div class="dropBox directions" style="right: -55px;">
+                                                            
+                                                                                                                        <div class="arrow-up"></div>
+                                                            
+                                                                                                                       
+                                                                                                                                
+                                                                                                                                
+                                                                                                                    
+                                                                                                                                                                                              
+                                                            
+                                                                                                                              <form class="form-inline ng-pristine ng-valid" style="margin-bottom: 25px;">
+                                                                                                                                    
+                                                                                                                                <textarea class="form-control" rows="3" style="width: 100%;margin-bottom:10px;"></textarea>
+
+                                                                                                                                    <a href="" class="btn btn-gd-primary pull-right icon-btn-color" target="_self">
+                                                                                                                                            Submit <i class="fa fa-arrow-right" aria-hidden="true"></i>                                                                    
+                                                                                                                                        </a>
+                                                                                                                                        
+                                                                                                                                        <a href="" class="btn btn-default pull-right" target="_self" style="margin-right: 5px;">
+                                                                                                                                                Cancel <i class="fa fa-times" aria-hidden="true"></i>                                                                                                                                                
+                                                                                                                                            </a>
+                                                                                                                                
+                                                                                                                              </form>
+                                                            
+                                                            
+                                                                                                                              <div>
+                                                                                                                                    
+                                                                                                                                    
+                                                                                                                                 
+                                                                                                                                    
+                                                                                                                                    </div>
+                                                            
+                                                                                                                                   
+                                                            
+                                                                                                                                   
+                                                            
+                                                                                                                             
+                                                            
+                                                                                                                </div>
+
+
                                             </li>
                                             <li draft-only>
                                                 <button class="control-button icon" id="save" data-ng-click="action.saveProject()" ng-disabled="!enable.saveProject()" title="Save Map">
@@ -431,7 +478,7 @@
                                                     </button> -->
                                             </li>
 
-                                            <li draft-only>
+                                            <!-- <li draft-only>
                                                     <button class="control-button icon" id="save" data-ng-click="" title="Directions">
                                                         <i class="fa fa-car" aria-hidden="true"></i>                                                        
                                                         </button>
@@ -502,7 +549,7 @@
                                                     </div>
 
 
-                                                </li>
+                                                </li> -->
 
                                         </ul>
                                    

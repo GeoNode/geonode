@@ -1,15 +1,21 @@
 ﻿<div class="mini-dialog">
-    <i class="fa fa-times modal-close-icon" ng-click="cancel()"></i>
+   
     <div class="modal-header">
-        <h3>[{nodeData.layer.name}] Properties</h3>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close" ng-click="cancel()">
+                    <span aria-hidden="true">×</span>
+                </button> 
+            <h4 class="modal-title">[{nodeData.layer.name}] Properties</h4>
     </div>
-    <select name="styleSelect" class="form-control" ng-change="onStyleChange()" ng-model="nodeData.selectedStyle"  ng-options="style.style.name for style in Styles">
+
+    <div class="modal-sub-header form-inline">
+
+    <select name="styleSelect" class="form-control" style="width: 400px;margin-right: 5px;" ng-change="onStyleChange()" ng-model="nodeData.selectedStyle"  ng-options="style.style.name for style in Styles">
             <option value="">-- Select Style --</option>
     </select>
-    <input class="btn btn-default" type="button" value="New" ng-click="newStyle()">
-    <div>
+    <input class="btn btn-gd-primary icon-btn-color" style="padding: 7px 12px;" type="button" value="New" ng-click="newStyle()">
 
     </div>
+
     <form ng-submit="save()" style="margin: 0" novalidate>
         <div class="modal-body" style="max-height: initial;">
             <tabset>
@@ -78,7 +84,7 @@
                     <layer-style-editor layer-style='nodeData.layer.style' feature-type="nodeData.layer.shapeType"></layer-style-editor>
                 </tab>
 
-                <tab active='tabs[2].active'>
+                <!-- <tab active='tabs[2].active'>
                     <tab-heading>
                         Fields
                         <span ng-if="tabs[2].active" class="selected-down-arrow"></span>
@@ -112,7 +118,7 @@
                         <attribute-definition-table>
                         </attribute-definition-table>
                     </div>
-                </tab>
+                </tab> -->
                 <tab active="tabs[3].active">
                     <tab-heading>
                         Classifier
