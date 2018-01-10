@@ -9,12 +9,12 @@ services:
       - dbbackups:/pg_backups
 
   elasticsearch:
-   image: elasticsearch
-   container_name: elasticsearch4${COMPOSE_PROJECT_NAME}
+    image: elasticsearch
+    container_name: elasticsearch4${COMPOSE_PROJECT_NAME}
 
   rabbitmq:
-     image: rabbitmq
-     container_name: rabbitmq4${COMPOSE_PROJECT_NAME}
+    image: rabbitmq
+    container_name: rabbitmq4${COMPOSE_PROJECT_NAME}
 
   django:
     image: geonode/geonode:2.6.x
@@ -75,8 +75,8 @@ services:
 volumes:
 
   geoserver_data_dir:
-      name: ${COMPOSE_PROJECT_NAME}-gsdatadir
+    name: ${COMPOSE_PROJECT_NAME}-gsdatadir
   dbdata:
-      name: ${COMPOSE_PROJECT_NAME}-dbdata
+    name: ${COMPOSE_PROJECT_NAME}-dbdata
   dbbackups:
-      name: ${COMPOSE_PROJECT_NAME}-dbbackups
+    name: ${COMPOSE_PROJECT_NAME}-dbbackups
