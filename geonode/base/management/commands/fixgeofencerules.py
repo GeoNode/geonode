@@ -18,12 +18,13 @@
 #
 #########################################################################
 
+from django.conf import settings
 from django.core.management.base import BaseCommand
 from guardian.shortcuts import get_objects_for_user
 from geonode.people.models import Profile
 from geonode.layers.models import Layer
-from geonode.security.models import set_geofence_all, set_geofence_owner
-from geonode.security.models import get_users_with_perms
+
+from geonode.security import models
 
 
 class Command(BaseCommand):
@@ -31,29 +32,36 @@ class Command(BaseCommand):
     """
 
     def handle(self, *args, **options):
-        profiles = Profile.objects.filter(is_superuser=False)
-        authorized = list(get_objects_for_user(profiles[0], 'base.view_resourcebase').values('id'))
-        layers = Layer.objects.filter(id__in=[d['id'] for d in authorized])
+        use_geofence = settings.OGC_SERVER['default'].get(
+            "GEOFENCE_SECURITY_ENABLED", False)
+        if use_geofence:
+            profiles = Profile.objects.filter(is_superuser=False)
+            authorized = list(get_objects_for_user(profiles[0], 'base.view_resourcebase').values('id'))
+            layers = Layer.objects.filter(id__in=[d['id'] for d in authorized])
 
-        for index, layer in enumerate(layers):
-            print "[%s / %s] Setting default permissions to Layer [%s] ..." % ((index + 1), len(layers), layer.name)
-            try:
-                set_geofence_all(layer)
-            except:
-                print "[ERROR] Layer [%s] couldn't be updated" % (layer.name)
+            for index, layer in enumerate(layers):
+                print "[%s / %s] Setting default permissions to Layer [%s] ..." % ((index + 1), len(layers), layer.name)
+                try:
+                    models.set_geofence_all(layer)
+                except:
+                    print "[ERROR] Layer [%s] couldn't be updated" % (layer.name)
 
-        protected_layers = Layer.objects.all().exclude(id__in=[d['id'] for d in authorized])
+            protected_layers = Layer.objects.all().exclude(id__in=[d['id'] for d in authorized])
 
-        for index, layer in enumerate(protected_layers):
-            print "[%s / %s] Setting owner permissions to Layer [%s] ..." \
-                  % ((index + 1), len(protected_layers), layer.name)
-            try:
-                perms = get_users_with_perms(layer)
-                for profile in perms.keys():
-                    print " - [%s / %s]" % (str(profile), layer.name)
-                    geofence_user = str(profile)
-                    if "AnonymousUser" in geofence_user:
-                        geofence_user = None
-                    set_geofence_owner(layer, geofence_user, view_perms=True, download_perms=True)
-            except:
-                print "[ERROR] Layer [%s] couldn't be updated" % (layer.name)
+            for index, layer in enumerate(protected_layers):
+                print "[%s / %s] Setting owner permissions to Layer [%s] ..." \
+                      % ((index + 1), len(protected_layers), layer.name)
+                try:
+                    perms = models.get_users_with_perms(layer)
+                    for profile in perms.keys():
+                        print " - [%s / %s]" % (str(profile), layer.name)
+                        geofence_user = str(profile)
+                        if "AnonymousUser" in geofence_user:
+                            geofence_user = None
+                        models.set_geofence_owner(
+                            layer, geofence_user,
+                            view_perms=True,
+                            download_perms=True
+                        )
+                except:
+                    print "[ERROR] Layer [%s] couldn't be updated" % (layer.name)

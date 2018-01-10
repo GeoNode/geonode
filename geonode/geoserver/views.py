@@ -48,7 +48,7 @@ from geonode.layers.models import Layer, Style
 from geonode.layers.views import _resolve_layer, _PERMISSION_MSG_MODIFY
 from geonode.maps.models import Map
 from geonode.geoserver.signals import gs_catalog
-from geonode.tasks.update import geoserver_update_layers
+from .tasks import geoserver_update_layers
 from geonode.utils import json_response, _get_basic_auth_info
 from geoserver.catalog import FailedRequestError, ConflictingDataError
 from .helpers import (get_stores, ogc_server_settings,
@@ -158,7 +158,7 @@ def layer_style_upload(request, layername):
     else:
         try:
             cat = gs_catalog
-            cat.create_style(name, sld, raw=True)
+            cat.create_style(name, sld, raw=True, workspace=settings.DEFAULT_WORKSPACE)
             layer.styles = layer.styles + \
                 [type('style', (object,), {'name': name})]
             cat.save(layer.publishing)
@@ -194,7 +194,10 @@ def layer_style_manage(request, layername):
                 logger.warn(
                     'Unable to set the default style.  Ensure Geoserver is running and that this layer exists.')
 
-            all_available_gs_styles = cat.get_styles()
+            # Ahmed Nour:
+            # Get public styles also
+            all_available_gs_styles = cat.get_styles(settings.DEFAULT_WORKSPACE)
+            all_available_gs_styles += cat.get_styles()
             gs_styles = []
             for style in all_available_gs_styles:
                 sld_title = style.name
@@ -256,10 +259,11 @@ def layer_style_manage(request, layername):
             # Save to GeoServer
             cat = gs_catalog
             gs_layer = cat.get_layer(layer.name)
-            gs_layer.default_style = cat.get_style(default_style)
+            gs_layer.default_style = cat.get_style(default_style, workspace=settings.DEFAULT_WORKSPACE) or \
+                cat.get_style(default_style)
             styles = []
             for style in selected_styles:
-                styles.append(cat.get_style(style))
+                styles.append(cat.get_style(style, workspace=settings.DEFAULT_WORKSPACE) or cat.get_style(style))
             gs_layer.styles = styles
             cat.save(gs_layer)
 
@@ -366,7 +370,7 @@ def style_change_check(request, path):
     return authorized
 
 
-def geoserver_rest_proxy(request, proxy_path, downstream_path):
+def geoserver_rest_proxy(request, proxy_path, downstream_path, workspace=None):
 
     if not request.user.is_authenticated():
         return HttpResponse(
@@ -380,6 +384,28 @@ def geoserver_rest_proxy(request, proxy_path, downstream_path):
 
     path = strip_prefix(request.get_full_path(), proxy_path)
     url = str("".join([ogc_server_settings.LOCATION, downstream_path, path]))
+    if settings.DEFAULT_WORKSPACE:
+        # Check that SLD is actually under the workspace
+        from urllib2 import urlopen, HTTPError
+
+        try:
+            urlopen(url)
+        except HTTPError as err:
+            logger.warn("[geoserver_rest_proxy] Got Exception from url %s" % url, err)
+            if err.code == 404:
+                # Lets try http://localhost:8080/geoserver/rest/workspaces/<ws>/styles/<style>.xml
+                _url = str("".join([ogc_server_settings.LOCATION,
+                                    'rest/workspaces/', settings.DEFAULT_WORKSPACE, '/styles',
+                                    path]))
+                try:
+                    logger.warn("[geoserver_rest_proxy] Got Exception from url %s" % _url)
+                    logger.warn("[geoserver_rest_proxy] Trying url %s" % _url)
+                    urlopen(_url)
+                    url = _url
+                except HTTPError as err:
+                    logger.warn("[geoserver_rest_proxy] Got Exception from url %s" % _url, err)
+                    logger.warn("[geoserver_rest_proxy] Raise Exception")
+                    raise
 
     http = httplib2.Http()
     username, password = ogc_server_settings.credentials
@@ -397,13 +423,14 @@ def geoserver_rest_proxy(request, proxy_path, downstream_path):
         # be edited by the user
         # we should remove this geonode dependency calling layers.views straight
         # from GXP, bypassing the proxy
-        if downstream_path in ('rest/styles', 'rest/layers') and len(request.body) > 0:
+        if downstream_path in ('rest/styles', 'rest/layers', 'rest/workspaces') and len(request.body) > 0:
             if not style_change_check(request, downstream_path):
                 return HttpResponse(
                     _("You don't have permissions to change style for this layer"),
                     content_type="text/plain",
                     status=401)
             if downstream_path == 'rest/styles':
+                logger.info("[geoserver_rest_proxy] Updating Style to ---> url %s" % url)
                 affected_layers = style_update(request, url)
 
     response, content = http.request(

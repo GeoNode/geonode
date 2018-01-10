@@ -34,7 +34,7 @@ from django.db.models import Q
 from geonode.people.models import Profile
 from geonode.people.forms import ProfileForm
 from geonode.people.forms import ForgotUsernameForm
-from geonode.tasks.email import send_email
+from geonode.tasks.tasks import send_email
 
 
 @login_required

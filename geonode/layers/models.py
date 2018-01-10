@@ -27,7 +27,7 @@ from django.db import models
 from django.db.models import signals
 from django.contrib.contenttypes.models import ContentType
 from django.conf import settings
-from django.utils.translation import ugettext as _
+from django.utils.translation import ugettext_lazy as _
 from django.core.urlresolvers import reverse
 from django.core.files.storage import FileSystemStorage
 
@@ -38,6 +38,9 @@ from geonode.utils import check_shp_columnnames
 from geonode.security.models import (
     remove_object_permissions,
     PermissionLevelMixin)
+
+from ..services.enumerations import CASCADED
+from ..services.enumerations import INDEXED
 
 logger = logging.getLogger("geonode.layers.models")
 
@@ -59,6 +62,10 @@ TIME_REGEX_FORMAT = {
     '[0-9]{8}T[0-9]{6}': '%Y%m%dT%H%M%S',
     '[0-9]{8}T[0-9]{6}Z': '%Y%m%dT%H%M%SZ'
 }
+
+# these are only used if there is no user-configured value in the settings
+_DEFAULT_CASCADE_WORKSPACE = "cascaded-services"
+_DEFAULT_WORKSPACE = "cascaded-services"
 
 
 class Style(models.Model, PermissionLevelMixin):
@@ -142,14 +149,17 @@ class Layer(ResourceBase):
 
     default_style = models.ForeignKey(
         Style,
+        on_delete=models.SET_NULL,
         related_name='layer_default_style',
         null=True,
         blank=True)
     styles = models.ManyToManyField(Style, related_name='layer_styles')
+    service = models.ForeignKey("services.Service", null=True, blank=True)
 
     charset = models.CharField(max_length=255, default='UTF-8')
 
     upload_session = models.ForeignKey('UploadSession', blank=True, null=True)
+
     # join target: available only for layers within the DATAVERSE_DB
     def add_as_join_target(self):
         if not self.id:
@@ -160,7 +170,7 @@ class Layer(ResourceBase):
         add_as_target_link = '%s?layer=%s' % (admin_url, self.id)
         return '<a href="%s">Add as Join Target</a>' % (add_as_target_link)
     add_as_join_target.allow_tags = True
-    
+
     @property
     def is_remote(self):
         return self.storeType == "remoteStore"
@@ -174,6 +184,7 @@ class Layer(ResourceBase):
             return None
         else:
             return service_layers[0].service
+
 
     def is_vector(self):
         return self.storeType == 'dataStore'
@@ -202,32 +213,22 @@ class Layer(ResourceBase):
         return None
 
     @property
-    def service_type(self):
-        if self.storeType == 'coverageStore':
-            return "WCS"
-        if self.storeType == 'dataStore':
-            return "WFS"
-
-    @property
     def ows_url(self):
-        if self.is_remote:
-            if self.service and self.service.base_url:
-                return self.service.base_url
-            else:
-                return None
+        if self.service is not None and self.service.method == INDEXED:
+            result = self.service.base_url
         else:
-            return settings.OGC_SERVER['default']['PUBLIC_LOCATION'] + "wms"
+            result = "{base}ows".format(
+                base=settings.OGC_SERVER['default']['PUBLIC_LOCATION'],
+            )
+        return result
 
     @property
     def ptype(self):
-        if self.is_remote:
-            return self.service.ptype
-        else:
-            return "gxp_wmscsource"
+        return self.service.ptype if self.service else "gxp_wmscsource"
 
     @property
     def service_typename(self):
-        if self.is_remote:
+        if self.service is not None and self.service.method == INDEXED:
             return "%s:%s" % (self.service.name, self.alternate)
         else:
             return self.alternate
@@ -273,7 +274,8 @@ class Layer(ResourceBase):
         return base_files.get(), list_col
 
     def get_absolute_url(self):
-        return reverse('layer_detail', args=(self.service_typename,))
+        # return reverse('layer_detail', args=(self.service_typename,))
+        return reverse('layer_detail', args=(self.alternate,))
 
     def attribute_config(self):
         # Get custom attribute sort order and labels if any
@@ -287,12 +289,13 @@ class Layer(ResourceBase):
         return cfg
 
     def __str__(self):
-        if self.alternate is not None:
-            return "%s Layer" % self.service_typename.encode('utf-8')
-        elif self.name is not None:
-            return "%s Layer" % self.name
-        else:
-            return "Unamed Layer"
+        return self.alternate
+        # if self.alternate is not None:
+        #     return "%s Layer" % self.service_typename.encode('utf-8')
+        # elif self.name is not None:
+        #     return "%s Layer" % self.name
+        # else:
+        #     return "Unamed Layer"
 
     class Meta:
         # custom permissions,
@@ -464,7 +467,7 @@ class Attribute(models.Model):
         default=True)
     display_order = models.IntegerField(_('display order'), help_text=_(
         'specifies the order in which attribute should be displayed in identify results'), default=1)
-    
+
     searchable = models.BooleanField(
         _('Searchable?'),
         default=False)
@@ -552,6 +555,22 @@ class Attribute(models.Model):
         return self.unique_values.split(',')
 
 
+def _get_alternate_name(instance):
+    if instance.service is not None and instance.service.method == INDEXED:
+        result = instance.name
+    elif instance.service is not None and instance.service.method == CASCADED:
+        result = "{}:{}".format(
+            getattr(settings, "CASCADE_WORKSPACE", _DEFAULT_CASCADE_WORKSPACE),
+            instance.name
+        )
+    else:  # we are not dealing with a service-related instance
+        result = "{}:{}".format(
+            getattr(settings, "DEFAULT_WORKSPACE", _DEFAULT_WORKSPACE),
+            instance.name
+        )
+    return result
+
+
 def pre_save_layer(instance, sender, **kwargs):
     if kwargs.get('raw', False):
         instance.owner = instance.resourcebase_ptr.owner
@@ -573,12 +592,10 @@ def pre_save_layer(instance, sender, **kwargs):
     if instance.uuid == '':
         instance.uuid = str(uuid.uuid1())
 
+    logger.debug("In pre_save_layer")
     if instance.alternate is None:
-        # Set a sensible default for the typename
-        if instance.is_remote:
-            instance.alternate = instance.name
-        else:
-            instance.alternate = 'geonode:%s' % instance.name
+        instance.alternate = _get_alternate_name(instance)
+    logger.debug("instance.alternate is: {}".format(instance.alternate))
 
     base_file, info = instance.get_base_file()
 
@@ -619,17 +636,16 @@ def pre_delete_layer(instance, sender, **kwargs):
     Remove any associated style to the layer, if it is not used by other layers.
     Default style will be deleted in post_delete_layer
     """
-    if instance.is_remote:
+    if instance.service is not None and instance.service.method == INDEXED:
         # we need to delete the maplayers here because in the post save layer.service is not available anymore
         # REFACTOR
         from geonode.maps.models import MapLayer
-        if instance.alternate:
-            logger.debug(
-                "Going to delete associated maplayers for [%s]",
-                instance.alternate.encode('utf-8'))
-            MapLayer.objects.filter(
-                name=instance.alternate,
-                ows_url=instance.ows_url).delete()
+        logger.debug(
+            "Going to delete associated maplayers for [%s]",
+            instance.alternate.encode('utf-8'))
+        MapLayer.objects.filter(
+            name=instance.alternate,
+            ows_url=instance.ows_url).delete()
         return
 
     logger.debug(
@@ -658,7 +674,7 @@ def post_delete_layer(instance, sender, **kwargs):
     Removed the layer from any associated map, if any.
     Remove the layer default style.
     """
-    if instance.is_remote:
+    if instance.service is not None and instance.service.method == INDEXED:
         return
 
     from geonode.maps.models import MapLayer

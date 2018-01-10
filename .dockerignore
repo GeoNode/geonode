@@ -1,0 +1,6 @@
+geonode/uploaded
+geonode/qgis_layer
+geonode/qgis_tiles
+docs
+.coverage
+.celerybeat-*

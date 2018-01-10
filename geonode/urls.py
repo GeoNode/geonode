@@ -79,6 +79,7 @@ urlpatterns = patterns('',
 
                        # Social views
                        (r"^account/", include("account.urls")),
+                       (r'^invitations/', include('invitations.urls', namespace='invitations')),
                        (r'^people/', include('geonode.people.urls')),
                        (r'^avatar/', include('avatar.urls')),
                        # (r'^comments/', include('dialogos.urls')),
@@ -147,7 +148,7 @@ if 'geonode.geoserver' in settings.INSTALLED_APPS:
                                 get_capabilities, name='capabilities_layer'),
                             url(r'^capabilities/map/(?P<mapid>\d+)/$',
                                 get_capabilities, name='capabilities_map'),
-                            url(r'^capabilities/user/(?P<user>[\w.]+)/$',
+                            url(r'^capabilities/user/(?P<user>[\w.-]+)/$',
                                 get_capabilities, name='capabilities_user'),
                             url(r'^capabilities/category/(?P<category>\w+)/$',
                                 get_capabilities, name='capabilities_category'),

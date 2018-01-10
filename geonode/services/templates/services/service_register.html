@@ -14,11 +14,27 @@
 </div>
     <form method="POST" id="service_register_form">
     {% csrf_token %}
-    {{ create_service_form|as_bootstrap }}
-
-    <div align="center"><p><input type="submit" class="btn btn-primary pull-left" id="submit_button" value="{% trans "Create" %}" /></p></div>
+    {{ form|as_bootstrap }}
+    <input type="submit" class="btn btn-primary" data-toggle="modal" data-target="progressModal" id="submit_button" value="{% trans "Create" %}" />
     </form>
+    <div class="modal fade" data-backdrop="static" data-keyboard="false" id="progressModal" tabindex="-1" role="dialog" aria-labelledby="progressModalLabel">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    {% trans "Connecting to service..." %}
+                </div>
+                <div class="modal-body">
+                    <div class="progress" id="serviceRegisterProgress">
+                        <div class="progress-bar progress-bar-striped progress-bar-info active" role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100" style="width: 100%;">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 
+    <!-- Replace these response and error divs with django's messaging system -->
+    <!--
     <div id="responseDiv" style="display:none;">
         <h4>{%  trans "Service has been created:" %}</h4>
     </div>
@@ -30,74 +46,85 @@
         <p>{%  trans "The following layers will be imported" %}</p>
         <table id="dataTable"></table>
     </div>
+    -->
 {% endblock %}
 {% block extra_script %}
 {{ block.super }}
 <script type="text/javascript">
-    $( document ).ready(function() {
-        $("#service_register_form").submit(function(e) {
-            var service_name_regexp = new RegExp('^[a-zA-Z]+[a-zA-Z0-9-_\.]*$');
-            if(!service_name_regexp.test($("#id_name").val())) {
-                $("#responseDiv").html("Service name must start with a letter, followed by letters, numbers, or the characters: . - _").show();
-                $("#submit_button").prop("disabled",false);
-                return false;
-            }
-
-            $("#responseDiv").html("Importing service, please wait...").show();
-            $(".result").remove();
-            $("#tableDiv").hide();
-            $("#dataTable").html("");
-            $(".error").html("");
-            $("#submit_button").prop("disabled",true);
-            e.preventDefault();
-            var url = $("#service_register_form").attr( "action" );
-
-            $.ajax({
-                type: "POST",
-                url: url,
-                dataType: "json",
-                data: $("#service_register_form").serialize(), // serializes the form's elements.
-                progress: function(jqXHR, progressEvent) {
-                    if (progressEvent.lengthComputable) {
-                        console.log("Importing service and layers - " + (Math.round(progressEvent.loaded / progressEvent.total * 100)) + "%");
-                    } else {
-                        console.log("Importing service and layers...");
-                    }
-                },
-                success: function(data)
-                {
-                    $("#submit_button").prop("disabled",false);
-                    $("#responseDiv").html("");
-                    for (var item in data) {
-                        if (data[item].available_layers) {
-                            $.each(data[item].available_layers,function(i,row){
-                                $('<tr>').attr('id',i).
-                                        append($('<td>').text(row[0])).
-                                        append($('<td>').text(row[1])).appendTo('#dataTable');
-                            });
-                            $("#tableDiv").show();
-                        }
-                        if (data[item].service_id) {
-                            $('<div>').attr("class", "result").append($('<a>').
-                                            attr('href', "/services/" + data[item].service_id).
-                                            text(data[item].service_title||data[item].service_name)).
-                                    appendTo("#responseDiv");
-                        }
-                        else {
-                            $('<h4>').attr("class", "result").text(data[item].msg).appendTo("#responseDiv");
-                        }
-                        $("#responseDiv").show();
-                    }
-                },
-                error: function(data) {
-                    $("#submit_button").prop("disabled",false);
-                    $(".error").html(data.responseText);
-                    $(".error").show();
-                }
-            });
-
-            return false; // avoid to execute the actual submit of the form.
-        });
+$(document).ready(function () {
+    $('#service_register_form').submit(function () {
+        $("#progressModal").modal("show");
     });
+})
 </script>
+<!--This will not be needed anymore since we're deferring layer import to a second stage-->
+<!--
+    <script type="text/javascript">
+        $( document ).ready(function() {
+            $("#service_register_form").submit(function(e) {
+                var service_name_regexp = new RegExp('^[a-zA-Z]+[a-zA-Z0-9-_\.]*$');
+                if(!service_name_regexp.test($("#id_name").val())) {
+                    $("#responseDiv").html("Service name must start with a letter, followed by letters, numbers, or the characters: . - _").show();
+                    $("#submit_button").prop("disabled",false);
+                    return false;
+                }
+
+                $("#responseDiv").html("Importing service, please wait...").show();
+                $(".result").remove();
+                $("#tableDiv").hide();
+                $("#dataTable").html("");
+                $(".error").html("");
+                $("#submit_button").prop("disabled",true);
+                e.preventDefault();
+                var url = $("#service_register_form").attr( "action" );
+
+                $.ajax({
+                    type: "POST",
+                    url: url,
+                    dataType: "json",
+                    data: $("#service_register_form").serialize(), // serializes the form's elements.
+                    progress: function(jqXHR, progressEvent) {
+                        if (progressEvent.lengthComputable) {
+                            console.log("Importing service and layers - " + (Math.round(progressEvent.loaded / progressEvent.total * 100)) + "%");
+                        } else {
+                            console.log("Importing service and layers...");
+                        }
+                    },
+                    success: function(data)
+                    {
+                        $("#submit_button").prop("disabled",false);
+                        $("#responseDiv").html("");
+                        for (var item in data) {
+                            if (data[item].available_layers) {
+                                $.each(data[item].available_layers,function(i,row){
+                                    $('<tr>').attr('id',i).
+                                            append($('<td>').text(row[0])).
+                                            append($('<td>').text(row[1])).appendTo('#dataTable');
+                                });
+                                $("#tableDiv").show();
+                            }
+                            if (data[item].service_id) {
+                                $('<div>').attr("class", "result").append($('<a>').
+                                                attr('href', "/services/" + data[item].service_id).
+                                                text(data[item].service_title||data[item].service_name)).
+                                        appendTo("#responseDiv");
+                            }
+                            else {
+                                $('<h4>').attr("class", "result").text(data[item].msg).appendTo("#responseDiv");
+                            }
+                            $("#responseDiv").show();
+                        }
+                    },
+                    error: function(data) {
+                        $("#submit_button").prop("disabled",false);
+                        $(".error").html(data.responseText);
+                        $(".error").show();
+                    }
+                });
+
+                return false; // avoid to execute the actual submit of the form.
+            });
+        });
+    </script>
+    -->
 {% endblock %}

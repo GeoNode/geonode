@@ -29,8 +29,8 @@ from geonode.messaging import connection
 from geonode.messaging.consumer import Consumer
 
 logger = logging.getLogger(__package__)
-logger.addHandler(logging.StreamHandler(sys.stdout))
-logger.setLevel(logging.DEBUG)
+# logger.addHandler(logging.StreamHandler(sys.stdout))
+# logger.setLevel(logging.DEBUG)
 
 
 class Command(BaseCommand):

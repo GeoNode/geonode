@@ -30,11 +30,8 @@ import dj_database_url
 #
 # General Django development settings
 #
-import django
 from django.conf.global_settings import DATETIME_INPUT_FORMATS
-from geonode import __file__ as geonode_path
 from geonode import get_version
-from geonode.celery_app import app  # flake8: noqa
 from kombu import Queue
 
 # GeoNode Version
@@ -94,7 +91,7 @@ DATABASE_URL = os.getenv(
     )
 )
 
-#DATABASE_URL = 'postgresql://test_geonode:test_geonode@localhost:5432/geonode'
+# DATABASE_URL = 'postgresql://test_geonode:test_geonode@localhost:5432/geonode'
 
 # Defines settings for development
 
@@ -369,6 +366,8 @@ INSTALLED_APPS = (
     'guardian',
     'oauth2_provider',
     'corsheaders',
+
+    'invitations',
 ) + GEONODE_APPS
 
 MONITORING_ENABLED = False
@@ -482,7 +481,8 @@ MIDDLEWARE_CLASSES = (
     # 'geonode.middleware.PrintProxyMiddleware',
 
     # If you use SessionAuthenticationMiddleware, be sure it appears before OAuth2TokenMiddleware.
-    # SessionAuthenticationMiddleware is NOT required for using django-oauth-toolkit.
+    # SessionAuthenticationMiddleware is NOT required for using
+    # django-oauth-toolkit.
     'django.contrib.auth.middleware.SessionAuthenticationMiddleware',
     'oauth2_provider.middleware.OAuth2TokenMiddleware',
 )
@@ -593,8 +593,6 @@ NOSE_ARGS = [
 # GeoNode specific settings
 #
 SITEURL = os.getenv('SITEURL', "http://localhost:8000/")
-
-USE_QUEUE = strtobool(os.getenv('USE_QUEUE', 'False'))
 
 DEFAULT_WORKSPACE = os.getenv('DEFAULT_WORKSPACE', 'geonode')
 CASCADE_WORKSPACE = os.getenv('CASCADE_WORKSPACE', 'geonode')
@@ -937,10 +935,10 @@ AUTO_GENERATE_AVATAR_SIZES = (
 )
 
 # Number of results per page listed in the GeoNode search pages
-CLIENT_RESULTS_LIMIT = int(os.getenv('CLIENT_RESULTS_LIMIT', '100'))
+CLIENT_RESULTS_LIMIT = int(os.getenv('CLIENT_RESULTS_LIMIT', '20'))
 
 # Number of items returned by the apis 0 equals no limit
-API_LIMIT_PER_PAGE = int(os.getenv('API_LIMIT_PER_PAGE', '20'))
+API_LIMIT_PER_PAGE = int(os.getenv('API_LIMIT_PER_PAGE', '200'))
 API_INCLUDE_REGIONS_COUNT = strtobool(
     os.getenv('API_INCLUDE_REGIONS_COUNT', 'False'))
 
@@ -1093,31 +1091,23 @@ if NOTIFICATION_ENABLED:
     INSTALLED_APPS += (NOTIFICATIONS_MODULE, )
 
 
-# broker url is for celery worker
-BROKER_URL = os.getenv('BROKER_URL', "django://")
-
 # async signals can be the same as broker url
 # but they should have separate setting anyway
 # use amqp:// for local rabbitmq server
 ASYNC_SIGNALS_BROKER_URL = 'memory://'
 
-CELERY_ALWAYS_EAGER = True
-CELERY_EAGER_PROPAGATES_EXCEPTIONS = True
-CELERY_IGNORE_RESULT = True
-CELERY_SEND_EVENTS = False
+CELERY_BROKER_URL = os.getenv('BROKER_URL', "amqp://")
 CELERY_RESULT_BACKEND = None
+CELERY_TASK_ALWAYS_EAGER = True  # set this to False in order to run async
+CELERY_TASK_IGNORE_RESULT = True
+CELERY_TASK_DEFAULT_QUEUE = "default"
+CELERY_TASK_DEFAULT_EXCHANGE = "default"
+CELERY_TASK_DEFAULT_EXCHANGE_TYPE = "direct"
+CELERY_TASK_DEFAULT_ROUTING_KEY = "default"
+CELERY_TASK_CREATE_MISSING_QUEUES = True
 CELERY_TASK_RESULT_EXPIRES = 1
-CELERY_DISABLE_RATE_LIMITS = True
-CELERY_DEFAULT_QUEUE = "default"
-CELERY_DEFAULT_EXCHANGE = "default"
-CELERY_DEFAULT_EXCHANGE_TYPE = "direct"
-CELERY_DEFAULT_ROUTING_KEY = "default"
-CELERY_CREATE_MISSING_QUEUES = True
-CELERY_IMPORTS = (
-    'geonode.tasks.deletion',
-    'geonode.tasks.update',
-    'geonode.tasks.email'
-)
+CELERY_WORKER_DISABLE_RATE_LIMITS = True
+CELERY_WORKER_SEND_TASK_EVENTS = False
 
 
 CELERY_QUEUES = [
@@ -1163,14 +1153,14 @@ if S3_MEDIA_ENABLED:
 # 3. Override settings in a local_settings.py file, legacy.
 # Load more settings from a file called local_settings.py if it exists
 try:
-    from geonode.local_settings import *
+    from geonode.local_settings import *  # flake8: noqa
 except ImportError:
     pass
 
 
 # Load additonal basemaps, see geonode/contrib/api_basemap/README.md
 try:
-    from geonode.contrib.api_basemaps import *
+    from geonode.contrib.api_basemaps import *  # flake8: noqa
 except ImportError:
     pass
 
@@ -1190,7 +1180,7 @@ if os.name == 'nt':
             GDAL_LIBRARY_PATH = os.environ.get('GDAL_LIBRARY_PATH')
         else:
             # maybe it will be found regardless if not it will throw 500 error
-            from django.contrib.gis.geos import GEOSGeometry
+            from django.contrib.gis.geos import GEOSGeometry  # flake8: noqa
 
 
 # define the urls after the settings are overridden
@@ -1225,15 +1215,17 @@ ADMIN_MODERATE_UPLOADS = False
 
 # add following lines to your local settings to enable monitoring
 if MONITORING_ENABLED:
-    INSTALLED_APPS + ('geonode.contrib.monitoring',)
-    MIDDLEWARE_CLASSES + \
+    INSTALLED_APPS += ('geonode.contrib.monitoring',)
+    MIDDLEWARE_CLASSES += \
         ('geonode.contrib.monitoring.middleware.MonitoringMiddleware',)
 
 GEOIP_PATH = os.path.join(PROJECT_ROOT, 'GeoIPCities.dat')
-# If this option is enabled, Resources belonging to a Group won't be visible by others
+# If this option is enabled, Resources belonging to a Group won't be
+# visible by others
 GROUP_PRIVATE_RESOURCES = False
 
-# If this option is enabled, Groups will become strictly Mandatory on Metadata Wizard
+# If this option is enabled, Groups will become strictly Mandatory on
+# Metadata Wizard
 GROUP_MANDATORY_RESOURCES = False
 
 # A boolean which specifies wether to display the email in user's profile

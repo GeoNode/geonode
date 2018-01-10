@@ -6,7 +6,7 @@
 {% include "geonode/app_header.html" %}
 {% include "geonode/geo_header.html" %}
 {{ block.super }}
-<script type="text/javascript">
+<script type="text/javascript" xmlns="http://www.w3.org/1999/html">
 var app;
 {% autoescape off %}
 Ext.onReady(function() {
@@ -40,63 +40,94 @@ Ext.onReady(function() {
 {% block body %}
 <div class="twocol">
   <h3>{{service.title|default:service.name}}</h3>
-  <p><strong>{% trans "Name:" %}</strong> {{service.name}}</p>
-  <p><strong>{% trans "URL:" %}</strong> {{service.base_url}}</p>
-  <p><strong>{% trans "Abstract:" %}</strong> {{service.abstract}}</p>
-  <p><strong>{% trans "Keywords:" %}</strong> {{ service.keywords.all|join:", " }}</p>
-  <p><strong>{% trans "Contact:" %}</strong> <a href="{% url "profile_detail" service.owner.username %}">{{ service.owner }}</a></p>
+      <p><strong>{% trans "Name:" %}</strong> {{service.name}}</p>
+      <p><strong>{% trans "Type:" %}</strong> {{service.type}}</p>
+      <p><strong>{% trans "URL:" %}</strong> {{service.base_url}}</p>
+      <p><strong>{% trans "Abstract:" %}</strong> {{service.abstract}}</p>
+      <p><strong>{% trans "Keywords:" %}</strong> {{ service.keywords.all|join:", " }}</p>
+      <p><strong>{% trans "Contact:" %}</strong> <a href="{% url "profile_detail" service.owner.username %}">{{ service.owner }}</a></p>
+
 
     {% autoescape off %}
-    {%  if services %}
-        <h3>{% trans "Services" %}</h3>
-        <p>{% trans "This CSW server contains the following services" %} </p>
-        <table>
-            <tr><th style="width:50%">Title</th><th>Description</th></tr>
-            {% for service in services %}
+        <h3>{% trans "Service Resources" %} <span class="badge">{{ total_resources }}</span></h3>
+        {% if total_resources == 0 %}
+            <p>{% trans "No resources have been imported yet." %}</p>
+        {% else %}
+            <div class="row">
+            <table class="table">
+                <thead>
+                <th>Title</th>
+                <th>Description</th>
+                </thead>
+                {% for job in resource_jobs %}
+                    <tr>
+                        <td>{{job.resource_id}}</td>
+                        <td>
+                            <div class="row">
+                                <div class="col-md-9">
+                                    {{job.status}} - {{ job.details }}
+                                </div>
+                                {% if job.status == 'FAILED' %}
+                                    <div class="btn-group pull-right">
+                                        <button title="Retry job" class="btn" name="retry-{{ job.resource_id }}"><i class="fa fa-refresh fa-fw" aria-hidden="true"></i></button>
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </td>
+                    </tr>
+                {% endfor %}
+                {% for service in services %}
                     <tr>
                         <td><a href='{%  url "service_detail" service.id %}'>{{service.title}}</a></td>
                         <td>{{service.abstract}}</td>
                     </tr>
-            {% endfor %}
-        </table>
+                {% endfor %}
+                {% for layer in layers %}
+                    {% if layer.group != "background" %}
+                        <tr>
+                            <td><a href='{{ layer.get_absolute_url }}'>{{layer.title}}</a></td>
+                            <td>{{layer.abstract}}</td>
+                        </tr>
+                    {% endif %}
+                {% endfor %}
+            </table>
+            </div>
+        {% endif %}
+    {% if resources.paginator.num_pages > 1 %}
+        <div class="row">
+            <nav aria-label="importable resources pages">
+                <ul class="pagination hidden-xs pull-right">
+                    {% if resources.has_previous %}
+                        <li><a id="previous" aria-label="Previous" href="?page={{ resources.previous_page_number }}">previous</a></li>
+                    {% else %}
+                        <li class="disabled"><a aria-label="Previous" href="#">previous</a></li>
+                    {% endif %}
+                    <li class="active"><a href="#">{{ resources.number }}/{{ resources.paginator.num_pages }}</a></li>
+                    {% if resources.has_next %}
+                        <li><a aria-label="Next" href="?page={{ resources.next_page_number }}">next</a></li>
+                    {% else %}
+                        <li class="disabled"><a aria-label="Next" href="#">next</a></li>
+                    {% endif %}
+                </ul>
+            </nav>
+        </div>
     {% endif %}
-    {% if layers %}
-    <h3>{% trans "Layers" %}</h3>
-    <p>{% trans "This Service contains the following layers" %} </p>
-    <table>
-        <tr><th style="width:50%">Title</th><th>Description</th></tr>
-        {% for layer in layers %}
-            {% if layer.group != "background" %}
-            <tr>
-                <td><a href='{{ layer.get_absolute_url }}'>{{layer.title}}</a></td>
-                <td>{{layer.abstract}}</td>
-            </tr>
-            {% endif %}
-        {% endfor %}
-        <tr>
-            <td colspan="2">
-                <div class="pagination">
-                    <span class="step-links">
-                    {% if layers.has_previous %}
-                        <a href="?page={{ layers.previous_page_number }}">previous</a>
-                    {% endif %}
-
-                    <span class="current">
-                            Page {{ layers.number }} of {{ layers.paginator.num_pages }}.
-                    </span>
-
-                    {% if layers.has_next %}
-                        <a href="?page={{ layers.next_page_number }}">next</a>
-                    {% endif %}
-                    </span>
-                </div>
-            </td>
-
-        </tr>
-    </table>
-    {%  endif %}
-
     {% endautoescape %}
+    <div class="modal fade" data-backdrop="static" data-keyboard="false" id="progressModal" tabindex="-1" role="dialog" aria-labelledby="progressModalLabel">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    {% trans "Connecting to service..." %}
+                </div>
+                <div class="modal-body">
+                    <div class="progress" id="serviceRegisterProgress">
+                        <div class="progress-bar progress-bar-striped progress-bar-info active" role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100" style="width: 100%;">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 
 </div>
 {% endblock %}
@@ -111,15 +142,36 @@ Ext.onReady(function() {
 
         {% if "change_service" in resource_perms %}
             <li class="list-group-item"><a class="btn btn-default btn-md btn-block" href="{% url "edit_service" service.id %}">{% trans "Edit Service Metadata" %}</a></li>
+            <li class="list-group-item"><a id="harvestResources" class="btn btn-default btn-md btn-block" href="{% url "harvest_resources" service.id %}">{% trans "Import Service Resources" %}</a></li>
         {% endif %}
         {% if  "remove_service" or "delete_service" in resource_perms %}
             <li class="list-group-item"><a class="btn btn-default btn-md btn-block" href="{% url "remove_service" service.id %}">{% trans "Remove Service" %}</a></li>
         {% endif %}
       </ul>
     {% endif %}
-
-
-
-
-
 {% endblock %}
+{% block extra_script %}
+    {{ block.super }}
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $('#harvestResources').on("click", function() {
+                $("#progressModal").modal("show");
+            });
+            $('button[name^=retry]').on('click', function () {
+                const resourceId = this.name.replace("retry-", "");
+                const retryUrl = "/services/{{ service.id }}/harvest/" + resourceId;
+                const retryForm = document.createElement('form');
+                retryForm.setAttribute("method", "post");
+                retryForm.setAttribute("action", retryUrl);
+                const csrfInputElem = document.createElement("input");
+                csrfInputElem.type = "hidden";
+                csrfInputElem.name = "csrfmiddlewaretoken";
+                csrfInputElem.value = "{{ csrf_token }}";
+                retryForm.appendChild(csrfInputElem);
+                document.body.appendChild(retryForm);
+                retryForm.submit();
+
+            });
+        });
+    </script>
+{% endblock extra_script %}

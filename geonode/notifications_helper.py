@@ -25,7 +25,7 @@ from django.apps import AppConfig
 from django.conf import settings
 from django.db.models import signals
 
-from geonode.tasks.email import send_queued_notifications
+from geonode.tasks.tasks import send_queued_notifications
 
 E = getattr(settings, 'NOTIFICATION_ENABLED', False)
 M = getattr(settings, 'NOTIFICATIONS_MODULE', None)
@@ -55,7 +55,8 @@ class NotificationsAppConfigBase(AppConfig):
         if has_notifications and notifications:
             self._get_logger().info("Creating notifications")
             for label, display, description in self.NOTIFICATIONS:
-                notifications.models.NoticeType.create(label, display, description)
+                notifications.models.NoticeType.create(
+                    label, display, description)
 
     def ready(self):
         signals.post_migrate.connect(self._register_notifications, sender=self)
