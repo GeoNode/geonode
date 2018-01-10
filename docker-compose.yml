@@ -2,12 +2,16 @@ version: '2.2'
 services:
 
   db:
-    image: postgres:9.6
+    image: geonode/postgis:9.6
     container_name: db4${COMPOSE_PROJECT_NAME}
     environment:
       POSTGRES_DB: postgres
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
+      GEONODE_DATABASE: geonode
+      GEONODE_DATABASE_PASSWORD: geonode
+      GEONODE_GEODATABASE: geonode_data
+      GEONODE_GEODATABASE_PASSWORD: geonode_data
     volumes:
       - dbdata:/var/lib/postgresql/data
       - dbbackups:/pg_backups
