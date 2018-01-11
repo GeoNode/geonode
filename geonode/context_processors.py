@@ -131,6 +131,7 @@ def resource_urls(request):
         USE_GEOSERVER=settings.USE_GEOSERVER,
         USE_NOTIFICATIONS=has_notifications,
         USE_MONITORING='geonode.contrib.monitoring' in settings.INSTALLED_APPS and settings.MONITORING_ENABLED,
+        USE_WORLDMAP=settings.USE_WORLDMAP,
         DEFAULT_ANONYMOUS_VIEW_PERMISSION=getattr(settings, 'DEFAULT_ANONYMOUS_VIEW_PERMISSION', False),
         DEFAULT_ANONYMOUS_DOWNLOAD_PERMISSION=getattr(settings, 'DEFAULT_ANONYMOUS_DOWNLOAD_PERMISSION', False),
         EXIF_ENABLED=getattr(

@@ -29,7 +29,6 @@ class Migration(migrations.Migration):
                 ('email', models.EmailField(max_length=254, verbose_name='email address', blank=True)),
                 ('is_staff', models.BooleanField(default=False, help_text='Designates whether the user can log into this admin site.', verbose_name='staff status')),
                 ('is_active', models.BooleanField(default=True, help_text='Designates whether this user should be treated as active. Unselect this instead of deleting accounts.', verbose_name='active')),
-                ('is_certifier', models.BooleanField(default=False, verbose_name='Allowed to certify maps & layers')),
                 ('date_joined', models.DateTimeField(default=django.utils.timezone.now, verbose_name='date joined')),
                 ('organization', models.CharField(help_text='name of the responsible organization', max_length=255, null=True, verbose_name='Organization Name', blank=True)),
                 ('profile', models.TextField(help_text='introduce yourself', null=True, verbose_name='Profile', blank=True)),

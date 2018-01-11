@@ -519,8 +519,10 @@ span.grippy::after {
                                   <th>{% trans "Label" %}</th>
                                   <th>{% trans "Description" %}</th>
                                   <th>{% trans "Display Order" %}</th>
-                                  <th>{% trans "Visible" %}</th>
-                                  <th>{% trans "Searchable" %}</th>
+                                  {% if USE_WORLDMAP %}
+                                    <th>{% trans "Visible" %}</th>
+                                    <th>{% trans "Searchable" %}</th>
+                                  {% endif %}
                               </tr>
                               {% for form in attribute_form.forms %}
                                   {% if form.attribute %}
@@ -530,8 +532,10 @@ span.grippy::after {
                                           <td>{{form.attribute_label}}</td>
                                           <td>{{form.description}}</td>
                                           <td>{{form.display_order}}</td>
-                                          <td>{{form.visible}}</td>
-                                          <td>{{form.searchable}}</td>
+                                          {% if USE_WORLDMAP %}
+                                            <td>{{form.visible}}</td>
+                                            <td>{{form.searchable}}</td>
+                                          {% endif %}
                                       </tr>
                                   {% endif %}
                               {% endfor %}

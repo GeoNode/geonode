@@ -144,9 +144,6 @@ class Layer(ResourceBase):
         choices=TIME_REGEX)
     elevation_regex = models.CharField(max_length=128, null=True, blank=True)
 
-    in_gazetteer = models.BooleanField(_('In Gazetteer?'), blank=False, null=False, default=False)
-    gazetteer_project = models.CharField(_("Gazetteer Project"), max_length=128, blank=True, null=True)
-
     default_style = models.ForeignKey(
         Style,
         on_delete=models.SET_NULL,
@@ -159,32 +156,6 @@ class Layer(ResourceBase):
     charset = models.CharField(max_length=255, default='UTF-8')
 
     upload_session = models.ForeignKey('UploadSession', blank=True, null=True)
-
-    # join target: available only for layers within the DATAVERSE_DB
-    def add_as_join_target(self):
-        if not self.id:
-            return 'n/a'
-        if self.store != settings.DB_DATAVERSE_NAME:
-            return 'n/a'
-        admin_url = reverse('admin:datatables_jointarget_add', args=())
-        add_as_target_link = '%s?layer=%s' % (admin_url, self.id)
-        return '<a href="%s">Add as Join Target</a>' % (add_as_target_link)
-    add_as_join_target.allow_tags = True
-
-    @property
-    def is_remote(self):
-        return self.storeType == "remoteStore"
-
-    @property
-    def service(self):
-        """Get the related service object dynamically
-        """
-        service_layers = self.servicelayer_set.all()
-        if len(service_layers) == 0:
-            return None
-        else:
-            return service_layers[0].service
-
 
     def is_vector(self):
         return self.storeType == 'dataStore'
@@ -333,32 +304,6 @@ class Layer(ResourceBase):
                 None)
         return None
 
-    def queue_gazetteer_update(self):
-        from geonode.queue.models import GazetteerUpdateJob
-        if GazetteerUpdateJob.objects.filter(layer=self.id).exists() == 0:
-            newJob = GazetteerUpdateJob(layer=self)
-            newJob.save()
-
-    def update_gazetteer(self):
-        from geonode.gazetteer.utils import add_to_gazetteer, delete_from_gazetteer
-        if not self.in_gazetteer:
-            delete_from_gazetteer(self.name)
-        else:
-            includedAttributes = []
-            gazetteerAttributes = self.attribute_set.filter(in_gazetteer=True)
-            for attribute in gazetteerAttributes:
-                includedAttributes.append(attribute.attribute)
-
-            startAttribute = self.attribute_set.filter(is_gaz_start_date=True)[0].attribute if self.attribute_set.filter(is_gaz_start_date=True).exists() > 0 else None
-            endAttribute = self.attribute_set.filter(is_gaz_end_date=True)[0].attribute if self.attribute_set.filter(is_gaz_end_date=True).exists() > 0 else None
-
-            add_to_gazetteer(self.name,
-                             includedAttributes,
-                             start_attribute=startAttribute,
-                             end_attribute=endAttribute,
-                             project=self.gazetteer_project,
-                             user=self.owner.username)
-
     def view_count_up(self, user, do_local=False):
         """ increase view counter, if user is not owner and not super
 
@@ -468,18 +413,6 @@ class Attribute(models.Model):
     display_order = models.IntegerField(_('display order'), help_text=_(
         'specifies the order in which attribute should be displayed in identify results'), default=1)
 
-    searchable = models.BooleanField(
-        _('Searchable?'),
-        default=False)
-    created_dttm = models.DateTimeField(
-        auto_now_add=True)
-    date_format = models.CharField(
-        _('Date Format'),
-        max_length=255,
-        blank=True,
-        null=True)
-    last_modified = models.DateTimeField(auto_now=True)
-
     # statistical derivations
     count = models.IntegerField(
         _('count'),
@@ -540,10 +473,6 @@ class Attribute(models.Model):
         default='NA')
     last_stats_updated = models.DateTimeField(_('last modified'), default=datetime.now, help_text=_(
         'date when attribute statistics were last updated'))  # passing the method itself, not
-
-    in_gazetteer = models.BooleanField(_('In Gazetteer?'), default=False)
-    is_gaz_start_date = models.BooleanField(_('Gazetteer Start Date'), default=False)
-    is_gaz_end_date = models.BooleanField(_('Gazetteer End Date'), default=False)
 
     objects = AttributeManager()
 
@@ -663,10 +592,6 @@ def pre_delete_layer(instance, sender, **kwargs):
 
     # Delete object permissions
     remove_object_permissions(instance)
-
-    if settings.USE_GAZETTEER and instance.in_gazetteer:
-        instance.in_gazetteer = False
-        instance.update_gazetteer()
 
 
 def post_delete_layer(instance, sender, **kwargs):

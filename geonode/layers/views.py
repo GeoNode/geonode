@@ -653,9 +653,11 @@ def layer_metadata(
         else llbbox_to_mercator([float(coord) for coord in bbox])
     config["title"] = layer.title
     config["queryable"] = True
+
+    show_gazetteer_form = settings.USE_WORLDMAP
+    # TODO remove this hack before PR vs GeoNode
     # hack needed to see if the layer is in Postgres (otherwise no gazetteer):
     # all PostGIS stores starts with wm. There is also a dataverse postgres database
-    show_gazetteer_form = settings.USE_GAZETTEER
     if layer.store[:2] != 'wm' and layer.store != 'dataverse':
     	show_gazetteer_form = False
 
@@ -803,7 +805,8 @@ def layer_metadata(
             la.attribute_label = form["attribute_label"]
             la.visible = form["visible"]
             la.display_order = form["display_order"]
-            la.searchable = form["searchable"]
+            if settings.USE_WORLDMAP:
+                la.searchable = form["searchable"]
             la.save()
 
         if new_poc is not None or new_author is not None:
