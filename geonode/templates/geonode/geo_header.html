@@ -11,7 +11,9 @@
 
 <script src="https://maps.googleapis.com/maps/api/js?key={% google_api_key %}" type="text/javascript"></script>
 
-<script src="{{STATIC_URL}}geoexplorer/script/GeoExplorer.js?v={{ VERSION }}" type="text/javascript"></script>
+<script src="{{ STATIC_URL }}geoexplorer/script/GeoExplorer.js?v={{ VERSION }}" type="text/javascript"></script>
+<!-- script type="text/javascript" src="{{ STATIC_URL }}geonode/js/extjs/GeoExplorer-debug.js"></script -->
+
 <script type="text/javascript">
 OpenLayers.ImgPath = "{{ STATIC_URL }}geoexplorer/externals/openlayers/theme/default/img";
 OpenLayers.Util.onImageLoadErrorColor = 'transparent';
@@ -44,13 +46,11 @@ GeoExplorer.Viewer.prototype.loadConfig = function(config) {
     checked: true
   });
 
-  /* - TEMPORARLY DISABLED GXPLORER PLAYBACK -
-      config.viewerTools.push({
+  config.viewerTools.push({
       ptype: "gxp_playback",
       checked: true,
       outputTarget: "paneltbar"
-    });
-  */
+  });
 
   // Do not include the layer styler on the map-detail view.
   {% if not map %}
@@ -66,6 +66,7 @@ GeoExplorer.Viewer.prototype.loadConfig = function(config) {
   GeoExplorer.Viewer.superclass.loadConfig.call(this, config);
 };
 
+//remove the 3D Viewer from GeoExplorer
 GeoExplorer.Composer.prototype.loadConfig = function(config) {
   // remove the 3D Viewer if no Google API Key is availbale
   var google_api_key = '{% google_api_key %}';
