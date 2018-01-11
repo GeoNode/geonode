@@ -135,9 +135,15 @@ mapModule.directive('routePopUpDirective', [
                     inIt();
 
                     function addRoutePlyLine(origin,destination){
-                        $http.post('https://maps.googleapis.com/maps/api/directions/json?origin=' + origin + '&destination=' + destination + '&key=AIzaSyAFQEpBZ0v2CEvRYzlFX0ugObBTgmA9_10').then(function (response) {
-                            if(response.data.status==="OK"){
-                                var polyline = response.data.routes[0].overview_polyline.points;
+                        var directionsService = new google.maps.DirectionsService();
+                        var request={
+                            origin: origin,
+                            destination: destination,
+                            travelMode :'DRIVING'
+                        };
+                        directionsService.route(request, function(response, status) {
+                            if (status == 'OK') {
+                                var polyline = response.routes[0].overview_polyline;
                                 var route = /** @type {ol.geom.LineString} */ (new ol.format.Polyline({
                                     factor: 1e5
                                 }).readGeometry(polyline, {
@@ -156,13 +162,13 @@ mapModule.directive('routePopUpDirective', [
                                     })
                                 }));
                                 vectorSource.addFeature(routeFeature);
-                            }else {
+                            }else{
                                 if(!angular.equals(routeFeature,{}))
-                                    vectorLayer.getSource().removeFeature(routeFeature);
-                                    surfToastr.error('Google Map can not give you direction', 'Error');
+                                vectorLayer.getSource().removeFeature(routeFeature);
+                                surfToastr.error('Google Map can not give you direction', 'Error');
                                 routeFeature={};
                             }
-                        });
+                          });                        
                     }
 
                     function addFeatureToVectorLayer(feature){
@@ -209,7 +215,7 @@ mapModule.directive('routePopUpDirective', [
                             if(response.data.length>0){
                                 var point=response.data[0][0];
                                 var destination=point.latitude+','+point.longitude;
-                                addRoutePlyLine(origin,destination);
+                                addRoutePlyLine(origin.join(','),destination);
                                 var Point3857=[point.longitude,point.latitude];
                                 var Point4236=ol.proj.transform(Point3857,'EPSG:4326', 'EPSG:3857');
                                 var feature = new ol.Feature(
