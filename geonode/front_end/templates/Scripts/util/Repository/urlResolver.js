@@ -1,5 +1,5 @@
-﻿repositoryModule.factory('urlResolver', ['$location', function($location) {
-    var geoserverRoot = 'http://localhost:8123/';
+﻿repositoryModule.factory('urlResolver', ['$location', '$window', function($location, $window) {
+    var geoserverRoot = 'null';//'http://localhost:8123/';
     var geoserverTileRoot = null;
 
     function resolve(controller, action, params) {
@@ -44,15 +44,22 @@
 
     function resolveGeoServer(service, params) {
         //window.urlRoot = '';
-        
         params = params || {};
         if (window.isProxyEnabled) {
             return addParams(geoserverRoot + service, params);
         }
         //return resolve('GeoServerGateway', service, params);
-        var url = geoserverRoot + 'geoserver' + "/" + service;
+        //console.log($window.GeoServerHttp2Root);
+        var url = geoServerRoot() + 'geoserver' + "/" + service;
         url = addParams(url, params);
         return url;
+    }
+
+    function geoServerRoot(){
+        if($window.GeoServerHttp2Root)
+            return $window.GeoServerHttp2Root.replace('geoserver/', '');
+        else
+            return '';
     }
 
     return {
@@ -94,6 +101,10 @@
             }
             geoserverTileRoot = tileRoot;
 
+        },
+        getGeoServerRoot: function(){
+            return geoServerRoot();
         }
+
     };
 }]);

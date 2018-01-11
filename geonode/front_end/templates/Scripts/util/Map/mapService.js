@@ -44,7 +44,8 @@
             i = 0;
             for (var k in layers) {
                 var e = layers[k];
-                var url = e.olLayer.getSource().getUrls()[0];
+                // var url = e.olLayer.getSource().getUrls()[0];
+                var url= e.geoserverUrl;
                 var index = sources.indexOf(url);
                 if (index == -1) {
                     sources.push(url);

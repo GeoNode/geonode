@@ -57,9 +57,15 @@
 
         <div class="col-md-6">
         <div class="file-container">
+                <div style="padding:20px 0px 60px 0px" ng-show="layers.length != 0">
+                        <span class="col-md-2" style="font-weight:bold">Search</span>
+                        <span class="col-md-6">
+                        <input type="text" class="form-control ng-pristine ng-valid" ng-model="searchKeyword">
+                        </span>
+                    </div>
                 <div class="list-group">
            
-                <a class="list-group-item" ng-repeat="layer in layers" ng-dblclick="addLayer(layer)">[{layer.Name}]</a>
+                <a class="list-group-item" ng-repeat="layer in layers | filter: searchKeyword" ng-dblclick="addLayer(layer)">[{layer.Name}]</a>
             
             </div>
         </div>

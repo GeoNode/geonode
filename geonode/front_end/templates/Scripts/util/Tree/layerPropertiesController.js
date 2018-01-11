@@ -89,7 +89,8 @@
         };
 
         $scope.save = function() {
-            if ($scope.nodeData.invalidField() || !$scope.nodeData.layer.name) {
+            //if ($scope.nodeData.invalidField() || !$scope.nodeData.layer.name) {
+            if (!$scope.nodeData.layer.name) {
                 return;
             }
             layer.Style.VisualizationSettings = $scope.visualizationSettings.selected;
