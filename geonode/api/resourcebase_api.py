@@ -70,6 +70,7 @@ LAYER_SUBTYPES = {
     'vector': 'dataStore',
     'raster': 'coverageStore',
     'remote': 'remoteStore',
+    'vector_time': 'vectorTimeSeries',
 }
 FILTER_TYPES.update(LAYER_SUBTYPES)
 
@@ -150,12 +151,23 @@ class CommonModelApi(ModelResource):
         if types:
             for the_type in types:
                 if the_type in LAYER_SUBTYPES.keys():
+                    super_type = the_type
+                    if 'vector_time' == the_type:
+                        super_type = 'vector'
                     if filtered:
-                        filtered = filtered | semi_filtered.filter(
-                            Layer___storeType=LAYER_SUBTYPES[the_type])
+                        if 'time' in the_type:
+                            filtered = filtered | semi_filtered.filter(
+                                Layer___storeType=LAYER_SUBTYPES[super_type]).exclude(Layer___has_time=False)
+                        else:
+                            filtered = filtered | semi_filtered.filter(
+                                Layer___storeType=LAYER_SUBTYPES[super_type])
                     else:
-                        filtered = semi_filtered.filter(
-                            Layer___storeType=LAYER_SUBTYPES[the_type])
+                        if 'time' in the_type:
+                            filtered = semi_filtered.filter(
+                                Layer___storeType=LAYER_SUBTYPES[super_type]).exclude(Layer___has_time=False)
+                        else:
+                            filtered = semi_filtered.filter(
+                                Layer___storeType=LAYER_SUBTYPES[super_type])
                 else:
                     if filtered:
                         filtered = filtered | semi_filtered.instance_of(

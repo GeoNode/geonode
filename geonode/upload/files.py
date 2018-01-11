@@ -269,7 +269,7 @@ def scan_file(file_name):
             if file_type.matches(ext[1:]):
                 found.append(file_type.build_spatial_file(f, files))
 
-    # detect slds and assign iff a single upload is found
+    # detect slds and assign if a single upload is found
     sld_files = _find_file_type(files, extension='.sld')
     if sld_files:
         if len(found) == 1:

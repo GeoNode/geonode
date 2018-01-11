@@ -122,18 +122,18 @@
                 }
             };
 
+            var resource_name = "{{resource.name}}";
             config = Ext.apply(config, {{ viewer|safe }});
 
 			//
-			// Extrapolating the granules times
+			// Extracting the layer's times
 			//
 			var is_mosaic = "{{resource.is_mosaic}}" == "True" ? true : false;
+            var has_time = "{{ resource.has_time }}" == "True" ? true : false;
+            var time_list = [];
 			if(is_mosaic){
-				var resource_name = "{{resource.name}}";
-
 				var granules_features = {% if all_granules %} {{all_granules.features}} {% else %} [] {% endif %};
 
-				var time_list = [];
 				for(var i=0; i<granules_features.length; i++){
 					var feature = granules_features[i];
 
@@ -146,29 +146,36 @@
 						}
 					}
 				}
+			} else {
+                var time_list_is_none = "{{ all_times }}" == "None" ? true : false;
+                if(has_time && !time_list_is_none) {
+                    time_list = {{ all_times }};
+                }
+            }
 
-				//
-				// Setting the time dimension accordingly to the granule time list
-				//
-				var layers = config.map.layers;
-				for(var layer in layers){
-					l = layers[layer];
-					if(!l.background && l.name && l.name.indexOf(resource_name) != -1){
-						l.dimensions = {
-							time:{
-								"name":"time",
-								"units":"ISO8601",
-								"unitsymbol":null,
-								"nearestVal":false,
-								"multipleVal":false,
-								"current":false,
-								"default":"current",
-								"values": time_list // granule time list
-							}
-						}
-					}
-				}
-			}
+            //
+            // Setting the time dimension accordingly to the granule time list
+            //
+            if(time_list.length > 0) {
+                var layers = config.map.layers;
+                for(var layer in layers){
+                    l = layers[layer];
+                    if(!l.background && l.name && l.name.indexOf(resource_name) != -1){
+                        l.dimensions = {
+                            time:{
+                                "name":"time",
+                                "units":"ISO8601",
+                                "unitsymbol":null,
+                                "nearestVal":false,
+                                "multipleVal":false,
+                                "current":false,
+                                "default":"current",
+                                "values": time_list // granule time list
+                            }
+                        }
+                    }
+                }
+            }
 
             app = new GeoNode.Viewer(config);
 

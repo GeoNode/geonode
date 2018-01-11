@@ -28,6 +28,11 @@ import re
 import uuid
 import subprocess
 import select
+import tempfile
+import tarfile
+
+from zipfile import ZipFile, is_zipfile
+
 from StringIO import StringIO
 
 from osgeo import ogr
@@ -88,6 +93,40 @@ signals_store = {}
 id_none = id(None)
 
 logger = logging.getLogger("geonode.utils")
+
+
+def unzip_file(upload_file, extension='.shp', tempdir=None):
+    """
+    Unzips a zipfile into a temporary directory and returns the full path of the .shp file inside (if any)
+    """
+    absolute_base_file = None
+    if tempdir is None:
+        tempdir = tempfile.mkdtemp()
+
+    the_zip = ZipFile(upload_file)
+    the_zip.extractall(tempdir)
+    for item in the_zip.namelist():
+        if item.endswith(extension):
+            absolute_base_file = os.path.join(tempdir, item)
+
+    return absolute_base_file
+
+
+def extract_tarfile(upload_file, extension='.shp', tempdir=None):
+    """
+    Extracts a tarfile into a temporary directory and returns the full path of the .shp file inside (if any)
+    """
+    absolute_base_file = None
+    if tempdir is None:
+        tempdir = tempfile.mkdtemp()
+
+    the_tar = tarfile.open(upload_file)
+    the_tar.extractall(tempdir)
+    for item in the_tar.getnames():
+        if item.endswith(extension):
+            absolute_base_file = os.path.join(tempdir, item)
+
+    return absolute_base_file
 
 
 def _get_basic_auth_info(request):
@@ -600,7 +639,7 @@ def resolve_object(request, model, query, permission='base.view_resourcebase',
     return obj
 
 
-def json_response(body=None, errors=None, redirect_to=None, exception=None,
+def json_response(body=None, errors=None, url=None, redirect_to=None, exception=None,
                   content_type=None, status=None):
     """Create a proper JSON response. If body is provided, this is the response.
     If errors is not None, the response is a success/errors json object.
@@ -624,6 +663,11 @@ def json_response(body=None, errors=None, redirect_to=None, exception=None,
         body = {
             'success': True,
             'redirect_to': redirect_to
+        }
+    elif url:
+        body = {
+            'success': True,
+            'url': url
         }
     elif exception:
         if body is None:
@@ -736,6 +780,10 @@ def check_shp_columnnames(layer):
     for f in layer.upload_session.layerfile_set.all():
         if os.path.splitext(f.file.name)[1] == '.shp':
             inShapefile = f.file.path
+
+    tempdir = tempfile.mkdtemp()
+    if is_zipfile(inShapefile):
+        inShapefile = unzip_file(inShapefile, '.shp', tempdir=tempdir)
 
     inDriver = ogr.GetDriverByName('ESRI Shapefile')
     inDataSource = inDriver.Open(inShapefile, 1)

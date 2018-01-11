@@ -607,12 +607,14 @@ def layer_acls(request):
 
 
 # capabilities
-def get_layer_capabilities(workspace, layer):
+def get_layer_capabilities(workspace, layer, access_token=None):
     """
     Retrieve a layer-specific GetCapabilities document
     """
     # TODO implement this for 1.3.0 too
-    wms_url = '%s%s/%s/wms?request=GetCapabilities&version=1.1.0' % (ogc_server_settings.public_url, workspace, layer)
+    wms_url = '%s%s/%s/wms?service=wms&version=1.1.0&request=GetCapabilities'\
+        % (ogc_server_settings.public_url, workspace, layer)
+    wms_url += ('&access_token=%s' % access_token if access_token else '')
     http = httplib2.Http()
     response, getcap = http.request(wms_url)
     return getcap
@@ -663,17 +665,25 @@ def get_capabilities(request, layerid=None, user=None, mapid=None, category=None
 
     for layer in layers:
         if request.user.has_perm('view_resourcebase', layer.get_self_resource()):
+            access_token = None
+            if 'access_token' in request.session:
+                access_token = request.session['access_token']
+            else:
+                access_token = None
+
             try:
                 workspace, layername = layer.typename.split(":")
                 if rootdoc is None:  # 1st one, seed with real GetCapabilities doc
                     try:
-                        layercap = etree.fromstring(get_layer_capabilities(workspace, layername))
+                        layercap = etree.fromstring(get_layer_capabilities(workspace,
+                                                                           layername,
+                                                                           access_token=access_token))
                         rootdoc = etree.ElementTree(layercap)
                         rootlayerelem = rootdoc.find('.//Capability/Layer')
                         format_online_resource(workspace, layername, rootdoc)
                         rootdoc.find('.//Service/Name').text = cap_name
                     except Exception, e:
-                        logger.error("Error occurred creating GetCapabilities for %s:%s" % (layer.typename, str(e)))
+                        logger.error("Error occurred creating GetCapabilities for %s: %s" % (layer.typename, str(e)))
                 else:
                         # Get the required info from layer model
                         tpl = get_template("geoserver/layer.xml")
