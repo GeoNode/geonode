@@ -111,6 +111,7 @@
                             function(res) {
                                 style.id = res.id;
                                 style.Name = res.uuid;
+                                style.Title = res.title;
                                 surfLayer.setStyle(style);
     
                                 if (callBack) {

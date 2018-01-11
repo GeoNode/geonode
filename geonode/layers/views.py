@@ -1285,10 +1285,14 @@ class StyleExtensionRetrieveUpdateAPIView(RetrieveUpdateAPIView):
             style_extension = StyleExtension.objects.get(pk=pk)
             style_extension.json_field = data.get("StyleString", None)
             style_extension.sld_body=data.get('SldStyle', None)
+            style_extension.title = data.get('Title', style_extension.title)
+            style_extension.style.sld_title = style_extension.title
         except Exception as ex:
             raise ex
-        
+
+        style_extension.style.save()
         style_extension.save()
+
         full_path = '/gs/rest/styles/{0}.xml'.format(style_extension.style.name)
         try:
             save_sld_geoserver(request_method='PUT', full_path=full_path, sld_body=style_extension.sld_body )
@@ -1353,14 +1357,15 @@ class LayerStyleView(View):
         
         style_extension = StyleExtension(json_field=json_field, created_by=request.user, modified_by=request.user)
 
+        title = data.get('Title', str(style_extension.uuid))
         sld_body = sld_body.format(style_name=str(style_extension.uuid))
-        sld_title = json.loads(json_field).get('Name', None) if json_field else None
 
-        style = Style(name=str(style_extension.uuid),sld_body=sld_body,sld_title=sld_title )
+        style = Style(name=str(style_extension.uuid),sld_body=sld_body,sld_title=title )
         style.save()
         
         layer_obj.styles.add(style)
 
+        style_extension.title = title
         style_extension.sld_body = sld_body
         style_extension.style = style
         style_extension.save()

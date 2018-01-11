@@ -23,7 +23,8 @@
                     StyleString: angular.toJson(properties),
                     SldStyle: sldStyle,
                     SelectionStyleSld: selectionStyleSld,
-                    LabelingSld: labelingSld
+                    LabelingSld: labelingSld,
+                    Title: properties.Title
                 }, {
                     headers: {
                         'X-CSRFToken': $cookies.get('csrftoken')
@@ -45,7 +46,8 @@
                     StyleString: angular.toJson(properties),
                     SldStyle: sldStyle,
                     SelectionStyleSld: selectionStyleSld,
-                    LabelingSld: labelingSld
+                    LabelingSld: labelingSld,
+                    Title: properties.Title
                 }, {
                     headers: {
                         'X-CSRFToken': $cookies.get('csrftoken')
