@@ -63,5 +63,5 @@
 
         $scope.close = function () {
             $modalInstance.close();
-        }
+        };
     }]);
