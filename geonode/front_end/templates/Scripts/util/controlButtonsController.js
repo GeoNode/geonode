@@ -172,7 +172,7 @@
 
                 $rootScope.mapImage = { baseMapUrl: undefined, shapeUrl: undefined };
                 $modal.open({
-                    templateUrl: './Print/PrintPreview',
+                    templateUrl: 'static/Templates/Print/PrintPreview.html',
                     controller: 'printPreviewController',
                     backdrop: 'static',
                     keyboard: false,
