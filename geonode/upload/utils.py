@@ -17,6 +17,7 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
+from itertools import islice
 import re
 import os
 import json
@@ -25,6 +26,7 @@ import zipfile
 import httplib2
 import traceback
 
+from lxml import etree
 from osgeo import ogr
 from urlparse import urlparse
 from django.conf import settings
@@ -36,9 +38,7 @@ from geoserver.catalog import FailedRequestError
 from geonode.utils import json_response as do_json_response, unzip_file
 from geonode.geoserver.helpers import gs_catalog, gs_uploader, ogc_server_settings
 
-from .forms import TimeForm
 
-from itertools import islice
 ogr.UseExceptions()
 
 logger = logging.getLogger(__name__)
@@ -173,6 +173,17 @@ def _byteify(data, ignore_dicts=False):
     return data
 
 
+def get_kml_doc(kml_bytes):
+    """Parse and return an etree element with the kml file's content"""
+    kml_doc = etree.fromstring(
+        kml_bytes,
+        parser=etree.XMLParser(resolve_entities=False)
+    )
+    ns = kml_doc.nsmap.copy()
+    ns["kml"] = ns.pop(None)
+    return kml_doc, ns
+
+
 """
     Upload Workflow: Steps Utilities
 """
@@ -184,6 +195,7 @@ _pages = {
     'tif': ('run', 'final'),
     'asc': ('run', 'final'),
     'kml': ('run', 'final'),
+    'kml-overlay': ('run', 'final'),
     'geojson': ('run', 'final'),
     'ntf': ('run', 'final'),  # NITF
     'img': ('run', 'final'),  # ERDAS Imagine
@@ -399,32 +411,6 @@ def is_longitude(colname):
 
 def is_async_step(upload_session):
     return _ASYNC_UPLOAD and get_next_step(upload_session, offset=2) == 'run'
-
-
-def create_time_form(request, upload_session, form_data):
-    feature_type = upload_session.import_session.tasks[0].layer
-
-    (has_time, layer_values) = layer_eligible_for_time_dimension(
-        request, feature_type, upload_session=upload_session)
-    att_list = []
-    if has_time:
-        att_list = _get_time_dimensions(feature_type, upload_session)
-    else:
-        att_list = [{'name': a.name, 'binding': a.binding} for a in feature_type.attributes]
-
-    def filter_type(b):
-        return [att['name'] for att in att_list if b in att['binding']]
-
-    args = dict(
-        time_names=filter_type('Date'),
-        text_names=filter_type('String'),
-        year_names=filter_type('Integer') +
-        filter_type('Long') +
-        filter_type('Double')
-    )
-    if form_data:
-        return TimeForm(form_data, **args)
-    return TimeForm(**args)
 
 
 def check_import_session_is_valid(request, upload_session, import_session):

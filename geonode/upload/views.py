@@ -40,6 +40,7 @@ import logging
 import zipfile
 import traceback
 import gsimporter
+import tempfile
 
 from httplib import BadStatusLine
 from django.conf import settings
@@ -48,22 +49,39 @@ from django.core.exceptions import PermissionDenied
 from django.core.urlresolvers import reverse
 from django.http import HttpResponseRedirect
 from django.utils.html import escape
-from django.shortcuts import get_object_or_404, render_to_response
+from django.shortcuts import get_object_or_404
+from django.shortcuts import render
+from django.shortcuts import render_to_response
 from django.template import RequestContext
 from django.views.generic import CreateView, DeleteView
 from geonode.utils import unzip_file
 from geonode.base.enumerations import CHARSETS
 
-from .forms import SRSForm, LayerUploadForm, UploadFileForm
+from .forms import (
+    LayerUploadForm,
+    SRSForm,
+    TimeForm,
+    UploadFileForm,
+)
 from .models import Upload, UploadFile
+from .files import get_scan_hint
 from .files import scan_file
-from .utils import (JSONResponse, json_response, error_response,
-                    next_step_response, get_previous_step,
-                    check_import_session_is_valid,
-                    layer_eligible_for_time_dimension,
-                    is_latitude, is_longitude, is_async_step,
-                    create_time_form,
-                    _SUPPORTED_CRS, _ASYNC_UPLOAD, _geoserver_down_error_msg)
+from .utils import (
+    _SUPPORTED_CRS,
+    _ASYNC_UPLOAD,
+    _geoserver_down_error_msg,
+    _get_time_dimensions,
+    check_import_session_is_valid,
+    error_response,
+    is_async_step,
+    is_latitude,
+    is_longitude,
+    JSONResponse,
+    json_response,
+    get_previous_step,
+    layer_eligible_for_time_dimension,
+    next_step_response,
+)
 from .upload import (save_step, srs_step, time_step, csv_step, final_step,
                      LayerNotReady, UploaderSession)
 
@@ -94,34 +112,68 @@ def data_upload_progress(req):
     return json_response({'state': 'NONE'})
 
 
+def _write_uploaded_files_to_disk(target_dir, files):
+    result = []
+    for django_file in files:
+        path = os.path.join(target_dir, django_file.name)
+        with open(path, 'wb') as fh:
+            for chunk in django_file.chunks():
+                fh.write(chunk)
+        result = path
+    return result
+
+
+def _select_relevant_files(allowed_extensions, files):
+    """Filter the input files list for relevant files only
+
+    Relevant files are those whose extension is in the ``allowed_extensions``
+    iterable.
+
+    :param allowed_extensions: list of strings with the extensions to keep
+    :param files: list of django files with the files to be filtered
+
+    """
+
+    result = []
+    for django_file in files:
+        extension = os.path.splitext(django_file.name)[-1].lower()[1:]
+        if extension in allowed_extensions:
+            result.append(django_file)
+    return result
+
+
 def save_step_view(req, session):
     if req.method == 'GET':
-        return render_to_response(
+        return render(
+            req,
             'upload/layer_upload.html',
-            RequestContext(
-                req,
-                {
-                    'async_upload': _ASYNC_UPLOAD,
-                    'incomplete': Upload.objects.get_incomplete_uploads(
-                        req.user),
-                    'charsets': CHARSETS}))
-
-    assert session is None
-
+            {
+                'async_upload': _ASYNC_UPLOAD,
+                'incomplete': Upload.objects.get_incomplete_uploads(req.user),
+                'charsets': CHARSETS
+            }
+        )
     form = LayerUploadForm(req.POST, req.FILES)
-    tempdir = None
-
     if form.is_valid():
-        tempdir, base_file = form.write_files()
-        logger.debug('Tempdir: {0}, basefile: {1}'.format(tempdir, base_file))
+        tempdir = tempfile.mkdtemp(dir=settings.FILE_UPLOAD_TEMP_DIR)
+        relevant_files = _select_relevant_files(
+            form.cleaned_data["valid_extensions"],
+            req.FILES.itervalues()
+        )
+        _write_uploaded_files_to_disk(tempdir, relevant_files)
+        base_file = os.path.join(tempdir, form.cleaned_data["base_file"].name)
         name, ext = os.path.splitext(os.path.basename(base_file))
         logger.debug('Name: {0}, ext: {1}'.format(name, ext))
-        base_file = scan_file(base_file)
-        logger.debug(base_file)
+        logger.debug("base_file: {}".format(base_file))
+        spatial_files = scan_file(
+            base_file,
+            scan_hint=get_scan_hint(form.cleaned_data["valid_extensions"])
+        )
+        logger.debug("spatial_files: {}".format(spatial_files))
         import_session = save_step(
             req.user,
             name,
-            base_file,
+            spatial_files,
             overwrite=False,
             mosaic=form.cleaned_data['mosaic'],
             append_to_mosaic_opts=form.cleaned_data['append_to_mosaic_opts'],
@@ -136,9 +188,9 @@ def save_step_view(req, session):
 
         sld = None
 
-        if base_file[0].sld_files:
-            sld = base_file[0].sld_files[0]
-        if not os.path.isfile(os.path.join(tempdir, base_file[0].base_file)):
+        if spatial_files[0].sld_files:
+            sld = spatial_files[0].sld_files[0]
+        if not os.path.isfile(os.path.join(tempdir, spatial_files[0].base_file)):
             tmp_files = [f for f in os.listdir(tempdir) if os.path.isfile(os.path.join(tempdir, f))]
             for f in tmp_files:
                 if zipfile.is_zipfile(os.path.join(tempdir, f)):
@@ -148,14 +200,14 @@ def save_step_view(req, session):
         # upload_type = get_upload_type(base_file)
         upload_session = UploaderSession(
             tempdir=tempdir,
-            base_file=base_file,
+            base_file=spatial_files,
             name=name,
             import_session=import_session,
             layer_abstract=form.cleaned_data["abstract"],
             layer_title=form.cleaned_data["layer_title"],
             permissions=form.cleaned_data["permissions"],
             import_sld_file=sld,
-            upload_type=base_file[0].file_type.code,
+            upload_type=spatial_files[0].file_type.code,
             geogig=form.cleaned_data['geogig'],
             geogig_store=form.cleaned_data['geogig_store'],
             time=form.cleaned_data['time'],
@@ -365,6 +417,32 @@ def check_step_view(request, upload_session):
     elif request.method != 'POST':
         raise Exception()
     return next_step_response(request, upload_session)
+
+
+def create_time_form(request, upload_session, form_data):
+    feature_type = upload_session.import_session.tasks[0].layer
+
+    (has_time, layer_values) = layer_eligible_for_time_dimension(
+        request, feature_type, upload_session=upload_session)
+    att_list = []
+    if has_time:
+        att_list = _get_time_dimensions(feature_type, upload_session)
+    else:
+        att_list = [{'name': a.name, 'binding': a.binding} for a in feature_type.attributes]
+
+    def filter_type(b):
+        return [att['name'] for att in att_list if b in att['binding']]
+
+    args = dict(
+        time_names=filter_type('Date'),
+        text_names=filter_type('String'),
+        year_names=filter_type('Integer') +
+                   filter_type('Long') +
+                   filter_type('Double')
+    )
+    if form_data:
+        return TimeForm(form_data, **args)
+    return TimeForm(**args)
 
 
 def time_step_view(request, upload_session):
