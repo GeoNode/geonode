@@ -1,11 +1,12 @@
 mapModule
     .factory('SetMarkerTool', SetMarkerTool);
-SetMarkerTool.$inject = ['mapService', 'layerService'];
+SetMarkerTool.$inject = ['mapService', 'layerService', 'SettingsService'];
 
-function SetMarkerTool(mapService, layerService) {
+function SetMarkerTool(mapService, layerService, SettingsService) {
     return function SetMarkerTool(map, view) {
         var container, content, close, popup;
         this.showPopup = false;
+        this.elevationLayerName = "";
 
         function createPopup() {
             container = document.getElementById('popup');
@@ -41,7 +42,8 @@ function SetMarkerTool(mapService, layerService) {
             var latLong = ol.proj.transform(evt.coordinate, 'EPSG:3857', 'EPSG:4326');
             var iconFeature = new ol.Feature({
                 geometry: new ol.geom.Point(evt.coordinate),
-                name: 'Lat: ' + latLong[1] + ' lon: ' + latLong[0],
+                lat: latLong[1].toFixed(6),
+                lon: latLong[0].toFixed(6),
                 coordinate: evt.coordinate,
                 population: 4000,
                 rainfall: 500
@@ -80,6 +82,8 @@ function SetMarkerTool(mapService, layerService) {
                 bbox: bbox.join(','),
                 width: size[0],
                 height: size[1],
+                query_layers: this.elevationLayerName,
+                layers: this.elevationLayerName,
                 info_format: 'application/json',
                 exceptions: 'application/json',
                 x: Math.round(event.pixel[0]),
@@ -88,11 +92,16 @@ function SetMarkerTool(mapService, layerService) {
             container.style.visibility = 'visible';
             layerService.fetchWMSFeatures(urlParams)
                 .then(function(res) {
-                    var html = feature.get('name');
+                    var lat = feature.get('lat');
+                    var lon = feature.get('lon');
+                    var html = "<div class='pop-up'> " +
+                        "<p>Lat: " + lat + "</p>" +
+                        "<p>Lon: " + lon + "</p>";
                     var properties = res.features.length > 0 ? res.features[0].properties : {};
                     for (var key in properties) {
-                        html += "<p>" + key + ": " + res.features["0"].properties[key] + "</p>";
+                        html += "<p>Elevation: " + res.features["0"].properties[key] + "</p>";
                     }
+                    html += "</div>";
                     content.innerHTML = html;
                 }, function(error) {
 
@@ -117,5 +126,21 @@ function SetMarkerTool(mapService, layerService) {
             });
 
         };
+
+        function getSettings(){
+            SettingsService.getSystemSettings()
+            .then(function(res){
+                var elevation = res.find(function(e){
+                    return e.settings_code === 'elevation';
+                });
+                this.elevationLayerName = elevation && elevation.content_object.typename;
+            });
+        }
+
+        function init(){
+            getSettings();
+        }
+
+        (init)();
     };
 }
