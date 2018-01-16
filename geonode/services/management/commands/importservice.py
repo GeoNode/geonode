@@ -87,12 +87,12 @@ class Command(BaseCommand):
             else:
                 print 'Invalid method'
 
-            json_response = json.loads(response.content)
-            if "id" in json_response:
-                print "Service created with id of %d" % json_response["id"]
-                service = Service.objects.get(id=json_response["id"])
+            json_response = json.loads(response)[0]
+            if "service_id" in json_response:
+                print "Service created with id of %d" % json_response["service_id"]
+                service = Service.objects.get(id=json_response["service_id"])
             else:
-                print "Something went wrong: %s" % response.content
+                print "Something went wrong: %s" % response
                 return
 
             print service.id
@@ -113,4 +113,4 @@ class Command(BaseCommand):
             else:
                 print('Invalid Service Type')
 
-        print response.content
+        print response
