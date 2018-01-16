@@ -5,7 +5,7 @@
 
         mapInstance.once('postcompose', function (event) {
             var canvas = event.context.canvas;
-            $rootScope.mapImage.shapeUrl = canvas.toDataURL('image/png');
+            // $rootScope.mapImage.shapeUrl = canvas.toDataURL('image/png');
         });
 
         mapInstance.renderSync();

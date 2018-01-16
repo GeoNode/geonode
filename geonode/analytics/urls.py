@@ -11,6 +11,8 @@ from geonode.analytics.api.views import (
     VisitorCreateAPIView,
     LayerLoadCreateAPIView,
     MapLoadCreateAPIView,
+    MapListAPIView,
+    LayerListAPIView,
 
 )
 
@@ -25,7 +27,8 @@ urlpatterns = [
     url(r'^api/layer/load/create/', LayerLoadCreateAPIView.as_view()),
     url(r'^api/map/load/create/', MapLoadCreateAPIView.as_view()),
 
-
+    url(r'maps/$', MapListAPIView.as_view()),
+    url(r'layers/$', LayerListAPIView.as_view()),
     # url(r'^api/layer/load/', LayerLoadListAPIView.as_view()),
     # url(r'^api/map/load/', MapLoadListAPIView.as_view()),
     # url(r'^api/visitor/', VisitorListAPIView.as_view()),

@@ -80,14 +80,14 @@ mapModule.factory("mapModes", [function () {
     function (urlResolver) {
         var pointGraphics = [];
 
-        [
-            'ol-marker-blue.png',
-            'ol-marker-gold.png',
-            'ol-marker-green.png',
-            'ol-marker-red.png'].forEach(function (graphics) {
-                pointGraphics.push(urlResolver.resolveRoot('Content/symbology/' + graphics));
-            });
-
+        // [
+        //     'ol-marker-blue.png',
+        //     'ol-marker-gold.png',
+        //     'ol-marker-green.png',
+        //     'ol-marker-red.png'].forEach(function (graphics) {
+        //         pointGraphics.push(urlResolver.resolveRoot('Content/symbology/' + graphics));
+        //     });
+            
         return pointGraphics;
     }
 ]).factory('pointGraphicNames', [
@@ -157,7 +157,8 @@ mapModule.factory("mapModes", [function () {
     };
 
     return {
-        allTextGraphics: textGraphicNames,
+        // allTextGraphics: textGraphicNames,
+        allTextGraphics: [],
         textGraphicIconClasses: textGraphicIconClasses,
         isValidTextGraphic: function (graphicName) {
             return graphicNamesForSld[graphicName] && !graphicNamesForSld[graphicName].isFontAwesome;
