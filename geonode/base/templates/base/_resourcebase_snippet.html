@@ -15,7 +15,10 @@
         <div class="col-lg-8 item-details">
           <div class="row">
             <div class="col-xs-10">
-              <p class="item-meta"><span class="item-category">{{ item.category__gn_description }}</span></p>
+              <p class="item-meta">
+                  <span class="item-category">{{ item.category__gn_description }}</span><br>
+                  <span class="item-category" ng-if="item.group"><a href="/groups/group/{{ item.group }}/activity/"><i class="fa fa-group" style="margin-right: 8px;"></i>{{ item.group_name }}</a></span>
+              </p>
               <h4><a href="{{ item.detail_url }}">{{ item.title }}</a></h4>
             </div>
             <div class="col-xs-2">
