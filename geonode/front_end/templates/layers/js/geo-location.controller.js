@@ -10,19 +10,28 @@
     function GeoLocationController(FileUploader, $timeout, uiGridConstants) {
         var self = this;
 
-        self.fileHeaders = [];
-        self.headers = ['post_code', 'road_no', 'house_no'];
-        self.mappedHeaders = {};
+        function initialize() {
+            self.fileHeaders = [];
+            self.headers = ['post_code', 'road_no', 'house_no'];
+            self.mappedHeaders = {};
 
-        self.gridOptions = {
-            paginationPageSizes: [25, 50, 75, 100],
-            paginationPageSize: 25,
-            data: [],
-            minRowsToShow: 15,
-            enableGridMenu: true,
-            exporterCsvFilename: self.layerName + '.csv',
-            // exporterCsvLinkElement: angular.element(document.querySelectorAll(".custom-csv-link-location")),
-            enableHorizontalScrollbar: uiGridConstants.scrollbars.ALWAYS
+            self.gridOptions = {
+                paginationPageSizes: [25, 50, 75, 100],
+                paginationPageSize: 25,
+                data: [],
+                minRowsToShow: 15,
+                enableGridMenu: true,
+                exporterCsvFilename: 'address_layer.csv',
+                // exporterCsvLinkElement: angular.element(document.querySelectorAll(".custom-csv-link-location")),
+                enableHorizontalScrollbar: uiGridConstants.scrollbars.ALWAYS
+            };
+
+            self.isSuccess = false;
+            self.isError = false;
+            self.Message = {
+                Success: "",
+                Error: ""
+            };
         }
 
         self.file = new FileUploader({
@@ -61,14 +70,8 @@
             onBeforeUploadItem: function(item) {
                 item.formData = [self.mappedHeaders];
             }
-
         });
-        self.isSuccess = false;
-        self.isError = false;
-        self.Message = {
-            Success: "",
-            Error: ""
-        };
+
         self.file.onSuccessItem = function(item, response, status, headers) {
             if (response.success) {
                 self.isSuccess = true;
@@ -101,6 +104,8 @@
             }
 
         };
+
+        (initialize)();
     }
 
 })();

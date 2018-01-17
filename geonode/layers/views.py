@@ -43,7 +43,7 @@ from geonode.layers.utils import (
     collect_epsg
 )
 import zipfile
-
+from django.contrib.gis.db import models
 from guardian.shortcuts import get_perms
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required, user_passes_test
@@ -1470,10 +1470,15 @@ class LayerAttributeRangeView(ListAPIView):
 
 
 class GeoLocationApiView(CreateAPIView):
+    """
+    Api for getting geo location from address (post_code, road_no, house_no)
+    """
     def post(self, request, **kwargs):
         location_settings = SystemSettings.objects.get(
             settings_code=SystemSettingsEnum.LOCATION)
-        factory = ClassFactory()
+        
+        factory = ClassFactory({'USER-DEFINED':models.PointField})
+        
         layer_obj = location_settings.content_object
         model_instance = factory.get_model(name=str(
             layer_obj.title_en), table_name=str(layer_obj.name), db=str(layer_obj.store))
@@ -1495,15 +1500,13 @@ class GeoLocationApiView(CreateAPIView):
             mapped_row = dict(zip(headers, row))
             values = [mapped_row[filtered_dict[k]] for k in keys]
             data = dict(zip(keys, values))
-            # print row
-
             try:
                 result = model_instance.objects.filter(**data).first()
                 if result is None:
                     raise Exception()
-                    
-                row.append(result.latitude)
-                row.append(result.longitude)
+                longitude, latitude = result.the_geom.get_coords()
+                row.append(latitude)
+                row.append(longitude)
                 success_count += 1
             except Exception as ex:
                 row += ['', '']

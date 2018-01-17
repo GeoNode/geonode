@@ -76,7 +76,7 @@ if 'geonode.geoserver' in settings.INSTALLED_APPS:
 #custom
 urlpatterns = patterns('',
     url(r'^geo-location$', TemplateView.as_view(template_name='layers/geo-location.html'), name='geo_location'),
-    url(r'^api/geo-location/$', GeoLocationApiView.as_view(), name='geo_location'),
+    url(r'^api/geo-location/$', GeoLocationApiView.as_view(), name='api_geo_location'),
     url(r'^(?P<layername>[^/]*)/style/$', LayerStyleView.as_view(), name='layer_style'),
     url(r'^style/(?P<pk>[0-9]+)/$', StyleExtensionRetrieveUpdateAPIView.as_view(), name='style_extention'),
     url(r'^(?P<layername>[^/]*)/styles/$', LayerStyleListAPIView.as_view(), name='layer_styles'),

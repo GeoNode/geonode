@@ -36,7 +36,7 @@
         </table>
         
         <input ng-if="ctrl.fileHeaders.length > 0" type="button" ng-click="ctrl.upload()" ng-disabled="ctrl.file.queue.length == 0" value="Upload" class="btn"> 
-        <div ui-grid="ctrl.gridOptions" ui-grid-pagination ui-grid-exporter class="grid"></div>
+        <div ng-if='ctrl.gridOptions.data.length > 0' ui-grid="ctrl.gridOptions" ui-grid-pagination ui-grid-exporter class="grid"></div>
         {% endblock %}
         
         {% block extra_script %}
