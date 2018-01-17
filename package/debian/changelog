@@ -1,5 +1,11 @@
 geonode (2.8.0+rc0) xenial; urgency=high
 
+  * UNRELEASED
+
+ -- Alessio Fabiani <alessio.fabiani@geo-solutions.it>  Wed, 17 Jan 2018 18:45:44 +0100
+
+geonode (2.8.0+rc0) xenial; urgency=high
+
   * [4c8284] Bump to version 2.7.4
   * [6afd8c] [Closes #3528] [Backport 2.9.x stable fixes to 2.7.x] - Prepare for 2.8.0 Release
   * [f0be26] Bump to version 2.7.5
