@@ -1,3 +1,9 @@
+geonode (2.8.0+rc1) xenial; urgency=high
+
+  * UNRELEASED
+
+ -- Alessio Fabiani <alessio.fabiani@geo-solutions.it>  Wed, 17 Jan 2018 18:50:18 +0100
+
 geonode (2.8.0+rc0) xenial; urgency=high
 
   * UNRELEASED
