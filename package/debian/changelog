@@ -1,3 +1,13 @@
+geonode (2.8.0+rc3) xenial; urgency=high
+
+  [ Jeremiah Cooper ]
+  * [b4da5a] Remove double migrations causing the build to fail.
+
+  [ Alessio Fabiani ]
+  * [f8b945]  - GeoNode Releasing
+
+ -- Alessio Fabiani <alessio.fabiani@geo-solutions.it>  Thu, 18 Jan 2018 20:39:58 +0100
+
 geonode (2.8.0+rc2) xenial; urgency=high
 
   * UNRELEASED
