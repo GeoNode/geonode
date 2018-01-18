@@ -152,6 +152,7 @@
                         style = getNewStyle();
                     }
                     style.Name = res.uuid;
+                    style.Title = res.title;
                     style.default.userStyle = style.Name;
                     style.select.userStyle = style.Name;
                     deferred.resolve(style);

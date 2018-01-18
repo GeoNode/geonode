@@ -23,7 +23,8 @@
                     StyleString: angular.toJson(properties),
                     SldStyle: sldStyle,
                     SelectionStyleSld: selectionStyleSld,
-                    LabelingSld: labelingSld
+                    LabelingSld: labelingSld,
+                    Title: properties.Title
                 }, {
                     headers: {
                         'X-CSRFToken': $cookies.get('csrftoken')
@@ -45,7 +46,8 @@
                     StyleString: angular.toJson(properties),
                     SldStyle: sldStyle,
                     SelectionStyleSld: selectionStyleSld,
-                    LabelingSld: labelingSld
+                    LabelingSld: labelingSld,
+                    Title: properties.Title
                 }, {
                     headers: {
                         'X-CSRFToken': $cookies.get('csrftoken')
@@ -183,9 +185,9 @@
                     request: "getfeatureinfo",
                     format: "image/jpeg",
                     transparent: true,
-                    query_layers: "nurc:Arc_Sample",
+                    query_layers: "",
                     styles: '',
-                    layers: "nurc:Arc_Sample",
+                    layers: "",
                     info_format: "application/json",
                     feature_count: 1,
                     srs: "epsg:3857",
