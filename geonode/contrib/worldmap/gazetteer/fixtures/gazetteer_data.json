@@ -1,0 +1,193 @@
+[    {
+        "fields": {
+            "date_joined": "2010-07-20 13:31:27",
+            "email": "admin@admin.admin",
+            "first_name": "",
+            "groups": [],
+            "is_active": true,
+            "is_staff": true,
+            "is_superuser": true,
+            "last_login": "2010-07-20 17:26:12",
+            "last_name": "",
+            "password": "sha1$6c974$de67ee46336cb3b9bb9e90d53863c3a8d01ce944",
+            "user_permissions": [],
+            "username": "admin"
+        },
+        "model": "auth.user",
+        "pk": 1
+    },
+    {
+        "fields": {
+            "typename": "base:CA1",
+            "store": "CA1",
+            "name": "CA1",
+            "workspace": "base",
+            "llbbox" : ["1", "3", "2", "3"],
+            "srs": "EPSG:4326",
+            "geographic_bounding_box": "whatever",
+            "uuid": "254afb8e-5a5f-4c1f-b01b-40af91532298",
+            "created_dttm": "2010-07-20 13:31:27",
+            "last_modified": "2010-07-20 13:31:27"
+        },
+        "model": "maps.layer",
+        "pk": 1
+    },
+    {
+        "fields": {
+            "typename": "base:CA2",
+            "store": "CA2",
+            "name": "CA2",
+            "workspace": "base",
+            "llbbox" : ["1", "3", "2", "3"],
+            "srs": "EPSG:4326",
+            "geographic_bounding_box": "whatever",
+            "uuid": "254afb8e-5a5f-4c1f-b01b-40af91532299",
+            "created_dttm": "2013-07-20 13:31:27",
+            "last_modified": "2013-07-20 13:31:27"
+        },
+        "model": "maps.layer",
+        "pk": 2
+    },
+    {
+        "fields": {
+            "abstract": "This is a demonstration of GeoNode, an application for assembling and publishing web based maps.  After adding layers to the map, use the Save Map button above to contribute your map to the GeoNode community.",
+            "center_x": -9428760.8701902702,
+            "center_y": 1427430.7410345681,
+            "owner": 1,
+            "projection": "EPSG:900913",
+            "title": "GeoNode Default Map",
+            "last_modified": "2010-07-20 13:31:27",
+            "zoom": 7,
+            "created_dttm": "2010-07-20 13:31:27"
+        },
+        "model": "maps.map",
+        "pk": 1
+    },
+    {
+        "fields": {
+            "fixed": false,
+            "group": "background",
+            "layer_params": "",
+            "map": 1,
+            "name": "base:CA1",
+            "ows_url": "http://localhost:8001/geoserver/wms",
+            "source_params": "",
+            "stack_order": 0,
+            "created_dttm": "2010-07-20 13:31:27",
+            "last_modified": "2010-07-20 13:31:27"
+        },
+        "model": "maps.maplayer",
+        "pk": 1
+    },
+    {
+        "fields": {
+            "fixed": false,
+            "group": "background",
+            "layer_params": "",
+            "map": 1,
+            "name": "base:CA2",
+            "ows_url": "http://localhost:8001/geoserver/wms",
+            "source_params": "",
+            "stack_order": 0,
+            "created_dttm": "2010-07-20 13:31:27",
+            "last_modified": "2010-07-20 13:31:27"
+        },
+        "model": "maps.maplayer",
+        "pk": 2
+    },
+    {
+        "fields": {
+            "layer_name": "CA1",
+            "layer_attribute": "field1",
+            "feature_type": "POINT",
+            "feature_fid": 121,
+            "latitude": 40,
+            "longitude": -70,
+            "place_name": "Paradise1",
+            "start_date": "2010-07-20",
+            "end_date": "2012-07-20",
+            "julian_start": 2455398,
+            "julian_end": 2456129,
+            "project": "test",
+            "feature": null
+        },
+        "model": "gazetteer.GazetteerEntry",
+        "pk": 1
+    },
+    {
+        "fields": {
+            "layer_name": "CA1",
+            "layer_attribute": "field1",
+            "feature_type": "POINT",
+            "feature_fid": 122,
+            "latitude": 40,
+            "longitude": -70,
+            "place_name": "Paradise2",
+            "start_date": "2011-07-20",
+            "end_date": "2013-07-20",
+            "julian_start": 2455763,
+            "julian_end": 2456494,
+            "project": "test",
+            "feature": null
+        },
+        "model": "gazetteer.GazetteerEntry",
+        "pk": 2
+    },
+    {
+        "fields": {
+            "layer_name": "CA1",
+            "layer_attribute": "field1",
+            "feature_type": "POINT",
+            "feature_fid": 123,
+            "latitude": 40,
+            "longitude": -70,
+            "place_name": "Paradise3",
+            "start_date": "2013-07-20 BC",
+            "end_date": "2011-07-20 BC",
+            "julian_start": 986027,
+            "julian_end": 986758,
+            "project": "test",
+            "feature": null
+        },
+        "model": "gazetteer.GazetteerEntry",
+        "pk": 3
+    },
+    {
+        "fields": {
+            "layer_name": "CA2",
+            "layer_attribute": "field1",
+            "feature_type": "POINT",
+            "feature_fid": 124,
+            "latitude": 40,
+            "longitude": -70,
+            "place_name": "Paradise4",
+            "start_date": "2012-07-20 BC",
+            "end_date": "2010-07-20 BC",
+            "julian_start": 986741,
+            "julian_end": 987471,
+            "project": "test",
+            "feature": null
+        },
+        "model": "gazetteer.GazetteerEntry",
+        "pk": 4
+    },
+    {
+        "fields": {
+            "layer_name": "CA2",
+            "layer_attribute": "field1",
+            "feature_type": "POINT",
+            "feature_fid": 125,
+            "latitude": 40,
+            "longitude": -70,
+            "place_name": "Paradise5",
+            "start_date": "2010-07-21 BC",
+            "end_date": null,
+            "julian_start": 987472,
+            "julian_end": null,
+            "project": null,
+            "feature": null
+        },
+        "model": "gazetteer.GazetteerEntry",
+        "pk": 5
+    }
+]

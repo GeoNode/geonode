@@ -1,0 +1,7 @@
+.gx-popup-anc {
+    background-image: url(../images/slate/anchor.png);
+}
+
+.gx-popup-anc.top {
+    background-image: url(../images/slate/anchor-top.png);
+}

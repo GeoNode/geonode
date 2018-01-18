@@ -1,0 +1,24 @@
+/* -------------------------------------------------------------- 
+  
+   Boilerplate reset.css
+   * Resets default browser CSS.
+   
+-------------------------------------------------------------- */
+
+html, body, div, span, object, iframe, h1, h2, h3, h4, h5, h6, p, blockquote, pre, a, abbr, acronym, address, code, del, dfn, em, img, q, dl, dt, dd, ol, ul, li, fieldset, form, label, legend, table, caption, tbody, tfoot, thead, tr, th, td { margin: 0; padding: 0; border: 0; font-weight: inherit; font-style: inherit; font-size: 100%; font-family: inherit; vertical-align: baseline; }
+body { line-height: 1.5; background: #fff; margin: 1.5em 0; }
+table { border-collapse: collapse; border-spacing: 0; }
+caption, th, td { text-align: left; font-weight:400; }
+blockquote:before, blockquote:after, q:before, q:after { content: ""; }
+blockquote, q { quotes: "" ""; }
+a img { border: none; }
+input,textarea { margin: 0; }
+
+/* Removes Firefox imposed outline */
+a { outline: none; }
+
+/* Clearing floats without extra markup  */
+.wrapper { display: inline-block; }
+.wrapper:after { content: "."; display: block; height: 0; clear: both; visibility: hidden; }
+* html .wrapper { height: 1%; }
+.wrapper { display: block; }
