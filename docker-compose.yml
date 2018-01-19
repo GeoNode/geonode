@@ -21,7 +21,7 @@ services:
   django:
     image: geonode/geonode:latest
     container_name: django4${COMPOSE_PROJECT_NAME}
-    links:
+    depends_on:
       - db
       - elasticsearch
       - rabbitmq
@@ -34,7 +34,7 @@ services:
   celery:
     image: geonode/geonode:latest
     container_name: celery4${COMPOSE_PROJECT_NAME}
-    links:
+    depends_on:
       - db
       - elasticsearch
       - rabbitmq
@@ -57,7 +57,7 @@ services:
   geoserver:
     image: geonode/geoserver:2.10.x
     container_name: geoserver4${COMPOSE_PROJECT_NAME}
-    links:
+    depends_on:
       - db
     ports:
       - "8080"
@@ -71,7 +71,7 @@ services:
   geonode:
     image: geonode/nginx:geoserver
     container_name: nginx4${COMPOSE_PROJECT_NAME}
-    links:
+    depends_on:
       - django
       - geoserver
     ports:
