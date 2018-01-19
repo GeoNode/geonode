@@ -155,7 +155,7 @@ setup(name='GeoNode',
             # Contribs
             "et-xmlfile<=1.0.1",  # python-et-xmlfile (1.0.1 in our ppa)
             "unicodecsv<=0.14.1",  # python-unicodecsv (0.14.1 in our ppa)
-            "urllib3<=1.22",  # python-urllib3 (1.13.1 in our ppa)
+            "urllib3<=1.22",
             "vine<=1.1.4",  # (1.1.4 in our ppa)
             "xlrd<=1.1.0",  # (0.9.4 in ppa) FIXME
             "xlwt<=1.3.0",  # (0.7.5 in ppa) FIXME
@@ -177,7 +177,7 @@ setup(name='GeoNode',
             "python-mimeparse<=1.6.0",  # (0.1.4 in ppa) FIXME
             "pytz<=2017.2",  # python-pytz (2017.3 in our ppa)
             "regex<=2016.7.21",  # (0.1.20160110 in ppa)
-            "requests<=2.18.4",  # python-requests (2.18.4 in our ppa)
+            "requests<=2.18.4",
             "simplejson<=3.11.1",  # (3.8.1 in ppa) FIXME
             "tablib<=0.12.1",  # (0.9.11 in ppa) FIXME
 
