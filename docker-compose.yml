@@ -54,7 +54,7 @@ services:
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
     volumes_from:
-      - data_dir_conf
+      - data-dir-conf
     env_file:
       - ./scripts/docker/env/production/geoserver.env
 
@@ -67,7 +67,7 @@ services:
     ports:
       - "80:80"
 
-  data_dir_conf:
+  data-dir-conf:
     image: geonode/geoserver_data:2.10.x
     container_name: geoserver_data_dir
     command: /bin/true
@@ -76,7 +76,7 @@ services:
 
 volumes:
 
-  geoserver_data_dir:
+  geoserver-data-dir:
     name: ${COMPOSE_PROJECT_NAME}-gsdatadir
   dbdata:
     name: ${COMPOSE_PROJECT_NAME}-dbdata
