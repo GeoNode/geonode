@@ -69,7 +69,7 @@ services:
 
   data-dir-conf:
     image: geonode/geoserver_data:2.10.x
-    container_name: geoserver_data_dir
+    container_name: geoserver-data-dir
     command: /bin/true
     volumes:
       - /geoserver_data/data
