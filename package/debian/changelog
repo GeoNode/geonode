@@ -1,3 +1,9 @@
+geonode (2.8.0+rc5) xenial; urgency=high
+
+  * UNRELEASED
+
+ -- Alessio Fabiani <alessio.fabiani@geo-solutions.it>  Fri, 19 Jan 2018 01:59:18 +0100
+
 geonode (2.8.0+rc4) xenial; urgency=high
 
   * [b92c19]  - GeoNode Releasing 2.8.0rc3
