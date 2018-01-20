@@ -131,7 +131,10 @@ def _localsettings():
 def _prepare_oauth_fixture():
     pub_ip = _docker_host_ip()
     print "Public IP is {0}".format(pub_ip)
-    pub_port = _nginx_exposed_port()
+    pub_port = _container_exposed_port(
+        'nginx',
+        os.getenv('GEONODE_INSTANCE_NAME', 'geonode')
+    )
     print "Public PORT is {0}".format(pub_port)
     default_fixture = [
         {
