@@ -22,7 +22,10 @@ def update(ctx):
     ctx.run("env", pty=True)
     pub_ip = _docker_host_ip()
     print "Public IP is {0}".format(pub_ip)
-    pub_port = _nginx_exposed_port()
+    pub_port = _container_exposed_port(
+        'nginx',
+        os.getenv('GEONODE_INSTANCE_NAME', 'geonode')
+    )
     print "Public PORT is {0}".format(pub_port)
     db_url = _update_db_connstring()
     geodb_url = _update_geodb_connstring()
@@ -81,11 +84,15 @@ address {0}".format(ip))
     return ip.replace("\n", "")
 
 
-def _nginx_exposed_port():
+def _container_exposed_port(component, instname):
     client = docker.from_env()
     ports_dict = json.dumps(
         [c.attrs['Config']['ExposedPorts'] for c in client.containers.list(
-        ) if c.status in 'running' and 'nginx4' in c.name][0]
+            filters={
+                'label': 'org.geonode.component={0}'.format(component),
+                'status': 'running'
+            }
+        ) if '{0}'.format(instname) in c.name][0]
     )
     for key in json.loads(ports_dict):
         port = re.split('/tcp', key)[0]

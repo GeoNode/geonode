@@ -6,6 +6,7 @@ services:
     container_name: db4${COMPOSE_PROJECT_NAME}
     labels:
         org.geonode.component: db
+        org.geonode.instance.name: geonode
     volumes:
       - dbdata:/var/lib/postgresql/data
       - dbbackups:/pg_backups
@@ -17,18 +18,21 @@ services:
     container_name: elasticsearch4${COMPOSE_PROJECT_NAME}
     labels:
         org.geonode.component: elasticsearch
+        org.geonode.instance.name: geonode
 
   rabbitmq:
     image: rabbitmq
     container_name: rabbitmq4${COMPOSE_PROJECT_NAME}
     labels:
         org.geonode.component: rabbitmq
+        org.geonode.instance.name: geonode
 
   django:
     image: geonode/geonode:2.6.x
     container_name: django4${COMPOSE_PROJECT_NAME}
     labels:
         org.geonode.component: django
+        org.geonode.instance.name: geonode
     depends_on:
       - db
       - elasticsearch
@@ -44,6 +48,7 @@ services:
     container_name: celery4${COMPOSE_PROJECT_NAME}
     labels:
         org.geonode.component: celery
+        org.geonode.instance.name: geonode
     depends_on:
       - db
       - elasticsearch
@@ -59,6 +64,7 @@ services:
     container_name: geoserver4${COMPOSE_PROJECT_NAME}
     labels:
         org.geonode.component: geoserver
+        org.geonode.instance.name: geonode
     depends_on:
       - db
     ports:
@@ -75,6 +81,7 @@ services:
     container_name: nginx4${COMPOSE_PROJECT_NAME}
     labels:
         org.geonode.component: nginx
+        org.geonode.instance.name: geonode
     depends_on:
       - django
       - geoserver
@@ -86,6 +93,7 @@ services:
     container_name: geoserver-data-dir
     labels:
         org.geonode.component: conf
+        org.geonode.instance.name: geonode
     command: /bin/true
     volumes:
       - /geoserver_data/data
