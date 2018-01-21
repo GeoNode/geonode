@@ -62,7 +62,7 @@ services:
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
     env_file:
-      - ./scripts/docker/env/production/django.env
+      - ./scripts/docker/env/production/celery.env
 
   geoserver:
     image: geonode/geoserver:2.10.x
