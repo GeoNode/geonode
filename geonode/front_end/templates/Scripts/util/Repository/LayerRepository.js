@@ -70,13 +70,13 @@
                 //     layerId: layerId,
                 //     attributeId: attributeId
                 // }));
-                return $http.get("/layers/"+layerId+"/unique-value-for-attribute/"+attributeId+"/");
+                return $http.get("/layers/" + layerId + "/unique-value-for-attribute/" + attributeId + "/");
             },
             getColumnMinMaxValues: function(layerId, attributeIds) {
-                var attributeQueryString = _.map(attributeIds, function(item){ 
-                    return 'attributes='+item;
+                var attributeQueryString = _.map(attributeIds, function(item) {
+                    return 'attributes=' + item;
                 }).join("&");
-                var url = '/layers/'+layerId+'/range-value-for-attribute/?' + attributeQueryString;
+                var url = '/layers/' + layerId + '/range-value-for-attribute/?' + attributeQueryString;
                 return $http.get(url);
             },
             getAttributeGridData: function(dataRetrievalInfo, surfLayer) {
@@ -84,12 +84,11 @@
             },
 
             getNumberOfFeatures: function(dataId) {
-                return $http.get(urlResolver.resolveGeoServer('wfs', 
-                { 
-                    request:'GetFeature', 
+                return $http.get(urlResolver.resolveGeoServer('wfs', {
+                    request: 'GetFeature',
                     typeName: dataId,
                     version: '1.1.0',
-                    resultType: 'hits' 
+                    resultType: 'hits'
                 }));
             },
             updateLayerExtent: function(surfLayer) {
@@ -178,6 +177,21 @@
                     });
                 return deferred.promise;
             },
+            post: function(url, data, options) {
+                var deferred = $q.defer();
+                var options = Object.assign({
+                    headers: {
+                        "X-CSRFToken": $cookies.get('csrftoken')
+                    }
+                }, options);
+                $http.post(url, data, options)
+                    .success(function(res) {
+                        deferred.resolve(res);
+                    }).error(function(error, status) {
+                        deferred.reject({ error: error, status: status });
+                    });
+                return deferred.promise;
+            },
             getWMS: function(url, params) {
                 var options = {
                     service: "wms",
@@ -203,6 +217,25 @@
                 return this.get('/proxy/?url=' + uri);
 
             },
+            uploadCsvLayer: function(layerData, file, fileName) {
+                var data = new FormData();
+                for (var k in layerData) {
+                    if (typeof layerData[k] == 'object')
+                        layerData[k] = JSON.stringify(layerData[k]);
+                    data.append(k, layerData[k]);
+                }
+                if (file instanceof Blob) {
+                    file = new File([file], fileName);
+                }
+                data.append('base_file', file);
+                return this.post('/layers/upload', data, {
+                    transformRequest: angular.identity,
+                    headers: {
+                        'Content-Type': undefined,
+                        "X-CSRFToken": $cookies.get('csrftoken')
+                    }
+                });
+            }
         };
     }
 ]);

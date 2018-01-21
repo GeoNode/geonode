@@ -2,9 +2,9 @@
     appModule
         .controller('OverpassApiQueryBuilderController', OverpassApiQueryBuilderController);
 
-    OverpassApiQueryBuilderController.$inject = ['$scope', '$modalInstance', 'mapService', '$http', '$compile', 'BoxDrawTool'];
+    OverpassApiQueryBuilderController.$inject = ['$scope', '$modalInstance', 'mapService', '$http', '$compile', 'BoxDrawTool', 'layerService'];
 
-    function OverpassApiQueryBuilderController($scope, $modalInstance, mapService, $http, $compile, BoxDrawTool) {
+    function OverpassApiQueryBuilderController($scope, $modalInstance, mapService, $http, $compile, BoxDrawTool, layerService) {
         mapService.removeUserInteractions();
         mapService.removeEvents();
         var boxTool = new BoxDrawTool();
@@ -166,6 +166,16 @@
                     });
                     _AddLayer(features);
                 });
+        };
+
+        $scope.SaveAsLayer = function(){
+            var projection = mapService.getProjection();
+            var geoJsonFormat = new ol.format.GeoJSON({
+                featureProjection: 'EPSG:4326'
+            });
+            var features = vectorLayer.getSource().getFeatures();
+            var geoJsonFeatures = JSON.parse(geoJsonFormat.writeFeatures(features)).features;
+            layerService.saveGeoJSONLayer(geoJsonFeatures);
         };
 
         function onBoxChange(feature, bbox) {

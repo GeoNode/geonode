@@ -214,8 +214,65 @@
             },
             map: function(layer, order){
                 return _map(layer, order);
+            },
+            saveGeoJSONLayer: function(geoJsonFeatures){
+                var csv = geoJsonToCsv(geoJsonFeatures);
+                var file = new Blob([csv], {type: 'application/octet-stream'});
+                var url = '/layers/upload';
+                var data = {
+                    'permissions': {},
+                    'charset': 'UTF-8',
+                    'layer_title': 'auto layer upload',
+                    'category': 'building',
+                    'organization': 1,
+                    'csv_layer_type': 'latlon',
+                    'longitude': 'longitude',
+                    'lattitude': 'latitude',
+                    'layer_type': 'csv',
+                    'admin_upload': true
+                };
+                return layerRepository.uploadCsvLayer(data, file, 'over-pass.csv');
+
             }
         };
+
+        function geoJsonToCsv(geoJsonFeatures){
+            var json = [];
+            var keys = {};
+            var reducer = function(a, e){return Object.assign(a, {[e]: true});};
+            geoJsonFeatures.forEach(function(e){
+                keys = Object.assign(keys, Object.keys(e.properties).reduce(reducer, {}));
+                json.push(Object.assign(e.properties, {
+                    longitude: e.geometry.coordinates[1],
+                    latitude: e.geometry.coordinates[0]
+                }));
+            });
+            keys = Object.assign(keys, {
+                'longitude': true,
+                'latitude': true
+            });
+            return JsonToCsv(json, keys);
+        }
+
+        function JsonToCsv(json, keys){
+            var fields = [];
+            if (keys){
+                fields = Object.keys(keys);
+            }else {
+                fields = Object.keys(json[0]);                
+            }
+
+            var replacer = function(key, value){return value == null? '' : value;};
+            var csv = json.map(function(row){
+                return fields.map(function(name){
+                    return JSON.stringify(row[name], replacer);
+                }).join(',');
+            });
+            csv.unshift(fields.join(','));
+            csv = csv.join('\r\n');
+            console.log(csv);
+            return csv;
+        }
 
         function replaceSpecialCharacters(style) {
             return style.replace(/&/g, '&amp;').replace(/'/g, '&apos;');
