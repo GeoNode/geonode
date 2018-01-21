@@ -19,4 +19,20 @@ echo "prepare task done"
 /usr/local/bin/invoke fixtures >> /usr/src/app/invoke.log
 echo "fixture task done"
 
-exec "$@"
+cmd="$@"
+
+echo DOCKER_ENV=$DOCKER_ENV
+
+if [ -z ${DOCKER_ENV} ] || [ ${DOCKER_ENV} = "development" ]
+then
+
+    echo "Executing standard Django server $cmd for Development"
+
+else
+
+    cmd="uwsgi --ini /usr/src/app/uwsgi.ini"
+    echo "Executing UWSGI server $@ for Production"
+
+fi
+
+exec $cmd
