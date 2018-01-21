@@ -30,8 +30,18 @@ then
 
 else
 
-    cmd="uwsgi --ini /usr/src/app/uwsgi.ini"
-    echo "Executing UWSGI server $@ for Production"
+    if [ ${IS_CELERY} = "true" ]
+    then
+
+        cmd=$CELERY_CMD
+        echo "Executing Celery server $cmd for Production"
+
+    else
+
+        cmd=$UWSGI_CMD
+        echo "Executing UWSGI server $cmd for Production"
+
+    fi
 
 fi
 
