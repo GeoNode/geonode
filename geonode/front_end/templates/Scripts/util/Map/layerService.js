@@ -1,6 +1,10 @@
-﻿mapModule.factory('layerService', [
-    '$rootScope', 'layerRepository', 'featureService', 'layerStyleGenerator', 'featureFilterGenerator', 'sldTemplateService', 'interactionHandler', '$q', 'LayerService', 'visualizationService', 'layerRenderingModeFactory',
-    function($rootScope, layerRepository, featureService, layerStyleGenerator, featureFilterGenerator, sldTemplateService, interactionHandler, $q, newLayerService, visualizationService, layerRenderingModeFactory) {
+﻿mapModule.factory('layerService', layerService);
+
+layerService.$inject = [
+    '$rootScope', 'layerRepository', 'featureService', 'layerStyleGenerator', 'featureFilterGenerator', 'sldTemplateService', 'interactionHandler', '$q', 'LayerService', 'visualizationService', 'layerRenderingModeFactory', '$window'
+];
+
+function layerService($rootScope, layerRepository, featureService, layerStyleGenerator, featureFilterGenerator, sldTemplateService, interactionHandler, $q, newLayerService, visualizationService, layerRenderingModeFactory, $window) {
         function _map(layer, order) {
             if (layer.BoundingBox) {
                 layer.bbox = [layer.BoundingBox[0].extent[0],
@@ -82,25 +86,23 @@
 
                 layerRenderingModeFactory.setLayerRenderingMode(surfLayer);
 
-                if(surfLayer.Style.VisualizationSettings){
+            if (surfLayer.Style.VisualizationSettings) {
                     visualizationService.getVisualizationSld(surfLayer, surfLayer.Style.VisualizationSettings)
-                    .then(function(visSld){
-                        if(visualizationService.isChart(surfLayer.Style.VisualizationSettings)){
+                    .then(function(visSld) {
+                        if (visualizationService.isChart(surfLayer.Style.VisualizationSettings)) {
                             defaultStyleSld = defaultStyleSld.replace(chartSldRegex, visSld);
-                        }
-                        else if(visualizationService.isHeatMap(surfLayer.Style.VisualizationSettings)){
+                        } else if (visualizationService.isHeatMap(surfLayer.Style.VisualizationSettings)) {
                             defaultStyleSld = visSld;
                         }
                         
                         return doAction();
                     });
-                }
-                else{
+            } else {
                     return doAction();
                 }
                 
 
-                function doAction(){
+            function doAction() {
                     surfLayer.setName(name);
                     surfLayer.setStyle(style);
                     //surfLayer.setTiled(surfLayer.Style.tiled);
@@ -212,12 +214,12 @@
                     }
                 });
             },
-            map: function(layer, order){
+        map: function(layer, order) {
                 return _map(layer, order);
             },
-            saveGeoJSONLayer: function(geoJsonFeatures){
+        saveGeoJSONLayer: function(geoJsonFeatures) {
                 var csv = geoJsonToCsv(geoJsonFeatures);
-                var file = new Blob([csv], {type: 'application/octet-stream'});
+            var file = new Blob([csv], { type: 'application/octet-stream' });
                 var url = '/layers/upload';
                 var data = {
                     'permissions': {},
@@ -236,15 +238,19 @@
             }
         };
 
-        function geoJsonToCsv(geoJsonFeatures){
+    function geoJsonToCsv(geoJsonFeatures) {
             var json = [];
             var keys = {};
-            var reducer = function(a, e){return Object.assign(a, {[e]: true});};
-            geoJsonFeatures.forEach(function(e){
+        var reducer = function(a, e) {
+            return Object.assign(a, {
+                [e]: true
+            });
+        };
+        geoJsonFeatures.forEach(function(e) {
                 keys = Object.assign(keys, Object.keys(e.properties).reduce(reducer, {}));
                 json.push(Object.assign(e.properties, {
-                    longitude: e.geometry.coordinates[1],
-                    latitude: e.geometry.coordinates[0]
+                longitude: e.geometry.coordinates[0],
+                latitude: e.geometry.coordinates[1]
                 }));
             });
             keys = Object.assign(keys, {
@@ -254,17 +260,17 @@
             return JsonToCsv(json, keys);
         }
 
-        function JsonToCsv(json, keys){
+    function JsonToCsv(json, keys) {
             var fields = [];
-            if (keys){
+        if (keys) {
                 fields = Object.keys(keys);
-            }else {
+        } else {
                 fields = Object.keys(json[0]);                
             }
 
-            var replacer = function(key, value){return value == null? '' : value;};
-            var csv = json.map(function(row){
-                return fields.map(function(name){
+        var replacer = function(key, value) { return value == null ? '' : value; };
+        var csv = json.map(function(row) {
+            return fields.map(function(name) {
                     return JSON.stringify(row[name], replacer);
                 }).join(',');
             });
@@ -299,4 +305,3 @@
         }
         return factory;
     }
-]);

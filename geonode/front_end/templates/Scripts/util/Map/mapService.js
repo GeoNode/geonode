@@ -318,8 +318,8 @@
             //         });
             //     }
             // },
-            addDataLayer: function(layer, override) {
-                var p1_deferred = $q.defer()
+            addDataLayer: function(layer) {
+                var p1_deferred = $q.defer();
                 var p1 = p1_deferred.promise;
                 mapId = this.getId();
                 if (!mapId) {

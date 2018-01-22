@@ -2,9 +2,9 @@
     appModule
         .controller('OverpassApiQueryBuilderController', OverpassApiQueryBuilderController);
 
-    OverpassApiQueryBuilderController.$inject = ['$scope', '$modalInstance', 'mapService', '$http', '$compile', 'BoxDrawTool', 'layerService'];
+    OverpassApiQueryBuilderController.$inject = ['$scope', '$modalInstance', 'mapService', '$http', '$compile', 'BoxDrawTool', 'layerService', '$window'];
 
-    function OverpassApiQueryBuilderController($scope, $modalInstance, mapService, $http, $compile, BoxDrawTool, layerService) {
+    function OverpassApiQueryBuilderController($scope, $modalInstance, mapService, $http, $compile, BoxDrawTool, layerService, $window) {
         mapService.removeUserInteractions();
         mapService.removeEvents();
         var boxTool = new BoxDrawTool();
@@ -130,7 +130,7 @@
                                 color: 'rgba(' + _random(255) + ',' + _random(255) + ',' + _random(255) + ',' + 0.3 + ')',
                                 width: 2
                             }),
-                            
+
                             radius: 10,
                         })
                     })
@@ -168,14 +168,31 @@
                 });
         };
 
-        $scope.SaveAsLayer = function(){
+        $scope.SaveAsLayer = function() {
             var projection = mapService.getProjection();
-            var geoJsonFormat = new ol.format.GeoJSON({
-                featureProjection: 'EPSG:4326'
-            });
+            var geoJsonFormat = new ol.format.GeoJSON();
             var features = vectorLayer.getSource().getFeatures();
-            var geoJsonFeatures = JSON.parse(geoJsonFormat.writeFeatures(features)).features;
-            layerService.saveGeoJSONLayer(geoJsonFeatures);
+            var geoJsonFeatures = JSON.parse(geoJsonFormat.writeFeatures(features, {
+                defaultDataProjection: 'EPSG:4326',
+                featureProjection: projection
+            })).features;
+            layerService.saveGeoJSONLayer(geoJsonFeatures)
+                .then(function(res) {
+                    var layer_name = res.url.split('/').pop();
+                    var extent = mapService.getMapExtent();
+                    var epsg4326Extent =
+                ol.proj.transformExtent(extent, projection, 'EPSG:4326');
+                    var layer = layerService.map({
+                        name: layer_name,
+                        geoserverUrl: $window.GeoServerTileRoot + '?access_token=' +  $window.mapConfig.access_token
+                    });
+                    if (vectorLayer) {
+                        mapService.removeVectorLayer(vectorLayer);
+                    }
+                    mapService.addDataLayer(layer);
+                }, function() {
+
+                });
         };
 
         function onBoxChange(feature, bbox) {

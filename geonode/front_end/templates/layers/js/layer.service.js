@@ -207,6 +207,9 @@
                                     shapeType = 'point';
                                 else if (e.localType.toLowerCase().search('linestring') != -1)
                                     shapeType = 'polyline';
+                                else if (e.localType.toLowerCase().search('geotiff') != -1)
+                                    shapeType = 'geoTiff';
+
                                 deferred.resolve(shapeType);
                                 return;
                             }
