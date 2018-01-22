@@ -224,10 +224,7 @@
                         layerData[k] = JSON.stringify(layerData[k]);
                     data.append(k, layerData[k]);
                 }
-                if (file instanceof Blob) {
-                    file = new File([file], fileName);
-                }
-                data.append('base_file', file);
+                data.append('base_file', file, fileName);
                 return this.post('/layers/upload', data, {
                     transformRequest: angular.identity,
                     headers: {
