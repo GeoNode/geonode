@@ -153,12 +153,15 @@
             }
             var epsg4326Extent =
                 ol.proj.transformExtent(extent, projection, 'EPSG:4326');
+            var reBbox = /{{bbox}}/g;
 
-            var param = query.split("{{bbox}}");
-            param = '(' + param[0] +
-                epsg4326Extent[1] + ',' + epsg4326Extent[0] + ',' +
-                epsg4326Extent[3] + ',' + epsg4326Extent[2] +
-                ');' + param[1];
+            var bbox =  epsg4326Extent[1] + ',' 
+                        + epsg4326Extent[0] + ',' 
+                        + epsg4326Extent[3] + ',' 
+                        + epsg4326Extent[2];
+      
+            var param = query.replace(reBbox, bbox);
+
             $http.post(url, param)
                 .then(function(response) {
                     var features = new ol.format.OSMXML().readFeatures(response.data, {
@@ -170,31 +173,7 @@
 
         $scope.SaveAsLayer = function() {
             var features = vectorLayer.getSource().getFeatures();
-            // var projection = mapService.getProjection();
-            // var geoJsonFormat = new ol.format.GeoJSON();
-            // var geoJsonFeatures = JSON.parse(geoJsonFormat.writeFeatures(features, {
-            //     defaultDataProjection: 'EPSG:4326',
-            //     featureProjection: projection
-            // })).features;
             
-            // layerService.saveGeoJSONLayer(geoJsonFeatures)
-            //     .then(function(res) {
-            //         var layer_name = res.url.split('/').pop();
-            //         var extent = mapService.getMapExtent();
-            //         var epsg4326Extent =
-            //     ol.proj.transformExtent(extent, projection, 'EPSG:4326');
-            //         var layer = layerService.map({
-            //             name: layer_name,
-            //             geoserverUrl: $window.GeoServerTileRoot + '?access_token=' +  $window.mapConfig.access_token
-            //         });
-            //         if (vectorLayer) {
-            //             mapService.removeVectorLayer(vectorLayer);
-            //         }
-            //         mapService.addDataLayer(layer);
-            //     }, function() {
-
-            //     });
-
             layerService.createLayerFromFeature(features)
                 .then(function(layer) {
                     if (vectorLayer) {

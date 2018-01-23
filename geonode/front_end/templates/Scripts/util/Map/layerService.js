@@ -316,7 +316,6 @@ function layerService($rootScope, layerRepository, featureService, layerStyleGen
         });
         csv.unshift(fields.join(','));
         csv = csv.join('\r\n');
-        console.log(csv);
         return csv;
     }
 
