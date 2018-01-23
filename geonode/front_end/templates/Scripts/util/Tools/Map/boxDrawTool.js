@@ -302,6 +302,7 @@ function BoxDrawTool(mapService) {
             vectorSource.addFeature(bottomLeftFeature);
             vectorSource.addFeature(bottomRightFeature);
         });
+        
         this.Draw = function(forceDraw) {
             mapService.addInteraction(dragInteraction);
             if (!isBoxDrawn || forceDraw) {
@@ -309,9 +310,11 @@ function BoxDrawTool(mapService) {
                 isBoxDrawn = true;
             }
         };
+
         this.Remove = function() {
             mapService.removeVectorLayer(layer);
-        }
+        };
+
         this.Stop = function() {
             mapService.removeInteraction(dragInteraction);
         };

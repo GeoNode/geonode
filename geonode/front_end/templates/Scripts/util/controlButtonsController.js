@@ -222,18 +222,18 @@
             });
         }
 
-        function showOverpassApiQueryDialog() {
-            $modal.open({
-                templateUrl: '/static/Templates/Project/OverpassApiQueryBuilder.html',
-                controller: 'OverpassApiQueryBuilderController',
-                backdrop: 'static',
-                keyboard: false,
-                windowClass: 'fullScreenModal First',
-                windowTopClass : 'Second',
-                openedClass : 'Third'
-                // windowClass: 'fullScreenModal'
-            });
-        }
+        // function showOverpassApiQueryDialog() {
+        //     $modal.open({
+        //         templateUrl: '/static/Templates/Project/OverpassApiQueryBuilder.html',
+        //         controller: 'OverpassApiQueryBuilderController',
+        //         backdrop: 'static',
+        //         keyboard: false,
+        //         windowClass: 'fullScreenModal First',
+        //         windowTopClass : 'Second',
+        //         openedClass : 'Third'
+        //         // windowClass: 'fullScreenModal'
+        //     });
+        // }
 
         $scope.toggleMapEditable = function() {
             interactionHandler.toggleEditable();

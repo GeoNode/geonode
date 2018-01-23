@@ -2,12 +2,12 @@
     appModule
         .controller('OverpassApiQueryBuilderController', OverpassApiQueryBuilderController);
 
-    OverpassApiQueryBuilderController.$inject = ['$scope', '$modalInstance', 'mapService', '$http', '$compile', 'BoxDrawTool', 'layerService', '$window'];
+    OverpassApiQueryBuilderController.$inject = ['$scope', 'mapService', '$http', '$compile', 'BoxDrawTool', 'layerService', '$window'];
 
-    function OverpassApiQueryBuilderController($scope, $modalInstance, mapService, $http, $compile, BoxDrawTool, layerService, $window) {
+    function OverpassApiQueryBuilderController($scope, mapService, $http, $compile, BoxDrawTool, layerService, $window) {
         mapService.removeUserInteractions();
         mapService.removeEvents();
-        var boxTool = new BoxDrawTool();
+        var boxTool = new BoxDrawTool();        
         var url = 'http://overpass-api.de/api/interpreter';
         $scope.queryStr = "node({{bbox}});out;";
         var vectorLayer;
@@ -93,7 +93,11 @@
         };
 
         $scope.closeDialog = function() {
-            $modalInstance.close();
+            // $modalInstance.close();
+            if (vectorLayer) {
+                mapService.removeVectorLayer(vectorLayer);
+            }
+            boxTool.Remove();
         };
 
         function _Style(feature, resolution) {
@@ -190,11 +194,9 @@
             $scope.executeQuery($scope.queryStr);
         }
         $scope.dragBox = function() {
-
             boxTool.Draw();
             boxTool.OnBoxDrawEnd(onBoxChange);
             boxTool.OnBoxModificationEnd(onBoxChange);
-            $scope.closeDialog();
         };
     }
 })();
