@@ -771,12 +771,16 @@ def deb(options):
         #  use the following line instead:
         # sh(('gbp dch --spawn-editor=snapshot --git-author --new-version=%s'
         #    ' --id-length=6 --ignore-branch --release' % (simple_version)))
-        sh(('gbp dch --force-distribution --spawn-editor=snapshot --git-author --new-version=%s'
-           ' --id-length=6 --ignore-branch --release' % (simple_version)))
+        distribution = "xenial"
+        sh(('gbp dch --distribution=%s --force-distribution --spawn-editor=snapshot --git-author --new-version=%s'
+           ' --id-length=6 --ignore-branch --release' % (distribution, simple_version)))
 
         deb_changelog = path('debian') / 'changelog'
-        for line in fileinput.input([deb_changelog], inplace=True):
-            print line.replace("urgency=medium", "urgency=high"),
+        for idx, line in enumerate(fileinput.input([deb_changelog], inplace=True)):
+            if idx == 0:
+                print "geonode (%s) %s; urgency=high"  % (simple_version, distribution),
+            else:
+                print line.replace("urgency=medium", "urgency=high"),
 
         # Revert workaround for git-dhc bug
         sh('rm -rf .git')
@@ -808,8 +812,8 @@ def publish():
 
     call_task('deb', options={
         'key': key,
-        'ppa': 'geonode/testing',
-        # 'ppa': 'geonode/unstable',
+        # 'ppa': 'geonode/testing',
+        'ppa': 'geonode/unstable',
     })
 
     version, simple_version = versions()
