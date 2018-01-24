@@ -242,8 +242,7 @@ function layerService($rootScope, layerRepository, featureService, layerStyleGen
             factory.saveGeoJSONLayer(geoJsonFeatures)
                 .then(function(res) {
                     var layer_name = res.url.split('/').pop();
-                    var extent = mapService.getMapExtent();
-                    var epsg4326Extent = ol.proj.transformExtent(extent, projection, 'EPSG:4326');
+
                     var layer = factory.map({
                         name: layer_name,
                         geoserverUrl: $window.GeoServerTileRoot + '?access_token=' + $window.mapConfig.access_token
@@ -263,7 +262,7 @@ function layerService($rootScope, layerRepository, featureService, layerStyleGen
             var data = {
                 'permissions': {},
                 'charset': 'UTF-8',
-                'layer_title': 'auto layer upload',
+                'layer_title': 'auto layer upload_the_geom',
                 'category': 'building',
                 'organization': 1,
                 'csv_layer_type': 'the_geom',
@@ -274,7 +273,22 @@ function layerService($rootScope, layerRepository, featureService, layerStyleGen
                 'layer_type': 'csv',
                 'admin_upload': true
             };
-            return layerRepository.uploadCsvLayer(data, file, 'over-pass.csv');
+            return layerRepository.uploadCsvLayer(data, file, 'over-pass_the_geom.csv');
+            data = {
+                'permissions': {},
+                'charset': 'UTF-8',
+                'layer_title': 'auto layer upload_latlon',
+                'category': 'building',
+                'organization': 1,
+                // 'csv_layer_type': 'the_geom',
+                // 'the_geom': 'geom',
+                'csv_layer_type': 'latlon',
+                'longitude': 'longitude',
+                'lattitude': 'latitude',
+                'layer_type': 'csv',
+                'admin_upload': true
+            };
+            return layerRepository.uploadCsvLayer(data, file, 'over-pass_latlon.csv');
 
         }
     };
