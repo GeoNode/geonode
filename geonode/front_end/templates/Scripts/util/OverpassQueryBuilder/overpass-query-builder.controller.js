@@ -98,6 +98,7 @@
                 mapService.removeVectorLayer(vectorLayer);
             }
             boxTool.Remove();
+            boxTool.Stop();
         };
 
         function _Style(feature, resolution) {

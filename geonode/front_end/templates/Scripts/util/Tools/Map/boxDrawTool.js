@@ -317,6 +317,7 @@ function BoxDrawTool(mapService) {
 
         this.Stop = function() {
             mapService.removeInteraction(dragInteraction);
+            mapService.removeInteraction(drawInteraction);
         };
 
         this.OnBoxDrawEnd = function(cb) {
