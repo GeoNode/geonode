@@ -52,6 +52,37 @@ function layerService($rootScope, layerRepository, featureService, layerStyleGen
                 // "SavedDataId": "s_fe297a3305394811919f33cdb16fc30d"
         };
     }
+    var layerDataType = {};
+    function _getPointData(data) {
+         return Object.assign({
+            'permissions': {},
+            'charset': 'UTF-8',
+            'layer_title': 'auto_layer_upload_point',
+            'category': 'building',
+            'organization': 1,
+            'csv_layer_type': 'latlon',
+            'longitude': 'longitude',
+            'lattitude': 'latitude',
+            'layer_type': 'csv',
+            // 'admin_upload': true
+        }, data);
+    }
+
+    function _getGeomData(data) {
+        return {
+            'permissions': {},
+            'charset': 'UTF-8',
+            'layer_title': 'auto_layer_upload_multi',
+            'category': 'building',
+            'organization': 1,
+            'csv_layer_type': 'the_geom',
+            'the_geom': 'geom',
+            'layer_type': 'csv',
+            // 'admin_upload': true
+        };
+    }
+    layerDataType.Point = _getPointData;
+    layerDataType.Geom = _getGeomData;
 
     var factory = {
 
@@ -217,12 +248,12 @@ function layerService($rootScope, layerRepository, featureService, layerStyleGen
         map: function(layer, order) {
             return _map(layer, order);
         },
-        createLayerFromFeature: function(features, defaultDataProjection, featureProjection) {
+        createLayerFromFeature: function(features, data, defaultDataProjection, featureProjection) {
             var deferred = $q.defer();
 
+            var featureType;
             var geoJsonFormat = new ol.format.GeoJSON();
             var wktFormat = new ol.format.WKT();
-            
             var geoJsonFeatures = [];
             features.forEach(function(f) {
 
@@ -235,11 +266,13 @@ function layerService($rootScope, layerRepository, featureService, layerStyleGen
                     dataProjection: defaultDataProjection || 'EPSG:4326',
                     featureProjection: featureProjection || 'EPSG:3857'
                 });
-                geoJsonFeature.properties = Object.assign(geoJsonFeature.properties, {'geom': wkt});
+                geoJsonFeature.properties = Object.assign(geoJsonFeature.properties, { 'geom': wkt });
                 geoJsonFeatures.push(geoJsonFeature);
             });
-                
-            factory.saveGeoJSONLayer(geoJsonFeatures)
+
+            featureType = geoJsonFeatures[0].geometry.type;
+
+            factory.saveGeoJSONLayer(geoJsonFeatures, featureType, data)
                 .then(function(res) {
                     var layer_name = res.url.split('/').pop();
 
@@ -255,43 +288,18 @@ function layerService($rootScope, layerRepository, featureService, layerStyleGen
                 });
             return deferred.promise;
         },
-        saveGeoJSONLayer: function(geoJsonFeatures) {
+        saveGeoJSONLayer: function(geoJsonFeatures, featureType, data) {
+            featureType = featureType == 'Point' ? 'Point' : 'Geom';
+
             var csv = geoJsonToCsv(geoJsonFeatures);
             var file = new Blob([csv], { type: 'application/octet-stream' });
             var url = '/layers/upload';
-            var data = {
-                'permissions': {},
-                'charset': 'UTF-8',
-                'layer_title': 'auto layer upload_the_geom',
-                'category': 'building',
-                'organization': 1,
-                'csv_layer_type': 'the_geom',
-                'the_geom': 'geom',
-                // 'csv_layer_type': 'latlon',
-                // 'longitude': 'longitude',
-                // 'lattitude': 'latitude',
-                'layer_type': 'csv',
-                'admin_upload': true
-            };
-            return layerRepository.uploadCsvLayer(data, file, 'over-pass_the_geom.csv');
-            data = {
-                'permissions': {},
-                'charset': 'UTF-8',
-                'layer_title': 'auto layer upload_latlon',
-                'category': 'building',
-                'organization': 1,
-                // 'csv_layer_type': 'the_geom',
-                // 'the_geom': 'geom',
-                'csv_layer_type': 'latlon',
-                'longitude': 'longitude',
-                'lattitude': 'latitude',
-                'layer_type': 'csv',
-                'admin_upload': true
-            };
-            return layerRepository.uploadCsvLayer(data, file, 'over-pass_latlon.csv');
+            var data = layerDataType[featureType](data);
 
+            return layerRepository.uploadCsvLayer(data, file, 'over-pass_the_geom.csv');
         }
     };
+
     function geoJsonToCsv(geoJsonFeatures) {
         var json = [];
         var keys = {};
