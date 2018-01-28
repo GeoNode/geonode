@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #########################################################################
 #
-# Copyright (C) 2016 OSGeo
+# Copyright (C) 2018 OSGeo
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -19,6 +19,7 @@
 #########################################################################
 
 import os
+import signal
 from urlparse import urljoin
 
 import pytest
@@ -42,7 +43,16 @@ def en_browser(browser, bdd_server):
     en_browser = browser
     en_browser.visit(urljoin(bdd_server.url, gn_settings.LOGIN_URL))
     yield en_browser
-    en_browser.quit()
+    try:
+        # kill the specific phantomjs child proc
+        en_browser.service.process.send_signal(signal.SIGTERM)
+    except:
+        pass
+    try:
+        # quit the node proc
+        en_browser.quit()
+    except:
+        pass
 
 
 @pytest.fixture
