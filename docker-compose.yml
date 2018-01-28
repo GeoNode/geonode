@@ -94,6 +94,7 @@ services:
 
   data-dir-conf:
     image: geonode/geoserver_data:2.10.x
+    restart: on-failure
     container_name: gsconf4${COMPOSE_PROJECT_NAME}
     labels:
         org.geonode.component: conf
