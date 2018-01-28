@@ -87,8 +87,7 @@ services:
       - "8080"
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
-    volumes_from:
-      - data-dir-conf
+      - geoserver-data-dir:/geoserver_data/data
     env_file:
       - ./scripts/docker/env/production/geoserver.env
 
@@ -107,13 +106,13 @@ services:
 
   data-dir-conf:
     image: geonode/geoserver_data:2.10.x
-    container_name: geoserver-data-dir
+    container_name: gsconf4${COMPOSE_PROJECT_NAME}
     labels:
         org.geonode.component: conf
         org.geonode.instance.name: geonode
     command: /bin/true
     volumes:
-      - /geoserver_data/data
+      - geoserver-data-dir:/geoserver_data/data
 
 volumes:
 
