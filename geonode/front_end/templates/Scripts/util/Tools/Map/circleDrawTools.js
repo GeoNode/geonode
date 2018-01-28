@@ -196,7 +196,7 @@ function CircleDrawTool(mapService) {
         }
         this.Draw = function() {
             _createLayer();
-            _addInteraction()
+            _addInteraction();
         };
         this.Remove = function() {
             layer && mapService.removeVectorLayer(layer);
