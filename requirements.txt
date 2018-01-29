@@ -18,6 +18,7 @@ coverage==4.4.1
 decorator==4.1.2
 diff-match-patch==20121119
 dj-database-url==0.4.2
+django-allauth==0.34.0
 django-activity-stream==0.6.4
 django-appconf==1.0.2
 django-autocomplete-light==2.3.3
@@ -68,7 +69,6 @@ geonode-arcrest==10.2
 geonode-avatar==2.1.6
 geonode-dialogos==0.7
 geonode-user-messages==0.1.11
-geonode-user-accounts==1.0.15
 gisdata==0.5.4
 gsconfig==1.0.8
 gn-gsimporter==1.0.2

@@ -1,0 +1,24 @@
+{% extends "geonode_base.html" %}
+{% load i18n %}
+
+{% block body_outer %}
+
+<div class="page-header">
+    <h2>{% trans "Invite User" %}</h2>
+</div>
+
+<form id="invite-form" method="POST" action="{% url 'invitations:send-invite' %}">
+  {% csrf_token %}
+  <div class="form-group">
+      <label for="id_email">Email</label>
+      <input type="text" name="email" id="id_email" value="{{ form.email.value }}" class="form-control validate-email" placeholder="{% trans 'Email' %}">
+  </div>
+  <div class="form-group">
+    {% for error in form.email.errors %}
+      <div class="alert alert-danger">{{ error }}</div>
+    {% endfor %}
+    {{ success_message }}
+  </div>
+  <input type="submit" value="Submit" class="btn btn-primary generic-ajax-submit">
+</form>
+{% endblock %}

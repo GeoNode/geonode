@@ -6752,6 +6752,12 @@ button.close {
 }
 /* Basics
 ----------------------- */
+div#user_messages {
+  position: absolute;
+  width: 500px;
+  margin-top: 80px;
+  right: 300px;
+}
 body {
   background: #333333;
   font-family: 'Lato', sans-serif;
