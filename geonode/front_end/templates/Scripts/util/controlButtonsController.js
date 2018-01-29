@@ -154,10 +154,8 @@
                     var meterPerDegree = 111325;
                     var radiusInDegree = values.radius/meterPerDegree;
                     var promises = [];
-                    var layers = [];
                     for (var k in layers) {
                         var layer = layers[k];
-                        layers.push(layer);
                         let p = LayerService.getWFS('/geoserver/', {
                             _dc: 1510220556364,
                             version: '1.0.0',
@@ -171,7 +169,14 @@
                     }
                     $q.all(promises)
                     .then(function(response){
-                        console.log(arguments);
+                        var layer_names = Object.keys(layers);
+                        var data = {};
+                        for(var i in layer_names){
+                            data[layer_names[i]] = response[i].features.map(function(e){
+                                return e.properties;
+                            });
+                        }
+                        showFeaturePreviewDialog(data);
                     });
                 });
             };
@@ -225,6 +230,21 @@
                 resolve: {
                     showProjectNameInput: function() {
                         return openForSave || false;
+                    }
+                }
+            });
+        }
+
+        function showFeaturePreviewDialog(data) {
+            $modal.open({
+                templateUrl: '/static/layers/feature-preview.html',
+                controller: 'FeaturePreviewController as ctrl',
+                backdrop: 'static',
+                keyboard: false,
+                windowClass: 'fullScreenModal First',
+                resolve: {
+                    data: function() {
+                        return data;
                     }
                 }
             });
