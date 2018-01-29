@@ -22,7 +22,7 @@ import os
 import shutil
 from django.contrib.sites.models import Site
 from django.conf import settings
-from .models import SiteResources, SitePeople
+from .models import SiteResources, SitePeople, SiteGroups
 
 
 def resources_for_site():
@@ -31,6 +31,10 @@ def resources_for_site():
 
 def users_for_site():
     return SitePeople.objects.get(site=Site.objects.get_current()).people.all()
+
+
+def groups_for_site():
+    return SiteGroups.objects.get(site=Site.objects.get_current()).group.all()
 
 
 def sed(filename, change_dict):

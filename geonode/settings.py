@@ -21,6 +21,7 @@
 
 # Django settings for the GeoNode project.
 import os
+
 import re
 import sys
 from datetime import timedelta
@@ -293,7 +294,7 @@ GEONODE_CONTRIB_APPS = (
     # 'geonode.contrib.exif',
     # 'geonode.contrib.favorite',
     # 'geonode.contrib.geogig',
-    # 'geonode.contrib.geosites',
+    'geonode.contrib.geosites',
     # 'geonode.contrib.nlp',
     # 'geonode.contrib.slack',
     # 'geonode.contrib.createlayer',

@@ -31,11 +31,12 @@ from guardian.shortcuts import get_objects_for_user
 from geonode.api.resourcebase_api import CommonModelApi, LayerResource, MapResource, DocumentResource, \
                                          ResourceBaseResource
 from geonode.base.models import ResourceBase
+from geonode.groups.models import GroupProfile
 from geonode.api.urls import api
 from geonode.api.api import TagResource, TopicCategoryResource, RegionResource, CountJSONSerializer, \
-                            ProfileResource
+                            ProfileResource, GroupResource
 
-from .utils import resources_for_site, users_for_site
+from .utils import resources_for_site, users_for_site, groups_for_site
 
 
 class CommonSiteModelApi(CommonModelApi):
@@ -145,6 +146,13 @@ class SiteProfileResource(ProfileResource):
         queryset = get_user_model().objects.exclude(username='AnonymousUser').filter(id__in=users_for_site())
 
 
+class SiteGroupResource(GroupResource):
+    """Site aware Group API"""
+
+    class Meta(GroupResource.Meta):
+        queryset = GroupProfile.objects.filter(id__in=groups_for_site())
+
+
 api.register(SiteLayerResource())
 api.register(SiteMapResource())
 api.register(SiteDocumentResource())
@@ -154,3 +162,5 @@ api.register(SiteTagResource())
 api.register(SiteTopicCategoryResource())
 api.register(SiteRegionResource())
 api.register(SiteProfileResource())
+api.register(SiteGroupResource())
+

@@ -42,7 +42,7 @@ from geonode.groups.models import GroupProfile
 from geonode.views import AjaxLoginForm
 
 from .models import SiteResources
-from .utils import resources_for_site, users_for_site
+from .utils import resources_for_site, users_for_site, groups_for_site
 
 _PERMISSION_MSG_VIEW = ('You don\'t have permissions to view this document')
 
@@ -212,8 +212,9 @@ def ajax_lookup(request):
                          Q(first_name__icontains=keyword) |
                          Q(organization__icontains=keyword)).exclude(username='AnonymousUser')
 
-    groups = GroupProfile.objects.filter(Q(title__istartswith=keyword) |
-                                         Q(description__icontains=keyword))
+    groups = GroupProfile.objects.filter(id__in=groups_for_site())
+    groups =groups.filter(Q(title__istartswith=keyword) |
+                          Q(description__icontains=keyword))
     json_dict = {
         'users': [({'username': u.username}) for u in users],
         'count': users.count(),
