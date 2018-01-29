@@ -420,8 +420,8 @@ def set_geofence_owner(instance, username=None, view_perms=False, download_perms
         pass
     else:
         services = (
-            ["WMS", "GWC"] if view_perms else [] +
-            ["WFS", "WCS", "WPS"] if download_perms else []
+            (["WMS", "GWC"] if view_perms else []) +
+            (["WFS", "WCS", "WPS"] if download_perms else [])
         )
         try:
             for service in services:
@@ -454,8 +454,8 @@ def set_geofence_group(instance, groupname, view_perms=False,
     else:
         if groupname:
             services = (
-                ["WMS", "GWC"] if view_perms else [] +
-                ["WFS", "WCS", "WPS"] if download_perms else []
+                (["WMS", "GWC"] if view_perms else []) +
+                (["WFS", "WCS", "WPS"] if download_perms else [])
             )
             try:
                 for service in services:
