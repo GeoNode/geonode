@@ -112,10 +112,11 @@ def validate_shapefile_components(possible_filenames):
         ShapefileAux(extension="sld", mandatory=False),
     ]
     for additional_component in shapefile_additional:
-        for path in [f.lower() for f in possible_filenames]:
+        for path in possible_filenames:
             additional_name = os.path.splitext(os.path.basename(path))[0]
             matches_main_name = additional_name == base_name
-            found_component = path.endswith(additional_component.extension)
+            extension = os.path.splitext(path)[1][1:]
+            found_component = extension == additional_component.extension
             if found_component and matches_main_name:
                 components.append(additional_component.extension)
                 break
