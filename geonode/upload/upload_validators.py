@@ -52,7 +52,7 @@ def validate_uploaded_files(cleaned, uploaded_files, field_spatial_types):
         'kml')
     types = [t for t in files.types if t.code not in requires_datastore]
     base_ext = os.path.splitext(cleaned["base_file"].name)[-1].lower()[1:]
-    if not _supported_type(base_ext, types):
+    if not _supported_type(base_ext, types) and base_ext.lower() != "zip":
         raise forms.ValidationError(
             "%(supported)s files are supported. You uploaded a "
             "%(uploaded)s file",
@@ -64,8 +64,7 @@ def validate_uploaded_files(cleaned, uploaded_files, field_spatial_types):
     elif base_ext.lower() == "zip":
         if not zipfile.is_zipfile(cleaned["base_file"]):
             raise forms.ValidationError(_("Invalid zip file detected"))
-        valid_extensions = validate_zip(
-            cleaned["base_file"])
+        valid_extensions = validate_zip(cleaned["base_file"])
     elif base_ext.lower() == "kmz":
         if not zipfile.is_zipfile(cleaned["base_file"]):
             raise forms.ValidationError(_("Invalid kmz file detected"))
@@ -82,7 +81,8 @@ def validate_uploaded_files(cleaned, uploaded_files, field_spatial_types):
         for field_name in field_spatial_types:
             django_file = cleaned.get(field_name)
             try:
-                valid_extensions.append(django_file.name)
+                extension = os.path.splitext(django_file.name)[1][1:]
+                valid_extensions.append(extension)
             except AttributeError:
                 pass
     return valid_extensions
@@ -170,7 +170,8 @@ def validate_kmz(kmz_django_file):
 def validate_zip(zip_django_file):
     with zipfile.ZipFile(zip_django_file) as zip_handler:
         contents = zip_handler.namelist()
-        return validate_shapefile_components(contents)
+        validate_shapefile_components(contents)
+    return ("zip",)
 
 
 def _validate_kml_bytes(kml_bytes, other_files):

@@ -226,57 +226,6 @@ def clean_macosx_dir(file_names):
     return [f for f in file_names if '__MACOSX' not in f]
 
 
-def _process_zip(zip_path, destination_dir):
-    """Perform sanity checks on uploaded zip file
-
-    This function will check if the zip file's contents have legal names.
-    If they do the zipfile remains compressed. Otherwise, it is extracted and
-    the files are renamed.
-
-    It will also check if an .sld file exists inside the zip and extract it
-
-    """
-
-    safe_zip_path = _rename_files([zip_path])[0]
-    with zipfile.ZipFile(safe_zip_path, "r") as zip_handler:
-        if safe_zip_path.endswith(".kmz"):
-            extracted_paths = _extract_zip(zip_handler, destination_dir)
-        else:
-            extracted_paths = _sanitize_zip_contents(
-                zip_handler, destination_dir)
-        if extracted_paths is not None:
-            all_paths = extracted_paths
-            kept_zip = False
-        else:
-            kept_zip = True
-            sld_paths = _probe_zip_for_sld(zip_handler, destination_dir)
-            all_paths = sld_paths.append(zip_path)
-    return all_paths, kept_zip
-
-
-def _sanitize_zip_contents(zip_handler, destination_dir):
-    file_names = clean_macosx_dir(zip_handler.namelist())
-    result = None
-    if _contains_bad_names(file_names):
-        result = _extract_zip(zip_handler, destination_dir)
-    return result
-
-
-def _extract_zip(zip_handler, destination):
-    file_names = zip_handler.namelist()
-    zip_handler.extractall(destination)
-    return [os.path.join(destination, p) for p in file_names]
-
-
-def _probe_zip_for_sld(zip_handler, destination_dir):
-    file_names = clean_macosx_dir(zip_handler.namelist())
-    result = []
-    for f in _find_file_type(file_names, extension='.sld'):
-        zip_handler.extract(f, destination_dir)
-        result.append(os.path.join(destination_dir, f))
-    return result
-
-
 def get_scan_hint(valid_extensions):
     """Provide hint on the type of file being handled in the upload session.
 
@@ -304,8 +253,10 @@ def scan_file(file_name, scan_hint=None):
     else:
         paths = [os.path.join(dirname, p) for p in os.listdir(dirname)]
         archive = None
-    safe_paths = _rename_files(paths)
-    logger.debug('Cleaned file names: {0}'.format(safe_paths))
+    if paths is not None:
+        safe_paths = _rename_files(paths)
+    else:
+        safe_paths = []
     found = []
     for file_type in types:
         for path in safe_paths:
@@ -324,3 +275,55 @@ def scan_file(file_name, scan_hint=None):
             raise Exception("One or more SLD files was provided, but no " +
                             "matching files were found for them.")
     return SpatialFiles(dirname, found, archive=archive)
+
+
+def _process_zip(zip_path, destination_dir):
+    """Perform sanity checks on uploaded zip file
+
+    This function will check if the zip file's contents have legal names.
+    If they do the zipfile remains compressed. Otherwise, it is extracted and
+    the files are renamed.
+
+    It will also check if an .sld file exists inside the zip and extract it
+
+    """
+
+    safe_zip_path = _rename_files([zip_path])[0]
+    with zipfile.ZipFile(safe_zip_path, "r") as zip_handler:
+        if safe_zip_path.endswith(".kmz"):
+            extracted_paths = _extract_zip(zip_handler, destination_dir)
+        else:
+            extracted_paths = _sanitize_zip_contents(
+                zip_handler, destination_dir)
+        if extracted_paths is not None:
+            all_paths = extracted_paths
+            kept_zip = False
+        else:
+            kept_zip = True
+            all_paths = [zip_path]
+            sld_paths = _probe_zip_for_sld(zip_handler, destination_dir)
+            all_paths.extend(sld_paths)
+    return all_paths, kept_zip
+
+
+def _sanitize_zip_contents(zip_handler, destination_dir):
+    clean_macosx_dir(zip_handler.namelist())
+    result = _extract_zip(zip_handler, destination_dir)
+    return result
+
+
+def _extract_zip(zip_handler, destination):
+    file_names = zip_handler.namelist()
+    zip_handler.extractall(destination)
+    return [os.path.join(destination, p) for p in file_names]
+
+
+def _probe_zip_for_sld(zip_handler, destination_dir):
+    file_names = clean_macosx_dir(zip_handler.namelist())
+    result = []
+    for f in _find_file_type(file_names, extension='.sld'):
+        zip_handler.extract(f, destination_dir)
+        result.append(os.path.join(destination_dir, f))
+    return result
+
+

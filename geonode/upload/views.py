@@ -138,7 +138,9 @@ def _select_relevant_files(allowed_extensions, files):
     for django_file in files:
         extension = os.path.splitext(django_file.name)[-1].lower()[1:]
         if extension in allowed_extensions:
-            result.append(django_file)
+            already_selected = django_file.name in (f.name for f in result)
+            if not already_selected:
+                result.append(django_file)
     return result
 
 

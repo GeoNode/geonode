@@ -276,6 +276,14 @@ def _check_geoserver_store(store_name, layer_type, overwrite):
                             raise GeoNodeException(msg)
 
 
+def _get_layer_type(spatial_files):
+    if spatial_files.archive is not None:
+        the_layer_type = FeatureType.resource_type
+    else:
+        the_layer_type = spatial_files[0].file_type.layer_type
+    return the_layer_type
+
+
 def save_step(user, layer, spatial_files, overwrite=True, mosaic=False,
               append_to_mosaic_opts=None, append_to_mosaic_name=None,
               mosaic_time_regex=None, mosaic_time_value=None,
@@ -292,9 +300,9 @@ def save_step(user, layer, spatial_files, overwrite=True, mosaic=False,
                 "Please upload only one type of file at a time")
     name = get_valid_layer_name(layer, overwrite)
     logger.info('Name for layer: {!r}'.format(name))
-    if not spatial_files:
+    if not any(spatial_files.all_files()):
         raise UploadException("Unable to recognize the uploaded file(s)")
-    the_layer_type = spatial_files[0].file_type.layer_type
+    the_layer_type = _get_layer_type(spatial_files)
     _check_geoserver_store(name, the_layer_type, overwrite)
     if the_layer_type not in (
             FeatureType.resource_type,
