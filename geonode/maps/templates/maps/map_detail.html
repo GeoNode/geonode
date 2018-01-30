@@ -27,7 +27,10 @@
         <div class="gd-content-body layer-test">
             <div class="row">
                 <div class="panel-container">
-                <div class="panel-left">
+                        <div id="sidebar" class="panel-left slideInRight">
+
+                                <button class="sidebar-toggle-btn" onclick="animating()"><i class="fa fa-navicon fa-2x py-1 p-1" style="color: #1B97D3"></i></button>
+
                 <div class="col-md-4 margin-zero right-pad-zero" style="width: 100%; padding-left: 0;">
                     <div id="gd-accordion-style" class="map-details-information" style="overflow-x: hidden;">
                         <div class="panel-group" id="accordion__" role="tablist" aria-multiselectable="true">
@@ -435,8 +438,8 @@
                     </div>
                 </div>
                 </div>
-                <div class="splitter">
-                </div>
+                <!-- <div class="splitter">
+                </div> -->
                 <div class="panel-right">
                 <div class="col-md-8  margin-zero left-pad-zero r" style="width: 100%;padding-right: 0;">
                     <div class="gd-content-body map-details-info">
@@ -668,4 +671,22 @@
     });
 
 </script>
+
+<script>
+        var count = 0;
+        function animating(){
+            console.log("asdasda");
+            if(count === 0){
+                document.getElementById('sidebar').className = 'panel-left slideOutRight';
+          
+                count++;
+            }else{
+                document.getElementById('sidebar').className = 'panel-left slideInRight show';//hide
+           
+                count--;
+            }
+            }
+    
+    </script>
+
 {% endblock %}

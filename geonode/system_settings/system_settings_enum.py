@@ -6,7 +6,8 @@ class SystemSettingsEnum(object):
     LOCATION = 'location'
     ELEVATION = 'elevation'
     CONTENT_TYPES = {
-        LOCATION: Layer
+        LOCATION: Layer,
+        ELEVATION: Layer
     }
     SYSTEM_SETTINGS_CHOICES = (
         (LOCATION, _('LOCATION')),

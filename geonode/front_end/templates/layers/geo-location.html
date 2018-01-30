@@ -1,0 +1,49 @@
+{% extends "upload/layer_upload_base.html" %}
+{% load i18n %}
+{% load staticfiles %}
+
+{% block title %} {% trans "Upload CSV" %} - {{ block.super }}  {% endblock %}
+
+{% block body_class %}layers upload{% endblock %}
+{% block head%}
+<link rel="stylesheet" href="{{ STATIC_URL }}.components/angular-ui-grid/ui-grid.min.css">
+{{ block.super }}
+{% endblock %}
+{% block body_outer %}
+<div ng-controller="GeoLocationController as ctrl" ng-app="LayerApp" ng-cloak>
+    <div class="alert alert-success  alert-dismissable" ng-show="ctrl.isSuccess">
+            <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+            <strong>Success!</strong> [{ctrl.Message.Success}]
+        </div>
+      
+      <div class="alert alert-danger  alert-dismissable" ng-show="ctrl.isError">
+            <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+        <strong>Error!</strong> [{ctrl.Message.Error}]
+      </div>
+
+      
+      <label for="">Upload CSV to get geo location</label>
+      <input type="file" nv-file-select uploader="ctrl.file">
+      <table ng-if="ctrl.fileHeaders.length > 0">
+          <tr ng-repeat="head in ctrl.headers">
+              <td>[{head}]</td>
+              <td>
+                  <select ng-options="fileHead for fileHead in ctrl.fileHeaders" ng-model="ctrl.mappedHeaders[head]">
+                      <option value=""> ---Please select one---</option>
+                    </select>
+                </td>
+            </tr>
+        </table>
+        
+        <input ng-if="ctrl.fileHeaders.length > 0" type="button" ng-click="ctrl.upload()" ng-disabled="ctrl.file.queue.length == 0" value="Upload" class="btn"> 
+        <div ng-if='ctrl.gridOptions.data.length > 0' ui-grid="ctrl.gridOptions" ui-grid-pagination ui-grid-exporter class="grid"></div>
+        {% endblock %}
+        
+        {% block extra_script %}
+        <script src="{{ STATIC_URL }}.components/angular-ui-grid/ui-grid.min.js"></script>
+<script src="{{ STATIC_URL }}.components/angular-file-upload/dist/angular-file-upload.js"></script>
+
+<script src="{{ STATIC_URL }}layers/js/layer.module.js"></script>
+<script src="{{ STATIC_URL }}layers/js/layer.service.js"></script>
+<script src="{{ STATIC_URL }}layers/js/geo-location.controller.js"></script>
+{% endblock %}

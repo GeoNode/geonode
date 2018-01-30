@@ -24,6 +24,12 @@
     white-space: nowrap;
     background: #fff;
     color: white;
+    position: fixed;
+    z-index: 99;
+    -webkit-box-shadow: 0px 0px 5px 0px rgba(0,0,0,0.57);
+    -moz-box-shadow: 0px 0px 5px 0px rgba(0,0,0,0.57);
+    box-shadow: 0px 0px 5px 0px rgba(0,0,0,0.57);  
+    border-right: 3px solid #ffffff;
 }
 
 .splitter {
