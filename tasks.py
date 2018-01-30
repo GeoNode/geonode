@@ -20,12 +20,9 @@ def waitfordbs(ctx):
 def update(ctx):
     print "***************************initial*********************************"
     ctx.run("env", pty=True)
-    pub_ip = _docker_host_ip()
-    print "Public IP is {0}".format(pub_ip)
-    pub_port = _container_exposed_port(
-        'nginx',
-        os.getenv('GEONODE_INSTANCE_NAME', 'geonode')
-    )
+    pub_ip = _geonode_public_host_ip()
+    print "Public Hostname or IP is {0}".format(pub_ip)
+    pub_port = _geonode_public_port()
     print "Public PORT is {0}".format(pub_port)
     db_url = _update_db_connstring()
     geodb_url = _update_geodb_connstring()
@@ -137,13 +134,27 @@ def _localsettings():
     return settings
 
 
+def _geonode_public_host_ip():
+    gn_pub_hostip = os.getenv('GEONODE_LB_HOST_IP', '')
+    if not gn_pub_hostip:
+        gn_pub_hostip = _docker_host_ip()
+    return gn_pub_hostip
+
+
+def _geonode_public_port():
+    gn_pub_port = os.getenv('GEONODE_LB_PORT', '')
+    if not gn_pub_port:
+        gn_pub_port = _container_exposed_port(
+            'nginx',
+            os.getenv('GEONODE_INSTANCE_NAME', 'geonode')
+        )
+    return gn_pub_port
+
+
 def _prepare_oauth_fixture():
-    pub_ip = _docker_host_ip()
-    print "Public IP is {0}".format(pub_ip)
-    pub_port = _container_exposed_port(
-        'nginx',
-        os.getenv('GEONODE_INSTANCE_NAME', 'geonode')
-    )
+    pub_ip = _geonode_public_host_ip()
+    print "Public Hostname or IP is {0}".format(pub_ip)
+    pub_port = _geonode_public_port()
     print "Public PORT is {0}".format(pub_port)
     default_fixture = [
         {
