@@ -1164,7 +1164,7 @@ def snapshot_config(snapshot, map_obj, user, access_token):
                 l,
                 sources,
                 user,
-                access_token) for l in maplayers]) for l in maplayers]
+                access_token) for l in maplayers]
     else:
         config = map_obj.viewer_json(user, access_token)
     return config
