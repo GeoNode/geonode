@@ -138,21 +138,21 @@
             saveVisibility: function(surfLayer) {
                 return;
                 layerRepository.saveVisibility(surfLayer.getId(), surfLayer.IsVisible).success(function() {
-                    if (surfLayer.hasClassifierDefinitions()) {
-                        var classes = surfLayer.getClassifierDefinitions().selected;
-                        for (var index in surfLayer.groups) {
-                            surfLayer.groups[index].isChecked = surfLayer.IsVisible;
-                        }
-                        if (!classes || !classes.length) {
-                            return;
-                        }
+                    // if (surfLayer.hasClassifierDefinitions()) {
+                    //     var classes = surfLayer.getClassifierDefinitions().selected;
+                    //     for (var index in surfLayer.groups) {
+                    //         surfLayer.groups[index].isChecked = surfLayer.IsVisible;
+                    //     }
+                    //     if (!classes || !classes.length) {
+                    //         return;
+                    //     }
 
-                        for (var i in classes) {
-                            surfLayer.setClassVisible(classes[i], surfLayer.IsVisible, true);
-                        }
-                        factory.saveClassifierDefinitions(surfLayer, surfLayer.getClassifierDefinitions(), true, true);
-                        surfLayer.setFilter(featureFilterGenerator.getFilter(surfLayer));
-                    }
+                    //     for (var i in classes) {
+                    //         surfLayer.setClassVisible(classes[i], surfLayer.IsVisible, true);
+                    //     }
+                    //     factory.saveClassifierDefinitions(surfLayer, surfLayer.getClassifierDefinitions(), true, true);
+                    //     surfLayer.setFilter(featureFilterGenerator.getFilter(surfLayer));
+                    // }
                 });
             },
             queryLayer: function(surfLayer, queries) {
@@ -164,7 +164,7 @@
                     surfLayer.setClassVisible(classes[index], classes[index].checked);
                 }
                 surfLayer.setFilter(featureFilterGenerator.getFilter(surfLayer));
-                factory.saveClassifierDefinitions(surfLayer, surfLayer.getClassifierDefinitions(), true, true);
+                //factory.saveClassifierDefinitions(surfLayer, surfLayer.getClassifierDefinitions(), true, true);
             },
             saveClassifierDefinitions: function(surfLayer, classifierDefinitions, hideProgress, excludeSld, broadcastUpdate) {
                 if (!hideProgress) {
