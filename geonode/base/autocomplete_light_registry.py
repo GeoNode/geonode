@@ -42,11 +42,9 @@ class ResourceBaseAutocomplete(AutocompleteModelTemplate):
         self.choices = self.choices.filter(id__in=permitted)
 
         is_admin = False
-        is_staff = False
         is_manager = False
         if request.user:
             is_admin = request.user.is_superuser if request.user else False
-            is_staff = request.user.is_staff if request.user else False
             try:
                 is_manager = request.user.groupmember_set.all().filter(role='manager').exists()
             except:
@@ -63,8 +61,8 @@ class ResourceBaseAutocomplete(AutocompleteModelTemplate):
         except:
             pass
         try:
-            manager_groups = Group.objects.filter(name__in=
-                request.user.groupmember_set.filter(role="manager").values_list("group__slug", flat=True))
+            manager_groups = Group.objects.filter(
+                name__in=request.user.groupmember_set.filter(role="manager").values_list("group__slug", flat=True))
         except:
             pass
         try:

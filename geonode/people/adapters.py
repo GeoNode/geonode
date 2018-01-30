@@ -40,7 +40,8 @@ from django.core.exceptions import ValidationError
 from django.core.urlresolvers import reverse
 from django.http import HttpResponseRedirect
 from django.utils.module_loading import import_string
-
+# from django.contrib.auth.models import Group
+from geonode.groups.models import GroupProfile
 
 logger = logging.getLogger(__name__)
 
@@ -129,15 +130,17 @@ class LocalAccountAdapter(DefaultAccountAdapter, BaseInvitationsAdapter):
 
     def render_mail(self, template_prefix, email, context):
         user = context.get("inviter")
-        full_name = " ".join((user.first_name, user.last_name))
-        manager_groups = user.groupmember_set.filter(
-            role="manager").values_list("group__title", flat=True)
+        full_name = " ".join((user.first_name, user.last_name)) if user.first_name or user.last_name else None
+        # manager_groups = Group.objects.filter(
+        #     name__in=user.groupmember_set.filter(role="manager").values_list("group__slug", flat=True))
+        user_groups = GroupProfile.objects.filter(
+            slug__in=user.groupmember_set.filter().values_list("group__slug", flat=True))
         enhanced_context = context.copy()
         enhanced_context.update({
-            "inviter_name": full_name,
-            "inviter_first_name": user.first_name,
+            "inviter_name": full_name or str(user),
+            "inviter_first_name": user.first_name or str(user),
             "inviter_id": user.id,
-            "groups": manager_groups,
+            "groups": user_groups,
             "MEDIA_URL": settings.MEDIA_URL,
             "SITEURL": settings.SITEURL,
             "STATIC_URL": settings.STATIC_URL

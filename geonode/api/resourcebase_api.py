@@ -126,6 +126,9 @@ class CommonModelApi(ModelResource):
         'detail_url',
         'rating',
         'group__name',
+        'has_time',
+        'is_approved',
+        'is_published',
     ]
 
     def build_filters(self, filters=None, ignore_bad_filters=False, **kwargs):
@@ -185,7 +188,7 @@ class CommonModelApi(ModelResource):
         else:
             filtered = semi_filtered
 
-        if settings.ADMIN_MODERATE_UPLOADS:
+        if settings.RESOURCE_PUBLISHING or settings.ADMIN_MODERATE_UPLOADS:
             filtered = self.filter_published(filtered, request)
 
         if settings.GROUP_PRIVATE_RESOURCES:
@@ -201,11 +204,9 @@ class CommonModelApi(ModelResource):
 
     def filter_published(self, queryset, request):
         is_admin = False
-        is_staff = False
         is_manager = False
         if request.user:
             is_admin = request.user.is_superuser if request.user else False
-            is_staff = request.user.is_staff if request.user else False
             try:
                 is_manager = request.user.groupmember_set.all().filter(role='manager').exists()
             except:
@@ -222,8 +223,8 @@ class CommonModelApi(ModelResource):
         except:
             pass
         try:
-            manager_groups = Group.objects.filter(name__in=
-                request.user.groupmember_set.filter(role="manager").values_list("group__slug", flat=True))
+            manager_groups = Group.objects.filter(
+                name__in=request.user.groupmember_set.filter(role="manager").values_list("group__slug", flat=True))
         except:
             pass
         try:
@@ -233,20 +234,44 @@ class CommonModelApi(ModelResource):
         except:
             pass
 
-        if not is_admin:
-            if is_manager:
-                filtered = queryset.filter(
-                    Q(is_published=True) |
-                    Q(group__in=manager_groups) |
-                    Q(owner__username__iexact=str(request.user)))
-            elif request.user:
-                filtered = queryset.filter(
-                    Q(is_published=True) |
-                    Q(owner__username__iexact=str(request.user)))
-            else:
-                filtered = queryset.filter(Q(is_published=True))
-        else:
-            filtered = queryset
+        filtered = queryset
+        if settings.ADMIN_MODERATE_UPLOADS:
+            if not is_admin:
+                if is_manager:
+                    filtered = filtered.filter(
+                        Q(is_published=True) |
+                        Q(group__in=groups) |
+                        Q(group__in=manager_groups) |
+                        Q(group__in=group_list_all) |
+                        Q(owner__username__iexact=str(request.user)))
+                elif request.user:
+                    filtered = filtered.filter(
+                        Q(is_published=True) |
+                        Q(group__in=groups) |
+                        Q(group__in=group_list_all) |
+                        Q(owner__username__iexact=str(request.user)))
+                else:
+                    filtered = filtered.filter(Q(is_published=True))
+
+        if settings.RESOURCE_PUBLISHING:
+            if not is_admin:
+                if is_manager:
+                    filtered = filtered.filter(
+                        Q(group__isnull=True) |
+                        Q(group__in=groups) |
+                        Q(group__in=manager_groups) |
+                        Q(group__in=group_list_all) |
+                        Q(group__in=public_groups) |
+                        Q(owner__username__iexact=str(request.user)))
+                elif request.user:
+                    filtered = filtered.filter(
+                        Q(is_published=True) |
+                        Q(group__in=groups) |
+                        Q(group__in=group_list_all) |
+                        Q(owner__username__iexact=str(request.user)))
+                else:
+                    filtered = filtered.filter(Q(is_published=True))
+
         return filtered
 
     def filter_group(self, queryset, request):
@@ -516,15 +541,16 @@ class CommonModelApi(ModelResource):
 
         if not settings.SKIP_PERMS_FILTER:
             is_admin = False
-            is_staff = False
             is_manager = False
             if request.user:
                 is_admin = request.user.is_superuser if request.user else False
-                is_staff = request.user.is_staff if request.user else False
                 try:
                     is_manager = request.user.groupmember_set.all().filter(role='manager').exists()
                 except:
                     is_manager = False
+
+            filter_set = get_objects_for_user(
+                request.user, 'base.view_resourcebase')
 
             # Get the list of objects the user has access to
             anonymous_group = None
@@ -537,8 +563,8 @@ class CommonModelApi(ModelResource):
             except:
                 pass
             try:
-                manager_groups = Group.objects.filter(name__in=
-                    request.user.groupmember_set.filter(role="manager").values_list("group__slug", flat=True))
+                manager_groups = Group.objects.filter(
+                    name__in=request.user.groupmember_set.filter(role="manager").values_list("group__slug", flat=True))
             except:
                 pass
             try:
@@ -553,11 +579,15 @@ class CommonModelApi(ModelResource):
                     if is_manager:
                         filter_set = filter_set.filter(
                             Q(is_published=True) |
+                            Q(group__in=groups) |
                             Q(group__in=manager_groups) |
+                            Q(group__in=group_list_all) |
                             Q(owner__username__iexact=str(request.user)))
                     elif request.user:
                         filter_set = filter_set.filter(
                             Q(is_published=True) |
+                            Q(group__in=groups) |
+                            Q(group__in=group_list_all) |
                             Q(owner__username__iexact=str(request.user)))
                     else:
                         filter_set = filter_set.filter(Q(is_published=True))
@@ -708,6 +738,9 @@ class CommonModelApi(ModelResource):
         """
         Format the objects for output in a response.
         """
+        if 'has_time' in self.VALUES:
+            idx = self.VALUES.index('has_time')
+            del self.VALUES[idx]
         objects_json = objects.values(*self.VALUES)
 
         # hack needed because dehydrate does not seem to work in CommonModelApi

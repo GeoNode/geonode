@@ -131,7 +131,7 @@ setup(name='GeoNode',
 
             # GeoNode org maintained apps.
             "django-geoexplorer>=4.0.0,<5.0",  # python-django-geoexplorer (4.0.37 in our ppa)
-            "geonode-user-messages<=0.1.11",  # python-geonode-user-messages (0.1.11 in our ppa)
+            "geonode-user-messages<=0.1.12",  # python-geonode-user-messages (0.1.11 in our ppa) FIXME
             "geonode-avatar<=2.1.6",  # python-geonode-avatar (2.1.6 in our ppa)
             "geonode-announcements<=1.0.9",  # python-geonode-announcements (1.0.9 in our ppa)
             "geonode-agon-ratings<=0.3.5",  # python-geonode-agon-ratings (0.3.5 in our ppa)

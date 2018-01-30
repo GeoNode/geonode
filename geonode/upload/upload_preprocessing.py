@@ -100,6 +100,8 @@ def preprocess_files(spatial_files):
             result.append(preprocessed)
         else:
             result.extend(spatial_file.all_files())
+    if spatial_files.archive is not None:
+        result.append(spatial_files.archive)
     return result
 
 

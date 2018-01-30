@@ -401,6 +401,18 @@ if MONITORING_ENABLED:
     MONITORING_CONFIG = None
     MONITORING_SERVICE_NAME = 'local-geonode'
 
+#Define email service on GeoNode
+EMAIL_ENABLE = True
+
+if EMAIL_ENABLE:
+    EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+    EMAIL_HOST = 'localhost'
+    EMAIL_PORT = 25
+    EMAIL_HOST_USER = ''
+    EMAIL_HOST_PASSWORD = ''
+    EMAIL_USE_TLS = False
+    DEFAULT_FROM_EMAIL = 'Example.com <no-reply@localhost>'
+
 # Advanced Security Workflow Settings
 CLIENT_RESULTS_LIMIT = 20
 API_LIMIT_PER_PAGE = 1000

@@ -356,7 +356,7 @@ LOGGING = {
             'class': 'django.utils.log.NullHandler',
         },
         'console': {
-            'level': 'DEBUG',
+            'level': 'ERROR',
             'class': 'logging.StreamHandler',
             'formatter': 'simple'
         },
@@ -369,11 +369,11 @@ LOGGING = {
         "django": {
             "handlers": ["console"], "level": "ERROR", },
         "geonode": {
-            "handlers": ["console"], "level": "DEBUG", },
+            "handlers": ["console"], "level": "ERROR", },
         "gsconfig.catalog": {
-            "handlers": ["console"], "level": "DEBUG", },
+            "handlers": ["console"], "level": "ERROR", },
         "owslib": {
-            "handlers": ["console"], "level": "DEBUG", },
+            "handlers": ["console"], "level": "ERROR", },
         "pycsw": {
             "handlers": ["console"], "level": "ERROR", },
     },

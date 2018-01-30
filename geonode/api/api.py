@@ -249,11 +249,9 @@ class TopicCategoryResource(TypeFilteredResource):
 
         if not settings.SKIP_PERMS_FILTER:
             is_admin = False
-            is_staff = False
             is_manager = False
             if request.user:
                 is_admin = request.user.is_superuser if request.user else False
-                is_staff = request.user.is_staff if request.user else False
                 try:
                     is_manager = request.user.groupmember_set.all().filter(role='manager').exists()
                 except:
@@ -270,8 +268,8 @@ class TopicCategoryResource(TypeFilteredResource):
             except:
                 pass
             try:
-                manager_groups = Group.objects.filter(name__in=
-                    request.user.groupmember_set.filter(role="manager").values_list("group__slug", flat=True))
+                manager_groups = Group.objects.filter(
+                    name__in=request.user.groupmember_set.filter(role="manager").values_list("group__slug", flat=True))
             except:
                 pass
             try:
@@ -286,11 +284,15 @@ class TopicCategoryResource(TypeFilteredResource):
                     if is_manager:
                         filter_set = filter_set.filter(
                             Q(is_published=True) |
+                            Q(group__in=groups) |
                             Q(group__in=manager_groups) |
+                            Q(group__in=group_list_all) |
                             Q(owner__username__iexact=str(request.user)))
                     elif request.user:
                         filter_set = filter_set.filter(
                             Q(is_published=True) |
+                            Q(group__in=groups) |
+                            Q(group__in=group_list_all) |
                             Q(owner__username__iexact=str(request.user)))
                     else:
                         filter_set = filter_set.filter(Q(is_published=True))
@@ -308,6 +310,8 @@ class TopicCategoryResource(TypeFilteredResource):
                     elif request.user:
                         filter_set = filter_set.filter(
                             Q(is_published=True) |
+                            Q(group__in=groups) |
+                            Q(group__in=group_list_all) |
                             Q(owner__username__iexact=str(request.user)))
                     else:
                         filter_set = filter_set.filter(Q(is_published=True))

@@ -430,11 +430,11 @@ def geoserver_rest_proxy(request, proxy_path, downstream_path, workspace=None):
         else:
             cookies = cookies + '; ' + cook
 
-    if cookies:
-        if 'JSESSIONID' in request.session and request.session['JSESSIONID']:
-            cookies = cookies + '; JSESSIONID=' + \
-                request.session['JSESSIONID']
-        headers['Cookie'] = cookies
+    # if cookies:
+    #     if 'JSESSIONID' in request.session and request.session['JSESSIONID']:
+    #         cookies = cookies + '; JSESSIONID=' + \
+    #             request.session['JSESSIONID']
+    #     headers['Cookie'] = cookies
 
     if request.method in ("POST", "PUT") and "CONTENT_TYPE" in request.META:
         headers["Content-Type"] = request.META["CONTENT_TYPE"]
