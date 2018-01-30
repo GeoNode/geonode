@@ -28,7 +28,6 @@ from django.db import models
 from django.utils.translation import ugettext_lazy as _
 from django.utils.text import slugify
 from django.db.models import signals
-from django.contrib.sites.models import Site
 
 from taggit.managers import TaggableManager
 from guardian.shortcuts import get_objects_for_group

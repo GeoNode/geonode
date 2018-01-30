@@ -113,11 +113,14 @@ class BaseServiceHandler(object):
 
     def collect(self, since=None, until=None, **kwargs):
         utc = pytz.utc
-        now = self.now
+        now = self.now or datetime.utcnow().replace(tzinfo=utc)
         if since is None:
             since = self.service.last_check.astimezone(utc) if self.service.last_check else now
         if until is None:
             until = now
+        if not self.service.last_check:
+            self.service.last_check = self.now
+            self.service.save()
         if self.service.last_check and not self.force_check:
             last_check = self.service.last_check.astimezone(utc) if self.service.last_check else now
             if last_check + self.service.check_interval > now:

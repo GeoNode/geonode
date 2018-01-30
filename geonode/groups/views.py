@@ -21,7 +21,6 @@
 import logging
 
 from actstream.models import Action
-from django.contrib import messages
 from django.contrib.auth import get_user_model
 from django.contrib.auth.decorators import login_required
 from django.core.urlresolvers import reverse
@@ -34,7 +33,6 @@ from django.shortcuts import redirect
 from django.shortcuts import render_to_response
 from django.shortcuts import render
 from django.template import RequestContext
-from django.utils.translation import ugettext_lazy as _
 from django.views.decorators.http import require_POST
 from django.views.generic import ListView
 from django.views.generic import CreateView

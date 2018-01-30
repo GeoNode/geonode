@@ -436,9 +436,7 @@ def create_time_form(request, upload_session, form_data):
     args = dict(
         time_names=filter_type('Date'),
         text_names=filter_type('String'),
-        year_names=filter_type('Integer') +
-                   filter_type('Long') +
-                   filter_type('Double')
+        year_names=filter_type('Integer') + filter_type('Long') + filter_type('Double')
     )
     if form_data:
         return TimeForm(form_data, **args)

@@ -115,9 +115,9 @@ setup(name='GeoNode',
             # pinax-comments==0.1.1
             "pinax-notifications<=4.0.0",  # (4.0.0 in ppa)
             "pinax-theme-bootstrap<=8.0.1",  # python-pinax-theme-bootstrap (8.0.1 in our ppa)
-            "django-bootstrap-form<=3.3",  # python-django-bootstrap-form (3.3 in our ppa)
             "django-forms-bootstrap<=3.1.0",  # python-django-forms-bootstrap (3.1.0 in our ppa)
             "django-friendly-tag-loader<=1.2.1",  # python-django-friendly-tag-loader (1.2.1 in our ppa)
+            "django-allauth<=0.34.0",  # TODO
             "django-activity-stream<=0.6.4",  # python-django-activity-stream (0.6.3 in ppa) FIXME
             "django-appconf<=1.0.2",  # (1.0.2 in ppa)
             "django-autocomplete-light>=2.3.3,<3.0a0",  # (2.3.3.1 in ppa)
@@ -135,7 +135,6 @@ setup(name='GeoNode',
             "geonode-avatar<=2.1.6",  # python-geonode-avatar (2.1.6 in our ppa)
             "geonode-announcements<=1.0.9",  # python-geonode-announcements (1.0.9 in our ppa)
             "geonode-agon-ratings<=0.3.5",  # python-geonode-agon-ratings (0.3.5 in our ppa)
-            "geonode-user-accounts==1.0.15",  # python-geonode-user-accounts (1.0.15 in our ppa)
             "geonode-arcrest>=10.0",  # python-geonode-arcrest (10.2 in our ppa)
             "geonode-dialogos>=0.5",  # python-geonode-dialogos (0.7 in our ppa)
             "gsconfig<2.0.0",  # python-gsconfig (1.0.8 in our ppa)

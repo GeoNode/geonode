@@ -96,10 +96,10 @@
                 {% if perms.announcements.can_manage %}
                 <li><a href="{% url "announcements_list" %}">{% trans "Announcements" %}</a></li>
                 {% endif %}
-                {% if user.is_superuser %}
                 <li role="separator" class="divider"></li>
+                <li><a href="{% url "geonode.invitations:geonode-send-invite" %}">{% trans "Invite User" %}</a></li>
+                {% if user.is_superuser %}
                 <li><a href="/admin/people/profile/add/">{% trans "Add User" %}</a></li>
-                <li><a href="{% url "invitations:send-invite" %}">{% trans "Invite User" %}</a></li>
                 <li><a href="{% url "group_create" %}">{% trans "Create Group" %}</a></li>
                 {% endif %}
               </ul>
@@ -233,9 +233,9 @@
             {% if perms.announcements.can_manage %}
             <li><a href="{% url "announcements_list" %}">{% trans "Announcements" %}</a></li>
             {% endif %}
+            <li><a href="{% url "geonode.invitations:geonode-send-invite" %}">{% trans "Invite User" %}</a></li>
             {% if user.is_superuser %}
             <li><a href="/admin/people/profile/add/">{% trans "Add User" %}</a></li>
-            <li><a href="{% url "invitations:send-invite" %}">{% trans "Invite User" %}</a></li>
             <li><a href="{% url "group_create" %}">{% trans "Create Group" %}</a></li>
             {% endif %}
           </ul>

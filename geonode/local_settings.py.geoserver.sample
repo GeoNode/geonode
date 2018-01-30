@@ -259,8 +259,9 @@ ALT_OSM_BASEMAPS = os.environ.get('ALT_OSM_BASEMAPS', False)
 CARTODB_BASEMAPS = os.environ.get('CARTODB_BASEMAPS', False)
 STAMEN_BASEMAPS = os.environ.get('STAMEN_BASEMAPS', False)
 THUNDERFOREST_BASEMAPS = os.environ.get('THUNDERFOREST_BASEMAPS', False)
-MAPBOX_ACCESS_TOKEN = os.environ.get('MAPBOX_ACCESS_TOKEN', None)
-BING_API_KEY = os.environ.get('BING_API_KEY', None)
+MAPBOX_ACCESS_TOKEN = os.environ.get('MAPBOX_ACCESS_TOKEN', '<MAPBOX_ACCESS_TOKEN>')
+BING_API_KEY = os.environ.get('BING_API_KEY', '<BING_API_KEY>')
+GOOGLE_API_KEY = os.environ.get('GOOGLE_API_KEY', '<GOOGLE_API_KEY>')
 
 MAP_BASELAYERS = [{
     "source": {"ptype": "gxp_olsource"},
@@ -388,6 +389,7 @@ LOGGING = {
     },
 }
 
+# Additional settings
 CORS_ORIGIN_ALLOW_ALL = True
 
 GEOIP_PATH = "/usr/local/share/GeoIP"
@@ -398,3 +400,18 @@ if MONITORING_ENABLED:
     MIDDLEWARE_CLASSES += ('geonode.contrib.monitoring.middleware.MonitoringMiddleware',)
     MONITORING_CONFIG = None
     MONITORING_SERVICE_NAME = 'local-geonode'
+
+# Advanced Security Workflow Settings
+CLIENT_RESULTS_LIMIT = 20
+API_LIMIT_PER_PAGE = 1000
+FREETEXT_KEYWORDS_READONLY = False
+RESOURCE_PUBLISHING = False
+ADMIN_MODERATE_UPLOADS = False
+GROUP_PRIVATE_RESOURCES = False
+GROUP_MANDATORY_RESOURCES = False
+MODIFY_TOPICCATEGORY = True
+USER_MESSAGES_ALLOW_MULTIPLE_RECIPIENTS = True
+DISPLAY_WMS_LINKS = True
+
+# For more information on available settings please consult the Django docs at
+# https://docs.djangoproject.com/en/dev/ref/settings

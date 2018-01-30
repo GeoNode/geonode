@@ -4,20 +4,25 @@
 {% block body_outer %}
 
 <div class="page-header">
-    <h2>{% trans "Invite User" %}</h2>
+    <h2>{% trans "Invite Users" %}</h2>
 </div>
 
-<form id="invite-form" method="POST" action="{% url 'invitations:send-invite' %}">
+<form id="invite-form" method="POST" action="{% url 'geonode.invitations:geonode-send-invite' %}">
   {% csrf_token %}
   <div class="form-group">
       <label for="id_email">Email</label>
-      <input type="text" name="email" id="id_email" value="{{ form.email.value }}" class="form-control validate-email" placeholder="{% trans 'Email' %}">
+      <input type="text" name="email" id="id_email" value="{{ form.email.value }}" class="form-control" placeholder="{% trans 'Email' %}">
   </div>
   <div class="form-group">
     {% for error in form.email.errors %}
       <div class="alert alert-danger">{{ error }}</div>
     {% endfor %}
-    {{ success_message }}
+    {% if error_message %}
+        <div class="alert alert-warning">{{ error_message }}</div>
+    {% endif %}
+    {% if success_message %}
+        <div class="alert alert-success">{{ success_message }}</div>
+    {% endif %}
   </div>
   <input type="submit" value="Submit" class="btn btn-primary generic-ajax-submit">
 </form>

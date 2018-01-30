@@ -734,6 +734,7 @@ def final_step(upload_session, user):
 
     if created:
         saved_layer.set_default_permissions()
+        saved_layer.handle_moderated_uploads()
 
     # Create the points of contact records for the layer
     _log('Creating points of contact records for [%s]', name)
@@ -799,6 +800,7 @@ def final_step(upload_session, user):
 
     signals.upload_complete.send(sender=final_step, layer=saved_layer)
 
+    saved_layer.save()
     return saved_layer
 
 

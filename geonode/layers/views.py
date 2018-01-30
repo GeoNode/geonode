@@ -909,7 +909,7 @@ def layer_metadata(
     if settings.ADMIN_MODERATE_UPLOADS:
         if not request.user.is_superuser:
             layer_form.fields['is_published'].widget.attrs.update({'disabled': 'true'})
-        if not request.user.is_superuser and not request.user.is_staff:
+
             can_change_metadata = request.user.has_perm(
                 'change_resourcebase_metadata',
                 layer.get_self_resource())

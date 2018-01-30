@@ -615,10 +615,29 @@ def resolve_object(request, model, query, permission='base.view_resourcebase',
     obj = get_object_or_404(model, **query)
     obj_to_check = obj.get_self_resource()
 
+    from guardian.shortcuts import get_groups_with_perms
+    from geonode.groups.models import GroupProfile
+
+    groups = get_groups_with_perms(obj_to_check,
+                                   attach_perms=True)
+    obj_group_managers = []
+    if groups:
+        for group in groups:
+            try:
+                group_profile = GroupProfile.objects.get(slug=group.name)
+                managers = group_profile.get_managers()
+                if managers:
+                    for manager in managers:
+                        if manager not in obj_group_managers and not manager.is_superuser:
+                            obj_group_managers.append(manager)
+            except GroupProfile.DoesNotExist:
+                pass
+
     if settings.RESOURCE_PUBLISHING:
         if (not obj_to_check.is_published) and (
             not request.user.has_perm('publish_resourcebase', obj_to_check)) and (
-                not request.user.has_perm('change_resourcebase_metadata', obj_to_check)):
+                not request.user.has_perm('view_resourcebase', obj_to_check)) and (
+                    not request.user.has_perm('change_resourcebase_metadata', obj_to_check)):
             raise Http404
 
     allowed = True
@@ -628,9 +647,12 @@ def resolve_object(request, model, query, permission='base.view_resourcebase',
             obj_to_check = obj
     if permission:
         if permission_required or request.method != 'GET':
-            allowed = request.user.has_perm(
-                permission,
-                obj_to_check)
+            if request.user in obj_group_managers:
+                allowed = True
+            else:
+                allowed = request.user.has_perm(
+                    permission,
+                    obj_to_check)
     if not allowed:
         mesg = permission_msg or _('Permission Denied')
         raise PermissionDenied(mesg)

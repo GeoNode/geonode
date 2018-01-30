@@ -36,6 +36,7 @@ from django.contrib.auth import get_user_model
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.auth import login
 from django.contrib.auth.models import Group, Permission
+from geonode.groups.models import GroupProfile
 from django.core.exceptions import ObjectDoesNotExist
 from django.conf import settings
 from guardian.utils import get_user_obj_perms_model
@@ -110,12 +111,25 @@ class PermissionLevelMixin(object):
     def get_all_level_info(self):
 
         resource = self.get_self_resource()
+        users = get_users_with_perms(resource)
+        groups = get_groups_with_perms(resource,
+                                       attach_perms=True)
+        if groups:
+            for group in groups:
+                try:
+                    group_profile = GroupProfile.objects.get(slug=group.name)
+                    managers = group_profile.get_managers()
+                    if managers:
+                        for manager in managers:
+                            if manager not in users and not manager.is_superuser:
+                                for perm in ADMIN_PERMISSIONS:
+                                    assign_perm(perm, manager, resource)
+                                users[manager] = ADMIN_PERMISSIONS
+                except GroupProfile.DoesNotExist:
+                    pass
         info = {
-            'users': get_users_with_perms(
-                resource),
-            'groups': get_groups_with_perms(
-                resource,
-                attach_perms=True)}
+            'users': users,
+            'groups': groups}
 
         # TODO very hugly here, but isn't huglier
         # to set layer permissions to resource base?
