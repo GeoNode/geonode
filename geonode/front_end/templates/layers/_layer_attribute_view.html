@@ -13,7 +13,21 @@
     <h4>Attributes</h4>
     <div ui-grid="ctrl.gridOptions" ui-grid-pagination ui-grid-exporter class="grid"></div>
 
+    <div style="float:right;margin:10px 0;text-align:right"> 
+
+
 <label for="">Upload CSV to update information</label>
-<input type="file" nv-file-select uploader="ctrl.file">
-<input type="button" ng-click="ctrl.upload()" ng-disabled="ctrl.file.queue.length == 0" value="Upload" class="btn"> 
+
+<div class="input-group">
+<input class="btn btn-default" type="file" nv-file-select uploader="ctrl.file" style="float: left">
+<span class="input-group-btn">
+<input type="button" ng-click="ctrl.upload()" ng-disabled="ctrl.file.queue.length == 0" value="Upload" class="btn btn-primary" style="padding: 8px;"> 
+<span class="input-group-btn"></span>
+</div>
+
+</div>
+
+
+
+
 </div>
