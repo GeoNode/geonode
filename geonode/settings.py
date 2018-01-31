@@ -1236,10 +1236,3 @@ MAP_CLIENT_USE_CROSS_ORIGIN_CREDENTIALS = strtobool(os.getenv(
     'MAP_CLIENT_USE_CROSS_ORIGIN_CREDENTIALS',
     'False'
 ))
-
-# WorldMap settings
-USE_WORLDMAP = str2bool(os.getenv('USE_GAZETTEER', 'True'))
-if USE_WORLDMAP:
-    INSTALLED_APPS += ('geonode.contrib.worldmap', )
-    GAZETTEER_DB_ALIAS = "wmdata"
-    GAZETTEER_FULLTEXTSEARCH = False
