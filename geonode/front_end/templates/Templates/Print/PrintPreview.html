@@ -1,5 +1,108 @@
-<div id="map-print-preview" class="container-fluid" style="background-color: #cccccc;">
-    <div class="row-fluid">
+<style>
+        .modal-dialog {
+        width: 466px !important;
+    }
+    </style>
+
+<div id="map-print-preview">
+
+   
+
+            
+
+                    <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close" ng-click="closeDialog()">
+                                    <span aria-hidden="true">×</span>
+                                </button>
+                                <h4 class="modal-title">Print Preview</h4>
+                    </div>
+
+<div style="padding: 15px;">
+
+
+                    <div class="form-inline" style="margin-bottom: 15px;">
+                            <div class="form-group">
+                              <label for="" style="width: 80px;display:block">Paper size:</label>
+                              <select class="form-control" style="width: 200px;"> 
+                                  <option>A1 Portrait</option> 
+                                  <option>A3 Portrait</option> 
+                                  <option>A4 portrait</option> 
+                                  <option>Legal Portrait</option> 
+                                </select>
+                            </div>
+                            <div class="form-group" style="margin-left: 30px;">
+                                    <label for="" style="display:block">Resolution:</label>
+                                
+                                    <select class="form-control" style="width: 200px;"> 
+                                        <option>75 dpi</option> 
+                                        <option>150 dpi</option> 
+                                        <option>300 dpi</option>
+                                    </select>
+                                  </div>
+
+                          
+                                                
+                                </div>
+
+                                <div style="margin-bottom: 5px;">
+                                        <div class="form-group">
+                                               
+                                                <input class="form-control" style="width: 433px;" id="" placeholder="Map title" type="text">
+                                        </div>
+                                        <div class="form-group" style="margin-left: 5px;margin-bottom:5px;">
+                                               <input autocomplete="off" id="ext-comp-1094" name="legend" class=" x-form-checkbox x-form-field" checked="" type="checkbox"> <label for="ext-comp-1094" class="x-form-cb-label" id="ext-gen294">Include legend?</label>
+                                              </div>
+            
+                                       
+                                                            
+                                            </div>
+
+
+                                            <div style="margin-bottom: 15px;">
+                                                    <div class="form-group">
+                                                           
+                                                            <textarea class="form-control" rows="3" style="width: 433px;"></textarea>
+                                                    </div>
+                                                    
+                                                        </div>
+
+
+                                                        <div style="margin-bottom: 15px;">
+                                                                <div class="form-group">
+                                                                        
+                                                                       
+                                                                        <img src="" alt="Map preview" class="img-thumbnail" style="background-color: rgb(235, 235, 235);width:433px;height:150px;">
+
+
+                                                                </div>
+                                                                
+                                                                    </div>
+
+                                                                    <div>
+                                                                            <div class="form-group">
+                                                                                  
+                                                                                   
+                                                                                    <button class="btn btn-gd-primary icon-btn-color" style="padding: 10px;">
+                                                                                          
+                                                                                            <i class="fa fa-print" aria-hidden="true" style="margin: 0"></i>
+                                                                                            Print
+                                                                                        </button>
+            
+            
+                                                                            </div>
+                                                                            
+                                                                                </div>
+                                    
+                        
+
+                       
+    
+                        </div>
+              
+    
+
+
+    <!-- <div class="row-fluid">
         <div class="span4 print-options donot-print">
 
             <div style="margin: -30px -41px 29px; padding: 20px 20px 12px; background-color: #f8f8f8;" class="donot-print">
@@ -78,5 +181,5 @@
                 </div>
             </div>
         </div>
-    </div>
+    </div> -->
 </div>

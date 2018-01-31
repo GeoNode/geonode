@@ -37,7 +37,20 @@
       <div class="gd-content-body layer-test" >
         <div class="row">
         <div class="panel-container">
-          <div class="panel-left">
+          
+          
+            <div id="sidebar" class="panel-left slideInRight">
+
+                <!-- <div class="layer-mini-slider" id="mini-slider" onclick="closeNav();">
+                        <span>
+                            <img src="{{ STATIC_URL }}geonode/images/layer_details_mini_icon.png" class="img-responsive1 expand_view close_carlet" title="Collapse side panel" alt="Mini-left">
+                        </span>
+                      </div> -->
+
+                      <button class="sidebar-toggle-btn" onclick="animating()"><i class="fa fa-navicon fa-2x py-1 p-1" style="color: #1B97D3"></i></button>
+
+                      
+
           <div class="margin-zero right-pad-zero overlay_layerdetails" id="myNav">
             <div id="gd-accordion-style" class="layer-information">
                         <div class="panel-group" id="accordion___" role="tablist" aria-multiselectable="true">
@@ -721,8 +734,8 @@
 
           </div> <!-- col-md-4 -->
           </div>
-          <div class="splitter">
-          </div>
+          <!-- <div class="splitter">
+          </div> -->
           <div class="panel-right">
          
 
@@ -753,11 +766,7 @@
                     <!--<img  src="{{ STATIC_URL }}geonode/images/caret-left.png" onclick="closeNav();" class="img-responsive expand_view close_carlet" title="Expand to view layer options" alt="Mini-left">-->
                   <!--</span>-->
               </div>
-              <div class="layer-mini-slider" id="mini-slider" onclick="closeNav();">
-                <span>
-                    <img src="{{ STATIC_URL }}geonode/images/layer_details_mini_icon.png" class="img-responsive1 expand_view close_carlet" title="Collapse side panel" alt="Mini-left">
-                </span>
-              </div>
+             
           </div>
 
           
@@ -1078,6 +1087,24 @@
        resizeHeight: false
      });
      });
+    </script>
+
+
+<script>
+        var count = 0;
+        function animating(){
+            console.log("asdasda");
+            if(count === 0){
+                document.getElementById('sidebar').className = 'panel-left slideOutRight';
+          
+                count++;
+            }else{
+                document.getElementById('sidebar').className = 'panel-left slideInRight show';//hide
+           
+                count--;
+            }
+            }
+    
     </script>
 
 {% endblock extra_script %}
