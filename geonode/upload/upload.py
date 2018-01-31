@@ -264,37 +264,38 @@ def save_step(
         # There is no store, ergo the road is clear
         pass
     else:
-        # If we get a store, we do the following:
-        resources = store.get_resources()
-        # Is it empty?
-        if len(resources) == 0:
-            # What should we do about that empty store?
-            if overwrite:
-                # We can just delete it and recreate it later.
-                store.delete()
+        if store is not None:
+            # If we get a store, we do the following:
+            resources = store.get_resources()
+            # Is it empty?
+            if len(resources) == 0:
+                # What should we do about that empty store?
+                if overwrite:
+                    # We can just delete it and recreate it later.
+                    store.delete()
+                else:
+                    msg = (
+                        'The layer exists and the overwrite parameter is %s' %
+                        overwrite)
+                    raise GeoNodeException(msg)
             else:
-                msg = (
-                    'The layer exists and the overwrite parameter is %s' %
-                    overwrite)
-                raise GeoNodeException(msg)
-        else:
 
-            # If our resource is already configured in the store it
-            # needs to have the right resource type
+                # If our resource is already configured in the store it
+                # needs to have the right resource type
 
-            for resource in resources:
-                if resource.name == name:
+                for resource in resources:
+                    if resource.name == name:
 
-                    assert overwrite, "Name already in use and overwrite is False"
+                        assert overwrite, "Name already in use and overwrite is False"
 
-                    existing_type = resource.resource_type
-                    if existing_type != the_layer_type:
-                        msg = (
-                            'Type of uploaded file %s (%s) does not match type '
-                            'of existing resource type %s' %
-                            (name, the_layer_type, existing_type))
-                        _log(msg)
-                        raise GeoNodeException(msg)
+                        existing_type = resource.resource_type
+                        if existing_type != the_layer_type:
+                            msg = (
+                                'Type of uploaded file %s (%s) does not match type '
+                                'of existing resource type %s' %
+                                (name, the_layer_type, existing_type))
+                            _log(msg)
+                            raise GeoNodeException(msg)
 
     if the_layer_type not in (
             FeatureType.resource_type,

@@ -158,4 +158,13 @@ def resource_urls(request):
         ),
         OGC_SERVER=getattr(settings, 'OGC_SERVER', None),
     )
+    if settings.USE_WORLDMAP:
+        defaults['GEONODE_CLIENT_LOCATION'] = settings.GEONODE_CLIENT_LOCATION
+        #defaults['DB_DATASTORE'] = settings.DB_DATASTORE
+        #defaults['HYPERMAP_REGISTRY_URL'] = settings.HYPERMAP_REGISTRY_URL
+        #defaults['MAPPROXY_URL'] = settings.MAPPROXY_URL
+        #defaults['SOLR_URL'] = settings.SOLR_URL
+        defaults['USE_GAZETTEER'] = settings.USE_GAZETTEER
+        # 'GOOGLE_API_KEY': settings.GOOGLE_API_KEY,
+        # 'GOOGLE_MAPS_API_KEY': settings.GOOGLE_MAPS_API_KEY
     return defaults
