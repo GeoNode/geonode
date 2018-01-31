@@ -250,6 +250,8 @@ class LayerUploadForm(forms.Form):
                                                     'or your uploaded file does not contains valid layer')
                     else:
                         absolute_base_file = os.path.join(tempdir, item)
+                    absolute_base_file = os.path.join(tempdir, item)
+                    
 
 
         elif zipfile.is_zipfile(self.cleaned_data['base_file']):

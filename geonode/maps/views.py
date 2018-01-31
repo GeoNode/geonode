@@ -613,7 +613,7 @@ def new_map_config(request):
         access_token = request.session['access_token']
     else:
         access_token = None
-
+    
     if request.method == 'GET' and 'copy' in request.GET:
         mapid = request.GET['copy']
         map_obj = _resolve_map(request, mapid, 'base.view_resourcebase')
@@ -749,6 +749,9 @@ def new_map_config(request):
             config['fromLayer'] = True
         else:
             config = DEFAULT_MAP_CONFIG
+            
+    config.update(dict(access_token=access_token))
+        
     return json.dumps(config)
 
 
