@@ -1,0 +1,459 @@
+﻿/** ********************************************************** **/
+/** ====== stylesheet for elements displayed on the map ====== **/
+/** ********************************************************** **/
+
+/*======= OL override =======*/
+
+.surfgis .ol-zoom button {
+    width: 25px;
+}
+
+.surfgis .ol-zoom.ol-unselectable.ol-control {
+    height: 73px;
+    display: none;
+}
+
+.surfgis .ol-zoom-out {
+    bottom: 2px;
+    position: absolute;
+}
+
+.surfgis .ol-attribution ul li:first-child {
+    display: none;
+}
+
+.surfgis .ol-mouse-position {
+    /* Extends .on-map-text*/
+    background-color: #ffffff;
+    background-color: rgba(256, 256, 256, .5);
+    color: rgb(68, 68, 68);
+    padding-left: 1px;
+    padding-right: 1px;
+    font-size: 12px;
+    top: 10px;
+    right: 47%;
+    padding-left: 2px;
+    padding-right: 2px;
+}
+
+/*===== OL override end =====*/
+
+.surfgis .on-map-text {
+    background-color: white;
+    color: rgb(68, 68, 68);
+    opacity: .7;
+    padding-left: 1px;
+    padding-right: 1px;
+    font-size: 12px;
+}
+
+.surfgis .on-map-button {
+    /* raugh copy of .ol-control button */
+    border: none;
+    color: #fff;
+    display: block;
+    height: 38px;
+    margin: 0;
+    padding: 0;
+    position: absolute;
+    right: 8px;
+    text-align: center;
+    top: 45px;
+    width: 138px;
+    z-index: 1;
+    background-color: rgba(0,60,136,.6);
+}
+
+    .surfgis .on-map-button:hover {
+        background-color: #14365f;
+        background-color: rgba(0,60,136,.8);
+    }
+
+.surfgis .zoom-level-display {
+    background-color: #9cb6d8;
+    color: #fff;
+    font-size: 15px;
+    left: 10px;
+    position: absolute;
+    text-align: center;
+    top: 33px;
+    width: 25px;
+    z-index: 2;
+    display: none;
+}
+
+.surfgis .base-map-switcher {
+    
+    padding: 15px 20px;
+    position: absolute;
+    right: 8px;
+    top: 95px;
+    width: 460px;
+    z-index: 2;
+}
+
+    .surfgis .base-map-switcher .layers-list {
+        padding-left: 10px;
+        padding-right: 10px;
+        width: 150px;
+    }
+
+    .surfgis .base-map-switcher label {
+        cursor: pointer;
+    }
+
+    .surfgis .base-map-switcher button {
+        height: 40px;
+        margin: 0;
+        padding: 5px 10px;
+        position: absolute;
+        right: 0;
+        top: -60px;
+        width: 145px;
+    }
+    .surfgis .base-map-switcher button i{
+      color: #ffffff;  
+    }
+
+    .surfgis .base-map-switcher.legends {
+        right: auto;
+        left: 0;
+        top: 110px;
+        border-top-left-radius: 0;
+        border-bottom-left-radius: 0;
+        border-top-right-radius: 6px;
+        border-bottom-right-radius: 6px;
+    }
+
+
+/*===== Popup =====*/
+
+.surf-popup {
+    position: absolute;
+    background-color: white;
+    -webkit-filter: drop-shadow(0 1px 4px rgba(0,0,0,0.2));
+    filter: drop-shadow(0 1px 4px rgba(0,0,0,0.2));
+    padding: 15px;
+    border-radius: 10px;
+    border: 1px solid #cccccc;
+    bottom: 12px;
+    left: -50px;
+    width: 180px;
+}
+
+    .surf-popup:after, .surf-popup:before {
+        top: 100%;
+        border: solid transparent;
+        content: " ";
+        height: 0;
+        width: 0;
+        position: absolute;
+        pointer-events: none;
+    }
+
+    .surf-popup:after {
+        border-top-color: white;
+        border-width: 10px;
+        left: 48px;
+        margin-left: -10px;
+    }
+
+    .surf-popup:before {
+        border-top-color: #cccccc;
+        border-width: 11px;
+        left: 48px;
+        margin-left: -11px;
+    }
+
+.surf-popup-closer {
+    text-decoration: none;
+    position: absolute;
+    top: 2px;
+    right: 8px;
+}
+
+    .surf-popup-closer:after {
+        content: "✖";
+    }
+
+.property-grid-overlay {
+    position: absolute;
+    background-color: white;
+    -webkit-filter: drop-shadow(0 1px 4px rgba(0,0,0,0.2));
+    filter: drop-shadow(0 1px 4px rgba(0,0,0,0.2));
+    padding: 10px;
+    border-radius: 10px;
+    border: 1px solid #cccccc;
+    bottom: 12px;
+    left: -50px;
+    width: 260px;
+    z-index: 100;
+}
+
+    .property-grid-overlay:after, .property-grid-overlay:before {
+        top: 100%;
+        border: solid transparent;
+        content: " ";
+        height: 0;
+        width: 0;
+        position: absolute;
+        pointer-events: none;
+    }
+
+    .property-grid-overlay:after {
+        border-top-color: white;
+        border-width: 10px;
+        left: 48px;
+        margin-left: -10px;
+    }
+
+    .property-grid-overlay:before {
+        border-top-color: #cccccc;
+        border-width: 11px;
+        left: 48px;
+        margin-left: -11px;
+    }
+
+.property-grid-overlay-closer {
+    text-decoration: none;
+    position: absolute;
+    top: 2px;
+    right: 8px;
+}
+
+    .property-grid-overlay-closer:after {
+        content: "✖";
+    }
+
+    .modal .header {
+        background-color: #f3f3f3;
+        border-bottom: 1px solid #d0d0d0;
+        box-shadow: 0 1px 5px 0 rgba(0, 0, 0, 0.18);
+        display: block;
+        font-size: 14px;
+        margin: -15px;
+        padding: 10px;
+        vertical-align: bottom;
+    }
+    .file-browser-button-container button {
+        background-color: #3896e2;
+        border: 1px solid #297bb9;
+        border-radius: 4px;
+        color: #fff;
+        cursor: pointer;
+        font-size: 15px;
+        height: 55px;
+        padding: 10px;
+    }
+    .file-browser-button-container button:hover {
+        background-color: #41a3f7;
+        color: #fff;
+    }
+    .file-browser-button-container button:hover i {
+        color: #f7de03;
+    }
+    .file-browser-button-container button i {
+        color: #fff;
+        display: block;
+        font-size: 20px;
+    }
+    .file-browser-button-container button[disabled="disabled"] {
+        background: #d0e7f9 none repeat scroll 0 0;
+        border: 1px solid #97aec0;
+        color: #97aec0;
+    }
+    .file-browser-button-container button[disabled="disabled"] i {
+        color: #97aec0;
+    }
+    .file-browser-button-container {
+        
+        border-bottom: 1px solid #e5e5e5;
+        border-top-left-radius: 8px;
+        border-top-right-radius: 8px;
+        padding: 10px;
+    }
+    .MainBodyContainer button, .MainBodyContainer .header {
+        font-family: RobotoRegular,"Trebuchet MS",Verdana,Helvetica,sans-serif;
+    }
+    .MainBodyContainer {
+        background-color: #f0f0f0;
+        border: 1px solid #e2e2e2;
+        border-radius: 10px;
+        box-shadow: 0 0 5px 0 rgba(0, 0, 0, 0.54);
+        box-sizing: border-box;
+        overflow: hidden;
+        /* position: relative; */
+    }
+    .file-browser-button-container, .folder-list, .file-container, .file-properties, .fSaveContainer {
+        box-sizing: border-box;
+    }
+    .file-browser-button-container {
+        cursor: pointer;
+        height: 75px;
+        left: 0;
+        right: 0;
+        top: 0;
+    }
+    .folder-list {
+
+        
+        margin:0 -15px;
+    }
+    .folder-list ul {
+        box-shadow: 0 1px 5px 0 rgba(0, 0, 0, 0.18);
+        margin: 0;
+        padding: 0;
+    }
+    .folder-list li.folder-selected {
+    background-color:#3896e2;
+    }
+    .folder-list li.folder-selected span {
+
+            color: #fff;
+        }
+        .folder-list li.folder-selected span i{
+            
+                        color: rgb(252, 248, 4);
+                    }
+    .folder-list li {
+        cursor: pointer;
+        display: block;
+        margin-bottom: 1px;
+        padding: 10px 15px;
+    }
+    .folder-list li {
+        list-style-type: none;
+    }
+    .folder-list li span i{
+       color: #41a3f7;
+    }
+    .file-properties {
+        bottom: 0;
+        box-shadow: 0 1px 5px 0 rgba(0, 0, 0, 0.18);
+        right: 0;
+        top: 75px;
+        width: 200px;
+    }
+    .file-container {
+        margin: 0 -15px 0 -14px;
+        overflow: auto;
+        padding: 15px;
+        background-color: #f0f0f0;
+        height: 440px;
+        overflow-y: auto;
+    }
+    .file-container ul{
+        list-style-type: none;
+    }
+    .catalog-browser .file-container {
+        bottom: 0;
+    }
+    .fSaveContainer {
+        bottom: 0;
+        height: 65px;
+        left: 200px;
+        right: 200px;
+    }
+    .fullScreenModal {
+        left: 0;
+        margin: 0 auto;
+        position: absolute;
+        width: 100%;
+    }
+    .attributeGridModal {
+        left: 0;
+        margin: 0 auto;
+        position: relative;
+        width: 80%;
+    }
+    .crossSectionGraphModal {
+        left: 0;
+        margin: 0 auto;
+        position: relative;
+        width: 630px;
+    }
+    .modal.fade.in.crossSectionGraphModal {
+        top: 60px;
+    }
+    .properties-modal
+    {
+         width: 100%;
+         margin: 0 auto;
+    }
+    .fixed-table-container-inner th
+    {
+        background-color: #637583;
+        color: #fff;
+        padding: 5px;
+    }
+    .label-style-left-column
+    {
+        border-right: 1px solid #ccc;
+    }
+
+   
+      .base-map-list
+      {
+         list-style-type: none;
+         margin: 0;
+         padding: 0;
+         width: 418px;
+         display: inline-block;
+         padding: 5px 0 11px;
+         border-bottom: 1px solid #e0e0e0;
+      } 
+      .base-map-list:last-child
+      {
+       border: none;
+      }      
+     .base-map-list li
+     {
+         float: left;
+         margin-right: 10px;
+     } 
+     .base-map-list li.name
+     {
+        font-size: 17px;
+        color:#73757d;
+        margin-right: 15px;
+        width: 100px;
+        line-height: 30px;
+     } 
+     .base-map-list li img
+     {
+      border: 1px solid #ccc;
+      border-radius: 2px;
+      position: absolute;
+      z-index: 1;
+     } 
+     .base-map-list li a
+     {
+     width: 30px;
+     height: 30px;
+     display: block;
+     } 
+     .base-map-list li a:hover
+     {
+      opacity: 1;
+
+     } 
+     .base-map-list li a:hover img
+     {
+        outline: 2px solid #3896e2;
+border-radius: 2px;
+     } 
+
+ 
+     
+      .btn-group-justified > .btn, .btn-group-justified > .btn-group
+      {
+          border-radius: 0;
+      }
+      .modal-content{
+          min-height: 500px;
+      }
+      
+
+      
+    
+

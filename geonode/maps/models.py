@@ -619,4 +619,5 @@ class WmsServer(models.Model):
     title = models.CharField(max_length=100, verbose_name=_('Your server name'))
     date_created = models.DateTimeField(auto_now_add=True)
     date_updated = models.DateTimeField(auto_now=True)
+    
 #end

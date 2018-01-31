@@ -1,0 +1,74 @@
+<!-- <div class="base-map-switcher">
+    <button ng-show="!expanded" class="on-map-button pull-right" ng-click="expanded=true"><i class="fa fa-chevron-circle-left"></i> Change basemap</button>
+    <button ng-show="expanded" class="on-map-button pull-right" ng-click="expanded=false"><i class="fa fa-chevron-circle-right"></i></button>
+
+    <div ng-show="expanded" class="layers-list">
+        <h4>Base Layer</h4>
+        <label ng-repeat="baseMap in baseMaps">
+            <input type="radio" name="baseMapSwitcher" ng-model="model.selectedBaseMap" ng-value="baseMap" ng-change="changed()" />
+            {{baseMap.title}}
+        </label>
+    </div>
+</div> -->
+<style>
+        /* Tooltip container */
+        .tooltip {
+            position: relative;
+            display: inline-block;
+            border-bottom: 1px dotted black; /* If you want dots under the hoverable text */
+        }
+        
+        /* Tooltip text */
+        .tooltip .tooltiptext {
+            visibility: hidden;
+            width: 120px;
+            background-color: black;
+            color: #fff;
+            text-align: center;
+            padding: 5px 0;
+            border-radius: 6px;
+            top: -35px;
+         left: -43px;
+            /* Position the tooltip text - see examples below! */
+            position: absolute;
+            z-index: 1000000;
+        }
+        
+        /* Show the tooltip text when you mouse over the tooltip container */
+        .tooltip:hover .tooltiptext {
+            visibility: visible;
+        }
+
+        .tooltip .tooltiptext::after {
+            content: " ";
+            position: absolute;
+            top: 100%; /* At the bottom of the tooltip */
+            left: 50%;
+            margin-left: -5px;
+            border-width: 5px;
+            border-style: solid;
+            border-color: black transparent transparent transparent;
+        }
+        </style>
+
+<button ng-show="!expanded" class="on-map-button pull-right" ng-click="expanded=true"><img src="/static/geonode/images/map-thumb.jpg" width="20" height="20"/> Change basemap</button>
+<button ng-show="expanded" class="on-map-button pull-right" ng-click="expanded=false"><img src="/static/geonode/images/map-thumb.jpg" width="20" height="20"/> Change basemap</button>
+
+<div class="dropBox base-map-switcher" ng-show="expanded">
+   
+
+    <div>
+
+            <div class="arrow-up"></div>
+
+            <ul class="base-map-list" ng-repeat="(key, value) in baseMapGroups">
+                <li class="name"> {{key}} </li>     
+                <li ng-repeat="basemap in value"> <a class="tooltip" href="" ng-click="changed(basemap)">
+                    <img  src="/static/geonode/images/map-thumb.jpg"/>
+                    <span class="tooltiptext">{{basemap.title}}</span></li></a>
+                    
+                                 
+            </ul>
+
+    </div>
+</div>

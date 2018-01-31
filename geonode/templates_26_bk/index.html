@@ -10,7 +10,7 @@
 {% block middle %}
   {% block hero %}
   <div class="jumbotron">
-  	<div class="container">
+  	<div class="container-fluid">
   		<h1>{% trans "Welcome" %}</h1>
   		<p></p>
   		<p>{% blocktrans %}GeoNode is an open source platform for sharing geospatial data and maps.{% endblocktrans %}</p>
@@ -25,7 +25,7 @@
 
   {% block mainbody %}
   <div class="big-search">
-  	<div class="container">
+  	<div class="container-fluid">
   		<h1>{% trans "Search for Data." %}</h1>
   		<div class="search">
   			<form id="search" action="{% url "search" %}" >
@@ -43,7 +43,7 @@
 
   {% block datasets %}
   <section id="datasets">
-  	<div class="container">
+  	<div class="container-fluid">
   		<div class="row">
   			<div class="container text-center">
   				<h1>Discover the available datasets.</h1>
@@ -163,7 +163,7 @@
 
   {% block showcase %}
   <section id="showcase">
-    <div class="container">
+    <div class="container-fluid">
       <div class="row">
         <h2>Featured Datasets</h2>
         {% verbatim %}

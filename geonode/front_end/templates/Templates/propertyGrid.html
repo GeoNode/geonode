@@ -1,0 +1,68 @@
+﻿<div class="propertygrid-wrapper" ng-if="hasFeature()">
+    <div class="layer-buttons">
+        <!-- <button draft-only ng-if="!isReadonly() && getProperties().length > 0" ng-click="toggleAttributeEditableState()"
+            class="btn attribute-locker"
+            ng-class="{'btn-success':isAttributeEditable(), 'btn-danger':!isAttributeEditable()}"
+            ng-attr-title="{{!isAttributeEditable() && 'Enable attribute editing mode' || 'Disable attribute editing mode'}}">
+            <i class="fa" ng-class="{'fa-lock':!isAttributeEditable(), 'fa-unlock':isAttributeEditable()}"></i>
+        </button>
+        <button draft-only ng-click="showProperties(2)" class="icon icon24 properties"></button> -->
+
+        <!-- <button ng-if="!isReadonly() && isAttributeEditable()" ng-click="redo()" title="redo" ng-disabled="!enableRedo()" class="icon icon24 icon-redo-small pull-right" draft-only></button>
+        <button ng-if="!isReadonly() && isAttributeEditable()" ng-click="undo()" title="undo" ng-disabled="!enableUndo()" class="icon icon24 icon-undo-small pull-right" draft-only></button> -->
+        <button ng-click="prev()" class="icon icon24 icon-undo-small" title="previous feature"></button>
+        <span>{{selectFeatureTool.selectedIndex + 1}} of {{selectFeatureTool.featuresData.length}}</span>
+        <button ng-click="next()" class="icon icon24 icon-redo-small" title="next feature"></button>
+    </div>
+    <table style="width: 100%;">
+        <thead>
+            <tr class="header-row">
+                <th>&nbsp;</th>
+                <th style="text-align: left"><font color="#FFF">Name</font></th>
+                <th style="text-align: left"><font color="#FFF">Value</font></th>
+            </tr>
+        </thead>
+    </table>
+    <div class="property-grid-container" table-height-adjuster style="max-height: 300px; overflow: auto">
+        <table class="propertyGridTable" cellspacing="0">
+            <tbody>
+                <tr ng-repeat="property in getProperties()" class="propertyGrid-row" ng-if="!isReadonly() && canDisplayRow(property)">
+                    <td class="emptyTD">&nbsp;</td>
+                    <td class="propertyGridColumn propertyGridPropertyNameColumn">{{property.name}}
+                        <span ng-if="isReadOnlyType(property)">
+                            <span ng-if="showUnit(property)">({{property.unit}})</span>
+                            <i class="fa fa-ban fa-fw red-text" draft-only title="Readonly Attribute"></i>
+                        </span>
+                    </td>
+                    <td ng-if="!property.isEditing" ng-click="makeEditable(property)" class="propertyGridColumn propertyGridPropertyValueColumn">
+                        <div class="property-value-div" href-watcher="property.value"></div>
+                    </td>
+                    <td ng-if="!isDateType(property.type) && property.isEditing" class="propertyGridColumn propertyGridPropertyValueColumn">
+                        <input type="text" ng-model="property.value" focus-me="!isDateType(property.type) && property.isEditing" ng-change="validate(property)" ng-blur="makeCurrentFieldUneditable(property)" class="propertyGridValueField" ng-change="makeDirty()" />
+                    </td>
+                    <td ng-hide="!isDateType(property.type) || !property.isEditing" class="propertyGridColumn propertyGridPropertyValueColumn">
+                        <!--This is intentionaly ng-hide-->
+                        <input type="text" ng-model="property.value" focus-me="isDateType(property.type) && property.isEditing" date-picker readonly class="propertyGridValueField surfgis-date" ng-blur="property.isEditing=false" ng-change="makeDirty();makeCurrentFieldUneditable(property);" ng-init="formatDate(property)" />
+                    </td>
+                </tr>
+                <tr ng-repeat="property in getProperties()" class="propertyGrid-row" ng-if="isReadonly() && canDisplayRow(property)">
+                    <td class="emptyTD">&nbsp;</td>
+                    <td class="propertyGridColumn propertyGridPropertyNameColumn">{{property.name}}
+                    </td>
+                    <td class="propertyGridColumn propertyGridPropertyValueColumn" style="cursor: not-allowed;">
+                        <div class="property-value-div">
+                            {{property.value}}
+                        </div>
+                    </td>
+                </tr>
+                <tr ng-if="getProperties().length == 0" class="propertyGrid-row">
+                    <td class="propertyGridColumn propertyGridPropertyValueColumn" colspan="2" style="text-align: center; padding: 10px">
+                        <div class="alert" ng-if="!getFeature().inProgress">No attribute available</div>
+                        <div class="alert" ng-if="getFeature().inProgress"><i class="fa fa-spinner fa-spin"></i></div>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+

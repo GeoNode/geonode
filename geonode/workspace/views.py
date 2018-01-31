@@ -17,6 +17,7 @@ from geonode.layers.models import LayerSubmissionActivity, LayerAuditActivity
 from geonode.people.models import Profile
 from geonode.groups.models import GroupProfile, GroupMember
 from geonode import settings
+from .utils import prepare_messages
 
 
 class MemberWorkspaceLayer(ListView):
@@ -32,9 +33,15 @@ class MemberWorkspaceLayer(ListView):
         context = super(ListView, self).get_context_data(*args, **kwargs)
 
         context['draft_list'] = Layer.objects.filter(owner=self.request.user, status='DRAFT').order_by('date_updated')
-        context['pending_list'] = Layer.objects.filter(owner=self.request.user, status='PENDING').order_by('date_updated')[:15]
+        context['pending_list'] = Layer.objects.filter(owner=self.request.user, status='PENDING').order_by('date_updated')  # [:15]
         context['denied_list'] = Layer.objects.filter(owner=self.request.user, status='DENIED').order_by('date_updated')
         context['active_list'] = Layer.objects.filter(owner=self.request.user, status='ACTIVE').order_by('date_updated')
+
+        context['draft_list_messages'] = prepare_messages(context['draft_list'])
+        context['pending_list_messages'] = prepare_messages(context['pending_list'])
+        context['denied_list_messages'] = prepare_messages(context['denied_list'])
+        context['active_list_messages'] = prepare_messages(context['active_list'])
+
         return context
 
 
@@ -50,7 +57,7 @@ class MemberWorkspaceDocument(ListView):
     def get_context_data(self, *args, **kwargs):
         context = super(ListView, self).get_context_data(*args, **kwargs)
         context['draft_list'] = Document.objects.filter(owner=self.request.user, status='DRAFT').order_by('date_updated')
-        context['pending_list'] = Document.objects.filter(owner=self.request.user, status='PENDING').order_by('date_updated')[:15]
+        context['pending_list'] = Document.objects.filter(owner=self.request.user, status='PENDING').order_by('date_updated')  # [:15]
         context['denied_list'] = Document.objects.filter(owner=self.request.user, status='DENIED').order_by('date_updated')
         context['active_list'] = Document.objects.filter(owner=self.request.user, status='ACTIVE').order_by('date_updated')
         return context
@@ -68,7 +75,7 @@ class MemberWorkspaceMap(ListView):
     def get_context_data(self, *args, **kwargs):
         context = super(ListView, self).get_context_data(*args, **kwargs)
         context['draft_list'] = Map.objects.filter(owner=self.request.user, status='DRAFT').order_by('date_updated')
-        context['pending_list'] = Map.objects.filter(owner=self.request.user, status='PENDING').order_by('date_updated')[:15]
+        context['pending_list'] = Map.objects.filter(owner=self.request.user, status='PENDING').order_by('date_updated')  # [:15]
         context['denied_list'] = Map.objects.filter(owner=self.request.user, status='DENIED').order_by('date_updated')
         context['active_list'] = Map.objects.filter(owner=self.request.user, status='ACTIVE').order_by('date_updated')
         return context
@@ -88,7 +95,7 @@ class AdminWorkspaceLayer(ListView):
         context['user_approval_request_list'] = Layer.objects.filter(status='PENDING', group__in=groups).order_by('date_updated')
         context['approved_list'] = Layer.objects.filter(status='ACTIVE', group__in=groups).order_by('date_updated')
         context['user_draft_list'] = Layer.objects.filter(status='DRAFT', group__in=groups).order_by('date_updated')
-        context['denied_list'] = Layer.objects.filter(status='DENIED', group__in=groups).order_by('date_updated')[:15]
+        context['denied_list'] = Layer.objects.filter(status='DENIED', group__in=groups).order_by('date_updated')  # [:15]
         return context
 
 
@@ -105,9 +112,9 @@ class AdminWorkspaceDocument(ListView):
         context = super(ListView, self).get_context_data(*args, **kwargs)
         groups = GroupProfile.objects.filter(groupmember__user=self.request.user, groupmember__role='manager')
         context['user_approval_request_list'] = Document.objects.filter(status='PENDING', group__in=groups).order_by('date_updated')
-        context['approved_list'] = Document.objects.filter(status='ACTIVE', group__in=groups).order_by('date_updated')[:15]
+        context['approved_list'] = Document.objects.filter(status='ACTIVE', group__in=groups).order_by('date_updated')  #  [:15]
         context['user_draft_list'] = Document.objects.filter(status='DRAFT', group__in=groups).order_by('date_updated')
-        context['denied_list'] = Document.objects.filter(status='DENIED', group__in=groups).order_by('date_updated')[:15]
+        context['denied_list'] = Document.objects.filter(status='DENIED', group__in=groups).order_by('date_updated')  #  [:15]
         return context
 
 
@@ -124,9 +131,9 @@ class AdminWorkspaceMap(ListView):
         context = super(ListView, self).get_context_data(*args, **kwargs)
         groups = GroupProfile.objects.filter(groupmember__user=self.request.user, groupmember__role='manager')
         context['user_approval_request_list'] = Map.objects.filter(status='PENDING', group__in=groups).order_by('date_updated')
-        context['approved_list'] = Map.objects.filter(status='ACTIVE', group__in=groups).order_by('date_updated')[:15]
+        context['approved_list'] = Map.objects.filter(status='ACTIVE', group__in=groups).order_by('date_updated')  # [:15]
         context['user_draft_list'] = Map.objects.filter(status='DRAFT', group__in=groups).order_by('date_updated')
-        context['denied_list'] = Map.objects.filter(status='DENIED', group__in=groups).order_by('date_updated')[:15]
+        context['denied_list'] = Map.objects.filter(status='DENIED', group__in=groups).order_by('date_updated')  # [:15]
         return context
 
 

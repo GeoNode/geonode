@@ -17,7 +17,7 @@
       {% else %}
       <link href="{{ STATIC_URL }}lib/css/main.4df7c95f.css?v={{ VERSION }}" rel="stylesheet"/>
       <link href="{{ STATIC_URL }}lib/css/bootstrap.min.css?v={{ VERSION }}" rel="stylesheet"/>
-      <link href="{{ STATIC_URL }}lib/css/font-awesome.min.css?v={{ VERSION }}" rel="stylesheet"/>
+      <link href="{{ STATIC_URL }}lib/css/font-awesome.min.css" rel="stylesheet"/>
       <link href="{{ STATIC_URL }}lib/css/bootstrap-datetimepicker.css?v={{ VERSION }}" rel="stylesheet"/>
       <!--<link href="{{ STATIC_URL }}lib/css/bootstrap-select.min.css?v={{ VERSION }}" rel="stylesheet"/>-->
       {% endif %}
@@ -59,7 +59,7 @@
     <section id="gd-header" class="sticky" >
         <!-- <nav class="navbar navbar-default"> -->
         <nav class="navbar navbar-default navbar-fixed-top">
-            <div class="container">
+            <div class="container-fluid">
                 <div class="navbar-header">
                     <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#gd-navbar-collapse" aria-expanded="false">
                         <span class="sr-only">Toggle navigation</span>
@@ -288,7 +288,7 @@
 
     <section id="gd-wrapper">
     {% block middle %}
-    <div class="container">
+    <div class="container-fluid">
       {% include "_status_message.html" %}
       <!--{% include "_announcements.html" %}-->
       {% include "_messages.html" %}
@@ -311,7 +311,7 @@
     <!-- Modal must stay outside the navbar -->
     {% if not user.is_authenticated %}
     <section id="gd-model">
-        <div class="container">
+        <div class="container-fluid">
             <div style="">
                 <div class="modal fade" id="SigninModal"  tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel">
                   <div class="modal-dialog" role="document" >
@@ -402,7 +402,7 @@
     {% endif %}
     {% if not user.is_authenticated and REGISTRATION_OPEN %}
     <section id="gd-model">
-        <div class="container">
+        <div class="container-fluid">
             <div style="">
                 <div class="modal fade" id="SignupModal"  tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel">
                   <div class="modal-dialog" role="document" >

@@ -1,0 +1,169 @@
+{% extends "site_base.html" %}
+{% load activity_tags  social_tags i18n %}
+
+{% block title %}{% trans "Analytics" %}{% endblock %}
+
+{% block body_outer %}
+
+    <div class="row">
+        <div class="col-md-12 analytics-header"><p class="text-center">WEB MAP METRICS</p></div>
+        <div class="col-md-12 analytics-heading"><h2 class="text-center">Track the metrics that convert</h2></div>
+    </div>
+    <div class="row">
+        <div class="col-md-2">&nbsp;</div>
+        {% comment %}<div class="col-md-2 analytics-box">
+            <h3 class="text-center">58%</h3>
+            <p class="text-center">Bounce Rate</p>
+        </div>
+        <div class="col-md-1">&nbsp;</div>{% endcomment %}
+        <div class="col-md-3 analytics-box">
+            <h3 class="text-center">{{ map_loads }}</h3>
+            <p class="text-center">Map Loads</p>
+        </div>
+        <div class="col-md-2">&nbsp;</div>
+        <div class="col-md-3 analytics-box">
+            <h3 class="text-center">{{ average_activity_load }}</h3>
+            <p class="text-center">Avg. Activities / Load</p>
+        </div>
+        <div class="col-md-2">&nbsp;</div>
+    </div>
+    <div class="row">
+        <div class="col-md-12">&nbsp;</div>
+    </div>
+    <div class="row">
+        <div class="col-md-2">&nbsp;</div>
+        {% comment %}<div class="col-md-2 analytics-box">
+            <h3 class="text-center">2</h3>
+            <p class="text-center">Avg. Visitor Duration (min)</p>
+        </div>
+        <div class="col-md-1">&nbsp;</div>{% endcomment %}
+        <div class="col-md-3 analytics-box">
+            <h3 class="text-center">{{ average_layer_load }}</h3>
+            <p class="text-center">Avg. Layer Load (sec)</p>
+        </div>
+        <div class="col-md-2">&nbsp;</div>
+        <div class="col-md-3 analytics-box">
+            <h3 class="text-center">{{ zooms }}</h3>
+            <p class="text-center">Zooms</p>
+        </div>
+        <div class="col-md-2">&nbsp;</div>
+    </div>
+    <div class="row">
+        <div class="col-md-12">
+            <div id="container-highchart" style="min-width: 310px; height: 400px; max-width: 600px; margin: 0 auto"></div>
+        </div>
+    </div>
+    
+    <div class="row text-center" style="margin-top: 10px">
+        <div class="btn-group">
+            <button onclick='showMapData()' type="button" class="btn btn-primary">Map Data</button>
+            <button onclick='showLayerData()' type="button" class="btn btn-primary">Layer Data</button>
+          </div>
+          
+    </div>
+    
+
+    <div class="row" id="output" style="width:100%; margin-top:5px;margin-left: 10px">
+
+    </div>
+{% endblock %}
+
+{% block extra_head %}
+    <link href="{{ STATIC_URL }}geonode/css/geoexplorer/analytics.css" rel="stylesheet" />
+{% endblock %}
+
+{% block extra_script %}
+    {# { block.super } #}}
+    <script src="https://code.highcharts.com/highcharts.js"></script>
+    <script src="https://code.highcharts.com/modules/exporting.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.css" />
+    <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/c3/0.4.10/c3.min.css">
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.5/d3.min.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/c3/0.4.10/c3.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/pivottable/2.18.0/pivot.min.css" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pivottable/2.18.0/pivot.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pivottable/2.18.0/c3_renderers.min.js"></script>
+    <script src="{{ STATIC_URL }}geonode/js/analytics/subtotal.js"></script>
+    <script>
+
+function showTable(url,rows){
+  $.ajax({
+                url: url
+              }).done(function(data) {
+                $("#output").pivotUI(data,{
+                  rows:rows,
+                  renderers: $.extend(
+                        $.pivotUtilities.renderers, 
+                        $.pivotUtilities.c3_renderers,
+                        $.pivotUtilities.subtotal_renderers
+                      ),
+                      rendererOptions:{
+                        c3:{
+                          zoom: {
+                            enabled: true
+                          }
+                        },
+                        collapseRowsAt:1,
+                        collapseColsAt:0,
+
+                      }
+                });
+              });
+}
+
+    function showMapData(){
+var url="/analytics/maps/";
+var rows = ['name','map_id','last_modified_date','activity_type','count'];
+showTable(url,rows);
+    }
+    function showLayerData(){
+      var url="/analytics/layers/";
+      var rows = ['name','layer_id','last_modified_date','activity_type','count'];
+      showTable(url,rows);
+    }
+    </script>
+    <script>
+        $(function () {
+
+            Highcharts.chart('container-highchart', {
+                chart: {
+                    plotBackgroundColor: null,
+                    plotBorderWidth: null,
+                    plotShadow: false,
+                    type: 'pie'
+                },
+                title: {
+                    text: 'User Pinpoint Activities'
+                },
+                tooltip: {
+                    pointFormat: '{series.name}: <b>{point.percentage:.1f}%</b>'
+                },
+                plotOptions: {
+                    pie: {
+                        allowPointSelect: true,
+                        cursor: 'pointer',
+                        dataLabels: {
+                            enabled: true,
+                            format: '<b>{point.name}</b>: {point.percentage:.1f} %',
+                            style: {
+                                color: (Highcharts.theme && Highcharts.theme.contrastTextColor) || 'black'
+                            }
+                        }
+                    }
+                },
+                series: [{
+                    name: 'Activities',
+                    colorByPoint: true,
+                    data: {{ chart_data|safe }}
+                }]
+            });
+
+            showLayerData();
+
+            
+        });
+        
+    </script>
+{% endblock %}

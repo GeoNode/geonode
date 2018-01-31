@@ -46,251 +46,274 @@
                   </div>
               </div>
           </div>
-          <div class="hr"></div>
+         
       </div>
-  <div class="gd-content-heading">
-      <div class="hr"></div>
-      <div class="row">
-            <div class="col-md-12">
-                <ul class="nav navbar-nav nav-pills">
-                  <li class="active"><a href="#org-profile" id="org_profile" data-toggle="tab" ><i class="fa fa-square-o rotate-45"></i> {% trans "Organization Profile" %}</a></li>
-                  <li><a href="#layerslist" id="layers_list" data-toggle="tab" ><i class="fa fa-square-o rotate-45"></i> {% trans "Layers List" %}</a></li>
-                  <li ><a href="#userlist" data-toggle="tab"><i class="fa fa-square-o rotate-45"></i> {% trans "User List" %}</a></li>
-                    {% if user.is_authenticated %}
-                  <li><a href="#acitivity" id="qroup_activity" data-toggle="tab"><i class="fa fa-map-marker"></i> {% trans "Activity" %}</a></li>
-                    {% endif %}
-                  <li><a href="#qtionanswer" id="qst_ans" data-target="#qtionanswer" data-toggle="tab"><i class="fa fa-comment-o"></i> {% trans "Question/Answer" %}</a></li>
-                    {% if request.user.is_superuser or request.user in object.get_managers %}
-                  <li><a href="{% url "user-invitation-list" object.slug %}"><i class="fa fa-comment-o"></i> {% trans "Member Requests" %}</a></li>
-                    {% endif %}
-                </ul>
-            </div>
-      </div>
-      <div class="row">
-            <div class="col-md-12">
-                <div class="tab-content activity-style-list">
-                    <article id="org-profile" class="tab-pane active">
-                      <div class="gd-content-body transparent top-bottom-margin-20px">
-                          <div class="row">
-                              <div class="col-md-8">
-                                  <div class="description">
-                                      {{ object.description }}
-                                  </div>
-                                  <div class="keywords">
-                                    {% if object.keyword_list %}
-                                      {% for keyword in object.keyword_list %}
-                                      <button type="reset" class="btn btn-default btn-xs">
-                                          {{ keyword }}
-                                      </button>
-                                      {% endfor %}
-                                    {% else %}
-                                    {% endif %}
-                                  </div>
-                                  <div class="emails">
-                                    {% if object.email %}
-                                      <i class="fa fa-envelope"></i>
-                                      <a href="mailto:{{ object.email }}">{{ object.email }}</a>
-                                    {% endif %}
-                                  </div>
-                              </div>
-                              <div class="col-md-4">
-                                {% if is_manager or request.user.is_superuser %}
-                                  <ul class="list-group gd-link-style">
-                                      <li class="list-group-item">
-                                          <a href="{% url "group_update" object.slug %}">
-                                            {% trans "Edit Organization Details" %}
-                                          </a>
-                                      </li>
-                                      <li class="list-group-item">
-                                          <a href="{% url "group_members" object.slug %}">
-                                            {% trans "Manage Organization Members" %}
-                                          </a>
-                                      </li>
-                                      {% if request.user.is_superuser %}
-                                      <li class="list-group-item">
-                                          <a href="{% url "group_remove" object.slug %}">
-                                            {% trans "Delete this Group" %}
-                                          </a>
-                                      </li>
-                                      {% endif %}
-                                  </ul>
-                                {% endif %}
-                                <!-- <div class="row">
-                                    <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
-                                        <div class="text-right">
-                                            <a href="javascript:;">More...</a>
-                                        </div>
-                                    </div>
-                                </div> -->
-                              </div>
-                          </div>
-                          <div class="row">
-                              {% for manager in object.get_managers %}
-                                  <div class="col-xs-3 col-sm-3 col-md-3 col-lg-3">
-                                        {% with manager as profile %}
-                                          {% include "groups/_manager_about_item.html" %}
-                                        {% endwith %}
-                                  </div>
-                              {% endfor %}
-                          </div>
-                      </div>
-                      <div class="gd-content-body">
-                          <div class="row">
-                              <div class="col-md-12">
-                                  <div class="gd-box">
-                                      <h3>{% trans "Permissions" %}</h3>
-                                      <div class="block-separator"></div>
-                                      {% blocktrans with object.get_access_display as access %}
-                                        This group is <strong>{{ access }}</strong>.
-                                      {% endblocktrans %}
-                                      {% if object.access == "public" %}
-                                        {% trans "Anyone may join this group." %}
-                                        <div class="row">
-                                            <div class="col-md-3">
-                                                <div class="block-separator"></div>
-                                                <form class="uniForm" method="POST" action="{% url "group_join" object.slug %}">
-                                                  {% csrf_token %}
-                                                  {% if not is_member %}
-                                                    <input type="submit" class="btn btn-gd-gray btn-md btn-block" value="Join Group" />
-                                                  {% endif %}
-                                                </form>
-                                            </div>
-                                        </div>
-                                      {% else %}
-                                          {% if object.access == "public-invite" %}
-                                            {% trans "Anyone may view this group but membership is by invitation only." %}
-                                              <div class="row">
-                                                    <div class="col-md-3">
-                                                        <div class="block-separator"></div>
-                                                            <form class="uniForm" method="POST" action="{% url "user-invitation" object.slug %}">
-                                                            {% csrf_token %}
-                                                            {% if can_send_request %}
-                                                                <input type="submit" class="btn btn-gd-gray btn-md btn-block" value="Send Request" />
-                                                             {% elif pending_request %}
-                                                                {% trans "You already have pending request to join this group." %}
-                                                            {% endif %}
-                                                            </form>
-                                                    </div>
-                                                </div>
-                                          {% else %}
-                                            {% if object.access == "private" %}
-                                                {% trans "Membership is by invitation only." %}
-                                            {% endif %}
-                                          {% endif %}
-                                      {% endif %}
-                                  </div>
-                              </div>
-                          </div>
-                      </div>
-                    </article>
-                    <article id="layerslist" class="tab-pane">
 
-                        <div class="no-style-list">
-                            <div class="gd-content-body transparent" id="search-content-layers">
 
-                              {% include 'search/_pagination.html' %}
-                          </div>
-                        </div>
-                    </article>
-                    <article id="userlist" class="tab-pane">
-                        <div class="no-style-list">
-                            <div class="gd-content-body transparent">
-                              <div class="paginate paginate-auto" id="search-content">
-                                {% include 'people/_profile_list_item.html' %}
-                              </div>
-                              {% include 'search/_pagination.html' %}
-                          </div>
-                        </div>
-                    </article>
-                    <article id="acitivity" class="tab-pane ">
-                        <div class="gd-content">
-                            <div class="gd-content-heading">
-                                <div class="title small-content">
-                                    {%  trans "Activity Feed for"  %}
-                                        <a href="{% url "group_detail" object.slug %}">
-                                            {{ object.title }}
-                                        </a>
-                                </div>
-                                <div class="hr"></div>
-                            </div>
-                            <div class="gd-content-body gd-history transparent top-bottom-margin-20px">
+      <div class="panel panel-default">
+
+            <div class="panel-heading globalNavHeading">
+                    <ul class="nav nav-tabs layerNav globalNav">
+                            <li class="active"><a href="#org-profile" id="org_profile" data-toggle="tab" ><i class="fa fa-building-o" aria-hidden="true"></i>
+                              {% trans "Organization Profile" %}</a></li>
+                            <li><a href="#layerslist" id="layers_list" data-toggle="tab" ><i class="fa fa-square-o rotate-45"></i> {% trans "Layers List" %}</a></li>
+                            <li ><a href="#userlist" data-toggle="tab"><i class="fa fa-user rotate-45"></i> {% trans "User List" %}</a></li>
+                              {% if user.is_authenticated %}
+                            <li><a href="#acitivity" id="qroup_activity" data-toggle="tab"><i class="fa fa-dot-circle-o"></i> {% trans "Activity" %}</a></li>
+                              {% endif %}
+                            <li><a href="#qtionanswer" id="qst_ans" data-target="#qtionanswer" data-toggle="tab"><i class="fa fa-comment-o"></i> {% trans "Question/Answer" %}</a></li>
+                              {% if request.user.is_superuser or request.user in object.get_managers %}
+                            <li><a href="{% url "user-invitation-list" object.slug %}"><i class="fa fa-user-plus"></i> {% trans "Member Requests" %}</a></li>
+                              {% endif %}
+                          </ul>
+                </div> 
+
+                <div class="panel-body">
+                        <div class="gd-content-heading">
+                                
+                               
                                 <div class="row">
-                                    <div class="col-md-12">
-                                        <ul class="nav navbar-nav nav-pills">
-                                            <li class="active">
-                                                <a href="#all" data-toggle="tab">
-                                                    <i class=""></i>
-                                                    {% trans "All" %}
-                                                </a>
-                                            </li>
-                                            <li>
-                                                <a href="#layers" id="layersdata" data-toggle="tab">
-                                                    <i class="fa fa-square-o rotate-45"></i>
-                                                    {% trans "Layers" %}
-                                                </a>
-                                            </li>
-                                            <li>
-                                                <a href="#maps" id="mapsdata" data-toggle="tab">
-                                                    <i class="fa fa-map-marker"></i>
-                                                    {% trans "Maps" %}
-                                                </a>
-                                            </li>
-                                            <li>
-                                                <a href="#comments" id="commentsdata" data-toggle="tab">
-                                                    <i class="fa fa-comment-o"></i>
-                                                    {% trans "Comments" %}
-                                                </a>
-                                            </li>
-                                        </ul>
+                                    <div class="col-md-12" >
+                                        <div class="message-box"></div>
                                     </div>
                                 </div>
                                 <div class="row">
-                                    <div class="col-md-12">
-                                        <div class="tab-content activity-style-list">
-                                            <article id="all" class="tab-pane active">
-                                                <div class="no-style-list">
-                                                    <div id="showallactivite">
-
+                                      <div class="col-md-12">
+                                          <div class="tab-content activity-style-list">
+                                              <article id="org-profile" class="tab-pane active">
+                                                <div class="gd-content-body transparent top-bottom-margin-20px">
+                                                    <div class="row">
+                                                        <div class="col-md-8">
+                                                            <div class="description">
+                                                                {{ object.description }}
+                                                            </div>
+                                                            <div class="keywords">
+                                                              {% if object.keyword_list %}
+                                                                {% for keyword in object.keyword_list %}
+                                                                <button type="reset" class="btn btn-default btn-xs">
+                                                                    {{ keyword }}
+                                                                </button>
+                                                                {% endfor %}
+                                                              {% else %}
+                                                              {% endif %}
+                                                            </div>
+                                                            <div class="emails">
+                                                              {% if object.email %}
+                                                                <i class="fa fa-envelope"></i>
+                                                                <a href="mailto:{{ object.email }}">{{ object.email }}</a>
+                                                              {% endif %}
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-md-4">
+                                                          {% if is_manager or request.user.is_superuser %}
+                                                            <ul class="list-group gd-link-style">
+                                                                <li class="list-group-item">
+                                                                    <a href="{% url "group_update" object.slug %}">
+                                                                      {% trans "Edit Organization Details" %}
+                                                                    </a>
+                                                                </li>
+                                                                <li class="list-group-item">
+                                                                    <a href="{% url "group_members" object.slug %}">
+                                                                      {% trans "Manage Organization Members" %}
+                                                                    </a>
+                                                                </li>
+                                                                {% if request.user.is_superuser %}
+                                                                <li class="list-group-item">
+                                                                    <a href="{% url "group_remove" object.slug %}">
+                                                                      {% trans "Delete this Group" %}
+                                                                    </a>
+                                                                </li>
+                                                                {% endif %}
+                                                            </ul>
+                                                          {% endif %}
+                                                          <!-- <div class="row">
+                                                              <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                                                                  <div class="text-right">
+                                                                      <a href="javascript:;">More...</a>
+                                                                  </div>
+                                                              </div>
+                                                          </div> -->
+                                                        </div>
+                                                    </div>
+                                                    <div class="row">
+                                                        {% for manager in object.get_managers %}
+                                                            <div class="col-xs-3 col-sm-3 col-md-3 col-lg-3">
+                                                                  {% with manager as profile %}
+                                                                    {% include "groups/_manager_about_item.html" %}
+                                                                  {% endwith %}
+                                                            </div>
+                                                        {% endfor %}
                                                     </div>
                                                 </div>
-                                            </article>
-                                            <article id="layers" class="tab-pane">
-                                                <div class="no-style-list">
-                                                    <div id="showallactivitelayers">
-
+                                                <div class="gd-content-body">
+                                                    <div class="row">
+                                                        <div class="col-md-12">
+                                                            <div class="gd-box">
+                                                                <h3>{% trans "Permissions" %}</h3>
+                                                                <div class="block-separator"></div>
+                                                                {% blocktrans with object.get_access_display as access %}
+                                                                  This group is <strong>{{ access }}</strong>.
+                                                                {% endblocktrans %}
+                                                                {% if object.access == "public" %}
+                                                                  {% trans "Anyone may join this group." %}
+                                                                  <div class="row">
+                                                                      <div class="col-md-3">
+                                                                          <div class="block-separator"></div>
+                                                                          <form class="uniForm" method="POST" action="{% url "group_join" object.slug %}">
+                                                                            {% csrf_token %}
+                                                                            {% if not is_member %}
+                                                                              <input type="submit" class="btn btn-gd-gray btn-md btn-block" value="Join Group" />
+                                                                            {% endif %}
+                                                                          </form>
+                                                                      </div>
+                                                                  </div>
+                                                                {% else %}
+                                                                    {% if object.access == "public-invite" %}
+                                                                      {% trans "Anyone may view this group but membership is by invitation only." %}
+                                                                        <div class="row">
+                                                                              <div class="col-md-3">
+                                                                                  <div class="block-separator"></div>
+                                                                                      <form class="uniForm" method="POST" action="{% url "user-invitation" object.slug %}">
+                                                                                      {% csrf_token %}
+                                                                                      {% if can_send_request %}
+                                                                                          <input type="submit" class="btn btn-gd-gray btn-md btn-block" value="Send Request" />
+                                                                                       {% elif pending_request %}
+                                                                                          {% trans "You already have pending request to join this group." %}
+                                                                                      {% endif %}
+                                                                                      </form>
+                                                                              </div>
+                                                                          </div>
+                                                                    {% else %}
+                                                                      {% if object.access == "private" %}
+                                                                          {% trans "Membership is by invitation only." %}
+                                                                      {% endif %}
+                                                                    {% endif %}
+                                                                {% endif %}
+                                                            </div>
+                                                        </div>
                                                     </div>
                                                 </div>
-                                            </article>
-                                            <article id="maps" class="tab-pane">
-                                                <div class="no-style-list">
-                                                    <div id="showallactivitemaps">
-
+                                              </article>
+                                              <article id="layerslist" class="tab-pane">
+                          
+                                                  <div class="no-style-list">
+                                                      <div class="gd-content-body transparent" id="search-content-layers">
+                                                          {% if request.user.is_superuser %}
+                                                          <input type="button" class="btn btn-primary pull-right" id="org-layer-download" value="Backup Data">
+                                                          {% endif %}
+                          
+                                                        {% include 'search/_pagination.html' %}
                                                     </div>
-                                                </div>
-                                            </article>
-                                            <article id="comments" class="tab-pane">
-                                                <div class="no-style-list" id="pagi_test">
-                                                    <div id="showallactivitecomments" class="list">
-
+                                                  </div>
+                                              </article>
+                                              <article id="userlist" class="tab-pane">
+                                                  <div class="no-style-list">
+                                                      <div class="gd-content-body transparent">
+                                                        <div class="paginate paginate-auto" id="search-content">
+                                                          {% include 'people/_profile_list_item.html' %}
+                                                        </div>
+                                                       
+                                                       
                                                     </div>
-                                                </div>
-                                            </article>
-                                        </div>
-                                    </div>
+                                                  </div>
+                                                  {% include 'search/_pagination.html' %}
+                                              </article>
+                                              <article id="acitivity" class="tab-pane ">
+                                                  <div class="gd-content">
+                                                      <div class="gd-content-heading">
+                                                          <div class="title small-content">
+                                                              {%  trans "Activity Feed for"  %}
+                                                                  <a href="{% url "group_detail" object.slug %}">
+                                                                      {{ object.title }}
+                                                                  </a>
+                                                          </div>
+                                                          <div class="hr"></div>
+                                                      </div>
+                                                      <div class="gd-content-body gd-history transparent top-bottom-margin-20px">
+                                                          <div class="row">
+                                                              <div class="col-md-12">
+                                                                  <ul class="nav navbar-nav nav-pills">
+                                                                      <li class="active">
+                                                                          <a href="#all" data-toggle="tab">
+                                                                              <i class=""></i>
+                                                                              {% trans "All" %}
+                                                                          </a>
+                                                                      </li>
+                                                                      <li>
+                                                                          <a href="#layers" id="layersdata" data-toggle="tab">
+                                                                              <i class="fa fa-square-o rotate-45"></i>
+                                                                              {% trans "Layers" %}
+                                                                          </a>
+                                                                      </li>
+                                                                      <li>
+                                                                          <a href="#maps" id="mapsdata" data-toggle="tab">
+                                                                              <i class="fa fa-map-marker"></i>
+                                                                              {% trans "Maps" %}
+                                                                          </a>
+                                                                      </li>
+                                                                      <li>
+                                                                          <a href="#comments" id="commentsdata" data-toggle="tab">
+                                                                              <i class="fa fa-comment-o"></i>
+                                                                              {% trans "Comments" %}
+                                                                          </a>
+                                                                      </li>
+                                                                  </ul>
+                                                              </div>
+                                                          </div>
+                                                          <div class="row">
+                                                              <div class="col-md-12">
+                                                                  <div class="tab-content activity-style-list">
+                                                                      <article id="all" class="tab-pane active">
+                                                                          <div class="no-style-list">
+                                                                              <div id="showallactivite">
+                          
+                                                                              </div>
+                                                                          </div>
+                                                                      </article>
+                                                                      <article id="layers" class="tab-pane">
+                                                                          <div class="no-style-list">
+                                                                              <div id="showallactivitelayers">
+                          
+                                                                              </div>
+                                                                          </div>
+                                                                      </article>
+                                                                      <article id="maps" class="tab-pane">
+                                                                          <div class="no-style-list">
+                                                                              <div id="showallactivitemaps">
+                          
+                                                                              </div>
+                                                                          </div>
+                                                                      </article>
+                                                                      <article id="comments" class="tab-pane">
+                                                                          <div class="no-style-list" id="pagi_test">
+                                                                              <div id="showallactivitecomments" class="list">
+                          
+                                                                              </div>
+                                                                          </div>
+                                                                      </article>
+                                                                  </div>
+                                                              </div>
+                                                          </div>
+                                                      </div>
+                                                  </div>
+                                              </article>
+                                              <article id="qtionanswer" class="tab-pane">
+                                                  <div class="no-style-list">
+                                                      <div id="showquestans">
+                                                      </div>
+                                                  </div>
+                                              </article>
+                                          </div>
+                                      </div>
                                 </div>
                             </div>
-                        </div>
-                    </article>
-                    <article id="qtionanswer" class="tab-pane">
-                        <div class="no-style-list">
-                            <div id="showquestans">
-                            </div>
-                        </div>
-                    </article>
                 </div>
-            </div>
-      </div>
-  </div>
+    
+    </div>
+
+
+
+  
   <div class="block-separator"></div>
 </div>
 {% endblock %}
@@ -316,15 +339,18 @@
                     contentType: "application/json; charset=utf-8",
                     dataType: "json",
                     success: function(jsondata) {
-                        console.log("success");
+                        //console.log("success");
                         //console.log(JSON.stringify(jsondata));
 
                         var data = eval(jsondata.objects);
                         var output='';
                       $.each(data, function(i, item) {
                         //alert(item.date);
-                            output +='<div class="col-xs-12 col-sm-6 col-md-4 col-lg-4">';
+                            output +='<div class="col-xs-12 col-sm-6 col-md-3 col-lg-3">';
                             output +='<div class="grid-container lmd">';
+                            output +='{% if request.user.is_superuser %}';
+                            output +='<div class="checkbox pull-right"><label><input type="checkbox" id="'+item.id+'" value="'+item.id+'"></label></div></br>';
+                            output += '{% endif %}';
                             output +='<div class="avater">';
                             output +='<div class="avater-img">';
                             output +='<a class="avater-img-mid" href="'+item.detail_url+'" target="_self">';
@@ -410,7 +436,7 @@
                               if(item.can_make_featured){
                               if(item.featured){
                             output +='<li ng-click=""class="col-md-6">';
-                            output +='<button class="btn col-md-12 btn-gd-primary-all" style="background:#d0d0d0;border:none;color:#000;font-size:12px;padding:5px;"';
+                            output +='<button class="btn btn-gd-primary-all btn-block" style="background:#d0d0d0;border:none;color:#000;font-size:12px;padding:5px;"';
                             output +='data-layerID="'+item.id+'" dataname="'+item.can_make_featured+'" data-statusID="false" onclick="featuredorgpage('+item.id+',false);" >';
                             output +='<i class="fa fa-heart-o" style="border:none;color:#000;"></i>';
                             output +='Unfeatured';
@@ -418,7 +444,7 @@
                             output +='</li>';
                                 }else{
                             output +='<li class="col-md-6" id="featured_chng">';
-                            output +='<button class="btn col-md-12 btn-gd-primary-all" dataname="{{item.group}}" onclick="featuredorgpage('+item.id+',true);" data-layerID="'+item.id+'" data-statusID="true">';
+                            output +='<button class="btn btn-gd-primary-all btn-block" dataname="{{item.group}}" onclick="featuredorgpage('+item.id+',true);" data-layerID="'+item.id+'" data-statusID="true">';
                             output +='<i class="fa fa-heart-o"></i>';
                             output +='Make Featured';
                             output +='</button>';
@@ -426,7 +452,7 @@
                                 }
                                 if(item.favorite){
                             output +='<li class="col-md-6">';
-                            output +='<button class="btn col-md-12 btn-gd-primary-all" onclick="favoriteorgpage('+item.id+',false);" style="background:#d0d0d0;border:none;color:#000;font-size:12px;padding:5px;"';
+                            output +='<button class="btn btn-gd-primary-all btn-block" onclick="favoriteorgpage('+item.id+',false);" style="background:#d0d0d0;border:none;color:#000;font-size:12px;padding:5px;"';
                             output +='data-favouriteID="{{item.id}}" data-favouriteStatus="false">';
                             output +='<i class="fa fa-heart-o" style="border:none;color:#000;"></i>';
                             output +='Unfavorite';
@@ -434,7 +460,7 @@
                             output +='</li>';
                                 }else{
                             output +='<li class="col-md-6">';
-                            output +='<button class="btn col-md-12 btn-gd-primary-all" onclick="favoriteorgpage('+item.id+',true);" data-favouriteID="'+item.id+'" data-favouriteStatus="true">';
+                            output +='<button class="btn btn-gd-primary-all btn-block" onclick="favoriteorgpage('+item.id+',true);" data-favouriteID="'+item.id+'" data-favouriteStatus="true">';
                             output +='<i class="fa fa-heart-o"></i>';
                             output +='Add to favorite';
                             output +='</button>';
@@ -444,14 +470,14 @@
                               else{
                               if(item.favorite){
                             output +='<li class="col-md-12">';
-                            output +='<button class="btn col-md-12 btn-gd-primary-all" onclick="favoriteorgpage('+item.id+',false);" style="background:#d0d0d0;border:none;color:#000;font-size:12px;padding:5px;" href="" data-favouriteID="'+item.id+'" data-favouriteStatus="false">';
+                            output +='<button class="btn btn-gd-primary-all btn-block" onclick="favoriteorgpage('+item.id+',false);" style="background:#d0d0d0;border:none;color:#000;font-size:12px;padding:5px;" href="" data-favouriteID="'+item.id+'" data-favouriteStatus="false">';
                             output +='<i class="fa fa-heart-o" style="border:none;color:#000;"></i>';
                             output +='Unfavorite';
                             output +='</button>';
                             output +='</li>';
                               }else{
                             output +='<li class="col-md-12">';
-                            output +='<button class="btn col-md-12 btn-gd-primary-all" onclick="favoriteorgpage('+item.id+',true);" data-favouriteID="'+item.id+'" data-favouriteStatus="true">';
+                            output +='<button class="btn btn-gd-primary-all btn-block" onclick="favoriteorgpage('+item.id+',true);" data-favouriteID="'+item.id+'" data-favouriteStatus="true">';
                             output +='  <i class="fa fa-heart-o"></i>';
                             output +=' Add to favorite';
                             output +=' </button>';
@@ -462,14 +488,14 @@
                             {% if user.is_authenticated %}
                               if(item.favorite){
                             output +='<li class="col-md-12">';
-                            output +='<button class="btn col-md-12 btn-gd-primary-all" onclick="favoriteorgpage('+item.id+',false);" style="background:#d0d0d0;border:none;color:#000;font-size:12px;padding:5px;" href="" data-favouriteID="'+item.id+'" data-favouriteStatus="false">';
+                            output +='<button class="btn btn-gd-primary-all btn-block" onclick="favoriteorgpage('+item.id+',false);" style="background:#d0d0d0;border:none;color:#000;font-size:12px;padding:5px;" href="" data-favouriteID="'+item.id+'" data-favouriteStatus="false">';
                             output +='    <i class="fa fa-heart-o" style="border:none;color:#000;"></i>';
                             output +='    Unfavorite';
                             output +='</button>';
                             output +='</li>';
                               }else{
                             output +='<li class="col-md-12">';
-                            output +='<button class="btn col-md-12 btn-gd-primary-all" onclick="favoriteorgpage('+item.id+',true);" data-favouriteID="'+item.id+'" data-favouriteStatus="true">';
+                            output +='<button class="btn btn-gd-primary-all btn-block" onclick="favoriteorgpage('+item.id+',true);" data-favouriteID="'+item.id+'" data-favouriteStatus="true">';
                             output +='  <i class="fa fa-heart-o"></i>';
                             output +=' Add to favorite';
                             output +=' </button>';
@@ -1129,6 +1155,88 @@
                 });
              });
     </script>
+    <script>
+
+        $('#org-layer-download').click(function(){
+
+            if($('input[type="checkbox"]:checked').length == 0){
+
+                $('.message-box').append("<div class='alert alert-warning alert-dismissable'><a href='#' class='close' data-dismiss='alert' aria-label='close'>&times;</a><strong>Warning!</strong> Please select at least one Layer to download!</div>");
+            }else{
+                $('.message-box').empty();
+                $('.message-box').append("<div class='alert alert-info alert-dismissable'><a href='#' class='close' data-dismiss='alert' aria-label='close'>&times;</a><strong>Info!</strong> An email will be sent to you with download link.</div>");
+
+
+                var layers = [];
+                $('input[type="checkbox"]:checked').each(function() {
+                    layers.push(this.value);
+                    //console.log(this.value);
+                });
+                var dataValueObj = {
+                    'group': '{{ object.id }}',
+                    'layers': layers
+                };
+                var dataValueJSON = JSON.stringify(dataValueObj);
+
+                url = '/api/download/task/';
+
+                downloadLayers(dataValueJSON, url);
+
+                function downloadLayers(data, url){
+
+                    // using jQuery
+                    function getCookie(name) {
+                        var cookieValue = null;
+                        if (document.cookie && document.cookie !== '') {
+                            var cookies = document.cookie.split(';');
+                            for (var i = 0; i < cookies.length; i++) {
+                                var cookie = jQuery.trim(cookies[i]);
+                                // Does this cookie string begin with the name we want?
+                                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                                    break;
+                                }
+                            }
+                        }
+                        return cookieValue;
+                    }
+                    var csrftoken = getCookie('csrftoken');
+                    function csrfSafeMethod(method) {
+                        // these HTTP methods do not require CSRF protection
+                        return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
+                    }
+                    $.ajaxSetup({
+                        beforeSend: function(xhr, settings) {
+                            if (!csrfSafeMethod(settings.type) && !this.crossDomain) {
+                                xhr.setRequestHeader("X-CSRFToken", csrftoken);
+                            }
+                        }
+                    });
+
+                    $.ajax({
+                        url: url,
+                        method: 'POST',
+                        data: data,
+                        dataType: 'json',
+                        success: function(data){
+                            console.log(data);
+
+                        },
+                        statusCode: {
+                            403: function() {
+                                // redirect to login page with next in header
+                                $('.message-box').empty();
+                                window.location = '/account/login/?next='+window.location.pathname;
+                            }
+                        }
+                    });
+
+                }
+
+            }
+        });
+
+    </script>
     <script type="text/javascript" language="JavaScript">
         <!--$(document).ready(function(){-->
             <!--$("#qroup_activity").click(function(){-->
@@ -1150,5 +1258,6 @@
             <!--});-->
         <!--});-->
     </script>
+
 {% endblock extra_script %}
 

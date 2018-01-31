@@ -1,0 +1,13 @@
+/** Analytics **/
+.analytics-box{
+    /*margin: 10px 10px 10px 10px;*/
+    border: 2px solid #E0E0E0;
+}
+.analytics-header{
+    margin-top: 30px;
+}
+
+.analytics-heading{
+    margin-top: -20px;
+    margin-bottom: 40px;
+}

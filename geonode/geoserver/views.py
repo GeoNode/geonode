@@ -298,6 +298,7 @@ def style_change_check(request, path):
     # we will suppose that a user can create a new style only if he is an
     # authenticated (we need to discuss about it)
     authorized = True
+    # impor t ipdb; ipdb.set_trace()
     if request.method == 'POST':
         # new style
         if not request.user.is_authenticated:
@@ -325,7 +326,6 @@ def style_change_check(request, path):
 
 
 def geoserver_rest_proxy(request, proxy_path, downstream_path):
-
     if not request.user.is_authenticated():
         return HttpResponse(
             "You must be logged in to access GeoServer",
@@ -368,13 +368,13 @@ def geoserver_rest_proxy(request, proxy_path, downstream_path):
         url, request.method,
         body=request.body or None,
         headers=headers)
-
+    
     # update thumbnails
     if affected_layers:
         for layer in affected_layers:
             logger.debug('Updating thumbnail for layer with uuid %s' % layer.uuid)
             create_gs_thumbnail(layer, True)
-
+            
     return HttpResponse(
         content=content,
         status=response.status,

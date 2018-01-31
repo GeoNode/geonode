@@ -65,7 +65,8 @@ class LayerForm(ResourceBaseForm):
             'service',
             'status',
             # 'group',
-            'last_auditor'
+            'last_auditor',
+            'user_data_epsg'
         )
 
 
@@ -261,9 +262,15 @@ class LayerUploadForm(forms.Form):
                 f = self.cleaned_data[field]
                 if f is not None:
                     path = os.path.join(tempdir, f.name)
-                    with open(path, 'wb') as writable:
-                        for c in f.chunks():
-                            writable.write(c)
+                    if str(extension).lower() == ".tif" or str(extension).lower() == ".csv" or str(extension).lower() == ".osm":
+                        with open(path, 'wb') as writable:
+                            for c in f.chunks():
+                                writable.write(c)
+                    else:
+                        # with open(path, 'wb') as writable:
+                        with open(path, 'r+b') as writable:
+                            for c in f.chunks():
+                                writable.write(c)
             absolute_base_file = os.path.join(tempdir,
                                               self.cleaned_data["base_file"].name)
         return tempdir, absolute_base_file

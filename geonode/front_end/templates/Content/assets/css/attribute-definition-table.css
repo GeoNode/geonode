@@ -1,0 +1,183 @@
+﻿/* 
+blue: #00B4F5
+gray : #909090,
+green: #78B82C
+*/
+
+.add-field-form {
+    margin: 10px;
+    display: block;
+}
+
+.add-field-form input[type='text'] {
+    width: 150px;
+    margin-bottom: 0;
+}
+
+.add-field-form select {
+    width: 100px;
+    margin-bottom: 0;
+}
+
+.add-field-form input[type='number'] {
+    width: 70px;
+    margin-bottom: 0;
+}
+
+.attribute-definition-table-wrapper
+{
+    overflow: hidden;
+    margin: 0;
+    font-size: 13px;
+    margin-top: 15px;
+}
+
+
+    .attribute-definition-table-wrapper .mCSB_container
+    {
+        margin-right: 20px;
+    }
+
+.attribute-definition-table
+{
+    border-collapse: collapse;
+    width: 100%;
+}
+
+    .attribute-definition-table th
+    {
+        background-color: #909090;
+        text-align: left;
+        color: #FFFFFF;
+        padding-left: 5px;
+    }
+
+        .attribute-definition-table th.hidden, .attribute-definition-table td.hidden
+        {
+            display: none;
+        }
+
+        .attribute-definition-table th.type
+        {
+            width: 100px;
+        }
+
+        .attribute-definition-table th.delete
+        {
+            width: 13px;
+        }
+
+    .attribute-definition-table td, .attribute-definition-table th
+    {
+        box-sizing: border-box;
+        -moz-box-sizing: border-box;
+        -webkit-box-sizing: border-box;
+        padding-left: 5px;
+        padding-right: 5px;
+        padding-top: 5px;
+        padding-bottom: 5px;
+    }
+
+    .attribute-definition-table td, .attribute-definition-table th, .attribute-definition-table .crudtable-editor
+    {
+        font-family: RobotoRegular;
+        font-weight: normal;
+        font-size: 13px;
+    }
+
+
+    .attribute-definition-table td
+    {
+        border-bottom: 1px dotted #E8E8E8;
+        color: #666666;
+    }
+
+        .attribute-definition-table td.name, .attribute-definition-table td.type
+        {
+            border-right: 1px solid #E8E8E8;
+        }
+
+    .attribute-definition-table tr td .delete
+    {
+        display: block;
+        width: 13px;
+        height: 22px;
+    }
+
+    .attribute-definition-table tr td .delete
+    {
+        background-image: url("../images/icon-delete.png");
+        background-position: center;
+        background-repeat: no-repeat;
+    }
+
+    .attribute-definition-table tr:hover td .delete, .attribute-definition-table tr[crudtable-rowstate='editing'] td .delete
+    {
+        background-image: url("../images/icon-delete-hover.png");
+    }
+
+    .attribute-definition-table tr[crudtable-rowstate='editing'] td, .attribute-definition-table tr:hover td
+    {
+        background-color: #EFF4F7;
+        cursor: pointer;
+    }
+
+    .attribute-definition-table tr td:first-child
+    {
+        border-left: 2px transparent solid;
+    }
+
+    .attribute-definition-table tr[crudtable-rowstate='adding'] td:first-child, .attribute-definition-table tr[crudtable-rowstate='editing'] td:first-child, .attribute-definition-table tr:hover td:first-child
+    {
+        border-left: 2px #00B4F5 solid;
+    }
+
+    .attribute-definition-table .crudtable-editor
+    {
+        box-sizing: border-box;
+        -moz-box-sizing: border-box;
+        -webkit-box-sizing: border-box;
+        width: 100%;
+    }
+
+    .attribute-definition-table td .crudtable-editor
+    {
+        border: #AAAAAA 1px solid;
+        padding: 0px;
+        margin: 0px;
+        height: auto;
+    }
+
+    .attribute-definition-table td input[type='text'].crudtable-editor
+    {
+        height: 30px;
+    }
+
+    .attribute-definition-table td.crudtable-error .crudtable-editor
+    {
+        border-color: red;
+    }
+
+.attribute-defination-add-button-container
+{
+    text-align: right;
+    padding-bottom: 5px;
+    margin-top: 55px;
+}
+
+.attribute-defination-add-button
+{
+    background-color: #78B82C;
+    border: medium none;
+    color: white;
+    cursor: pointer;
+    padding: 2px 10px;
+    text-transform: uppercase;
+    font-size: 13px;
+}
+
+.delete-row
+{
+    text-align: center;
+    cursor: pointer;
+}

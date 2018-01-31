@@ -1,0 +1,86 @@
+<div class="catalog-browser" data-ng-init="fetchData()" style="height: 10%; width: 100%;">
+    
+   
+
+    <div class="modal-header"> 
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close" ng-click="closeDialog()">
+            <span aria-hidden="true">×</span>
+        </button> 
+        <h4 class="modal-title">Layers</h4> 
+    </div>
+
+
+    <!-- <div class="file-browser-button-container draggable-div">
+        
+        <div style="float: left;">
+            <button style="width: 100px" ng-if="selectedFile.DataType != 'csv'" data-ng-click="addToProject()" ng-disabled="!enableAddToProject()"
+                title="Add selected data to working map">
+           <i class="fa fa-plus-square"></i>Add to Map</button>
+            <button style="width: 100px" ng-if="selectedFile.DataType == 'csv'" ng-click="editCSV()">
+           <i class="fa" 
+              ng-class='{"fa-edit":!isSharedFilesShown(), "fa-eye":isSharedFilesShown()}'>
+               
+           </i><span ng-if='!isSharedFilesShown()'>Edit File</span>
+           <span ng-if='isSharedFilesShown()'>View File</span>
+       </button>
+        </div>
+        <div style="float: left; margin-left: 3px;" data-ng-if="!isSharedFilesShown()">
+            <button data-ng-click="upload()" title="Upload a new data source">
+           <i class="fa fa-upload"></i>Upload</button>
+            <button data-ng-click="downloadSelectedFile()" ng-disabled="!selectedFile.Name" title="Download selected data">
+           <i class="fa fa-download"></i>Download</button>
+            <button data-ng-click="cloneSelectedFile()" ng-disabled="!enableCopy()" title="Create a copy of selected data">
+           <i class="fa fa-copy"></i>Create Copy</button>
+            <button data-ng-click="rename()" ng-disabled="!selectedFile.Name || editing" title="Rename selected data">
+           <i class="fa fa-pencil-square-o"></i>Rename</button>
+            <button data-ng-click="deleteFile()" ng-disabled="!enableDelete()" title="Delete selected data">
+           <i class="fa fa-trash-o"></i>Delete</button>
+            <button data-ng-click="share()" ng-disabled="!selectedFile.Name" title="Share selected data with others">
+           <i class="fa fa-share-square-o"></i>Share</button>
+            <button data-ng-click="isBrowseSelected = true" title="Browse layers">
+            <i class="fa fa-sitemap"></i>Browse</button>
+        </div>
+
+    </div> -->
+    
+    <div class="modal-body" style="padding-top: 0;padding-bottom:0;">
+        
+    <div class="row">
+        <div class="col-md-3">
+        <div class="folder-list">
+            <ul>
+                <li data-ng-repeat="server in serverList" data-ng-class="{'folder-selected':server.name == selectedServerName}" data-ng-click="loadLayers(server)"><span><i class="fa fa-chevron-circle-right"></i>
+                    [{server.name}]</span> </li>
+            </ul>
+        </div>
+        </div>
+
+        <div class="col-md-6">
+        <div class="file-container">
+                <div style="padding:20px 0px 60px 0px" ng-show="layers.length != 0">
+                        <span class="col-md-2" style="font-weight:bold">Search</span>
+                        <span class="col-md-6">
+                        <input type="text" class="form-control ng-pristine ng-valid" ng-model="searchKeyword">
+                        </span>
+                    </div>
+                <div class="list-group">
+           
+                <a class="list-group-item" ng-repeat="layer in layers | filter: searchKeyword" ng-dblclick="addLayer(layer)">[{layer.Name}]</a>
+            
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-3">
+        <div class="file-properties">
+            <ng-include ng-if="!!selectedFile.Name" src="templates.properties"></ng-include>
+            <div class="clearer">
+            </div>
+        </div>
+    </div>
+
+    </div>
+
+    </div>
+
+</div>

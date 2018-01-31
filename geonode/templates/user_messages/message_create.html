@@ -6,38 +6,78 @@
 {% block title %}{% trans "Create Message" %} — {{ block.super }}{% endblock %}
 
 {% block body_header %}
-<div class="gd-content">
-    <div class="gd-content-heading">
-      <div class="row">
-          <div class="col-md-8">
-              <div class="title small-content">
-                  {% trans "Create Message" %}
-              </div>
-          </div>
-          <div class="col-md-4">
-              <div class="small-content pull-right">
+
+    <div class="d-title">
+      
+                 
+            
+          <div class="pull-right">
+              
                   <a href="{% url "messages_inbox" %}" class="btn btn-gd-primary btn-xm col-md-12 col-sm-12 col-xs-12" type="button">
                     {% trans "Back to Inbox" %}
                   </a>
-              </div>
+             
           </div>
-      </div>
-      <div class="hr"></div>
+
+          {% trans "Create Message" %}
+      
+  
   </div>
-</div>
+
 {% endblock %}
 {% block body %}
-<div class="gd-content">
-  <div class="gd-content-body full-pad-40px top-bottom-margin-20px">
-      <form method="post" action="{% url "message_create" %}">
-        {% csrf_token %}
-        <table width=100%>
-          {{ form|as_bootstrap }}
-        </table>
-        <div class="form-actions">
-          <input type="submit" class="btn btn-gd-primary" value="{% trans "Send message" %}"  class="btn btn-primary" type="button"/>
-        </div>
-      </form>
+
+<div class="panel panel-default">
+    <div class="panel-body">
+    
+       
+            
+                <form class="form-horizontal" method="post" action="{% url "message_create" %}">
+                  {% csrf_token %}
+          
+                    <div class="form-group">
+                      <label class="col-md-4 control-label" for="id_to_user">User</label>
+                      <div class="col-md-4">
+                      {{ form.to_user }}
+                      </div>
+                    </div>
+                    <div class="form-group">
+                      <label class="col-md-4 control-label" for="id_subject">Subject</label>
+                      <div class="col-md-4">  
+                      {{ form.subject }}
+                      </div>
+                    
+                    </div>
+                    <div class="form-group">
+                      <label class="col-md-4 control-label" for="id_content">Content</label>
+                    
+                      <div class="col-md-4">  
+                      {{ form.content }}
+                      </div>
+                    
+                    </div>
+          
+                    <div class="form-group">
+                        <label class="col-md-4 control-label"></label>
+                        <div class="col-md-4">  
+                    <input type="submit" class="btn btn-gd-primary" value="{% trans "Send message" %}"  class="btn btn-primary" type="button"/>
+                  </div>
+                  </div>
+                </form>
+         
+      
+
+    </div>
   </div>
-</div>
+
+
+{% endblock %}
+
+{% block extra_script %}
+    <link rel="stylesheet" href="{{ STATIC_URL }}lib/chosen_v1.8.2/chosen.css">
+    <script src="{{ STATIC_URL }}lib/chosen_v1.8.2/chosen.jquery.min.js"></script>
+
+    <script>
+        $("#id_to_user").chosen();
+    </script>
 {% endblock %}

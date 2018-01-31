@@ -1,18 +1,22 @@
 {% load i18n %}
 
 <article itemscope itemtype="http://schema.org/Dataset" class="description tab-pane active" id="info">
-    <dl class="dl-horizontal">
+{#    <dl class="dl-horizontal">#}
+    <dl class="dl-vertical">
         {% if resource.title %}
             <dt>{% trans "Title" %}</dt>
             <dd itemprop="name">{{ resource.title|truncatechars:80 }}</dd>
+{#            <dt itemprop="name">{{ resource.title|truncatechars:80 }}</dt>#}
         {% endif %}
 
         {% if resource.srid and SRID_DETAIL == 'above' %}
+            <br>
             <dt>{% trans "SRID" %}</dt>
             <dd>{{ resource.srid }}</dd>
         {% endif %}
 
         {% if LICENSES_ENABLED and LICENSES_DETAIL == 'above' and resource.license %}
+            <br>
             <dt>{% trans "License" %}</dt>
             <dd itemprop="license">{{ resource.license.name_long }}
                 <a href="#license-more-above" data-toggle="collapse" data-target=".license-more-above">
@@ -30,11 +34,13 @@
         </dd>
 
         {% if resource.abstract %}
+            <br>
             <dt>{% trans "Abstract" %}</dt>
             <dd itemprop="description">{{ resource.abstract|escape|urlize|linebreaks|safe|truncatechars:500 }}</dd>
         {% endif %}
 
         {% if resource.date %}
+            <br>
             <dt>{% trans resource.date_type|title %} {% trans "Date" %}</dt>
             {% if resource.date_type == 'creation' %}
                 <dd itemprop="dateCreated" datetime="{{ resource.date|date:"c" }}">{{ resource.date }}</dd>
@@ -46,11 +52,13 @@
         {% endif %}
 
         {% if resource.display_type %}
+            <br>
             <dt>{% trans "Type" %}</dt>
             <dd>{{ resource.display_type }}</dd>
         {% endif %}
 
         {% if resource.keywords.count > 0 %}
+            <br>
             <dt>{% trans "Keywords" %}</dt>
             <dd itemprop="keywords">
                 {% for keyword in resource.keywords.all %}
@@ -64,6 +72,7 @@
         {% endif %}
 
         {% if resource.category %}
+            <br>
             <dt>{% trans "Category" %}</dt>
             <dd>
                 <a href="{% url "search" %}?category__identifier__in={{ resource.category.identifier }}">{{ resource.category }}</a>
@@ -78,6 +87,7 @@
         {% endif %}
 
         {% if resource.regions.all %}
+            <br>
             <dt>{% trans "Regions" %}</dt>
             <dd itemprop="keywords">
                 {% for region in resource.regions.all %}
@@ -91,30 +101,36 @@
         {% endif %}
 
         {% if resource.owner %}
+            <br>
             <dt>{% trans "Owner" %}</dt>
             <dd><a itemprop="author" href="{{ resource.owner.get_absolute_url }}">{{ resource.owner.username }}</a></dd>
         {% endif %}
 
         {% if resource.poc.user %}
+            <br>
             <dt>{% trans "Point of Contact" %}</dt>
             <dd><a href="{{ resource.poc.user.get_absolute_url }}">{{ resource.poc.user.username }}</a></dd>
         {% endif %}
     </dl>
 
     <dl class="dl-horizontal">
+        <br>
         <dt><a href="#more" data-toggle="collapse" data-target=".more">{% trans "More info" %}</a></dt>
         <dd>-</dd>
     </dl>
 
-    <dl class="dl-horizontal">
+{#    <dl class="dl-horizontal">#}
+    <dl class="dl-vertical">
         <div class="more collapse">
 
             {% if resource.srid and SRID_DETAIL == 'below' %}
+                <br>
                 <dt>{% trans "SRID" %}</dt>
                 <dd>{{ resource.srid }}</dd>
             {% endif %}
 
             {% if LICENSES_ENABLED and LICENSES_DETAIL == 'below' and resource.license %}
+                <br>
                 <dt>{% trans "License" %}</dt>
                 <dd>{{ resource.license.name_long }} <a href="#license-more-below" data-toggle="collapse"
                                                         data-target=".license-more-below"><i
@@ -130,11 +146,13 @@
             {% endif %}
 
             {% if resource.maintenance_frequency %}
+                <br>
                 <dt>{% trans "Maintenance Frequency" %}</dt>
                 <dd>{{ resource.maintenance_frequency_title }}</dd>
             {% endif %}
 
             {% if resource.restriction_code_type or resource.constraints_other %}
+                <br>
                 <dt>{% trans "Restrictions" %}</dt>
                 <dd>{% if resource.constraints_other %}
                     {{ resource.constraints_other }}
@@ -144,36 +162,43 @@
             {% endif %}
 
             {% if resource.edition %}
+                <br>
                 <dt>{% trans "Edition" %}</dt>
                 <dd>{{ resource.edition }}</dd>
             {% endif %}
 
             {% if resource.purpose %}
+                <br>
                 <dt>{% trans "Purpose" %}</dt>
                 <dd>{{ resource.purpose|escape|urlize|linebreaks|safe|truncatechars:160 }}</dd>
             {% endif %}
 
             {% if resource.language %}
+                <br>
                 <dt>{% trans "Language" %}</dt>
                 <dd>{{ resource.language_title }}</dd>
             {% endif %}
 
             {% if resource.temporal_extent_start and resource.temporal_extent_end %}
+                <br>
                 <dt>{% trans "Temporal Extent" %}</dt>
                 <dd>{{ resource.temporal_extent_start }} - {{ resource.temporal_extent_end }}</dd>
             {% endif %}
 
             {% if resource.data_quality_statement %}
+                <br>
                 <dt>{% trans "Data Quality" %}</dt>
                 <dd>{{ resource.data_quality_statement }}</dd>
             {% endif %}
 
             {% if resource.supplemental_information %}
+                <br>
                 <dt>{% trans "Supplemental Information" %}</dt>
                 <dd>{{ resource.supplemental_information|truncatechars:160|escape|urlize|linebreaks|safe }}</dd>
             {% endif %}
 
             {% if resource.spatial_representation_type %}
+                <br>
                 <dt>{% trans "Spatial Representation Type" %}</dt>
                 <dd>{{ resource.spatial_representation_type }}</dd>
             {% endif %}

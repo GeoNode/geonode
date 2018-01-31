@@ -25,7 +25,7 @@ from geonode import __file__ as geonode_path
 from geonode import get_version
 from geonode.celery_app import app  # flake8: noqa
 from distutils.util import strtobool
-import djcelery
+# import djcelery
 import dj_database_url
 
 
@@ -207,6 +207,8 @@ STATIC_URL = os.getenv('STATIC_URL', "/static/")
 # Additional directories which hold static files
 _DEFAULT_STATICFILES_DIRS = [
     os.path.join(PROJECT_ROOT, "static"),
+    # os.path.join(PROJECT_ROOT, "front_end/templates/Scripts/"),
+    os.path.join(PROJECT_ROOT, "front_end/templates/"),
 ]
 
 STATICFILES_DIRS = os.getenv('STATICFILES_DIRS', _DEFAULT_STATICFILES_DIRS)
@@ -281,8 +283,17 @@ GEONODE_APPS = (
     'geonode.cms',
     'geonode.workspace',
 
+    'rest_framework',
+    'rest_framework_gis',
+
+    'geonode.analytics',
+    'geonode.error_reporting',
+    'geonode.locations',
+    'geonode.system_settings',
+
     #end
 
+    'geonode.front_end',
 )
 
 GEONODE_CONTRIB_APPS = (
@@ -339,7 +350,7 @@ INSTALLED_APPS = (
     'mptt',
     # 'modeltranslation',
     # 'djkombu',
-    'djcelery',
+    # 'djcelery',
     # 'kombu.transport.django',
     'storages',
 
@@ -368,11 +379,15 @@ INSTALLED_APPS = (
     'suit',
     #end
 
+    'django_db_logger',
+
 
     'oauth2_provider',
 
 ) + GEONODE_APPS
 
+# TODO: Old settings. Need to delete in future
+"""
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': True,
@@ -418,7 +433,62 @@ LOGGING = {
             "handlers": ["console"], "level": "ERROR", },
         },
     }
+"""
 
+# WARNING: New settings for error logging
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'formatters': {
+        'verbose': {
+            'format': '%(levelname)s %(asctime)s %(module)s %(process)d '
+                      '%(thread)d %(message)s'
+        },
+        'simple': {
+            'format': '%(levelname)s %(asctime)s %(message)s',
+        },
+    },
+    'filters': {
+        'require_debug_false': {
+            '()': 'django.utils.log.RequireDebugFalse'
+        }
+    },
+    'handlers': {
+        'null': {
+            'level': 'ERROR',
+            'class': 'django.utils.log.NullHandler',
+        },
+        'console': {
+            'level': 'ERROR',
+            'class': 'logging.StreamHandler',
+            'formatter': 'simple'
+        },
+        'mail_admins': {
+            'level': 'ERROR', 'filters': ['require_debug_false'],
+            'class': 'django.utils.log.AdminEmailHandler',
+        },
+        'db_log': {
+            'level': 'DEBUG',
+            'class': 'django_db_logger.db_log_handler.DatabaseLogHandler',
+        },
+    },
+    "loggers": {
+        'db': {
+            'handlers': ['db_log'],
+            'level': 'DEBUG',
+        },
+        "django": {
+            "handlers": ["console"], "level": "ERROR", },
+        "geonode": {
+            "handlers": ["console"], "level": "ERROR", },
+        "gsconfig.catalog": {
+            "handlers": ["console"], "level": "ERROR", },
+        "owslib": {
+            "handlers": ["console"], "level": "ERROR", },
+        "pycsw": {
+            "handlers": ["console"], "level": "ERROR", },
+        },
+    }
 #
 # Customizations to built in Django settings required by GeoNode
 #
@@ -428,7 +498,7 @@ TEMPLATES = [
     {
         'NAME': 'GeoNode Project Templates',
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [os.path.join(PROJECT_ROOT, "templates")],
+        'DIRS': [os.path.join(PROJECT_ROOT, "templates"), os.path.join(PROJECT_ROOT, "front_end/templates")],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -478,7 +548,8 @@ MIDDLEWARE_CLASSES = (
     'oauth2_provider.middleware.OAuth2TokenMiddleware',
     # Middleware class for social auth
     'social.apps.django_app.middleware.SocialAuthExceptionMiddleware',
-
+    'geonode.middleware.ExceptionHandlerMiddleware',
+    
 
 )
 
@@ -1005,7 +1076,8 @@ SEARCH_FILTERS = {
 # Queue non-blocking notifications.
 NOTIFICATION_QUEUE_ALL = False
 
-BROKER_URL = os.getenv('BROKER_URL', "django://")
+# BROKER_URL = os.getenv('BROKER_URL', "django://")
+CELERY_BROKER_URL = 'amqp://geodash:admin1234@localhost:5672/myvhost'
 CELERY_ALWAYS_EAGER = True
 CELERY_EAGER_PROPAGATES_EXCEPTIONS = True
 CELERY_IGNORE_RESULT = True
@@ -1051,7 +1123,11 @@ if S3_MEDIA_ENABLED:
     MEDIA_URL = "https://%s/%s/" % (AWS_S3_BUCKET_DOMAIN, MEDIAFILES_LOCATION)
 
 
-djcelery.setup_loader()
+# djcelery.setup_loader()
+
+# Database router
+DATABASE_ROUTERS = ['geonode.db_router.DbRouter']
+
 
 # There are 3 ways to override GeoNode settings:
 # 1. Using environment variables, if your changes to GeoNode are minimal.
@@ -1107,3 +1183,10 @@ if 'geonode.geoserver' in INSTALLED_APPS:
 # Required: (boolean, optional, default false) mandatory while editing metadata (not implemented yet)
 # Filter: (boolean, optional, default false) a filter option on that thesaurus will appear in the main search page
 THESAURI = []
+
+
+# EMAIL_FROM = ""
+# EMAIL_HOST = ""
+# EMAIL_PORT = 80
+# EMAIL_HOST_USER = ""
+# EMAIL_HOST_PASSWORD = ""

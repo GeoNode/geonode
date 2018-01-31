@@ -1,0 +1,31 @@
+<div class="mini-dialog">
+    <i class="fa fa-times modal-close-icon" ng-click="cancel()"></i>
+    <div class="modal-header">
+        <h3>Add a blank layer</h3>
+    </div>
+    <div class="modal-body">
+        <div class="row">
+            <div class="span1" style="text-align: right;">
+                Name :
+            </div>
+            <div class="span2">
+                <input type='text' ng-model='layer.name' maxlength="100" validatefilename focus-me="true" required />
+            </div>
+        </div>
+        <div class="row">
+            <div class="span1" style="text-align: right;">
+                Type :
+            </div>
+            <div class="span2">
+                <select ng-model='layer.shapeType' ng-options="item for item in layerTypes" required>
+                    <option value="">Select a type</option>
+                </select>
+            </div>
+        </div>
+    </div>
+    <div class="modal-footer">
+        <input type="button" ng-click="save()" class="btn btn-success" value="Save" ng-disabled="!layer.name || !layer.shapeType" />
+        <button class="btn btn-danger" ng-click="cancel()">
+            Cancel</button>
+    </div>
+</div>

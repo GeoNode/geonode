@@ -1,0 +1,12 @@
+﻿<div class="base-map-switcher legends">
+    <button ng-show="!expanded" class="on-map-button pull-left" ng-click="expanded=true"><i class="fa fa-chevron-circle-right"></i></button>
+    <button ng-show="expanded" class="on-map-button pull-left" ng-click="expanded=false"><i class="fa fa-chevron-circle-left"></i></button>
+
+    <div ng-show="expanded" class="layers-list">
+        <h4 class="text-right">Legends</h4>
+        <label ng-repeat="layer in getLayers()" class="legend-item">
+            <style-preview preview-size="{width:25, height: 25}" style-hash="layer.getDefaultStyle()" feature-type="layer.getFeatureType()"></style-preview>
+            <span>{{layer.getName()}}</span>
+        </label>
+    </div>
+</div>

@@ -1,0 +1,21 @@
+﻿<div class="mini-dialog">
+    <div class="modal-header">
+        <h3>
+            Save Unsaved Working Map</h3>
+    </div>
+    <div class="modal-body">
+        <p>
+             You have unsaved changes in your working map.
+            <br />
+            Save map as :
+            <input type="text" ng-model="update.name" required />
+        </p>
+        <div ng-show="isReplacing()" class="alert alert-warning">
+            A map with this name already exists.
+        </div>
+    </div>
+    <div class="modal-footer">
+        <input type="button" ng-disabled="!update.name" ng-click="save()" class="btn btn-success" ng-value="isReplacing() ? 'Replace' : 'Save'" />
+        <input type="button" class="btn btn-danger" ng-click="discard()" value="Discard"/>
+    </div>
+</div>

@@ -1,0 +1,17 @@
+﻿<div ng-show="show">
+    <div draft-only>
+        <button class="control-button icon icon32 icon-edit" ng-class="{'buttonActive': active.editFeature()}"
+            ng-click="action.toEditShapeMode()" title="Edit Feature">
+        </button>
+    </div>
+    <div draft-only>
+        <button class="control-button icon icon32 icon-add" ng-class="{'buttonActive': active.addFeature()}"
+            ng-click="action.toAddShapeMode()" title="Add New Feature">
+        </button>
+    </div>
+    <div draft-only>
+        <button class="control-button icon icon32 icon-recyclebin" ng-class="{'buttonActive': active.deleteFeature()}"
+            ng-click="action.toDeleteShapeMode()" title="Delete Feature">
+        </button>
+    </div>
+</div>

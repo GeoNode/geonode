@@ -23,20 +23,23 @@
 
 {% block body_outer %}
     {% overall_rating resource "map" as map_rating %}
-    <div class="gd-content" style="border-top:5px solid lightgrey;">
+    <div class="gd-content">
         <div class="gd-content-body layer-test">
             <div class="row">
-                <div class="col-md-4 margin-zero right-pad-zero">
-                    <div id="gd-accordion-style" class="map-details-information">
+                <div class="panel-container">
+                <div class="panel-left">
+                <div class="col-md-4 margin-zero right-pad-zero" style="width: 100%; padding-left: 0;">
+                    <div id="gd-accordion-style" class="map-details-information" style="overflow-x: hidden;">
                         <div class="panel-group" id="accordion__" role="tablist" aria-multiselectable="true">
                             <div class="panel panel-default">
                                 <div class="panel-heading" role="tab" id="headingOne">
                                     <h4 class="panel-title">
                                         <a role="button" data-toggle="collapse" data-parent="#accordion1"
                                            href="#collapse1-down" aria-expanded="true" aria-controls="collapse1">
-                                            {{ resource.title }}
-                                            <i class="fa fa-chevron-up" aria-hidden="true"></i>
-                                            <i class="fa fa-chevron-down" aria-hidden="true"></i>
+                                           <i class="fa fa-chevron-up" aria-hidden="true"></i>
+                                           <i class="fa fa-chevron-down" aria-hidden="true"></i>
+                                           {{ resource.title }}
+                                            
                                         </a>
                                     </h4>
                                 </div>
@@ -129,7 +132,7 @@
                                                 </li>
                                                 <div class="modal fade" id="edit-map" tabindex="-1" role="dialog"
                                                      aria-labelledby="myModalLabel" aria-hidden="true">
-                                                    <div class="modal-dialog">
+                                                    <div class="modal-dialog" style="width: 600px;">
                                                         <div class="modal-content">
                                                             <div class="modal-header">
                                                                 <button type="button" class="close"
@@ -141,27 +144,27 @@
                                                             <div class="modal-body">
                                                                 <div class="row edit-modal">
                                                                     {% if "change_resourcebase_metadata" in perms_list %}
-                                                                        <div class="col-sm-3">
-                                                                            <i class="fa fa-list-alt fa-3x"></i>
+                                                                        <div class="col-sm-4 text-center">
+                                                                            <i class="fa fa-list-alt fa-2x" style="color:#0b8e58"></i>
                                                                             <h4>{% trans "Metadata" %}</h4>
-                                                                            <a class="btn btn-default btn-gd btn-block btn-xs"
+                                                                            <a class="btn btn btn-gd-primary btn-block"
                                                                                href="{% url "map_metadata" resource.id %}">{% trans "Edit" %}</a>
                                                                         </div>
                                                                     {% endif %}
                                                                     {% if "change_resourcebase" in perms_list %}
-                                                                        <div class="col-sm-3">
-                                                                            <i class="fa fa-photo fa-3x"></i>
+                                                                    <div class="col-sm-4 text-center">
+                                                                            <i class="fa fa-photo fa-2x" style="color:#0b8e58"></i>
                                                                             <h4>{% trans "Thumbnail" %}</h4>
-                                                                            <a class="btn btn-default btn-gd btn-block btn-xs"
+                                                                            <a class="btn btn btn-gd-primary btn-block"
                                                                                href="#"
                                                                                id="set_thumbnail">{% trans "Set" %}</a>
                                                                         </div>
                                                                     {% endif %}
                                                                     {% if "change_resourcebase" in perms_list %}
-                                                                        <div class="col-sm-3">
-                                                                            <i class="fa fa-map-marker fa-3x"></i>
+                                                                    <div class="col-sm-4 text-center">
+                                                                            <i class="fa fa-map-marker fa-2x" style="color:#0b8e58"></i>
                                                                             <h4>{% trans "Map" %}</h4>
-                                                                            <a class="btn btn-default btn-gd btn-block btn-xs"
+                                                                            <a class="btn btn btn-gd-primary btn-block"
                                                                                href="{% url "map_view" resource.id %}">
                                                                                 {% trans "Edit" %}
                                                                             </a>
@@ -198,9 +201,10 @@
                                             <a role="button" data-toggle="collapse"
                                                data-parent="#accordion3-per" href="#collapse4" aria-expanded="true"
                                                aria-controls="collapse4">
-                                                {% trans "Permissions" %}
+                                                
                                                 <i class="fa fa-chevron-up" aria-hidden="true"></i>
                                                 <i class="fa fa-chevron-down" aria-hidden="true"></i>
+                                                {% trans "Permissions" %}
                                             </a>
                                         </h4>
                                     </div>
@@ -221,9 +225,10 @@
                                         <a role="button" data-toggle="collapse"
                                            data-parent="#accordion2-map" href="#collapse2" aria-expanded="true"
                                            aria-controls="collapse2">
-                                            {% trans "Map Layers" %}
+                                           
                                             <i class="fa fa-chevron-up" aria-hidden="true"></i>
                                             <i class="fa fa-chevron-down" aria-hidden="true"></i>
+                                            {% trans "Map Layers" %}
                                         </a>
                                     </h4>
                                 </div>
@@ -254,9 +259,10 @@
                                             <a role="button" data-toggle="collapse"
                                                data-parent="#accordion" href="#collapse3" aria-expanded="true"
                                                aria-controls="collapse3">
-                                                {% trans "Documents related to this map" %}
+                                              
                                                 <i class="fa fa-chevron-up" aria-hidden="true"></i>
                                                 <i class="fa fa-chevron-down" aria-hidden="true"></i>
+                                                {% trans "Documents related to this map" %}
                                             </a>
                                         </h4>
                                     </div>
@@ -280,9 +286,10 @@
                                         <a role="button" data-toggle="collapse"
                                            data-parent="#accordion4" href="#collapse5" aria-expanded="true"
                                            aria-controls="collapse5">
-                                            {% trans "Copy this map" %}
+                                           
                                             <i class="fa fa-chevron-up" aria-hidden="true"></i>
                                             <i class="fa fa-chevron-down" aria-hidden="true"></i>
+                                            {% trans "Copy this map" %}
                                         </a>
                                     </h4>
                                 </div>
@@ -302,9 +309,10 @@
                                             <a role="button" data-toggle="collapse"
                                                data-parent="#accordion5" href="#collapse11" aria-expanded="true"
                                                aria-controls="collapse11">
-                                                {% trans "Map WMS" %}
+                                               
                                                 <i class="fa fa-chevron-up" aria-hidden="true"></i>
                                                 <i class="fa fa-chevron-down" aria-hidden="true"></i>
+                                                {% trans "Map WMS" %}
                                             </a>
                                         </h4>
                                     </div>
@@ -341,9 +349,10 @@
                                         <a role="button" data-toggle="collapse"
                                            data-parent="#accordion6" href="#collapse7" aria-expanded="true"
                                            aria-controls="collapse7">
-                                            {% trans "About" %}
+                                           
                                             <i class="fa fa-chevron-up" aria-hidden="true"></i>
                                             <i class="fa fa-chevron-down" aria-hidden="true"></i>
+                                            {% trans "About" %}
                                         </a>
                                     </h4>
                                 </div>
@@ -378,9 +387,10 @@
                                         <a role="button" data-toggle="collapse"
                                            data-parent="#accordion7" href="#collapse8" aria-expanded="true"
                                            aria-controls="collapse8">
-                                            Information
+                                           
                                             <i class="fa fa-chevron-up" aria-hidden="true"></i>
                                             <i class="fa fa-chevron-down" aria-hidden="true"></i>
+                                            Information
                                         </a>
                                     </h4>
                                 </div>
@@ -424,12 +434,18 @@
                         </div>
                     </div>
                 </div>
-                <div class="col-md-8  margin-zero left-pad-zero">
+                </div>
+                <div class="splitter">
+                </div>
+                <div class="panel-right">
+                <div class="col-md-8  margin-zero left-pad-zero r" style="width: 100%;padding-right: 0;">
                     <div class="gd-content-body map-details-info">
                         <div id="embedded_map">
                             <div id="the_map"></div>
                         </div>
                     </div>
+                </div>
+                </div>
                 </div>
             </div>
           </div>
@@ -551,6 +567,11 @@
     </script>
 {% include "_permissions_form_js.html" %}
 <script type="text/javascript" src="{{ STATIC_URL}}geonode/js/utils/thumbnail.js"></script>
+<script>
+    $.fn.resizable = undefined;
+</script>
+<script src="https://rawgit.com/RickStrahl/jquery-resizable/master/src/jquery-resizable.js"></script>
+<link rel="stylesheet" href="{{ STATIC_URL }}layers/css/styles.css">
 <script type="text/javascript">
   $('#set_thumbnail').click(function(){
     createMapThumbnail();
@@ -563,5 +584,88 @@
             anyonePermissionDisable();
         {% endif %}
     });
+</script>
+<script type="text/javascript">
+    user_info = '{{ request.user.id }}';
+    map_info = '{{ resource.id }}';
+
+    // Map load
+    var user_location = JSON.parse(localStorage.getItem("user_location"));
+
+    var url = '/analytics/api/map/load/create/';
+
+    var latitude = '';
+    var longitude = '';
+    try{
+        latitude = user_location.latitude.toString();
+        longitude = user_location.longitude.toString()
+    }catch(err){
+        latitude = "";
+        longitude = "";
+    }
+
+    var data = {
+        'user': user_info,
+        'map': map_info,
+        'latitude': latitude,
+        'longitude': longitude,
+        'agent': '',
+        'ip': ''
+    };
+
+
+    map_load_activity_submit(data, url);
+
+    function map_load_activity_submit(data, url){
+
+        // using jQuery
+        function getCookie(name) {
+            var cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                var cookies = document.cookie.split(';');
+                for (var i = 0; i < cookies.length; i++) {
+                    var cookie = jQuery.trim(cookies[i]);
+                    // Does this cookie string begin with the name we want?
+                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
+        var csrftoken = getCookie('csrftoken');
+        function csrfSafeMethod(method) {
+            // these HTTP methods do not require CSRF protection
+            return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
+        }
+        $.ajaxSetup({
+            beforeSend: function(xhr, settings) {
+                if (!csrfSafeMethod(settings.type) && !this.crossDomain) {
+                    xhr.setRequestHeader("X-CSRFToken", csrftoken);
+                }
+            }
+        });
+
+        $.ajax({
+            url: url,
+            method: 'POST',
+            data: data,
+            dataType: 'json',
+            success: function(data){
+                console.log(data);
+
+            }
+        });
+
+    }
+
+    $(document).ready(function(){
+        $(".panel-left").resizable({
+            handleSelector: ".splitter",
+            resizeHeight: false
+        });
+    });
+
 </script>
 {% endblock %}

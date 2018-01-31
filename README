@@ -314,6 +314,26 @@ You can eventually generate a pdf containing the whole documentation set. For th
   vendor, or packaged other than on PyPI.  When in doubt, however, just leave
   this option out.
 
+Celery and RabbitMQ
+-------------------
+In the terminal (Ubuntu):
+Installing RabbitMQ
+    $ sudo apt-cache policy
+    $ echo 'deb http://www.rabbitmq.com/debian/ testing main' | sudo tee /etc/apt/sources.list.d/rabbitmq.list
+    $ wget -O- https://www.rabbitmq.com/rabbitmq-release-signing-key.asc | sudo apt-key add -
+    $ sudo apt-get update
+    $ sudo apt-get install rabbitmq-server
+    $ service rabbitmq-server start
+    $ sudo rabbitmqctl status
+    $ sudo rabbitmqctl add_user myuser mypassword
+    $ sudo rabbitmqctl add_vhost myvhost
+    $ sudo rabbitmqctl set_user_tags myuser mytag
+    $ sudo rabbitmqctl set_permissions -p myvhost myuser ".*" ".*" ".*"
+
+References:
+http://www.rabbitmq.com/install-debian.html
+http://docs.celeryproject.org/en/latest/getting-started/brokers/rabbitmq.html#installation-configuration
+
 Development Roadmap
 ===================
 

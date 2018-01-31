@@ -28,11 +28,14 @@ from django.contrib import admin
 
 import geonode.proxy.urls
 from geonode.cms.views import IndexClass
+import geonode.front_end.urls
 
 from geonode.api.urls import api
 from geonode.api.views import verify_token, roles, users, admin_role
 
 import autocomplete_light
+
+from geonode.api.download_task_api import DownloadTaskAPIView, DownloadAPIView
 
 # Setup Django Admin
 autocomplete_light.autodiscover()
@@ -161,6 +164,24 @@ urlpatterns = patterns('',
                        url(r'^api/adminRole', admin_role, name='adminRole'),
                        url(r'^api/users', users, name='users'),
                        url(r'', include(api.urls)),
+
+                       # Analytics
+                       url(r'^analytics/', include('geonode.analytics.urls')),
+
+                       # Logging and Error Reporting
+                       url(r'^error/reporting/', include('geonode.error_reporting.urls')),
+
+                       # Download task API
+                       url(r'^api/download/task/', DownloadTaskAPIView.as_view()),
+                       url(r'^download/(?P<file_name>[0-9a-z.]+)', DownloadAPIView.as_view()),
+
+
+                       # Locations
+                       url(r'^locations/', include('geonode.locations.urls')),
+
+                       # System Settings
+                       url(r'^settings/', include('geonode.system_settings.urls')),
+
                        )
 
 if "geonode.contrib.dynamic" in settings.INSTALLED_APPS:
@@ -209,3 +230,7 @@ urlpatterns += patterns('',
                         (r'^featured/(?P<site>[A-Za-z0-9_\-]+)/$', 'geonode.maps.views.featured_map'),
                         (r'^featured/(?P<site>[A-Za-z0-9_\-]+)/info$', 'geonode.maps.views.featured_map_info'),
                         )
+
+#Custom injected app
+urlpatterns += geonode.front_end.urls.urlpatterns
+

@@ -1,0 +1,19 @@
+﻿<div class="mini-dialog" style="left: 0; right: 0; top: 0; bottom: 0;">
+    <!--ng-mouseenter="showCarouselMenu=true" ng-mouseleave="showCarouselMenu=false"-->
+    <div class="dialog-close-icon" ng-click="close()">
+        <i class="fa fa-times"></i>
+    </div>
+    <carousel interval="-1">
+        <slide ng-repeat="image in getImages()" active="image.active">
+            <img ng-src="{{image.url}}" class="large-image" />
+            <h4 class="carousel-title">{{$index+1}}/{{getImages().length}}</h4>
+            <div draft-only ng-if="showCarouselMenu && !isReadonly" class="carousel-caption">
+                <i class="fa fa-trash-o" ng-click="deleteImage()" style="color: white; cursor: pointer; float: right;"></i>
+            </div>
+            <div draft-only class="carousel-caption">
+              <i ng-if="!isReadonly" class="fa fa-trash-o" ng-click="deleteImage()" style="color: white; cursor: pointer; float: right;"></i>
+              <i class="fa fa-download" ng-click="downloadFile()" style="color: white; cursor: pointer;"> Download</i>
+            </div>
+        </slide>
+    </carousel>
+</div>

@@ -18,17 +18,31 @@
 #
 #########################################################################
 
-import os
-import sys
+import base64
+import decimal
+import httplib2
 import logging
+import os
 import shutil
+import sys
 import traceback
 import uuid
-import decimal
 
 import requests
 import xmltodict
 import  requests
+import string
+import random
+import shutil
+from osgeo import gdal, osr
+from geonode.layers.utils import (
+    reprojection,
+    create_tmp_dir,
+    upload_files,
+    checking_projection,
+    collect_epsg
+)
+import zipfile
 
 from guardian.shortcuts import get_perms
 from django.contrib import messages
@@ -40,6 +54,7 @@ from django.conf import settings
 from django.template import RequestContext
 from django.utils.translation import ugettext as _
 from django.template import RequestContext, loader
+from django.core.files import File
 try:
     import json
 except ImportError:
@@ -50,6 +65,7 @@ from django.forms.models import inlineformset_factory
 from django.db import transaction
 from django.db.models import F
 from django.forms.util import ErrorList
+from django.views.generic import View
 from requests.auth import HTTPBasicAuth
 from geonode.settings import  OGC_SERVER
 
@@ -74,15 +90,29 @@ from geonode.documents.models import get_related_documents
 from geonode.utils import build_social_links
 from geonode.geoserver.helpers import cascading_delete, gs_catalog
 from geonode.geoserver.helpers import ogc_server_settings
+from geonode import GeoNodeException
 
 from geonode.groups.models import GroupProfile
-from geonode.layers.models import LayerSubmissionActivity, LayerAuditActivity
+from geonode.layers.models import LayerSubmissionActivity, LayerAuditActivity, StyleExtension, Style
 from geonode.base.libraries.decorators import manager_or_member
 from geonode.base.models import KeywordIgnoreListModel
+# from geonode.authentication_decorators import login_required as custom_login_required
+from rest_framework.generics import ListAPIView, RetrieveUpdateAPIView
+from .serializers import StyleExtensionSerializer
+from rest_framework.authentication import SessionAuthentication, BasicAuthentication
+from rest_framework import permissions
+from rest_framework.response import Response
 
+from django.db import connection
+from osgeo import osr
+
+from geonode.authentication_decorators import login_required as custom_login_required
+from geonode.class_factory import ClassFactory
 
 if 'geonode.geoserver' in settings.INSTALLED_APPS:
     from geonode.geoserver.helpers import _render_thumbnail
+    # from geonode.geoserver.views import save_sld_geoserver
+
 CONTEXT_LOG_FILE = ogc_server_settings.LOG_FILE
 
 logger = logging.getLogger("geonode.layers.views")
@@ -144,6 +174,7 @@ def _resolve_layer(request, typename, permission='base.view_resourcebase',
 @login_required
 @user_passes_test(manager_or_member)
 def layer_upload(request, template='upload/layer_upload.html'):
+    db_logger = logging.getLogger('db')
     if request.method == 'GET':
         mosaics = Layer.objects.filter(is_mosaic=True).order_by('name')
         ctx = {
@@ -156,11 +187,81 @@ def layer_upload(request, template='upload/layer_upload.html'):
         }
         return render_to_response(template, RequestContext(request, ctx))
     elif request.method == 'POST':
+
+        file_extension = request.FILES['base_file'].name.split('.')[1].lower()
+        data_dict = dict()
+        tmp_dir = ''
+        epsg_code = ''
+        if str(file_extension).lower() == 'shp' or zipfile.is_zipfile(request.FILES['base_file']):
+            # Check if zip file then, extract into tmp_dir and convert
+            if zipfile.is_zipfile(request.FILES['base_file']):
+                tmp_dir = create_tmp_dir()
+                with zipfile.ZipFile(request.FILES['base_file']) as zf:
+                    zf.extractall(tmp_dir)
+
+                prj_file_name = ''
+                shp_file_name = ''
+                for file in os.listdir(tmp_dir):
+                    if file.endswith(".prj"):
+                        prj_file_name = file
+
+                    elif file.endswith(".shp"):
+                        shp_file_name = file
+
+                srs = checking_projection(tmp_dir, prj_file_name)
+
+                # collect epsg code
+                epsg_code = collect_epsg(tmp_dir, prj_file_name)
+
+                if epsg_code:
+                    data_dict = reprojection(tmp_dir, shp_file_name)
+
+            if str(file_extension) == 'shp':
+
+                # create temporary directory for conversion
+                tmp_dir = create_tmp_dir()
+
+                # Upload files
+                upload_files(tmp_dir, request.FILES)
+
+                # collect epsg code
+                epsg_code = collect_epsg(tmp_dir, str(request.FILES['prj_file'].name))
+
+                # Checking projection
+                srs = checking_projection(tmp_dir, str(request.FILES['prj_file'].name))
+
+                # if srs.IsProjected:
+                if epsg_code:
+
+                    if srs.GetAttrValue('projcs'):
+                        if "WGS" not in srs.GetAttrValue('projcs'):
+
+                            data_dict = reprojection(tmp_dir, str(request.FILES['base_file'].name))
+
+                    # check WGS84 projected
+                    else:
+                        # call projection util function
+                        data_dict = reprojection(tmp_dir, str(request.FILES['base_file'].name))
+
         form = NewLayerUploadForm(request.POST, request.FILES)
         tempdir = None
         errormsgs = []
         out = {'success': False}
         if form.is_valid():
+            if str(file_extension) == 'shp' and srs.IsProjected:
+                form.cleaned_data['base_file'] = data_dict['base_file']
+                form.cleaned_data['shx_file'] = data_dict['shx_file']
+                form.cleaned_data['dbf_file'] = data_dict['dbf_file']
+                form.cleaned_data['prj_file'] = data_dict['prj_file']
+                if 'xml_file' in data_dict:
+                    form.cleaned_data['xml_file'] = data_dict['xml_file']
+                """
+                if 'sbn_file' in  data_dict:
+                    form.cleaned_data['sbn_file'] = data_dict['sbn_file']
+                if 'sbx_file' in data_dict:
+                    form.cleaned_data['sbx_file'] = data_dict['sbx_file']
+                """
+
             title = form.cleaned_data["layer_title"]
             category = form.cleaned_data["category"]
             organization_id = form.cleaned_data["organization"]
@@ -201,13 +302,15 @@ def layer_upload(request, template='upload/layer_upload.html'):
                     charset=form.cleaned_data["charset"],
                     abstract=form.cleaned_data["abstract"],
                     title=form.cleaned_data["layer_title"],
-                    metadata_uploaded_preserve=form.cleaned_data["metadata_uploaded_preserve"]
+                    metadata_uploaded_preserve=form.cleaned_data["metadata_uploaded_preserve"],
+                    user_data_epsg=epsg_code
                 )
                 if admin_upload:
                     saved_layer.status = 'ACTIVE'
                     saved_layer.save()
 
             except Exception as e:
+                db_logger.exception(e)
                 exception_type, error, tb = sys.exc_info()
                 logger.exception(e)
                 out['success'] = False
@@ -237,6 +340,11 @@ def layer_upload(request, template='upload/layer_upload.html'):
                 if permissions is not None and len(permissions.keys()) > 0:
                     saved_layer.set_permissions(permissions)
             finally:
+                # Delete temporary files
+
+                if tmp_dir != '':
+                    shutil.rmtree(tmp_dir)
+
                 if tempdir is not None:
                     shutil.rmtree(tempdir)
         else:
@@ -465,6 +573,24 @@ def layer_detail(request, layername, template='layers/layer_detail.html'):
     if settings.SOCIAL_ORIGINS:
         context_dict["social_links"] = build_social_links(request, layer)
 
+    if str(layer.user_data_epsg) and str(layer.user_data_epsg) != 'None':
+        with connection.cursor() as cursor:
+            cursor.execute("SELECT srtext FROM spatial_ref_sys WHERE srid = %s", [str(layer.user_data_epsg)])
+
+            all_data = cursor.fetchall()
+        srstext = str(all_data[0][0])
+
+        srs = osr.SpatialReference(wkt=srstext)
+        if srs.IsProjected:
+            print srs.GetAttrValue('projcs')
+        user_proj = srs.GetAttrValue('geogcs')
+
+        context_dict['user_data_proj'] = user_proj
+    
+    context_dict["user_data_epsg"] = str(layer.user_data_epsg)
+
+    context_dict["layer_status"] = layer.status
+
     return render_to_response(template, RequestContext(request, context_dict))
 
 
@@ -670,6 +796,7 @@ def layer_change_poc(request, ids, template='layers/layer_change_poc.html'):
 
 @login_required
 def layer_replace(request, layername, template='layers/layer_replace.html'):
+    db_logger = logging.getLogger('db')
     layer = _resolve_layer(
         request,
         layername,
@@ -716,6 +843,7 @@ def layer_replace(request, layername, template='layers/layer_replace.html'):
                         'layer_detail', args=[
                             saved_layer.service_typename])
             except Exception as e:
+                db_logger.exception(e)
                 out['success'] = False
                 out['errors'] = str(e)
             finally:
@@ -741,6 +869,7 @@ def layer_replace(request, layername, template='layers/layer_replace.html'):
 
 @login_required
 def layer_remove(request, layername, template='layers/layer_remove.html'):
+    db_logger = logging.getLogger('db')
     layer = _resolve_layer(
         request,
         layername,
@@ -762,6 +891,7 @@ def layer_remove(request, layername, template='layers/layer_remove.html'):
                     notify.send(request.user, recipient=recipient, actor=request.user,
                     target=layer, verb='deleted your layer')
         except Exception as e:
+            db_logger.exception(e)
             message = '{0}: {1}.'.format(_('Unable to delete layer'), layer.typename)
 
             if 'referenced by layer group' in getattr(e, 'message', ''):
@@ -1040,7 +1170,7 @@ def layer_delete(request, layer_pk):
         except:
             return Http404("requested layer does not exists")
         else:
-            if layer.status == 'DRAFT' and ( request.user == layer.owner or request.user in layer.group.get_managers()):
+            if layer.status == 'ACTIVE' and (request.user == request.user.is_superuser or request.user == layer.owner or request.user in layer.group.get_managers()):
                 layer.status = "DELETED"
                 layer.save()
 
@@ -1106,5 +1236,179 @@ def finding_xlink(dic):
             if item is not None:
                 return item
 
+def save_sld_geoserver(request_method, full_path, sld_body, content_type='application/vnd.ogc.sld+xml'):
+    def strip_prefix(path, prefix):
+        assert path.startswith(prefix)
+        return path[len(prefix):]
+    
+    proxy_path = '/gs/rest/styles'
+    downstream_path='rest/styles'
+
+    path = strip_prefix(full_path, proxy_path)
+    url = str("".join([ogc_server_settings.LOCATION, downstream_path, path]))
+
+    http = httplib2.Http()
+    username, password = ogc_server_settings.credentials
+    auth = base64.encodestring(username + ':' + password)
+    headers = dict()
+    headers["Content-Type"] = content_type
+    headers["Authorization"] = "Basic " + auth
+
+    return http.request(
+        url, request_method,
+        body=sld_body or None,
+        headers=headers)
+
+
+class LayerStyleListAPIView(ListAPIView):
+    serializer_class = StyleExtensionSerializer
+
+    def get_queryset(self):
+        """
+        This view should return a list of all the style extension for a layer.
+        """
+        layername = self.kwargs['layername']
+        layer_obj = _resolve_layer(self.request, layername)
+        styles = layer_obj.styles.all();
+        return StyleExtension.objects.filter(style__in = styles)
+
+
+class StyleExtensionRetrieveUpdateAPIView(RetrieveUpdateAPIView):
+    queryset = StyleExtension.objects.all()
+    serializer_class = StyleExtensionSerializer
+    permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
+
+    def put(self, request, pk, **kwargs):
+        data = json.loads(request.body)
+        # check already style extension created or not
+        try:
+            style_extension = StyleExtension.objects.get(pk=pk)
+            style_extension.json_field = data.get("StyleString", None)
+            style_extension.sld_body=data.get('SldStyle', None)
+        except Exception as ex:
+            raise ex
+        
+        style_extension.save()
+        full_path = '/gs/rest/styles/{0}.xml'.format(style_extension.style.name)
+        try:
+            save_sld_geoserver(request_method='PUT', full_path=full_path, sld_body=style_extension.sld_body )
+        except Exception as ex:
+            logger.error(ex)
+
+        return HttpResponse(
+                    json.dumps(
+                        dict(success="OK"),
+                        ensure_ascii=False), 
+                        status=200,
+                        content_type='application/javascript')
+
+
+class LayerStyleView(View):
+    def get(self, request, layername):
+        layer_obj = _resolve_layer(request, layername)
+        layer_style = layer_obj.default_style       
+        serializer = StyleExtensionSerializer(layer_style.styleextension)
+        return HttpResponse(
+                    json.dumps(
+                       serializer.data,
+                        ensure_ascii=False), 
+                        status=200,
+                        content_type='application/javascript')
+
+    @custom_login_required
+    def put(self, request, layername, **kwargs):
+        layer_obj = _resolve_layer(request, layername)
+        data = json.loads(request.body)
+        # check already style extension created or not
+        try:
+            style_extension = layer_obj.default_style.styleextension
+            style_extension.json_field = data.get("StyleString", None)
+            style_extension.sld_body=data.get('SldStyle', None)
+        except Exception as ex:
+            # Style extension does not exists
+            style_extension = StyleExtension(style=layer_obj.default_style, json_field=data.get("StyleString", None), sld_body=data.get('SldStyle', None), created_by=request.user, modified_by=request.user)
+        
+        style_extension.save()
+        full_path = '/gs/rest/styles/{0}.xml'.format(layer_obj.default_style.name)
+        try:
+            save_sld_geoserver(request_method='PUT', full_path=full_path, sld_body=style_extension.sld_body )
+        except Exception as ex:
+            logger.error(ex)
+
+        return HttpResponse(
+                    json.dumps(
+                        dict(success="OK"),
+                        ensure_ascii=False), 
+                        status=200,
+                        content_type='application/javascript')
+    
+    @custom_login_required
+    def post(self, request, layername, **kwargs):
+        layer_obj = _resolve_layer(request, layername)
+        data = json.loads(request.body)
+        json_field=data.get("StyleString", None)
+        sld_body=data.get('SldStyle', None)
+
+        #create style
+        
+        style_extension = StyleExtension(json_field=json_field, created_by=request.user, modified_by=request.user)
+
+        sld_body = sld_body.format(style_name=str(style_extension.uuid))
+        sld_title = json.loads(json_field).get('Name', None) if json_field else None
+
+        style = Style(name=str(style_extension.uuid),sld_body=sld_body,sld_title=sld_title )
+        style.save()
+        
+        layer_obj.styles.add(style)
+
+        style_extension.sld_body = sld_body
+        style_extension.style = style
+        style_extension.save()
+        full_path = '/gs/rest/styles/'
+
+        save_sld_geoserver(request_method='POST', full_path=full_path, sld_body=style_extension.sld_body )
+
+        serializer = StyleExtensionSerializer(style_extension)
+        return HttpResponse(
+                    json.dumps(
+                       serializer.data,
+                        ensure_ascii=False), 
+                        status=200,
+                        content_type='application/javascript')
+
+
+class LayerAttributeView(View):
+    def get(self, request, layername, attributename, **kwargs):
+        layer_obj = _resolve_layer(request, layername)
+        factory = ClassFactory()
+        model_instance = factory.get_model(name=str(layer_obj.title_en), table_name=str(layer_obj.name), db=str(layer_obj.store))
+        values = set([getattr(l, attributename) for l in model_instance.objects.all()])
+        return HttpResponse(
+                    json.dumps(
+                        dict(values=[dict(value=v,checked=False) for v in values], count=len(values)),
+                        ensure_ascii=False), 
+                        status=200,
+                        content_type='application/javascript')
+
+
+class LayerAttributeRangeView(ListAPIView):
+    def get(self, request, layername, **kwargs):
+        from django.db.models import Max, Min
+        layer_obj = _resolve_layer(request, layername)
+        factory = ClassFactory()
+        model_instance = factory.get_model(name=str(layer_obj.title_en), table_name=str(layer_obj.name), db=str(layer_obj.store))
+        data = dict(request.query_params)
+        result = dict()
+        for attribute in data.get('attributes', []):
+            min_value =  model_instance.objects.all().aggregate(Min(attribute))
+            max_value =  model_instance.objects.all().aggregate(Max(attribute))
+            result[attribute]= [min_value.items()[0][1], max_value.items()[0][1]]
+
+        return HttpResponse(
+                    json.dumps(
+                        result,
+                        ensure_ascii=False, default=lambda x: float(x) if isinstance(x, decimal.Decimal) else x), 
+                        status=200,
+                        content_type='application/javascript')
 #end
 

@@ -1,0 +1,70 @@
+﻿<div class="mini-dialog">
+    <i class="fa fa-times modal-close-icon" ng-click="closeModal()"></i>
+    <div class="modal-header">
+        <h3>Publish {{mapSummary.ProjectName}}</h3>
+    </div>
+    <form method="POST" ng-submit="publish()" class="nomargin mapInfoForm">
+        <div class="modal-body">
+            <div ng-if="mapSummary">
+                <div class="alert alert-info">
+                    <span ng-if="mapSummary.IsPublic">The map is already published</span>
+                    <span ng-if="!mapSummary.IsPublic">The map is not published yet</span>
+                </div>
+                <div class="form-group">
+                    <label>
+                        <input type="checkbox" ng-model="mapSummary.IsAuthorNamePublic" />
+                        Publish your name as author
+                    </label>
+                </div>
+                <div class="form-group">
+                    <label>Map Title ({{40 - mapSummary.Title.length}} more characters allowed)</label>
+                    <input type="text" class="control-field" style="width: 97%" ng-model="mapSummary.Title" maxlength="40" />
+                </div>
+                <div class="form-group">
+                    <label>Map Description ({{500 - mapSummary.Description.length}} more characters allowed)</label>
+                    <textarea type="text" style="width: 97%" rows="3" class="control-field" ng-model="mapSummary.Description" maxlength="500"></textarea>
+                </div>
+                <div class="form-group">
+                    <label>Attribute Display</label>
+                    <input type="radio" ng-value="true" ng-model="mapSummary.PropertyInPopup"/> Popup
+                    <input type="radio" ng-value="false" ng-model="mapSummary.PropertyInPopup"/> Side Panel
+                </div>
+                <div class="form-group">
+                    <label class="inline-block">URL: </label>
+                    <a ng-attr-href="{{mapSummary.PublicUrl}}" class="inline-block">{{mapSummary.PublicUrl}}</a>
+                </div>
+                <div class="form-group">
+                    <label>Embed</label>
+                    <pre>{{embedCode()}}</pre>
+                </div>
+                <div class="form-group" style="margin-bottom: 20px;">
+                    <div style="margin-bottom: 10px;">
+                        <label class="inline-block">Width:&nbsp;</label>
+                        <input type="number" class="control-field inline-block tiny-input" ng-model="previewSize.width" />
+                        <sub class="inline-block">pixels</sub>
+                    </div>
+                    <div style="margin-bottom: 10px;">
+                        <label class="inline-block">Height:</label>
+                        <input type="number" class="control-field inline-block tiny-input" ng-model="previewSize.height" />
+                        <sub class="inline-block">pixels</sub>
+                    </div>
+                </div>
+            </div>
+            <div ng-if="!mapSummary">
+                <i class="fa fa-spinner fa-spin fa-4x"></i>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button type="submit" class="btn btn-success"
+                ng-disabled="formSubmissionDisabled()">
+                <i class="fa fa-fw fa-share"></i>{{mapSummary.IsPublic ? 'Save' : 'Publish'}}</button>
+            <button type="button" class="btn btn-danger" ng-if="mapSummary.IsPublic" ng-click="unPublish()">
+                <i class="fa fa-fw fa-close"></i>
+                Unpublish
+            </button>
+            <button class="btn btn-warning" ng-click="closeModal()">
+                <i class="fa fa-fw fa-times"></i>Cancel
+            </button>
+        </div>
+    </form>
+</div>

@@ -1,0 +1,28 @@
+﻿<table class="table" style="border-top: 1px solid #fff;">
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>File type</th>
+            <th>Size</th>
+            <th>Last Modified On</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr data-ng-repeat="file in currentlyViewingFiles | filter:searchFilter.queryText | fileTypeFilter:fileType.type:'ShapeType' | orderBy:'-CreatedOn'"
+            data-ng-class="{'file-selected':file == selectedFile, {{file.ShapeType}}:true, 'disabled-file':file.IsLocked}"
+            data-ng-click="action.click(file)" ng-dblclick="action.doubleClick()" ng-attr-title="{{file.Name}}">
+            <td ng-if="viewOption.currentView == 'List view'" class="icon" style="padding-left: 35px; max-width: 200px; overflow: hidden;">
+                <div class="file-icon">
+                </div>
+                <span class="name" data-ng-hide="editing && selectedFile == file">{{file.Name}}</span>
+
+                <input type="text" maxlength="100" data-ng-if="editing && selectedFile == file" data-ng-model="file.Name" validatefilename
+                    focus-me="editing && selectedFile.Name == file.Name" data-ng-blur="stopEditing(file)" data-ng-keypress="saveIfEnterPressed($event, file)" />
+
+            </td>
+            <td>{{file.ShapeType}}</td>
+            <td>{{file.FileSize | byteFilter}}</td>
+            <td>{{file.LastUpdatedOn | date:'medium'}}</td>
+        </tr>
+    </tbody>
+</table>

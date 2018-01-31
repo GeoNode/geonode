@@ -1,0 +1,14 @@
+{% extends "layers/layer_base.html" %} {% load i18n %} {% block title %}{{ block.super }}{% endblock %} {% block head %}
+<base href="/"> {{ block.super }} {% endblock %} {% block extra_head %}
+<link rel="stylesheet" href="/static/.components/angular-ui-grid/ui-grid.min.css"> {% endblock %} {% block body_outer %}
+
+<div ng-controller="AttributeViewController as ctrl" ng-app="LayerApp">
+    <h3>Attribute view</h3>
+    <div ui-grid="ctrl.gridOptions" ui-grid-pagination class="grid"></div>
+</div>
+{% endblock %} {% block extra_script %} {{ block.super }}
+<script src="/static/.components/angular-ui-grid/ui-grid.min.js"></script>
+<script src="/static/layers/js/layer.module.js"></script>
+<script src="/static/layers/js/layer.service.js"></script>
+<script src="/static/layers/js/attribute-view.controller.js"></script>
+{% endblock extra_script %}

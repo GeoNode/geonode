@@ -75,6 +75,12 @@ from geonode.groups.models import GroupProfile
 from geonode.maps.models import WmsServer
 from geonode.maps.forms import WmsServerForm
 
+from rest_framework.generics import RetrieveUpdateAPIView
+from .serializers import MapLayerSerializer
+from rest_framework.response import Response
+from rest_framework.parsers import JSONParser
+from rest_framework import permissions
+
 if 'geonode.geoserver' in settings.INSTALLED_APPS:
     # FIXME: The post service providing the map_status object
     # should be moved to geonode.geoserver.
@@ -366,8 +372,8 @@ def map_embed(
 
 # MAPS VIEWER #
 
-
-def map_view(request, mapid, snapshot=None, template='maps/map_view.html'):
+# detail_map_view
+def map_view(request, mapid, snapshot=None, template='maps/detail_map_view.html'):
     """
     The view that returns the map composer opened to
     the map with the given map ID.
@@ -504,7 +510,7 @@ def clean_config(conf):
         return conf
 
 
-def new_map(request, template='maps/map_view.html'):
+def new_map(request, template='maps/map_new.html'):
     config = new_map_config(request)
     context_dict = {
         'config': config,
@@ -518,6 +524,8 @@ def new_map(request, template='maps/map_view.html'):
     else:
         return render_to_response(template, RequestContext(request, context_dict))
 
+def old_map(request, template='maps/map_view.html'):
+    return new_map(request, template);
 
 def new_map_json(request):
 
@@ -1345,4 +1353,22 @@ def set_bounds_from_bbox(bbox):
         center_y = center_y
         return zoom, center_x, center_y
 
+class MapLayerRetrieveUpdateAPIView(RetrieveUpdateAPIView):
+    serializer_class = MapLayerSerializer
+    permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
+
+    def get(self, request, map_id, layername, **kwargs):
+        map_obj = MapLayer.objects.filter(map_id=map_id, name=layername).first()
+        serializer = MapLayerSerializer(map_obj)
+        return Response(serializer.data)
+
+    def put(self, request, map_id, layername, **kwargs):
+        map_obj = MapLayer.objects.filter(map_id=map_id, name=layername).first()
+        data = JSONParser().parse(request)
+       
+        if map_obj:
+            map_obj.styles = data.get('styles', str())
+            map_obj.save()
+            return Response(dict(success =True))
+        return Response(dict(success =False))
 #end

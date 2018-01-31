@@ -6,59 +6,83 @@
 {% block title %}{% trans "Message Inbox" %} — {{ block.super }}{% endblock %}
 
 {% block body_outer %}
-<div class="gd-content">
-    <div class="gd-content-heading">
-        <div class="row">
-            <div class="col-md-8">
-                <div class="title small-content">
-                    {%  trans "Messages" %}
-                </div>
-            </div>
-            <div class="col-md-4">
-                <div class="small-content pull-right">
-                    <ul class="search-type separator">
-                        <li>
-                          <a href="{% url "message_create" %}" class="btn btn-gd-primary btn-xs col-md-12 col-sm-12 col-xs-12">
+<div class="d-title">
+   
+        
+            
+            <div class="pull-right">
+                
+                    <div class="input-group pull-right">
+                            <form class="gSearch" method="post" action="{% url "message_search" %}">
+                                    {% csrf_token %}
+                                    {{ search_form }}
+                            <span class="input-group-btn">
+                                    <button type="submit" class="btn btn-primary" value="{% trans "Search!" %}"  class="btn btn-default" type="button"><i class="fa fa-search"></i></button>
+                             
+                            </span>
+                            </form>
+                          </div><!-- /input-group -->
+                       
+                          <a href="{% url "message_create" %}" class="btn btn-gd-primary icon-btn-color">
                             {% trans "Create Message" %}
+                            <i class="fa fa-pencil-square-o" aria-hidden="true"></i>
                           </a>
-                        </li>
+
+                       
                         <!--<li class="active">-->
                           <!--<a href="#all" data-toggle="tab"><i class=""></i> {% trans "All" %}</a>-->
                         <!--</li>-->
                         <!--<li >-->
                           <!--<a href="#inbox" data-toggle="tab"><i class=""></i>{% trans "Inbox" %}</a>-->
                         <!--</li>-->
-                    </ul>
-                </div>
+                   
+
+
+                
             </div>
-        </div>
-        <div class="hr"></div>
-    </div>
+      
+         {%  trans "Messages" %}
+   
 </div>
-<div class="gd-content">
-  <div class="gd-content-body transparent">
-    <div class="row">
-      <div class="col-md-12">
-        <ul class="nav nav-tabs">
-          <li ><a href="#inbox" data-toggle="tab"><i class=""></i>{% trans "New" %}</a></li>
-          <li class="active"><a href="#all" data-toggle="tab"><i class=""></i> {% trans "All" %}</a></li>
-        </ul>
-        <div class="tab-content">
-          <article id="all" class="tab-pane active">
-            {% with threads_all as threads %}
-                {% include "user_messages/_message_snippet.html" %}
-            {% endwith %}
-          </article>
-          <article id="inbox" class="tab-pane ">
-            {% with threads_unread as threads %}
-                {% include "user_messages/_message_snippet.html" %}
-            {% endwith %}
-          </article>
+
+<div class="panel panel-default">
+
+        <div class="panel-heading globalNavHeading">
+                <ul class="nav nav-tabs layerNav globalNav">
+                        <li ><a href="#inbox" data-toggle="tab"><i class=""></i>{% trans "New" %}</a></li>
+                        <li class="active"><a href="#all" data-toggle="tab"><i class=""></i> {% trans "All" %}</a></li>
+                      </ul>
+        </div>
+
+        <div class="panel-body">
+               
+                        <div class="gd-content-body transparent">
+                          <div class="row">
+                            <div class="col-md-12">
+                             
+                              <div class="tab-content">
+                                <article id="all" class="tab-pane active">
+                                  {% with threads_all as threads %}
+                                      {% include "user_messages/_message_snippet.html" %}
+                                  {% endwith %}
+                                </article>
+                                <article id="inbox" class="tab-pane ">
+                                  {% with threads_unread as threads %}
+                                      {% include "user_messages/_message_snippet.html" %}
+                                  {% endwith %}
+                                </article>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                     
         </div>
       </div>
-    </div>
-  </div>
-</div>
+
+
+
+
+
 {% endblock %}
 
 {% block sidebar %}

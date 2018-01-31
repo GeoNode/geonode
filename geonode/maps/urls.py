@@ -23,13 +23,14 @@ from django.conf import settings
 from django.views.generic import TemplateView
 
 from geonode.maps.qgis_server_views import MapCreateView, MapDetailView
-from geonode.maps.views import WmsServerList, WmsServerCreate, WmsServerUpdate, WmsServerDelete
+from geonode.maps.views import WmsServerList, WmsServerCreate, WmsServerUpdate, WmsServerDelete, MapLayerRetrieveUpdateAPIView
 
 js_info_dict = {
     'packages': ('geonode.maps',),
 }
 
 new_map_view = 'new_map'
+old_map_view = 'old_map'
 existing_map_view = 'map_view'
 
 if 'geonode.geoserver' in settings.INSTALLED_APPS:
@@ -47,6 +48,7 @@ urlpatterns = patterns(
         name='maps_browse'),
     url(r'^bccviewmap$', TemplateView.as_view(template_name='maps/bccviewmap.html'), name='bccviewmap'),
     url(r'^new$', new_map_view, name="new_map"),
+    url(r'^old$', old_map_view, name="old_map"),
     url(r'^new/data$', 'new_map_json', name='new_map_json'),
     url(r'^checkurl/?$', 'ajax_url_lookup'),
     url(r'^snapshot/create/?$', 'snapshot_create'),
@@ -97,3 +99,8 @@ urlpatterns = patterns(
 #end
 
 )
+
+#custom
+urlpatterns = patterns('',
+    url(r'^(?P<map_id>[0-9]+)/layer/(?P<layername>[^/]*)/$', MapLayerRetrieveUpdateAPIView.as_view(), name='map_layer'),
+) + urlpatterns

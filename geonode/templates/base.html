@@ -17,7 +17,7 @@
       {% else %}
       <link href="{{ STATIC_URL }}lib/css/main.4df7c95f.css?v={{ VERSION }}" rel="stylesheet"/>
       <link href="{{ STATIC_URL }}lib/css/bootstrap.min.css?v={{ VERSION }}" rel="stylesheet"/>
-      <link href="{{ STATIC_URL }}lib/css/font-awesome.min.css?v={{ VERSION }}" rel="stylesheet"/>
+      <link href="{{ STATIC_URL }}lib/css/font-awesome.min.css" rel="stylesheet"/>
       <link href="{{ STATIC_URL }}lib/css/bootstrap-datetimepicker.css?v={{ VERSION }}" rel="stylesheet"/>
       <!--<link href="{{ STATIC_URL }}lib/css/bootstrap-select.min.css?v={{ VERSION }}" rel="stylesheet"/>-->
       {% endif %}
@@ -71,7 +71,7 @@
     <section id="gd-header" class="navsticky" >
         <!-- <nav class="navbar navbar-default"> -->
         <nav class="navbar navbar-default navbar-fixed-top">
-            <div class="container">
+            <div class="container-fluid">
                 <div class="navbar-header">
                     <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#gd-navbar-collapse" aria-expanded="false">
                         <span class="sr-only">Toggle navigation</span>
@@ -122,7 +122,7 @@
                                 </li>
 {#                                {% if user.is_authenticated %}#}
                                 <li id="nav_maps">
-                                  <a href="{% url "new_map" %}">{% trans "Create a New Map" %}</a>
+                                  <a href="{% url "old_map" %}">{% trans "Create a New Map" %}</a>
                                 </li>
 {#                                {% endif %}#}
                             </ul>
@@ -191,9 +191,9 @@
                                     {% if HAYSTACK_SEARCH %}
                                         <input id="search_input"  type="text" placeholder="" name="q" style="color:#5a5d63;">
                                     {% else %}
-                                        <input id="search_input"  type="text" placeholder="Search layer/map/doc" style="color:#5a5d63;" name="title__icontains">
+                                        <input id="search_input"  type="text" placeholder="Search layer/map/doc" style="color:#5a5d63;" class="map-search" name="title__icontains">
                                     {% endif %}
-                                    <span style="padding-left:20px;">
+                                    <span style="padding-left:0;">
                                         <!--<select name="" class="user_dropdown" id="user_dropdown_onch" onchange="drop_sec(this);">-->
                                             <!--<option value="Default" id="layermapdocsearch" selected="selected">Layer/Map/Document</option>-->
                                             <!--<option value="Organization" id="organizationsearch" >Organization</option>-->
@@ -215,7 +215,7 @@
                                             <!--</ul>-->
                                         <!--</div>-->
                                         <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button"
-                                               aria-haspopup="true" aria-expanded="false">{% trans "" %} <span class="caret"></span>
+                                               aria-haspopup="true" aria-expanded="false">{% trans "" %} <span class="caret search-caret"></span>
                                         </a>
                                             <ul class="dropdown-menu" >
                                                 <li id="layermapdocsearch">
@@ -278,19 +278,19 @@
                                 <span class="badge badge-notify" id="rload">{% if user.notification_count %}{{ request.user.notification_count }}{% endif %}</span>
                             </a>
                         </li>
-                        <div id="show-notification-msg" class="show-notification-msg" style="display:none;">
-                            <div class="notifications" style="height:250px;overflow:auto;">
+                        <div id="show-notification-msg" style="display:none;">
+                            <div class="dropBox directions notifications" style="right:86px;top:61px;padding:0">
+                                    <div class="arrow-up"></div>
                                 <ul class="text-center">
                                     {% load notification_tags %}
                                     {% include_notify_js_variables %}
                                     {% user_notifications %}
                                 </ul>
+                                <a class="btn btn-gd-primary icon-btn-color btn-block" href="{% url "notifications_all" %}" target="_self">
+                                    Show All Notifications
+                            </a>
                             </div>
-                            <div style="padding:10px 0px 0px 20px;z-index:100">
-                                <a class="btn btn-gd-primary icon-btn-color" href="{% url "notifications_all" %}" target="_self">
-                                        Show All Notifications
-                                </a>
-                            </div>
+                           
                         </div>
                         <!--<li class="notification">-->
                             <!--<a class="usi" href="{% url "_dashboard" %}" >-->
@@ -346,7 +346,7 @@
 
     <section id="gd-wrapper">
     {% block middle %}
-    <div class="container">
+    <div class="container-fluid">
       {% include "_status_message.html" %}
       <!--{% include "_announcements.html" %}-->
       {% include "_messages.html" %}
@@ -367,7 +367,7 @@
 
     {% block footer %}
     <footer id="gd-footer">
-        <div class="container">
+        <div class="container-fluid">
             <div class="row">
                 <div class="col-md-7">
                     <!-- <button type="button" class="navbar-toggle collapsed" data-toggle="collapse"
@@ -419,7 +419,7 @@
 							<a  href="https://ssl.comodo.com" id="comodoTL">Comodo SSL</a>
 					</div>
 				</div>
-                <div class="col-md-2">
+                <div class="col-md-1">
                     <div class="gd-footer-language" >
                         <label class="hidden">{% trans "Language" %}</label>
                         {% if csrf_token != "NOTPROVIDED" %}
@@ -456,7 +456,7 @@
 
     <!-- Modal must stay outside the navbar -->
     <section id="gd-announcements-model">
-        <div class="container">
+        <div class="container-fluid">
             <div class="modal fade" id="GDAnnouncementsModel"  tabindex="-1" role="dialog" aria-labelledby="GDAnnouncementsModel">
               <div class="modal-dialog" role="document" >
                 <div class="modal-content" style="min-height: 200px;">
@@ -475,7 +475,7 @@
     </section>
     {% if not user.is_authenticated %}
     <section id="gd-model">
-        <div class="container">
+        <div class="container-fluid">
             <div style="">
                 <div class="modal fade" id="SigninModal"  tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel">
                   <div class="modal-dialog" role="document" >
@@ -566,7 +566,7 @@
     {% endif %}
     {% if not user.is_authenticated and REGISTRATION_OPEN %}
     <section id="gd-model">
-        <div class="container">
+        <div class="container-fluid">
             <div style="">
                 <div class="modal fade" id="SignupModal"  tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel">
                   <div class="modal-dialog" role="document" >
@@ -669,12 +669,12 @@
     {% else %}
     <nav id="c-menu--slide-right" class="c-menu c-menu--slide-right">
         <div class="c-menu__close">
-            <button class="btn-link c-menu_gd_close">X</button>
+            <button class="btn c-menu_gd_close"><i class="fa fa-times" aria-hidden="true"></i></button>
         </div>
         <div class="user-details">
             <article>
                 <div class="grid-container">
-                    <div class="top-content text-center">
+                    <div class="top-content text-center user-pic">
                         <div class="avater">
                             <a href="javascript:;">
                                 <div class="img">
@@ -695,35 +695,36 @@
             <li class="c-menu__item">
                 <a href="{% url "layer_upload"  %}" class="c-menu__link">
                     <i class="fa fa-cloud-upload"></i>
-                    <span style="text-align:left;color:#fff;margin-left:-8px;">{% trans "Upload Layers" %}</span>
+                    <span style="text-align:left;">{% trans "Upload Layers" %}</span>
                 </a>
             </li>
             <li class="c-menu__item">
                 <a href="{{ user.get_absolute_url }}" class="c-menu__link">
                     <i class="fa fa-user" aria-hidden="true"></i>
-                    <span style="text-align:left;color:#fff;margin-left:-3px;">{% trans "Profile" %}</span>
+                    <span style="text-align:left;">{% trans "Profile" %}</span>
                 </a>
             </li>
             {% if request.user.is_superuser %}
             <li class="c-menu__item">
                 <a href="{% url "keyword-list" %}" class="c-menu__link">
-                    <i class="fa fa-tasks"></i>
-                    <span style="text-align:left;color:#fff;margin-left:-8px;">{% trans "Keyword List" %}</span>
+                    <i class="fa fa-keyboard-o"></i>
+                    <span style="text-align:left;">{% trans "Keyword List" %}</span>
                 </a>
             </li>
             {% endif %}
             {% if request.user.is_superuser %}
             <li class="c-menu__item">
                 <a href="{% url "section-list-table" %}" class="c-menu__link">
-                    <i class="fa fa-tasks"></i>
-                    <span style="text-align:left;color:#fff;margin-left:-8px;">{% trans "Manage Section" %}</span>
+                    <i class="fa fa-columns"></i>
+                    <span style="text-align:left;">{% trans "Manage Section" %}</span>
                 </a>
             </li>
             {% endif %}
             {% if request.user.is_superuser %}
             <li class="c-menu__item">
                 <a href="{% url "topiccategory-list" %}" class="c-menu__link">
-                    <i class="fa fa-map-marker"></i> {% trans "Manage Category" %}
+                    <i class="fa fa-tags"></i>
+                    <span style="text-align:left;">{% trans "Manage Category" %}</span>
                 </a>
             </li>
             {% endif %}
@@ -731,7 +732,7 @@
             <li class="c-menu__item">
                 <a href="{% url "wms-server-list" %}" class="c-menu__link">
                     <i class="fa fa-tasks"></i>
-                    <span style="text-align:left;color:#fff;margin-left:-7px;">{% trans "Add Server" %}</span>
+                    <span style="text-align:left;">{% trans "Add Server" %}</span>
                 </a>
             </li>
             {% endif %}
@@ -739,7 +740,7 @@
             <li class="c-menu__item">
                 <a href="{% url "news-create" %}" class="c-menu__link">
                     <i class="fa fa-file-text-o"></i>
-                    <span style="text-align:left;color:#fff;margin-left:-6px;">{% trans "Add News" %}</span>
+                    <span style="text-align:left;">{% trans "Add News" %}</span>
                 </a>
             </li>
             {% endif %}
@@ -747,8 +748,8 @@
             {% if request.user.is_member_of_any_group or  request.user.is_manager_of_any_group or request.user.is_superuser %}
             <li class="c-menu__item">
                 <a href="{% url "member-workspace-layer" %}" class="c-menu__link">
-                    <i class="fa fa-building-o"></i>
-                    <span style="text-align:left;color:#fff;margin-left:-8px;">{% trans "Member-Workspace" %}</span>
+                    <i class="fa fa-users"></i>
+                    <span style="text-align:left;">{% trans "Member-Workspace" %}</span>
                 </a>
             </li>
             {% endif %}
@@ -757,52 +758,52 @@
             {% if request.user.is_authenticated and request.user.is_manager_of_any_group %}
             <li class="c-menu__item">
                 <a href="{% url "admin-workspace-layer" %}" class="c-menu__link">
-                    <i class="fa fa-building-o"></i>
-                    <span style="text-align:left;color:#fff;margin-left:-8px;">{% trans "Admin-Workspace" %}</span>
+                    <i class="fa fa-lock"></i>
+                    <span style="text-align:left;">{% trans "Admin-Workspace" %}</span>
                 </a>
             </li>
             {% endif %}
             {% if request.user.is_superuser or request.user.is_manager_of_any_group %}
               <li class="c-menu__item">
                   <a href="{% url "create-user" %}" class="c-menu__link">
-                    <i class="fa fa-fire"></i>
-                    <span style="text-align:left;color:#fff;margin-left:-8px;">{% trans "Create User" %}</span>
+                    <i class="fa fa-user-plus"></i>
+                    <span style="text-align:left;">{% trans "Create User" %}</span>
                   </a>
               </li>
             {% endif %}
             <li class="c-menu__item">
                 <a href="{% url "recent-activity" %}" class="c-menu__link">
-                    <img src="{{ STATIC_URL }}geonode/images/user-icon/recent-activity.png" alt="Recent Activity">
-                    <span style="text-align:left;color:#fff;margin-left:-10px;">{% trans "Recent Activity" %}</span>
+                    <i class="fa"><img src="{{ STATIC_URL }}geonode/images/user-icon/recent-activity.png" alt="Recent Activity"></i>
+                    <span style="text-align:left;">{% trans "Recent Activity" %}</span>
                 </a>
             </li>
             {% if perms.announcements.can_manage %}
             <li class="c-menu__item">
                 <a href="{% url "announcements_list" %}" class="c-menu__link">
-                    <img src="{{ STATIC_URL }}geonode/images/user-icon/announcements.png" alt="Announcements">
-                    <span style="text-align:left;color:#fff;margin-left:-10px;">{% trans "Announcements" %}</span>
+                    <i class="fa"><img src="{{ STATIC_URL }}geonode/images/user-icon/announcements.png" alt="Announcements"></i>
+                    <span style="text-align:left;">{% trans "Announcements" %}</span>
                 </a>
             </li>
             {% endif %}
             {% if user.is_superuser %}
             <li class="c-menu__item">
                 <a href="{% url "services" %}" class="c-menu__link">
-                    <img src="{{ STATIC_URL }}geonode/images/user-icon/remote-services.png" alt="Remote Services">
-                    <span style="text-align:left;color:#fff;margin-left:-10px;">{% trans "Remote Services" %}</span>
+                    <i class="fa"><img src="{{ STATIC_URL }}geonode/images/user-icon/remote-services.png" alt="Remote Services"></i>
+                    <span style="text-align:left;">{% trans "Remote Services" %}</span>
                 </a>
             </li>
             <li class="c-menu__item">
                 <a href="{{ GEOSERVER_BASE_URL }}" class="c-menu__link">
-                    <img src="{{ STATIC_URL }}geonode/images/user-icon/geo-server.png" alt="GeoServer">
-                    <span style="text-align:left;color:#fff;margin-left:-10px;">{% trans "GeoServer" %}</span>
+                    <i class="fa"><img src="{{ STATIC_URL }}geonode/images/user-icon/geo-server.png" alt="GeoServer"></i>
+                    <span style="text-align:left;">{% trans "GeoServer" %}</span>
                 </a>
             </li>
             {% endif %}
             {% if user.is_manager_of_any_group %}
             <li class="c-menu__item">
                 <a href="{% url "invite_user" %}" class="c-menu__link">
-                    <img src="{{ STATIC_URL }}geonode/images/user-icon/invite-user.png" alt="Invite User">
-                    <span style="text-align:left;color:#fff;margin-left:-14px;">{% trans "Invite User" %}</span>
+                    <i class="fa"><img src="{{ STATIC_URL }}geonode/images/user-icon/invite-user.png" alt="Invite User"></i>
+                    <span style="text-align:left;">{% trans "Invite User" %}</span>
                 </a>
             </li>
             {% endif %}
@@ -820,33 +821,63 @@
             {% if request.user.is_superuser %}
             <li class="c-menu__item">
                 <a href="{% url "metadata-backup" %}" class="c-menu__link">
-                    <img src="{{ STATIC_URL }}geonode/images/user-icon/help.png" alt="Help">
-                    <span style="text-align:left;color:#fff;margin-left:-10px;">{% trans "Metadata Backup" %}</span>
+                    <i class="fa"><img src="{{ STATIC_URL }}geonode/images/user-icon/help.png" alt="Help"></i>
+                    <span style="text-align:left;">{% trans "Metadata Backup" %}</span>
                 </a>
             </li>
             <li class="c-menu__item">
                 <a href="{% url "data-backup" %}" class="c-menu__link">
-                    <img src="{{ STATIC_URL }}geonode/images/user-icon/help.png" alt="Help">
-                    <span style="text-align:left;color:#fff;margin-left:-10px;">{% trans "Data Backup" %}</span>
+                    <i class="fa"><img src="{{ STATIC_URL }}geonode/images/user-icon/help.png" alt="Help"></i>
+                    <span style="text-align:left;">{% trans "Data Backup" %}</span>
                 </a>
             </li>
             <li class="c-menu__item">
                 <a href="{% url "uploaded-folder-backup" %}" class="c-menu__link">
+                    <i class="fa"><img src="{{ STATIC_URL }}geonode/images/user-icon/help.png" alt="Help"></i>
+                    <span style="text-align:left;">{% trans "Media Backup" %}</span>
+                </a>
+            </li>
+            <li class="c-menu__item">
+                <a href="{% url "analytics" %}" class="c-menu__link">
                     <img src="{{ STATIC_URL }}geonode/images/user-icon/help.png" alt="Help">
-                    <span style="text-align:left;color:#fff;margin-left:-10px;">{% trans "Media Backup" %}</span>
+                    <span style="text-align:left;margin-left:-10px;">{% trans "Analytics" %}</span>
+                </a>
+            </li>
+            <li class="c-menu__item">
+                <a href="{% url "error_reporting" %}" class="c-menu__link">
+                    <img src="{{ STATIC_URL }}geonode/images/user-icon/help.png" alt="Help">
+                    <span style="text-align:left;margin-left:-10px;">{% trans "Error Reporting" %}</span>
+                </a>
+            </li>
+            <li class="c-menu__item">
+                <a href="{% url "system_settings" %}" class="c-menu__link">
+                    <img src="{{ STATIC_URL }}geonode/images/user-icon/help.png" alt="Help">
+                    <span style="text-align:left;margin-left:-10px;">{% trans "System Settings" %}</span>
+                </a>
+            </li>
+            <li class="c-menu__item">
+                <a href="{% url "locations" %}" class="c-menu__link">
+                    <img src="{{ STATIC_URL }}geonode/images/user-icon/help.png" alt="Help">
+                    <span style="text-align:left;margin-left:-10px;">{% trans "Locations" %}</span>
                 </a>
             </li>
             <li class="c-menu__item">
                 <a href="{% url "data-folder-backup" %}" class="c-menu__link">
                     <img src="{{ STATIC_URL }}geonode/images/user-icon/help.png" alt="Help">
-                    <span style="text-align:left;color:#fff;margin-left:-10px;">{% trans "Geoserver Data Backup" %}</span>
+                    <span style="text-align:left;margin-left:-10px;">{% trans "Error Reporting" %}</span>
+                </a>
+            </li>
+            <li class="c-menu__item">
+                <a href="{% url "data-folder-backup" %}" class="c-menu__link">
+                    <i class="fa"><img src="{{ STATIC_URL }}geonode/images/user-icon/help.png" alt="Help"></i>
+                    <span style="text-align:left;">{% trans "Geoserver Data Backup" %}</span>
                 </a>
             </li>
             {% endif %}
             <li class="c-menu__item">
                 <a href="{% url "help" %}" class="c-menu__link">
-                    <img src="{{ STATIC_URL }}geonode/images/user-icon/help.png" alt="Help">
-                    <span style="text-align:left;color:#fff;margin-left:-10px;">{% trans "Help" %}</span>
+                    <i class="fa"><img src="{{ STATIC_URL }}geonode/images/user-icon/help.png" alt="Help"></i>
+                    <span style="text-align:left;">{% trans "Help" %}</span>
                 </a>
             </li>
             <li class="c-menu__item active">
@@ -854,8 +885,8 @@
                   {% csrf_token %}
                   <a class="c-menu__link" href="javascript:{}"
                      onclick="document.getElementById('logout_form').submit();">
-                      <img src="{{ STATIC_URL }}geonode/images/user-icon/logout.png" alt="Logout">
-                      <span style="text-align:left;color:#fff;margin-left:-10px;">{% trans "Log out" %}</span>
+                     <i class="fa"><img src="{{ STATIC_URL }}geonode/images/user-icon/logout.png" alt="Logout"></i>
+                      <span style="text-align:left;">{% trans "Log out" %}</span>
                   </a>
                 </form>
             </li>
@@ -891,7 +922,7 @@
     <script src="{{ STATIC_URL }}notify/notifyX.js?v={{ VERSION }}"></script>
     {% include 'autocomplete_light/static.html' %}
     <script type="text/javascript" src="{% url 'django.views.i18n.javascript_catalog' %}"></script>
-
+    <script src="{{ STATIC_URL }}geonode/js/base/analytics.js" type="text/javascript"></script>
 
     {% block extra_script %}{% endblock extra_script %}
 
@@ -1036,6 +1067,11 @@
    <!--</script>-->
 
     <script type="text/javascript" src="{% url "lang" %}"></script>
+    <script type="text/javascript">
+        user_info = '{{ request.user.id }}';
+        layer_info = '{{ resource.id }}';
+        map_info = '{{ maps|length }}' == 'NULL' ? 0 : '{{ maps.0.id }}';
+    </script>
 
   </body>
 </html>

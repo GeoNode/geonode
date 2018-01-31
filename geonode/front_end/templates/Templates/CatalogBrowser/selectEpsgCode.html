@@ -1,0 +1,41 @@
+﻿<div class="mini-dialog">
+    <div class="modal-header">
+        <h3>Choose EPSG code of your data</h3>
+    </div>
+    <div class="modal-body">
+        <div class="alert alert-info">
+            We could not detect the exact coordinate reference system of your data. <br/>
+            Please specify the correct coordinate system or you may also choose one from our suggestions bellow.
+        </div>
+
+        <div ng-if="isProcessing">
+            <div style="text-align: center; margin: 50px 0;" class="alert alert-info">
+                <cogs></cogs>
+                <span style="font-size: 20px; margin-left: 3px;">Processing...</span>
+            </div>
+        </div>
+        <div ng-if="!isProcessing">
+            <div>
+                <label>
+                    EPSG:
+                    <input type="number" ng-model="data.epsg" placeholder="e.g. 3857" />
+                    &nbsp;
+                    <span class="text-error" ng-if="data.epsg && !isEpsgKnown()">Code is unknown or invalid</span>
+                </label>
+            </div>
+            <div ng-repeat="codeItem in epsgCodes | filter:data.epsg">
+                <a href="" ng-click="selectEpsg(codeItem)">{{codeItem.code}} - {{codeItem.name}}</a> &nbsp;
+                <a ng-href="http://epsg.io/{{codeItem.code}}" target="_blank" class="fa fa-external-link"></a>
+            </div>
+        </div>
+    </div>
+    <div class="modal-footer">
+        <button type="button" class="btn btn-success btn-sm" ng-disabled="!isEpsgKnown() || isProcessing" ng-click="submit()">
+            <i class="fa fa-check fa-fw"></i>OK
+        </button>
+        <button type="button" class="btn btn-warning btn-sm" ng-disabled="isProcessing" ng-click="closeModal()">
+            <i class="fa fa-ban fa-fw"></i>Cancel
+        </button>
+    </div>
+
+</div>

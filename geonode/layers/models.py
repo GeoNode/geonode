@@ -107,6 +107,7 @@ class Layer(ResourceBase):
     has_elevation = models.BooleanField(default=False)
     time_regex = models.CharField(max_length=128, null=True, blank=True, choices=TIME_REGEX)
     elevation_regex = models.CharField(max_length=128, null=True, blank=True)
+    user_data_epsg = models.CharField(max_length=128, null=True, blank=True)
 
     default_style = models.ForeignKey(
         Style,
@@ -607,6 +608,67 @@ class LayerAuditActivity(models.Model):
                                blank=True, null=True)
     date_created = models.DateTimeField(auto_now_add=True)
     date_updated = models.DateTimeField(auto_now=True)
+
+
+class StyleExtension(models.Model):
+    '''
+    Layer style extension
+    '''
+    uuid = models.UUIDField(
+        verbose_name = _('UUID'),
+        help_text=_('Designats uuid'),
+        default=uuid.uuid4, 
+        editable=False
+    )
+    title = models.CharField(
+        verbose_name = _('Title'),
+        help_text=_('Designats title of the SLD'),
+        max_length=50, blank=False
+    )
+    style = models.OneToOneField(
+        Style,
+        verbose_name = _('Style'),
+        help_text=_('Designats related Style'),
+        null=False, blank=False
+    )
+    json_field = models.TextField(
+        verbose_name=_('Json Field'),
+        help_text=_('Designates json field.'),
+        blank=True
+    )
+    sld_body = models.TextField(
+        verbose_name=_('SLD Text'), 
+        help_text=_('Designates SLD Text.'),
+        blank=True
+    )
+    created_by = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        verbose_name=_('Created by'), 
+        related_name = 'layer_style_created_by',        
+        help_text=_('Designates user who creates the record.'),
+        )
+    modified_by = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        verbose_name=_('Modified by'), 
+        related_name = 'layer_style_modified_by',
+        help_text=_('Designates user who updates the record.'),
+        )
+    created_date = models.DateTimeField(
+        verbose_name=_('Created Date'), 
+        help_text=_('Designates when this record created.'),
+        auto_now_add=True
+    )
+    last_modified = models.DateTimeField(
+        verbose_name=_('Last Modified'), 
+        help_text=_('Designates when this record last modified.'),
+        auto_now=True
+    )
+
+    def __str__(self):
+        return self.style.name
+
+    class Meta:
+        pass
 #end
 
 

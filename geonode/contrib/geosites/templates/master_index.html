@@ -6,7 +6,7 @@ This is where you can override the hero area block. You can simply modify the co
 {% endcomment %}
   {% block hero %}
   <div class="jumbotron">
-    <div class="container">
+    <div class="container-fluid">
       <h1>{% trans "Welcome" %}</h1>
       <p>{% blocktrans %}GeoNode is an open source platform for sharing geospatial data and maps.{% endblocktrans %}</p>
       <p>{% blocktrans %}If you have any questions about the software or service, join our <a href="https://groups.google.com/d/forum/geonode-users">mailing list</a>.{% endblocktrans %}</p>
@@ -16,7 +16,7 @@ This is where you can override the hero area block. You can simply modify the co
   {% endblock %}
   
 {% block mainbody %}
-  <div class="container">
+  <div class="container-fluid">
     <div class="row home-facets">
     {% with facet_type='home' %}
      {% site_facets as facets %}

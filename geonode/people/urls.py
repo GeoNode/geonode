@@ -41,4 +41,5 @@ urlpatterns = patterns('geonode.people.views',
 
                        #user message inbox
                        url(r'^inbox', 'inbox', name='message-inbox-extend'),
+                       url(r'^current-user/$', "get_current_user", name="get-current-user")
                        )

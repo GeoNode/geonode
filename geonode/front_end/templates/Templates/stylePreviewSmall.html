@@ -1,0 +1,119 @@
+﻿
+<svg width="20" height="20" ng-if="styleHash.textGraphicName == 'circledText'">
+    <circle cx="10" cy="10" r="9" ng-attr-style="fill: {{styleHash.fillColor}};
+                  stroke: {{styleHash.strokeColor}}; stroke-width: {{styleHash.strokeWidth}};" />
+    <text x="50%" y="50%" ng-attr-fill="{{styleHash.textFillColor}}" font-size="8" font-weight="bold"
+          alignment-baseline="middle" text-anchor="middle">{{styleHash.text}}</text>
+</svg>
+<svg width="15" height="17" ng-if="styleHash.textGraphicName == 'squaredText'">
+    <rect x="0" y="2" width="15" height="15" ng-attr-style="fill: {{styleHash.fillColor}};
+                  stroke: {{styleHash.strokeColor}}; stroke-width: {{styleHash.strokeWidth}};" />
+    <text x="50%" y="50%" ng-attr-fill="{{styleHash.textFillColor}}" font-size="8" font-weight="bold"
+          alignment-baseline="middle" text-anchor="middle">{{styleHash.text}}</text>
+</svg>
+<svg height="15" width="20" ng-if="styleHash.textGraphicName == 'triangledText'">
+    <polygon points="10,0 0,15 20,15" ng-attr-style="fill: {{styleHash.fillColor}};
+                  stroke: {{styleHash.strokeColor}}; stroke-width: {{styleHash.strokeWidth}};" />
+    <text x="50%" y="50%" ng-attr-fill="{{styleHash.textFillColor}}" font-size="8" font-weight="bold"
+          alignment-baseline="middle" text-anchor="middle">{{styleHash.text}}</text>
+</svg>
+
+
+<svg width="20" height="20" ng-if="styleHash.textGraphicName == 'circledGraphic'">
+    <circle cx="10" cy="10" r="9" ng-attr-style="fill: {{styleHash.fillColor}};
+                  stroke: {{styleHash.strokeColor}}; stroke-width: {{styleHash.strokeWidth}};" />
+    <text style="font-size: 10px;"  x="5" y="65%" class="fa" ng-attr-fill="{{styleHash.textFillColor}}" font-weight="normal" font-size="5" ng-attr-fill="{{styleHash.textFillColor}}">
+        {{styleHash.text}}
+    </text>
+</svg>
+<svg  width="15" height="17" ng-if="styleHash.textGraphicName == 'squaredGraphic'">
+    <rect x="0" y="3" width="28" height="28" ng-attr-style="fill: {{styleHash.fillColor}};
+                  stroke: {{styleHash.strokeColor}}; stroke-width: {{styleHash.strokeWidth}};" />
+    <text style="font-size: 10px;" x="2" y="75%" class="fa" ng-attr-fill="{{styleHash.textFillColor}}" font-weight="normal" font-size="5" ng-attr-fill="{{styleHash.textFillColor}}">
+        {{styleHash.text}}
+    </text>
+</svg>
+<svg  height="15" width="20" ng-if="styleHash.textGraphicName == 'triangledGraphic'">
+    <polygon points="10,0 0,15 20,15" ng-attr-style="fill: {{styleHash.fillColor}};
+                  stroke: {{styleHash.strokeColor}}; stroke-width: {{styleHash.strokeWidth}};" />
+    <text style="font-size: 7px;" x="6" y="80%" class="fa" ng-attr-fill="{{styleHash.textFillColor}}" font-weight="normal" ng-attr-fill="{{styleHash.textFillColor}}">
+        {{styleHash.text}}
+    </text>
+</svg>
+
+
+
+<svg ng-if="isPoint && !styleHash.externalGraphic && styleHash.graphicName == 'circle'" height="16" width="12">
+    <circle r="5" cx="6" cy="10"
+            ng-attr-style="fill: {{styleHash.fillColor}}; stroke: {{styleHash.strokeColor}};fill-opacity:{{styleHash.fillOpacity}};" />
+</svg>
+<svg ng-if="isPoint && !styleHash.externalGraphic && styleHash.graphicName == 'x'" height="10" width="10">
+    <polygon points="0,0 2,0 4,2.8 6,0 8,0 5.2,4 8,8 6,8 4,5.2 2,8 0,8 2.8,4"
+             ng-attr-style="fill: {{styleHash.fillColor}}; stroke: {{styleHash.strokeColor}};fill-opacity:{{styleHash.fillOpacity}};">
+    </polygon>
+</svg>
+<svg ng-if="isPoint && !styleHash.externalGraphic && styleHash.graphicName == 'cross'" height="10" width="10">
+    <polygon points="4,0 6,0 6,4 10,4 10,6 6,6 6,10 4,10 4,6 0,6 0,4 4,4"
+             ng-attr-style="fill: {{styleHash.fillColor}}; stroke: {{styleHash.strokeColor}};fill-opacity:{{styleHash.fillOpacity}};">
+    </polygon>
+</svg>
+<svg ng-if="isPoint && !styleHash.externalGraphic && styleHash.graphicName == 'triangle'" height="12" width="10">
+    <polygon points="0,10 10,10 5,0"
+             ng-attr-style="fill: {{styleHash.fillColor}}; stroke: {{styleHash.strokeColor}};fill-opacity:{{styleHash.fillOpacity}};">
+    </polygon>
+</svg>
+<svg ng-if="isPoint && !styleHash.externalGraphic && styleHash.graphicName == 'square'" height="11" width="10">
+    <polygon points="0,0 10,0 10,10 0,10"
+             ng-attr-style="fill: {{styleHash.fillColor}}; stroke: {{styleHash.strokeColor}};fill-opacity:{{styleHash.fillOpacity}};">
+    </polygon>
+</svg>
+
+<div ng-if="isPoint && styleHash.externalGraphic" class="shape-point-image">
+    <img ng-src="{{styleHash.externalGraphic}}" ng-alt="" />
+</div>
+<svg ng-if="isPolyline" width="10" height="10">
+    <line x1="0" y1="5" x2="10" y2="5" stroke-width="3" ng-attr-style="stroke: {{styleHash.strokeColor}};" />
+</svg>
+<svg ng-if="isPolygon" width="10" height="10">
+    <defs>
+        <pattern ng-attr-id="shape://vertline{{uniqueId}}"
+                 x="3" y="3"
+                 width="3" height="3"
+                 patternUnits="userSpaceOnUse">
+            <line x2="0" y2="100%" x1="0" y1="0" ng-attr-style="stroke:{{styleHash.fillColor}}; stroke-width:1" />
+        </pattern>
+
+        <pattern ng-attr-id="shape://horline{{uniqueId}}"
+                 x="3" y="3"
+                 width="3" height="3"
+                 patternUnits="userSpaceOnUse">
+            <line x1="0" y1="0" x2="100%" y2="0" ng-attr-style="stroke:{{styleHash.fillColor}}; stroke-width:1" />
+        </pattern>
+
+        <pattern ng-attr-id="shape://backslash{{uniqueId}}"
+                 x="3" y="3"
+                 width="3" height="3"
+                 patternUnits="userSpaceOnUse">
+            <line x1="0" y1="0" x2="100%" y2="100%" ng-attr-style="stroke:{{styleHash.fillColor}};" />
+        </pattern>
+
+        <pattern ng-attr-id="shape://plus{{uniqueId}}"
+                 x="3" y="3"
+                 width="3" height="3"
+                 patternUnits="userSpaceOnUse">
+            <line x2="0" y2="100%" x1="0" y1="0" ng-attr-style="stroke:{{styleHash.fillColor}}; stroke-width:1" />
+            <line x1="0" y1="0" x2="100%" y2="0" ng-attr-style="stroke:{{styleHash.fillColor}}; stroke-width:1" />
+        </pattern>
+
+        <pattern ng-attr-id="shape://dot{{uniqueId}}"
+                 x="3" y="3"
+                 width="3" height="3"
+                 patternUnits="userSpaceOnUse">
+            <circle cx="1" cy="1" r="0.2" ng-attr-style="stroke:{{styleHash.fillColor}}; stroke-width:1;fill:{{styleHash.fillColor}}" />
+        </pattern>
+    </defs>
+    <rect width="10" height="10" ng-attr-style="fill: {{getFill(styleHash)}};
+        stroke: {{styleHash.strokeColor}}; fill-opacity:{{styleHash.fillOpacity}}" />
+</svg>
+<img width="10" height="10" ng-if="isGeoTiff" src="/static/Content/assets/images/rasterIcon.png" style="max-width: initial; height: initial; vertical-align: initial;" alt="geoTiff" />
+<i title="Type can not be resolved" ng-if="!(isPolygon || isPolyline || isPoint || isGeoTiff)" class="fa fa-question red-text"></i>
