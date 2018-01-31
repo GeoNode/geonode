@@ -8,7 +8,7 @@ import json
 class LayerSerializer(serializers.ModelSerializer):
     class Meta:
         model = Layer
-        fields = ('uuid', 'title',)
+        fields = ('uuid', 'title', 'typename',)
         # fields = '__all__'
 
 

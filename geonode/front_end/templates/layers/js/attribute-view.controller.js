@@ -38,7 +38,7 @@
                 self.gridOptions.data = self.attributeDetails;
 
                 self.gridOptions.columnDefs = [];
-                self.propertyNames.forEach(e => {
+                self.propertyNames.forEach(function(e) {
                     self.gridOptions.columnDefs.push({
                         field: e,
                         displayName: e

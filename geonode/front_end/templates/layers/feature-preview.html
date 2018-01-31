@@ -1,0 +1,16 @@
+<div class="MainBodyContainer catalog-browser" style="height: 100%; width: 100%;" ng-init="ctrl.init()">
+    <div class="file-browser-button-container draggable-div">
+        <i class="fa fa-times-circle modal-close-icon" style="float: right; cursor: pointer" ng-click="ctrl.closeDialog()"></i>         
+        <h4>Features</h4>
+    </div>
+    <tabset>
+        <tab active='tab.active' ng-repeat="tab in ctrl.tabs">
+            <tab-heading>
+                [{tab.name}]
+                <span ng-if="tab.active" class="selected-down-arrow"></span>
+            </tab-heading>
+            <div  ui-grid="ctrl.data[tab.name].gridOptions" ui-grid-pagination class="grid"></div>
+        </tab>
+    </tabset>
+    <div style="clear:both"></div>
+</div>

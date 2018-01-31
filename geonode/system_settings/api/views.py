@@ -6,6 +6,7 @@ from geonode.class_factory import ClassFactory
 from django.db import connection
 from rest_framework.views import APIView
 from rest_framework.response import Response
+from rest_framework.permissions import IsAuthenticated, IsAdminUser
 from django.http import JsonResponse
 from rest_framework import status
 import json
@@ -21,7 +22,7 @@ from geonode.db_connections import Database
 
 class SystemSettingsSaveAPIView(APIView):
 
-    # permission_classes = (IsAuthenticated,)
+    permission_classes = (IsAuthenticated, IsAdminUser)
 
     def put(self, request, *args, **kwargs):
         data = request.data

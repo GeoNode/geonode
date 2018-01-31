@@ -1,0 +1,46 @@
+<div ng-show="layout.rightVisible">
+
+    <div class="titleBar text-left" style="padding-right: 8px; padding-left: 0">
+
+        <div class="arrow-right-container" ng-click="layout.setRightVisible(false)">
+            <button class="icon icon18 icon-arrow-right"></button>
+        </div>
+        Attributes
+    </div>
+
+    <div class="content">
+        <div ng-hide="isAttributeGridOn" property-grid options="attributeTableOptions" ng-click="$event.stopPropagation()">
+        </div>
+    </div>
+
+    <!-- <div class="feature-image-thumbnail-pane" ng-controller="imagePreviewController">
+        <div ng-if="hasFeature()">
+            <div class="featureImageHeader">
+                <button ng-if="!isReadonly()" class="btn btn-sm btn-primary" draft-only ng-click="openAttachModal()">
+                       <i class="fa fa-plus fa-fw"></i>Add File
+                    </button>
+            </div>
+
+            <div ng-if="getImages().length == undefined || getImages().length == 0" style="text-align: center; margin-top: 50px;">
+                <div class="alert" style="margin: 0 10px;">
+                    <span ng-if="getImages().length == undefined"><i class="fa fa-spinner fa-spin"></i></span>
+                    <span ng-if="getImages().length == 0">No file available
+                        </span>
+                </div>
+            </div>
+            <carousel ng-if="!isLargeImageViewOn" interval="-1" style="cursor: pointer;">
+                <slide ng-repeat="image in getImages()" active="image.active">
+                    <img ng-src="[{image.url}]" style="margin:auto;min-height: 100px;max-height: 140px;" ng-click="showLargeImage()" />
+                    <h6 class="carousel-title">[{$index+1}]/[{getImages().length}]</h6>
+                </slide>
+            </carousel>
+        </div>
+    </div> -->
+</div>
+<div ng-hide="layout.rightVisible">
+    <div class="titleBar nopadding">
+        <div class="arrow-right-container" ng-click="layout.setRightVisible(true)">
+            <button class="icon icon18 icon-arrow-left"></button>
+        </div>
+    </div>
+</div>
