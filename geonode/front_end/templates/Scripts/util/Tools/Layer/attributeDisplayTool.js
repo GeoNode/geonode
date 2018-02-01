@@ -4,7 +4,7 @@
         return function AttributeDisplayTool(surfLayer, selectFeatureTool, olOverlay, olMap) {
             var isActivated = false;
             var _thisTool = this;
-
+            var _selectFeatureTool = selectFeatureTool;
             this.events = new Event();
 
             this.activate = function () {
@@ -41,7 +41,8 @@
 
             function adjustPopupPosition(map, coordinate) {
                 var center = map.getView().getCenter();
-                var pixelPosition = map.getPixelFromCoordinate([coordinate[0], coordinate[1]]);
+                //var pixelPosition = map.getPixelFromCoordinate([coordinate[0], coordinate[1]]);
+                var pixelPosition = _selectFeatureTool.getCurrentEvent().pixel;
                 var mapWidth = $("#map_canvas").width();
                 var mapHeight = $("#map_canvas").height();
                 var popoverHeight = $(".property-grid-overlay").height();
@@ -52,6 +53,7 @@
                 var thresholdRight = mapWidth - popoverWidth / 2 - 130;
                 var newX, newY;
                 if (pixelPosition[0] < thresholdLeft || pixelPosition[0] > thresholdRight || pixelPosition[1] < thresholdTop || pixelPosition[1] > thresholdBottom) {
+                                    
                     if (pixelPosition[0] < thresholdLeft) {
                         newX = pixelPosition[0] + (thresholdLeft - pixelPosition[0]);
                     } else if (pixelPosition[0] > thresholdRight) {
@@ -80,9 +82,10 @@
             selectFeatureTool.events.register('selected', function (surfFeature, olFeature) {
                 if (!surfLayer.IsVisible) return;
 
-                var coordinate = getCenterOfExtent(olFeature.getGeometry().getExtent());
+                //var coordinate = getCenterOfExtent(olFeature.getGeometry().getExtent());
+                var coordinate = olMap.getCoordinateFromPixel(_selectFeatureTool.getCurrentEvent().pixel);
                 olOverlay.setPosition(coordinate);
-
+                
                 _thisTool.events.broadcast('selected', surfFeature, olFeature);
 
                 $timeout(function () {

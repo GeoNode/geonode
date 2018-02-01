@@ -63,15 +63,15 @@
             }
         };
 
-        (function getSubscriptionStatus() {
-            $http.get(urlResolver.resolveUserProfile("GetResourceUsageInfo")).success(function (usageInfo) {
-                resourceUsage = usageInfo || {};
-            });
+        // (function getSubscriptionStatus() {
+        //     $http.get(urlResolver.resolveUserProfile("GetResourceUsageInfo")).success(function (usageInfo) {
+        //         resourceUsage = usageInfo || {};
+        //     });
 
-            $http.get(urlResolver.resolveUserProfile("GetSubscriptionInfo")).success(function (subscriptionInfo) {
-                subscription = subscriptionInfo || {};
-            });
-        })();
+        //     $http.get(urlResolver.resolveUserProfile("GetSubscriptionInfo")).success(function (subscriptionInfo) {
+        //         subscription = subscriptionInfo || {};
+        //     });
+        // })();
 
         return validators;
     }
