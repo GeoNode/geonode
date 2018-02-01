@@ -428,6 +428,10 @@ def add_layers_to_map_config(request, map_obj, layer_names, add_base_layers=True
             # bad layer, skip
             continue
 
+        if not layer.is_published:
+            # invisible layer, skip inclusion
+            continue
+
         if not request.user.has_perm(
                 'view_resourcebase',
                 obj=layer.get_self_resource()):
@@ -605,6 +609,8 @@ def gxp2wm(config, map_obj=None):
         group = 'General'
         layer_config['tiled'] = True
         if is_wm:
+            source = layer_config['source']
+            config['sources'][source]['ptype'] = 'gxp_gnsource'
             layer_config['local'] = True
             alternate = layer_config['name']
             layer = Layer.objects.get(alternate=alternate)
@@ -620,8 +626,8 @@ def gxp2wm(config, map_obj=None):
             layer_config["srs"] = getattr(
                 settings, 'DEFAULT_MAP_CRS', 'EPSG:900913')
             bbox = layer.bbox[:-1]
-            layer_config["bbox"] = bbox if layer_config["srs"] != 'EPSG:900913' \
-                else llbbox_to_mercator([float(coord) for coord in bbox])
+            #layer_config["bbox"] = bbox if layer_config["srs"] != 'EPSG:900913' \
+            #    else llbbox_to_mercator([float(coord) for coord in bbox])
         if is_hh:
             layer_config['local'] = False
             layer_config['styles'] = ''
@@ -650,9 +656,10 @@ def gxp2wm(config, map_obj=None):
     else:
         # TODO check if this works with different languages
         config['about']['introtext'] = unicode(DEFAULT_CONTENT)
-    print json.dumps(config)
+
     if config_is_string:
         config = json.dumps(config)
+
     return config
 
 
