@@ -38,6 +38,7 @@
 
                 angular.extend(factory, mapInfo);
                 factory.info = mapInfo;
+                factory.info.PropertyInPopup = true;
 
                 factory.events.broadcast('infoLoaded', mapInfo);
 

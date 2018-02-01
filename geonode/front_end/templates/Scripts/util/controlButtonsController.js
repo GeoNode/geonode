@@ -1,5 +1,5 @@
-﻿appModule.controller("controlButtonsController", ["$scope", "$modal", "$timeout", "$rootScope", "$window", "projectService", 'mapModes', 'mapService', 'dirtyManager', 'featureService', 'interactionHandler', 'mapTools', 'CircleDrawTool', 'LayerService', 'urlResolver',
-    function($scope, $modal, $timeout, $rootScope, $window, projectService, mapModes, mapService, dirtyManager, featureService, interactionHandler, mapTools, CircleDrawTool, LayerService, urlResolver) {
+﻿appModule.controller("controlButtonsController", ["$scope", "$modal", "$timeout", "$rootScope", "$window", "projectService", 'mapModes', 'mapService', 'dirtyManager', 'featureService', 'interactionHandler', 'mapTools', 'CircleDrawTool', 'LayerService', 'urlResolver', '$q',
+    function($scope, $modal, $timeout, $rootScope, $window, projectService, mapModes, mapService, dirtyManager, featureService, interactionHandler, mapTools, CircleDrawTool, LayerService, urlResolver, $q) {
         $scope.mapService = mapService;
         $scope.mapTools = mapTools;
 
@@ -153,18 +153,31 @@
                     var layers = mapService.getLayers();
                     var meterPerDegree = 111325;
                     var radiusInDegree = values.radius/meterPerDegree;
+                    var promises = [];
                     for (var k in layers) {
                         var layer = layers[k];
-                        LayerService.getWFS(urlResolver.getGeoServerRoot()+'geoserver/', {
+                        let p = LayerService.getWFS('/geoserver/', {
                             _dc: 1510220556364,
                             version: '1.0.0',
                             request: 'GetFeature',
                             outputFormat: 'JSON',
                             srsName: 'EPSG:4326',
                             typeNames: layer.getName(),
-                            cql_filter: 'DWithin(the_geom,POINT(' + centerLongLat[0] + ' ' + centerLongLat[1] + '),' + values.radius + ',meters)',
+                            cql_filter: 'DWithin(the_geom,POINT(' + centerLongLat[0] + ' ' + centerLongLat[1] + '),' + radiusInDegree + ',meters)',
                         }, false);
+                        promises.push(p);
                     }
+                    $q.all(promises)
+                    .then(function(response){
+                        var layer_names = Object.keys(layers);
+                        var data = {};
+                        for(var i in layer_names){
+                            data[layer_names[i]] = response[i].features.map(function(e){
+                                return e.properties;
+                            });
+                        }
+                        showFeaturePreviewDialog(data);
+                    });
                 });
             };
 
@@ -222,18 +235,33 @@
             });
         }
 
-        function showOverpassApiQueryDialog() {
+        function showFeaturePreviewDialog(data) {
             $modal.open({
-                templateUrl: '/static/Templates/Project/OverpassApiQueryBuilder.html',
-                controller: 'OverpassApiQueryBuilderController',
+                templateUrl: '/static/layers/feature-preview.html',
+                controller: 'FeaturePreviewController as ctrl',
                 backdrop: 'static',
                 keyboard: false,
                 windowClass: 'fullScreenModal First',
-                windowTopClass : 'Second',
-                openedClass : 'Third'
-                // windowClass: 'fullScreenModal'
+                resolve: {
+                    data: function() {
+                        return data;
+                    }
+                }
             });
         }
+
+        // function showOverpassApiQueryDialog() {
+        //     $modal.open({
+        //         templateUrl: '/static/Templates/Project/OverpassApiQueryBuilder.html',
+        //         controller: 'OverpassApiQueryBuilderController',
+        //         backdrop: 'static',
+        //         keyboard: false,
+        //         windowClass: 'fullScreenModal First',
+        //         windowTopClass : 'Second',
+        //         openedClass : 'Third'
+        //         // windowClass: 'fullScreenModal'
+        //     });
+        // }
 
         $scope.toggleMapEditable = function() {
             interactionHandler.toggleEditable();
