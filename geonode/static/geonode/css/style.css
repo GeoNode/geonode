@@ -2739,6 +2739,7 @@ body.layer-detail-page #gd-wrapper .container-fluid.padding-zero{
 }
 #gd-accordion-style .panel-group .panel{
     border-radius: 0;
+    margin: 10px;
 }
 #gd-accordion-style .panel-group .panel + .panel{
     margin-top: 0;
@@ -3331,6 +3332,7 @@ width: 80%;
 #myNav .panel-heading
 {
     white-space: normal;
+    background-color: #f5f5f5;
 }
 #gd-accordion-style .panel-heading
 {
