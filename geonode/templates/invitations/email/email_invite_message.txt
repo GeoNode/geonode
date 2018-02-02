@@ -1,0 +1,22 @@
+{% load i18n %}
+{% autoescape off %}
+Dear Sir/Madam,
+
+{{ inviter_name }} is inviting you to join ({{ site_name }}).
+
+To do so, please register at {{ invite_url }} .
+
+Once you receive the confirmation that your account is activated, you can notify {{ inviter_name }} that you wish to join her/his group(s) through this link
+
+{{ SITEURL }}{% url 'message_create' inviter_id %}?subject=Request%20to%20join%20your%20group&content=Dear%20group%20manager%2C%0A%0AI%20am%20now%20a%20member%20of%20{{ site_name }}%2C%20and%20I%20would%20like%20to%20join%20the%20group%20that%20you%20are%20managing.%0APlease%20add%20me%20to%20your%20group.%0A%0AThank%20you.
+
+{{ inviter_name }} is a member of the following group(s):
+{% for group in groups %}
+- {{ group }}
+{% endfor %}
+
+We look forward to seeing you on the platform,
+
+The GeoNode team.
+
+{% endautoescape %}

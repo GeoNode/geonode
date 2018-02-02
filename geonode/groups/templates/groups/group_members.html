@@ -6,7 +6,7 @@
 <div class="row">
   <div class="col-md-12">
     <h2 class="page-header">{%  trans "Edit Members for"  %} <a href="{% url "group_detail" group.slug %}">{{ group.title }}</a></h2>
-    <h2 class="page-title">{%  trans "Members" %}</h2>
+    <h3 class="page-title">{%  trans "Current Members" %}</h3>
     <div class="row">
       <div class="col-md-12">
         <ul class="nav nav-tabs">
@@ -43,7 +43,7 @@
           <article id="managers" class="tab-pane">
             <ul class="no-style-list">
             {% for member in members %}
-              {% if member.role = 'manager' %}
+              {% if member.role == 'manager' %}
               <h4>
                 <i class="fa fa-user"></i> <a href="{{ member.user.get_absolute_url }}">{{ member.user.username }}</a>
                 {% if member.user.email %}
@@ -95,27 +95,20 @@
             </ul>
           </article>
         </div>
-        {% if member_form %}
-          <h2>{% trans "Add members" %}</h2>
-          <form class="uniForm" method="POST" action="{% url "group_members_add" group.slug %}">
-            {% csrf_token %}
-            <div id="member_form_container">
-              {{ member_form|as_bootstrap }}<br/><br/>
-            </div>
-            <input type="submit" value="Add Group Members" class="btn btn-success"/>
-          </form>
-        {% endif %}
-
-        {% if invite_form %}
-          <h2>{% trans "Invite people" %}</h2>
-          <form class="uniForm" method="POST" action="{% url "group_invite" group.slug %}">
-            {% csrf_token %}
-            {{ invite_form|as_bootstrap }}
-            <input type="submit" value="invite" />
-          </form>
-        {% endif %}
       </div>
     </div>
+    {% if member_form %}
+    <div class="row">
+        <h3>{% trans "Add new members" %}</h3>
+        <form method="POST" action="{% url "group_members_add" group.slug %}">
+            {% csrf_token %}
+            <div id="member_form_container">
+                {{ member_form|as_bootstrap }}<br/><br/>
+            </div>
+            <input type="submit" value="Add Group Members" class="btn btn-primary"/>
+        </form>
+    </div>
+    {% endif %}
   </div>
 </div>
 {% endblock %}

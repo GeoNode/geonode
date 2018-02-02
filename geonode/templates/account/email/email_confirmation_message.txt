@@ -1,6 +1,8 @@
-{% load i18n account_tags %}{% blocktrans with site_name=current_site.name %}A user on {{ site_name }} has created an account using this email address.
+{% load account %}{% user_display user as user_display %}{% load i18n %}{% autoescape off %}{% blocktrans with site_name=current_site.name site_domain=current_site.domain %}Hello from {{ site_name }}!
 
-To confirm this email address, go to {{ activate_url }}
+You're receiving this e-mail because user {{ user_display }} has given yours as an e-mail address to connect their account.
 
-If you did not sign up for this site, you can ignore this message.
-{% endblocktrans %}
+To confirm this is correct, go to {{ activate_url }}
+{% endblocktrans %}{% endautoescape %}
+{% blocktrans with site_name=current_site.name site_domain=current_site.domain %}Thank you from {{ site_name }}!
+{{ site_domain }}{% endblocktrans %}

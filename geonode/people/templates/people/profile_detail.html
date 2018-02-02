@@ -133,7 +133,9 @@
   {% if user == profile %}
     <ul class="list-group">
       <li class="list-group-item"><a href="{% url "profile_edit" user.username %}"><i class="fa fa-edit"></i> {% trans "Edit profile" %}</a></li>
-      <li class="list-group-item"><a href="{% url "account_password" %}"><i class="fa fa-lock"></i> {% trans "Change password" %}</a></li>
+      <li class="list-group-item"><a href="{% url "socialaccount_connections" %}"><i class="fa fa-sign-in"></i> {% trans "Connected social accounts" %}</a></li>
+      <li class="list-group-item"><a href="{% url "account_email" %}"><i class="fa fa-envelope-o"></i> {% trans "Associated e-mails" %}</a></li>
+      <li class="list-group-item"><a href="{% url "account_change_password" %}"><i class="fa fa-lock"></i> {% trans "Set/Change password" %}</a></li>
     </ul>
     <ul class="list-group">
       <li class="list-group-item"><a href="{% url "layer_upload" %}"><i class="fa fa-cloud-upload"></i> {% trans "Upload new layers" %}</a></li>
@@ -151,10 +153,10 @@
       <li class="list-group-item"><a href="{% url "announcements_list" %}"><i class="fa fa-bullhorn"></i> {% trans "Announcements" %}</a></li>
       {% endif %}
     </ul>
-      {% if user.is_superuser %}
     <ul class="list-group">
+      <li class="list-group-item"><a href="{% url "geonode.invitations:geonode-send-invite" %}"><i class="fa fa-edit"></i> {% trans "Invite Users" %}</a></li>
+      {% if user.is_superuser %}
       <li class="list-group-item"><a href="{% url "services" %}?limit={{ CLIENT_RESULTS_LIMIT }}"><i class="fa fa-globe"></i> {% trans "Remote Services" %}</a></li>
-      <li class="list-group-item"><a href="{% url "invitations:send-invite" %}"><i class="fa fa-edit"></i> {% trans "Invite User" %}</a></li>
       <li class="list-group-item"><a href="{{ GEOSERVER_BASE_URL }}"><i class="fa fa-gears"></i> {% trans "GeoServer" %}</a></li>
       {% endif %}
       {% if user.is_staff %}

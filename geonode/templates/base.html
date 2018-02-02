@@ -1,4 +1,5 @@
 {% load i18n avatar_tags %}
+{% load account socialaccount %}
 <!DOCTYPE html>
 <html lang="en">
   <head>
@@ -95,10 +96,10 @@
                 {% if perms.announcements.can_manage %}
                 <li><a href="{% url "announcements_list" %}">{% trans "Announcements" %}</a></li>
                 {% endif %}
-                {% if user.is_superuser %}
                 <li role="separator" class="divider"></li>
+                <li><a href="{% url "geonode.invitations:geonode-send-invite" %}">{% trans "Invite Users" %}</a></li>
+                {% if user.is_superuser %}
                 <li><a href="/admin/people/profile/add/">{% trans "Add User" %}</a></li>
-                <li><a href="{% url "invitations:send-invite" %}">{% trans "Invite User" %}</a></li>
                 <li><a href="{% url "group_create" %}">{% trans "Create Group" %}</a></li>
                 {% endif %}
               </ul>
@@ -232,9 +233,9 @@
             {% if perms.announcements.can_manage %}
             <li><a href="{% url "announcements_list" %}">{% trans "Announcements" %}</a></li>
             {% endif %}
+            <li><a href="{% url "geonode.invitations:geonode-send-invite" %}">{% trans "Invite Users" %}</a></li>
             {% if user.is_superuser %}
             <li><a href="/admin/people/profile/add/">{% trans "Add User" %}</a></li>
-            <li><a href="{% url "invitations:send-invite" %}">{% trans "Invite User" %}</a></li>
             <li><a href="{% url "group_create" %}">{% trans "Create Group" %}</a></li>
             {% endif %}
           </ul>
@@ -277,9 +278,15 @@
           <form class="form-signin" role="form" action="{% url "account_login" %}?next={{ request.path }}" method="post">
             <div class="modal-body">
               {% csrf_token %}
+              {% get_providers as socialaccount_providers %}
+              {% if socialaccount_providers %}
+                  {% include "socialaccount/snippets/provider_list.html" with process="login" %}
+                  {% include "socialaccount/snippets/login_extra.html" %}
+                <hr>
+              {% endif %}
               <div class="form-group">
                 <label for="id_username" class="sr-only">{% trans "Username" %}:</label>
-                <input id="id_username" class="form-control" name="username" placeholder="{% trans "Username" %}" type="text" />
+                <input id="id_username" class="form-control" name="login" placeholder="{% trans "Username" %}" type="text" />
               </div>
               <div class="form-group">
                 <label for="id_password" class="sr-only">{% trans "Password" %}:</label>

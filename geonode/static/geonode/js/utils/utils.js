@@ -3,13 +3,13 @@ $(function() {
     $(".main-nav li").removeClass("current");
 
 //    $('[rel=tooltip]').tooltip({placement:"left"});
-    
+
     var class_list = $("body").attr("class").split(/\s+/);
     $.each(class_list, function(index, item) {
         var selector = ".main-nav li#nav_" + item;
         $(selector).addClass("current");
     });
-    
+
 });
 
 $(function(){

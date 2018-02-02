@@ -129,10 +129,10 @@
     {% autoescape off %}
 
       csrf_token =  "{{ csrf_token }}",
-      form_target = "{{ UPLOADER_URL }}",
+      form_target = "{{ LAYER_ANCILLARY_FILES_UPLOAD_URL }}",
       geogig_enabled = {{ GEOGIG_ENABLED|lower  }},
-      time_enabled = {{ TIME_ENABLED|lower  }},
-      mosaic_enabled = {{ MOSAIC_ENABLED|lower  }},
+      time_enabled = false,
+      mosaic_enabled = false,
       userLookup = "{% url "geonode.views.ajax_lookup" %}"
 
     {% endautoescape %}

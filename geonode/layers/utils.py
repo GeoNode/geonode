@@ -27,7 +27,6 @@ import re
 import os
 import glob
 import sys
-import tempfile
 
 from geonode.maps.models import Map
 from osgeo import gdal
@@ -50,7 +49,8 @@ from geonode.base.models import Link, SpatialRepresentationType,  \
     TopicCategory, Region, License, ResourceBase
 from geonode.layers.models import shp_exts, csv_exts, vec_exts, cov_exts
 from geonode.layers.metadata import set_metadata
-from geonode.utils import http_client, check_ogc_backend
+from geonode.utils import (http_client, check_ogc_backend,
+                           unzip_file, extract_tarfile)
 
 import tarfile
 
@@ -354,40 +354,6 @@ def get_bbox(filename):
         bbox_y1 = max(ext[0][1], ext[2][1])
 
     return [bbox_x0, bbox_x1, bbox_y0, bbox_y1]
-
-
-def unzip_file(upload_file, extension='.shp', tempdir=None):
-    """
-    Unzips a zipfile into a temporary directory and returns the full path of the .shp file inside (if any)
-    """
-    absolute_base_file = None
-    if tempdir is None:
-        tempdir = tempfile.mkdtemp()
-
-    the_zip = ZipFile(upload_file)
-    the_zip.extractall(tempdir)
-    for item in the_zip.namelist():
-        if item.endswith(extension):
-            absolute_base_file = os.path.join(tempdir, item)
-
-    return absolute_base_file
-
-
-def extract_tarfile(upload_file, extension='.shp', tempdir=None):
-    """
-    Extracts a tarfile into a temporary directory and returns the full path of the .shp file inside (if any)
-    """
-    absolute_base_file = None
-    if tempdir is None:
-        tempdir = tempfile.mkdtemp()
-
-    the_tar = tarfile.open(upload_file)
-    the_tar.extractall(tempdir)
-    for item in the_tar.getnames():
-        if item.endswith(extension):
-            absolute_base_file = os.path.join(tempdir, item)
-
-    return absolute_base_file
 
 
 def file_upload(filename, name=None, user=None, title=None, abstract=None,
