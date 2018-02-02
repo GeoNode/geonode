@@ -1,5 +1,19 @@
+# Set variables to pass
+DOCKER_HOST := $(DOCKER_HOST)
+DOCKER_HOST_IP := `docker run --net=host codenvy/che-ip:nightly`
+
+auto-up:
+	# bring up the services with proper environment variables
+	unset DOCKERHOST; \
+	export DOCKERHOST=$(DOCKER_HOST); \
+	echo Docker daemon is running at the following address $$DOCKERHOST; \
+	unset GEONODE_LB_HOST_IP; \
+	export GEONODE_LB_HOST_IP=$(DOCKER_HOST_IP); \
+	echo GeoNode will be available at the following address http://$$GEONODE_LB_HOST_IP; \
+	echo If you want to run it on localhost then remember to add this line "localhost $$GEONODE_LB_HOST_IP" to /etc/hosts; \
+	docker-compose up -d --build
+
 up:
-	# bring up the services
 	docker-compose up -d
 
 build:
@@ -7,7 +21,7 @@ build:
 	docker-compose build celery
 
 sync: up
-	# set up the database tablea
+	# set up the database tables
 	docker-compose exec django django-admin.py migrate --noinput
 	docker-compose exec django django-admin.py loaddata sample_admin
 	docker-compose exec django django-admin.py loaddata geonode/base/fixtures/default_oauth_apps_docker.json

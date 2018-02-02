@@ -25,13 +25,11 @@ import sys
 from datetime import timedelta
 from distutils.util import strtobool
 
+import dj_database_url
+import djcelery
 from geonode import __file__ as geonode_path
 from geonode import get_version
 from geonode.celery_app import app  # flake8: noqa
-from distutils.util import strtobool
-import djcelery
-import dj_database_url
-
 
 #
 # General Django development settings
@@ -85,6 +83,14 @@ DATABASE_URL = os.getenv(
 DATABASES = {
     'default': dj_database_url.parse(DATABASE_URL, conn_max_age=600)
 }
+
+if os.getenv('DEFAULT_BACKEND_DATASTORE'):
+    GEODATABASE_URL = os.getenv('GEODATABASE_URL',
+                                'postgis://\
+geonode_data:geonode_data@localhost:5432/geonode_data')
+    DATABASES[os.getenv('DEFAULT_BACKEND_DATASTORE')] = dj_database_url.parse(
+        GEODATABASE_URL, conn_max_age=600
+    )
 
 MANAGERS = ADMINS = os.getenv('ADMINS', [])
 
@@ -146,25 +152,25 @@ EXTRA_LANG_INFO = {
         'code': 'am',
         'name': 'Amharic',
         'name_local': 'Amharic',
-        },
+    },
     'tl': {
         'bidi': False,
         'code': 'tl',
         'name': 'Tagalog',
         'name_local': 'tagalog',
-        },
+    },
     'ta': {
         'bidi': False,
         'code': 'ta',
         'name': 'Tamil',
         'name_local': u'tamil',
-        },
+    },
     'si': {
         'bidi': False,
         'code': 'si',
         'name': 'Sinhala',
         'name_local': 'sinhala',
-        },
+    },
 }
 
 
@@ -388,8 +394,8 @@ LOGGING = {
             "handlers": ["console"], "level": "ERROR", },
         "pycsw": {
             "handlers": ["console"], "level": "ERROR", },
-        },
-    }
+    },
+}
 
 #
 # Customizations to built in Django settings required by GeoNode
@@ -470,7 +476,7 @@ OAUTH2_PROVIDER = {
 # authorized exempt urls needed for oauth when GeoNode is set to lockdown
 AUTH_EXEMPT_URLS = ('/api/o/*', '/api/roles', '/api/adminRole', '/api/users',)
 
-ANONYMOUS_USER_ID = os.getenv('ANONYMOUS_USER_ID','-1')
+ANONYMOUS_USER_ID = os.getenv('ANONYMOUS_USER_ID', '-1')
 GUARDIAN_GET_INIT_ANONYMOUS_USER = os.getenv(
     'GUARDIAN_GET_INIT_ANONYMOUS_USER',
     'geonode.people.models.get_anonymous_user_instance'
@@ -606,7 +612,8 @@ OGC_SERVER = {
         'LOG_FILE': '%s/geoserver/data/logs/geoserver.log'
         % os.path.abspath(os.path.join(PROJECT_ROOT, os.pardir)),
         # Set to name of database in DATABASES dictionary to enable
-        'DATASTORE': '',  # 'datastore',
+        # 'datastore',
+        'DATASTORE': os.getenv('DEFAULT_BACKEND_DATASTORE', ''),
         'PG_GEOGIG': False,
         'TIMEOUT': 10  # number of seconds to allow for HTTP requests
     }
@@ -1037,9 +1044,9 @@ if LOCKDOWN_GEONODE:
 # maybe they set it as a windows environment
 if os.name == 'nt':
     if "GEOS_LIBRARY_PATH" not in locals() \
-      or "GDAL_LIBRARY_PATH" not in locals():
+            or "GDAL_LIBRARY_PATH" not in locals():
         if os.environ.get("GEOS_LIBRARY_PATH", None) \
-          and os.environ.get("GDAL_LIBRARY_PATH", None):
+                and os.environ.get("GDAL_LIBRARY_PATH", None):
             GEOS_LIBRARY_PATH = os.environ.get('GEOS_LIBRARY_PATH')
             GDAL_LIBRARY_PATH = os.environ.get('GDAL_LIBRARY_PATH')
         else:

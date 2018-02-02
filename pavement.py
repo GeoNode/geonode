@@ -18,6 +18,8 @@
 #
 #########################################################################
 
+import fileinput
+import glob
 import os
 import re
 import shutil
@@ -26,16 +28,12 @@ import time
 import urllib
 import urllib2
 import zipfile
-import glob
-import fileinput
-import yaml
-
-from setuptools.command import easy_install
 from urlparse import urlparse
 
-from paver.easy import task, options, cmdopts, needs
-from paver.easy import path, sh, info, call_task
-from paver.easy import BuildFailure
+import yaml
+from paver.easy import (BuildFailure, call_task, cmdopts, info, needs, options,
+                        path, sh, task)
+from setuptools.command import easy_install
 
 try:
     from geonode.settings import GEONODE_APPS
@@ -83,6 +81,12 @@ def grab(src, dest, name):
 ])
 def setup_geoserver(options):
     """Prepare a testing instance of GeoServer."""
+    from geonode.settings import INSTALLED_APPS
+
+    # only start if using Geoserver backend
+    if 'geonode.geoserver' not in INSTALLED_APPS:
+        return
+
     download_dir = path('downloaded')
     if not download_dir.exists():
         download_dir.makedirs()
@@ -121,10 +125,34 @@ def setup_geoserver(options):
     _install_data_dir()
 
 
+def _robust_rmtree(path, logger=None, max_retries=5):
+    """Try to delete paths robustly .
+    Retries several times (with increasing delays) if an OSError
+    occurs.  If the final attempt fails, the Exception is propagated
+    to the caller. Taken from https://github.com/hashdist/hashdist/pull/116
+    """
+
+    for i in range(max_retries):
+        try:
+            shutil.rmtree(path)
+            return
+        except OSError, e:
+            if logger:
+                info('Unable to remove path: %s' % path)
+                info('Retrying after %d seconds' % i)
+            time.sleep(i)
+
+    # Final attempt, pass any Exceptions up to caller.
+    shutil.rmtree(path)
+
+
 def _install_data_dir():
     target_data_dir = path('geoserver/data')
     if target_data_dir.exists():
-        target_data_dir.rmtree()
+        try:
+            target_data_dir.rmtree()
+        except OSError:
+            _robust_rmtree(target_data_dir, logger=True)
 
     original_data_dir = path('geoserver/geoserver/data')
     justcopy(original_data_dir, target_data_dir)
@@ -137,6 +165,43 @@ def _install_data_dir():
         xml = xml[:m.start(1)] + "http://localhost:8000/" + xml[m.end(1):]
         with open(config, 'w') as f:
             f.write(xml)
+
+    try:
+        config = path(
+            'geoserver/data/security/filter/geonode-oauth2/config.xml')
+        with open(config) as f:
+            xml = f.read()
+            m = re.search('accessTokenUri>([^<]+)', xml)
+            xml = xml[:m.start(1)] + \
+                "http://localhost:8000/o/token/" + xml[m.end(1):]
+            m = re.search('userAuthorizationUri>([^<]+)', xml)
+            xml = xml[:m.start(
+                1)] + "http://localhost:8000/o/authorize/" + xml[m.end(1):]
+            m = re.search('redirectUri>([^<]+)', xml)
+            xml = xml[:m.start(
+                1)] + "http://localhost:8080/geoserver/index.html" + xml[m.end(1):]
+            m = re.search('checkTokenEndpointUrl>([^<]+)', xml)
+            xml = xml[:m.start(
+                1)] + "http://localhost:8000/api/o/v4/tokeninfo/" + xml[m.end(1):]
+            m = re.search('logoutUri>([^<]+)', xml)
+            xml = xml[:m.start(
+                1)] + "http://localhost:8000/account/logout/" + xml[m.end(1):]
+            with open(config, 'w') as f:
+                f.write(xml)
+    except Exception as e:
+        print(e)
+
+    try:
+        config = path(
+            'geoserver/data/security/role/geonode REST role service/config.xml')
+        with open(config) as f:
+            xml = f.read()
+            m = re.search('baseUrl>([^<]+)', xml)
+            xml = xml[:m.start(1)] + "http://localhost:8000" + xml[m.end(1):]
+            with open(config, 'w') as f:
+                f.write(xml)
+    except Exception as e:
+        print(e)
 
 
 @task
@@ -324,10 +389,18 @@ def stop_geoserver():
     """
     Stop GeoServer
     """
+    from geonode.settings import INSTALLED_APPS
+
+    # only start if using Geoserver backend
+    if 'geonode.geoserver' not in INSTALLED_APPS:
+        return
     kill('java', 'geoserver')
 
 
 @task
+@needs([
+    'stop_geoserver'
+])
 def stop():
     """
     Stop GeoNode
@@ -347,7 +420,7 @@ def start_django():
     """
     Start the GeoNode Django application
     """
-    bind = options.get('bind', '')
+    bind = options.get('bind', '0.0.0.0:8000')
     foreground = '' if options.get('foreground', False) else '&'
     sh('python manage.py runserver %s %s' % (bind, foreground))
 
@@ -361,7 +434,12 @@ def start_geoserver(options):
     Start GeoServer with GeoNode extensions
     """
 
-    from geonode.settings import OGC_SERVER
+    from geonode.settings import OGC_SERVER, INSTALLED_APPS
+
+    # only start if using Geoserver backend
+    if 'geonode.geoserver' not in INSTALLED_APPS:
+        return
+
     GEOSERVER_BASE_URL = OGC_SERVER['default']['LOCATION']
     url = GEOSERVER_BASE_URL
 
@@ -376,6 +454,7 @@ def start_geoserver(options):
     jetty_runner = download_dir / \
         os.path.basename(dev_config['JETTY_RUNNER_URL'])
     data_dir = path('geoserver/data').abspath()
+    geofence_dir = path('geoserver/data/geofence').abspath()
     web_app = path('geoserver/geoserver').abspath()
     log_file = path('geoserver/jetty.log').abspath()
     config = path('scripts/misc/jetty-runner.xml').abspath()
@@ -420,8 +499,10 @@ def start_geoserver(options):
         sh((
             '%(javapath)s -Xmx512m -XX:MaxPermSize=256m'
             ' -DGEOSERVER_DATA_DIR=%(data_dir)s'
+            ' -Dgeofence.dir=%(geofence_dir)s'
+            # ' -Dgeofence-ovr=geofence-datasource-ovr.properties'
             # workaround for JAI sealed jar issue and jetty classloader
-            ' -Dorg.eclipse.jetty.server.webapp.parentLoaderPriority=true'
+            # ' -Dorg.eclipse.jetty.server.webapp.parentLoaderPriority=true'
             ' -jar %(jetty_runner)s'
             ' --port %(jetty_port)i'
             ' --log %(log_file)s'
@@ -733,11 +814,28 @@ def waitfor(url, timeout=300):
     return started
 
 
+def _copytree(src, dst, symlinks=False, ignore=None):
+    for item in os.listdir(src):
+        s = os.path.join(src, item)
+        d = os.path.join(dst, item)
+        if os.path.isdir(s):
+            shutil.copytree(s, d, symlinks, ignore)
+        else:
+            shutil.copy2(s, d)
+
+
 def justcopy(origin, target):
     if os.path.isdir(origin):
         shutil.rmtree(target, ignore_errors=True)
-        shutil.copytree(origin, target)
+        _copytree(origin, target)
     elif os.path.isfile(origin):
         if not os.path.exists(target):
             os.makedirs(target)
         shutil.copy(origin, target)
+
+
+def str2bool(v):
+    if v and len(v) > 0:
+        return v.lower() in ("yes", "true", "t", "1")
+    else:
+        return False
