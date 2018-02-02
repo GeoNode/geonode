@@ -131,22 +131,35 @@ client_secret=`echo $oauth_keys | cut -d \, -f 2`
 oauth_config="$GEOSERVER_DATA_DIR/security/filter/geonode-oauth2/config.xml"
 sed -i "s|<cliendId>.*</cliendId>|<cliendId>$client_id</cliendId>|g" $oauth_config
 sed -i "s|<clientSecret>.*</clientSecret>|<clientSecret>$client_secret</clientSecret>|g" $oauth_config
+sed -i "s|<accessTokenUri>.*</accessTokenUri>|<accessTokenUri>http://$NEWIP/o/token/</accessTokenUri>|g" $oauth_config
 sed -i "s|<userAuthorizationUri>.*</userAuthorizationUri>|<userAuthorizationUri>http://$NEWIP/o/authorize/</userAuthorizationUri>|g" $oauth_config
 sed -i "s|<redirectUri>.*</redirectUri>|<redirectUri>http://$NEWIP/geoserver/</redirectUri>|g" $oauth_config
+sed -i "s|<checkTokenEndpointUrl>.*</checkTokenEndpointUrl>|<checkTokenEndpointUrl>http://$NEWIP/api/o/v4/tokeninfo/</checkTokenEndpointUrl>|g" $oauth_config
 sed -i "s|<logoutUri>.*</logoutUri>|<logoutUri>http://$NEWIP/account/logout/</logoutUri>|g" $oauth_config
 
 sed -i "s/localhost:8000/$NEWIP/g" $oauth_config
 sed -i "s/localhost:8080/$NEWIP/g" $oauth_config
+sed -i "s/localhost/$NEWIP/g" $oauth_config
+sed -i "s/localhost/$NEWIP/g" $oauth_config
 
 sed -i "s|<baseUrl>.*</baseUrl>|<baseUrl>http://$NEWIP</baseUrl>|g" "$GEOSERVER_DATA_DIR/security/role/geonode REST role service/config.xml"
 sed -i "s/localhost:8000/$NEWIP/g" "$GEOSERVER_DATA_DIR/security/role/geonode REST role service/config.xml"
+sed -i "s/localhost/$NEWIP/g" "$GEOSERVER_DATA_DIR/security/role/geonode REST role service/config.xml"
 
 sed -i "s|<proxyBaseUrl>.*</proxyBaseUrl>|<proxyBaseUrl>http://$NEWIP/geoserver</proxyBaseUrl>|g" "$GEOSERVER_DATA_DIR/global.xml"
 sed -i "s/localhost:8080/$NEWIP/g" "$GEOSERVER_DATA_DIR/global.xml"
+sed -i "s/localhost/$NEWIP/g" "$GEOSERVER_DATA_DIR/global.xml"
+
+# Restart tomcat server
+$TOMCAT_SERVICE restart
+
+echo "Waiting Tomcat Service to Restart..."
+sleep 30s
 
 # Restart apache server
 $APACHE_SERVICE restart
-service tomcat8 restart
+echo "Waiting Apache HTTPD Service to Restart..."
+sleep 5s
 
 # Run updatelayers
 geonode updatelayers
