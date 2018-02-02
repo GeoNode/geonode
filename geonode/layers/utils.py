@@ -83,7 +83,8 @@ def resolve_regions(regions):
         if len(regions) > 0:
             for region in regions:
                 try:
-                    region_resolved = Region.objects.get(Q(name__iexact=region) | Q(code__iexact=region))
+                    region_resolved = Region.objects.get(
+                        Q(name__iexact=region) | Q(code__iexact=region))
                     regions_resolved.append(region_resolved)
                 except ObjectDoesNotExist:
                     regions_unresolved.append(region)
@@ -400,7 +401,8 @@ def file_upload(filename, name=None, user=None, title=None, abstract=None,
         name = slugify(title).replace('-', '_')
 
     if category is not None:
-        categories = TopicCategory.objects.filter(Q(identifier__iexact=category) | Q(gn_description__iexact=category))
+        categories = TopicCategory.objects.filter(
+            Q(identifier__iexact=category) | Q(gn_description__iexact=category))
         if len(categories) == 1:
             category = categories[0]
         else:
@@ -482,7 +484,7 @@ def file_upload(filename, name=None, user=None, title=None, abstract=None,
             if nlp_metadata:
                 regions_resolved.extend(nlp_metadata.get('regions', []))
                 keywords.extend(nlp_metadata.get('keywords', []))
-        except:
+        except BaseException:
             print "NLP extraction failed."
 
     # If it is a vector file, create the layer in postgis.
@@ -642,7 +644,7 @@ def upload(incoming, user=None, overwrite=False,
                         send_slack_messages(build_slack_message_layer(
                             ("layer_new" if status == "created" else "layer_edit"),
                             layer))
-                    except:
+                    except BaseException:
                         print "Could not send slack message."
 
             except Exception as e:
@@ -713,8 +715,8 @@ def create_thumbnail(instance, thumbnail_remote_url, thumbnail_create_url=None,
                                            name="Remote Thumbnail",
                                            mime='image/png',
                                            link_type='image',
-                                           )
-                                       )
+            )
+            )
             Layer.objects.filter(id=instance.id) \
                 .update(thumbnail_url=thumbnail_remote_url)
             # Download thumbnail and save it locally.

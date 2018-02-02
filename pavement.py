@@ -37,7 +37,7 @@ from setuptools.command import easy_install
 
 try:
     from geonode.settings import GEONODE_APPS
-except:
+except BaseException:
     # probably trying to run install_win_deps.
     pass
 
@@ -157,18 +157,14 @@ def _install_data_dir():
     original_data_dir = path('geoserver/geoserver/data')
     justcopy(original_data_dir, target_data_dir)
 
-    try:
-        config = path(
-            'geoserver/data/global.xml')
-        with open(config) as f:
-            xml = f.read()
-            m = re.search('proxyBaseUrl>([^<]+)', xml)
-            xml = xml[:m.start(1)] + \
-                "http://localhost:8080/geoserver" + xml[m.end(1):]
-            with open(config, 'w') as f:
-                f.write(xml)
-    except Exception as e:
-        print(e)
+    config = path(
+        'geoserver/data/security/auth/geonodeAuthProvider/config.xml')
+    with open(config) as f:
+        xml = f.read()
+        m = re.search('baseUrl>([^<]+)', xml)
+        xml = xml[:m.start(1)] + "http://localhost:8000/" + xml[m.end(1):]
+        with open(config, 'w') as f:
+            f.write(xml)
 
     try:
         config = path(
@@ -260,7 +256,7 @@ def win_install_deps(options):
         grab_winfiles(url, tempfile, package)
         try:
             easy_install.main([tempfile])
-        except Exception, e:
+        except Exception as e:
             failed = True
             print "install failed with error: ", e
         os.remove(tempfile)
@@ -409,7 +405,9 @@ def stop():
     """
     Stop GeoNode
     """
-    # windows needs to stop the geoserver first b/c we can't tell which python is running, so we kill everything
+    # windows needs to stop the geoserver first b/c we can't tell which python
+    # is running, so we kill everything
+    stop_geoserver()
     info("Stopping GeoNode ...")
     stop_django()
 
@@ -565,7 +563,7 @@ def test_integration(options):
             call_task('setup_data')
         sh(('python manage.py test %s'
             ' --noinput --liveserver=localhost:8000' % name))
-    except BuildFailure, e:
+    except BuildFailure as e:
         info('Tests failed! %s' % str(e))
     else:
         success = True
@@ -776,7 +774,8 @@ def kill(arg1, arg2):
         running = False
         for line in lines:
             # this kills all java.exe and python including self in windows
-            if ('%s' % arg2 in line) or (os.name == 'nt' and '%s' % arg1 in line):
+            if ('%s' % arg2 in line) or (
+                    os.name == 'nt' and '%s' % arg1 in line):
                 running = True
 
                 # Get pid

@@ -119,7 +119,8 @@ def register_service(request):
                 type, server = _verify_service_type(url)
 
             if type is None:
-                return HttpResponse('Could not determine server type', status=400)
+                return HttpResponse(
+                    'Could not determine server type', status=400)
 
             if "user" in request.POST and "password" in request.POST:
                 user = request.POST.get('user')
@@ -129,11 +130,14 @@ def register_service(request):
                 password = None
 
             if type in ["WMS", "OWS"]:
-                return _process_wms_service(url, name, type, user, password, wms=server, owner=request.user)
+                return _process_wms_service(
+                    url, name, type, user, password, wms=server, owner=request.user)
             elif type == "REST":
-                return _register_arcgis_url(url, name, user, password, owner=request.user)
+                return _register_arcgis_url(
+                    url, name, user, password, owner=request.user)
             elif type == "CSW":
-                return _register_harvested_service(url, name, user, password, owner=request.user)
+                return _register_harvested_service(
+                    url, name, user, password, owner=request.user)
             elif type == "OGP":
                 return _register_ogp_service(url, owner=request.user)
             else:
@@ -187,7 +191,8 @@ def _clean_url(base_url):
     # hack, we make sure to append the map parameter for MapServer endpoints
     # that are exposing it
     if 'map' in urlparse.parse_qs(urlprop.query):
-        map_param = urllib.urlencode({'map': urlparse.parse_qs(urlprop.query)['map'][0]})
+        map_param = urllib.urlencode(
+            {'map': urlparse.parse_qs(urlprop.query)['map'][0]})
         url = '%s?%s' % (url, map_param)
     return url
 
@@ -217,7 +222,7 @@ def _verify_service_type(base_url, service_type=None):
     if service_type in ['WMS', 'OWS', None]:
         try:
             service = WebMapService(base_url)
-        except:
+        except BaseException:
             pass
         else:
             return ['WMS', service]
@@ -225,7 +230,7 @@ def _verify_service_type(base_url, service_type=None):
     if service_type in ['WFS', 'OWS', None]:
         try:
             servicewfs = WebFeatureService(base_url)
-        except:
+        except BaseException:
             pass
         else:
             return ['WFS', servicewfs]
@@ -233,7 +238,7 @@ def _verify_service_type(base_url, service_type=None):
     if service_type in ['TMS', None]:
         try:
             service = TileMapService(base_url)
-        except:
+        except BaseException:
             pass
         else:
             return ['TMS', service]
@@ -241,7 +246,7 @@ def _verify_service_type(base_url, service_type=None):
     if service_type in ['REST', None]:
         try:
             service = ArcFolder(base_url)
-        except:
+        except BaseException:
             pass
         else:
             try:
@@ -253,7 +258,7 @@ def _verify_service_type(base_url, service_type=None):
     if service_type in ['CSW', None]:
         try:
             service = CatalogueServiceWeb(base_url)
-        except Exception, e:
+        except Exception as e:
             logger.exception(e)
             raise
         else:
@@ -267,7 +272,8 @@ def _verify_service_type(base_url, service_type=None):
     return [None, None]
 
 
-def _process_wms_service(url, name, type, username, password, wms=None, owner=None, parent=None):
+def _process_wms_service(url, name, type, username,
+                         password, wms=None, owner=None, parent=None):
     """
     Create a new WMS/OWS service, cascade it if necessary (i.e. if Web Mercator not available)
     """
@@ -280,7 +286,7 @@ def _process_wms_service(url, name, type, username, password, wms=None, owner=No
         if base_url and base_url != url:
             url = base_url
             wms = WebMapService(base_url)
-    except:
+    except BaseException:
         logger.info(
             "Could not retrieve GetMap url, using originally supplied URL %s" % url)
         pass
@@ -295,7 +301,7 @@ def _process_wms_service(url, name, type, username, password, wms=None, owner=No
         return HttpResponse(json.dumps(return_dict),
                             content_type='application/json',
                             status=200)
-    except:
+    except BaseException:
         pass
 
     title = wms.identification.title
@@ -306,15 +312,19 @@ def _process_wms_service(url, name, type, username, password, wms=None, owner=No
             name = _get_valid_name(urlsplit(url).netloc)
     try:
         supported_crs = ','.join(wms.contents.itervalues().next().crsOptions)
-    except:
+    except BaseException:
         supported_crs = None
-    if supported_crs and re.search('EPSG:900913|EPSG:3857|EPSG:102100|EPSG:102113', supported_crs):
-        return _register_indexed_service(type, url, name, username, password, wms=wms, owner=owner, parent=parent)
+    if supported_crs and re.search(
+            'EPSG:900913|EPSG:3857|EPSG:102100|EPSG:102113', supported_crs):
+        return _register_indexed_service(
+            type, url, name, username, password, wms=wms, owner=owner, parent=parent)
     else:
-        return _register_cascaded_service(url, type, name, username, password, wms=wms, owner=owner, parent=parent)
+        return _register_cascaded_service(
+            url, type, name, username, password, wms=wms, owner=owner, parent=parent)
 
 
-def _register_cascaded_service(url, type, name, username, password, wms=None, owner=None, parent=None):
+def _register_cascaded_service(
+        url, type, name, username, password, wms=None, owner=None, parent=None):
     """
     Register a service as cascading WMS
     """
@@ -327,7 +337,7 @@ def _register_cascaded_service(url, type, name, username, password, wms=None, ow
         return HttpResponse(json.dumps(return_dict),
                             content_type='application/json',
                             status=200)
-    except:
+    except BaseException:
         # TODO: Handle this error properly
         pass
 
@@ -362,7 +372,7 @@ def _register_cascaded_service(url, type, name, username, password, wms=None, ow
 
         try:
             cascade_store = cat.get_store(name, cascade_ws)
-        except:
+        except BaseException:
             cascade_store = cat.create_wmsstore(
                 name, cascade_ws, username, password)
             cascade_store.capabilitiesURL = url
@@ -382,7 +392,7 @@ def _register_cascaded_service(url, type, name, username, password, wms=None, ow
 
         try:
             wfs_ds = cat.get_store(name, cascade_ws)
-        except:
+        except BaseException:
             wfs_ds = cat.create_datastore(name, cascade_ws)
             connection_params = {
                 "WFSDataStoreFactory:MAXFEATURES": "0",
@@ -518,7 +528,8 @@ def _register_cascaded_layers(service, owner=None):
         return HttpResponse('Invalid Service Type', status=400)
 
 
-def _register_indexed_service(type, url, name, username, password, verbosity=False, wms=None, owner=None, parent=None):
+def _register_indexed_service(
+        type, url, name, username, password, verbosity=False, wms=None, owner=None, parent=None):
     """
     Register a service - WMS or OWS currently supported
     """
@@ -537,7 +548,7 @@ def _register_indexed_service(type, url, name, username, password, verbosity=Fal
             return HttpResponse(json.dumps(return_dict),
                                 content_type='application/json',
                                 status=200)
-        except:
+        except BaseException:
             pass
 
         service = Service.objects.create(base_url=url,
@@ -606,7 +617,7 @@ def _register_indexed_layers(service, wms=None, verbosity=False):
             layer_uuid = str(uuid.uuid1())
             try:
                 keywords = map(lambda x: x[:100], wms_layer.keywords)
-            except:
+            except BaseException:
                 keywords = []
             if not wms_layer.abstract:
                 abstract = ""
@@ -640,7 +651,8 @@ def _register_indexed_layers(service, wms=None, verbosity=False):
                     existing_layer = layer
 
             if not existing_layer:
-                signals.post_save.disconnect(resourcebase_post_save, sender=Layer)
+                signals.post_save.disconnect(
+                    resourcebase_post_save, sender=Layer)
                 signals.post_save.disconnect(catalogue_post_save, sender=Layer)
                 saved_layer = Layer.objects.create(
                     typename=wms_layer.name,
@@ -692,7 +704,8 @@ def _register_indexed_layers(service, wms=None, verbosity=False):
         return HttpResponse('Invalid Service Type', status=400)
 
 
-def _register_harvested_service(url, name, username, password, csw=None, owner=None):
+def _register_harvested_service(
+        url, name, username, password, csw=None, owner=None):
     """
     Register a CSW service, then step through results (or queue for asynchronous harvesting)
     """
@@ -708,7 +721,7 @@ def _register_harvested_service(url, name, username, password, csw=None, owner=N
         return HttpResponse(json.dumps(return_dict),
                             content_type='application/json',
                             status=200)
-    except:
+    except BaseException:
         pass
 
     if csw is None:
@@ -721,7 +734,8 @@ def _register_harvested_service(url, name, username, password, csw=None, owner=N
                                          csw.identification.title or url) if not name else name,
                                      title=csw.identification.title,
                                      version=csw.identification.version,
-                                     abstract=csw.identification.abstract or _("Not provided"),
+                                     abstract=csw.identification.abstract or _(
+                                         "Not provided"),
                                      owner=owner)
 
     service.keywords = ','.join(csw.identification.keywords)
@@ -795,13 +809,14 @@ def _harvest_csw(csw, maxrecords=10, totalrecords=float('inf')):
                 try:
                     _process_wms_service(
                         known_types["WMS"], type, None, None, parent=csw)
-                except Exception, e:
+                except Exception as e:
                     logger.error("Error registering %s:%s" %
                                  (known_types["WMS"], str(e)))
             elif "REST" in known_types:
                 try:
-                    _register_arcgis_url(ref["url"], None, None, None, parent=csw)
-                except Exception, e:
+                    _register_arcgis_url(
+                        ref["url"], None, None, None, parent=csw)
+                except Exception as e:
                     logger.error("Error registering %s:%s" %
                                  (known_types["REST"], str(e)))
 
@@ -809,7 +824,8 @@ def _harvest_csw(csw, maxrecords=10, totalrecords=float('inf')):
         stop = 0
 
 
-def _register_arcgis_url(url, name, username, password, owner=None, parent=None):
+def _register_arcgis_url(url, name, username, password,
+                         owner=None, parent=None):
     """
     Register an ArcGIS REST service URL
     """
@@ -820,13 +836,19 @@ def _register_arcgis_url(url, name, username, password, owner=None, parent=None)
         # This is a MapService
         try:
             arcserver = ArcMapService(baseurl)
-        except Exception, e:
+        except Exception as e:
             logger.exception(e)
         if isinstance(arcserver, ArcMapService) and arcserver.spatialReference.wkid in [
                 102100, 102113, 3785, 3857, 900913]:
-            return_json = [_process_arcgis_service(arcserver, name, owner=owner, parent=parent)]
+            return_json = [
+                _process_arcgis_service(
+                    arcserver,
+                    name,
+                    owner=owner,
+                    parent=parent)]
         else:
-            return_json = [{'msg':  _("Could not find any layers in a compatible projection.")}]
+            return_json = [
+                {'msg': _("Could not find any layers in a compatible projection.")}]
 
     else:
         # This is a Folder
@@ -967,7 +989,8 @@ def _process_arcgis_service(arcserver, name, owner=None, parent=None):
     return return_dict
 
 
-def _process_arcgis_folder(folder, name, services=None, owner=None, parent=None):
+def _process_arcgis_folder(
+        folder, name, services=None, owner=None, parent=None):
     """
     Iterate through folders and services in an ArcGIS REST service folder
     """
@@ -981,7 +1004,8 @@ def _process_arcgis_folder(folder, name, services=None, owner=None, parent=None)
             logger.debug(return_dict['msg'])
         else:
             try:
-                if service.spatialReference.wkid in [102100, 102113, 3785, 3857, 900913]:
+                if service.spatialReference.wkid in [
+                        102100, 102113, 3785, 3857, 900913]:
                     return_dict = _process_arcgis_service(
                         service, name, owner, parent=parent)
                 else:
@@ -990,7 +1014,11 @@ def _process_arcgis_folder(folder, name, services=None, owner=None, parent=None)
                                                                         'url': service.url})
                     logger.debug(return_dict['msg'])
             except Exception as e:
-                logger.exception('Error uploading from the service: ' + service.url + ' ' + str(e))
+                logger.exception(
+                    'Error uploading from the service: ' +
+                    service.url +
+                    ' ' +
+                    str(e))
 
         services.append(return_dict)
 
@@ -1043,7 +1071,8 @@ def _register_ogp_service(url, owner=None):
                         status=200)
 
 
-def _harvest_ogp_layers(service, maxrecords=10, start=0, totalrecords=float('inf'), owner=None,  institution=None):
+def _harvest_ogp_layers(service, maxrecords=10, start=0,
+                        totalrecords=float('inf'), owner=None, institution=None):
     """
     Query OpenGeoPortal's solr instance for layers.
     """
@@ -1078,7 +1107,7 @@ def process_ogp_results(ogp, result_json, owner=None):
     for doc in result_json["response"]["docs"]:
         try:
             locations = json.loads(doc["Location"])
-        except:
+        except BaseException:
             continue
         if "tilecache" in locations:
             service_url = locations["tilecache"][0]
@@ -1110,7 +1139,7 @@ def process_ogp_results(ogp, result_json, owner=None):
                         service_url, service_type, None, None, parent=ogp)
                     r_json = json.loads(response.content)
                     service = Service.objects.get(id=r_json[0]["service_id"])
-                except Exception, e:
+                except Exception as e:
                     print str(e)
 
         if service:
@@ -1139,9 +1168,11 @@ def process_ogp_results(ogp, result_json, owner=None):
                                                                    owner=None,
                                                                    # Assumption
                                                                    srid="EPSG:900913",
-                                                                   bbox=list(bbox),
+                                                                   bbox=list(
+                                                                       bbox),
                                                                    geographic_bounding_box=bbox_to_wkt(
-                                                                       str(bbox[0]), str(bbox[1]),
+                                                                       str(bbox[0]), str(
+                                                                           bbox[1]),
                                                                        str(bbox[2]), str(bbox[3]), srid="EPSG:4326")
                                                                )
                                                                )
@@ -1280,7 +1311,8 @@ def remove_service(request, service_id):
 @login_required
 def ajax_service_permissions(request, service_id):
     service = get_object_or_404(Service, pk=service_id)
-    if not request.user.has_perm("maps.change_service_permissions", obj=service):
+    if not request.user.has_perm(
+            "maps.change_service_permissions", obj=service):
         return HttpResponse(
             'You are not allowed to change permissions for this service',
             status=401,
@@ -1331,8 +1363,14 @@ def create_arcgis_links(instance):
     )
 
     # Create thumbnails.
-    bbox = urllib.pathname2url('%s,%s,%s,%s' % (instance.bbox_x0, instance.bbox_y0, instance.bbox_x1, instance.bbox_y1))
+    bbox = urllib.pathname2url(
+        '%s,%s,%s,%s' %
+        (instance.bbox_x0,
+         instance.bbox_y0,
+         instance.bbox_x1,
+         instance.bbox_y1))
 
     thumbnail_remote_url = instance.ows_url + 'export?LAYERS=show%3A' + str(instance.typename) + \
-        '&TRANSPARENT=true&FORMAT=png&BBOX=' + bbox + '&SIZE=200%2C150&F=image&BBOXSR=4326&IMAGESR=3857'
+        '&TRANSPARENT=true&FORMAT=png&BBOX=' + bbox + \
+        '&SIZE=200%2C150&F=image&BBOXSR=4326&IMAGESR=3857'
     create_thumbnail(instance, thumbnail_remote_url)

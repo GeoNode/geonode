@@ -79,7 +79,8 @@ class Style(models.Model):
         return "%s" % self.name.encode('utf-8')
 
     def absolute_url(self):
-        return self.sld_url.split(settings.OGC_SERVER['default']['LOCATION'], 1)[1]
+        return self.sld_url.split(
+            settings.OGC_SERVER['default']['LOCATION'], 1)[1]
 
 
 class LayerManager(ResourceBaseManager):
@@ -105,7 +106,11 @@ class Layer(ResourceBase):
     is_mosaic = models.BooleanField(default=False)
     has_time = models.BooleanField(default=False)
     has_elevation = models.BooleanField(default=False)
-    time_regex = models.CharField(max_length=128, null=True, blank=True, choices=TIME_REGEX)
+    time_regex = models.CharField(
+        max_length=128,
+        null=True,
+        blank=True,
+        choices=TIME_REGEX)
     elevation_regex = models.CharField(max_length=128, null=True, blank=True)
 
     default_style = models.ForeignKey(
@@ -214,7 +219,8 @@ class Layer(ResourceBase):
         # we need to check, for shapefile, if column names are valid
         list_col = None
         if self.storeType == 'dataStore':
-            valid_shp, wrong_column_name, list_col = check_shp_columnnames(self)
+            valid_shp, wrong_column_name, list_col = check_shp_columnnames(
+                self)
             if wrong_column_name:
                 msg = 'Shapefile has an invalid column name: %s' % wrong_column_name
             else:
@@ -275,7 +281,8 @@ class Layer(ResourceBase):
     @property
     def geogig_link(self):
         if(self.geogig_enabled):
-            return getattr(self.link_set.filter(name__icontains='clone in geogig').first(), 'url', None)
+            return getattr(self.link_set.filter(
+                name__icontains='clone in geogig').first(), 'url', None)
         return None
 
 
@@ -302,7 +309,7 @@ class LayerFile(models.Model):
     name = models.CharField(max_length=255)
     base = models.BooleanField(default=False)
     file = models.FileField(upload_to='layers',
-                            storage=FileSystemStorage(base_url=settings.LOCAL_MEDIA_URL),  max_length=255)
+                            storage=FileSystemStorage(base_url=settings.LOCAL_MEDIA_URL), max_length=255)
 
 
 class AttributeManager(models.Manager):
@@ -332,7 +339,8 @@ class Attribute(models.Model):
         related_name='attribute_set')
     attribute = models.CharField(
         _('attribute name'),
-        help_text=_('name of attribute as stored in shapefile/spatial database'),
+        help_text=_(
+            'name of attribute as stored in shapefile/spatial database'),
         max_length=255,
         blank=False,
         null=True,
@@ -352,7 +360,8 @@ class Attribute(models.Model):
         unique=False)
     attribute_type = models.CharField(
         _('attribute type'),
-        help_text=_('the data type of the attribute (integer, string, geometry, etc)'),
+        help_text=_(
+            'the data type of the attribute (integer, string, geometry, etc)'),
         max_length=50,
         blank=False,
         null=False,
@@ -360,11 +369,13 @@ class Attribute(models.Model):
         unique=False)
     visible = models.BooleanField(
         _('visible?'),
-        help_text=_('specifies if the attribute should be displayed in identify results'),
+        help_text=_(
+            'specifies if the attribute should be displayed in identify results'),
         default=True)
     display_order = models.IntegerField(
         _('display order'),
-        help_text=_('specifies the order in which attribute should be displayed in identify results'),
+        help_text=_(
+            'specifies the order in which attribute should be displayed in identify results'),
         default=1)
 
     # statistical derivations

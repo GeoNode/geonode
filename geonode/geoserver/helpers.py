@@ -1387,7 +1387,7 @@ class OGC_Servers_Handler(object):
         server.setdefault('GEOGIG_DATASTORE_DIR', str())
 
         for option in ['MAPFISH_PRINT_ENABLED', 'PRINT_NG_ENABLED', 'GEONODE_SECURITY_ENABLED',
-                       'BACKEND_WRITE_ENABLED']:
+                       'GEOFENCE_SECURITY_ENABLED', 'BACKEND_WRITE_ENABLED']:
             server.setdefault(option, True)
 
         for option in ['GEOGIG_ENABLED', 'WMST_ENABLED', 'WPS_ENABLED']:
