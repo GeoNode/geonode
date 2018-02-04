@@ -26,7 +26,11 @@
 
 <script>
     {% autoescape off %}
+    {% if config %}
     window.mapConfig = {{config}};
+    {% else %}
+    window.mapConfig = {{viewer}};
+    {%endif%}
     window.GeoServerHttp2Root = '{{GEOSERVER_BASE_URL}}';
     window.GeoServerTileRoot = '{{GEOSERVER_BASE_URL}}' + 'wms';
     {% endautoescape %}
