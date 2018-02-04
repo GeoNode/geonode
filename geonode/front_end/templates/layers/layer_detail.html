@@ -30,10 +30,22 @@
 {% block body_class %}layers{% endblock %}
 
 {% block body_outer %}
+
+<style>
+    #gd-footer
+    {
+        display: none;
+    }
+    #gd-wrapper
+    {
+        padding-bottom: 0;
+    }
+</style>
+
     <div class="gd-content">
       <div class="gd-content-body layer-test" >
         <div class="row">
-        <div class="panel-container">
+        <div class="panel-container content-p-top">
           
           
             <div id="sidebar" class="panel-left slideInRight">
@@ -736,7 +748,7 @@
           <div class="panel-right">
          
 
-              <ul class="nav nav-tabs layerNav">
+              <ul class="nav nav-tabs layerNav map-tab-bar">
                     <li role="presentation" id="attribute" onclick="activeTab('attribute')" style="float: right">
                             <a aria-controls="profile" role="tab" data-toggle="tab" href="javascript:void(0)"><i class="fa fa-table" aria-hidden="true"></i> {% trans "Attribute" %}</a></li>
 

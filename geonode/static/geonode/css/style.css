@@ -183,10 +183,13 @@ ul.user-actions li a .fa{
     color: #FFFFFF;
 }
 .grid-container{
-    border: 1px solid #3896e2;
-    border-radius: 6px;
+
+    border-radius: 4px;
     margin-bottom: 0;
     padding: 0;
+    -webkit-box-shadow: 0px 0px 5px 0px rgba(0,0,0,0.14);
+    -moz-box-shadow: 0px 0px 5px 0px rgba(0,0,0,0.14);
+    box-shadow: 0px 0px 5px 0px rgba(0,0,0,0.14);
 }
 .grid-container.box-shadow {
     -webkit-box-shadow: 0px 2px 5px 0px rgba(224,217,224,1);
@@ -210,7 +213,6 @@ ul.user-actions li a .fa{
 .grid-container .top-content .details{
     font-size: 13px;
     font-weight: 600;
-    margin-bottom: 20px;
 }
 .grid-container .top-content .details.pro-org{
     font-size: 13px;
@@ -2337,10 +2339,14 @@ ul.resources-summery li a .fa{
 /* end user details page*/
 #user_messages {
     margin-top: 0;
+    position: absolute;
+    width: 50%;
+    z-index: 1003;
 }
 #user_messages .alert{
     margin-bottom: 0px;
     border-radius: 0;
+    padding: 10px;
 }
 .row.margin-right-15px{
     margin-right: 0px;
@@ -2623,7 +2629,7 @@ ul#global-errors li{
 }
 .grid-container .information .top-content .details{
     font-size: 12px;
-    min-height: 105px;
+    min-height: 70px;
 }
 .grid-container.lmd .information .title {
     font-size: 20px;
@@ -2703,7 +2709,7 @@ body.layer-detail-page #gd-wrapper .container-fluid.padding-zero{
 }
 .map-details-information,
 .layer-information{
-    height: 100%;
+    height: calc(100vh - 142px) !important;
     overflow-y: scroll;
 }
 .gd-link-style.inaccordion{
@@ -2739,6 +2745,7 @@ body.layer-detail-page #gd-wrapper .container-fluid.padding-zero{
 }
 #gd-accordion-style .panel-group .panel{
     border-radius: 0;
+    margin: 10px;
 }
 #gd-accordion-style .panel-group .panel + .panel{
     margin-top: 0;
@@ -3331,6 +3338,7 @@ width: 80%;
 #myNav .panel-heading
 {
     white-space: normal;
+    background-color: #f5f5f5;
 }
 #gd-accordion-style .panel-heading
 {
@@ -3395,7 +3403,7 @@ width: 80%;
 }
 .panel-body
 {
-    padding: 22px ;
+    padding: 15px ;
 }
 .checkbox-overlay .btn-primary
 {
@@ -3422,7 +3430,7 @@ width: 80%;
 .bottom-content
 {
     background-color: #edf7fc;
-    border-top: 1px solid #3896e2;
+    border-top: 1px solid #e0e9ed;
     padding: 15px;
     border-bottom-left-radius: 6px;
     border-bottom-right-radius: 6px;
@@ -3618,5 +3626,53 @@ width: 80%;
 .x-panel table, .x-window table
 {
     float: right;
+}
+.map-tab-bar
+{
+    position: fixed;
+    width: 100%;
+    top: 61px;
+    z-index: 1000;
+    background-color: #fff;
+}
+.x-toolbar
+{
+position: fixed;
+position: fixed;
+width: 100%;
+top: 104px;
+z-index: 1000;
+background-color: #fff;
+}
+#myNav_map_left
+{
+    padding: 0px;
+    width: 100%;
+    float: right;
+    left: 0%;
+    top: 140px;
+    position: absolute;
+    height: 500px;
+}
+.content-p-top
+{
+  padding-top: 40px;
+}
+#the_map .x-toolbar
+{
+    top: 63px;
+}
+#ext-gen95 .panel-left
+{
+    top: 99px;
+}
+#ext-gen95 .map-details-information
+{
+    height: calc(100vh - 100px) !important;
+}
+.x-toolbar
+{
+    border-bottom: 1px solid #ddd !important;
+    border-top: none;
 }
 

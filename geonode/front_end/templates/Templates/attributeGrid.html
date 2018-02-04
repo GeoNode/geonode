@@ -1,15 +1,22 @@
-﻿<div class="mini-dialog">
-    <i class="fa fa-times modal-close-icon" ng-click="closeAttributeGrid()"></i>
-    <div class="modal-header">
-        <h3>Attribute Grid</h3>
-    </div>
+﻿
+        <div class="modal-header"> 
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close" ng-click="closeAttributeGrid()">
+                    <span aria-hidden="true">×</span>
+                </button> 
+                <h4 class="modal-title">Attribute Grid</h4> 
+            </div>
+
+
     <div class="modal-body" style="overflow: visible;">
-        <form ng-submit="searchByAttribute()" class="attributeGridFilter">
-            <select ng-model="search.attribute" ng-options="attribute.Name for attribute in gridData.attributeDefinitions">
+            
+        <form ng-submit="searchByAttribute()" class="attributeGridFilter form-inline">
+                <div class="form-group">
+            <select class="form-control" ng-model="search.attribute" ng-options="attribute.Name for attribute in gridData.attributeDefinitions">
                 <option value="">Select an Attribute</option>
             </select>
-            <input type="text" ng-model="search.value" placeholder="search by attribute" ng-disabled="!search.attribute"/>
-            <input type="submit" class="btn btn-primary" value="Search" style="margin-bottom: 10px;"/>
+            <input class="form-control" type="text" ng-model="search.value" placeholder="search by attribute" ng-disabled="!search.attribute"/>
+            <input type="submit" class="btn btn-primary" value="Search"/>
+        </div>
         </form>
 
         <div class="attribute-grid-container">
@@ -33,13 +40,17 @@
             </button>
         </div>
     </div>
-</div>
+
+
+
+
 
 <style>
     .attribute-grid-container {
         min-height: 400px;
         margin-top: 10px;
         overflow-y: hidden;
+        border: 1px solid #ccc;
     }
 
         .attribute-grid-container .htCore th {
