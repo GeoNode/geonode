@@ -23,7 +23,7 @@
     min-width: 150px;
     white-space: nowrap;
     background: #fff;
-    color: white;
+    color: rgb(44, 44, 44);
     position: fixed;
     z-index: 99;
     -webkit-box-shadow: 0px 0px 5px 0px rgba(0,0,0,0.57);
