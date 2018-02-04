@@ -1,0 +1,695 @@
+{% extends "maps/map_base.html" %}
+{% load i18n %}
+{% load dialogos_tags %}
+{% load agon_ratings_tags %}
+{% load url from future %}
+{% load base_tags %}
+{% load guardian_tags %}
+
+{% block title %}{{ resource.title }} — {{ block.super }}{% endblock %}
+
+{% block head %}
+    {% if TWITTER_CARD %}
+        {% include "base/_resourcebase_twittercard.html" %}
+    {% endif %}
+    {% if OPENGRAPH_ENABLED %}
+        {% include "base/_resourcebase_opengraph.html" %}
+    {% endif %}
+    {# include "maps/map_include.html" #}
+    {% include 'Templates/_base-headers.html' %}
+    {{ block.super }}
+{% endblock %}
+
+{% block body_class %}maps{% endblock %}
+
+{% block body_outer %}
+    {% overall_rating resource "map" as map_rating %}
+    <div class="gd-content">
+        <div class="gd-content-body layer-test">
+            <div class="row">
+                <div class="panel-container">
+                        <div id="sidebar" class="panel-left slideInRight">
+
+                                <button class="sidebar-toggle-btn" onclick="animating()"><i class="fa fa-navicon fa-2x py-1 p-1" style="color: #1B97D3"></i></button>
+
+                <div class="col-md-4 margin-zero right-pad-zero" style="width: 100%; padding-left: 0;">
+                    <div id="gd-accordion-style" class="map-details-information" style="overflow-x: hidden;">
+                        <div class="panel-group" id="accordion__" role="tablist" aria-multiselectable="true">
+                            <div class="panel panel-default">
+                                <div class="panel-heading" role="tab" id="headingOne">
+                                    <h4 class="panel-title">
+                                        <a role="button" data-toggle="collapse" data-parent="#accordion1"
+                                           href="#collapse1-down" aria-expanded="true" aria-controls="collapse1">
+                                           <i class="fa fa-chevron-up" aria-hidden="true"></i>
+                                           <i class="fa fa-chevron-down" aria-hidden="true"></i>
+                                           {{ resource.title }}
+                                            
+                                        </a>
+                                    </h4>
+                                </div>
+                                <div id="collapse1-down" class="panel-collapse collapse in" role="tabpanel"
+                                     aria-labelledby="headingOne">
+                                    <div class="panel-body">
+                                        <ul class="list-group gd-link-style inaccordion">
+
+                                            {% if resource.storeType != "remoteStore" %}
+                                              {% if user_role == "member" %}
+                                                {% if status == 'DENIED' %}
+                                                <li class="list-group-item">
+                                                        <button class="btn btn-gd-primary btn-md btn-block" data-toggle="modal" data-target="#_deny_comments">{% trans "Comments" %}</button>
+                                                        {% include "map_templates/_deny_comments.html" %}
+
+                                                </li>
+                                                {% endif %}
+                                                <li class="list-group-item">
+                                                        <button class="btn btn-gd-primary btn-md btn-block" data-toggle="modal" data-target="#_publish_map">{% trans "Push for Approval" %}</button>
+                                                        {% include "map_templates/_publish_map.html" %}
+                                                    {% endif %}
+                                                </li>
+                                                {% if user_role == "manager" and status == 'PENDING' %}
+                                                <li class="list-group-item">
+                                                        <button class="btn btn-gd-primary btn-md btn-block" data-toggle="modal" data-target="#_deny_comments">{% trans "Comments" %}</button>
+                                                        {% include "map_templates/_deny_comments.html" %}
+                                                </li>
+                                                <li class="list-group-item">
+                                                        <button class="btn btn-gd-primary btn-md btn-block" data-toggle="modal" data-target="#_approve_map">{% trans "Approve Map" %}</button>
+                                                        {% include "map_templates/_approve_map.html" %}
+                                                </li>
+                                                <li class="list-group-item">
+                                                        <button class="btn btn-gd-primary btn-md btn-block" data-toggle="modal" data-target="#_deney_map">{% trans "Deny Map" %}</button>
+                                                        {% include "map_templates/_deny_map.html" %}
+                                                    {% endif %}
+                                                </li>
+
+                                            {% endif %}
+
+                                            {% if "download_resourcebase" in perms_list %}
+                                                <li class="list-group-item">
+                                                    <button class="btn btn-gd-primary btn-md btn-block"
+                                                            data-toggle="modal"
+                                                            data-target="#download-map">
+                                                        {% trans "Download Map" %}
+                                                    </button>
+                                                </li>
+                                            {% endif %}
+                                            <div class="modal fade" id="download-map" tabindex="-1" role="dialog"
+                                                 aria-labelledby="myModalLabel" aria-hidden="true">
+                                                <div class="modal-dialog">
+                                                    <div class="modal-content">
+                                                        <div class="modal-header">
+                                                            <button type="button" class="close" data-dismiss="modal"
+                                                                    aria-hidden="true">&times;</button>
+                                                            <h4 class="modal-title"
+                                                                id="myModalLabel">{% trans "Download Map" %}</h4>
+                                                        </div>
+                                                        <div class="modal-body">
+                                                            <ul>
+                                                                <li>
+                                                                    <a href="{% url "map_download" resource.pk %}">
+                                                                        {% trans "Download Data Layers" %}
+                                                                    </a>
+                                                                </li>
+                                                                <li>
+                                                                    <a href="{% url "map_wmc" resource.pk %}"
+                                                                       target="_new">
+                                                                        {% trans "Download Web Map Context" %}
+                                                                    </a>
+                                                                </li>
+                                                            </ul>
+                                                        </div>
+                                                        <div class="modal-footer">
+                                                            <button type="button" class="btn btn-default btn-gd"
+                                                                    data-dismiss="modal">
+                                                                {% trans "Close" %}
+                                                            </button>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            {% if "change_resourcebase" in perms_list  or "change_resourcebase_metadata" in perms_list %}
+                                                <li class="list-group-item">
+                                                    <button class="btn btn-gd-primary btn-md btn-block"
+                                                            data-toggle="modal"
+                                                            data-target="#edit-map">
+                                                        {% trans "Edit Map" %}
+                                                    </button>
+                                                </li>
+                                                <div class="modal fade" id="edit-map" tabindex="-1" role="dialog"
+                                                     aria-labelledby="myModalLabel" aria-hidden="true">
+                                                    <div class="modal-dialog" style="width: 600px;">
+                                                        <div class="modal-content">
+                                                            <div class="modal-header">
+                                                                <button type="button" class="close"
+                                                                        data-dismiss="modal"
+                                                                        aria-hidden="true">&times;</button>
+                                                                <h4 class="modal-title"
+                                                                    id="myModalLabel">{% trans "Edit Map" %}</h4>
+                                                            </div>
+                                                            <div class="modal-body">
+                                                                <div class="row edit-modal">
+                                                                    {% if "change_resourcebase_metadata" in perms_list %}
+                                                                        <div class="col-sm-4 text-center">
+                                                                            <i class="fa fa-list-alt fa-2x" style="color:#0b8e58"></i>
+                                                                            <h4>{% trans "Metadata" %}</h4>
+                                                                            <a class="btn btn btn-gd-primary btn-block"
+                                                                               href="{% url "map_metadata" resource.id %}">{% trans "Edit" %}</a>
+                                                                        </div>
+                                                                    {% endif %}
+                                                                    {% if "change_resourcebase" in perms_list %}
+                                                                    <div class="col-sm-4 text-center">
+                                                                            <i class="fa fa-photo fa-2x" style="color:#0b8e58"></i>
+                                                                            <h4>{% trans "Thumbnail" %}</h4>
+                                                                            <a class="btn btn btn-gd-primary btn-block"
+                                                                               href="#"
+                                                                               id="set_thumbnail">{% trans "Set" %}</a>
+                                                                        </div>
+                                                                    {% endif %}
+                                                                    {% if "change_resourcebase" in perms_list %}
+                                                                    <div class="col-sm-4 text-center">
+                                                                            <i class="fa fa-map-marker fa-2x" style="color:#0b8e58"></i>
+                                                                            <h4>{% trans "Map" %}</h4>
+                                                                            <a class="btn btn btn-gd-primary btn-block"
+                                                                               href="{% url "map_view" resource.id %}">
+                                                                                {% trans "Edit" %}
+                                                                            </a>
+                                                                            <a class="btn btn-danger btn-gd btn-block btn-xs"
+                                                                               href="{% url "map_remove" resource.id %}">
+                                                                                {% trans "Remove" %}
+                                                                            </a>
+                                                                        </div>
+                                                                    {% endif %}
+                                                                </div>
+                                                            </div>
+                                                            <div class="modal-footer">
+                                                                <button type="button" class="btn btn-default btn-gd"
+                                                                        data-dismiss="modal">
+                                                                    {% trans "Close" %}
+                                                                </button>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            {% endif %}
+                                            <li class="list-group-item">
+                                                <a href="{% url "map_view" resource.id %}"
+                                                   class="btn btn-default btn-md btn-block btn-gd">{% trans "View Map" %}</a>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                            {% if "change_resourcebase_permissions" in perms_list %}
+                                <div class="panel panel-default">
+                                    <div class="panel-heading" role="tab" id="heading3">
+                                        <h4 class="panel-title">
+                                            <a role="button" data-toggle="collapse"
+                                               data-parent="#accordion3-per" href="#collapse4" aria-expanded="true"
+                                               aria-controls="collapse4">
+                                                
+                                                <i class="fa fa-chevron-up" aria-hidden="true"></i>
+                                                <i class="fa fa-chevron-down" aria-hidden="true"></i>
+                                                {% trans "Permissions" %}
+                                            </a>
+                                        </h4>
+                                    </div>
+                                    <div id="collapse4-per" class="panel-collapse collapse in" role="tabpanel"
+                                         aria-labelledby="heading3">
+                                        <div class="panel-body">
+                                            <p>{% trans "Specify which users can view or modify this map" %}</p>
+                                            <button class="btn btn-gd-primary btn-md btn-block" data-toggle="modal"
+                                                data-target="#_permissions">{% trans "Change Permissions of this Map" %}</button>
+                                        </div>
+                                    </div>
+                                </div>
+                                {% include "_permissions_form.html" %}
+                            {% endif %}
+                            <div class="panel panel-default">
+                                <div class="panel-heading" role="tab" id="heading1">
+                                    <h4 class="panel-title">
+                                        <a role="button" data-toggle="collapse"
+                                           data-parent="#accordion2-map" href="#collapse2" aria-expanded="true"
+                                           aria-controls="collapse2">
+                                           
+                                            <i class="fa fa-chevron-up" aria-hidden="true"></i>
+                                            <i class="fa fa-chevron-down" aria-hidden="true"></i>
+                                            {% trans "Map Layers" %}
+                                        </a>
+                                    </h4>
+                                </div>
+                                <div id="collapse2-map" class="panel-collapse collapse in" role="tabpanel"
+                                     aria-labelledby="heading1">
+                                    <div class="panel-body">
+                                        <p>{% trans "This map uses the following layers:" %}</p>
+                                        <ul class="list-unstyled">
+                                            {% for layer in resource.layer_set.all %}
+                                                {% ifnotequal layer.group 'background' %}
+                                                    {% if layer.local %}
+                                                        <li>
+                                                            <a href="{% url "layer_detail" layer.name %}">{{ layer.layer_title }}</a>
+                                                        </li>
+                                                    {% else %}
+                                                        <li>{{ layer.layer_title }}</li>
+                                                    {% endif %}
+                                                {% endifnotequal %}
+                                            {% endfor %}
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                            {% if documents.count > 0 %}
+                                <div class="panel panel-default">
+                                    <div class="panel-heading" role="tab" id="heading2">
+                                        <h4 class="panel-title">
+                                            <a role="button" data-toggle="collapse"
+                                               data-parent="#accordion" href="#collapse3" aria-expanded="true"
+                                               aria-controls="collapse3">
+                                              
+                                                <i class="fa fa-chevron-up" aria-hidden="true"></i>
+                                                <i class="fa fa-chevron-down" aria-hidden="true"></i>
+                                                {% trans "Documents related to this map" %}
+                                            </a>
+                                        </h4>
+                                    </div>
+                                    <div id="collapse3" class="panel-collapse collapse in" role="tabpanel"
+                                         aria-labelledby="heading2">
+                                        <div class="panel-body">
+                                            <p>{% trans "List of documents related to this map:" %}</p>
+                                            <ul class="list-unstyled">
+                                                {% for document in documents %}
+                                                    <li><a href="{{ document.get_absolute_url }}">{{ document.title }}</a>
+                                                    </li>
+                                                {% endfor %}
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
+                            {% endif %}
+                            <div class="panel panel-default">
+                                <div class="panel-heading" role="tab" id="heading4">
+                                    <h4 class="panel-title">
+                                        <a role="button" data-toggle="collapse"
+                                           data-parent="#accordion4" href="#collapse5" aria-expanded="true"
+                                           aria-controls="collapse5">
+                                           
+                                            <i class="fa fa-chevron-up" aria-hidden="true"></i>
+                                            <i class="fa fa-chevron-down" aria-hidden="true"></i>
+                                            {% trans "Copy this map" %}
+                                        </a>
+                                    </h4>
+                                </div>
+                                <div id="collapse5" class="panel-collapse collapse in" role="tabpanel"
+                                     aria-labelledby="heading4">
+                                    <div class="panel-body">
+                                        <p>{% trans "Duplicate this map and modify it for your own purposes" %}</p>
+                                        <a href="{% url "new_map" %}?copy={{ resource.id }}"
+                                           class="btn btn-default btn-gd btn-md btn-block">{% trans "Create a New Map" %}</a>
+                                    </div>
+                                </div>
+                            </div>
+                            {% if resource.is_public and "change_resourcebase" in perms_list or resource.layer_group %}
+                                <div class="panel panel-default">
+                                    <div class="panel-heading" role="tab" id="heading5">
+                                        <h4 class="panel-title">
+                                            <a role="button" data-toggle="collapse"
+                                               data-parent="#accordion5" href="#collapse11" aria-expanded="true"
+                                               aria-controls="collapse11">
+                                               
+                                                <i class="fa fa-chevron-up" aria-hidden="true"></i>
+                                                <i class="fa fa-chevron-down" aria-hidden="true"></i>
+                                                {% trans "Map WMS" %}
+                                            </a>
+                                        </h4>
+                                    </div>
+                                    <div id="collapse11" class="panel-collapse collapse in" role="tabpanel"
+                                         aria-labelledby="heading5">
+                                        <div class="panel-body">
+                                            <dl>
+                                                {% if resource.layer_group %}
+                                                <dt>{% trans "WMS layer group for local map layers" %}:</dt>
+                                                <dd>
+                                                    <em>{{ resource.layer_group.name }}</em>
+                                                    ({% trans "on" %}
+                                                    <a href="{{ ows }}?service=WMS&request=GetCapabilities" target="_blank">
+                                                        {% trans "local OWS" %}
+                                                    </a>)
+                                                </dd>
+                                                {% endif %}
+                                            </dl>
+                                            {% if "change_resourcebase" in perms_list %}
+                                                <p>{% trans "Publish local map layers as WMS layer group" %}</p>
+                                                <a href="{% url "map_wms" resource.id %}"
+                                                   class="btn btn-gd btn-default btn-md btn-block">
+                                                    {% trans "Publish Map WMS" %}
+                                                </a>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                </div>
+                                {% include "_permissions_form.html" %}
+                            {% endif %}
+                            <div class="panel panel-default">
+                                <div class="panel-heading" role="tab" id="heading6">
+                                    <h4 class="panel-title">
+                                        <a role="button" data-toggle="collapse"
+                                           data-parent="#accordion6" href="#collapse7" aria-expanded="true"
+                                           aria-controls="collapse7">
+                                           
+                                            <i class="fa fa-chevron-up" aria-hidden="true"></i>
+                                            <i class="fa fa-chevron-down" aria-hidden="true"></i>
+                                            {% trans "About" %}
+                                        </a>
+                                    </h4>
+                                </div>
+                                <div id="collapse7" class="panel-collapse collapse in" role="tabpanel"
+                                     aria-labelledby="heading7">
+                                    <div class="panel-body">
+                                        {% if resource.owner == resource.poc and resource.owner == resource.metadata_author %}
+                                            <p>{% trans "Owner, Point of Contact, Metadata Author" %}</p>
+                                            {% with resource.owner as profile %}
+                                                {% include "people/_profile_about_item.html" %}
+                                            {% endwith %}
+                                        {% else %}
+                                            <p>{% trans "Owner" %}</p>
+                                            {% with resource.owner as profile %}
+                                                {% include "people/_profile_about_item.html" %}
+                                            {% endwith %}
+                                            <p>{% trans "Point of Contact" %}</p>
+                                            {% with resource.poc as profile %}
+                                                {% include "people/_profile_about_item.html" %}
+                                            {% endwith %}
+                                            <p>{% trans "Metadata Author" %}</p>
+                                            {% with resource.metadata_author as profile %}
+                                                {% include "people/_profile_about_item.html" %}
+                                            {% endwith %}
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="panel panel-default">
+                                <div class="panel-heading" role="tab" id="heading8">
+                                    <h4 class="panel-title">
+                                        <a role="button" data-toggle="collapse"
+                                           data-parent="#accordion7" href="#collapse8" aria-expanded="true"
+                                           aria-controls="collapse8">
+                                           
+                                            <i class="fa fa-chevron-up" aria-hidden="true"></i>
+                                            <i class="fa fa-chevron-down" aria-hidden="true"></i>
+                                            Information
+                                        </a>
+                                    </h4>
+                                </div>
+                                <div id="collapse8" class="panel-collapse collapse in" role="tabpanel"
+                                     aria-labelledby="heading8">
+                                    <div class="panel-body">
+                                        <div class="">
+                                            <div class="map-actions">
+                                                {% include "_actions.html" %}
+                                            </div>
+
+                                            <div class="tab-content gd-tab-content-style">
+                                                {% include "base/resourcebase_info_panel.html" %}
+                                                <article class="tab-pane" id="comments">
+                                                    {% include "_comments.html" %}
+                                                </article>
+                                                <article class="tab-pane" id="rate">
+                                                    {% if request.user.is_authenticated %}
+                                                        <h3>{% trans "Rate this Map" %}</h3>
+                                                        {% user_rating request.user resource "map" as user_map_rating %}
+                                                        <div id="user_rating" class="category-map"
+                                                             data-score="{{ user_map_rating }}"></div>
+                                                    {% endif %}
+                                                    <h3>{% trans 'Average Rating' %}</h3>
+                                                    {% overall_rating resource "map" as map_rating %}
+                                                    {% num_ratings resource as num_votes %}
+                                                    <div class="overall_rating" style="float:left"
+                                                         data-score="{{ map_rating }}"></div>
+                                                    ({{ num_votes }})
+                                                </article>
+                                                {% block social_links %}
+                                                    {% if SOCIAL_BUTTONS %}
+                                                        {% include "social_links.html" %}
+                                                    {% endif %}
+                                                {% endblock %}
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                </div>
+                <!-- <div class="splitter">
+                </div> -->
+                <div class="panel-right">
+                <div class="col-md-8  margin-zero left-pad-zero r surfgis" ng-controller="appController" style="width: 100%;padding-right: 0;" ng-app="appModule" ng-click="bodyClicked()">
+                    <div class="gd-content-body map-details-info" ng-controller="MapUpdateController">
+                        <!-- <div id="embedded_map"> -->
+                            <!-- <div id="the_map"></div> -->
+                            {% include 'maps/_map-view-panel.html'%}
+
+                        <!-- </div> -->
+                    </div>
+                </div>
+                </div>
+                </div>
+            </div>
+          </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block extra_script %}
+    <script type="text/javascript">
+        var GD_WRAPPER__HEIGHT = 400;
+        /*function resetWrapperHight() {
+            var bodyHeight = $("body").height();
+            console.log("bodyHeight", bodyHeight);
+            var documentHeight = $("document").height();
+            console.log("documentHeight", documentHeight);
+            var wrapperHeight = $("#gd-wrapper").height();
+            wrapperHeight = parseInt(parseInt(wrapperHeight) - 53);
+            GD_WRAPPER__HEIGHT = wrapperHeight;
+            $("#gd-wrapper .map-details-information, #gd-wrapper .map-details-info").css("height", wrapperHeight + "px");
+            console.log("wrapperHeight", wrapperHeight);
+        }*/
+        function resetWrapperHight() {
+            var bodyHeight = $("body").height();
+            bodyHeight = parseInt(parseInt(bodyHeight) - 53);
+            console.log("bodyHeight", bodyHeight);
+            GD_WRAPPER__HEIGHT = bodyHeight;
+            $("#gd-wrapper .map-details-information, #gd-wrapper .map-details-info").css("height", bodyHeight + "px");
+        }
+        $(document).ready(function () {
+            // wrapper
+            resetWrapperHight();
+            $(window).resize(function () {
+                resetWrapperHight();
+            });
+        });
+    </script>
+    {% if SOCIAL_BUTTONS %}
+        <div id="fb-root"></div>
+    <script>
+        (function (d, s, id) {
+            var js, fjs = d.getElementsByTagName(s)[0];
+            if (d.getElementById(id)) {
+                return;
+            }
+            js = d.createElement(s);
+            js.id = id;
+            js.src = "//connect.facebook.net/en_US/all.js#xfbml=1";
+            fjs.parentNode.insertBefore(js, fjs);
+        }(document, 'script', 'facebook-jssdk'));
+    </script>
+    {% endif %}
+    {% if request.user.is_authenticated %}
+        {% user_rating_js request.user resource "map" %}
+    {% else %}
+        {% overall_rating resource "map" as the_map_rating %}
+    {% endif %}
+    {% include 'rating.html' %}
+    <script type="text/javascript">
+        $(function () {
+
+  {% verbatim %}
+  // Publish layer group
+  // TODO: this should really not be inside a script tag...
+  var $wmsBtn = $(".layer-group .btn"),
+      layerGroupElTpl;
+            if ($wmsBtn.length > 0) {
+                $wmsBtn.on("click", function (event) {
+                    event.preventDefault();
+                    $.ajax({
+                        type: "PUT",
+                        url: $wmsBtn.attr("href")
+                    })
+                    .done(function (data) {
+                        layerGroupElTpl = "<dt>WMS layer group for local map layers:</dt><dd><em>{{layerGroupName}}</em> (on <a href='{{ows}}?request=GetCapabilities'>local OWS</a>)</dd>";
+                        $.each(data, function (key, value) {
+                            // client-side template hack
+                            layerGroupElTpl = layerGroupElTpl.replace("{{" + key + "}}", value);
+                        });
+                    })
+
+                    .fail(function () {
+                        layerGroupElTpl = "<dt>Error:</dt><dd>Layer group could not be created.</dd>";
+                    })
+
+                    .always(function () {
+                        $(".layer-group dl").html(layerGroupElTpl);
+                    });
+                });
+            };
+            {% endverbatim %}
+
+        });
+        {% if SOCIAL_BUTTONS %}
+            (function () {
+                var po = document.createElement('script');
+                po.type = 'text/javascript';
+                po.async = true;
+                po.src = 'https://apis.google.com/js/plusone.js';
+                var s = document.getElementsByTagName('script')[0];
+                s.parentNode.insertBefore(po, s);
+            })();
+        {% endif %}
+        $("#comment_submit_btn").click(function (event) {
+            $.ajax({
+                type: "POST",
+                url: $("#form_post_comment").attr('action'),
+                data: $("#form_post_comment").serialize(),
+                success: function () {
+                    $('#form_post_comment_div').modal('hide');
+                    $('#comments_section').load(window.location.pathname + ' #comments_section',
+                            function () {
+                                $(this).children().unwrap()
+                            })
+                }
+            });
+            return false;
+        });
+
+    </script>
+{% include "_permissions_form_js.html" %}
+<script type="text/javascript" src="{{ STATIC_URL}}geonode/js/utils/thumbnail.js"></script>
+<script>
+    $.fn.resizable = undefined;
+</script>
+<script src="https://rawgit.com/RickStrahl/jquery-resizable/master/src/jquery-resizable.js"></script>
+<link rel="stylesheet" href="{{ STATIC_URL }}layers/css/styles.css">
+<script type="text/javascript">
+  $('#set_thumbnail').click(function(){
+    createMapThumbnail();
+    $('#edit-map').modal('toggle');
+  });
+</script>
+<script type="text/javascript">
+    $(document).ready(function () {
+        {% if status != 'ACTIVE' %}
+            anyonePermissionDisable();
+        {% endif %}
+    });
+</script>
+<script type="text/javascript">
+    user_info = '{{ request.user.id }}';
+    map_info = '{{ resource.id }}';
+
+    // Map load
+    var user_location = JSON.parse(localStorage.getItem("user_location"));
+
+    var url = '/analytics/api/map/load/create/';
+
+    var latitude = '';
+    var longitude = '';
+    try{
+        latitude = user_location.latitude.toString();
+        longitude = user_location.longitude.toString()
+    }catch(err){
+        latitude = "";
+        longitude = "";
+    }
+
+    var data = {
+        'user': user_info,
+        'map': map_info,
+        'latitude': latitude,
+        'longitude': longitude,
+        'agent': '',
+        'ip': ''
+    };
+
+
+    map_load_activity_submit(data, url);
+
+    function map_load_activity_submit(data, url){
+
+        // using jQuery
+        function getCookie(name) {
+            var cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                var cookies = document.cookie.split(';');
+                for (var i = 0; i < cookies.length; i++) {
+                    var cookie = jQuery.trim(cookies[i]);
+                    // Does this cookie string begin with the name we want?
+                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
+        var csrftoken = getCookie('csrftoken');
+        function csrfSafeMethod(method) {
+            // these HTTP methods do not require CSRF protection
+            return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
+        }
+        $.ajaxSetup({
+            beforeSend: function(xhr, settings) {
+                if (!csrfSafeMethod(settings.type) && !this.crossDomain) {
+                    xhr.setRequestHeader("X-CSRFToken", csrftoken);
+                }
+            }
+        });
+
+        // $.ajax({
+        //     url: url,
+        //     method: 'POST',
+        //     data: data,
+        //     dataType: 'json',
+        //     success: function(data){
+        //         console.log(data);
+
+        //     }
+        // });
+
+    }
+
+    $(document).ready(function(){
+        $(".panel-left").resizable({
+            handleSelector: ".splitter",
+            resizeHeight: false
+        });
+    });
+
+</script>
+
+<script>
+        var count = 0;
+        function animating(){
+            console.log("asdasda");
+            if(count === 0){
+                document.getElementById('sidebar').className = 'panel-left slideOutRight';
+          
+                count++;
+            }else{
+                document.getElementById('sidebar').className = 'panel-left slideInRight show';//hide
+           
+                count--;
+            }
+            }
+    
+    </script>
+
+{% endblock %}
