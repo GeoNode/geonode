@@ -1163,6 +1163,7 @@ fieldset[disabled] .btn-gd-yellow.focus {
 }
 #gd-wrapper .gd-content-body {
     background:#fff;
+    padding-top: 38px;
 }
 #gd-wrapper .gd-content-body.box-shadow {
     -webkit-box-shadow: 0px 2px 5px 0px rgba(224,217,224,1);
@@ -2337,10 +2338,14 @@ ul.resources-summery li a .fa{
 /* end user details page*/
 #user_messages {
     margin-top: 0;
+    position: absolute;
+    width: 50%;
+    z-index: 1003;
 }
 #user_messages .alert{
     margin-bottom: 0px;
     border-radius: 0;
+    padding: 10px;
 }
 .row.margin-right-15px{
     margin-right: 0px;
@@ -2703,7 +2708,7 @@ body.layer-detail-page #gd-wrapper .container-fluid.padding-zero{
 }
 .map-details-information,
 .layer-information{
-    height: 100%;
+    height: calc(100vh - 142px) !important;
     overflow-y: scroll;
 }
 .gd-link-style.inaccordion{
@@ -3620,5 +3625,32 @@ width: 80%;
 .x-panel table, .x-window table
 {
     float: right;
+}
+.map-tab-bar
+{
+    position: fixed;
+    width: 100%;
+    top: 61px;
+    z-index: 1000;
+    background-color: #fff;
+}
+.x-toolbar
+{
+position: fixed;
+position: fixed;
+width: 100%;
+top: 104px;
+z-index: 1000;
+background-color: #fff;
+}
+#myNav_map_left
+{
+    padding: 0px;
+    width: 100%;
+    float: right;
+    left: 0%;
+    top: 140px;
+    position: absolute;
+    height: 500px;
 }
 
