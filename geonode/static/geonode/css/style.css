@@ -3654,4 +3654,25 @@ background-color: #fff;
     position: absolute;
     height: 500px;
 }
+.content-p-top
+{
+  padding-top: 40px;
+}
+#the_map .x-toolbar
+{
+    top: 63px;
+}
+#ext-gen95 .panel-left
+{
+    top: 99px;
+}
+#ext-gen95 .map-details-information
+{
+    height: calc(100vh - 100px) !important;
+}
+.x-toolbar
+{
+    border-bottom: 1px solid #ddd !important;
+    border-top: none;
+}
 
