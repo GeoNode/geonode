@@ -49,9 +49,101 @@
       <div class="gd-content-body layer-test" >
         <div class="row">
         <div class="panel-container content-p-top">
+
+
+            <!-- Start edit layer modal -->
+
+                {% if GEOSERVER_BASE_URL %}
+                {% get_obj_perms request.user for resource.layer as "layer_perms" %}
+            {% endif %}
+            {% if "change_resourcebase_metadata" in perms_list or "change_resourcebase" in perms_list or "delete_resourcebase" in perms_list or "change_layer_style" in layer_perms %}
+                <div class="modal fade" id="edit-layer" tabindex="-1" role="dialog"
+                aria-labelledby="myModalLabel" aria-hidden="true">
+               <div class="modal-dialog modal-dialog-edit">
+                   <div class="modal-content">
+                       <div class="modal-header">
+                           <button type="button" class="close" data-dismiss="modal"
+                                   aria-hidden="true">&times;</button>
+                           <h4 class="modal-title"
+                               id="myModalLabel">{% trans "Edit Layer" %}</h4>
+                       </div>
+                       <div class="modal-body">
+                           <div class="row edit-modal">
+                               {% if "change_resourcebase_metadata" in perms_list %}
+                                   <div class="col-sm-3">
+                                       <i class="fa fa-list-alt fa-3x"></i>
+                                       <h4>{% trans "Metadata" %}</h4>
+                                       <a class="btn btn-default btn-gd btn-block btn-xs"
+                                          href="{% url "layer_metadata" resource.service_typename %}">{% trans "Edit" %}</a>
+                                   </div>
+                               {% endif %}
+                               {% if GEOSERVER_BASE_URL and not resource.service %}
+                                   {% if "change_layer_style" in layer_perms %}
+                                       <div class="col-sm-3">
+                                           <i class="fa fa-tint fa-3x"></i>
+                                           <h4>{% trans "Styles" %}</h4>
+                                           {% if preview == 'geoext' %}
+                                               <a class="btn btn-default btn-gd btn-block btn-xs style-edit"
+                                                  data-dismiss="modal"
+                                                  href="#">{% trans "Edit" %}</a>
+                                           {% endif %}
+                                           <a class="btn btn-default btn-gd btn-block btn-xs"
+                                              href="{% url "layer_style_manage" resource.service_typename %}">{% trans "Manage" %}</a>
+                                       </div>
+                                   {% endif %}
+                               {% endif %}
+                               {% if "change_resourcebase" in perms_list %}
+                                   <div class="col-sm-3">
+                                       <i class="fa fa-photo fa-3x"></i>
+                                       <h4>{% trans "Thumbnail" %}</h4>
+                                       <a class="btn btn-default btn-gd btn-block btn-xs"
+                                          href="#"
+                                          id="set_thumbnail">{% trans "Set" %}</a>
+                                   </div>
+                               {% endif %}
+
+                               {% if "change_resourcebase" in perms_list or "delete_resourcebase" in perms_list or "change_layer_data" in layer_perms %}
+                                   <div class="col-sm-3">
+                                       <i class="fa fa-square-o fa-3x rotate-45"></i>
+                                       <h4>{% trans "Layer" %}</h4>
+                                       {% if "change_resourcebase" in perms_list and not resource.service %}
+                                           <a class="btn btn-default btn-gd btn-block btn-xs"
+                                              href="{% url "layer_replace" resource.service_typename %}">{% trans "Replace" %}</a>
+                                       {% endif %}
+                                       {% if resource.storeType == 'dataStore' and "change_layer_data" in layer_perms %}
+                                           <a class="btn btn-default btn-gd btn-block btn-xs"
+                                              href="{% url "new_map" %}?layer={{ resource.service_typename }}">{% trans "Edit data" %}</a>
+                                       {% endif %}
+                                       {% if layer_status != 'ACTIVE' or request.user.is_superuser %}
+                                           {% if "delete_resourcebase" in perms_list %}
+                                           <a class="btn btn-danger btn-gd btn-block btn-xs"
+                                              href="{% url "layer_remove" resource.service_typename %}">{% trans "Remove" %}</a>
+                                           {% endif %}
+                                       {% endif %}
+
+                                   </div>
+                               {% endif %}
+
+                               <div class="tab-content">
+
+                               </div>
+                           </div>
+                           <div class="modal-footer">
+                               <button type="button" class="btn btn-gd btn-default"
+                                       data-dismiss="modal">{% trans "Close" %}</button>
+                           </div>
+                       </div>
+                   </div>
+                   </div>
+               </div>   
+               {% endif %}
           
-          
+ <!-- End edit layer modal -->
+
+
             <div id="sidebar" class="panel-left slideInRight">
+
+                  
 
                 <!-- <div class="layer-mini-slider" id="mini-slider" onclick="closeNav();">
                         <span>
@@ -262,84 +354,7 @@
                                                     {% trans "Edit Layer" %}
                                                 </button>
                                             </li>
-                                            <div class="modal fade" id="edit-layer" tabindex="-1" role="dialog"
-                                                 aria-labelledby="myModalLabel" aria-hidden="true">
-                                                <div class="modal-dialog modal-dialog-edit">
-                                                    <div class="modal-content">
-                                                        <div class="modal-header">
-                                                            <button type="button" class="close" data-dismiss="modal"
-                                                                    aria-hidden="true">&times;</button>
-                                                            <h4 class="modal-title"
-                                                                id="myModalLabel">{% trans "Edit Layer" %}</h4>
-                                                        </div>
-                                                        <div class="modal-body">
-                                                            <div class="row edit-modal">
-                                                                {% if "change_resourcebase_metadata" in perms_list %}
-                                                                    <div class="col-sm-3">
-                                                                        <i class="fa fa-list-alt fa-3x"></i>
-                                                                        <h4>{% trans "Metadata" %}</h4>
-                                                                        <a class="btn btn-default btn-gd btn-block btn-xs"
-                                                                           href="{% url "layer_metadata" resource.service_typename %}">{% trans "Edit" %}</a>
-                                                                    </div>
-                                                                {% endif %}
-                                                                {% if GEOSERVER_BASE_URL and not resource.service %}
-                                                                    {% if "change_layer_style" in layer_perms %}
-                                                                        <div class="col-sm-3">
-                                                                            <i class="fa fa-tint fa-3x"></i>
-                                                                            <h4>{% trans "Styles" %}</h4>
-                                                                            {% if preview == 'geoext' %}
-                                                                                <a class="btn btn-default btn-gd btn-block btn-xs style-edit"
-                                                                                   data-dismiss="modal"
-                                                                                   href="#">{% trans "Edit" %}</a>
-                                                                            {% endif %}
-                                                                            <a class="btn btn-default btn-gd btn-block btn-xs"
-                                                                               href="{% url "layer_style_manage" resource.service_typename %}">{% trans "Manage" %}</a>
-                                                                        </div>
-                                                                    {% endif %}
-                                                                {% endif %}
-                                                                {% if "change_resourcebase" in perms_list %}
-                                                                    <div class="col-sm-3">
-                                                                        <i class="fa fa-photo fa-3x"></i>
-                                                                        <h4>{% trans "Thumbnail" %}</h4>
-                                                                        <a class="btn btn-default btn-gd btn-block btn-xs"
-                                                                           href="#"
-                                                                           id="set_thumbnail">{% trans "Set" %}</a>
-                                                                    </div>
-                                                                {% endif %}
-
-                                                                {% if "change_resourcebase" in perms_list or "delete_resourcebase" in perms_list or "change_layer_data" in layer_perms %}
-                                                                    <div class="col-sm-3">
-                                                                        <i class="fa fa-square-o fa-3x rotate-45"></i>
-                                                                        <h4>{% trans "Layer" %}</h4>
-                                                                        {% if "change_resourcebase" in perms_list and not resource.service %}
-                                                                            <a class="btn btn-default btn-gd btn-block btn-xs"
-                                                                               href="{% url "layer_replace" resource.service_typename %}">{% trans "Replace" %}</a>
-                                                                        {% endif %}
-                                                                        {% if resource.storeType == 'dataStore' and "change_layer_data" in layer_perms %}
-                                                                            <a class="btn btn-default btn-gd btn-block btn-xs"
-                                                                               href="{% url "new_map" %}?layer={{ resource.service_typename }}">{% trans "Edit data" %}</a>
-                                                                        {% endif %}
-                                                                        {% if layer_status != 'ACTIVE' or request.user.is_superuser %}
-                                                                            {% if "delete_resourcebase" in perms_list %}
-                                                                            <a class="btn btn-danger btn-gd btn-block btn-xs"
-                                                                               href="{% url "layer_remove" resource.service_typename %}">{% trans "Remove" %}</a>
-                                                                            {% endif %}
-                                                                        {% endif %}
-
-                                                                    </div>
-                                                                {% endif %}
-
-                                                                <div class="tab-content">
-
-                                                                </div>
-                                                            </div>
-                                                            <div class="modal-footer">
-                                                                <button type="button" class="btn btn-gd btn-default"
-                                                                        data-dismiss="modal">{% trans "Close" %}</button>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </div>
+                                            
                                             {% endif %}
                                             <!--
                                             <li class="list-group-item lastchild">
