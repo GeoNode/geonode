@@ -130,7 +130,7 @@ setup(name='GeoNode',
             "django-utils<=0.0.2",  # missing from ppa FIXME
 
             # GeoNode org maintained apps.
-            "django-geoexplorer>=4.0.0,<5.0",  # python-django-geoexplorer (4.0.37 in our ppa)
+            "django-geoexplorer>=4.0.0,<5.0",  # python-django-geoexplorer (4.0.37 in our ppa) FIXME
             "geonode-user-messages<=0.1.12",  # python-geonode-user-messages (0.1.11 in our ppa) FIXME
             "geonode-avatar<=2.1.6",  # python-geonode-avatar (2.1.6 in our ppa)
             "geonode-announcements<=1.0.9",  # python-geonode-announcements (1.0.9 in our ppa)
@@ -151,6 +151,9 @@ setup(name='GeoNode',
 
             # AWS S3 dependencies
             "django-storages<=1.6.5",  # python-django-storages (1.6.5 in our ppa)
+
+            # DJango Caches
+            "python-memcached<=1.59",  # missing from ppa FIXME
 
             # Contribs
             "et-xmlfile<=1.0.1",  # python-et-xmlfile (1.0.1 in our ppa)

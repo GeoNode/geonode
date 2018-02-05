@@ -33,7 +33,7 @@ django-extensions==1.6.1
 django-floppyforms==1.7.0
 django-forms-bootstrap==3.1.0
 django-friendly-tag-loader==1.2.1
-django-geoexplorer==4.0.37
+django-geoexplorer==4.0.38
 django-geonode-client==1.0.0
 django-guardian==1.4.9
 django-haystack==2.6.0
@@ -124,3 +124,4 @@ xmljson
 psutil
 django-cors-headers==2.1.0
 django-multi-email-field
+python-memcached==1.59
