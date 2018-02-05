@@ -156,6 +156,13 @@
                             </button>
             </li>
             <li class="divider-vertical" draft-only></li>
+
+            <li draft-only>
+                    <button class="control-button icon" onclick="animating()" title="Query">
+                            <i class="fa fa-binoculars"></i>                                  
+                                </button>
+                </li>
+
             <li>
                 <!-- <button class="control-button icon icon32 icon-help" ng-click="action.openHelp('Url.Action(" Help ", "Document ")')" title="Open Help">
                                 <span>Help</span>
@@ -188,3 +195,209 @@
     <div id="olmap" class="map">
     </div>
 </div>
+
+
+<!-- <div id="panel-bottom" class="panel-bottom slideOutDown"> -->
+        <div id="panel-bottom" class="panel-bottom slideInUp">
+
+        <div class="container-fluid" style="padding: 0;">
+                <div class="row">
+                        <div class="col-md-3" style="padding-right: 0">
+                                <div class="panel panel-info">
+                                        <div class="panel-heading">
+                                          <h3 class="panel-title">Query</h3>
+                                        </div>
+                                        <div class="panel-body">
+                                         <form>
+                <div class="checkbox" style="padding-left: 0"> <label> <input type="checkbox"> Query by current map extent </label> </div>
+                <div class="checkbox" style="padding-left: 0"> <label> <input type="checkbox"> Query by attributes </label> </div>
+                                        </form>
+
+                                        <div class="panel panel-default">
+                                                <div class="panel-body">
+                <form class="form-inline" style="margin-bottom: 10px;">
+                        <div class="form-group">
+                            <label for="exampleInputName2">Match</label>
+                            <select class="form-control input-sm">
+                                <option>Any</option>                                                                        <option>2</option>
+                                <option>All</option>
+                                <option>None</option>
+                                </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="exampleInputEmail2">Of the following</label>
+                        </div>                                                               
+                        </form>
+
+                    <form class="form-inline" style="margin-bottom: 10px;">
+                        <div class="form-group">
+                            <label><i class="fa fa-minus-circle"></i></label>
+                        </div>
+                        <div class="form-group">
+                           
+                                <select class="form-control input-sm">
+                                        <option>Any</option>                                                                        <option>2</option>
+                                        <option>All</option>
+                                        <option>None</option>
+                                        </select>
+                        </div>
+
+                        <div class="form-group">
+                                
+                                     <select class="form-control input-sm">
+                                             <option>Any</option>                                                                        <option>2</option>
+                                             <option>All</option>
+                                             <option>None</option>
+                                             </select>
+                             </div>
+
+                             <div class="form-group">
+                                    
+                                    <input type="email" class="form-control input-sm" id="inputEmail3" style="width: 50px;">
+                                 </div>
+
+                        
+                        </form>
+
+                        <button type="submit" class="btn btn-primary"><i class="fa fa-plus-circle"></i> Add condition</button>
+
+
+                                                </div>
+                                              </div>
+
+
+                                        </div>
+
+                                        <div class="panel-footer">
+                                                <a href="" class="btn btn-gd-primary pull-right icon-btn-color">
+                                                        Query <i class="fa fa-binoculars" aria-hidden="true"></i>    
+                                                    </a>
+                            <a href="" class="btn btn-default pull-right" target="_self" style="margin-right: 5px;">
+                                                            Cancel <i class="fa fa-times" aria-hidden="true"></i></a>
+
+                                                            <div style="clear:both"></div>
+                                        </div>
+
+
+                                      </div>
+                        </div>
+                        
+                        <div class="col-md-9" style="padding-left: 3px">
+                                <div class="panel panel-info">
+                                        <div class="panel-heading">
+                                          <h3 class="panel-title">Table</h3>
+                                        </div>
+                                        
+                                        <div class="table-responsive panel-bottom-table">
+                                        <table class="table table-hover table-striped">
+                                                <thead>
+                                                  <tr>
+                                                    <th>#</th>
+                                                    <th>First Name</th>
+                                                    <th>Last Name</th>
+                                                    <th>Username</th>
+                                                  </tr>
+                                                </thead>
+                                                <tbody>
+                                                  <tr>
+                                                        <td>Mark</td>
+                                                    <td>Mark</td>
+                                                    <td>Otto</td>
+                                                    <td>@mdo</td>
+                                                  </tr>
+                                                  <tr>
+                                                        <td>Mark</td>
+                                                    <td>Jacob</td>
+                                                    <td>Thornton</td>
+                                                    <td>@fat</td>
+                                                  </tr>
+                                                  <tr>
+                                                        <td>Mark</td>
+                                                    <td>Larry</td>
+                                                    <td>the Bird</td>
+                                                    <td>@twitter</td>
+                                                  </tr>
+
+                                                  <tr>
+                                                        <td>Mark</td>
+                                                        <td>Larry</td>
+                                                        <td>the Bird</td>
+                                                        <td>@twitter</td>
+                                                      </tr>
+
+                                                      <tr>
+                                                            <td>Mark</td>
+                                                            <td>Larry</td>
+                                                            <td>the Bird</td>
+                                                            <td>@twitter</td>
+                                                          </tr>
+
+
+                                                      <tr>
+                                                            <td>Mark</td>
+                                                            <td>Larry</td>
+                                                            <td>the Bird</td>
+                                                            <td>@twitter</td>
+                                                          </tr>
+
+                                                      <tr>
+                                                            <td>Mark</td>
+                                                            <td>Larry</td>
+                                                            <td>the Bird</td>
+                                                            <td>@twitter</td>
+                                                          </tr>
+
+                                                      <tr>
+                                                            <td>Mark</td>
+                                                            <td>Larry</td>
+                                                            <td>the Bird</td>
+                                                            <td>@twitter</td>
+                                                          </tr>
+                                                </tbody>
+                                              </table>
+                                              </div>
+
+                                              <div class="panel-footer">
+                                                    <a href="" class="btn btn-gd-primary pull-right icon-btn-color" title="Zoom to selected features">
+                                                            <i class="fa fa-search" style="margin-left: 0"></i></i>    
+                                                        </a>
+                                <a href="" class="btn btn-default pull-left" target="_self" style="margin-right: 5px;">
+                                                                <i class="fa fa-step-backward"></i></a>
+
+                                                                <a href="" class="btn btn-default pull-left" target="_self" style="margin-right: 5px;">
+                                                                        <i class="fa fa-caret-left"></i></a>
+
+                                                                        <a href="" class="btn btn-default pull-left" target="_self" style="margin-right: 5px;">
+                                                                                <i class="fa fa-caret-right"></i></a>
+
+                                                                                <a href="" class="btn btn-default pull-left" target="_self" style="margin-right: 5px;">
+                                                                                        <i class="fa fa-step-forward"></i></a>
+    
+                                                                <div style="clear:both"></div>
+                                            </div>
+
+                                      </div>
+                        </div>
+
+                        </div>
+
+            </div>        
+</div>
+
+
+<script>
+        var count = 0;
+        function animating(){
+            console.log("asdasda");
+            if(count === 0){
+                document.getElementById('panel-bottom').className = 'panel-bottom slideInUp';
+          
+                count++;
+            }else{
+                document.getElementById('panel-bottom').className = 'panel-bottom slideOutDown';//hide
+           
+                count--;
+            }
+            }
+    
+    </script>
