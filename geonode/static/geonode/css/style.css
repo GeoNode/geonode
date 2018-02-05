@@ -498,7 +498,7 @@ table.gd-list-table tr td .media-body {
     -webkit-box-shadow: 0px 0px 5px 0px rgba(0,0,0,0.26);
     -moz-box-shadow: 0px 0px 5px 0px rgba(0,0,0,0.26);
     box-shadow: 0px 0px 5px 0px rgba(0,0,0,0.26);
-    z-index: 2;
+    z-index: 500;
 }
 #gd-header .navbar-nav {
     margin-top:15px;
@@ -3283,7 +3283,7 @@ ul.termsuseandcondition li {
     position: fixed;
     right: 0;
     top: 0;
-    z-index: 3;
+    z-index: 1000;
 }
 .styled-dropdown-select-all{
     color: #999;
