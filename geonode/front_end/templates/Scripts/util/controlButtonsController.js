@@ -181,6 +181,18 @@
                 });
             };
 
+            $scope.action.shareMap = function(){
+                $modal.open({
+                    templateUrl: 'static/maps/_share-map-window.html',
+                    controller: 'ShareMapController as ctrl',
+                    backdrop: 'static',
+                    keyboard: false,
+                    windowClass: 'fullScreenModal First',
+                    windowTopClass : 'Second',
+                    openedClass : 'Third'
+                });
+            }
+
             $scope.action.printPreview = function() {
 
                 $rootScope.mapImage = { baseMapUrl: undefined, shapeUrl: undefined };

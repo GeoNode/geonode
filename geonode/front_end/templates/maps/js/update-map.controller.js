@@ -39,6 +39,13 @@
         (getGeoServerSettings)();
         var keyPointerDrag, keyPostRender, keyChangeResolution;
         (function() {
+            var re = /\d*\/embed/g;
+            
+            if(re.test($window.location.href)){
+                //Do not need analytics in share map
+                return;
+            }
+
             keyPostRender = map.on('postrender', function(evt) {
                 var user_href = window.location.href.split('/');
                 var map_info = user_href[user_href.length - 2];
