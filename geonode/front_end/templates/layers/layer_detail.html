@@ -50,6 +50,122 @@
         <div class="row">
         <div class="panel-container content-p-top">
 
+            <div class="modal fade" id="download-layer" tabindex="-1" role="dialog"
+            aria-labelledby="myModalLabel" aria-hidden="true">
+           <div class="modal-dialog modal-dialog-edit">
+               <div class="modal-content">
+                   <div class="modal-header">
+                       <button type="button" class="close" data-dismiss="modal"
+                               aria-hidden="true">&times;</button>
+                       <h4 class="modal-title"
+                           id="myModalLabel">{% trans "Download Layer..." %}</h4>
+                   </div>
+                   <div class="modal-body">
+                       <h2>Data format</h2>
+                       <div class="native">
+
+                           {% if links %}
+{#                                                                <ul>#}
+                                   {% for link in links %}
+                                       <div class="radio">
+                                           <label>
+                                               <input type="radio" name="native-download" id="{{ link.name }}-data" value="{{ link.url }}&srsName=EPSG%3A{{ user_data_epsg }}">
+                                               {% trans link.name %}
+                                           </label>
+                                       </div>
+                                       {% comment %}<li>
+                                           <a href="{{ link.url }}">{% trans link.name %}</a>
+                                       </li>{% endcomment %}
+                                   {% endfor %}
+{#                                                                </ul>#}
+                           {% endif %}
+                           {% if links_download %}
+                               {% comment %}<ul>{% endcomment %}
+                                   {% for link in links_download %}
+                                       {% comment %}<li>{% endcomment %}
+                                       <div class="radio">
+                                           <label>
+                                               <input type="radio" name="native-download" id="{{ link.name }}-data" value="{{ link.url }}&srsName=EPSG%3A{{ user_data_epsg }}">
+                                               {% trans link.name %}
+                                           </label>
+                                       </div>
+                                           {% comment %}<a href="{{ link.url }}">{% trans link.name %}</a>{% endcomment %}
+                                       {% comment %}</li>{% endcomment %}
+                                   {% endfor %}
+                               {% comment %}</ul>{% endcomment %}
+                           {% endif %}
+                       </div>
+                       <div class="wgs84">
+
+                           {% if links %}
+
+                               {% comment %}<ul>{% endcomment %}
+
+                                   {% for link in links %}
+                                       <div class="radio">
+                                           <label>
+                                               <input type="radio" name="wgs84-download" id="{{ link.name }}-data" value="{{ link.url }}">
+                                               {% trans link.name %}
+                                           </label>
+                                       </div>
+                                       {% comment %}<li>
+                                           <a href="{{ link.url }}&srsName=EPSG%3A{{ user_data_epsg }}">{% trans link.name %}</a>
+                                       </li>{% endcomment %}
+                                   {% endfor %}
+                               {% comment %}</ul>{% endcomment %}
+                           {% endif %}
+
+                           {% if links_download %}
+                               {% comment %}<ul>{% endcomment %}
+                                   {% for link in links_download %}
+                                       {% comment %}<li>{% endcomment %}
+                                       <div class="radio">
+                                           <label>
+                                               <input type="radio" name="wgs84-download" id="{{ link.name }}-data" value="{{ link.url }}">
+                                               {% trans link.name %}
+                                           </label>
+                                       </div>
+
+                                           {% comment %}<a href="{{ link.url }}">{% trans link.name %}</a>{% endcomment %}
+                                       {% comment %}</li>{% endcomment %}
+                                   {% endfor %}
+                               {% comment %}</ul>{% endcomment %}
+                           {% endif %}
+                       </div>
+
+                       {% if user_data_epsg != 'None' and user_data_epsg != "4326" %}
+
+                           <h3>Projections</h3>
+                           <div class="radio">
+                               <label>
+                                   <input type="radio" name="nativeOrwgs84" id="native-data" value="native" checked>
+                                   {% comment %}Native{% endcomment %}
+                                   {% if user_data_proj %}
+                                   {{ user_data_proj }}
+                                   {% endif %}
+                               </label>
+                           </div>
+                           <div class="radio">
+                               <label>
+                                   <input type="radio" name="nativeOrwgs84" id="wgs84-data" value="wgs84">
+                                   WGS 84
+                               </label>
+                           </div>
+                       {% endif %}
+
+                   </div>
+                   <div class="modal-footer">
+                       <button type="button" class="btn btn-primary pull-left data-export-button">Export...</button>
+                       <button type="button" class="btn btn-default btn-gd"
+                               data-dismiss="modal">
+                           {% trans "Close" %}
+                       </button>
+                   </div>
+               </div>
+           </div>
+       </div>
+
+
 
             {% if GEONODE_SECURITY_ENABLED %}
             {% include "_permissions_form.html" %}
@@ -234,120 +350,7 @@
                                                 </a>
                                               </li>
                                               {% endcomment %}
-                                        <div class="modal fade" id="download-layer" tabindex="-1" role="dialog"
-                                             aria-labelledby="myModalLabel" aria-hidden="true">
-                                            <div class="modal-dialog modal-dialog-edit">
-                                                <div class="modal-content">
-                                                    <div class="modal-header">
-                                                        <button type="button" class="close" data-dismiss="modal"
-                                                                aria-hidden="true">&times;</button>
-                                                        <h4 class="modal-title"
-                                                            id="myModalLabel">{% trans "Download Layer..." %}</h4>
-                                                    </div>
-                                                    <div class="modal-body">
-                                                        <h2>Data format</h2>
-                                                        <div class="native">
-
-                                                            {% if links %}
-{#                                                                <ul>#}
-                                                                    {% for link in links %}
-                                                                        <div class="radio">
-                                                                            <label>
-                                                                                <input type="radio" name="native-download" id="{{ link.name }}-data" value="{{ link.url }}&srsName=EPSG%3A{{ user_data_epsg }}">
-                                                                                {% trans link.name %}
-                                                                            </label>
-                                                                        </div>
-                                                                        {% comment %}<li>
-                                                                            <a href="{{ link.url }}">{% trans link.name %}</a>
-                                                                        </li>{% endcomment %}
-                                                                    {% endfor %}
-{#                                                                </ul>#}
-                                                            {% endif %}
-                                                            {% if links_download %}
-                                                                {% comment %}<ul>{% endcomment %}
-                                                                    {% for link in links_download %}
-                                                                        {% comment %}<li>{% endcomment %}
-                                                                        <div class="radio">
-                                                                            <label>
-                                                                                <input type="radio" name="native-download" id="{{ link.name }}-data" value="{{ link.url }}&srsName=EPSG%3A{{ user_data_epsg }}">
-                                                                                {% trans link.name %}
-                                                                            </label>
-                                                                        </div>
-                                                                            {% comment %}<a href="{{ link.url }}">{% trans link.name %}</a>{% endcomment %}
-                                                                        {% comment %}</li>{% endcomment %}
-                                                                    {% endfor %}
-                                                                {% comment %}</ul>{% endcomment %}
-                                                            {% endif %}
-                                                        </div>
-                                                        <div class="wgs84">
-
-                                                            {% if links %}
-
-                                                                {% comment %}<ul>{% endcomment %}
-
-                                                                    {% for link in links %}
-                                                                        <div class="radio">
-                                                                            <label>
-                                                                                <input type="radio" name="wgs84-download" id="{{ link.name }}-data" value="{{ link.url }}">
-                                                                                {% trans link.name %}
-                                                                            </label>
-                                                                        </div>
-                                                                        {% comment %}<li>
-                                                                            <a href="{{ link.url }}&srsName=EPSG%3A{{ user_data_epsg }}">{% trans link.name %}</a>
-                                                                        </li>{% endcomment %}
-                                                                    {% endfor %}
-                                                                {% comment %}</ul>{% endcomment %}
-                                                            {% endif %}
-
-                                                            {% if links_download %}
-                                                                {% comment %}<ul>{% endcomment %}
-                                                                    {% for link in links_download %}
-                                                                        {% comment %}<li>{% endcomment %}
-                                                                        <div class="radio">
-                                                                            <label>
-                                                                                <input type="radio" name="wgs84-download" id="{{ link.name }}-data" value="{{ link.url }}">
-                                                                                {% trans link.name %}
-                                                                            </label>
-                                                                        </div>
-
-                                                                            {% comment %}<a href="{{ link.url }}">{% trans link.name %}</a>{% endcomment %}
-                                                                        {% comment %}</li>{% endcomment %}
-                                                                    {% endfor %}
-                                                                {% comment %}</ul>{% endcomment %}
-                                                            {% endif %}
-                                                        </div>
-
-                                                        {% if user_data_epsg != 'None' and user_data_epsg != "4326" %}
-
-                                                            <h3>Projections</h3>
-                                                            <div class="radio">
-                                                                <label>
-                                                                    <input type="radio" name="nativeOrwgs84" id="native-data" value="native" checked>
-                                                                    {% comment %}Native{% endcomment %}
-                                                                    {% if user_data_proj %}
-                                                                    {{ user_data_proj }}
-                                                                    {% endif %}
-                                                                </label>
-                                                            </div>
-                                                            <div class="radio">
-                                                                <label>
-                                                                    <input type="radio" name="nativeOrwgs84" id="wgs84-data" value="wgs84">
-                                                                    WGS 84
-                                                                </label>
-                                                            </div>
-                                                        {% endif %}
-
-                                                    </div>
-                                                    <div class="modal-footer">
-                                                        <button type="button" class="btn btn-primary pull-left data-export-button">Export...</button>
-                                                        <button type="button" class="btn btn-default btn-gd"
-                                                                data-dismiss="modal">
-                                                            {% trans "Close" %}
-                                                        </button>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
+                                       
                                         {% if GEOSERVER_BASE_URL %}
                                             {% get_obj_perms request.user for resource.layer as "layer_perms" %}
                                         {% endif %}
