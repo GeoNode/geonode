@@ -51,6 +51,10 @@
         <div class="panel-container content-p-top">
 
 
+            {% if GEONODE_SECURITY_ENABLED %}
+            {% include "_permissions_form.html" %}
+          {% endif %}
+
             <!-- Start edit layer modal -->
 
                 {% if GEOSERVER_BASE_URL %}
@@ -755,9 +759,7 @@
                             </div>
                         </div>
                     </div>
-          {% if GEONODE_SECURITY_ENABLED %}
-            {% include "_permissions_form.html" %}
-          {% endif %}
+          
 
           </div> <!-- col-md-4 -->
           </div>
