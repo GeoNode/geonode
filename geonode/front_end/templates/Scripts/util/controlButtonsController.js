@@ -156,7 +156,7 @@
                     var promises = [];
                     for (var k in layers) {
                         var layer = layers[k];
-                        let p = LayerService.getWFS('/geoserver/', {
+                        let p = LayerService.getWFS('api/geoserver/', {
                             _dc: 1510220556364,
                             version: '1.0.0',
                             request: 'GetFeature',
