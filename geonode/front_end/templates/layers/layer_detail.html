@@ -21,11 +21,8 @@
     {% include "base/_resourcebase_opengraph.html" %}
   {% endif %}
 
-  {% if preview == 'geoext' %}
-    {% include "layers/layer_geoext_map.html" %}
-  {% else %}
-    {% include "layers/layer_leaflet_map.html" %}
-  {% endif %}
+  {% include 'Templates/_base-headers.html' %}
+
 {{ block.super }}
 {% endblock %}
 
@@ -33,10 +30,22 @@
 {% block body_class %}layers{% endblock %}
 
 {% block body_outer %}
+
+<style>
+    #gd-footer
+    {
+        display: none;
+    }
+    #gd-wrapper
+    {
+        padding-bottom: 0;
+    }
+</style>
+
     <div class="gd-content">
       <div class="gd-content-body layer-test" >
         <div class="row">
-        <div class="panel-container">
+        <div class="panel-container content-p-top">
           
           
             <div id="sidebar" class="panel-left slideInRight">
@@ -739,7 +748,7 @@
           <div class="panel-right">
          
 
-              <ul class="nav nav-tabs layerNav">
+              <ul class="nav nav-tabs layerNav map-tab-bar">
                     <li role="presentation" id="attribute" onclick="activeTab('attribute')" style="float: right">
                             <a aria-controls="profile" role="tab" data-toggle="tab" href="javascript:void(0)"><i class="fa fa-table" aria-hidden="true"></i> {% trans "Attribute" %}</a></li>
 
@@ -754,7 +763,15 @@
                 <div class="col-md-12" id="myNav_map_left" style="padding: 0">
 
             <div id="embedded_map" class="mrg-btm">
-              <div id="preview_map"></div>
+                    <div class="col-md-8  margin-zero left-pad-zero r surfgis" ng-controller="appController" style="width: 100%;padding-right: 0;" ng-app="appModule" ng-click="bodyClicked()">
+                            <div class="gd-content-body map-details-info" ng-controller="MapUpdateController">
+                                <!-- <div id="embedded_map"> -->
+                                    <!-- <div id="the_map"></div> -->
+                                    {% include 'maps/_map-view-panel.html'%}
+        
+                                <!-- </div> -->
+                            </div>
+                        </div>
             </div>
               <div class="layerdetails_arro" id="layerdetails_arro_addcls" onclick="openNav()">
                   <span id="layerdetails_show">
@@ -1106,6 +1123,33 @@
             }
     
     </script>
-
+<script type="text/javascript">
+    var GD_WRAPPER__HEIGHT = 400;
+    /*function resetWrapperHight() {
+        var bodyHeight = $("body").height();
+        console.log("bodyHeight", bodyHeight);
+        var documentHeight = $("document").height();
+        console.log("documentHeight", documentHeight);
+        var wrapperHeight = $("#gd-wrapper").height();
+        wrapperHeight = parseInt(parseInt(wrapperHeight) - 53);
+        GD_WRAPPER__HEIGHT = wrapperHeight;
+        $("#gd-wrapper .map-details-information, #gd-wrapper .map-details-info").css("height", wrapperHeight + "px");
+        console.log("wrapperHeight", wrapperHeight);
+    }*/
+    function resetWrapperHight() {
+        var bodyHeight = $("body").height();
+        bodyHeight = parseInt(parseInt(bodyHeight) - 53);
+        console.log("bodyHeight", bodyHeight);
+        GD_WRAPPER__HEIGHT = bodyHeight;
+        $("#gd-wrapper .map-details-information, #gd-wrapper .map-details-info").css("height", bodyHeight + "px");
+    }
+    $(document).ready(function () {
+        // wrapper
+        resetWrapperHight();
+        $(window).resize(function () {
+            resetWrapperHight();
+        });
+    });
+</script>
 {% endblock extra_script %}
 

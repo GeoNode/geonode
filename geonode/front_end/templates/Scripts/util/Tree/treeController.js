@@ -67,7 +67,7 @@
             $modal.open({
                 templateUrl: '/static/Templates/attributeGrid.html',
                 controller: 'attributeGridController',
-                backdrop: false,
+                backdrop: 'static',
                 keyboard: false,
                 windowClass: 'attributeGridModal',
                 resolve: {

@@ -163,6 +163,8 @@ urlpatterns = patterns('',
                        url(r'^api/roles', roles, name='roles'),
                        url(r'^api/adminRole', admin_role, name='adminRole'),
                        url(r'^api/users', users, name='users'),
+                       url(r'^api/geoserver/', include('geonode.geoserver.api.urls')),
+                       
                        url(r'', include(api.urls)),
 
                        # Analytics
