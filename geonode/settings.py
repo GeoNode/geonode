@@ -1079,6 +1079,7 @@ _EMAIL_BACKEND = "pinax.notifications.backends.email.EmailBackend"
 PINAX_NOTIFICATIONS_BACKENDS = [
     ("email", _EMAIL_BACKEND),
 ]
+PINAX_NOTIFICATIONS_HOOKSET = "pinax.notifications.hooks.DefaultHookSet"
 
 # Queue non-blocking notifications.
 PINAX_NOTIFICATIONS_QUEUE_ALL = False
