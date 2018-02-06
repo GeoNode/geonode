@@ -14,10 +14,7 @@
            <div id="mainContent" class="layout-center donot-print" ng-style="layout.centerStyle">
                 {% include 'maps/_map-panel.html'%}
            </div>
-           <div class="layout-right donot-print" ng-style="layout.rightStyle" ng-if="!layout.isRightPaneHidden">
-            {% include 'maps/_layer-attributes.html'%}
-               
-           </div>
+           
        </div>
        <div id="location-search-display-popup" class="surf-popup">
            <label class="addtolayer">
@@ -29,7 +26,11 @@
        </div>
    </div>
    <div id="property-grid-in-overlay" >
-        <property-grid-overlay></property-grid-overlay>
+        <div class="donot-print" ng-style="layout.rightStyle" ng-if="!layout.isRightPaneHidden">
+                {% include 'maps/_layer-attributes.html'%}
+                   
+               </div>
+        <!--<property-grid-overlay></property-grid-overlay>-->
 </div>
    {% endblock %} {% block footer %}{% endblock %}
    
