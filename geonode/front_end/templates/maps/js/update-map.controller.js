@@ -6,6 +6,7 @@
 
     function MapUpdateController(mapService, $window, analyticsService, LayerService, $scope, oldLayerService) {
         var self = this;
+        var re = /\d*\/embed/;
         var map = mapService.getMap();
         self.MapConfig = $window.mapConfig;
 
@@ -17,7 +18,7 @@
             self.MapConfig.map.layers.forEach(function(layer) {
                 var url = self.MapConfig.sources[layer.source].url;
                 if (url) {
-                    layer.geoserverUrl = url;
+                    layer.geoserverUrl = re.test($window.location.pathname) ? getCqlFilterUrl(url) : url;
                     mapService.addDataLayer(oldLayerService.map(layer), false);
                 }
             });
@@ -36,12 +37,27 @@
                 }, errorFn);
         }
 
+        function getCqlFilterUrl(url) {
+            var param = window.location.search.split('?').pop();
+            if (url && param) {
+                var urlParts = url.split('?');
+                var filter = 'CQL_FILTER=' + param.replace(/=/gi, '%3D');
+                if (urlParts.length == 1) {
+                    url = urlParts[0] + '?' + filter;
+                } else {
+                    url += '&' + filter;
+                }
+            }
+            return url;
+        }
+
+
         (getGeoServerSettings)();
         var keyPointerDrag, keyPostRender, keyChangeResolution;
         (function() {
-            var re = /\d*\/embed/g;
-            
-            if(re.test($window.location.href)){
+
+
+            if (re.test($window.location.pathname)) {
                 //Do not need analytics in share map
                 return;
             }

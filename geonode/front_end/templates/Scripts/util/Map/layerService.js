@@ -17,6 +17,8 @@ function layerService($rootScope, layerRepository, featureService, layerStyleGen
         if (!layer.bbox) {
             layer.bbox = [-9818543.41779904, 5183814.6260749, -9770487.95134629, 5235883.07751104];
         }
+        if (!layer.hasOwnProperty('visibility'))
+            layer.visibility = false;
         // var userStyle = layer.name + '_' + _uuid();
         return {
             "LayerId": layer.Name || layer.name,
@@ -29,7 +31,7 @@ function layerService($rootScope, layerRepository, featureService, layerStyleGen
             // "ShapeType": "point",
 
             "VisualizationSettings": null,
-            "IsVisible": layer.visibility || true,
+            "IsVisible": layer.visibility,
             "Filters": [],
             "ZoomLevel": 0,
             "ModificationState": "Added",
@@ -53,8 +55,9 @@ function layerService($rootScope, layerRepository, featureService, layerStyleGen
         };
     }
     var layerDataType = {};
+
     function _getPointData(data) {
-         return Object.assign({
+        return Object.assign({
             'permissions': {},
             'charset': 'UTF-8',
             'layer_title': 'auto_layer_upload_point',
