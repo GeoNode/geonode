@@ -156,7 +156,7 @@
                     var promises = [];
                     for (var k in layers) {
                         var layer = layers[k];
-                        let p = LayerService.getWFS('/geoserver/', {
+                        let p = LayerService.getWFS('api/geoserver/', {
                             _dc: 1510220556364,
                             version: '1.0.0',
                             request: 'GetFeature',
@@ -180,6 +180,18 @@
                     });
                 });
             };
+
+            $scope.action.shareMap = function(){
+                $modal.open({
+                    templateUrl: 'static/maps/_share-map-window.html',
+                    controller: 'ShareMapController as ctrl',
+                    backdrop: 'static',
+                    keyboard: false,
+                    windowClass: 'fullScreenModal First',
+                    windowTopClass : 'Second',
+                    openedClass : 'Third'
+                });
+            }
 
             $scope.action.printPreview = function() {
 

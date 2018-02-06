@@ -27,7 +27,11 @@
 
 <script>
     {% autoescape off %}
+    {% if config %}
     window.mapConfig = {{config}};
+    {% else %}
+    window.mapConfig = {{viewer}};
+    {%endif%}
     window.GeoServerHttp2Root = '{{GEOSERVER_BASE_URL}}';
     window.GeoServerTileRoot = '{{GEOSERVER_BASE_URL}}' + 'wms';
     {% endautoescape %}
@@ -237,10 +241,16 @@
 <script src="{{ STATIC_URL }}Scripts/util/Tools/UI/routePopUpDirective.js"></script>
 
 <script src="{{ STATIC_URL }}.components/angular-ui-grid/ui-grid.min.js"></script>
+<script src="{{ STATIC_URL }}.components/angular-file-upload/dist/angular-file-upload.js"></script>
+
 <script src="{{ STATIC_URL }}layers/js/layer.module.js"></script>
 <script src="{{ STATIC_URL }}layers/js/layer.service.js"></script>
+<script src="{{ STATIC_URL }}layers/js/attribute-view.controller.js"></script>
 <script src="{{ STATIC_URL }}layers/js/feature-preview.controller.js"></script>
 
 <script src="{{ STATIC_URL }}geonode/js/system-settings/system-settings.module.js"></script>
 <script src="{{ STATIC_URL }}geonode/js/system-settings/system-settings.service.js"></script>
+    
+<script src="{{ STATIC_URL }}maps/js/share-map.controller.js"></script>
+
 {% endblock extra_script %} 

@@ -21,11 +21,8 @@
     {% include "base/_resourcebase_opengraph.html" %}
   {% endif %}
 
-  {% if preview == 'geoext' %}
-    {% include "layers/layer_geoext_map.html" %}
-  {% else %}
-    {% include "layers/layer_leaflet_map.html" %}
-  {% endif %}
+  {% include 'Templates/_base-headers.html' %}
+
 {{ block.super }}
 {% endblock %}
 
@@ -786,7 +783,15 @@
                 <div class="col-md-12" id="myNav_map_left" style="padding: 0">
 
             <div id="embedded_map" class="mrg-btm">
-              <div id="preview_map"></div>
+                    <div class="col-md-8  margin-zero left-pad-zero r surfgis" ng-controller="appController" style="width: 100%;padding-right: 0;" ng-app="appModule" ng-click="bodyClicked()">
+                            <div class="gd-content-body map-details-info" ng-controller="MapUpdateController">
+                                <!-- <div id="embedded_map"> -->
+                                    <!-- <div id="the_map"></div> -->
+                                    {% include 'maps/_map-view-panel.html'%}
+        
+                                <!-- </div> -->
+                            </div>
+                        </div>
             </div>
               <div class="layerdetails_arro" id="layerdetails_arro_addcls" onclick="openNav()">
                   <span id="layerdetails_show">
@@ -813,12 +818,9 @@
 {% endblock %}
 
 {% block extra_script %}
-<script src="{{ STATIC_URL }}.components/angular-ui-grid/ui-grid.min.js"></script>
-<script src="{{ STATIC_URL }}.components/angular-file-upload/dist/angular-file-upload.js"></script>
 
-<script src="{{ STATIC_URL }}layers/js/layer.module.js"></script>
-<script src="{{ STATIC_URL }}layers/js/layer.service.js"></script>
-<script src="{{ STATIC_URL }}layers/js/attribute-view.controller.js"></script>
+
+
 <script>
     $.fn.resizable = undefined;
 </script>
@@ -1125,7 +1127,6 @@
 <script>
         var count = 0;
         function animating(){
-            console.log("asdasda");
             if(count === 0){
                 document.getElementById('sidebar').className = 'panel-left slideOutRight';
           
@@ -1138,6 +1139,33 @@
             }
     
     </script>
-
+<script type="text/javascript">
+    var GD_WRAPPER__HEIGHT = 400;
+    /*function resetWrapperHight() {
+        var bodyHeight = $("body").height();
+        console.log("bodyHeight", bodyHeight);
+        var documentHeight = $("document").height();
+        console.log("documentHeight", documentHeight);
+        var wrapperHeight = $("#gd-wrapper").height();
+        wrapperHeight = parseInt(parseInt(wrapperHeight) - 53);
+        GD_WRAPPER__HEIGHT = wrapperHeight;
+        $("#gd-wrapper .map-details-information, #gd-wrapper .map-details-info").css("height", wrapperHeight + "px");
+        console.log("wrapperHeight", wrapperHeight);
+    }*/
+    function resetWrapperHight() {
+        var bodyHeight = $("body").height();
+        bodyHeight = parseInt(parseInt(bodyHeight) - 53);
+        console.log("bodyHeight", bodyHeight);
+        GD_WRAPPER__HEIGHT = bodyHeight;
+        $("#gd-wrapper .map-details-information, #gd-wrapper .map-details-info").css("height", bodyHeight + "px");
+    }
+    $(document).ready(function () {
+        // wrapper
+        resetWrapperHight();
+        $(window).resize(function () {
+            resetWrapperHight();
+        });
+    });
+</script>
 {% endblock extra_script %}
 
