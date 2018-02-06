@@ -25,7 +25,7 @@
     background: #fff;
     color: rgb(44, 44, 44);
     position: fixed;
-    z-index: 99;
+    z-index: 1;
     -webkit-box-shadow: 0px 0px 5px 0px rgba(0,0,0,0.57);
     -moz-box-shadow: 0px 0px 5px 0px rgba(0,0,0,0.57);
     box-shadow: 0px 0px 5px 0px rgba(0,0,0,0.57);  
