@@ -554,7 +554,6 @@ def add_layers_to_map_config(request, map_obj, layer_names, add_base_layers=True
     return config
 
 
-
 def gxp2wm(config, map_obj=None):
     """
     Convert a GeoNode map json or string config to the WorldMap client format.
@@ -611,10 +610,12 @@ def gxp2wm(config, map_obj=None):
         if is_wm:
             source = layer_config['source']
             config['sources'][source]['ptype'] = 'gxp_gnsource'
+            config['sources'][source]['url'] = config['sources'][source]['url'].replace('ows', 'wms')
             layer_config['local'] = True
             alternate = layer_config['name']
             layer = Layer.objects.get(alternate=alternate)
-            layer_config['url'] = layer.ows_url
+            # layer_config['url'] = layer.ows_url
+            layer_config['url'] = layer.ows_url.replace('ows', 'wms')
             if 'styles' not in layer_config:
                 #layer_config['styles'] = [str(unicode(style.name)) for style in layer.styles.all()]
                 if layer.default_style:
@@ -659,7 +660,7 @@ def gxp2wm(config, map_obj=None):
 
     if config_is_string:
         config = json.dumps(config)
-
+    print config
     return config
 
 
