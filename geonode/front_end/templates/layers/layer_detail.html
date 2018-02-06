@@ -765,25 +765,20 @@
           </div>
           <!-- <div class="splitter">
           </div> -->
-          <div class="panel-right">
-         
-
+          <div class="panel-right" ng-app="appModule">
               <ul class="nav nav-tabs layerNav map-tab-bar">
                     <li role="presentation" id="attribute" onclick="activeTab('attribute')" style="float: right">
                             <a aria-controls="profile" role="tab" data-toggle="tab" href="javascript:void(0)"><i class="fa fa-table" aria-hidden="true"></i> {% trans "Attribute" %}</a></li>
 
                   <li role="presentation" class="active" id="map" onclick="activeTab('map')" style="float: right">
                       <a  aria-controls="profile" role="tab" data-toggle="tab" href="javascript:void(0)"><i class="fa fa-map-o" aria-hidden="true"></i> {% trans "Map" %}</a></li>
-                  
-
-                      
                 </ul>     
            
             
                 <div class="col-md-12" id="myNav_map_left" style="padding: 0">
 
             <div id="embedded_map" class="mrg-btm">
-                    <div class="col-md-8  margin-zero left-pad-zero r surfgis" ng-controller="appController" style="width: 100%;padding-right: 0;" ng-app="appModule" ng-click="bodyClicked()">
+                    <div class="col-md-8  margin-zero left-pad-zero r surfgis" ng-controller="appController" style="width: 100%;padding-right: 0;"  ng-click="bodyClicked()">
                             <div class="gd-content-body map-details-info" ng-controller="MapUpdateController">
                                 <!-- <div id="embedded_map"> -->
                                     <!-- <div id="the_map"></div> -->
@@ -818,8 +813,6 @@
 {% endblock %}
 
 {% block extra_script %}
-
-
 
 <script>
     $.fn.resizable = undefined;
