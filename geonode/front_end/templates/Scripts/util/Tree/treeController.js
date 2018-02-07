@@ -62,21 +62,22 @@
             });
         };
 
-        $scope.showAttributeGrid = function() {
-            $rootScope.isAttributeGridOn = true;
-            $modal.open({
-                templateUrl: '/static/Templates/attributeGrid.html',
-                controller: 'attributeGridController',
-                backdrop: 'static',
-                keyboard: false,
-                windowClass: 'attributeGridModal',
-                resolve: {
-                    layerId: activeLayerTool.getActiveLayer().getId
-                }
-            }).result.then(function() {
-                $rootScope.isAttributeGridOn = false;
-            });
-        }
+        // $scope.showAttributeGrid = function() {
+        //     $scope.layerId = activeLayerTool.getActiveLayer().getId();
+        //     //$rootScope.isAttributeGridOn = true;
+        //     // $modal.open({
+        //     //     templateUrl: '/static/Templates/attributeGrid.html',
+        //     //     controller: 'attributeGridController',
+        //     //     backdrop: 'static',
+        //     //     keyboard: false,
+        //     //     windowClass: 'attributeGridModal',
+        //     //     resolve: {
+        //     //         layerId: activeLayerTool.getActiveLayer().getId
+        //     //     }
+        //     // }).result.then(function() {
+        //     //     $rootScope.isAttributeGridOn = false;
+        //     // });
+        // };
 
         $scope.showVisualizationWindow = function() {
             $modal.open({

@@ -1,12 +1,23 @@
-﻿appModule.controller('attributeGridController', ['$scope', '$rootScope', '$modalInstance', 'featureRepository',
-    'attributeGridService', 'attributeValidator', 'layerId', 'mapService', 'featureService', 'attributeTypes',
+﻿appModule.controller('attributeGridController', ['$scope', '$rootScope', 'featureRepository',
+    'attributeGridService', 'attributeValidator', 'mapService', 'featureService', 'attributeTypes',
     'cqlFilterCharacterFormater', 'mapTools', '$timeout', 'mapAccessLevel',
-    function ($scope, $rootScope, $modalInstance, featureRepository, attributeGridService, attributeValidator,
-        layerId, mapService, featureService, attributeTypes, cqlFilterCharacterFormater, mapTools, $timeout, mapAccessLevel) {
+    function ($scope, $rootScope, featureRepository, attributeGridService, attributeValidator,
+        mapService, featureService, attributeTypes, cqlFilterCharacterFormater, mapTools, $timeout, mapAccessLevel) {
 
         var surfLayer, activeLayerId;
+        $scope.config = {};
 
-        initGrid(layerId);
+        $scope.gridOptions = {
+            enableSorting: true,
+            columnDefs: []
+        };
+
+        $scope.$watch(function() {
+            return $rootScope.layerId;
+          }, function(){
+            if($rootScope.layerId)
+                initGrid($rootScope.layerId);
+        });
 
         function initGrid(newActiveLayerId) {
 
@@ -16,7 +27,8 @@
             activeLayerId = newActiveLayerId;
             surfLayer = mapService.getLayer(activeLayerId);
             mapService.setAllFeaturesUnselected();
-            $scope.data = { loading: true, isReadonly: !surfLayer.isWritable() || !mapAccessLevel.isWritable };
+            //$scope.data = { loading: true, isReadonly: !surfLayer.isWritable() || !mapAccessLevel.isWritable };
+            $scope.data = { loading: true, isReadonly: true };
             $scope.sorting = { predicate: null };
             $scope.pagination = { totalItems: 0, currentPage: 1, itemsPerPage: 10, pageSizes: [10, 50, 100] };
             $scope.gridData = { attributeDefinitions: [], attributeRows: [] };
@@ -24,7 +36,12 @@
 
             $scope.gridData.attributeDefinitions = surfLayer.getAttributeDefinition();
 
-            $scope.config = {
+            $scope.gridOptions = {
+                enableSorting: true,
+                enableColumnResizing: true,
+                columnDefs: attributeGridService.getColumns($scope.gridData.attributeDefinitions, attributeTypes)
+            };
+            $scope.config = angular.extend($scope.config, {
                 contextMenu: {
                     items: {
                         "remove_row": {
@@ -38,38 +55,38 @@
                 },
                 manualColumnFreeze: true,
                 stretchH: "all",
-                afterChange: function (change, source) {
-                    if (source === "edit") {
-                        attributeGridService.storeChanges(change, $scope.gridData.attributeRows);
-                    } else if (source === "autofill" || source === "paste") {
-                        attributeGridService.storeChanges(change, $scope.gridData.attributeRows);
-                    }
-                },
-                afterOnCellMouseDown: function (event, pos, elem) {
-                    if (pos.row === -1) {
-                        setActiveHeader(pos.col);
-                    }
-                },
+                // afterChange: function (change, source) {
+                //     if (source === "edit") {
+                //         attributeGridService.storeChanges(change, $scope.gridData.attributeRows);
+                //     } else if (source === "autofill" || source === "paste") {
+                //         attributeGridService.storeChanges(change, $scope.gridData.attributeRows);
+                //     }
+                // },
+                // afterOnCellMouseDown: function (event, pos, elem) {
+                //     if (pos.row === -1) {
+                //         setActiveHeader(pos.col);
+                //     }
+                // },
                 colHeaders: attributeGridService.getColumnHeaders($scope.gridData.attributeDefinitions),
                 rowHeaders: true,
                 columns: attributeGridService.getColumns($scope.gridData.attributeDefinitions, attributeTypes),
                 manualColumnResize: true,
                 manualRowResize: true,
                 allowInsertRow: false,
-                afterCreateRow: function (index, amount) {
-                    $scope.gridData.attributeRows.splice(index, amount);
-                },
-                beforeRemoveRow: function (rowIndex) {
-                    attributeGridService.deleteRow($scope.gridData.attributeRows[rowIndex].Fid);
-                },
-                cells: function (row, col) {
-                    if (isNaN(col)) return { readOnly: $scope.data.isReadonly };
-                    return { readOnly: $scope.data.isReadonly || attributeTypes.isReadOnlyType($scope.gridData.attributeDefinitions[col].Type) }
-                },
-                beforeKeyDown: function (e) {
-                    validateAndUpdateValue(e);
-                }
-            }
+                // afterCreateRow: function (index, amount) {
+                //     $scope.gridData.attributeRows.splice(index, amount);
+                // },
+                // beforeRemoveRow: function (rowIndex) {
+                //     attributeGridService.deleteRow($scope.gridData.attributeRows[rowIndex].Fid);
+                // },
+                // cells: function (row, col) {
+                //     if (isNaN(col)) return { readOnly: $scope.data.isReadonly };
+                //     return { readOnly: $scope.data.isReadonly || attributeTypes.isReadOnlyType($scope.gridData.attributeDefinitions[col].Type) }
+                // },
+                // beforeKeyDown: function (e) {
+                //     validateAndUpdateValue(e);
+                // }
+            });
 
             loadAttributeGridInfo();
         }
@@ -140,7 +157,18 @@
                 attributeGridService.changeEditedRows($scope.gridData);
                 attributeGridService.removeDeletedRows($scope.gridData);
                 $scope.loading = false;
-                $scope.config.table.render();
+                var settings = angular.extend({
+                    data: $scope.gridData.attributeRows
+                }, $scope.config);
+                $scope.gridOptions.data = $scope.gridData.attributeRows;
+                // if(!$scope.config.table){
+                //     $scope.config.table = new Handsontable($('#attribute-grid')[0], settings);
+                // }
+                // else{
+                //     $scope.config.table.updateSettings(settings);
+                // }
+                //$scope.config.table.render();
+                //table.render();
 
             }).catch(function () {
                 if (onError) {

@@ -1,10 +1,10 @@
 ﻿
-        <div class="modal-header"> 
+        <!-- <div class="modal-header"> 
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close" ng-click="closeAttributeGrid()">
                     <span aria-hidden="true">×</span>
                 </button> 
                 <h4 class="modal-title">Attribute Grid</h4> 
-            </div>
+            </div> -->
 
 
     <div class="modal-body" style="overflow: visible;">
@@ -21,7 +21,8 @@
 
         <div class="attribute-grid-container">
             <!-- <div ng-if="loading"><i class="fa fa-spinner fa-spin"></i></div>-->
-            <div hands-on-table="gridData.attributeRows" config="config" class="hot handsontable"></div>
+            <!-- <div id="attribute-grid" hands-on-table="gridData.attributeRows" config="config" class="hot handsontable"></div> -->
+            <div id="attribute-grid" ui-grid="gridOptions" ui-grid-edit ui-grid-resize-columns class="grid"></div>
         </div>
     </div>
     <div class="modal-footer">

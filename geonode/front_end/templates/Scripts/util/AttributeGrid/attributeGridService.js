@@ -109,7 +109,7 @@
                 for (var i = 0; i < attributeDefinitions.length; i++) {
                     if (mapAccessLevel.isPublic && !attributeDefinitions[i].IsPublished) continue;
 
-                    var column = { data: "Attributes." + attributeDefinitions[i].Id };
+                    var column = { field: "Attributes." + attributeDefinitions[i].Id, name: attributeDefinitions[i].Id };
                     if (attributeTypes.isDateType(attributeDefinitions[i].Type)) {
                         angular.extend(column, { type: "date", dateFormat: "D MMM, YYYY", validator: factory.dateValidator, allowInvalid: false });
                     }

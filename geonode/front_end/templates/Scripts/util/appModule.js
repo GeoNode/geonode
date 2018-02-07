@@ -23,6 +23,11 @@
             // userProfileService.loadData();
             // $cookies.put('ASP.NET_SessionId', 'l20edewgv2bqa41dgdwijcuq');
             // $cookies.put('shape-maker-uat', '7F496AF1D3F4D37373D6DA951DD7D3797424FFC4480B582CF7879450C6FE952B084F5BE79EABCFA0B38C9F52340F8C1E8F36B92C3DD2BFDC4E7C728167588CD1BF4F075966AF13E7EFF01C177B13D19074408E517BAF9827EAEDE29C5ED8700FED2584EAB2F79CBD81DC8021512BBEC1EC474D5C6ABB44418A42967D2546770E');
+
+            $rootScope.showAttributeGrid = function() {
+                console.log('show grid');
+                $rootScope.layerId = mapTools.activeLayer.getActiveLayer().getId();
+            };
             $rootScope.showProperties = function(selectedTabIndex) {
 
                 if (!mapAccessLevel.isWritable || !mapTools.activeLayer.hasActiveLayer() || mapTools.activeLayer.getActiveLayer().IsRaster) {
