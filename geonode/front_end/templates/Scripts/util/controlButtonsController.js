@@ -70,8 +70,8 @@
                     backdrop: 'static',
                     keyboard: false,
                     windowClass: 'fullScreenModal First',
-                    windowTopClass : 'Second',
-                    openedClass : 'Third'
+                    windowTopClass: 'Second',
+                    openedClass: 'Third'
                 });
             };
 
@@ -149,15 +149,18 @@
                 circle.Draw();
                 circle.OnModificationEnd(function(feature, values) {
                     var center = feature.values_.geometry.getCenter();
-                    var centerLongLat = ol.proj.transform([center[0], center[1]], 'EPSG:3857','EPSG:4326');
+                    var centerLongLat = ol.proj.transform([center[0], center[1]], 'EPSG:3857', 'EPSG:4326');
                     var layers = mapService.getLayers();
                     var meterPerDegree = 111325;
-                    var radiusInDegree = values.radius/meterPerDegree;
+                    var radiusInDegree = values.radius / meterPerDegree;
                     var promises = [];
+                    var layer_names = [];
                     for (var k in layers) {
                         var layer = layers[k];
-                        let p = LayerService.getWFS('/geoserver/', {
-                            _dc: 1510220556364,
+                        if (!layer.IsVisible)
+                            continue;
+                        layer_names.push(k);
+                        let p = LayerService.getWFS('api/geoserver/', {
                             version: '1.0.0',
                             request: 'GetFeature',
                             outputFormat: 'JSON',
@@ -168,18 +171,30 @@
                         promises.push(p);
                     }
                     $q.all(promises)
-                    .then(function(response){
-                        var layer_names = Object.keys(layers);
-                        var data = {};
-                        for(var i in layer_names){
-                            data[layer_names[i]] = response[i].features.map(function(e){
-                                return e.properties;
-                            });
-                        }
-                        showFeaturePreviewDialog(data);
-                    });
+                        .then(function(response) {
+
+                            var data = {};
+                            for (var i in layer_names) {
+                                data[layer_names[i]] = response[i].features.map(function(e) {
+                                    return e.properties;
+                                });
+                            }
+                            showFeaturePreviewDialog(data);
+                        });
                 });
             };
+
+            $scope.action.shareMap = function() {
+                $modal.open({
+                    templateUrl: 'static/maps/_share-map-window.html',
+                    controller: 'ShareMapController as ctrl',
+                    backdrop: 'static',
+                    keyboard: false,
+                    windowClass: 'fullScreenModal First',
+                    windowTopClass: 'Second',
+                    openedClass: 'Third'
+                });
+            }
 
             $scope.action.printPreview = function() {
 
@@ -190,9 +205,9 @@
                     backdrop: 'static',
                     keyboard: false,
                     windowClass: 'fullScreenModal First',
-                    windowTopClass : 'Second',
-                    openedClass : 'Third'
-                    // windowClass: 'fullScreenModal printPreviewModal'
+                    windowTopClass: 'Second',
+                    openedClass: 'Third'
+                        // windowClass: 'fullScreenModal printPreviewModal'
                 });
 
                 moveShape();
@@ -225,8 +240,8 @@
                 keyboard: false,
                 // windowClass: 'fullScreenModal',
                 windowClass: 'fullScreenModal First',
-                windowTopClass : 'Second',
-                openedClass : 'Third',
+                windowTopClass: 'Second',
+                openedClass: 'Third',
                 resolve: {
                     showProjectNameInput: function() {
                         return openForSave || false;

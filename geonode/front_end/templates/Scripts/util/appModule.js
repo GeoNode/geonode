@@ -5,15 +5,9 @@
         // $httpProvider.defaults.withCredentials = true;
         $interpolateProvider.startSymbol('[{');
         $interpolateProvider.endSymbol('}]');
-        console.log('T');
-        //rest of route code
     })
     .run(['$rootScope', '$window', '$timeout', '$http', 'mapRepository', 'mapService', 'dirtyManager', 'surfToastr', 'urlResolver', 'userProfileService', 'mapAccessLevel', '$modal', 'layerService', 'interactionHandler', 'GeoLocationTool', 'LocationSearchTool', 'ActiveLayerTool', 'AllSelectableLayerTool', 'google', 'SurfMap', 'layerRenderingModeFactory', 'ZoomTrackerTool', 'ZoomToLayerTool', 'BaseMapTool', 'reprojection', 'mapTools', 'mapToolsFactory', 'onZoomHandler', '$cookies', 'LayerService',
         function($rootScope, $window, $timeout, $http, mapRepository, mapService, dirtyManager, surfToastr, urlResolver, userProfileService, mapAccessLevel, $modal, layerService, interactionHandler, GeoLocationTool, LocationSearchTool, ActiveLayerTool, AllSelectableLayerTool, google, SurfMap, layerRenderingModeFactory, ZoomTrackerTool, ZoomToLayerTool, BaseMapTool, reprojection, mapTools, mapToolsFactory, onZoomHandler, $cookies, LayerService) {
-            // LayerService.getGeoServerSettings().then(function(res) {
-            //     $window.GeoServerHttp2Root = res.url;
-            //     $window.GeoServerTileRoot = res.url + 'wms';
-            // });
             urlResolver.setGeoserverRoot($window.GeoServerHttp2Root, $window.GeoServerTileRoot);
             // $window.GeoServerHttp2Root = "";
             // $window.GeoServerTileRoot = "";
@@ -28,6 +22,7 @@
                 console.log('show grid');
                 $rootScope.layerId = mapTools.activeLayer.getActiveLayer().getId();
             };
+
             $rootScope.showProperties = function(selectedTabIndex) {
 
                 if (!mapAccessLevel.isWritable || !mapTools.activeLayer.hasActiveLayer() || mapTools.activeLayer.getActiveLayer().IsRaster) {

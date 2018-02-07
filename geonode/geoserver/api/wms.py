@@ -1,28 +1,13 @@
-import json
-import requests
-import urllib
-from django.conf import settings
-from geonode.layers.models import Layer
+from geonode.geoserver.mixins import GeoServerMixin
 from rest_framework import status
 from rest_framework.generics import ListAPIView
 from rest_framework.response import Response
 
 
-class GeoserverWMSListAPIView(ListAPIView):
-    def _get_configuration(self, data):
-        query = {}
-        for k,v in data.items():
-            query.update({k: v[0]})
-
-        return query
-
-    def _get_response_from_geoserver(self, url):
-        response = requests.get(url)    
-        return json.loads(response.content)
-
-    def getAttributesPermission(self, layer_name):
-        attributes = [l.attribute for l in Layer.objects.get(typename=layer_name).attribute_set.all()]
-        return attributes
+class GeoserverWMSGetFeatureInfoListAPIView(ListAPIView, GeoServerMixin):
+    """
+    This api will serve wms call of geoserver
+    """
     
     def get(self, request, **kwargs):
         data = dict(request.query_params)
@@ -31,11 +16,10 @@ class GeoserverWMSListAPIView(ListAPIView):
         if not layers:
             layers = data.get('LAYERS')[0]
             
-        query = self._get_configuration(data)
+        query = self.get_configuration(data)
+        query.update(dict(SERVICE='WMS', REQUEST='GetFeatureInfo'))
 
-        url = settings.LOCAL_GEOSERVER.get('source').get('url')
-
-        result = self._get_response_from_geoserver('{}?{}'.format(url, urllib.urlencode(query)))
+        result = self.get_response_from_geoserver('wms', query)
         
         permitted_attributes = {}
         for layer_name in layers.split(','):
@@ -52,5 +36,3 @@ class GeoserverWMSListAPIView(ListAPIView):
                     del feature['properties'][k]
 
         return Response(result, status=status.HTTP_200_OK)
-        
-            
