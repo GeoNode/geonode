@@ -37,6 +37,10 @@ from kombu import Queue
 # GeoNode Version
 VERSION = get_version()
 
+# Choose thumbnail generator -- this is the default generator
+THUMBNAIL_GENERATOR = "geonode.geoserver.helpers.create_gs_thumbnail_geonode"
+
+
 # Defines the directory that contains the settings file as the PROJECT_ROOT
 # It is used for relative settings elsewhere.
 PROJECT_ROOT = os.path.abspath(os.path.dirname(__file__))
