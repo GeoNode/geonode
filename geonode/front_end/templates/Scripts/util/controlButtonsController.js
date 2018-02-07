@@ -151,8 +151,6 @@
                     var center = feature.values_.geometry.getCenter();
                     var centerLongLat = ol.proj.transform([center[0], center[1]], 'EPSG:3857', 'EPSG:4326');
                     var layers = mapService.getLayers();
-                    var meterPerDegree = 111325;
-                    var radiusInDegree = values.radius / meterPerDegree;
                     var promises = [];
                     var layer_names = [];
                     for (var k in layers) {
@@ -164,9 +162,9 @@
                             version: '1.0.0',
                             request: 'GetFeature',
                             outputFormat: 'JSON',
-                            srsName: 'EPSG:4326',
+                            srsName: 'EPSG:3857',
                             typeNames: layer.getName(),
-                            cql_filter: 'DWithin(the_geom,POINT(' + centerLongLat[0] + ' ' + centerLongLat[1] + '),' + radiusInDegree + ',meters)',
+                            cql_filter: 'DWithin(the_geom,POINT(' + centerLongLat[0] + ' ' + centerLongLat[1] + '),' + values.radius + ',meters)',
                         }, false);
                         promises.push(p);
                     }
