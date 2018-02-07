@@ -26,7 +26,8 @@
                 self.data[d] = {};
                 self.data[d].gridOptions = new AngularUiGridOptions();
                 self.data[d].gridOptions.exporterCsvFilename = d + '.csv';
-                
+                if(data[d].length == 0)
+                    continue;
                 self.data[d].gridOptions.columnDefs = Object.keys(data[d][0]).map(function(e) {
                     return {
                         field: e,

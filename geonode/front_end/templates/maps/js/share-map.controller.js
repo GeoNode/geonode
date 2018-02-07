@@ -8,8 +8,6 @@
     function ShareMapController($modalInstance, $window) {
         var self = this;
 
-        
-
         function initialize() {
             self.height = 100;
             self.width = 100;
@@ -45,8 +43,9 @@
             if (!re.test(href))
                 return;
             var id = href.match(re).pop();
-            self.url = '<iframe style="border: none;" height="' + self.height + '" width="' + self.width + '" src="https://geodash.gov.bd/maps/' + id + '/embed"></iframe>';
-        }
+            
+            self.url = '<iframe style="border: none;" height="' + self.height + '" width="' + self.width + '" src="'+$window.location.origin+'/maps/' + id + '/embed"></iframe>';
+        };
 
         self.onMapSizeChange = function(size) {
             self.height = size.height;
