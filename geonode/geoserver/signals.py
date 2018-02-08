@@ -366,7 +366,6 @@ def geoserver_post_save(instance, sender, **kwargs):
     # immediately re-generate the thumbnail here.  use layer#save(update_fields=['thumbnail_url'])
     if not ('update_fields' in kwargs and kwargs['update_fields'] is not None and
             'thumbnail_url' in kwargs['update_fields']):
-        logger.info("Creating Thumbnail for Layer [%s]" % (instance.alternate))
         create_gs_thumbnail(instance, overwrite=True)
 
     legend_url = ogc_server_settings.PUBLIC_LOCATION + \
