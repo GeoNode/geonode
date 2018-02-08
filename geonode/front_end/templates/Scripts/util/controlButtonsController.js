@@ -237,18 +237,18 @@
                 removeZoomControl();
                 styleContents();
 
-                html2canvas($('#mainContent'), {
-                    useCORS: true,
-                    onrendered: function(canvas) {
-                        restoreShape();
-                        addLayerSwitcher();
-                        addZoomControl();
-                        restoreStyles();
-                        $timeout(function() {
-                            $rootScope.mapImage.baseMapUrl = canvas.toDataURL('image/png');
-                        });
-                    }
-                });
+                // html2canvas($('#mainContent'), {
+                //     useCORS: true,
+                //     onrendered: function(canvas) {
+                //         restoreShape();
+                //         addLayerSwitcher();
+                //         addZoomControl();
+                //         restoreStyles();
+                //         $timeout(function() {
+                //             $rootScope.mapImage.baseMapUrl = canvas.toDataURL('image/png');
+                //         });
+                //     }
+                // });
             };
         })();
 
