@@ -6,9 +6,9 @@
 Using the WorldMap contrib application, GeoNode is extended with the following additional features:
 
 * a customized GeoExplorer viewer
-    * the table of contents is hierarchical with layer categories. When a layer is added a new category containing the layer is added in the table of content. If the category is already in the table of content, then the layer is added to it. By default category is the same as the layer's topic category, but can be renamed by right clicking on it
+    * the table of contents is hierarchical with layer categories. When a layer is added a new category containing the layer is added to the table of contents. If the category is already in the table of contents, then the layer is added to it. By default the category is the same as the layer's topic category, but that can be renamed by right clicking on it
     * the "Add Layers" dialog comes with a "Search" tab which uses Hypermap Registry (Hypermap) as a catalogue of remote and local layers. Hypermap is a requirement when using the WorldMap contrib application
-* a gazetteer application: it is possible to include a given layer to a gazetteer. The gazetteer can be checked using the map client. When a layer is part of the gazetter it is possible to include it in a general gazetteer or in a specific project one. It is possible to search place names in the gazetteer by date range, in which case it is needed to specify the layer attributes for the start and end depict dates
+* a gazetteer application: it is possible to add a given layer to a gazetteer. The gazetteer can be checked using the map client. When a layer is part of the gazetter it is possible to include it in a general gazetteer or in a specific project one. It is possible to search place names in the gazetteer by date range, in which case it is necessary to specify the layer attributes for the start and end depict dates
 
 ## Installation
 
@@ -33,7 +33,7 @@ Create and activate the virtual environment:
     virtualenv --no-site-packages env
     . env/bin/activate
 
-Right now WorldMap is a contribute's application which lives in the CGA GeoNode forked version.
+Right now WorldMap is a contribute application which lives in the CGA GeoNode forked version.
 But it will be merged in official GeoNode soon.
 
 Therefore git clone from this repository (using the worldmap branch):
@@ -100,7 +100,7 @@ Remember to add the ip of your server in ALLOWED_HOSTS in the local_settings.py 
 
 ## Hypermap Registry
 
-GeoNode with WorldMap contribute module requires an Hypermap Registry (Hypermap) running instance.
+GeoNode with the WorldMap contribute module requires a Hypermap Registry (Hypermap) running instance.
 
 You can install Hypermap by following these instructions (use the "Manual Installation" section): https://github.com/cga-harvard/HHypermap/blob/master/_docs/developers.md
 
