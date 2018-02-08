@@ -207,6 +207,7 @@ def layer_style_manage(request, layername):
                 except:
                     pass
                 gs_styles.append((style.name, sld_title))
+            gs_styles = sorted(gs_styles, key=lambda x: x[1])
 
             current_layer_styles = layer.styles.all()
             layer_styles = []
