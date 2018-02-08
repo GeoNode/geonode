@@ -1,4 +1,3 @@
-
 # -*- coding: utf-8 -*-
 #########################################################################
 #
@@ -268,6 +267,7 @@ GEONODE_APPS = (
     # GeoNode internal apps
     'geonode.people',
     'geonode.base',
+    'geonode.client',
     'geonode.layers',
     'geonode.maps',
     'geonode.proxy',
@@ -340,7 +340,7 @@ INSTALLED_APPS = (
     'geoexplorer',
     'leaflet',
     'django_extensions',
-    # 'geonode-client',
+    'geonode-client',
     # 'haystack',
     'autocomplete_light',
     'mptt',
@@ -1048,8 +1048,8 @@ CACHES = {
     #     }
 }
 
-LAYER_PREVIEW_LIBRARY = 'geoext'
-# LAYER_PREVIEW_LIBRARY = 'leaflet'
+GEONODE_CLIENT_LAYER_PREVIEW_LIBRARY = 'geoext'  # DEPRECATED use HOOKSET instead
+GEONODE_CLIENT_HOOKSET = "geonode.client.hooksets.GeoExtHookSet"
 
 SERVICE_UPDATE_INTERVAL = 0
 

@@ -151,9 +151,9 @@ Default::
 
 A list of dictionaries that specify the default map layers.
 
-LAYER_PREVIEW_LIBRARY
----------------------
-Default:  ``"leaflet"``
+GEONODE_CLIENT_LAYER_PREVIEW_LIBRARY
+------------------------------------
+Default:  ``"geoext"``
 
 The library to use for display preview images of layers.  The library choices are:
 
