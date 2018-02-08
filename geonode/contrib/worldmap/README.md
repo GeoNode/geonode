@@ -51,24 +51,28 @@ Now install GeoNode:
 
 You will use a geonode-project in order to separate the customization of your instance from GeoNode.
 
-Set the following variables as needed:
+Set the following variables as needed (change SITE_NAME and SERVER_IP s needed). Even better, create a file and source it:
 
+    export SITE_NAME=worldmap
+    export SERVER_IP=128.31.22.73
     export PG_USERNAME=worldmap
     export PG_PASSWORD=worldmap
     export PG_WORLDMAP_DJANGO_DB=worldmap
     export PG_WORLDMAP_UPLOADS_DB=wmdata
     export OWNER=$PG_USERNAME
+    export ALLOWED_HOSTS="localhost, $SERVER_IP, "
+    export GEOSERVER_LOCATION=http://localhost:8080/geoserver/
+    export GEOSERVER_PUBLIC_LOCATION=http://$SERVER_IP/geoserver/
 
 Create your geonode project by using the WorldMap geonode-project as a template  (https://github.com/cga-harvard/geonode-project). Rename it to something meaningful (for example your web site name):
 
     cd ~
-    export SITENAME=worldmap # changes here accordingly
-    django-admin startproject $SITENAME --template=https://github.com/GeoNode/geonode-project/archive/master.zip -epy,rst
-    cd $SITENAME
+    django-admin startproject $SITE_NAME --template=https://github.com/cga-harvard/geonode-project/archive/master.zip -epy,rst
+    cd $SITE_NAME
 
 Create a local_settings.py by copying the included template:
 
-    cp $SITENAME/local_settings.py.sample $SITENAME/local_settings.py
+    cp $SITE_NAME/local_settings.py.sample $SITE_NAME/local_settings.py
     make build
     paver setup
 
@@ -83,6 +87,16 @@ To upload layers you can login with the default GeoNode administrative account:
 
 user: admin
 password: admin
+
+### Configuring instance for production
+
+Please follow best practices suggested by GeoNode documentation:
+
+http://docs.geonode.org/en/master/tutorials/advanced/geonode_production/
+
+Remember to add the ip of your server in ALLOWED_HOSTS in the local_settings.py file:
+
+    ALLOWED_HOSTS = ['localhost', '128.31.22.73', ]
 
 ## Hypermap Registry
 
