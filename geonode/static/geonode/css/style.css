@@ -1447,7 +1447,7 @@ fieldset[disabled] .btn-gd-yellow.focus {
 /* end for history page */
 /* start for sign-in page */
 
-body.modal-open { overflow:inherit; padding-right:inherit !important; }
+
 #gd-model .modal-header {
     border:none;
 }
