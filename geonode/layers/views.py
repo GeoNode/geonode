@@ -64,7 +64,7 @@ from django.template.defaultfilters import slugify
 from django.forms.models import inlineformset_factory
 from django.db import transaction
 from django.db.models import F
-from django.forms.util import ErrorList
+from django.forms.utils import ErrorList
 from django.views.generic import View
 from requests.auth import HTTPBasicAuth
 from geonode.settings import OGC_SERVER
