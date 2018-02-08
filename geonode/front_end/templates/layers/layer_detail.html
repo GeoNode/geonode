@@ -258,7 +258,7 @@
  <!-- End edit layer modal -->
 
 
-            <div id="sidebar" class="panel-left slideInRight">
+            <div id="sidebar" class="panel-left layer-panel slideInRight">
 
                   
 
@@ -1121,11 +1121,11 @@
         var count = 0;
         function animating(){
             if(count === 0){
-                document.getElementById('sidebar').className = 'panel-left slideOutRight';
+                document.getElementById('sidebar').className = 'panel-left layer-panel slideOutRight';
           
                 count++;
             }else{
-                document.getElementById('sidebar').className = 'panel-left slideInRight show';//hide
+                document.getElementById('sidebar').className = 'panel-left layer-panel slideInRight show';//hide
            
                 count--;
             }
@@ -1150,7 +1150,7 @@
         bodyHeight = parseInt(parseInt(bodyHeight) - 53);
         console.log("bodyHeight", bodyHeight);
         GD_WRAPPER__HEIGHT = bodyHeight;
-        $("#gd-wrapper .map-details-information, #gd-wrapper .map-details-info").css("height", bodyHeight + "px");
+        $("#gd-wrapper .layer-details-information, #gd-wrapper .map-details-info").css("height", bodyHeight + "px");
     }
     $(document).ready(function () {
         // wrapper

@@ -2711,6 +2711,11 @@ body.layer-detail-page #gd-wrapper .container-fluid.padding-zero{
 }
 .map-details-information,
 .layer-information{
+    height: calc(100vh - 98px) !important;
+    overflow-y: scroll;
+}
+.layer-details-information,
+.layer-information{
     height: calc(100vh - 142px) !important;
     overflow-y: scroll;
 }
@@ -3742,6 +3747,10 @@ background-color: #fff;
 .gallery-container .panel-body
 {
    padding: 0;
+}
+.layer-panel
+{
+    top: 141px !important;
 }
 
 
