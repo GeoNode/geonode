@@ -1,0 +1,331 @@
+.. _geonode_socialaccounts:
+
+GeoNode Social Accounts
+=======================
+
+.. contents::
+   :depth: 4
+
+Allow GeoNode to Login throguh Social Accounts (Facebook and Linkedin)
+----------------------------------------------------------------------
+
+Base concepts and objects
+~~~~~~~~~~~~~~~~~~~~~~~~~
+
+ In order to harmonize the various authentication flows between local accounts and remote social accounts, the whole user registration and authentication codebase has been refactored.
+
+ Major changes:
+
+ * `geonode-user-accounts <https://github.com/GeoNode/geonode-user-accounts>`_ has been retired and is not used anymore. This app was only capable of managing local accounts;
+
+ * `django-allauth <https://github.com/pennersr/django-allauth>`_ has been integrated as a dependency of geonode. It provides a solution for managing both local and remote user accounts. It is now used for dealing with most user registration and auth flows;
+
+ * `django-invitations <https://github.com/bee-keeper/django-invitations>`_ has also been integrated as a dependency of geonode and is used for managing invitations to new users. This functionality was previously provided by geonode-user-accounts;
+
+ * `django-allauth <http://django-allauth.readthedocs.io/en/latest/>`_ has been extended in order to provide the following additional features:
+ 
+    - Automatically registering an e-mail with a user when the e-mail is used to connect to a social account;
+    - Automatically extract information from the user's social account and use that to enhance the user's profile fields on geonode. This was implemented in a pluggable way, allowing custom installs to configure it for other providers;
+    - Allow approval of new registrations by staff members before allowing new users to login. This functionality was previously provided by geonode-user-accounts.
+
+ * There are now extra sections on the user's profile to manage connected social accounts and e-mail accounts
+
+    .. image:: img/001_screenshot.png
+
+ * When properly configured, the login and register pages now display the possibility to login with social accounts
+ 
+    .. image:: img/002_screenshot.png
+
+
+Installation
+~~~~~~~~~~~~
+
+ * Install the new ``allauth`` plugin and remove any of the old dependencies
+
+    .. code:: python
+
+        pip install -r requirements.txt
+        pip install -e .
+        pip uninstall geonode-user-accounts -y
+        pip uninstall django-user-accounts -y
+
+ * ensure sure the DJango model is updated and the templates updated to the ``static`` folder
+
+    .. code:: python
+
+        DJANGO_SETTINGS_MODULE=geonode.local_settings python -W ignore manage.py makemigrations
+        DJANGO_SETTINGS_MODULE=geonode.local_settings python -W ignore manage.py migrate
+        DJANGO_SETTINGS_MODULE=geonode.local_settings python -W ignore manage.py collectstatic --noinput
+
+ * ensure that Social Providers are enabled in your ``settings``:
+
+    .. code:: python
+
+        # prevent signing up by default
+        ACCOUNT_OPEN_SIGNUP = True
+        ACCOUNT_EMAIL_REQUIRED = True
+        ACCOUNT_EMAIL_VERIFICATION = 'optional'
+        ACCOUNT_EMAIL_CONFIRMATION_EMAIL = True
+        ACCOUNT_EMAIL_CONFIRMATION_REQUIRED = True
+        ACCOUNT_CONFIRM_EMAIL_ON_GET = True
+        ACCOUNT_APPROVAL_REQUIRED = True
+
+        SOCIALACCOUNT_ADAPTER = 'geonode.people.adapters.SocialAccountAdapter'
+
+        SOCIALACCOUNT_AUTO_SIGNUP = False
+
+        INSTALLED_APPS += (
+            'allauth.socialaccount.providers.linkedin_oauth2',
+            'allauth.socialaccount.providers.facebook',
+        )
+
+        SOCIALACCOUNT_PROVIDERS = {
+            'linkedin_oauth2': {
+                'SCOPE': [
+                    'r_emailaddress',
+                    'r_basicprofile',
+                ],
+                'PROFILE_FIELDS': [
+                    'emailAddress',
+                    'firstName',
+                    'headline',
+                    'id',
+                    'industry',
+                    'lastName',
+                    'pictureUrl',
+                    'positions',
+                    'publicProfileUrl',
+                    'location',
+                    'specialties',
+                    'summary',
+                ]
+            },
+            'facebook': {
+                'METHOD': 'oauth2',
+                'SCOPE': [
+                    'email',
+                    'public_profile',
+                ],
+                'FIELDS': [
+                    'id',
+                    'email',
+                    'name',
+                    'first_name',
+                    'last_name',
+                    'verified',
+                    'locale',
+                    'timezone',
+                    'link',
+                    'gender',
+                ]
+            },
+        }
+
+        # Comment out this in case you wont to diable Social login
+        SOCIALACCOUNT_PROFILE_EXTRACTORS = {
+            "facebook": "geonode.people.profileextractors.FacebookExtractor",
+            "linkedin_oauth2": "geonode.people.profileextractors.LinkedInExtractor",
+        }
+
+Configuration
+~~~~~~~~~~~~~
+
+1. Go to GeoNode/Django Admin Dashboard and add the Social Apps you want to configure:
+
+``admin/socialaccount/socialapp/``
+
+.. image:: img/001_socialaouth.png
+   :alt: go to admin section
+
+* Linkedin
+
+.. image:: img/002_socialaouth.png
+   :alt: Linkedin
+
+* Facebook
+
+.. image:: img/003_socialaouth.png
+   :alt: Facebook
+
+.. warning:: Make sure to add the sites you want to enable.
+
+Usage
+~~~~~
+
+ You need first to create and configure OAuth2 Applications on your Social Providers.
+
+ This will require a persoanl or business account, which can access to the ``developers`` sections of LinkedIn and Facebook and create and configure new ``Applications``.
+
+ That account won't be visibile to the GeoNode users. This is needed only to generate OAuth2 ``Client ID`` and ``Client Secret`` Authorization Keys.
+ 
+ In the following sections we will see in details how to configure them for both LinkedIn and Facebook.
+ 
+LinkedIn Application
+++++++++++++++++++++
+(ref.: http://django-allauth.readthedocs.io/en/latest/providers.html)
+
+1. Go to https://www.linkedin.com/developer/apps and select ``Create Application``
+
+.. image:: img/004_socialaouth.png
+   :alt: Linkedin Dev
+
+2. Create a new Company
+
+.. image:: img/005_socialaouth.png
+
+3. Fill the informations
+
+.. note:: The logo must have precise square dimensions
+
+.. image:: img/006_socialaouth.png
+
+4. Select the following ``Default Application Permissions``
+
+.. warning:: Be sure to select the ``r_basicprofile`` and ``r_emailaddress``  application permissions.
+
+.. image:: img/007_socialaouth.png
+
+5. Add OAuth 2.0 Authorized Redirect URLs:
+
+    .. code:: python
+    
+        http://geonode.geo-solutions.it/account/linkedin_oauth2/login/callback/
+        http://geonode.geo-solutions.it/account/linkedin/login/callback/
+        
+.. image:: img/008_socialaouth.png
+
+6. Save
+
+.. image:: img/009_socialaouth.png
+
+7. Take note of the ``Authentication Keys``
+
+.. image:: img/010_socialaouth.png
+
+8. Go to GeoNode/Django admin, Social Applications and select the LinkedIn one
+
+(``/admin/socialaccount/socialapp/``)
+
+.. image:: img/011_socialaouth.png
+
+9. Cut and Paste the ``Client ID`` and ``Client Secret`` on the related fields
+
+.. image:: img/012_socialaouth.png
+
+10. Save
+
+Facebook Application
+++++++++++++++++++++
+(ref.: http://django-allauth.readthedocs.io/en/latest/providers.html)
+(ref.: https://www.webforefront.com/django/setupdjangosocialauthentication.html)
+
+1. Go to https://developers.facebook.com/apps and Add a ``New Application``
+
+.. image:: img/013_socialaouth.png
+
+2. Create the ``App ID`` and go to the ``Dashboard``
+
+.. image:: img/014_socialaouth.png
+
+
+.. image:: img/015_socialaouth.png
+
+3. Take note of the ``Authentication Keys``
+
+.. image:: img/016_socialaouth.png
+
+4. Go to GeoNode/Django admin, Social Applications and select the LinkedIn one
+
+(``/admin/socialaccount/socialapp/``)
+
+.. image:: img/017_socialaouth.png
+
+5. Cut and Paste the ``App ID`` and ``Secret Key`` on the related fields
+
+    .. code:: python
+    
+        ClientID      <--> App Id
+    	Client Secret <--> Secret Key
+        
+.. image:: img/018_socialaouth.png
+
+6. Save
+
+7. Go back to the Facebook Application ``Dashboard`` and select ``Settings``
+
+.. image:: img/019_socialaouth.png
+
+8. Add your App Domain
+
+.. image:: img/020_socialaouth.png
+
+9. Click on ``Add Platform``
+
+.. image:: img/021_socialaouth.png
+
+10. Select ``Web Site``
+
+.. image:: img/022_socialaouth.png
+
+11. Add the ``URL``
+
+.. image:: img/023_socialaouth.png
+
+12. And Save
+
+.. image:: img/024_socialaouth.png
+
+13. Go to ``Add Product``
+
+.. image:: img/025_socialaouth.png
+
+14. Select ``Facebook Login``
+
+.. image:: img/026_socialaouth.png
+
+15. Select ``Web``
+
+.. image:: img/027_socialaouth.png
+
+16. Go to ``Settings``
+
+.. image:: img/028_socialaouth.png
+
+17. Make sure ``Allow client OAuth`` and ``Access via OAuth Web`` are enabled
+
+.. image:: img/029_socialaouth.png
+
+18. Add the valid ``redirect URIs``:
+
+    .. code:: python
+    
+        http://geonode.geo-solutions.it/account/facebook/login/callback/
+        http://geondoe.geo-solutions.it/account/login/
+
+.. image:: img/030_socialaouth.png
+
+19. Save
+
+.. image:: img/031_socialaouth.png
+
+Login by using Existing Accounts on GeoNode
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+ If you want to enable an already existing user account to login through social apps, you need to associate it to social accounts.
+ 
+ Usually this could be done only by the current user, since this operation requires authentication on its social accounts.
+ 
+ In order to do that you need to go to the User Profile Settings
+
+ .. image:: img/032_socialaouth.png
+
+
+ Click on “Connected social accounts”
+
+ .. image:: img/033_socialaouth.png
+
+ And actually connect them
+ 
+ .. image:: img/034_socialaouth.png
+
+ .. image:: img/035_socialaouth.png
