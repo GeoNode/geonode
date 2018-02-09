@@ -19,6 +19,9 @@
 #########################################################################
 
 import json
+import logging
+from itertools import chain
+
 from guardian.shortcuts import get_perms
 
 from django.shortcuts import render_to_response, get_object_or_404
@@ -32,17 +35,21 @@ from django.core.exceptions import PermissionDenied
 from django_downloadview.response import DownloadResponse
 from django.views.generic.edit import UpdateView, CreateView
 from django.db.models import F
-from django.forms.util import ErrorList
+from django.forms.utils import ErrorList
 
 from geonode.utils import resolve_object
 from geonode.security.views import _perms_info_json
 from geonode.people.forms import ProfileForm
 from geonode.base.forms import CategoryForm
-from geonode.base.models import TopicCategory, ResourceBase
-from geonode.documents.models import Document
+from geonode.base.models import TopicCategory
+from geonode.documents.models import Document, get_related_resources
 from geonode.documents.forms import DocumentForm, DocumentCreateForm, DocumentReplaceForm
 from geonode.documents.models import IMGTYPES
 from geonode.utils import build_social_links
+from geonode.groups.models import GroupProfile
+from geonode.base.views import batch_modify
+
+logger = logging.getLogger("geonode.documents.views")
 
 ALLOWED_DOC_TYPES = settings.ALLOWED_DOCUMENT_TYPES
 
@@ -80,7 +87,7 @@ def document_detail(request, docid):
             loader.render_to_string(
                 '404.html', RequestContext(
                     request, {
-                        })), status=404)
+                    })), status=404)
 
     except PermissionDenied:
         return HttpResponse(
@@ -97,30 +104,38 @@ def document_detail(request, docid):
         )
 
     else:
-        try:
-            related = document.content_type.get_object_for_this_type(
-                id=document.object_id)
-        except:
-            related = ''
+        related = get_related_resources(document)
 
         # Update count for popularity ranking,
         # but do not includes admins or resource owners
         if request.user != document.owner and not request.user.is_superuser:
-            Document.objects.filter(id=document.id).update(popular_count=F('popular_count') + 1)
+            Document.objects.filter(
+                id=document.id).update(
+                popular_count=F('popular_count') + 1)
 
         metadata = document.link_set.metadata().filter(
             name__in=settings.DOWNLOAD_FORMATS_METADATA)
 
+        group = None
+        if document.group:
+            try:
+                group = GroupProfile.objects.get(slug=document.group.name)
+            except GroupProfile.DoesNotExist:
+                group = None
         context_dict = {
-            'perms_list': get_perms(request.user, document.get_self_resource()),
+            'perms_list': get_perms(
+                request.user,
+                document.get_self_resource()),
             'permissions_json': _perms_info_json(document),
             'resource': document,
+            'group': group,
             'metadata': metadata,
             'imgtypes': IMGTYPES,
             'related': related}
 
         if settings.SOCIAL_ORIGINS:
-            context_dict["social_links"] = build_social_links(request, document)
+            context_dict["social_links"] = build_social_links(
+                request, document)
 
         if getattr(settings, 'EXIF_ENABLED', False):
             try:
@@ -128,7 +143,7 @@ def document_detail(request, docid):
                 exif = exif_extract_dict(document)
                 if exif:
                     context_dict['exif_data'] = exif
-            except:
+            except BaseException:
                 print "Exif extraction failed."
 
         return render_to_response(
@@ -138,6 +153,10 @@ def document_detail(request, docid):
 
 def document_download(request, docid):
     document = get_object_or_404(Document, pk=docid)
+
+    if settings.MONITORING_ENABLED:
+        request.add_resource('document', document.alternate)
+
     if not request.user.has_perm(
             'base.download_resourcebase',
             obj=document.get_self_resource()):
@@ -158,24 +177,38 @@ class DocumentUploadView(CreateView):
         context['ALLOWED_DOC_TYPES'] = ALLOWED_DOC_TYPES
         return context
 
+    def form_invalid(self, form):
+        if self.request.REQUEST.get('no__redirect', False):
+            out = {'success': False}
+            out['message'] = ""
+            status_code = 400
+            return HttpResponse(
+                json.dumps(out),
+                content_type='application/json',
+                status=status_code)
+        else:
+            form.name = None
+            form.title = None
+            form.doc_file = None
+            form.doc_url = None
+            return self.render_to_response(self.get_context_data(form=form))
+
     def form_valid(self, form):
         """
         If the form is valid, save the associated model.
         """
         self.object = form.save(commit=False)
         self.object.owner = self.request.user
-        resource_id = self.request.POST.get('resource', None)
-        if resource_id:
-            self.object.content_type = ResourceBase.objects.get(id=resource_id).polymorphic_ctype
-            self.object.object_id = resource_id
         # by default, if RESOURCE_PUBLISHING=True then document.is_published
         # must be set to False
-        is_published = True
-        if settings.RESOURCE_PUBLISHING:
-            is_published = False
+        # RESOURCE_PUBLISHING works in similar way as ADMIN_MODERATE_UPLOADS,
+        # but is applied to documents only. ADMIN_MODERATE_UPLOADS has wider
+        # usage
+        is_published = not (
+            settings.RESOURCE_PUBLISHING or settings.ADMIN_MODERATE_UPLOADS)
         self.object.is_published = is_published
-
         self.object.save()
+        form.save_many2many()
         self.object.set_permissions(form.cleaned_data['permissions'])
 
         abstract = None
@@ -183,6 +216,8 @@ class DocumentUploadView(CreateView):
         regions = []
         keywords = []
         bbox = None
+
+        out = {'success': False}
 
         if getattr(settings, 'EXIF_ENABLED', False):
             try:
@@ -193,7 +228,7 @@ class DocumentUploadView(CreateView):
                     keywords.extend(exif_metadata.get('keywords', []))
                     bbox = exif_metadata.get('bbox', None)
                     abstract = exif_metadata.get('abstract', None)
-            except:
+            except BaseException:
                 print "Exif extraction failed."
 
         if getattr(settings, 'NLP_ENABLED', False):
@@ -203,7 +238,7 @@ class DocumentUploadView(CreateView):
                 if nlp_metadata:
                     regions.extend(nlp_metadata.get('regions', []))
                     keywords.extend(nlp_metadata.get('keywords', []))
-            except:
+            except BaseException:
                 print "NLP extraction failed."
 
         if abstract:
@@ -232,16 +267,37 @@ class DocumentUploadView(CreateView):
         if getattr(settings, 'SLACK_ENABLED', False):
             try:
                 from geonode.contrib.slack.utils import build_slack_message_document, send_slack_message
-                send_slack_message(build_slack_message_document("document_new", self.object))
-            except:
+                send_slack_message(
+                    build_slack_message_document(
+                        "document_new", self.object))
+            except BaseException:
                 print "Could not send slack message for new document."
 
-        return HttpResponseRedirect(
-            reverse(
-                'document_metadata',
+        if settings.MONITORING_ENABLED:
+            self.request.add_resource('document', self.object.alternate)
+
+        if self.request.REQUEST.get('no__redirect', False):
+            out['success'] = True
+            out['url'] = reverse(
+                'document_detail',
                 args=(
                     self.object.id,
-                )))
+                ))
+            if out['success']:
+                status_code = 200
+            else:
+                status_code = 400
+            return HttpResponse(
+                json.dumps(out),
+                content_type='application/json',
+                status=status_code)
+        else:
+            return HttpResponseRedirect(
+                reverse(
+                    'document_metadata',
+                    args=(
+                        self.object.id,
+                    )))
 
 
 class DocumentUpdateView(UpdateView):
@@ -261,6 +317,8 @@ class DocumentUpdateView(UpdateView):
         If the form is valid, save the associated model.
         """
         self.object = form.save()
+        if settings.MONITORING_ENABLED:
+            self.request.add_resource('document', self.object.alternate)
         return HttpResponseRedirect(
             reverse(
                 'document_metadata',
@@ -288,7 +346,7 @@ def document_metadata(
             loader.render_to_string(
                 '404.html', RequestContext(
                     request, {
-                        })), status=404)
+                    })), status=404)
 
     except PermissionDenied:
         return HttpResponse(
@@ -314,11 +372,8 @@ def document_metadata(
                 request.POST,
                 instance=document,
                 prefix="resource")
-            category_form = CategoryForm(
-                request.POST,
-                prefix="category_choice_field",
-                initial=int(
-                    request.POST["category_choice_field"]) if "category_choice_field" in request.POST else None)
+            category_form = CategoryForm(request.POST, prefix="category_choice_field", initial=int(
+                request.POST["category_choice_field"]) if "category_choice_field" in request.POST else None)
         else:
             document_form = DocumentForm(instance=document, prefix="resource")
             category_form = CategoryForm(
@@ -330,6 +385,7 @@ def document_metadata(
             new_poc = document_form.cleaned_data['poc']
             new_author = document_form.cleaned_data['metadata_author']
             new_keywords = document_form.cleaned_data['keywords']
+            new_regions = document_form.cleaned_data['regions']
             new_category = TopicCategory.objects.get(
                 id=category_form.cleaned_data['category_choice_field'])
 
@@ -344,8 +400,10 @@ def document_metadata(
                 if poc_form.is_valid():
                     if len(poc_form.cleaned_data['profile']) == 0:
                         # FIXME use form.add_error in django > 1.7
-                        errors = poc_form._errors.setdefault('profile', ErrorList())
-                        errors.append(_('You must set a point of contact for this resource'))
+                        errors = poc_form._errors.setdefault(
+                            'profile', ErrorList())
+                        errors.append(
+                            _('You must set a point of contact for this resource'))
                         poc = None
                 if poc_form.has_changed and poc_form.is_valid():
                     new_poc = poc_form.save()
@@ -359,33 +417,48 @@ def document_metadata(
                 if author_form.is_valid():
                     if len(author_form.cleaned_data['profile']) == 0:
                         # FIXME use form.add_error in django > 1.7
-                        errors = author_form._errors.setdefault('profile', ErrorList())
-                        errors.append(_('You must set an author for this resource'))
+                        errors = author_form._errors.setdefault(
+                            'profile', ErrorList())
+                        errors.append(
+                            _('You must set an author for this resource'))
                         metadata_author = None
                 if author_form.has_changed and author_form.is_valid():
                     new_author = author_form.save()
 
+            the_document = document_form.instance
             if new_poc is not None and new_author is not None:
-                the_document = document_form.save()
                 the_document.poc = new_poc
                 the_document.metadata_author = new_author
+            if new_keywords:
+                the_document.keywords.clear()
                 the_document.keywords.add(*new_keywords)
-                Document.objects.filter(id=the_document.id).update(category=new_category)
+            if new_regions:
+                the_document.regions.clear()
+                the_document.regions.add(*new_regions)
+            the_document.save()
+            document_form.save_many2many()
+            Document.objects.filter(
+                id=the_document.id).update(
+                category=new_category)
 
-                if getattr(settings, 'SLACK_ENABLED', False):
-                    try:
-                        from geonode.contrib.slack.utils import build_slack_message_document, send_slack_messages
-                        send_slack_messages(build_slack_message_document("document_edit", the_document))
-                    except:
-                        print "Could not send slack message for modified document."
+            if getattr(settings, 'SLACK_ENABLED', False):
+                try:
+                    from geonode.contrib.slack.utils import build_slack_message_document, send_slack_messages
+                    send_slack_messages(
+                        build_slack_message_document(
+                            "document_edit", the_document))
+                except BaseException:
+                    print "Could not send slack message for modified document."
 
-                return HttpResponseRedirect(
-                    reverse(
-                        'document_detail',
-                        args=(
-                            document.id,
-                        )))
+            return HttpResponseRedirect(
+                reverse(
+                    'document_detail',
+                    args=(
+                        document.id,
+                    )))
+        # - POST Request Ends here -
 
+        # Request.GET
         if poc is not None:
             document_form.fields['poc'].initial = poc.id
             poc_form = ProfileForm(prefix="poc")
@@ -396,13 +469,52 @@ def document_metadata(
             author_form = ProfileForm(prefix="author")
             author_form.hidden = True
 
+        metadata_author_groups = []
+        if request.user.is_superuser or request.user.is_staff:
+            metadata_author_groups = GroupProfile.objects.all()
+        else:
+            try:
+                all_metadata_author_groups = chain(
+                    request.user.group_list_all(),
+                    GroupProfile.objects.exclude(access="private").exclude(access="public-invite"))
+            except:
+                all_metadata_author_groups = GroupProfile.objects.exclude(
+                    access="private").exclude(access="public-invite")
+            [metadata_author_groups.append(item) for item in all_metadata_author_groups
+                if item not in metadata_author_groups]
+
+        if settings.ADMIN_MODERATE_UPLOADS:
+            if not request.user.is_superuser:
+                document_form.fields['is_published'].widget.attrs.update({'disabled': 'true'})
+
+                can_change_metadata = request.user.has_perm(
+                    'change_resourcebase_metadata',
+                    document.get_self_resource())
+                try:
+                    is_manager = request.user.groupmember_set.all().filter(role='manager').exists()
+                except:
+                    is_manager = False
+                if not is_manager or not can_change_metadata:
+                    document_form.fields['is_approved'].widget.attrs.update({'disabled': 'true'})
+
         return render_to_response(template, RequestContext(request, {
+            "resource": document,
             "document": document,
             "document_form": document_form,
             "poc_form": poc_form,
             "author_form": author_form,
             "category_form": category_form,
+            "metadata_author_groups": metadata_author_groups,
+            "GROUP_MANDATORY_RESOURCES": getattr(settings, 'GROUP_MANDATORY_RESOURCES', False),
         }))
+
+
+@login_required
+def document_metadata_advanced(request, docid):
+    return document_metadata(
+        request,
+        docid,
+        template='documents/document_metadata_advanced.html')
 
 
 def document_search_page(request):
@@ -445,8 +557,9 @@ def document_remove(request, docid, template='documents/document_remove.html'):
                 slack_message = None
                 try:
                     from geonode.contrib.slack.utils import build_slack_message_document
-                    slack_message = build_slack_message_document("document_delete", document)
-                except:
+                    slack_message = build_slack_message_document(
+                        "document_delete", document)
+                except BaseException:
                     print "Could not build slack message for delete document."
 
                 document.delete()
@@ -454,7 +567,7 @@ def document_remove(request, docid, template='documents/document_remove.html'):
                 try:
                     from geonode.contrib.slack.utils import send_slack_messages
                     send_slack_messages(slack_message)
-                except:
+                except BaseException:
                     print "Could not send slack message for delete document."
             else:
                 document.delete()
@@ -471,14 +584,28 @@ def document_remove(request, docid, template='documents/document_remove.html'):
         )
 
 
-def document_metadata_detail(request, docid, template='documents/document_metadata_detail.html'):
+def document_metadata_detail(
+        request,
+        docid,
+        template='documents/document_metadata_detail.html'):
     document = _resolve_document(
         request,
         docid,
         'view_resourcebase',
         _PERMISSION_MSG_METADATA)
+    group = None
+    if document.group:
+        try:
+            group = GroupProfile.objects.get(slug=document.group.name)
+        except GroupProfile.DoesNotExist:
+            group = None
     return render_to_response(template, RequestContext(request, {
-        "layer": document,
-        "docid": docid,
+        "resource": document,
+        "group": group,
         'SITEURL': settings.SITEURL[:-1]
     }))
+
+
+@login_required
+def document_batch_metadata(request, ids):
+    return batch_modify(request, ids, 'Document')

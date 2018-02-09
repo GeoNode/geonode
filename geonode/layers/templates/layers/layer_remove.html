@@ -1,17 +1,17 @@
 {% extends "layers/layer_base.html" %}
 {% load i18n %}
 
-{% block title %}{{ layer.typename }} — {{ block.super }}{% endblock %}
+{% block title %}{{ layer.alternate }} — {{ block.super }}{% endblock %}
 
 {% block body %}
 <div class="page-header">
-  <a href="{% url "layer_browse" %}" class="btn btn-primary pull-right">{% trans "Explore Layers" %}</a>
+  <a href="{% url "layer_browse" %}?limit={{ CLIENT_RESULTS_LIMIT }}" class="btn btn-primary pull-right">{% trans "Explore Layers" %}</a>
   <h2 class="page-title">{% trans "Remove Layers" %}</h2>
 </div>
 <div class="row">
   <div class="col-md-8">
     <p class="lead">
-        {% blocktrans with layer.typename as layer_title %}
+        {% blocktrans with layer.alternate as layer_title %}
           Are you sure you want to remove <a href="{{ layer.get_absolute_url }}">{{ layer_title }}</a>?
         {% endblocktrans %}
       </p>

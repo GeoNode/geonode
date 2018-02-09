@@ -1,4 +1,4 @@
-{% extends "site_base.html" %}
+{% extends "geonode_base.html" %}
 {% load i18n %}
 {% load url from future %}
 
@@ -7,6 +7,6 @@
 {% block body_class %}documents{% endblock %}
 
 {% block body_outer %}
-{% block body %}{% endblock body %}
-{% block sidebar %}{% endblock sidebar %}
+  {% block body %}{% endblock body %}
+  {% block sidebar %}{% endblock sidebar %}
 {% endblock body_outer %}

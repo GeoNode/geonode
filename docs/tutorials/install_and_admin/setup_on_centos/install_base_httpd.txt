@@ -4,6 +4,8 @@
 Apache HTTP Server Installation
 ===============================
 
+Install and setup base packages
+===============================
 
 Install Apache::
 
@@ -13,13 +15,19 @@ And additional modules::
 
     sudo yum install -y mod_ssl mod_proxy_html mod_wsgi
 
+.. important:: Please be aware that the WSGI module for Apache shipped by the CentOS repositories is pretty much old and obsolete. It is recommended to separately replace it with the latest binary from the official `mod_wsgi`_ project. Referer to :ref:`install_venv_httpd_wsgi`. Alternatively you can replace your HTTP web server with the combination of `Nginx`_ and `Gunicorn`_ for publishing GeoServer and the Django application as explained in :ref:`install_venv_nginx_gunicorn`.
+
+.. _mod_wsgi: http://www.modwsgi.org/
+.. _Nginx: https://nginx.org
+.. _Gunicorn: http://gunicorn.org/
+
 Firewall configuration
 ----------------------
 
 Allow requests on port 80 through the firewall::
 
-    firewall-cmd --zone=public --add-service=http --permanent
-    firewall-cmd --reload
+    sudo firewall-cmd --zone=public --add-service=http --permanent
+    sudo firewall-cmd --reload
 
 Security issues
 ---------------
@@ -29,7 +37,7 @@ There are a couple of security issues to fix when dealing with GeoNode.
 GeoNode will run inside httpd through WSGI. This means that httpd will try to perform external connection toward the DB.
 This is usually blocked by default by strict security policies, so we need to relax them::
 
-   setsebool -P httpd_can_network_connect_db 1
+   sudo setsebool -P httpd_can_network_connect_db 1
 
 The other issue is about SELinux itself: it is not WSGI friendly, so we'll have to disable it.
 Edit the file ``/etc/sysconfig/selinux`` and  change the line::
@@ -42,26 +50,27 @@ into::
 
 and reboot the machine.
 
-
 httpd configuration
 ===================
 
 As ``root``, create the file ``/etc/httpd/conf.d/geonode.conf``
 and insert into it :download:`this content <resources/geonode.conf>`.
 
-Add `thumbs` and `layers` folders::
+Add ``thumbs`` and ``layers`` folders::
 
-    sudo mkdir -p /home/geonode/geonode/geonode/uploaded/thumbs
-    sudo mkdir -p /home/geonode/geonode/geonode/uploaded/layers
+    mkdir -p /opt/apps/geonode/geonode/geonode/static_root
+    mkdir -p /opt/apps/geonode/geonode/geonode/uploaded/thumbs
+    mkdir -p /opt/apps/geonode/geonode/geonode/uploaded/layers
 
-Set appropriate permissions on the folders:::
+Change permissions on GeoNode files and folders to allow Apache to read and edit them:::
 
-    sudo chown -R geonode /home/geonode/geonode/
-    sudo chown geonode:www-data /home/geonode/geonode/geonode/static/
-    sudo chown geonode:www-data /home/geonode/geonode/geonode/uploaded/
-    chmod -Rf 777 /home/geonode/geonode/geonode/uploaded/thumbs
-    chmod -Rf 777 /home/geonode/geonode/geonode/uploaded/layers
-    sudo chown www-data:www-data /home/geonode/geonode/geonode/static_root/
+    chmod +x /opt/apps/geonode/
+    sudo chown -R geonode /opt/apps/geonode/geonode
+    sudo chown geonode:apache /opt/apps/geonode/geonode/geonode/static/
+    sudo chown geonode:apache /opt/apps/geonode/geonode/geonode/uploaded/
+    sudo chown geonode:apache /opt/apps/geonode/geonode/geonode/static_root/
+    chmod -Rf 777 /opt/apps/geonode/geonode/geonode/uploaded/thumbs
+    chmod -Rf 777 /opt/apps/geonode/geonode/geonode/uploaded/layers
 
 SSL configuration
 -----------------
@@ -84,7 +93,7 @@ Alternatively the directive that sets the directory where you keep the certifica
 
     SSLProxyCACertificatePath /usr/local/apache2/conf/ssl.crt/
 
-.. note:: 
+.. note::
 
     If the verification of GeoServer certificate is not required then the SSL proxy has to be instructed with a directive which excludes the need of a valid certificate:::
 
@@ -96,8 +105,8 @@ If a strong authentication with client certificates is needed then the secure vi
     SSLVerifyDepth 1
     SSLCACertificateFile "conf/ssl.crt/geonode-ca.crt"
 
-.. note:: 
-    
+.. note::
+
     This configuration above requires a client certificate which has to be directly signed by the GeoNode CA certificate in geonode-ca.crt. In certain cases you do not want the verification of GeoServer certificate as mandatory hence it is enough to apply the value *none*
 
 Quick administration
@@ -105,8 +114,8 @@ Quick administration
 
 If you change any directive then restart httpd to make it reload the new configurations:::
 
-   systemctl restart httpd
+   sudo systemctl restart httpd
 
 To automatically start Apache at boot, run:::
 
-    systemctl enable httpd
+    sudo systemctl enable httpd

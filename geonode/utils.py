@@ -26,6 +26,14 @@ import math
 import os
 import re
 import uuid
+import subprocess
+import select
+import tempfile
+import tarfile
+
+from zipfile import ZipFile, is_zipfile
+
+from StringIO import StringIO
 
 from osgeo import ogr
 from slugify import Slugify
@@ -37,9 +45,17 @@ from django.core.exceptions import PermissionDenied
 from django.http import Http404
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404
+# use lazy gettext because some translated strings are used before
+# i18n infra is up
 from django.utils.translation import ugettext_lazy as _
+from django.db import models, connection, transaction
+from django.core.serializers.json import DjangoJSONEncoder
 import httplib2
+import urlparse
+import urllib
 
+import gc
+import weakref
 
 try:
     import json
@@ -56,12 +72,61 @@ ALPHABET = string.ascii_uppercase + string.ascii_lowercase + \
 ALPHABET_REVERSE = dict((c, i) for (i, c) in enumerate(ALPHABET))
 BASE = len(ALPHABET)
 SIGN_CHARACTER = '$'
+SQL_PARAMS_RE = re.compile(r'%\(([\w_\-]+)\)s')
 
 http_client = httplib2.Http()
 
 custom_slugify = Slugify(separator='_')
 
+signalnames = [
+    'class_prepared',
+    'm2m_changed',
+    'post_delete',
+    'post_init',
+    'post_save',
+    'post_syncdb',
+    'pre_delete',
+    'pre_init',
+    'pre_save']
+signals_store = {}
+
+id_none = id(None)
+
 logger = logging.getLogger("geonode.utils")
+
+
+def unzip_file(upload_file, extension='.shp', tempdir=None):
+    """
+    Unzips a zipfile into a temporary directory and returns the full path of the .shp file inside (if any)
+    """
+    absolute_base_file = None
+    if tempdir is None:
+        tempdir = tempfile.mkdtemp()
+
+    the_zip = ZipFile(upload_file)
+    the_zip.extractall(tempdir)
+    for item in the_zip.namelist():
+        if item.endswith(extension):
+            absolute_base_file = os.path.join(tempdir, item)
+
+    return absolute_base_file
+
+
+def extract_tarfile(upload_file, extension='.shp', tempdir=None):
+    """
+    Extracts a tarfile into a temporary directory and returns the full path of the .shp file inside (if any)
+    """
+    absolute_base_file = None
+    if tempdir is None:
+        tempdir = tempfile.mkdtemp()
+
+    the_tar = tarfile.open(upload_file)
+    the_tar.extractall(tempdir)
+    for item in the_tar.getnames():
+        if item.endswith(extension):
+            absolute_base_file = os.path.join(tempdir, item)
+
+    return absolute_base_file
 
 
 def _get_basic_auth_info(request):
@@ -111,6 +176,8 @@ def _split_query(query):
 
 
 def bbox_to_wkt(x0, x1, y0, y1, srid="4326"):
+    if srid and srid.startswith('EPSG:'):
+        srid = srid[5:]
     if None not in [x0, x1, y0, y1]:
         wkt = 'SRID=%s;POLYGON((%s %s,%s %s,%s %s,%s %s,%s %s))' % (
             srid, x0, y0, x0, y1, x1, y1, x1, y0, x0, y0)
@@ -120,14 +187,14 @@ def bbox_to_wkt(x0, x1, y0, y1, srid="4326"):
 
 
 def llbbox_to_mercator(llbbox):
-    minlonlat = forward_mercator([llbbox[0], llbbox[1]])
-    maxlonlat = forward_mercator([llbbox[2], llbbox[3]])
+    minlonlat = forward_mercator([llbbox[0], llbbox[2]])
+    maxlonlat = forward_mercator([llbbox[1], llbbox[3]])
     return [minlonlat[0], minlonlat[1], maxlonlat[0], maxlonlat[1]]
 
 
 def mercator_to_llbbox(bbox):
-    minlonlat = inverse_mercator([bbox[0], bbox[1]])
-    maxlonlat = inverse_mercator([bbox[2], bbox[3]])
+    minlonlat = inverse_mercator([bbox[0], bbox[2]])
+    maxlonlat = inverse_mercator([bbox[1], bbox[3]])
     return [minlonlat[0], minlonlat[1], maxlonlat[0], maxlonlat[1]]
 
 
@@ -178,11 +245,24 @@ def layer_from_viewer_config(model, layer, source, ordering):
               "fixed", "group", "visibility", "source", "getFeatureInfo"]:
         if k in layer_cfg:
             del layer_cfg[k]
+    layer_cfg["wrapDateLine"] = True
+    layer_cfg["displayOutsideMaxExtent"] = True
 
     source_cfg = dict(source)
     for k in ["url", "projection"]:
         if k in source_cfg:
             del source_cfg[k]
+
+    # We don't want to hardcode 'access_token' into the storage
+    if 'capability' in layer_cfg:
+        capability = layer_cfg['capability']
+        if 'styles' in capability:
+            styles = capability['styles']
+            for style in styles:
+                if 'legend' in style:
+                    legend = style['legend']
+                    if 'href' in legend:
+                        legend['href'] = re.sub(r'\&access_token=.*', '', legend['href'])
 
     return model(
         stack_order=ordering,
@@ -268,12 +348,13 @@ class GXPMapBase(object):
                        for source in sources.values() if 'url' in source]
 
         if 'geonode.geoserver' in settings.INSTALLED_APPS:
-            if len(sources.keys()) > 0 and not settings.MAP_BASELAYERS[0]['source']['url'] in source_urls:
+            if len(sources.keys(
+            )) > 0 and not settings.MAP_BASELAYERS[0]['source']['url'] in source_urls:
                 keys = sorted(sources.keys())
                 settings.MAP_BASELAYERS[0]['source'][
                     'title'] = 'Local Geoserver'
-                sources[
-                    str(int(keys[-1]) + 1)] = settings.MAP_BASELAYERS[0]['source']
+                sources[str(int(keys[-1]) + 1)
+                        ] = settings.MAP_BASELAYERS[0]['source']
 
         def _base_source(source):
             base_source = copy.deepcopy(source)
@@ -288,8 +369,8 @@ class GXPMapBase(object):
                     _base_source,
                     sources.values()):
                 if len(sources.keys()) > 0:
-                    sources[
-                        str(int(max(sources.keys(), key=int)) + 1)] = lyr["source"]
+                    sources[str(int(max(sources.keys(), key=int)) + 1)
+                            ] = lyr["source"]
 
         # adding remote services sources
         from geonode.services.models import Service
@@ -311,6 +392,7 @@ class GXPMapBase(object):
                 'title': self.title,
                 'abstract': self.abstract
             },
+            'aboutUrl': '../about',
             'defaultSourceType': "gxp_wmscsource",
             'sources': sources,
             'map': {
@@ -371,8 +453,31 @@ class GXPLayerBase(object):
             cfg = dict(ptype="gxp_wmscsource", restUrl="/gs/rest")
 
         if self.ows_url:
-            if access_token:
-                cfg["url"] = self.ows_url+'?access_token='+access_token
+            '''
+            This limits the access token we add to only the OGC servers decalred in OGC_SERVER.
+            Will also override any access_token in the request and replace it with an existing one.
+            '''
+            urls = []
+            for name, server in settings.OGC_SERVER.iteritems():
+                url = urlparse.urlsplit(server['PUBLIC_LOCATION'])
+                urls.append(url.netloc)
+
+            my_url = urlparse.urlsplit(self.ows_url)
+
+            if access_token and my_url.netloc in urls:
+                request_params = urlparse.parse_qs(my_url.query)
+                if 'access_token' in request_params:
+                    del request_params['access_token']
+                # request_params['access_token'] = [access_token]
+                encoded_params = urllib.urlencode(request_params, doseq=True)
+
+                parsed_url = urlparse.SplitResult(
+                    my_url.scheme,
+                    my_url.netloc,
+                    my_url.path,
+                    encoded_params,
+                    my_url.fragment)
+                cfg["url"] = parsed_url.geturl()
             else:
                 cfg["url"] = self.ows_url
 
@@ -426,6 +531,8 @@ class GXPLayer(GXPLayerBase):
         self.fixed = False
         self.group = None
         self.visibility = True
+        self.wrapDateLine = True
+        self.displayOutsideMaxExtent = True
         self.ows_url = ows_url
         self.layer_params = ""
         self.source_params = ""
@@ -470,7 +577,8 @@ def default_map_config(request):
             u = uuid.uuid1()
             access_token = u.hex
 
-    DEFAULT_MAP_CONFIG = _default_map.viewer_json(user, access_token, *DEFAULT_BASE_LAYERS)
+    DEFAULT_MAP_CONFIG = _default_map.viewer_json(
+        user, access_token, *DEFAULT_BASE_LAYERS)
 
     return DEFAULT_MAP_CONFIG, DEFAULT_BASE_LAYERS
 
@@ -507,28 +615,92 @@ def resolve_object(request, model, query, permission='base.view_resourcebase',
     obj = get_object_or_404(model, **query)
     obj_to_check = obj.get_self_resource()
 
-    if settings.RESOURCE_PUBLISHING:
-        if (not obj_to_check.is_published) and (
-                not request.user.has_perm('publish_resourcebase', obj_to_check)
-        ):
+    from guardian.shortcuts import assign_perm, get_groups_with_perms
+    from geonode.groups.models import GroupProfile
+
+    groups = get_groups_with_perms(obj_to_check,
+                                   attach_perms=True)
+
+    if obj_to_check.group and obj_to_check.group not in groups:
+        groups[obj_to_check.group] = obj_to_check.group
+
+    obj_group_managers = []
+    obj_group_members = []
+    if groups:
+        for group in groups:
+            try:
+                group_profile = GroupProfile.objects.get(slug=group.name)
+                managers = group_profile.get_managers()
+                if managers:
+                    for manager in managers:
+                        if manager not in obj_group_managers and not manager.is_superuser:
+                            obj_group_managers.append(manager)
+                if group_profile.user_is_member(request.user) and request.user not in obj_group_members:
+                    obj_group_members.append(request.user)
+            except GroupProfile.DoesNotExist:
+                pass
+
+    if settings.RESOURCE_PUBLISHING or settings.ADMIN_MODERATE_UPLOADS:
+        is_admin = False
+        is_manager = False
+        is_owner = True if request.user == obj_to_check.owner else False
+        if request.user:
+            is_admin = request.user.is_superuser if request.user else False
+            try:
+                is_manager = request.user.groupmember_set.all().filter(role='manager').exists()
+            except:
+                is_manager = False
+        else:
             raise Http404
+        if (not obj_to_check.is_published):
+            if not is_admin:
+                if is_owner or (is_manager and request.user in obj_group_managers):
+                    if (not request.user.has_perm('publish_resourcebase', obj_to_check)) and (
+                        not request.user.has_perm('view_resourcebase', obj_to_check)) and (
+                            not request.user.has_perm('change_resourcebase_metadata', obj_to_check)) and (
+                                not is_owner and not settings.ADMIN_MODERATE_UPLOADS):
+                                    raise Http404
+                    else:
+                        assign_perm('view_resourcebase', request.user, obj_to_check)
+                        assign_perm('publish_resourcebase', request.user, obj_to_check)
+                        assign_perm('change_resourcebase_metadata', request.user, obj_to_check)
+                        assign_perm('download_resourcebase', request.user, obj_to_check)
+
+                        if is_owner:
+                            assign_perm('change_resourcebase', request.user, obj_to_check)
+                            assign_perm('delete_resourcebase', request.user, obj_to_check)
+                            assign_perm('change_resourcebase_permissions', request.user, obj_to_check)
+                else:
+                    if request.user in obj_group_members:
+                        if (not request.user.has_perm('publish_resourcebase', obj_to_check)) and (
+                            not request.user.has_perm('view_resourcebase', obj_to_check)) and (
+                                not request.user.has_perm('change_resourcebase_metadata', obj_to_check)):
+                                    raise Http404
+                    else:
+                        raise Http404
 
     allowed = True
-    if permission.split('.')[-1] in ['change_layer_data', 'change_layer_style']:
+    if permission.split('.')[-1] in ['change_layer_data',
+                                     'change_layer_style']:
         if obj.__class__.__name__ == 'Layer':
             obj_to_check = obj
     if permission:
         if permission_required or request.method != 'GET':
-            allowed = request.user.has_perm(
-                permission,
-                obj_to_check)
+            if request.user in obj_group_managers:
+                allowed = True
+            else:
+                allowed = request.user.has_perm(
+                    permission,
+                    obj_to_check)
     if not allowed:
         mesg = permission_msg or _('Permission Denied')
         raise PermissionDenied(mesg)
+    if settings.MONITORING_ENABLED:
+        request.add_resource(model._meta.verbose_name_raw, obj.alternate if hasattr(obj, 'alternate') else obj.title)
     return obj
 
 
-def json_response(body=None, errors=None, redirect_to=None, exception=None,
+def json_response(body=None, errors=None, url=None, redirect_to=None, exception=None,
                   content_type=None, status=None):
     """Create a proper JSON response. If body is provided, this is the response.
     If errors is not None, the response is a success/errors json object.
@@ -537,6 +709,8 @@ def json_response(body=None, errors=None, redirect_to=None, exception=None,
     exception message will be used as a format option to that string and the
     result will be a success=False, errors = body % exception
     """
+    if isinstance(body, HttpResponse):
+        return body
     if content_type is None:
         content_type = "application/json"
     if errors:
@@ -550,6 +724,11 @@ def json_response(body=None, errors=None, redirect_to=None, exception=None,
         body = {
             'success': True,
             'redirect_to': redirect_to
+        }
+    elif url:
+        body = {
+            'success': True,
+            'url': url
         }
     elif exception:
         if body is None:
@@ -569,7 +748,7 @@ def json_response(body=None, errors=None, redirect_to=None, exception=None,
         status = 200
 
     if not isinstance(body, basestring):
-        body = json.dumps(body)
+        body = json.dumps(body, cls=DjangoJSONEncoder)
     return HttpResponse(body, content_type=content_type, status=status)
 
 
@@ -608,7 +787,8 @@ def format_urls(a, values):
 
 def build_abstract(resourcebase, url=None, includeURL=True):
     if resourcebase.abstract and url and includeURL:
-        return u"{abstract} -- [{url}]({url})".format(abstract=resourcebase.abstract, url=url)
+        return u"{abstract} -- [{url}]({url})".format(
+            abstract=resourcebase.abstract, url=url)
     else:
         return resourcebase.abstract
 
@@ -633,8 +813,10 @@ def build_social_links(request, resourcebase):
         host=request.get_host(),
         path=request.get_full_path())
     # Don't use datetime strftime() because it requires year >= 1900
-    # see https://docs.python.org/2/library/datetime.html#strftime-strptime-behavior
-    date = '{0.month:02d}/{0.day:02d}/{0.year:4d}'.format(resourcebase.date) if resourcebase.date else None
+    # see
+    # https://docs.python.org/2/library/datetime.html#strftime-strptime-behavior
+    date = '{0.month:02d}/{0.day:02d}/{0.year:4d}'.format(
+        resourcebase.date) if resourcebase.date else None
     abstract = build_abstract(resourcebase, url=social_url, includeURL=True)
     caveats = build_caveats(resourcebase)
     hashtags = ",".join(getattr(settings, 'TWITTER_HASHTAGS', []))
@@ -659,6 +841,10 @@ def check_shp_columnnames(layer):
     for f in layer.upload_session.layerfile_set.all():
         if os.path.splitext(f.file.name)[1] == '.shp':
             inShapefile = f.file.path
+
+    tempdir = tempfile.mkdtemp()
+    if is_zipfile(inShapefile):
+        inShapefile = unzip_file(inShapefile, '.shp', tempdir=tempdir)
 
     inDriver = ogr.GetDriverByName('ESRI Shapefile')
     inDataSource = inDriver.Open(inShapefile, 1)
@@ -687,7 +873,11 @@ def check_shp_columnnames(layer):
             list_col_original.append(field_name)
     try:
         for i in range(0, inLayerDefn.GetFieldCount()):
-            field_name = unicode(inLayerDefn.GetFieldDefn(i).GetName(), layer.charset)
+            charset = layer.charset if layer.charset and 'undefined' not in layer.charset \
+                else 'UTF-8'
+            field_name = unicode(
+                inLayerDefn.GetFieldDefn(i).GetName(),
+                charset)
 
             if not a.match(field_name):
                 new_field_name = custom_slugify(field_name)
@@ -710,12 +900,17 @@ def check_shp_columnnames(layer):
         return True, None, None
     else:
         for key in list_col.keys():
-            qry = u"ALTER TABLE {0} RENAME COLUMN \"{1}\" TO \"{2}\"".format(inLayer.GetName(), key, list_col[key])
+            qry = u"ALTER TABLE {0} RENAME COLUMN \"{1}\" TO \"{2}\"".format(
+                inLayer.GetName(), key, list_col[key])
             inDataSource.ExecuteSQL(qry.encode(layer.charset))
     return True, None, list_col
 
 
-def set_attributes(layer, attribute_map, overwrite=False, attribute_stats=None):
+def set_attributes(
+        layer,
+        attribute_map,
+        overwrite=False,
+        attribute_stats=None):
     """ *layer*: a geonode.layers.models.Layer instance
         *attribute_map*: a list of 2-lists specifying attribute names and types,
             example: [ ['id', 'Integer'], ... ]
@@ -749,7 +944,8 @@ def set_attributes(layer, attribute_map, overwrite=False, attribute_stats=None):
                 # store description and attribute_label in attribute_map
                 attribute[attribute_map_dict['description']] = la.description
                 attribute[attribute_map_dict['label']] = la.attribute_label
-                attribute[attribute_map_dict['display_order']] = la.display_order
+                attribute[attribute_map_dict['display_order']
+                          ] = la.display_order
         if overwrite or not lafound:
             logger.debug(
                 "Going to delete [%s] for [%s]",
@@ -795,3 +991,173 @@ def set_attributes(layer, attribute_map, overwrite=False, attribute_stats=None):
                         layer.name.encode('utf-8'))
     else:
         logger.debug("No attributes found")
+
+
+def id_to_obj(id_):
+    if id_ == id_none:
+        return None
+
+    for obj in gc.get_objects():
+        if id(obj) == id_:
+            return obj
+            break
+    raise Exception("Not found")
+
+
+def printsignals():
+    for signalname in signalnames:
+        logger.debug("SIGNALNAME: %s" % signalname)
+        signaltype = getattr(models.signals, signalname)
+        signals = signaltype.receivers[:]
+        for signal in signals:
+            logger.info(signal)
+
+
+def designals():
+    global signals_store
+
+    for signalname in signalnames:
+        signaltype = getattr(models.signals, signalname)
+        logger.debug("RETRIEVE: %s: %d" %
+                     (signalname, len(signaltype.receivers)))
+        signals_store[signalname] = []
+        signals = signaltype.receivers[:]
+        for signal in signals:
+            uid = receiv_call = None
+            sender_ista = sender_call = None
+            # first tuple element:
+            # - case (id(instance), id(method))
+            if not isinstance(signal[0], tuple):
+                raise "Malformed signal"
+
+            lookup = signal[0]
+
+            if isinstance(lookup[0], tuple):
+                # receiv_ista = id_to_obj(lookup[0][0])
+                receiv_call = id_to_obj(lookup[0][1])
+            else:
+                # - case id(function) or uid
+                try:
+                    receiv_call = id_to_obj(lookup[0])
+                except BaseException:
+                    uid = lookup[0]
+
+            if isinstance(lookup[1], tuple):
+                sender_call = id_to_obj(lookup[1][0])
+                sender_ista = id_to_obj(lookup[1][1])
+            else:
+                sender_ista = id_to_obj(lookup[1])
+
+            # second tuple element
+            if (isinstance(signal[1], weakref.ReferenceType)):
+                is_weak = True
+                receiv_call = signal[1]()
+            else:
+                is_weak = False
+                receiv_call = signal[1]
+
+            signals_store[signalname].append({
+                'uid': uid, 'is_weak': is_weak,
+                'sender_ista': sender_ista, 'sender_call': sender_call,
+                'receiv_call': receiv_call,
+            })
+
+            signaltype.disconnect(
+                receiver=receiv_call,
+                sender=sender_ista,
+                weak=is_weak,
+                dispatch_uid=uid)
+
+
+def resignals():
+    global signals_store
+
+    for signalname in signalnames:
+        signals = signals_store[signalname]
+        signaltype = getattr(models.signals, signalname)
+        for signal in signals:
+            signaltype.connect(
+                signal['receiv_call'],
+                sender=signal['sender_ista'],
+                weak=signal['is_weak'],
+                dispatch_uid=signal['uid'])
+
+
+def run_subprocess(*cmd, **kwargs):
+    p = subprocess.Popen(
+        ' '.join(cmd),
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
+        **kwargs)
+    stdout = StringIO()
+    stderr = StringIO()
+    buff_size = 1024
+    while p.poll() is None:
+        inr = [p.stdout.fileno(), p.stderr.fileno()]
+        inw = []
+        rlist, wlist, xlist = select.select(inr, inw, [])
+
+        for r in rlist:
+            if r == p.stdout.fileno():
+                readfrom = p.stdout
+                readto = stdout
+            else:
+                readfrom = p.stderr
+                readto = stderr
+            readto.write(readfrom.read(buff_size))
+
+        for w in wlist:
+            w.write('')
+
+    return p.returncode, stdout.getvalue(), stderr.getvalue()
+
+
+def parse_datetime(value):
+    for patt in settings.DATETIME_INPUT_FORMATS:
+        try:
+            return datetime.datetime.strptime(value, patt)
+        except ValueError:
+            pass
+    raise ValueError("Invalid datetime input: {}".format(value))
+
+
+def _convert_sql_params(cur, query):
+    # sqlite driver doesn't support %(key)s notation,
+    # use :key instead.
+    if cur.db.vendor in ('sqlite', 'sqlite3', 'spatialite',):
+        return SQL_PARAMS_RE.sub(r':\1', query)
+    return query
+
+
+@transaction.atomic
+def raw_sql(query, params=None, ret=True):
+    """
+    Execute raw query
+    param ret=True returns data from cursor as iterator
+    """
+    with connection.cursor() as c:
+        query = _convert_sql_params(c, query)
+        c.execute(query, params)
+        if ret:
+            desc = [r[0] for r in c.description]
+            for row in c:
+                yield dict(zip(desc, row))
+
+
+def check_ogc_backend(backend_package):
+    """Check that geonode use a particular OGC Backend integration
+
+    :param backend_package: django app of backend to use
+    :type backend_package: str
+
+    :return: bool
+    :rtype: bool
+    """
+    # Check exists in INSTALLED_APPS
+    try:
+        in_installed_apps = backend_package in settings.INSTALLED_APPS
+        ogc_conf = settings.OGC_SERVER['default']
+        is_configured = ogc_conf.get('BACKEND') == backend_package
+        return in_installed_apps and is_configured
+    except:
+        return False

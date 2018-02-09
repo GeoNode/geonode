@@ -1,0 +1,30 @@
+<Layer queryable="{% if layer.storeType == 'dataStore' %}1{% else %}0{% endif %}">
+<Name>{{ layer.name }}</Name>
+<Title>{{ layer.title }}</Title>
+<Abstract>{{ layer.abstract }}</Abstract>
+<KeywordList>
+    {% for kw in layer.keyword_list %}
+    <Keyword>{{ kw }}</Keyword>
+    {% endfor %}
+</KeywordList>
+<SRS>{{ layer.srid }}</SRS>
+<LatLonBoundingBox minx="{{ layer.bbox_x0 }}" miny="{{layer.bbox_y0 }}" maxx="{{ layer.bbox_x1 }}" maxy="{{ layer.bbox_y1 }}"/>
+<BoundingBox SRS="{{ layer.srid }}" minx="{{ layer.bbox_x0 }}" miny="{{ layer.bbox_y0 }}" maxx="{{ layer.bbox_x1 }}" maxy="{{ layer.bbox_y1 }}"/>
+<Attribution>
+<Title>{{ layer.owner.username }}</Title>
+</Attribution>
+<MetadataURL type="FGDC">
+<Format>text/xml</Format>
+<OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" xlink:href="{{ catalogue_url }}?outputschema=http%3A%2F%2Fwww.opengis.net%2Fcat%2Fcsw%2Fcsdgm&amp;service=CSW&amp;request=GetRecordById&amp;version=2.0.2&amp;elementsetname=full&amp;id={{ layer.uuid }}"/>
+</MetadataURL>
+{% for style in layer.styles.all %}
+  <Style>
+  <Name>{{ style.name }}</Name>
+  <Title>{{ style.title }}</Title>
+  <LegendURL width="20" height="20">
+  <Format>image/png</Format>
+  <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" xlink:href="{{ geoserver_public_url }}wms?request=GetLegendGraphic&amp;format=image%2Fpng&amp;width=20&amp;height=20&amp;layer={{ layer.alternate }}&amp;style={{ style.name }}"/>
+  </LegendURL>
+  </Style>
+{% endfor %}
+</Layer>

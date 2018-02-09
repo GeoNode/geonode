@@ -1,0 +1,19 @@
+.. _layers.detail:
+
+Download a layer filtered by attributes
+=====================
+
+In GeoNode it is possible to download parts of a layer using a Query Builder. The Query Builder provides a step by step graphical environment, where the user is able to select attributes existing in the layer (e.g. population of an area) and set numerical or text filters.
+
+The filters can be chained together either by an AND or an OR operator. Moreover when building the Query statements, the user can retrieve all the available values for each attribute. This is particularly useful, when the user wants to filter data based on numbers, locations etc. which he/she is not familiarized.
+
+.. figure:: img/layer_filtering.png
+
+Access the Layer Filtering:
+
+* select 'Layers' from the main menu.
+* choose the desired layer by clicking on its title.
+* click the button 'Download Layer' (on the upper right part of the screen)
+* choose "Data" tab and select the button: 'Do you want to filter it?'
+* use the filtering functionality to build the CQL Query.
+* pick up one of the format you want to download the layer

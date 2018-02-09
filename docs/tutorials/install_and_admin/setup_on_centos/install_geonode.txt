@@ -13,28 +13,48 @@ Make sure all the needed libraries are installed::
     python-virtualenv python-devel gcc-c++ python-psycopg2 libxml2 \
     libxml2-devel libxml2-python libxslt libxslt-devel libxslt-python
 
-Create geonode user
-===================
+Upgrade Python PIP version
+==========================
+
+Upgrade ``pip`` utility::
+
+    sudo pip install --upgrade pip
+
+Create a geonode system user for the application
+================================================
+
+Create the group::
+
+    sudo groupadd --system geonode
 
 Create the user::
 
-    adduser -m geonode
+    sudo useradd --system --gid geonode --shell /bin/bash --home /home/geonode --create-home geonode
+
+Create project home somewhere::
+
+    sudo mkdir -p /opt/apps/geonode
+
+Give the required permissions to the new user ``geonode``::
+
+    sudo chown -R geonode:geonode /opt/apps/geonode/
 
 Install GeoNode
----------------
+===============
 
-Install GeoNode sources from official repository::
+As a user ``geonode`` install GeoNode sources from official repository::
 
-   git clone https://github.com/GeoNode/geonode.git
+    curl -LO "https://github.com/GeoNode/geonode/archive/2.6.3.zip"
+    unzip 2.6.3.zip && mv geonode-2.6.3 geonode
 
-Move the sources in `geonode` user home folder::
+Move the sources into project folder::
 
-    mv geonode /home/geonode
+    mv geonode /opt/apps/geonode/
 
 Navigate to sources folder and install required packages::
 
-   cd /home/geonode/geonode
-   pip install -e .
+    cd /opt/apps/geonode/geonode
+    sudo pip install -e .
 
 .. _geonode_install_settings:
 
@@ -42,7 +62,7 @@ Edit settings
 -------------
 
 GeoNode Configuration
-=====================
+^^^^^^^^^^^^^^^^^^^^^
 
 Now that all applications have been configured we are going to instruct GeoNode on
 how to connect to `PostgreSQL` and `GeoServer`. Also we are going to instruct GeoNode
@@ -50,11 +70,11 @@ on who is allowed to connect to it.
 
 First navigate to geonode configuration folder::
 
-    cd /home/geonode/geonode/geonode/
+    cd /opt/apps/geonode/geonode/geonode/
 
 Copy the `local_settings.py` sample file called `local_settings.py.sample`::
 
-    cp local_settings.py.sample local_settings.py
+    cp local_settings.py.geoserver.sample local_settings.py
 
 Then edit the configuration file::
 
@@ -64,11 +84,11 @@ Add the `ALLOWED_HOSTS` and `PROXY_ALLOWED_HOSTS` variables at the top with the
 following values:::
 
     ALLOWED_HOSTS = ['127.0.0.1', 'localhost', '::1']
-    PROXY_ALLOWED_HOSTS = ("127.0.0.1", 'localhost', '::1']
+    PROXY_ALLOWED_HOSTS = ("127.0.0.1", 'localhost', '::1', )
 
 Add the `POSTGIS_VERSION` variable matching your PostGIS version:::
 
-    POSTGIS_VERSION = (2, 1, 8)
+    POSTGIS_VERSION = (2, 3, 0)
 
 This will instruct GeoNode to listen on connections from your local machine.
 
@@ -93,14 +113,22 @@ and comment the one with empty `ENGINE` variable. Also set the `NAME` variable t
     }
 
 Then configure GeoServer location:
-Change the value of the `LOCATION` and `PUBLIC_LOCATION` variables as follows:::
+Change the value of the `LOCATION` and `PUBLIC_LOCATION` variables as below::
+
+    GEOSERVER_LOCATION = os.getenv(
+        'GEOSERVER_LOCATION', 'http://localhost/geoserver/'
+    )
+    GEOSERVER_PUBLIC_LOCATION = os.getenv(
+        'GEOSERVER_PUBLIC_LOCATION', 'http://localhost/geoserver/'
+    )
+
+Finally configure GeoServer datastore:
+Change the value of the `DATASTORE` variable to the dictionary identifier of database for spatial data as below::
 
     OGC_SERVER = {
-        'default' : {
+        'default': {
         ...
-        'LOCATION' : 'http://localhost/geoserver/',
-        'PUBLIC_LOCATION' : 'http://localhost/geoserver/',
-        ...
+        'DATASTORE': 'datastore',
     }
 
 The resulting configuration file should look like this:::
@@ -109,11 +137,12 @@ The resulting configuration file should look like this:::
 
     PROJECT_ROOT = os.path.abspath(os.path.dirname(__file__))
 
-    SITEURL = "http://localhost/"
-
     ALLOWED_HOSTS = ['127.0.0.1', 'localhost', '::1']
-    PROXY_ALLOWED_HOSTS = ("127.0.0.1", 'localhost', '::1')
-    POSTGIS_VERSION = (2, 1, 8)
+    PROXY_ALLOWED_HOSTS = ("127.0.0.1", 'localhost', '::1', )
+
+    POSTGIS_VERSION = (2, 3, 0)
+
+    SITEURL = "http://localhost/"
 
     DATABASES = {
         'default': {
@@ -134,12 +163,24 @@ The resulting configuration file should look like this:::
         }
     }
 
+    GEOSERVER_LOCATION = os.getenv(
+        'GEOSERVER_LOCATION', 'http://localhost/geoserver/'
+    )
+    GEOSERVER_PUBLIC_LOCATION = os.getenv(
+        'GEOSERVER_PUBLIC_LOCATION', 'http://localhost:8001/geoserver/'
+    )
+
     # OGC (WMS/WFS/WCS) Server Settings
     OGC_SERVER = {
-        'default' : {
-            'BACKEND' : 'geonode.geoserver',
-            'LOCATION' : 'http://localhost/geoserver/',
-            'PUBLIC_LOCATION' : 'http://localhost/geoserver/',
+        'default': {
+            'BACKEND': 'geonode.geoserver',
+            'LOCATION': GEOSERVER_LOCATION,
+            'LOGIN_ENDPOINT': 'j_spring_oauth2_geonode_login',
+            'LOGOUT_ENDPOINT': 'j_spring_oauth2_geonode_logout',
+            # PUBLIC_LOCATION needs to be kept like this because in dev mode
+            # the proxy won't work and the integration tests will fail
+            # the entire block has to be overridden in the local_settings
+            'PUBLIC_LOCATION': GEOSERVER_PUBLIC_LOCATION,
             'USER' : 'admin',
             'PASSWORD' : 'geoserver',
             'MAPFISH_PRINT_ENABLED' : True,
@@ -150,10 +191,22 @@ The resulting configuration file should look like this:::
             'BACKEND_WRITE_ENABLED': True,
             'WPS_ENABLED' : False,
             'LOG_FILE': '%s/geoserver/data/logs/geoserver.log' % os.path.abspath(os.path.join(PROJECT_ROOT, os.pardir)),
-            # Set to name of database in DATABASES dictionary to enable
-            'DATASTORE': '', #'datastore',
+            # Set to dictionary identifier of database containing spatial data in DATABASES dictionary to enable
+            'DATASTORE': 'datastore', #'datastore',
         }
     }
+
+    # If you want to enable Mosaics use the following configuration
+    #UPLOADER = {
+    ##    'BACKEND': 'geonode.rest',
+    #    'BACKEND': 'geonode.importer',
+    #    'OPTIONS': {
+    #        'TIME_ENABLED': True,
+    #        'MOSAIC_ENABLED': True,
+    #        'GEOGIG_ENABLED': False,
+    #    }
+    #}
+
 
     CATALOGUE = {
         'default': {
@@ -181,20 +234,64 @@ The resulting configuration file should look like this:::
     # Default preview library
     #LAYER_PREVIEW_LIBRARY = 'geoext'
 
+.. _geonode_install_initialization:
+
 Initialize GeoNode
 ------------------
 
-As user ``geonode``, initialize the db, by creating the schema tables and populating the static data:::
+As user ``geonode``, initialize the db, by creating the schema tables and populating the initial data:::
 
-    cd /home/geonode/geonode/geonode/
+    cd /opt/apps/geonode/geonode/
     python manage.py migrate
     python manage.py loaddata geonode/base/fixtures/initial_data.json
 
-Now create the admin user for GeoNode running the following:::
+Now create the admin user for GeoNode running the following::
 
    python manage.py createsuperuser
 
-You will be prompted for the username, email address and password for the user
+You will be prompted for the username, email address and password for the user.
+
+.. warning:: It is required to have at least one admin user called `admin`. If you want to break for security concerns this rule then you have to edit the default OAuth2 initial configuration :file:`geonode/base/fixtures/default_oauth_apps.json` accordingly.
+
+Finally create the default configuration for the OAuth2 application::
+
+    python manage.py loaddata geonode/base/fixtures/default_oauth_apps.json
+
+In case your GeoNode will be exposed on a different port (i.e. `8001` in case of vagrant port forwarding) from the default `80` please make sure to do not forget to run the following commands::
+
+Fix the site url from the `local_settings` file::
+
+    python manage.py fixsitename
+
+Setting up OAuth2 configuration::
+
+    # Set oauth keys
+    export GEOSERVER_DATA_DIR=/var/lib/tomcat/webapps/geoserver/data
+    export NEWIP=localhost:8001 # Case of proxied geonode for example
+    oauth_keys=$(python manage.py fixoauthuri 2>&1)
+    oauth_keys_cleaned=$(echo $oauth_keys | cut -d " " -f 15)
+    client_id=`echo $oauth_keys_cleaned | cut -d \, -f 1`
+    client_secret=`echo $oauth_keys_cleaned | cut -d \, -f 2`
+    oauth_config="$GEOSERVER_DATA_DIR/security/filter/geonode-oauth2/config.xml"
+    sudo sed -i "s|<cliendId>.*</cliendId>|<cliendId>$client_id</cliendId>|g" $oauth_config
+    sudo sed -i "s|<clientSecret>.*</clientSecret>|<clientSecret>$client_secret</clientSecret>|g" $oauth_config
+    sudo sed -i "s/localhost:8000/localhost/g" $oauth_config
+    sudo sed -i "s|<userAuthorizationUri>.*</userAuthorizationUri>|<userAuthorizationUri>http://$NEWIP/o/authorize/</userAuthorizationUri>|g" $oauth_config
+    sudo sed -i "s|<logoutUri>.*</logoutUri>|<logoutUri>http://$NEWIP/account/logout/</logoutUri>|g" $oauth_config
+    sudo sed -i "s|localhost:8080/geoserver|$NEWIP/geoserver/|g" $oauth_config
+    sudo sed -i "s|localhost:8000|localhost|g" "$GEOSERVER_DATA_DIR/security/role/geonode REST role service/config.xml"
+
+Restart Tomcat to load new configuration settings::
+
+    sudo systemctl restart tomcat@geoserver
+
+Run the command :command:`updatelayers`::
+
+    python manage.py updatelayers
+
+Run the command :command:`updatemaplayerip`::
+
+    python manage.py updatemaplayerip
 
 Download GeoNode data to be served by Apache. You will be prompted for confirmation::
 
@@ -202,12 +299,9 @@ Download GeoNode data to be served by Apache. You will be prompted for confirmat
 
 Create `uploaded` folder::
 
-    mkdir /home/geonode/geonode/geonode/uploaded/
+    mkdir -p /opt/apps/geonode/geonode/geonode/uploaded/
 
-Change permissions on GeoNode files and folders to allow Apache to read and edit them:::
+Isolate GeoNode installation
+----------------------------
 
-    chmod +x /home/geonode/
-    chown -R geonode /home/geonode/geonode/
-    chown apache:apache /home/geonode/geonode/geonode/static/
-    chown apache:apache /home/geonode/geonode/geonode/uploaded/
-    chown apache:apache /home/geonode/geonode/geonode/static_root/
+In case you prefer to isolate the GeoNode installation from the rest of your OS the most used strategy is to rely on a virtual environment. You can also install all the dependencies with a totally separated version of the python binary as explained in the section :ref:`install_venv_httpd`.

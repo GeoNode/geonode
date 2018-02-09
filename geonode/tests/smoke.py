@@ -20,8 +20,11 @@
 
 import os
 import math
-from django.test import TestCase
+from django.test import TestCase, override_settings
 from django.core.urlresolvers import reverse
+
+from geonode import geoserver
+from geonode.decorators import on_ogc_backend
 
 from geonode.utils import forward_mercator, inverse_mercator
 
@@ -66,6 +69,7 @@ class GeoNodeSmokeTests(TestCase):
         response = self.client.get(reverse('layer_browse'))
         self.failUnlessEqual(response.status_code, 200)
 
+    @on_ogc_backend(geoserver.BACKEND_PACKAGE)
     def test_layer_acls(self):
         'Test if the data/acls endpoint renders.'
         response = self.client.get(reverse('layer_acls'))
@@ -93,11 +97,14 @@ class GeoNodeSmokeTests(TestCase):
         response = self.client.get(reverse('profile_browse'))
         self.failUnlessEqual(response.status_code, 200)
 
+    @override_settings(USE_GEOSERVER=False)
     def test_profiles(self):
         '''Test that user profile pages render.'''
         response = self.client.get(reverse('profile_detail', args=['admin']))
         self.failUnlessEqual(response.status_code, 200)
         response = self.client.get(reverse('profile_detail', args=['norman']))
+        self.failUnlessEqual(response.status_code, 200)
+        response = self.client.get(reverse('profile_detail', args=['a.fancy.username.123']))
         self.failUnlessEqual(response.status_code, 200)
 
     def test_csw_endpoint(self):

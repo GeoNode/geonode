@@ -24,6 +24,8 @@ from unittest import TestCase
 from lxml import etree
 import gisdata
 from geonode.catalogue import get_catalogue
+from geonode.utils import check_ogc_backend
+from geonode import geoserver, qgis_server
 
 
 class GeoNodeCSWTest(TestCase):
@@ -120,14 +122,30 @@ class GeoNodeCSWTest(TestCase):
 
         # test for correct service link articulation
         for link in record.references:
-            if link['scheme'] == 'OGC:WMS':
-                self.assertEqual(link['url'],
-                                 'http://localhost:8080/geoserver/geonode/wms',
-                                 'Expected a specific OGC:WMS URL')
-            elif link['scheme'] == 'OGC:WFS':
-                self.assertEqual(link['url'],
-                                 'http://localhost:8080/geoserver/geonode/wfs',
-                                 'Expected a specific OGC:WFS URL')
+            if check_ogc_backend(geoserver.BACKEND_PACKAGE):
+                if link['scheme'] == 'OGC:WMS':
+                    self.assertEqual(
+                        link['url'],
+                        'http://localhost:8080/geoserver/geonode/wms',
+                        'Expected a specific OGC:WMS URL')
+                elif link['scheme'] == 'OGC:WFS':
+                    self.assertEqual(
+                        link['url'],
+                        'http://localhost:8080/geoserver/geonode/wfs',
+                        'Expected a specific OGC:WFS URL')
+            elif check_ogc_backend(qgis_server.BACKEND_PACKAGE):
+                if link['scheme'] == 'OGC:WMS':
+                    self.assertEqual(
+                        link['url'],
+                        'http://localhost:8000/qgis-server/ogc/'
+                        'san_andres_y_providencia_location',
+                        'Expected a specific OGC:WMS URL')
+                elif link['scheme'] == 'OGC:WFS':
+                    self.assertEqual(
+                        link['url'],
+                        'http://localhost:8000/qgis-server/ogc/'
+                        'san_andres_y_providencia_location',
+                        'Expected a specific OGC:WFS URL')
 
     def test_csw_outputschema_iso(self):
         """Verify that GeoNode CSW can handle ISO metadata with ISO outputSchema"""
@@ -156,33 +174,50 @@ class GeoNodeCSWTest(TestCase):
             'Expected a specific abstract in ISO model')
 
         # test BBOX properties in Dublin Core
+        from decimal import Decimal
         self.assertEqual(
-            record.identification.bbox.minx,
-            '-81.8593555',
+            Decimal(record.identification.bbox.minx),
+            Decimal('-81.8593555'),
             'Expected a specific minx coordinate value in ISO model')
         self.assertEqual(
-            record.identification.bbox.miny,
-            '12.1665322',
+            Decimal(record.identification.bbox.miny),
+            Decimal('12.1665322'),
             'Expected a specific minx coordinate value in ISO model')
         self.assertEqual(
-            record.identification.bbox.maxx,
-            '-81.356409',
+            Decimal(record.identification.bbox.maxx),
+            Decimal('-81.356409'),
             'Expected a specific maxx coordinate value in ISO model')
         self.assertEqual(
-            record.identification.bbox.maxy,
-            '13.396306',
+            Decimal(record.identification.bbox.maxy),
+            Decimal('13.396306'),
             'Expected a specific maxy coordinate value in ISO model')
 
         # test for correct link articulation
         for link in record.distribution.online:
-            if link.protocol == 'OGC:WMS':
-                self.assertEqual(link.url,
-                                 'http://localhost:8080/geoserver/geonode/wms',
-                                 'Expected a specific OGC:WMS URL')
-            elif link.protocol == 'OGC:WFS':
-                self.assertEqual(link.url,
-                                 'http://localhost:8080/geoserver/geonode/wfs',
-                                 'Expected a specific OGC:WFS URL')
+            if check_ogc_backend(geoserver.BACKEND_PACKAGE):
+                if link.protocol == 'OGC:WMS':
+                    self.assertEqual(
+                        link.url,
+                        'http://localhost:8080/geoserver/geonode/wms',
+                        'Expected a specific OGC:WMS URL')
+                elif link.protocol == 'OGC:WFS':
+                    self.assertEqual(
+                        link.url,
+                        'http://localhost:8080/geoserver/geonode/wfs',
+                        'Expected a specific OGC:WFS URL')
+            if check_ogc_backend(qgis_server.BACKEND_PACKAGE):
+                if link.protocol == 'OGC:WMS':
+                    self.assertEqual(
+                        link.url,
+                        'http://localhost:8000/qgis-server/ogc/'
+                        'san_andres_y_providencia_location',
+                        'Expected a specific OGC:WMS URL')
+                elif link.protocol == 'OGC:WFS':
+                    self.assertEqual(
+                        link.url,
+                        'http://localhost:8000/qgis-server/ogc/'
+                        'san_andres_y_providencia_location',
+                        'Expected a specific OGC:WFS URL')
 
     def test_csw_outputschema_dc_bbox(self):
         """Verify that GeoNode CSW can handle ISO metadata BBOX model with Dublin Core outputSchema"""
@@ -209,21 +244,22 @@ class GeoNodeCSWTest(TestCase):
                 4326,
                 'Expected a specific CRS code value in Dublin Core model')
             # test BBOX properties in Dublin Core
+            from decimal import Decimal
             self.assertEqual(
-                record.bbox.minx,
-                '-81.8593555',
+                Decimal(record.bbox.minx),
+                Decimal('-81.8593555'),
                 'Expected a specific minx coordinate value in Dublin Core model')
             self.assertEqual(
-                record.bbox.miny,
-                '12.1665322',
+                Decimal(record.bbox.miny),
+                Decimal('12.1665322'),
                 'Expected a specific minx coordinate value in Dublin Core model')
             self.assertEqual(
-                record.bbox.maxx,
-                '-81.356409',
+                Decimal(record.bbox.maxx),
+                Decimal('-81.356409'),
                 'Expected a specific maxx coordinate value in Dublin Core model')
             self.assertEqual(
-                record.bbox.maxy,
-                '13.396306',
+                Decimal(record.bbox.maxy),
+                Decimal('13.396306'),
                 'Expected a specific maxy coordinate value in Dublin Core model')
 
     def test_csw_outputschema_fgdc(self):
@@ -320,21 +356,22 @@ class GeoNodeCSWTest(TestCase):
                 'Expected a specific CRS code value in Dublin Core model')
 
             # test BBOX properties in Dublin Core
+            from decimal import Decimal
             self.assertEqual(
-                record.bbox.minx,
-                '-117.6',
+                Decimal(record.bbox.minx),
+                Decimal('-117.6'),
                 'Expected a specific minx coordinate value in Dublin Core model')
             self.assertEqual(
-                record.bbox.miny,
-                '32.53',
+                Decimal(record.bbox.miny),
+                Decimal('32.53'),
                 'Expected a specific minx coordinate value in Dublin Core model')
             self.assertEqual(
-                record.bbox.maxx,
-                '-116.08',
+                Decimal(record.bbox.maxx),
+                Decimal('-116.08'),
                 'Expected a specific maxx coordinate value in Dublin Core model')
             self.assertEqual(
-                record.bbox.maxy,
-                '33.51',
+                Decimal(record.bbox.maxy),
+                Decimal('33.51'),
                 'Expected a specific maxy coordinate value in Dublin Core model')
 
             # query against FGDC typename, return in ISO

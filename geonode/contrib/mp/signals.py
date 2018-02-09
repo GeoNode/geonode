@@ -23,9 +23,11 @@ def tileset_post_save(instance, sender, **kwargs):
             uuid=layer_uuid)
 
     if settings.USE_DISK_CACHE:
-        tile_url = '%s%s/%s/{z}/{x}/{y}.png' % (settings.SITEURL, TILESET_CACHE_URL, instance.id)
+        tile_url = '%s%s/%s/{z}/{x}/{y}.png' % (
+            settings.SITEURL, TILESET_CACHE_URL, instance.id)
     else:
-        tile_url = "%sdjmp/%d/map/tiles/%s/EPSG3857/{z}/{x}/{y}.png" % (settings.SITEURL, instance.id, instance.name)
+        tile_url = "%sdjmp/%d/map/tiles/%s/EPSG3857/{z}/{x}/{y}.png" % (
+            settings.SITEURL, instance.id, instance.name)
 
     l, __ = Link.objects.get_or_create(
         resource=layer.resourcebase_ptr,
@@ -43,7 +45,7 @@ def layer_post_save(instance, sender, **kwargs):
         tileset = Tileset.objects.create(
             name=instance.title,
             created_by=instance.owner.username,
-            layer_name=instance.typename,
+            layer_name=instance.alternate,
             bbox_x0=instance.bbox_x0,
             bbox_x1=instance.bbox_x1,
             bbox_y0=instance.bbox_y0,
@@ -57,7 +59,7 @@ def layer_post_save(instance, sender, **kwargs):
             layer_zoom_stop=settings.CACHE_ZOOM_STOP,
             layer_zoom_start=settings.CACHE_ZOOM_START,
             layer_uuid=instance.uuid
-            )
+        )
 
         if settings.CACHE_ON_LAYER_LOAD:
             tileset.seed()

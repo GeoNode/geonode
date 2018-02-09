@@ -1,0 +1,1 @@
+{% load i18n %}{% trans "User" %} "{{from_user}}" ({{from_user.email}}) {% trans "has requested access to the site." %} {% trans "You can enable access by setting the user as active on the admin section" %}: http://{{current_site}}/admin/people/profile/{{from_user.id}}

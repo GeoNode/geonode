@@ -17,3 +17,22 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
+
+
+from django.utils.translation import ugettext_noop as _
+from geonode.notifications_helper import NotificationsAppConfigBase
+
+
+class MapsAppConfig(NotificationsAppConfigBase):
+    name = 'geonode.maps'
+    NOTIFICATIONS = (("map_created", _("Map Created"), _("A Map was created"),),
+                     ("map_updated", _("Map Updated"), _("A Map was updated"),),
+                     ("map_approved", _("Map Approved"), _("A Map was approved by a Manager"),),
+                     ("map_published", _("Map Published"), _("A Map was published"),),
+                     ("map_deleted", _("Map Deleted"), _("A Map was deleted"),),
+                     ("map_comment", _("Comment on Map"), _("A map was commented on"),),
+                     ("map_rated", _("Rating for Map"), _("A rating was given to a map"),),
+                     )
+
+
+default_app_config = 'geonode.maps.MapsAppConfig'

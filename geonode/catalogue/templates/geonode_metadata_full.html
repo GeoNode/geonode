@@ -1,9 +1,9 @@
 {% load i18n %}
-<html> 
+<html>
 	<head>
     <meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1"> 
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>{{ resource.title }}</title>
     {% block head %}
       {% if DEBUG_STATIC %}
@@ -16,13 +16,14 @@
       <link href="{{ STATIC_URL }}lib/css/assets.min.css" rel="stylesheet"/>
       {% endif %}
       <link href="{{ STATIC_URL }}geonode/css/ext-compatibility.css" rel="stylesheet" />
+      <link href="{{ STATIC_URL }}geonode/css/ux-all.css" rel="stylesheet" />
       <link href="{{ STATIC_URL }}geonode/css/base.css" rel="stylesheet" />
       <style type="text/css">[ng\:cloak],[ng-cloak],[data-ng-cloak],[x-ng-cloak],.ng-cloak,.x-ng-cloak,.ng-hide:not(.ng-hide-animate){display:none !important;}</style>
 	<style>
 	dl dd{ margin-left:20px; }
 	dl dt {margin-top:10px;}
 	ul.nop {list-style-type: none;}
-	</style>	
+	</style>
 
     {% endblock %}
 	</head>
@@ -53,7 +54,7 @@
 
 						<dt>{% trans "Title" %}</dt>
 							<dd>{{resource.title}}</dd>
-							
+
 						<dt>{% trans "Date" %}</dt>
 							<dd>{{resource.date}}, {% trans resource.date_type|title %} </dd>
 
@@ -66,15 +67,15 @@
 							{% else %}
 								<dd> -- </dd>
 							{% endif %}
-							
-				  
+
+
 						<dt>{% trans "Owner" %}</dt>
 							<dd>{{resource.owner}}</dd>
-								
+
 						<dt>{% trans "Point of Contact" %}</dt>
 							<dd>{{extra_res_md.poc_last_name}}</dd>
-							<dd><a href="mailto:{{extra_res_md.poc_email}}"><i class="fa fa-envelope"></i>{{extra_res_md.poc_email}}</a></dd>							
-							
+							<dd><a href="mailto:{{extra_res_md.poc_email}}"><i class="fa fa-envelope"></i>{{extra_res_md.poc_email}}</a></dd>
+
 
 						<dt>{% trans "Purpose" %}</dt>
 								{% if resource.purpose %}
@@ -82,7 +83,7 @@
 								{% else %}
 									<dd> -- </dd>
 								{% endif %}
-							
+
 
 						<dt>{% trans "Maintenance Frequency" %}</dt>
 							<dd>{{resource.maintenance_frequency}}</dd>
@@ -127,7 +128,7 @@
 
 						<dt>Extent</dt>
 							<dd>
-								<ul class="nop">	
+								<ul class="nop">
 									<li>long min: {{resource.bbox_x0}}</li>
 									<li>long max: {{resource.bbox_x1}}</li>
 									<li>lat min: {{resource.bbox_y0}}</li>
@@ -143,7 +144,7 @@
 
 						<dt>{% trans "Category" %}</dt>
 							<dd>{{resource.category}}</dd>
-							
+
 						{% if resource.regions.all %}
 						<dt>{% trans "Regions" %}</dt>
 							<dd>
@@ -152,21 +153,21 @@
 								{% if not forloop.last %},{% endif %}
 									  {% endfor %}
 							</dd>
-									{% endif %}						
-						
+									{% endif %}
+
 						{% if "layer" in  request.META.HTTP_REFERER|stringformat:"s" %}
 						<dt>Attributes</dt>
 							<dd>
 								<table id="attr_table" class="table table-striped table-bordered table-condensed" style="margin-top:10px;font-size:14px;">
 								</table>
-							</dd>				
+							</dd>
 							<script  type="text/javascript">
 								var content="{{extra_res_md.atrributes}}";
 								content = content.replace(/\&lt;/gi,"<").replace(/\&gt;/gi,">");
 								var headertab="<thead><tr><th style='width:25%'>Attribute name</th><th>Label</th><th>Description</th></tr></thead>";
 								document.getElementById("attr_table").innerHTML=headertab+content;
-							</script>	
-							
+							</script>
+
 						{% endif %}
 
 				  </div>

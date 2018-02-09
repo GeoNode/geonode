@@ -24,8 +24,9 @@ from django.conf import settings
 from django.core.management import call_command
 from django.template.response import TemplateResponse
 
-import autocomplete_light
 import StringIO
+from autocomplete_light.forms import ModelForm
+from autocomplete_light.forms import modelform_factory
 from autocomplete_light.contrib.taggit_field import TaggitField, TaggitWidget
 
 from treebeard.admin import TreeAdmin
@@ -33,8 +34,27 @@ from treebeard.forms import movenodeform_factory
 
 from modeltranslation.admin import TranslationAdmin
 
-from geonode.base.models import (TopicCategory, SpatialRepresentationType, Region, RestrictionCodeType,
-                                 ContactRole, Link, Backup, License, HierarchicalKeyword)
+from geonode.base.models import (
+    TopicCategory,
+    SpatialRepresentationType,
+    Region,
+    RestrictionCodeType,
+    ContactRole,
+    Link,
+    Backup,
+    License,
+    HierarchicalKeyword)
+from django.http import HttpResponseRedirect
+
+
+def metadata_batch_edit(modeladmin, request, queryset):
+    ids = ','.join([str(element.pk) for element in queryset])
+    resource = queryset[0].class_name.lower()
+    return HttpResponseRedirect(
+        '/{}s/metadata/batch/{}/'.format(resource, ids))
+
+
+metadata_batch_edit.short_description = 'Metadata batch edit'
 
 
 class MediaTranslationAdmin(TranslationAdmin):
@@ -47,7 +67,7 @@ class MediaTranslationAdmin(TranslationAdmin):
         }
 
 
-class BackupAdminForm(autocomplete_light.ModelForm):
+class BackupAdminForm(ModelForm):
 
     class Meta:
         model = Backup
@@ -65,13 +85,18 @@ def run(self, request, queryset):
             for siteObj in queryset:
                 self.message_user(request, "Executed Backup: " + siteObj.name)
                 out = StringIO.StringIO()
-                call_command('backup', force_exec=True, backup_dir=siteObj.base_folder, stdout=out)
+                call_command(
+                    'backup',
+                    force_exec=True,
+                    backup_dir=siteObj.base_folder,
+                    stdout=out)
                 value = out.getvalue()
                 if value:
                     siteObj.location = value
                     siteObj.save()
                 else:
-                    self.message_user(request, siteObj.name + " backup failed!")
+                    self.message_user(
+                        request, siteObj.name + " backup failed!")
         else:
             context = {
                 "objects_name": "Backups",
@@ -80,8 +105,11 @@ def run(self, request, queryset):
                 'cancellable_backups': [siteObj],
                 'action_checkbox_name': helpers.ACTION_CHECKBOX_NAME,
             }
-            return TemplateResponse(request, 'admin/backups/confirm_cancel.html', context,
-                                    current_app=self.admin_site.name)
+            return TemplateResponse(
+                request,
+                'admin/backups/confirm_cancel.html',
+                context,
+                current_app=self.admin_site.name)
 
 
 def restore(self, request, queryset):
@@ -96,9 +124,12 @@ def restore(self, request, queryset):
                 self.message_user(request, "Executed Restore: " + siteObj.name)
                 out = StringIO.StringIO()
                 if siteObj.location:
-                    call_command('restore', force_exec=True, backup_file=str(siteObj.location).strip(), stdout=out)
+                    call_command(
+                        'restore', force_exec=True, backup_file=str(
+                            siteObj.location).strip(), stdout=out)
                 else:
-                    self.message_user(request, siteObj.name + " backup not ready!")
+                    self.message_user(
+                        request, siteObj.name + " backup not ready!")
         else:
             context = {
                 "objects_name": "Restores",
@@ -107,8 +138,11 @@ def restore(self, request, queryset):
                 'cancellable_backups': [siteObj],
                 'action_checkbox_name': helpers.ACTION_CHECKBOX_NAME,
             }
-            return TemplateResponse(request, 'admin/backups/confirm_cancel.html', context,
-                                    current_app=self.admin_site.name)
+            return TemplateResponse(
+                request,
+                'admin/backups/confirm_cancel.html',
+                context,
+                current_app=self.admin_site.name)
 
 
 run.short_description = "Run the Backup"
@@ -133,7 +167,12 @@ class LicenseAdmin(MediaTranslationAdmin):
 class TopicCategoryAdmin(MediaTranslationAdmin):
     model = TopicCategory
     list_display_links = ('identifier',)
-    list_display = ('identifier', 'description', 'gn_description', 'fa_class', 'is_choice')
+    list_display = (
+        'identifier',
+        'description',
+        'gn_description',
+        'fa_class',
+        'is_choice')
     if settings.MODIFY_TOPICCATEGORY is False:
         exclude = ('identifier', 'description',)
 
@@ -193,7 +232,7 @@ class ContactRoleAdmin(admin.ModelAdmin):
     list_display_links = ('id',)
     list_display = ('id', 'contact', 'resource', 'role')
     list_editable = ('contact', 'resource', 'role')
-    form = autocomplete_light.modelform_factory(ContactRole, fields='__all__')
+    form = modelform_factory(ContactRole, fields='__all__')
 
 
 class LinkAdmin(admin.ModelAdmin):
@@ -202,7 +241,7 @@ class LinkAdmin(admin.ModelAdmin):
     list_display = ('id', 'resource', 'extension', 'link_type', 'name', 'mime')
     list_filter = ('resource', 'extension', 'link_type', 'mime')
     search_fields = ('name', 'resource__title',)
-    form = autocomplete_light.modelform_factory(Link, fields='__all__')
+    form = modelform_factory(Link, fields='__all__')
 
 
 class HierarchicalKeywordAdmin(TreeAdmin):
@@ -220,11 +259,12 @@ admin.site.register(License, LicenseAdmin)
 admin.site.register(HierarchicalKeyword, HierarchicalKeywordAdmin)
 
 
-class ResourceBaseAdminForm(autocomplete_light.ModelForm):
+class ResourceBaseAdminForm(ModelForm):
     # We need to specify autocomplete='TagAutocomplete' or admin views like
     # /admin/maps/map/2/ raise exceptions during form rendering.
     # But if we specify it up front, TaggitField.__init__ throws an exception
     # which prevents app startup. Therefore, we defer setting the widget until
     # after that's done.
     keywords = TaggitField(required=False)
-    keywords.widget = TaggitWidget(autocomplete='HierarchicalKeywordAutocomplete')
+    keywords.widget = TaggitWidget(
+        autocomplete='HierarchicalKeywordAutocomplete')

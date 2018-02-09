@@ -20,7 +20,7 @@
 
 import json
 
-from tastypie.test import ResourceTestCase
+from tastypie.test import ResourceTestCaseMixin
 from django.test.utils import override_settings
 from django.contrib.sites.models import Site
 from django.core.urlresolvers import reverse
@@ -39,7 +39,7 @@ from .models import SiteResources, SitePeople
 
 @override_settings(SITE_NAME='Slave')
 @override_settings(SITE_ID=2)
-class SiteTests(ResourceTestCase):
+class SiteTests(ResourceTestCaseMixin):
 
     """Tests the sites functionality
     """
@@ -75,7 +75,7 @@ class SiteTests(ResourceTestCase):
         self.slave2_data = {'name': 'Slave2',
                             'domain': 'slave2.test.org'}
         # all layers belong to slave but let's remove one resource from it (CA)
-        SiteResources.objects.get(site=self.slave_site).resources.remove(Layer.objects.get(typename='geonode:CA'))
+        SiteResources.objects.get(site=self.slave_site).resources.remove(Layer.objects.get(alternate='geonode:CA'))
 
     def test_create_new_site(self):
         """
@@ -129,7 +129,7 @@ class SiteTests(ResourceTestCase):
         """
         # test that the CA layer detail page, that does not belong to the SlaveSite, is not found
         self.client.login(username=self.user, password=self.passwd)
-        response = self.client.get(reverse('layer_detail', args=[Layer.objects.all()[0].typename]))
+        response = self.client.get(reverse('layer_detail', args=[Layer.objects.all()[0].alternate]))
         self.assertEqual(response.status_code, 404)
 
     @override_settings(SITE_ID=1)
@@ -139,7 +139,7 @@ class SiteTests(ResourceTestCase):
         """
         # test that the CA layer detail page, that does not belong to the SlaveSite, is not found
         self.client.login(username=self.user, password=self.passwd)
-        response = self.client.get(reverse('layer_detail', args=[Layer.objects.all()[0].typename]))
+        response = self.client.get(reverse('layer_detail', args=[Layer.objects.all()[0].alternate]))
         self.assertEqual(response.status_code, 200)
 
     def test_master_site_all_layers(self):

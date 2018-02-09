@@ -5,6 +5,12 @@
 
 /* Basics
 ----------------------- */
+div#user_messages {
+    position: absolute;
+    width: 500px;
+    margin-top: 80px;
+    right: 300px;
+}
 
 body {
   background: @gray-dark;
@@ -85,7 +91,7 @@ article.tab-pane {
 		}
     }
 }
-.navbar-inverse .navbar-nav > .open > a, 
+.navbar-inverse .navbar-nav > .open > a,
 .navbar-inverse .navbar-nav > .open > a:hover,
 .navbar-inverse .navbar-nav > .open > a:focus {
 	background-color: @brand-primary;
@@ -113,7 +119,7 @@ article.tab-pane {
 		color: #444;
 		top: 20px;
 		margin-right: 25px;
-		.fa-search { 
+		.fa-search {
 			position: absolute;
 			top: 8px;
 			left: 10px;
@@ -131,7 +137,7 @@ article.tab-pane {
 		&:focus {
 			width: 240px;
 		}
-	}		
+	}
 	.avatar img {
 		border-radius: 50%;
 		margin-bottom: -15px;
@@ -222,7 +228,7 @@ article.tab-pane {
 		}
 
 		.search input { text-indent: 64px;}
-		.search .fa-search { 
+		.search .fa-search {
 		  position: absolute;
 		  top: 10px;
 		  left: 15px;
@@ -240,10 +246,10 @@ article.tab-pane {
 	    /*background: @brand-primary;
 		color: white;*/
 		padding: 1em 0;
-		p {font-size: 14px;}
+		p {font-size: 12px;}
 		h4 {
 			text-transform: uppercase;
-			font-size: 14px;}
+			font-size: 12px;}
 		a {
 			color: @gray-dark;
 			&:hover {
@@ -277,7 +283,7 @@ article.tab-pane {
 		p {font-size: 18px;}
 	}
 }
-/* autocomplete 
+/* autocomplete
 ------------------------*/
 
 .yourlabs-autocomplete {
@@ -491,7 +497,7 @@ article.tab-pane {
   width: 320px;
 }
 .controls > select, .controls > textarea, .controls > input, .controls > div {
- width: 320px; 
+ width: 320px;
 }
 /* Maps
 ----------------------- */
@@ -553,7 +559,7 @@ article.tab-pane {
     margin: 0.5em 0;
   }
 }
-  li a { 
+  li a {
     color: @gray;
     margin-right: 0.5em;
     &:hover {
@@ -839,8 +845,13 @@ footer {
 }
 
 .select2-container-multi .select2-choices .select2-search-field input {
-  height: auto;
+  height: auto !important;
 }
+
+.tokenfield {
+  height: auto !important;
+}
+
 .datepicker {
   border-radius: 0px;
   -webkit-border-radius: 0px;
@@ -1063,7 +1074,7 @@ footer {
         padding-bottom: 10px;
     }
     /* since 3.1.0 */
-    .navbar-collapse.collapse.in { 
+    .navbar-collapse.collapse.in {
         display: block!important;
     }
     .collapsing {
@@ -1093,4 +1104,99 @@ footer {
 
 .table-user-profile-attribute  {
   font-weight: bold;
+}
+
+/* Download Layer Filtering Modal
+----------------------- */
+.gear {
+	-webkit-animation: rotation 6s infinite linear;
+	-moz-animation: rotation 6s infinite linear;
+	-o-animation: rotation 6s infinite linear;
+	animation: rotation 6s infinite linear;
+}
+@-webkit-keyframes "rotation" {
+	from {
+		-webkit-transform: rotate(0deg);
+	}
+	to {
+		-webkit-transform: rotate(359deg);
+	}
+}
+@-moz-keyframes "rotation" {
+	from {
+		-moz-transform: rotate(0deg);
+	}
+	to {
+		-moz-transform: rotate(359deg);
+	}
+}
+@-o-keyframes "rotation" {
+	from {
+		-o-transform: rotate(0deg);
+	}
+	to {
+		-o-transform: rotate(359deg);
+	}
+}
+@keyframes "rotation" {
+	from {
+		transform: rotate(0deg);
+	}
+	to {
+		transform: rotate(359deg);
+	}
+}
+form-inline {
+	display: inline-table;
+	vertical-align: middle;
+	width: auto;
+}
+.btn {
+  display: inline-block;
+  margin-bottom: 0;
+  font-weight: normal;
+  text-align: center;
+  vertical-align: inherit;
+  touch-action: manipulation;
+  cursor: pointer;
+  background-image: none;
+  white-space: nowrap;
+  padding: 4px 8px;
+  line-height: 1.42857143;
+  border-radius: 4px;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+.text_area {
+	visibility: hidden;
+}
+.dropdown-menu-attribute {
+	height: auto;
+	max-height: 200px;
+	overflow-x: hidden;
+}
+.dropdown-menu-operator {
+	height: auto;
+	max-height: 200px;
+	overflow-x: hidden;
+}
+.dropdown-menu-and-or {
+	height: auto;
+	max-height: 200px;
+	overflow-x: hidden;
+}
+#wrong-data-type {
+	color: @red-dark;
+	font-style: italic;
+}
+#hr_filter_layer {
+	width: 100%;
+	color: @gray46;
+	height: 1px;
+}
+#missing-values {
+	color: @red-dark;
+	font-style: italic;
 }

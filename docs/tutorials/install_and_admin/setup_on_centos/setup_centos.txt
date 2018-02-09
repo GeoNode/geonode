@@ -9,7 +9,7 @@ CentOS Setup
 
 We are re going to install a minimal CentOS 7 distribution.
 You can get a copy of the .iso the image used for the installation
-`here <http://isoredirect.centos.org/centos/7/isos/x86_64/CentOS-7-x86_64-Minimal-1511.iso>`_.
+`here <http://isoredirect.centos.org/centos/7/isos/x86_64/CentOS-7-x86_64-Minimal-1611.iso>`_.
 
 Boot up the installation DVD and start the `CentOS 7` Installation wizard.
 
@@ -132,7 +132,7 @@ the password::
 You can now disable password based login over SSH
 
 .. warning::
-    Before disabling password authentication make sure you' ve installed your
+    Before disabling password authentication make sure you've installed your
     public key on the server and you are able to login without password
 
 Edit ``/etc/ssh/sshd_config`` as follows::
@@ -153,7 +153,7 @@ Installing ntp
 
 Install the program for NTP server synchronization::
 
-   yum install ntp
+   sudo yum install ntp
 
 Edit ``/etc/ntp.conf`` and add the following line before the first ``server`` directive::
 
@@ -172,6 +172,16 @@ Set the time synchronization as an automatically started daemon::
 Installing base packages
 ========================
 
-Install::
+Install common utility packages::
 
     sudo yum install -y man vim openssh-clients zip unzip wget
+
+Update the system with EPEL latest release::
+
+    sudo yum install -y epel-release
+    sudo yum update -y && sudo reboot
+
+Install pip and necessary dependencies::
+
+    sudo yum install -y python-devel python-setuptools python-pip python-virtualenv
+    sudo pip install --upgrade pip

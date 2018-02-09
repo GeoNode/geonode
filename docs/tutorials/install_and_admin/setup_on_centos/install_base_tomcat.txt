@@ -7,28 +7,25 @@ Tomcat Installation
 Installing Java
 ===============
 
-We'll need a JDK to run GeoServer.
+We'll need a JDK to run GeoServer. In particular the latest GeoServer from GeoNode needs the JDK version 1.8
 
-You may already have the OpenJDK package (``java-1.7.0-openjdk-devel.x86_64``) installed.
-Check and see if Java is already installed::
+You may already have the OpenJDK package (``java-1.8.0-openjdk.x86_64``) installed.
+Check and see if Java 8 is already installed::
 
-   # java -version
-   java version "1.7.0_51"
-   OpenJDK Runtime Environment (rhel-2.4.4.1.el6_5-x86_64 u51-b02)
-   OpenJDK 64-Bit Server VM (build 24.45-b08, mixed mode)
+  java -version
+  openjdk version "1.8.0_131"
+  OpenJDK Runtime Environment (build 1.8.0_131-b12)
+  OpenJDK 64-Bit Server VM (build 25.131-b12, mixed mode)
 
-   # javac -version
-   javac 1.7.0_51
+Otherwise install it by running::
 
-Otherwise install it running:::
-
-   yum install java-1.7.0-openjdk-devel
+  sudo yum install java-1.8.0-openjdk.x86_64
 
 Once done, the command ``java -version`` should return info about the installed version.
 
 If java version does not match the  one just installed, run the following command::
 
-    alternatives --set java /usr/lib/jvm/java-1.8.0-openjdk-1.8.0.60=2.b27.el7_1.x86_64/jre/bin/java
+    alternatives --set java /usr/lib/jvm/jre-1.8.0-openjdk/bin/java
 
 Oracle JDK
 ----------
@@ -41,47 +38,44 @@ You can download the Oracle JDK RPM from this page:
 
   http://www.oracle.com/technetwork/java/javase/downloads/index.html
 
-Oracle does not expose a URL to automatically download the JDK because interactive license acceptance is requested.
-You may start downloading the JDK RPM from a browser, and then either:
+Programmatically you can then run::
 
-* stop the download from the browser and use on the server the dynamic download URL your browser has been assigned, or
-* finish the download and transfer the JDK RPM to the server using ``scp``.
+  curl -LO -H "Cookie: oraclelicense=accept-securebackup-cookie;" "http://download.oracle.com/otn-pub/java/jdk/8u131-b11/d54c1d3a095b4ff2b6607d096fa80163/jdk-8u131-linux-x64.rpm"
 
 Once you have the ``.rpm`` file, you can install it by::
 
-  rpm -ivh jdk-7u51-linux-x64.rpm
-
+  sudo rpm -ivh jdk-8u131-linux-x64.rpm
 
 Once installed, you still see that the default ``java`` and ``javac`` commands
 are still the ones from OpenJDK.
-In order to switch JDK version you have to set the proper system `alternatives`.
+In order to switch JDK version you have to set the proper system ``alternatives``.
 
 Issue the command::
 
-   alternatives --install /usr/bin/java java /usr/java/latest/bin/java 200000 \
-   --slave /usr/lib/jvm/jre jre /usr/java/latest/jre \
-   --slave /usr/lib/jvm-exports/jre jre_exports /usr/java/latest/jre/lib \
-   --slave /usr/bin/keytool keytool /usr/java/latest/jre/bin/keytool \
-   --slave /usr/bin/orbd orbd /usr/java/latest/jre/bin/orbd \
-   --slave /usr/bin/pack200 pack200 /usr/java/latest/jre/bin/pack200 \
-   --slave /usr/bin/rmid rmid /usr/java/latest/jre/bin/rmid \
-   --slave /usr/bin/rmiregistry rmiregistry /usr/java/latest/jre/bin/rmiregistry \
-   --slave /usr/bin/servertool servertool /usr/java/latest/jre/bin/servertool \
-   --slave /usr/bin/tnameserv tnameserv /usr/java/latest/jre/bin/tnameserv \
-   --slave /usr/bin/unpack200 unpack200 /usr/java/latest/jre/bin/unpack200 \
-   --slave /usr/share/man/man1/java.1 java.1 /usr/java/latest/man/man1/java.1 \
-   --slave /usr/share/man/man1/keytool.1 keytool.1 /usr/java/latest/man/man1/keytool.1 \
-   --slave /usr/share/man/man1/orbd.1 orbd.1 /usr/java/latest/man/man1/orbd.1 \
-   --slave /usr/share/man/man1/pack200.1 pack200.1 /usr/java/latest/man/man1/pack200.1 \
-   --slave /usr/share/man/man1/rmid.1.gz rmid.1 /usr/java/latest/man/man1/rmid.1 \
-   --slave /usr/share/man/man1/rmiregistry.1 rmiregistry.1 /usr/java/latest/man/man1/rmiregistry.1 \
-   --slave /usr/share/man/man1/servertool.1 servertool.1 /usr/java/latest/man/man1/servertool.1 \
-   --slave /usr/share/man/man1/tnameserv.1 tnameserv.1 /usr/java/latest/man/man1/tnameserv.1 \
-   --slave /usr/share/man/man1/unpack200.1 unpack200.1 /usr/java/latest/man/man1/unpack200.1
+  alternatives --install /usr/bin/java java /usr/java/latest/bin/java 200000 \
+  --slave /usr/lib/jvm/jre jre /usr/java/latest/jre \
+  --slave /usr/lib/jvm-exports/jre jre_exports /usr/java/latest/jre/lib \
+  --slave /usr/bin/keytool keytool /usr/java/latest/jre/bin/keytool \
+  --slave /usr/bin/orbd orbd /usr/java/latest/jre/bin/orbd \
+  --slave /usr/bin/pack200 pack200 /usr/java/latest/jre/bin/pack200 \
+  --slave /usr/bin/rmid rmid /usr/java/latest/jre/bin/rmid \
+  --slave /usr/bin/rmiregistry rmiregistry /usr/java/latest/jre/bin/rmiregistry \
+  --slave /usr/bin/servertool servertool /usr/java/latest/jre/bin/servertool \
+  --slave /usr/bin/tnameserv tnameserv /usr/java/latest/jre/bin/tnameserv \
+  --slave /usr/bin/unpack200 unpack200 /usr/java/latest/jre/bin/unpack200 \
+  --slave /usr/share/man/man1/java.1 java.1 /usr/java/latest/man/man1/java.1 \
+  --slave /usr/share/man/man1/keytool.1 keytool.1 /usr/java/latest/man/man1/keytool.1 \
+  --slave /usr/share/man/man1/orbd.1 orbd.1 /usr/java/latest/man/man1/orbd.1 \
+  --slave /usr/share/man/man1/pack200.1 pack200.1 /usr/java/latest/man/man1/pack200.1 \
+  --slave /usr/share/man/man1/rmid.1.gz rmid.1 /usr/java/latest/man/man1/rmid.1 \
+  --slave /usr/share/man/man1/rmiregistry.1 rmiregistry.1 /usr/java/latest/man/man1/rmiregistry.1 \
+  --slave /usr/share/man/man1/servertool.1 servertool.1 /usr/java/latest/man/man1/servertool.1 \
+  --slave /usr/share/man/man1/tnameserv.1 tnameserv.1 /usr/java/latest/man/man1/tnameserv.1 \
+  --slave /usr/share/man/man1/unpack200.1 unpack200.1 /usr/java/latest/man/man1/unpack200.1
 
-Then run ::
+Then run::
 
-   alternatives --config java
+  alternatives --config java
 
 and select the number related to ``/usr/java/latest/bin/java``.
 
@@ -89,12 +83,9 @@ Now the default java version should be the Oracle one.
 Verify the proper installation on the JDK::
 
   # java -version
-  java version "1.7.0_51"
-  Java(TM) SE Runtime Environment (build 1.7.0_51-b13)
-  Java HotSpot(TM) 64-Bit Server VM (build 24.51-b03, mixed mode)
-  # javac -version
-  javac 1.7.0_51
-
+  java version "1.8.0_131"
+  Java(TM) SE Runtime Environment (build 1.8.0_131-b11)
+  Java HotSpot(TM) 64-Bit Server VM (build 25.131-b11, mixed mode)
 
 Installing Tomcat
 =================
@@ -106,80 +97,82 @@ Tomcat
 
 Let's install `Tomcat` first::
 
-    sudo yum install -y tomcat
+  sudo yum install -y tomcat
 
 Then prepare a clean instance called ``base`` to be used as a template
 for all tomcat instances::
 
-    sudo mkdir /var/lib/tomcats/base
-    sudo cp -a /usr/share/tomcat/* /var/lib/tomcats/base/
+  sudo mkdir /var/lib/tomcats/base
+  sudo cp -a /usr/share/tomcat/* /var/lib/tomcats/base/
 
 Then create GeoServer's instance directory structure::
 
-    sudo mkdir /var/lib/tomcats/geoserver
-    sudo cp -a /usr/share/tomcat/* /var/lib/tomcats/geoserver/
+  sudo mkdir /var/lib/tomcats/geoserver
+  sudo cp -a /usr/share/tomcat/* /var/lib/tomcats/geoserver/
 
 Instance manager script
 -----------------------
 
 Copy the existing management script::
 
-    sudo cp /usr/lib/systemd/system/tomcat.service \
-    /usr/lib/systemd/system/tomcat\@geoserver.service
+  sudo cp /usr/lib/systemd/system/tomcat.service \
+  /usr/lib/systemd/system/tomcat\@geoserver.service
 
-Edit the `EnvironmentFile` variable in service management file as follows::
+Edit the ``EnvironmentFile`` variable in service management file as follows::
 
-    sudo vim /usr/lib/systemd/system/tomcat\@geoserver.service
+  sudo vim /usr/lib/systemd/system/tomcat\@geoserver.service
 
-    # Systemd unit file for default tomcat
-    #
-    # To create clones of this service:
-    # DO NOTHING, use tomcat@.service instead.
+  # Systemd unit file for default tomcat
+  #
+  # To create clones of this service:
+  # DO NOTHING, use tomcat@.service instead.
 
-    [Unit]
-    Description=Apache Tomcat Web Application Container
-    After=syslog.target network.target
+  [Unit]
+  Description=Apache Tomcat Web Application Container
+  After=syslog.target network.target
 
-    [Service]
-    Type=simple
-    EnvironmentFile=/etc/tomcat/tomcat.conf
-    Environment="NAME="
-    EnvironmentFile=-/etc/sysconfig/tomcat@geoserver
-    ExecStart=/usr/libexec/tomcat/server start
-    ExecStop=/usr/libexec/tomcat/server stop
-    SuccessExitStatus=143
-    User=tomcat
-    Group=tomcat
+  [Service]
+  Type=simple
+  EnvironmentFile=/etc/tomcat/tomcat.conf
+  Environment="NAME="
+  EnvironmentFile=-/etc/sysconfig/tomcat@geoserver
+  ExecStart=/usr/libexec/tomcat/server start
+  ExecStop=/usr/libexec/tomcat/server stop
+  SuccessExitStatus=143
+  User=tomcat
+  Group=tomcat
 
 
-    [Install]
-    WantedBy=multi-user.target
+  [Install]
+  WantedBy=multi-user.target
 
 Create the associated configuration file from template::
 
-    sudo cp /etc/sysconfig/tomcat /etc/sysconfig/tomcat\@geoserver
+  sudo cp /etc/sysconfig/tomcat /etc/sysconfig/tomcat\@geoserver
 
-Edit the configuration file and customize the `CATALINA_HOME` and `CATALINA_BASE`
+Edit the configuration file and customize the ``CATALINA_HOME`` and ``CATALINA_BASE``
 variables::
 
-    ...
-    CATALINA_BASE="/var/lib/tomcats/geoserver"
-    CATALINA_HOME="/usr/share/tomcat"
-    ...
+  ...
+  CATALINA_BASE="/var/lib/tomcats/geoserver"
+  CATALINA_HOME="/usr/share/tomcat"
+  ...
 
-Now copy GeoServer web archive inside the webapps folder. Tomcat will extract the
+Now download and copy GeoServer web archive inside the webapps folder. Tomcat will extract the
 war file and run GeoServer::
 
-    sudo cp geoserver.war /var/lib/tomcats/geoserver/webapps/
+  curl -LO http://build.geonode.org/geoserver/latest/geoserver-2.9.x-oauth2.war && mv geoserver-2.9.x-oauth2.war geoserver.war
+  sudo mkdir -p /var/lib/tomcats/geoserver/webapps/
+  sudo cp geoserver.war /var/lib/tomcats/geoserver/webapps/
 
 And fix the permissions on the files::
 
-    sudo chown -R tomcat:tomcat /var/lib/tomcats*
+  sudo chown -R tomcat:tomcat /var/lib/tomcats*
 
 Finally start GeoServer::
 
-    systemctl start tomcat@geoserver
+  sudo systemctl start tomcat@geoserver
 
 And enable it to automatically start at boot time::
 
-    systemctl enable tomcat@geoserver
+  sudo systemctl enable tomcat@geoserver

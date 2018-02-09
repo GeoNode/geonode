@@ -36,9 +36,11 @@ from taggit.models import Tag
 from taggit.models import TaggedItem
 from uuid import uuid4
 import os.path
+import six
 
 
-if 'geonode.geoserver' in settings.INSTALLED_APPS:
+def disconnect_signals():
+    """Disconnect signals for test class purposes."""
     from django.db.models import signals
     from geonode.geoserver.signals import geoserver_pre_save_maplayer
     from geonode.geoserver.signals import geoserver_post_save_map
@@ -48,6 +50,23 @@ if 'geonode.geoserver' in settings.INSTALLED_APPS:
     signals.post_save.disconnect(geoserver_post_save_map, sender=Map)
     signals.pre_save.disconnect(geoserver_pre_save, sender=Layer)
     signals.post_save.disconnect(geoserver_post_save, sender=Layer)
+
+
+def reconnect_signals():
+    """Reconnect signals for test class purposes."""
+    from django.db.models import signals
+    from geonode.geoserver.signals import geoserver_pre_save_maplayer
+    from geonode.geoserver.signals import geoserver_post_save_map
+    from geonode.geoserver.signals import geoserver_pre_save
+    from geonode.geoserver.signals import geoserver_post_save
+    signals.pre_save.connect(geoserver_pre_save_maplayer, sender=MapLayer)
+    signals.post_save.connect(geoserver_post_save_map, sender=Map)
+    signals.pre_save.connect(geoserver_pre_save, sender=Layer)
+    signals.post_save.connect(geoserver_post_save, sender=Layer)
+
+
+if 'geonode.geoserver' in settings.INSTALLED_APPS:
+    disconnect_signals()
 
 # This is used to populate the database with the search fixture data. This is
 # primarily used as a first step to generate the json data for the fixture using
@@ -98,15 +117,32 @@ def create_fixtures():
             ('this contains all my interesting profile information',),
             ('some other information goes here',),
             ]
+    now = datetime.now()
+    step = timedelta(days=60)
 
-    layer_data = [('CA', 'abstract1', 'CA', 'geonode:CA', world_extent, '19850101', ('populartag', 'here'), elevation),
-            ('layer2', 'abstract2', 'layer2', 'geonode:layer2', world_extent, '19800501', ('populartag',), elevation),
-            ('uniquetitle', 'something here', 'mylayer', 'geonode:mylayer', world_extent, '19901001', ('populartag',), elevation),  # flake8: noqa
-            ('common blar', 'lorem ipsum', 'foo', 'geonode:foo', world_extent, '19000603', ('populartag', 'layertagunique'), location),  # flake8: noqa
-            ('common double it', 'whatever', 'whatever', 'geonode:whatever', [0, 1, 0, 1], '50001101', ('populartag',), location),  # flake8: noqa
-            ('common double time', 'else', 'fooey', 'geonode:fooey', [0, 5, 0, 5], '00010101', ('populartag',), location),  # flake8: noqa
-            ('common bar', 'uniqueabstract', 'quux', 'geonode:quux', [0, 10, 0, 10], '19501209', ('populartag',), biota),   # flake8: noqa
-            ('common morx', 'lorem ipsum', 'fleem', 'geonode:fleem', [0, 50, 0, 50], '19630829', ('populartag',), biota),   # flake8: noqa
+    def get_test_date():
+        def it():
+            current = now - step
+            while True:
+                yield current
+                current = current - step
+        itinst = it()
+
+        def callable():
+            return six.next(itinst)
+        return callable
+
+    next_date = get_test_date()
+
+
+    layer_data = [('CA', 'abstract1', 'CA', 'geonode:CA', world_extent, next_date(), ('populartag', 'here'), elevation),
+            ('layer2', 'abstract2', 'layer2', 'geonode:layer2', world_extent, next_date(), ('populartag',), elevation),
+            ('uniquetitle', 'something here', 'mylayer', 'geonode:mylayer', world_extent, next_date(), ('populartag',), elevation),  # flake8: noqa
+            ('common blar', 'lorem ipsum', 'foo', 'geonode:foo', world_extent, next_date(), ('populartag', 'layertagunique'), location),  # flake8: noqa
+            ('common double it', 'whatever', 'whatever', 'geonode:whatever', [0, 1, 0, 1], next_date(), ('populartag',), location),  # flake8: noqa
+            ('common double time', 'else', 'fooey', 'geonode:fooey', [0, 5, 0, 5], next_date(), ('populartag',), location),  # flake8: noqa
+            ('common bar', 'uniqueabstract', 'quux', 'geonode:quux', [0, 10, 0, 10], next_date(), ('populartag',), biota),   # flake8: noqa
+            ('common morx', 'lorem ipsum', 'fleem', 'geonode:fleem', [0, 50, 0, 50], next_date(), ('populartag',), biota),   # flake8: noqa
             ]
 
     document_data = [('lorem ipsum', 'common lorem ipsum', ('populartag',), world_extent, biota),
@@ -183,14 +219,12 @@ def create_models(type=None):
 
     if not type or type == 'layer':
         for ld, owner, storeType in zip(layer_data, cycle(users), cycle(('coverageStore', 'dataStore'))):
-            title, abstract, name, typename, (bbox_x0, bbox_x1, bbox_y0, bbox_y1), dt, kws, category = ld
-            year, month, day = map(int, (dt[:4], dt[4:6], dt[6:]))
-            start = datetime(year, month, day)
+            title, abstract, name, alternate, (bbox_x0, bbox_x1, bbox_y0, bbox_y1), start, kws, category = ld
             end = start + timedelta(days=365)
             l = Layer(title=title,
                       abstract=abstract,
                       name=name,
-                      typename=typename,
+                      alternate=alternate,
                       bbox_x0=bbox_x0,
                       bbox_x1=bbox_x1,
                       bbox_y0=bbox_y0,

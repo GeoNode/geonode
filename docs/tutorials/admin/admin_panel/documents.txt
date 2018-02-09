@@ -10,3 +10,4 @@ As for the layers, most of the information related to the documents can and shou
 
 Through the document detail page is possible to edit the metadata information.
 The fields related to the bounding box or the file attached should not be edited directly.
+Metadata information can be changed for multiple documents at once with "Metadata batch edit" action, just like for layers.

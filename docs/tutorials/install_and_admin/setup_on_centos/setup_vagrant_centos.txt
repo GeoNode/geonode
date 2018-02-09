@@ -1,0 +1,59 @@
+.. _setup_vagrant_centos:
+
+===============================
+Installing the Operating System
+===============================
+
+.. warning:: In order to follow this section you must have `Vagrant`_ already installed into your machine. If not then you can follow the link and install properly in your computer.
+
+.. _Vagrant: https://www.vagrantup.com/
+
+CentOS Setup
+============
+
+Start a new base CentOS server from scratch is as easier as possible with this simple command::
+
+    vagrant init centos/7
+
+A new configuration file called `Vagrantfile` is created in the same directory. That file will contain all the configuration of the box you are going to run.
+
+Alternatively you can start a new specific version of a CentOS server from an ISO image like this `CentOS-7-x86_64-Minimal-1611.iso`. In order to have such a minimal box we can exploit `Packer`_ in doing that. Therefore follow the previous link and install the toolkit. `Ansible`_ is required too.
+
+.. _Ansible: http://docs.ansible.com/intro_installation.html
+
+.. _Packer: http://www.packer.io/
+
+As an example for achieving this goal you might follow the instructions on `this`_ GitHub repository. Fork it and simply let's do::
+
+    packer build --only=virtualbox-iso centos7.json
+
+.. _this: https://github.com/geerlingguy/packer-centos-7
+
+The build artifact ``virtualbox-centos7.box`` will be in the directory ``builds`` and can be mounted as alternative Virtual Box image in the Vagrantfile.
+
+If you, at any time, modify the configuration you can bring your changes by running::
+
+    vagrant reload
+
+Network configuration
+=====================
+
+The configuration of your new CentOS machine can be customised at your need. You can choose to configure a private network which allows host-only access to the machine using a specific IP as well as a public one which generally matched to bridged network and the machine would appear as another physical device on your network. Initially you can opt also to have your internal port of GeoNode forwarded to a physical port on your host for navigating the application from the browser.
+The simplest configuration can be::
+
+    config.vm.network "forwarded_port", guest: 80, host: 8001
+
+Please note that in development mode this configuration can be a little bit different::
+
+    config.vm.network "forwarded_port", guest: 8000, host: 8001 # GeoNode port
+    config.vm.network "forwarded_port", guest: 8080, host: 8080 # GeoServer port
+
+You can even choose to mapping on ``80`` but be carefully you need administrative privileges on your host machine. So it is recommended to begin with a port higher like in the previous example.
+
+Launch your CentOS box
+======================
+
+After editing the Vagrant configurations you should end up with a ``Vagrantfile`` like :download:`this basic sample <resources/Vagrantfile>`.
+From the same directory then run this command and launch your box::
+
+    vagrant up

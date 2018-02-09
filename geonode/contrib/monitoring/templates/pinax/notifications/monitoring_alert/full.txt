@@ -1,0 +1,14 @@
+{% load i18n %}
+
+<p>{% trans "Hi," %} {{ recipient.username }}</p>
+
+<p>{% trans "Monitoring on" %} {{ host }} {% trans "has detected following problems :" %}</p>
+<ul>
+{% for ndata in alerts %}
+    <li><p> {{ ndata.message }}
+        <p> {% trans "spotted" %} {{ ndata.spotted_at|date}} {{ ndata.spotted_at|time }} - {{ ndata.spotted_at|timesince }} {% trans "ago" %}</p>
+        <p> {% trans "emerged" %} {{ ndata.valid_to|date}} {{ ndata.valid_to|time }} - {{ ndata.valid_to|timesince }} {% trans "ago" %}</p>
+        <p>&nbsp;&nbsp;&nbsp; <small>{{ ndata.description }}</small></p></li>
+{% endfor %}
+</ul>
+

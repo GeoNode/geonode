@@ -349,6 +349,7 @@ ALL_LANGUAGES = (
     ('fry', 'Frisian'),
     ('glg', 'Gallegan'),
     ('ger', 'German'),
+    ('gre', 'Greek'),
     ('kal', 'Greenlandic'),
     ('grn', 'Guarani'),
     ('guj', 'Gujarati'),

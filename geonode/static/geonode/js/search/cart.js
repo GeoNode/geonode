@@ -1,11 +1,21 @@
 'use strict';
 
 (function(){
-  angular.module('cart', [])
+  angular.module('cart', ['ngCookies'])
+    .filter('title', function(){
+      return function(value){
+        return value.replace(/\w\S*/g, function(txt){return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();});
+      };
+    })
+    .filter('default_if_blank', function(){
+      return function(value, arg){
+        return angular.isString(value) && value.length > 0 ? value : arg;
+      };
+    })
     .controller('CartList', function($scope, cart){
       $scope.cart = cart;
       $scope.layers_params = '';
-  
+
       $scope.newMap = function(){
         var items = cart.getCart().items;
         var params = '';
@@ -35,8 +45,8 @@
            },
            success: function(data) {
              var not_changed = $.parseJSON(data).not_changed;
-             if (not_changed.length > 0){ 
-               message.find('.message').html('Permissions correctly registered, although the following resources were'+ 
+             if (not_changed.length > 0){
+               message.find('.message').html('Permissions correctly registered, although the following resources were'+
                    ' skipped because you don\'t have the rights to edit their permissions:');
                message.find('.extra_content').html(not_changed.join('</br>'));
                message.addClass('alert-warning').removeClass('alert-success alert-danger hidden');
@@ -54,20 +64,50 @@
         );
       };
     })
-
     .directive('resourceCart', [function(){
       return {
-        restrict: 'E',
-        templateUrl: "/static/geonode/js/templates/cart.html"
+        restrict: 'EA',
+        templateUrl: "/static/geonode/js/templates/cart.html",
+        link: function($scope, $element){
+          // Don't use isolateScope, but add to parent scope
+          $scope.facetType = $element.attr("data-facet-type");
+        }
       };
     }])
 
-    .service('cart', function(){
-      
+    .service('cart', function($cookies){
+
       this.init = function(){
         this.$cart = {
-          items: []
+          items: this.fillCart()
         };
+      };
+
+      this.fillCart = function(){
+        // This will fail if angular<1.4.0
+        try {
+          var geonodeCart = $cookies.getAll();
+        } catch(err) {
+          var geonodeCart = null;
+        }
+        var cartSession = [];
+        if (geonodeCart !== null) {
+          if(Object.keys(geonodeCart).length > 1) {
+            Object.keys(geonodeCart).forEach(function(key,index) {
+              if(key !== 'csrftoken') {
+                try {
+                  var obj = JSON.parse(geonodeCart[key]);
+                  obj['$$hashKey'] = "object:" + index;
+                  cartSession.push(obj);
+                } catch(err) {
+                  console.log("Cart Session Issue: " + err.message);
+                }
+              }
+            });
+          }
+        }
+
+        return cartSession;
       };
 
       this.getCart = function(){
@@ -75,8 +115,14 @@
       }
 
       this.addItem = function(item){
+
+        if(!item.id && item.layer_identifier){
+          item.id = item.layer_identifier;
+        }
+
         if(this.getItemById(item.id) === null){
           this.getCart().items.push(item);
+          $cookies.putObject(item['uuid'], item);
         }
       }
 
@@ -86,6 +132,7 @@
           angular.forEach(cart.items, function(cart_item, index){
             if(cart_item.id === item.id){
               cart.items.splice(index, 1);
+              $cookies.remove(cart_item['uuid']);
             }
           });
         }
@@ -112,9 +159,9 @@
 
       this.getFaClass = function(id){
         if(this.getItemById(id) === null){
-          return 'fa-cart-plus';
+          return 'fa-plus';
         }else{
-          return 'fa-remove'
+          return 'fa-remove';
         }
       }
     })

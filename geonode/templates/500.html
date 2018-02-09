@@ -4,7 +4,7 @@
   <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1"> 
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>{% block title %}{{ SITE_NAME }}{% endblock %}</title>
     {% block head %}
       {% if DEBUG_STATIC %}
@@ -17,6 +17,7 @@
       <link href="{{ STATIC_URL }}lib/css/assets.min.css" rel="stylesheet"/>
       {% endif %}
       <link href="{{ STATIC_URL }}geonode/css/ext-compatibility.css" rel="stylesheet" />
+      <link href="{{ STATIC_URL }}geonode/css/ux-all.css" rel="stylesheet" />
       <link href="{{ STATIC_URL }}geonode/css/base.css" rel="stylesheet" />
       <style type="text/css">[ng\:cloak],[ng-cloak],[data-ng-cloak],[x-ng-cloak],.ng-cloak,.x-ng-cloak,.ng-hide:not(.ng-hide-animate){display:none !important;}</style>
       {% block extra_head %}
@@ -33,7 +34,7 @@
       </style>
     <![endif]-->
   </head>
-  
+
   <body class="{% block body_class %}{% endblock %}">
 
     {% block header %}
@@ -52,13 +53,13 @@
           <ul class="nav navbar-nav">
             {% block tabs %}
             <li id="nav_layers">
-              <a href="{% url "layer_browse" %}">{% trans "Layers" %}</a>
+              <a href="{% url "layer_browse" %}?limit={{ CLIENT_RESULTS_LIMIT }}">{% trans "Layers" %}</a>
             </li>
             <li id="nav_maps">
-              <a href="{% url "maps_browse" %}">{% trans "Maps" %}</a>
+              <a href="{% url "maps_browse" %}?limit={{ CLIENT_RESULTS_LIMIT }}">{% trans "Maps" %}</a>
             </li>
             <li id="nav_documents">
-              <a href="{% url "document_browse" %}">{% trans "Documents" %}</a>
+              <a href="{% url "document_browse" %}?limit={{ CLIENT_RESULTS_LIMIT }}">{% trans "Documents" %}</a>
             </li>
            {% block extra_tab %}
            {% endblock %}
@@ -85,7 +86,7 @@
             </div>
           </form>
           <ul class="nav navbar-nav navbar-right">
-            {% if not user.is_authenticated and REGISTRATION_OPEN %}
+            {% if not user.is_authenticated and ACCOUNT_OPEN_SIGNUP %}
             <li><a href="{% url "account_signup" %}">{% trans "Register" %}</a></li>
             {% endif %}
             {% if user.is_authenticated %}
@@ -97,7 +98,7 @@
             {% else %}
             <li>
               <a href="#" data-toggle="modal" data-target="#SigninModal" role="button" >
-                {% trans "Sign in" %} 
+                {% trans "Sign in" %}
               </a>
             </li>
             {% endif %}
@@ -140,7 +141,7 @@
     </div>
     {% endblock middle %}
   </div>
-    
+
     {% block footer %}
     <footer class="footer">
       <div class="container">
@@ -219,14 +220,14 @@
               <li><a href="{% url "recent-activity" %}"><i class="fa fa-fire"></i> {% trans "Recent Activity" %}</a></li>
               <li><a href="{% url "messages_inbox" %}"><i class="fa fa-inbox"></i> {% trans "Inbox" %}</a></li>
               {% if USE_NOTIFICATIONS %}
-                <li><a href="{% url "notification_notice_settings" %}"><i class="fa fa-bell"></i> {% trans "Notifications" %}</a></li>
+                <li><a href="{% url "notice_settings" %}"><i class="fa fa-bell"></i> {% trans "Notifications" %}</a></li>
               {% endif %}
               {% if perms.announcements.can_manage %}
               <li><a href="{% url "announcements_list" %}"><i class="fa fa-bullhorn"></i> {% trans "Announcements" %}</a></li>
               {% endif %}
+              <li><a href="{% url "geonode.invitations:geonode-send-invite" %}"><i class="fa fa-edit"></i> {% trans "Invite Users" %}</a></li>
               {% if user.is_superuser %}
-              <li><a href="{% url "services" %}"><i class="fa fa-globe"></i> {% trans "Remote Services" %}</a></li>
-              <li><a href="{% url "account_invite_user" %}"><i class="fa fa-edit"></i> {% trans "Invite User" %}</a></li>
+              <li><a href="{% url "services" %}?limit={{ CLIENT_RESULTS_LIMIT }}"><i class="fa fa-globe"></i> {% trans "Remote Services" %}</a></li>
               <li class="modal-divider"></li>
               <li><a href="{{ GEOSERVER_BASE_URL }}"><i class="fa fa-gears"></i> {% trans "GeoServer" %}</a></li>
               {% endif %}
@@ -250,7 +251,7 @@
     </div>
     {% endif %}
     <!-- End of Modal -->
-    
+
     {% if DEBUG_STATIC %}
     <script src="{{ STATIC_URL }}lib/js/jquery.min.js"></script>
     <script src="{{ STATIC_URL }}lib/js/jquery.dataTables.js"></script>

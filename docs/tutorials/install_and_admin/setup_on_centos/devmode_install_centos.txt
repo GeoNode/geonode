@@ -1,4 +1,3 @@
-:Author: Margherita Di Leo
 .. _devmode_install_centos:
 
 ######################################
@@ -12,9 +11,9 @@ Make sure all the needed libraries are installed
 
     .. code-block:: console
 
-        yum -y update
-        yum groupinstall 'Development Tools'
-        yum install -y libxml2-devel libxslt-devel libjpeg-turbo-devel postgresql postgresql-server postgresql-contrib postgresql-libs postgresql-devel postgis geos-python python python-tools python-devel python-pillow python-lxml openssh-clients zip unzip wget git gdal python-virtualenv gdal-python geos python-pip python-imaging python-devel gcc-c++ python-psycopg2 libxml2 libxml2-devel libxml2-python libxslt libxslt-devel libxslt-python
+        sudo yum -y update
+        sudo yum groupinstall 'Development Tools'
+        sudo yum install -y libxml2-devel libxslt-devel libjpeg-turbo-devel postgresql postgresql-server postgresql-contrib postgresql-libs postgresql-devel postgis geos-python python python-tools python-devel python-pillow python-lxml openssh-clients zip unzip wget git gdal python-virtualenv gdal-python geos python-pip python-imaging python-devel gcc-c++ python-psycopg2 libxml2 libxml2-devel libxml2-python libxslt libxslt-devel libxslt-python
 
 
 Install pip
@@ -23,16 +22,18 @@ Installation of Python pip:
 
     .. code-block:: console
 
-        rpm -iUvh http://dl.fedoraproject.org/pub/epel/7/x86_64/e/epel-release-7-5.noarch.rpm
-        yum -y update
-        yum -y install python-pip
-        pip install --upgrade pip
+        sudo rpm -iUvh http://dl.fedoraproject.org/pub/epel/7/x86_64/e/epel-release-7-9.noarch.rpm
+        sudo yum -y update
+        sudo yum -y install python-pip
+        sudo pip install --upgrade pip
+
+.. warning:: Make sure to align the version of EPEL to the latest for your current CentOS version
 
 Install Python Virtual Environment
 
     .. code-block:: console
 
-        pip install virtualenvwrapper
+        sudo pip install virtualenvwrapper
 
 
 Set up PostgreSQL
@@ -47,8 +48,14 @@ Change the Unix password for the postgres user
 
     .. code-block:: console
 
-        passwd -u postgres -f
-        passwd postgres
+        sudo passwd -u postgres -f
+        sudo passwd postgres
+
+Initialize the PostgreSQL database with the default service name `postgresql`
+
+    .. code-block:: console
+
+        sudo /usr/bin/postgresql-setup initdb
 
 Start the PostgreSQL service
 
@@ -56,28 +63,33 @@ Start the PostgreSQL service
 
         systemctl start postgresql.service
 
-Create the GeoNode role and database
+Create the database for GeoNode
 
     .. code-block:: console
 
         su - postgres
-        initdb
-        pg_ctl start
-        pg_ctl status 
- 
+        pg_ctl status
+        pg_ctl start # if not running
+
     .. code-block:: console
 
         createdb geonode
+
+Create the needed role and privileges
+
+    .. code-block:: console
+
+        psql
         postgres=#
         postgres=# \password postgres
-        postgres=# CREATE USER geonode WITH PASSWORD 'geonode'; 
+        postgres=# CREATE USER geonode WITH PASSWORD 'geonode';
         postgres=# GRANT ALL PRIVILEGES ON DATABASE "geonode" to geonode;
         postgres=# \q
 
 
 Install Java
 ============
-First, check if Java is already installed
+First come back to the normal user, then check if Java is already installed
 
     .. code-block:: console
 
@@ -87,25 +99,25 @@ In case, install Java
 
     .. code-block:: console
 
-        yum install -y java-1.8.0-openjdk-devel
+        sudo yum install -y java-1.8.0-openjdk-devel
 
 
 Setup a virtual environment
 ===========================
 
-Assuming your user name is v-user, you need to edit your .bashrc file
+Assuming your username is ``geonode``, you need to edit your :file:`.bashrc` file
 
     .. code-block:: console
 
-        nano /home/v-user/.bashrc
+        nano /home/geonode/.bashrc
 
-Add the following lines (please replace v-user with your actual user name):
+Add the following lines (please replace `geonode` with your actual user name):
 
     .. code-block:: console
 
         # virtualenvwrapper
         export VIRTUALENVWRAPPER_PYTHON=/usr/bin/python
-        export WORKON_HOME=home/v-user/.venvs
+        export WORKON_HOME=home/geonode/.venvs
         source /usr/bin/virtualenvwrapper.sh
         export PIP_DOWNLOAD_CACHE=$HOME/.pip-downloads
 
@@ -113,44 +125,47 @@ Save and exit. Then,
 
     .. code-block:: console
 
-        source /home/v-user/.bashrc
-
+        source /home/geonode/.bashrc
 
 Install GeoNode
 ===============
-Setup a virtual environment for GeoNode
+Setup a virtual environment for GeoNode and enter into it
 
     .. code-block:: console
 
         mkvirtualenv geonode --system-site-packages
         workon geonode
 
-Download the current stable version (2.4)
+Make sure to have the most updated Python pip version
+
+.. code-block:: console
+
+    pip install --upgrade pip
+
+Clone the current stable branch 2.6.x
 
     .. code-block:: console
 
-        wget https://github.com/GeoNode/geonode/archive/debian/2.4.0+thefinal0.zip
-        unzip 2.4.0+thefinal0.zip
-        cd geonode-debian-2.4.0-thefinal0/
+        git clone -b 2.6.x https://github.com/GeoNode/geonode
 
-Install
+Install GeoNode and its dependencies
 
     .. code-block:: console
 
-        pip install -e . --use-mirrors
+        pip install -e geonode && pip install -r geonode/requirements.txt
+        pip Paver
 
 Verify the installation
 
     .. code-block:: console
 
-        pip freeze
+        pip freeze | grep geonode
 
 In case of successful installation, this should return several (50+) lines.
 
-
 Install GeoServer
 -----------------
-The installation of GeoServer starts with
+The installation of GeoServer in development mode can be started with this ``pavement`` command script
 
     .. code-block:: console
 
@@ -160,6 +175,40 @@ This should return
 
     .. code-block:: console
 
-        GeoNode development environment successfully set up.If you have not set 
-        up an administrative account, please do so now. Use "paver start" to start 
+        GeoNode development environment successfully set up.If you have not set
+        up an administrative account, please do so now. Use "paver start" to start
         up the server.
+
+Run the Django server
+---------------------
+Before starting the GeoNode server you have to complete the installation with several import pre-running steps. Let's see them in their order.
+
+.. warning:: Please note we have always to be in our virtual environment before running the following commands, while you don't need the ``sudo`` privileges anymore!
+
+Migrate the database
+
+    .. code-block:: console
+
+        python manage.py migrate
+
+Create an administrative account as know as ``superuser`` in Django. Please make sure you will create at least one superuser named ``admin`` which is required in development mode.
+
+    .. code-block:: console
+
+        python manage.py createsuperuser
+
+Create the required initial data and OAuth2 configurations
+
+    .. code-block:: console
+
+        python manage.py loaddata geonode/base/fixtures/initial_data.json
+        python manage.py loaddata geonode/base/fixtures/default_oauth_apps.json
+
+Finally we are able to start all the components
+
+    .. code-block:: console
+
+        paver start_geoserver # start GeoServer
+        python manage.py runserver 0.0.0.0:8000 # start GeoNode
+
+.. warning:: Note that the default IP address, ``127.0.0.1``, is not accessible from other machines on your network. In case you are using ``forwarded_port`` on a ``Vagrantfile`` please make sure to start ``runserver`` with the option :option:``0.0.0.0:8000`` which allows fundamentally to view your development server from other machines on the network, included your host machine in such a case. See more on :ref:`setup_vagrant_centos`.

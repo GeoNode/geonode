@@ -20,7 +20,7 @@
 
 import logging
 
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import ugettext as _
 import urllib
 
 logger = logging.getLogger(__name__)
@@ -28,24 +28,26 @@ logger = logging.getLogger(__name__)
 DEFAULT_EXCLUDE_FORMATS = ['PNG', 'JPEG', 'GIF', 'TIFF']
 
 
-def _wcs_link(wcs_url, identifier, mime):
+def _wcs_link(wcs_url, identifier, mime, srid, bbox):
     return wcs_url + urllib.urlencode({
         'service': 'WCS',
         'request': 'GetCoverage',
         'coverageid': identifier,
         'format': mime,
-        'version': '2.0.1'
+        'version': '2.0.1',
+        'srs': srid,
+        'bbox': bbox,
     })
 
 
-def wcs_links(wcs_url, identifier):
+def wcs_links(wcs_url, identifier, bbox, srid):
     types = [
         ("x-gzip", _("GZIP"), "application/x-gzip"),
         ("geotiff", _("GeoTIFF"), "image/tiff"),
     ]
     output = []
     for ext, name, mime in types:
-        url = _wcs_link(wcs_url, identifier, mime)
+        url = _wcs_link(wcs_url, identifier, mime, srid, bbox)
         output.append((ext, name, mime, url))
     return output
 

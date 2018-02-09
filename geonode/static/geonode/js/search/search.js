@@ -44,6 +44,24 @@
         });
     }
 
+  // Load group categories
+  module.load_group_categories = function ($http, $rootScope, $location){
+        var params = typeof FILTER_TYPE == 'undefined' ? {} : {'type': FILTER_TYPE};
+        if ($location.search().hasOwnProperty('name__icontains')){
+          params['name__icontains'] = $location.search()['name__icontains'];
+        }
+        $http.get(GROUP_CATEGORIES_ENDPOINT, {params: params}).success(function(data){
+            if($location.search().hasOwnProperty('slug')){
+                data.objects = module.set_initial_filters_from_query(data.objects,
+                    $location.search()['slug'], 'identifier');
+            }
+            $rootScope.categories = data.objects;
+            if (HAYSTACK_FACET_COUNTS && $rootScope.query_data) {
+                module.haystack_facets($http, $rootScope, $location);
+            }
+        });
+    }
+
   module.load_keywords = function ($http, $rootScope, $location){
         var params = typeof FILTER_TYPE == 'undefined' ? {} : {'type': FILTER_TYPE};
         if ($location.search().hasOwnProperty('title__icontains')){
@@ -72,7 +90,7 @@
           if(node.nodes){
             for(var i=0; i<node.nodes.length;i++){
               $('#treeview').treeview('selectNode', node.nodes[i]);
-            } 
+            }
           }
         },
         onNodeUnselected: function($event, node){
@@ -81,7 +99,7 @@
             for(var i=0; i<node.nodes.length;i++){
               $('#treeview').treeview('unselectNode', node.nodes[i]);
               $('#treeview').trigger('nodeUnselected', $.extend(true, {}, node.nodes[i]));
-            } 
+            }
           }
         }
       });
@@ -143,50 +161,66 @@
   module.haystack_facets = function($http, $rootScope, $location) {
       var data = $rootScope.query_data;
       if ("categories" in $rootScope) {
-          $rootScope.category_counts = data.meta.facets.category;
-          for (var id in $rootScope.categories) {
-              var category = $rootScope.categories[id];
-              if (category.identifier in $rootScope.category_counts) {
-                  category.count = $rootScope.category_counts[category.identifier]
-              } else {
-                  category.count = 0;
+          try {
+              $rootScope.category_counts = data.meta.facets.category;
+              for (var id in $rootScope.categories) {
+                  var category = $rootScope.categories[id];
+                  if (category.identifier in $rootScope.category_counts) {
+                      category.count = $rootScope.category_counts[category.identifier]
+                  } else {
+                      category.count = 0;
+                  }
               }
+          } catch(err) {
+              // console.log(err);
           }
       }
 
       if ("keywords" in $rootScope) {
-          $rootScope.keyword_counts = data.meta.facets.keywords;
-          for (var id in $rootScope.keywords) {
-              var keyword = $rootScope.keywords[id];
-              if (keyword.slug in $rootScope.keyword_counts) {
-                  keyword.count = $rootScope.keyword_counts[keyword.slug]
-              } else {
-                  keyword.count = 0;
+          try {
+              $rootScope.keyword_counts = data.meta.facets.keywords;
+              for (var id in $rootScope.keywords) {
+                  var keyword = $rootScope.keywords[id];
+                  if (keyword.slug in $rootScope.keyword_counts) {
+                      keyword.count = $rootScope.keyword_counts[keyword.slug]
+                  } else {
+                      keyword.count = 0;
+                  }
               }
+          } catch(err) {
+              // console.log(err);
           }
       }
 
       if ("regions" in $rootScope) {
-          $rootScope.regions_counts = data.meta.facets.regions;
-          for (var id in $rootScope.regions) {
-              var region = $rootScope.regions[id];
-              if (region.name in $rootScope.region_counts) {
-                  region.count = $rootScope.region_counts[region.name]
-              } else {
-                  region.count = 0;
+          try {
+              $rootScope.regions_counts = data.meta.facets.regions;
+              for (var id in $rootScope.regions) {
+                  var region = $rootScope.regions[id];
+                  if (region.name in $rootScope.region_counts) {
+                      region.count = $rootScope.region_counts[region.name]
+                  } else {
+                      region.count = 0;
+                  }
               }
+          } catch(err) {
+              // console.log(err);
           }
       }
 
       if ("owners" in $rootScope) {
-          $rootScope.owner_counts = data.meta.facets.owners;
-          for (var id in $rootScope.owners) {
-              var owner = $rootScope.owners[id];
-              if (owner.name in $rootScope.owner_counts) {
-                  owner.count = $rootScope.owner_counts[owner.name]
-              } else {
-                  owner.count = 0;
+          try {
+              $rootScope.owner_counts = data.meta.facets.owners;
+              for (var id in $rootScope.owners) {
+                  var owner = $rootScope.owners[id];
+                  if (owner.name in $rootScope.owner_counts) {
+                      owner.count = $rootScope.owner_counts[owner.name]
+                  } else {
+                      owner.count = 0;
+                  }
               }
+          } catch(err) {
+              // console.log(err);
           }
       }
   }
@@ -202,11 +236,16 @@
     if ($('#categories').length > 0){
        module.load_categories($http, $rootScope, $location);
     }
+
+    if ($('#groupcategories').length > 0){
+       module.load_group_categories($http, $rootScope, $location);
+    }
+
     //if ($('#keywords').length > 0){
     //   module.load_keywords($http, $rootScope, $location);
     //}
     module.load_h_keywords($http, $rootScope, $location);
-    
+
     if ($('#regions').length > 0){
        module.load_regions($http, $rootScope, $location);
     }
@@ -249,10 +288,11 @@
     $scope.query.limit = $scope.query.limit || CLIENT_RESULTS_LIMIT;
     $scope.query.offset = $scope.query.offset || 0;
     $scope.page = Math.round(($scope.query.offset / $scope.query.limit) + 1);
-   
+
     //Get data from apis and make them available to the page
     function query_api(data){
       $http.get(Configs.url, {params: data || {}}).success(function(data){
+        setTimeout(function(){$('[ng-controller="CartList"] [data-toggle="tooltip"]').tooltip();},0);
         $scope.results = data.objects;
         $scope.total_counts = data.meta.total_count;
         $scope.$root.query_data = data;
@@ -268,17 +308,21 @@
 
         //Update facet/keyword/category counts from search results
         if (HAYSTACK_FACET_COUNTS){
-            module.haystack_facets($http, $scope.$root, $location);
-            $("#types").find("a").each(function(){
-                if ($(this)[0].id in data.meta.facets.subtype) {
-                    $(this).find("span").text(data.meta.facets.subtype[$(this)[0].id]);
-                }
-                else if ($(this)[0].id in data.meta.facets.type) {
-                    $(this).find("span").text(data.meta.facets.type[$(this)[0].id]);
-                } else {
-                    $(this).find("span").text("0");
-                }
-            });
+            try {
+                module.haystack_facets($http, $scope.$root, $location);
+                $("#types").find("a").each(function(){
+                    if ($(this)[0].id in data.meta.facets.subtype) {
+                        $(this).find("span").text(data.meta.facets.subtype[$(this)[0].id]);
+                    }
+                    else if ($(this)[0].id in data.meta.facets.type) {
+                        $(this).find("span").text(data.meta.facets.type[$(this)[0].id]);
+                    } else {
+                        $(this).find("span").text("0");
+                    }
+                });
+            } catch(err) {
+                // console.log(err);
+            }
         }
       });
     };
@@ -338,7 +382,7 @@
     $scope.$on('select_h_keyword', function($event, element){
       var data_filter = 'keywords__slug__in';
       var query_entry = [];
-      var value = element.text;
+      var value = (element.href ? element.href : element.text);
       // If the query object has the record then grab it
       if ($scope.query.hasOwnProperty(data_filter)){
 
@@ -350,7 +394,7 @@
           query_entry.push($scope.query[data_filter]);
         }
       }
-  
+
       // Add the entry in the correct query
       if (query_entry.indexOf(value) == -1){
         query_entry.push(value);
@@ -365,7 +409,7 @@
     $scope.$on('unselect_h_keyword', function($event, element){
       var data_filter = 'keywords__slug__in';
       var query_entry = [];
-      var value = element.text;
+      var value = (element.href ? element.href : element.text);
       // If the query object has the record then grab it
       if ($scope.query.hasOwnProperty(data_filter)){
 
@@ -377,7 +421,7 @@
           query_entry.push($scope.query[data_filter]);
         }
       }
-  
+
       query_entry.splice(query_entry.indexOf(value), 1);
 
       //save back the new query entry to the scope query
@@ -395,7 +439,7 @@
     * and pushes/removes the value of the element from the query object
     */
     $scope.multiple_choice_listener = function($event){
-      var element = $($event.target);
+      var element = $(event.currentTarget);
       var query_entry = [];
       var data_filter = element.attr('data-filter');
       var value = element.attr('data-value');
@@ -441,7 +485,7 @@
     }
 
     $scope.single_choice_listener = function($event){
-      var element = $($event.target);
+      var element = $(event.currentTarget);
       var query_entry = [];
       var data_filter = element.attr('data-filter');
       var value = element.attr('data-value');
@@ -504,7 +548,8 @@
                 // the /people page, filter by username instead
                 var query_key = 'username__icontains';
             else
-                var query_key = 'title__icontains';
+                console.log('search key', $('#text_search_input').data());
+                var query_key = $('#text_search_input').data('query-key')||'title__icontains';
             $scope.query[query_key] = $('#text_search_input').val();
         query_api($scope.query);
     });
@@ -533,7 +578,7 @@
     });
 
     $scope.feature_select = function($event){
-      var element = $($event.target);
+      var element = $(event.currentTarget);
       var article = $(element.parents('article')[0]);
       if (article.hasClass('resource_selected')){
         element.html('Select');
@@ -588,12 +633,12 @@
         layers: {
           baselayers: {
             stamen: {
-              name: 'Toner Lite',
+              name: 'OpenStreetMap Mapnik',
               type: 'xyz',
-              url: 'http://{s}.tile.stamen.com/toner-lite/{z}/{x}/{y}.png',
+              url: '//{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
               layerOptions: {
                 subdomains: ['a', 'b', 'c'],
-                attribution: 'Map tiles by <a href="http://stamen.com">Stamen Design</a>',
+                attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
                 continuousWorld: true
               }
             }
@@ -609,7 +654,7 @@
         }
       });
 
-			
+
       var leafletData = $injector.get('leafletData'),
           map = leafletData.getMap('filter-map');
 
@@ -619,15 +664,15 @@
           query_api($scope.query);
         });
       });
-    
+
       var showMap = false;
       $('#_extent_filter').click(function(evt) {
-     	  showMap = !showMap
+          showMap = !showMap
         if (showMap){
           leafletData.getMap().then(function(map) {
             map.invalidateSize();
           });
-        } 
+        }
       });
     }
   });

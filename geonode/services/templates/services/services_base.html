@@ -1,4 +1,4 @@
-{% extends "site_base.html" %}
+{% extends "geonode_base.html" %}
 {% load i18n %}
 {% load url from future %}
 
@@ -11,7 +11,7 @@
 <div class="row">
   <div class="col-md-12">
     <ul class="nav nav-tabs" id="subnav-tabs">
-      <li><a href="{% url "layer_browse" %}" class="explore">{% trans "Explore Layers" %}</a></li>
+      <li><a href="{% url "layer_browse" %}?limit={{ CLIENT_RESULTS_LIMIT }}" class="explore">{% trans "Explore Layers" %}</a></li>
       <li><a href="{% url "data_upload" %}" class="upload">{% trans "Upload Layers" %}</a></li>
     </ul>
   </div>

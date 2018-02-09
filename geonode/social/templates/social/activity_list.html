@@ -1,4 +1,4 @@
-{% extends 'site_base.html' %}
+{% extends 'geonode_base.html' %}
 {% load activity_tags  social_tags i18n %}
 
 {% block title %}{% trans "Recent activity" %}{% endblock %}
@@ -25,7 +25,7 @@
     <div class="tab-content">
       <article id="all" class="tab-pane active">
         <ul class="no-style-list">
-        {% for action in action_list %}       
+        {% for action in action_list %}
           {% activity_item action %}
           {% empty %}
           <p>{% trans "No actions yet" %}</p>

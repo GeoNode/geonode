@@ -1,4 +1,4 @@
-{% extends "site_base.html" %}
+{% extends "geonode_base.html" %}
 
 {% load i18n %}
 {% block title %} {% trans "User Guide" %} - {{ block.super }} {% endblock %}
@@ -42,8 +42,8 @@
     <h4 id="exporting-a-map">Publishing a Map</h4>
     <p>Any map from the GeoNode can be embedded for use in another site or blog. To publish a map:</p>
     <ol>
-      <li>Select the from the list of maps on the community or map page and then hit the 'Publish map' button.</li> 
-      <li>Choose your desired height and width for the widget in the wizard.</li> 
+      <li>Select the from the list of maps on the community or map page and then hit the 'Publish map' button.</li>
+      <li>Choose your desired height and width for the widget in the wizard.</li>
       <li>Copy the HTML snippet provided in the wizard to any HTML page or iFrame-supporting blog post.</li>
     </ol>
     <p>This will put an interactive widget showing you map in your web page or blog post.</p>
@@ -58,7 +58,7 @@
       <li><strong>IMPORTANT:</strong> Update the title, abstract, contact info and tags to reflect the new map.</li>
       <li>Save the map.</li>
     </ol>
-    <p>You will be able to see your new map when you search for it from the <a href="/maps">Maps</a> tab.</p> 
+    <p>You will be able to see your new map when you search for it from the <a href="/maps">Maps</a> tab.</p>
     {% endblocktrans %}
   </div>
   <div class="col-md-4">

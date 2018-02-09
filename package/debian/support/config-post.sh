@@ -6,7 +6,7 @@ INSTALL_DIR=.
 # or something like $(CURDIR)/debian/geonode/
 TARGET_ROOT=''
 # Tomcat webapps directory
-TOMCAT_WEBAPPS=$TARGET_ROOT/var/lib/tomcat7/webapps
+TOMCAT_WEBAPPS=$TARGET_ROOT/var/lib/tomcat8/webapps
 # Geoserver data dir, it will survive removals and upgrades
 GEOSERVER_DATA_DIR=$TARGET_ROOT/var/lib/geoserver/geonode-data
 # Place where GeoNode media is going to be served
@@ -27,7 +27,7 @@ GEONODE_LOG=$TARGET_ROOT/var/log/geonode
 # for example 'service httpd' or '/etc/init.d/apache2'
 APACHE_SERVICE="invoke-rc.d apache2"
 # sama sama
-TOMCAT_SERVICE="invoke-rc.d tomcat7"
+TOMCAT_SERVICE="invoke-rc.d tomcat8"
 
 # For Ubuntu 12.04 (with PostGIS 1.5)
 if [ -d "/usr/share/postgresql/9.1/contrib/postgis-1.5" ]
@@ -43,6 +43,16 @@ fi
 if [ -d "/usr/share/postgresql/9.3/contrib/postgis-2.1" ]
 then
     POSTGIS_SQL_PATH=/usr/share/postgresql/9.3/contrib/postgis-2.1
+    POSTGIS_SQL=postgis.sql
+    GEOGRAPHY=1
+else
+    GEOGRAPHY=0
+fi
+
+# For Ubuntu 16.04 (with PostGIS 2.2)
+if [ -d "/usr/share/postgresql/9.5/contrib/postgis-2.2" ]
+then
+    POSTGIS_SQL_PATH=/usr/share/postgresql/9.5/contrib/postgis-2.2
     POSTGIS_SQL=postgis.sql
     GEOGRAPHY=1
 else

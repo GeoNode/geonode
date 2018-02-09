@@ -14,7 +14,7 @@
 
 {% block body_outer %}
 <div class="page-header">
-  <a href="{% url "layer_browse" %}" class="btn btn-primary pull-right">{% trans "Explore Layers" %}</a>
+  <a href="{% url "layer_browse" %}?limit={{ CLIENT_RESULTS_LIMIT }}" class="btn btn-primary pull-right">{% trans "Explore Layers" %}</a>
   <h2 class="page-title">{% trans "Upload Layers" %}</h2>
 
   <script language="javascript">
@@ -122,6 +122,7 @@
 
 
 {% block extra_script %}
+{{ block.super }}
 <script data-main="{% static 'geonode/js/upload/main' %}"
   src="{% static 'lib/js/require.js' %}">
 </script>

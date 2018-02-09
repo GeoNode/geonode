@@ -44,7 +44,7 @@ def print_map(request):
     for layer in params['layers']:
         if ogc_server_settings.LOCATION in layer['baseURL']:
             for layer_name in layer['layers']:
-                layer_obj = Layer.objects.get(typename=layer_name)
+                layer_obj = Layer.objects.get(alternate=layer_name)
                 permissions[layer_obj] = _perms_info_json(layer_obj)
                 layer_obj.set_default_permissions()
     try:

@@ -322,10 +322,34 @@ It is worth notice that both commands allows the following option
 
     .. code-block:: shell
 
-        python manage.py backup --force / -f
-        
-        python manage.py restore --force / -f
-    
+        python manage.py restore
+
+        -f, --force                          # Forces the execution without asking for confirmation
+        -c CONFIG, --config=CONFIG           # Use custom settings.ini configuration file
+        --geoserver-data-dir=GS_DATA_DIR     # Geoserver data directory
+        --dump-geoserver-vector-data         # Dump geoserver vector data
+        --no-geoserver-vector-data           # Don't dump geoserver vector data
+        --dump-geoserver-raster-data         # Dump geoserver raster data
+        --no-geoserver-raster-data           # Don't dump geoserver raster data
+        --skip-geoserver                     # Skips geoserver backup
+        --backup-file=BACKUP_FILE            # Backup archive containing GeoNode data to restore.
+        --backup-dir=BACKUP_DIR              # Backup directory containing GeoNode data to restore.
+
+    .. code-block:: shell
+
+        python manage.py backup
+
+        -f, --force                          # Forces the execution without asking for confirmation
+        -c CONFIG, --config=CONFIG           # Use custom settings.ini configuration file
+        --geoserver-data-dir=GS_DATA_DIR     # Geoserver data directory
+        --dump-geoserver-vector-data         # Dump geoserver vector data
+        --no-geoserver-vector-data           # Don't dump geoserver vector data
+        --dump-geoserver-raster-data         # Dump geoserver raster data
+        --no-geoserver-raster-data           # Don't dump geoserver raster data
+        --skip-geoserver                     # Skips geoserver backup
+        --backup-dir=BACKUP_DIR              # Destination folder where to store the backup archive.
+                                             # It must be writable.
+
 Which will instruct the management command to not ask for confirmation from the user. It enables basically a non-interactive mode.
     
 Backup

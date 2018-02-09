@@ -1,0 +1,51 @@
+{% extends "groups/group_detail.html" %}
+{% load i18n %}
+
+
+{% block title %}{{ object.name|default:object.slug }} — {{ block.super.super }}{% endblock %}
+
+{% block body_outer %}
+<div class="page-header">
+  <h2 class="page-title">{{ object.name|default:object.slug }}</h2>
+</div>
+<div class="row">
+  <div class="col-md-8 group-details">
+    <div class="row">
+      <div class="col-xs-12 col-md-12 group-details">
+        <p class="group-desc">{{ object.description|default_if_none:'' }}</p>
+
+      </div>
+    </div>
+  </div>
+
+  <div class="col-md-4">
+    <ul class="list-group">
+      {% if request.user.is_staff %}
+      <li class="list-group-item"><a href="{% url "group_category_update" object.slug %}">{% trans "Edit Group Category Details" %}</a></li>
+      {% endif %}
+    </ul>
+  </div>
+</div>
+<div class="row">
+  <div class="col-md-12">
+    <h4>{% trans "Groups" %}</h4>
+    <div class="tab-content paginate paginate-auto" id="search-content">
+    {% include 'groups/_group_list_item.html' %}
+    </div>
+  </div>
+  {% include 'search/_pagination.html' %}
+</div>
+{% endblock %}
+
+
+{% block extra_script %}
+{{ block.super.super }}
+  <script type="text/javascript">
+  SEARCH_URL = '{% url 'api_dispatch_list' api_name='api' resource_name='groups' %}'+ '?categories__slug='+ '{{ object.slug }}';
+  </script>
+  {% with include_spatial='false' %}
+  {% include 'search/search_scripts.html' %}
+  {% endwith %}
+{% endblock extra_script %}
+
+

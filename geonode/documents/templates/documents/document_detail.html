@@ -50,16 +50,23 @@
     </div>
 
     <div class="tab-content">
+      <article id="info" class="tab-pane{% if tab == 'info' or not tab %} active{% endif %}">
       {% include "base/resourcebase_info_panel.html" %}
+      </article>
 
       {% block social_links %}
+        {% if DISPLAY_SOCIAL %}
         {% include "social_links.html" %}
+        {% endif %}
       {% endblock %}
 
+      {% if DISPLAY_COMMENTS %}
       <article id="comments" class="tab-pane">
       {% include "_comments.html" %}
       </article>
+      {% endif %}
 
+      {% if DISPLAY_RATINGS %}
       <article id="rate" class="tab-pane">
         <!-- TODO: Move this to a reusable template snippet -->
         {% if request.user.is_authenticated %}
@@ -73,6 +80,7 @@
         <div class="overall_rating" style="float:left" data-score="{{ document_rating }}"></div> ({{num_votes}})
         <!-- TODO: Add display of who gave what rating based -->
       </article>
+      {% endif %}
 
       {% if EXIF_ENABLED and exif_data %}
         {% with "exif/_exif_document_detail.html" as exif_template %}
@@ -124,7 +132,8 @@
                 <div class="col-sm-3">
                   <i class="fa fa-list-alt fa-3x"></i>
                   <h4>{% trans "Metadata" %}</h4>
-                  <a class="btn btn-default btn-block btn-xs" href="{% url "document_metadata" resource.id %}">{% trans "Edit" %}</a>
+                  <a class="btn btn-default btn-block btn-xs" href="{% url "document_metadata" resource.id %}">{% trans "Wizard" %}</a>
+                  <a class="btn btn-default btn-block btn-xs" href="{% url "document_metadata_advanced" resource.id %}">{% trans "Advanced Edit" %}</a>
                 </div>
                 {% endif %}
                 {% if "change_resourcebase" in perms_list or "delete_resourcebase" in perms_list %}
@@ -185,17 +194,16 @@
       </div>
 
       <li class="list-group-item">
-        <h4>{% trans "Resource using this document" %}</h4>
+        <h4>{% trans "Resources using this document" %}</h4>
         {% if layer.maps %}
         <p>{% trans "List of resources using this document:" %}</p>
         {% endif %}
         <ul class="list-unstyled">
-          {% if related.title %}
-          <p>{% trans "This document is related to a " %} {{ resource.content_type.name }}</p>
-          <a href='{{ related.get_absolute_url }}'>{{ related.title }}</a>
-          {% else %}
+          {% for resource in related %}
+          <li><a href="{{ resource.get_absolute_url }}">{{ resource.title }}</a></li>
+          {% empty %}
           <p>{% trans "This document is not related to any maps or layers" %}</p>
-          {% endif %}
+          {% endfor %}
         </ul>
       </li>
 
@@ -216,15 +224,9 @@
 {% endblock %}
 
 {% block extra_script %}
-{% if SOCIAL_BUTTONS %}
-<div id="fb-root"></div>
-<script>(function(d, s, id) {
-  var js, fjs = d.getElementsByTagName(s)[0];
-  if (d.getElementById(id)) {return;}
-  js = d.createElement(s); js.id = id;
-  js.src = "//connect.facebook.net/en_US/all.js#xfbml=1";
-  fjs.parentNode.insertBefore(js, fjs);
-}(document, 'script', 'facebook-jssdk'));</script>
+{{ block.super }}
+{% if DISPLAY_SOCIAL %}
+    {% include 'facebook_sdk.html' %}
 {% endif %}
     {% if request.user.is_authenticated %}
         {% user_rating_js request.user resource "document" %}
@@ -234,7 +236,7 @@
     {% include 'rating.html' %}
     {% include 'request_download.html' %}
     <script type="text/javascript">
-        {% if SOCIAL_BUTTONS %}
+        {% if DISPLAY_SOCIAL %}
         (function() {
             var po = document.createElement('script'); po.type = 'text/javascript'; po.async = true;
             po.src = 'https://apis.google.com/js/plusone.js';

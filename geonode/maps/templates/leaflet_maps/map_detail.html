@@ -1,0 +1,23 @@
+  {% if TWITTER_CARD %}
+    {% include "base/_resourcebase_twittercard.html" %}
+  {% endif %}
+  {% if OPENGRAPH_ENABLED %}
+    {% include "base/_resourcebase_opengraph.html" %}
+  {% endif %}
+  {% if preview == 'OL3' %}
+    {% include "maps/map_ol3.html" %}
+  {% elif preview == 'leaflet' %}
+    {% include "maps/map_leaflet.html" %}
+  {% elif preview == 'react' %}
+		{% include 'geonode-client/map_detail.html' %}
+  {% else %}
+    {% include "maps/map_include.html" %}
+  {% endif %}
+  {{ block.super }}
+
+
+
+      <div id="embedded_map">
+        <div id="the_map"></div>
+      </div>
+

@@ -23,25 +23,34 @@ This file demonstrates writing tests using the unittest module. These will pass
 when you run "manage.py test".
 
 """
+import os
 import StringIO
 import json
 
+import gisdata
+from datetime import datetime
 from django.test import TestCase
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.contrib.auth import get_user_model
 from django.contrib.contenttypes.models import ContentType
 from django.core.urlresolvers import reverse
+from django.contrib.auth.models import Group
+from geonode.base.models import License, Region
 
 from guardian.shortcuts import get_anonymous_user
 
 from .forms import DocumentCreateForm
 
 from geonode.maps.models import Map
-from geonode.documents.models import Document
+from geonode.layers.models import Layer
+from geonode.documents.models import Document, DocumentResourceLink
+from geonode.documents.forms import DocumentFormMixin
 from geonode.base.populate_test_data import create_models
+from geonode.tests.utils import NotificationsTestsHelper
+from geonode.documents import DocumentsAppConfig
 
 
-class LayersTest(TestCase):
+class DocumentsTest(TestCase):
     fixtures = ['initial_data.json', 'bobby']
 
     perm_spec = {
@@ -85,17 +94,21 @@ class LayersTest(TestCase):
 
         superuser = get_user_model().objects.get(pk=2)
 
-        m = Map.objects.all()[0]
-        ctype = ContentType.objects.get_for_model(m)
-
         c = Document.objects.create(
             doc_file=f,
             owner=superuser,
-            title='theimg',
+            title='theimg')
+
+        m = Map.objects.all()[0]
+        ctype = ContentType.objects.get_for_model(m)
+        l = DocumentResourceLink.objects.create(
+            document_id=c.id,
             content_type=ctype,
             object_id=m.id)
 
         self.assertEquals(Document.objects.get(pk=c.id).title, 'theimg')
+        self.assertEquals(DocumentResourceLink.objects.get(pk=l.id).object_id,
+                          m.id)
 
     def test_create_document_url(self):
         """Tests creating an external document instead of a file."""
@@ -194,12 +207,32 @@ class LayersTest(TestCase):
 
     def test_document_details(self):
         """/documents/1 -> Test accessing the detail view of a document"""
-
         d = Document.objects.get(pk=1)
         d.set_default_permissions()
 
         response = self.client.get(reverse('document_detail', args=(str(d.id),)))
         self.assertEquals(response.status_code, 200)
+
+    def test_document_metadata_details(self):
+        d = Document.objects.get(pk=1)
+        d.set_default_permissions()
+
+        response = self.client.get(reverse('document_metadata_detail', args=(str(d.id),)))
+        self.failUnlessEqual(response.status_code, 200)
+        self.assertContains(response, "Approved", count=1, status_code=200, msg_prefix='', html=False)
+        self.assertContains(response, "Published", count=1, status_code=200, msg_prefix='', html=False)
+        self.assertContains(response, "Featured", count=1, status_code=200, msg_prefix='', html=False)
+        self.assertContains(response, "<dt>Group</dt>", count=0, status_code=200, msg_prefix='', html=False)
+
+        # ... now assigning a Group to the document
+        group = Group.objects.first()
+        d.group = group
+        d.save()
+        response = self.client.get(reverse('document_metadata_detail', args=(str(d.id),)))
+        self.failUnlessEqual(response.status_code, 200)
+        self.assertContains(response, "<dt>Group</dt>", count=1, status_code=200, msg_prefix='', html=False)
+        d.group = None
+        d.save()
 
     def test_access_document_upload_form(self):
         """Test the form page is returned correctly via GET request /documents/upload"""
@@ -318,3 +351,265 @@ class LayersTest(TestCase):
 
         # Test that the method returns 200
         self.assertEquals(response.status_code, 200)
+
+    def test_batch_edit(self):
+        Model = Document
+        view = 'document_batch_metadata'
+        resources = Model.objects.all()[:3]
+        ids = ','.join([str(element.pk) for element in resources])
+        # test non-admin access
+        self.client.login(username="bobby", password="bob")
+        response = self.client.get(reverse(view, args=(ids,)))
+        self.assertEquals(response.status_code, 401)
+        # test group change
+        group = Group.objects.first()
+        self.client.login(username='admin', password='admin')
+        response = self.client.post(
+            reverse(view, args=(ids,)),
+            data={'group': group.pk},
+        )
+        self.assertEquals(response.status_code, 302)
+        resources = Model.objects.filter(id__in=[r.pk for r in resources])
+        for resource in resources:
+            self.assertEquals(resource.group, group)
+        # test owner change
+        owner = get_user_model().objects.first()
+        response = self.client.post(
+            reverse(view, args=(ids,)),
+            data={'owner': owner.pk},
+        )
+        self.assertEquals(response.status_code, 302)
+        resources = Model.objects.filter(id__in=[r.pk for r in resources])
+        for resource in resources:
+            self.assertEquals(resource.owner, owner)
+        # test license change
+        license = License.objects.first()
+        response = self.client.post(
+            reverse(view, args=(ids,)),
+            data={'license': license.pk},
+        )
+        self.assertEquals(response.status_code, 302)
+        resources = Model.objects.filter(id__in=[r.pk for r in resources])
+        for resource in resources:
+            self.assertEquals(resource.license, license)
+        # test regions change
+        region = Region.objects.first()
+        response = self.client.post(
+            reverse(view, args=(ids,)),
+            data={'region': region.pk},
+        )
+        self.assertEquals(response.status_code, 302)
+        resources = Model.objects.filter(id__in=[r.pk for r in resources])
+        for resource in resources:
+            self.assertTrue(region in resource.regions.all())
+        # test date change
+        date = datetime.now()
+        response = self.client.post(
+            reverse(view, args=(ids,)),
+            data={'date': date},
+        )
+        self.assertEquals(response.status_code, 302)
+        resources = Model.objects.filter(id__in=[r.pk for r in resources])
+        for resource in resources:
+            self.assertEquals(resource.date, date)
+        # test language change
+        language = 'eng'
+        response = self.client.post(
+            reverse(view, args=(ids,)),
+            data={'language': language},
+        )
+        self.assertEquals(response.status_code, 302)
+        resources = Model.objects.filter(id__in=[r.pk for r in resources])
+        for resource in resources:
+            self.assertEquals(resource.language, language)
+        # test keywords change
+        keywords = 'some,thing,new'
+        response = self.client.post(
+            reverse(view, args=(ids,)),
+            data={'keywords': keywords},
+        )
+        self.assertEquals(response.status_code, 302)
+        resources = Model.objects.filter(id__in=[r.pk for r in resources])
+        for resource in resources:
+            for word in resource.keywords.all():
+                self.assertTrue(word.name in keywords.split(','))
+
+
+class DocumentModerationTestCase(TestCase):
+
+    fixtures = ['initial_data.json', 'bobby']
+
+    def setUp(self):
+        super(DocumentModerationTestCase, self).setUp()
+        self.user = 'admin'
+        self.passwd = 'admin'
+        create_models(type='document')
+        create_models(type='map')
+        self.u = get_user_model().objects.get(username=self.user)
+        self.u.email = 'test@email.com'
+        self.u.is_active = True
+        self.u.save()
+
+    def _get_input_path(self):
+        base_path = gisdata.GOOD_DATA
+        return os.path.join(base_path, 'vector', 'readme.txt')
+
+    def test_moderated_upload(self):
+        """
+        Test if moderation flag works
+        """
+        with self.settings(ADMIN_MODERATE_UPLOADS=False):
+            document_upload_url = reverse('document_upload')
+            self.client.login(username=self.user, password=self.passwd)
+
+            input_path = self._get_input_path()
+
+            with open(input_path, 'rb') as f:
+                data = {'title': 'document title',
+                        'doc_file': f,
+                        'doc_url': '',
+                        'resource': '',
+                        'permissions': '{}',
+                        }
+                resp = self.client.post(document_upload_url, data=data)
+            self.assertEqual(resp.status_code, 302)
+            dname = 'document title'
+            l = Document.objects.get(title=dname)
+
+            self.assertTrue(l.is_published)
+            l.delete()
+
+        with self.settings(ADMIN_MODERATE_UPLOADS=True):
+            document_upload_url = reverse('document_upload')
+            self.client.login(username=self.user, password=self.passwd)
+
+            input_path = self._get_input_path()
+
+            with open(input_path, 'rb') as f:
+                data = {'title': 'document title',
+                        'doc_file': f,
+                        'doc_url': '',
+                        'resource': '',
+                        'permissions': '{}',
+                        }
+                resp = self.client.post(document_upload_url, data=data)
+            self.assertEqual(resp.status_code, 302)
+            dname = 'document title'
+            l = Document.objects.get(title=dname)
+
+            self.assertFalse(l.is_published)
+
+
+class DocumentNotificationsTestCase(NotificationsTestsHelper):
+
+    fixtures = ['initial_data.json', 'bobby']
+
+    def setUp(self):
+        super(DocumentNotificationsTestCase, self).setUp()
+        self.user = 'admin'
+        self.passwd = 'admin'
+        create_models(type='document')
+        self.anonymous_user = get_anonymous_user()
+        self.u = get_user_model().objects.get(username=self.user)
+        self.u.email = 'test@email.com'
+        self.u.is_active = True
+        self.u.save()
+        self.setup_notifications_for(DocumentsAppConfig.NOTIFICATIONS, self.u)
+
+    def testDocumentNotifications(self):
+        with self.settings(PINAX_NOTIFICATIONS_QUEUE_ALL=True):
+            self.clear_notifications_queue()
+            l = Document.objects.create(title='test notifications', owner=self.u)
+            self.assertTrue(self.check_notification_out('document_created', self.u))
+            l.title = 'test notifications 2'
+            l.save()
+            self.assertTrue(self.check_notification_out('document_updated', self.u))
+
+            from dialogos.models import Comment
+            lct = ContentType.objects.get_for_model(l)
+            comment = Comment(author=self.u, name=self.u.username,
+                              content_type=lct, object_id=l.id,
+                              content_object=l, comment='test comment')
+            comment.save()
+
+            self.assertTrue(self.check_notification_out('document_comment', self.u))
+
+
+class DocumentResourceLinkTestCase(TestCase):
+
+    fixtures = ['initial_data.json', 'bobby']
+
+    def setUp(self):
+        create_models('document')
+        create_models('map')
+        create_models('layer')
+
+        self.test_file = StringIO.StringIO(
+            'GIF87a\x01\x00\x01\x00\x80\x01\x00\x00\x00\x00ccc,\x00'
+            '\x00\x00\x00\x01\x00\x01\x00\x00\x02\x02D\x01\x00;'
+        )
+
+    def test_create_document_with_links(self):
+        """Tests the creation of document links."""
+        f = SimpleUploadedFile(
+            'test_img_file.gif',
+            self.test_file.read(),
+            'image/gif')
+
+        superuser = get_user_model().objects.get(pk=2)
+
+        d = Document.objects.create(
+            doc_file=f,
+            owner=superuser,
+            title='theimg')
+
+        self.assertEquals(Document.objects.get(pk=d.id).title, 'theimg')
+
+        maps = list(Map.objects.all())
+        layers = list(Layer.objects.all())
+        resources = maps + layers
+
+        # create document links
+
+        mixin1 = DocumentFormMixin()
+        mixin1.instance = d
+        mixin1.cleaned_data = dict(
+            links=mixin1.generate_link_values(resources=resources),
+        )
+        mixin1.save_many2many()
+
+        for resource in resources:
+            ct = ContentType.objects.get_for_model(resource)
+            l = DocumentResourceLink.objects.get(
+                document_id=d.id,
+                content_type=ct.id,
+                object_id=resource.id
+            )
+            self.assertEquals(l.object_id, resource.id)
+
+        # update document links
+
+        mixin2 = DocumentFormMixin()
+        mixin2.instance = d
+        mixin2.cleaned_data = dict(
+            links=mixin2.generate_link_values(resources=layers),
+        )
+        mixin2.save_many2many()
+
+        for resource in layers:
+            ct = ContentType.objects.get_for_model(resource)
+            l = DocumentResourceLink.objects.get(
+                document_id=d.id,
+                content_type=ct.id,
+                object_id=resource.id
+            )
+            self.assertEquals(l.object_id, resource.id)
+
+        for resource in maps:
+            ct = ContentType.objects.get_for_model(resource)
+            with self.assertRaises(DocumentResourceLink.DoesNotExist):
+                DocumentResourceLink.objects.get(
+                    document_id=d.id,
+                    content_type=ct.id,
+                    object_id=resource.id
+                )

@@ -1,3 +1,5 @@
+sudo: required
+
 language: python
 
 python:
@@ -6,33 +8,79 @@ python:
 virtualenv:
   system_site_packages: true
 
+services:
+  - docker
+  - postgresql
+
+addons:
+  postgresql: 9.6
+  apt:
+    packages:
+    - postgresql-9.6-postgis-2.3
+
+env:
+  - BACKEND: 'geonode.geoserver'
+  - BACKEND: 'geonode.qgis_server'
+    DOCKER_COMPOSE_VERSION: 1.11.2
+    # This is qgis server address
+    QGIS_SERVER_URL: http://localhost:9000/
+    # This is the location of docker network bridge
+    # So QGIS server can access this address
+    SITEURL: http://localhost:8000/
+    QGIS_SERVER_PORT: 9000
+    ON_TRAVIS: True
+    CELERY_ALWAYS_EAGER: True
+
 branches:
   only:
     - master
+    - 2.9.x
+    - 2.7.x
+    - 2.6.x
+
+before_install:
+  - scripts/misc/qgis_server_setup.sh before_install
+  - chmod +x scripts/misc/bdd_setup.sh
+  - scripts/misc/bdd_setup.sh before_install
 
 install:
   - sudo apt-get -qq -y update
-  - sudo apt-get install -y libgdal1h python-gdal
+  - sudo apt-get install -y libgdal1h python-gdal gdal-bin spatialite-bin
   - sudo apt-get install -y python-virtualenv python-imaging python-lxml python-pyproj python-shapely python-nose python-httplib2 python-httplib2 gettext
+  - sudo apt-get install -y python-dev libxml2 libxml2-dev libxslt1-dev zlib1g-dev libjpeg-dev libpq-dev libgdal-dev git default-jdk
   - sudo add-apt-repository -y ppa:webupd8team/java
   - sudo apt-get update
-  - sudo apt-get install -y --force-yes oracle-java8-installer ant maven2 libjai-imageio-core-java --no-install-recommends
+  - sudo apt-get install -y --force-yes oracle-java8-installer ant maven2 --no-install-recommends
   - sudo update-java-alternatives --set java-8-oracle
-  - pip install -r requirements.txt --use-mirrors
-  - pip install -e . --use-mirrors --no-deps
-  - pip install coveralls
+  - pip install -r requirements.txt --no-deps
+  - pip install -e .
+  - pip install pygdal==`gdal-config --version`
+  - pip install codecov
 
 before_script:
+  # Initialize DB
+  # - sudo apt-get install postgresql-9.6-postgis-2.3 -y -q
+  - psql -U postgres -c "create extension postgis"
+  - chmod +x scripts/misc/create_dbs_travis.sh
+  - scripts/misc/create_dbs_travis.sh before_script
+  # For QGIS Server Travis steps
+  - scripts/misc/qgis_server_setup.sh before_script
+  - scripts/misc/bdd_setup.sh before_script
+
   - paver setup
 
 script:
-  - paver run_tests --coverage
+  - paver run_tests --coverage --local false
 
 after_script:
+  # For QGIS Server Travis steps
+  - scripts/misc/qgis_server_setup.sh after_script
+
+  # Cleanup
   - paver reset_hard
 
 after_success:
-  - coveralls
+  - codecov
 
 notifications:
   irc:

@@ -20,7 +20,7 @@
 
 """
 This is a fabric script file that allows for remote deployment of
-GeoNode and a downstream GeoNode project via ssh. 
+GeoNode and a downstream GeoNode project via ssh.
 
 To deploy a default GeoNode:
     fab -H user@hostname deploy_default_geonode
@@ -33,7 +33,7 @@ This file currently gets GeoNode from GitHub, eventually will install
 from repo or debian package (once release candidate phase or later)
 """
 # Usage:
-#     fab -H user@hostname 
+#     fab -H user@hostname
 
 import os, glob
 from fabric.api import env, sudo, run, cd, local, put, prefix
@@ -47,10 +47,10 @@ INSTALLDIR = '/var/lib'
 POSTGIS_VER = "1.5.3-2"
 GEONODE_BRANCH = 'dev'
 GEONODE_GIT_URL = 'git://github.com/GeoNode/geonode.git'
-ADMIN_USER='geonode' # Matches user in ubuntu packages 
+ADMIN_USER='geonode' # Matches user in ubuntu packages
 ADMIN_PASSWORD='adm1n'
 ADMIN_EMAIL='admin@admin.admin'
-UBUNTU_VERSION = "precise" 
+UBUNTU_VERSION = "precise"
 ARCH='x86_64'
 VERSION='2.0a0'
 MAKE_PUBLIC=True
@@ -126,7 +126,7 @@ def deploy_project(project):
                 put(projdir,PYLIBS,use_sudo=True)
     put('requirements.txt',GEONODEDIR,use_sudo=True)
     with cd(GEONODEDIR), prefix(ACT):
-        sudo('pip install -r requirements.txt')
+        sudo('pip install -r requirements.txt --no-deps')
         sudo('rm requirements.txt')
     put('%s/%s.apache' % (project,project),'/etc/apache2/sites-available/%s' % project, use_sudo=True)
     sed('/etc/apache2/sites-available/%s' % project, 'REPLACE_WITH_SITEDIR', PYLIBS, use_sudo=True)
@@ -153,7 +153,7 @@ def restore_data(project):
     with prefix(ACT):
         sudo('django-admin.py cleardeadlayers --settings=%s.settings' % project)
         sudo('django-admin.py updatelayers --settings=%s.settings' % project)
-        
+
 def create_database(db,user,password):
     #sudo("dropdb %s" % db, user="postgres")
     #sudo("dropuser %s" % user, user="postgres")
@@ -179,7 +179,7 @@ def setup_pgsql(project):
 def deploy(project):
     install_depend()
     deploy_geonode()
-    deploy_project(project=project) 
+    deploy_project(project=project)
     enable_site(project)
     setup_pgsql(project)
 
@@ -191,22 +191,22 @@ def deploy_default_geonode():
     setup_pgsql('geonode')
 
 def deploy_geonode_testing_package():
-    sudo('add-apt-repository -y ppa:geonode/testing') 
+    sudo('add-apt-repository -y ppa:geonode/testing')
     sudo('apt-get update')
     sudo('apt-get install -f -y geonode')
 
 def deploy_geonode_snapshot_package():
-    sudo('add-apt-repository -y ppa:geonode/snapshots') 
+    sudo('add-apt-repository -y ppa:geonode/snapshots')
     sudo('apt-get update')
     sudo('apt-get install -f -y geonode')
 
 def deploy_geonode_unstable_package():
-    sudo('add-apt-repository -y ppa:geonode/unstable') 
+    sudo('add-apt-repository -y ppa:geonode/unstable')
     sudo('apt-get update')
     sudo('apt-get install -f -y geonode')
 
 def deploy_geonode_dev_deb():
-    sudo('add-apt-repository -y ppa:geonode/unstable') 
+    sudo('add-apt-repository -y ppa:geonode/unstable')
     sudo('apt-get update')
     sudo('wget -e robots=off --wait 0.25 -r -l1 --no-parent -A.deb http://build.geonode.org/geonode/latest/')
     with settings(warn_only=True):
@@ -269,12 +269,12 @@ def build_geonode_ami():
         sudo('export AWS_USER_ID=%s' % AWS_USER_ID)
         sudo('export AWS_ACCESS_KEY_ID=%s' % AWS_ACCESS_KEY_ID)
         sudo('export AWS_SECRET_ACCESS_KEY=%s' % AWS_SECRET_ACCESS_KEY)
-    sudo('export ARCH=%s' % ARCH) 
+    sudo('export ARCH=%s' % ARCH)
     prefix = 'geonode-%s-%s' % (VERSION, datetime.datetime.now().strftime('%Y%m%d%H%M%S'))
     excludes = '/mnt,/root/.ssh,/home/ubuntu/.ssh,/tmp'
     sudo("ec2-bundle-vol -r %s -d /mnt -p %s -u %s -k ~/.ssh/pk-*.pem -c ~/.ssh/cert-*.pem -e %s" % (ARCH, prefix, AWS_USER_ID, excludes))
     sudo("ec2-upload-bundle -b %s -m /mnt/%s.manifest.xml -a %s -s %s" % (AMI_BUCKET, prefix, AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY))
-    output = sudo('ec2-register --name "%s/%s" "%s/%s.manifest.xml" -K ~/.ssh/pk-*.pem -C ~/.ssh/cert-*.pem' % (AMI_BUCKET, prefix, AMI_BUCKET, prefix)) 
+    output = sudo('ec2-register --name "%s/%s" "%s/%s.manifest.xml" -K ~/.ssh/pk-*.pem -C ~/.ssh/cert-*.pem' % (AMI_BUCKET, prefix, AMI_BUCKET, prefix))
     ami_id = output.split('\t')[1]
     if MAKE_PUBLIC:
         sudo("ec2-modify-image-attribute -l -a all -K ~/.ssh/pk-*.pem -C ~/.ssh/cert-*.pem %s" % (ami_id))

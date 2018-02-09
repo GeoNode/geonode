@@ -11,7 +11,7 @@ services:
      image: rabbitmq
 
   django:
-    image: geonode/django
+    image: geonode/geonode:geonode
     links:
       - postgres
       - elasticsearch
@@ -21,7 +21,7 @@ services:
       - ./scripts/docker/env/production/django.env
 
   celery:
-    image: geonode/django
+    image: geonode/geonode:geonode
     links:
       - rabbitmq
       - postgres
@@ -30,8 +30,18 @@ services:
     env_file:
       - ./scripts/docker/env/production/django.env
 
+  consumers:
+    image: geonode/geonode:geonode
+    links:
+      - rabbitmq
+      - postgres
+      - elasticsearch
+    command: python manage.py runmessaging
+    env_file:
+      - ./scripts/docker/env/production/django.env
+
   geoserver:
-    image: geonode/geoserver
+    image: geonode/geoserver:alias
     links:
       - postgres
     ports:
@@ -41,7 +51,7 @@ services:
     env_file:
       - ./scripts/docker/env/production/geoserver.env
 
-  nginx:
+  geonode:
     image: geonode/nginx:geoserver
     links:
       - django
@@ -50,7 +60,7 @@ services:
       - "80:80"
 
   data_dir_conf:
-    image: geonode/geoserver_data
+    image: geonode/geoserver_data:2.9.x-oauth2
     container_name: geoserver_data_dir
     command: /bin/true
     volumes:

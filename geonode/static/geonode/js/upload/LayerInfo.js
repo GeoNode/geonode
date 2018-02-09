@@ -26,15 +26,15 @@ define(function (require, exports) {
         this.main     = null;
 
         this.element  = null;
+
         $.extend(this, options || {});
         if (!this.main || !this.type) {
             this.guessFileType();
         }
 
         // need to find a way converting this name to a safe selector
-        this.selector = '#' + LayerInfo.safeSelector(this.name) + '-element';
-        this.selector = this.selector.replace(' ','_');
-        this.name = this.name.replace(' ','_');
+        this.name = LayerInfo.safeSelector(this.name.split('.')[0]);
+        this.selector = '#' + this.name + '-element';
         this.errors = this.collectErrors();
         this.polling = false;
     };
@@ -45,7 +45,7 @@ define(function (require, exports) {
      *  @returns string
      */
     LayerInfo.safeSelector = function (name) {
-        return name.replace(/\[|\]|\(|\)|./g, '_');
+        return name.replace(/\[|\]|\(|\)| /g, '_');
     };
 
     /** Function to return the success template
@@ -86,8 +86,14 @@ define(function (require, exports) {
             // if we find the type of the file, we also find the "main"
             // file
             if (results) {
-                self.type = results.type;
-                self.main = results.file;
+                // Avoid assuming the metadata file as main one
+                if (results.type.main == 'xml' && self.main != undefined) {
+                   self.type = self.type;
+                   self.main = self.main;
+                } else {
+                   self.type = results.type;
+                   self.main = results.file;
+                }
             }
         });
     };
@@ -100,20 +106,18 @@ define(function (require, exports) {
      */
     LayerInfo.prototype.collectErrors = function () {
         var errors = [];
-
-		var mosaic_is_valid = true;
-		var is_granule = $('#' + this.name + '-mosaic').is(':checked');
+        var mosaic_is_valid = true;
+        var is_granule = $('#' + this.name + '-mosaic').is(':checked');
 
         var is_time_enabled = $('#' + this.name + '-timedim').is(':checked');
-		var is_time_valid = is_time_enabled && !$('#' + this.name + '-timedim-value-valid').is(':visible');
+	    var is_time_valid = is_time_enabled && !$('#' + this.name + '-timedim-value-valid').is(':visible');
 
         if (is_granule && is_time_enabled) {
-			mosaic_is_valid = is_time_valid;
-		}
-
-		if (is_granule && !mosaic_is_valid) {
-			errors.push('The configuration of the file as a Mosaic Granule is not valid, please fix the issue and try again');
-		}
+		    mosaic_is_valid = is_time_valid;
+	    }
+	    if (is_granule && !mosaic_is_valid) {
+		    errors.push('The configuration of the file as a Mosaic Granule is not valid, please fix the issue and try again');
+	    }
 
         if (this.type) {
             errors = this.type.findTypeErrors(this.getExtensions());
@@ -152,14 +156,14 @@ define(function (require, exports) {
     LayerInfo.prototype.prepareFormData = function (form_data) {
         var i, ext, file, perm, geogig, geogig_store, time, mosaic;
 
-		var base_ext  = this.main.name.split('.').pop();
-		var base_name = this.main.name.slice(0, -(base_ext.length+1));
+        var base_ext  = this.main.name.split('.').pop();
+        var base_name = this.name;
 
         var base_ext  = this.main.name.split('.').pop();
-        var base_name = this.main.name.slice(0, -(base_ext.length+1));
+        var base_name = this.name;
 
         var base_ext  = this.main.name.split('.').pop();
-        var base_name = this.main.name.slice(0, -(base_ext.length+1));
+        var base_name = this.name;
 
         if (!form_data) {
             form_data = new FormData();
@@ -173,9 +177,9 @@ define(function (require, exports) {
         }
 
         if (geogig_enabled) {
-            geogig = $('#' + base_name + '\\:geogig_toggle').is(':checked');
+            geogig_store = $('#' + base_name + '\\:geogig_store').val();
+            geogig = $('#' + base_name + '\\:geogig_toggle').is(':checked') && geogig_store.length != 0;
             if (geogig) {
-                geogig_store = $('#' + base_name + '\\:geogig_store').val();
                 form_data.append('geogig_store', geogig_store);
             } else {
                 form_data.append('geogig_store', "");
@@ -183,7 +187,7 @@ define(function (require, exports) {
             form_data.append('geogig', geogig);
         }
         if (time_enabled) {
-            time = $('#' + base_name + '-time').is(':checked');
+            time = (this.type && (this.type.main === 'shp' || this.type.main === 'csv'));
             form_data.append('time', time);
         }
         if (mosaic_enabled) {
@@ -260,15 +264,22 @@ define(function (require, exports) {
 
         for (i = 0; i < this.files.length; i += 1) {
             file = this.files[i];
-            if (file.name !== this.main.name) {
+            if (file.name !== this.name) {
                 ext = path.getExt(file);
                 form_data.append(ext + '_file', file);
             }
         }
 
         form_data.append('charset', $('#charset').val());
+        if ($('#id_metadata_upload_form').prop('checked')) {
+             form_data.append('metadata_upload_form', true);
+        }
         if ($('#id_metadata_uploaded_preserve').prop('checked')) {
              form_data.append('metadata_uploaded_preserve', true);
+        }
+        if ($('#id_style_upload_form').prop('checked')) {
+             form_data.append('style_upload_form', true);
+             form_data.append('layer_title', $('#id_layer_title').val());
         }
         return form_data;
     };
@@ -289,6 +300,7 @@ define(function (require, exports) {
      *  @returns {string}
      */
     LayerInfo.prototype.markError = function (error, status) {
+        var error = (error != undefined ? error : 'Unespected error!');
         common.logError(error, this.element.find('#status'));
     };
 
@@ -313,7 +325,11 @@ define(function (require, exports) {
             url: event.data.url,
             async: true,
             failure: function (resp, status) {
-                self.markError(resp.errors, status);
+                if (resp && resp.errors) {
+                    self.markError(resp.errors, status);
+                } else {
+                    self.markError(gettext('Unexpected Error'), status);
+                }
             },
             success: function (resp, status) {
                 if(resp.url && resp.input_required){
@@ -330,7 +346,13 @@ define(function (require, exports) {
         var self = this;
         var a = '<a href="' + resp.url + '" class="btn btn-success">' + gettext('Layer Info') + '</a>';
         var b = '<a href="' + resp.url + '/metadata" class="btn btn-warning">' + gettext('Edit Metadata') + '</a>';
-        var c = '<a href="' + resp.url.replace(/^\/layers/, '/gs') + '/style/manage" class="btn btn-warning">' + gettext('Manage Styles') + '</a>';
+        var c = '<a href="' + resp.url + '/metadata_upload" class="btn btn-warning">' + gettext('Upload Metadata') + '</a>';
+        var d = '<a href="' + resp.url + '/style_upload" class="btn btn-warning">' + gettext('Upload SLD') + '</a>';
+        var e = '<a href="' + resp.url.replace(/^\/layers/, '/gs') + '/style/manage" class="btn btn-warning">' + gettext('Manage Styles') + '</a>';
+        if(resp.ogc_backend == 'geonode.qgis_server'){
+            // QGIS Server has no manage style interaction.
+            d = '';
+        }
         var msg_col = "";
         if (resp.info){
             var msg_template = gettext('The column %1 was renamed to %2 <br/>');
@@ -339,7 +361,7 @@ define(function (require, exports) {
             }
         }
         self.logStatus({
-            msg: '<p>' + gettext('Your layer was successfully uploaded') + '<br/>' + msg_col + '<br/>' + a + '&nbsp;&nbsp;&nbsp;' + b + '&nbsp;&nbsp;&nbsp;' + c + '</p>',
+            msg: '<p>' + gettext('Your layer was successfully uploaded') + '<br/>' + msg_col + '<br/>' + a + '&nbsp;&nbsp;&nbsp;' + b + '&nbsp;&nbsp;&nbsp;' + c + '&nbsp;&nbsp;&nbsp;' + d + '&nbsp;&nbsp;&nbsp;' + e + '</p>',
             level: 'alert-success',
             empty: 'true'
         });
@@ -391,6 +413,9 @@ define(function (require, exports) {
                         setTimeout(function() {
                             self.doFinal(resp);
                         }, 5000);
+                    } else if (resp.status === 'error') {
+                        self.polling = false;
+                        self.markError(resp.error_msg, resp.status);
                     } else {
                         self.displayUploadedLayerLinks(resp);
                     }
@@ -399,9 +424,17 @@ define(function (require, exports) {
         } else if (resp.status === "incomplete") {
             var id = common.parseQueryString(resp.url).id;
             var element = 'next_step_' + id
-            var a = '<a id="' + element + '" class="btn">Continue</a>';
+            var a = '<a id="' + element + '" class="btn btn-primary" target="_new">Continue</a>';
+            var msg = '<p>' + gettext('Files are ready to be ingested!')
+
+            if (resp.redirect_to.indexOf('time') !== -1 || resp.url.indexOf('time') !== -1) {
+                msg += '&nbsp;' + gettext('A temporal dimension may be added to this Layer.') + '&nbsp;' + a + '</p>'
+            } else {
+                msg += '&nbsp;' + a + '</p>'
+            }
+
             self.logStatus({
-                msg:'<p>' + gettext('You need to specify more information in order to complete your upload.') + '</p><p>' + gettext('You can continue configuring your layer.') + '</p><p>' + a + '</p>',
+                msg: msg,
                 level: 'alert-success',
                 empty: 'true'
             });
@@ -413,11 +446,15 @@ define(function (require, exports) {
                 level: 'alert-success',
                 empty: 'true'
             });
+        } else if (resp.status === 'error') {
+            self.polling = false;
+            self.markError(resp.error_msg, resp.status);
         } else if (resp.success === true) {
             self.polling = false;
             self.displayUploadedLayerLinks(resp);
         } else {
             self.polling = false;
+            resp.errors = 'Unexpected Error';
             self.logStatus({
                 msg:'<p>' + gettext('Unexpected Error') + '</p>',
                 level: 'alert-error',
@@ -445,7 +482,11 @@ define(function (require, exports) {
                 async: true,
                 failure: function (resp, status) {
                     self.polling = false;
-                    self.markError(resp.errors, status);
+                    if (resp.status && resp.status !== 'success') {
+                        self.markError(resp.error_msg, resp.status);
+                    } else {
+                        self.markError(resp.errors, status);
+                    }
                 },
                 success: function (resp, status) {
                     self.id = resp.id;
@@ -455,6 +496,9 @@ define(function (require, exports) {
                         } else {
                             self.doStep(resp);
                         }
+                    } else if (resp.status === 'error') {
+                        self.polling = false;
+                        self.markError(resp.error_msg, resp.status);
                     } else if (resp.redirect_to.indexOf('/upload/final') > -1) {
                         self.doFinal(resp);
                     } else {
@@ -462,6 +506,9 @@ define(function (require, exports) {
                     }
                 }
             });
+        } else if (resp.success === true && resp.status === 'error') {
+            self.polling = false;
+            self.markError(resp.error_msg, resp.status);
         } else if (resp.success === true && typeof resp.url != 'undefined') {
             self.doFinal(resp);
         } else if (resp.success === true && resp.redirect_to.indexOf('/upload/final') > -1) {
@@ -581,15 +628,15 @@ define(function (require, exports) {
 
              time_re_txt = input.val();
 
-			 var base_name = this.name.split('-timedim')[0];
+	     var base_name = this.name.split('-timedim')[0];
 
-			 $('#' + base_name + '-timedim-value-valid').show();
+	     $('#' + base_name + '-timedim-value-valid').show();
         });
 
         $('#' + this.name + '-timedim-presentation-format-select').on('change', function() {
              var input = $(this);
 
-			 var base_name = this.name.split('-timedim')[0];
+             var base_name = this.name.split('-timedim')[0];
 
              if (input.val() === 'DISCRETE_INTERVAL') {
                 $('#' + base_name + '-mosaic-timedim-presentation-res-options').show();
@@ -601,7 +648,7 @@ define(function (require, exports) {
         $('#' + this.name + '-timedim-defaultvalue-format-select').on('change', function() {
              var input = $(this);
 
-			 var base_name = this.name.split('-timedim')[0];
+              var base_name = this.name.split('-timedim')[0];
 
              if (input.val() === 'NEAREST' || input.val() === 'FIXED') {
                 $('#' + base_name + '-mosaic-timedim-defaultvalue-res-options').show();
@@ -616,10 +663,10 @@ define(function (require, exports) {
            var re = new RegExp(time_re_txt, "g");
            var is_valid = re.test(input.val());
            if(is_valid){
-		      $('#' + this.name + '-valid').hide();
-		   } else {
-		      $('#' + this.name + '-valid').show();
-	       }
+	      $('#' + this.name + '-valid').hide();
+	   } else {
+	      $('#' + this.name + '-valid').show();
+           }
         });
 
         $('#' + this.name + '-timedim-defaultvalue-ref-value').on('input', function() {
@@ -637,7 +684,7 @@ define(function (require, exports) {
         $('#' + this.name + '\\:geogig_toggle').on('change', this.doGeoGigToggle);
 
         // Add values to the geogig store dropdown and hide.
-        this.setupGeogigDropdown($('#' + this.main.name.split('.')[0] + '\\:geogig_store'));
+        this.setupGeogigDropdown($('#' + this.name.split('.')[0] + '\\:geogig_store'));
         $("#s2id_" + this.name + "\\:geogig_store").hide()
 
         return li;

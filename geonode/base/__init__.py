@@ -17,3 +17,16 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
+
+from django.utils.translation import ugettext_noop as _
+from geonode.notifications_helper import NotificationsAppConfigBase
+
+
+class BaseAppConfig(NotificationsAppConfigBase):
+    name = 'geonode.base'
+    NOTIFICATIONS = (("request_download_resourcebase", _("Request to download a resource"),
+                     _("A request for downloading a resource was sent")),
+                     )
+
+
+default_app_config = 'geonode.base.BaseAppConfig'

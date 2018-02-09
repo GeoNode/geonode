@@ -1,4 +1,4 @@
-{% extends "site_base.html" %}
+{% extends "geonode_base.html" %}
 {% load i18n avatar_tags %}
 {% load bootstrap_tags %}
 
@@ -24,6 +24,7 @@
 {% endblock %}
 
 {% block extra_script %}
+{{ block.super }}
 <script type="text/javascript">
     $('#id_avatar').change(function() {
         $('#avatar-file').css('visibility', 'visible');

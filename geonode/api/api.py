@@ -21,16 +21,26 @@
 import json
 import time
 
+from django.db.models import Q
 from django.conf.urls import url
 from django.contrib.auth import get_user_model
 from django.core.urlresolvers import reverse
 from django.contrib.contenttypes.models import ContentType
 from django.conf import settings
 from django.db.models import Count
+from django.http.response import HttpResponse
+from django.template.response import TemplateResponse
 from django.utils.translation import get_language
 
 from avatar.templatetags.avatar_tags import avatar_url
+from tastypie import http
+from tastypie.exceptions import BadRequest
+
+from geonode import qgis_server, geoserver
+from geonode.api.authorization import GeoNodeStyleAuthorization
+from geonode.qgis_server.models import QGISServerStyle
 from guardian.shortcuts import get_objects_for_user
+from tastypie.bundle import Bundle
 
 from geonode.base.models import ResourceBase
 from geonode.base.models import TopicCategory
@@ -38,18 +48,19 @@ from geonode.base.models import Region
 from geonode.base.models import HierarchicalKeyword
 from geonode.base.models import ThesaurusKeywordLabel
 
-from geonode.layers.models import Layer
+from geonode.layers.models import Layer, Style
 from geonode.maps.models import Map
 from geonode.documents.models import Document
-from geonode.groups.models import GroupProfile
-
+from geonode.groups.models import GroupProfile, GroupCategory
+from django.contrib.auth.models import Group
 from django.core.serializers.json import DjangoJSONEncoder
 from tastypie.serializers import Serializer
 from tastypie import fields
 from tastypie.resources import ModelResource
-from tastypie.constants import ALL
+from tastypie.constants import ALL, ALL_WITH_RELATIONS
 from tastypie.utils import trailing_slash
 
+from geonode.utils import check_ogc_backend
 
 FILTER_TYPES = {
     'layer': Layer,
@@ -70,7 +81,7 @@ class CountJSONSerializer(Serializer):
                 'base.view_resourcebase'
             )
         if settings.RESOURCE_PUBLISHING:
-            resources = resources.filter(is_published=True)
+            resources = resources.filter(Q(is_published=True) | Q(owner__username__iexact=str(options['user'])))
 
         if options['title_filter']:
             resources = resources.filter(title__icontains=options['title_filter'])
@@ -102,7 +113,7 @@ class TypeFilteredResource(ModelResource):
 
     count = fields.IntegerField()
 
-    def build_filters(self, filters=None):
+    def build_filters(self, filters=None, ignore_bad_filters=False):
         if filters is None:
             filters = {}
         self.type_filter = None
@@ -155,7 +166,7 @@ class ThesaurusKeywordResource(TypeFilteredResource):
     thesaurus_identifier = fields.CharField(null=False)
     label_id = fields.CharField(null=False)
 
-    def build_filters(self, filters={}):
+    def build_filters(self, filters={}, ignore_bad_filters=False):
         """adds filtering by current language"""
 
         id = filters.pop('id', None)
@@ -228,6 +239,106 @@ class RegionResource(TypeFilteredResource):
 
 class TopicCategoryResource(TypeFilteredResource):
     """Category api"""
+    layers_count = fields.IntegerField(default=0)
+
+    def dehydrate_layers_count(self, bundle):
+        request = bundle.request
+        obj_with_perms = get_objects_for_user(request.user,
+                                              'base.view_resourcebase').instance_of(Layer)
+        filter_set = bundle.obj.resourcebase_set.filter(id__in=obj_with_perms.values('id'))
+
+        if not settings.SKIP_PERMS_FILTER:
+            is_admin = False
+            is_manager = False
+            if request.user:
+                is_admin = request.user.is_superuser if request.user else False
+                try:
+                    is_manager = request.user.groupmember_set.all().filter(role='manager').exists()
+                except:
+                    is_manager = False
+
+            # Get the list of objects the user has access to
+            anonymous_group = None
+            public_groups = GroupProfile.objects.exclude(access="private").values('group')
+            groups = []
+            group_list_all = []
+            manager_groups = []
+            try:
+                group_list_all = request.user.group_list_all().values('group')
+            except:
+                pass
+            try:
+                manager_groups = Group.objects.filter(
+                    name__in=request.user.groupmember_set.filter(role="manager").values_list("group__slug", flat=True))
+            except:
+                pass
+            try:
+                anonymous_group = Group.objects.get(name='anonymous')
+                if anonymous_group and anonymous_group not in groups:
+                    groups.append(anonymous_group)
+            except:
+                pass
+
+            if settings.ADMIN_MODERATE_UPLOADS:
+                if not is_admin:
+                    if is_manager:
+                        filter_set = filter_set.filter(
+                            Q(is_published=True) |
+                            Q(group__in=groups) |
+                            Q(group__in=manager_groups) |
+                            Q(group__in=group_list_all) |
+                            Q(owner__username__iexact=str(request.user)))
+                    elif request.user:
+                        filter_set = filter_set.filter(
+                            Q(is_published=True) |
+                            Q(group__in=groups) |
+                            Q(group__in=group_list_all) |
+                            Q(owner__username__iexact=str(request.user)))
+                    else:
+                        filter_set = filter_set.filter(Q(is_published=True))
+
+            if settings.RESOURCE_PUBLISHING:
+                if not is_admin:
+                    if is_manager:
+                        filter_set = filter_set.filter(
+                            Q(group__isnull=True) |
+                            Q(group__in=groups) |
+                            Q(group__in=manager_groups) |
+                            Q(group__in=group_list_all) |
+                            Q(group__in=public_groups) |
+                            Q(owner__username__iexact=str(request.user)))
+                    elif request.user:
+                        filter_set = filter_set.filter(
+                            Q(is_published=True) |
+                            Q(group__in=groups) |
+                            Q(group__in=group_list_all) |
+                            Q(owner__username__iexact=str(request.user)))
+                    else:
+                        filter_set = filter_set.filter(Q(is_published=True))
+
+            if settings.GROUP_PRIVATE_RESOURCES:
+                if is_admin:
+                    filter_set = filter_set
+                elif request.user:
+                    filter_set = filter_set.filter(
+                        Q(group__isnull=True) |
+                        Q(group__in=groups) |
+                        Q(group__in=manager_groups) |
+                        Q(group__in=public_groups) |
+                        Q(group__in=group_list_all) |
+                        Q(owner__username__iexact=str(request.user)))
+                else:
+                    if anonymous_group:
+                        filter_set = filter_set.filter(
+                            Q(group__isnull=True) |
+                            Q(group__in=public_groups) |
+                            Q(group=anonymous_group))
+                    else:
+                        filter_set = filter_set.filter(
+                            Q(group__isnull=True) |
+                            Q(group__in=public_groups))
+
+        return filter_set.distinct().count()
 
     def serialize(self, request, data, format, options=None):
         if options is None:
@@ -246,12 +357,68 @@ class TopicCategoryResource(TypeFilteredResource):
         serializer = CountJSONSerializer()
 
 
-class GroupResource(ModelResource):
-    """Groups api"""
+class GroupCategoryResource(TypeFilteredResource):
+    detail_url = fields.CharField()
+    member_count = fields.IntegerField()
 
+    class Meta:
+        queryset = GroupCategory.objects.all()
+        allowed_methods = ['get']
+        include_resource_uri = False
+        fields = ['name', 'slug']
+        filtering = {'slug': ALL,
+                     'name': ALL}
+
+    def dehydrate_detail_url(self, bundle):
+        return bundle.obj.get_absolute_url()
+
+    def dehydrate_member_count(self, bundle):
+        return bundle.obj.groups.all().count()
+
+
+class GroupResource(TypeFilteredResource):
+    """Groups api"""
     detail_url = fields.CharField()
     member_count = fields.IntegerField()
     manager_count = fields.IntegerField()
+    categories = fields.ToManyField(GroupCategoryResource, 'categories', full=True)
+
+    def build_filters(self, filters=None, ignore_bad_filters=False):
+        """adds filtering by group functionality"""
+        if filters is None:
+            filters = {}
+
+        orm_filters = super(GroupResource, self).build_filters(filters)
+
+        if 'group' in filters:
+            orm_filters['group'] = filters['group']
+
+        if 'name__icontains' in filters:
+            orm_filters['title__icontains'] = filters['name__icontains']
+            orm_filters['title_en__icontains'] = filters['name__icontains']
+        return orm_filters
+
+    def apply_filters(self, request, applicable_filters):
+        """filter by group if applicable by group functionality"""
+
+        group = applicable_filters.pop('group', None)
+        name = applicable_filters.pop('name__icontains', None)
+
+        semi_filtered = super(
+            GroupResource,
+            self).apply_filters(
+            request,
+            applicable_filters)
+
+        if group is not None:
+            semi_filtered = semi_filtered.filter(
+                groupmember__group__slug=group)
+
+        if name is not None:
+            semi_filtered = semi_filtered.filter(
+                Q(title__icontains=name) | Q(title_en__icontains=name))
+
+        return semi_filtered
 
     def dehydrate_member_count(self, bundle):
         return bundle.obj.member_queryset().count()
@@ -267,14 +434,14 @@ class GroupResource(ModelResource):
         resource_name = 'groups'
         allowed_methods = ['get']
         filtering = {
-            'title': ALL
+            'title': ALL,
+            'categories': ALL_WITH_RELATIONS,
         }
         ordering = ['title', 'last_modified']
 
 
 class ProfileResource(TypeFilteredResource):
     """Profile api"""
-
     avatar_100 = fields.CharField(null=True)
     profile_detail_url = fields.CharField()
     email = fields.CharField(default='')
@@ -284,7 +451,7 @@ class ProfileResource(TypeFilteredResource):
     current_user = fields.BooleanField(default=False)
     activity_stream_url = fields.CharField(null=True)
 
-    def build_filters(self, filters=None):
+    def build_filters(self, filters=None, ignore_bad_filters=False):
         """adds filtering by group functionality"""
         if filters is None:
             filters = {}
@@ -294,12 +461,15 @@ class ProfileResource(TypeFilteredResource):
         if 'group' in filters:
             orm_filters['group'] = filters['group']
 
+        if 'name__icontains' in filters:
+            orm_filters['username__icontains'] = filters['name__icontains']
         return orm_filters
 
     def apply_filters(self, request, applicable_filters):
         """filter by group if applicable by group functionality"""
 
         group = applicable_filters.pop('group', None)
+        name = applicable_filters.pop('name__icontains', None)
 
         semi_filtered = super(
             ProfileResource,
@@ -310,6 +480,10 @@ class ProfileResource(TypeFilteredResource):
         if group is not None:
             semi_filtered = semi_filtered.filter(
                 groupmember__group__slug=group)
+
+        if name is not None:
+            semi_filtered = semi_filtered.filter(
+                profile__first_name__icontains=name)
 
         return semi_filtered
 
@@ -370,7 +544,7 @@ class ProfileResource(TypeFilteredResource):
         return super(ProfileResource, self).serialize(request, data, format, options)
 
     class Meta:
-        queryset = get_user_model().objects.exclude(username='AnonymousUser')
+        queryset = get_user_model().objects.exclude(Q(username='AnonymousUser') | Q(is_active=False))
         resource_name = 'profiles'
         allowed_methods = ['get']
         ordering = ['username', 'date_joined']
@@ -385,6 +559,10 @@ class ProfileResource(TypeFilteredResource):
 
 class OwnersResource(TypeFilteredResource):
     """Owners api, lighter and faster version of the profiles api"""
+    full_name = fields.CharField(null=True)
+
+    def dehydrate_full_name(self, bundle):
+        return bundle.obj.get_full_name() or bundle.obj.username
 
     def serialize(self, request, data, format, options=None):
         if options is None:
@@ -405,3 +583,255 @@ class OwnersResource(TypeFilteredResource):
             'username': ALL,
         }
         serializer = CountJSONSerializer()
+
+
+class QGISStyleResource(ModelResource):
+    """Styles API for QGIS Server backend."""
+
+    body = fields.CharField(attribute='body', use_in='detail')
+    name = fields.CharField(attribute='name')
+    title = fields.CharField(attribute='title')
+    layer = fields.ForeignKey(
+        'geonode.api.resourcebase_api.LayerResource',
+        attribute='layer',
+        null=True)
+    style_url = fields.CharField(attribute='style_url')
+    type = fields.CharField(attribute='type')
+
+    class Meta:
+        queryset = QGISServerStyle.objects.all()
+        resource_name = 'styles'
+        detail_uri_name = 'id'
+        allowed_methods = ['get', 'post', 'delete']
+        authorization = GeoNodeStyleAuthorization()
+        filtering = {
+            'id': ALL,
+            'title': ALL,
+            'name': ALL,
+            'layer': ALL_WITH_RELATIONS
+        }
+
+    def populate_object(self, style):
+        """Populate results with necessary fields
+
+        :param style: Style objects
+        :type style: QGISServerStyle
+        :return:
+        """
+        try:
+            qgis_layer = style.layer_styles.first()
+            """:type: geonode.qgis_server.QGISServerLayer"""
+            style.layer = qgis_layer.layer
+            style.type = 'qml'
+        except:
+            pass
+        return style
+
+    def build_filters(self, filters=None, **kwargs):
+        """Apply custom filters for layer."""
+        filters = super(QGISStyleResource, self).build_filters(
+            filters, **kwargs)
+        # Convert layer__ filters into layer_styles__layer__
+        updated_filters = {}
+        for key, value in filters.iteritems():
+            key = key.replace('layer__', 'layer_styles__layer__')
+            updated_filters[key] = value
+        return updated_filters
+
+    def build_bundle(self, obj=None, data=None, request=None, **kwargs):
+        """Override build_bundle method to add additional info."""
+
+        if obj is None and self._meta.object_class:
+            obj = self._meta.object_class()
+
+        elif obj:
+            obj = self.populate_object(obj)
+
+        return Bundle(
+            obj=obj,
+            data=data,
+            request=request,
+            **kwargs)
+
+    def post_list(self, request, **kwargs):
+        """Attempt to redirect to QGIS Server Style management.
+
+        A post method should have the following field:
+
+        name: Slug name of style
+        title: Title of style
+        style: the style file uploaded
+
+        Also, should have kwargs:
+
+        layername or layer__name: The layer name associated with the style
+
+        or
+
+        layer__id: The layer id associated with the style
+
+        """
+        from geonode.qgis_server.views import qml_style
+
+        # Extract layer name information
+        POST = request.POST
+        FILES = request.FILES
+        layername = POST.get('layername') or POST.get('layer__name')
+        if not layername:
+            layer_id = POST.get('layer__id')
+            layer = Layer.objects.get(id=layer_id)
+            layername = layer.name
+
+        # move style file
+        FILES['qml'] = FILES['style']
+
+        response = qml_style(request, layername)
+
+        if isinstance(response, TemplateResponse):
+            if response.status_code == 201:
+                obj = QGISServerStyle.objects.get(
+                    layer_styles__layer__name=layername,
+                    name=POST['name'])
+                updated_bundle = self.build_bundle(obj=obj, request=request)
+                location = self.get_resource_uri(updated_bundle)
+
+                if not self._meta.always_return_data:
+                    return http.HttpCreated(location=location)
+                else:
+                    updated_bundle = self.full_dehydrate(updated_bundle)
+                    updated_bundle = self.alter_detail_data_to_serialize(
+                        request, updated_bundle)
+                    return self.create_response(
+                        request, updated_bundle,
+                        response_class=http.HttpCreated,
+                        location=location)
+            else:
+                context = response.context_data
+                # Check form valid
+                style_upload_form = context['style_upload_form']
+                if not style_upload_form.is_valid():
+                    raise BadRequest(style_upload_form.errors.as_text())
+                alert_message = context['alert_message']
+                raise BadRequest(alert_message)
+        elif isinstance(response, HttpResponse):
+            response_class = None
+            if response.status_code == 403:
+                response_class = http.HttpForbidden
+            return self.error_response(
+                request, response.content,
+                response_class=response_class)
+
+    def delete_detail(self, request, **kwargs):
+        """Attempt to redirect to QGIS Server Style management."""
+        from geonode.qgis_server.views import qml_style
+        style_id = kwargs.get('id')
+
+        qgis_style = QGISServerStyle.objects.get(id=style_id)
+        layername = qgis_style.layer_styles.first().layer.name
+
+        response = qml_style(request, layername, style_name=qgis_style.name)
+
+        if isinstance(response, TemplateResponse):
+            if response.status_code == 200:
+                # style deleted
+                return http.HttpNoContent()
+            else:
+                context = response.context_data
+                # Check form valid
+                style_upload_form = context['style_upload_form']
+                if not style_upload_form.is_valid():
+                    raise BadRequest(style_upload_form.errors.as_text())
+                alert_message = context['alert_message']
+                raise BadRequest(alert_message)
+        elif isinstance(response, HttpResponse):
+            response_class = None
+            if response.status_code == 403:
+                response_class = http.HttpForbidden
+            return self.error_response(
+                request, response.content,
+                response_class=response_class)
+
+    def delete_list(self, request, **kwargs):
+        """Do not allow delete list"""
+        return http.HttpForbidden()
+
+
+class GeoserverStyleResource(ModelResource):
+    """Styles API for Geoserver backend."""
+    body = fields.CharField(
+        attribute='sld_body',
+        use_in='detail')
+    name = fields.CharField(attribute='name')
+    title = fields.CharField(attribute='sld_title')
+    # layer_default_style is polymorphic, so it will have many to many
+    # relation
+    layer = fields.ManyToManyField(
+        'geonode.api.resourcebase_api.LayerResource',
+        attribute='layer_default_style',
+        null=True)
+    version = fields.CharField(
+        attribute='sld_version',
+        null=True,
+        blank=True)
+    style_url = fields.CharField(attribute='sld_url')
+    workspace = fields.CharField(attribute='workspace', null=True)
+    type = fields.CharField(attribute='type')
+
+    class Meta:
+        queryset = Style.objects.all()
+        resource_name = 'styles'
+        detail_uri_name = 'id'
+        authorization = GeoNodeStyleAuthorization()
+        allowed_methods = ['get']
+        filtering = {
+            'id': ALL,
+            'title': ALL,
+            'name': ALL,
+            'layer': ALL_WITH_RELATIONS
+        }
+
+    def build_filters(self, filters=None, **kwargs):
+        """Apply custom filters for layer."""
+        filters = super(GeoserverStyleResource, self).build_filters(
+            filters, **kwargs)
+        # Convert layer__ filters into layer_styles__layer__
+        updated_filters = {}
+        for key, value in filters.iteritems():
+            key = key.replace('layer__', 'layer_default_style__')
+            updated_filters[key] = value
+        return updated_filters
+
+    def populate_object(self, style):
+        """Populate results with necessary fields
+
+        :param style: Style objects
+        :type style: Style
+        :return:
+        """
+        style.type = 'sld'
+        return style
+
+    def build_bundle(self, obj=None, data=None, request=None, **kwargs):
+        """Override build_bundle method to add additional info."""
+
+        if obj is None and self._meta.object_class:
+            obj = self._meta.object_class()
+
+        elif obj:
+            obj = self.populate_object(obj)
+
+        return Bundle(
+            obj=obj,
+            data=data,
+            request=request,
+            **kwargs)
+
+
+if check_ogc_backend(qgis_server.BACKEND_PACKAGE):
+    class StyleResource(QGISStyleResource):
+        """Wrapper for Generic Style Resource"""
+        pass
+elif check_ogc_backend(geoserver.BACKEND_PACKAGE):
+    class StyleResource(GeoserverStyleResource):
+        """Wrapper for Generic Style Resource"""
+        pass

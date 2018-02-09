@@ -61,6 +61,9 @@ def verify_token(request):
     Verifies the velidity of an OAuth2 Access Token
     and returns associated User's details
     """
+
+    """
+    No need to check authentication (see Issue #2815)
     if (not request.user.is_authenticated()):
         return HttpResponse(
             json.dumps({
@@ -69,6 +72,7 @@ def verify_token(request):
             status=403,
             content_type="application/json"
         )
+    """
 
     if (request.POST and request.POST['token']):
         try:

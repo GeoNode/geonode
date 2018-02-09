@@ -1,0 +1,140 @@
+# -*- coding: utf-8 -*-
+import os
+import geonode
+
+PROJECT_ROOT = os.path.abspath(os.path.dirname(__file__))
+
+# Setting debug to true makes Django serve static media and
+# present pretty error pages.
+DEBUG = True
+
+# Set to True to load non-minified versions of (static) client dependencies
+# Requires to set-up Node and tools that are required for static development
+# otherwise it will raise errors for the missing non-minified dependencies
+DEBUG_STATIC = False
+
+SITENAME = 'GeoNode'
+SITEURL = 'http://localhost:8000/'
+
+DATABASE_ENGINE = 'postgresql_psycopg2'
+DATABASE_NAME = 'geonode_afg'
+DATABASE_USER = 'geonode'
+DATABASE_PASSWORD = 'geonode'
+DATABASE_HOST = 'localhost'
+DATABASE_PORT = '5432'
+
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'NAME': DATABASE_NAME,
+        'USER': DATABASE_USER,
+        'PASSWORD': DATABASE_PASSWORD,
+        'HOST': DATABASE_HOST,
+        'PORT': DATABASE_PORT,
+    },
+    'datastore': {
+        'ENGINE': 'django.contrib.gis.db.backends.postgis',
+        'NAME': DATABASE_NAME + '_data',
+        'USER': DATABASE_USER,
+        'PASSWORD': DATABASE_PASSWORD,
+        'HOST': DATABASE_HOST,
+        'PORT': DATABASE_PORT,
+    }
+}
+
+GEOSERVER_LOCATION = os.getenv(
+    'GEOSERVER_LOCATION', 'http://localhost:8080/geoserver/'
+)
+GEOSERVER_PUBLIC_LOCATION = os.getenv(
+    'GEOSERVER_PUBLIC_LOCATION', 'http://localhost:8080/geoserver/'
+)
+
+# OGC (WMS/WFS/WCS) Server Settings
+OGC_SERVER = {
+    'default': {
+        'BACKEND': 'geonode.geoserver',
+        'LOCATION': GEOSERVER_LOCATION,
+        'LOGIN_ENDPOINT': 'j_spring_oauth2_geonode_login',
+        'LOGOUT_ENDPOINT': 'j_spring_oauth2_geonode_logout',
+        # PUBLIC_LOCATION needs to be kept like this because in dev mode
+        # the proxy won't work and the integration tests will fail
+        # the entire block has to be overridden in the local_settings
+        'PUBLIC_LOCATION': GEOSERVER_PUBLIC_LOCATION,
+        'USER' : 'admin',
+        'PASSWORD' : 'geoserver',
+        'MAPFISH_PRINT_ENABLED' : True,
+        'PRINT_NG_ENABLED' : True,
+        'GEONODE_SECURITY_ENABLED' : True,
+        'GEOGIG_ENABLED' : False,
+        'WMST_ENABLED' : False,
+        'BACKEND_WRITE_ENABLED': True,
+        'WPS_ENABLED' : False,
+        'LOG_FILE': '%s/geoserver/data/logs/geoserver.log' % os.path.abspath(os.path.join(PROJECT_ROOT, os.pardir)),
+        # Set to dictionary identifier of database containing spatial data in DATABASES dictionary to enable
+        'DATASTORE': 'datastore',
+    }
+}
+
+
+
+LANGUAGE_CODE = 'en'
+
+# MEDIA_ROOT = '/var/www/geonode/uploaded'
+# STATIC_ROOT = '/var/www/geonode/static/'
+
+# secret key used in hashing, should be a long, unique string for each
+# site.  See http://docs.djangoproject.com/en/1.2/ref/settings/#secret-key
+SECRET_KEY = 'vr@xe*3u1o41xzude)+snd8za^=4_gha93r(cx48e+qb)x@bf)'
+
+
+CATALOGUE = {
+    'default': {
+        # The underlying CSW backend
+        # ("pycsw_http", "pycsw_local", "geonetwork", "deegree")
+        'ENGINE': 'geonode.catalogue.backends.pycsw_local',
+        # The FULLY QUALIFIED base url to the CSW instance for this GeoNode
+        'URL': '%scatalogue/csw' % SITEURL,
+    }
+}
+
+# A Google Maps API key is needed for the 3D Google Earth view of maps
+# See http://code.google.com/apis/maps/signup.html
+GOOGLE_API_KEY = ''
+
+# GEONODE_ROOT = os.path.dirname(geonode.__file__)
+
+#TEMPLATE_DIRS = (
+#    '/etc/geonode/templates',
+#    os.path.join(GEONODE_ROOT, 'templates'),
+#)
+
+# Additional directories which hold static files
+#STATICFILES_DIRS = [
+#    '/etc/geonode/media',
+#    os.path.join(GEONODE_ROOT, 'static'),
+#]
+
+#REGISTRATION_OPEN = False
+#ACCOUNT_APPROVAL_REQUIRED = False
+
+#ACCOUNT_EMAIL_CONFIRMATION_EMAIL = False
+#ACCOUNT_EMAIL_CONFIRMATION_REQUIRED = False
+
+# Allowed values for the preview library are 'geoext' and 'leaflet'.
+#LAYER_PREVIEW_LIBRARY = 'geoext'
+
+# Uncomment the following to receive emails whenever there are errors in GeoNode
+# or to be notified of new user requests when ACCOUNT_APPROVAL_REQUIRED has been set.
+#ADMINS = (
+#            ('John', 'john@example.com'),
+#         )
+
+# Uncomment the following to use a Gmail account as the email backend
+#EMAIL_USE_TLS = True
+#EMAIL_HOST = 'smtp.gmail.com'
+#EMAIL_HOST_USER = 'youremail@gmail.com'
+#EMAIL_HOST_PASSWORD = 'yourpassword'
+#EMAIL_PORT = 587
+
+# For more information on available settings please consult the Django docs at
+# https://docs.djangoproject.com/en/dev/ref/settings

@@ -14,7 +14,7 @@
 # GNU General Public License for more details.
 #
 # You should have received a copy of the GNU General Public License
-# along with this program. If not, see <http://www.gnu.org/licenses/>.
+# along with this profgram. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
 
@@ -25,7 +25,13 @@ import urllib2
 # import base64
 import time
 import logging
+
+from StringIO import StringIO
+# import traceback
 import gisdata
+from decimal import Decimal
+from lxml import etree
+from urlparse import urljoin
 
 from django.conf import settings
 from django.core.exceptions import ObjectDoesNotExist
@@ -35,13 +41,20 @@ from django.core.urlresolvers import reverse
 from django.contrib.staticfiles.templatetags import staticfiles
 from django.contrib.auth import get_user_model
 # from guardian.shortcuts import assign_perm
+from django.test.testcases import LiveServerTestCase
+from geonode.base.populate_test_data import reconnect_signals, all_public
+from tastypie.test import ResourceTestCaseMixin
+
+from geonode.qgis_server.models import QGISServerLayer
 
 from geoserver.catalog import FailedRequestError, UploadError
 
 # from geonode.security.models import *
+from geonode.decorators import on_ogc_backend
+from geonode.base.models import TopicCategory
 from geonode.layers.models import Layer
 from geonode.maps.models import Map
-from geonode import GeoNodeException
+from geonode import GeoNodeException, geoserver, qgis_server
 from geonode.layers.utils import (
     upload,
     file_upload,
@@ -54,11 +67,14 @@ from geonode.geoserver.helpers import cascading_delete, set_attributes_from_geos
 # from geonode.geoserver.helpers import get_wms
 # from geonode.geoserver.helpers import set_time_info
 from geonode.geoserver.signals import gs_catalog
-
+from geonode.utils import check_ogc_backend
 
 LOGIN_URL = "/accounts/login/"
 
 logging.getLogger("south").setLevel(logging.INFO)
+
+# Reconnect post_save signals that is disconnected by populate_test_data
+reconnect_signals()
 
 """
  HOW TO RUN THE TESTS
@@ -187,6 +203,57 @@ class GeoNodeMapTest(TestCase):
                 wcs_link = True
         self.assertTrue(wcs_link)
 
+    @on_ogc_backend(qgis_server.BACKEND_PACKAGE)
+    def test_zipped_files(self):
+        """Test that the zipped files is created for raster."""
+        filename = os.path.join(gisdata.GOOD_DATA, 'raster/test_grid.tif')
+        uploaded = file_upload(filename)
+        zip_link = False
+        for link in uploaded.link_set.all():
+            if link.mime == 'ZIP':
+                zip_link = True
+        self.assertTrue(zip_link)
+
+    def test_layer_upload_bbox(self):
+        """Test that the bbox format is correct
+
+        Test that it is correctly saved in` database and represented in the
+        properties correctly.
+        """
+        filename = os.path.join(gisdata.GOOD_DATA, 'raster/test_grid.tif')
+        uploaded = file_upload(filename)
+
+        # Check bbox value
+        bbox_x0 = Decimal('96.9560000000')
+        bbox_x1 = Decimal('97.1097053200')
+        bbox_y0 = Decimal('-5.5187330000')
+        bbox_y1 = Decimal('-5.3035455520')
+        srid = u'EPSG:4326'
+
+        self.assertEqual(bbox_x0, uploaded.bbox_x0)
+        self.assertEqual(bbox_x1, uploaded.bbox_x1)
+        self.assertEqual(bbox_y0, uploaded.bbox_y0)
+        self.assertEqual(bbox_y1, uploaded.bbox_y1)
+        self.assertEqual(srid, uploaded.srid)
+
+        # bbox format: [xmin,xmax,ymin,ymax]
+        expected_bbox = [
+            Decimal('96.9560000000'),
+            Decimal('97.1097053200'),
+            Decimal('-5.5187330000'),
+            Decimal('-5.3035455520'),
+            u'EPSG:4326'
+        ]
+        self.assertEqual(expected_bbox, uploaded.bbox)
+
+        # bbox format: [xmin,ymin,xmax,ymax]
+        expected_bbox_string = (
+            '96.9560000000,-5.5187330000,97.1097053200,-5.3035455520')
+        self.assertEqual(expected_bbox_string, uploaded.bbox_string)
+
+        # Clean up
+        uploaded.delete()
+
     def test_layer_upload(self):
         """Test that layers can be uploaded to running GeoNode/GeoServer
         """
@@ -306,7 +373,7 @@ class GeoNodeMapTest(TestCase):
 
         self.assertEqual(
             uploaded.title,
-            'Air_Runways',
+            'Air Runways',
             'Expected specific title from uploaded layer XML metadata')
 
         self.assertEqual(
@@ -325,12 +392,19 @@ class GeoNodeMapTest(TestCase):
                          'Expected specific supplemental information '
                          'from uploaded layer XML metadata')
 
-        self.assertEqual(len(uploaded.keyword_list(
-        )), 5, 'Expected specific number of keywords from uploaded layer XML metadata')
+        if check_ogc_backend(geoserver.BACKEND_PACKAGE):
+            self.assertEqual(
+                len(uploaded.keyword_list()), 7,
+                'Expected specific number of keywords from uploaded layer XML metadata')
+        elif check_ogc_backend(qgis_server.BACKEND_PACKAGE):
+            # QGIS Server backend doesn't have GeoServer assigned keywords.
+            self.assertEqual(
+                len(uploaded.keyword_list()), 5,
+                'Expected specific number of keywords from uploaded layer XML metadata')
 
-        self.assertEqual(uploaded.keyword_csv,
-                         u'Airport,Airports,Landing Strips,Runway,Runways',
-                         'Expected CSV of keywords from uploaded layer XML metadata')
+        self.assertTrue(
+             u'Airport,Airports,Landing Strips,Runway,Runways' in uploaded.keyword_csv,
+             'Expected CSV of keywords from uploaded layer XML metadata')
 
         self.assertTrue(
             'Landing Strips' in uploaded.keyword_list(),
@@ -417,6 +491,7 @@ class GeoNodeMapTest(TestCase):
 
     # geonode.maps.views
 
+    @on_ogc_backend(geoserver.BACKEND_PACKAGE)
     def test_layer_delete_from_geoserver(self):
         """Verify that layer is correctly deleted from GeoServer
         """
@@ -432,14 +507,25 @@ class GeoNodeMapTest(TestCase):
             gisdata.VECTOR_DATA,
             'san_andres_y_providencia_poi.shp')
         shp_layer = file_upload(shp_file, overwrite=True)
+
+        # we need some time to have the service up and running
+        time.sleep(20)
+
         ws = gs_cat.get_workspace(shp_layer.workspace)
         shp_store = gs_cat.get_store(shp_layer.store, ws)
         shp_store_name = shp_store.name
         shp_layer.delete()
-        # self.assertIsNone(gs_cat.get_resource(shp_layer.name, store=shp_store))
+
+        # Verify that it no longer exists in GeoServer
         self.assertRaises(
             FailedRequestError,
-            lambda: gs_cat.get_store(shp_store_name))
+            lambda: gs_cat.get_resource(
+                shp_layer.name,
+                store=shp_store))
+
+        # Verify that the store was deleted
+        ds = gs_cat.get_store(shp_store_name)
+        self.assertIsNone(ds)
 
         # Test Uploading then Deleting a TIFF file from GeoServer
         tif_file = os.path.join(gisdata.RASTER_DATA, 'test_grid.tif')
@@ -453,6 +539,7 @@ class GeoNodeMapTest(TestCase):
                 shp_layer.name,
                 store=tif_store))
 
+    @on_ogc_backend(geoserver.BACKEND_PACKAGE)
     def test_delete_layer(self):
         """Verify that the 'delete_layer' pre_delete hook is functioning
         """
@@ -464,6 +551,10 @@ class GeoNodeMapTest(TestCase):
             gisdata.VECTOR_DATA,
             'san_andres_y_providencia_poi.shp')
         shp_layer = file_upload(shp_file)
+
+        # we need some time to have the service up and running
+        time.sleep(20)
+
         shp_layer_id = shp_layer.pk
         ws = gs_cat.get_workspace(shp_layer.workspace)
         shp_store = gs_cat.get_store(shp_layer.store, ws)
@@ -475,17 +566,18 @@ class GeoNodeMapTest(TestCase):
         shp_layer.delete()
 
         # Verify that it no longer exists in GeoServer
-        # self.assertIsNone(gs_cat.get_resource(name, store=shp_store))
-        # self.assertIsNone(gs_cat.get_layer(shp_layer.name))
-        self.assertRaises(
-            FailedRequestError,
-            lambda: gs_cat.get_store(shp_store_name))
+        res = gs_cat.get_layer(shp_layer.name)
+        self.assertIsNone(res)
+
+        # Verify that the store was deleted
+        ds = gs_cat.get_store(shp_store_name)
+        self.assertIsNone(ds)
 
         # Check that it was also deleted from GeoNodes DB
         self.assertRaises(ObjectDoesNotExist,
                           lambda: Layer.objects.get(pk=shp_layer_id))
 
-    # geonode.geoserver.helpers
+        # geonode.geoserver.helpers
         # If catalogue is installed, then check that it is deleted from there
         # too.
         if 'geonode.catalogue' in settings.INSTALLED_APPS:
@@ -496,7 +588,8 @@ class GeoNodeMapTest(TestCase):
             shp_layer_gn_info = catalogue.get_record(uuid)
             assert shp_layer_gn_info is None
 
-    def test_cascading_delete(self):
+    @on_ogc_backend(geoserver.BACKEND_PACKAGE)
+    def test_geoserver_cascading_delete(self):
         """Verify that the helpers.cascading_delete() method is working properly
         """
         gs_cat = gs_catalog
@@ -516,11 +609,12 @@ class GeoNodeMapTest(TestCase):
         styles = layer.styles + [layer.default_style]
 
         # Delete the Layer using cascading_delete()
-        cascading_delete(gs_cat, shp_layer.typename)
+        cascading_delete(gs_cat, shp_layer.alternate)
 
         # Verify that the styles were deleted
         for style in styles:
-            s = gs_cat.get_style(style.name)
+            s = gs_cat.get_style(style.name, workspace=settings.DEFAULT_WORKSPACE) or \
+                gs_cat.get_style(style.name)
             assert s is None
 
         # Verify that the resource was deleted
@@ -531,12 +625,63 @@ class GeoNodeMapTest(TestCase):
                 store=store))
 
         # Verify that the store was deleted
-        self.assertRaises(
-            FailedRequestError,
-            lambda: gs_cat.get_store(store_name))
+        ds = gs_cat.get_store(store_name)
+        self.assertIsNone(ds)
 
         # Clean up by deleting the layer from GeoNode's DB and GeoNetwork
         shp_layer.delete()
+
+    @on_ogc_backend(qgis_server.BACKEND_PACKAGE)
+    def test_qgis_server_cascading_delete(self):
+        """Verify that QGIS Server layer deleted and cascaded."""
+        # Upload a Shapefile
+        shp_file = os.path.join(
+            gisdata.VECTOR_DATA,
+            'san_andres_y_providencia_poi.shp')
+        shp_layer = file_upload(shp_file)
+
+        # get layer and QGIS Server Layer object
+        qgis_layer = shp_layer.qgis_layer
+        base_path = qgis_layer.base_layer_path
+        base_name, _ = os.path.splitext(base_path)
+
+        # get existing files
+        file_paths = qgis_layer.files
+
+        for path in file_paths:
+            self.assertTrue(os.path.exists(path))
+
+        # try to access a tile to trigger tile cache
+        tile_url = reverse(
+            'qgis_server:tile',
+            kwargs={
+                'layername': shp_layer.name,
+                'z': 9,
+                'x': 139,
+                'y': 238
+            })
+        response = self.client.get(tile_url)
+
+        self.assertTrue(response.status_code, 200)
+
+        self.assertTrue(os.path.exists(qgis_layer.cache_path))
+
+        # delete layer
+        shp_layer.delete()
+
+        # verify that qgis server layer no longer exists
+        with self.assertRaises(QGISServerLayer.DoesNotExist):
+            QGISServerLayer.objects.get(pk=qgis_layer.pk)
+
+        with self.assertRaises(QGISServerLayer.DoesNotExist):
+            QGISServerLayer.objects.get(layer__id=shp_layer.id)
+
+        # verify that related files in QGIS Server object gets deleted.
+        for path in file_paths:
+            self.assertFalse(os.path.exists(path))
+
+        # verify that cache path gets deleted
+        self.assertFalse(os.path.exists(qgis_layer.cache_path))
 
     def test_keywords_upload(self):
         """Check that keywords can be passed to file_upload
@@ -578,77 +723,150 @@ class GeoNodeMapTest(TestCase):
         raster_file = os.path.join(gisdata.RASTER_DATA, 'test_grid.tif')
         raster_layer = file_upload(raster_file, overwrite=True)
 
-        self.client.login(username='admin', password='admin')
+        # we need some time to have the service up and running
+        time.sleep(20)
+        new_vector_layer = None
+        try:
+            self.client.login(username='admin', password='admin')
 
-        # test the program can determine the original layer in raster type
-        raster_replace_url = reverse(
-            'layer_replace', args=[
-                raster_layer.service_typename])
-        response = self.client.get(raster_replace_url)
-        self.assertEquals(response.status_code, 200)
-        self.assertEquals(response.context['is_featuretype'], False)
+            # test the program can determine the original layer in raster type
+            raster_replace_url = reverse(
+                'layer_replace', args=[
+                    raster_layer.service_typename])
+            response = self.client.get(raster_replace_url)
+            self.assertEquals(response.status_code, 200)
+            self.assertEquals(response.context['is_featuretype'], False)
 
-        # test the program can determine the original layer in vector type
-        vector_replace_url = reverse(
-            'layer_replace', args=[
-                vector_layer.service_typename])
-        response = self.client.get(vector_replace_url)
-        self.assertEquals(response.status_code, 200)
-        self.assertEquals(response.context['is_featuretype'], True)
+            # test the program can determine the original layer in vector type
+            vector_replace_url = reverse(
+                'layer_replace', args=[
+                    vector_layer.service_typename])
+            response = self.client.get(vector_replace_url)
+            self.assertEquals(response.status_code, 200)
+            self.assertEquals(response.context['is_featuretype'], True)
 
-        # test replace a vector with a raster
-        response = self.client.post(
-            vector_replace_url, {
+            # test replace a vector with a raster
+            post_permissions = {
+                'users': {
+                    'AnonymousUser': [
+                        'view_resourcebase', 'download_resourcebase']
+                },
+                'groups': {}
+            }
+            post_data = {
                 'base_file': open(
-                    raster_file, 'rb')})
-        # TODO: This should really return a 400 series error with the json dict
-        self.assertEquals(response.status_code, 400)
-        response_dict = json.loads(response.content)
-        self.assertEquals(response_dict['success'], False)
+                    raster_file, 'rb'),
+                'permissions': json.dumps(post_permissions)
+            }
+            response = self.client.post(
+                vector_replace_url, post_data)
+            # TODO: This should really return a 400 series error with the json dict
+            self.assertEquals(response.status_code, 400)
+            response_dict = json.loads(response.content)
+            self.assertEquals(response_dict['success'], False)
 
-        # test replace a vector with a different vector
-        new_vector_file = os.path.join(
-            gisdata.VECTOR_DATA,
-            'san_andres_y_providencia_poi.shp')
-        layer_path, __ = os.path.splitext(new_vector_file)
-        layer_base = open(layer_path + '.shp', 'rb')
-        layer_dbf = open(layer_path + '.dbf', 'rb')
-        layer_shx = open(layer_path + '.shx', 'rb')
-        layer_prj = open(layer_path + '.prj', 'rb')
+            # test replace a vector with a different vector
+            new_vector_file = os.path.join(
+                gisdata.VECTOR_DATA,
+                'san_andres_y_providencia_coastline.shp')
+            layer_path, __ = os.path.splitext(new_vector_file)
+            layer_base = open(layer_path + '.shp', 'rb')
+            layer_dbf = open(layer_path + '.dbf', 'rb')
+            layer_shx = open(layer_path + '.shx', 'rb')
+            layer_prj = open(layer_path + '.prj', 'rb')
 
-        response = self.client.post(
-            vector_replace_url,
-            {'base_file': layer_base,
-             'dbf_file': layer_dbf,
-             'shx_file': layer_shx,
-             'prj_file': layer_prj
-             })
-        self.assertEquals(response.status_code, 200)
-        response_dict = json.loads(response.content)
-        self.assertEquals(response_dict['success'], True)
+            response = self.client.post(
+                vector_replace_url,
+                {'base_file': layer_base,
+                 'dbf_file': layer_dbf,
+                 'shx_file': layer_shx,
+                 'prj_file': layer_prj,
+                 'charset': 'UTF-8',
+                 'permissions': json.dumps(post_permissions)
+                 })
+            response_dict = json.loads(response.content)
 
-        # Get a Layer object for the newly created layer.
-        new_vector_layer = Layer.objects.get(pk=vector_layer.pk)
-        # FIXME(Ariel): Check the typename does not change.
+            if not response_dict['success'] and 'unknown encoding' in \
+                    response_dict['errors']:
+                # print(response_dict['errors'])
+                pass
+            else:
+                self.assertEquals(response.status_code, 200)
+                self.assertEquals(response_dict['success'], True)
+                # Get a Layer object for the newly created layer.
+                new_vector_layer = Layer.objects.get(pk=vector_layer.pk)
+                # FIXME(Ariel): Check the typename does not change.
 
-        # Test the replaced layer is indeed different from the original layer
-        self.assertNotEqual(vector_layer.bbox_x0, new_vector_layer.bbox_x0)
-        self.assertNotEqual(vector_layer.bbox_x1, new_vector_layer.bbox_x1)
-        self.assertNotEqual(vector_layer.bbox_y0, new_vector_layer.bbox_y0)
-        self.assertNotEqual(vector_layer.bbox_y1, new_vector_layer.bbox_y1)
+                # Test the replaced layer is indeed different from the original layer
+                self.assertNotEqual(vector_layer.bbox_x0, new_vector_layer.bbox_x0)
+                self.assertNotEqual(vector_layer.bbox_x1, new_vector_layer.bbox_x1)
+                self.assertNotEqual(vector_layer.bbox_y0, new_vector_layer.bbox_y0)
+                self.assertNotEqual(vector_layer.bbox_y1, new_vector_layer.bbox_y1)
 
-        # test an invalid user without layer replace permission
-        self.client.logout()
-        self.client.login(username='norman', password='norman')
+                # test an invalid user without layer replace permission
+                self.client.logout()
+                self.client.login(username='norman', password='norman')
 
-        response = self.client.post(
-            vector_replace_url,
-            {'base_file': layer_base,
-             'dbf_file': layer_dbf,
-             'shx_file': layer_shx,
-             'prj_file': layer_prj
-             })
-        self.assertEquals(response.status_code, 401)
+                response = self.client.post(
+                    vector_replace_url,
+                    {'base_file': layer_base,
+                     'dbf_file': layer_dbf,
+                     'shx_file': layer_shx,
+                     'prj_file': layer_prj,
+                     'permissions': json.dumps(post_permissions)
+                     })
+                self.assertEquals(response.status_code, 401)
+        finally:
+            # Clean up and completely delete the layer
+            try:
+                if vector_layer:
+                    vector_layer.delete()
+                if raster_layer:
+                    raster_layer.delete()
+                if new_vector_layer:
+                    new_vector_layer.delete()
+            except:
+                # tb = traceback.format_exc()
+                # print(tb)
+                pass
+
+    def test_importlayer_mgmt_command(self):
+            """Test layer import management command
+            """
+            vector_file = os.path.join(
+                gisdata.VECTOR_DATA,
+                'san_andres_y_providencia_administrative.shp')
+
+            call_command('importlayers', vector_file, overwrite=True,
+                         keywords="test, import, san andreas",
+                         title="Test San Andres y Providencia Administrative",
+                         verbosity=1)
+
+            lyr = Layer.objects.get(title='Test San Andres y Providencia Administrative')
+            try:
+                self.assertIsNotNone(lyr)
+                self.assertEqual(lyr.name, "test_san_andres_y_providencia_administrative")
+                self.assertEqual(lyr.title, "Test San Andres y Providencia Administrative")
+                default_keywords = [
+                    u'import',
+                    u'san andreas',
+                    u'test',
+                ]
+                if check_ogc_backend(geoserver.BACKEND_PACKAGE):
+                    geoserver_keywords = [
+                        u'features',
+                        u'test_san_andres_y_providencia_administrative'
+                    ]
+                    self.assertEqual(
+                        set(lyr.keyword_list()),
+                        set(default_keywords + geoserver_keywords))
+                elif check_ogc_backend(qgis_server.BACKEND_PACKAGE):
+                    self.assertEqual(
+                        set(lyr.keyword_list()),
+                        set(default_keywords))
+            finally:
+                # Clean up and completely delete the layer
+                lyr.delete()
 
 
 class GeoNodePermissionsTest(TestCase):
@@ -774,10 +992,10 @@ xsi:schemaLocation="http://www.opengis.net/sld http://schemas.opengis.net/sld/1.
         layer.delete()
     """
 
+    @on_ogc_backend(geoserver.BACKEND_PACKAGE)
     def test_unpublished(self):
         """Test permissions on an unpublished layer
         """
-
         thefile = os.path.join(
             gisdata.VECTOR_DATA,
             'san_andres_y_providencia_poi.shp')
@@ -788,56 +1006,57 @@ xsi:schemaLocation="http://www.opengis.net/sld http://schemas.opengis.net/sld/1.
         # we need some time to have the service up and running
         time.sleep(20)
 
-        # request getCapabilities: layer must be there as it is published and
-        # advertised: we need to check if in response there is
-        # <Name>geonode:san_andres_y_providencia_water</Name>
-        url = 'http://localhost:8080/geoserver/ows?' \
-            'service=wms&version=1.3.0&request=GetCapabilities'
-        str_to_check = '<Name>geonode:san_andres_y_providencia_poi</Name>'
-        request = urllib2.Request(url)
-        response = urllib2.urlopen(request)
-        self.assertTrue(any(str_to_check in s for s in response.readlines()))
+        try:
+            # request getCapabilities: layer must be there as it is published and
+            # advertised: we need to check if in response there is
+            # <Name>geonode:san_andres_y_providencia_water</Name>
+            geoserver_base_url = settings.OGC_SERVER['default']['LOCATION']
+            get_capabilities_url = 'ows?' \
+                'service=wms&version=1.3.0&request=GetCapabilities'
+            url = urljoin(geoserver_base_url, get_capabilities_url)
+            str_to_check = '<Name>geonode:san_andres_y_providencia_poi</Name>'
+            request = urllib2.Request(url)
+            response = urllib2.urlopen(request)
+            self.assertTrue(any(str_to_check in s for s in response.readlines()))
 
-        # by default the uploaded layer is
-        self.assertTrue(layer.is_published, True)
-
-        # Clean up and completely delete the layer
-        layer.delete()
+            # by default the uploaded layer is
+            self.assertTrue(layer.is_published, True)
+        finally:
+            # Clean up and completely delete the layer
+            layer.delete()
 
         # with settings disabled
         with self.settings(RESOURCE_PUBLISHING=True):
-
-            thefile = os.path.join(
-                gisdata.VECTOR_DATA,
-                'san_andres_y_providencia_administrative.shp')
-            layer = file_upload(thefile, overwrite=True)
+            layer = file_upload(thefile)
             layer.set_default_permissions()
             check_layer(layer)
 
             # we need some time to have the service up and running
             time.sleep(20)
 
-            str_to_check = '<Name>san_andres_y_providencia_administrative</Name>'
+            try:
+                # by default the uploaded layer must be unpublished
+                self.assertEqual(layer.is_published, False)
 
-            # by default the uploaded layer must be unpublished
-            self.assertEqual(layer.is_published, False)
+                # check the layer is not in GetCapabilities
+                request = urllib2.Request(url)
+                response = urllib2.urlopen(request)
+                self.assertFalse(any(str_to_check in s for s in response.readlines()))
 
-            # check the layer is not in GetCapabilities
-            request = urllib2.Request(url)
-            response = urllib2.urlopen(request)
-            self.assertFalse(any(str_to_check in s for s in response.readlines()))
+                # now test with published layer
+                layer = Layer.objects.get(pk=layer.pk)
+                layer.is_published = True
+                layer.save()
 
-            # now test with published layer
-            resource = layer.get_self_resource()
-            resource.is_published = True
-            resource.save()
+                # we need some time to have the service up and running
+                time.sleep(20)
 
-            request = urllib2.Request(url)
-            response = urllib2.urlopen(request)
-            self.assertTrue(any(str_to_check in s for s in response.readlines()))
-
-            # Clean up and completely delete the layer
-            layer.delete()
+                request = urllib2.Request(url)
+                response = urllib2.urlopen(request)
+                self.assertTrue(any(str_to_check in s for s in response.readlines()))
+            finally:
+                # Clean up and completely delete the layer
+                layer.delete()
 
 
 class GeoNodeThumbnailTest(TestCase):
@@ -854,9 +1073,6 @@ class GeoNodeThumbnailTest(TestCase):
     def test_layer_thumbnail(self):
         """Test the layer save method generates a thumbnail link
         """
-
-        self.client.login(username='norman', password='norman')
-
         # TODO: Would be nice to ensure the name is available before
         # running the test...
         norman = get_user_model().objects.get(username="norman")
@@ -868,16 +1084,18 @@ class GeoNodeThumbnailTest(TestCase):
             user=norman,
             overwrite=True,
         )
+        try:
+            self.client.login(username='norman', password='norman')
 
-        thumbnail_url = saved_layer.get_thumbnail_url()
-
-        assert thumbnail_url != staticfiles.static(settings.MISSING_THUMBNAIL)
+            thumbnail_url = saved_layer.get_thumbnail_url()
+            self.assertNotEqual(thumbnail_url, staticfiles.static(settings.MISSING_THUMBNAIL))
+        finally:
+            # Cleanup
+            saved_layer.delete()
 
     def test_map_thumbnail(self):
         """Test the map save method generates a thumbnail link
         """
-        self.client.login(username='norman', password='norman')
-
         # TODO: Would be nice to ensure the name is available before
         # running the test...
         norman = get_user_model().objects.get(username="norman")
@@ -889,14 +1107,20 @@ class GeoNodeThumbnailTest(TestCase):
             user=norman,
             overwrite=True,
         )
-        saved_layer.set_default_permissions()
-        map_obj = Map(owner=norman, zoom=0,
-                      center_x=0, center_y=0)
-        map_obj.create_from_layer_list(norman, [saved_layer], 'title', '')
+        try:
+            self.client.login(username='norman', password='norman')
 
-        thumbnail_url = map_obj.get_thumbnail_url()
+            saved_layer.set_default_permissions()
+            map_obj = Map(owner=norman, zoom=0,
+                          center_x=0, center_y=0)
+            map_obj.create_from_layer_list(norman, [saved_layer], 'title', '')
 
-        assert thumbnail_url != staticfiles.static(settings.MISSING_THUMBNAIL)
+            thumbnail_url = map_obj.get_thumbnail_url()
+
+            self.assertNotEqual(thumbnail_url, staticfiles.static(settings.MISSING_THUMBNAIL))
+        finally:
+            # Cleanup
+            saved_layer.delete()
 
 
 class GeoNodeMapPrintTest(TestCase):
@@ -1003,6 +1227,7 @@ class GeoNodeGeoServerSync(TestCase):
     def tearDown(self):
         pass
 
+    @on_ogc_backend(geoserver.BACKEND_PACKAGE)
     def test_set_attributes_from_geoserver(self):
         """Test attributes syncronization
         """
@@ -1032,3 +1257,367 @@ class GeoNodeGeoServerSync(TestCase):
                 attribute.description,
                 '%s_description' % attribute.attribute
             )
+
+
+class GeoNodeGeoServerCapabilities(TestCase):
+
+    """Tests GeoNode/GeoServer GetCapabilities per layer, user, category and map
+    """
+
+    def setUp(self):
+        call_command('loaddata', 'initial_data', verbosity=0)
+        call_command('loaddata', 'people_data', verbosity=0)
+
+    def tearDown(self):
+        pass
+
+    @on_ogc_backend(geoserver.BACKEND_PACKAGE)
+    def test_capabilities(self):
+        """Test capabilities
+        """
+
+        # a category
+        category = TopicCategory.objects.all()[0]
+
+        # some users
+        norman = get_user_model().objects.get(username="norman")
+        admin = get_user_model().objects.get(username="admin")
+
+        # create 3 layers, 2 with norman as an owner an 2 with category as a category
+        layer1 = file_upload(
+            os.path.join(
+                gisdata.VECTOR_DATA,
+                "san_andres_y_providencia_poi.shp"),
+            name='layer1',
+            user=norman,
+            category=category,
+            overwrite=True,
+        )
+        layer2 = file_upload(
+            os.path.join(
+                gisdata.VECTOR_DATA,
+                "single_point.shp"),
+            name='layer2',
+            user=norman,
+            overwrite=True,
+        )
+        layer3 = file_upload(
+            os.path.join(
+                gisdata.VECTOR_DATA,
+                "san_andres_y_providencia_administrative.shp"),
+            name='layer3',
+            user=admin,
+            category=category,
+            overwrite=True,
+        )
+
+        # 0. test capabilities_layer
+        url = reverse('capabilities_layer', args=[layer1.id])
+        resp = self.client.get(url)
+        layercap = etree.fromstring(resp.content)
+        rootdoc = etree.ElementTree(layercap)
+        layernodes = rootdoc.findall('.//Capability/Layer/Layer')
+        layernode = layernodes[0]
+
+        self.assertEquals(1, len(layernodes))
+        self.assertEquals(layernode.find('Name').text, layer1.name)
+
+        # 1. test capabilities_user
+        url = reverse('capabilities_user', args=[norman.username])
+        resp = self.client.get(url)
+        layercap = etree.fromstring(resp.content)
+        rootdoc = etree.ElementTree(layercap)
+        layernodes = rootdoc.findall('.//Capability/Layer/Layer')
+
+        # norman has 2 layers
+        self.assertEquals(2, len(layernodes))
+
+        # the norman two layers are named layer1 and layer2
+        count = 0
+        for layernode in layernodes:
+            if layernode.find('Name').text == layer1.name:
+                count += 1
+            elif layernode.find('Name').text == layer2.name:
+                count += 1
+        self.assertEquals(2, count)
+
+        # 2. test capabilities_category
+        url = reverse('capabilities_category', args=[category.identifier])
+        resp = self.client.get(url)
+        layercap = etree.fromstring(resp.content)
+        rootdoc = etree.ElementTree(layercap)
+        layernodes = rootdoc.findall('.//Capability/Layer/Layer')
+
+        # category is in two layers
+        self.assertEquals(2, len(layernodes))
+
+        # the layers for category are named layer1 and layer3
+        count = 0
+        for layernode in layernodes:
+            if layernode.find('Name').text == layer1.name:
+                count += 1
+            elif layernode.find('Name').text == layer3.name:
+                count += 1
+        self.assertEquals(2, count)
+
+        # 3. test for a map
+        # TODO
+
+
+class LayersStylesApiInteractionTests(
+        ResourceTestCaseMixin, LiveServerTestCase):
+
+    """Test Layers"""
+
+    fixtures = ['initial_data.json', 'bobby']
+
+    def setUp(self):
+        super(LayersStylesApiInteractionTests, self).setUp()
+
+        call_command('loaddata', 'people_data', verbosity=0)
+
+        self.layer_list_url = reverse(
+            'api_dispatch_list',
+            kwargs={
+                'api_name': 'api',
+                'resource_name': 'layers'})
+        self.style_list_url = reverse(
+            'api_dispatch_list',
+            kwargs={
+                'api_name': 'api',
+                'resource_name': 'styles'})
+        filename = os.path.join(gisdata.GOOD_DATA, 'raster/test_grid.tif')
+        self.layer = file_upload(filename)
+        all_public()
+
+    def tearDown(self):
+        Layer.objects.all().delete()
+
+    def test_layer_interaction(self):
+        """Layer API interaction check."""
+        layer_id = self.layer.id
+
+        layer_detail_url = reverse(
+            'api_dispatch_detail',
+            kwargs={
+                'api_name': 'api',
+                'resource_name': 'layers',
+                'id': layer_id
+            }
+        )
+        resp = self.api_client.get(layer_detail_url)
+        self.assertValidJSONResponse(resp)
+        obj = self.deserialize(resp)
+        # Should have links
+        self.assertTrue('links' in obj and obj['links'])
+        # Should have default style
+        self.assertTrue('default_style' in obj and obj['default_style'])
+        # Should have styles
+        self.assertTrue('styles' in obj and obj['styles'])
+
+        # Test filter layers by id
+        filter_url = self.layer_list_url + '?id=' + str(layer_id)
+        resp = self.api_client.get(filter_url)
+        self.assertValidJSONResponse(resp)
+        # This is a list url
+        objects = self.deserialize(resp)['objects']
+        self.assertEqual(len(objects), 1)
+        obj = objects[0]
+        # Should not have links
+        self.assertFalse('links' in obj)
+        # Should not have styles
+        self.assertTrue('styles' not in obj)
+        # Should have default_style
+        self.assertTrue('default_style' in obj and obj['default_style'])
+        # Should have resource_uri to browse layer detail
+        self.assertTrue('resource_uri' in obj and obj['resource_uri'])
+
+        prev_obj = obj
+        # Test filter layers by name
+        filter_url = self.layer_list_url + '?name=' + self.layer.name
+        resp = self.api_client.get(filter_url)
+        self.assertValidJSONResponse(resp)
+        # This is a list url
+        objects = self.deserialize(resp)['objects']
+        self.assertEqual(len(objects), 1)
+        obj = objects[0]
+
+        self.assertEqual(obj, prev_obj)
+
+    def test_style_interaction(self):
+        """Style API interaction check."""
+
+        # filter styles by layer id
+        filter_url = self.style_list_url + '?layer__id=' + str(self.layer.id)
+        resp = self.api_client.get(filter_url)
+        self.assertValidJSONResponse(resp)
+        # This is a list url
+        objects = self.deserialize(resp)['objects']
+
+        self.assertEqual(len(objects), 1)
+
+        # filter styles by layer name
+        filter_url = self.style_list_url + '?layer__name=' + self.layer.name
+        resp = self.api_client.get(filter_url)
+        self.assertValidJSONResponse(resp)
+        # This is a list url
+        objects = self.deserialize(resp)['objects']
+
+        self.assertEqual(len(objects), 1)
+
+        # Check necessary list fields
+        obj = objects[0]
+        field_list = [
+            'layer',
+            'name',
+            'title',
+            'style_url',
+            'type',
+            'resource_uri'
+        ]
+
+        # Additional field based on OGC Backend
+        if check_ogc_backend(geoserver.BACKEND_PACKAGE):
+            field_list += [
+                'version',
+                'workspace'
+            ]
+        elif check_ogc_backend(qgis_server.BACKEND_PACKAGE):
+            field_list += [
+                'style_legend_url'
+            ]
+        for f in field_list:
+            self.assertTrue(f in obj)
+
+        if check_ogc_backend(geoserver.BACKEND_PACKAGE):
+            self.assertEqual(obj['type'], 'sld')
+        elif check_ogc_backend(qgis_server.BACKEND_PACKAGE):
+            self.assertEqual(obj['type'], 'qml')
+
+        # Check style detail
+        detail_url = obj['resource_uri']
+        resp = self.api_client.get(detail_url)
+        self.assertValidJSONResponse(resp)
+        obj = self.deserialize(resp)
+
+        # should include body field
+        self.assertTrue('body' in obj and obj['body'])
+
+    @on_ogc_backend(qgis_server.BACKEND_PACKAGE)
+    def test_add_delete_styles(self):
+        """Style API Add/Delete interaction."""
+        # Check styles count
+        style_list_url = reverse(
+            'api_dispatch_list',
+            kwargs={
+                'api_name': 'api',
+                'resource_name': 'styles'
+            }
+        )
+        filter_url = style_list_url + '?layer__name=' + self.layer.name
+        resp = self.api_client.get(filter_url)
+        self.assertValidJSONResponse(resp)
+        objects = self.deserialize(resp)['objects']
+
+        self.assertEqual(len(objects), 1)
+
+        # Fetch default style
+        layer_detail_url = reverse(
+            'api_dispatch_detail',
+            kwargs={
+                'api_name': 'api',
+                'resource_name': 'layers',
+                'id': self.layer.id
+            }
+        )
+        resp = self.api_client.get(layer_detail_url)
+        self.assertValidJSONResponse(resp)
+        obj = self.deserialize(resp)
+        # Take default style url from Layer detail info
+        default_style_url = obj['default_style']
+        resp = self.api_client.get(default_style_url)
+        self.assertValidJSONResponse(resp)
+        obj = self.deserialize(resp)
+        style_body = obj['body']
+
+        style_stream = StringIO(style_body)
+        # Add virtual filename
+        style_stream.name = 'style.qml'
+        data = {
+            'layer__id': self.layer.id,
+            'name': 'new_style',
+            'title': 'New Style',
+            'style': style_stream
+        }
+        # Use default client to request
+        resp = self.client.post(style_list_url, data=data)
+
+        # Should not be able to add style without authentication
+        self.assertEqual(resp.status_code, 403)
+
+        # Login using anonymous user
+        self.client.login(username='AnonymousUser')
+        style_stream.seek(0)
+        resp = self.client.post(style_list_url, data=data)
+        # Should not be able to add style without correct permission
+        self.assertEqual(resp.status_code, 403)
+        self.client.logout()
+
+        # Use admin credentials
+        self.client.login(username='admin', password='admin')
+        style_stream.seek(0)
+        resp = self.client.post(style_list_url, data=data)
+        self.assertEqual(resp.status_code, 201)
+
+        # Check styles count
+        filter_url = style_list_url + '?layer__name=' + self.layer.name
+        resp = self.api_client.get(filter_url)
+        self.assertValidJSONResponse(resp)
+        objects = self.deserialize(resp)['objects']
+
+        self.assertEqual(len(objects), 2)
+
+        # Attempt to set default style
+        resp = self.api_client.get(layer_detail_url)
+        self.assertValidJSONResponse(resp)
+        obj = self.deserialize(resp)
+        # Get style list and get new default style
+        styles = obj['styles']
+        new_default_style = None
+        for s in styles:
+            if not s == obj['default_style']:
+                new_default_style = s
+                break
+        obj['default_style'] = new_default_style
+        # Put the new update
+        patch_data = {
+            'default_style': new_default_style
+        }
+        resp = self.client.patch(
+            layer_detail_url,
+            data=json.dumps(patch_data),
+            content_type='application/json')
+        self.assertEqual(resp.status_code, 200)
+
+        # check new default_style
+        resp = self.api_client.get(layer_detail_url)
+        self.assertValidJSONResponse(resp)
+        obj = self.deserialize(resp)
+        self.assertEqual(obj['default_style'], new_default_style)
+
+        # Attempt to delete style
+        filter_url = style_list_url + '?layer__id=%d&name=%s' % (
+            self.layer.id, data['name'])
+        resp = self.api_client.get(filter_url)
+        self.assertValidJSONResponse(resp)
+        objects = self.deserialize(resp)['objects']
+
+        resource_uri = objects[0]['resource_uri']
+
+        resp = self.client.delete(resource_uri)
+        self.assertEqual(resp.status_code, 204)
+
+        resp = self.api_client.get(filter_url)
+        meta = self.deserialize(resp)['meta']
+
+        self.assertEqual(meta['total_count'], 0)
