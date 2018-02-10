@@ -3,6 +3,7 @@ services:
 
   db:
     image: geonode/postgis:9.6
+    restart: unless-stopped
     container_name: db4${COMPOSE_PROJECT_NAME}
     labels:
         org.geonode.component: db
@@ -15,6 +16,7 @@ services:
 
   elasticsearch:
     image: elasticsearch
+    restart: unless-stopped
     container_name: elasticsearch4${COMPOSE_PROJECT_NAME}
     labels:
         org.geonode.component: elasticsearch
@@ -22,12 +24,14 @@ services:
 
   rabbitmq:
     image: rabbitmq
+    restart: unless-stopped
     container_name: rabbitmq4${COMPOSE_PROJECT_NAME}
     labels:
         org.geonode.component: rabbitmq
         org.geonode.instance.name: geonode
 
   django:
+    restart: unless-stopped
     image: geonode/geonode:latest
     container_name: django4${COMPOSE_PROJECT_NAME}
     labels:
@@ -44,6 +48,7 @@ services:
       - ./scripts/docker/env/production/django.env
 
   celery:
+    restart: unless-stopped
     image: geonode/geonode:latest
     container_name: celery4${COMPOSE_PROJECT_NAME}
     labels:
@@ -71,6 +76,7 @@ services:
 
   geoserver:
     image: geonode/geoserver:2.10.x
+    restart: unless-stopped
     container_name: geoserver4${COMPOSE_PROJECT_NAME}
     labels:
         org.geonode.component: geoserver
@@ -88,6 +94,7 @@ services:
 
   geonode:
     image: geonode/nginx:geoserver
+    restart: unless-stopped
     container_name: nginx4${COMPOSE_PROJECT_NAME}
     labels:
         org.geonode.component: nginx
