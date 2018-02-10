@@ -62,13 +62,15 @@
 
                         {% if 'access_token' in request.session %}
                             try {
-                                l.url += ( !l.url.match(/\b\?/gi) || l.url.match(/\b\?/gi).length == 0 ? '?' : '&');
+                                if(l.url != undefined && (typeof l.url) == "string") {
+                                    l.url += ( !l.url.match(/\b\?/gi) || l.url.match(/\b\?/gi).length == 0 ? '?' : '&');
 
-                                if((!l.url.match(/\baccess_token/gi))) {
-                                    l.url += "access_token={{request.session.access_token}}";
-                                } else {
-                                    l.url =
-                                        l.url.replace(/(access_token)(.+?)(?=\&)/, "$1={{request.session.access_token}}");
+                                    if((!l.url.match(/\baccess_token/gi))) {
+                                        l.url += "access_token={{request.session.access_token}}";
+                                    } else {
+                                        l.url =
+                                            l.url.replace(/(access_token)(.+?)(?=\&)/, "$1={{request.session.access_token}}");
+                                    }
                                 }
                             } catch(err) {
                                 console.log(err);
