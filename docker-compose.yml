@@ -3,15 +3,19 @@ services:
 
   postgres:
     image: postgres
+    container_name: postgres4${COMPOSE_PROJECT_NAME}
 
   elasticsearch:
    image: elasticsearch
+   container_name: elasticsearch4${COMPOSE_PROJECT_NAME}
 
   rabbitmq:
      image: rabbitmq
+     container_name: rabbitmq4${COMPOSE_PROJECT_NAME}
 
   django:
     image: geonode/geonode:latest
+    container_name: django4${COMPOSE_PROJECT_NAME}
     links:
       - postgres
       - elasticsearch
@@ -24,6 +28,7 @@ services:
 
   celery:
     image: geonode/geonode:latest
+    container_name: celery4${COMPOSE_PROJECT_NAME}
     links:
       - rabbitmq
       - postgres
@@ -46,6 +51,7 @@ services:
 
   geoserver:
     image: geonode/geoserver:2.10.x
+    container_name: geoserver4${COMPOSE_PROJECT_NAME}
     links:
       - postgres
     ports:
@@ -59,6 +65,7 @@ services:
 
   geonode:
     image: geonode/nginx:geoserver
+    container_name: nginx4${COMPOSE_PROJECT_NAME}
     links:
       - django
       - geoserver
@@ -67,7 +74,7 @@ services:
 
   data_dir_conf:
     image: geonode/geoserver_data:2.10.x
-    container_name: geoserver_data_dir
+    container_name: geoserver_data_dir4${COMPOSE_PROJECT_NAME}
     command: /bin/true
     volumes:
       - /geoserver_data/data
