@@ -107,6 +107,14 @@ DATABASES = {
     'default': dj_database_url.parse(DATABASE_URL, conn_max_age=600)
 }
 
+if os.getenv('DEFAULT_BACKEND_DATASTORE'):
+    GEODATABASE_URL = os.getenv('GEODATABASE_URL',
+                                'postgis://\
+geonode_data:geonode_data@localhost:5432/geonode_data')
+    DATABASES[os.getenv('DEFAULT_BACKEND_DATASTORE')] = dj_database_url.parse(
+        GEODATABASE_URL, conn_max_age=600
+    )
+
 MANAGERS = ADMINS = os.getenv('ADMINS', [])
 
 # Local time zone for this installation. Choices can be found here:
@@ -651,7 +659,8 @@ OGC_SERVER = {
         'LOG_FILE': '%s/geoserver/data/logs/geoserver.log'
         % os.path.abspath(os.path.join(PROJECT_ROOT, os.pardir)),
         # Set to name of database in DATABASES dictionary to enable
-        'DATASTORE': '',  # 'datastore',
+        # 'datastore',
+        'DATASTORE': os.getenv('DEFAULT_BACKEND_DATASTORE', ''),
         'PG_GEOGIG': False,
         'TIMEOUT': 10  # number of seconds to allow for HTTP requests
     }
