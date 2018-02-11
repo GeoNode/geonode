@@ -75,7 +75,7 @@ services:
       - ./scripts/docker/env/production/celery.env
 
   consumers:
-    image: geonode/geonode:geonode
+    image: geonode/geonode:latest
     stdin_open: true
     tty: true
     links:
