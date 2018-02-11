@@ -212,7 +212,6 @@ a
 }
 
 
-
 .control-button-container
 {
     margin-top: -16px;
@@ -497,7 +496,7 @@ a
 
 .layout-header, .layout-footer, .layout-content
 {
-    position: absolute;
+    position: fixed;
     width: 100%;
 }
 

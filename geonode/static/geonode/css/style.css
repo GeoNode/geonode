@@ -1447,7 +1447,7 @@ fieldset[disabled] .btn-gd-yellow.focus {
 /* end for history page */
 /* start for sign-in page */
 
-body.modal-open { overflow:inherit; padding-right:inherit !important; }
+
 #gd-model .modal-header {
     border:none;
 }
@@ -2711,6 +2711,11 @@ body.layer-detail-page #gd-wrapper .container-fluid.padding-zero{
 }
 .map-details-information,
 .layer-information{
+    height: calc(100vh - 98px) !important;
+    overflow-y: scroll;
+}
+.layer-details-information,
+.layer-information{
     height: calc(100vh - 142px) !important;
     overflow-y: scroll;
 }
@@ -3651,7 +3656,7 @@ background-color: #fff;
     width: 100%;
     float: right;
     left: 0%;
-    top: 140px;
+    top: 104px;
     position: absolute;
     height: 500px;
 }
@@ -3742,6 +3747,10 @@ background-color: #fff;
 .gallery-container .panel-body
 {
    padding: 0;
+}
+.layer-panel
+{
+    top: 141px !important;
 }
 
 
