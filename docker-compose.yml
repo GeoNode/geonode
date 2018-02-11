@@ -79,8 +79,9 @@ services:
     stdin_open: true
     tty: true
     links:
+    depends_on:
       - rabbitmq
-      - postgres
+      - db
       - elasticsearch
     command: python manage.py runmessaging
     env_file:
