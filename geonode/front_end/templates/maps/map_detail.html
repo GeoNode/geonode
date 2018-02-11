@@ -28,6 +28,45 @@
         <div class="gd-content-body layer-test">
             <div class="row">
                 <div class="panel-container">
+
+
+                    <div class="modal fade" id="download-map" tabindex="-1" role="dialog"
+                         aria-labelledby="myModalLabel" aria-hidden="true">
+                        <div class="modal-dialog">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <button type="button" class="close" data-dismiss="modal"
+                                            aria-hidden="true">&times;</button>
+                                    <h4 class="modal-title"
+                                        id="myModalLabel">{% trans "Download Map" %}</h4>
+                                </div>
+                                <div class="modal-body">
+                                    <ul>
+                                        <li>
+                                            <a href="{% url "map_download" resource.pk %}">
+                                                {% trans "Download Data Layers" %}
+                                            </a>
+                                        </li>
+                                        <li>
+                                            <a href="{% url "map_wmc" resource.pk %}"
+                                               target="_new">
+                                                {% trans "Download Web Map Context" %}
+                                            </a>
+                                        </li>
+                                    </ul>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-default btn-gd"
+                                            data-dismiss="modal">
+                                        {% trans "Close" %}
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+
+
                         <div id="sidebar" class="panel-left map-panel slideInRight">
 
                                 <button class="sidebar-toggle-btn" onclick="animating()"><i class="fa fa-navicon fa-2x py-1 p-1" style="color: #1B97D3"></i></button>
@@ -88,44 +127,11 @@
                                                     <button class="btn btn-gd-primary btn-md btn-block"
                                                             data-toggle="modal"
                                                             data-target="#download-map">
-                                                        {% trans "Download Map" %}
+                                                        {% trans "Download Map" %} 
                                                     </button>
                                                 </li>
                                             {% endif %}
-                                            <div class="modal fade" id="download-map" tabindex="-1" role="dialog"
-                                                 aria-labelledby="myModalLabel" aria-hidden="true">
-                                                <div class="modal-dialog">
-                                                    <div class="modal-content">
-                                                        <div class="modal-header">
-                                                            <button type="button" class="close" data-dismiss="modal"
-                                                                    aria-hidden="true">&times;</button>
-                                                            <h4 class="modal-title"
-                                                                id="myModalLabel">{% trans "Download Map" %}</h4>
-                                                        </div>
-                                                        <div class="modal-body">
-                                                            <ul>
-                                                                <li>
-                                                                    <a href="{% url "map_download" resource.pk %}">
-                                                                        {% trans "Download Data Layers" %}
-                                                                    </a>
-                                                                </li>
-                                                                <li>
-                                                                    <a href="{% url "map_wmc" resource.pk %}"
-                                                                       target="_new">
-                                                                        {% trans "Download Web Map Context" %}
-                                                                    </a>
-                                                                </li>
-                                                            </ul>
-                                                        </div>
-                                                        <div class="modal-footer">
-                                                            <button type="button" class="btn btn-default btn-gd"
-                                                                    data-dismiss="modal">
-                                                                {% trans "Close" %}
-                                                            </button>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
+                                            
                                             {% if "change_resourcebase" in perms_list  or "change_resourcebase_metadata" in perms_list %}
                                                 <li class="list-group-item">
                                                     <button class="btn btn-gd-primary btn-md btn-block"
