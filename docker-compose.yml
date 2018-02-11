@@ -78,7 +78,9 @@ services:
     image: geonode/geonode:latest
     stdin_open: true
     tty: true
-    links:
+    labels:
+        org.geonode.component: consumers
+        org.geonode.instance.name: geonode
     depends_on:
       - rabbitmq
       - db
