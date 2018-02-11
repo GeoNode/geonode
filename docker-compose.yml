@@ -76,6 +76,8 @@ services:
 
   consumers:
     image: geonode/geonode:latest
+    restart: unless-stopped
+    container_name: consumers4${COMPOSE_PROJECT_NAME}
     stdin_open: true
     tty: true
     labels:
