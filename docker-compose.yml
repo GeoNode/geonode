@@ -5,6 +5,8 @@ services:
     image: geonode/postgis:9.6
     restart: unless-stopped
     container_name: db4${COMPOSE_PROJECT_NAME}
+    stdin_open: true
+    tty: true
     labels:
         org.geonode.component: db
         org.geonode.instance.name: geonode
@@ -18,6 +20,8 @@ services:
     image: elasticsearch
     restart: unless-stopped
     container_name: elasticsearch4${COMPOSE_PROJECT_NAME}
+    stdin_open: true
+    tty: true
     labels:
         org.geonode.component: elasticsearch
         org.geonode.instance.name: geonode
@@ -26,6 +30,8 @@ services:
     image: rabbitmq
     restart: unless-stopped
     container_name: rabbitmq4${COMPOSE_PROJECT_NAME}
+    stdin_open: true
+    tty: true
     labels:
         org.geonode.component: rabbitmq
         org.geonode.instance.name: geonode
@@ -34,6 +40,8 @@ services:
     restart: unless-stopped
     image: geonode/geonode:latest
     container_name: django4${COMPOSE_PROJECT_NAME}
+    stdin_open: true
+    tty: true
     labels:
         org.geonode.component: django
         org.geonode.instance.name: geonode
@@ -51,6 +59,8 @@ services:
     restart: unless-stopped
     image: geonode/geonode:latest
     container_name: celery4${COMPOSE_PROJECT_NAME}
+    stdin_open: true
+    tty: true
     labels:
         org.geonode.component: celery
         org.geonode.instance.name: geonode
@@ -66,6 +76,8 @@ services:
 
   consumers:
     image: geonode/geonode:geonode
+    stdin_open: true
+    tty: true
     links:
       - rabbitmq
       - postgres
@@ -78,6 +90,8 @@ services:
     image: geonode/geoserver:2.10.x
     restart: unless-stopped
     container_name: geoserver4${COMPOSE_PROJECT_NAME}
+    stdin_open: true
+    tty: true
     labels:
         org.geonode.component: geoserver
         org.geonode.instance.name: geonode
@@ -93,6 +107,8 @@ services:
     image: geonode/nginx:geoserver
     restart: unless-stopped
     container_name: nginx4${COMPOSE_PROJECT_NAME}
+    stdin_open: true
+    tty: true
     labels:
         org.geonode.component: nginx
         org.geonode.instance.name: geonode
