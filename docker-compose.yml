@@ -88,6 +88,8 @@ services:
       - db
       - elasticsearch
     command: python manage.py runmessaging
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
     env_file:
       - ./scripts/docker/env/production/django.env
 
