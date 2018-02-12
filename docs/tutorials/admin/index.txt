@@ -43,6 +43,7 @@ You will know how to:
     monitoring/index
     database_shards/index
     async_signals/index
+    socialaccounts/index
 
 :ref:`geoserver_geonode_aa`
     GeoNode interacts with GeoServer through an advanced security mechanism based on OAuth2 Protocol and GeoFence. This section is a walk through of the configuration and setup of GeoNode and GeoServer Advanced Security.
@@ -91,3 +92,5 @@ You will know how to:
 :ref:`async_signals`
     How to set up asynchronous signals handling.
 
+:ref:`geonode_socialaccounts`
+    How to set up and login trhgough LinkedIn and Facebook Social Accounts.

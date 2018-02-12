@@ -83,6 +83,7 @@ function setup_django_once() {
 }
 
 function setup_django_every_time() {
+    pip install --upgrade pip --quiet
     pip install $GEONODE_SHARE/GeoNode-*.zip --no-dependencies --quiet
 
     geonodedir=`python -c "import geonode;import os;print os.path.dirname(geonode.__file__)"`
@@ -92,11 +93,19 @@ function setup_django_every_time() {
     mkdir -p $GEONODE_LOG
     ln -sf /var/log/apache2/error.log $GEONODE_LOG/apache.log
 
-    export DJANGO_SETTINGS_MODULE=geonode.settings
+    export DJANGO_SETTINGS_MODULE=geonode.local_settings
 
-    django-admin migrate account --settings=geonode.settings
+    # django-admin migrate account --settings=geonode.settings
+    geonode makemigrations --merge --verbosity 0
+    geonode makemigrations --verbosity 0
+    # geonode migrate auth --verbosity 0
+    # geonode migrate sites --verbosity 0
+    # geonode migrate people --verbosity 0
     geonode migrate --verbosity 0
+    geonode loaddata $geonodedir/people/fixtures/sample_admin.json
+    geonode loaddata $geonodedir/base/fixtures/default_oauth_apps.json
     geonode loaddata $geonodedir/base/fixtures/initial_data.json
+    geonode set_all_layers_alternate --verbosity 0
     geonode collectstatic --noinput --verbosity 0
 
     # Create an empty uploads dir
@@ -146,6 +155,7 @@ function setup_geoserver() {
     paver setup
     popd
     mv ../downloaded/geoserver.war $TOMCAT_WEBAPPS
+    $TOMCAT_SERVICE restart
 }
 
 function postinstall() {
@@ -154,6 +164,8 @@ function postinstall() {
     setup_apache_every_time
     $TOMCAT_SERVICE restart
     $APACHE_SERVICE restart
+
+    $GEONODE_BIN/geonode-updateip localhost
 }
 
 function once() {

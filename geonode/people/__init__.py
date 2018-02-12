@@ -17,8 +17,14 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
+from uuid import uuid4
+
+from allauth.account.signals import user_signed_up
+from allauth.socialaccount.signals import social_account_added
 from django.utils.translation import ugettext_noop as _
 from geonode.notifications_helper import NotificationsAppConfigBase
+
+from . import signals
 
 
 class PeopleAppConfig(NotificationsAppConfigBase):
@@ -29,6 +35,19 @@ class PeopleAppConfig(NotificationsAppConfigBase):
                      ("account_active", _("Account activated"),
                       _("This account is now active and can log in the site"),),
                      )
+
+    def ready(self):
+        """ Connect relevant signals to their corresponding handlers. """
+        social_account_added.connect(
+            signals.update_user_email_addresses,
+            dispatch_uid=str(uuid4()),
+            weak=False
+        )
+        user_signed_up.connect(
+            signals.notify_admins_new_signup,
+            dispatch_uid=str(uuid4()),
+            weak=False
+        )
 
 
 default_app_config = 'geonode.people.PeopleAppConfig'

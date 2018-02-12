@@ -354,13 +354,11 @@ GeoExplorer.Viewer.prototype.loadConfig = function(config) {
     checked: true
   });
 
-  /* - TEMPORARLY DISABLED GXPLORER PLAYBACK -
-    config.viewerTools.push({
-      ptype: "gxp_playback",
-      checked: true,
-      outputTarget: "paneltbar"
-    });
-  */
+  config.viewerTools.push({
+    ptype: "gxp_playback",
+    checked: true,
+    outputTarget: "paneltbar"
+  });
 
   // Do not include the layer styler on the map-detail view.
   {% if not map %}

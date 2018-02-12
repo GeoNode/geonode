@@ -919,7 +919,7 @@ class SecurityTest(TestCase):
             reverse('account_ajax_login'),
             reverse('account_confirm_email', kwargs=dict(key='test')),
             reverse('account_login'),
-            reverse('account_password_reset'),
+            reverse('account_reset_password'),
             reverse('forgot_username'),
             reverse('layer_acls'),
             reverse('layer_resolve_user'),

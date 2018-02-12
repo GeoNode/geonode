@@ -13,9 +13,9 @@ from django.utils.translation import ugettext_lazy as _
 from django.contrib import auth
 from django.conf import settings
 from django.contrib.auth import get_user_model
-from account.conf import settings
-from account.hooks import hookset
-from account.models import EmailAddress, SignupCode
+# from account.conf import settings
+# from account.hooks import hookset
+# from account.models import EmailAddress, SignupCode
 
 alnum_re = re.compile(r"^\w+$")
 
@@ -27,7 +27,7 @@ def get_user_lookup_kwargs(kwargs):
     return result
 
 class SignupForm(forms.Form):
-    
+
     username = forms.CharField(
         label=_("Username"),
         max_length=30,
@@ -59,9 +59,9 @@ class SignupForm(forms.Form):
         initial=0, label=settings.CUSTOM_ORG_AUTH_TEXT
         )
     agree_tos = forms.BooleanField(
-	label=mark_safe("I agree to the <a href='/upload_terms'>Terms and Conditions</a>")		
+	label=mark_safe("I agree to the <a href='/upload_terms'>Terms and Conditions</a>")
      )
-    
+
     def clean_username(self):
         if not alnum_re.search(self.cleaned_data["username"].replace('.', '')):
             raise forms.ValidationError(_("Usernames can only contain letters, numbers, dots and underscores."))
@@ -88,10 +88,10 @@ class SignupForm(forms.Form):
         return self.cleaned_data
 
 
-class SignupCodeForm(forms.ModelForm):
-
-    username = forms.CharField(max_length=30, required=False)
-    
-    class Meta:
-        model = SignupCode
-        fields = ('email', )
+# class SignupCodeForm(forms.ModelForm):
+#
+#     username = forms.CharField(max_length=30, required=False)
+#
+#     class Meta:
+#         model = SignupCode
+#         fields = ('email', )

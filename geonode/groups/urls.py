@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #########################################################################
 #
-# Copyright (C) 2016 OSGeo
+# Copyright (C) 2017 OSGeo
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -38,13 +38,10 @@ urlpatterns = patterns('geonode.groups.views',
                        url(r'^group/(?P<slug>[-\w]+)/$', GroupDetailView.as_view(), name='group_detail'),
                        url(r'^group/(?P<slug>[-\w]+)/update/$', 'group_update', name='group_update'),
                        url(r'^group/(?P<slug>[-\w]+)/members/$', 'group_members', name='group_members'),
-                       url(r'^group/(?P<slug>[-\w]+)/invite/$', 'group_invite', name='group_invite'),
                        url(r'^group/(?P<slug>[-\w]+)/members_add/$', 'group_members_add', name='group_members_add'),
                        url(r'^group/(?P<slug>[-\w]+)/member_remove/(?P<username>.+)$', 'group_member_remove',
                            name='group_member_remove'),
                        url(r'^group/(?P<slug>[-\w]+)/remove/$', 'group_remove', name='group_remove'),
                        url(r'^group/(?P<slug>[-\w]+)/join/$', 'group_join', name='group_join'),
-                       url(r'^group/[-\w]+/invite/(?P<token>[\w]{40})/$', 'group_invite_response',
-                           name='group_invite_response'),
                        url(r'^group/(?P<slug>[-\w]+)/activity/$', GroupActivityView.as_view(), name='group_activity'),
                        )

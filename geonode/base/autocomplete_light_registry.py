@@ -42,101 +42,91 @@ class ResourceBaseAutocomplete(AutocompleteModelTemplate):
         self.choices = self.choices.filter(id__in=permitted)
 
         is_admin = False
-        is_staff = False
         is_manager = False
         if request.user:
             is_admin = request.user.is_superuser if request.user else False
-            is_staff = request.user.is_staff if request.user else False
             try:
                 is_manager = request.user.groupmember_set.all().filter(role='manager').exists()
             except:
                 is_manager = False
 
-        if settings.ADMIN_MODERATE_UPLOADS:
-            if not is_admin and not is_staff:
-                if is_manager:
-                    groups = request.user.groups.all()
-                    group_list_all = []
-                    try:
-                        group_list_all = request.user.group_list_all().values('group')
-                    except:
-                        pass
-                    public_groups = GroupProfile.objects.exclude(access="private").values('group')
-                    try:
-                        anonymous_group = Group.objects.get(name='anonymous')
-                        self.choices = self.choices.filter(
-                            Q(group__isnull=True) | Q(group__in=group_list_all) |
-                            Q(group__in=groups) | Q(group__in=public_groups) |
-                            Q(group=anonymous_group) |
-                            Q(owner__username__iexact=str(request.user)))
-                    except:
-                        self.choices = self.choices.filter(
-                            Q(group__isnull=True) | Q(group__in=groups) |
-                            Q(group__in=group_list_all) | Q(group__in=public_groups) |
-                            Q(owner__username__iexact=str(request.user)))
-                else:
-                    self.choices = self.choices.filter(Q(is_published=True) |
-                                                       Q(owner__username__iexact=str(request.user)))
-
-        if settings.RESOURCE_PUBLISHING:
-            if not is_admin and not is_staff:
-                if is_manager:
-                    groups = request.user.groups.all()
-                    group_list_all = []
-                    try:
-                        group_list_all = request.user.group_list_all().values('group')
-                    except:
-                        pass
-                    public_groups = GroupProfile.objects.exclude(access="private").values('group')
-                    try:
-                        anonymous_group = Group.objects.get(name='anonymous')
-                        self.choices = self.choices.filter(
-                            Q(group__isnull=True) | Q(group__in=groups) |
-                            Q(group__in=group_list_all) | Q(group__in=public_groups) |
-                            Q(group=anonymous_group) |
-                            Q(owner__username__iexact=str(request.user)))
-                    except:
-                        self.choices = self.choices.filter(
-                            Q(group__isnull=True) | Q(group__in=groups) |
-                            Q(group__in=group_list_all) | Q(group__in=public_groups) |
-                            Q(owner__username__iexact=str(request.user)))
-                else:
-                    self.choices = self.choices.filter(Q(is_published=True) |
-                                                       Q(owner__username__iexact=str(request.user)))
-
+        # Get the list of objects the user has access to
+        anonymous_group = None
+        public_groups = GroupProfile.objects.exclude(access="private").values('group')
+        groups = []
+        group_list_all = []
+        manager_groups = []
+        try:
+            group_list_all = request.user.group_list_all().values('group')
+        except:
+            pass
+        try:
+            manager_groups = Group.objects.filter(
+                name__in=request.user.groupmember_set.filter(role="manager").values_list("group__slug", flat=True))
+        except:
+            pass
         try:
             anonymous_group = Group.objects.get(name='anonymous')
+            if anonymous_group and anonymous_group not in groups:
+                groups.append(anonymous_group)
         except:
-            anonymous_group = None
+            pass
+
+        if settings.ADMIN_MODERATE_UPLOADS:
+            if not is_admin:
+                if is_manager:
+                    self.choices = self.choices.filter(
+                        Q(is_published=True) |
+                        Q(group__in=manager_groups) |
+                        Q(owner__username__iexact=str(request.user)))
+                elif request.user:
+                    self.choices = self.choices.filter(
+                        Q(is_published=True) |
+                        Q(owner__username__iexact=str(request.user)))
+                else:
+                    self.choices = self.choices.filter(Q(is_published=True))
+
+        if settings.RESOURCE_PUBLISHING:
+            if not is_admin:
+                if is_manager:
+                    self.choices = self.choices.filter(
+                        Q(group__isnull=True) |
+                        Q(group__in=groups) |
+                        Q(group__in=manager_groups) |
+                        Q(group__in=group_list_all) |
+                        Q(group__in=public_groups) |
+                        Q(owner__username__iexact=str(request.user)))
+                elif request.user:
+                    self.choices = self.choices.filter(
+                        Q(is_published=True) |
+                        Q(group__in=groups) |
+                        Q(group__in=group_list_all) |
+                        Q(owner__username__iexact=str(request.user)))
+                else:
+                    self.choices = self.choices.filter(Q(is_published=True))
 
         if settings.GROUP_PRIVATE_RESOURCES:
             public_groups = GroupProfile.objects.exclude(access="private").values('group')
             if is_admin:
                 self.choices = self.choices
             elif request.user:
-                groups = request.user.groups.all()
-                group_list_all = []
-                try:
-                    group_list_all = request.user.group_list_all().values('group')
-                except:
-                    pass
-                if anonymous_group:
-                    self.choices = self.choices.filter(
-                        Q(group__isnull=True) | Q(group__in=groups) |
-                        Q(group__in=group_list_all) | Q(group__in=public_groups) |
-                        Q(group=anonymous_group) | Q(owner__username__iexact=str(request.user)))
-                else:
-                    self.choices = self.choices.filter(
-                        Q(group__isnull=True) | Q(group__in=public_groups) |
-                        Q(group__in=group_list_all) | Q(group__in=groups) |
-                        Q(owner__username__iexact=str(request.user)))
+                self.choices = self.choices.filter(
+                    Q(group__isnull=True) |
+                    Q(group__in=groups) |
+                    Q(group__in=manager_groups) |
+                    Q(group__in=public_groups) |
+                    Q(group__in=group_list_all) |
+                    Q(owner__username__iexact=str(request.user)))
             else:
                 if anonymous_group:
                     self.choices = self.choices.filter(
-                        Q(group__isnull=True) | Q(group__in=public_groups) | Q(group=anonymous_group))
+                        Q(group__isnull=True) |
+                        Q(group__in=public_groups) |
+                        Q(group=anonymous_group))
                 else:
                     self.choices = self.choices.filter(
-                        Q(group__isnull=True) | Q(group__in=public_groups))
+                        Q(group__isnull=True) |
+                        Q(group__in=public_groups))
 
         return super(ResourceBaseAutocomplete, self).choices_for_request()
 

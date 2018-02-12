@@ -29,7 +29,7 @@ from django.conf import settings
 
 from guardian.shortcuts import get_anonymous_user
 
-from geonode.groups.models import GroupProfile, GroupInvitation, GroupCategory
+from geonode.groups.models import GroupProfile, GroupCategory
 from geonode.documents.models import Document
 from geonode.layers.models import Layer
 from geonode.maps.models import Map
@@ -388,9 +388,9 @@ class SmokeTest(TestCase):
         response = self.client.get("/groups/group/bar/update/")
         self.assertEqual(302, response.status_code)
 
-        # 405 - json endpoint, doesn't support GET
-        response = self.client.get("/groups/group/bar/invite/")
-        self.assertEqual(405, response.status_code)
+        # # 405 - json endpoint, doesn't support GET
+        # response = self.client.get("/groups/group/bar/invite/")
+        # self.assertEqual(405, response.status_code)
 
     def test_protected_pages_render(self):
         """
@@ -414,9 +414,9 @@ class SmokeTest(TestCase):
         response = self.client.get("/groups/group/bar/update/")
         self.assertEqual(200, response.status_code)
 
-        # 405 - json endpoint, doesn't support GET
-        response = self.client.get("/groups/group/bar/invite/")
-        self.assertEqual(405, response.status_code)
+        # # 405 - json endpoint, doesn't support GET
+        # response = self.client.get("/groups/group/bar/invite/")
+        # self.assertEqual(405, response.status_code)
 
     def test_group_activity_pages_render(self):
         """
@@ -527,79 +527,79 @@ class MembershipTest(TestCase):
         self.assertTrue(normal.is_member_of_group(group.slug))
 
 
-class InvitationTest(TestCase):
-    """
-    Tests invitation logic in geonode.groups models
-    """
-
-    fixtures = ["group_test_data"]
-
-    def test_invite_user(self):
-        """
-        Tests inviting a registered user
-        """
-
-        normal = get_user_model().objects.get(username="norman")
-        admin = get_user_model().objects.get(username="admin")
-        group = GroupProfile.objects.get(slug="bar")
-        group.invite(normal, admin, role="member", send=False)
-
-        self.assert_(
-            GroupInvitation.objects.filter(
-                user=normal,
-                from_user=admin,
-                group=group).exists())
-
-        invite = GroupInvitation.objects.get(
-            user=normal, from_user=admin, group=group)
-
-        # Test that the user can access the token url.
-        self.client.login(username="norman", password="norman")
-        response = self.client.get(
-            "/groups/group/{group}/invite/{token}/".format(group=group, token=invite.token))
-        self.assertEqual(200, response.status_code)
-
-    def test_accept_invitation(self):
-        """
-        Tests accepting an invitation
-        """
-
-        anon = get_anonymous_user()
-        normal = get_user_model().objects.get(username="norman")
-        admin = get_user_model().objects.get(username="admin")
-        group = GroupProfile.objects.get(slug="bar")
-        group.invite(normal, admin, role="member", send=False)
-
-        invitation = GroupInvitation.objects.get(
-            user=normal, from_user=admin, group=group)
-
-        self.assertRaises(ValueError, lambda: invitation.accept(anon))
-        self.assertRaises(ValueError, lambda: invitation.accept(admin))
-        invitation.accept(normal)
-
-        self.assert_(group.user_is_member(normal))
-        self.assert_(invitation.state == "accepted")
-
-    def test_decline_invitation(self):
-        """
-        Tests declining an invitation
-        """
-
-        anon = get_anonymous_user()
-        normal = get_user_model().objects.get(username="norman")
-        admin = get_user_model().objects.get(username="admin")
-        group = GroupProfile.objects.get(slug="bar")
-        group.invite(normal, admin, role="member", send=False)
-
-        invitation = GroupInvitation.objects.get(
-            user=normal, from_user=admin, group=group)
-
-        self.assertRaises(ValueError, lambda: invitation.decline(anon))
-        self.assertRaises(ValueError, lambda: invitation.decline(admin))
-        invitation.decline(normal)
-
-        self.assert_(not group.user_is_member(normal))
-        self.assert_(invitation.state == "declined")
+# class InvitationTest(TestCase):
+#     """
+#     Tests invitation logic in geonode.groups models
+#     """
+#
+#     fixtures = ["group_test_data"]
+#
+#     def test_invite_user(self):
+#         """
+#         Tests inviting a registered user
+#         """
+#
+#         normal = get_user_model().objects.get(username="norman")
+#         admin = get_user_model().objects.get(username="admin")
+#         group = GroupProfile.objects.get(slug="bar")
+#         group.invite(normal, admin, role="member", send=False)
+#
+#         self.assert_(
+#             GroupInvitation.objects.filter(
+#                 user=normal,
+#                 from_user=admin,
+#                 group=group).exists())
+#
+#         invite = GroupInvitation.objects.get(
+#             user=normal, from_user=admin, group=group)
+#
+#         # Test that the user can access the token url.
+#         self.client.login(username="norman", password="norman")
+#         response = self.client.get(
+#             "/groups/group/{group}/invite/{token}/".format(group=group, token=invite.token))
+#         self.assertEqual(200, response.status_code)
+#
+#     def test_accept_invitation(self):
+#         """
+#         Tests accepting an invitation
+#         """
+#
+#         anon = get_anonymous_user()
+#         normal = get_user_model().objects.get(username="norman")
+#         admin = get_user_model().objects.get(username="admin")
+#         group = GroupProfile.objects.get(slug="bar")
+#         group.invite(normal, admin, role="member", send=False)
+#
+#         invitation = GroupInvitation.objects.get(
+#             user=normal, from_user=admin, group=group)
+#
+#         self.assertRaises(ValueError, lambda: invitation.accept(anon))
+#         self.assertRaises(ValueError, lambda: invitation.accept(admin))
+#         invitation.accept(normal)
+#
+#         self.assert_(group.user_is_member(normal))
+#         self.assert_(invitation.state == "accepted")
+#
+#     def test_decline_invitation(self):
+#         """
+#         Tests declining an invitation
+#         """
+#
+#         anon = get_anonymous_user()
+#         normal = get_user_model().objects.get(username="norman")
+#         admin = get_user_model().objects.get(username="admin")
+#         group = GroupProfile.objects.get(slug="bar")
+#         group.invite(normal, admin, role="member", send=False)
+#
+#         invitation = GroupInvitation.objects.get(
+#             user=normal, from_user=admin, group=group)
+#
+#         self.assertRaises(ValueError, lambda: invitation.decline(anon))
+#         self.assertRaises(ValueError, lambda: invitation.decline(admin))
+#         invitation.decline(normal)
+#
+#         self.assert_(not group.user_is_member(normal))
+#         self.assert_(invitation.state == "declined")
 
 
 class GroupCategoriesTestCase(TestCase):

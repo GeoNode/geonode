@@ -30,4 +30,4 @@ BASEMAP = {
     'visibility': False,
     'group': 'background'
 }
-settings.MAP_BASELAYERS.append(settings.BASEMAP)
+settings.MAP_BASELAYERS.append(BASEMAP)

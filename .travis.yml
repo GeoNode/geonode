@@ -10,6 +10,13 @@ virtualenv:
 
 services:
   - docker
+  - postgresql
+
+addons:
+  postgresql: 9.6
+  apt:
+    packages:
+    - postgresql-9.6-postgis-2.3
 
 env:
   - BACKEND: 'geonode.geoserver'
@@ -27,6 +34,7 @@ env:
 branches:
   only:
     - master
+    - 2.9.x
     - 2.7.x
     - 2.6.x
 
@@ -50,6 +58,11 @@ install:
   - pip install codecov
 
 before_script:
+  # Initialize DB
+  # - sudo apt-get install postgresql-9.6-postgis-2.3 -y -q
+  - psql -U postgres -c "create extension postgis"
+  - chmod +x scripts/misc/create_dbs_travis.sh
+  - scripts/misc/create_dbs_travis.sh before_script
   # For QGIS Server Travis steps
   - scripts/misc/qgis_server_setup.sh before_script
   - scripts/misc/bdd_setup.sh before_script

@@ -92,7 +92,8 @@ def send_notification(*args, **kwargs):
             return queue_notification(*args, **kwargs)
         try:
             return notifications.models.send(*args, **kwargs)
-        except:
+        except Exception:
+            logging.exception("Could not send notifications.")
             return False
 
 

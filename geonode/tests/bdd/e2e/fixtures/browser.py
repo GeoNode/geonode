@@ -34,7 +34,7 @@ def browser(browser, base_url, credentials):
     if credentials["login"]:
         browser.visit(urljoin(base_url, settings.LOGIN_URL))
 
-        browser.fill("username", credentials["username"])
+        browser.fill("login", credentials["username"])
         browser.fill("password", credentials["password"])
         button = browser.find_by_css("button[type=submit]").first
         button.click()

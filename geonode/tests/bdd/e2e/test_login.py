@@ -59,15 +59,17 @@ def go_to_login(en_browser):
     assert en_browser.is_text_present('Password')
 
 
-@when('I fill in "Password" with "admin"')
-def fill_password(en_browser):
-    """I fill in "Password" with "admin"."""
-    en_browser.fill('username', 'admin')
-
-
 @when('I fill in "Username" with "admin"')
 def fill_username(en_browser):
     """I fill in "Username" with "admin"."""
+    assert en_browser.is_text_present('Username')
+    en_browser.fill('login', 'admin')
+
+
+@when('I fill in "Password" with "admin"')
+def fill_password(en_browser):
+    """I fill in "Password" with "admin"."""
+    assert en_browser.is_text_present('Password')
     en_browser.fill('password', 'admin')
 
 
