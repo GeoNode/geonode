@@ -486,7 +486,7 @@ def document_metadata(
         if settings.ADMIN_MODERATE_UPLOADS:
             if not request.user.is_superuser:
                 document_form.fields['is_published'].widget.attrs.update({'disabled': 'true'})
-            if not request.user.is_superuser or not request.user.is_staff:
+
                 can_change_metadata = request.user.has_perm(
                     'change_resourcebase_metadata',
                     document.get_self_resource())

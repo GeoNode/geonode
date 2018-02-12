@@ -8,7 +8,6 @@ from .views import (proxy, ajax_layer_update, ajax_layer_edit_check, upload_laye
     add_endpoint)
 from tastypie.api import Api
 from .api.resources import LayerResource, TagResource, TopicCategoryResource
-from .accounts.views import SignupView
 
 # api
 wm_api = Api(api_name='2.6')
@@ -37,6 +36,3 @@ urlpatterns = patterns('',
                         url(r'^/data/upload', upload_layer, name='data_upload'),
                         url(r'^data/layerstats', ajax_increment_layer_stats, name='layer_stats'),
 )
-
-#import ipdb; ipdb.set_trace()
-print 'there'

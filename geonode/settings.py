@@ -31,6 +31,7 @@ import dj_database_url
 # General Django development settings
 #
 from django.conf.global_settings import DATETIME_INPUT_FORMATS
+from django.conf.global_settings import TEMPLATE_CONTEXT_PROCESSORS
 from geonode import get_version
 from kombu import Queue
 
@@ -51,16 +52,20 @@ DEBUG = strtobool(os.getenv('DEBUG', 'True'))
 DEBUG_STATIC = strtobool(os.getenv('DEBUG_STATIC', 'False'))
 
 # Define email service on GeoNode
-EMAIL_ENABLE = strtobool(os.getenv('EMAIL_ENABLE', 'True'))
+EMAIL_ENABLE = strtobool(os.getenv('EMAIL_ENABLE', 'False'))
 
 if EMAIL_ENABLE:
-    EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+    EMAIL_BACKEND = os.getenv('DJANGO_EMAIL_BACKEND', \
+        default='django.core.mail.backends.smtp.EmailBackend')
     EMAIL_HOST = 'localhost'
     EMAIL_PORT = 25
     EMAIL_HOST_USER = ''
     EMAIL_HOST_PASSWORD = ''
     EMAIL_USE_TLS = False
     DEFAULT_FROM_EMAIL = 'GeoNode <no-reply@geonode.org>'
+else:
+    EMAIL_BACKEND = os.getenv('DJANGO_EMAIL_BACKEND', \
+        default='django.core.mail.backends.console.EmailBackend')
 
 # This is needed for integration tests, they require
 # geonode to be listening for GeoServer auth requests.
@@ -235,13 +240,14 @@ _DEFAULT_LOCALE_PATHS = (
 
 LOCALE_PATHS = os.getenv('LOCALE_PATHS', _DEFAULT_LOCALE_PATHS)
 
-
 # Location of url mappings
 ROOT_URLCONF = os.getenv('ROOT_URLCONF', 'geonode.urls')
 
 # Login and logout urls override
 LOGIN_URL = os.getenv('LOGIN_URL', '/account/login/')
 LOGOUT_URL = os.getenv('LOGOUT_URL', '/account/logout/')
+
+LOGIN_REDIRECT_URL = '/'
 
 # Documents application
 ALLOWED_DOCUMENT_TYPES = [
@@ -352,7 +358,6 @@ INSTALLED_APPS = (
     'django_forms_bootstrap',
 
     # Social
-    'account',
     'avatar',
     'dialogos',
     # 'pinax.comments',
@@ -368,6 +373,10 @@ INSTALLED_APPS = (
     'corsheaders',
 
     'invitations',
+    # login with external providers
+    'allauth',
+    'allauth.account',
+    'allauth.socialaccount',
 ) + GEONODE_APPS
 
 MONITORING_ENABLED = False
@@ -449,7 +458,7 @@ TEMPLATES = [
                 'django.core.context_processors.static',
                 'django.core.context_processors.request',
                 'django.contrib.messages.context_processors.messages',
-                'account.context_processors.account',
+                'django.template.context_processors.request',
                 'geonode.context_processors.resource_urls',
                 'geonode.geoserver.context_processors.geoserver_urls',
             ],
@@ -493,6 +502,7 @@ AUTHENTICATION_BACKENDS = (
     'oauth2_provider.backends.OAuth2Backend',
     'django.contrib.auth.backends.ModelBackend',
     'guardian.backends.ObjectPermissionBackend',
+    'allauth.account.auth_backends.AuthenticationBackend',
 )
 
 OAUTH2_PROVIDER = {
@@ -520,7 +530,7 @@ DEFAULT_ANONYMOUS_VIEW_PERMISSION = strtobool(
     os.getenv('DEFAULT_ANONYMOUS_VIEW_PERMISSION', 'True')
 )
 DEFAULT_ANONYMOUS_DOWNLOAD_PERMISSION = strtobool(
-    os.getenv('DEFAULT_ANONYMOUS_VIEW_PERMISSION', 'True')
+    os.getenv('DEFAULT_ANONYMOUS_DOWNLOAD_PERMISSION', 'True')
 )
 
 #
@@ -555,18 +565,7 @@ ACTSTREAM_SETTINGS = {
 }
 
 
-# prevent signing up by default
-ACCOUNT_OPEN_SIGNUP = True
 
-ACCOUNT_EMAIL_CONFIRMATION_EMAIL = strtobool(
-    os.getenv('ACCOUNT_EMAIL_CONFIRMATION_EMAIL', 'False')
-)
-ACCOUNT_EMAIL_CONFIRMATION_REQUIRED = strtobool(
-    os.getenv('ACCOUNT_EMAIL_CONFIRMATION_REQUIRED', 'False')
-)
-ACCOUNT_APPROVAL_REQUIRED = strtobool(
-    os.getenv('ACCOUNT_APPROVAL_REQUIRED', 'False')
-)
 
 # Email for users to contact admins.
 THEME_ACCOUNT_CONTACT_EMAIL = os.getenv(
@@ -662,11 +661,20 @@ OGC_SERVER = {
 # Uploader Settings
 UPLOADER = {
     'BACKEND': 'geonode.rest',
+    # 'BACKEND': 'geonode.importer',
     'OPTIONS': {
         'TIME_ENABLED': False,
         'MOSAIC_ENABLED': False,
         'GEOGIG_ENABLED': False,
-    }
+    },
+    'SUPPORTED_CRS': [
+        'EPSG:4326',
+        'EPSG:3785',
+        'EPSG:3857',
+        'EPSG:900913',
+        'EPSG:32647',
+        'EPSG:32736'
+    ]
 }
 
 # CSW settings
@@ -1065,13 +1073,14 @@ FREETEXT_KEYWORDS_READONLY = False
 
 # notification settings
 NOTIFICATION_ENABLED = True or TEST
-PINAX_NOTIFICATIONS_LANGUAGE_MODEL = "account.Account"
+#PINAX_NOTIFICATIONS_LANGUAGE_MODEL = "people.Profile"
 
 # notifications backends
 _EMAIL_BACKEND = "pinax.notifications.backends.email.EmailBackend"
 PINAX_NOTIFICATIONS_BACKENDS = [
     ("email", _EMAIL_BACKEND),
 ]
+PINAX_NOTIFICATIONS_HOOKSET = "pinax.notifications.hooks.DefaultHookSet"
 
 # Queue non-blocking notifications.
 PINAX_NOTIFICATIONS_QUEUE_ALL = False
@@ -1236,3 +1245,17 @@ MAP_CLIENT_USE_CROSS_ORIGIN_CREDENTIALS = strtobool(os.getenv(
     'MAP_CLIENT_USE_CROSS_ORIGIN_CREDENTIALS',
     'False'
 ))
+
+ACCOUNT_OPEN_SIGNUP = True
+ACCOUNT_APPROVAL_REQUIRED = strtobool(
+    os.getenv('ACCOUNT_APPROVAL_REQUIRED', 'False')
+)
+ACCOUNT_ADAPTER = 'geonode.people.adapters.LocalAccountAdapter'
+ACCOUNT_CONFIRM_EMAIL_ON_GET = True
+ACCOUNT_EMAIL_REQUIRED = True
+ACCOUNT_EMAIL_VERIFICATION = 'optional'
+SOCIALACCOUNT_ADAPTER = 'geonode.people.adapters.SocialAccountAdapter'
+
+INVITATIONS_ADAPTER = ACCOUNT_ADAPTER
+
+TEMPLATE_CONTEXT_PROCESSORS += ('django.core.context.processors.request', )

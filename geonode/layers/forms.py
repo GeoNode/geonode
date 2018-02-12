@@ -32,7 +32,7 @@ try:
     import json
 except ImportError:
     from django.utils import simplejson as json
-from geonode.layers.utils import unzip_file
+from geonode.utils import unzip_file
 from geonode.layers.models import Layer, Attribute
 
 autodiscover() # flake8: noqa
@@ -210,8 +210,8 @@ class LayerUploadForm(forms.Form):
         tempdir = tempfile.mkdtemp()
 
         if zipfile.is_zipfile(self.cleaned_data['base_file']):
-            absolute_base_file = unzip_file(self.cleaned_data['base_file'], '.shp', tempdir=tempdir)
-
+            absolute_base_file = unzip_file(self.cleaned_data['base_file'],
+                                            '.shp', tempdir=tempdir)
         else:
             for field in self.spatial_files:
                 f = self.cleaned_data[field]
@@ -220,8 +220,9 @@ class LayerUploadForm(forms.Form):
                     with open(path, 'wb') as writable:
                         for c in f.chunks():
                             writable.write(c)
-            absolute_base_file = os.path.join(tempdir,
-                                              self.cleaned_data["base_file"].name)
+
+        absolute_base_file = os.path.join(tempdir,
+                                          self.cleaned_data["base_file"].name)
         return tempdir, absolute_base_file
 
 

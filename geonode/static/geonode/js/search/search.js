@@ -43,8 +43,8 @@
             }
         });
     }
-  // Load group categories
 
+  // Load group categories
   module.load_group_categories = function ($http, $rootScope, $location){
         var params = typeof FILTER_TYPE == 'undefined' ? {} : {'type': FILTER_TYPE};
         if ($location.search().hasOwnProperty('name__icontains')){
@@ -61,8 +61,6 @@
             }
         });
     }
-
-
 
   module.load_keywords = function ($http, $rootScope, $location){
         var params = typeof FILTER_TYPE == 'undefined' ? {} : {'type': FILTER_TYPE};
@@ -163,50 +161,66 @@
   module.haystack_facets = function($http, $rootScope, $location) {
       var data = $rootScope.query_data;
       if ("categories" in $rootScope) {
-          $rootScope.category_counts = data.meta.facets.category;
-          for (var id in $rootScope.categories) {
-              var category = $rootScope.categories[id];
-              if (category.identifier in $rootScope.category_counts) {
-                  category.count = $rootScope.category_counts[category.identifier]
-              } else {
-                  category.count = 0;
+          try {
+              $rootScope.category_counts = data.meta.facets.category;
+              for (var id in $rootScope.categories) {
+                  var category = $rootScope.categories[id];
+                  if (category.identifier in $rootScope.category_counts) {
+                      category.count = $rootScope.category_counts[category.identifier]
+                  } else {
+                      category.count = 0;
+                  }
               }
+          } catch(err) {
+              // console.log(err);
           }
       }
 
       if ("keywords" in $rootScope) {
-          $rootScope.keyword_counts = data.meta.facets.keywords;
-          for (var id in $rootScope.keywords) {
-              var keyword = $rootScope.keywords[id];
-              if (keyword.slug in $rootScope.keyword_counts) {
-                  keyword.count = $rootScope.keyword_counts[keyword.slug]
-              } else {
-                  keyword.count = 0;
+          try {
+              $rootScope.keyword_counts = data.meta.facets.keywords;
+              for (var id in $rootScope.keywords) {
+                  var keyword = $rootScope.keywords[id];
+                  if (keyword.slug in $rootScope.keyword_counts) {
+                      keyword.count = $rootScope.keyword_counts[keyword.slug]
+                  } else {
+                      keyword.count = 0;
+                  }
               }
+          } catch(err) {
+              // console.log(err);
           }
       }
 
       if ("regions" in $rootScope) {
-          $rootScope.regions_counts = data.meta.facets.regions;
-          for (var id in $rootScope.regions) {
-              var region = $rootScope.regions[id];
-              if (region.name in $rootScope.region_counts) {
-                  region.count = $rootScope.region_counts[region.name]
-              } else {
-                  region.count = 0;
+          try {
+              $rootScope.regions_counts = data.meta.facets.regions;
+              for (var id in $rootScope.regions) {
+                  var region = $rootScope.regions[id];
+                  if (region.name in $rootScope.region_counts) {
+                      region.count = $rootScope.region_counts[region.name]
+                  } else {
+                      region.count = 0;
+                  }
               }
+          } catch(err) {
+              // console.log(err);
           }
       }
 
       if ("owners" in $rootScope) {
-          $rootScope.owner_counts = data.meta.facets.owners;
-          for (var id in $rootScope.owners) {
-              var owner = $rootScope.owners[id];
-              if (owner.name in $rootScope.owner_counts) {
-                  owner.count = $rootScope.owner_counts[owner.name]
-              } else {
-                  owner.count = 0;
+          try {
+              $rootScope.owner_counts = data.meta.facets.owners;
+              for (var id in $rootScope.owners) {
+                  var owner = $rootScope.owners[id];
+                  if (owner.name in $rootScope.owner_counts) {
+                      owner.count = $rootScope.owner_counts[owner.name]
+                  } else {
+                      owner.count = 0;
+                  }
               }
+          } catch(err) {
+              // console.log(err);
           }
       }
   }
@@ -294,17 +308,21 @@
 
         //Update facet/keyword/category counts from search results
         if (HAYSTACK_FACET_COUNTS){
-            module.haystack_facets($http, $scope.$root, $location);
-            $("#types").find("a").each(function(){
-                if ($(this)[0].id in data.meta.facets.subtype) {
-                    $(this).find("span").text(data.meta.facets.subtype[$(this)[0].id]);
-                }
-                else if ($(this)[0].id in data.meta.facets.type) {
-                    $(this).find("span").text(data.meta.facets.type[$(this)[0].id]);
-                } else {
-                    $(this).find("span").text("0");
-                }
-            });
+            try {
+                module.haystack_facets($http, $scope.$root, $location);
+                $("#types").find("a").each(function(){
+                    if ($(this)[0].id in data.meta.facets.subtype) {
+                        $(this).find("span").text(data.meta.facets.subtype[$(this)[0].id]);
+                    }
+                    else if ($(this)[0].id in data.meta.facets.type) {
+                        $(this).find("span").text(data.meta.facets.type[$(this)[0].id]);
+                    } else {
+                        $(this).find("span").text("0");
+                    }
+                });
+            } catch(err) {
+                // console.log(err);
+            }
         }
       });
     };

@@ -15,7 +15,11 @@
         <div class="col-lg-8 item-details">
           <div class="row">
             <div class="col-xs-10">
-              <p class="item-meta"><span class="item-category">{{ item.category__gn_description }}</span></p>
+              <p class="item-meta">
+                  <span class="item-category">{{ item.category__gn_description }}</span><br>
+                  <span class="item-category" ng-if="item.group"><a href="/groups/group/{{ item.group }}/activity/"><i class="fa fa-group" aria-hidden="true" style="margin-right: 8px;"></i>{{ item.group_name }}</a><br></span>
+                  <span class="item-category" ng-if="item.has_time"><i class="fa fa-clock-o" aria-hidden="true" style="margin-right: 8px;"></i>Temporal Serie<br></span>
+              </p>
               <h4><a href="{{ item.detail_url }}">{{ item.title }}</a></h4>
             </div>
             <div class="col-xs-2">
@@ -30,6 +34,8 @@
               </h4>
             </div>
           </div>
+          <div class="alert alert-warning" ng-if="item.is_approved == false">PENDING APPROVAL</div>
+          <div class="alert alert-danger" ng-if="item.is_approved == true && item.is_published == false">UNPUBLISHED</div>
           <p class="abstract">{{ item.abstract | limitTo: 300 }}{{ item.abstract.length  > 300 ? '...' : ''}}</p>
           <div class="row">
             <div class="col-lg-12 item-items">

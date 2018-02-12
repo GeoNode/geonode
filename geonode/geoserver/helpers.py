@@ -310,11 +310,18 @@ def cascading_delete(cat, layer_name):
             try:
                 store = get_store(cat, name, workspace=ws)
             except FailedRequestError:
-                try:
-                    layer = Layer.objects.get(alternate=layer_name)
-                    store = get_store(cat, layer.store, workspace=ws)
-                except FailedRequestError:
-                    logger.debug('the store was not found in geoserver')
+                if ogc_server_settings.DATASTORE:
+                    try:
+                        layers = Layer.objects.filter(alternate=layer_name)
+                        for layer in layers:
+                            store = get_store(cat, layer.store, workspace=ws)
+                    except FailedRequestError:
+                        logger.debug(
+                            'the store was not found in geoserver')
+                        return
+                else:
+                    logger.debug(
+                        'the store was not found in geoserver')
                     return
             if ws is None:
                 logger.debug(
@@ -855,10 +862,14 @@ def set_styles(layer, gs_catalog):
 
 def save_style(gs_style):
     style, created = Style.objects.get_or_create(name=gs_style.name)
-    style.sld_title = gs_style.sld_title
-    style.sld_body = gs_style.sld_body
-    style.sld_url = gs_style.body_href
-    style.save()
+    try:
+        style.sld_title = gs_style.sld_title
+    except:
+        style.sld_title = gs_style.name
+    finally:
+        style.sld_body = gs_style.sld_body
+        style.sld_url = gs_style.body_href
+        style.save()
     return style
 
 

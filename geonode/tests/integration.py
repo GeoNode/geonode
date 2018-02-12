@@ -27,7 +27,7 @@ import time
 import logging
 
 from StringIO import StringIO
-import traceback
+# import traceback
 import gisdata
 from decimal import Decimal
 from lxml import etree
@@ -788,7 +788,7 @@ class GeoNodeMapTest(TestCase):
 
             if not response_dict['success'] and 'unknown encoding' in \
                     response_dict['errors']:
-                print(response_dict['errors'])
+                # print(response_dict['errors'])
                 pass
             else:
                 self.assertEquals(response.status_code, 200)
@@ -826,8 +826,9 @@ class GeoNodeMapTest(TestCase):
                 if new_vector_layer:
                     new_vector_layer.delete()
             except:
-                tb = traceback.format_exc()
-                print(tb)
+                # tb = traceback.format_exc()
+                # print(tb)
+                pass
 
     def test_importlayer_mgmt_command(self):
             """Test layer import management command

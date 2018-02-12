@@ -36,6 +36,8 @@ from django.contrib.auth import get_user_model
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.auth import login
 from django.contrib.auth.models import Group, Permission
+from geonode.groups.models import GroupProfile
+from django.core.exceptions import ObjectDoesNotExist
 from django.conf import settings
 from guardian.utils import get_user_obj_perms_model
 from guardian.shortcuts import assign_perm, get_groups_with_perms
@@ -109,12 +111,25 @@ class PermissionLevelMixin(object):
     def get_all_level_info(self):
 
         resource = self.get_self_resource()
+        users = get_users_with_perms(resource)
+        groups = get_groups_with_perms(resource,
+                                       attach_perms=True)
+        if groups:
+            for group in groups:
+                try:
+                    group_profile = GroupProfile.objects.get(slug=group.name)
+                    managers = group_profile.get_managers()
+                    if managers:
+                        for manager in managers:
+                            if manager not in users and not manager.is_superuser:
+                                for perm in ADMIN_PERMISSIONS:
+                                    assign_perm(perm, manager, resource)
+                                users[manager] = ADMIN_PERMISSIONS
+                except GroupProfile.DoesNotExist:
+                    pass
         info = {
-            'users': get_users_with_perms(
-                resource),
-            'groups': get_groups_with_perms(
-                resource,
-                attach_perms=True)}
+            'users': users,
+            'groups': groups}
 
         # TODO very hugly here, but isn't huglier
         # to set layer permissions to resource base?
@@ -325,7 +340,7 @@ def set_geofence_all(instance):
     try:
         workspace = _get_layer_workspace(resource.layer)
         logger.debug("going to work in workspace {!r}".format(workspace))
-    except (AttributeError, RuntimeError):
+    except (ObjectDoesNotExist, AttributeError, RuntimeError):
         # This is either not a layer (if raised AttributeError) or it is
         # a layer that is not manageable by geofence (if raised
         # RuntimeError) so we have nothing to do
@@ -413,15 +428,15 @@ def set_geofence_owner(instance, username=None, view_perms=False, download_perms
     resource = instance.get_self_resource()
     try:
         workspace = _get_layer_workspace(resource.layer)
-    except (AttributeError, RuntimeError):
+    except (ObjectDoesNotExist, AttributeError, RuntimeError):
         # resource is either not a layer (if raised AttributeError) or
         # a layer that is not manageable by geofence (if raised
         # RuntimeError) so we have nothing to do
         pass
     else:
         services = (
-            ["WMS", "GWC"] if view_perms else [] +
-            ["WFS", "WCS", "WPS"] if download_perms else []
+            (["WMS", "GWC"] if view_perms else []) +
+            (["WFS", "WCS", "WPS"] if download_perms else [])
         )
         try:
             for service in services:
@@ -446,7 +461,7 @@ def set_geofence_group(instance, groupname, view_perms=False,
     resource = instance.get_self_resource()
     try:
         workspace = _get_layer_workspace(resource.layer)
-    except (AttributeError, RuntimeError):
+    except (ObjectDoesNotExist, AttributeError, RuntimeError):
         # resource is either not a layer (if raised AttributeError) or
         # a layer that is not manageable by geofence (if raised
         # RuntimeError) so we have nothing to do
@@ -454,8 +469,8 @@ def set_geofence_group(instance, groupname, view_perms=False,
     else:
         if groupname:
             services = (
-                ["WMS", "GWC"] if view_perms else [] +
-                ["WFS", "WCS", "WPS"] if download_perms else []
+                (["WMS", "GWC"] if view_perms else []) +
+                (["WFS", "WCS", "WPS"] if download_perms else [])
             )
             try:
                 for service in services:
@@ -548,7 +563,7 @@ def remove_object_permissions(instance):
                             e = Exception(msg)
                             logger.debug("Response [{}] : {}".format(r.status_code, r.text))
                             raise e
-        except RuntimeError:
+        except (ObjectDoesNotExist, RuntimeError):
             pass  # This layer is not manageable by geofence
         except Exception:
             tb = traceback.format_exc()

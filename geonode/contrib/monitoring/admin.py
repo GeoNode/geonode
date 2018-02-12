@@ -36,7 +36,7 @@ class ServiceTypeAdmin(admin.ModelAdmin):
 
 @admin.register(Service)
 class ServiceAdmin(admin.ModelAdmin):
-    list_display = ('name', 'active', 'host_name', 'service_type', 'url',)
+    list_display = ('name', 'active', 'host_name', 'service_type', 'last_check', 'url',)
 
     def host_name(self, obj):
         return obj.host.name

@@ -95,7 +95,11 @@ class Upload(models.Model):
             self.complete = True
             self.session = None
         else:
-            self.session = pickle.dumps(upload_session)
+            # Make sure we don't pickle UTF-8 chars
+            upload_session.user.first_name = u'{}'.format(upload_session.user.first_name).encode('ascii', 'ignore')
+            upload_session.user.last_name = u'{}'.format(upload_session.user.last_name).encode('ascii', 'ignore')
+            unicode_session = pickle.dumps(upload_session)
+            self.session = unicode_session
         if self.upload_dir is None:
             self.upload_dir = path.dirname(upload_session.base_file)
             self.name = upload_session.layer_title or upload_session.name
