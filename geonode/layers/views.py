@@ -403,13 +403,16 @@ def layer_detail(request, layername, template='layers/layer_detail.html'):
     if 'geonode.geoserver' in settings.INSTALLED_APPS:
         from geonode.geoserver.views import get_capabilities
         if layer.has_time:
-            wms_capabilities_resp = get_capabilities(request, layer.id)
+            workspace, layername = layer.alternate.split(":")
+            # WARNING Please make sure to have enabled DJANGO CACHE as per
+            # https://docs.djangoproject.com/en/2.0/topics/cache/#filesystem-caching
+            wms_capabilities_resp = get_capabilities(request, layer.id, tolerant=True)
             if wms_capabilities_resp.status_code >= 200 and wms_capabilities_resp.status_code < 400:
                 wms_capabilities = wms_capabilities_resp.getvalue()
                 if wms_capabilities:
                     import xml.etree.ElementTree as ET
                     e = ET.fromstring(wms_capabilities)
-                    for atype in e.findall('Capability/Layer/Layer/Extent'):
+                    for atype in e.findall("Capability/Layer/Layer[Name='%s']/Extent" % (layername)):
                         dim_name = atype.get('name')
                         if dim_name:
                             dim_name = str(dim_name).lower()

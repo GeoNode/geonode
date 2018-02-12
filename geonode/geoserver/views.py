@@ -631,16 +631,26 @@ def layer_acls(request):
 
 
 # capabilities
-def get_layer_capabilities(workspace, layer, access_token=None):
+def get_layer_capabilities(workspace, layer, access_token=None, tolerant=False):
     """
     Retrieve a layer-specific GetCapabilities document
     """
     # TODO implement this for 1.3.0 too
     wms_url = '%s%s/%s/wms?service=wms&version=1.1.0&request=GetCapabilities'\
         % (ogc_server_settings.public_url, workspace, layer)
-    wms_url += ('&access_token=%s' % access_token if access_token else '')
+    if access_token:
+        wms_url += ('&access_token=%s' % access_token)
     http = httplib2.Http()
     response, getcap = http.request(wms_url)
+    # TODO this is to bypass an actual bug of GeoServer 2.12.x
+    if tolerant and response.status == 404:
+        # WARNING Please make sure to have enabled DJANGO CACHE as per
+        # https://docs.djangoproject.com/en/2.0/topics/cache/#filesystem-caching
+        wms_url = '%s%s/wms?service=wms&version=1.1.0&request=GetCapabilities&layers=%s:%s'\
+            % (ogc_server_settings.public_url, workspace, workspace, layer)
+        if access_token:
+            wms_url += ('&access_token=%s' % access_token)
+        response, getcap = http.request(wms_url)
     return getcap
 
 
@@ -657,7 +667,7 @@ def format_online_resource(workspace, layer, element):
         resource.attrib['{http://www.w3.org/1999/xlink}href'] = wtf.replace("/" + workspace + "/" + layer, "")
 
 
-def get_capabilities(request, layerid=None, user=None, mapid=None, category=None):
+def get_capabilities(request, layerid=None, user=None, mapid=None, category=None, tolerant=False):
     """
     Compile a GetCapabilities document containing public layers
     filtered by layer, user, map, or category
@@ -696,12 +706,14 @@ def get_capabilities(request, layerid=None, user=None, mapid=None, category=None
                 access_token = None
 
             try:
-                workspace, layername = layer.typename.split(":")
+                workspace, layername = layer.alternate.split(":")
                 if rootdoc is None:  # 1st one, seed with real GetCapabilities doc
                     try:
-                        layercap = etree.fromstring(get_layer_capabilities(workspace,
-                                                                           layername,
-                                                                           access_token=access_token))
+                        layercap = get_layer_capabilities(workspace,
+                                                          layername,
+                                                          access_token=access_token,
+                                                          tolerant=tolerant)
+                        layercap = etree.fromstring(layercap)
                         rootdoc = etree.ElementTree(layercap)
                         rootlayerelem = rootdoc.find('.//Capability/Layer')
                         format_online_resource(workspace, layername, rootdoc)
