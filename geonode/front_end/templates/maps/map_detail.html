@@ -190,7 +190,14 @@
                                                         {% include "map_templates/_deny_map.html" %}
                                                     {% endif %}
                                                 </li>
-
+                                                {% if user_role == "manager" and status == 'ACTIVE' %}
+                                                <li class="list-group-item">
+                                                        <form method="post" action="{% url "map-draft" resource.id %}">
+                                                                {% csrf_token %}
+                                                    <button type="submit" class="btn btn-gd-primary btn-md btn-block" >{% trans "Unapproved Map" %}</button>
+                                                    </form>
+                                                </li>
+                                                {% endif %}
                                             {% endif %}
 
                                             {% if "download_resourcebase" in perms_list %}
@@ -513,6 +520,7 @@
           </div>
         </div>
     </div>
+   
 {% endblock %}
 
 {% block extra_script %}

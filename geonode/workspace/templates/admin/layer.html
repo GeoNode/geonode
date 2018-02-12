@@ -93,6 +93,7 @@
                                                             <th>Approve Date</th>
                                                             <th>Layer Edit</th>
                                                             <th>Layer Delete</th>
+                                                            <th>Unapproved Layer</th>
                                                         </tr>
                                                     </thead>
                                                     <!--{% for approved in approved_list %}-->
@@ -442,6 +443,7 @@
                     output+='<td>'+ item.date_updated +'</td>';
                     output+='<td><a href="'+ item.detail_url +'" class="btn btn-gd-primary">{% trans "Edit" %}</a></td>';
                     output+='<td><button type="button" class="btn btn-gd-primary" onclick="deleteLayer('+ item.id +')" style="color:#fff;">{% trans "Delete Layer" %}</button></td>';
+                    output+='<td><a href="'+ item.detail_url +'?user_role=manager" class="btn btn-gd-primary">{% trans "Unapproved" %}</a></td>';                    
                     output+='</tr>';
                   });
                   outputpag+='<div>';

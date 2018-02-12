@@ -318,6 +318,14 @@
                                                         {% include "layer_templates/_deny_layer.html" %}
                                                     {% endif %}
                                                 </li>
+                                                {% if user_role == "manager" and status == 'ACTIVE' %}
+                                                <li class="list-group-item">
+                                                        <form method="post" action="{% url "layer-draft" resource.id %}">
+                                                                {% csrf_token %}
+                                                    <button type="submit" class="btn btn-gd-primary btn-md btn-block" >{% trans "Unapproved Layer" %}</button>
+                                                    </form>
+                                                </li>
+                                                {% endif %}
 
                                             {% endif %}
 
