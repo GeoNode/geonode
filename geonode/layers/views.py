@@ -1142,6 +1142,27 @@ def layer_approve(request, layer_pk):
     else:
         return HttpResponseRedirect(reverse('admin-workspace-layer'))
 
+@login_required
+def layer_draft(request, layer_pk):
+    if request.method == 'POST':
+        try:
+            layer = Layer.objects.get(id=layer_pk)
+        except Layer.DoesNotExist:
+            return Http404("Map does not exist")
+
+        group = layer.group
+        managers = list( group.get_managers())
+        layer.status = 'DRAFT'
+
+        if request.user in managers or request.user.is_superuser:
+            # only managers or superuser can change status
+            layer.save()
+            messages.info(request, 'Unapproved layer successfully')
+            
+        return HttpResponseRedirect(reverse('member-workspace-layer'))            
+    else:
+        return HttpResponseRedirect(reverse('member-workspace-layer'))
+
 
 @login_required
 def layer_deny(request, layer_pk):
