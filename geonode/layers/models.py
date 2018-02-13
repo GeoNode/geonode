@@ -35,9 +35,8 @@ from geonode.base.models import ResourceBase, ResourceBaseManager, resourcebase_
 from geonode.people.utils import get_valid_user
 from agon_ratings.models import OverallRating
 from geonode.utils import check_shp_columnnames
-from geonode.security.models import (
-    remove_object_permissions,
-    PermissionLevelMixin)
+from geonode.security.models import PermissionLevelMixin
+from geonode.security.utils import remove_object_permissions
 
 from ..services.enumerations import CASCADED
 from ..services.enumerations import INDEXED

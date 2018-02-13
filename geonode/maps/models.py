@@ -43,7 +43,7 @@ from geonode.utils import GXPLayerBase
 from geonode.utils import layer_from_viewer_config
 from geonode.utils import default_map_config
 from geonode.utils import num_encode
-from geonode.security.models import remove_object_permissions
+from geonode.security.utils import remove_object_permissions
 
 from agon_ratings.models import OverallRating
 

@@ -459,8 +459,8 @@ def layer_detail(request, layername, template='layers/layer_detail.html'):
         request.user, access_token, * (NON_WMS_BASE_LAYERS + [maplayer])))
     context_dict["preview"] = getattr(
         settings,
-        'LAYER_PREVIEW_LIBRARY',
-        'leaflet')
+        'GEONODE_CLIENT_LAYER_PREVIEW_LIBRARY',
+        'geoext')
     context_dict["crs"] = getattr(
         settings,
         'DEFAULT_MAP_CRS',
@@ -976,7 +976,7 @@ def layer_metadata(
         "category_form": category_form,
         "tkeywords_form": tkeywords_form,
         "viewer": viewer,
-        "preview": getattr(settings, 'LAYER_PREVIEW_LIBRARY', 'leaflet'),
+        "preview": getattr(settings, 'GEONODE_CLIENT_LAYER_PREVIEW_LIBRARY', 'geoext'),
         "crs": getattr(settings, 'DEFAULT_MAP_CRS', 'EPSG:900913'),
         "metadataxsl": metadataxsl,
         "freetext_readonly": getattr(

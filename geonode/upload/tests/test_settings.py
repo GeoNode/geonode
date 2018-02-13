@@ -204,8 +204,8 @@ DEFAULT_MAP_CENTER = (0, 0)
 DEFAULT_MAP_ZOOM = 0
 
 # Default preview library
-LAYER_PREVIEW_LIBRARY = 'geoext'
-#LAYER_PREVIEW_LIBRARY = 'leaflet'
+GEONODE_CLIENT_LAYER_PREVIEW_LIBRARY = 'geoext'
+#GEONODE_CLIENT_LAYER_PREVIEW_LIBRARY = 'leaflet'
 # LEAFLET_CONFIG = {
 #    'TILES': [
 #        # Find tiles at:

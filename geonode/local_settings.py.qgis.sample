@@ -57,7 +57,8 @@ qgis_server_context_processor = 'geonode.qgis_server.context_processors.qgis_ser
 TEMPLATES[0]['OPTIONS']['context_processors'].append(qgis_server_context_processor)
 
 # Leaflet config
-LAYER_PREVIEW_LIBRARY = 'leaflet'
+GEONODE_CLIENT_LAYER_PREVIEW_LIBRARY = 'leaflet'
+GEONODE_CLIENT_HOOKSET = "geonode.client.hooksets.LeafletHookSet"
 LEAFLET_CONFIG = {
     'TILES': [
         # Map Quest

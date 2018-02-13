@@ -155,9 +155,9 @@ Specific settings for map API providers (if they are not set those base maps wil
 * BING_API_KEY set this variable to your BING Map Key value
 
 
-LAYER_PREVIEW_LIBRARY
----------------------
-Default:  ``"leaflet"``
+GEONODE_CLIENT_LAYER_PREVIEW_LIBRARY
+------------------------------------
+Default:  ``"geoext"``
 
 The library to use for display preview images of layers.  The library choices are:
 
