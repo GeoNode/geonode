@@ -5,9 +5,9 @@
         .module('LayerApp')
         .controller('FeaturePreviewController', FeaturePreviewController);
 
-    FeaturePreviewController.$inject = ['data', '$modalInstance', 'uiGridConstants', 'AngularUiGridOptions'];
+    FeaturePreviewController.$inject = ['data', '$modalInstance', 'uiGridConstants', 'AngularUiGridOptions', 'layerService'];
 
-    function FeaturePreviewController(data, $modalInstance, uiGridConstants, AngularUiGridOptions) {
+    function FeaturePreviewController(data, $modalInstance, uiGridConstants, AngularUiGridOptions, layerService) {
         var self = this;
 
         function initializeTabs() {
@@ -26,7 +26,7 @@
                 self.data[d] = {};
                 self.data[d].gridOptions = new AngularUiGridOptions();
                 self.data[d].gridOptions.exporterCsvFilename = d + '.csv';
-                if(data[d].length == 0)
+                if (data[d].length == 0)
                     continue;
                 self.data[d].gridOptions.columnDefs = Object.keys(data[d][0]).map(function(e) {
                     return {
@@ -40,6 +40,20 @@
 
         self.closeDialog = function() {
             $modalInstance.close();
+        };
+
+        self.SaveAsLayer = function() {
+            var features = vectorLayer.getSource().getFeatures();
+
+            layerService.createLayerFromFeature(features)
+                .then(function(layer) {
+                    if (vectorLayer) {
+                        mapService.removeVectorLayer(vectorLayer);
+                    }
+                    mapService.addDataLayer(layer);
+                }, function() {
+
+                });
         };
 
         self.init = function() {
