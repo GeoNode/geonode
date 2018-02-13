@@ -41,7 +41,6 @@ from django.conf.urls import url
 from django.core.paginator import Paginator, InvalidPage
 from django.http import Http404
 from django.core.exceptions import ObjectDoesNotExist
-from django.contrib.auth.models import Group
 from django.forms.models import model_to_dict
 
 from tastypie.utils.mime import build_content_type
@@ -55,6 +54,7 @@ from geonode.base.models import HierarchicalKeyword
 from geonode.people.models import Profile
 from geonode.groups.models import GroupProfile
 from geonode.utils import check_ogc_backend
+from geonode.security.utils import get_visible_resources
 
 from .authorization import GeoNodeAuthorization, GeonodeApiKeyAuthentication
 
@@ -203,123 +203,21 @@ class CommonModelApi(ModelResource):
         return filtered
 
     def filter_published(self, queryset, request):
-        is_admin = False
-        is_manager = False
-        if request.user:
-            is_admin = request.user.is_superuser if request.user else False
-            try:
-                is_manager = request.user.groupmember_set.all().filter(role='manager').exists()
-            except:
-                is_manager = False
+        filter_set = get_visible_resources(
+            queryset,
+            request.user if request else None,
+            admin_approval_required=settings.ADMIN_MODERATE_UPLOADS,
+            unpublished_not_visible=settings.RESOURCE_PUBLISHING)
 
-        # Get the list of objects the user has access to
-        anonymous_group = None
-        public_groups = GroupProfile.objects.exclude(access="private").values('group')
-        groups = []
-        group_list_all = []
-        manager_groups = []
-        try:
-            group_list_all = request.user.group_list_all().values('group')
-        except:
-            pass
-        try:
-            manager_groups = Group.objects.filter(
-                name__in=request.user.groupmember_set.filter(role="manager").values_list("group__slug", flat=True))
-        except:
-            pass
-        try:
-            anonymous_group = Group.objects.get(name='anonymous')
-            if anonymous_group and anonymous_group not in groups:
-                groups.append(anonymous_group)
-        except:
-            pass
-
-        filtered = queryset
-        if settings.ADMIN_MODERATE_UPLOADS:
-            if not is_admin:
-                if is_manager:
-                    filtered = filtered.filter(
-                        Q(is_published=True) |
-                        Q(group__in=groups) |
-                        Q(group__in=manager_groups) |
-                        Q(group__in=group_list_all) |
-                        Q(owner__username__iexact=str(request.user)))
-                elif request.user:
-                    filtered = filtered.filter(
-                        Q(is_published=True) |
-                        Q(group__in=groups) |
-                        Q(group__in=group_list_all) |
-                        Q(owner__username__iexact=str(request.user)))
-                else:
-                    filtered = filtered.filter(Q(is_published=True))
-
-        if settings.RESOURCE_PUBLISHING:
-            if not is_admin:
-                if is_manager:
-                    filtered = filtered.filter(
-                        Q(group__isnull=True) |
-                        Q(group__in=groups) |
-                        Q(group__in=manager_groups) |
-                        Q(group__in=group_list_all) |
-                        Q(group__in=public_groups) |
-                        Q(owner__username__iexact=str(request.user)))
-                elif request.user:
-                    filtered = filtered.filter(
-                        Q(is_published=True) |
-                        Q(group__in=groups) |
-                        Q(group__in=group_list_all) |
-                        Q(owner__username__iexact=str(request.user)))
-                else:
-                    filtered = filtered.filter(Q(is_published=True))
-
-        return filtered
+        return filter_set
 
     def filter_group(self, queryset, request):
-        is_admin = False
-        if request.user:
-            is_admin = request.user.is_superuser if request.user else False
+        filter_set = get_visible_resources(
+            queryset,
+            request.user if request else None,
+            private_groups_not_visibile=settings.GROUP_PRIVATE_RESOURCES)
 
-        try:
-            anonymous_group = Group.objects.get(name='anonymous')
-        except BaseException:
-            anonymous_group = None
-
-        public_groups = GroupProfile.objects.exclude(access="private").values('group')
-        if is_admin:
-            filtered = queryset
-        elif request.user:
-            groups = request.user.groups.all()
-            group_list_all = []
-            try:
-                group_list_all = request.user.group_list_all().values('group')
-            except:
-                pass
-            if anonymous_group:
-                filtered = queryset.filter(
-                    Q(group__isnull=True) |
-                    Q(group__in=groups) |
-                    Q(group__in=group_list_all) |
-                    Q(group__in=public_groups) |
-                    Q(group=anonymous_group) |
-                    Q(owner__username__iexact=str(request.user)))
-            else:
-                filtered = queryset.filter(
-                    Q(group__isnull=True) |
-                    Q(group__in=group_list_all) |
-                    Q(group__in=public_groups) |
-                    Q(group__in=groups) |
-                    Q(owner__username__iexact=str(request.user)))
-        else:
-            if anonymous_group:
-                filtered = queryset.filter(
-                    Q(group__isnull=True) |
-                    Q(group__in=public_groups) |
-                    Q(group=anonymous_group))
-            else:
-                filtered = queryset.filter(
-                    Q(group__isnull=True) |
-                    Q(group__in=public_groups))
-        return filtered
+        return filter_set
 
     def filter_h_keywords(self, queryset, keywords):
         filtered = queryset
@@ -540,98 +438,16 @@ class CommonModelApi(ModelResource):
         sqs = self.build_haystack_filters(request.GET)
 
         if not settings.SKIP_PERMS_FILTER:
-            is_admin = False
-            is_manager = False
-            if request.user:
-                is_admin = request.user.is_superuser if request.user else False
-                try:
-                    is_manager = request.user.groupmember_set.all().filter(role='manager').exists()
-                except:
-                    is_manager = False
 
             filter_set = get_objects_for_user(
                 request.user, 'base.view_resourcebase')
 
-            # Get the list of objects the user has access to
-            anonymous_group = None
-            public_groups = GroupProfile.objects.exclude(access="private").values('group')
-            groups = []
-            group_list_all = []
-            manager_groups = []
-            try:
-                group_list_all = request.user.group_list_all().values('group')
-            except:
-                pass
-            try:
-                manager_groups = Group.objects.filter(
-                    name__in=request.user.groupmember_set.filter(role="manager").values_list("group__slug", flat=True))
-            except:
-                pass
-            try:
-                anonymous_group = Group.objects.get(name='anonymous')
-                if anonymous_group and anonymous_group not in groups:
-                    groups.append(anonymous_group)
-            except:
-                pass
-
-            if settings.ADMIN_MODERATE_UPLOADS:
-                if not is_admin:
-                    if is_manager:
-                        filter_set = filter_set.filter(
-                            Q(is_published=True) |
-                            Q(group__in=groups) |
-                            Q(group__in=manager_groups) |
-                            Q(group__in=group_list_all) |
-                            Q(owner__username__iexact=str(request.user)))
-                    elif request.user:
-                        filter_set = filter_set.filter(
-                            Q(is_published=True) |
-                            Q(group__in=groups) |
-                            Q(group__in=group_list_all) |
-                            Q(owner__username__iexact=str(request.user)))
-                    else:
-                        filter_set = filter_set.filter(Q(is_published=True))
-
-            if settings.RESOURCE_PUBLISHING:
-                if not is_admin:
-                    if is_manager:
-                        filter_set = filter_set.filter(
-                            Q(group__isnull=True) |
-                            Q(group__in=groups) |
-                            Q(group__in=manager_groups) |
-                            Q(group__in=group_list_all) |
-                            Q(group__in=public_groups) |
-                            Q(owner__username__iexact=str(request.user)))
-                    elif request.user:
-                        filter_set = filter_set.filter(
-                            Q(is_published=True) |
-                            Q(group__in=groups) |
-                            Q(group__in=group_list_all) |
-                            Q(owner__username__iexact=str(request.user)))
-                    else:
-                        filter_set = filter_set.filter(Q(is_published=True))
-
-            if settings.GROUP_PRIVATE_RESOURCES:
-                if is_admin:
-                    filter_set = filter_set
-                elif request.user:
-                    filter_set = filter_set.filter(
-                        Q(group__isnull=True) |
-                        Q(group__in=groups) |
-                        Q(group__in=manager_groups) |
-                        Q(group__in=public_groups) |
-                        Q(group__in=group_list_all) |
-                        Q(owner__username__iexact=str(request.user)))
-                else:
-                    if anonymous_group:
-                        filter_set = filter_set.filter(
-                            Q(group__isnull=True) |
-                            Q(group__in=public_groups) |
-                            Q(group=anonymous_group))
-                    else:
-                        filter_set = filter_set.filter(
-                            Q(group__isnull=True) |
-                            Q(group__in=public_groups))
+            filter_set = get_visible_resources(
+                filter_set,
+                request.user if request else None,
+                admin_approval_required=settings.ADMIN_MODERATE_UPLOADS,
+                unpublished_not_visible=settings.RESOURCE_PUBLISHING,
+                private_groups_not_visibile=settings.GROUP_PRIVATE_RESOURCES)
 
             filter_set_ids = filter_set.values_list('id')
             # Do the query using the filterset and the query term. Facet the

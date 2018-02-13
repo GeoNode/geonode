@@ -121,7 +121,7 @@ GOOGLE_API_KEY = ''
 #ACCOUNT_EMAIL_CONFIRMATION_REQUIRED = False
 
 # Allowed values for the preview library are 'geoext' and 'leaflet'.
-#LAYER_PREVIEW_LIBRARY = 'geoext'
+#GEONODE_CLIENT_LAYER_PREVIEW_LIBRARY = 'geoext'
 
 # Uncomment the following to receive emails whenever there are errors in GeoNode
 # or to be notified of new user requests when ACCOUNT_APPROVAL_REQUIRED has been set.
