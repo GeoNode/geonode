@@ -1246,3 +1246,6 @@ MAP_CLIENT_USE_CROSS_ORIGIN_CREDENTIALS = strtobool(os.getenv(
     'MAP_CLIENT_USE_CROSS_ORIGIN_CREDENTIALS',
     'False'
 ))
+
+# Choose thumbnail generator -- this is the default generator
+THUMBNAIL_GENERATOR = "geonode.geoserver.helpers.create_gs_thumbnail_geonode"
