@@ -32,6 +32,7 @@
     {% else %}
     window.mapConfig = {{viewer}};
     {%endif%}
+    window.access_token = '{{access_token}}';
     window.GeoServerHttp2Root = '{{GEOSERVER_BASE_URL}}';
     window.GeoServerTileRoot = '{{GEOSERVER_BASE_URL}}' + 'wms';
     {% endautoescape %}
@@ -247,6 +248,7 @@
 <script src="{{ STATIC_URL }}layers/js/layer.service.js"></script>
 <script src="{{ STATIC_URL }}layers/js/attribute-view.controller.js"></script>
 <script src="{{ STATIC_URL }}layers/js/feature-preview.controller.js"></script>
+<script src="{{ STATIC_URL }}layers/js/layers-save.controller.js"></script>
 
 <script src="{{ STATIC_URL }}geonode/js/system-settings/system-settings.module.js"></script>
 <script src="{{ STATIC_URL }}geonode/js/system-settings/system-settings.service.js"></script>

@@ -5,9 +5,9 @@
         .module('LayerApp')
         .controller('FeaturePreviewController', FeaturePreviewController);
 
-    FeaturePreviewController.$inject = ['data', '$modalInstance', 'uiGridConstants', 'AngularUiGridOptions', 'layerService'];
+    FeaturePreviewController.$inject = ['data', 'wfsConfig', '$modalInstance', 'uiGridConstants', 'AngularUiGridOptions', 'LayerService', '$modal', '$window', 'layerService', 'mapService'];
 
-    function FeaturePreviewController(data, $modalInstance, uiGridConstants, AngularUiGridOptions, layerService) {
+    function FeaturePreviewController(data, wfsConfig, $modalInstance, uiGridConstants, AngularUiGridOptions, LayerService, $modal, $window, layerService, mapService) {
         var self = this;
 
         function initializeTabs() {
@@ -18,6 +18,7 @@
                 };
             });
             self.tabs[0].active = true;
+            self.selectedTab = self.tabs[0];
         }
 
         function initializeData() {
@@ -43,22 +44,36 @@
         };
 
         self.SaveAsLayer = function() {
-            var features = vectorLayer.getSource().getFeatures();
+            showLayerSaveDialog();
 
-            layerService.createLayerFromFeature(features)
-                .then(function(layer) {
-                    if (vectorLayer) {
-                        mapService.removeVectorLayer(vectorLayer);
-                    }
-                    mapService.addDataLayer(layer);
-                }, function() {
-
-                });
         };
 
         self.init = function() {
             initializeTabs();
             initializeData();
         };
+
+        function showLayerSaveDialog() {
+            $modal.open({
+                templateUrl: '/static/layers/_layers-save.html',
+                controller: 'LayerSaveController as ctrl',
+                backdrop: 'static',
+                keyboard: false,
+                windowClass: 'fullScreenModal First'
+            }).result.then(function(res) {
+                LayerService.createLayerByWfs(Object.assign({}, wfsConfig, {
+                    typeNames: self.selectedTab.name
+                }, res)).then(function(res){
+                    var layer_name = res.url.split('/').pop();
+
+                    var layer = layerService.map({
+                        name: layer_name,
+                        geoserverUrl: $window.GeoServerTileRoot + '?access_token=' + $window.access_token
+                    });
+                    mapService.addDataLayer(layer);
+
+                });
+            });
+        }
     }
 })();

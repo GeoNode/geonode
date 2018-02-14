@@ -153,31 +153,36 @@
                     var layers = mapService.getLayers();
                     var promises = [];
                     var layer_names = [];
+
+                    var params = {
+                        version: '1.0.0',
+                        request: 'GetFeature',
+                        outputFormat: 'JSON',
+                        srsName: 'EPSG:3857',
+                        typeNames: '',
+                        cql_filter: 'DWithin(the_geom,POINT(' + centerLongLat[0] + ' ' + centerLongLat[1] + '),' + values.radius + ',meters)',
+                    }
+
                     for (var k in layers) {
                         var layer = layers[k];
                         if (!layer.IsVisible)
                             continue;
                         layer_names.push(k);
-                        let p = LayerService.getWFS('api/geoserver/', {
-                            version: '1.0.0',
-                            request: 'GetFeature',
-                            outputFormat: 'JSON',
-                            srsName: 'EPSG:3857',
-                            typeNames: layer.getName(),
-                            cql_filter: 'DWithin(the_geom,POINT(' + centerLongLat[0] + ' ' + centerLongLat[1] + '),' + values.radius + ',meters)',
-                        }, false);
+
+                        let p = LayerService.getWFS('api/geoserver/', Object.assign({}, params, {
+                            typeNames: layer.getName()
+                        }), false);
                         promises.push(p);
                     }
                     $q.all(promises)
                         .then(function(response) {
-
                             var data = {};
                             for (var i in layer_names) {
                                 data[layer_names[i]] = response[i].features.map(function(e) {
                                     return e.properties;
                                 });
                             }
-                            showFeaturePreviewDialog(data);
+                            showFeaturePreviewDialog(data, params);
                         });
                 });
             };
@@ -248,7 +253,7 @@
             });
         }
 
-        function showFeaturePreviewDialog(data) {
+        function showFeaturePreviewDialog(data, wfsConfig) {
             $modal.open({
                 templateUrl: '/static/layers/feature-preview.html',
                 controller: 'FeaturePreviewController as ctrl',
@@ -258,6 +263,9 @@
                 resolve: {
                     data: function() {
                         return data;
+                    },
+                    wfsConfig: function(){
+                       return wfsConfig;
                     }
                 }
             });

@@ -392,6 +392,7 @@ def map_view(request, mapid, snapshot=None, template='maps/detail_map_view.html'
 
     return render_to_response(template, RequestContext(request, {
         'config': json.dumps(config),
+        'access_token': access_token,
         'map': map_obj,
         'preview': getattr(
             settings,

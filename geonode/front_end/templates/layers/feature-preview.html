@@ -2,10 +2,10 @@
     <div class="file-browser-button-container draggable-div">
         <i class="fa fa-times-circle modal-close-icon" style="float: right; cursor: pointer" ng-click="ctrl.closeDialog()"></i>         
         <h4>Features</h4>
-        <button class="btn btn-default" >Save as layer </button>
+        <button class="btn btn-default"  ng-click="ctrl.SaveAsLayer()">Save as layer [{ctrl.selectedTab.name}]</button>
     </div>
     <tabset>
-        <tab active='tab.active' ng-repeat="tab in ctrl.tabs">
+        <tab active='tab.active' ng-click="ctrl.selectedTab = tab" ng-repeat="tab in ctrl.tabs" >
             <tab-heading>
                 [{tab.name}]
                 <span ng-if="tab.active" class="selected-down-arrow"></span>

@@ -169,7 +169,7 @@
 
                 analyticsService.saveAnalytics(data, url);
             });
-        })();
+        });
 
         $scope.$on("$destroy", function() {
             ol.Observable.unByKey(keyPointerDrag);
