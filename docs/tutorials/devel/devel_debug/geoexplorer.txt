@@ -3,7 +3,7 @@
 Debugging GeoExplorer
 =====================
 
-In case you want to debug the GeoExplorer behaviour in your browser with 
+In case you want to debug the GeoExplorer behaviour in your browser with
 Firebug of Chromium Developer toolbar, you may do the following:
 
 Install Boundless Suite::
@@ -13,17 +13,17 @@ Install Boundless Suite::
     $ git submodule update --init --recursive
 
 Run GeoExplorer in debug mode::
-    
+
     $ cd geoexplorer
     $ ant debug
-    
+
 Check if GeoExplorer is running at this URL: http://localhost:9080
 
-Edit the ``layers/templates/layers/layer_geoext_map.html`` file and replace this 
+Edit the ``layers/templates/layers/layer_geoext_map.html`` file and replace this
 line::
 
-    {% include "geonode/geo_header.html" %}
-    
+    {% include "geoext/geo_header.html" %}
+
 with this one::
 
-    {% include "geonode/geo_header_debug.html" %}
+    {% include "geoext/geo_header_debug.html" %}

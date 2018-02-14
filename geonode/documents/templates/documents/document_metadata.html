@@ -8,11 +8,6 @@
 
 {% block title %}{{ document.title }} — {{ block.super }}{% endblock %}
 
-{% block head %}
-  {% include "geonode/ext_header.html" %}
-  {{ block.super }}
-{% endblock head %}
-
 {% block body_class %}data{% endblock body_class %}
 
 {% block body_outer %}

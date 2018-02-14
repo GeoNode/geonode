@@ -101,7 +101,7 @@ define(['underscore',
                     } else {
                         log_error({
                             title: 'Wrong selection',
-                            message: gettext('Only one Layer at a time can be uploaded!')
+                            message: gettext('Only one File at a time can be uploaded!')
                         });
                     }
                 }

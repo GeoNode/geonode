@@ -49,4 +49,5 @@ urlpatterns = patterns('geonode.documents.views',
                            name='document_batch_metadata'),
                        url(r'^(?P<docid>\d+)/metadata_advanced$', 'document_metadata_advanced',
                            name='document_metadata_advanced'),
+                       url(r'^(?P<docid>[^/]*)/thumb_upload$', 'document_thumb_upload', name='document_thumb_upload'),
                        )

@@ -18,6 +18,7 @@
 #
 #########################################################################
 
+import os
 import json
 import logging
 from itertools import chain
@@ -32,6 +33,8 @@ from django.contrib.auth.decorators import login_required
 from django.conf import settings
 from django.core.urlresolvers import reverse
 from django.core.exceptions import PermissionDenied
+from django.core.files.storage import default_storage
+from django.core.files.base import ContentFile
 from django_downloadview.response import DownloadResponse
 from django.views.generic.edit import UpdateView, CreateView
 from django.db.models import F
@@ -45,6 +48,7 @@ from geonode.base.models import TopicCategory
 from geonode.documents.models import Document, get_related_resources
 from geonode.documents.forms import DocumentForm, DocumentCreateForm, DocumentReplaceForm
 from geonode.documents.models import IMGTYPES
+from geonode.documents.renderers import generate_thumbnail_content, MissingPILError
 from geonode.utils import build_social_links
 from geonode.groups.models import GroupProfile
 from geonode.base.views import batch_modify
@@ -515,6 +519,83 @@ def document_metadata_advanced(request, docid):
         request,
         docid,
         template='documents/document_metadata_advanced.html')
+
+
+@login_required
+def document_thumb_upload(
+        request,
+        docid,
+        template='documents/document_thumb_upload.html'):
+    document = None
+    try:
+        document = _resolve_document(
+            request,
+            docid,
+            'base.change_resourcebase',
+            _PERMISSION_MSG_MODIFY)
+
+    except Http404:
+        return HttpResponse(
+            loader.render_to_string(
+                '404.html', RequestContext(
+                    request, {
+                    })), status=404)
+
+    except PermissionDenied:
+        return HttpResponse(
+            loader.render_to_string(
+                '401.html', RequestContext(
+                    request, {
+                        'error_message': _("You are not allowed to edit this document.")})), status=403)
+
+    if document is None:
+        return HttpResponse(
+            'An unknown error has occured.',
+            content_type="text/plain",
+            status=401
+        )
+
+    if request.method == 'GET':
+        return render_to_response(template, RequestContext(request, {
+            "resource": document,
+            "docid": docid,
+            'SITEURL': settings.SITEURL[:-1]
+        }))
+    elif request.method == 'POST':
+        status_code = 401
+        out = {'success': False}
+        if docid and request.FILES:
+            data = request.FILES.get('base_file')
+            if data:
+                filename = 'document-{}-thumb.png'.format(document.uuid)
+                path = default_storage.save('tmp/' + filename, ContentFile(data.read()))
+                f = os.path.join(settings.MEDIA_ROOT, path)
+                try:
+                    image_path = f
+                except:
+                    image_path = document.find_placeholder()
+
+                thumbnail_content = None
+                try:
+                    thumbnail_content = generate_thumbnail_content(image_path)
+                except MissingPILError:
+                    logger.error('Pillow not installed, could not generate thumbnail.')
+
+                document.save_thumbnail(filename, thumbnail_content)
+                logger.debug("Thumbnail for document #{} created.".format(docid))
+            status_code = 200
+            out['success'] = True
+            out['resource'] = docid
+        else:
+            out['success'] = False
+            out['errors'] = 'An unknown error has occured.'
+        out['url'] = reverse(
+            'document_detail', args=[
+                docid])
+        return HttpResponse(
+            json.dumps(out),
+            content_type='application/json',
+            status=status_code)
 
 
 def document_search_page(request):
