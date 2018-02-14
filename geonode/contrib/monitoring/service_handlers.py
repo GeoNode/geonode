@@ -126,7 +126,7 @@ class BaseServiceHandler(object):
             if last_check + self.service.check_interval > now:
                 log.warning("Next check too soon")
                 return
-        _collected = self._collect(since, until, **kwargs)
+        _collected = self._collect(since.astimezone(utc), until.astimezone(utc), **kwargs)
         return self.handle_collected(_collected)
 
     def _collect(self, since, until, *args, **kwargs):
