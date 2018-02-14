@@ -71,6 +71,7 @@ from geonode.layers.utils import layer_type, get_files, create_thumbnail
 from geonode.security.views import _perms_info_json
 from geonode.utils import set_attributes
 import xml.etree.ElementTree as ET
+from django.utils.module_loading import import_string
 
 
 logger = logging.getLogger(__name__)
@@ -1890,7 +1891,8 @@ def set_time_dimension(cat, layer, time_presentation, time_presentation_res, tim
     cat.save(resource)
 
 
-def create_gs_thumbnail(instance, overwrite=False):
+# this is the original implementation of create_gs_thumbnail()
+def create_gs_thumbnail_geonode(instance, overwrite=False):
     """
     Create a thumbnail with a GeoServer request.
     """
@@ -1936,3 +1938,10 @@ def create_gs_thumbnail(instance, overwrite=False):
 
     create_thumbnail(instance, thumbnail_remote_url, thumbnail_create_url,
                      ogc_client=http_client, overwrite=overwrite, check_bbox=check_bbox)
+
+
+# main entry point to create a thumbnail - will use implementation
+# defined in settings.THUMBNAIL_GENERATOR (see settings.py)
+def create_gs_thumbnail(instance, overwrite=False):
+    implementation = import_string(settings.THUMBNAIL_GENERATOR)
+    return implementation(instance, overwrite)
