@@ -46,7 +46,7 @@ class GeoserverCreateLayerByFeature(GeoServerMixin, CreateAPIView):
 
         return mem_file
 
-    def create_layer(self, csv, host, scheme='http', cookies = None):
+    def create_layer(self, csv, layer_title, organizationId, categoryId, host, scheme='http', cookies = None):
         import requests, json   
 
         if not cookies:
@@ -57,9 +57,9 @@ class GeoserverCreateLayerByFeature(GeoServerMixin, CreateAPIView):
         data = {
             'permissions': json.dumps({}),
             'charset': 'UTF-8',
-            'layer_title': 'auto_layer_upload_multi',
-            'category': 'building',
-            'organization': 1,
+            'layer_title': layer_title,
+            'category': categoryId,
+            'organization': organizationId,
             'csv_layer_type': 'the_geom',
             'the_geom': 'geom',
             'layer_type': 'csv',
@@ -73,10 +73,24 @@ class GeoserverCreateLayerByFeature(GeoServerMixin, CreateAPIView):
         cookies.update(dict(csrftoken=csrftoken))
 
         headers = {'X-CSRFToken': csrftoken }
-        return requests.post(url, cookies=cookies, headers=headers, data=data, files=files)
+        response = requests.post(url, cookies=cookies, headers=headers, data=data, files=files)
 
-    def get(self, request, **kwargs):
-        data = dict(request.query_params)
+        return json.loads(response.content)
+
+    def post(self, request, **kwargs):
+        data = request.data
+        layer_title = None
+        categoryId = None
+        organizationId = None
+        if 'title' in data:
+            layer_title = data['title']
+            del data['title']
+        if 'categoryId' in data:
+            categoryId = data['categoryId']
+            del data['categoryId']
+        if 'organizationId' in data:
+            organizationId = data['organizationId']
+            del data['organizationId']  
             
         query = self.get_configuration(data)
 
@@ -85,6 +99,12 @@ class GeoserverCreateLayerByFeature(GeoServerMixin, CreateAPIView):
         result = self.get_response_from_geoserver('wfs', query)
         mem_file = self.create_csv(result)
         
-        response = self.create_layer(mem_file, request.META.get('HTTP_HOST'), request.scheme, request.COOKIES)
-        print response.content
-        return Response(result, status=status.HTTP_200_OK)
+        response = self.create_layer(csv=mem_file, 
+                                    layer_title=layer_title, 
+                                    categoryId=categoryId,
+                                    organizationId=organizationId,
+                                    host=request.META.get('HTTP_HOST'), 
+                                    scheme=request.scheme, 
+                                    cookies=request.COOKIES)
+
+        return Response(response, status=status.HTTP_200_OK)
