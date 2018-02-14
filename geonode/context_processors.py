@@ -161,6 +161,7 @@ def resource_urls(request):
     )
     if settings.USE_WORLDMAP:
         defaults['GEONODE_CLIENT_LOCATION'] = settings.GEONODE_CLIENT_LOCATION
+        defaults['DB_DATASTORE'] = True
         #defaults['DB_DATASTORE'] = settings.DB_DATASTORE
         #defaults['HYPERMAP_REGISTRY_URL'] = settings.HYPERMAP_REGISTRY_URL
         #defaults['MAPPROXY_URL'] = settings.MAPPROXY_URL
