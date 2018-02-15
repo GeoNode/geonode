@@ -161,11 +161,11 @@ def resource_urls(request):
     )
     if settings.USE_WORLDMAP:
         defaults['GEONODE_CLIENT_LOCATION'] = settings.GEONODE_CLIENT_LOCATION
+        # TODO disable DB_DATASTORE setting
         defaults['DB_DATASTORE'] = True
-        #defaults['DB_DATASTORE'] = settings.DB_DATASTORE
-        #defaults['HYPERMAP_REGISTRY_URL'] = settings.HYPERMAP_REGISTRY_URL
-        #defaults['MAPPROXY_URL'] = settings.MAPPROXY_URL
-        #defaults['SOLR_URL'] = settings.SOLR_URL
+        defaults['HYPERMAP_REGISTRY_URL'] = settings.HYPERMAP_REGISTRY_URL
+        defaults['MAPPROXY_URL'] = settings.HYPERMAP_REGISTRY_URL
+        defaults['SOLR_URL'] = settings.SOLR_URL
         defaults['USE_GAZETTEER'] = settings.USE_GAZETTEER
         # 'GOOGLE_API_KEY': settings.GOOGLE_API_KEY,
         # 'GOOGLE_MAPS_API_KEY': settings.GOOGLE_MAPS_API_KEY

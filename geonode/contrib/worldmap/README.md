@@ -51,7 +51,7 @@ Now install GeoNode:
 
 You will use a geonode-project in order to separate the customization of your instance from GeoNode.
 
-Set the following variables as needed (change SITE_NAME and SERVER_IP s needed). Even better, create a file and source it:
+Set the following variables as needed (change SITE_NAME and SERVER_IP s needed. Also HYPERMAP_REGISTRY_URL and SOLR_URL may be different). Even better, create a file and source it:
 
     export SITE_NAME=worldmap
     export SERVER_IP=128.31.22.73
@@ -63,6 +63,8 @@ Set the following variables as needed (change SITE_NAME and SERVER_IP s needed).
     export ALLOWED_HOSTS="localhost, $SERVER_IP, "
     export GEOSERVER_LOCATION=http://localhost:8080/geoserver/
     export GEOSERVER_PUBLIC_LOCATION=http://$SERVER_IP/geoserver/
+    export HYPERMAP_REGISTRY_URL =http://localhost:8001/
+    export SOLR_URL =http://localhost:8983/solr/hypermap/select/
 
 Create your geonode project by using the WorldMap geonode-project as a template  (https://github.com/cga-harvard/geonode-project). Rename it to something meaningful (for example your web site name):
 
