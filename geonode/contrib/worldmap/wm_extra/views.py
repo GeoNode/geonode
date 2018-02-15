@@ -612,6 +612,7 @@ def gxp2wm(config, map_obj=None):
             config['sources'][source]['ptype'] = 'gxp_gnsource'
             config['sources'][source]['url'] = config['sources'][source]['url'].replace('ows', 'wms')
             layer_config['local'] = True
+            layer_config['queryable'] = True
             alternate = layer_config['name']
             layer = Layer.objects.get(alternate=alternate)
             # layer_config['url'] = layer.ows_url
