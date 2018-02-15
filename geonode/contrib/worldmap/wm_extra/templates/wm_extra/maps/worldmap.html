@@ -47,102 +47,122 @@
     {% autoescape off %}
         var config = Ext.apply({
             tools:  [{
-                ptype: "gxp_geonodequerytool",
-                id: "worldmap_query_tool",
-                actionTarget:  {target: "paneltbar", index: 2},
-                toolText: '<span class="x-btn-text">{% trans 'Identify' %}</span>',
-                iconCls: null,
-                outputConfig: {width: 400, height: 200, panIn: false},
-                featurePanel: 'queryPanel',
-                attributePanel: 'gridWinPanel',
-                toggleGroup: 'featureGroup'
-            },
-                {
-                    ptype: "gxp_coordinatetool",
-                    title: "<span class='x-btn-text'>{% trans 'Map Coordinates - longitude, latitude' %}</span>",
-                    actionTarget:  {target: "paneltbar"}
-                },
-                {
-                    ptype: "gxp_printpage",
-                    openInNewWindow: true,
-                    includeLegend: true,
-                    text: '<span class="x-btn-text">{% trans 'Print' %}</span>',
-                    iconCls: null,
-                    actionTarget: {target: "paneltbar", index: 4}
-                },
-                {
-                    ptype: "gxp_annotation",
-                    user: "{{ user.id }}",
-                    toggleGroup: 'featureGroup',
-                    actionTarget:  {target: "paneltbar", index: 6}
-                },
-                {
-                    ptype: "gxp_googleearth",
-                    text: '<span class="x-btn-text">{% trans 'Google Earth' %}</span>',
-                    iconCls: null,
-                    actionTarget: {target: "paneltbar", index: 7}
-                },
-                {
-                	ptype: "gxp_streetviewtool",
-                	actionTarget:   {target: "paneltbar", index: 8},
-                    toggleGroup: 'featureGroup'
-                },
-                {
-                	  ptype: "gxp_measure",
-                    toggleGroup: 'featureGroup',
-                    text: '<span class="x-btn-text">{% trans 'Measure' %}</span>',
-                    iconCls: null,
-                	  actionTarget:   {target: "paneltbar", index: 9}
-                },
-                {
-                	ptype: 'gxp_mapshare',
-                	target: this,
-                	text: '<span class="x-btn-text">{% trans 'Share Map' %}</span>',
-                	iconCls: null,
-                    actionTarget:  {target: "paneltbar", index: 24}
-                }{% if USE_GAZETTEER %},
-                {
-                    ptype: "gxp_gazetteertool",
-                    actionTarget:  {target: "paneltbar", index: 5},
-                    title: '<span class="x-btn-text">{% trans 'Find Place' %}</span>',
-                    iconCls: null,
-                    toggleGroup: 'featureGroup',
-                    pressed: false
-                }{% endif %}
-                {% if user.is_authenticated and DB_DATASTORE  %},
-                {
-                    ptype: "gxp_featuremanager",
-                    id: "feature_manager",
-                    paging: false,
-                    autoSetLayer: true,
-                    autoLoadFeatures: true,
-                    listeners: {
-                        'layerchange': function(mgr, layer, schema) {
-                            app.checkLayerPermissions(layer);
-                        }
+                      ptype: "gxp_geonodequerytool",
+                      id: "worldmap_query_tool",
+                      actionTarget:  {target: "paneltbar", index: 2},
+                      toolText: '<span class="x-btn-text">{% trans 'Identify' %}</span>',
+                      iconCls: null,
+                      outputConfig: {width: 400, height: 200, panIn: false},
+                      featurePanel: 'queryPanel',
+                      attributePanel: 'gridWinPanel',
+                      toggleGroup: 'featureGroup'
                     },
-                    actionTarget:  {target: "paneltbar"},
-                    toggleGroup: 'featureGroup'
-                },
-                {
-                    ptype: "gxp_featureeditor",
-                    id: "gn_layer_editor",
-                    featureManager: "feature_manager",
-                    autoLoadFeature: true,
-                    iconClsAdd: null,
-                    iconClsEdit: null,
-                    createFeatureActionText: '<span class="x-btn-text" >{% trans 'Create Feature' %}</span>',
-                    editFeatureActionText: '<span class="x-btn-text">{% trans 'Edit Feature' %}</span>',
-                    actionTarget:  {target: "paneltbar", index: 2},
-                    toggleGroup: 'featureGroup'
-                }{% endif %}
-                {% if editmap %},
-                {
-                	ptype: "gxp_maprevisiontool",
-                	actionTarget:   {target: "paneltbar", index: 20}
-                }{% endif %}
-                ],
-                proxy: "{{ PROXY_URL }}",
+                    {
+                        ptype: "gxp_coordinatetool",
+                        title: "<span class='x-btn-text'>{% trans 'Map Coordinates - longitude, latitude' %}</span>",
+                        actionTarget:  {target: "paneltbar"}
+                    },
+                    {
+                        ptype: "gxp_printpage",
+                        openInNewWindow: true,
+                        includeLegend: true,
+                        text: '<span class="x-btn-text">{% trans 'Print' %}</span>',
+                        iconCls: null,
+                        actionTarget: {target: "paneltbar", index: 4}
+                    },
+                    {
+                        ptype: "gxp_annotation",
+                        user: "{{ user.id }}",
+                        toggleGroup: 'featureGroup',
+                        actionTarget:  {target: "paneltbar", index: 6}
+                    },
+                    {
+                        ptype: "gxp_googleearth",
+                        text: '<span class="x-btn-text">{% trans 'Google Earth' %}</span>',
+                        iconCls: null,
+                        actionTarget: {target: "paneltbar", index: 7}
+                    },
+                    {
+                    	ptype: "gxp_streetviewtool",
+                    	actionTarget:   {target: "paneltbar", index: 8},
+                        toggleGroup: 'featureGroup'
+                    },
+                    {
+                    	  ptype: "gxp_measure",
+                        toggleGroup: 'featureGroup',
+                        text: '<span class="x-btn-text">{% trans 'Measure' %}</span>',
+                        iconCls: null,
+                    	  actionTarget:   {target: "paneltbar", index: 9}
+                    },
+                    {
+                    	ptype: 'gxp_mapshare',
+                    	target: this,
+                    	text: '<span class="x-btn-text">{% trans 'Share Map' %}</span>',
+                    	iconCls: null,
+                        actionTarget:  {target: "paneltbar", index: 24}
+                    }
+                    {% if USE_GAZETTEER %},
+                    {
+                        ptype: "gxp_gazetteertool",
+                        actionTarget:  {target: "paneltbar", index: 5},
+                        title: '<span class="x-btn-text">{% trans 'Find Place' %}</span>',
+                        iconCls: null,
+                        toggleGroup: 'featureGroup',
+                        pressed: false
+                    }
+                    {% endif %}
+                    {% if user.is_authenticated and DB_DATASTORE  %},
+                    {
+                        ptype: "gxp_featuremanager",
+                        id: "feature_manager",
+                        paging: false,
+                        autoSetLayer: true,
+                        autoLoadFeatures: true,
+                        listeners: {
+                            'layerchange': function(mgr, layer, schema) {
+                                app.checkLayerPermissions(layer);
+                            }
+                        },
+                        actionTarget:  {target: "paneltbar"},
+                        toggleGroup: 'featureGroup'
+                    },
+                    {
+                        ptype: "gxp_featureeditor",
+                        id: "gn_layer_editor",
+                        featureManager: "feature_manager",
+                        autoLoadFeature: true,
+                        iconClsAdd: null,
+                        iconClsEdit: null,
+                        createFeatureActionText: '<span class="x-btn-text" >{% trans 'Create Feature' %}</span>',
+                        editFeatureActionText: '<span class="x-btn-text">{% trans 'Edit Feature' %}</span>',
+                        actionTarget:  {target: "paneltbar", index: 2},
+                        toggleGroup: 'featureGroup'
+                    }
+                    {% endif %}
+                    {% if editmap %},
+                    {
+                    	ptype: "gxp_maprevisiontool",
+                    	actionTarget:   {target: "paneltbar", index: 20}
+                    }{% endif %}
+                    ],
+
+            {% if PROXY_URL %}
+            proxy: '{{ PROXY_URL }}',
+            {% endif %}
+
+            {% if 'access_token' in request.session %}
+            access_token: "{{request.session.access_token}}",
+            {% else %}
+            access_token: null,
+            {% endif %}
+
+            {% if MAPFISH_PRINT_ENABLED %}
+            printService: "{{GEOSERVER_BASE_URL}}pdf/",
+            {% else %}
+            printService: null,
+            printCapabilities: null,
+            {% endif %}
+
             /* The URL to a REST map configuration service.  This service
              * provides listing and, with an authenticated user, saving of
              * maps on the server for sharing and editing.
@@ -150,18 +170,124 @@
             rest: "{% url "maps_browse" %}",
             ajaxLoginUrl: "{% url "account_ajax_login" %}",
             homeUrl: "{% url "home" %}",
-            localGeoServerBaseUrl: "{{ GEOSERVER_BASE_URL }}",
+
+            {% if 'access_token' in request.session %}
+            localGeoServerBaseUrl: "{{GEOSERVER_BASE_URL}}?access_token={{request.session.access_token}}",
+            access_token: "{{request.session.access_token}}",
+            {% else %}
+            localGeoServerBaseUrl: "{{GEOSERVER_BASE_URL}}",
+            access_token: null,
+            {% endif %}
+
             localCSWBaseUrl: "{{ CATALOGUE_BASE_URL }}",
             hypermapRegistryUrl: "{{ HYPERMAP_REGISTRY_URL }}",
             mapProxyUrl: "{{ HYPERMAP_REGISTRY_URL }}",
             solrUrl: "{{ SOLR_URL }}",
             username: "{{ user.username }}",
             csrfToken: "{{ csrf_token }}",
+
             {% if user.is_authenticated %}
             db_datastore: true,
             {% endif %}
-            authorizedRoles: "{{ user.is_authenticated|yesno:"ROLE_ADMINISTRATOR,ROLE_ANONYMOUS" }}"
+
+            authorizedRoles: "{{ user.is_authenticated|yesno:"ROLE_ADMINISTRATOR,ROLE_ANONYMOUS" }}",
+
+            /*
+            listeners: {
+                "ready": function() {
+                    l = app.selectedLayer.getLayer();
+                    l.addOptions({wrapDateLine:true, displayOutsideMaxExtent: true});
+                    if(app.selectedLayer.data.queryable) {
+                        app.mapPanel.map.getMaxExtent = function() {
+                            return new OpenLayers.Bounds(-80150033.36/2,-80150033.36/2,80150033.36/2,80150033.36/2);
+                        }
+                        app.mapPanel.map.getMaxResolution = function() {
+                            return 626172.135625/2;
+                        }
+                        l.addOptions({maxExtent:app.mapPanel.map.getMaxExtent(), restrictedExtent:app.mapPanel.map.getMaxExtent()});
+                    }
+                    {% if 'access_token' in request.session %}
+                        try {
+                            if(l.url != undefined && (typeof l.url) == "string") {
+                                l.url += ( !l.url.match(/\b\?/gi) || l.url.match(/\b\?/gi).length == 0 ? '?' : '&');
+                                if((!l.url.match(/\baccess_token/gi))) {
+                                    l.url += "access_token={{request.session.access_token}}";
+                                } else {
+                                    l.url =
+                                        l.url.replace(/(access_token)(.+?)(?=\&)/, "$1={{request.session.access_token}}");
+                                }
+                            }
+                        } catch(err) {
+                            console.log(err);
+                        }
+                    {% endif %}
+
+                    for (var ll in app.mapPanel.map.layers) {
+                        l = app.mapPanel.map.layers[ll];
+                        if (l.url != undefined && (typeof l.url) == "string" && l.url.indexOf('{{GEOSERVER_BASE_URL}}') !== -1) {
+                            l.addOptions({wrapDateLine:true, displayOutsideMaxExtent: true});
+                            l.addOptions({maxExtent:app.mapPanel.map.getMaxExtent(), restrictedExtent:app.mapPanel.map.getMaxExtent()});
+                            {% if 'access_token' in request.session %}
+                                try {
+                                    l.url += ( !l.url.match(/\b\?/gi) || l.url.match(/\b\?/gi).length == 0 ? '?' : '&');
+                                    if((!l.url.match(/\baccess_token/gi))) {
+                                        l.url += "access_token={{request.session.access_token}}";
+                                    } else {
+                                        l.url =
+                                            l.url.replace(/(access_token)(.+?)(?=\&)/, "$1={{request.session.access_token}}");
+                                    }
+                                } catch(err) {
+                                    console.log(err);
+                                }
+                            {% endif %}
+                        }
+                    }
+
+                    var map = app.mapPanel.map;
+                    var layer = app.map.layers.slice(-1)[0];
+                    var bbox = layer.bbox;
+                    var crs = layer.crs
+                    if (bbox != undefined)
+                    {
+                       if (!Array.isArray(bbox) && Object.keys(layer.srs) in bbox) {
+                           bbox = bbox[Object.keys(layer.srs)].bbox;
+                       }
+
+                       var extent = new OpenLayers.Bounds();
+
+                       if(map.projection != 'EPSG:900913' && crs && crs.properties) {
+                           extent.left = bbox[0];
+                           extent.right = bbox[1];
+                           extent.bottom = bbox[2];
+                           extent.top = bbox[3];
+
+                           if (crs.properties != map.projection) {
+                               extent = extent.clone().transform(crs.properties, map.projection);
+                           }
+                       } else {
+                           extent = OpenLayers.Bounds.fromArray(bbox);
+                       }
+
+                       var zoomToData = function()
+                       {
+                           map.zoomToExtent(extent, false);
+                           app.mapPanel.center = map.center;
+                           app.mapPanel.zoom = map.zoom;
+                           map.events.unregister('changebaselayer', null, zoomToData);
+                       };
+                       map.events.register('changebaselayer',null, zoomToData);
+                       if(map.baseLayer){
+                           map.zoomToExtent(extent, false);
+                       }
+                    }
+                },
+               'save': function(obj_id) {
+                   createMapThumbnail(obj_id);
+               }
+             }
+             */
         }, {{ config }});
+
         app = new GeoExplorer(config, true);
         var permalinkTemplate = new Ext.Template("{protocol}//{host}/maps/{id}/edit");
         var permalink = function(id) {
