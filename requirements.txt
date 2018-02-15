@@ -125,3 +125,4 @@ psutil
 django-cors-headers==2.1.0
 django-multi-email-field
 python-memcached==1.59
+django-basic-authentication-decorator==0.9
